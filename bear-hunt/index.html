@@ -46,6 +46,7 @@ self: bear
         <p data-i18n-html="model.card2.body">As a joiner, you contribute the <strong>counts and tiers</strong> of your infantry, cavalry and archers. Those three troop types are scored as separate square-root buckets.</p>
       </article>
     </div>
+    <p class="note" data-i18n-html="model.thesis">A stronger lead makes <strong>each rally slot worth more</strong>. Another lead creates <strong>more rally slots</strong>. Those are two different multipliers. The strategy is not “ignore lead strength” — it is “do not throw away rally supply chasing it.” <strong>Everyone should rally; not everyone should launch at once.</strong></p>
     <p class="note" data-i18n="model.note">Your own attack, lethality, gear and buffs do not follow your troops into somebody else's Bear rally.</p>
   </section>
 
@@ -107,7 +108,18 @@ self: bear
   </section>
 
   
-<section class="section" id="marches">
+<!-- ═══════════ THE CAP ═══════════ -->
+  <section class="section" id="cap">
+    <h2 data-i18n="cap.title">The cap</h2>
+    <p class="lede" data-i18n-html="cap.lede">The joiner cap exists to protect <strong>participant count</strong>. An oversized march is not just using extra troops — it can remove somebody else's entire square-root damage bucket.</p>
+    <details><summary data-i18n="cap.details">The maths of the cap</summary><div class="d-body"><p data-i18n-html="cap.d1">For a rally with capacity R and a lead march of L, a target of J joiners suggests <b>join cap ≈ (R − L) ÷ J</b>. In practice we use a conservative fixed <b>~85k</b> so ordinary rallies reliably land around 13–14 joiners.</p><p data-i18n-html="cap.d2">For the same total joined troops, 14 equal participant buckets have √(14/10) ≈ <b>18% more</b> square-root output than 10 buckets. Real rallies are messier, but the direction is brutal: protecting slots matters more than squeezing another oversized join march in.</p></div></details>
+    <p class="note" data-i18n-html="cap.note">The cap stays on <b>joiner marches</b>. The exception is a designated outsized rally lead: their <b>own lead march</b> can be full-sized and use its calculated ideal ratio. That exception never follows them into somebody else's rally.</p>
+  </section>
+
+  
+  <!-- ═══════════ 10 · THE 4 RULES ═══════════ -->
+
+  <section class="section" id="marches">
     <h2 data-i18n="marches.title">Spread your marches</h2>
     <p class="lede" data-i18n-html="marches.lede">Your join queues are reusable damage buckets. Start by dividing your <strong>archers equally across every join queue</strong>, then do the same with cavalry and infantry until each queue reaches the cap.</p>
     <div class="calc" id="marchcalc" data-group="march">
@@ -182,8 +194,8 @@ self: bear
     <div class="rank-blocks">
       <!-- ── JOINERS ── -->
       <div class="rank-block">
-        <h3 class="rank-title" data-i18n="heroes.joiners.title">Joiners</h3>
-        <p class="rank-lede" data-i18n-html="heroes.joiners.lede">Only the <b>first hero's first skill</b> can take one of the four shared joiner slots. Supplying the skill does not give that joiner extra personal damage. S and A tiers get cards; everyone else gets a line.</p>
+        <h3 class="rank-title" data-i18n="heroes.joiners.title">Shared skill suppliers</h3>
+        <p class="rank-lede" data-i18n-html="heroes.joiners.lede">This is <b>not a join permission list</b>. Only four first-hero skills are locked for the whole rally. Once those useful shared slots are covered, everyone else's job is simply to <b>use the queue and bring troops</b>; their hero choice does not create a private Bear multiplier.</p>
 
         <div class="gen">
           <h4 class="gen-title"><span data-i18n="heroes.gen">Generation</span> I</h4>
@@ -479,7 +491,7 @@ self: bear
       </div>
     </div>
 
-    <p class="note" data-i18n="heroes.out">Send the S and A faces. Leave the defence heroes at home — the bear doesn't care about your armour.</p>
+    <p class="note" data-i18n="heroes.out">For <b>leaders</b>, optimise the full kit. For <b>joiners</b>, the rally only needs four useful shared skill suppliers. After that: <b>fill the rally, use every queue</b>.</p>
 
     <details>
       <summary data-i18n="heroes.details">Sources, testing and fine print</summary>
@@ -509,27 +521,16 @@ self: bear
       <li><b>19.2B</b><span class="forge" role="img" aria-label="17 Forgehammers" data-i18n-key="rewards.forgeAria" data-i18n-attr="aria-label" data-i18n-n="17"><svg class="forge-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20.5 14 10.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M13.5 3.5 20.5 10.5 14.8 16.2 7.8 9.2Z" fill="currentColor"/></svg><span class="forge-n">17</span></span></li>
       <li><b>38.4B+</b><span class="forge" role="img" aria-label="18 Forgehammers" data-i18n-key="rewards.forgeAria" data-i18n-attr="aria-label" data-i18n-n="18"><svg class="forge-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20.5 14 10.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M13.5 3.5 20.5 10.5 14.8 16.2 7.8 9.2Z" fill="currentColor"/></svg><span class="forge-n">18</span></span></li>
     </ul>
-    <p class="note" data-i18n="rewards.note">47M pays 8 hammers, 38.4B pays 18 — one extra per bracket. More players crossing
-      brackets = more Forgehammers for the whole alliance. Fair-share rallies grow everyone — one
-      whale hoarding rallies grows one player.</p>
+    <p class="note" data-i18n="rewards.note">47M pays 8 hammers, 38.4B pays 18 — one extra per bracket. Strong leads raise every joiner's hit, but restricting launches to only the strongest also cuts the number of scoring slots. More players crossing brackets means more Forgehammers across the alliance — <b>do not leave queues idle waiting for a perfect lead</b>.</p>
   </section>
 
   <!-- ═══════════ 9 · THE CAP ═══════════ -->
   
-<section class="section" id="cap">
-    <h2 data-i18n="cap.title">The cap</h2>
-    <p class="lede" data-i18n-html="cap.lede">The joiner cap exists to protect <strong>participant count</strong>. An oversized march is not just using extra troops — it can remove somebody else's entire square-root damage bucket.</p>
-    <details><summary data-i18n="cap.details">The maths of the cap</summary><div class="d-body"><p data-i18n-html="cap.d1">For a rally with capacity R and a lead march of L, a target of J joiners suggests <b>join cap ≈ (R − L) ÷ J</b>. In practice we use a conservative fixed <b>~85k</b> so ordinary rallies reliably land around 13–14 joiners.</p><p data-i18n-html="cap.d2">For the same total joined troops, 14 equal participant buckets have √(14/10) ≈ <b>18% more</b> square-root output than 10 buckets. Real rallies are messier, but the direction is brutal: protecting slots matters more than squeezing another oversized join march in.</p></div></details>
-    <p class="note" data-i18n-html="cap.note">The cap stays on <b>joiner marches</b>. The exception is a designated outsized rally lead: their <b>own lead march</b> can be full-sized and use its calculated ideal ratio. That exception never follows them into somebody else's rally.</p>
-  </section>
-
-  
-  <!-- ═══════════ 10 · THE 4 RULES ═══════════ -->
-  <section class="section rules" id="rules">
+<section class="section rules" id="rules">
     <h2 data-i18n="rules.title">The whole page in four rules</h2>
     <button class="hedera" id="hedera" type="button" aria-label="a small mark in the margin" title="a small mark in the margin" data-i18n-key="rules.hedera" data-i18n-attr="aria-label title">❦</button>
     <ol class="rule-list">
-      <li><span class="rule-num">1</span><div><h3 data-i18n="rules.1.title">Launch your rally</h3><p data-i18n-html="rules.1.body">Every player who can should launch once per five-minute cycle. Rally slots are the scarce resource.</p></div></li>
+      <li><span class="rule-num">1</span><div><h3 data-i18n="rules.1.title">Everyone rallies — not at once</h3><p data-i18n-html="rules.1.body">Every available player should launch once per five-minute cycle. Seed the opening so rallies fill; later launches recycle returning queues.</p></div></li>
       <li><span class="rule-num">2</span><div><h3 data-i18n="rules.2.title">Protect 13–14 joiners</h3><p data-i18n-html="rules.2.body">Keep join marches around the alliance cap — <b>~85k for us</b>. One oversized join can erase another player's √ bucket.</p></div></li>
       <li><span class="rule-num">3</span><div><h3 data-i18n="rules.3.title">Equalise your queues</h3><p data-i18n-html="rules.3.body">Split archers evenly across your join queues; as they cap out, work toward <b>5 / 15 / 80</b>.</p></div></li>
       <li><span class="rule-num">4</span><div><h3 data-i18n="rules.4.title">Take the next rally</h3><p data-i18n-html="rules.4.body">Seed the opening waves, then relaunch on return. Join the next suitable rally to fire, hit, return, repeat. <span class="rev">Parked = zero.</span></p></div></li>
