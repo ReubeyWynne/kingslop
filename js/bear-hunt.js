@@ -1,5 +1,5 @@
 /* bear-hunt.js — Bear Hunt page toys.
-   Registers the two calculators (rally fill, march split) as declared groups
+   Registers the calculators (rally fill, march split, throughput) as declared groups
    with js/bind.js: the page's markup says which inputs feed which figures, the
    group says what the figures are, and the dictionary sentence carries only
    `{tokens}` — no id, no value. Nothing here re-queries an input or holds an
@@ -28,6 +28,23 @@
       var P = isFinite(v.pool) && v.pool > 0 ? v.pool : NaN;
       var q = Math.min(6, Math.max(1, v.q || 1));
       return { n: q, share: BH.fmt(P / q), mult: BH.mult(Math.sqrt(q)) };
+    }
+  });
+
+  // ── Rally-throughput calculator ────────────────────────
+  BH.group('throughput', {
+    inputs: ['participants', 'launchers', 'joiners', 'queues'],
+    values: function (v, BH) {
+      var p = Math.max(1, Math.round(v.participants || 1));
+      var l = Math.min(p, Math.max(1, Math.round(v.launchers || 1)));
+      var s = Math.min(14, Math.max(1, Math.round(v.joiners || 1)));
+      var q = Math.min(6, Math.max(1, Math.round(v.queues || 1)));
+      var slots = l * s;
+      return {
+        slots: BH.fmt(slots),
+        hits: (slots / (p * q)).toFixed(2) + '×',
+        spacing: Math.round(300 / l) + 's'
+      };
     }
   });
 
