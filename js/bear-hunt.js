@@ -48,6 +48,43 @@
     }
   });
 
+  // ── Major-section disclosures ──────────────────────────
+  // Desktop keeps the long-form guide open by default. On mobile, mechanics
+  // and reference sections start collapsed so the page becomes a quick index.
+  // Direct links / TOC taps always open their target before scrolling.
+  function wireSectionFolds() {
+    var folds = Array.prototype.slice.call(document.querySelectorAll('.section-fold[data-mobile-collapse]'));
+    if (!folds.length) return;
+
+    var mobile = window.matchMedia && window.matchMedia('(max-width: 760px)').matches;
+    if (mobile) {
+      folds.forEach(function (fold) { fold.open = false; });
+    }
+
+    function openTarget(hash) {
+      if (!hash || hash.length < 2) return;
+      var section = document.getElementById(hash.slice(1));
+      if (!section) return;
+      var fold = section.querySelector(':scope > .section-fold');
+      if (fold) fold.open = true;
+    }
+
+    openTarget(window.location.hash);
+
+    var toc = document.getElementById('toc');
+    if (toc) {
+      toc.addEventListener('click', function (event) {
+        var link = event.target.closest('a[href^="#"]');
+        if (!link) return;
+        openTarget(link.getAttribute('href'));
+      });
+    }
+
+    window.addEventListener('hashchange', function () {
+      openTarget(window.location.hash);
+    });
+  }
+
   // ── The ❦ in the margin ────────────────────────────────
   // The mark beside "the four rules" is the fifth rule's own whisper: pressing
   // it reveals the rule the page keeps for whoever reads the margin. The copy
@@ -66,5 +103,6 @@
     });
   }
 
+  wireSectionFolds();
   wireMarginMark();
 })();
