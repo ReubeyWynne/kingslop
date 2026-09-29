@@ -42,8 +42,8 @@
       var slots = l * s;
       return {
         slots: BH.fmt(slots),
-        hits: (slots / (p * q)).toFixed(2) + '×',
-        spacing: Math.round(300 / l) + 's'
+        opening: (p * q / s).toFixed(1),
+        hits: (slots / (p * q)).toFixed(2) + '×'
       };
     }
   });
