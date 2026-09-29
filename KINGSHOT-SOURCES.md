@@ -79,10 +79,11 @@ there).
 - Effect targets: own troop type / all own types / multi-continue / all.
 - Report labels (effect → line): 101 harm · 801 shield · 901 heal · 302/202 hurt- ·
   201/211/221 damage+.
-- **Scope:** a hero's skills apply to that hero's own march. SoS rally joiners
-  contribute only a small defense-only share (`302`, ≈ 0.36×benefit, on infantry) —
-  **do not transplant that to the bear model**; dey.ci's tested rule ("joiner's
-  first skill boosts their own march") stands for Bear Hunt.
+- **Scope update (Bear):** newer Bear-specific testing indicates the rally leader's stats and full
+  hero kit are reused for every participant's individual Bear simulation together with the **four
+  locked joiner first-skills**. The joiner contributes troop counts/tier; supplying one of those
+  skills does **not** create a private bonus for that player. This supersedes the older dey.ci
+  assumption that each joiner skill applied only to its owner's march.
 - Report stat lines (`sos_en.properties`) match KingShot report grammar: per-type
   Attack/Defense/Health/Lethality, Damage, Damage Received, Crit Lv., Resilience,
   March Capacity, Rally Capacity.
@@ -408,3 +409,15 @@ have an empty widget row in the mined bundle, and the four heroes with
   beautifier, then grep the markers above (`tMt`, `Xg`, `yHt`, `howto.*`,
   `special`).
 - Agent mining transcripts are ephemeral; this file is the durable record.
+
+
+### Bear Hunt operational model — 2026-09-29
+
+- Joiner damage is treated per troop type: infantry, cavalry and archers each contribute their own
+  `coefficient × √N_type` term under the rally lead's combat package.
+- For live coordination, equalise scarce troops across join queues instead of routing particular
+  marches to particular leader strengths. As queues hit the cap, use the operational **5/15/80** preset.
+- The current server join cap is **~85k**, chosen to preserve **13–14 joiner slots**. Designated
+  outsized leads may full-send their own lead march; their join queues remain capped.
+- Rally supply limits reuse: `H=L·S/(P·Q)` supported hits per join queue per five-minute cycle.
+  If everyone launches and Q=6, then H=S/6, so 13–14 joiners gives **2.17–2.33** hits/queue.
