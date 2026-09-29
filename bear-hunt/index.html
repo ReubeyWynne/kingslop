@@ -51,7 +51,8 @@ self: bear
   </section>
 
   <section class="section" id="sqrt">
-    <h2 data-i18n="sqrt.title">The square root</h2>
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="sqrt.title">The square root</h2></summary>
     <p class="lede" data-i18n-html="sqrt.lede">The sqrt is the whole game. Here's the only number you need:
       <strong>double your march → +41%, not +100%.</strong></p>
 
@@ -85,12 +86,15 @@ self: bear
         <p data-i18n-html="sqrt.last">The full form also carries the fixed Bear factor <b>(1.2/1000) × √5000</b>, your troops' <b>base attack</b> (higher tier = higher base = more damage), the lead's hero kit, and the rally's four locked joiner skills. Those joiner skills are <b>shared by every participant</b>; contributing one does not give its owner a private bonus. None of that changes the √ and split rules on this page.</p>
       </div>
     </details>
+  
+    </details>
   </section>
 
   <!-- ═══════════ 3 · FILL THE RALLY ═══════════ -->
   
 <section class="section" id="rally">
-    <h2 data-i18n="rally.title">Fill the rally</h2>
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="rally.title">Fill the rally</h2></summary>
     <p class="lede" data-i18n-html="rally.lede">A rally holds <strong>1 lead + up to 14 joiners</strong>. The goal is not one huge march — it is <strong>13–14 separate joiner damage buckets</strong> whenever possible.</p>
     <div class="demo">
       <p class="demo-title" data-i18n-html="rally.demoTitle">A 900k rally with 15 players → <b>60k each</b>.</p>
@@ -105,22 +109,28 @@ self: bear
       <p class="calc-out" data-i18n-html="rally.out" data-i18n-vars="rally">Target average: <b>60,000</b> per player · rally hits <b>3.9×</b> harder than one player carrying the same total troops.</p>
     </div>
     <details><summary data-i18n="rally.details">Why, in one line of maths</summary><div class="d-body"><p data-i18n-html="rally.d">15 players × √(900k ÷ 15) = √(15 × 900k) ≈ <b>3.9×</b> one player's √900k. The exact troop mix changes the constants, not the reason extra participant slots are valuable.</p></div></details>
+  
+    </details>
   </section>
 
   
 <!-- ═══════════ THE CAP ═══════════ -->
   <section class="section" id="cap">
-    <h2 data-i18n="cap.title">The cap</h2>
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="cap.title">The cap</h2></summary>
     <p class="lede" data-i18n-html="cap.lede">The joiner cap exists to protect <strong>participant count</strong>. An oversized march is not just using extra troops — it can remove somebody else's entire square-root damage bucket.</p>
     <details><summary data-i18n="cap.details">The maths of the cap</summary><div class="d-body"><p data-i18n-html="cap.d1">For a rally with capacity R and a lead march of L, a target of J joiners suggests <b>join cap ≈ (R − L) ÷ J</b>. In practice we use a conservative fixed <b>~85k</b> so ordinary rallies reliably land around 13–14 joiners.</p><p data-i18n-html="cap.d2">For the same total joined troops, 14 equal participant buckets have √(14/10) ≈ <b>18% more</b> square-root output than 10 buckets. Real rallies are messier, but the direction is brutal: protecting slots matters more than squeezing another oversized join march in.</p></div></details>
     <p class="note" data-i18n-html="cap.note">The cap stays on <b>joiner marches</b>. The exception is a designated outsized rally lead: their <b>own lead march</b> can be full-sized and use its calculated ideal ratio. That exception never follows them into somebody else's rally.</p>
+  
+    </details>
   </section>
 
   
   <!-- ═══════════ 10 · THE 4 RULES ═══════════ -->
 
   <section class="section" id="marches">
-    <h2 data-i18n="marches.title">Spread your marches</h2>
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="marches.title">Spread your marches</h2></summary>
     <p class="lede" data-i18n-html="marches.lede">Your join queues are reusable damage buckets. Start by dividing your <strong>archers equally across every join queue</strong>, then do the same with cavalry and infantry until each queue reaches the cap.</p>
     <div class="calc" id="marchcalc" data-group="march">
       <h4 class="calc-title" data-i18n="marches.calcTitle">TRY IT — SPLIT YOUR ARCHERS</h4>
@@ -130,12 +140,15 @@ self: bear
     </div>
     <p class="note" data-i18n-html="marches.note">Do not save a giant archer march for a random stronger lead. In a live hunt, <strong>equal queues + next rally to fire</strong> is the strategy you can actually execute.</p>
     <details><summary data-i18n="marches.details">Why equal queues win</summary><div class="d-body"><p data-i18n-html="marches.d">For one troop type, a fixed pool P across Q equivalent queues is maximised when the queues are equal: Q × √(P ÷ Q) = √(Q × P). Six equal buckets = √6 ≈ <b>2.4×</b> one bucket, before those queues rotate into later rallies.</p></div></details>
+  
+    </details>
   </section>
 
   
 
 <section class="section" id="timing">
-    <h2 data-i18n="timing.title">Keep moving</h2>
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="timing.title">Keep moving</h2></summary>
     <p class="lede" data-i18n-html="timing.lede">Do not try to choreograph twenty people on a stopwatch. <strong>Seed a first wave that can actually fill</strong>, start the rest a couple of minutes later, then let return times spread the hunt naturally.</p>
 
     <div class="demo">
@@ -170,10 +183,13 @@ self: bear
         <li data-i18n-html="timing.d7">After the seeded opening, <b>do not wait for a scheduled slot</b>. Relaunch on return, and join the next suitable rally to fire.</li>
       </ul></div>
     </details>
+  
+    </details>
   </section>
 
   <section class="section" id="mix">
-    <h2 data-i18n="mix.title">Troop mix</h2>
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="mix.title">Troop mix</h2></summary>
     <p class="lede" data-i18n-html="mix.lede">The square root is applied <strong>separately to infantry, cavalry and archers</strong>. Archers are still the scarce high-damage troop, so build your join queues around them first.</p>
     <div class="cards">
       <article class="card"><h3 data-i18n="mix.card1.title">Equalise first</h3><p data-i18n-html="mix.card1.body">Divide your total archers equally across your join queues. Do the same with cavalry and infantry until the queues fill. The first troops in a √ bucket have the highest marginal value — there is no magical 5k minimum.</p></article>
@@ -184,10 +200,13 @@ self: bear
     <details><summary data-i18n="mix.details1">How to build six join queues</summary><div class="d-body"><p data-i18n-html="mix.d1">At an 85k cap, six 5/15/80 queues hold <b>25.5k infantry, 76.5k cavalry and 408k archers</b>. Until you reach those amounts, spread what you own evenly rather than forcing the ratio. Once capped, excess infantry and cavalry stay home first; most players should have very few archers left unused.</p></div></details>
     <details><summary data-i18n="mix.details2">If you like the maths</summary><div class="d-body"><p data-i18n-html="mix.d2">For one lead, maximising Σ base<sub>t</sub>·A<sub>t</sub>·√n<sub>t</sub> gives <strong>f<sub>t</sub> ∝ (base<sub>t</sub>·A<sub>t</sub>)²</strong>. That exact ratio depends on the lead's attack and lethality by troop type. Use the <a href="../battle-simulator/">battle simulator</a> for a designated strong lead; use the fixed join preset everywhere else.</p></div></details>
     <details><summary data-i18n-html="mix.details3">Tier &amp; heroes — the fine print</summary><div class="d-body"><ul><li data-i18n-html="mix.d3a"><b>Troop tier:</b> damage scales with your troops' base attack — send your highest tier. The weights above are T6-era numbers.</li><li data-i18n-html="mix.d3b"><b>T7+ / TG3+:</b> archers gain another ×1.1 vs the bear (all-infantry), weight 4.4/3 → 4.84/3 ≈ 1.61.</li><li data-i18n-html="mix.d3c"><b>Heroes:</b> the lead's full hero kit applies to every participant, and up to four joiner first-skills are locked as shared rally skills. The joiner who supplies one gets no private ownership bonus.</li></ul></div></details>
+  
+    </details>
   </section>
 
   <section class="section" id="heroes">
-    <h2 data-i18n="heroes.title">The heroes</h2>
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="heroes.title">The heroes</h2></summary>
     <p class="lede" data-i18n-html="heroes.lede">The lead's full kit and the rally's four locked joiner skills are the last big multiplier left. Two jobs, two lists — and a hero that shines at one is usually dead weight at the other.</p>
     <p class="note" data-i18n-html="heroes.note">How to read this: a <b>joiner</b>'s first hero may supply one of the rally's four shared first-skills. If selected, that skill is used for <b>every participant's Bear simulation</b>, not just the player who supplied it. A <b>leader</b> brings their full kit and stats. Same skill codes stack additively; different codes multiply. Defence does nothing to a bear.</p>
 
@@ -501,11 +520,14 @@ self: bear
         <p data-i18n-html="heroes.d3">Hero portraits from the Kingshot community wiki (kingshotwiki.com); the hero-card layout owes its start to Catarina's Kingshot transfer chat design.</p>
       </div>
     </details>
+  
+    </details>
   </section>
 
   <!-- ═══════════ 8 · REWARDS ═══════════ -->
   <section class="section" id="rewards">
-    <h2 data-i18n="rewards.title">Rewards</h2>
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="rewards.title">Rewards</h2></summary>
     <p class="lede" data-i18n-html="rewards.lede">Your reward bracket follows <strong>your own</strong> damage — not the rally's.
       Thresholds keep doubling, one extra Forgehammer per bracket, all the way to <strong>38.4B+</strong>:</p>
     <ul class="brackets">
@@ -522,6 +544,8 @@ self: bear
       <li><b>38.4B+</b><span class="forge" role="img" aria-label="18 Forgehammers" data-i18n-key="rewards.forgeAria" data-i18n-attr="aria-label" data-i18n-n="18"><svg class="forge-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20.5 14 10.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M13.5 3.5 20.5 10.5 14.8 16.2 7.8 9.2Z" fill="currentColor"/></svg><span class="forge-n">18</span></span></li>
     </ul>
     <p class="note" data-i18n="rewards.note">47M pays 8 hammers, 38.4B pays 18 — one extra per bracket. Strong leads raise every joiner's hit, but restricting launches to only the strongest also cuts the number of scoring slots. More players crossing brackets means more Forgehammers across the alliance — <b>do not leave queues idle waiting for a perfect lead</b>.</p>
+  
+    </details>
   </section>
 
   <!-- ═══════════ 9 · THE CAP ═══════════ -->
