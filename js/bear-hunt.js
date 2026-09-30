@@ -114,9 +114,9 @@
       homeOut.textContent = formatNumber(home);
 
       if (reserve > 0) {
-        note.innerHTML = 'Own rally: <b>' + formatNumber(own) + '</b> archers. Split the rest evenly across ' + queues + ' join queues: <b>' + formatNumber(eachJoin) + '</b> archers each.';
+        note.innerHTML = 'Own rally: <b>' + formatNumber(own) + '</b> archers. Split the rest evenly across ' + queues + ' join queues: <b>' + formatNumber(eachJoin) + '</b> each, up to 80% of each join-march cap.';
       } else {
-        note.innerHTML = 'Split archers across your own rally and ' + queues + ' join queues until a cap is reached. Each join queue gets <b>' + formatNumber(eachJoin) + '</b> archers.';
+        note.innerHTML = 'Split your archers across your own rally and ' + queues + ' join queues. Each join queue gets <b>' + formatNumber(eachJoin) + '</b> archers, capped at 80% of that march\'s join cap.';
       }
     }
 
