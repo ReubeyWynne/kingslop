@@ -188,30 +188,30 @@ DmgUp); their effect multiplies into `A`, which everyone in the rally shares.
    `DamageCalc` comment already flagged this ("flip to 4.84/3 when TG3+ archer bonus lands").
 3. **Troop tier matters**: damage is ∝ `base_att` of the troops you send — send your highest tier.
    The site previously said nothing about tiers.
-4. **Heroes multiply**: lead's hero skills (whole rally) and joining heroes' skills (their own
-   march) are multiplicative on top of A. The site previously implied the leader's stats were the
-   only personal factor.
+4. **Hero scope**: the rally leader's full hero kit is shared, and up to four locked joiner
+   first-skills become rally-wide skills used in every participant's individual simulation.
+   Supplying one of those skills does not give that joiner a private damage bonus.
 5. **Absolute scale**: the reward brackets double from 47M to 38.4B
    (47M / 90M / 175M / 330M / 625M / 1.2B / 2.4B / 4.8B / 9.6B / 19.2B / 38.4B), one extra
    Forgehammer per bracket (8 at 47M → 18 at 38.4B), and sit on the full scale that includes the
-   bear factor `(1.2/1000)·√5000`, `√N_tot`, `base_att`, and hero boosts. The √ / split /
-   fair-share rules are scale-independent and hold regardless.
-6. **Nothing changes the relative rules**: doubling a march is still +41%; Q marches are still
-   √Q × one march; a full rally at fair share is still √j × a solo carry — because all of those
-   are ratios and every constant cancels.
-7. **The 10/10/80 heuristic**: the exact optimum (§4) is per-lead — it depends on that lead's
-   attack factors. Since joiners sit in rallies from many different leads, the site teaches a
-   fixed inf/cav/arc split of 10/10/80 once a player passes the ~350k ratio threshold (~65k fair
-   share per rally slot × 5–6 march slots, +1 if leading) — "the per-lead perfect ratio is a
-   fool's errand; 10/10/80 is close enough everywhere and doable." Below the threshold, equalised
-   marches are best and the mix barely matters.
-8. **The participant-cap line (~364k archers)**: an alliance cap on how many troops each march
-   participant may send only touches players past **~364k archers** — 65k fair share per march ×
-   80% archers × 7 marches (a rally lead with six queues fields all seven). Even there the nerf is
-   slight (√), and because reward brackets double, a few percent almost never costs a bracket
-   while rallies stay plentiful. Hence the monthly "God bear" after KvK: both hunt time slots'
-   strongest players together, everyone within ~30s travel of the bear for a constant stream of
-   rallies (super-low dwell times), cap off, everyone full-sends.
+   bear factor `(1.2/1000)·√5000`, `√N_tot`, `base_att`, and hero boosts. The √ and split rules
+   are scale-independent and hold regardless.
+6. **Player and troop-type calculations stay separate**: a participant's Bear damage is the sum
+   of that player's infantry, cavalry and archer terms. Players do not contribute to a shared troop
+   pool. For a fixed amount of one troop type, splitting one player's stock across `Q` otherwise
+   equivalent active queues gives `Q·√(P/Q) = √(Q·P)` summed output; similarly, filling more rally
+   participant slots adds more independently calculated player buckets.
+7. **The 5/15/80 join preset**: the exact optimum (§4) is per lead because it depends on that
+   lead's attack factors. Across a useful range of normal rally-leader coefficients, roughly
+   **5% infantry / 15% cavalry / 80% archers** is a practical fixed composition for an individual
+   full join march. It is a per-march heuristic, not a rally-wide target. If a player cannot field
+   that composition in every active join queue, equalise the scarce troop type — usually archers —
+   across those queues instead of building one perfect join and weakening the rest.
+8. **The alliance join cap is a separate capacity rule**: our current ~85k cap limits each join
+   march so ordinary rallies can still fit about 13–14 joiners. It does not pool or normalise their
+   damage. At an 85k cap, one 5/15/80 join is 4.25k infantry / 12.75k cavalry / 68k archers. Six
+   simultaneous joins at that preset therefore require 25.5k / 76.5k / 408k in the player's own
+   available troop inventory; those totals are only a supply check for the six queues.
 
 ## Verified-consistent items
 
@@ -271,6 +271,8 @@ that fit in each rally, and `Q` = join queues per player.
 If everyone launches, `L=P`, so `H=S/Q`. With six join queues, 13–14 joiners per rally means
 **2.17–2.33 supported hits per queue** even when physical march turnaround could support more.
 
-The live guide therefore prioritises: everyone launching; preserving 13–14 joiner slots with a
-conservative ~85k join cap; equalising scarce troops across join queues; converging on **5/15/80**
-once queues hit the cap; and allowing designated outsized leads to full-send only their own lead march.
+The live guide therefore prioritises: enough launches to keep queues scoring; preserving 13–14
+joiner slots with a conservative ~85k join cap; using **5/15/80 as the default composition for each
+full join march**; equalising scarce troop types across a player's active queues when that preset
+cannot be fielded everywhere; and allowing designated outsized leads to full-send only their own
+lead march.
