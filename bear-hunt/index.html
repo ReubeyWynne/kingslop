@@ -15,46 +15,46 @@ self: bear
 
 <main>
   <section class="section hero" id="top">
-    <h1>BEAR HUNT,<br><span class="accent">DEMYSTIFIED</span></h1>
-    <p class="lede">One goal: keep as many useful rally slots and march queues scoring as possible.</p>
+    <h1>BEAR HUNT</h1>
+    <p class="lede">How Bear damage works, and how to organise rallies around it.</p>
     <p class="chips"><span>30 min</span> <span aria-hidden="true">·</span> <span>every 48 hours</span> <span aria-hidden="true">·</span> <span>5-minute rally cycle</span></p>
   </section>
 
   <section class="section" id="model">
     <span class="anchor-alias" id="rules" aria-hidden="true"></span>
     <h2>The plan</h2>
-    <p class="lede">The rally lead supplies the combat stats and full hero kit. Joiners supply their troop counts and tiers. Up to four joiner first-hero skills are shared across the whole rally.</p>
+    <p class="lede">The rally lead supplies the combat stats and full hero kit. Joiners supply troop counts and tiers. Up to four joiner first-hero skills are shared across the rally.</p>
 
     <ul class="facts strategy-list">
-      <li><b>Everyone launches.</b> Strong leads are valuable, but extra rallies create extra places for returning join queues to score.</li>
-      <li><b>Protect rally slots.</b> Keep join marches around <b>85k</b> so rallies can fit roughly 13–14 joiners.</li>
-      <li><b>Use every queue.</b> Spread scarce archers instead of building one oversized join march; as queues fill, work toward <b>5 / 15 / 80</b>.</li>
-      <li><b>Be strict about joiner heroes.</b> Use an approved first hero, or send no hero. A bad first skill can occupy one of the four shared slots.</li>
+      <li>Launch enough rallies to keep returning join queues busy; do not restrict launches to only the strongest leads.</li>
+      <li>Keep join marches around <b>85k</b> so rallies can usually fit 13–14 joiners.</li>
+      <li>Spread scarce archers across your own rally and join queues; as join marches fill, work toward <b>5 / 15 / 80</b>.</li>
+      <li>Use a recommended first hero on join marches, or send no hero.</li>
     </ul>
 
-    <p class="note"><strong>Lead quality and rally supply are different levers.</strong> A stronger lead makes each slot better; another rally creates more slots. If a march can hit both, the weaker rally is additional damage rather than a replacement for the stronger one.</p>
+    <p class="note">A stronger lead raises the damage of every march in that rally. An extra rally gives returning join queues another place to score. If the same march can hit both, there is no need to choose between them.</p>
   </section>
 
   <section class="section" id="sqrt" data-collapse>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="sqrt-body"><span>Why splitting works</span><span class="section-chevron" aria-hidden="true">⌄</span></button></h2>
     <div class="section-body" id="sqrt-body">
-      <p class="lede">For each troop type, damage grows roughly with the square root of the number you send. Doubling a bucket gives about 41% more damage, not 100%.</p>
+      <p class="lede">For each troop type, damage grows roughly with the square root of the number you send. Doubling the troops in one march gives about 41% more damage, not 100%.</p>
 
-      <div class="bars" role="img" aria-label="The same troop pool split into one, two, or six equal scoring buckets">
-        <p class="bars-cap">Same troop pool, more separate scoring buckets:</p>
-        <div class="bar-row"><span class="bar-label">1 bucket</span><div class="bar-track"><div class="bar-fill" style="--p:41"></div></div><span class="bar-value">1.00×</span></div>
-        <div class="bar-row"><span class="bar-label">2 buckets</span><div class="bar-track"><div class="bar-fill" style="--p:58"></div></div><span class="bar-value">1.41×</span></div>
-        <div class="bar-row"><span class="bar-label">6 buckets</span><div class="bar-track"><div class="bar-fill" style="--p:100"></div></div><span class="bar-value">2.45×</span></div>
+      <div class="bars" role="img" aria-label="The same troop pool split into one, two, or six equal marches">
+        <p class="bars-cap">The same troop pool split across more marches:</p>
+        <div class="bar-row"><span class="bar-label">1 march</span><div class="bar-track"><div class="bar-fill" style="--p:41"></div></div><span class="bar-value">1.00×</span></div>
+        <div class="bar-row"><span class="bar-label">2 marches</span><div class="bar-track"><div class="bar-fill" style="--p:58"></div></div><span class="bar-value">1.41×</span></div>
+        <div class="bar-row"><span class="bar-label">6 marches</span><div class="bar-track"><div class="bar-fill" style="--p:100"></div></div><span class="bar-value">2.45×</span></div>
       </div>
 
-      <p>That is why we care about <strong>separate players in a rally</strong> and <strong>separate march queues</strong>. The exact multiplier changes with lead strength, troop type, heroes and procs; the diminishing-return shape does not.</p>
+      <p>This is why separate players and separate march queues are valuable. The exact amount changes with the lead, troop type, heroes and skill procs, but splitting the same troops still benefits from the square-root calculation.</p>
 
       <details>
         <summary>Exact model</summary>
         <div class="d-body">
-          <p>A useful proportional form for one participant is:</p>
+          <p>For one participant, a useful proportional form is:</p>
           <p class="d-formula">D ∝ K<sub>I</sub>√I + K<sub>C</sub>√C + K<sub>A</sub>√A</p>
-          <p>The three K values come from the rally lead's attack/lethality package, troop base attack, hero/widget effects and the Bear matchup. Chance-based skills add noise across the ten rounds, so for planning we care about their average effect rather than trying to route every march around a proc.</p>
+          <p>The K values include the rally lead's attack and lethality, troop base attack, hero and widget effects, and the Bear matchup. Chance-based skills vary across the ten rounds, so the planning model uses their average effect.</p>
         </div>
       </details>
     </div>
@@ -64,14 +64,14 @@ self: bear
     <span class="anchor-alias" id="cap" aria-hidden="true"></span>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="rally-body"><span>Fill rallies</span><span class="section-chevron" aria-hidden="true">⌄</span></button></h2>
     <div class="section-body" id="rally-body">
-      <p class="lede">Aim for <strong>13–14 joiners</strong> in every rally. Our current join cap is about <strong>85k troops</strong>.</p>
-      <p>The cap is a throughput rule, not a fairness rule. One oversized join march can consume enough capacity to keep another player out, removing an entire independent damage bucket.</p>
-      <p>A designated strong lead is the exception only for <strong>their own lead march</strong>: fill it, do not apply the 85k join cap, and use that lead's tested or simulated ratio. When that player joins somebody else's rally, the normal join cap applies again.</p>
+      <p class="lede">Aim for <strong>13–14 joiners</strong> in each rally. Our current join-march cap is about <strong>85k troops</strong>.</p>
+      <p>The cap leaves room for more players. An oversized join march can use enough rally capacity to keep another player out, losing a separate damage calculation.</p>
+      <p>For a designated strong lead, the 85k cap does not apply to <strong>their own lead march</strong>. Fill that march and use the lead's tested or simulated ratio. Their join marches into other rallies still use the normal cap.</p>
 
       <details>
-        <summary>Why 13–14 matters</summary>
+        <summary>Why 13–14?</summary>
         <div class="d-body">
-          <p>If the same useful troops are spread over 14 participant buckets instead of 10, the idealised square-root gain is about 18%. Real rallies are not perfectly equal, but losing several participant slots is still expensive.</p>
+          <p>If the same useful troops are spread over 14 participants instead of 10, the idealised square-root gain is about 18%. Real rallies are not perfectly equal, but losing several participant slots still costs damage.</p>
         </div>
       </details>
     </div>
@@ -81,16 +81,16 @@ self: bear
     <span class="anchor-alias" id="mix" aria-hidden="true"></span>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="marches-body"><span>Build your marches</span><span class="section-chevron" aria-hidden="true">⌄</span></button></h2>
     <div class="section-body" id="marches-body">
-      <p class="lede">Use your highest-tier troops. Treat your own rally as another scoring bucket, then keep the join queues as even as practical.</p>
+      <p class="lede">Use your highest-tier troops. Divide scarce archers across your own rally and join queues, then fill join marches toward the 85k cap.</p>
 
       <div class="cards compact-cards">
         <article class="card">
           <h3>Join marches</h3>
-          <p>Cap at about <b>85k</b>. As you become troop-rich, work toward <b>5% infantry / 15% cavalry / 80% archers</b>: about 4.25k / 12.75k / 68k at the cap.</p>
+          <p>At the 85k cap, work toward <b>5% infantry / 15% cavalry / 80% archers</b>: about 4.25k / 12.75k / 68k.</p>
         </article>
         <article class="card">
           <h3>Your own rally</h3>
-          <p>Ordinary players can treat it as another bucket when scarce troops are being divided. Designated strong leads should reserve the troops they want for their full lead march first, then split the remainder across join queues.</p>
+          <p>If your own rally is much stronger than the rallies you normally join, reserve the troops you want for your lead march first. Otherwise, include it when dividing scarce archers.</p>
         </article>
       </div>
 
@@ -107,33 +107,33 @@ self: bear
           <p><span>Each join queue</span><b id="alloc-join">50,000</b></p>
           <p><span>Archers left home</span><b id="alloc-home">0</b></p>
         </div>
-        <p class="calc-out" id="alloc-note">Auto mode equalises archers across your own rally and six join queues until a cap binds. Each capped 85k join can hold up to 68k archers at 5/15/80.</p>
+        <p class="calc-out" id="alloc-note">Auto mode divides archers across your own rally and six join queues, limited by the capacities above.</p>
       </div>
 
-      <p class="note">This calculator only distributes <strong>archers</strong>. Fill the remaining join capacity with cavalry and infantry toward 5/15/80. If you are one of the alliance's outsized leads, set an own-rally reserve based on your tested formation or the <a href="../battle-simulator/">battle simulator</a>.</p>
+      <p class="note">The allocator only divides <strong>archers</strong>. Fill the rest of each join march with cavalry and infantry toward 5/15/80. Strong leads can set an own-rally reserve from their tested formation or the <a href="../battle-simulator/">battle simulator</a>.</p>
     </div>
   </section>
 
   <section class="section" id="timing" data-collapse>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="timing-body"><span>Run the hunt</span><span class="section-chevron" aria-hidden="true">⌄</span></button></h2>
     <div class="section-body" id="timing-body">
-      <p class="lede">Use a controlled two-wave start. After that, stop scheduling and relaunch as soon as your rally heroes return.</p>
+      <p class="lede">Use two groups for the opening rallies. After those are launched, relaunch as soon as your rally heroes return.</p>
 
       <ol class="hunt-steps">
-        <li><strong>Poll before the event.</strong> A short same-day Bear chat poll for availability and Group 1/2 preference is enough. Plan for some non-voters and late arrivals.</li>
-        <li><strong>Group 1 launches immediately.</strong> Size it to the join queues you expect to have at the start, with a small surplus if one or two leads are willing to flex.</li>
-        <li><strong>Group 2 launches at roughly 28:00–27:30 remaining.</strong> Returning Group 1 join marches then have plenty of time to move into those rallies.</li>
-        <li><strong>Flex if Group 1 is too large.</strong> A nominated lead can cancel and relaunch with Group 2 rather than let an opening rally fire half-empty.</li>
-        <li><strong>After the first rally, relaunch on return.</strong> Travel time and human reaction naturally spread later launches. Joiners take the next suitable rally that is close to firing instead of waiting for the perfect lead.</li>
+        <li><strong>Poll before the event.</strong> Ask who is available and whether they prefer Group 1 or Group 2. Allow for people who do not answer and for late arrivals.</li>
+        <li><strong>Group 1 launches immediately.</strong> Choose enough starters to use most of the join queues available at the start. A small surplus is fine if one or two leads are willing to cancel.</li>
+        <li><strong>Group 2 launches at roughly 28:00–27:30 remaining.</strong> Group 1 join marches should be home in time to join them.</li>
+        <li><strong>If Group 1 does not fill, cancel a flex rally.</strong> Relaunch it with Group 2 instead of letting it fire half-empty.</li>
+        <li><strong>After that, relaunch on return.</strong> Joiners take the next suitable rally that is close to firing. Travel time and normal player timing will spread the later launches.</li>
       </ol>
 
-      <p class="note"><strong>Fast relaunch trick:</strong> while your lead march is walking home from the Bear, open the rally screen and keep tapping your saved Bear lead formation. It will not load while the troops are away; the first tap after they arrive loads it immediately, so you can relaunch without waiting to notice the return.</p>
+      <p class="note"><strong>Fast relaunch:</strong> while your lead march is walking home, open the rally screen and tap your saved Bear formation. It will not load while the troops are away; the first tap after they arrive loads it immediately.</p>
 
       <details>
-        <summary>How many rallies belong in Group 1?</summary>
+        <summary>How many rallies in Group 1?</summary>
         <div class="d-body">
-          <p>Estimate the join queues available at the start and divide by the number of joiners you want per rally. With 15 players and six join queues each, 90 opening join queues support about seven 13-person join groups. Starting eight can still be sensible when one or two leads are ready to cancel if the room does not fill.</p>
-          <p>Later in the event the same join queue can score again after it returns, so the opening-wave limit is not the steady-state limit.</p>
+          <p>Estimate the join queues available at the start and divide by the number of joiners you want per rally. With 15 players and six join queues each, 90 opening join queues support about seven rallies with 13 joiners. Starting eight can still work if one or two leads are ready to cancel when needed.</p>
+          <p>After the first hits, returning join queues can be used again, so later rallies are not limited by the opening number.</p>
         </div>
       </details>
     </div>
@@ -142,11 +142,11 @@ self: bear
   <section class="section" id="heroes" data-collapse>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="heroes-body"><span>Heroes</span><span class="section-chevron" aria-hidden="true">⌄</span></button></h2>
     <div class="section-body" id="heroes-body">
-      <p class="lede">For join marches, the first hero is a permission list. Use an approved first hero while you have one free; once those heroes are committed to other queues, send the remaining joins <strong>with no hero</strong>.</p>
-      <p>Do not fill an empty hero slot with a random hero. Only four joiner first skills are locked for the rally, and an unhelpful first skill can take one of those places. Supplying a selected skill does not give that player a private damage bonus; the skill is shared across the rally.</p>
+      <p class="lede">On a join march, only the first hero can contribute to the rally's four shared joiner skills. Use one of the recommended first heroes below; if none are available, send the march with no hero.</p>
+      <p>A random first hero can occupy one of the four shared slots with a defensive or otherwise unhelpful skill. If your hero is selected, that skill applies to the whole rally rather than only to your march.</p>
 
       <div class="hero-permission">
-        <h3>Approved joiner first heroes</h3>
+        <h3>Recommended joiner first heroes</h3>
         <p><b>Gen I:</b> Chenko, Yeonwoo, Amane; Amadeus when he is not needed as your lead.</p>
         <p><b>Gen II:</b> Hilde.</p>
         <p><b>Gen IV:</b> Margot, Rosa.</p>
@@ -155,7 +155,7 @@ self: bear
         <p><b>Later options:</b> Petra (avoid duplicate Petras in one rally), Ava, Wee &amp; Woo.</p>
       </div>
 
-      <p class="note"><strong>Leaders are different.</strong> The lead contributes their full hero kit and stats, so designated strong leads should use their best offensive lead setup and their own idealised formation. The joiner permission list is not a leader tier list.</p>
+      <p class="note">Rally leaders use their full hero kit and stats. The selector below recommends leader lineups separately from joiner first heroes.</p>
     </div>
   </section>
 
