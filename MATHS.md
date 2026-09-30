@@ -207,11 +207,17 @@ DmgUp); their effect multiplies into `A`, which everyone in the rally shares.
    full join march. It is a per-march heuristic, not a rally-wide target. If a player cannot field
    that composition in every active join queue, equalise the scarce troop type — usually archers —
    across those queues instead of building one perfect join and weakening the rest.
-8. **The alliance join cap is a separate capacity rule**: our current ~85k cap limits each join
-   march so ordinary rallies can still fit about 13–14 joiners. It does not pool or normalise their
-   damage. At an 85k cap, one 5/15/80 join is 4.25k infantry / 12.75k cavalry / 68k archers. Six
-   simultaneous joins at that preset therefore require 25.5k / 76.5k / 408k in the player's own
-   available troop inventory; those totals are only a supply check for the six queues.
+8. **The alliance join cap is primarily a throughput rule**: our current ~85k cap limits each join
+   march so ordinary rallies can get as close as possible to all **14 joiner slots**. If `P` players
+   each contribute six join queues and launch one rally per five-minute cycle, the alliance supplies
+   `6P` queues and creates `14P` join slots, so the structural supply ceiling is
+   **14P / 6P = 2.33 hits per join queue per cycle**. Averaging only 13 joiners drops that to
+   **13/6 = 2.17**, about **7% below** the 14-slot ceiling. The extra participant also improves that
+   individual rally's damage, but that is secondary: the cap exists mainly to keep all players'
+   queues rotating toward the 2.33-hit ceiling. It does not pool or normalise participant damage.
+   At an 85k cap, one 5/15/80 join is 4.25k infantry / 12.75k cavalry / 68k archers. Six simultaneous
+   joins at that preset therefore require 25.5k / 76.5k / 408k in the player's own available troop
+   inventory; those totals are only a supply check for the six queues.
 
 ## Verified-consistent items
 
@@ -268,10 +274,30 @@ H = L·S / (P·Q)
 where `P` = participants, `L` = rally launchers per five-minute cycle, `S` = average joiners
 that fit in each rally, and `Q` = join queues per player.
 
-If everyone launches, `L=P`, so `H=S/Q`. With six join queues, 13–14 joiners per rally means
-**2.17–2.33 supported hits per queue** even when physical march turnaround could support more.
+If every participant launches once per five-minute cycle, `L=P`, so:
 
-The live guide therefore prioritises: enough launches to keep queues scoring; preserving 13–14
+```
+H = S / Q
+```
+
+With six join queues per player and the game's 14 joiner slots per rally:
+
+```
+H_max = 14 / 6 = 2.333… hits per join queue per five-minute cycle
+```
+
+This is the structural ceiling created by the event's supply geometry: each player adds **six join
+queues** to the alliance but only **one rally with fourteen joiner slots** per cycle. With `P` players,
+that is `6P` queue resources competing for `14P` join opportunities. Travel time, player reaction,
+empty slots and mistimed launches can only pull realised throughput below that ceiling.
+
+That is why the target is **14 joiners whenever possible**, not merely "a fairly full rally". An
+average of 13 joiners supports only `13/6 = 2.17` hits per queue, roughly 7% below the maximum. The
+14th joiner also adds another independently calculated march to that particular rally, so filling it
+helps per-rally damage too; however, the operational reason for protecting the slot is alliance-wide
+queue reuse.
+
+The live guide therefore prioritises: enough launches to keep queues scoring; preserving all 14
 joiner slots with a conservative ~85k join cap; using **5/15/80 as the default composition for each
 full join march**; equalising scarce troop types across a player's active queues when that preset
 cannot be fielded everywhere; and allowing designated outsized leads to full-send only their own
