@@ -621,3 +621,79 @@ html[data-page="kvksg"] .dust i:nth-child(3) { background-size: 260px 260px; ani
 .check-num { font-family: var(--display-2); font-weight: 700; font-size: var(--step-1); color: var(--amber); }
 .checklist h3 { font-size: var(--step-0); letter-spacing: 0.04em; margin-bottom: 0.2rem; }
 .checklist p { color: var(--ink-dim); font-size: var(--step--1); }
+
+
+/* ─── Bear Hunt — collapsible major sections ────────────
+   The guide is long on mobile. Major sections use native details so the page
+   can collapse into a scannable contents view without hiding the core thesis
+   or the final four rules. */
+html[data-page="bearhunt"] .section-fold {
+  margin-top: 0;
+}
+
+html[data-page="bearhunt"] .section-fold > summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  cursor: pointer;
+  list-style: none;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: none;
+  color: inherit;
+  user-select: none;
+}
+
+html[data-page="bearhunt"] .section-fold > summary::-webkit-details-marker { display: none; }
+html[data-page="bearhunt"] .section-fold > summary::before { content: none; }
+
+html[data-page="bearhunt"] .section-fold > summary h2 {
+  flex: 1 1 auto;
+  margin-bottom: 0;
+}
+
+html[data-page="bearhunt"] .section-fold > summary h2::after {
+  content: "⌄";
+  display: inline-block;
+  margin-inline-start: 0.45em;
+  color: var(--amber);
+  font-family: var(--body);
+  font-size: 0.72em;
+  font-weight: 700;
+  transform: translateY(-0.06em) rotate(-90deg);
+  transform-origin: center;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+html[data-page="bearhunt"] .section-fold[open] > summary h2::after {
+  transform: translateY(-0.06em) rotate(0deg);
+}
+
+html[data-page="bearhunt"] .section-fold > summary:hover h2::after {
+  color: var(--ink);
+}
+
+html[data-page="bearhunt"] .section-fold:not([open]) > summary h2 {
+  color: var(--ink-dim);
+}
+
+html[data-page="bearhunt"] .section-fold:not([open]) > summary h2::before {
+  opacity: 0.72;
+}
+
+@media (max-width: 760px) {
+  html[data-page="bearhunt"] .section {
+    padding-block: clamp(1.1rem, 5vw, 1.8rem);
+  }
+
+  html[data-page="bearhunt"] .section-fold:not([open]) {
+    margin-bottom: 0;
+  }
+
+  html[data-page="bearhunt"] .section-fold > summary {
+    min-height: 2.75rem;
+    align-items: center;
+  }
+}

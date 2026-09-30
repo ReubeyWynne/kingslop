@@ -8,12 +8,12 @@ self: bear
   <a href="#model" data-i18n="nav.model">The one-liner</a>
   <a href="#sqrt" data-i18n="nav.sqrt">The square root</a>
   <a href="#rally" data-i18n="nav.rally">Fill the rally</a>
+  <a href="#cap" data-i18n="nav.cap">The cap</a>
   <a href="#marches" data-i18n="nav.marches">Spread your marches</a>
   <a href="#timing" data-i18n="nav.timing">Keep moving</a>
   <a href="#mix" data-i18n="nav.mix">Troop mix</a>
   <a href="#heroes" data-i18n="nav.heroes">Heroes</a>
   <a href="#rewards" data-i18n="nav.rewards">Rewards</a>
-  <a href="#cap" data-i18n="nav.cap">The cap</a>
   <a href="#rules" data-i18n="nav.rules">The 4 rules</a>
 </nav>
 
@@ -30,32 +30,34 @@ self: bear
   </section>
 
   <!-- ═══════════ 1 · THE ONE-LINER ═══════════ -->
-  <section class="section" id="model">
+  
+<section class="section" id="model">
     <h2 data-i18n="model.title">The one-liner</h2>
     <p class="lede" data-i18n="model.lede">Remember one sentence and you basically know the whole event:</p>
-    <p class="punchline" data-i18n-html="model.punchline">The <span class="hl">lead's stats</span> × <span class="hl">your troops</span>
-      — with a <span class="hl">square root</span> on your count.</p>
+    <p class="punchline" data-i18n-html="model.punchline">The <span class="hl">lead sets the power</span>. <span class="hl">You supply the troops</span>.
+      Each troop type gets its own <span class="hl">square root</span>.</p>
     <div class="cards">
       <article class="card">
         <h3><span class="tag tag-lead" data-i18n="model.card1.tag">THE LEAD</span> <span data-i18n="model.card1.title">Sets the power</span></h3>
-        <p data-i18n-html="model.card1.body">Everyone in the rally <strong>borrows the lead's stats</strong>. Same lead, same power, for all 15 of you. Your own attack stats don't matter.</p>
+        <p data-i18n-html="model.card1.body">Everyone in the rally uses the <strong>lead's combat stats and full hero kit</strong>. Up to four locked joiner first-skills become shared rally skills too.</p>
       </article>
       <article class="card">
-        <h3><span class="tag tag-you" data-i18n="model.card2.tag">YOU</span> <span data-i18n="model.card2.title">Make your damage</span></h3>
-        <p data-i18n-html="model.card2.body">Each player's march is scored <strong>on its own</strong>, using the square root of its troop count. Your march. Your sqrt. Your damage.</p>
+        <h3><span class="tag tag-you" data-i18n="model.card2.tag">YOU</span> <span data-i18n="model.card2.title">Supply the troops</span></h3>
+        <p data-i18n-html="model.card2.body">As a joiner, you contribute the <strong>counts and tiers</strong> of your infantry, cavalry and archers. Those three troop types are scored as separate square-root buckets.</p>
       </article>
     </div>
-    <p class="note" data-i18n="model.note">That's it. Everything below is just what those two facts mean in practice.</p>
+    <p class="note" data-i18n-html="model.thesis">A stronger lead makes <strong>each rally slot worth more</strong>. Another lead creates <strong>more rally slots</strong>. Those are two different multipliers. The strategy is not “ignore lead strength” — it is “do not throw away rally supply chasing it.” <strong>Everyone should rally; not everyone should launch at once.</strong></p>
+    <p class="note" data-i18n="model.note">Your own attack, lethality, gear and buffs do not follow your troops into somebody else's Bear rally.</p>
   </section>
 
-  <!-- ═══════════ 2 · THE SQUARE ROOT ═══════════ -->
   <section class="section" id="sqrt">
-    <h2 data-i18n="sqrt.title">The square root</h2>
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="sqrt.title">The square root</h2></summary>
     <p class="lede" data-i18n-html="sqrt.lede">The sqrt is the whole game. Here's the only number you need:
       <strong>double your march → +41%, not +100%.</strong></p>
 
-    <div class="bars" role="img" aria-label="Same troops split across marches: 1 march is 1 times damage, 2 marches is 1.4 times, 4 marches is 2 times, 6 marches is 2.4 times." data-i18n-key="sqrt.barsAria" data-i18n-attr="aria-label">
-      <p class="bars-cap" data-i18n="sqrt.barsCap">Same troops. Just split across more marches:</p>
+    <div class="bars" role="img" aria-label="The same troop type split across marches: 1 march is 1 times damage, 2 marches is 1.4 times, 4 marches is 2 times, 6 marches is 2.4 times." data-i18n-key="sqrt.barsAria" data-i18n-attr="aria-label">
+      <p class="bars-cap" data-i18n="sqrt.barsCap">Same troop type. Just split across more marches:</p>
       <div class="bar-row"><span class="bar-label" data-i18n="sqrt.bar1">1 march</span><div class="bar-track"><div class="bar-fill" style="--p:41.7"></div></div><span class="bar-value">1.0×</span></div>
       <div class="bar-row"><span class="bar-label" data-i18n="sqrt.bar2">2 marches</span><div class="bar-track"><div class="bar-fill" style="--p:58.3"></div></div><span class="bar-value">1.4×</span></div>
       <div class="bar-row"><span class="bar-label" data-i18n="sqrt.bar4">4 marches</span><div class="bar-track"><div class="bar-fill" style="--p:83.3"></div></div><span class="bar-value">2.0×</span></div>
@@ -81,210 +83,138 @@ self: bear
           <li data-i18n-html="sqrt.li2"><b>A<sub>t</sub>(lead)</b> = (1 + atk%) × (1 + lethality%) of the <em>lead</em>, per type. Your own attack &amp; lethality never enter it.</li>
           <li data-i18n-html="sqrt.li3"><b>base<sub>t</sub></b> — the relative weights at T6: infantry ⅓, cavalry 1, archers 4.4/3 ≈ 1.47. The archer weight is (4/3) × 1.1 — the bear is all infantry and archers do +10% vs infantry. At T7+/TG3+ archers pick up another 1.1, so the weight becomes 4.84/3 ≈ 1.61.</li>
         </ul>
-        <p data-i18n-html="sqrt.last">The Frakinator's full form also multiplies in a constant bear factor — <b>(1.2/1000) × √5000 × √N<sub>tot</sub></b> — plus your troops' <b>base attack</b> (higher tier = higher base = more damage), and hero skills of the lead <em>and</em> of joining heroes add multiplicative boosts on top. None of that changes the √ and split rules on this page.</p>
+        <p data-i18n-html="sqrt.last">The full form also carries the fixed Bear factor <b>(1.2/1000) × √5000</b>, your troops' <b>base attack</b> (higher tier = higher base = more damage), the lead's hero kit, and the rally's four locked joiner skills. Those joiner skills are <b>shared by every participant</b>; contributing one does not give its owner a private bonus. None of that changes the √ and split rules on this page.</p>
       </div>
+    </details>
+  
     </details>
   </section>
 
   <!-- ═══════════ 3 · FILL THE RALLY ═══════════ -->
-  <section class="section" id="rally">
-    <h2 data-i18n="rally.title">Fill the rally</h2>
-    <p class="lede" data-i18n-html="rally.lede">A rally holds <strong>1 lead + 14 joiners</strong>. Its troop capacity is split
-      evenly: <strong>capacity ÷ players = your fair share.</strong></p>
-
+  
+<section class="section" id="rally">
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="rally.title">Fill the rally</h2></summary>
+    <p class="lede" data-i18n-html="rally.lede">A rally holds <strong>1 lead + up to 14 joiners</strong>. The goal is not one huge march — it is <strong>13–14 separate joiner damage buckets</strong> whenever possible.</p>
     <div class="demo">
       <p class="demo-title" data-i18n-html="rally.demoTitle">A 900k rally with 15 players → <b>60k each</b>.</p>
-      <div class="slot-row">
-        <span class="slot-label" data-i18n="rally.slotLabel">FULL RALLY — 15 players</span>
-        <span class="slot-grid" aria-hidden="true">
-          <i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i>
-          <i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i>
-          <i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i>
-        </span>
-        <span class="slot-value">≈ 3.9×</span>
-      </div>
-      <p class="demo-sub" data-i18n-html="rally.demoSub">All 15 slots filled beats a few fat ones. <strong>Always.</strong> Because rally
-        damage is every player's √ added up — more players at fair share = more damage from the same 900k.</p>
+      <div class="slot-row"><span class="slot-label" data-i18n="rally.slotLabel">FULL RALLY — 15 players</span><span class="slot-grid" aria-hidden="true"><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i><i class="slot"></i></span><span class="slot-value">≈ 3.9×</span></div>
+      <p class="demo-sub" data-i18n-html="rally.demoSub">For the same total troops, more players means more independent √ buckets. <strong>Oversized join marches can cost an entire player's bucket.</strong></p>
     </div>
-
-    <p class="note" data-i18n-html="rally.note">And you <em>can't</em> carry the rally yourself anyway: your march is capped
-      (~100–150k on our server), so stuffing one rally just wastes its slots.</p>
-
+    <p class="note" data-i18n-html="rally.note">That is why our joiner cap is about <strong>85k</strong>: it is a throughput rule, not a fairness rule. Protect the 13th and 14th joiner slots.</p>
     <div class="calc" id="rallycalc" data-group="rally">
       <h4 class="calc-title" data-i18n="rally.calcTitle">TRY IT — FILL THE RALLY</h4>
-      <div class="calc-row">
-        <label for="rally-cap" data-i18n="rally.capLabel">Rally troop capacity</label>
-        <input id="rally-cap" data-in="cap" type="number" inputmode="numeric" min="1000" step="1000" value="900000">
-      </div>
-      <div class="calc-row">
-        <label for="rally-players" data-i18n-html="rally.playersLabel" data-i18n-vars="rally">Players in it (incl. lead) <output>15</output>/15</label>
-        <input id="rally-players" data-in="players" type="range" min="1" max="15" step="1" value="15">
-      </div>
-      <p class="calc-out" data-i18n-html="rally.out" data-i18n-vars="rally">Fair share: <b>60,000</b> per player ·
-        rally hits <b>3.9×</b> harder than one player carrying it all.</p>
+      <div class="calc-row"><label for="rally-cap" data-i18n="rally.capLabel">Rally troop capacity</label><input id="rally-cap" data-in="cap" type="number" inputmode="numeric" min="1000" step="1000" value="900000"></div>
+      <div class="calc-row"><label for="rally-players" data-i18n-html="rally.playersLabel" data-i18n-vars="rally">Players in it (incl. lead) <output>15</output>/15</label><input id="rally-players" data-in="players" type="range" min="1" max="15" step="1" value="15"></div>
+      <p class="calc-out" data-i18n-html="rally.out" data-i18n-vars="rally">Target average: <b>60,000</b> per player · rally hits <b>3.9×</b> harder than one player carrying the same total troops.</p>
     </div>
-
-    <details>
-      <summary data-i18n="rally.details">Why, in one line of maths</summary>
-      <div class="d-body">
-        <p data-i18n-html="rally.d">15 players × √(900k ÷ 15) = √(15 × 900k) ≈ <b>3.9×</b> one player's √900k.
-          Fewer players → fewer sqrts → less damage. There's no way around it.</p>
-      </div>
+    <details><summary data-i18n="rally.details">Why, in one line of maths</summary><div class="d-body"><p data-i18n-html="rally.d">15 players × √(900k ÷ 15) = √(15 × 900k) ≈ <b>3.9×</b> one player's √900k. The exact troop mix changes the constants, not the reason extra participant slots are valuable.</p></div></details>
+  
     </details>
   </section>
 
-  <!-- ═══════════ 4 · SPREAD YOUR MARCHES ═══════════ -->
+  
+<!-- ═══════════ THE CAP ═══════════ -->
+  <section class="section" id="cap">
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="cap.title">The cap</h2></summary>
+    <p class="lede" data-i18n-html="cap.lede">The joiner cap exists to protect <strong>participant count</strong>. An oversized march is not just using extra troops — it can remove somebody else's entire square-root damage bucket.</p>
+    <details><summary data-i18n="cap.details">The maths of the cap</summary><div class="d-body"><p data-i18n-html="cap.d1">For a rally with capacity R and a lead march of L, a target of J joiners suggests <b>join cap ≈ (R − L) ÷ J</b>. In practice we use a conservative fixed <b>~85k</b> so ordinary rallies reliably land around 13–14 joiners.</p><p data-i18n-html="cap.d2">For the same total joined troops, 14 equal participant buckets have √(14/10) ≈ <b>18% more</b> square-root output than 10 buckets. Real rallies are messier, but the direction is brutal: protecting slots matters more than squeezing another oversized join march in.</p></div></details>
+    <p class="note" data-i18n-html="cap.note">The cap stays on <b>joiner marches</b>. The exception is a designated outsized rally lead: their <b>own lead march</b> can be full-sized and use its calculated ideal ratio. That exception never follows them into somebody else's rally.</p>
+  
+    </details>
+  </section>
+
+  
+  <!-- ═══════════ THE 4 RULES ═══════════ -->
+
   <section class="section" id="marches">
-    <h2 data-i18n="marches.title">Spread your marches</h2>
-    <p class="lede" data-i18n-html="marches.lede">You can field <strong>5–6 marches</strong>. Put them in <strong>5–6 different
-      rallies</strong>. That's rule one and two doing their job at the same time.</p>
-
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="marches.title">Spread your marches</h2></summary>
+    <p class="lede" data-i18n-html="marches.lede">Your join queues are reusable damage buckets. Start by dividing your <strong>archers equally across every join queue</strong>, then do the same with cavalry and infantry until each queue reaches the cap.</p>
     <div class="calc" id="marchcalc" data-group="march">
-      <h4 class="calc-title" data-i18n="marches.calcTitle">TRY IT — YOUR TROOPS, YOUR MARCHES</h4>
-      <div class="calc-row">
-        <label for="march-pool" data-i18n="marches.poolLabel">Your total troops</label>
-        <input id="march-pool" data-in="pool" type="number" inputmode="numeric" min="1000" step="1000" value="400000">
-      </div>
-      <div class="calc-row">
-        <label for="march-q" data-i18n-html="marches.qLabel" data-i18n-vars="march">Marches (Q) <output>6</output>/6</label>
-        <input id="march-q" data-in="q" type="range" min="1" max="6" step="1" value="6">
-      </div>
-      <p class="calc-out" data-i18n-html="marches.out" data-i18n-vars="march"><b>66,667</b> per march ·
-        <b>2.4×</b> the damage of one big march. Same troops, nothing spent.</p>
+      <h4 class="calc-title" data-i18n="marches.calcTitle">TRY IT — SPLIT YOUR ARCHERS</h4>
+      <div class="calc-row"><label for="march-pool" data-i18n="marches.poolLabel">Archers available for join queues</label><input id="march-pool" data-in="pool" type="number" inputmode="numeric" min="1000" step="1000" value="300000"></div>
+      <div class="calc-row"><label for="march-q" data-i18n-html="marches.qLabel" data-i18n-vars="march">Join queues (Q) <output>6</output>/6</label><input id="march-q" data-in="q" type="range" min="1" max="6" step="1" value="6"></div>
+      <p class="calc-out" data-i18n-html="marches.out" data-i18n-vars="march"><b>50,000</b> archers per queue · those same archers have <b>2.4×</b> the square-root output of one combined bucket before queue reuse is counted.</p>
     </div>
-
-    <p class="note" data-i18n="marches.note">400k in one march isn't even an option on most servers (march cap ~100–150k).
-      Spreading across all your marches is the only way to use what you've got. Under ~350k total,
-      equalised marches are best — the ratio barely matters until you're past the line (troop mix).</p>
-
-    <details>
-      <summary data-i18n="marches.details">Why 2.4×, in one line of maths</summary>
-      <div class="d-body">
-        <p data-i18n-html="marches.d">Your pool P across Q marches: 1 march scores √P, but Q marches score √(Q × P).
-          Six marches = √6 ≈ <b>2.4×</b>. Same troops, no extra spend.</p>
-      </div>
+    <p class="note" data-i18n-html="marches.note">Do not save a giant archer march for a random stronger lead. In a live hunt, <strong>equal queues + next rally to fire</strong> is the strategy you can actually execute.</p>
+    <details><summary data-i18n="marches.details">Why equal queues win</summary><div class="d-body"><p data-i18n-html="marches.d">For one troop type, a fixed pool P across Q equivalent queues is maximised when the queues are equal: Q × √(P ÷ Q) = √(Q × P). Six equal buckets = √6 ≈ <b>2.4×</b> one bucket, before those queues rotate into later rallies.</p></div></details>
+  
     </details>
   </section>
 
-  <!-- ═══════════ 5 · KEEP MOVING ═══════════ -->
-  <section class="section" id="timing">
-    <h2 data-i18n="timing.title">Keep moving</h2>
-    <p class="lede" data-i18n-html="timing.lede">A rally fires <strong>5 minutes after launch</strong>. Parked troops score
-      nothing — and the event only runs 30 minutes.</p>
-    <p class="note" data-i18n-html="timing.note1">Why stagger? A rally fires exactly <b>5:00 after launch</b> — that window is
-      fixed. Staggered launches mean there's always a rally about to fire, so joiners never sit
-      parked waiting out a full countdown.</p>
+  
 
-    <div class="waves" aria-label="Four staggered launch waves" data-i18n-key="timing.wavesAria" data-i18n-attr="aria-label">
-      <p class="waves-cap" data-i18n="timing.wavesCap">Staggered waves = a fire roughly every minute, not one big blob:</p>
-      <div class="wave-row"><span class="wave-label">W1</span><div class="wave-track"><span class="seg march" style="--w:0;--len:5"></span><span class="seg fire" style="--w:5"></span></div><span class="wave-times">0:00 → 5:00</span></div>
-      <div class="wave-row"><span class="wave-label">W2</span><div class="wave-track"><span class="seg march" style="--w:1;--len:5"></span><span class="seg fire" style="--w:6"></span></div><span class="wave-times">1:00 → 6:00</span></div>
-      <div class="wave-row"><span class="wave-label">W3</span><div class="wave-track"><span class="seg march" style="--w:2;--len:5"></span><span class="seg fire" style="--w:7"></span></div><span class="wave-times">2:00 → 7:00</span></div>
-      <div class="wave-row"><span class="wave-label">W4</span><div class="wave-track"><span class="seg march" style="--w:3;--len:5"></span><span class="seg fire" style="--w:8"></span></div><span class="wave-times">3:00 → 8:00</span></div>
-      <div class="wave-axis"><span>0:00</span><span>2:00</span><span>4:00</span><span>6:00</span><span>8:00</span></div>
+<section class="section" id="timing">
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="timing.title">Keep moving</h2></summary>
+    <p class="lede" data-i18n-html="timing.lede">Do not try to choreograph twenty people on a stopwatch. <strong>Seed a first wave that can actually fill</strong>, start the rest a couple of minutes later, then let return times spread the hunt naturally.</p>
+
+    <div class="demo">
+      <p class="demo-title" data-i18n-html="timing.demoTitle">Opening-wave target: <b>participants × join queues ÷ target joiners per rally</b>.</p>
+      <p class="demo-sub" data-i18n-html="timing.demoSub">With 20 players, 6 join queues and a 13–14 joiner target, the first wave can support about <b>8–9 full rallies</b>. A small surplus is useful if 1–2 flexible leads are ready to cancel and relaunch with Group 2.</p>
     </div>
 
-    <p class="note" data-i18n="timing.note2">The ideal, after the first wave: don't join a rally with more than a minute to
-      launch. Join late, fire, go again. The reality: you join the rallies you can — the good leads
-      launch when they launch, and only cities close enough to the bear can reach the slots. And
-      marching is the real clock: out to the rally, to the bear, back home eats most of a joiner's
-      march time. You're optimising marching, really.</p>
+    <div class="calc" id="throughputcalc" data-group="throughput">
+      <h4 class="calc-title" data-i18n="timing.calcTitle">TRY IT — RALLY THROUGHPUT</h4>
+      <div class="calc-row"><label for="throughput-participants" data-i18n="timing.participantsLabel">Expected participants</label><input id="throughput-participants" data-in="participants" type="number" inputmode="numeric" min="1" step="1" value="20"></div>
+      <div class="calc-row"><label for="throughput-launchers" data-i18n="timing.launchersLabel">Rally launchers per 5 min</label><input id="throughput-launchers" data-in="launchers" type="number" inputmode="numeric" min="1" step="1" value="15"></div>
+      <div class="calc-row"><label for="throughput-joiners" data-i18n="timing.joinersLabel">Target joiners per rally</label><input id="throughput-joiners" data-in="joiners" type="number" inputmode="numeric" min="1" max="14" step="1" value="13"></div>
+      <div class="calc-row"><label for="throughput-queues" data-i18n="timing.queuesLabel">Join queues per player</label><input id="throughput-queues" data-in="queues" type="number" inputmode="numeric" min="1" max="6" step="1" value="6"></div>
+      <p class="calc-out" data-i18n-html="timing.out" data-i18n-vars="throughput">First wave supports about <b>9.2</b> full rallies · steady-state supply supports <b>1.63×</b> hits per join queue.</p>
+    </div>
+
+    <p class="note" data-i18n-html="timing.poll">Run a short same-day Bear poll in a separate group chat: <b>available?</b> and <b>Group 1 or Group 2?</b> As a planning heuristic, assume roughly <b>20% of eventual participants will not vote</b>, then adjust the starter list on the fly.</p>
+
+    <p class="note" data-i18n-html="timing.note1">Make Group 1 <strong>slightly oversized, not undersized</strong>. If it is too big, a designated flex lead can cancel before firing and relaunch with Group 2. Empty opening capacity is harder to recover.</p>
+
+    <p class="note" data-i18n-html="timing.note2">Group 2 launches roughly <strong>2–3 minutes into the event</strong>. After that, every lead relaunches as soon as their rally heroes return. Travel time, fight resolution and human reaction naturally smear the later rallies across the cycle.</p>
 
     <details>
       <summary data-i18n="timing.details">The timing, in detail</summary>
-      <div class="d-body">
-        <ul>
-          <li data-i18n-html="timing.d1">Fire = launch + <b>5:00</b>, always.</li>
-          <li data-i18n-html="timing.d2">Event length: <b>30:00</b>.</li>
-          <li data-i18n-html="timing.d3">Wave groups launch at 0:00, 1:00, 2:00, 3:00 → fires at 5:00–8:00.</li>
-          <li data-i18n-html="timing.d4">No 4:00 group: a lead starting that late can't realistically fit in five rallies —
-            marching to and from the bear costs ~30s per rally at least, so a 3:00 launch is already
-            cutting it close. The 4:00 slot still suits a newer or weaker lead: low pressure, no need
-            to rotate fast.</li>
-          <li data-i18n-html="timing.d5">Join late: after the first wave, aim for rallies with ≤1:00 to launch, not fresh ones.</li>
-          <li data-i18n-html="timing.d6">After firing, troops fight + travel home (~30s) before the next launch.</li>
-          <li data-i18n-html="timing.d7">A march parked in a rally that already fired is missing the next one.</li>
-        </ul>
-      </div>
+      <div class="d-body"><ul>
+        <li data-i18n-html="timing.d1"><b>Group 1:</b> launch immediately at event start. Size it from expected participants and available join queues.</li>
+        <li data-i18n-html="timing.d2"><b>Group 2:</b> launch around 28:00–27:30 remaining. That gives returning Group 1 join marches plenty of time to recycle.</li>
+        <li data-i18n-html="timing.d3">Opening full-rally capacity is approximately <b>R₀ = P·Q ÷ S</b>, where P = participants, Q = join queues and S = target joiners per rally.</li>
+        <li data-i18n-html="timing.d4">Steady-state supported hits per join queue are <b>H = L·S ÷ (P·Q)</b>. If everybody launches, this simplifies to <b>H = S ÷ Q</b>.</li>
+        <li data-i18n-html="timing.d5">With Q = 6, 13–14 joiners/rally gives a structural ceiling of <b>2.17–2.33 hits per join queue per five-minute cycle</b>.</li>
+        <li data-i18n-html="timing.d6"><b>Instant lead relaunch:</b> while your rally troops are marching home from the Bear, open the rally screen and tap your saved Bear lead formation. It will not load while the troops are away; the first tap after they arrive home loads it immediately, so you can relaunch without waiting to notice the return.</li>
+        <li data-i18n-html="timing.d7">After the seeded opening, <b>do not wait for a scheduled slot</b>. Relaunch on return, and join the next suitable rally to fire.</li>
+      </ul></div>
+    </details>
+  
     </details>
   </section>
 
-  <!-- ═══════════ 6 · TROOP MIX ═══════════ -->
   <section class="section" id="mix">
-    <h2 data-i18n="mix.title">Troop mix</h2>
-    <p class="lede" data-i18n-html="mix.lede">Archers hit hardest per troop. And the mix only starts to matter once you're
-      past <strong>~350k troops</strong> — under that, equalised marches are best and the ratio barely
-      matters.</p>
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="mix.title">Troop mix</h2></summary>
+    <p class="lede" data-i18n-html="mix.lede">The square root is applied <strong>separately to infantry, cavalry and archers</strong>. Archers are still the scarce high-damage troop, so build your join queues around them first.</p>
     <div class="cards">
-      <article class="card">
-        <h3 data-i18n="mix.card1.title">Lean archers</h3>
-        <p data-i18n-html="mix.card1.body">Archers weigh ≈ <b>1.47</b> per troop at T6 — (4/3) × 1.1, where the 1.1 is their +10% vs infantry and the bear is all infantry. Cavalry 1.0, infantry 0.33. Same leader, same march — archers simply hit harder.</p>
-      </article>
-      <article class="card">
-        <h3 data-i18n="mix.card2.title">10 / 10 / 80</h3>
-        <p data-i18n-html="mix.card2.body">Past ~350k, run <b>10% infantry, 10% cavalry, 80% archers</b> in every march, and leave
-          the weaker infantry and cavalry at home. It's not the perfect ratio for any one lead — but
-          you'll join rallies from a dozen different leads, and perfect per lead is a fool's errand.
-          10/10/80 is close enough everywhere, and you can actually do it.</p>
-      </article>
-      <article class="card">
-        <h3 data-i18n="mix.card3.title">~5k or skip it</h3>
-        <p data-i18n-html="mix.card3.body">Under ~5,000 troops of a type, the sqrt barely registers. In a 10/10/80 march at fair
-          share, the 10%s land ~6.5k — right around that floor. Any smaller, fold it into the
-          archers.</p>
-      </article>
+      <article class="card"><h3 data-i18n="mix.card1.title">Equalise first</h3><p data-i18n-html="mix.card1.body">Divide your total archers equally across your join queues. Do the same with cavalry and infantry until the queues fill. The first troops in a √ bucket have the highest marginal value — there is no magical 5k minimum.</p></article>
+      <article class="card"><h3 data-i18n="mix.card2.title">Work toward 5 / 15 / 80</h3><p data-i18n-html="mix.card2.body">As you become troop-rich and each join queue reaches the <b>~85k cap</b>, converge on roughly <b>5% infantry / 15% cavalry / 80% archers</b>. At 85k that is 4.25k / 12.75k / 68k.</p></article>
+      <article class="card"><h3 data-i18n="mix.card3.title">Strong leads are different</h3><p data-i18n-html="mix.card3.body">A genuinely outsized rally lead should <b>full-send their own lead march</b> with their calculated ideal ratio. Their six join queues still obey the normal cap and equalisation rule.</p></article>
     </div>
-    <p class="note" data-i18n="mix.note">The perfect bear event isn't humanly possible. Do the heuristics.</p>
-    <details>
-      <summary data-i18n="mix.details1">When ratios start to matter</summary>
-      <div class="d-body">
-        <p data-i18n-html="mix.d1">A full rally pays <b>~65k per player</b> — a 1M rally (Town Center 30, our server) split
-          across 15 slots. Times your <b>5–6 march slots</b>, plus one more if you're leading a
-          rally yourself (leading doesn't use a normal queue) — and you reach about <b>350k troops</b>.
-          Under that, everything you own fits in your marches: equalised marches are best, ratio be
-          damned. Past it, some troops stay home, so what you send decides your damage — and that's
-          when archer-heavy starts to win.</p>
-      </div>
-    </details>
-    <details>
-      <summary data-i18n="mix.details2">If you like the maths</summary>
-      <div class="d-body">
-        <p data-i18n-html="mix.d2">Maximising Σ base<sub>t</sub>·A<sub>t</sub>·√n<sub>t</sub> over the split
-          (f<sub>inf</sub> + f<sub>cav</sub> + f<sub>arc</sub> = 1) is a Lagrange-multiplier
-          problem; the solution is <strong>f<sub>t</sub> ∝ (base<sub>t</sub>·A<sub>t</sub>)²</strong> —
-          the weights (A<sub>inf</sub>/3, A<sub>cav</sub>, 4.4·A<sub>arc</sub>/3), squared. The bear
-          factor L cancels out of the ratio, so the mix depends only on the lead's attack factors.
-          That "preferred mix" a lead asks for is literally this — and 10/10/80 is the doable
-          average of all those per-lead optima.</p>
-      </div>
-    </details>
-    <details>
-      <summary data-i18n-html="mix.details3">Tier &amp; heroes — the fine print</summary>
-      <div class="d-body">
-        <ul>
-          <li data-i18n-html="mix.d3a"><b>Troop tier:</b> damage scales with your troops' base attack — send your highest tier. The weights above are T6-era numbers.</li>
-          <li data-i18n-html="mix.d3b"><b>T7+ / TG3+:</b> archers gain another ×1.1 vs the bear (all-infantry), weight 4.4/3 → 4.84/3 ≈ 1.61.</li>
-          <li data-i18n-html="mix.d3c"><b>Heroes:</b> the lead's hero skills multiply the whole rally's damage; joining heroes' skills multiply their own march. Reward brackets sit on this absolute scale.</li>
-        </ul>
-      </div>
+    <p class="note" data-i18n="mix.note">5/15/80 is an operational preset, not a claim that every leader's mathematical optimum is identical.</p>
+    <details><summary data-i18n="mix.details1">How to build six join queues</summary><div class="d-body"><p data-i18n-html="mix.d1">At an 85k cap, six 5/15/80 queues hold <b>25.5k infantry, 76.5k cavalry and 408k archers</b>. Until you reach those amounts, spread what you own evenly rather than forcing the ratio. Once capped, excess infantry and cavalry stay home first; most players should have very few archers left unused.</p></div></details>
+    <details><summary data-i18n="mix.details2">If you like the maths</summary><div class="d-body"><p data-i18n-html="mix.d2">For one lead, maximising Σ base<sub>t</sub>·A<sub>t</sub>·√n<sub>t</sub> gives <strong>f<sub>t</sub> ∝ (base<sub>t</sub>·A<sub>t</sub>)²</strong>. That exact ratio depends on the lead's attack and lethality by troop type. Use the <a href="../battle-simulator/">battle simulator</a> for a designated strong lead; use the fixed join preset everywhere else.</p></div></details>
+    <details><summary data-i18n-html="mix.details3">Tier &amp; heroes — the fine print</summary><div class="d-body"><ul><li data-i18n-html="mix.d3a"><b>Troop tier:</b> damage scales with your troops' base attack — send your highest tier. The weights above are T6-era numbers.</li><li data-i18n-html="mix.d3b"><b>T7+ / TG3+:</b> archers gain another ×1.1 vs the bear (all-infantry), weight 4.4/3 → 4.84/3 ≈ 1.61.</li><li data-i18n-html="mix.d3c"><b>Heroes:</b> the lead's full hero kit applies to every participant, and up to four joiner first-skills are locked as shared rally skills. The joiner who supplies one gets no private ownership bonus.</li></ul></div></details>
+  
     </details>
   </section>
 
-  <!-- ═══════════ 7 · THE HEROES ═══════════ -->
   <section class="section" id="heroes">
-    <h2 data-i18n="heroes.title">The heroes</h2>
-    <p class="lede" data-i18n-html="heroes.lede">The lead's kit and the joiners' first skills are the last big multiplier
-      left. Two jobs, two lists — and a hero that shines at one is usually dead weight at the other.</p>
-    <p class="note" data-i18n-html="heroes.note">How to read this: a <b>joiner</b> contributes only their first skill to the
-      rally — that one slot is the whole job. A <b>leader</b> brings their full kit and their stats. Same skill codes stack
-      additively; different codes multiply. And defence does nothing to a bear.</p>
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="heroes.title">The heroes</h2></summary>
+    <p class="lede" data-i18n-html="heroes.lede">The lead's full kit and the rally's four locked joiner skills are the last big multiplier left. Two jobs, two lists — and a hero that shines at one is usually dead weight at the other.</p>
+    <p class="note" data-i18n-html="heroes.note">How to read this: a <b>joiner</b>'s first hero may supply one of the rally's four shared first-skills. If selected, that skill is used for <b>every participant's Bear simulation</b>, not just the player who supplied it. A <b>leader</b> brings their full kit and stats. Same skill codes stack additively; different codes multiply. Defence does nothing to a bear.</p>
 
     <div class="rank-blocks">
       <!-- ── JOINERS ── -->
       <div class="rank-block">
-        <h3 class="rank-title" data-i18n="heroes.joiners.title">Joiners</h3>
-        <p class="rank-lede" data-i18n-html="heroes.joiners.lede">One hero per march, and only the <b>first skill</b> counts.
-          S and A tiers get cards; everyone else gets a line.</p>
+        <h3 class="rank-title" data-i18n="heroes.joiners.title">Shared skill suppliers</h3>
+        <p class="rank-lede" data-i18n-html="heroes.joiners.lede">This <b>is</b> the hero permission list for join marches. If you have one of these approved first heroes available, use them. Once those heroes are already committed to other queues, send your remaining Bear join marches <b>with no hero</b> rather than risk locking an unhelpful first skill into one of the rally's four shared slots.</p>
 
         <div class="gen">
           <h4 class="gen-title"><span data-i18n="heroes.gen">Generation</span> I</h4>
@@ -580,7 +510,7 @@ self: bear
       </div>
     </div>
 
-    <p class="note" data-i18n="heroes.out">Send the S and A faces. Leave the defence heroes at home — the bear doesn't care about your armour.</p>
+    <p class="note" data-i18n="heroes.out">For <b>leaders</b>, optimise the full kit. For <b>joiners</b>, use approved first heroes from the list while you have them available; after that, <b>send no hero</b>. The rally only needs four useful shared skill suppliers — every other queue still matters because the troops still score.</p>
 
     <details>
       <summary data-i18n="heroes.details">Sources, testing and fine print</summary>
@@ -590,11 +520,14 @@ self: bear
         <p data-i18n-html="heroes.d3">Hero portraits from the Kingshot community wiki (kingshotwiki.com); the hero-card layout owes its start to Catarina's Kingshot transfer chat design.</p>
       </div>
     </details>
+  
+    </details>
   </section>
 
   <!-- ═══════════ 8 · REWARDS ═══════════ -->
   <section class="section" id="rewards">
-    <h2 data-i18n="rewards.title">Rewards</h2>
+    <details class="section-fold" open data-mobile-collapse>
+      <summary><h2 data-i18n="rewards.title">Rewards</h2></summary>
     <p class="lede" data-i18n-html="rewards.lede">Your reward bracket follows <strong>your own</strong> damage — not the rally's.
       Thresholds keep doubling, one extra Forgehammer per bracket, all the way to <strong>38.4B+</strong>:</p>
     <ul class="brackets">
@@ -610,49 +543,20 @@ self: bear
       <li><b>19.2B</b><span class="forge" role="img" aria-label="17 Forgehammers" data-i18n-key="rewards.forgeAria" data-i18n-attr="aria-label" data-i18n-n="17"><svg class="forge-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20.5 14 10.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M13.5 3.5 20.5 10.5 14.8 16.2 7.8 9.2Z" fill="currentColor"/></svg><span class="forge-n">17</span></span></li>
       <li><b>38.4B+</b><span class="forge" role="img" aria-label="18 Forgehammers" data-i18n-key="rewards.forgeAria" data-i18n-attr="aria-label" data-i18n-n="18"><svg class="forge-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20.5 14 10.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M13.5 3.5 20.5 10.5 14.8 16.2 7.8 9.2Z" fill="currentColor"/></svg><span class="forge-n">18</span></span></li>
     </ul>
-    <p class="note" data-i18n="rewards.note">47M pays 8 hammers, 38.4B pays 18 — one extra per bracket. More players crossing
-      brackets = more Forgehammers for the whole alliance. Fair-share rallies grow everyone — one
-      whale hoarding rallies grows one player.</p>
-  </section>
-
-  <!-- ═══════════ 9 · THE CAP ═══════════ -->
-  <section class="section" id="cap">
-    <h2 data-i18n="cap.title">The cap</h2>
-    <p class="lede" data-i18n-html="cap.lede">Alliances cap how many troops a march participant can send — usually right
-      around fair share. It's a fairness rule, and the maths says it's nearly free: only players
-      past <strong>~364k archers</strong> feel it at all.</p>
-    <details>
-      <summary data-i18n="cap.details">The maths of the cap</summary>
-      <div class="d-body">
-        <p data-i18n-html="cap.d1">The line is <b>~364k archers</b> — 65k fair share per march × 80% archers ×
-          7 marches, because a rally lead with six queues fields all seven. Past it, the cap leaves
-          some archers at home. It's a real nerf, but a slight one: every extra troop past your
-          first hits softer (that's the √ again).</p>
-        <p data-i18n-html="cap.d2">And it almost never costs a bracket: the thresholds keep doubling, so
-          47M → 90M is a <b>91% gap</b>, and a few percent lost to the cap won't cross it —
-          <b>provided the alliance launches enough rallies</b> that strong players can keep every
-          queue full.</p>
-      </div>
+    <p class="note" data-i18n-html="rewards.note">47M pays 8 hammers, 38.4B pays 18 — one extra per bracket. Strong leads raise every joiner's hit, but restricting launches to only the strongest also cuts the number of scoring slots. More players crossing brackets means more Forgehammers across the alliance — <b>do not leave queues idle waiting for a perfect lead</b>.</p>
+  
     </details>
-    <p class="note" data-i18n-html="cap.note">So cap away — except one day a month. After KvK, hold a
-      <b>God bear</b>: the strongest players from both hunt time slots in one massive hunt, everyone
-      within <b>~30s travel</b> of the bear, rallies chained back-to-back for super-low dwell times —
-      and the cap off: <b>everyone full-sends</b>, and the whales finally get to use every last
-      archer.</p>
   </section>
-
-  <!-- ═══════════ 10 · THE 4 RULES ═══════════ -->
-  <section class="section rules" id="rules">
+<section class="section rules" id="rules">
     <h2 data-i18n="rules.title">The whole page in four rules</h2>
     <button class="hedera" id="hedera" type="button" aria-label="a small mark in the margin" title="a small mark in the margin" data-i18n-key="rules.hedera" data-i18n-attr="aria-label title">❦</button>
     <ol class="rule-list">
-      <li><span class="rule-num">1</span><div><h3 data-i18n="rules.1.title">Split your marches</h3><p data-i18n-html="rules.1.body">6 rallies ≈ 2.4× one big march. Spread across different rallies, every wave.</p></div></li>
-      <li><span class="rule-num">2</span><div><h3 data-i18n="rules.2.title">Fill every rally</h3><p data-i18n-html="rules.2.body">Capacity ÷ players = your fair share. Leave no slot empty, stuff no rally.</p></div></li>
-      <li><span class="rule-num">3</span><div><h3 data-i18n="rules.3.title">Send 10 / 10 / 80</h3><p data-i18n-html="rules.3.body">Past ~350k troops: 10% inf, 10% cav, 80% archers — the per-lead perfect ratio is a fool's errand.</p></div></li>
-      <li><span class="rule-num">4</span><div><h3 data-i18n="rules.4.title">Keep moving</h3><p data-i18n-html="rules.4.body">Fire = launch + 5:00. Staggered waves = a fire every minute. <span class="rev">Parked = zero.</span></p></div></li>
-      <li class="rule-five" id="rulefive" hidden><span class="rule-num" aria-hidden="true">5</span><div><h3 data-i18n="rules.5.title">The whispered rule</h3><p data-i18n-html="rules.5.body">Leave no slot empty, no matter how weak the joiner. Every √ counts.</p></div></li>
+      <li><span class="rule-num">1</span><div><h3 data-i18n="rules.1.title">Everyone rallies — not at once</h3><p data-i18n-html="rules.1.body">Every available player should launch once per five-minute cycle. Seed the opening so rallies fill; later launches recycle returning queues.</p></div></li>
+      <li><span class="rule-num">2</span><div><h3 data-i18n="rules.2.title">Protect 13–14 joiners</h3><p data-i18n-html="rules.2.body">Keep join marches around the alliance cap — <b>~85k for us</b>. One oversized join can erase another player's √ bucket.</p></div></li>
+      <li><span class="rule-num">3</span><div><h3 data-i18n="rules.3.title">Equalise your queues</h3><p data-i18n-html="rules.3.body">Split archers evenly across your join queues; as they cap out, work toward <b>5 / 15 / 80</b>.</p></div></li>
+      <li><span class="rule-num">4</span><div><h3 data-i18n="rules.4.title">Take the next rally</h3><p data-i18n-html="rules.4.body">Seed the opening waves, then relaunch on return. Join the next suitable rally to fire, hit, return, repeat. <span class="rev">Parked = zero.</span></p></div></li>
+      <li class="rule-five" id="rulefive" hidden><span class="rule-num" aria-hidden="true">5</span><div><h3 data-i18n="rules.5.title">The whispered rule</h3><p data-i18n-html="rules.5.body">Strong leads full-send their own march. Their join queues still follow the cap.</p></div></li>
     </ol>
-    <p class="punchline" data-i18n-html="rules.punchline">Lead's stats × your troops, √ on your count.
-      <strong>Everything else follows.</strong></p>
+    <p class="punchline" data-i18n-html="rules.punchline">Lead sets the power. You supply the troops. Each type gets its own √. <strong>Everything else is throughput.</strong></p>
   </section>
 </main>

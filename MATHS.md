@@ -39,8 +39,10 @@ Per-troop properties:
 - proportional to **√(number of troops)** of a given type.
 
 > *"Needless to say, this is the most basic formula. Multiplicative contributions from the skills of
-> the lead and joining heroes have to be factored in as well."* — i.e. **hero skills multiply on top**:
-> the lead's hero skills boost the rally; joining heroes' skills boost their own march.
+> the lead and joining heroes have to be factored in as well."* — i.e. **hero skills multiply on top**.
+> Current Bear-specific testing refines the scope: the lead's full hero kit is shared, and up to four
+> locked joiner first-skills become **rally-wide skills used in every participant's individual Bear
+> simulation**. Supplying a selected skill gives its owner no private bonus.
 
 ## 2. Simplified proportional form ("real" unit stats)
 
@@ -153,9 +155,10 @@ The simplified formula is missing a factor `√N₀` that is common to both side
 N₀ = min( attacker total troops, defender total troops )
 ```
 
-- For bear: the bear's army is much larger than the rally, so `N₀ = rally total troops`, and
-  every joiner's damage carries a common `√(rally total)` multiplier. It is constant per rally,
-  so it never changes the split rules — a full rally at fair share is still √j × a solo carry.
+- For Bear Hunt, the target is **5,000 special infantry**, so a normal attacking march is larger and
+  `N₀ = 5000`. Each troop-type army factor is therefore `√(N_t × 5000)`. When the simplified
+  formula is written in troop fractions, its `√N_tot` comes from substituting
+  `N_t = f_t·N_tot`; it is not a separate rally-size multiplier.
 
 ### 6.4 Widgets (and similar buffs) are just multiplicative percentages
 
@@ -252,3 +255,22 @@ date(T) = today + ceil((cumulative(T) − earned) ÷ rate)
 
 Milestones for the copy: VIP 4 (construction +10%), VIP 6 (march queue +1 — the most
 impactful perk), VIP 9 (construction +20%, first combat buff — the F2P ceiling).
+
+
+## 9. Operational throughput model
+
+For live Bear coordination, rally supply limits how often join queues can actually score.
+
+```
+H = L·S / (P·Q)
+```
+
+where `P` = participants, `L` = rally launchers per five-minute cycle, `S` = average joiners
+that fit in each rally, and `Q` = join queues per player.
+
+If everyone launches, `L=P`, so `H=S/Q`. With six join queues, 13–14 joiners per rally means
+**2.17–2.33 supported hits per queue** even when physical march turnaround could support more.
+
+The live guide therefore prioritises: everyone launching; preserving 13–14 joiner slots with a
+conservative ~85k join cap; equalising scarce troops across join queues; converging on **5/15/80**
+once queues hit the cap; and allowing designated outsized leads to full-send only their own lead march.

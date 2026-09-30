@@ -1,5 +1,5 @@
 /* bear-hunt.js — Bear Hunt page toys.
-   Registers the two calculators (rally fill, march split) as declared groups
+   Registers the calculators (rally fill, march split, throughput) as declared groups
    with js/bind.js: the page's markup says which inputs feed which figures, the
    group says what the figures are, and the dictionary sentence carries only
    `{tokens}` — no id, no value. Nothing here re-queries an input or holds an
@@ -31,6 +31,60 @@
     }
   });
 
+  // ── Rally-throughput calculator ────────────────────────
+  BH.group('throughput', {
+    inputs: ['participants', 'launchers', 'joiners', 'queues'],
+    values: function (v, BH) {
+      var p = Math.max(1, Math.round(v.participants || 1));
+      var l = Math.min(p, Math.max(1, Math.round(v.launchers || 1)));
+      var s = Math.min(14, Math.max(1, Math.round(v.joiners || 1)));
+      var q = Math.min(6, Math.max(1, Math.round(v.queues || 1)));
+      var slots = l * s;
+      return {
+        slots: BH.fmt(slots),
+        opening: (p * q / s).toFixed(1),
+        hits: (slots / (p * q)).toFixed(2) + '×'
+      };
+    }
+  });
+
+  // ── Major-section disclosures ──────────────────────────
+  // Desktop keeps the long-form guide open by default. On mobile, mechanics
+  // and reference sections start collapsed so the page becomes a quick index.
+  // Direct links / TOC taps always open their target before scrolling.
+  function wireSectionFolds() {
+    var folds = Array.prototype.slice.call(document.querySelectorAll('.section-fold[data-mobile-collapse]'));
+    if (!folds.length) return;
+
+    var mobile = window.matchMedia && window.matchMedia('(max-width: 760px)').matches;
+    if (mobile) {
+      folds.forEach(function (fold) { fold.open = false; });
+    }
+
+    function openTarget(hash) {
+      if (!hash || hash.length < 2) return;
+      var section = document.getElementById(hash.slice(1));
+      if (!section) return;
+      var fold = section.querySelector(':scope > .section-fold');
+      if (fold) fold.open = true;
+    }
+
+    openTarget(window.location.hash);
+
+    var toc = document.getElementById('toc');
+    if (toc) {
+      toc.addEventListener('click', function (event) {
+        var link = event.target.closest('a[href^="#"]');
+        if (!link) return;
+        openTarget(link.getAttribute('href'));
+      });
+    }
+
+    window.addEventListener('hashchange', function () {
+      openTarget(window.location.hash);
+    });
+  }
+
   // ── The ❦ in the margin ────────────────────────────────
   // The mark beside "the four rules" is the fifth rule's own whisper: pressing
   // it reveals the rule the page keeps for whoever reads the margin. The copy
@@ -49,5 +103,6 @@
     });
   }
 
+  wireSectionFolds();
   wireMarginMark();
 })();
