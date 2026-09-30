@@ -27,12 +27,13 @@ self: bear
 
     <ul class="facts strategy-list">
       <li>Launch enough rallies that returning join marches always have somewhere useful to go. Do not limit launches to only the strongest leads.</li>
-      <li>Set a join-march cap that matches your alliance's rally capacity. Ours is about <b>85k</b> right now, which usually leaves room for 13–14 joiners.</li>
+      <li>Protect all <b>14 joiner slots</b> whenever possible. With six join queues per player and one rally launch per player per five-minute cycle, those 14 slots are what let each join queue score up to <b>14 ÷ 6 = 2.33 times per cycle</b>.</li>
+      <li>Set a join-march cap that matches your alliance's rally capacity. Ours is about <b>85k</b> right now, chosen so ordinary rallies can get as close to 14 joiners as possible.</li>
       <li>For a full join march, use roughly <b>5% infantry / 15% cavalry / 80% archers</b>. If you cannot field that in every active queue, split your scarce troops evenly instead of perfecting one march and weakening the rest.</li>
       <li>Use a recommended first hero on join marches. If none is available, send no hero.</li>
     </ul>
 
-    <p class="note">A stronger lead increases the damage of every march in that rally. More rallies give returning join marches more chances to score. The two goals work together: good leads make each hit stronger; enough rallies keep your queues hitting.</p>
+    <p class="note">A stronger lead increases the damage of every march in that rally. Full rallies create enough join slots for those marches to keep scoring. The two goals work together: good leads make each hit stronger; 14 joiner slots push queue reuse toward the structural maximum.</p>
   </section>
 
   <section class="section" id="sqrt" data-collapse>
@@ -64,15 +65,17 @@ self: bear
     <span class="anchor-alias" id="cap" aria-hidden="true"></span>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="rally-body"><span>Fill rallies</span><span class="section-chevron" aria-hidden="true">⌄</span></button></h2>
     <div class="section-body" id="rally-body">
-      <p class="lede">Aim for <strong>13–14 joiners</strong> per rally. Set your join-march cap to match your alliance's current rally capacity and progression.</p>
-      <p>Our alliance currently uses a cap of about <strong>85k troops</strong>. That is an alliance-specific number, not a universal Bear rule, and it should rise as rally capacities grow.</p>
+      <p class="lede">Aim for <strong>14 joiners</strong> whenever possible. The main reason is not the damage optimisation inside that one rally — it is keeping the whole alliance close to the maximum join-queue throughput.</p>
+      <p>Every active player contributes about <strong>six join queues</strong>, but can launch only <strong>one rally with 14 joiner slots</strong> per five-minute cycle. If everyone launches, those resources balance at <strong>14 ÷ 6 = 2.33 Bear hits per join queue per cycle</strong>. A 13-joiner average drops that ceiling to <strong>13 ÷ 6 = 2.17</strong>.</p>
+      <p>Our alliance currently uses a cap of about <strong>85k troops</strong>. That is an alliance-specific number, not a universal Bear rule, and it should rise as rally capacities grow. Its job is to stop oversized joins consuming the slot that would have carried another queue hit.</p>
       <p>The cap only manages shared rally capacity. It does not combine players' troops or damage. An oversized join march can simply consume enough capacity to exclude another independently calculated joiner.</p>
       <p>The join cap does not apply to a strong lead's <strong>own rally march</strong>. Fill that march and use the lead's tested or simulated ratio. Their marches joining other rallies still follow the normal alliance cap.</p>
 
       <details>
-        <summary>Why 13–14?</summary>
+        <summary>Why 14?</summary>
         <div class="d-body">
-          <p>For a fixed amount of one troop type under the same lead, spreading it across 14 otherwise equivalent participants instead of 10 gives about 18% more summed square-root output. Real rallies are not perfectly equal, but giving up several participant slots still costs damage.</p>
+          <p>Let P players each supply six join queues and launch one rally in a five-minute cycle. The alliance supplies <b>6P join queues</b> and creates <b>14P join slots</b>, so the theoretical supported reuse is 14P ÷ 6P = <b>2.33 hits per queue</b>. At 13 joiners it is only <b>2.17</b>, about 7% below the 14-slot ceiling.</p>
+          <p>Filling the extra slot also improves the damage of that individual rally because another independently calculated march gets to hit. That is useful, but it is secondary to keeping all six queues per player rotating as close to 2.33 hits per cycle as the live timing allows.</p>
         </div>
       </details>
     </div>
@@ -135,8 +138,8 @@ self: bear
       <details>
         <summary>How many rallies in Group 1?</summary>
         <div class="d-body">
-          <p>Estimate how many join queues are available at the start, then divide by your target number of joiners per rally. With 15 players and six join queues each, 90 opening join queues support about seven rallies with 13 joiners. Starting eight can still work if one or two leads are ready to cancel when needed.</p>
-          <p>After the first hits land, returning join queues can be used again, so later rallies are not limited by the opening count.</p>
+          <p>Estimate how many join queues are available at the start, then divide by your target number of joiners per rally. With 15 players and six join queues each, 90 opening join queues support about six fully filled 14-joiner rallies, with six queues left for the next launch. Starting a seventh can still work if a flex lead is ready to cancel when the opening supply is thinner than expected.</p>
+          <p>After the first hits land, returning join queues can be used again. The long-run target is not merely to fill the opening wave; it is to keep those six queues per player rotating toward the <b>2.33 hits per five-minute cycle</b> that 14 joiner slots can support.</p>
         </div>
       </details>
     </div>
