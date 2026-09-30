@@ -389,7 +389,7 @@ window.__BH_I18N_DATA["en"] = {
   "vip.nav.table": "The ladder",
   "vip.nav.targets": "The milestones",
 
-  "vip.hero.h1": "VIP CALCULATOR,<br><span class=\"accent\">DEMYSTIFIED</span>",
+  "vip.hero.h1": "VIP,<br><span class=\"accent\">DEMYSTIFIED</span>",
   "vip.hero.lede": "Every VIP level costs a set amount of XP. Enter your level, your progress and your days played, and the page works out the date for each remaining level at your current rate.",
   "vip.hero.chip1": "VIP 1–12",
   "vip.hero.chip2": "xp resets each level",
