@@ -114,9 +114,9 @@
       homeOut.textContent = formatNumber(home);
 
       if (reserve > 0) {
-        note.innerHTML = 'Own rally: <b>' + formatNumber(own) + '</b> archers. The remainder is divided evenly across ' + queues + ' join queues, capped at <b>' + formatNumber(joinArcherCap) + '</b> archers each.';
+        note.innerHTML = 'Own rally: <b>' + formatNumber(own) + '</b> archers. The remainder is divided evenly across ' + queues + ' join queues at <b>' + formatNumber(eachJoin) + '</b> each.';
       } else {
-        note.innerHTML = 'Archers are divided evenly across your own rally and ' + queues + ' join queues until one of the march caps is reached.';
+        note.innerHTML = 'Archers are divided across your own rally and ' + queues + ' join queues until a cap is reached. Every join queue stays equal at <b>' + formatNumber(eachJoin) + '</b> archers.';
       }
     }
 
@@ -178,11 +178,11 @@
 
   var APPROVED_BACKUPS = {
     1: ['Amadeus when he is not your lead'],
-    2: ['Amadeus when free', 'Hilde'],
-    3: ['Amadeus when free', 'Hilde'],
-    4: ['Amadeus when free', 'Hilde', 'Rosa'],
-    5: ['Amadeus when free', 'Hilde', 'Rosa'],
-    6: ['Amadeus when free', 'Hilde', 'Rosa', 'Yang'],
+    2: ['Amadeus when free'],
+    3: ['Amadeus when free'],
+    4: ['Amadeus when free', 'Rosa'],
+    5: ['Amadeus when free', 'Rosa'],
+    6: ['Amadeus when free', 'Rosa', 'Yang'],
     7: ['Earlier S-tier suppliers remain usable', 'Rosa', 'Yang', 'exactly one Petra per rally']
   };
 
@@ -225,7 +225,7 @@
             '<p class="hero-explorer-help">These are first-hero choices. Tap an icon to see what its first skill contributes. If none of the approved heroes are free, send that queue with no hero.</p>' +
             '<div class="joiner-icons" id="joiner-icons"></div>' +
             '<div class="joiner-explain" id="joiner-explain" hidden></div>' +
-            '<details class="hero-backups"><summary>Other approved options</summary><p id="hero-backup-copy"></p></details>' +
+            '<details class="hero-backups"><summary>Other approved options / alliance rules</summary><p id="hero-backup-copy"></p></details>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -297,7 +297,8 @@
       joinerExplain.innerHTML = '';
 
       var backups = APPROVED_BACKUPS[generation] || [];
-      backupCopy.textContent = backups.length ? backups.join(' · ') + '. If none are available, send no hero.' : 'If none are available, send no hero.';
+      var base = backups.length ? backups.join(' · ') + '. ' : '';
+      backupCopy.textContent = base + 'Hilde is not in this default joiner list; some alliances allow her, so follow your alliance rules. If no approved hero is available, send no hero.';
     }
 
     lineup.addEventListener('click', function (event) {
