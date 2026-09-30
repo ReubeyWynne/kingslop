@@ -1,108 +1,132 @@
-/* bear-hunt.js — Bear Hunt page toys.
-   Registers the calculators (rally fill, march split, throughput) as declared groups
-   with js/bind.js: the page's markup says which inputs feed which figures, the
-   group says what the figures are, and the dictionary sentence carries only
-   `{tokens}` — no id, no value. Nothing here re-queries an input or holds an
-   output node, so a language switch is just a repaint: the tokens resolve
-   against the inputs as they stand, in the active locale. */
+/* bear-hunt.js — Bear Hunt page interactions. */
 (function () {
   'use strict';
 
-  // ── Rally-fill calculator ──────────────────────────────
-  // A blank or negative capacity has no fair share: the dash says "no answer
-  // yet", where a coerced 0 would read as "the answer is zero".
-  BH.group('rally', {
-    inputs: ['cap', 'players'],
-    values: function (v, BH) {
-      var T = isFinite(v.cap) && v.cap > 0 ? v.cap : NaN;
-      var j = Math.min(15, Math.max(1, v.players || 1));
-      return { n: j, share: BH.fmt(T / j), mult: BH.mult(Math.sqrt(j)) };
-    }
-  });
+  function setSectionOpen(section, open) {
+    if (!section) return;
+    var button = section.querySelector(':scope > h2 .section-toggle');
+    var body = section.querySelector(':scope > .section-body');
+    if (!button || !body) return;
 
-  // ── March-split calculator ─────────────────────────────
-  // Same rule as the rally: no answer is a dash, not a zero.
-  BH.group('march', {
-    inputs: ['pool', 'q'],
-    values: function (v, BH) {
-      var P = isFinite(v.pool) && v.pool > 0 ? v.pool : NaN;
-      var q = Math.min(6, Math.max(1, v.q || 1));
-      return { n: q, share: BH.fmt(P / q), mult: BH.mult(Math.sqrt(q)) };
-    }
-  });
+    button.setAttribute('aria-expanded', open ? 'true' : 'false');
+    body.hidden = !open;
+    if (open) section.removeAttribute('data-collapsed');
+    else section.setAttribute('data-collapsed', '');
+  }
 
-  // ── Rally-throughput calculator ────────────────────────
-  BH.group('throughput', {
-    inputs: ['participants', 'launchers', 'joiners', 'queues'],
-    values: function (v, BH) {
-      var p = Math.max(1, Math.round(v.participants || 1));
-      var l = Math.min(p, Math.max(1, Math.round(v.launchers || 1)));
-      var s = Math.min(14, Math.max(1, Math.round(v.joiners || 1)));
-      var q = Math.min(6, Math.max(1, Math.round(v.queues || 1)));
-      var slots = l * s;
-      return {
-        slots: BH.fmt(slots),
-        opening: (p * q / s).toFixed(1),
-        hits: (slots / (p * q)).toFixed(2) + '×'
-      };
-    }
-  });
+  function sectionForHash(hash) {
+    if (!hash || hash.length < 2) return null;
+    var target = document.getElementById(hash.slice(1));
+    if (!target) return null;
+    if (target.matches && target.matches('section[data-collapse]')) return target;
+    return target.closest ? target.closest('section[data-collapse]') : null;
+  }
 
-  // ── Major-section disclosures ──────────────────────────
-  // Desktop keeps the long-form guide open by default. On mobile, mechanics
-  // and reference sections start collapsed so the page becomes a quick index.
-  // Direct links / TOC taps always open their target before scrolling.
-  function wireSectionFolds() {
-    var folds = Array.prototype.slice.call(document.querySelectorAll('.section-fold[data-mobile-collapse]'));
-    if (!folds.length) return;
+  function wireSections() {
+    var sections = Array.prototype.slice.call(document.querySelectorAll('section[data-collapse]'));
+    if (!sections.length) return;
 
     var mobile = window.matchMedia && window.matchMedia('(max-width: 760px)').matches;
-    if (mobile) {
-      folds.forEach(function (fold) { fold.open = false; });
+    sections.forEach(function (section) {
+      setSectionOpen(section, !mobile);
+      var button = section.querySelector(':scope > h2 .section-toggle');
+      if (!button) return;
+      button.addEventListener('click', function () {
+        setSectionOpen(section, button.getAttribute('aria-expanded') !== 'true');
+      });
+    });
+
+    function openHash(hash) {
+      var section = sectionForHash(hash);
+      if (section) setSectionOpen(section, true);
     }
 
-    function openTarget(hash) {
-      if (!hash || hash.length < 2) return;
-      var section = document.getElementById(hash.slice(1));
-      if (!section) return;
-      var fold = section.querySelector(':scope > .section-fold');
-      if (fold) fold.open = true;
-    }
-
-    openTarget(window.location.hash);
+    openHash(window.location.hash);
 
     var toc = document.getElementById('toc');
     if (toc) {
       toc.addEventListener('click', function (event) {
-        var link = event.target.closest('a[href^="#"]');
-        if (!link) return;
-        openTarget(link.getAttribute('href'));
+        var link = event.target.closest && event.target.closest('a[href^="#"]');
+        if (link) openHash(link.getAttribute('href'));
       });
     }
 
     window.addEventListener('hashchange', function () {
-      openTarget(window.location.hash);
+      openHash(window.location.hash);
     });
   }
 
-  // ── The ❦ in the margin ────────────────────────────────
-  // The mark beside "the four rules" is the fifth rule's own whisper: pressing
-  // it reveals the rule the page keeps for whoever reads the margin. The copy
-  // and the row shipped with the page; only the listener was missing, which
-  // left a focusable button that did nothing.
-  function wireMarginMark() {
-    var mark = document.getElementById('hedera');
-    var five = document.getElementById('rulefive');
-    if (!mark || !five) return;
-    mark.setAttribute('aria-expanded', 'false');
-    mark.setAttribute('aria-controls', 'rulefive');
-    mark.addEventListener('click', function () {
-      var open = five.hidden;
-      five.hidden = !open;
-      mark.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
+  function numberValue(id, fallback) {
+    var el = document.getElementById(id);
+    if (!el) return fallback;
+    var n = Number(el.value);
+    return isFinite(n) ? n : fallback;
   }
 
-  wireSectionFolds();
-  wireMarginMark();
+  function formatNumber(n) {
+    return Math.max(0, Math.round(n)).toLocaleString(undefined);
+  }
+
+  function wireAllocator() {
+    var root = document.getElementById('archer-allocator');
+    if (!root) return;
+
+    var inputs = Array.prototype.slice.call(root.querySelectorAll('input'));
+    var ownOut = document.getElementById('alloc-own');
+    var joinOut = document.getElementById('alloc-join');
+    var homeOut = document.getElementById('alloc-home');
+    var note = document.getElementById('alloc-note');
+
+    function render() {
+      var total = Math.max(0, numberValue('archer-total', 0));
+      var queues = Math.min(6, Math.max(1, Math.round(numberValue('join-queues', 6))));
+      var joinCap = Math.max(0, numberValue('join-cap', 85000));
+      var ownCap = Math.max(0, numberValue('own-cap', 130000));
+      var reserve = Math.max(0, numberValue('own-reserve', 0));
+      var joinArcherCap = joinCap * 0.80;
+
+      var own = 0;
+      var eachJoin = 0;
+
+      if (reserve > 0) {
+        own = Math.min(total, ownCap, reserve);
+        eachJoin = Math.min(joinArcherCap, Math.max(0, total - own) / queues);
+      } else {
+        var equal = total / (queues + 1);
+
+        if (equal <= ownCap && equal <= joinArcherCap) {
+          own = equal;
+          eachJoin = equal;
+        } else if (ownCap < equal) {
+          own = ownCap;
+          eachJoin = Math.min(joinArcherCap, Math.max(0, total - own) / queues);
+        } else {
+          eachJoin = joinArcherCap;
+          own = Math.min(ownCap, Math.max(0, total - eachJoin * queues));
+        }
+      }
+
+      var used = own + eachJoin * queues;
+      var home = Math.max(0, total - used);
+
+      ownOut.textContent = formatNumber(own);
+      joinOut.textContent = formatNumber(eachJoin);
+      homeOut.textContent = formatNumber(home);
+
+      if (reserve > 0) {
+        note.innerHTML = 'Reserved <b>' + formatNumber(own) + '</b> archers for your own rally, then split the remainder evenly across ' + queues + ' join queues. Each capped ' + formatNumber(joinCap) + ' join targets at most <b>' + formatNumber(joinArcherCap) + '</b> archers at 5/15/80.';
+      } else {
+        note.innerHTML = 'Auto mode equalises archers across your own rally and ' + queues + ' join queues until a cap binds. Each capped ' + formatNumber(joinCap) + ' join targets at most <b>' + formatNumber(joinArcherCap) + '</b> archers at 5/15/80.';
+      }
+    }
+
+    inputs.forEach(function (input) {
+      input.addEventListener('input', render);
+      input.addEventListener('change', render);
+    });
+    render();
+  }
+
+  wireSections();
+  wireAllocator();
 })();
