@@ -27,8 +27,8 @@ self: bear
 
     <ul class="facts strategy-list">
       <li>Launch enough rallies to keep returning join queues busy; do not restrict launches to only the strongest leads.</li>
-      <li>Keep join marches around <b>85k</b> so rallies can usually fit 13–14 joiners.</li>
-      <li>Spread scarce archers across your own rally and join queues; as join marches fill, work toward <b>5 / 15 / 80</b>.</li>
+      <li>Use a join-march cap that fits your alliance's current rally capacity. Ours is about <b>85k</b> right now, which usually leaves room for 13–14 joiners.</li>
+      <li>Keep your join marches as equal as practical. Divide archers evenly between the join queues, then fill the remaining space with cavalry and infantry, weighted more toward cavalry.</li>
       <li>Use a recommended first hero on join marches, or send no hero.</li>
     </ul>
 
@@ -64,9 +64,10 @@ self: bear
     <span class="anchor-alias" id="cap" aria-hidden="true"></span>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="rally-body"><span>Fill rallies</span><span class="section-chevron" aria-hidden="true">⌄</span></button></h2>
     <div class="section-body" id="rally-body">
-      <p class="lede">Aim for <strong>13–14 joiners</strong> in each rally. Our current join-march cap is about <strong>85k troops</strong>.</p>
+      <p class="lede">Aim for <strong>13–14 joiners</strong> in each rally. The join-march cap should be set for your alliance's current progression and rally capacities.</p>
+      <p>For our alliance that cap is currently about <strong>85k troops</strong>. It is not a universal Bear number, and we should expect to change it as rally capacities grow.</p>
       <p>The cap leaves room for more players. An oversized join march can use enough rally capacity to keep another player out, losing a separate damage calculation.</p>
-      <p>For a designated strong lead, the 85k cap does not apply to <strong>their own lead march</strong>. Fill that march and use the lead's tested or simulated ratio. Their join marches into other rallies still use the normal cap.</p>
+      <p>For a designated strong lead, the join cap does not apply to <strong>their own lead march</strong>. Fill that march and use the lead's tested or simulated ratio. Their join marches into other rallies still use the alliance join cap.</p>
 
       <details>
         <summary>Why 13–14?</summary>
@@ -81,24 +82,26 @@ self: bear
     <span class="anchor-alias" id="mix" aria-hidden="true"></span>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="marches-body"><span>Build your marches</span><span class="section-chevron" aria-hidden="true">⌄</span></button></h2>
     <div class="section-body" id="marches-body">
-      <p class="lede">Use your highest-tier troops. Divide scarce archers across your own rally and join queues, then fill join marches toward the 85k cap.</p>
+      <p class="lede">Keep the join marches equal. In a live hunt you cannot reliably choose which lead gets your stronger join march without slowing the whole flow, so there is little value in building one good join and several weaker ones.</p>
 
       <div class="cards compact-cards">
         <article class="card">
-          <h3>Join marches</h3>
-          <p>At the 85k cap, work toward <b>5% infantry / 15% cavalry / 80% archers</b>: about 4.25k / 12.75k / 68k.</p>
+          <h3>1. Divide archers evenly</h3>
+          <p>Split your available archers equally across every join queue. The allocator below can also include your own rally; if your own rally is unusually strong, reserve its archers first and then divide the remainder equally between the join queues.</p>
         </article>
         <article class="card">
-          <h3>Your own rally</h3>
-          <p>If your own rally is much stronger than the rallies you normally join, reserve the troops you want for your lead march first. Otherwise, include it when dividing scarce archers.</p>
+          <h3>2. Fill with cavalry and infantry</h3>
+          <p>Top each join march up to your alliance's cap with cavalry and infantry. Cavalry should be weighted higher than infantry for Bear. We do not have enough evidence to pretend there is one exact cavalry/infantry split that is correct for every account and lead.</p>
         </article>
       </div>
+
+      <p><strong>5 / 15 / 80 is a rough long-term troop shape, not a per-march routing trick.</strong> As your troop pool grows, all of your equal join marches can become more archer-heavy together. At our current 85k cap, six full join marches contain 510k troops; a literal 5/15/80 split across all six would require about 25.5k infantry, 76.5k cavalry and 408k archers. Until you have that troop depth, spread what you have evenly rather than forcing one march to the target ratio.</p>
 
       <div class="calc" id="archer-allocator">
         <h4 class="calc-title">ARCHER ALLOCATOR</h4>
         <div class="calc-row"><label for="archer-total">Total archers</label><input id="archer-total" type="number" inputmode="numeric" min="0" step="1000" value="350000"></div>
         <div class="calc-row"><label for="join-queues">Join queues</label><input id="join-queues" type="number" inputmode="numeric" min="1" max="6" step="1" value="6"></div>
-        <div class="calc-row"><label for="join-cap">Join troop cap</label><input id="join-cap" type="number" inputmode="numeric" min="1000" step="1000" value="85000"></div>
+        <div class="calc-row"><label for="join-cap">Your alliance's join-march cap</label><input id="join-cap" type="number" inputmode="numeric" min="1000" step="1000" value="85000"></div>
         <div class="calc-row"><label for="own-cap">Own march capacity</label><input id="own-cap" type="number" inputmode="numeric" min="1000" step="1000" value="130000"></div>
         <div class="calc-row"><label for="own-reserve">Own-rally archer reserve <small>(0 = auto)</small></label><input id="own-reserve" type="number" inputmode="numeric" min="0" step="1000" value="0"></div>
 
@@ -107,10 +110,10 @@ self: bear
           <p><span>Each join queue</span><b id="alloc-join">50,000</b></p>
           <p><span>Archers left home</span><b id="alloc-home">0</b></p>
         </div>
-        <p class="calc-out" id="alloc-note">Auto mode divides archers across your own rally and six join queues, limited by the capacities above.</p>
+        <p class="calc-out" id="alloc-note">Auto mode divides archers across your own rally and six join queues, while keeping every join queue equal.</p>
       </div>
 
-      <p class="note">The allocator only divides <strong>archers</strong>. Fill the rest of each join march with cavalry and infantry toward 5/15/80. Strong leads can set an own-rally reserve from their tested formation or the <a href="../battle-simulator/">battle simulator</a>.</p>
+      <p class="note">The allocator only divides <strong>archers</strong>, and every join queue always gets the same archer count. Fill the rest of each join march with cavalry and infantry, using more cavalry than infantry. The 80% archer ceiling is a rough late-progression target, not an instruction to make some joins better than others.</p>
     </div>
   </section>
 
@@ -148,7 +151,7 @@ self: bear
       <div class="hero-permission">
         <h3>Recommended joiner first heroes</h3>
         <p><b>Gen I:</b> Chenko, Yeonwoo, Amane; Amadeus when he is not needed as your lead.</p>
-        <p><b>Gen II:</b> Hilde.</p>
+        <p><b>Gen II:</b> no new default joiner hero. <b>Hilde is alliance-policy dependent</b>; many alliances do not allow her, so follow your alliance's rule.</p>
         <p><b>Gen IV:</b> Margot, Rosa.</p>
         <p><b>Gen V:</b> Vivian.</p>
         <p><b>Gen VI:</b> Yang.</p>
