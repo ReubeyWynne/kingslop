@@ -114,9 +114,9 @@
       homeOut.textContent = formatNumber(home);
 
       if (reserve > 0) {
-        note.innerHTML = 'Own rally: <b>' + formatNumber(own) + '</b> archers. Split the rest evenly across ' + queues + ' join queues: <b>' + formatNumber(eachJoin) + '</b> each, up to 80% of each join-march cap.';
+        note.innerHTML = 'Own rally: <b>' + formatNumber(own) + '</b> archers. Each join queue gets <b>' + formatNumber(eachJoin) + '</b>. Then add cavalry evenly, followed by infantry, so the join marches stay the same total size.';
       } else {
-        note.innerHTML = 'Split your archers across your own rally and ' + queues + ' join queues. Each join queue gets <b>' + formatNumber(eachJoin) + '</b> archers, capped at 80% of that march\'s join cap.';
+        note.innerHTML = 'Each join queue gets <b>' + formatNumber(eachJoin) + '</b> archers. Then add cavalry evenly, followed by infantry, so the join marches stay the same total size.';
       }
     }
 
