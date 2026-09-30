@@ -122,9 +122,9 @@ there).
   ≤80 candidates, 80 sims/candidate, bayes optimizer, "steadiest" selection
   (z 1.8, margin 0.8%), top 8, `bearTrapLevel` hard-coded 5.
 - **Search window: infantry 1–20%, cavalry/lancers 5–50%, archers = remainder.**
-  The site's 5/15/80 join preset sits inside that search window. It is deliberately
-  a practical fixed composition for join marches, not a claim that every rally
-  leader has the same exact mathematical optimum.
+  The site's 5/15/80 join preset sits inside that search window. The exact optimum
+  remains lead-specific; MATHS.md records the measured baseline where 5/15/80 is
+  about 99.66% of the modelled optimum.
 
 ### Bear joiner helper
 
@@ -418,12 +418,14 @@ have an empty widget row in the mined bundle, and the four heroes with
 
 - Joiner damage is treated per player and per troop type: infantry, cavalry and archers each
   contribute their own `coefficient × √N_type` term under the rally lead's combat package.
-- **5/15/80 is a per-march join preset**, chosen as a practical approximation across a useful
-  range of rally-leader coefficients. The exact optimum remains per lead.
-- If a player cannot field that preset in every active join queue, equalise the scarce troop type
-  across their own queues instead of perfecting one march and weakening the rest.
-- The current server join cap is **~85k**, chosen to preserve **13–14 joiner slots**. It only
-  manages shared rally capacity; it does not pool participant damage. Designated outsized leads
-  may full-send their own lead march; their join queues remain capped.
+- **5/15/80 is a per-march join preset.** The exact optimum remains per lead; on the measured
+  baseline recorded in MATHS.md, 5/15/80 retains about **99.66%** of the modelled optimum.
+- If a player cannot field that preset in every active join queue, keep the **whole join marches
+  equal**: divide archers evenly first, then cavalry, then infantry to the same total march size.
+- The join cap is alliance-specific. Ours is currently **~85k**, chosen so ordinary rallies can
+  approach all **14 joiner slots**; it should rise as rally capacities grow. It manages shared
+  rally capacity only and does not pool participant damage. Designated outsized leads may full-send
+  their own lead march; their join queues remain capped.
 - Rally supply limits reuse: `H=L·S/(P·Q)` supported hits per join queue per five-minute cycle.
-  If everyone launches and Q=6, then H=S/6, so 13–14 joiners gives **2.17–2.33** hits/queue.
+  With Q=6, the maximum needs everyone launching (`L=P`) and 14 joiners (`S=14`), giving
+  **14/6 = 2.33 hits per queue**.
