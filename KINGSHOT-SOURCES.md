@@ -122,8 +122,9 @@ there).
   ≤80 candidates, 80 sims/candidate, bayes optimizer, "steadiest" selection
   (z 1.8, margin 0.8%), top 8, `bearTrapLevel` hard-coded 5.
 - **Search window: infantry 1–20%, cavalry/lancers 5–50%, archers = remainder.**
-  dey.ci's taught 10/10/80 sits inside that window — consistent with the site's own
-  caveat that 10/10/80 is a doable near-optimum, not the exact optimum.
+  The site's 5/15/80 join preset sits inside that search window. The exact optimum
+  remains lead-specific; MATHS.md records the measured baseline where 5/15/80 is
+  about 99.66% of the modelled optimum.
 
 ### Bear joiner helper
 
@@ -338,10 +339,12 @@ have an empty widget row in the mined bundle, and the four heroes with
   (useful if the page ever explains pets/widgets).
 - Reward-bracket table (47M → 38.4B doubling, +1 Forgehammer per bracket): only
   Frakinator-sourced; the sim does not expose it.
-- The 15-player rally model (1 lead + 14 joiners, fair share) is dey.ci's own
-  tested model. SoS's "legion = sum of participants, ≤4 participant skills
-  modelled" and the sim's 4-joiner-slots abstraction are different structures —
-  do not silently cross-import.
+- The 15-player rally model (1 lead + up to 14 joiners) is a capacity/throughput
+  model, not a shared damage pool. Each participant's Bear simulation remains
+  independent; the shared rally capacity only determines how many marches fit.
+  SoS's "legion = sum of participants, ≤4 participant skills modelled" and the
+  sim's 4-joiner-slots abstraction are different structures — do not silently
+  cross-import.
 
 ### Battle Simulator page (`battle-simulator/`, `js/sim.js`)
 
@@ -413,11 +416,16 @@ have an empty widget row in the mined bundle, and the four heroes with
 
 ### Bear Hunt operational model — 2026-09-29
 
-- Joiner damage is treated per troop type: infantry, cavalry and archers each contribute their own
-  `coefficient × √N_type` term under the rally lead's combat package.
-- For live coordination, equalise scarce troops across join queues instead of routing particular
-  marches to particular leader strengths. As queues hit the cap, use the operational **5/15/80** preset.
-- The current server join cap is **~85k**, chosen to preserve **13–14 joiner slots**. Designated
-  outsized leads may full-send their own lead march; their join queues remain capped.
+- Joiner damage is treated per player and per troop type: infantry, cavalry and archers each
+  contribute their own `coefficient × √N_type` term under the rally lead's combat package.
+- **5/15/80 is a per-march join preset.** The exact optimum remains per lead; on the measured
+  baseline recorded in MATHS.md, 5/15/80 retains about **99.66%** of the modelled optimum.
+- If a player cannot field that preset in every active join queue, keep the **whole join marches
+  equal**: divide archers evenly first, then cavalry, then infantry to the same total march size.
+- The join cap is alliance-specific. Ours is currently **~85k**, chosen so ordinary rallies can
+  approach all **14 joiner slots**; it should rise as rally capacities grow. It manages shared
+  rally capacity only and does not pool participant damage. Designated outsized leads may full-send
+  their own lead march; their join queues remain capped.
 - Rally supply limits reuse: `H=L·S/(P·Q)` supported hits per join queue per five-minute cycle.
-  If everyone launches and Q=6, then H=S/6, so 13–14 joiners gives **2.17–2.33** hits/queue.
+  With Q=6, the maximum needs everyone launching (`L=P`) and 14 joiners (`S=14`), giving
+  **14/6 = 2.33 hits per queue**.

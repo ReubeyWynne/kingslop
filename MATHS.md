@@ -180,7 +180,7 @@ A widget's `w%` multiplies the attack factor: `1 + x/100 = (1 + 234.6/100) × (1
 For bear, the lead wants heroes whose skills feed attack / lethality / damage (AtkUp, LetUp,
 DmgUp); their effect multiplies into `A`, which everyone in the rally shares.
 
-## Corrections this implies for the demystified site
+## Guide implications
 
 1. **Archer weight origin**: it is `(4/3) × 1.1 = 4.4/3 ≈ 1.47`, not "4 × 1.1". The 1.1 is the
    archers' +10%-vs-infantry bonus, and it applies because **the bear is all infantry**.
@@ -188,30 +188,36 @@ DmgUp); their effect multiplies into `A`, which everyone in the rally shares.
    `DamageCalc` comment already flagged this ("flip to 4.84/3 when TG3+ archer bonus lands").
 3. **Troop tier matters**: damage is ∝ `base_att` of the troops you send — send your highest tier.
    The site previously said nothing about tiers.
-4. **Heroes multiply**: lead's hero skills (whole rally) and joining heroes' skills (their own
-   march) are multiplicative on top of A. The site previously implied the leader's stats were the
-   only personal factor.
+4. **Hero scope**: the rally leader's full hero kit is shared, and up to four locked joiner
+   first-skills become rally-wide skills used in every participant's individual simulation.
+   Supplying one of those skills does not give that joiner a private damage bonus.
 5. **Absolute scale**: the reward brackets double from 47M to 38.4B
    (47M / 90M / 175M / 330M / 625M / 1.2B / 2.4B / 4.8B / 9.6B / 19.2B / 38.4B), one extra
    Forgehammer per bracket (8 at 47M → 18 at 38.4B), and sit on the full scale that includes the
-   bear factor `(1.2/1000)·√5000`, `√N_tot`, `base_att`, and hero boosts. The √ / split /
-   fair-share rules are scale-independent and hold regardless.
-6. **Nothing changes the relative rules**: doubling a march is still +41%; Q marches are still
-   √Q × one march; a full rally at fair share is still √j × a solo carry — because all of those
-   are ratios and every constant cancels.
-7. **The 10/10/80 heuristic**: the exact optimum (§4) is per-lead — it depends on that lead's
-   attack factors. Since joiners sit in rallies from many different leads, the site teaches a
-   fixed inf/cav/arc split of 10/10/80 once a player passes the ~350k ratio threshold (~65k fair
-   share per rally slot × 5–6 march slots, +1 if leading) — "the per-lead perfect ratio is a
-   fool's errand; 10/10/80 is close enough everywhere and doable." Below the threshold, equalised
-   marches are best and the mix barely matters.
-8. **The participant-cap line (~364k archers)**: an alliance cap on how many troops each march
-   participant may send only touches players past **~364k archers** — 65k fair share per march ×
-   80% archers × 7 marches (a rally lead with six queues fields all seven). Even there the nerf is
-   slight (√), and because reward brackets double, a few percent almost never costs a bracket
-   while rallies stay plentiful. Hence the monthly "God bear" after KvK: both hunt time slots'
-   strongest players together, everyone within ~30s travel of the bear for a constant stream of
-   rallies (super-low dwell times), cap off, everyone full-sends.
+   bear factor `(1.2/1000)·√5000`, `√N_tot`, `base_att`, and hero boosts. The √ and split rules
+   are scale-independent and hold regardless.
+6. **Player and troop-type calculations stay separate**: a participant's Bear damage is the sum
+   of that player's infantry, cavalry and archer terms. Players do not contribute to a shared troop
+   pool. For a fixed amount of one troop type, splitting one player's stock across `Q` otherwise
+   equivalent active queues gives `Q·√(P/Q) = √(Q·P)` summed output; similarly, filling more rally
+   participant slots adds more independently calculated player buckets.
+7. **The 5/15/80 join preset**: the exact optimum (§4) is per lead because it depends on that
+   lead's attack factors. On the measured baseline coefficients used during the current Bear testing,
+   the exact split is about **2.0 / 16.2 / 81.8**, while **5 / 15 / 80 retains about 99.66% of the
+   modelled optimum output**. That supports it as a practical preset for the leaders tested so far;
+   it is not evidence that every possible lead has the same optimum. If a player cannot field the
+   preset in every active join queue, keep the **whole join marches equal**: divide archers evenly
+   first, then cavalry, then use infantry to bring each active join march to the same total size.
+8. **Rally participation and the join cap are both throughput rules**: each active player contributes
+   about six join queues that need scoring opportunities. To maximise those opportunities, every
+   available player should also launch one rally per five-minute cycle, while an alliance-specific
+   join cap keeps those rallies close to all **14 joiner slots**. Our current cap is ~85k, but it
+   should rise as rally capacities grow. With `P` participants, `L` launchers, `S` average joiners
+   per rally and `Q=6` join queues per player, supported reuse is `H=L·S/(P·Q)`. The maximum requires
+   both `L=P` and `S=14`, giving **14/6 = 2.33 hits per join queue per cycle**. The extra participant
+   also improves that individual rally's damage, but the operational reason for protecting the slot
+   is to create enough join opportunities for all players' queues to keep rotating. The cap does not
+   pool or normalise participant damage.
 
 ## Verified-consistent items
 
@@ -265,12 +271,42 @@ For live Bear coordination, rally supply limits how often join queues can actual
 H = L·S / (P·Q)
 ```
 
-where `P` = participants, `L` = rally launchers per five-minute cycle, `S` = average joiners
+where `P` = active participants, `L` = rally launchers per five-minute cycle, `S` = average joiners
 that fit in each rally, and `Q` = join queues per player.
 
-If everyone launches, `L=P`, so `H=S/Q`. With six join queues, 13–14 joiners per rally means
-**2.17–2.33 supported hits per queue** even when physical march turnaround could support more.
+Let `r = L/P` be the fraction of active participants who launch. Then:
 
-The live guide therefore prioritises: everyone launching; preserving 13–14 joiner slots with a
-conservative ~85k join cap; equalising scarce troops across join queues; converging on **5/15/80**
-once queues hit the cap; and allowing designated outsized leads to full-send only their own lead march.
+```
+H = r·S / Q
+```
+
+With six join queues per player and the game's 14 joiner slots per rally:
+
+```
+H = r·14/6 = 2.333…r
+```
+
+So the structural maximum requires **both** full launch participation and full rallies:
+
+- `r = 1.00`, `S = 14` → **2.33 hits per join queue per five-minute cycle**
+- `r = 1.00`, `S = 13` → **2.17 hits per queue**
+- `r = 0.80`, `S = 14` → **1.87 hits per queue**
+
+This is why **everyone rallying matters as much as filling the rallies**. Each active player adds six
+join queues to the alliance's demand. If that player also launches, they create up to fourteen join
+opportunities that help absorb everybody's queues. If they only join, their six queues still compete
+for the available slots but they add no rally capacity of their own. A missing launcher therefore
+reduces the system-wide queue-reuse ceiling, not merely that player's personal lead damage.
+
+The launches still need to be staggered. `L=P` means everyone contributes one rally during the
+five-minute cycle, not that everyone presses launch at the same second. Opening groups and natural
+return times spread those launches so the 14-slot rallies can actually fill.
+
+The 14th joiner also adds another independently calculated march to that particular rally, so filling
+it helps per-rally damage too. That is useful, but secondary to the throughput effect above.
+
+The live guide therefore prioritises: **everyone available launching once per cycle, staggered so the
+rallies fill**; preserving all 14 joiner slots with an alliance-specific cap (~85k for our current
+rally capacities); using **5/15/80 as the default composition for each full join march**; keeping
+active join marches equal when the preset cannot be fielded everywhere; and allowing designated
+outsized leads to full-send only their own lead march.

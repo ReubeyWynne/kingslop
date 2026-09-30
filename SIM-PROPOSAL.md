@@ -47,10 +47,10 @@ rally, Mystic Trial stage, beast fight) or about to open one. Visitor mode: **Op
 a tool that answers, not a guide to read. The page is the site's arithmetic room; the
 event guides keep their demystifying role and link out to it.
 
-Success: the import → answer loop takes seconds, the answer is plain ("send 10/10/80 for
-this lead", "your march lands bracket 9 — next hammer at 38.4B", "Forest of Life is open —
-pets are the check, start 50/15/35"), and the maths sits behind the `❧` disclosure, never
-in front of the reader.
+Success: the import → answer loop takes seconds, the answer is plain ("5/15/80 is the default
+join preset; this lead's exact optimum is …", "your march lands bracket 9 — next hammer at
+38.4B", "Forest of Life is open — pets are the check, start 50/15/35"), and the maths sits
+behind the `❧` disclosure, never in front of the reader.
 
 ## 3 · Grounded facts the design leans on
 
