@@ -23,22 +23,22 @@ self: bear
   <section class="section" id="model">
     <span class="anchor-alias" id="rules" aria-hidden="true"></span>
     <h2>The plan</h2>
-    <p class="lede">The rally leader provides the combat stats and full hero kit. Joiners contribute troops, and up to four first-hero skills from joiners can apply to the whole rally.</p>
+    <p class="lede">The rally leader provides the combat stats and full hero kit. Each player's infantry, cavalry and archers are then scored separately. Up to four joiner first-hero skills can apply across the whole rally.</p>
 
     <ul class="facts strategy-list">
       <li>Launch enough rallies that returning join marches always have somewhere useful to go. Do not limit launches to only the strongest leads.</li>
       <li>Set a join-march cap that matches your alliance's rally capacity. Ours is about <b>85k</b> right now, which usually leaves room for 13–14 joiners.</li>
-      <li>Keep your join marches roughly equal. Split archers evenly across the join queues, then fill the remaining space with cavalry and infantry, using more cavalry than infantry.</li>
+      <li>For a full join march, use roughly <b>5% infantry / 15% cavalry / 80% archers</b>. If you cannot field that in every active queue, split your scarce troops evenly instead of perfecting one march and weakening the rest.</li>
       <li>Use a recommended first hero on join marches. If none is available, send no hero.</li>
     </ul>
 
-    <p class="note">A stronger lead increases the damage of every march in that rally. More rallies also give returning join marches more chances to score. When the same march can do both, these are complementary rather than competing goals.</p>
+    <p class="note">A stronger lead increases the damage of every march in that rally. More rallies give returning join marches more chances to score. The two goals work together: good leads make each hit stronger; enough rallies keep your queues hitting.</p>
   </section>
 
   <section class="section" id="sqrt" data-collapse>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="sqrt-body"><span>Why splitting works</span><span class="section-chevron" aria-hidden="true">⌄</span></button></h2>
     <div class="section-body" id="sqrt-body">
-      <p class="lede">For each troop type, damage grows roughly with the square root of the number you send. Doubling the troops in one march gives about 41% more damage, not 100%.</p>
+      <p class="lede">For each troop type in your own march, damage grows roughly with the square root of the number you send. Doubling one troop-type count gives about 41% more damage from that type, not 100%.</p>
 
       <div class="bars" role="img" aria-label="The same troop pool split into one, two, or six equal marches">
         <p class="bars-cap">The same troop pool split across more marches:</p>
@@ -47,7 +47,7 @@ self: bear
         <div class="bar-row"><span class="bar-label">6 marches</span><div class="bar-track"><div class="bar-fill" style="--p:100"></div></div><span class="bar-value">2.45×</span></div>
       </div>
 
-      <p>More independent marches matter because each gets its own damage calculation. The exact gain depends on the lead, troop types, heroes and skill procs, but spreading the same troop pool across more useful marches still benefits from the square-root relationship.</p>
+      <p>Each player is calculated independently, and infantry, cavalry and archers are separate square-root terms inside that player's calculation. Splitting one player's available troops across several useful join queues creates more independent terms than concentrating them in one queue.</p>
 
       <details>
         <summary>Exact model</summary>
@@ -66,13 +66,13 @@ self: bear
     <div class="section-body" id="rally-body">
       <p class="lede">Aim for <strong>13–14 joiners</strong> per rally. Set your join-march cap to match your alliance's current rally capacity and progression.</p>
       <p>Our alliance currently uses a cap of about <strong>85k troops</strong>. That is an alliance-specific number, not a universal Bear rule, and it should rise as rally capacities grow.</p>
-      <p>The point of the cap is to leave room for more players. An oversized join march can consume enough capacity to exclude another joiner, costing the rally an entire participant's damage.</p>
+      <p>The cap only manages shared rally capacity. It does not combine players' troops or damage. An oversized join march can simply consume enough capacity to exclude another independently calculated joiner.</p>
       <p>The join cap does not apply to a strong lead's <strong>own rally march</strong>. Fill that march and use the lead's tested or simulated ratio. Their marches joining other rallies still follow the normal alliance cap.</p>
 
       <details>
         <summary>Why 13–14?</summary>
         <div class="d-body">
-          <p>If the same useful troops are spread across 14 participants instead of 10, the idealised square-root gain is about 18%. Real rallies are not perfectly equal, but giving up several participant slots still costs damage.</p>
+          <p>For a fixed amount of one troop type under the same lead, spreading it across 14 otherwise equivalent participants instead of 10 gives about 18% more summed square-root output. Real rallies are not perfectly equal, but giving up several participant slots still costs damage.</p>
         </div>
       </details>
     </div>
@@ -82,20 +82,20 @@ self: bear
     <span class="anchor-alias" id="mix" aria-hidden="true"></span>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="marches-body"><span>Build your marches</span><span class="section-chevron" aria-hidden="true">⌄</span></button></h2>
     <div class="section-body" id="marches-body">
-      <p class="lede">Make your join marches as equal as possible. During a live hunt you usually cannot control which lead receives which march without slowing down, so avoid concentrating your best troops in one join and weakening the rest.</p>
+      <p class="lede"><strong>5 / 15 / 80 is a per-march join preset.</strong> It is roughly optimal across a useful range of rally-leader coefficients; the exact mathematical optimum still depends on the lead.</p>
 
       <div class="cards compact-cards">
         <article class="card">
-          <h3>1. Split archers evenly</h3>
-          <p>Divide your available archers equally across every join queue. The allocator below can include your own rally too. If your own rally is unusually strong, reserve its archers first, then split the remainder equally across the join queues.</p>
+          <h3>1. Aim for 5 / 15 / 80</h3>
+          <p>For each full join march, use about <b>5% infantry / 15% cavalry / 80% archers</b>. At our current 85k cap, that is about 4.25k infantry, 12.75k cavalry and 68k archers in that march.</p>
         </article>
         <article class="card">
-          <h3>2. Fill with cavalry and infantry</h3>
-          <p>Fill each join march to your alliance's cap with cavalry and infantry, using more cavalry than infantry. There is not enough evidence for one universal cavalry-to-infantry split that is correct for every account and rally lead.</p>
+          <h3>2. Equalise shortages</h3>
+          <p>If you do not have enough troops to build that composition in every active join queue, do not make one perfect march and starve the others. Split the scarce troop type — usually archers — evenly across your queues, then fill the remaining space with cavalry and infantry.</p>
         </article>
       </div>
 
-      <p><strong>Treat 5 / 15 / 80 as a long-term target for your combined join troops, not a composition to force into every march.</strong> As your troop pool grows, all of your join marches can become more archer-heavy together. With our current 85k cap, six full joins contain 510k troops. A literal 5/15/80 split across those six marches would require about 25.5k infantry, 76.5k cavalry and 408k archers. If you have fewer archers than that, divide them evenly across all six joins instead of filling some to 80% and starving the others.</p>
+      <p>To field six 85k join marches at 5/15/80 at the same time, your account needs about <strong>25.5k infantry, 76.5k cavalry and 408k archers</strong> available for those six queues. Those totals are only an inventory check for your own simultaneous marches. They are <strong>not</strong> a rally-wide composition or a combined damage pool.</p>
 
       <div class="calc" id="archer-allocator">
         <h4 class="calc-title">ARCHER ALLOCATOR</h4>
@@ -113,7 +113,7 @@ self: bear
         <p class="calc-out" id="alloc-note">Auto mode splits archers across your own rally and six join queues while keeping every join queue equal.</p>
       </div>
 
-      <p class="note">The allocator only distributes <strong>archers</strong>. Every join queue receives the same archer count. Fill the remaining space with cavalry and infantry, using more cavalry than infantry. The 80% archer share is a rough late-progression target, not a reason to make some join marches stronger than others.</p>
+      <p class="note">The allocator is a shortage tool: it spreads <strong>your archers across your own queues</strong>, up to the 80% archer share of each join cap. It does not model a rally-wide troop pool. Each join march is scored independently, with separate infantry, cavalry and archer terms.</p>
     </div>
   </section>
 
