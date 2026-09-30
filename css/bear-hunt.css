@@ -1,0 +1,173 @@
+/* Bear Hunt — page-specific reading and disclosure styles. */
+
+html[data-page="bearhunt"] .strategy-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+html[data-page="bearhunt"] .strategy-list li {
+  padding-block: 0.3rem;
+}
+
+html[data-page="bearhunt"] .section[data-collapse] > h2 {
+  margin-bottom: 0;
+}
+
+html[data-page="bearhunt"] .section-toggle {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  color: inherit;
+}
+
+html[data-page="bearhunt"] .section-toggle:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 0.2rem;
+  border-radius: 0.15rem;
+}
+
+html[data-page="bearhunt"] .section-chevron {
+  display: inline-block;
+  color: var(--amber);
+  font-family: var(--body);
+  font-size: 0.72em;
+  transform: rotate(0deg);
+  transform-origin: center;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+html[data-page="bearhunt"] .section[data-collapsed] .section-chevron {
+  transform: rotate(-90deg);
+}
+
+html[data-page="bearhunt"] .section[data-collapsed] h2 {
+  color: var(--ink-dim);
+}
+
+html[data-page="bearhunt"] .section-body {
+  padding-top: var(--space-m);
+}
+
+html[data-page="bearhunt"] .section-body[hidden] {
+  display: none !important;
+}
+
+html[data-page="bearhunt"] .anchor-alias {
+  display: block;
+  position: relative;
+  top: calc(-1 * (var(--topbar-h) + 4rem));
+  visibility: hidden;
+}
+
+html[data-page="bearhunt"] .compact-cards {
+  margin-bottom: var(--space-m);
+}
+
+html[data-page="bearhunt"] .compact-cards .card p {
+  margin-bottom: 0;
+}
+
+html[data-page="bearhunt"] .allocator-result {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: var(--space-m);
+}
+
+html[data-page="bearhunt"] .allocator-result p {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--rule);
+}
+
+html[data-page="bearhunt"] .allocator-result span {
+  color: var(--ink-muted);
+  font-size: var(--step--1);
+}
+
+html[data-page="bearhunt"] .allocator-result b {
+  color: var(--amber);
+  font-family: var(--display-2);
+  font-size: var(--step-1);
+}
+
+html[data-page="bearhunt"] .calc-row small {
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+
+html[data-page="bearhunt"] .hunt-steps {
+  counter-reset: hunt;
+  list-style: none;
+  display: grid;
+  gap: 0.8rem;
+  margin: 0 0 var(--space-m);
+  padding: 0;
+}
+
+html[data-page="bearhunt"] .hunt-steps li {
+  counter-increment: hunt;
+  position: relative;
+  padding-inline-start: 2.1rem;
+  color: var(--ink-dim);
+}
+
+html[data-page="bearhunt"] .hunt-steps li::before {
+  content: counter(hunt);
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  color: var(--amber);
+  font-family: var(--display-2);
+  font-weight: 700;
+}
+
+html[data-page="bearhunt"] .hero-permission {
+  margin: var(--space-m) 0;
+  padding-block: var(--space-s);
+  border-block: 1px solid var(--rule);
+}
+
+html[data-page="bearhunt"] .hero-permission h3 {
+  margin-bottom: 0.65rem;
+}
+
+html[data-page="bearhunt"] .hero-permission p {
+  margin: 0.25rem 0;
+  color: var(--ink-dim);
+}
+
+html[data-page="bearhunt"] .compact-brackets li span {
+  color: var(--ink-muted);
+  font-family: var(--body);
+}
+
+@media (max-width: 760px) {
+  html[data-page="bearhunt"] .section {
+    padding-block: clamp(1.05rem, 4.5vw, 1.65rem);
+  }
+
+  html[data-page="bearhunt"] .section[data-collapse] > h2 {
+    margin-bottom: 0;
+  }
+
+  html[data-page="bearhunt"] .section-toggle {
+    width: 100%;
+    justify-content: space-between;
+    min-height: 2.8rem;
+  }
+
+  html[data-page="bearhunt"] .section-body {
+    padding-top: var(--space-s);
+  }
+
+  html[data-page="bearhunt"] .allocator-result {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
