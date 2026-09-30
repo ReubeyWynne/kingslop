@@ -114,9 +114,9 @@
       homeOut.textContent = formatNumber(home);
 
       if (reserve > 0) {
-        note.innerHTML = 'Reserved <b>' + formatNumber(own) + '</b> archers for your own rally, then split the remainder evenly across ' + queues + ' join queues. Each capped ' + formatNumber(joinCap) + ' join targets at most <b>' + formatNumber(joinArcherCap) + '</b> archers at 5/15/80.';
+        note.innerHTML = 'Own rally: <b>' + formatNumber(own) + '</b> archers. The remainder is divided evenly across ' + queues + ' join queues, capped at <b>' + formatNumber(joinArcherCap) + '</b> archers each.';
       } else {
-        note.innerHTML = 'Auto mode equalises archers across your own rally and ' + queues + ' join queues until a cap binds. Each capped ' + formatNumber(joinCap) + ' join targets at most <b>' + formatNumber(joinArcherCap) + '</b> archers at 5/15/80.';
+        note.innerHTML = 'Archers are divided evenly across your own rally and ' + queues + ' join queues until one of the march caps is reached.';
       }
     }
 
@@ -128,32 +128,32 @@
   }
 
   var HEROES = {
-    amadeus: { name: 'Amadeus', type: 'inf', why: 'Three offensive skills and an offensive rally widget. His kit is so Bear-specific that he remains the default infantry lead for years.' },
-    helga: { name: 'Helga', type: 'inf', why: 'Two offensive skills plus an offensive widget. A very strong infantry fallback when Amadeus is unavailable or under-built.' },
-    zoe: { name: 'Zoe', type: 'inf', why: 'Excellent free-to-play stats and kit, although Sundering Wounds does not work on the Bear. Useful when premium infantry options are behind.' },
-    alcar: { name: 'Alcar', type: 'inf', why: 'Powerful infantry-focused damage and a rare enemy-damage-taken effect, but he wants a formation built around him. Test him rather than blindly replacing Amadeus.' },
+    amadeus: { name: 'Amadeus', type: 'inf', why: 'Three offensive skills and an offensive rally widget. He remains our recommended infantry lead through Generation VII.' },
+    helga: { name: 'Helga', type: 'inf', why: 'Two offensive skills and an offensive widget. Use her when Amadeus is unavailable or much less developed.' },
+    zoe: { name: 'Zoe', type: 'inf', why: 'Good free-to-play infantry stats. Sundering Wounds does not work on the Bear, so part of her kit is lost here.' },
+    alcar: { name: 'Alcar', type: 'inf', why: 'High infantry damage and an enemy-damage-taken effect. He benefits from a more infantry-heavy formation, so compare him with Amadeus using your own setup.' },
 
-    jabel: { name: 'Jabel', type: 'cav', why: 'Two useful offensive skills and the best cavalry stats of Generation I. A clean early-game cavalry lead.' },
-    hilde: { name: 'Hilde', type: 'cav', why: 'Generation-II cavalry stats with a partly offensive kit. A useful alternative, but some of her value is defensive and therefore wasted on Bear.' },
-    petra: { name: 'Petra', type: 'cav', why: 'Offensive widget, strong cavalry stats and a first-skill interaction with unusually high expected Bear value. She remains excellent long after release.' },
-    margot: { name: 'Margot', type: 'cav', why: 'Strong newer cavalry stats and two offensive skills. Her defensive widget keeps her behind the very best Bear cavalry leads.' },
-    thrud: { name: 'Thrud', type: 'cav', why: 'An offensive widget and several damage effects, but her multi-turn kit converts less cleanly to a ten-round Bear fight than Petra.' },
-    ava: { name: 'Ava', type: 'cav', why: 'Generation-VII cavalry stats, an offensive widget and three offensive skills, including a rare enemy-damage-taken effect. The new default cavalry lead.' },
+    jabel: { name: 'Jabel', type: 'cav', why: 'Two offensive skills and the best cavalry stats available in Generation I.' },
+    hilde: { name: 'Hilde', type: 'cav', why: 'Generation-II cavalry stats and some offensive value, but part of her kit is defensive and does not add Bear damage.' },
+    petra: { name: 'Petra', type: 'cav', why: 'An offensive widget, strong cavalry stats and a first-skill interaction with unusually high expected value in a Bear fight.' },
+    margot: { name: 'Margot', type: 'cav', why: 'Higher cavalry stats and two offensive skills. Her widget is defensive, so Petra usually remains ahead.' },
+    thrud: { name: 'Thrud', type: 'cav', why: 'An offensive widget and several damage effects, but some of her kit ramps or applies awkwardly during a ten-round Bear fight.' },
+    ava: { name: 'Ava', type: 'cav', why: 'Generation-VII cavalry stats, an offensive widget and three offensive skills, including an enemy-damage-taken effect. She is our recommended cavalry lead in Generation VII.' },
 
-    saul: { name: 'Saul', type: 'arc', why: 'By far the strongest early archer stats. His kit is less specialised than later Bear archers, but Generation I has nothing better.' },
-    marlin: { name: 'Marlin', type: 'arc', why: 'Offensive widget, two all-troop offensive skills and a large stat jump over Saul. The clear Generation-II archer upgrade.' },
-    rosa: { name: 'Rosa', type: 'arc', why: 'Offensive widget, strong archer stats and a 30% archer attack skill. She overtakes Marlin as the default archer lead.' },
-    vivian: { name: 'Vivian', type: 'arc', why: 'Excellent newer archer stats and three offensive skills, but two phase in slowly across the ten Bear rounds. Very close to Rosa rather than an automatic replacement.' },
-    yang: { name: 'Yang', type: 'arc', why: 'Three offensive skills, an offensive widget and high archer stats. The complete Bear archer package and the default from Generation VI onward.' },
-    weewoo: { name: 'Wee & Woo', type: 'arc', why: 'Generation-VII archer stats and three offensive skills. Very close to Yang, but Yang’s widget keeps the edge in the current model.' },
+    saul: { name: 'Saul', type: 'arc', why: 'The highest archer stats available in Generation I, which is enough to make him the recommended archer lead for that generation.' },
+    marlin: { name: 'Marlin', type: 'arc', why: 'An offensive widget, two all-troop offensive skills and a large stat increase over Saul. Recommended from Generation II.' },
+    rosa: { name: 'Rosa', type: 'arc', why: 'An offensive widget, higher archer stats and a 30% archer attack skill. Recommended from Generation IV until Yang arrives.' },
+    vivian: { name: 'Vivian', type: 'arc', why: 'Higher Generation-V archer stats and three offensive skills, but two ramp slowly across the ten rounds. In our model she stays close to Rosa rather than clearly passing her.' },
+    yang: { name: 'Yang', type: 'arc', why: 'Three offensive skills, an offensive widget and high archer stats. Recommended from Generation VI.' },
+    weewoo: { name: 'Wee & Woo', type: 'arc', why: 'Generation-VII archer stats and three offensive skills. They are close to Yang, but Yang’s widget keeps her ahead in our current model.' },
 
-    chenko: { name: 'Chenko', type: 'cav', whyJoin: '25% attack up. Simple, reliable and the original S-tier shared-skill benchmark.' },
-    yeonwoo: { name: 'Yeonwoo', type: 'inf', whyJoin: '25% attack up on the same attack family as Chenko; useful, predictable shared damage.' },
-    amane: { name: 'Amane', type: 'arc', whyJoin: '25% attack up with a clean offensive first skill. One of the core early shared-skill suppliers.' },
-    margotJoin: { name: 'Margot', key: 'margot', type: 'cav', whyJoin: 'Another clean 25% attack-up first skill, so she joins the S-tier shared-skill pool when Generation IV arrives.' },
-    vivianJoin: { name: 'Vivian', key: 'vivian', type: 'arc', whyJoin: '25% enemy-damage-taken up. Because it is a different effect family, it multiplies against the common attack/lethality stack.' },
-    avaJoin: { name: 'Ava', key: 'ava', type: 'cav', whyJoin: 'Flat enemy-defence reduction on a fresh effect family. Excellent shared value — when she is not needed as the rally lead.' },
-    weewooJoin: { name: 'Wee & Woo', key: 'weewoo', type: 'arc', whyJoin: 'Splits its first skill between attack and lethality. The two effect families multiply, making the combined result a little better than a flat 25%.' }
+    chenko: { name: 'Chenko', type: 'cav', whyJoin: '25% attack up. A straightforward shared offensive skill.' },
+    yeonwoo: { name: 'Yeonwoo', type: 'inf', whyJoin: '25% attack up. It shares an effect family with Chenko, so those bonuses add together.' },
+    amane: { name: 'Amane', type: 'arc', whyJoin: '25% attack up on a different effect family from Chenko and Yeonwoo, so it multiplies with their shared attack stack.' },
+    margotJoin: { name: 'Margot', key: 'margot', type: 'cav', whyJoin: '25% attack up on the same effect family as Amane. She gives another strong shared offensive option from Generation IV.' },
+    vivianJoin: { name: 'Vivian', key: 'vivian', type: 'arc', whyJoin: '25% enemy-damage-taken up. It uses a different effect family from the common attack bonuses, so it multiplies with them.' },
+    avaJoin: { name: 'Ava', key: 'ava', type: 'cav', whyJoin: 'Flat enemy-defence reduction on its own effect family. Strong shared value when Ava is not being used as the rally lead.' },
+    weewooJoin: { name: 'Wee & Woo', key: 'weewoo', type: 'arc', whyJoin: 'Their first skill splits between attack and lethality. Those effect families multiply, giving slightly more combined value than a flat 25% bonus.' }
   };
 
   var LEADER_BY_GEN = {
@@ -183,7 +183,7 @@
     4: ['Amadeus when free', 'Hilde', 'Rosa'],
     5: ['Amadeus when free', 'Hilde', 'Rosa'],
     6: ['Amadeus when free', 'Hilde', 'Rosa', 'Yang'],
-    7: ['Earlier S-tier suppliers remain useful backups', 'Rosa', 'Yang', 'exactly one Petra per rally']
+    7: ['Earlier S-tier suppliers remain usable', 'Rosa', 'Yang', 'exactly one Petra per rally']
   };
 
   function heroImage(key) {
@@ -208,24 +208,24 @@
     mount.innerHTML =
       '<div class="hero-explorer" id="hero-explorer">' +
         '<div class="hero-age-row">' +
-          '<label for="server-generation"><b>Your server generation</b><small>Saved across dey.ci for future pages.</small></label>' +
+          '<label for="server-generation"><b>Your server generation</b><small>Saved on this device and reused by other tools.</small></label>' +
           '<select id="server-generation"><option value="">Choose generation…</option>' +
             [1,2,3,4,5,6,7].map(function (g) { return '<option value="' + g + '">Generation ' + g + '</option>'; }).join('') +
           '</select>' +
         '</div>' +
         '<div id="hero-generation-content" hidden>' +
           '<div class="hero-explorer-block">' +
-            '<h3>Best fully-built leader lineup</h3>' +
-            '<p class="hero-explorer-help">Assuming comparable development. Tap a slot to see the useful alternatives and why they rank below the default.</p>' +
+            '<h3>Recommended leader lineup</h3>' +
+            '<p class="hero-explorer-help">Assuming similar development. Tap a slot to see the alternatives and the reason for each.</p>' +
             '<div class="leader-lineup" id="leader-lineup"></div>' +
             '<div class="leader-alts" id="leader-alts" hidden></div>' +
           '</div>' +
           '<div class="hero-explorer-block joiner-explorer">' +
             '<h3>S-tier joiner first heroes</h3>' +
-            '<p class="hero-explorer-help">These are first-hero choices, not full march lineups. Tap an icon for the reason. If you run out of approved heroes, send the remaining queues with no hero.</p>' +
+            '<p class="hero-explorer-help">These are first-hero choices. Tap an icon to see what its first skill contributes. If none of the approved heroes are free, send that queue with no hero.</p>' +
             '<div class="joiner-icons" id="joiner-icons"></div>' +
             '<div class="joiner-explain" id="joiner-explain" hidden></div>' +
-            '<details class="hero-backups"><summary>Approved backups / special cases</summary><p id="hero-backup-copy"></p></details>' +
+            '<details class="hero-backups"><summary>Other approved options</summary><p id="hero-backup-copy"></p></details>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -297,7 +297,7 @@
       joinerExplain.innerHTML = '';
 
       var backups = APPROVED_BACKUPS[generation] || [];
-      backupCopy.textContent = backups.length ? backups.join(' · ') + '. Otherwise, no hero.' : 'No additional backup is worth risking a shared slot; use no hero.';
+      backupCopy.textContent = backups.length ? backups.join(' · ') + '. If none are available, send no hero.' : 'If none are available, send no hero.';
     }
 
     lineup.addEventListener('click', function (event) {
