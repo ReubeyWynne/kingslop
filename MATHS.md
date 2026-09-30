@@ -207,17 +207,19 @@ DmgUp); their effect multiplies into `A`, which everyone in the rally shares.
    full join march. It is a per-march heuristic, not a rally-wide target. If a player cannot field
    that composition in every active join queue, equalise the scarce troop type — usually archers —
    across those queues instead of building one perfect join and weakening the rest.
-8. **The alliance join cap is primarily a throughput rule**: our current ~85k cap limits each join
-   march so ordinary rallies can get as close as possible to all **14 joiner slots**. If `P` players
-   each contribute six join queues and launch one rally per five-minute cycle, the alliance supplies
-   `6P` queues and creates `14P` join slots, so the structural supply ceiling is
-   **14P / 6P = 2.33 hits per join queue per cycle**. Averaging only 13 joiners drops that to
-   **13/6 = 2.17**, about **7% below** the 14-slot ceiling. The extra participant also improves that
-   individual rally's damage, but that is secondary: the cap exists mainly to keep all players'
-   queues rotating toward the 2.33-hit ceiling. It does not pool or normalise participant damage.
-   At an 85k cap, one 5/15/80 join is 4.25k infantry / 12.75k cavalry / 68k archers. Six simultaneous
-   joins at that preset therefore require 25.5k / 76.5k / 408k in the player's own available troop
-   inventory; those totals are only a supply check for the six queues.
+8. **Rally participation and the join cap are both throughput rules**: each active player contributes
+   about six join queues that need scoring opportunities. To maximise those opportunities, every
+   available player should also launch one rally per five-minute cycle, while the ~85k join cap keeps
+   those rallies close to all **14 joiner slots**. With `P` participants, `L` launchers, `S` average
+   joiners per rally and `Q=6` join queues per player, supported reuse is `H=L·S/(P·Q)`. The maximum
+   requires both `L=P` and `S=14`, giving **14/6 = 2.33 hits per join queue per cycle**. Averaging
+   only 13 joiners gives **2.17**; getting 14 joiners but only 80% of participants launching gives
+   **1.87**. The extra participant also improves that individual rally's damage, but that is secondary:
+   the operational goal is to create enough join opportunities for all players' queues to keep rotating.
+   The cap does not pool or normalise participant damage. At an 85k cap, one 5/15/80 join is 4.25k
+   infantry / 12.75k cavalry / 68k archers. Six simultaneous joins at that preset therefore require
+   25.5k / 76.5k / 408k in the player's own available troop inventory; those totals are only a supply
+   check for the six queues.
 
 ## Verified-consistent items
 
@@ -271,34 +273,42 @@ For live Bear coordination, rally supply limits how often join queues can actual
 H = L·S / (P·Q)
 ```
 
-where `P` = participants, `L` = rally launchers per five-minute cycle, `S` = average joiners
+where `P` = active participants, `L` = rally launchers per five-minute cycle, `S` = average joiners
 that fit in each rally, and `Q` = join queues per player.
 
-If every participant launches once per five-minute cycle, `L=P`, so:
+Let `r = L/P` be the fraction of active participants who launch. Then:
 
 ```
-H = S / Q
+H = r·S / Q
 ```
 
 With six join queues per player and the game's 14 joiner slots per rally:
 
 ```
-H_max = 14 / 6 = 2.333… hits per join queue per five-minute cycle
+H = r·14/6 = 2.333…r
 ```
 
-This is the structural ceiling created by the event's supply geometry: each player adds **six join
-queues** to the alliance but only **one rally with fourteen joiner slots** per cycle. With `P` players,
-that is `6P` queue resources competing for `14P` join opportunities. Travel time, player reaction,
-empty slots and mistimed launches can only pull realised throughput below that ceiling.
+So the structural maximum requires **both** full launch participation and full rallies:
 
-That is why the target is **14 joiners whenever possible**, not merely "a fairly full rally". An
-average of 13 joiners supports only `13/6 = 2.17` hits per queue, roughly 7% below the maximum. The
-14th joiner also adds another independently calculated march to that particular rally, so filling it
-helps per-rally damage too; however, the operational reason for protecting the slot is alliance-wide
-queue reuse.
+- `r = 1.00`, `S = 14` → **2.33 hits per join queue per five-minute cycle**
+- `r = 1.00`, `S = 13` → **2.17 hits per queue**
+- `r = 0.80`, `S = 14` → **1.87 hits per queue**
 
-The live guide therefore prioritises: enough launches to keep queues scoring; preserving all 14
-joiner slots with a conservative ~85k join cap; using **5/15/80 as the default composition for each
-full join march**; equalising scarce troop types across a player's active queues when that preset
-cannot be fielded everywhere; and allowing designated outsized leads to full-send only their own
-lead march.
+This is why **everyone rallying matters as much as filling the rallies**. Each active player adds six
+join queues to the alliance's demand. If that player also launches, they create up to fourteen join
+opportunities that help absorb everybody's queues. If they only join, their six queues still compete
+for the available slots but they add no rally capacity of their own. A missing launcher therefore
+reduces the system-wide queue-reuse ceiling, not merely that player's personal lead damage.
+
+The launches still need to be staggered. `L=P` means everyone contributes one rally during the
+five-minute cycle, not that everyone presses launch at the same second. Opening groups and natural
+return times spread those launches so the 14-slot rallies can actually fill.
+
+The 14th joiner also adds another independently calculated march to that particular rally, so filling
+it helps per-rally damage too. That is useful, but secondary to the throughput effect above.
+
+The live guide therefore prioritises: **everyone available launching once per cycle, staggered so the
+rallies fill**; preserving all 14 joiner slots with a conservative ~85k join cap; using **5/15/80 as
+the default composition for each full join march**; equalising scarce troop types across a player's
+active queues when that preset cannot be fielded everywhere; and allowing designated outsized leads
+to full-send only their own lead march.
