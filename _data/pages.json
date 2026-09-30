@@ -120,21 +120,21 @@
     "canonicalPath": "/bear-hunt/",
     "themeColor": "#0B110C",
     "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230B110C'/%3E%3Ctext x='16' y='24' font-size='22' text-anchor='middle' fill='%23AEC878'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E\">",
-    "titleKey": "meta.title",
-    "titleText": "Bear Hunt, Demystified",
-    "metaDescKey": "meta.description",
-    "metaDesc": "Bear Hunt, demystified. How rally damage works in plain words: the lead's stats, your troops, the square root, and four rules.",
-    "ogTitleKey": "meta.ogTitle",
-    "ogTitle": "Bear Hunt, Demystified",
-    "ogDescKey": "meta.ogDescription",
-    "ogDesc": "How rally damage actually works — in plain words.",
+    "titleKey": "",
+    "titleText": "Bear Hunt — dey.ci",
+    "metaDescKey": "",
+    "metaDesc": "How Bear damage works, how to build join marches, and how to organise rallies so queues keep scoring.",
+    "ogTitleKey": "",
+    "ogTitle": "Bear Hunt — dey.ci",
+    "ogDescKey": "",
+    "ogDesc": "Bear damage, join marches, rally timing and hero choices explained from the mechanics we use in play.",
     "skipHref": "#model",
-    "skipKey": "skip",
-    "skipText": "Skip to the maths",
+    "skipKey": "",
+    "skipText": "Skip to the plan",
     "dust": "<i></i><i></i><i></i>",
     "brand": "BEAR HUNT",
-    "brandNoteKey": "brandNote",
-    "brandNote": "just the maths",
+    "brandNoteKey": "",
+    "brandNote": "guide",
     "swipePrev": {
       "url": "../events/",
       "page": "kvksg",
@@ -157,20 +157,20 @@
       "../js/bind.js",
       "../js/bear-hunt.js"
     ],
-    "footMainKey": "foot.main",
-    "footMain": "JUST THE MATHS",
+    "footMainKey": "",
+    "footMain": "BEAR HUNT",
     "footSubs": [
       {
-        "key": "foot.note",
-        "html": "Numbers here are for our server: marches ~100–150k, rallies 500k–1M.\n    Your server will differ — <b>the maths doesn't.</b>"
+        "key": "",
+        "html": "The cap and example march sizes on this page are for our alliance's current progression. Other alliances should set their own cap from their rally capacity."
       },
       {
-        "key": "foot.credit",
+        "key": "",
         "html": "Damage model from the <a href=\"https://frakinator.streamlit.app/\">Frakinator</a> by [685] Frak — a tested community model, not an official one · built for the [2129]MadNess alliance"
       },
       {
-        "key": "foot.credit2",
-        "html": "Hero tiers and extensive play testing with <a href=\"https://www.youtube.com/channel/UCUB-sjmFklRFmVuybS_fOSA\">StratGameSloth</a> and the <a href=\"https://discord.gg/CVubr6M7x\">Play Smarter Community</a>"
+        "key": "",
+        "html": "Hero recommendations and play testing with <a href=\"https://www.youtube.com/channel/UCUB-sjmFklRFmVuybS_fOSA\">StratGameSloth</a> and the <a href=\"https://discord.gg/CVubr6M7x\">Play Smarter Community</a>"
       }
     ],
     "headScripts": []
