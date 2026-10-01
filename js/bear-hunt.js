@@ -2,6 +2,29 @@
 (function () {
   'use strict';
 
+  function dynamicKey(source) {
+    var hash = 2166136261;
+    for (var i = 0; i < source.length; i++) hash = Math.imul(hash ^ source.charCodeAt(i), 16777619);
+    return 'bh.dynamic.' + (hash >>> 0).toString(36);
+  }
+
+  function t(source) {
+    return window.I18N && window.I18N.tr ? window.I18N.tr(dynamicKey(source), source) : source;
+  }
+
+  function i18nAttr(source) {
+    return 'data-i18n="' + dynamicKey(source) + '"';
+  }
+
+  function i18nText(source) {
+    var safe = source.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return '<span ' + i18nAttr(source) + '>' + safe + '</span>';
+  }
+
+  function refreshI18n(root) {
+    if (window.I18N && window.I18N.refresh) window.I18N.refresh(root);
+  }
+
   function setSectionOpen(section, open) {
     if (!section) return;
     var button = section.querySelector(':scope > h2 .section-toggle');
@@ -114,9 +137,12 @@
       homeOut.textContent = formatNumber(home);
 
       if (reserve > 0) {
-        note.innerHTML = 'Own rally: <b>' + formatNumber(own) + '</b> archers. Each join queue gets <b>' + formatNumber(eachJoin) + '</b>. Then add cavalry evenly, followed by infantry, so the join marches stay the same total size.';
+        note.innerHTML = t('Own rally: {own} archers. Each join queue gets {join}. Then add cavalry evenly, followed by infantry, so the join marches stay the same total size.')
+          .replace('{own}', '<b>' + formatNumber(own) + '</b>')
+          .replace('{join}', '<b>' + formatNumber(eachJoin) + '</b>');
       } else {
-        note.innerHTML = 'Each join queue gets <b>' + formatNumber(eachJoin) + '</b> archers. Then add cavalry evenly, followed by infantry, so the join marches stay the same total size.';
+        note.innerHTML = t('Each join queue gets {join} archers. Then add cavalry evenly, followed by infantry, so the join marches stay the same total size.')
+          .replace('{join}', '<b>' + formatNumber(eachJoin) + '</b>');
       }
     }
 
@@ -125,6 +151,7 @@
       input.addEventListener('change', render);
     });
     render();
+    document.addEventListener('i18n:change', render);
   }
 
   var HEROES = {
@@ -193,7 +220,7 @@
   }
 
   function typeLabel(type) {
-    return type === 'inf' ? 'Infantry' : type === 'cav' ? 'Cavalry' : 'Archer';
+    return t(type === 'inf' ? 'Infantry' : type === 'cav' ? 'Cavalry' : 'Archer');
   }
 
   function heroPortrait(key, compact) {
@@ -208,27 +235,28 @@
     mount.innerHTML =
       '<div class="hero-explorer" id="hero-explorer">' +
         '<div class="hero-age-row">' +
-          '<label for="server-generation"><b>Your server generation</b><small>Saved on this device for use by other tools.</small></label>' +
-          '<select id="server-generation"><option value="">Choose generation…</option>' +
-            [1,2,3,4,5,6,7].map(function (g) { return '<option value="' + g + '">Generation ' + g + '</option>'; }).join('') +
+          '<label for="server-generation"><b>' + i18nText('Your server generation') + '</b><small>' + i18nText('Saved on this device for use by other tools.') + '</small></label>' +
+          '<select id="server-generation"><option value="" ' + i18nAttr('Choose generation…') + '>Choose generation…</option>' +
+            [1,2,3,4,5,6,7].map(function (g) { return '<option value="' + g + '">' + i18nText('Generation ') + g + '</option>'; }).join('') +
           '</select>' +
         '</div>' +
         '<div id="hero-generation-content" hidden>' +
           '<div class="hero-explorer-block">' +
-            '<h3>Recommended leader lineup</h3>' +
-            '<p class="hero-explorer-help">Assuming similar development. Tap a slot to see the alternatives and why each is recommended.</p>' +
+            '<h3>' + i18nText('Recommended leader lineup') + '</h3>' +
+            '<p class="hero-explorer-help">' + i18nText('Assuming similar development. Tap a slot to see the alternatives and why each is recommended.') + '</p>' +
             '<div class="leader-lineup" id="leader-lineup"></div>' +
             '<div class="leader-alts" id="leader-alts" hidden></div>' +
           '</div>' +
           '<div class="hero-explorer-block joiner-explorer">' +
-            '<h3>Recommended first heroes for join marches</h3>' +
-            '<p class="hero-explorer-help">Only the first hero matters here. Tap a hero to see what their first skill adds. If none of the approved options is available, send the march without a hero.</p>' +
+            '<h3>' + i18nText('Recommended first heroes for join marches') + '</h3>' +
+            '<p class="hero-explorer-help">' + i18nText('Only the first hero matters here. Tap a hero to see what their first skill adds. If none of the approved options is available, send the march without a hero.') + '</p>' +
             '<div class="joiner-icons" id="joiner-icons"></div>' +
             '<div class="joiner-explain" id="joiner-explain" hidden></div>' +
-            '<details class="hero-backups"><summary>Other options and alliance rules</summary><p id="hero-backup-copy"></p></details>' +
+            '<details class="hero-backups"><summary>' + i18nText('Other options and alliance rules') + '</summary><p id="hero-backup-copy"></p></details>' +
           '</div>' +
         '</div>' +
       '</div>';
+    refreshI18n(mount);
 
     var select = document.getElementById('server-generation');
     var content = document.getElementById('hero-generation-content');
@@ -250,15 +278,16 @@
       var keys = LEADER_BY_GEN[generation][slot] || [];
       if (!keys.length) { alts.hidden = true; return; }
       alts.hidden = false;
-      alts.innerHTML = '<h4>' + typeLabel(slot) + ' options</h4>' +
+      alts.innerHTML = '<h4>' + typeLabel(slot) + ' ' + t('options') + '</h4>' +
         keys.map(function (key, index) {
           var hero = HEROES[key];
           return '<article class="leader-alt' + (index === 0 ? ' recommended' : '') + '">' +
             heroPortrait(key, true) +
-            '<div><p class="leader-alt-name"><b>' + hero.name + '</b>' + (index === 0 ? '<span>recommended</span>' : '') + '</p>' +
-            '<p>' + hero.why + '</p></div>' +
+            '<div><p class="leader-alt-name"><b>' + hero.name + '</b>' + (index === 0 ? '<span>' + i18nText('recommended') + '</span>' : '') + '</p>' +
+            '<p>' + i18nText(hero.why) + '</p></div>' +
           '</article>';
         }).join('');
+      refreshI18n(alts);
 
       Array.prototype.forEach.call(lineup.querySelectorAll('.leader-slot'), function (button) {
         button.classList.toggle('active', button.getAttribute('data-slot') === slot);
@@ -278,18 +307,18 @@
       lineup.innerHTML = slots.map(function (slot) {
         var key = LEADER_BY_GEN[generation][slot][0];
         var hero = HEROES[key];
-        return '<button class="leader-slot" type="button" data-slot="' + slot + '" aria-label="' + typeLabel(slot) + ': ' + hero.name + '. Show alternatives">' +
+        return '<button class="leader-slot" type="button" data-slot="' + slot + '" aria-label="' + typeLabel(slot) + ': ' + hero.name + '. ' + t('Show alternatives') + '">' +
           '<span class="leader-slot-type">' + typeLabel(slot) + '</span>' +
           heroPortrait(key, false) +
           '<strong>' + hero.name + '</strong>' +
-          '<span class="leader-slot-hint">alternatives</span>' +
+          '<span class="leader-slot-hint">' + t('alternatives') + '</span>' +
         '</button>';
       }).join('');
 
       var sKeys = JOINER_S_BY_GEN[generation] || [];
       joiners.innerHTML = sKeys.map(function (key) {
         var hero = HEROES[key];
-        return '<button class="joiner-icon" type="button" data-hero="' + key + '" aria-label="' + hero.name + ': show recommendation details">' +
+        return '<button class="joiner-icon" type="button" data-hero="' + key + '" aria-label="' + hero.name + ': ' + t('show recommendation details') + '">' +
           heroPortrait(key, true) + '<span>' + hero.name + '</span>' +
         '</button>';
       }).join('');
@@ -297,8 +326,9 @@
       joinerExplain.innerHTML = '';
 
       var backups = APPROVED_BACKUPS[generation] || [];
-      var base = backups.length ? backups.join(' · ') + '. ' : '';
-      backupCopy.textContent = base + 'Hilde is excluded from the default list because alliance policies vary. Use her only if your alliance allows her. If no approved hero is available, send no hero.';
+      var base = backups.length ? backups.map(i18nText).join(' · ') + '. ' : '';
+      backupCopy.innerHTML = base + i18nText('Hilde is excluded from the default list because alliance policies vary. Use her only if your alliance allows her. If no approved hero is available, send no hero.');
+      refreshI18n(backupCopy);
     }
 
     lineup.addEventListener('click', function (event) {
@@ -325,7 +355,8 @@
         item.classList.toggle('active', item === button);
       });
       joinerExplain.hidden = false;
-      joinerExplain.innerHTML = '<div class="joiner-explain-head">' + heroPortrait(key, true) + '<b>' + hero.name + '</b></div><p>' + hero.whyJoin + '</p>';
+      joinerExplain.innerHTML = '<div class="joiner-explain-head">' + heroPortrait(key, true) + '<b>' + hero.name + '</b></div><p>' + i18nText(hero.whyJoin) + '</p>';
+      refreshI18n(joinerExplain);
     });
 
     select.addEventListener('change', function () {
@@ -348,9 +379,22 @@
       select.value = String(stored);
       render(stored);
     }
+
+    document.addEventListener('i18n:change', function () {
+      var generation = generationValue();
+      var slot = activeSlot;
+      var showAlternates = !alts.hidden;
+      render(generation);
+      if (showAlternates && slot && generation) renderAlternates(slot, generation);
+    });
   }
 
-  wireSections();
-  wireAllocator();
-  wireHeroExplorer();
+  function init() {
+    wireSections();
+    wireAllocator();
+    wireHeroExplorer();
+  }
+
+  if (window.I18N && window.I18N.onReady) window.I18N.onReady(init);
+  else init();
 })();
