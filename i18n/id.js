@@ -734,7 +734,7 @@ window.__BH_I18N_DATA["id"] = {
   "bh.page.127": "Gen VI:",
   "bh.page.128": "Yang.",
   "bh.page.129": "Pilihan generasi berikutnya:",
-  "bh.page.130": "Petra (hindari Petra ganda dalam satu rally), Ava, Wee &amp; Woo.",
+  "bh.page.130": "Petra (hindari Petra ganda dalam satu rally), Ava, Wee & Woo.",
   "bh.page.131": "Pemimpin rally menggunakan seluruh kit hero dan statistiknya. Pemilih di bawah merekomendasikan susunan pemimpin secara terpisah dari hero pertama march peserta.",
   "bh.page.132": "Hadiah",
   "bh.page.133": "Kelompok hadiah ditentukan oleh total damage Bear yang kamu hasilkan sendiri. Setiap tingkat menambahkan satu Forgehammer.",
