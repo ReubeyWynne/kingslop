@@ -734,7 +734,7 @@ window.__BH_I18N_DATA["vi"] = {
   "bh.page.127": "Gen VI:",
   "bh.page.128": "Yang.",
   "bh.page.129": "Các lựa chọn về sau:",
-  "bh.page.130": "Petra (tránh trùng Petra trong cùng rally), Ava, Wee &amp; Woo.",
+  "bh.page.130": "Petra (tránh trùng Petra trong cùng rally), Ava, Wee & Woo.",
   "bh.page.131": "Đội trưởng rally dùng toàn bộ bộ kỹ năng và chỉ số anh hùng. Bộ chọn bên dưới đề xuất đội hình đội trưởng riêng với anh hùng đầu tiên dành cho đội tham gia.",
   "bh.page.132": "Phần thưởng",
   "bh.page.133": "Mốc phần thưởng dựa trên tổng sát thương Bear do chính bạn gây ra. Mỗi bậc tăng thêm một Forgehammer.",
