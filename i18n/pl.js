@@ -725,7 +725,7 @@ window.__BH_I18N_DATA["pl"] = {
   "bh.page.127": "Gen VI:",
   "bh.page.128": "Yang.",
   "bh.page.129": "Późniejsze opcje:",
-  "bh.page.130": "Petra (unikaj dwóch Petr w jednym rajdzie), Ava, Wee &amp; Woo.",
+  "bh.page.130": "Petra (unikaj dwóch Petr w jednym rajdzie), Ava, Wee & Woo.",
   "bh.page.131": "Liderzy rajdów używają pełnego zestawu bohaterów i statystyk. Poniższy selektor osobno dobiera składy liderów oraz pierwszych bohaterów do oddziałów dołączających.",
   "bh.page.132": "Nagrody",
   "bh.page.133": "Próg nagrody zależy od twoich łącznych obrażeń zadanych Niedźwiedziowi. Każdy kolejny próg dodaje jeden Forgehammer.",
