@@ -1,0 +1,211 @@
+name: PR preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+env:
+  PREVIEW_REPOSITORY: ReubeyWynne/kingslop-preview
+  PREVIEW_HOST: preview.dey.ci
+
+jobs:
+  build:
+    name: Build preview
+    if: github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out PR
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      # Keep the cross-repo deployment token out of this job. PR code is built
+      # here, then only the static artifact crosses into the deploy job.
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install Jekyll
+        run: gem install jekyll -v 4.3.4 --no-document
+
+      - name: Build site
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          jekyll build \
+            --trace \
+            --destination _site \
+            --url "https://${PREVIEW_HOST}/pr-${PR_NUMBER}"
+
+      - name: Mark preview as non-indexable
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          marker = '<meta name="robots" content="noindex,nofollow">'
+          for path in Path('_site').rglob('*.html'):
+              text = path.read_text(encoding='utf-8')
+              if marker not in text:
+                  text = text.replace('<head>', '<head>\n  ' + marker, 1)
+                  path.write_text(text, encoding='utf-8')
+          PY
+          touch _site/.nojekyll
+
+      - name: Upload built site
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-preview-${{ github.event.pull_request.number }}
+          path: _site
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
+
+  deploy:
+    name: Publish preview
+    needs: build
+    if: github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    concurrency:
+      group: kingslop-preview-publisher
+      cancel-in-progress: false
+
+    steps:
+      - name: Download built site
+        uses: actions/download-artifact@v4
+        with:
+          name: pr-preview-${{ github.event.pull_request.number }}
+          path: site
+
+      - name: Check out preview host
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.PREVIEW_REPOSITORY }}
+          ref: main
+          token: ${{ secrets.PREVIEW_DEPLOY_TOKEN }}
+          path: preview
+          fetch-depth: 0
+
+      - name: Replace this PR's preview
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          target="preview/pr-${PR_NUMBER}"
+          rm -rf "$target"
+          mkdir -p "$target"
+          cp -a site/. "$target/"
+
+          # These live at the preview host root, outside any individual PR.
+          touch preview/.nojekyll
+          printf '%s\n' "$PREVIEW_HOST" > preview/CNAME
+          if [ ! -f preview/index.html ]; then
+            cat > preview/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1">
+          <meta name="robots" content="noindex,nofollow">
+          <title>dey.ci PR previews</title>
+          <body><p>Pull-request previews are published under <code>/pr-N/</code>.</p></body>
+          </html>
+          HTML
+          fi
+
+      - name: Commit preview
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_SHA: ${{ github.event.pull_request.head.sha }}
+        working-directory: preview
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Preview PR #${PR_NUMBER} (${PR_SHA:0:7})"
+          git push origin main
+
+      - name: Add or refresh PR preview comment
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PREVIEW_URL: https://${{ env.PREVIEW_HOST }}/pr-${{ github.event.pull_request.number }}/
+        with:
+          script: |
+            const marker = '<!-- kingslop-pr-preview -->';
+            const body = `${marker}\nPreview: ${process.env.PREVIEW_URL}\n\nThis URL updates when the PR is pushed.`;
+            const { owner, repo } = context.repo;
+            const issue_number = Number(process.env.PR_NUMBER);
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100
+            });
+            const existing = comments.find(c => c.user?.type === 'Bot' && c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+  cleanup:
+    name: Remove preview
+    if: github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    concurrency:
+      group: kingslop-preview-publisher
+      cancel-in-progress: false
+
+    steps:
+      - name: Check out preview host
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.PREVIEW_REPOSITORY }}
+          ref: main
+          token: ${{ secrets.PREVIEW_DEPLOY_TOKEN }}
+          path: preview
+          fetch-depth: 0
+
+      - name: Remove this PR's preview
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        working-directory: preview
+        run: |
+          set -euo pipefail
+          rm -rf "pr-${PR_NUMBER}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Remove preview for PR #${PR_NUMBER}"
+          git push origin main
+
+      - name: Mark preview comment as removed
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        with:
+          script: |
+            const marker = '<!-- kingslop-pr-preview -->';
+            const { owner, repo } = context.repo;
+            const issue_number = Number(process.env.PR_NUMBER);
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100
+            });
+            const existing = comments.find(c => c.user?.type === 'Bot' && c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner, repo, comment_id: existing.id,
+                body: `${marker}\nPreview removed because this PR is closed.`
+              });
+            }
