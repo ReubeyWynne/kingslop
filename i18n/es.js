@@ -697,8 +697,8 @@ window.__BH_I18N_DATA["es"] = {
   "bh.page.99": "Pregunta quién estará disponible y si prefiere el Grupo 1 o el Grupo 2. Deja algo de margen para quienes no respondan y para quienes lleguen tarde.",
   "bh.page.100": "El Grupo 1 lanza de inmediato.",
   "bh.page.101": "Inicia suficientes reuniones para que la mayoría de las colas de apoyo iniciales tengan dónde unirse. Un pequeño excedente está bien si uno o dos líderes están dispuestos a cancelar.",
-  "bh.page.102": "El Grupo 2 lanza cuando queden aproximadamente 28:00–27:30.",
-  "bh.page.103": "Las marchas de apoyo del Grupo 1 deberían haber regresado a tiempo para unirse a ellas.",
+  "bh.page.102": "Escalona los lanzamientos del Grupo 2 cuando queden aproximadamente 29:00–28:30.",
+  "bh.page.103": "Estas reuniones deberían seguir reuniendo tropas cuando regresen las marchas de apoyo del Grupo 1. Deja tiempo suficiente para el impacto, el regreso a casa y la marcha hasta la siguiente reunión.",
   "bh.page.104": "Si el Grupo 1 no se llena, cancela una reunión flexible.",
   "bh.page.105": "Vuelve a lanzarla con el Grupo 2 en vez de dejar que salga medio vacía.",
   "bh.page.106": "Después, cada persona que lanza vuelve a hacerlo al regresar.",
@@ -787,7 +787,21 @@ window.__BH_I18N_DATA["es"] = {
   "bh.dynamic.1u58fjw": "Mostrar alternativas",
   "bh.dynamic.1nrzp1d": "alternativas",
   "bh.dynamic.1odx08d": "mostrar detalles de la recomendación",
-  "bh.dynamic.9au4tb": "Hilde se excluye de la lista predeterminada porque las reglas varían según la alianza. Úsala solo si tu alianza lo permite. Si no hay ningún héroe aprobado disponible, no envíes héroe."
+  "bh.dynamic.9au4tb": "Hilde se excluye de la lista predeterminada porque las reglas varían según la alianza. Úsala solo si tu alianza lo permite. Si no hay ningún héroe aprobado disponible, no envíes héroe.",
 
+
+  "bh.opening.title": "La apertura",
+  "bh.opening.clock": "tiempo restante",
+  "bh.opening.first": "El Grupo 1 lanza",
+  "bh.opening.second": "Escalona el Grupo 2",
+  "bh.opening.third": "Vuelve a unirte al regresar",
+  "bh.opening.joiners": "Marchas de apoyo",
+  "bh.opening.group1": "Grupo 1",
+  "bh.opening.group2": "Grupo 2",
+  "bh.opening.gathering": "Reuniendo tropas",
+  "bh.opening.after": "Tras los primeros impactos",
+  "bh.opening.rejoin": "Regresa y únete",
+  "bh.opening.onReturn": "Al regresar",
+  "bh.opening.note": "Horarios de ejemplo — ajusta el intervalo a los tiempos de marcha de tu alianza.",
 }
 ;

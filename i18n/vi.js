@@ -706,8 +706,8 @@ window.__BH_I18N_DATA["vi"] = {
   "bh.page.99": "Hỏi ai sẽ tham gia được và họ muốn vào Nhóm 1 hay Nhóm 2. Chừa chỗ cho người không trả lời và người đến muộn.",
   "bh.page.100": "Nhóm 1 mở rally ngay.",
   "bh.page.101": "Mở đủ rally để phần lớn hàng chờ tham gia ban đầu có chỗ vào. Dư một chút cũng được nếu một hoặc hai đội trưởng sẵn sàng hủy.",
-  "bh.page.102": "Nhóm 2 mở rally khi còn khoảng 28:00–27:30.",
-  "bh.page.103": "Các đội tham gia của Nhóm 1 sẽ về kịp để tham gia nhóm này.",
+  "bh.page.102": "Rải thời điểm mở rally của Nhóm 2 trong khoảng còn 29:00–28:30.",
+  "bh.page.103": "Các rally này nên vẫn đang tập kết khi đội tham gia của Nhóm 1 trở về. Chừa đủ thời gian cho lượt đánh, hành trình về thành và hành quân tới rally tiếp theo.",
   "bh.page.104": "Nếu Nhóm 1 không đầy, hãy hủy một rally linh hoạt.",
   "bh.page.105": "Mở lại rally đó cùng Nhóm 2 thay vì để nó đánh khi mới đầy một nửa.",
   "bh.page.106": "Sau đó, mọi người mở rally lại khi đội trở về.",
@@ -798,5 +798,19 @@ window.__BH_I18N_DATA["vi"] = {
   "bh.dynamic.1odx08d": "hiện chi tiết đề xuất",
   "bh.dynamic.9au4tb": "Hilde không có trong danh sách mặc định vì mỗi liên minh có quy định khác nhau. Chỉ dùng cô ấy nếu liên minh cho phép. Nếu không có anh hùng được chấp thuận, hãy gửi đội không có anh hùng.",
 
+
+  "bh.opening.title": "Mở đầu",
+  "bh.opening.clock": "thời gian còn lại",
+  "bh.opening.first": "Nhóm 1 mở rally",
+  "bh.opening.second": "Nhóm 2 mở lần lượt",
+  "bh.opening.third": "Về rồi tham gia tiếp",
+  "bh.opening.joiners": "Đội tham gia",
+  "bh.opening.group1": "Nhóm 1",
+  "bh.opening.group2": "Nhóm 2",
+  "bh.opening.gathering": "Đang tập kết",
+  "bh.opening.after": "Sau lượt đánh đầu",
+  "bh.opening.rejoin": "Về rồi tham gia",
+  "bh.opening.onReturn": "Khi trở về",
+  "bh.opening.note": "Mốc giờ ví dụ — điều chỉnh khoảng cách theo thời gian hành quân của liên minh.",
 }
 ;

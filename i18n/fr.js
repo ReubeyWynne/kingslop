@@ -696,8 +696,8 @@ window.__BH_I18N_DATA["fr"] = {
   "bh.page.99": "Demandez qui sera disponible et s’il préfère le Groupe 1 ou le Groupe 2. Gardez une marge pour les personnes qui ne répondent pas et les arrivées tardives.",
   "bh.page.100": "Le Groupe 1 lance immédiatement.",
   "bh.page.101": "Lancez assez de rallies pour que la plupart des files de renfort initiales puissent rejoindre un rally. Un léger surplus convient si un ou deux chefs sont prêts à annuler.",
-  "bh.page.102": "Le Groupe 2 lance lorsqu’il reste environ 28:00–27:30.",
-  "bh.page.103": "Les marches de renfort du Groupe 1 devraient être rentrées à temps pour les rejoindre.",
+  "bh.page.102": "Échelonnez les lancements du Groupe 2 lorsqu'il reste environ 29:00–28:30.",
+  "bh.page.103": "Ces ralliements devraient encore rassembler des troupes au retour des marches de renfort du Groupe 1. Prévoyez assez de temps pour le coup, le retour à la ville et la marche vers le ralliement suivant.",
   "bh.page.104": "Si le Groupe 1 ne se remplit pas, annulez un rally flexible.",
   "bh.page.105": "Relancez-le avec le Groupe 2 au lieu de le laisser partir à moitié vide.",
   "bh.page.106": "Ensuite, chaque lanceur relance à son retour.",
@@ -786,7 +786,21 @@ window.__BH_I18N_DATA["fr"] = {
   "bh.dynamic.1u58fjw": "Afficher les alternatives",
   "bh.dynamic.1nrzp1d": "alternatives",
   "bh.dynamic.1odx08d": "afficher les détails de la recommandation",
-  "bh.dynamic.9au4tb": "Hilde est exclue de la liste par défaut, car les règles varient selon les alliances. Utilisez-la uniquement si votre alliance l’autorise. Si aucun héros approuvé n’est disponible, n’envoyez pas de héros."
+  "bh.dynamic.9au4tb": "Hilde est exclue de la liste par défaut, car les règles varient selon les alliances. Utilisez-la uniquement si votre alliance l’autorise. Si aucun héros approuvé n’est disponible, n’envoyez pas de héros.",
 
+
+  "bh.opening.title": "L'ouverture",
+  "bh.opening.clock": "temps restant",
+  "bh.opening.first": "Le Groupe 1 lance",
+  "bh.opening.second": "Échelonnez le Groupe 2",
+  "bh.opening.third": "Rejoignez à nouveau au retour",
+  "bh.opening.joiners": "Marches de renfort",
+  "bh.opening.group1": "Groupe 1",
+  "bh.opening.group2": "Groupe 2",
+  "bh.opening.gathering": "Rassemblement",
+  "bh.opening.after": "Après les premiers coups",
+  "bh.opening.rejoin": "Rentrez, puis rejoignez",
+  "bh.opening.onReturn": "Au retour",
+  "bh.opening.note": "Horaires d'exemple — adaptez l'écart aux temps de marche de votre alliance.",
 }
 ;

@@ -125,10 +125,71 @@ self: bear
     <div class="section-body" id="timing-body">
       <p class="lede"><strong><span data-i18n="bh.page.96">Everyone available should launch once per five-minute cycle — just not all at once.</span></strong> <span data-i18n="bh.page.97">Open with two groups of rallies, then relaunch as soon as your rally heroes return.</span></p>
 
+      <figure class="hunt-opening" aria-labelledby="hunt-opening-title">
+        <figcaption>
+          <span id="hunt-opening-title" data-i18n="bh.opening.title">The opening</span>
+          <span class="opening-clock" data-i18n="bh.opening.clock">time remaining</span>
+        </figcaption>
+        <svg class="opening-symbols" aria-hidden="true" width="0" height="0">
+          <defs><symbol id="opening-march-symbol" viewBox="0 0 24 24"><path d="m4 3 6 3 10 14-3 1L6 7Zm16 0-6 3L4 20l3 1L18 7M3 15l6 6M15 21l6-6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol></defs>
+        </svg>
+        <ol class="opening-scenes">
+          <li>
+            <div class="opening-head">
+              <h3><span data-i18n="bh.opening.first">Group 1 launches</span></h3>
+              <bdi class="opening-time">30:00</bdi>
+            </div>
+            <div class="opening-scene">
+              <div class="opening-entity">
+                <b class="opening-name" data-i18n="bh.opening.joiners">Join marches</b>
+                <div class="opening-marches" aria-hidden="true"><svg><use href="#opening-march-symbol"/></svg><svg><use href="#opening-march-symbol"/></svg><svg><use href="#opening-march-symbol"/></svg></div>
+              </div>
+              <div class="opening-transfer" aria-hidden="true"><span class="opening-arrow">→</span></div>
+              <div class="opening-entity opening-rally opening-destination">
+                <b class="opening-name" data-i18n="bh.opening.group1">Group 1</b>
+                <span class="opening-state" data-i18n="bh.opening.gathering">Gathering</span>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="opening-head">
+              <h3><span data-i18n="bh.opening.second">Stagger Group 2</span></h3>
+              <bdi class="opening-time">29:00–28:30</bdi>
+            </div>
+            <p class="opening-group" data-i18n="bh.opening.group2">Group 2</p>
+            <div class="opening-launches">
+              <bdi>29:00</bdi><bdi>28:45</bdi><bdi>28:30</bdi>
+            </div>
+          </li>
+          <li>
+            <div class="opening-head">
+              <h3><span data-i18n="bh.opening.third">Join again on return</span></h3>
+              <span class="opening-time" data-i18n="bh.opening.onReturn">On return</span>
+            </div>
+            <div class="opening-scene">
+              <div class="opening-entity opening-rally">
+                <b class="opening-name" data-i18n="bh.opening.group1">Group 1</b>
+                <span class="opening-state" data-i18n="bh.opening.after">After the first hits</span>
+              </div>
+              <div class="opening-transfer">
+                <span class="opening-route" data-i18n="bh.opening.rejoin">Return, then join</span>
+                <span class="opening-arrow" aria-hidden="true">→</span>
+              </div>
+              <div class="opening-entity opening-rally opening-destination">
+                <b class="opening-name" data-i18n="bh.opening.group2">Group 2</b>
+                <div class="opening-marches" aria-hidden="true"><svg><use href="#opening-march-symbol"/></svg><svg><use href="#opening-march-symbol"/></svg><svg><use href="#opening-march-symbol"/></svg></div>
+                <span class="opening-state" data-i18n="bh.opening.gathering">Gathering</span>
+              </div>
+            </div>
+          </li>
+        </ol>
+        <p class="note" data-i18n="bh.opening.note">Example times — set the gap from your alliance's travel times.</p>
+      </figure>
+
       <ol class="hunt-steps">
         <li><strong><span data-i18n="bh.page.98">Poll before the event.</span></strong> <span data-i18n="bh.page.99">Ask who will be available and whether they prefer Group 1 or Group 2. Leave some room for people who do not reply and for late arrivals.</span></li>
         <li><strong><span data-i18n="bh.page.100">Group 1 launches immediately.</span></strong> <span data-i18n="bh.page.101">Start enough rallies to give most opening join queues somewhere to go. A small surplus is fine if one or two leads are willing to cancel.</span></li>
-        <li><strong><span data-i18n="bh.page.102">Group 2 launches with roughly 28:00–27:30 remaining.</span></strong> <span data-i18n="bh.page.103">Group 1 join marches should be home in time to join them.</span></li>
+        <li><strong><span data-i18n="bh.page.102">Spread Group 2 launches across roughly 29:00–28:30 remaining.</span></strong> <span data-i18n="bh.page.103">These rallies should still be gathering when Group 1 join marches return. Leave enough time for the hit, the return home and the march to the next rally.</span></li>
         <li><strong><span data-i18n="bh.page.104">If Group 1 does not fill, cancel a flex rally.</span></strong> <span data-i18n="bh.page.105">Relaunch it with Group 2 rather than letting it fire half-empty.</span></li>
         <li><strong><span data-i18n="bh.page.106">After that, every launcher relaunches on return.</span></strong> <span data-i18n="bh.page.107">Joiners take the next suitable rally that is close to firing. Travel time and normal player timing will naturally spread the later launches.</span></li>
       </ol>

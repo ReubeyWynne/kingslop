@@ -706,8 +706,8 @@ window.__BH_I18N_DATA["id"] = {
   "bh.page.99": "Tanyakan siapa yang bisa ikut dan memilih Kelompok 1 atau Kelompok 2. Sisakan ruang bagi yang tidak menjawab dan yang datang terlambat.",
   "bh.page.100": "Kelompok 1 meluncurkan rally segera.",
   "bh.page.101": "Mulai cukup banyak rally agar sebagian besar antrean peserta awal punya tujuan. Sedikit kelebihan tidak masalah jika satu atau dua pemimpin bersedia membatalkan rally.",
-  "bh.page.102": "Kelompok 2 meluncurkan saat tersisa sekitar 28:00–27:30.",
-  "bh.page.103": "March peserta Kelompok 1 seharusnya sudah kembali tepat waktu untuk bergabung.",
+  "bh.page.102": "Sebarkan peluncuran Kelompok 2 saat tersisa sekitar 29:00–28:30.",
+  "bh.page.103": "Rally ini seharusnya masih mengumpulkan pasukan saat march peserta Kelompok 1 kembali. Sisakan waktu yang cukup untuk serangan, perjalanan pulang, dan march ke rally berikutnya.",
   "bh.page.104": "Jika Kelompok 1 tidak penuh, batalkan rally cadangan.",
   "bh.page.105": "Luncurkan kembali bersama Kelompok 2 daripada membiarkannya menyerang dalam keadaan setengah kosong.",
   "bh.page.106": "Setelah itu, setiap peluncur membuat rally lagi saat kembali.",
@@ -798,5 +798,19 @@ window.__BH_I18N_DATA["id"] = {
   "bh.dynamic.1odx08d": "tampilkan detail rekomendasi",
   "bh.dynamic.9au4tb": "Hilde tidak disertakan dalam daftar default karena kebijakan tiap aliansi berbeda. Gunakan dia hanya jika aliansimu mengizinkan. Jika tidak ada hero yang disetujui, kirim tanpa hero.",
 
+
+  "bh.opening.title": "Pembukaan",
+  "bh.opening.clock": "waktu tersisa",
+  "bh.opening.first": "Kelompok 1 memulai",
+  "bh.opening.second": "Mulai Kelompok 2 bertahap",
+  "bh.opening.third": "Bergabung lagi setelah kembali",
+  "bh.opening.joiners": "March peserta",
+  "bh.opening.group1": "Kelompok 1",
+  "bh.opening.group2": "Kelompok 2",
+  "bh.opening.gathering": "Mengumpulkan pasukan",
+  "bh.opening.after": "Setelah serangan pertama",
+  "bh.opening.rejoin": "Kembali, lalu bergabung",
+  "bh.opening.onReturn": "Saat kembali",
+  "bh.opening.note": "Waktu contoh — sesuaikan jeda dengan waktu march aliansimu.",
 }
 ;

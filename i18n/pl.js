@@ -697,8 +697,8 @@ window.__BH_I18N_DATA["pl"] = {
   "bh.page.99": "Zapytajcie, kto będzie dostępny i czy woli grupę 1, czy 2. Zostawcie trochę miejsca dla osób, które nie odpowiedzą, oraz dla spóźnialskich.",
   "bh.page.100": "Grupa 1 rozpoczyna natychmiast.",
   "bh.page.101": "Uruchomcie tyle rajdów, by większość początkowych kolejek dołączających miała dokąd trafić. Niewielka nadwyżka jest w porządku, jeśli jeden lub dwóch liderów zgadza się anulować rajd.",
-  "bh.page.102": "Grupa 2 rozpoczyna, gdy pozostanie mniej więcej 28:00–27:30.",
-  "bh.page.103": "Oddziały dołączające grupy 1 powinny wrócić na czas, by do nich dołączyć.",
+  "bh.page.102": "Rozłóż starty grupy 2 na okres, gdy pozostanie mniej więcej 29:00–28:30.",
+  "bh.page.103": "Te rajdy powinny nadal zbierać wojska, gdy wrócą oddziały dołączające grupy 1. Zostaw dość czasu na trafienie, powrót do domu i marsz do następnego rajdu.",
   "bh.page.104": "Jeśli grupa 1 nie zapełni rajdu, anulujcie rajd rezerwowy.",
   "bh.page.105": "Uruchomcie go ponownie z grupą 2, zamiast pozwalać mu wystartować w połowie pustym.",
   "bh.page.106": "Później każdy uruchamiający ponownie rozpoczyna rajd po powrocie.",
@@ -786,6 +786,20 @@ window.__BH_I18N_DATA["pl"] = {
   "bh.dynamic.1u58fjw": "Pokaż alternatywy",
   "bh.dynamic.1nrzp1d": "alternatywy",
   "bh.dynamic.1odx08d": "pokaż szczegóły rekomendacji",
-  "bh.dynamic.9au4tb": "Hilde nie ma na domyślnej liście, ponieważ zasady sojuszy są różne. Używaj jej tylko wtedy, gdy twój sojusz na to pozwala. Jeśli żaden zatwierdzony bohater nie jest dostępny, nie wysyłaj bohatera."
+  "bh.dynamic.9au4tb": "Hilde nie ma na domyślnej liście, ponieważ zasady sojuszy są różne. Używaj jej tylko wtedy, gdy twój sojusz na to pozwala. Jeśli żaden zatwierdzony bohater nie jest dostępny, nie wysyłaj bohatera.",
+
+  "bh.opening.title": "Początek polowania",
+  "bh.opening.clock": "pozostały czas",
+  "bh.opening.first": "Grupa 1 rozpoczyna",
+  "bh.opening.second": "Rozłóż starty grupy 2",
+  "bh.opening.third": "Dołącz ponownie po powrocie",
+  "bh.opening.joiners": "Oddziały dołączające",
+  "bh.opening.group1": "Grupa 1",
+  "bh.opening.group2": "Grupa 2",
+  "bh.opening.gathering": "Zbieranie wojsk",
+  "bh.opening.after": "Po pierwszych trafieniach",
+  "bh.opening.rejoin": "Wróć, potem dołącz",
+  "bh.opening.onReturn": "Po powrocie",
+  "bh.opening.note": "Przykładowe czasy — dopasuj odstęp do czasów marszu swojego sojuszu.",
 }
 ;
