@@ -59,13 +59,29 @@ function displayCells(line) {
       assert.equal(await page.locator('#ks-cycle [aria-pressed="true"]').getAttribute('data-cycle-day'), '21');
       assert.equal(await page.locator('.reference-body:visible').count(), 0);
       assert.equal(await page.locator('#ks-copy-btn').isVisible(), true);
-      for (const d of [21, 22, 1]) {
+      for (const d of [21, 22, 20, 26, 1]) {
         if (d !== 21) await page.locator('[data-cycle-day="' + d + '"]').click();
         const metrics = await page.locator('#today').evaluate(el => ({ overflow: el.scrollWidth > el.clientWidth + 1, pageOverflow: document.documentElement.scrollWidth > innerWidth + 1, images: [...el.querySelectorAll('img')].every(img => img.complete && img.naturalWidth > 0), direction: document.documentElement.dir }));
         assert.equal(metrics.overflow, false, lang + ': today overflow ' + d);
         assert.equal(metrics.pageOverflow, false, lang + ': page overflow ' + d);
         assert.equal(metrics.images, true, lang + ': missing icons ' + d);
         assert.equal(metrics.direction, lang === 'ar' ? 'rtl' : 'ltr');
+        const copy = await page.locator('#ks-copy-btn').boundingBox();
+        const tasks = await page.locator('.today-value').boundingBox();
+        assert.ok(copy.y >= tasks.y + tasks.height, lang + ': copy interrupts tasks ' + d);
+        assert.equal(await page.locator('#ks-copy-btn').evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(0, 0, 0, 0)', lang + ': prominent copy background');
+        if (d >= 22 && d <= 26) {
+          assert.equal(await page.locator('#ks-card .tpts').count(), 0, lang + ': KvK point figures');
+          assert.equal(await page.locator('#ks-card').innerText().then(text => /200[,.\s]?000/.test(text)), false, lang + ': fixed chest target');
+        }
+        if (d === 20) {
+          const reminders = await page.locator('.today-actions').innerText();
+          assert.ok(reminders.includes(dictionaries[lang]['ks.today.intelTomorrow']), lang + ': missing advance intel reminder');
+          assert.ok(reminders.includes(dictionaries[lang]['ks.today.prepPlan']), lang + ': missing prep planning reminder');
+        }
+        const first = d <= 7 ? 1 : d <= 14 ? 8 : d <= 20 ? 15 : d >= 22 ? 22 : null;
+        assert.equal(await page.locator('.week-jumps [aria-pressed="true"]').count(), first ? 1 : 0);
+        if (first) assert.equal(await page.locator('.week-jumps [aria-pressed="true"]').getAttribute('data-jump'), String(first));
         report.push({ lang, width, day: d, ...metrics });
         for (const label of await page.locator('#today [data-i18n], .events-heading [data-i18n]').all()) {
           const key = await label.getAttribute('data-i18n');
@@ -97,6 +113,7 @@ function displayCells(line) {
       if (lang === 'en' && width === 1280) {
         for (let d = 1; d <= 28; d++) {
           await page.locator('[data-cycle-day="' + d + '"]').click();
+          if (d >= 22 && d <= 26) assert.equal(await page.locator('#ks-card .tpts').count(), 0, 'KvK day ' + d + ': point figures');
           const parts = page.locator('#ks-copy-parts button');
           const count = Math.max(1, await parts.count());
           for (let n = 0; n < count; n++) {
@@ -126,5 +143,5 @@ function displayCells(line) {
     await browser?.close();
     await new Promise(resolve => server.close(resolve));
   }
-  console.log('Passed 60 layout checks across 17 languages, all 28 copy days, navigation, UTC rollover, clipboard success/failure and RTL.');
+  console.log('Passed 100 layout checks across 17 languages, copy placement, KvK task display, day 20 reminders, all 28 copy days, navigation, UTC rollover, clipboard success/failure and RTL.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

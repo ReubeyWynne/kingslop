@@ -844,7 +844,7 @@ window.__BH_I18N_DATA["de"] = {
   "ks.today.budget": "Wähle dein Belohnungsziel vor dem Ausgeben. Bewahre für andere Ereignisse reserviertes Material auf, sofern du es nicht hier einsetzen willst.",
   "ks.today.selected": "Ausgewählter Tag",
   "ks.today.nextUp": "Nächster Tag",
-  "ks.today.weeks": "Zur Woche springen",
+  "ks.today.weeks": "Zu einem Event springen",
   "ks.today.preview": "Nachrichtenvorschau",
   "ks.today.copyFailed": "Markiere und kopiere die Nachricht unten.",
   "ks.today.priorities": "Unsere Vorbereitungsprioritäten",
@@ -872,5 +872,13 @@ window.__BH_I18N_DATA["de"] = {
   "ks.today.copyRun": "Für KingShot kopieren",
   "ks.today.holdIntel": "Spare Intel ab 08:00 UTC für die Vorbereitung morgen.",
   "ks.today.swordSunday": "Swordland: prüfe den Termin des einstündigen Kampfes deiner Allianz.",
+  "ks.today.prepGuide": "Prüfe die heutigen Aufgaben und Belohnungsstufen im Spiel.",
+  "ks.days.lede": "Jeder Vorbereitungstag hat eigene Aufgaben. Plane deine Materialien anhand der Listen unten und prüfe die Belohnungsstufen im Spiel.",
+  "ks.checklist.c9.body": "Kläre Kampfzeit, Angriffsreichweite und Rally-Aufgaben mit deiner Allianz. Prüfe die Teilnahmebedingungen für Duel of the Elites und das KvK-Matchmaking im Spiel.",
+  "ks.days.troopsNote": "Truppentraining und Beförderungen bringen heute Punkte, ebenso passende Ausrüstungsverbesserungen. Prüfe die verfügbaren Aufgaben und Truppenstufen in deinem Event.",
+  "ks.today.intelTomorrow": "Spare morgen ab 08:00 UTC Intel für die Vorbereitung an Tag 22.",
+  "ks.today.prepPlan": "Plane deine KvK-Ausgaben, bevor die Vorbereitung an Tag 22 beginnt.",
+  "ks.today.kvkWeek": "KvK-Vorbereitung und Kampf",
+  "ks.today.cycleRange": "Tage {from}–{to}",
 }
 ;

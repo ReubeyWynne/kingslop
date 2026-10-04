@@ -855,7 +855,7 @@ window.__BH_I18N_DATA["id"] = {
   "ks.today.budget": "Tentukan target hadiah sebelum memakai bahan. Simpan bahan untuk acara lain kecuali kamu memutuskan memakainya di sini.",
   "ks.today.selected": "Hari yang dipilih",
   "ks.today.nextUp": "Hari berikutnya",
-  "ks.today.weeks": "Lompat ke minggu",
+  "ks.today.weeks": "Lompat ke event",
   "ks.today.preview": "Pratinjau pesan",
   "ks.today.copyFailed": "Pilih dan salin pesan di bawah.",
   "ks.today.priorities": "Prioritas persiapan kami",
@@ -883,5 +883,13 @@ window.__BH_I18N_DATA["id"] = {
   "ks.today.copyRun": "Salin untuk KingShot",
   "ks.today.holdIntel": "Simpan misi intel mulai 08:00 UTC untuk persiapan besok.",
   "ks.today.swordSunday": "Swordland: periksa waktu pertempuran satu jam aliansimu.",
+  "ks.today.prepGuide": "Periksa tugas dan target hadiah hari ini di dalam game.",
+  "ks.days.lede": "Setiap hari persiapan memiliki tugas sendiri. Gunakan daftar di bawah untuk merencanakan bahan dan periksa target hadiah di dalam game.",
+  "ks.checklist.c9.body": "Pastikan waktu pertempuran, jangkauan serangan, dan tugas rally bersama aliansimu. Periksa syarat Duel of the Elites dan pencocokan KvK di dalam game.",
+  "ks.days.troopsNote": "Pelatihan dan promosi pasukan memberikan poin hari ini, bersama peningkatan perlengkapan yang memenuhi syarat. Periksa tugas dan tingkat pasukan yang tersedia dalam eventmu.",
+  "ks.today.intelTomorrow": "Besok, simpan misi intel mulai 08:00 UTC untuk persiapan hari ke-22.",
+  "ks.today.prepPlan": "Rencanakan penggunaan bahan KvK sebelum persiapan dimulai pada hari ke-22.",
+  "ks.today.kvkWeek": "Persiapan dan pertempuran KvK",
+  "ks.today.cycleRange": "Hari {from}–{to}",
 }
 ;

@@ -843,7 +843,7 @@ window.__BH_I18N_DATA["tr"] = {
   "ks.today.budget": "Harcamadan önce hedef ödülünü seç. Burada kullanmayı seçmedikçe başka etkinlikler için ayrılan malzemeleri sakla.",
   "ks.today.selected": "Seçilen gün",
   "ks.today.nextUp": "Sonraki gün",
-  "ks.today.weeks": "Haftaya git",
+  "ks.today.weeks": "Bir etkinliğe geç",
   "ks.today.preview": "Mesaj önizlemesi",
   "ks.today.copyFailed": "Aşağıdaki mesajı seç ve kopyala.",
   "ks.today.priorities": "Hazırlık önceliklerimiz",
@@ -871,5 +871,13 @@ window.__BH_I18N_DATA["tr"] = {
   "ks.today.copyRun": "KingShot için kopyala",
   "ks.today.holdIntel": "Yarının hazırlığı için 08:00 UTC’den itibaren istihbarat görevlerini biriktir.",
   "ks.today.swordSunday": "Swordland: ittifakının bir saatlik savaş zamanını kontrol et.",
+  "ks.today.prepGuide": "Bugünün görevlerini ve ödül eşiklerini oyunda kontrol et.",
+  "ks.days.lede": "Her hazırlık gününün kendi görevleri vardır. Aşağıdaki listelerle malzemelerini planla ve ödül eşiklerini oyunda kontrol et.",
+  "ks.checklist.c9.body": "Savaş saatini, saldırı menzilini ve ralli görevlerini ittifakınla doğrula. Duel of the Elites katılım koşullarını ve KvK eşleşmesini oyunda kontrol et.",
+  "ks.days.troopsNote": "Bugün birlik eğitimi ve terfisi ile uygun ekipman geliştirmeleri puan verir. Etkinliğindeki görevleri ve birlik seviyelerini kontrol et.",
+  "ks.today.intelTomorrow": "Yarın, 22. gün hazırlığı için 08:00 UTC’den itibaren istihbarat görevlerini biriktir.",
+  "ks.today.prepPlan": "22. gün hazırlık başlamadan önce KvK harcamalarını planla.",
+  "ks.today.kvkWeek": "KvK hazırlığı ve savaşı",
+  "ks.today.cycleRange": "{from}–{to}. günler",
 }
 ;

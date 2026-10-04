@@ -844,7 +844,7 @@ window.__BH_I18N_DATA["pl"] = {
   "ks.today.budget": "Wybierz docelową nagrodę przed wydatkami. Zachowaj materiały na inne wydarzenia, chyba że zdecydujesz użyć ich tutaj.",
   "ks.today.selected": "Wybrany dzień",
   "ks.today.nextUp": "Następny dzień",
-  "ks.today.weeks": "Przejdź do tygodnia",
+  "ks.today.weeks": "Przejdź do wydarzenia",
   "ks.today.preview": "Podgląd wiadomości",
   "ks.today.copyFailed": "Zaznacz i skopiuj wiadomość poniżej.",
   "ks.today.priorities": "Priorytety przygotowania",
@@ -872,5 +872,13 @@ window.__BH_I18N_DATA["pl"] = {
   "ks.today.copyRun": "Kopiuj do KingShot",
   "ks.today.holdIntel": "Zachowaj zadania wywiadowcze od 08:00 UTC na jutrzejsze przygotowania.",
   "ks.today.swordSunday": "Swordland: sprawdź godzinę jednogodzinnej bitwy swojego sojuszu.",
+  "ks.today.prepGuide": "Sprawdź dzisiejsze zadania i progi nagród w grze.",
+  "ks.days.lede": "Każdy dzień przygotowań ma własne zadania. Zaplanuj materiały według list poniżej i sprawdź progi nagród w grze.",
+  "ks.checklist.c9.body": "Potwierdź z sojuszem godzinę bitwy, zasięg ataku i przydziały do rajdów. Sprawdź w grze warunki udziału w Duel of the Elites i dobór przeciwnika KvK.",
+  "ks.days.troopsNote": "Szkolenie i awansowanie oddziałów daje dziś punkty, podobnie jak odpowiednie ulepszenia wyposażenia. Sprawdź dostępne zadania i poziomy oddziałów w swoim wydarzeniu.",
+  "ks.today.intelTomorrow": "Jutro zachowaj zadania wywiadowcze od 08:00 UTC na przygotowania w dniu 22.",
+  "ks.today.prepPlan": "Zaplanuj wydatki na KvK przed rozpoczęciem przygotowań w dniu 22.",
+  "ks.today.kvkWeek": "Przygotowania i bitwa KvK",
+  "ks.today.cycleRange": "Dni {from}–{to}",
 }
 ;

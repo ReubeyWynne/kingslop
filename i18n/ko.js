@@ -844,7 +844,7 @@ window.__BH_I18N_DATA["ko"] = {
   "ks.today.budget": "지출 전에 목표 보상을 정하세요. 여기서 쓰기로 결정하지 않았다면 다른 이벤트용 재료는 보관하세요.",
   "ks.today.selected": "선택한 날짜",
   "ks.today.nextUp": "다음 날",
-  "ks.today.weeks": "주간으로 이동",
+  "ks.today.weeks": "이벤트로 이동",
   "ks.today.preview": "메시지 미리보기",
   "ks.today.copyFailed": "아래 메시지를 선택하고 복사하세요.",
   "ks.today.priorities": "우리의 준비 우선순위",
@@ -872,5 +872,13 @@ window.__BH_I18N_DATA["ko"] = {
   "ks.today.copyRun": "KingShot용 복사",
   "ks.today.holdIntel": "내일 준비를 위해 08:00 UTC부터 정보 임무를 모아 두세요.",
   "ks.today.swordSunday": "Swordland: 연맹의 한 시간 전투 시간을 확인하세요.",
+  "ks.today.prepGuide": "게임에서 오늘의 과제와 보상 달성 조건을 확인하세요.",
+  "ks.days.lede": "준비일마다 과제가 다릅니다. 아래 목록으로 재료 사용을 계획하고 게임에서 보상 달성 조건을 확인하세요.",
+  "ks.checklist.c9.body": "연맹과 전투 시간, 공격 범위, 집결 역할을 확인하세요. 게임에서 Duel of the Elites 참가 자격과 KvK 매칭을 확인하세요.",
+  "ks.days.troopsNote": "오늘은 부대 훈련과 승급, 해당 장비 업그레이드가 점수를 줍니다. 이벤트에서 가능한 과제와 부대 등급을 확인하세요.",
+  "ks.today.intelTomorrow": "22일 차 준비를 위해 내일 08:00 UTC부터 정보 임무를 모아 두세요.",
+  "ks.today.prepPlan": "22일 차 준비가 시작되기 전에 KvK 재료 사용을 계획하세요.",
+  "ks.today.kvkWeek": "KvK 준비 및 전투",
+  "ks.today.cycleRange": "{from}–{to}일 차",
 }
 ;

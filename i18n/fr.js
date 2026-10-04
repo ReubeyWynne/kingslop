@@ -845,7 +845,7 @@ window.__BH_I18N_DATA["fr"] = {
   "ks.today.budget": "Choisis ta récompense avant de dépenser. Garde les matériaux réservés à un autre événement, sauf si tu décides de les utiliser ici.",
   "ks.today.selected": "Jour sélectionné",
   "ks.today.nextUp": "Jour suivant",
-  "ks.today.weeks": "Aller à une semaine",
+  "ks.today.weeks": "Aller à un événement",
   "ks.today.preview": "Aperçu du message",
   "ks.today.copyFailed": "Sélectionne et copie le message ci-dessous.",
   "ks.today.priorities": "Nos priorités de préparation",
@@ -873,5 +873,13 @@ window.__BH_I18N_DATA["fr"] = {
   "ks.today.copyRun": "Copier pour KingShot",
   "ks.today.holdIntel": "Gardez les missions de renseignement dès 08:00 UTC pour la préparation de demain.",
   "ks.today.swordSunday": "Swordland : vérifiez l’horaire du combat d’une heure de votre alliance.",
+  "ks.today.prepGuide": "Vérifiez les tâches et les paliers de récompense du jour dans le jeu.",
+  "ks.days.lede": "Chaque jour de préparation a ses propres tâches. Utilisez les listes ci-dessous pour prévoir vos matériaux et vérifiez les paliers de récompense dans le jeu.",
+  "ks.checklist.c9.body": "Confirmez avec votre alliance l’horaire de bataille, la portée d’attaque et les rôles dans les rallies. Vérifiez les conditions de Duel of the Elites et le matchmaking de KvK dans le jeu.",
+  "ks.days.troopsNote": "L’entraînement et la promotion des troupes rapportent des points aujourd’hui, ainsi que les améliorations d’équipement admissibles. Vérifiez les tâches et les niveaux de troupes disponibles dans votre événement.",
+  "ks.today.intelTomorrow": "Demain, gardez les missions de renseignement dès 08:00 UTC pour la préparation du jour 22.",
+  "ks.today.prepPlan": "Prévoyez vos dépenses de KvK avant le début de la préparation au jour 22.",
+  "ks.today.kvkWeek": "Préparation et bataille KvK",
+  "ks.today.cycleRange": "Jours {from}–{to}",
 }
 ;
