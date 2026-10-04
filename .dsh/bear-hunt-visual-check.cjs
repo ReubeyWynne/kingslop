@@ -79,7 +79,7 @@ const server = http.createServer((request, response) => {
       assert.equal(await page.locator('#archer-allocator').isVisible(), true);
       await page.locator('#own-priority').check();
       assert.equal(await page.locator('#own-ratio').isVisible(), true);
-      await figure.screenshot({ path: path.join(output, lang + '-' + width + '-allocator-inputs.png'), style: screenshotStyle });
+      await page.locator('#archer-allocator').screenshot({ path: path.join(output, lang + '-' + width + '-allocator-inputs.png'), style: screenshotStyle });
       const inputOverflow = await figure.evaluate(el => el.scrollWidth > el.clientWidth + 1);
       if (inputOverflow) failures.push({ lang, width, problem: 'allocator input overflow' });
       await page.locator('#archer-allocator button[type="submit"]').click();

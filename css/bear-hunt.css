@@ -729,12 +729,33 @@ html[dir="rtl"] .opening-arrow {
   cursor: pointer;
 }
 
-.allocator-inputs .calc-row label { min-width: 0; }
+.allocator-inputs {
+  margin-block: 1rem;
+  padding: 0;
+  gap: 0.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.allocator-inputs:not([hidden]), .allocator-ratio:not([hidden]) { display: grid; }
+.allocator-inputs > :not(.calc-row) { grid-column: 1 / -1; }
+.allocator-inputs .calc-title, .allocator-inputs .note { margin: 0; }
+.allocator-inputs .calc-row {
+  min-width: 0;
+  margin: 0;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 0.2rem;
+}
+
+.allocator-inputs .calc-row label { min-width: 0; overflow-wrap: anywhere; }
+.allocator-inputs input[type="number"] { width: 100%; min-width: 0; min-height: 2.75rem; font-size: var(--step--1); }
+.allocator-inputs > button { justify-self: start; }
 .allocator-priority { display: flex; align-items: start; gap: 0.6rem; }
 .allocator-priority input { flex: 0 0 auto; margin-top: 0.4rem; }
-.allocator-ratio { min-width: 0; margin-block: 1rem; padding: 0.75rem; border: 1px solid var(--signal-line); }
+.allocator-ratio { min-width: 0; margin: 0; padding: 0.6rem; border: 1px solid var(--signal-line); grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
 .allocator-ratio legend { padding-inline: 0.3rem; }
-.allocator-ratio .note { margin-bottom: 0.75rem; }
+.allocator-ratio .note { grid-column: 1 / -1; }
 .march-own { margin-block: 1rem; text-align: center; }
 .march-total { overflow-wrap: anywhere; font-size: var(--step--1); }
 
