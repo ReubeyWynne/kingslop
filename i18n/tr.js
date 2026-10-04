@@ -697,7 +697,7 @@ window.__BH_I18N_DATA["tr"] = {
   "bh.page.100": "Grup 1 hemen başlar.",
   "bh.page.101": "Açılışta çoğu katılım kuyruğunun gidecek yeri olması için yeterli sayıda ralli başlatın. Bir veya iki lider iptal etmeye hazırsa küçük bir fazlalık sorun olmaz.",
   "bh.page.102": "Grup 2'nin başlangıçlarını yaklaşık 29:00–28:30 kala gerçekleşecek şekilde yay.",
-  "bh.page.103": "Grup 1'in katılım kolları döndüğünde bu ralliler hâlâ birlik topluyor olmalı. Vuruş, eve dönüş ve sonraki ralliye yürüyüş için yeterli süre bırak.",
+  "bh.page.103": "Grup 1 katılım yürüyüşleri döndüğünde Grup 2 rallileri hâlâ katılım kabul ediyor olmalı. Vuruş, şehre dönüş ve sonraki ralliye yürüyüş için yeterli süre bırak.",
   "bh.page.104": "Grup 1 dolmazsa esnek bir ralliyi iptal edin.",
   "bh.page.105": "Yarı boş şekilde ateşlenmesine izin vermek yerine Grup 2 ile yeniden başlatın.",
   "bh.page.106": "Bundan sonra her başlatan, kolu döndüğünde yeniden başlatır.",
@@ -795,10 +795,18 @@ window.__BH_I18N_DATA["tr"] = {
   "bh.opening.joiners": "Katılım kolları",
   "bh.opening.group1": "Grup 1",
   "bh.opening.group2": "Grup 2",
-  "bh.opening.gathering": "Birlikler toplanıyor",
+  "bh.opening.rallying": "Ralli hazırlanıyor",
   "bh.opening.after": "İlk vuruşlardan sonra",
   "bh.opening.rejoin": "Dön, sonra katıl",
   "bh.opening.onReturn": "Dönüşte",
   "bh.opening.note": "Örnek süreler — aralığı ittifakının yürüyüş sürelerine göre ayarla.",
+
+  "bh.rally.title": "Ralli",
+  "bh.rally.lead": "Ralli lideri",
+  "bh.rally.stats": "Savaş istatistikleri + tam kahraman seti",
+  "bh.rally.scoring": "Her oyuncunun birlikleri ayrı hesaplanır.",
+  "bh.rally.skills": "En fazla 4 ortak ilk kahraman becerisi",
+  "bh.marches.title": "Eşit katılım yürüyüşleri",
+  "bh.marches.archers": "Okçular",
 }
 ;

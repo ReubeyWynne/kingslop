@@ -697,7 +697,7 @@ window.__BH_I18N_DATA["fr"] = {
   "bh.page.100": "Le Groupe 1 lance immédiatement.",
   "bh.page.101": "Lancez assez de rallies pour que la plupart des files de renfort initiales puissent rejoindre un rally. Un léger surplus convient si un ou deux chefs sont prêts à annuler.",
   "bh.page.102": "Échelonnez les lancements du Groupe 2 lorsqu'il reste environ 29:00–28:30.",
-  "bh.page.103": "Ces ralliements devraient encore rassembler des troupes au retour des marches de renfort du Groupe 1. Prévoyez assez de temps pour le coup, le retour à la ville et la marche vers le ralliement suivant.",
+  "bh.page.103": "Les rassemblements du Groupe 2 doivent encore accepter des participants lorsque les marches du Groupe 1 reviennent. Prévoyez assez de temps pour la frappe, le retour à la ville et la marche vers le rassemblement suivant.",
   "bh.page.104": "Si le Groupe 1 ne se remplit pas, annulez un rally flexible.",
   "bh.page.105": "Relancez-le avec le Groupe 2 au lieu de le laisser partir à moitié vide.",
   "bh.page.106": "Ensuite, chaque lanceur relance à son retour.",
@@ -797,10 +797,18 @@ window.__BH_I18N_DATA["fr"] = {
   "bh.opening.joiners": "Marches de renfort",
   "bh.opening.group1": "Groupe 1",
   "bh.opening.group2": "Groupe 2",
-  "bh.opening.gathering": "Rassemblement",
+  "bh.opening.rallying": "Rassemblement en cours",
   "bh.opening.after": "Après les premiers coups",
   "bh.opening.rejoin": "Rentrez, puis rejoignez",
   "bh.opening.onReturn": "Au retour",
   "bh.opening.note": "Horaires d'exemple — adaptez l'écart aux temps de marche de votre alliance.",
+
+  "bh.rally.title": "Le rassemblement",
+  "bh.rally.lead": "Chef du rassemblement",
+  "bh.rally.stats": "Stats de combat + kit complet des héros",
+  "bh.rally.scoring": "Les troupes de chaque joueur sont évaluées séparément.",
+  "bh.rally.skills": "Jusqu'à 4 compétences partagées du premier héros",
+  "bh.marches.title": "Marches de participation égales",
+  "bh.marches.archers": "Archers",
 }
 ;

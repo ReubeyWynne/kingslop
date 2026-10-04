@@ -898,7 +898,7 @@ window.__BH_I18N_DATA["en"] = {
   "bh.page.100": "Group 1 launches immediately.",
   "bh.page.101": "Start enough rallies to give most opening join queues somewhere to go. A small surplus is fine if one or two leads are willing to cancel.",
   "bh.page.102": "Spread Group 2 launches across roughly 29:00–28:30 remaining.",
-  "bh.page.103": "These rallies should still be gathering when Group 1 join marches return. Leave enough time for the hit, the return home and the march to the next rally.",
+  "bh.page.103": "Group 2 rallies should still be rallying when Group 1 join marches return. Leave enough time for the hit, the return home and the march to the next rally.",
   "bh.page.104": "If Group 1 does not fill, cancel a flex rally.",
   "bh.page.105": "Relaunch it with Group 2 rather than letting it fire half-empty.",
   "bh.page.106": "After that, every launcher relaunches on return.",
@@ -949,10 +949,18 @@ window.__BH_I18N_DATA["en"] = {
   "bh.opening.joiners": "Join marches",
   "bh.opening.group1": "Group 1",
   "bh.opening.group2": "Group 2",
-  "bh.opening.gathering": "Gathering",
+  "bh.opening.rallying": "Rallying",
   "bh.opening.after": "After the first hits",
   "bh.opening.rejoin": "Return, then join",
   "bh.opening.onReturn": "On return",
   "bh.opening.note": "Example times — set the gap from your alliance's travel times.",
+
+  "bh.rally.title": "The rally",
+  "bh.rally.lead": "Rally leader",
+  "bh.rally.stats": "Combat stats + full hero kit",
+  "bh.rally.scoring": "Each player's troops score separately.",
+  "bh.rally.skills": "Up to 4 shared first-hero skills",
+  "bh.marches.title": "Equal join marches",
+  "bh.marches.archers": "Archers",
 }
 ;

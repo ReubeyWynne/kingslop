@@ -698,7 +698,7 @@ window.__BH_I18N_DATA["de"] = {
   "bh.page.100": "Gruppe 1 startet sofort.",
   "bh.page.101": "Starte genügend Rallyes, damit die meisten Beitrittswarteschlangen zu Beginn eine Rallye finden. Ein kleiner Überschuss ist in Ordnung, wenn ein oder zwei Anführer bereit sind, abzubrechen.",
   "bh.page.102": "Staffelt die Starts von Gruppe 2, wenn noch ungefähr 29:00–28:30 verbleiben.",
-  "bh.page.103": "Diese Rallys sollten noch Truppen sammeln, wenn die Beitrittsmärsche von Gruppe 1 zurückkehren. Plant genug Zeit für den Treffer, die Rückkehr und den Marsch zur nächsten Rally ein.",
+  "bh.page.103": "Die Rallyes der Gruppe 2 sollten noch auf Beitritte warten, wenn die Beitrittsmärsche der Gruppe 1 zurückkehren. Plane genug Zeit für den Treffer, die Heimkehr und den Marsch zur nächsten Rallye ein.",
   "bh.page.104": "Wenn Gruppe 1 nicht voll wird, brich eine flexible Rallye ab.",
   "bh.page.105": "Starte sie mit Gruppe 2 erneut, statt sie halb leer loszuschicken.",
   "bh.page.106": "Danach startet jeder Starter nach der Rückkehr erneut.",
@@ -796,10 +796,18 @@ window.__BH_I18N_DATA["de"] = {
   "bh.opening.joiners": "Beitrittsmärsche",
   "bh.opening.group1": "Gruppe 1",
   "bh.opening.group2": "Gruppe 2",
-  "bh.opening.gathering": "Truppen sammeln sich",
+  "bh.opening.rallying": "Rallye läuft",
   "bh.opening.after": "Nach den ersten Treffern",
   "bh.opening.rejoin": "Zurückkehren, dann beitreten",
   "bh.opening.onReturn": "Bei der Rückkehr",
   "bh.opening.note": "Beispielzeiten — richtet den Abstand nach den Marschzeiten eurer Allianz.",
+
+  "bh.rally.title": "Die Rallye",
+  "bh.rally.lead": "Rallye-Anführer",
+  "bh.rally.stats": "Kampfwerte + vollständiges Helden-Set",
+  "bh.rally.scoring": "Die Truppen jedes Spielers werden getrennt gewertet.",
+  "bh.rally.skills": "Bis zu 4 gemeinsame Ersthelden-Fähigkeiten",
+  "bh.marches.title": "Gleich große Beitrittsmärsche",
+  "bh.marches.archers": "Bogenschützen",
 }
 ;

@@ -707,7 +707,7 @@ window.__BH_I18N_DATA["id"] = {
   "bh.page.100": "Kelompok 1 meluncurkan rally segera.",
   "bh.page.101": "Mulai cukup banyak rally agar sebagian besar antrean peserta awal punya tujuan. Sedikit kelebihan tidak masalah jika satu atau dua pemimpin bersedia membatalkan rally.",
   "bh.page.102": "Sebarkan peluncuran Kelompok 2 saat tersisa sekitar 29:00–28:30.",
-  "bh.page.103": "Rally ini seharusnya masih mengumpulkan pasukan saat march peserta Kelompok 1 kembali. Sisakan waktu yang cukup untuk serangan, perjalanan pulang, dan march ke rally berikutnya.",
+  "bh.page.103": "Rally Grup 2 seharusnya masih menerima peserta saat barisan bergabung Grup 1 kembali. Sisakan cukup waktu untuk serangan, pulang ke kota, dan perjalanan ke rally berikutnya.",
   "bh.page.104": "Jika Kelompok 1 tidak penuh, batalkan rally cadangan.",
   "bh.page.105": "Luncurkan kembali bersama Kelompok 2 daripada membiarkannya menyerang dalam keadaan setengah kosong.",
   "bh.page.106": "Setelah itu, setiap peluncur membuat rally lagi saat kembali.",
@@ -807,10 +807,18 @@ window.__BH_I18N_DATA["id"] = {
   "bh.opening.joiners": "March peserta",
   "bh.opening.group1": "Kelompok 1",
   "bh.opening.group2": "Kelompok 2",
-  "bh.opening.gathering": "Mengumpulkan pasukan",
+  "bh.opening.rallying": "Rally sedang dibentuk",
   "bh.opening.after": "Setelah serangan pertama",
   "bh.opening.rejoin": "Kembali, lalu bergabung",
   "bh.opening.onReturn": "Saat kembali",
   "bh.opening.note": "Waktu contoh — sesuaikan jeda dengan waktu march aliansimu.",
+
+  "bh.rally.title": "Rally",
+  "bh.rally.lead": "Pemimpin rally",
+  "bh.rally.stats": "Statistik tempur + seluruh kemampuan hero",
+  "bh.rally.scoring": "Pasukan setiap pemain dihitung secara terpisah.",
+  "bh.rally.skills": "Hingga 4 skill bersama dari hero pertama",
+  "bh.marches.title": "Barisan bergabung yang sama besar",
+  "bh.marches.archers": "Pemanah",
 }
 ;

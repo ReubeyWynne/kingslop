@@ -707,7 +707,7 @@ window.__BH_I18N_DATA["vi"] = {
   "bh.page.100": "Nhóm 1 mở rally ngay.",
   "bh.page.101": "Mở đủ rally để phần lớn hàng chờ tham gia ban đầu có chỗ vào. Dư một chút cũng được nếu một hoặc hai đội trưởng sẵn sàng hủy.",
   "bh.page.102": "Rải thời điểm mở rally của Nhóm 2 trong khoảng còn 29:00–28:30.",
-  "bh.page.103": "Các rally này nên vẫn đang tập kết khi đội tham gia của Nhóm 1 trở về. Chừa đủ thời gian cho lượt đánh, hành trình về thành và hành quân tới rally tiếp theo.",
+  "bh.page.103": "Khi các đội hành quân tham gia của Nhóm 1 trở về, các cuộc tập kết của Nhóm 2 vẫn nên còn nhận người tham gia. Chừa đủ thời gian cho đòn đánh, trở về thành và hành quân đến cuộc tập kết tiếp theo.",
   "bh.page.104": "Nếu Nhóm 1 không đầy, hãy hủy một rally linh hoạt.",
   "bh.page.105": "Mở lại rally đó cùng Nhóm 2 thay vì để nó đánh khi mới đầy một nửa.",
   "bh.page.106": "Sau đó, mọi người mở rally lại khi đội trở về.",
@@ -807,10 +807,18 @@ window.__BH_I18N_DATA["vi"] = {
   "bh.opening.joiners": "Đội tham gia",
   "bh.opening.group1": "Nhóm 1",
   "bh.opening.group2": "Nhóm 2",
-  "bh.opening.gathering": "Đang tập kết",
+  "bh.opening.rallying": "Đang tập kết",
   "bh.opening.after": "Sau lượt đánh đầu",
   "bh.opening.rejoin": "Về rồi tham gia",
   "bh.opening.onReturn": "Khi trở về",
   "bh.opening.note": "Mốc giờ ví dụ — điều chỉnh khoảng cách theo thời gian hành quân của liên minh.",
+
+  "bh.rally.title": "Tập kết",
+  "bh.rally.lead": "Đội trưởng tập kết",
+  "bh.rally.stats": "Chỉ số chiến đấu + toàn bộ bộ kỹ năng anh hùng",
+  "bh.rally.scoring": "Quân của mỗi người chơi được tính điểm riêng.",
+  "bh.rally.skills": "Tối đa 4 kỹ năng dùng chung của anh hùng đầu tiên",
+  "bh.marches.title": "Các đội hành quân tham gia bằng nhau",
+  "bh.marches.archers": "Cung thủ",
 }
 ;

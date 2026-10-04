@@ -698,7 +698,7 @@ window.__BH_I18N_DATA["pl"] = {
   "bh.page.100": "Grupa 1 rozpoczyna natychmiast.",
   "bh.page.101": "Uruchomcie tyle rajdów, by większość początkowych kolejek dołączających miała dokąd trafić. Niewielka nadwyżka jest w porządku, jeśli jeden lub dwóch liderów zgadza się anulować rajd.",
   "bh.page.102": "Rozłóż starty grupy 2 na okres, gdy pozostanie mniej więcej 29:00–28:30.",
-  "bh.page.103": "Te rajdy powinny nadal zbierać wojska, gdy wrócą oddziały dołączające grupy 1. Zostaw dość czasu na trafienie, powrót do domu i marsz do następnego rajdu.",
+  "bh.page.103": "Zbiórki Grupy 2 powinny nadal przyjmować uczestników, gdy wrócą marsze dołączające Grupy 1. Zostaw dość czasu na uderzenie, powrót do miasta i marsz do następnej zbiórki.",
   "bh.page.104": "Jeśli grupa 1 nie zapełni rajdu, anulujcie rajd rezerwowy.",
   "bh.page.105": "Uruchomcie go ponownie z grupą 2, zamiast pozwalać mu wystartować w połowie pustym.",
   "bh.page.106": "Później każdy uruchamiający ponownie rozpoczyna rajd po powrocie.",
@@ -796,10 +796,18 @@ window.__BH_I18N_DATA["pl"] = {
   "bh.opening.joiners": "Oddziały dołączające",
   "bh.opening.group1": "Grupa 1",
   "bh.opening.group2": "Grupa 2",
-  "bh.opening.gathering": "Zbieranie wojsk",
+  "bh.opening.rallying": "Zbiórka trwa",
   "bh.opening.after": "Po pierwszych trafieniach",
   "bh.opening.rejoin": "Wróć, potem dołącz",
   "bh.opening.onReturn": "Po powrocie",
   "bh.opening.note": "Przykładowe czasy — dopasuj odstęp do czasów marszu swojego sojuszu.",
+
+  "bh.rally.title": "Zbiórka",
+  "bh.rally.lead": "Dowódca zbiórki",
+  "bh.rally.stats": "Statystyki bojowe + pełny zestaw bohaterów",
+  "bh.rally.scoring": "Wojska każdego gracza są oceniane osobno.",
+  "bh.rally.skills": "Do 4 wspólnych umiejętności pierwszego bohatera",
+  "bh.marches.title": "Równe marsze dołączające",
+  "bh.marches.archers": "Łucznicy",
 }
 ;

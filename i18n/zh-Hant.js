@@ -698,7 +698,7 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "bh.page.100": "第1組立即發起。",
   "bh.page.101": "發起足夠數量的集結，讓大多數開場加入隊列都有去處。如果一兩位發起者願意取消，多開少量集結也沒問題。",
   "bh.page.102": "將第2組的發起時間分散在剩餘約29:00–28:30時。",
-  "bh.page.103": "第1組的加入行軍返回時，這些集結應仍在召集部隊。為攻擊、返回城鎮和前往下一場集結留出足夠時間。",
+  "bh.page.103": "第 1 組的加入行軍返回時，第 2 組的集結應該仍可加入。為攻擊、返回城鎮以及前往下一場集結的行軍留出足夠時間。",
   "bh.page.104": "如果第1組的集結沒有滿員，就取消一支彈性集結。",
   "bh.page.105": "讓它和第2組一起重新發起，而不要讓它半滿就出發。",
   "bh.page.106": "之後，每位發起者在行軍返回後立即再次發起。",
@@ -796,10 +796,18 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "bh.opening.joiners": "加入行軍",
   "bh.opening.group1": "第1組",
   "bh.opening.group2": "第2組",
-  "bh.opening.gathering": "正在集結",
+  "bh.opening.rallying": "集結中",
   "bh.opening.after": "首輪攻擊後",
   "bh.opening.rejoin": "先返回，再加入",
   "bh.opening.onReturn": "返回時",
   "bh.opening.note": "範例時間 — 依聯盟的行軍時間調整間隔。",
+
+  "bh.rally.title": "集結",
+  "bh.rally.lead": "集結發起者",
+  "bh.rally.stats": "戰鬥屬性 + 完整英雄技能組",
+  "bh.rally.scoring": "每位玩家的部隊分別計分。",
+  "bh.rally.skills": "最多 4 個共享的首位英雄技能",
+  "bh.marches.title": "等量加入行軍",
+  "bh.marches.archers": "弓兵",
 }
 ;

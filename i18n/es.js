@@ -698,7 +698,7 @@ window.__BH_I18N_DATA["es"] = {
   "bh.page.100": "El Grupo 1 lanza de inmediato.",
   "bh.page.101": "Inicia suficientes reuniones para que la mayoría de las colas de apoyo iniciales tengan dónde unirse. Un pequeño excedente está bien si uno o dos líderes están dispuestos a cancelar.",
   "bh.page.102": "Escalona los lanzamientos del Grupo 2 cuando queden aproximadamente 29:00–28:30.",
-  "bh.page.103": "Estas reuniones deberían seguir reuniendo tropas cuando regresen las marchas de apoyo del Grupo 1. Deja tiempo suficiente para el impacto, el regreso a casa y la marcha hasta la siguiente reunión.",
+  "bh.page.103": "Las reuniones del Grupo 2 deberían seguir abiertas para reunir tropas cuando regresen las marchas de apoyo del Grupo 1. Deja tiempo suficiente para el impacto, el regreso a casa y la marcha hasta la siguiente reunión.",
   "bh.page.104": "Si el Grupo 1 no se llena, cancela una reunión flexible.",
   "bh.page.105": "Vuelve a lanzarla con el Grupo 2 en vez de dejar que salga medio vacía.",
   "bh.page.106": "Después, cada persona que lanza vuelve a hacerlo al regresar.",
@@ -798,10 +798,18 @@ window.__BH_I18N_DATA["es"] = {
   "bh.opening.joiners": "Marchas de apoyo",
   "bh.opening.group1": "Grupo 1",
   "bh.opening.group2": "Grupo 2",
-  "bh.opening.gathering": "Reuniendo tropas",
+  "bh.opening.rallying": "Reunión en curso",
   "bh.opening.after": "Tras los primeros impactos",
   "bh.opening.rejoin": "Regresa y únete",
   "bh.opening.onReturn": "Al regresar",
   "bh.opening.note": "Horarios de ejemplo — ajusta el intervalo a los tiempos de marcha de tu alianza.",
+
+  "bh.rally.title": "La reunión",
+  "bh.rally.lead": "Líder de la reunión",
+  "bh.rally.stats": "Estadísticas de combate + todos los héroes",
+  "bh.rally.scoring": "Las tropas de cada jugador se puntúan por separado.",
+  "bh.rally.skills": "Hasta 4 habilidades compartidas del primer héroe",
+  "bh.marches.title": "Marchas de apoyo iguales",
+  "bh.marches.archers": "Arqueros",
 }
 ;

@@ -698,7 +698,7 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "bh.page.100": "O Grupo 1 lança imediatamente.",
   "bh.page.101": "Inicie rallies suficientes para que a maioria das filas de apoio iniciais tenha onde entrar. Um pequeno excedente é aceitável se um ou dois líderes estiverem dispostos a cancelar.",
   "bh.page.102": "Distribua os lançamentos do Grupo 2 quando faltarem aproximadamente 29:00–28:30.",
-  "bh.page.103": "Esses rallies devem continuar reunindo tropas quando as marchas de apoio do Grupo 1 voltarem. Reserve tempo para o ataque, a volta para casa e a marcha até o próximo rally.",
+  "bh.page.103": "Os ralis do Grupo 2 ainda devem estar em preparação quando as marchas de entrada do Grupo 1 retornarem. Deixe tempo suficiente para o ataque, o retorno para casa e a marcha até o próximo rali.",
   "bh.page.104": "Se o Grupo 1 não encher, cancele um rally flexível.",
   "bh.page.105": "Lance-o novamente com o Grupo 2 em vez de deixá-lo partir pela metade.",
   "bh.page.106": "Depois disso, cada pessoa que lança inicia outro rally ao retornar.",
@@ -798,10 +798,18 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "bh.opening.joiners": "Marchas de apoio",
   "bh.opening.group1": "Grupo 1",
   "bh.opening.group2": "Grupo 2",
-  "bh.opening.gathering": "Reunindo tropas",
+  "bh.opening.rallying": "Rali em preparação",
   "bh.opening.after": "Após os primeiros ataques",
   "bh.opening.rejoin": "Volte e entre",
   "bh.opening.onReturn": "Ao voltar",
   "bh.opening.note": "Horários de exemplo — ajuste o intervalo aos tempos de marcha da sua aliança.",
+
+  "bh.rally.title": "O rali",
+  "bh.rally.lead": "Líder do rali",
+  "bh.rally.stats": "Atributos de combate + conjunto completo dos heróis",
+  "bh.rally.scoring": "As tropas de cada jogador são pontuadas separadamente.",
+  "bh.rally.skills": "Até 4 habilidades compartilhadas do primeiro herói",
+  "bh.marches.title": "Marchas de entrada iguais",
+  "bh.marches.archers": "Arqueiros",
 }
 ;
