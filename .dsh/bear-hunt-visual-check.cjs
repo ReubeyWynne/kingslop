@@ -9,6 +9,7 @@ const root = path.resolve('_site');
 const output = path.resolve('.dsh/visual-preview');
 const langs = ['en', 'es', 'pt-BR', 'de', 'fr', 'it', 'ru', 'pl', 'tr', 'zh-Hans', 'zh-Hant', 'ko', 'ja', 'th', 'id', 'vi', 'ar'];
 const diagrams = ['rally-anatomy', 'march-composition', 'hunt-opening'];
+const screenshotStyle = '.topbar, .toc { visibility: hidden !important; }';
 const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml' };
 
 fs.mkdirSync(output, { recursive: true });
@@ -62,7 +63,7 @@ const server = http.createServer((request, response) => {
           }).map(node => node.className?.baseVal ?? node.className ?? node.tagName);
           return { outside, images: [...el.querySelectorAll('img')].every(img => img.complete && img.naturalWidth > 0), direction: document.documentElement.dir };
         });
-        await figure.screenshot({ path: path.join(output, lang + '-' + width + '-' + name + '.png') });
+        await figure.screenshot({ path: path.join(output, lang + '-' + width + '-' + name + '.png'), style: screenshotStyle });
         report.push({ lang, width, name, ...metrics });
         if (metrics.outside.length || !metrics.images || metrics.direction !== (lang === 'ar' ? 'rtl' : 'ltr')) failures.push({ lang, width, name, ...metrics });
         for (const label of await figure.locator('[data-i18n]').all()) {
@@ -78,7 +79,7 @@ const server = http.createServer((request, response) => {
       assert.equal(await page.locator('#archer-allocator').isVisible(), true);
       await page.locator('#own-priority').check();
       assert.equal(await page.locator('#own-ratio').isVisible(), true);
-      await figure.screenshot({ path: path.join(output, lang + '-' + width + '-allocator-inputs.png') });
+      await figure.screenshot({ path: path.join(output, lang + '-' + width + '-allocator-inputs.png'), style: screenshotStyle });
       const inputOverflow = await figure.evaluate(el => el.scrollWidth > el.clientWidth + 1);
       if (inputOverflow) failures.push({ lang, width, problem: 'allocator input overflow' });
       await page.locator('#archer-allocator button[type="submit"]').click();
@@ -89,7 +90,7 @@ const server = http.createServer((request, response) => {
       assert.equal(await page.locator('#own-arc').textContent(), formatted.archers);
       assert.equal(await page.locator('#march-queues > div').count(), 6);
       assert.equal(await button.innerText(), dictionaries[lang]['bh.alloc.edit']);
-      await figure.screenshot({ path: path.join(output, lang + '-' + width + '-allocator-priority.png') });
+      await figure.screenshot({ path: path.join(output, lang + '-' + width + '-allocator-priority.png'), style: screenshotStyle });
       if (await figure.evaluate(el => el.scrollWidth > el.clientWidth + 1)) failures.push({ lang, width, problem: 'allocator result overflow' });
       await button.click();
       await page.locator('#join-queues').fill('3');
