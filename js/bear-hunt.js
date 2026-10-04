@@ -92,64 +92,123 @@
 
   function wireAllocator() {
     var root = document.getElementById('archer-allocator');
-    if (!root) return;
+    var button = document.getElementById('allocator-toggle');
+    if (!root || !button || !window.BH_BEAR_ALLOCATOR) return;
+    var priority = document.getElementById('own-priority');
+    var ratio = document.getElementById('own-ratio');
+    var ratios = Array.prototype.slice.call(ratio.querySelectorAll('input'));
+    var personalized = false;
+    var result;
 
-    var inputs = Array.prototype.slice.call(root.querySelectorAll('input'));
-    var ownOut = document.getElementById('alloc-own');
-    var joinOut = document.getElementById('alloc-join');
-    var homeOut = document.getElementById('alloc-home');
-    var note = document.getElementById('alloc-note');
-
-    function render() {
-      var total = Math.max(0, numberValue('archer-total', 0));
-      var queues = Math.min(6, Math.max(1, Math.round(numberValue('join-queues', 6))));
-      var joinCap = Math.max(0, numberValue('join-cap', 85000));
-      var ownCap = Math.max(0, numberValue('own-cap', 130000));
-      var reserve = Math.max(0, numberValue('own-reserve', 0));
-      var joinArcherCap = joinCap * 0.80;
-
-      var own = 0;
-      var eachJoin = 0;
-
-      if (reserve > 0) {
-        own = Math.min(total, ownCap, reserve);
-        eachJoin = Math.min(joinArcherCap, Math.max(0, total - own) / queues);
-      } else {
-        var equal = total / (queues + 1);
-
-        if (equal <= ownCap && equal <= joinArcherCap) {
-          own = equal;
-          eachJoin = equal;
-        } else if (ownCap < equal) {
-          own = ownCap;
-          eachJoin = Math.min(joinArcherCap, Math.max(0, total - own) / queues);
-        } else {
-          eachJoin = joinArcherCap;
-          own = Math.min(ownCap, Math.max(0, total - eachJoin * queues));
-        }
-      }
-
-      var used = own + eachJoin * queues;
-      var home = Math.max(0, total - used);
-
-      ownOut.textContent = formatNumber(own);
-      joinOut.textContent = formatNumber(eachJoin);
-      homeOut.textContent = formatNumber(home);
-
-      if (reserve > 0) {
-        note.innerHTML = t('Own rally: {own} archers. Each join queue gets {join}. Then add cavalry evenly, followed by infantry, so the join marches stay the same total size.')
-          .replace('{own}', '<b>' + formatNumber(own) + '</b>')
-          .replace('{join}', '<b>' + formatNumber(eachJoin) + '</b>');
-      } else {
-        note.innerHTML = t('Each join queue gets {join} archers. Then add cavalry evenly, followed by infantry, so the join marches stay the same total size.')
-          .replace('{join}', '<b>' + formatNumber(eachJoin) + '</b>');
-      }
+    function label(key, fallback) {
+      return window.I18N && window.I18N.tr ? window.I18N.tr(key, fallback) : fallback;
     }
 
-    inputs.forEach(function (input) {
-      input.addEventListener('input', render);
-      input.addEventListener('change', render);
+    function format(n) {
+      return window.BH && window.BH.fmt ? window.BH.fmt(n) : formatNumber(n);
+    }
+
+    function open(show) {
+      root.hidden = !show;
+      button.setAttribute('aria-expanded', show ? 'true' : 'false');
+      if (show) document.getElementById('infantry-total').focus();
+    }
+
+    function showRatio() {
+      ratio.hidden = !priority.checked;
+      ratios.forEach(function (input) { input.disabled = !priority.checked; input.setCustomValidity(''); });
+    }
+
+    function read() {
+      return {
+        infantry: numberValue('infantry-total', 0),
+        cavalry: numberValue('cavalry-total', 0),
+        archers: numberValue('archer-total', 0),
+        queues: numberValue('join-queues', 6),
+        joinCap: numberValue('join-cap', 85000),
+        ownCap: numberValue('own-cap', 130000),
+        priority: priority.checked,
+        ratio: { infantry: numberValue('own-infantry', 5), cavalry: numberValue('own-cavalry', 15), archers: numberValue('own-archers', 80) }
+      };
+    }
+
+    function stack(node, march, maximum) {
+      var bar = node.querySelector('.march-stack');
+      bar.style.height = (100 * march.total / maximum) + '%';
+      ['archers', 'cavalry', 'infantry'].forEach(function (type, index) {
+        bar.children[index].style.height = (march.total ? 100 * march[type] / march.total : 0) + '%';
+      });
+      node.querySelector('.march-total').textContent = format(march.total);
+    }
+
+    function render() {
+      var maximum = Math.max(result.own.total, result.join.total, 1);
+      stack(document.getElementById('march-own'), result.own, maximum);
+      var queues = document.getElementById('march-queues');
+      queues.innerHTML = '';
+      for (var i = 0; i < result.queues; i++) {
+        var node = document.createElement('div');
+        var number = document.createElement('b');
+        number.textContent = format(i + 1);
+        node.appendChild(number);
+        var bar = document.createElement('div');
+        bar.className = 'march-bar';
+        var strips = document.createElement('div');
+        strips.className = 'march-stack';
+        for (var j = 0; j < 3; j++) strips.appendChild(document.createElement('span'));
+        bar.appendChild(strips);
+        node.appendChild(bar);
+        var size = document.createElement('b');
+        size.className = 'march-total';
+        node.appendChild(size);
+        stack(node, result.join, maximum);
+        queues.appendChild(node);
+      }
+      var suffix = { infantry: 'inf', cavalry: 'cav', archers: 'arc' };
+      Object.keys(suffix).forEach(function (type) {
+        document.getElementById('own-' + suffix[type]).textContent = format(result.own[type]);
+        document.getElementById('join-' + suffix[type]).textContent = format(result.join[type]);
+      });
+      document.getElementById('alloc-own').textContent = format(result.own.total);
+      document.getElementById('alloc-join').textContent = format(result.join.total);
+      document.getElementById('home-inf').textContent = format(result.home.infantry);
+      document.getElementById('home-cav').textContent = format(result.home.cavalry);
+      document.getElementById('alloc-home').textContent = format(result.home.archers);
+      document.getElementById('allocator-example').hidden = personalized;
+      var text = button.querySelector('[data-i18n]');
+      var key = personalized ? 'bh.alloc.edit' : 'bh.alloc.open';
+      text.setAttribute('data-i18n', key);
+      text.textContent = label(key, personalized ? 'Edit troops' : 'Use my troops');
+      var note = document.getElementById('alloc-note');
+      var noteKey = result.priority ? 'bh.alloc.priorityNote' : 'bh.alloc.equalNote';
+      note.removeAttribute('data-i18n');
+      note.textContent = '';
+      var explanation = document.createElement('span');
+      explanation.setAttribute('data-i18n', noteKey);
+      explanation.textContent = label(noteKey, result.priority ? 'Your own rally is filled first. The remaining troops form equal, capped join marches.' : 'Share troops across your own rally and equal join marches.');
+      note.appendChild(explanation);
+      note.appendChild(document.createTextNode(' ' + label('bh.alloc.result', 'Own rally: {own}. Join queues: {n} × {join}.').replace('{own}', format(result.own.total)).replace('{n}', format(result.queues)).replace('{join}', format(result.join.total))));
+    }
+
+    button.hidden = false;
+    button.addEventListener('click', function () { open(root.hidden); });
+    priority.addEventListener('change', showRatio);
+    ratios.forEach(function (input) { input.addEventListener('input', function () { ratios.forEach(function (field) { field.setCustomValidity(''); }); }); });
+    root.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var options = read();
+      if (options.priority && Math.abs(options.ratio.infantry + options.ratio.cavalry + options.ratio.archers - 100) > 0.000001) {
+        ratios[2].setCustomValidity(label('bh.alloc.ratioError', 'The three percentages must add up to 100.'));
+      }
+      if (!root.reportValidity()) return;
+      result = window.BH_BEAR_ALLOCATOR.allocate(options);
+      personalized = true;
+      render();
+      open(false);
+      button.focus();
     });
+    showRatio();
+    result = window.BH_BEAR_ALLOCATOR.allocate(read());
     render();
     document.addEventListener('i18n:change', render);
   }

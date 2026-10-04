@@ -155,6 +155,7 @@
       "../js/i18n.js",
       "../js/common.js",
       "../js/bind.js",
+      "../js/bear-allocator.js",
       "../js/bear-hunt.js"
     ],
     "footMainKey": "",

@@ -1,0 +1,50 @@
+name: Bear Hunt preview
+
+on:
+  pull_request:
+    paths:
+      - 'bear-hunt/**'
+      - 'css/**'
+      - 'js/**'
+      - 'i18n/**'
+      - 'img/**'
+      - '_includes/**'
+      - '_layouts/**'
+      - '_data/**'
+      - '_config.yml'
+      - '.dsh/bear-hunt-visual-check.cjs'
+      - '.dsh/bear-allocator-check.cjs'
+      - '.github/workflows/bear-hunt-preview.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/jekyll-build-pages@44a6e6beabd48582f863aeeb6cb2151cc1716697
+      - name: Check troop allocation
+        run: node .dsh/bear-allocator-check.cjs
+      - name: Install preview browser
+        run: |
+          npm install --prefix "$RUNNER_TEMP/bear-visuals" --no-audit --no-fund playwright@1.63.0
+          node "$RUNNER_TEMP/bear-visuals/node_modules/playwright/cli.js" install --with-deps chromium
+      - name: Check diagrams and capture previews
+        env:
+          NODE_PATH: ${{ runner.temp }}/bear-visuals/node_modules
+        run: node .dsh/bear-hunt-visual-check.cjs
+      - name: Upload built site and screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bear-hunt-preview
+          include-hidden-files: true
+          retention-days: 14
+          path: |
+            _site/
+            .dsh/visual-preview/
