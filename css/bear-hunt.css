@@ -423,13 +423,24 @@ html[data-page="bearhunt"] .hero-backups {
   font-size: var(--step--1);
 }
 
-.march-stack {
-  display: grid;
-  grid-template-rows: 80fr 15fr 5fr;
+.march-bar {
+  display: flex;
+  align-items: end;
   height: 6rem;
   max-width: 6rem;
   margin: 0.4rem auto;
 }
+
+.march-stack {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.march-stack span:nth-child(1) { height: 80%; }
+.march-stack span:nth-child(2) { height: 15%; }
+.march-stack span:nth-child(3) { height: 5%; }
 
 .march-stack span:nth-child(1),
 .march-archers {
@@ -696,3 +707,47 @@ html[dir="rtl"] .opening-arrow {
     height: 3.65rem;
   }
 }
+
+.allocator-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.allocator-button {
+  min-height: 2.75rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--amber-dim);
+  background: var(--signal-tint);
+  color: var(--amber);
+  font: inherit;
+  font-size: var(--step--1);
+  letter-spacing: normal;
+  text-transform: none;
+  cursor: pointer;
+}
+
+.allocator-inputs .calc-row label { min-width: 0; }
+.allocator-priority { display: flex; align-items: start; gap: 0.6rem; }
+.allocator-priority input { flex: 0 0 auto; margin-top: 0.4rem; }
+.allocator-ratio { min-width: 0; margin-block: 1rem; padding: 0.75rem; border: 1px solid var(--signal-line); }
+.allocator-ratio legend { padding-inline: 0.3rem; }
+.allocator-ratio .note { margin-bottom: 0.75rem; }
+.march-own { margin-block: 1rem; text-align: center; }
+.march-total { overflow-wrap: anywhere; font-size: var(--step--1); }
+
+.march-breakdown {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: var(--step--1);
+  overflow-wrap: anywhere;
+}
+
+.march-breakdown caption { text-align: start; color: var(--amber); margin-bottom: 0.4rem; }
+.march-breakdown th, .march-breakdown td { padding: 0.45rem 0.25rem; border-bottom: 1px solid var(--signal-line); text-align: end; }
+.march-breakdown th:first-child { text-align: start; }
+.allocator-home { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; font-size: var(--step--1); overflow-wrap: anywhere; }
+.allocator-home dd { color: var(--amber); font-weight: 700; }

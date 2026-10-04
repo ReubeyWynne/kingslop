@@ -71,6 +71,57 @@ const server = http.createServer((request, response) => {
           if (!expected || await label.textContent() !== expected) failures.push({ lang, width, name, key, problem: 'translation mismatch' });
         }
       }
+      const figure = page.locator('.march-composition');
+      const button = page.locator('#allocator-toggle');
+      assert.equal(await page.locator('#march-queues > div').count(), 6);
+      await button.click();
+      assert.equal(await page.locator('#archer-allocator').isVisible(), true);
+      await page.locator('#own-priority').check();
+      assert.equal(await page.locator('#own-ratio').isVisible(), true);
+      await figure.screenshot({ path: path.join(output, lang + '-' + width + '-allocator-inputs.png') });
+      const inputOverflow = await figure.evaluate(el => el.scrollWidth > el.clientWidth + 1);
+      if (inputOverflow) failures.push({ lang, width, problem: 'allocator input overflow' });
+      await page.locator('#archer-allocator button[type="submit"]').click();
+      assert.equal(await page.locator('#archer-allocator').isVisible(), false);
+      const formatted = await page.evaluate(() => ({ own: window.BH.fmt(130000), join: window.BH.fmt(77500), archers: window.BH.fmt(104000) }));
+      assert.equal(await page.locator('#alloc-own').textContent(), formatted.own);
+      assert.equal(await page.locator('#alloc-join').textContent(), formatted.join);
+      assert.equal(await page.locator('#own-arc').textContent(), formatted.archers);
+      assert.equal(await page.locator('#march-queues > div').count(), 6);
+      assert.equal(await button.innerText(), dictionaries[lang]['bh.alloc.edit']);
+      await figure.screenshot({ path: path.join(output, lang + '-' + width + '-allocator-priority.png') });
+      if (await figure.evaluate(el => el.scrollWidth > el.clientWidth + 1)) failures.push({ lang, width, problem: 'allocator result overflow' });
+      await button.click();
+      await page.locator('#join-queues').fill('3');
+      await page.locator('#own-infantry').fill('20');
+      await page.locator('#own-cavalry').fill('30');
+      await page.locator('#own-archers').fill('40');
+      await page.locator('#archer-allocator button[type="submit"]').click();
+      assert.equal(await page.locator('#archer-allocator').isVisible(), true);
+      assert.equal(await page.locator('#own-archers').evaluate(el => el.validity.customError), true);
+      await page.locator('#own-archers').fill('50');
+      await page.locator('#archer-allocator button[type="submit"]').click();
+      assert.equal(await page.locator('#archer-allocator').isVisible(), false);
+      assert.equal(await page.locator('#march-queues > div').count(), 3);
+      if (lang === 'en' || lang === 'ar') {
+        const other = lang === 'en' ? 'ar' : 'en';
+        await page.evaluate(code => window.I18N.switchTo(code), other);
+        await page.waitForFunction(([code, text]) => window.I18N.lang === code && document.getElementById('allocator-toggle').textContent.trim() === text, [other, dictionaries[other]['bh.alloc.edit']]);
+        assert.equal(await page.locator('#join-queues').inputValue(), '3');
+        assert.equal(await page.locator('#own-infantry').inputValue(), '20');
+        assert.equal(await page.locator('#alloc-own').textContent(), await page.evaluate(() => window.BH.fmt(130000)));
+        await page.evaluate(code => window.I18N.switchTo(code), lang);
+        await page.waitForFunction(([code, text]) => window.I18N.lang === code && document.getElementById('allocator-toggle').textContent.trim() === text, [lang, dictionaries[lang]['bh.alloc.edit']]);
+      }
+      await button.click();
+      await page.locator('#own-priority').uncheck();
+      assert.equal(await page.locator('#own-ratio').isVisible(), false);
+      for (const id of ['infantry-total', 'cavalry-total', 'archer-total']) await page.locator('#' + id).fill('0');
+      await page.locator('#join-queues').fill('0');
+      await page.locator('#archer-allocator button[type="submit"]').click();
+      assert.equal(await page.locator('#archer-allocator').isVisible(), false);
+      assert.equal(await page.locator('#march-queues > div').count(), 0);
+      assert.equal(await page.locator('#alloc-own').textContent(), await page.evaluate(() => window.BH.fmt(0)));
       const flow = await page.locator('.opening-scene').first().evaluate(el => [...el.children].filter(node => node.classList.contains('opening-entity')).map(node => node.getBoundingClientRect().left));
       if (lang === 'ar' ? flow[0] <= flow[1] : flow[0] >= flow[1]) failures.push({ lang, width, problem: 'march flow direction' });
       if (errors.length) failures.push({ lang, width, errors });

@@ -106,22 +106,67 @@ self: bear
       <p class="lede"><strong><span data-i18n="bh.page.71">Keep all active join marches the same size.</span></strong> <span data-i18n="bh.page.72">Divide archers evenly first, then cavalry, then use infantry to fill the remaining space. When you have enough troops to fill every join march,</span> <strong>5 / 15 / 80</strong> <span data-i18n="bh.page.73">is the practical preset we use.</span></p>
 
       <figure class="hunt-diagram march-composition" aria-labelledby="march-composition-title">
-        <figcaption id="march-composition-title" data-i18n="bh.marches.title">Equal join marches</figcaption>
-        <div class="march-queues" aria-hidden="true">
-          <div><b>1</b><div class="march-stack"><span></span><span></span><span></span></div><b>85k</b></div>
-          <div><b>2</b><div class="march-stack"><span></span><span></span><span></span></div><b>85k</b></div>
-          <div><b>3</b><div class="march-stack"><span></span><span></span><span></span></div><b>85k</b></div>
-          <div><b>4</b><div class="march-stack"><span></span><span></span><span></span></div><b>85k</b></div>
-          <div><b>5</b><div class="march-stack"><span></span><span></span><span></span></div><b>85k</b></div>
-          <div><b>6</b><div class="march-stack"><span></span><span></span><span></span></div><b>85k</b></div>
+        <figcaption class="allocator-heading">
+          <span id="march-composition-title" data-i18n="bh.alloc.title">Your Bear marches</span>
+          <button id="allocator-toggle" class="allocator-button" type="button" aria-expanded="false" aria-controls="archer-allocator" hidden><span data-i18n="bh.alloc.open">Use my troops</span></button>
+        </figcaption>
+        <form class="calc allocator-inputs" id="archer-allocator" hidden>
+          <h4 class="calc-title" data-i18n="bh.alloc.inputs">Your available troops</h4>
+          <div class="calc-row"><label for="infantry-total" data-i18n="sim.calc.inf">Infantry</label><input id="infantry-total" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" value="29750" required></div>
+          <div class="calc-row"><label for="cavalry-total" data-i18n="sim.calc.cav">Cavalry</label><input id="cavalry-total" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" value="89250" required></div>
+          <div class="calc-row"><label for="archer-total" data-i18n="bh.marches.archers">Archers</label><input id="archer-total" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" value="476000" required></div>
+          <div class="calc-row"><label for="join-queues" data-i18n="bh.page.85">Join queues</label><input id="join-queues" type="number" inputmode="numeric" min="0" max="6" step="1" value="6" required></div>
+          <div class="calc-row"><label for="join-cap" data-i18n="bh.page.86">Alliance join-march cap</label><input id="join-cap" type="number" inputmode="numeric" min="1" max="1000000000000" step="1" value="85000" required></div>
+          <div class="calc-row"><label for="own-cap" data-i18n="bh.page.87">Own march capacity</label><input id="own-cap" type="number" inputmode="numeric" min="1" max="1000000000000" step="1" value="130000" required></div>
+          <label class="allocator-priority"><input id="own-priority" type="checkbox"><span data-i18n="bh.alloc.priority">Fill my own rally first</span></label>
+          <p class="note" data-i18n="bh.alloc.priorityHelp">For designated stronger leads — your own rally may take a larger share. Your join marches still follow the alliance cap.</p>
+          <fieldset id="own-ratio" class="allocator-ratio" hidden>
+            <legend data-i18n="bh.alloc.ratio">Own rally ratio (%)</legend>
+            <p class="note" data-i18n="bh.alloc.ratioHelp">Use your tested or simulated lead ratio. 5 / 15 / 80 is the starting example.</p>
+            <div class="calc-row"><label for="own-infantry" data-i18n="sim.calc.inf">Infantry</label><input id="own-infantry" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="5" required></div>
+            <div class="calc-row"><label for="own-cavalry" data-i18n="sim.calc.cav">Cavalry</label><input id="own-cavalry" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="15" required></div>
+            <div class="calc-row"><label for="own-archers" data-i18n="bh.marches.archers">Archers</label><input id="own-archers" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="80" required></div>
+          </fieldset>
+          <button class="allocator-button" type="submit" data-i18n="bh.alloc.apply">Show my marches</button>
+        </form>
+        <p class="diagram-caption" id="allocator-example" data-i18n="bh.alloc.example">Example troops — use the button to enter yours.</p>
+        <div class="march-own" id="march-own">
+          <b data-i18n="bh.page.90">Own rally</b>
+          <div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div>
+          <b class="march-total"><bdi>85,000</bdi></b>
         </div>
-        <p class="diagram-caption"><b data-i18n="bh.page.85">Join queues</b>: <bdi>6 × 85k</bdi></p>
+        <p class="diagram-label" data-i18n="bh.page.85">Join queues</p>
+        <div class="march-queues" id="march-queues" aria-hidden="true">
+          <div><b>1</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
+          <div><b>2</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
+          <div><b>3</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
+          <div><b>4</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
+          <div><b>5</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
+          <div><b>6</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
+        </div>
         <ul class="march-key">
-          <li><i class="march-infantry" aria-hidden="true"></i><span><bdi>5%</bdi> <span data-i18n="sim.calc.inf">Infantry</span></span></li>
-          <li><i class="march-cavalry" aria-hidden="true"></i><span><bdi>15%</bdi> <span data-i18n="sim.calc.cav">Cavalry</span></span></li>
-          <li><i class="march-archers" aria-hidden="true"></i><span><bdi>80%</bdi> <span data-i18n="bh.marches.archers">Archers</span></span></li>
+          <li><i class="march-infantry" aria-hidden="true"></i><span data-i18n="sim.calc.inf">Infantry</span></li>
+          <li><i class="march-cavalry" aria-hidden="true"></i><span data-i18n="sim.calc.cav">Cavalry</span></li>
+          <li><i class="march-archers" aria-hidden="true"></i><span data-i18n="bh.marches.archers">Archers</span></li>
         </ul>
-        <p class="note" data-i18n="mix.note">5/15/80 is an operational preset, not a claim that every leader's mathematical optimum is identical.</p>
+        <table class="march-breakdown">
+          <caption data-i18n="bh.alloc.breakdown">Troops per march</caption>
+          <thead><tr><th scope="col" data-i18n="bh.alloc.type">Troop type</th><th scope="col" data-i18n="bh.page.90">Own rally</th><th scope="col" data-i18n="bh.page.91">Each join queue</th></tr></thead>
+          <tbody>
+            <tr><th scope="row" data-i18n="sim.calc.inf">Infantry</th><td id="own-inf">4,250</td><td id="join-inf">4,250</td></tr>
+            <tr><th scope="row" data-i18n="sim.calc.cav">Cavalry</th><td id="own-cav">12,750</td><td id="join-cav">12,750</td></tr>
+            <tr><th scope="row" data-i18n="bh.marches.archers">Archers</th><td id="own-arc">68,000</td><td id="join-arc">68,000</td></tr>
+            <tr><th scope="row" data-i18n="bh.alloc.total">Total</th><td id="alloc-own">85,000</td><td id="alloc-join">85,000</td></tr>
+          </tbody>
+        </table>
+        <p class="diagram-caption" data-i18n="bh.alloc.home">Troops left home</p>
+        <dl class="allocator-home">
+          <div><dt data-i18n="sim.calc.inf">Infantry</dt><dd id="home-inf">0</dd></div>
+          <div><dt data-i18n="sim.calc.cav">Cavalry</dt><dd id="home-cav">0</dd></div>
+          <div><dt data-i18n="bh.marches.archers">Archers</dt><dd id="alloc-home">0</dd></div>
+        </dl>
+        <p class="note" id="alloc-note" aria-live="polite" data-i18n="bh.alloc.equalNote">Share troops across your own rally and equal join marches.</p>
+        <p class="note" data-i18n="bh.alloc.method">Archers first, then cavalry, then infantry. Use 5 / 15 / 80 for full join marches when your troops allow it.</p>
       </figure>
 
       <div class="cards compact-cards">
@@ -137,23 +182,7 @@ self: bear
 
       <p><span data-i18n="bh.page.80">To field six 85k join marches at 5/15/80 at the same time, your account needs about</span> <strong><span data-i18n="bh.page.81">25.5k infantry, 76.5k cavalry and 408k archers</span></strong> <span data-i18n="bh.page.82">available for those six queues. Until you have that depth, equal marches matter more than forcing the preset.</span></p>
 
-      <div class="calc" id="archer-allocator">
-        <h4 class="calc-title"><span data-i18n="bh.page.83">ARCHER ALLOCATOR</span></h4>
-        <div class="calc-row"><label for="archer-total"><span data-i18n="bh.page.84">Total archers</span></label><input id="archer-total" type="number" inputmode="numeric" min="0" step="1000" value="350000"></div>
-        <div class="calc-row"><label for="join-queues"><span data-i18n="bh.page.85">Join queues</span></label><input id="join-queues" type="number" inputmode="numeric" min="1" max="6" step="1" value="6"></div>
-        <div class="calc-row"><label for="join-cap"><span data-i18n="bh.page.86">Alliance join-march cap</span></label><input id="join-cap" type="number" inputmode="numeric" min="1000" step="1000" value="85000"></div>
-        <div class="calc-row"><label for="own-cap"><span data-i18n="bh.page.87">Own march capacity</span></label><input id="own-cap" type="number" inputmode="numeric" min="1000" step="1000" value="130000"></div>
-        <div class="calc-row"><label for="own-reserve"><span data-i18n="bh.page.88">Own-rally archer reserve</span> <small><span data-i18n="bh.page.89">(0 = auto)</span></small></label><input id="own-reserve" type="number" inputmode="numeric" min="0" step="1000" value="0"></div>
 
-        <div class="allocator-result" aria-live="polite">
-          <p><span><span data-i18n="bh.page.90">Own rally</span></span><b id="alloc-own">50,000</b></p>
-          <p><span><span data-i18n="bh.page.91">Each join queue</span></span><b id="alloc-join">50,000</b></p>
-          <p><span><span data-i18n="bh.page.92">Archers left home</span></span><b id="alloc-home">0</b></p>
-        </div>
-        <p class="calc-out" id="alloc-note"><span data-i18n="bh.page.93">Auto mode splits archers across your own rally and six join queues while keeping every join queue equal.</span></p>
-      </div>
-
-      <p class="note"><span data-i18n="bh.page.94">The allocator only handles the scarce archer step. Once those archers are split, add cavalry evenly across the join queues, then infantry, keeping every active join march the same total size. Prefer cavalry over infantry where you have a choice.</span></p>
     </div>
   </section>
 
