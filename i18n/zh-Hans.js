@@ -844,7 +844,7 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "ks.today.budget": "花费前先确定目标奖励。保留为其他活动准备的材料，除非你决定在这里使用。",
   "ks.today.selected": "已选日期",
   "ks.today.nextUp": "下一天",
-  "ks.today.weeks": "跳转到一周",
+  "ks.today.weeks": "跳转到活动",
   "ks.today.preview": "消息预览",
   "ks.today.copyFailed": "选择并复制下方消息。",
   "ks.today.priorities": "我们的备战优先项",
@@ -872,5 +872,13 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "ks.today.copyRun": "复制到 KingShot",
   "ks.today.holdIntel": "从 08:00 UTC 起保留情报任务，用于明天备战。",
   "ks.today.swordSunday": "Swordland：查看联盟一小时战斗的时间。",
+  "ks.today.prepGuide": "在游戏中查看今天的任务和奖励里程碑。",
+  "ks.days.lede": "每个备战日都有各自的任务。根据下方列表安排材料，并在游戏中查看奖励里程碑。",
+  "ks.checklist.c9.body": "与联盟确认战斗时间、攻击范围和集结分工。在游戏中查看 Duel of the Elites 资格和 KvK 匹配。",
+  "ks.days.troopsNote": "今天训练和晋升部队，以及符合条件的装备升级都可得分。查看活动中可用的任务和部队等级。",
+  "ks.today.intelTomorrow": "明天从 08:00 UTC 起保留情报任务，用于第 22 天的备战。",
+  "ks.today.prepPlan": "在第 22 天备战开始前，规划好 KvK 材料消耗。",
+  "ks.today.kvkWeek": "KvK 备战与战斗",
+  "ks.today.cycleRange": "第 {from}–{to} 天",
 }
 ;

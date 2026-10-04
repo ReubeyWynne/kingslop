@@ -35,35 +35,9 @@
     ['Forgehammer',     ['no',   'no',   'no',   'best', 'best']]
   ];
 
-  // A representative points-per-unit per material (for the today card).
-  var PTS = {
-    'Truegold': '2,000', 'Tempered TG': '30,000', 'Hero shard': '3,040+',
-    'Master emblem': '6,000', 'Building': '30/min', 'Troop': '75 (T11)',
-    'Research': '30/min', 'Hero roulette': '8,000', 'Gathering': '2',
-    'Intel missions': '6,000', 'Pets advance': '15,000', 'Gov charm': '70',
-    'Gov gear': '—', 'Widget gear': '8,000', 'Mithril': '40,000', 'Forgehammer': '4,000'
-  };
-
   var GLYPH = { best: '\u2705', ok: '\uD83C\uDD97', no: '\uD83D\uDEAB' }; // ✅ 🆗 🚫
 
   var KOP_THEMES = ['City Construction', 'Basic Skills Up', 'Pet Training', 'Gear & Troops', 'Combined'];
-  /* The daily reward thresholds are not stated here: they scale with the
-     server and Town Center level, so the goal is always the 200k chest. */
-
-  // Top-value tasks per prep day, for the "best value today" line.
-  var KOP_TOPS = [
-    ['Tempered Truegold', 30000], ['Intel missions', 6000], ['Truegold', 2000],
-    ['Hero Roulette', 8000], ['Master emblem', 6000], ['Mythic shard', 3040], ['Truegold', 2000],
-    ['Advanced Taming Mark', 15000], ['Hero Roulette', 8000], ['Intel missions', 6000],
-    ['Mithril', 40000], ['Widget gear', 8000], ['Forgehammer', 4000], ['T11 troop', 75],
-    ['Gov gear', 0], ['Truegold', 2000], ['Mithril', 40000], ['Intel missions', 6000]
-  ];
-  function kopTops(day) { // day 1-5
-    var ranges = [[0, 3], [3, 7], [7, 10], [10, 14], [14, 18]];
-    var r = ranges[day - 1];
-    return KOP_TOPS.slice(r[0], r[1]);
-  }
-
   var SG_THEMES = ['City Construction', 'Hero Development', 'Skill Up', 'Combat Training', 'Skill Up', 'Combat Training', 'Hero Development'];
   var SG_TASKS = [
     [['Tempered Truegold', 30000], ['Truegold', 2000], ['Gov charm', 70], ['Speedups', 30]],
@@ -272,7 +246,7 @@
   function rowHTML(mark, name, pts, extra, vClass) {
     return '<div class="trow' + (mark === GLYPH.no ? ' dont' : '') + (extra ? ' keep' : '') + (vClass ? ' ' + vClass : '') + '"><span class="tmark">' + mark + '</span>' +
       '<span class="tname">' + name + '</span>' +
-      (pts ? '<span class="tpts">' + pts + '</span>' : '<span class="tpts"></span>') +
+      (pts ? '<span class="tpts">' + pts + '</span>' : '') +
       (extra ? '<span class="tkeep">' + extra + '</span>' : '') + '</div>';
   }
 
@@ -356,7 +330,7 @@
         html += '<details class="today-stored"><summary>' + (state === 'hold' ? ITEM_GLYPH.Truegold + ITEM_GLYPH['Hero shard'] : '📋 ') + labels[state] + '</summary>' + groups[state] + '</details>';
       } else html += zone(labels[state], groups[state]);
     }
-    if (groups.best || groups.ok) html += '<p class="today-meta">' + BH.tr('ks.today.units', 'Points shown are per task unit. Use the day’s table for the exact units and unlocked tiers.') + '</p>';
+    if (!ctx.prepN && (groups.best || groups.ok)) html += '<p class="today-meta">' + BH.tr('ks.today.units', 'Points shown are per task unit. Use the day’s table for the exact units and unlocked tiers.') + '</p>';
     return '<div class="today-value">' + html + '</div>';
   }
 
@@ -364,9 +338,9 @@
     var theme = KOP_THEMES[n - 1];
     var head = '<p class="today-kicker">' + BH.tr('ks.today.kickerPrep', 'KvK prep') + ' \u00B7 ' + BH.tr('ks.today.day', 'day') + ' ' + n + '</p>' +
       '<p class="today-title">' + theme + '</p>' +
-      '<p class="today-meta">' + BH.tr('ks.today.chest', 'the daily goal is the 200,000-point chest') + '</p>';
+      '<p class="today-meta">' + BH.tr('ks.today.prepGuide', 'Check today’s tasks and reward milestones in game.') + '</p>';
 
-    var ctx = { prepN: n, sgN: null, brawlIds: null, sgIds: new Set(), lowIds: runLowIds(), ptsById: PTS, freeActions: null };
+    var ctx = { prepN: n, sgN: null, brawlIds: null, sgIds: new Set(), lowIds: runLowIds(), ptsById: {}, freeActions: null };
     var body = todayValueHtml(ctx, BH);
 
     return { head: head, body: body, copy: dayBlock(n), copyTitle: BH.tr('ks.today.copyToday', 'copy today for KingShot') };
@@ -505,6 +479,12 @@
 
   function render(BH) {
     paintDaySections();
+    document.querySelectorAll('.week-jumps [data-jump]').forEach(function (button) {
+      var first = Number(button.dataset.jump);
+      var selected = first === 22 ? day >= 22 : weekOf(first) === weekOf(day);
+      button.setAttribute('aria-pressed', String(selected));
+      button.querySelector('.week-jump-range').textContent = BH.tpl('ks.today.cycleRange', 'Days {from}–{to}', { from: BH.fmt(first), to: BH.fmt(Number(button.dataset.end)) });
+    });
     document.getElementById('ks-view-title').textContent = followingToday ? BH.tr('ks.today.title', 'Today') : BH.tr('ks.today.selected', 'Selected day');
     var now = new Date();
     var offset = day - todayDay();
@@ -540,7 +520,7 @@
     if (!info.copy) info.copy = reminderCopy(w, BH);
     info.copyTitle = BH.tr('ks.today.copyRun', 'Copy for KingShot');
 
-    var html = info.head + weekActions(BH) + copyBoxHTML(info.copy, info.copyTitle) + info.body;
+    var html = info.head + weekActions(BH) + info.body + copyBoxHTML(info.copy, info.copyTitle);
     card.innerHTML = html;
     wireCopy(BH, info.copy);
   }
@@ -549,13 +529,18 @@
     var notes = '';
     if (day === 21) notes += '<p class="today-action">' + ITEM_GLYPH['Intel missions'] + BH.tr('ks.today.holdIntel', 'Hold intel from 08:00 UTC for tomorrow’s prep.') + '</p>';
     if (day === 7 || day === 21) notes += '<p class="today-action"><span aria-hidden="true">⚔️</span> ' + BH.tr('ks.today.swordSunday', 'Swordland: check your alliance’s one-hour battle time.') + '</p>';
-    if (day === 20) notes += '<p class="today-action"><span aria-hidden="true">🏰</span> ' + BH.tr('ks.today.matchmaking', 'KvK matchmaking window: check the opponent reveal in game.') + '</p>';
+    if (day === 20) {
+      notes += '<p class="today-action">' + ITEM_GLYPH['Intel missions'] + BH.tr('ks.today.intelTomorrow', 'Tomorrow, hold intel from 08:00 UTC for prep on day 22.') + '</p>';
+      notes += '<p class="today-action">' + ITEM_GLYPH.Truegold + BH.tr('ks.today.prepPlan', 'Plan your KvK spending before prep starts on day 22.') + '</p>';
+      notes += '<p class="today-action"><span aria-hidden="true">🏰</span> ' + BH.tr('ks.today.matchmaking', 'KvK matchmaking window: check the opponent reveal in game.') + '</p>';
+    }
     return notes ? '<div class="today-actions">' + notes + '</div>' : '';
   }
 
   function reminderCopy(w) {
     if (w === 'brawl') return ['ALLIANCE BRAWL · DAY ' + day, BRAWL_THEMES[brawlThemeIdx(day) - 1], 'Check agreed alliance ranks', 'Then check your next chest', 'Trucks: Merchant overlap', 'where available'].join('\n');
     if (w === 'gap') return ['BEFORE KVK PREP', itemTag('Intel') + 'Hold intel from 08:00 UTC', 'Prep begins next reset', 'Swordland: alliance time', 'Keep prep materials'].join('\n');
+    if (day === 20) return ['BEFORE KVK PREP', 'Plan spending for day 22', 'Tomorrow: hold intel', 'from 08:00 UTC', 'Check KvK matchmaking', 'Finish Mobilization missions'].join('\n');
     return ['ALLIANCE MOBILIZATION', 'Accept mission before task', 'Check overlapping events', 'Keep planned prep materials'].join('\n');
   }
 
@@ -750,7 +735,7 @@
 
   function copyBoxHTML(text, title) {
     return '<div class="copy-box"><div class="copy-btns">' +
-      '<button type="button" id="ks-copy-btn" class="kb copy-primary">📋 ' + window.BH.tr('ks.today.copyRun', 'Copy for KingShot') + '</button>' +
+      '<button type="button" id="ks-copy-btn" class="kb copy-action">📋 ' + window.BH.tr('ks.today.copyRun', 'Copy for KingShot') + '</button>' +
       '<span id="ks-copy-status" role="status"></span><span id="ks-copy-parts" class="cycle-quick"></span></div>' +
       '<details id="ks-copy-preview"><summary>' + window.BH.tr('ks.today.preview', 'Message preview') + '</summary><div class="copy-inner">' +
       '<textarea id="ks-copy-out" readonly spellcheck="false" aria-label="' + title + '"></textarea>' +

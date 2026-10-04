@@ -39,11 +39,11 @@ self: events
       <button type="button" id="ks-next" class="kb" aria-label="next day" data-i18n-key="ks.today.nextAria" data-i18n-attr="aria-label">+</button>
       <button type="button" id="ks-today" class="kb" data-i18n="ks.today.btn">Today</button>
     </div>
-    <div class="cycle-quick" role="group" aria-label="Jump to a week" data-i18n-key="ks.today.weeks" data-i18n-attr="aria-label">
-      <button type="button" class="kb" data-jump="1"><span aria-hidden="true">⚔️</span> <span data-i18n="ks.brawl.title">Alliance Brawl</span></button>
-      <button type="button" class="kb" data-jump="8"><span aria-hidden="true">👑</span> <span data-i18n="ks.week.sgShort">Governor</span></button>
-      <button type="button" class="kb" data-jump="15"><span aria-hidden="true">📜</span> <span data-i18n="ks.week.mobShort">Mobilize</span></button>
-      <button type="button" class="kb" data-jump="22"><span aria-hidden="true">🏰</span> <span data-i18n="ks.week.prepShort">KvK</span></button>
+    <div class="cycle-quick week-jumps" role="group" aria-label="Jump to an event" data-i18n-key="ks.today.weeks" data-i18n-attr="aria-label">
+      <button type="button" class="kb" data-jump="1" data-end="7"><span class="week-jump-icon" aria-hidden="true">⚔️</span><span class="week-jump-copy"><span data-i18n="ks.brawl.title">Alliance Brawl</span><small class="week-jump-range">Days 1–7</small></span></button>
+      <button type="button" class="kb" data-jump="8" data-end="14"><span class="week-jump-icon" aria-hidden="true">👑</span><span class="week-jump-copy"><span data-i18n="ks.governor.title">Strongest Governor</span><small class="week-jump-range">Days 8–14</small></span></button>
+      <button type="button" class="kb" data-jump="15" data-end="20"><span class="week-jump-icon" aria-hidden="true">📜</span><span class="week-jump-copy"><span data-i18n="ks.mob.title">Alliance Mobilization</span><small class="week-jump-range">Days 15–20</small></span></button>
+      <button type="button" class="kb" data-jump="22" data-end="28"><span class="week-jump-icon" aria-hidden="true">🏰</span><span class="week-jump-copy"><span data-i18n="ks.today.kvkWeek">KvK prep &amp; battle</span><small class="week-jump-range">Days 22–28</small></span></button>
     </div>
     <div class="next-day" id="ks-next-day"></div>
   </section>
@@ -288,96 +288,83 @@ self: events
   <section class="section" id="days" data-phase="prep">
     <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="days-body"><span data-i18n="ks.days.title">The five prep days</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
     <div id="days-body" class="reference-body">
-    <p class="lede" data-i18n-html="ks.days.lede">Each prep day is one theme, and each theme decides what your hoard is
-      worth. The daily goal is the <strong>200,000-point chest</strong>; the milestone thresholds scale with your server
-      and Town Center level, so check your own ladder in-game.</p>
+    <p class="lede" data-i18n="ks.days.lede">Each prep day has its own tasks. Use the lists below to plan your materials, and check your reward milestones in game.</p>
 
     <details class="day">
-      <summary><span class="day-title">Day 1: City Construction</span>
-      <span class="day-meta">goal: the <b>200,000-point chest</b></span></summary>
-      <table class="pt"><tbody>
-        <tr><td>Tempered Truegold (building upgrade)</td><td class="pts">30,000</td></tr>
-        <tr><td>Watchtower Intel Mission</td><td class="pts">6,000</td></tr>
-        <tr><td>Truegold (building upgrade)</td><td class="pts">2,000</td></tr>
-        <tr><td>Truegold Dust (tech research)</td><td class="pts">1,000</td></tr>
-        <tr><td>Governor Charm max score +1</td><td class="pts">70</td></tr>
-        <tr><td>1 min construction / research / training / learning speedup</td><td class="pts">30</td></tr>
-      </tbody></table>
-      <p class="note">The biggest value here is intel missions and truegold on upgrades; construction speedups score,
-        but they're the same 30 a minute they'll be on day 2.</p>
+      <summary><span class="day-title">Day 1: City Construction</span></summary>
+      <ul class="prep-tasks">
+        <li>Tempered Truegold (building upgrade)</li>
+        <li>Watchtower Intel Mission</li>
+        <li>Truegold (building upgrade)</li>
+        <li>Truegold Dust (tech research)</li>
+        <li>Governor Charm max score +1</li>
+        <li>1 min construction / research / training / learning speedup</li>
+      </ul>
+
     </details>
     <details class="day">
-      <summary><span class="day-title">Day 2: Basic Skills Up</span>
-      <span class="day-meta">goal: the <b>200,000-point chest</b></span></summary>
-      <table class="pt"><tbody>
-        <tr><td>Tempered Truegold</td><td class="pts">30,000</td></tr>
-        <tr><td>Hero Roulette (1 spin)</td><td class="pts">8,000</td></tr>
-        <tr><td>Master Emblem</td><td class="pts">6,000</td></tr>
-        <tr><td>Mythic hero shard</td><td class="pts">3,040</td></tr>
-        <tr><td>Truegold</td><td class="pts">2,000</td></tr>
-        <tr><td>Epic hero shard</td><td class="pts">1,220</td></tr>
-        <tr><td>Truegold Dust</td><td class="pts">1,000</td></tr>
-        <tr><td>Rare hero shard</td><td class="pts">350</td></tr>
-        <tr><td>Master's Manuscript</td><td class="pts">60</td></tr>
-        <tr><td>1 min speedups (all kinds)</td><td class="pts">30</td></tr>
-        <tr><td>Gather 1,000 bread/wood, 200 stone, 50 iron</td><td class="pts">2</td></tr>
-      </tbody></table>
+      <summary><span class="day-title">Day 2: Basic Skills Up</span></summary>
+      <ul class="prep-tasks">
+        <li>Tempered Truegold</li>
+        <li>Hero Roulette (1 spin)</li>
+        <li>Master Emblem</li>
+        <li>Mythic hero shard</li>
+        <li>Truegold</li>
+        <li>Epic hero shard</li>
+        <li>Truegold Dust</li>
+        <li>Rare hero shard</li>
+        <li>Master's Manuscript</li>
+        <li>1 min speedups (all kinds)</li>
+        <li>Gather 1,000 bread/wood, 200 stone, 50 iron</li>
+      </ul>
     </details>
     <details class="day">
-      <summary><span class="day-title">Day 3: Pet Training</span>
-      <span class="day-meta">goal: the <b>200,000-point chest</b></span></summary>
-      <table class="pt"><tbody>
-        <tr><td>Advanced Taming Mark (pet refinement)</td><td class="pts">15,000</td></tr>
-        <tr><td>Hero Roulette</td><td class="pts">8,000</td></tr>
-        <tr><td>Master Emblem</td><td class="pts">6,000</td></tr>
-        <tr><td>Watchtower Intel Mission</td><td class="pts">6,000</td></tr>
-        <tr><td>Mythic hero shard</td><td class="pts">3,040</td></tr>
-        <tr><td>Epic hero shard</td><td class="pts">1,220</td></tr>
-        <tr><td>Common Taming Mark</td><td class="pts">1,150</td></tr>
-        <tr><td>Rare hero shard</td><td class="pts">350</td></tr>
-        <tr><td>Governor Charm max score +1</td><td class="pts">70</td></tr>
-        <tr><td>Master's Manuscript</td><td class="pts">60</td></tr>
-        <tr><td>Pet Advancement score +1</td><td class="pts">50</td></tr>
-      </tbody></table>
-      <p class="note">The non-whale day: Advanced Taming Marks are 15,000 a piece, the best rate most accounts can
-        save for. This is where disciplined saving shows up on the scoreboard.</p>
+      <summary><span class="day-title">Day 3: Pet Training</span></summary>
+      <ul class="prep-tasks">
+        <li>Advanced Taming Mark (pet refinement)</li>
+        <li>Hero Roulette</li>
+        <li>Master Emblem</li>
+        <li>Watchtower Intel Mission</li>
+        <li>Mythic hero shard</li>
+        <li>Epic hero shard</li>
+        <li>Common Taming Mark</li>
+        <li>Rare hero shard</li>
+        <li>Governor Charm max score +1</li>
+        <li>Master's Manuscript</li>
+        <li>Pet Advancement score +1</li>
+      </ul>
+
     </details>
     <details class="day">
-      <summary><span class="day-title">Day 4: Gear &amp; Troops</span>
-      <span class="day-meta">the swing day: <b>troop volume</b> for most, <b>mithril</b> for whales</span></summary>
-      <table class="pt"><tbody>
-        <tr><td>Mithril</td><td class="pts">40,000</td></tr>
-        <tr><td>Widget (hero exclusive gear)</td><td class="pts">8,000</td></tr>
-        <tr><td>Hero Gear Forgehammer</td><td class="pts">4,000</td></tr>
-        <tr><td>Governor Charm max score +1</td><td class="pts">70</td></tr>
-        <tr><td>T11 troop</td><td class="pts">75</td></tr>
-        <tr><td>T10 troop</td><td class="pts">60</td></tr>
-        <tr><td>T9 troop</td><td class="pts">45</td></tr>
-        <tr><td>T8 troop</td><td class="pts">35</td></tr>
-        <tr><td>T7 troop</td><td class="pts">25</td></tr>
-        <tr><td>T6 troop</td><td class="pts">18</td></tr>
-        <tr><td>T5 troop</td><td class="pts">12</td></tr>
-        <tr><td>T4 troop</td><td class="pts">8</td></tr>
-      </tbody></table>
-      <p class="note">Day 4 is often the kingdom's <b>highest-scoring day</b>: the sheer quantity of troops players
-        churn out beats every single item, mithril included. No mithril yet? That's normal; it needs maxed mythic
-        gear. Without it, day 4 is a volume day: your highest-tier troops, then widgets, then forgehammers. Promotion
-        counts; come in with troops one tier below your max and promote them here.</p>
+      <summary><span class="day-title">Day 4: Gear &amp; Troops</span></summary>
+      <ul class="prep-tasks">
+        <li>Mithril</li>
+        <li>Widget (hero exclusive gear)</li>
+        <li>Hero Gear Forgehammer</li>
+        <li>Governor Charm max score +1</li>
+        <li>T11 troop</li>
+        <li>T10 troop</li>
+        <li>T9 troop</li>
+        <li>T8 troop</li>
+        <li>T7 troop</li>
+        <li>T6 troop</li>
+        <li>T5 troop</li>
+        <li>T4 troop</li>
+      </ul>
+      <p class="note" data-i18n="ks.days.troopsNote">Troop training and promotion score today, alongside eligible gear upgrades. Check the available tasks and troop tiers in your event.</p>
     </details>
     <details class="day">
-      <summary><span class="day-title">Day 5: Combined</span>
-      <span class="day-meta">the cleanup day: full rates on everything</span></summary>
-      <table class="pt"><tbody>
-        <tr><td>Governor gear</td><td class="pts">·</td></tr>
-        <tr><td>Truegold + Tempered Truegold</td><td class="pts">2,000 / 30,000</td></tr>
-        <tr><td>Mithril / widget / forgehammer</td><td class="pts">40,000 / 8,000 / 4,000</td></tr>
-        <tr><td>1 min construction / research / training speedups</td><td class="pts">30</td></tr>
-        <tr><td>Watchtower Intel Mission</td><td class="pts">6,000</td></tr>
-        <tr><td>Gathering</td><td class="pts">2</td></tr>
-        <tr><td>Pets advance</td><td class="pts">50</td></tr>
-      </tbody></table>
-      <p class="note">Day 5 isn't reduced; every task scores at its full rate. It only feels different because more
-        categories are live at once. It's the day the saved stockpile empties.</p>
+      <summary><span class="day-title">Day 5: Combined</span></summary>
+      <ul class="prep-tasks">
+        <li>Governor gear</li>
+        <li>Truegold + Tempered Truegold</li>
+        <li>Mithril / widget / forgehammer</li>
+        <li>1 min construction / research / training speedups</li>
+        <li>Watchtower Intel Mission</li>
+        <li>Gathering</li>
+        <li>Pets advance</li>
+      </ul>
+
     </details>
     </div>
   </section>
@@ -539,7 +526,7 @@ self: events
       <li><span class="check-num">6</span><div><h3 data-i18n="ks.checklist.c6.title">Stack the buffs before day 1</h3><p data-i18n-html="ks.checklist.c6.body">Wolf pet buff, Double Time Decree, Chief Minister if the kingdom runs it; activate them <b>before</b> you spend, then spend.</p></div></li>
       <li><span class="check-num">7</span><div><h3 data-i18n="ks.checklist.c7.title">Hold the intel</h3><p data-i18n-html="ks.checklist.c7.body">Stop collecting Watchtower missions from <b>08:00</b> the day before a scoring day (day 21 before prep) so they bank for points.</p></div></li>
       <li><span class="check-num">8</span><div><h3 data-i18n="ks.checklist.c8.title">Shield before the window</h3><p data-i18n-html="ks.checklist.c8.body">Activate your town's shield as prep ends. The gap between phases is when unshielded towns fall.</p></div></li>
-      <li><span class="check-num">9</span><div><h3 data-i18n="ks.checklist.c9.title">Know the battle plan</h3><p data-i18n-html="ks.checklist.c9.body">Your UTC window, your Town Center's attack range, your rally assignments — and if you're top-150 by power, check your Duel of the Elites group before you stop at 200,000. Watch day 20 for the matchmaking reveal.</p></div></li>
+      <li><span class="check-num">9</span><div><h3 data-i18n="ks.checklist.c9.title">Know the battle plan</h3><p data-i18n="ks.checklist.c9.body">Confirm your battle time, attack range and rally assignments with your alliance. Check Duel of the Elites eligibility and KvK matchmaking in game.</p></div></li>
     </ol>
     </div>
   </section>

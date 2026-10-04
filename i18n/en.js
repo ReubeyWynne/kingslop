@@ -664,7 +664,6 @@ window.__BH_I18N_DATA["en"] = {
   "ks.today.matchmaking": "KvK matchmaking window: check the opponent reveal in game.",
   "ks.today.swordSunday": "Swordland: check your alliance’s one-hour battle time.",
   "ks.today.holdIntel": "Hold intel from 08:00 UTC for tomorrow’s prep.",
-  "ks.today.chest": "the daily goal is the 200,000-point chest",
   "ks.today.spend": "spend today",
   "ks.today.dont": "don't touch",
   "ks.today.top": "best value today",
@@ -730,7 +729,7 @@ window.__BH_I18N_DATA["en"] = {
   "ks.matrix.note": "The chart is the alliance's own, checked against the community tables. One row to sanity-check in-game: <b>Building</b> marks construction best on day 2, while some guides put it on day 1. Day 5 scores construction too, but it's the cleanup day; gear, intel and truegold beat it there. Beast hunting earns <b>no</b> prep points at all.",
 
   "ks.days.title": "The five prep days",
-  "ks.days.lede": "Each prep day is one theme, and each theme decides what your hoard is worth. The daily goal is the <strong>200,000-point chest</strong>; the milestone thresholds scale with your server and Town Center level, so check your own ladder in-game.",
+  "ks.days.lede": "Each prep day has its own tasks. Use the lists below to plan your materials, and check your reward milestones in game.",
 
   "ks.governor.title": "Strongest Governor",
   "ks.governor.lede": "Seven scoring days. Repeated day names can have different tasks, so check the current day’s table.",
@@ -767,7 +766,7 @@ window.__BH_I18N_DATA["en"] = {
   "ks.checklist.c8.title": "Shield before the window",
   "ks.checklist.c8.body": "Activate your town's shield as prep ends. The gap between phases is when unshielded towns fall.",
   "ks.checklist.c9.title": "Know the battle plan",
-  "ks.checklist.c9.body": "Your UTC window, your Town Center’s attack range, your rally assignments — and if you’re top-150 by power, check your Duel of the Elites group before you stop at 200,000. Watch day 20 for the matchmaking reveal.",
+  "ks.checklist.c9.body": "Confirm your battle time, attack range and rally assignments with your alliance. Check Duel of the Elites eligibility and KvK matchmaking in game.",
 
   "ks.foot.main": "Event cycle",
   "ks.foot.note": "Points shown are per task unit. Use the day’s table for the exact units and unlocked tiers. · <a href=\"https://kingshotoptimizer.com/events/kingdom-of-power/event-guide\">Kingshot Optimizer</a> · <a href=\"https://kingshotmastery.com/guides/kingshot-kvk-prep-guide\">Kingshot Mastery</a> · <a href=\"https://kingshotwiki.com/events/armament-competition/\">Kingshot Wiki</a> · <a href=\"https://kingshotdata.com/events/alliance-brawl-event/\">Kingshot Data</a>",
@@ -977,7 +976,7 @@ window.__BH_I18N_DATA["en"] = {
   "ks.today.budget": "Choose your reward target before spending. Keep materials reserved for another event unless you decide to use them here.",
   "ks.today.selected": "Selected day",
   "ks.today.nextUp": "Next day",
-  "ks.today.weeks": "Jump to a week",
+  "ks.today.weeks": "Jump to an event",
   "ks.today.preview": "Message preview",
   "ks.today.copyFailed": "Select and copy the message below.",
   "ks.today.priorities": "Our prep priorities",
@@ -988,6 +987,12 @@ window.__BH_I18N_DATA["en"] = {
   "ks.today.units": "Points shown are per task unit. Use the day’s table for the exact units and unlocked tiers.",
   "ks.today.beforePrep": "Before prep tomorrow",
   "ks.today.between": "Between weeks",
-  "ks.today.sideRun": "check its tasks before a planned spend."
+  "ks.today.sideRun": "check its tasks before a planned spend.",
+  "ks.today.prepGuide": "Check today’s tasks and reward milestones in game.",
+  "ks.days.troopsNote": "Troop training and promotion score today, alongside eligible gear upgrades. Check the available tasks and troop tiers in your event.",
+  "ks.today.intelTomorrow": "Tomorrow, hold intel from 08:00 UTC for prep on day 22.",
+  "ks.today.prepPlan": "Plan your KvK spending before prep starts on day 22.",
+  "ks.today.kvkWeek": "KvK prep & battle",
+  "ks.today.cycleRange": "Days {from}–{to}",
 }
 ;

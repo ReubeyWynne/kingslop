@@ -855,7 +855,7 @@ window.__BH_I18N_DATA["vi"] = {
   "ks.today.budget": "Chọn mục tiêu phần thưởng trước khi dùng vật liệu. Giữ vật liệu dành cho sự kiện khác trừ khi quyết định dùng ở đây.",
   "ks.today.selected": "Ngày đã chọn",
   "ks.today.nextUp": "Ngày tiếp theo",
-  "ks.today.weeks": "Chuyển đến tuần",
+  "ks.today.weeks": "Chuyển đến sự kiện",
   "ks.today.preview": "Xem trước tin nhắn",
   "ks.today.copyFailed": "Chọn và sao chép tin nhắn bên dưới.",
   "ks.today.priorities": "Ưu tiên chuẩn bị của chúng ta",
@@ -883,5 +883,13 @@ window.__BH_I18N_DATA["vi"] = {
   "ks.today.copyRun": "Sao chép cho KingShot",
   "ks.today.holdIntel": "Giữ nhiệm vụ tình báo từ 08:00 UTC cho đợt chuẩn bị ngày mai.",
   "ks.today.swordSunday": "Swordland: kiểm tra giờ trận chiến một tiếng của liên minh.",
+  "ks.today.prepGuide": "Kiểm tra nhiệm vụ và các mốc thưởng hôm nay trong game.",
+  "ks.days.lede": "Mỗi ngày chuẩn bị có nhiệm vụ riêng. Dùng danh sách bên dưới để lên kế hoạch vật liệu và kiểm tra các mốc thưởng trong game.",
+  "ks.checklist.c9.body": "Xác nhận giờ chiến đấu, phạm vi tấn công và phân công tập kết với liên minh. Kiểm tra điều kiện Duel of the Elites và ghép cặp KvK trong game.",
+  "ks.days.troopsNote": "Huấn luyện, nâng bậc quân và các nâng cấp trang bị phù hợp đều tính điểm hôm nay. Kiểm tra nhiệm vụ và bậc quân có trong sự kiện.",
+  "ks.today.intelTomorrow": "Ngày mai, giữ nhiệm vụ tình báo từ 08:00 UTC để chuẩn bị cho ngày 22.",
+  "ks.today.prepPlan": "Lên kế hoạch dùng vật liệu KvK trước khi giai đoạn chuẩn bị bắt đầu vào ngày 22.",
+  "ks.today.kvkWeek": "Chuẩn bị và chiến đấu KvK",
+  "ks.today.cycleRange": "Ngày {from}–{to}",
 }
 ;

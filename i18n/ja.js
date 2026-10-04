@@ -844,7 +844,7 @@ window.__BH_I18N_DATA["ja"] = {
   "ks.today.budget": "消費前に目標の報酬を決めましょう。ここで使うと決めない限り、他のイベント用の素材は残してください。",
   "ks.today.selected": "選択した日",
   "ks.today.nextUp": "次の日",
-  "ks.today.weeks": "週に移動",
+  "ks.today.weeks": "イベントへ移動",
   "ks.today.preview": "メッセージのプレビュー",
   "ks.today.copyFailed": "下のメッセージを選択してコピーしてください。",
   "ks.today.priorities": "私たちの準備優先項目",
@@ -872,5 +872,13 @@ window.__BH_I18N_DATA["ja"] = {
   "ks.today.copyRun": "KingShot用にコピー",
   "ks.today.holdIntel": "明日の準備に向け、08:00 UTCから情報任務を貯めてください。",
   "ks.today.swordSunday": "Swordland：同盟の1時間の戦闘の開始時刻を確認してください。",
+  "ks.today.prepGuide": "今日の課題と報酬の到達条件をゲーム内で確認してください。",
+  "ks.days.lede": "準備日ごとに課題が異なります。下の一覧で素材の使用を計画し、報酬の到達条件をゲーム内で確認してください。",
+  "ks.checklist.c9.body": "同盟と戦闘時刻、攻撃範囲、集結での役割を確認してください。Duel of the Elites の参加資格と KvK のマッチングはゲーム内で確認してください。",
+  "ks.days.troopsNote": "今日は部隊の訓練と昇格、対象となる装備強化で得点できます。イベント内で利用可能な課題と部隊の等級を確認してください。",
+  "ks.today.intelTomorrow": "22日目の準備に向け、明日の 08:00 UTCから情報任務を貯めてください。",
+  "ks.today.prepPlan": "22日目に準備が始まる前に、KvKで使う素材を計画してください。",
+  "ks.today.kvkWeek": "KvK 準備と戦闘",
+  "ks.today.cycleRange": "{from}–{to}日目",
 }
 ;
