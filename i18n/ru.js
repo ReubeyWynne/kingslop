@@ -864,6 +864,8 @@ window.__BH_I18N_DATA["ru"] = {
   "ks.meta.ogDescription": "Что проходит сегодня, что приносит очки и что оставить на потом.",
   "ks.foot.main": "Цикл событий",
   "ks.foot.note": "Очки указаны за единицу задания. Точные единицы и открытые уровни смотрите в таблице дня. · <a href=\"https://kingshotoptimizer.com/events/kingdom-of-power/event-guide\">Kingshot Optimizer</a> · <a href=\"https://kingshotmastery.com/guides/kingshot-kvk-prep-guide\">Kingshot Mastery</a> · <a href=\"https://kingshotwiki.com/events/armament-competition/\">Kingshot Wiki</a> · <a href=\"https://kingshotdata.com/events/alliance-brawl-event/\">Kingshot Data</a>",
-  "ks.today.sideRun": "проверьте задания перед тратами."
+  "ks.today.sideRun": "проверьте задания перед тратами.",
+  "ks.fm.title": "Armament & Officer",
+  "ks.nav.fillers": "Armament & Officer",
 }
 ;

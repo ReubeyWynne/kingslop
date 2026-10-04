@@ -864,6 +864,8 @@ window.__BH_I18N_DATA["ko"] = {
   "ks.meta.ogDescription": "오늘 열리는 이벤트, 점수를 주는 항목, 나중을 위해 남길 재료.",
   "ks.foot.main": "이벤트 주기",
   "ks.foot.note": "점수는 임무 단위당 수치입니다. 정확한 단위와 해제된 단계는 당일 표를 확인하세요. · <a href=\"https://kingshotoptimizer.com/events/kingdom-of-power/event-guide\">Kingshot Optimizer</a> · <a href=\"https://kingshotmastery.com/guides/kingshot-kvk-prep-guide\">Kingshot Mastery</a> · <a href=\"https://kingshotwiki.com/events/armament-competition/\">Kingshot Wiki</a> · <a href=\"https://kingshotdata.com/events/alliance-brawl-event/\">Kingshot Data</a>",
-  "ks.today.sideRun": "재료를 쓰기 전에 과제를 확인하세요."
+  "ks.today.sideRun": "재료를 쓰기 전에 과제를 확인하세요.",
+  "ks.fm.title": "Armament & Officer",
+  "ks.nav.fillers": "Armament & Officer",
 }
 ;

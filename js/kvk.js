@@ -317,13 +317,6 @@
     return out;
   }
 
-  // The hold mark is drawn, not an emoji: the ⏸️ chip renders in the same
-  // blue family as the ok 🆗 at row size, and the two are easy to blur
-  // together. Amber bars read as the theme's caution/save-it tone instead.
-  // (Copy lines keep emoji marks — those must paste into KingShot chat.)
-  var HOLD_ICO = '<svg class="hold-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.3 5.1v13.8M15.7 5.1v13.8" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"/></svg>';
-  var VALUE_MARK = { best: GLYPH.best, ok: GLYPH.ok, low: '\uD83D\uDD3B', hold: HOLD_ICO };
-  var VALUE_TAG = { best: 'best value', ok: 'ok value', low: 'low value', hold: 'hold' };
   var VALUE_ORDER = ['best', 'ok', 'low', 'hold'];
 
   function todayValueHtml(ctx, BH) {
@@ -347,7 +340,7 @@
           if (labelToItemId(tasks[t][0]) === id) { pts = typeof tasks[t][1] === 'number' ? BH.fmt(tasks[t][1]) : String(tasks[t][1]); break; }
         }
       }
-      if (['Hero shard', 'Pets advance', 'Gathering', 'Gov charm', 'Gov gear'].indexOf(id) !== -1) pts = '';
+      if (['Hero shard', 'Pets advance', 'Gathering', 'Gov charm', 'Gov gear'].indexOf(id) !== -1 || (id === 'Troop' && !ctx.prepN)) pts = '';
       groups[val] += rowHTML(ITEM_GLYPH[id], id, pts, '', 'v-' + val);
     }
     var labels = {
@@ -494,11 +487,6 @@
   }
 
   // ── Day-driven page ────────────────────────────────────
-  var PHASE_FIRST = { brawl: 1, sg: 8, mob: 15, prep: 22, battle: 27 };
-  var PHASE_NAME = {
-    brawl: 'Alliance Brawl', sg: 'Strongest Governor', mob: 'Alliance Mobilization',
-    prep: 'KvK prep', battle: 'the battle weekend'
-  };
   function paintDaySections() {
     var w = weekOf(day);
     var secs = document.querySelectorAll('section[data-phase]');
@@ -687,23 +675,17 @@
   // the rows matrix-aligned; they already cost less than " · " (2 vs 3 cells).
   // Each emitted line ends with the group's mark (✅/🆗/🚫) rather than leading
   // with it, so a wrapped group keeps its verdict on every row it spans.
-  // Packing uses the game's own count (each char, each tag = 1 cell — the
-  // layout the alliance tested in chat): icon tag + space = 2, label chars =
-  // their length, ｜ separator = 1, trailing space + verdict = 2. Budget 28.
   function packRows(ids, mark, maxCells) {
     var lines = [];
     var cur = '';
-    var cells = 0;
     var sep = '\uFF5C';
     for (var i = 0; i < ids.length; i++) {
       var id = ids[i];
       var t = itemTag(id);
       var name = SHORT[id] || id;
       var piece = t ? (t + ' ' + name) : name;
-      var pc = (t ? 2 : 0) + name.length;
-      var sepCost = cur ? 1 : 0;
-      if (cur && cells + sepCost + pc + 2 > maxCells) { lines.push(cur + ' ' + mark); cur = piece; cells = pc; }
-      else { cur = (cur ? cur + sep : '') + piece; cells += sepCost + pc; }
+      if (cur && displayCells(cur + sep + piece + ' ' + mark) > maxCells) { lines.push(cur + ' ' + mark); cur = piece; }
+      else cur = (cur ? cur + sep : '') + piece;
     }
     if (cur) lines.push(cur + ' ' + mark);
     return lines;
@@ -716,7 +698,7 @@
     }
     var lines = ['\uD83D\uDC51KVK PREP \u00B7 DAY ' + n + '\uD83D\uDC51', KOP_THEMES[n - 1]];
     lines = lines.concat(packRows(groups.best, '\u2705', 28), packRows(groups.ok, '\uD83C\uDD97', 28));
-    if (groups.no.length > 4) lines.push('\uD83D\uDEAB everything else, save it \uD83D\uDEAB');
+    if (groups.no.length > 4) lines.push('\uD83D\uDEAB save the rest \uD83D\uDEAB');
     else lines = lines.concat(packRows(groups.no, '\uD83D\uDEAB', 28));
     return lines.join('\n');
   }
@@ -785,6 +767,7 @@
     var partsWrap = document.getElementById('ks-copy-parts');
     if (!out || !meta || !btn) return;
 
+    var preview = document.getElementById('ks-copy-preview');
     var parts = splitParts(text);
     var idx = 0;
 
@@ -824,7 +807,7 @@
         }
       } catch (e) {}
       if (!copied) {
-        document.getElementById('ks-copy-preview').open = true;
+        preview.open = true;
         out.focus();
         out.select();
         try { copied = document.execCommand('copy'); } catch (e) {}

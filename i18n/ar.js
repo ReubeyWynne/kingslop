@@ -861,5 +861,7 @@ window.__BH_I18N_DATA["ar"] = {
   "ks.meta.ogDescription": "فعاليات اليوم، وما يمنح النقاط، وما يُحفظ لوقت لاحق.",
   "ks.foot.main": "دورة الفعاليات",
   "ks.foot.note": "النقاط المعروضة لكل وحدة من المهمة. راجع جدول اليوم للوحدات الدقيقة والمستويات المتاحة. · <a href=\"https://kingshotoptimizer.com/events/kingdom-of-power/event-guide\">Kingshot Optimizer</a> · <a href=\"https://kingshotmastery.com/guides/kingshot-kvk-prep-guide\">Kingshot Mastery</a> · <a href=\"https://kingshotwiki.com/events/armament-competition/\">Kingshot Wiki</a> · <a href=\"https://kingshotdata.com/events/alliance-brawl-event/\">Kingshot Data</a>",
-  "ks.today.sideRun": "تحقق من المهام قبل إنفاق المواد."
+  "ks.today.sideRun": "تحقق من المهام قبل إنفاق المواد.",
+  "ks.fm.title": "Armament & Officer",
+  "ks.nav.fillers": "Armament & Officer",
 };

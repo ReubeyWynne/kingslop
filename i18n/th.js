@@ -875,6 +875,8 @@ window.__BH_I18N_DATA["th"] = {
   "ks.meta.ogDescription": "วันนี้มีกิจกรรมอะไร อะไรให้คะแนน และควรเก็บอะไรไว้ใช้ภายหลัง",
   "ks.foot.main": "รอบกิจกรรม",
   "ks.foot.note": "คะแนนที่แสดงเป็นคะแนนต่อหน่วยงาน ตรวจหน่วยที่แน่นอนและระดับที่ปลดล็อกในตารางของวันนั้น · <a href=\"https://kingshotoptimizer.com/events/kingdom-of-power/event-guide\">Kingshot Optimizer</a> · <a href=\"https://kingshotmastery.com/guides/kingshot-kvk-prep-guide\">Kingshot Mastery</a> · <a href=\"https://kingshotwiki.com/events/armament-competition/\">Kingshot Wiki</a> · <a href=\"https://kingshotdata.com/events/alliance-brawl-event/\">Kingshot Data</a>",
-  "ks.today.sideRun": "ตรวจสอบภารกิจก่อนใช้ทรัพยากร"
+  "ks.today.sideRun": "ตรวจสอบภารกิจก่อนใช้ทรัพยากร",
+  "ks.fm.title": "Armament & Officer",
+  "ks.nav.fillers": "Armament & Officer",
 }
 ;

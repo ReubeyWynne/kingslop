@@ -863,6 +863,8 @@ window.__BH_I18N_DATA["tr"] = {
   "ks.meta.ogDescription": "Bugün neler var, ne puan kazandırır ve neyi sonraya saklamalısın.",
   "ks.foot.main": "Etkinlik döngüsü",
   "ks.foot.note": "Puanlar görev birimi başınadır. Tam birimler ve açılan seviyeler için günün tablosuna bak. · <a href=\"https://kingshotoptimizer.com/events/kingdom-of-power/event-guide\">Kingshot Optimizer</a> · <a href=\"https://kingshotmastery.com/guides/kingshot-kvk-prep-guide\">Kingshot Mastery</a> · <a href=\"https://kingshotwiki.com/events/armament-competition/\">Kingshot Wiki</a> · <a href=\"https://kingshotdata.com/events/alliance-brawl-event/\">Kingshot Data</a>",
-  "ks.today.sideRun": "harcamadan önce görevlerini kontrol et."
+  "ks.today.sideRun": "harcamadan önce görevlerini kontrol et.",
+  "ks.fm.title": "Armament & Officer",
+  "ks.nav.fillers": "Armament & Officer",
 }
 ;

@@ -864,6 +864,8 @@ window.__BH_I18N_DATA["ja"] = {
   "ks.meta.ogDescription": "今日のイベント、得点になるもの、後に残す素材。",
   "ks.foot.main": "イベント周期",
   "ks.foot.note": "表示点数は課題の単位あたりです。正確な単位と解放済みの段階は、その日の表を確認してください。 · <a href=\"https://kingshotoptimizer.com/events/kingdom-of-power/event-guide\">Kingshot Optimizer</a> · <a href=\"https://kingshotmastery.com/guides/kingshot-kvk-prep-guide\">Kingshot Mastery</a> · <a href=\"https://kingshotwiki.com/events/armament-competition/\">Kingshot Wiki</a> · <a href=\"https://kingshotdata.com/events/alliance-brawl-event/\">Kingshot Data</a>",
-  "ks.today.sideRun": "素材を使う前に課題を確認してください。"
+  "ks.today.sideRun": "素材を使う前に課題を確認してください。",
+  "ks.fm.title": "Armament & Officer",
+  "ks.nav.fillers": "Armament & Officer",
 }
 ;

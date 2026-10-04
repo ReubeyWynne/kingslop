@@ -875,6 +875,8 @@ window.__BH_I18N_DATA["vi"] = {
   "ks.meta.ogDescription": "Hôm nay có gì, việc nào tính điểm và nên giữ gì cho sau này.",
   "ks.foot.main": "Chu kỳ sự kiện",
   "ks.foot.note": "Điểm hiển thị theo đơn vị nhiệm vụ. Xem bảng của ngày đó để biết đơn vị chính xác và cấp đã mở. · <a href=\"https://kingshotoptimizer.com/events/kingdom-of-power/event-guide\">Kingshot Optimizer</a> · <a href=\"https://kingshotmastery.com/guides/kingshot-kvk-prep-guide\">Kingshot Mastery</a> · <a href=\"https://kingshotwiki.com/events/armament-competition/\">Kingshot Wiki</a> · <a href=\"https://kingshotdata.com/events/alliance-brawl-event/\">Kingshot Data</a>",
-  "ks.today.sideRun": "kiểm tra nhiệm vụ trước khi dùng vật liệu."
+  "ks.today.sideRun": "kiểm tra nhiệm vụ trước khi dùng vật liệu.",
+  "ks.fm.title": "Armament & Officer",
+  "ks.nav.fillers": "Armament & Officer",
 }
 ;

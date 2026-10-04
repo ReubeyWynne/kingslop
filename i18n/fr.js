@@ -865,6 +865,8 @@ window.__BH_I18N_DATA["fr"] = {
   "ks.meta.ogDescription": "Ce qui se joue aujourd’hui, ce qui rapporte des points et ce qu’il faut garder.",
   "ks.foot.main": "Cycle des événements",
   "ks.foot.note": "Les points sont indiqués par unité de tâche. Le tableau du jour précise les unités et les paliers débloqués. · <a href=\"https://kingshotoptimizer.com/events/kingdom-of-power/event-guide\">Kingshot Optimizer</a> · <a href=\"https://kingshotmastery.com/guides/kingshot-kvk-prep-guide\">Kingshot Mastery</a> · <a href=\"https://kingshotwiki.com/events/armament-competition/\">Kingshot Wiki</a> · <a href=\"https://kingshotdata.com/events/alliance-brawl-event/\">Kingshot Data</a>",
-  "ks.today.sideRun": "vérifiez ses tâches avant de dépenser."
+  "ks.today.sideRun": "vérifiez ses tâches avant de dépenser.",
+  "ks.fm.title": "Armament & Officer",
+  "ks.nav.fillers": "Armament & Officer",
 }
 ;

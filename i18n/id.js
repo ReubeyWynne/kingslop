@@ -875,6 +875,8 @@ window.__BH_I18N_DATA["id"] = {
   "ks.meta.ogDescription": "Acara hari ini, apa yang memberi poin, dan apa yang disimpan untuk nanti.",
   "ks.foot.main": "Siklus acara",
   "ks.foot.note": "Poin ditampilkan per unit tugas. Lihat tabel hari itu untuk unit tepat dan tingkat yang terbuka. · <a href=\"https://kingshotoptimizer.com/events/kingdom-of-power/event-guide\">Kingshot Optimizer</a> · <a href=\"https://kingshotmastery.com/guides/kingshot-kvk-prep-guide\">Kingshot Mastery</a> · <a href=\"https://kingshotwiki.com/events/armament-competition/\">Kingshot Wiki</a> · <a href=\"https://kingshotdata.com/events/alliance-brawl-event/\">Kingshot Data</a>",
-  "ks.today.sideRun": "periksa tugasnya sebelum memakai bahan."
+  "ks.today.sideRun": "periksa tugasnya sebelum memakai bahan.",
+  "ks.fm.title": "Armament & Officer",
+  "ks.nav.fillers": "Armament & Officer",
 }
 ;

@@ -864,6 +864,8 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "ks.meta.ogDescription": "今天有哪些活动、哪些任务得分，以及哪些材料留到以后。",
   "ks.foot.main": "活动周期",
   "ks.foot.note": "显示的是每任务单位的分数。具体单位和已解锁等级请查看当天表格。 · <a href=\"https://kingshotoptimizer.com/events/kingdom-of-power/event-guide\">Kingshot Optimizer</a> · <a href=\"https://kingshotmastery.com/guides/kingshot-kvk-prep-guide\">Kingshot Mastery</a> · <a href=\"https://kingshotwiki.com/events/armament-competition/\">Kingshot Wiki</a> · <a href=\"https://kingshotdata.com/events/alliance-brawl-event/\">Kingshot Data</a>",
-  "ks.today.sideRun": "消耗材料前先查看任务。"
+  "ks.today.sideRun": "消耗材料前先查看任务。",
+  "ks.fm.title": "Armament & Officer",
+  "ks.nav.fillers": "Armament & Officer",
 }
 ;
