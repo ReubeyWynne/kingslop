@@ -64,18 +64,18 @@
     "themeColor": "#081315",
     "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23081315'/%3E%3Ctext x='16' y='24' font-size='22' text-anchor='middle' fill='%23D9B25A'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E\">",
     "titleKey": "ks.meta.title",
-    "titleText": "Event Cycle, Demystified",
+    "titleText": "Event cycle — dey.ci",
     "metaDescKey": "ks.meta.description",
-    "metaDesc": "One 28-day clock for the recurring events. Day 1 is always a Monday: set it to your kingdom's day — what's on today, what to save, what to copy into KingShot.",
+    "metaDesc": "What’s on today, what scores, and what to keep for later.",
     "ogTitleKey": "ks.meta.ogTitle",
-    "ogTitle": "Event Cycle, Demystified",
+    "ogTitle": "Event cycle",
     "ogDescKey": "ks.meta.ogDescription",
-    "ogDesc": "One 28-day clock for the recurring events — what's on today, in plain words.",
+    "ogDesc": "What’s on today, what scores, and what to keep for later.",
     "skipHref": "#today",
     "skipKey": "ks.skip",
     "skipText": "Skip to the guide",
     "dust": "<i></i><i></i><i></i>",
-    "brand": "EVENT <b>CYCLE</b>",
+    "brand": "EVENT CYCLE",
     "brandNoteKey": "ks.brandNote",
     "brandNote": "the 28-day clock",
     "swipePrev": {
@@ -101,11 +101,11 @@
       "../js/kvk.js"
     ],
     "footMainKey": "ks.foot.main",
-    "footMain": "JUST THE CLOCK",
+    "footMain": "EVENT CYCLE",
     "footSubs": [
       {
         "key": "ks.foot.note",
-        "html": "Point tables are community numbers: <a href=\"https://kingshotoptimizer.com/events/kingdom-of-power/event-guide\">Kingshot Optimizer</a> and <a href=\"https://kingshotmastery.com/guides/kingshot-kvk-prep-guide\">Kingshot Mastery</a> for prep, the <a href=\"https://kingshotwiki.com/events/armament-competition/\">Kingshot Wiki</a> for armament and officer, <a href=\"https://kingshotdata.com/events/alliance-brawl-event/\">Kingshot Data</a> for the brawl — for our server. The live scoring screen is the final word; <b>the principles don't change.</b>"
+        "html": "Points shown are per task unit. Use the day’s table for the exact units and unlocked tiers. · <a href=\"https://kingshotoptimizer.com/events/kingdom-of-power/event-guide\">Kingshot Optimizer</a> · <a href=\"https://kingshotmastery.com/guides/kingshot-kvk-prep-guide\">Kingshot Mastery</a> · <a href=\"https://kingshotwiki.com/events/armament-competition/\">Kingshot Wiki</a> · <a href=\"https://kingshotdata.com/events/alliance-brawl-event/\">Kingshot Data</a>"
       },
       {
         "key": "ks.foot.credit",

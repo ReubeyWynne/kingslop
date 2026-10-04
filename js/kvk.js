@@ -80,22 +80,13 @@
     'Troop','Research','Hero roulette','Gathering','Intel missions','Pets advance',
     'Gov charm','Gov gear','Widget gear','Mithril','Forgehammer'];
 
-  // Icon per material, shown in the today-card rows. The materials that have
-  // a KingShot in-game icon render the real game art (img/kingshot/, the icon
-  // PUA glyphs as PNGs); the rest keep an emoji stand-in — the game has no
-  // icon for them. KS_IMG resolves from this script's own URL (like i18n.js),
-  // so it works from any page depth. The art is ~11 KB a file and every row
-  // that uses it sits below the first screen, so the icons are deferred (the
-  // static prep-chart table defers its copies the same way): the page's own
-  // copy is what the reader is waiting for, and the icons arrive with the
-  // scroll.
   var KS_IMG = (function () {
     try {
       return new URL('../img/kingshot/', (document.currentScript && document.currentScript.src) || location.href).href;
     } catch (e) { return '../img/kingshot/'; }
   })();
   function ksIco(file) {
-    return '<img class="ks-ico" loading="lazy" src="' + KS_IMG + file + '" alt="" decoding="async">';
+    return '<img class="ks-ico" loading="eager" src="' + KS_IMG + file + '" alt="" decoding="async">';
   }
   var ITEM_GLYPH = {
     'Truegold': ksIco('truegold.png'), 'Tempered TG': ksIco('truegold.png'),
@@ -230,8 +221,10 @@
   }
 
   var day = todayDay();
+  var followingToday = true;
 
   function setDay(n, BH) {
+    followingToday = false;
     day = ((n - 1 + CYCLE_LEN) % CYCLE_LEN) + 1;
     render(BH);
   }
@@ -251,22 +244,28 @@
   function paintCycle(BH) {
     var box = document.getElementById('ks-cycle');
     if (!box) return;
-    var keys = '<div class="cycle-keys" aria-hidden="true">' +
-      '<span>' + BH.tr('ks.week.brawl', 'Brawl') + '</span>' +
-      '<span>' + BH.tr('ks.week.sgShort', 'Governor') + '</span>' +
-      '<span>' + BH.tr('ks.week.mobShort', 'Mobilize') + '</span>' +
-      '<span>' + BH.tr('ks.week.prepShort', 'KvK') + '</span></div>';
-    var cells = '';
     var tday = todayDay();
-    for (var d = 1; d <= CYCLE_LEN; d++) {
-      var w = weekOf(d);
-      var label = BH.tr('ks.week.' + w, w) + ' \u2014 day ' + d;
-      var cls = 'cell ' + w;
-      if (d === day) cls += ' now';
-      else if (d === tday) cls += ' mark';
-      cells += '<span class="' + cls + '" role="img" aria-label="' + label + '" title="' + label + '"></span>';
+    if (!box.children.length) {
+      for (var d = 1; d <= CYCLE_LEN; d++) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'cell ' + weekOf(d);
+        button.dataset.cycleDay = d;
+        button.addEventListener('click', function () { setDay(Number(this.dataset.cycleDay), window.BH); });
+        box.appendChild(button);
+      }
     }
-    box.innerHTML = keys + '<div class="cycle-bar">' + cells + '</div>';
+    box.className = 'cycle-bar';
+    Array.prototype.forEach.call(box.children, function (button) {
+      var d = Number(button.dataset.cycleDay);
+      button.textContent = BH.fmt(d);
+      button.classList.toggle('now', d === day);
+      button.classList.toggle('mark', d === tday && d !== day);
+      button.setAttribute('aria-pressed', String(d === day));
+      button.setAttribute('aria-label', BH.tpl('ks.today.dayOut', 'day {n} of 28', { n: BH.fmt(d) }) + ' · ' + (weekOf(d) === 'gap' ? BH.tr('ks.today.between', 'Between weeks') : BH.tr('ks.week.' + weekOf(d), 'KvK')) + (d === tday ? ' · ' + BH.tr('ks.today.title', 'Today') : ''));
+      if (d === tday) button.setAttribute('aria-current', 'date');
+      else button.removeAttribute('aria-current');
+    });
   }
 
   // ── The today card ─────────────────────────────────────
@@ -318,13 +317,6 @@
     return out;
   }
 
-  // The hold mark is drawn, not an emoji: the ⏸️ chip renders in the same
-  // blue family as the ok 🆗 at row size, and the two are easy to blur
-  // together. Amber bars read as the theme's caution/save-it tone instead.
-  // (Copy lines keep emoji marks — those must paste into KingShot chat.)
-  var HOLD_ICO = '<svg class="hold-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.3 5.1v13.8M15.7 5.1v13.8" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"/></svg>';
-  var VALUE_MARK = { best: GLYPH.best, ok: GLYPH.ok, low: '\uD83D\uDD3B', hold: HOLD_ICO };
-  var VALUE_TAG = { best: 'best value', ok: 'ok value', low: 'low value', hold: 'hold' };
   var VALUE_ORDER = ['best', 'ok', 'low', 'hold'];
 
   function todayValueHtml(ctx, BH) {
@@ -332,21 +324,39 @@
     if (ctx.freeActions && ctx.freeActions.length) {
       var freeRows = '';
       for (var i = 0; i < ctx.freeActions.length; i++) {
-        freeRows += rowHTML('\u2705', ctx.freeActions[i].label, ctx.freeActions[i].pts, '');
+        freeRows += rowHTML('✅', ctx.freeActions[i].label, ctx.freeActions[i].pts, '');
       }
-      html += zone('free \u2014 nothing from the hoard', freeRows);
+      html += zone(BH.tr('ks.today.actions', 'Daily tasks'), freeRows);
     }
     var groups = { best: '', ok: '', low: '', hold: '' };
-    var v;
-    for (v = 0; v < VITEMS.length; v++) {
+    for (var v = 0; v < VITEMS.length; v++) {
       var id = VITEMS[v];
       var val = valueOf(id, ctx);
       var pts = (val === 'best' || val === 'ok') && ctx.ptsById[id] ? ctx.ptsById[id] : '';
-      groups[val] += rowHTML(VALUE_MARK[val], ITEM_GLYPH[id] + ' ' + id, pts, VALUE_TAG[val], 'v-' + val);
+      if (val === 'low' && !ctx.prepN && !ctx.sgN && !ctx.brawlIds) {
+        var run = liveRun(day);
+        var tasks = run.event === 'armament' ? ARM_TASKS[run.run.type] : OFF_TASKS[run.run.type];
+        for (var t = 0; t < tasks.length; t++) {
+          if (labelToItemId(tasks[t][0]) === id) { pts = typeof tasks[t][1] === 'number' ? BH.fmt(tasks[t][1]) : String(tasks[t][1]); break; }
+        }
+      }
+      if (['Hero shard', 'Pets advance', 'Gathering', 'Gov charm', 'Gov gear'].indexOf(id) !== -1 || (id === 'Troop' && !ctx.prepN)) pts = '';
+      groups[val] += rowHTML(ITEM_GLYPH[id], id, pts, '', 'v-' + val);
     }
-    for (v = 0; v < VALUE_ORDER.length; v++) {
-      if (groups[VALUE_ORDER[v]]) html += zone(VALUE_MARK[VALUE_ORDER[v]] + ' ' + VALUE_TAG[VALUE_ORDER[v]], groups[VALUE_ORDER[v]]);
+    var labels = {
+      best: BH.tr('ks.today.priorities', 'Our prep priorities'),
+      ok: BH.tr('ks.today.scoring', 'Also scores'),
+      low: BH.tr('ks.today.otherTasks', 'Other event tasks'),
+      hold: BH.tr('ks.today.save', 'Keep for later')
+    };
+    for (var j = 0; j < VALUE_ORDER.length; j++) {
+      var state = VALUE_ORDER[j];
+      if (!groups[state]) continue;
+      if (state === 'hold' || (state === 'low' && (ctx.prepN || ctx.sgN || ctx.brawlIds))) {
+        html += '<details class="today-stored"><summary>' + (state === 'hold' ? ITEM_GLYPH.Truegold + ITEM_GLYPH['Hero shard'] : '📋 ') + labels[state] + '</summary>' + groups[state] + '</details>';
+      } else html += zone(labels[state], groups[state]);
     }
+    if (groups.best || groups.ok) html += '<p class="today-meta">' + BH.tr('ks.today.units', 'Points shown are per task unit. Use the day’s table for the exact units and unlocked tiers.') + '</p>';
     return '<div class="today-value">' + html + '</div>';
   }
 
@@ -395,23 +405,6 @@
   var BRAWL_THEMES = ['Rise of the City', 'Hero Development', 'Pet Training', 'Gear Enhancement', 'Trade Baron', 'Full-Scale Competition'];
   function brawlThemeIdx(d) { return d > 6 ? 6 : d; }
 
-  function weekNotesHtml(w, BH) {
-    // Time-critical notes: the Swordland battle on the cycle's Sundays
-    // (days 7 and 21), the matchmaking reveal on Mobilization's last day
-    // (day 20), and day 21's intel hold for prep.
-    var h = '';
-    if (w === 'mob' && day === 20) {
-      h += '<p class="today-meta">' + BH.tr('ks.today.matchmaking', 'KvK matchmaking: your opponent is revealed tomorrow!') + '</p>';
-    }
-    if (day === 7 || day === 21) {
-      h += '<p class="today-meta">' + BH.tr('ks.today.swordSunday', 'Swordland Showdown\u2019s one-hour battle runs today, the Sunday of this week.') + '</p>';
-    }
-    if (day === 21) {
-      h += '<p class="today-meta">' + BH.tr('ks.today.holdIntel', 'from 08:00 today, stop collecting intel missions. They bank and cash in for prep points.') + '</p>';
-    }
-    return h;
-  }
-
   // ── The week's main event feeds the card (single source: the section DOM) ──
   function brawlDayDetails(n) {
     var sec = document.getElementById('brawl');
@@ -440,8 +433,7 @@
     var kicker = 'Alliance Brawl \u00B7 day ' + n + ' of the week';
     var det = brawlDayDetails(n);
     var title = det ? det.title : (BRAWL_THEMES[n - 1] || '');
-    var meta = det && det.verdict ? det.verdict
-      : BH.tr('ks.today.brawlMeta', 'spend on the rows worth it below; keep the saved stockpile for Strongest Governor and KvK prep.');
+    var meta = BH.tr('ks.today.brawlMeta', 'Your personal ranking is against your alliance members. Check any agreed ranking before pushing your score.');
     var brawlIds = new Set();
     var ptsById = {};
     var freeActions = [];
@@ -460,72 +452,67 @@
     var body = todayValueHtml(ctx, BH);
     var head = '<p class="today-kicker">' + kicker + '</p>' +
       '<p class="today-title">' + title + '</p>' +
-      '<p class="today-meta">' + meta + '</p>' + weekNotesHtml(weekOf(day), BH);
+      '<p class="today-meta">' + meta + '</p>';
     return { head: head, body: body, copy: '', copyTitle: '' };
   }
 
   function mobCard(BH) {
     var kicker = 'Alliance Mobilization \u00B7 week 3';
-    var title = BH.tr('ks.today.mobTitle', 'spend little from the hoard today');
-    var meta = BH.tr('ks.today.mobMeta', 'no high-value events for spending today. if armament or officer is live, accept your mobilization missions first so a spend double-dips; everything else keeps for KvK prep.');
+    var title = BH.tr('ks.today.mobTitle', 'Alliance missions');
+    var meta = BH.tr('ks.today.mobMeta', 'Accept a mission before completing its task. Check overlapping Armament or Officer tasks before a planned spend.');
     if (day === 20) meta = BH.tr('ks.today.mobLast', 'last day of mobilization \u2014 ') + meta;
     var head = '<p class="today-kicker">' + kicker + '</p>' +
       '<p class="today-title">' + title + '</p>' +
-      '<p class="today-meta">' + meta + '</p>' + weekNotesHtml(weekOf(day), BH);
+      '<p class="today-meta">' + meta + '</p>';
     var ctx = { prepN: null, sgN: null, brawlIds: null, sgIds: new Set(), lowIds: runLowIds(), ptsById: {}, freeActions: null };
     var body = todayValueHtml(ctx, BH);
     return { head: head, body: body, copy: '', copyTitle: '' };
   }
 
-  // Runs are never the headline: a slim strip naming the live run as the
-  // source of the low-value rows above — not a parallel event.
   function sideRun(run, BH) {
     var name = run.event === 'armament' ? 'Armament Competition' : 'Officer Project';
-    var gly = run.event === 'armament' ? '\uD83D\uDEE1\uFE0F ' : '\uD83C\uDF96\uFE0F ';
-    return '<p class="side-run">' + gly + '<b>' + name + ' \u00B7 Type ' + run.run.type + ' is live</b> \u2014 its asks are the low-value rows above, so treat them like holds.</p>';
+    var gly = run.event === 'armament' ? '🛡️ ' : '🎖️ ';
+    return '<p class="side-run">' + gly + '<b>' + name + ' · ' + run.run.type + '</b> — ' + BH.tr('ks.today.sideRun', 'check its tasks before a planned spend.') + '</p>';
   }
 
   function gapCard(BH) {
-    // Day 21: nothing of its own — Officer Project Type B and Swordland's
-    // Sunday battle are the only things live (weekNotes + sideRun carry them).
-    var head = '<p class="today-kicker">between weeks \u00B7 day 21</p>' +
-      '<p class="today-title">quiet day</p>' +
-      '<p class="today-meta">' + BH.tr('ks.today.gapMeta', 'nothing of its own today \u2014 KvK prep opens tomorrow (day 22). keep the hoard.') + '</p>' +
-      weekNotesHtml('gap', BH);
+    var head = '<p class="today-kicker">' + BH.tr('ks.today.between', 'Between weeks') + ' · ' + BH.tr('ks.today.day', 'day') + ' 21</p>' +
+      '<p class="today-title">' + BH.tr('ks.today.beforePrep', 'Before prep tomorrow') + '</p>';
     var ctx = { prepN: null, sgN: null, brawlIds: null, sgIds: new Set(), lowIds: runLowIds(), ptsById: {}, freeActions: null };
     var body = todayValueHtml(ctx, BH);
     return { head: head, body: body, copy: '', copyTitle: '' };
   }
 
   // ── Day-driven page ────────────────────────────────────
-  var PHASE_FIRST = { brawl: 1, sg: 8, mob: 15, prep: 22, battle: 27 };
-  var PHASE_NAME = {
-    brawl: 'Alliance Brawl', sg: 'Strongest Governor', mob: 'Alliance Mobilization',
-    prep: 'KvK prep', battle: 'the battle weekend'
-  };
-  function paintDaySections(BH) {
+  function paintDaySections() {
     var w = weekOf(day);
-    var hasRun = !!liveRun(day);
     var secs = document.querySelectorAll('section[data-phase]');
     for (var i = 0; i < secs.length; i++) {
-      var ph = secs[i].getAttribute('data-phase');
-      var show = (ph === w) || (ph === 'fillers' && hasRun);
-      secs[i].hidden = !show;
-    }
-    var links = document.querySelectorAll('.toc a');
-    for (var j = 0; j < links.length; j++) {
-      var h = links[j].getAttribute('href');
-      if (h && h.charAt(0) === '#') {
-        var el = document.getElementById(h.slice(1));
-        links[j].hidden = !!(el && el.hasAttribute('data-phase') && el.hidden);
-      } else {
-        links[j].hidden = false;
-      }
+      secs[i].hidden = false;
+      secs[i].classList.toggle('current-phase', secs[i].dataset.phase === w);
     }
   }
 
+  function daySummary(d, BH) {
+    var phase = weekOf(d);
+    if (phase === 'prep') return BH.tr('ks.today.kickerPrep', 'KvK prep') + ' · ' + BH.tr('ks.today.day', 'day') + ' ' + prepDayOf(d) + ': ' + KOP_THEMES[prepDayOf(d) - 1];
+    if (phase === 'sg') return BH.tr('ks.today.kickerSg', 'Strongest Governor') + ' · ' + BH.tr('ks.today.day', 'day') + ' ' + sgDayOf(d) + ': ' + SG_THEMES[sgDayOf(d) - 1];
+    if (phase === 'brawl') return BH.tr('ks.brawl.title', 'Alliance Brawl') + ': ' + BRAWL_THEMES[brawlThemeIdx(d) - 1];
+    if (phase === 'mob') return BH.tr('ks.mob.title', 'Alliance Mobilization');
+    if (phase === 'gap') return BH.tr('ks.today.beforePrep', 'Before prep tomorrow');
+    return BH.tr('ks.week.battle', 'KvK battle weekend');
+  }
+
   function render(BH) {
-    paintDaySections(BH);
+    paintDaySections();
+    document.getElementById('ks-view-title').textContent = followingToday ? BH.tr('ks.today.title', 'Today') : BH.tr('ks.today.selected', 'Selected day');
+    var now = new Date();
+    var offset = day - todayDay();
+    var date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + offset));
+    document.getElementById('ks-date').textContent = date.toLocaleDateString((window.I18N && window.I18N.locale) || 'en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }) + ' · UTC';
+    document.getElementById('ks-today').setAttribute('aria-pressed', String(followingToday));
+    var nextDay = day % CYCLE_LEN + 1;
+    document.getElementById('ks-next-day').textContent = BH.tr('ks.today.nextUp', 'Next day') + ' · ' + daySummary(nextDay, BH);
     var out = document.getElementById('ks-day-out');
     if (out) {
       var dows = BH.tr('ks.today.dows', ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']);
@@ -533,7 +520,7 @@
       var weekday = (Array.isArray(dows) ? dows[uw] : '') ||
         ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][uw];
       out.textContent = weekday + ' \u00B7 ' + BH.tpl('ks.today.dayOut', 'day {n} of 28', { n: day }) +
-        (day === todayDay() ? ' ' + BH.tr('ks.today.isToday', '\u00B7 today') : '');
+        (followingToday ? ' ' + BH.tr('ks.today.isToday', '\u00B7 today') : '');
     }
     paintCycle(BH);
     highlightMatrix(BH);
@@ -549,12 +536,27 @@
     else if (w === 'prep') info = prepCard(prepDayOf(day), BH);
     else if (w === 'sg') info = sgCard(sgDayOf(day), BH);
     else info = battleCard(BH);
-    if (run) info.body += sideRun(run, BH);
+    if (run) info.head += sideRun(run, BH);
+    if (!info.copy) info.copy = reminderCopy(w, BH);
+    info.copyTitle = BH.tr('ks.today.copyRun', 'Copy for KingShot');
 
-    var html = info.head + info.body;
-    if (info.copy) html += copyBoxHTML(info.copy, info.copyTitle);
+    var html = info.head + weekActions(BH) + copyBoxHTML(info.copy, info.copyTitle) + info.body;
     card.innerHTML = html;
-    if (info.copy) wireCopy(BH, info.copy);
+    wireCopy(BH, info.copy);
+  }
+
+  function weekActions(BH) {
+    var notes = '';
+    if (day === 21) notes += '<p class="today-action">' + ITEM_GLYPH['Intel missions'] + BH.tr('ks.today.holdIntel', 'Hold intel from 08:00 UTC for tomorrow’s prep.') + '</p>';
+    if (day === 7 || day === 21) notes += '<p class="today-action"><span aria-hidden="true">⚔️</span> ' + BH.tr('ks.today.swordSunday', 'Swordland: check your alliance’s one-hour battle time.') + '</p>';
+    if (day === 20) notes += '<p class="today-action"><span aria-hidden="true">🏰</span> ' + BH.tr('ks.today.matchmaking', 'KvK matchmaking window: check the opponent reveal in game.') + '</p>';
+    return notes ? '<div class="today-actions">' + notes + '</div>' : '';
+  }
+
+  function reminderCopy(w) {
+    if (w === 'brawl') return ['ALLIANCE BRAWL · DAY ' + day, BRAWL_THEMES[brawlThemeIdx(day) - 1], 'Check agreed alliance ranks', 'Then check your next chest', 'Trucks: Merchant overlap', 'where available'].join('\n');
+    if (w === 'gap') return ['BEFORE KVK PREP', itemTag('Intel') + 'Hold intel from 08:00 UTC', 'Prep begins next reset', 'Swordland: alliance time', 'Keep prep materials'].join('\n');
+    return ['ALLIANCE MOBILIZATION', 'Accept mission before task', 'Check overlapping events', 'Keep planned prep materials'].join('\n');
   }
 
   // ── The matrix highlight ───────────────────────────────
@@ -670,23 +672,17 @@
   // the rows matrix-aligned; they already cost less than " · " (2 vs 3 cells).
   // Each emitted line ends with the group's mark (✅/🆗/🚫) rather than leading
   // with it, so a wrapped group keeps its verdict on every row it spans.
-  // Packing uses the game's own count (each char, each tag = 1 cell — the
-  // layout the alliance tested in chat): icon tag + space = 2, label chars =
-  // their length, ｜ separator = 1, trailing space + verdict = 2. Budget 28.
   function packRows(ids, mark, maxCells) {
     var lines = [];
     var cur = '';
-    var cells = 0;
     var sep = '\uFF5C';
     for (var i = 0; i < ids.length; i++) {
       var id = ids[i];
       var t = itemTag(id);
       var name = SHORT[id] || id;
       var piece = t ? (t + ' ' + name) : name;
-      var pc = (t ? 2 : 0) + name.length;
-      var sepCost = cur ? 1 : 0;
-      if (cur && cells + sepCost + pc + 2 > maxCells) { lines.push(cur + ' ' + mark); cur = piece; cells = pc; }
-      else { cur = (cur ? cur + sep : '') + piece; cells += sepCost + pc; }
+      if (cur && displayCells(cur + sep + piece + ' ' + mark) > maxCells) { lines.push(cur + ' ' + mark); cur = piece; }
+      else cur = (cur ? cur + sep : '') + piece;
     }
     if (cur) lines.push(cur + ' ' + mark);
     return lines;
@@ -699,7 +695,7 @@
     }
     var lines = ['\uD83D\uDC51KVK PREP \u00B7 DAY ' + n + '\uD83D\uDC51', KOP_THEMES[n - 1]];
     lines = lines.concat(packRows(groups.best, '\u2705', 28), packRows(groups.ok, '\uD83C\uDD97', 28));
-    if (groups.no.length > 4) lines.push('\uD83D\uDEAB everything else, save it \uD83D\uDEAB');
+    if (groups.no.length > 4) lines.push('\uD83D\uDEAB save the rest \uD83D\uDEAB');
     else lines = lines.concat(packRows(groups.no, '\uD83D\uDEAB', 28));
     return lines.join('\n');
   }
@@ -720,8 +716,7 @@
       else cur += add;
     }
     if (cur) lines.push(cur);
-    lines.push('roulette costs gems');
-    lines.push('hold intel from 08:00');
+    if (tasks.some(function (task) { return task[0] === 'Hero Roulette'; })) lines.push('roulette costs gems');
     return lines.join('\n');
   }
 
@@ -754,20 +749,12 @@
   }
 
   function copyBoxHTML(text, title) {
-    // The KingShot copy block is one tap away but folded by default so the
-    // today card stays short; the summary carries the copy prompt.
-    return '<details class="copy-box">' +
-      '<summary>' + title + '</summary>' +
-      '<div class="copy-inner">' +
-      '<textarea id="ks-copy-out" readonly spellcheck="false"></textarea>' +
-      '<p class="copy-meta" id="ks-copy-meta"></p>' +
-      '<div class="copy-btns">' +
-      '<button type="button" id="ks-copy-btn" class="kb">' + window.BH.tr('ks.today.copyBtn', 'copy') + '</button>' +
-      '<span id="ks-copy-parts" class="cycle-quick"></span>' +
-      '</div>' +
-      '<p class="copy-note">' + window.BH.tr('ks.today.copyNote', 'Shaped for KingShot chat: item icons ride in as &lt;item_icon_N&gt; tags, every line stays inside 28 display cells, and a block stays under 512 characters. If a block runs over one message, it comes split into parts; paste them in order.') + '</p>' +
-      '</div>' +
-      '</details>';
+    return '<div class="copy-box"><div class="copy-btns">' +
+      '<button type="button" id="ks-copy-btn" class="kb copy-primary">📋 ' + window.BH.tr('ks.today.copyRun', 'Copy for KingShot') + '</button>' +
+      '<span id="ks-copy-status" role="status"></span><span id="ks-copy-parts" class="cycle-quick"></span></div>' +
+      '<details id="ks-copy-preview"><summary>' + window.BH.tr('ks.today.preview', 'Message preview') + '</summary><div class="copy-inner">' +
+      '<textarea id="ks-copy-out" readonly spellcheck="false" aria-label="' + title + '"></textarea>' +
+      '<p class="copy-meta" id="ks-copy-meta"></p><p class="copy-note">' + window.BH.tr('ks.today.copyNote', 'Shaped for KingShot chat: item icons ride in as &lt;item_icon_N&gt; tags, every line stays inside 28 display cells, and a block stays under 512 characters. If a block runs over one message, it comes split into parts; paste them in order.') + '</p></div></details></div>';
   }
 
   function wireCopy(BH, text) {
@@ -777,6 +764,7 @@
     var partsWrap = document.getElementById('ks-copy-parts');
     if (!out || !meta || !btn) return;
 
+    var preview = document.getElementById('ks-copy-preview');
     var parts = splitParts(text);
     var idx = 0;
 
@@ -786,9 +774,11 @@
       var fits = len <= LIMIT;
       meta.innerHTML = BH.tpl('ks.today.chars', '<b>{n}</b> / 512 characters', { n: BH.fmt(len) }) +
         (fits ? ' \u2014 ' + BH.tr('ks.today.fits', 'fits one message') : ' \u2014 <span class="over">' + BH.tpl('ks.today.over', 'split into {n} messages', { n: parts.length }) + '</span>');
-      btn.textContent = (parts.length > 1 ? BH.tpl('ks.today.part', 'part {n}', { n: idx + 1 }) + ' \u00B7 ' : '') + BH.tr('ks.today.copyBtn', 'copy');
+      btn.textContent = '📋 ' + (parts.length > 1 ? BH.tpl('ks.today.part', 'part {n}', { n: idx + 1 }) + ' \u00B7 ' : '') + BH.tr('ks.today.copyRun', 'Copy for KingShot');
+      document.getElementById('ks-copy-status').textContent = '';
       if (partsWrap) {
         partsWrap.innerHTML = '';
+        if (parts.length === 1) return;
         for (var i = 0; i < parts.length; i++) {
           (function (pi) {
             var b = document.createElement('button');
@@ -802,17 +792,25 @@
       }
     }
 
-    function doCopy() {
-      var done = false;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(out.value).then(function () { done = true; }).catch(function () { done = false; });
-      }
-      if (!done) {
+    async function doCopy() {
+      var copied = false;
+      var value = out.value;
+      var status = document.getElementById('ks-copy-status');
+      btn.disabled = true;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(value);
+          copied = true;
+        }
+      } catch (e) {}
+      if (!copied) {
+        preview.open = true;
         out.focus();
         out.select();
-        try { document.execCommand('copy'); } catch (e) { /* no clipboard */ }
+        try { copied = document.execCommand('copy'); } catch (e) {}
       }
-      BH.showNote(BH.tr('ks.today.copied', 'copied. paste it straight into KingShot.'));
+      btn.disabled = false;
+      status.textContent = copied ? BH.tr('ks.today.copied', 'copied. paste it straight into KingShot.') : BH.tr('ks.today.copyFailed', 'Select and copy the message below.');
     }
 
     btn.addEventListener('click', doCopy);
@@ -826,20 +824,48 @@
     if (prev) prev.addEventListener('click', function () { setDay(day - 1, BH); });
     if (next) next.addEventListener('click', function () { setDay(day + 1, BH); });
     var today = document.getElementById('ks-today');
-    if (today) today.addEventListener('click', function () { setDay(todayDay(), BH); });
+    if (today) today.addEventListener('click', function () { followingToday = true; day = todayDay(); render(BH); });
     var quicks = document.querySelectorAll('[data-jump]');
     for (var i = 0; i < quicks.length; i++) {
       (function (b) {
         b.addEventListener('click', function () { setDay(parseInt(b.getAttribute('data-jump'), 10), BH); });
       })(quicks[i]);
     }
+    var toggles = document.querySelectorAll('.reference-toggle');
+    Array.prototype.forEach.call(toggles, function (button) {
+      var body = document.getElementById(button.getAttribute('aria-controls'));
+      body.hidden = true;
+      button.setAttribute('aria-expanded', 'false');
+      button.querySelector('.reference-mark').textContent = '+';
+      button.addEventListener('click', function () {
+        body.hidden = !body.hidden;
+        button.setAttribute('aria-expanded', String(!body.hidden));
+        button.querySelector('.reference-mark').textContent = body.hidden ? '+' : '−';
+      });
+    });
+    function openHash() {
+      var section = document.getElementById(location.hash.slice(1));
+      if (!section) return;
+      var body = section.querySelector('.reference-body');
+      var button = section.querySelector('.reference-toggle');
+      if (body && button) { body.hidden = false; button.setAttribute('aria-expanded', 'true'); button.querySelector('.reference-mark').textContent = '−'; }
+    }
+    window.addEventListener('hashchange', openHash);
+    document.querySelectorAll('.toc a').forEach(function (link) {
+      link.addEventListener('click', function () {
+        var section = document.getElementById(link.hash.slice(1));
+        var button = section && section.querySelector('.reference-toggle');
+        if (button && button.getAttribute('aria-expanded') === 'false') button.click();
+      });
+    });
+    openHash();
     // The today display is live on the UTC date: if the cycle day rolls over
     // while the page is open (or the tab sat backgrounded overnight), catch
     // up on focus/visibility instead of showing a stale day. No-op whenever
     // the selected day already matches today.
     function refreshToday() {
       var t = todayDay();
-      if (t !== day) setDay(t, BH);
+      if (followingToday && t !== day) { day = t; render(BH); }
     }
     document.addEventListener('visibilitychange', function () {
       if (!document.hidden) refreshToday();

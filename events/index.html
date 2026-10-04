@@ -14,57 +14,45 @@ self: events
   <a href="#days" data-i18n="ks.nav.days">The five prep days</a>
   <a href="#battle" data-i18n="ks.nav.battle">The battle weekend</a>
   <a href="#checklist" data-i18n="ks.nav.checklist">The routine</a>
-  <a href="#fillers" data-i18n="ks.nav.fillers">the light-week fillers</a>
+  <a href="#fillers" data-i18n="ks.nav.fillers">Armament &amp; Officer</a>
 </nav>
 
 
 <main>
   <!-- ═══════════ HERO ═══════════ -->
-  <section class="section hero" id="top">
-    <h1 data-i18n-html="ks.hero.h1">EVENT CYCLE,<br><span class="accent">DEMYSTIFIED</span></h1>
-    <span class="beta-badge">BETA</span>
-    <p class="lede" data-i18n-html="ks.hero.lede">One <strong>28-day wheel</strong> for the recurring events —
-      <strong>day 1 is always a Monday</strong>. Set it to your kingdom's day: what's on today, what to save, what to
-      copy into KingShot.</p>
-    <p class="chips"><span data-i18n="ks.hero.chip1">every 28 days</span> <span aria-hidden="true">·</span>
-      <span data-i18n="ks.hero.chip2">day 1 is a monday</span> <span aria-hidden="true">·</span>
-      <span data-i18n="ks.hero.chip3">prep · governor · light weeks</span> <span aria-hidden="true">·</span>
-      <span data-i18n="ks.hero.chip4">copy for KingShot</span></p>
-  </section>
+  <header class="events-heading" id="top">
+    <h1 data-i18n="ks.hero.h1">Event cycle</h1>
+    <p data-i18n="ks.hero.lede">What’s on today, what scores, and what to keep for later.</p>
+  </header>
 
-  <!-- ═══════════ 1 · TODAY — THE LIVE DISPLAY ═══════════ -->
-  <section class="section" id="today">
-    <h2 data-i18n="ks.today.title">Today</h2>
-
-    <div class="calc live">
-      <p class="calc-title" data-i18n="ks.today.calcTitle">the 28-day clock</p>
-
-      <div id="ks-cycle" role="group" aria-label="the 28 day cycle"></div>
-
-      <div class="cycle-controls">
-        <button type="button" id="ks-prev" class="kb" aria-label="previous day" data-i18n-key="ks.today.prevAria" data-i18n-attr="aria-label">− day</button>
-        <output id="ks-day-out" class="cycle-day-out" aria-live="polite">day 1 of 28</output>
-        <button type="button" id="ks-next" class="kb" aria-label="next day" data-i18n-key="ks.today.nextAria" data-i18n-attr="aria-label">+ day</button>
-      </div>
-      <div class="cycle-quick" role="group" aria-label="jump to a week">
-        <button type="button" id="ks-today" class="kb" data-i18n="ks.today.btn">today</button>
-        <button type="button" class="kb" data-jump="1">Brawl</button>
-        <button type="button" class="kb" data-jump="8">SG</button>
-        <button type="button" class="kb" data-jump="15">Mobilize</button>
-        <button type="button" class="kb" data-jump="22">KvK</button>
-      </div>
-      <div id="ks-card" class="today-card" aria-live="polite">
-        <p class="today-empty" data-i18n="ks.today.empty">set the clock and the card fills itself in.</p>
-      </div>
+  <section class="section today-section" id="today">
+    <div class="today-heading">
+      <h2 id="ks-view-title" data-i18n="ks.today.title">Today</h2>
+      <p id="ks-date"></p>
     </div>
-</section>
+    <div id="ks-card" class="today-card" aria-live="polite">
+      <p class="today-empty" data-i18n="ks.today.empty">Loading today’s events.</p>
+    </div>
+    <div class="cycle-controls">
+      <button type="button" id="ks-prev" class="kb" aria-label="previous day" data-i18n-key="ks.today.prevAria" data-i18n-attr="aria-label">−</button>
+      <output id="ks-day-out" class="cycle-day-out" aria-live="polite"></output>
+      <button type="button" id="ks-next" class="kb" aria-label="next day" data-i18n-key="ks.today.nextAria" data-i18n-attr="aria-label">+</button>
+      <button type="button" id="ks-today" class="kb" data-i18n="ks.today.btn">Today</button>
+    </div>
+    <div class="cycle-quick" role="group" aria-label="Jump to a week" data-i18n-key="ks.today.weeks" data-i18n-attr="aria-label">
+      <button type="button" class="kb" data-jump="1"><span aria-hidden="true">⚔️</span> <span data-i18n="ks.brawl.title">Alliance Brawl</span></button>
+      <button type="button" class="kb" data-jump="8"><span aria-hidden="true">👑</span> <span data-i18n="ks.week.sgShort">Governor</span></button>
+      <button type="button" class="kb" data-jump="15"><span aria-hidden="true">📜</span> <span data-i18n="ks.week.mobShort">Mobilize</span></button>
+      <button type="button" class="kb" data-jump="22"><span aria-hidden="true">🏰</span> <span data-i18n="ks.week.prepShort">KvK</span></button>
+    </div>
+    <div class="next-day" id="ks-next-day"></div>
+  </section>
 
   <!-- ═══════════ 2 · THE 28-DAY CLOCK ═══════════ -->
   <section class="section" id="cycle">
     <h2 data-i18n="ks.cycle.title">The 28-day clock</h2>
-    <p class="lede" data-i18n-html="ks.cycle.lede">Four weeks, one loop. After your kingdom's first Kingdom of Power
-      they repeat forever on a <strong>global 28-day cycle</strong> — every kingdom runs the same week, and
-      <strong>day 1 is always a Monday</strong>. Which week you're in is the whole game.</p>
+    <div id="ks-cycle" role="group" aria-label="the 28 day cycle" data-i18n-key="ks.today.calcTitle" data-i18n-attr="aria-label"></div>
+    <p class="lede" data-i18n="ks.cycle.lede">After your kingdom’s first KvK, events follow a 28-day cycle. Day 1 is Monday; this clock uses UTC.</p>
 
     <div class="wavetable">
       <div class="wt-row"><span class="wt-waves">1–7</span><span class="wt-type">Brawl</span><span class="wt-note" data-i18n-html="ks.cycle.w1">Alliance Brawl week — the light week, days 1–7: the brawl runs 6.5 days against another kingdom, and armament (Type 1 Mon–Tue, Type 2 Fri–Sat) and officer (Type A Wed–Thu, Type B Sun into day 8) each run twice inside it. Swordland's battle fires on its Sunday.</span></div>
@@ -78,17 +66,15 @@ self: events
       that, their events run on their own clock. The live clock above works today out from the UTC date, so every
       kingdom sees the same day.</p>
 
-    <p data-i18n-html="ks.cycle.other">The other clocks still run underneath: <b>Bear Hunt</b> every two days,
-      <b>Mystic Trial</b> rooms on their weekdays, <b>Arena</b> daily. They're the income; the 28-day wheel is the
-      spending — and what your kingdom does there becomes its <b>permanent KvK record</b>, the ledger that shapes how
-      Transfer treats it. the hoard is the point: spend it only where the wheel scores it highest.</p>
+    <p data-i18n="ks.cycle.other">Bear Hunt, Mystic Trial and Arena have their own schedules. This cycle helps you plan spending for recurring scoring events.</p>
   </section>
 
 
 
   <!-- ═══════════ 2C · ALLIANCE BRAWL ═══════════ -->
   <section class="section" id="brawl" data-phase="brawl">
-    <h2 data-i18n="ks.brawl.title">Alliance Brawl</h2>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="brawl-body"><span data-i18n="ks.brawl.title">Alliance Brawl</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <div id="brawl-body" class="reference-body">
     <p class="lede" data-i18n-html="ks.brawl.lede">The week-1 main event, right after KvK: your alliance against one
       from another kingdom for <b>6.5 days</b> — five 24-hour themed days, then a ~36-hour finale. In eligible
       kingdoms it runs beside Merchant Empire, so the truck tasks count in both.</p>
@@ -115,8 +101,6 @@ self: events
     <details class="day">
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 1 · Rise of the City</span>
       <span class="day-meta">24h · building and gathering day</span></summary>
-      <p class="note bd-verdict">the verdict: trucks, raids and gathering are free and score twice (Merchant Empire); the building rows eat truegold you'll want in prep, so spend them only up to a chest.</p>
-      
       <table class="pt"><tbody>
         <tr><td>Escort a truck (any grade)</td><td class="pts">10,000</td></tr>
         <tr><td>Raid a truck (any grade)</td><td class="pts">10,000</td></tr>
@@ -133,8 +117,6 @@ self: events
     <details class="day">
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 2 · Hero Development</span>
       <span class="day-meta">24h · hero day</span></summary>
-      <p class="note bd-verdict">the verdict: trucks and intel missions are the free score; shards cost a hoard Strongest Governor wants, so spend them only when today's chest needs it.</p>
-      
       <table class="pt"><tbody>
         <tr><td>Escort a truck (any grade)</td><td class="pts">10,000</td></tr>
         <tr><td>Raid a truck (any grade)</td><td class="pts">10,000</td></tr>
@@ -154,8 +136,6 @@ self: events
     <details class="day">
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 3 · Pet Training</span>
       <span class="day-meta">24h · pet and charm day</span></summary>
-      <p class="note bd-verdict">the verdict: pets and charms score, but taming marks pay less here than prep day 3 — spend only what today's chest needs, keep the rest for prep.</p>
-      
       <table class="pt"><tbody>
         <tr><td>Escort a truck (any grade)</td><td class="pts">10,000</td></tr>
         <tr><td>Raid a truck (any grade)</td><td class="pts">10,000</td></tr>
@@ -172,8 +152,6 @@ self: events
     <details class="day">
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 4 · Gear Enhancement</span>
       <span class="day-meta">24h · gear and troop day</span></summary>
-      <p class="note bd-verdict">the verdict: this day asks the most hoard (mithril at half the prep rate); run the free rows and save the mithril and gear for prep.</p>
-      
       <table class="pt"><tbody>
         <tr><td>Escort a truck (any grade)</td><td class="pts">10,000</td></tr>
         <tr><td>Raid a truck (any grade)</td><td class="pts">10,000</td></tr>
@@ -194,14 +172,11 @@ self: events
         <tr><td>T1 troop</td><td class="pts">1</td></tr>
         <tr><td>Governor Charm max score +1</td><td class="pts">45</td></tr>
       </tbody></table>
-      <p class="note">The gear day: mithril pays 18,750 here vs 40,000 on prep day 4, and troops at half the KvK rate —
-        it's the day the brawl wants your hoard most. Spend knowingly.</p>
+      <p class="note" data-i18n="ks.today.budget">Choose your reward target before spending. Keep materials reserved for another event unless you decide to use them here.</p>
     </details>
     <details class="day">
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 5 · Trade Baron</span>
       <span class="day-meta">24h · beast day</span></summary>
-      <p class="note bd-verdict">the verdict: the free day — beasts and the terror cost nothing from the hoard; push it if the alliance needs a win.</p>
-      
       <table class="pt"><tbody>
         <tr><td>Escort a truck (any grade)</td><td class="pts">10,000</td></tr>
         <tr><td>Raid a truck (any grade)</td><td class="pts">10,000</td></tr>
@@ -222,8 +197,6 @@ self: events
     <details class="day">
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 6 · Full-Scale Competition</span>
       <span class="day-meta">~36h finale · every day's tasks at once, into Sunday</span></summary>
-      <p class="note bd-verdict">the verdict: the finale mixes every table; the free and cheap rows are the value and gems are never worth spending for — keep the hoard whole.</p>
-      
       <table class="pt"><tbody>
         <tr><td>Escort a truck (any grade)</td><td class="pts">10,000</td></tr>
         <tr><td>Raid a truck (any grade)</td><td class="pts">10,000</td></tr>
@@ -260,19 +233,17 @@ self: events
     <p class="note" data-i18n-html="ks.brawl.overlap">Escort and raid trucks (10,000 each) live in Merchant Empire,
       which runs beside the brawl — the same truck counts in both. Armament runs this week too; check it before
       spending truegold or shards.</p>
-    <p class="note" data-i18n-html="ks.brawl.stance">F2P: the daily chests are the value. Stars and ranking decorations are cosmetic — don't burn the hoard chasing one, and never spend for a ranking slot the chests don't pay — unless the alliance is deliberately pushing the brawl, which is the one reason to spend here. the hoard you keep is the kingdom's KvK record.</p>
+    <p class="note" data-i18n="ks.brawl.stance">Personal ranks are mainly within your alliance. Some alliances compete freely; others agree the top places to reward active low spenders. Check the plan before overtaking someone or spending for a rank.</p>
+    </div>
   </section>
 
   <!-- ═══════════ 3 · THE PREP CHART ═══════════ -->
   <section class="section" id="matrix" data-phase="prep">
-    <h2 data-i18n="ks.matrix.title">The prep chart</h2>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="matrix-body"><span data-i18n="ks.matrix.title">The prep chart</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <div id="matrix-body" class="reference-body">
     <p class="lede" data-i18n-html="ks.matrix.lede">The whole KvK prep week as one chart: every material you've been
       saving, and which of the five prep days wants it. <strong>Today's column is what the clock above says to
       spend.</strong></p>
-    <p class="note" data-i18n-html="ks.matrix.record"><b>the prep week is the point.</b> what you spend the saved
-      hoard on here becomes your kingdom's permanent <b>KvK record</b> — the one that shapes how Transfer treats it. a
-      light-week filler's fixed reward is a rounding error next to that.</p>
-
     <details class="matrix-fold">
       <summary data-i18n="ks.matrix.summary">the prep chart — 16 materials × five prep days</summary>
       <p class="legend"><span class="lg best">✅</span> <span data-i18n="ks.matrix.best">best day</span>
@@ -310,11 +281,13 @@ self: events
       Beast hunting earns <b>no</b> prep points at all.</p>
     </details>
 
+    </div>
   </section>
 
   <!-- ═══════════ 4 · THE FIVE PREP DAYS ═══════════ -->
   <section class="section" id="days" data-phase="prep">
-    <h2 data-i18n="ks.days.title">The five prep days</h2>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="days-body"><span data-i18n="ks.days.title">The five prep days</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <div id="days-body" class="reference-body">
     <p class="lede" data-i18n-html="ks.days.lede">Each prep day is one theme, and each theme decides what your hoard is
       worth. The daily goal is the <strong>200,000-point chest</strong>; the milestone thresholds scale with your server
       and Town Center level, so check your own ladder in-game.</p>
@@ -405,14 +378,15 @@ self: events
       </tbody></table>
       <p class="note">Day 5 isn't reduced; every task scores at its full rate. It only feels different because more
         categories are live at once. It's the day the saved stockpile empties.</p>
-    </details>  </section>
+    </details>
+    </div>
+  </section>
 
   <!-- ═══════════ 5 · STRONGEST GOVERNOR ═══════════ -->
   <section class="section sg" id="governor" data-phase="sg">
-    <h2 data-i18n="ks.governor.title">Strongest Governor</h2>
-    <p class="lede" data-i18n-html="ks.governor.lede">The same machine, played solo: seven days, your hoard scored
-      against everyone else's. Day names repeat — Skill Up, Combat Training, Hero Development — but each repeat has
-      its own list; always read the live day.</p>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="governor-body"><span data-i18n="ks.governor.title">Strongest Governor</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <div id="governor-body" class="reference-body">
+    <p class="lede" data-i18n="ks.governor.lede">Seven scoring days. Repeated day names can have different tasks, so check the current day’s table.</p>
 
     <p class="legend"><span class="lg free">💎 gems</span> <span data-i18n="ks.governor.gems">roulette spins cost
       gems, so only spin on a day that pays well</span>
@@ -508,20 +482,24 @@ self: events
       Town Center group</b>, and the reward ladder runs <b>daily ranks</b>, <b>challenge medals</b>, <b>kingdom and
       cross-kingdom ranks</b>, and a <b>kingdom-state reward bar</b> that pays state rewards when your kingdom
       finishes near the top of its group.</p>
-    <p class="note" data-i18n-html="ks.governor.rank">Worth your hoard for the fixed rewards — after KvK prep it's the best place to spend in the whole cycle. Hit the daily milestones and challenge medals; skip the cosmetic ranking chase. The one exception: if your alliance is deliberately pushing the brawl, that week's brawl takes the spend. What you do in the 28-day cycle becomes your kingdom's permanent <b>KvK record</b> — the one that shapes how Transfer treats it.</p>
+    <p class="note" data-i18n="ks.today.budget">Choose your reward target before spending. Keep materials reserved for another event unless you decide to use them here.</p>
+    </div>
   </section>
 
   <!-- ═══════════ 6 · THE BATTLE WEEKEND ═══════════ -->
     <!-- ═══ 6A · ALLIANCE MOBILIZATION (week 3) ════════════ -->
   <section class="section" id="mobilize" data-phase="mob">
-    <h2 data-i18n="ks.mob.title">Alliance Mobilization</h2>
-    <p class="lede" data-i18n-html="ks.mob.lede">The week-3 main event (days 15–20), the month's second light week — its own event with <strong>no daily themes</strong>. The armament and officer runs repeat here, and the week's real job is banking the hoard for the KvK prep that follows.</p>
-    <p class="note" data-i18n-html="ks.mob.hold"><strong>Spend nothing from the hoard this week.</strong> Day 20 reveals the KvK matchmaking; day 21 is a quiet gap before prep — from 08:00 stop collecting intel so it banks.</p>
-    <p class="note" data-i18n-html="ks.mob.open">A full guide to what Alliance Mobilization scores is still being written — the scoring detail isn't on this page yet. What you can already bank on: your hoard is worth more in Strongest Governor and KvK prep than here.</p>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="mobilize-body"><span data-i18n="ks.mob.title">Alliance Mobilization</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <div id="mobilize-body" class="reference-body">
+    <p class="lede" data-i18n="ks.mob.lede">Alliance Mobilization runs on cycle days 15–20 with no daily themes. Accept a mission before completing its task.</p>
+    <p class="note" data-i18n="ks.today.budget">Choose your reward target before spending. Keep materials reserved for another event unless you decide to use them here.</p>
+    <p class="note" data-i18n="ks.mob.open">Full Mobilization scoring tables aren’t included here yet. Check the active mission in game.</p>
+    </div>
   </section>
 
 <section class="section" id="battle" data-phase="battle">
-    <h2 data-i18n="ks.battle.title">The battle weekend</h2>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="battle-body"><span data-i18n="ks.battle.title">The battle weekend</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <div id="battle-body" class="reference-body">
     <p class="lede" data-i18n-html="ks.battle.lede">Prep decides who attacks; the weekend decides who holds. The prep
       winner enters the loser's kingdom and tries to take the Castle — a <strong>five-hour contest</strong>: one clean
       2.5-hour hold wins it, else the most hold time at the close.</p>
@@ -543,11 +521,13 @@ self: events
       <li data-i18n-html="ks.battle.f6"><b>The shield:</b> activate it before the window opens — there's always a
         between-phase gap when unshielded towns fall, and it's essential for offline time during the battle day.</li>
     </ul>
+    </div>
   </section>
 
   <!-- ═══════════ 7 · THE ROUTINE ═══════════ -->
   <section class="section" id="checklist">
-    <h2 data-i18n="ks.checklist.title">The routine</h2>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="checklist-body"><span data-i18n="ks.checklist.title">The routine</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <div id="checklist-body" class="reference-body">
     <p class="lede" data-i18n-html="ks.checklist.lede">The page, in the order you'll do it: save for KvK prep, the
       day-one ritual, then the weekend:</p>
     <ol class="checklist">
@@ -561,13 +541,15 @@ self: events
       <li><span class="check-num">8</span><div><h3 data-i18n="ks.checklist.c8.title">Shield before the window</h3><p data-i18n-html="ks.checklist.c8.body">Activate your town's shield as prep ends. The gap between phases is when unshielded towns fall.</p></div></li>
       <li><span class="check-num">9</span><div><h3 data-i18n="ks.checklist.c9.title">Know the battle plan</h3><p data-i18n-html="ks.checklist.c9.body">Your UTC window, your Town Center's attack range, your rally assignments — and if you're top-150 by power, check your Duel of the Elites group before you stop at 200,000. Watch day 20 for the matchmaking reveal.</p></div></li>
     </ol>
+    </div>
   </section>
 
   <!-- ═══ A · THE LIGHT-WEEK FILLERS (Armament + Officer — reference only) ═════════ -->
   <section class="section" id="fillers" data-phase="fillers">
-    <h2 data-i18n="ks.fm.title">the light-week fillers</h2>
-    <p class="lede" data-i18n-html="ks.fm.lede">Two low-reward side events — <b>Armament Competition</b> and <b>Officer Project</b> — each repeat twice inside every light week (days 1–7 and 15–20), two days at a time. They pay the hoard back at a fraction of what Strongest Governor and KvK prep do for the same material.</p>
-    <p class="note" data-i18n-html="ks.fm.verdict"><b>skip them.</b> Even the fixed milestones are usually not worth the material they ask; do the free or cheap rows if they're convenient, otherwise keep everything for Strongest Governor and KvK prep. What you do in the 28-day cycle becomes your kingdom's permanent <b>KvK record</b> — the one that shapes how Transfer treats it.</p>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="fillers-body"><span data-i18n="ks.fm.title">Armament &amp; Officer</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <div id="fillers-body" class="reference-body">
+    <p class="lede" data-i18n="ks.fm.lede">Armament Competition and Officer Project each run twice in Brawl and Mobilization weeks. Tasks depend on the run type.</p>
+    <p class="note" data-i18n="ks.today.budget">Choose your reward target before spending. Keep materials reserved for another event unless you decide to use them here.</p>
     <details class="day">
       <summary><span class="sum-mark" aria-hidden="true">🛡️ 🎖️</span><span class="day-title" data-i18n="ks.fm.tables">the point tables (for reference only)</span><span class="day-meta">Armament &amp; Officer · for reference only</span></summary>
       <div class="day-body">
@@ -640,5 +622,6 @@ self: events
     </details>
       </div>
     </details>
+    </div>
   </section>
 </main>
