@@ -838,7 +838,6 @@ window.__BH_I18N_DATA["tr"] = {
   "ks.mob.lede": "Alliance Mobilization döngünün 15–20. günlerinde günlük temalar olmadan sürer. Görevi tamamlamadan önce misyonu kabul et.",
   "ks.mob.open": "Tam Mobilization puan tabloları henüz burada yok. Oyundaki aktif misyonu kontrol et.",
   "ks.today.mobMeta": "Görevi yapmadan önce misyonu kabul et. Planlı harcamadan önce Armament veya Officer ile örtüşen görevleri kontrol et.",
-  "ks.today.gapMeta": "KvK hazırlığı yarın başlar. 08:00 UTC’den itibaren istihbarat görevlerini sakla ve ittifakının Swordland saatini kontrol et.",
   "ks.today.matchmaking": "KvK eşleştirme aralığı: açıklanan rakibi oyunda kontrol et.",
   "ks.fm.lede": "Armament Competition ve Officer Project, Brawl ve Mobilization haftalarında ikişer kez gerçekleşir. Görevler türüne bağlıdır.",
   "ks.today.budget": "Harcamadan önce hedef ödülünü seç. Burada kullanmayı seçmedikçe başka etkinlikler için ayrılan malzemeleri sakla.",
@@ -866,5 +865,11 @@ window.__BH_I18N_DATA["tr"] = {
   "ks.today.sideRun": "harcamadan önce görevlerini kontrol et.",
   "ks.fm.title": "Armament & Officer",
   "ks.nav.fillers": "Armament & Officer",
+  "ks.today.title": "Bugün",
+  "ks.today.btn": "Bugün",
+  "ks.nav.today": "Bugün",
+  "ks.today.copyRun": "KingShot için kopyala",
+  "ks.today.holdIntel": "Yarının hazırlığı için 08:00 UTC’den itibaren istihbarat görevlerini biriktir.",
+  "ks.today.swordSunday": "Swordland: ittifakının bir saatlik savaş zamanını kontrol et.",
 }
 ;

@@ -839,7 +839,6 @@ window.__BH_I18N_DATA["ru"] = {
   "ks.mob.lede": "Alliance Mobilization проходит в дни 15–20 цикла без ежедневных тем. Примите миссию до выполнения её задания.",
   "ks.mob.open": "Полных таблиц Mobilization здесь пока нет. Проверяйте активную миссию в игре.",
   "ks.today.mobMeta": "Примите миссию до выполнения задания. Перед расходами проверьте совпадающие задания Armament или Officer.",
-  "ks.today.gapMeta": "Подготовка KvK начинается завтра. С 08:00 UTC не забирайте задания разведки и уточните время Swordland в альянсе.",
   "ks.today.matchmaking": "Окно подбора KvK: проверьте объявленного противника в игре.",
   "ks.fm.lede": "Armament Competition и Officer Project проходят по два раза в недели Brawl и Mobilization. Задания зависят от типа.",
   "ks.today.budget": "Выберите желаемую награду до расходов. Сохраняйте материалы для других событий, если не решили использовать их здесь.",
@@ -867,5 +866,11 @@ window.__BH_I18N_DATA["ru"] = {
   "ks.today.sideRun": "проверьте задания перед тратами.",
   "ks.fm.title": "Armament & Officer",
   "ks.nav.fillers": "Armament & Officer",
+  "ks.today.title": "Сегодня",
+  "ks.today.btn": "Сегодня",
+  "ks.nav.today": "Сегодня",
+  "ks.today.copyRun": "Копировать для KingShot",
+  "ks.today.holdIntel": "Сохраняйте разведзадания с 08:00 UTC для завтрашней подготовки.",
+  "ks.today.swordSunday": "Swordland: уточните время часового боя своего альянса.",
 }
 ;

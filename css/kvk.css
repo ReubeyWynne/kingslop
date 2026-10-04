@@ -384,6 +384,7 @@ section[data-phase][hidden], .toc a[hidden] { display: none !important; }
 .cycle-bar .cell:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .next-day { margin-top: 0.85rem; font-size: var(--step--1); color: var(--ink-dim); border-bottom: 1px solid var(--signal-line); padding-bottom: var(--space-s); }
 #cycle { padding: var(--space-m) 0; }
+#cycle h2 { font-size: clamp(1.4rem, 4vw, 2rem); }
 section[data-phase], #checklist { padding: var(--space-s) 0; border-top: 1px solid var(--signal-line); }
 .reference-heading { font-size: clamp(1.2rem, 4vw, 1.7rem); }
 .reference-heading::before { display: none !important; }

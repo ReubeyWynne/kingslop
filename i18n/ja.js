@@ -839,7 +839,6 @@ window.__BH_I18N_DATA["ja"] = {
   "ks.mob.lede": "Alliance Mobilization は周期の 15–20 日目で、日別テーマはありません。課題をこなす前に任務を受けましょう。",
   "ks.mob.open": "Mobilization の完全な得点表はまだありません。ゲーム内で現在の任務を確認してください。",
   "ks.today.mobMeta": "課題の前に任務を受けましょう。予定した消費の前に、Armament や Officer と重なる課題を確認してください。",
-  "ks.today.gapMeta": "KvK 準備は明日開始。08:00 UTC から情報任務を残し、同盟の Swordland 時間を確認しましょう。",
   "ks.today.matchmaking": "KvK マッチング期間：発表された相手をゲーム内で確認してください。",
   "ks.fm.lede": "Armament Competition と Officer Project は Brawl、Mobilization の週に各 2 回。課題は種類によって変わります。",
   "ks.today.budget": "消費前に目標の報酬を決めましょう。ここで使うと決めない限り、他のイベント用の素材は残してください。",
@@ -867,5 +866,11 @@ window.__BH_I18N_DATA["ja"] = {
   "ks.today.sideRun": "素材を使う前に課題を確認してください。",
   "ks.fm.title": "Armament & Officer",
   "ks.nav.fillers": "Armament & Officer",
+  "ks.today.title": "今日",
+  "ks.today.btn": "今日",
+  "ks.nav.today": "今日",
+  "ks.today.copyRun": "KingShot用にコピー",
+  "ks.today.holdIntel": "明日の準備に向け、08:00 UTCから情報任務を貯めてください。",
+  "ks.today.swordSunday": "Swordland：同盟の1時間の戦闘の開始時刻を確認してください。",
 }
 ;

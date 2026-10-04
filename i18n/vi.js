@@ -850,7 +850,6 @@ window.__BH_I18N_DATA["vi"] = {
   "ks.mob.lede": "Alliance Mobilization diễn ra vào ngày 15–20 của chu kỳ, không có chủ đề hằng ngày. Nhận nhiệm vụ trước khi làm yêu cầu của nó.",
   "ks.mob.open": "Chưa có bảng điểm Mobilization đầy đủ ở đây. Kiểm tra nhiệm vụ hiện tại trong game.",
   "ks.today.mobMeta": "Nhận nhiệm vụ trước khi làm. Kiểm tra các nhiệm vụ Armament hoặc Officer trùng nhau trước khi dùng vật liệu.",
-  "ks.today.gapMeta": "Chuẩn bị KvK bắt đầu ngày mai. Giữ nhiệm vụ tình báo từ 08:00 UTC và kiểm tra giờ Swordland của liên minh.",
   "ks.today.matchmaking": "Khung ghép trận KvK: xem đối thủ được công bố trong game.",
   "ks.fm.lede": "Armament Competition và Officer Project đều chạy hai lần trong tuần Brawl và Mobilization. Nhiệm vụ phụ thuộc vào loại lượt.",
   "ks.today.budget": "Chọn mục tiêu phần thưởng trước khi dùng vật liệu. Giữ vật liệu dành cho sự kiện khác trừ khi quyết định dùng ở đây.",
@@ -878,5 +877,11 @@ window.__BH_I18N_DATA["vi"] = {
   "ks.today.sideRun": "kiểm tra nhiệm vụ trước khi dùng vật liệu.",
   "ks.fm.title": "Armament & Officer",
   "ks.nav.fillers": "Armament & Officer",
+  "ks.today.title": "Hôm nay",
+  "ks.today.btn": "Hôm nay",
+  "ks.nav.today": "Hôm nay",
+  "ks.today.copyRun": "Sao chép cho KingShot",
+  "ks.today.holdIntel": "Giữ nhiệm vụ tình báo từ 08:00 UTC cho đợt chuẩn bị ngày mai.",
+  "ks.today.swordSunday": "Swordland: kiểm tra giờ trận chiến một tiếng của liên minh.",
 }
 ;

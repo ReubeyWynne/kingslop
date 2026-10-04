@@ -850,7 +850,6 @@ window.__BH_I18N_DATA["id"] = {
   "ks.mob.lede": "Alliance Mobilization berlangsung pada hari siklus 15–20 tanpa tema harian. Terima misi sebelum mengerjakan tugasnya.",
   "ks.mob.open": "Tabel poin lengkap Mobilization belum ada di sini. Periksa misi aktif dalam game.",
   "ks.today.mobMeta": "Terima misi sebelum tugasnya. Periksa tugas Armament atau Officer yang tumpang tindih sebelum memakai bahan.",
-  "ks.today.gapMeta": "Persiapan KvK mulai besok. Simpan misi intel sejak 08:00 UTC dan periksa waktu Swordland aliansimu.",
   "ks.today.matchmaking": "Jendela pencocokan KvK: periksa lawan yang diumumkan dalam game.",
   "ks.fm.lede": "Armament Competition dan Officer Project masing-masing berjalan dua kali pada minggu Brawl dan Mobilization. Tugas bergantung pada jenisnya.",
   "ks.today.budget": "Tentukan target hadiah sebelum memakai bahan. Simpan bahan untuk acara lain kecuali kamu memutuskan memakainya di sini.",
@@ -878,5 +877,11 @@ window.__BH_I18N_DATA["id"] = {
   "ks.today.sideRun": "periksa tugasnya sebelum memakai bahan.",
   "ks.fm.title": "Armament & Officer",
   "ks.nav.fillers": "Armament & Officer",
+  "ks.today.title": "Hari ini",
+  "ks.today.btn": "Hari ini",
+  "ks.nav.today": "Hari ini",
+  "ks.today.copyRun": "Salin untuk KingShot",
+  "ks.today.holdIntel": "Simpan misi intel mulai 08:00 UTC untuk persiapan besok.",
+  "ks.today.swordSunday": "Swordland: periksa waktu pertempuran satu jam aliansimu.",
 }
 ;

@@ -836,7 +836,6 @@ window.__BH_I18N_DATA["ar"] = {
   "ks.mob.lede": "تقام Alliance Mobilization في أيام الدورة 15–20 دون موضوعات يومية. اقبل المهمة قبل تنفيذ متطلباتها.",
   "ks.mob.open": "جداول نقاط Mobilization الكاملة غير موجودة هنا بعد. راجع المهمة النشطة في اللعبة.",
   "ks.today.mobMeta": "اقبل المهمة قبل تنفيذها. راجع المهام المتداخلة مع Armament أو Officer قبل إنفاق مخطط.",
-  "ks.today.gapMeta": "يبدأ تحضير KvK غدًا. احتفظ بمهام الاستطلاع من 08:00 UTC وراجع موعد Swordland لتحالفك.",
   "ks.today.matchmaking": "فترة مطابقة KvK: راجع الخصم المعلن في اللعبة.",
   "ks.fm.lede": "تقام Armament Competition وOfficer Project مرتين لكل منهما في أسابيع Brawl وMobilization. تعتمد المهام على نوع الجولة.",
   "ks.today.budget": "اختر المكافأة المستهدفة قبل الإنفاق. احتفظ بالمواد المخصصة لفعالية أخرى إلا إذا قررت استخدامها هنا.",
@@ -864,4 +863,10 @@ window.__BH_I18N_DATA["ar"] = {
   "ks.today.sideRun": "تحقق من المهام قبل إنفاق المواد.",
   "ks.fm.title": "Armament & Officer",
   "ks.nav.fillers": "Armament & Officer",
+  "ks.today.title": "اليوم",
+  "ks.today.btn": "اليوم",
+  "ks.nav.today": "اليوم",
+  "ks.today.copyRun": "نسخ لـ KingShot",
+  "ks.today.holdIntel": "احتفظ بمهام الاستطلاع من 08:00 UTC لتحضير الغد.",
+  "ks.today.swordSunday": "Swordland: راجع موعد معركة تحالفك التي تستمر ساعة.",
 };

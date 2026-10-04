@@ -839,7 +839,6 @@ window.__BH_I18N_DATA["ko"] = {
   "ks.mob.lede": "Alliance Mobilization은 주기 15–20일차에 진행되며 일일 테마가 없습니다. 임무를 수락한 뒤 목표를 완료하세요.",
   "ks.mob.open": "Mobilization의 전체 점수표는 아직 없습니다. 게임에서 현재 임무를 확인하세요.",
   "ks.today.mobMeta": "임무를 먼저 수락하세요. 계획된 지출 전에 Armament나 Officer의 중복 임무를 확인하세요.",
-  "ks.today.gapMeta": "KvK 준비는 내일 시작됩니다. 08:00 UTC부터 정보 임무를 모아 두고 동맹의 Swordland 시간을 확인하세요.",
   "ks.today.matchmaking": "KvK 매칭 기간: 게임에서 공개된 상대를 확인하세요.",
   "ks.fm.lede": "Armament Competition과 Officer Project는 Brawl과 Mobilization 주간에 각각 두 번 열립니다. 임무는 유형에 따라 다릅니다.",
   "ks.today.budget": "지출 전에 목표 보상을 정하세요. 여기서 쓰기로 결정하지 않았다면 다른 이벤트용 재료는 보관하세요.",
@@ -867,5 +866,11 @@ window.__BH_I18N_DATA["ko"] = {
   "ks.today.sideRun": "재료를 쓰기 전에 과제를 확인하세요.",
   "ks.fm.title": "Armament & Officer",
   "ks.nav.fillers": "Armament & Officer",
+  "ks.today.title": "오늘",
+  "ks.today.btn": "오늘",
+  "ks.nav.today": "오늘",
+  "ks.today.copyRun": "KingShot용 복사",
+  "ks.today.holdIntel": "내일 준비를 위해 08:00 UTC부터 정보 임무를 모아 두세요.",
+  "ks.today.swordSunday": "Swordland: 연맹의 한 시간 전투 시간을 확인하세요.",
 }
 ;

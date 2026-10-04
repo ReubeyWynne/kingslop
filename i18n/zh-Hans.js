@@ -839,7 +839,6 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "ks.mob.lede": "Alliance Mobilization 在周期第 15–20 天举行，没有每日主题。先接受任务，再完成任务要求。",
   "ks.mob.open": "这里尚未列出 Mobilization 的完整计分表。请在游戏中查看当前任务。",
   "ks.today.mobMeta": "先接受任务，再完成要求。计划花费前，查看 Armament 或 Officer 中重叠的任务。",
-  "ks.today.gapMeta": "KvK 备战明天开始。从 08:00 UTC 起保留情报任务，并确认联盟的 Swordland 时间。",
   "ks.today.matchmaking": "KvK 匹配窗口：在游戏中查看公布的对手。",
   "ks.fm.lede": "Armament Competition 和 Officer Project 在 Brawl 和 Mobilization 周各举行两次。任务取决于场次类型。",
   "ks.today.budget": "花费前先确定目标奖励。保留为其他活动准备的材料，除非你决定在这里使用。",
@@ -867,5 +866,11 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "ks.today.sideRun": "消耗材料前先查看任务。",
   "ks.fm.title": "Armament & Officer",
   "ks.nav.fillers": "Armament & Officer",
+  "ks.today.title": "今天",
+  "ks.today.btn": "今天",
+  "ks.nav.today": "今天",
+  "ks.today.copyRun": "复制到 KingShot",
+  "ks.today.holdIntel": "从 08:00 UTC 起保留情报任务，用于明天备战。",
+  "ks.today.swordSunday": "Swordland：查看联盟一小时战斗的时间。",
 }
 ;

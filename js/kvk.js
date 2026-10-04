@@ -476,11 +476,8 @@
   }
 
   function gapCard(BH) {
-    // Day 21: nothing of its own — Officer Project Type B and Swordland's
-    // Sunday battle are the only things live (weekNotes + sideRun carry them).
     var head = '<p class="today-kicker">' + BH.tr('ks.today.between', 'Between weeks') + ' · ' + BH.tr('ks.today.day', 'day') + ' 21</p>' +
-      '<p class="today-title">' + BH.tr('ks.today.beforePrep', 'Before prep tomorrow') + '</p>' +
-      '<p class="today-meta">' + BH.tr('ks.today.gapMeta', 'KvK prep opens tomorrow. Hold intel from 08:00 UTC and check your alliance’s Swordland time.') + '</p>';
+      '<p class="today-title">' + BH.tr('ks.today.beforePrep', 'Before prep tomorrow') + '</p>';
     var ctx = { prepN: null, sgN: null, brawlIds: null, sgIds: new Set(), lowIds: runLowIds(), ptsById: {}, freeActions: null };
     var body = todayValueHtml(ctx, BH);
     return { head: head, body: body, copy: '', copyTitle: '' };
@@ -541,7 +538,7 @@
     else info = battleCard(BH);
     if (run) info.head += sideRun(run, BH);
     if (!info.copy) info.copy = reminderCopy(w, BH);
-    info.copyTitle = BH.tr('ks.today.copyRun', 'copy for KingShot');
+    info.copyTitle = BH.tr('ks.today.copyRun', 'Copy for KingShot');
 
     var html = info.head + weekActions(BH) + copyBoxHTML(info.copy, info.copyTitle) + info.body;
     card.innerHTML = html;
@@ -550,8 +547,8 @@
 
   function weekActions(BH) {
     var notes = '';
-    if (day === 21) notes += '<p class="today-action">' + ITEM_GLYPH['Intel missions'] + BH.tr('ks.today.holdIntel', 'from 08:00 today, stop collecting intel missions. They bank and cash in for prep points.') + '</p>';
-    if (day === 7 || day === 21) notes += '<p class="today-action"><span aria-hidden="true">⚔️</span> ' + BH.tr('ks.today.swordSunday', 'Swordland Showdown’s one-hour battle runs today, the Sunday of this week.') + '</p>';
+    if (day === 21) notes += '<p class="today-action">' + ITEM_GLYPH['Intel missions'] + BH.tr('ks.today.holdIntel', 'Hold intel from 08:00 UTC for tomorrow’s prep.') + '</p>';
+    if (day === 7 || day === 21) notes += '<p class="today-action"><span aria-hidden="true">⚔️</span> ' + BH.tr('ks.today.swordSunday', 'Swordland: check your alliance’s one-hour battle time.') + '</p>';
     if (day === 20) notes += '<p class="today-action"><span aria-hidden="true">🏰</span> ' + BH.tr('ks.today.matchmaking', 'KvK matchmaking window: check the opponent reveal in game.') + '</p>';
     return notes ? '<div class="today-actions">' + notes + '</div>' : '';
   }
@@ -753,7 +750,7 @@
 
   function copyBoxHTML(text, title) {
     return '<div class="copy-box"><div class="copy-btns">' +
-      '<button type="button" id="ks-copy-btn" class="kb copy-primary">📋 ' + window.BH.tr('ks.today.copyRun', 'copy for KingShot') + '</button>' +
+      '<button type="button" id="ks-copy-btn" class="kb copy-primary">📋 ' + window.BH.tr('ks.today.copyRun', 'Copy for KingShot') + '</button>' +
       '<span id="ks-copy-status" role="status"></span><span id="ks-copy-parts" class="cycle-quick"></span></div>' +
       '<details id="ks-copy-preview"><summary>' + window.BH.tr('ks.today.preview', 'Message preview') + '</summary><div class="copy-inner">' +
       '<textarea id="ks-copy-out" readonly spellcheck="false" aria-label="' + title + '"></textarea>' +
@@ -777,7 +774,7 @@
       var fits = len <= LIMIT;
       meta.innerHTML = BH.tpl('ks.today.chars', '<b>{n}</b> / 512 characters', { n: BH.fmt(len) }) +
         (fits ? ' \u2014 ' + BH.tr('ks.today.fits', 'fits one message') : ' \u2014 <span class="over">' + BH.tpl('ks.today.over', 'split into {n} messages', { n: parts.length }) + '</span>');
-      btn.textContent = '📋 ' + (parts.length > 1 ? BH.tpl('ks.today.part', 'part {n}', { n: idx + 1 }) + ' \u00B7 ' : '') + BH.tr('ks.today.copyRun', 'copy for KingShot');
+      btn.textContent = '📋 ' + (parts.length > 1 ? BH.tpl('ks.today.part', 'part {n}', { n: idx + 1 }) + ' \u00B7 ' : '') + BH.tr('ks.today.copyRun', 'Copy for KingShot');
       document.getElementById('ks-copy-status').textContent = '';
       if (partsWrap) {
         partsWrap.innerHTML = '';

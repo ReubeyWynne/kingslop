@@ -840,7 +840,6 @@ window.__BH_I18N_DATA["fr"] = {
   "ks.mob.lede": "Alliance Mobilization occupe les jours 15–20 du cycle, sans thèmes quotidiens. Accepte une mission avant d’accomplir sa tâche.",
   "ks.mob.open": "Les tableaux complets de Mobilization ne sont pas encore ici. Consulte la mission active dans le jeu.",
   "ks.today.mobMeta": "Accepte la mission avant sa tâche. Vérifie les tâches communes à Armament ou Officer avant une dépense prévue.",
-  "ks.today.gapMeta": "La préparation KvK commence demain. Garde les missions de renseignement dès 08:00 UTC et vérifie l’horaire Swordland de ton alliance.",
   "ks.today.matchmaking": "Fenêtre d’appariement KvK : consulte l’adversaire annoncé dans le jeu.",
   "ks.fm.lede": "Armament Competition et Officer Project reviennent deux fois dans les semaines Brawl et Mobilization. Les tâches dépendent du type.",
   "ks.today.budget": "Choisis ta récompense avant de dépenser. Garde les matériaux réservés à un autre événement, sauf si tu décides de les utiliser ici.",
@@ -868,5 +867,11 @@ window.__BH_I18N_DATA["fr"] = {
   "ks.today.sideRun": "vérifiez ses tâches avant de dépenser.",
   "ks.fm.title": "Armament & Officer",
   "ks.nav.fillers": "Armament & Officer",
+  "ks.today.title": "Aujourd’hui",
+  "ks.today.btn": "Aujourd’hui",
+  "ks.nav.today": "Aujourd’hui",
+  "ks.today.copyRun": "Copier pour KingShot",
+  "ks.today.holdIntel": "Gardez les missions de renseignement dès 08:00 UTC pour la préparation de demain.",
+  "ks.today.swordSunday": "Swordland : vérifiez l’horaire du combat d’une heure de votre alliance.",
 }
 ;

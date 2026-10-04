@@ -60,7 +60,7 @@ function displayCells(line) {
       assert.equal(await page.locator('.reference-body:visible').count(), 0);
       assert.equal(await page.locator('#ks-copy-btn').isVisible(), true);
       for (const d of [21, 22, 1]) {
-        await page.locator('[data-cycle-day="' + d + '"]').click();
+        if (d !== 21) await page.locator('[data-cycle-day="' + d + '"]').click();
         const metrics = await page.locator('#today').evaluate(el => ({ overflow: el.scrollWidth > el.clientWidth + 1, pageOverflow: document.documentElement.scrollWidth > innerWidth + 1, images: [...el.querySelectorAll('img')].every(img => img.complete && img.naturalWidth > 0), direction: document.documentElement.dir }));
         assert.equal(metrics.overflow, false, lang + ': today overflow ' + d);
         assert.equal(metrics.pageOverflow, false, lang + ': page overflow ' + d);
@@ -73,8 +73,9 @@ function displayCells(line) {
           assert.equal(await label.textContent(), dictionaries[lang][key] ?? dictionaries.en[key], lang + ': ' + key);
         }
         if (lang === 'en' || lang === 'ar') {
-          await page.locator('#today').scrollIntoViewIfNeeded();
-          await page.screenshot({ path: path.join(output, lang + '-' + width + '-day-' + d + '.png'), fullPage: true });
+          await page.evaluate(() => scrollTo(0, 0));
+          await page.screenshot({ path: path.join(output, lang + '-' + width + '-day-' + d + '-viewport.png') });
+          await page.screenshot({ path: path.join(output, lang + '-' + width + '-day-' + d + '.png'), fullPage: true, style: '.topbar, .toc { visibility: hidden !important; }' });
         }
       }
       await page.evaluate(() => window.dispatchEvent(new Event('focus')));

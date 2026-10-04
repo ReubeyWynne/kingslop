@@ -850,7 +850,6 @@ window.__BH_I18N_DATA["th"] = {
   "ks.mob.lede": "Alliance Mobilization อยู่ในวันที่ 15–20 ของรอบ ไม่มีธีมรายวัน รับภารกิจก่อนทำงานของภารกิจนั้น",
   "ks.mob.open": "ยังไม่มีตารางคะแนน Mobilization แบบเต็มที่นี่ ตรวจภารกิจที่ใช้งานในเกม",
   "ks.today.mobMeta": "รับภารกิจก่อนทำงาน ตรวจงานที่ซ้อนกับ Armament หรือ Officer ก่อนใช้วัสดุตามแผน",
-  "ks.today.gapMeta": "เตรียม KvK เริ่มพรุ่งนี้ เก็บภารกิจข่าวกรองตั้งแต่ 08:00 UTC และตรวจเวลา Swordland ของพันธมิตร",
   "ks.today.matchmaking": "ช่วงจับคู่ KvK: ตรวจคู่แข่งที่ประกาศในเกม",
   "ks.fm.lede": "Armament Competition และ Officer Project จัดอย่างละสองครั้งในสัปดาห์ Brawl และ Mobilization งานขึ้นกับประเภทกิจกรรม",
   "ks.today.budget": "เลือกเป้าหมายรางวัลก่อนใช้วัสดุ เก็บวัสดุที่กันไว้สำหรับกิจกรรมอื่น เว้นแต่ตัดสินใจใช้ที่นี่",
@@ -878,5 +877,11 @@ window.__BH_I18N_DATA["th"] = {
   "ks.today.sideRun": "ตรวจสอบภารกิจก่อนใช้ทรัพยากร",
   "ks.fm.title": "Armament & Officer",
   "ks.nav.fillers": "Armament & Officer",
+  "ks.today.title": "วันนี้",
+  "ks.today.btn": "วันนี้",
+  "ks.nav.today": "วันนี้",
+  "ks.today.copyRun": "คัดลอกสำหรับ KingShot",
+  "ks.today.holdIntel": "เก็บภารกิจข่าวกรองตั้งแต่ 08:00 UTC สำหรับช่วงเตรียมการพรุ่งนี้",
+  "ks.today.swordSunday": "Swordland: ตรวจสอบเวลาการต่อสู้หนึ่งชั่วโมงของพันธมิตร",
 }
 ;

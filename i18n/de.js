@@ -839,7 +839,6 @@ window.__BH_I18N_DATA["de"] = {
   "ks.mob.lede": "Alliance Mobilization läuft an den Zyklustagen 15–20 ohne Tagesthemen. Nimm eine Mission an, bevor du ihre Aufgabe erledigst.",
   "ks.mob.open": "Die vollständigen Mobilization-Punktetabellen fehlen hier noch. Prüfe die aktive Mission im Spiel.",
   "ks.today.mobMeta": "Nimm die Mission vor ihrer Aufgabe an. Prüfe überschneidende Armament- oder Officer-Aufgaben vor geplanten Ausgaben.",
-  "ks.today.gapMeta": "Die KvK-Vorbereitung beginnt morgen. Sammle ab 08:00 UTC keine Intel-Missionen ein und prüfe die Swordland-Zeit deiner Allianz.",
   "ks.today.matchmaking": "KvK-Zuordnungsfenster: prüfe den bekanntgegebenen Gegner im Spiel.",
   "ks.fm.lede": "Armament Competition und Officer Project laufen jeweils zweimal in den Brawl- und Mobilization-Wochen. Aufgaben hängen vom Typ ab.",
   "ks.today.budget": "Wähle dein Belohnungsziel vor dem Ausgeben. Bewahre für andere Ereignisse reserviertes Material auf, sofern du es nicht hier einsetzen willst.",
@@ -867,5 +866,11 @@ window.__BH_I18N_DATA["de"] = {
   "ks.today.sideRun": "prüfe die Aufgaben vor dem Ausgeben.",
   "ks.fm.title": "Armament & Officer",
   "ks.nav.fillers": "Armament & Officer",
+  "ks.today.title": "Heute",
+  "ks.today.btn": "Heute",
+  "ks.nav.today": "Heute",
+  "ks.today.copyRun": "Für KingShot kopieren",
+  "ks.today.holdIntel": "Spare Intel ab 08:00 UTC für die Vorbereitung morgen.",
+  "ks.today.swordSunday": "Swordland: prüfe den Termin des einstündigen Kampfes deiner Allianz.",
 }
 ;
