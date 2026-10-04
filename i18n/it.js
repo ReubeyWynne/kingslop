@@ -697,8 +697,8 @@ window.__BH_I18N_DATA["it"] = {
   "bh.page.99": "Chiedi chi sarà disponibile e se preferisce il Gruppo 1 o il Gruppo 2. Lascia un po’ di margine per chi non risponde e per chi arriva tardi.",
   "bh.page.100": "Il Gruppo 1 avvia subito.",
   "bh.page.101": "Avvia abbastanza rally perché la maggior parte delle code di supporto iniziali abbia un posto dove andare. Un piccolo surplus va bene se uno o due leader sono disposti ad annullare.",
-  "bh.page.102": "Il Gruppo 2 avvia quando mancano circa 28:00–27:30.",
-  "bh.page.103": "Le marce di supporto del Gruppo 1 dovrebbero essere tornate in tempo per unirsi.",
+  "bh.page.102": "Scagliona gli avvii del Gruppo 2 quando mancano circa 29:00–28:30.",
+  "bh.page.103": "Questi rally dovrebbero ancora raccogliere truppe quando rientrano le marce di supporto del Gruppo 1. Lascia tempo per il colpo, il ritorno a casa e la marcia verso il rally successivo.",
   "bh.page.104": "Se il Gruppo 1 non si riempie, annulla un rally flessibile.",
   "bh.page.105": "Avvialo di nuovo con il Gruppo 2 invece di lasciarlo partire mezzo vuoto.",
   "bh.page.106": "Dopodiché, ogni giocatore che avvia un rally lo riavvia al ritorno.",
@@ -787,7 +787,21 @@ window.__BH_I18N_DATA["it"] = {
   "bh.dynamic.1u58fjw": "Mostra alternative",
   "bh.dynamic.1nrzp1d": "alternative",
   "bh.dynamic.1odx08d": "mostra i dettagli del consiglio",
-  "bh.dynamic.9au4tb": "Hilde è esclusa dall’elenco predefinito perché le regole variano tra le alleanze. Usala solo se la tua alleanza la consente. Se non è disponibile nessun eroe approvato, non inviare eroi."
+  "bh.dynamic.9au4tb": "Hilde è esclusa dall’elenco predefinito perché le regole variano tra le alleanze. Usala solo se la tua alleanza la consente. Se non è disponibile nessun eroe approvato, non inviare eroi.",
 
+
+  "bh.opening.title": "L'apertura",
+  "bh.opening.clock": "tempo rimanente",
+  "bh.opening.first": "Il Gruppo 1 avvia",
+  "bh.opening.second": "Scagliona il Gruppo 2",
+  "bh.opening.third": "Unisciti di nuovo al ritorno",
+  "bh.opening.joiners": "Marce di supporto",
+  "bh.opening.group1": "Gruppo 1",
+  "bh.opening.group2": "Gruppo 2",
+  "bh.opening.gathering": "Raccolta truppe",
+  "bh.opening.after": "Dopo i primi colpi",
+  "bh.opening.rejoin": "Rientra, poi unisciti",
+  "bh.opening.onReturn": "Al ritorno",
+  "bh.opening.note": "Orari di esempio — regola l'intervallo sui tempi di marcia della tua alleanza.",
 }
 ;
