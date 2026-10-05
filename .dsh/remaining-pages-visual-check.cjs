@@ -24,6 +24,9 @@ const server = http.createServer((request, response) => {
   response.setHeader('Content-Type', mime[path.extname(file)] || 'application/octet-stream');
   fs.createReadStream(file).pipe(response);
 });
+async function setRange(page, id, value) {
+  await page.locator(id).evaluate((el, value) => { el.value = value; el.dispatchEvent(new Event('input', { bubbles: true })); }, value);
+}
 async function overflow(page, message) {
   const bad = await page.evaluate(() => [...document.querySelectorAll('main, main section, main .calc, main .sim-report, main .vip-out, main .vip-ref')].filter(el => el.getClientRects().length && el.scrollWidth > el.clientWidth + 2).map(el => el.id || el.className));
   assert.deepEqual(bad, [], message + ': overflow');
@@ -85,22 +88,22 @@ async function overflow(page, message) {
           assert.equal(await page.locator('#vip-out').isVisible(), false);
           await page.locator('#vip-days').fill('120');
           assert.equal(await page.locator('#vip-headline').innerText(), before);
-          await page.locator('#vip-level').fill('12');
+          await setRange(page, '#vip-level', '12');
           assert.equal(await page.locator('#vip-xp').isDisabled(), true);
           assert.equal(await page.locator('#vip-out').isVisible(), false);
-          await page.locator('#vip-level').fill('5');
+          await setRange(page, '#vip-level', '5');
           assert.equal(await page.locator('#vip-xp').isDisabled(), false);
         }
         if (route === 'swordland-showdown/') {
-          await page.locator('#sw-occ').fill('55');
+          await setRange(page, '#sw-occ', '55');
           assert.equal(await page.locator('#sw-total').innerText(), await page.evaluate(() => BH.fmt(165000)));
-          await page.locator('#sw-kill').fill('2000000');
+          await setRange(page, '#sw-kill', '2000000');
           assert.equal(await page.locator('#sw-total').innerText(), await page.evaluate(() => BH.fmt(181000)));
         }
         if (route === 'vikings-vengeance/') {
-          await page.locator('#vv-cities').fill('0');
+          await setRange(page, '#vv-cities', '0');
           assert.ok((await page.locator('#vv-outline').innerText()).includes('0'));
-          await page.locator('#vv-cities').fill('6');
+          await setRange(page, '#vv-cities', '6');
           assert.ok((await page.locator('#vv-outline').innerText()).includes('6'));
         }
         if (route === 'battle-simulator/') {
