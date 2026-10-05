@@ -728,6 +728,7 @@
 
   // Split into ≤512-char messages at line boundaries.
   var LIMIT = 512;
+  var includeSiteLink = false;
   function splitParts(text) {
     var parts = [];
     var rest = text;
@@ -744,6 +745,7 @@
   function copyBoxHTML(text, title) {
     return '<div class="copy-box"><div class="copy-btns">' +
       '<button type="button" id="ks-copy-btn" class="kb copy-action">📋 ' + window.BH.tr('ks.today.copyRun', 'Copy for KingShot') + '</button>' +
+      '<label class="copy-link-option"><input type="checkbox" id="ks-copy-link"' + (includeSiteLink ? ' checked' : '') + '><span>' + window.BH.tr('ks.today.includeLink', 'Include site link') + '</span></label>' +
       '<span id="ks-copy-status" role="status"></span><span id="ks-copy-parts" class="cycle-quick"></span></div>' +
       '<details id="ks-copy-preview"><summary>' + window.BH.tr('ks.today.preview', 'Message preview') + '</summary><div class="copy-inner">' +
       '<textarea id="ks-copy-out" readonly spellcheck="false" aria-label="' + title + '"></textarea>' +
@@ -758,7 +760,12 @@
     if (!out || !meta || !btn) return;
 
     var preview = document.getElementById('ks-copy-preview');
-    var parts = splitParts(text);
+    var linkOption = document.getElementById('ks-copy-link');
+    function messageParts() {
+      var canonical = document.querySelector('link[rel="canonical"]');
+      return splitParts(text + (includeSiteLink && canonical ? '\n' + canonical.href : ''));
+    }
+    var parts = messageParts();
     var idx = 0;
 
     function paint() {
@@ -807,6 +814,12 @@
     }
 
     btn.addEventListener('click', doCopy);
+    linkOption.addEventListener('change', function () {
+      includeSiteLink = linkOption.checked;
+      parts = messageParts();
+      idx = 0;
+      paint();
+    });
     paint();
   }
 

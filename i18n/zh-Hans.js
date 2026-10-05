@@ -870,6 +870,7 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "ks.today.btn": "今天",
   "ks.nav.today": "今天",
   "ks.today.copyRun": "复制到 KingShot",
+  "ks.today.includeLink": "附上网站链接",
   "ks.today.holdIntel": "从 08:00 UTC 起保留情报任务，用于明天备战。",
   "ks.today.swordSunday": "Swordland：查看联盟一小时战斗的时间。",
   "ks.today.prepGuide": "在游戏中查看今天的任务和奖励里程碑。",

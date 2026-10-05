@@ -871,6 +871,7 @@ window.__BH_I18N_DATA["fr"] = {
   "ks.today.btn": "Aujourd’hui",
   "ks.nav.today": "Aujourd’hui",
   "ks.today.copyRun": "Copier pour KingShot",
+  "ks.today.includeLink": "Inclure le lien du site",
   "ks.today.holdIntel": "Gardez les missions de renseignement dès 08:00 UTC pour la préparation de demain.",
   "ks.today.swordSunday": "Swordland : vérifiez l’horaire du combat d’une heure de votre alliance.",
   "ks.today.prepGuide": "Vérifiez les tâches et les paliers de récompense du jour dans le jeu.",

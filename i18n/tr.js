@@ -869,6 +869,7 @@ window.__BH_I18N_DATA["tr"] = {
   "ks.today.btn": "Bugün",
   "ks.nav.today": "Bugün",
   "ks.today.copyRun": "KingShot için kopyala",
+  "ks.today.includeLink": "Site bağlantısını ekle",
   "ks.today.holdIntel": "Yarının hazırlığı için 08:00 UTC’den itibaren istihbarat görevlerini biriktir.",
   "ks.today.swordSunday": "Swordland: ittifakının bir saatlik savaş zamanını kontrol et.",
   "ks.today.prepGuide": "Bugünün görevlerini ve ödül eşiklerini oyunda kontrol et.",

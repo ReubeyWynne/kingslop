@@ -870,6 +870,7 @@ window.__BH_I18N_DATA["ru"] = {
   "ks.today.btn": "Сегодня",
   "ks.nav.today": "Сегодня",
   "ks.today.copyRun": "Копировать для KingShot",
+  "ks.today.includeLink": "Добавить ссылку на сайт",
   "ks.today.holdIntel": "Сохраняйте разведзадания с 08:00 UTC для завтрашней подготовки.",
   "ks.today.swordSunday": "Swordland: уточните время часового боя своего альянса.",
   "ks.today.prepGuide": "Проверьте сегодняшние задания и этапы наград в игре.",

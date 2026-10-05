@@ -881,6 +881,7 @@ window.__BH_I18N_DATA["vi"] = {
   "ks.today.btn": "Hôm nay",
   "ks.nav.today": "Hôm nay",
   "ks.today.copyRun": "Sao chép cho KingShot",
+  "ks.today.includeLink": "Kèm liên kết trang web",
   "ks.today.holdIntel": "Giữ nhiệm vụ tình báo từ 08:00 UTC cho đợt chuẩn bị ngày mai.",
   "ks.today.swordSunday": "Swordland: kiểm tra giờ trận chiến một tiếng của liên minh.",
   "ks.today.prepGuide": "Kiểm tra nhiệm vụ và các mốc thưởng hôm nay trong game.",

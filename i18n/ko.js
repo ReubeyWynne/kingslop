@@ -870,6 +870,7 @@ window.__BH_I18N_DATA["ko"] = {
   "ks.today.btn": "오늘",
   "ks.nav.today": "오늘",
   "ks.today.copyRun": "KingShot용 복사",
+  "ks.today.includeLink": "사이트 링크 포함",
   "ks.today.holdIntel": "내일 준비를 위해 08:00 UTC부터 정보 임무를 모아 두세요.",
   "ks.today.swordSunday": "Swordland: 연맹의 한 시간 전투 시간을 확인하세요.",
   "ks.today.prepGuide": "게임에서 오늘의 과제와 보상 달성 조건을 확인하세요.",

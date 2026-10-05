@@ -13,7 +13,7 @@ for (const lang of langs) {
   const scope = { window: {} };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'i18n', lang + '.js'), 'utf8'), scope);
   dictionaries[lang] = scope.window.__BH_I18N_DATA[lang];
-  for (const key of ['ks.hero.h1', 'ks.today.brawlMeta', 'ks.today.selected', 'ks.today.preview', 'ks.today.copyFailed', 'ks.today.priorities', 'ks.today.save', 'ks.today.sideRun']) assert.ok(dictionaries[lang][key], lang + ': ' + key);
+  for (const key of ['ks.hero.h1', 'ks.today.brawlMeta', 'ks.today.selected', 'ks.today.preview', 'ks.today.copyFailed', 'ks.today.priorities', 'ks.today.save', 'ks.today.sideRun', 'ks.today.includeLink']) assert.ok(dictionaries[lang][key], lang + ': ' + key);
 }
 fs.mkdirSync(output, { recursive: true });
 const server = http.createServer((request, response) => {
@@ -59,8 +59,14 @@ function displayCells(line) {
       assert.equal(await page.locator('#ks-cycle [aria-pressed="true"]').getAttribute('data-cycle-day'), '21');
       assert.equal(await page.locator('.reference-body:visible').count(), 0);
       assert.equal(await page.locator('#ks-copy-btn').isVisible(), true);
+      assert.equal(await page.locator('#ks-copy-link').isChecked(), false, lang + ': site link defaults off');
       for (const d of [21, 22, 20, 26, 1]) {
         if (d !== 21) await page.locator('[data-cycle-day="' + d + '"]').click();
+        if (d === 21) await page.locator('#ks-copy-link').check();
+        assert.equal(await page.locator('#ks-copy-link').isChecked(), true, lang + ': site-link choice survives day changes');
+        assert.equal(await page.locator('.copy-link-option span').textContent(), dictionaries[lang]['ks.today.includeLink']);
+        const option = await page.locator('.copy-link-option').boundingBox();
+        assert.ok(option.height >= 44, lang + ': site-link tap size');
         const metrics = await page.locator('#today').evaluate(el => ({ overflow: el.scrollWidth > el.clientWidth + 1, pageOverflow: document.documentElement.scrollWidth > innerWidth + 1, images: [...el.querySelectorAll('img')].every(img => img.complete && img.naturalWidth > 0), direction: document.documentElement.dir }));
         assert.equal(metrics.overflow, false, lang + ': today overflow ' + d);
         assert.equal(metrics.pageOverflow, false, lang + ': page overflow ' + d);
@@ -101,6 +107,10 @@ function displayCells(line) {
           assert.equal(await label.textContent(), dictionaries[lang][key] ?? dictionaries.en[key], lang + ': ' + key);
         }
         if (lang === 'en' || lang === 'ar') {
+          if (d === 21) {
+            await page.locator('#ks-copy-preview summary').click();
+            await page.locator('.copy-box').screenshot({ path: path.join(output, 'copy-link-' + lang + '-' + width + '.png') });
+          }
           await page.evaluate(() => scrollTo(0, 0));
           await page.screenshot({ path: path.join(output, lang + '-' + width + '-day-' + d + '-viewport.png') });
           await page.screenshot({ path: path.join(output, lang + '-' + width + '-day-' + d + '.png'), fullPage: true, style: '.topbar, .toc { visibility: hidden !important; }' });
@@ -140,19 +150,32 @@ function displayCells(line) {
             assert.equal(await page.locator('#ks-card .trow').filter({ hasText: 'Mithril' }).locator('.tpts').textContent(), '40,000');
             assert.equal(await page.locator('#ks-card .trow').filter({ hasText: 'Troop' }).locator('.tpts').textContent(), '75 (T11)');
           }
-          const parts = page.locator('#ks-copy-parts button');
-          const count = Math.max(1, await parts.count());
-          for (let n = 0; n < count; n++) {
-            if (await parts.count()) await parts.nth(n).click();
-            const message = await page.locator('#ks-copy-out').inputValue();
-            assert.ok(message.length <= 512, 'day ' + d + ': message limit');
-            for (const line of message.split('\n')) assert.ok(displayCells(line) <= 28, 'day ' + d + ': line too wide: ' + line);
-            await page.locator('#ks-copy-btn').click();
-            await page.waitForFunction(() => !document.getElementById('ks-copy-btn').disabled);
-            assert.equal(await page.evaluate(() => window.copiedMessages.at(-1)), message);
-            assert.equal(await page.locator('#ks-copy-status').textContent(), dictionaries.en['ks.today.copied']);
+          let withoutLink;
+          for (const includeLink of [false, true, false]) {
+            await page.locator('#ks-copy-link').setChecked(includeLink);
+            const parts = page.locator('#ks-copy-parts button');
+            const count = Math.max(1, await parts.count());
+            const messages = [];
+            for (let n = 0; n < count; n++) {
+              if (await parts.count()) await parts.nth(n).click();
+              const message = await page.locator('#ks-copy-out').inputValue();
+              messages.push(message);
+              assert.ok(message.length <= 512, 'day ' + d + ': message limit');
+              assert.equal(await page.locator('#ks-copy-meta b').textContent(), String(message.length));
+              for (const line of message.split('\n')) assert.ok(displayCells(line) <= 28, 'day ' + d + ': line too wide: ' + line);
+              await page.locator('#ks-copy-btn').click();
+              await page.waitForFunction(() => !document.getElementById('ks-copy-btn').disabled);
+              assert.equal(await page.evaluate(() => window.copiedMessages.at(-1)), message);
+              assert.equal(await page.locator('#ks-copy-status').textContent(), dictionaries.en['ks.today.copied']);
+            }
+            const combined = messages.join('\n');
+            if (withoutLink === undefined) withoutLink = combined;
+            assert.equal(combined, withoutLink + (includeLink ? '\nhttps://dey.ci/events/' : ''), 'day ' + d + ': optional canonical link');
           }
         }
+        await page.locator('#ks-copy-link').focus();
+        await page.keyboard.press('Space');
+        assert.equal(await page.locator('#ks-copy-link').isChecked(), true);
         await page.evaluate(() => { navigator.clipboard.writeText = async () => { throw new Error('denied'); }; document.execCommand = () => false; });
         await page.locator('#ks-copy-btn').click();
         await page.waitForFunction(() => document.getElementById('ks-copy-preview').open);
@@ -160,6 +183,9 @@ function displayCells(line) {
         await page.evaluate(() => window.I18N.switchTo('ar'));
         await page.waitForFunction(() => window.I18N.lang === 'ar');
         assert.equal(await page.locator('#ks-cycle [aria-pressed="true"]').getAttribute('data-cycle-day'), '28');
+        assert.equal(await page.locator('#ks-copy-link').isChecked(), true, 'site-link choice survives language change');
+        assert.equal(await page.locator('.copy-link-option span').textContent(), dictionaries.ar['ks.today.includeLink']);
+        assert.ok((await page.locator('#ks-copy-out').inputValue()).endsWith('https://dey.ci/events/'));
       }
       assert.deepEqual(errors, [], lang + ': browser errors');
       await page.close();
@@ -169,5 +195,5 @@ function displayCells(line) {
     await browser?.close();
     await new Promise(resolve => server.close(resolve));
   }
-  console.log('Passed 100 layout checks across 17 languages, copy placement, KvK task display, day 20 reminders, all 28 copy days, navigation, UTC rollover, clipboard success/failure and RTL.');
+  console.log('Passed 100 layout checks across 17 languages, copy placement, optional canonical site links and message limits for all 28 days, KvK task display, day 20 reminders, navigation, UTC rollover, clipboard success/failure and RTL.');
 })().catch(error => { console.error(error); process.exitCode = 1; });
