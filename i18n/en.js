@@ -994,5 +994,11 @@ window.__BH_I18N_DATA["en"] = {
   "ks.today.prepPlan": "Plan your KvK spending before prep starts on day 22.",
   "ks.today.kvkWeek": "KvK prep & battle",
   "ks.today.cycleRange": "Days {from}–{to}",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">DEMYSTIFIED</span>",
+  "home.hero.lede": "The alliance events in plain words — how each one scores, what to do about it, and where the real points live.",
+  "sw.hero.lede": "Two scoreboards, the alliance’s bracket and your personal tier, and one number that decides yours: <strong>180,000</strong>. The strategy changes with the matchup; the target doesn’t.",
+  "sw.hero.chip1": "55 min a match",
+  "sw.hero.chip2": "two legions",
+  "sw.hero.chip3": "no losses, only injuries"
 }
 ;

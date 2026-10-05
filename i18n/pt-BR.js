@@ -882,5 +882,11 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "ks.today.prepPlan": "Planeje seus gastos de KvK antes do início da preparação no dia 22.",
   "ks.today.kvkWeek": "Preparação e batalha de KvK",
   "ks.today.cycleRange": "Dias {from}–{to}",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">SEM MISTÉRIOS</span>",
+  "home.hero.lede": "Os eventos da aliança em palavras simples — como cada um pontua, o que fazer e onde estão os pontos.",
+  "sw.hero.lede": "Dois placares, a faixa da aliança e seu nível pessoal, e um número que decide o seu: <strong>180,000</strong>. A estratégia muda conforme o adversário; a meta não.",
+  "sw.hero.chip1": "55 min por partida",
+  "sw.hero.chip2": "duas legiões",
+  "sw.hero.chip3": "sem perdas, só ferimentos"
 }
 ;

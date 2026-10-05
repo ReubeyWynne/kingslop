@@ -6,13 +6,12 @@ self: vip
 
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
   <a href="#calc" data-i18n="vip.nav.calc">The calculator</a>
+  <a href="#targets" data-i18n="vip.nav.targets">The milestones</a>
   <a href="#maths" data-i18n="vip.nav.maths">The maths</a>
   <a href="#table" data-i18n="vip.nav.table">The ladder</a>
-  <a href="#targets" data-i18n="vip.nav.targets">The milestones</a>
 </nav>
 
 <main>
-  <!-- ═══════════ HERO ═══════════ -->
   <section class="section hero" id="top">
     <h1 data-i18n-html="vip.hero.h1">VIP,<br><span class="accent">DEMYSTIFIED</span></h1>
     <p class="lede" data-i18n-html="vip.hero.lede">Every VIP level costs a set amount of XP. Enter your level,
@@ -23,7 +22,6 @@ self: vip
       <span data-i18n="vip.hero.chip3">dates at your rate</span></p>
   </section>
 
-  <!-- ═══════════ 1 · THE CALCULATOR ═══════════ -->
   <section class="section" id="calc">
     <h2 data-i18n="vip.calc.title">The calculator</h2>
     <p class="lede" data-i18n-html="vip.calc.lede">Enter your level, your progress and your days played:</p>
@@ -34,14 +32,14 @@ self: vip
         <label for="vip-level" data-i18n="vip.calc.levelLabel">Your current VIP level</label>
         <div class="vip-input-wrap">
           <input id="vip-level" type="range" min="1" max="12" step="1" value="5">
-          <output id="vip-l-out" class="vip-chip">5/12</output>
+          <output id="vip-l-out" class="vip-chip" for="vip-level">5/12</output>
         </div>
       </div>
       <div class="calc-row">
         <label for="vip-xp" data-i18n="vip.calc.xpLabel">VIP XP toward the next level</label>
         <div class="vip-input-wrap">
-          <input id="vip-xp" type="number" inputmode="numeric" min="0" step="100" value="12000">
-          <output id="vip-xp-out" class="vip-chip">12,000 / 40,000</output>
+          <input id="vip-xp" type="number" inputmode="numeric" min="0" step="1" value="12000">
+          <output id="vip-xp-out" class="vip-chip" for="vip-xp">12,000 / 40,000</output>
         </div>
       </div>
       <div class="calc-row">
@@ -50,7 +48,7 @@ self: vip
           <input id="vip-days" type="number" inputmode="numeric" min="1" step="1" value="120">
         </div>
       </div>
-      <p class="calc-out" id="vip-headline">Your dates land here.</p>
+      <p class="calc-out" id="vip-headline" role="status">Your dates land here.</p>
       <div class="vip-out" id="vip-out" role="table" data-i18n-key="vip.calc.tableAria" data-i18n-attr="aria-label" hidden></div>
     </div>
 
@@ -59,57 +57,6 @@ self: vip
       Store and events, so your dates change with your rate.</p>
   </section>
 
-  <!-- ═══════════ 2 · THE MATHS ═══════════ -->
-  <section class="section" id="maths">
-    <h2 data-i18n="vip.maths.title">The maths</h2>
-    <p class="lede" data-i18n-html="vip.maths.lede">How the dates are worked out:</p>
-    <p data-i18n-html="vip.maths.p1">The rate is <b>earned ÷ days</b>: everything your progress bar has banked,
-      divided by every day you've played.</p>
-    <p data-i18n-html="vip.maths.p2">Each level's date is <b>today + still-needed ÷ rate</b>. Still-needed comes
-      from the table; the rate comes from your own numbers.</p>
-    <details>
-      <summary data-i18n="vip.maths.details">The formula, in one line</summary>
-      <div class="d-body">
-        <p class="d-formula" data-i18n-html="vip.maths.d">rate = earned ÷ days · date = today + still-needed ÷ rate</p>
-      </div>
-    </details>
-    <p class="note" data-i18n-html="vip.maths.note">Nothing here is estimated. The costs are the game's fixed table,
-      the progress is what the game shows, and days played is your own count. The division just divides.</p>
-  </section>
-
-  <!-- ═══════════ 3 · THE LADDER ═══════════ -->
-  <section class="section" id="table">
-    <h2 data-i18n="vip.table.title">The ladder</h2>
-    <p class="lede" data-i18n-html="vip.table.lede">Every level, the XP it costs and the total so far, with the perk
-      it unlocks:</p>
-
-    <div class="vip-ref" role="table" data-i18n-key="vip.table.aria" data-i18n-attr="aria-label">
-      <div class="vr-head">
-        <span data-i18n="vip.table.thLevel">VIP</span>
-        <span data-i18n="vip.table.thCost">XP to next</span>
-        <span data-i18n="vip.table.thCum">Total so far</span>
-        <span data-i18n="vip.table.thPerk">New at this level</span>
-      </div>
-      <div class="vr-row"><span class="vr-lvl">VIP 1</span><span class="vr-cost">0</span><span class="vr-cum">0</span><span class="vr-perk" data-i18n="vip.table.perk1">resource +2% · storehouse +100k</span></div>
-      <div class="vr-row"><span class="vr-lvl">VIP 2</span><span class="vr-cost">2,500</span><span class="vr-cum">2,500</span><span class="vr-perk" data-i18n="vip.table.perk2">resource +4% · storehouse +150k</span></div>
-      <div class="vr-row"><span class="vr-lvl">VIP 3</span><span class="vr-cost">5,000</span><span class="vr-cum">7,500</span><span class="vr-perk" data-i18n="vip.table.perk3">resource +6% · storehouse +200k</span></div>
-      <div class="vr-row milestone"><span class="vr-lvl">VIP 4</span><span class="vr-cost">12,500</span><span class="vr-cum">20,000</span><span class="vr-perk" data-i18n="vip.table.perk4">construction +10%</span></div>
-      <div class="vr-row"><span class="vr-lvl">VIP 5</span><span class="vr-cost">30,000</span><span class="vr-cum">50,000</span><span class="vr-perk" data-i18n="vip.table.perk5">formations +1</span></div>
-      <div class="vr-row milestone"><span class="vr-lvl">VIP 6</span><span class="vr-cost">40,000</span><span class="vr-cum">90,000</span><span class="vr-perk" data-i18n="vip.table.perk6">march queue +1</span></div>
-      <div class="vr-row"><span class="vr-lvl">VIP 7</span><span class="vr-cost">60,000</span><span class="vr-cum">150,000</span><span class="vr-perk" data-i18n="vip.table.perk7">resource +14%</span></div>
-      <div class="vr-row"><span class="vr-lvl">VIP 8</span><span class="vr-cost">100,000</span><span class="vr-cum">250,000</span><span class="vr-perk" data-i18n="vip.table.perk8">formations +2</span></div>
-      <div class="vr-row milestone"><span class="vr-lvl">VIP 9</span><span class="vr-cost">350,000</span><span class="vr-cum">600,000</span><span class="vr-perk" data-i18n="vip.table.perk9">construction +20% · squads' defence +10%</span></div>
-      <div class="vr-row"><span class="vr-lvl">VIP 10</span><span class="vr-cost">600,000</span><span class="vr-cum">1,200,000</span><span class="vr-perk" data-i18n="vip.table.perk10">squads' attack +12%</span></div>
-      <div class="vr-row"><span class="vr-lvl">VIP 11</span><span class="vr-cost">1,200,000</span><span class="vr-cum">2,400,000</span><span class="vr-perk" data-i18n="vip.table.perk11">squads' health +14%</span></div>
-      <div class="vr-row"><span class="vr-lvl">VIP 12</span><span class="vr-cost">2,400,000</span><span class="vr-cum">4,800,000</span><span class="vr-perk" data-i18n="vip.table.perk12">squads' lethality +16%</span></div>
-    </div>
-
-    <p class="note" data-i18n-html="vip.table.note">From the in-game VIP screen (March 2026 patch), via the
-      <a href="https://kingshotmastery.com/guides/kingshot-vip-guide">Kingshot Mastery VIP guide</a>. Community
-      numbers, not official. Past VIP 9 the cost doubles every level.</p>
-  </section>
-
-  <!-- ═══════════ 4 · YOUR TARGETS ═══════════ -->
   <section class="section" id="targets">
     <h2 data-i18n="vip.targets.title">The milestones</h2>
     <p class="lede" data-i18n-html="vip.targets.lede">Three levels worth aiming for, with your date for each:</p>
@@ -136,5 +83,57 @@ self: vip
 
     <p class="note" data-i18n-html="vip.targets.note">Past VIP 9 the cost doubles each level: 600k, 1.2M, 2.4M.
       The page will work out those dates too, but the numbers get large quickly.</p>
+  </section>
+
+  <section class="section" id="maths" data-collapse>
+    <h2><button type="button" class="section-toggle" aria-expanded="true" aria-controls="maths-body"><span data-i18n="vip.maths.title">The maths</span><span class="section-chevron" aria-hidden="true">▾</span></button></h2>
+    <div class="section-body" id="maths-body">
+    <p class="lede" data-i18n-html="vip.maths.lede">How the dates are worked out:</p>
+    <p data-i18n-html="vip.maths.p1">The rate is <b>earned ÷ days</b>: everything your progress bar has banked,
+      divided by every day you've played.</p>
+    <p data-i18n-html="vip.maths.p2">Each level's date is <b>today + still-needed ÷ rate</b>. Still-needed comes
+      from the table; the rate comes from your own numbers.</p>
+    <details>
+      <summary data-i18n="vip.maths.details">The formula, in one line</summary>
+      <div class="d-body">
+        <p class="d-formula" data-i18n-html="vip.maths.d">rate = earned ÷ days · date = today + still-needed ÷ rate</p>
+      </div>
+    </details>
+    <p class="note" data-i18n-html="vip.maths.note">Nothing here is estimated. The costs are the game's fixed table,
+      the progress is what the game shows, and days played is your own count. The division just divides.</p>
+      </div>
+  </section>
+
+  <section class="section" id="table" data-collapse>
+    <h2><button type="button" class="section-toggle" aria-expanded="true" aria-controls="table-body"><span data-i18n="vip.table.title">The ladder</span><span class="section-chevron" aria-hidden="true">▾</span></button></h2>
+    <div class="section-body" id="table-body">
+    <p class="lede" data-i18n-html="vip.table.lede">Every level, the XP it costs and the total so far, with the perk
+      it unlocks:</p>
+
+    <div class="vip-ref" role="table" data-i18n-key="vip.table.aria" data-i18n-attr="aria-label">
+      <div class="vr-head" role="row">
+        <span role="columnheader" data-i18n="vip.table.thLevel">VIP</span>
+        <span role="columnheader" data-i18n="vip.table.thCost">XP to next</span>
+        <span role="columnheader" data-i18n="vip.table.thCum">Total so far</span>
+        <span role="columnheader" data-i18n="vip.table.thPerk">New at this level</span>
+      </div>
+      <div class="vr-row" role="row"><span role="cell" class="vr-lvl">VIP 1</span><span role="cell" class="vr-cost">0</span><span role="cell" class="vr-cum">0</span><span role="cell" class="vr-perk" data-i18n="vip.table.perk1">resource +2% · storehouse +100k</span></div>
+      <div class="vr-row" role="row"><span role="cell" class="vr-lvl">VIP 2</span><span role="cell" class="vr-cost">2,500</span><span role="cell" class="vr-cum">2,500</span><span role="cell" class="vr-perk" data-i18n="vip.table.perk2">resource +4% · storehouse +150k</span></div>
+      <div class="vr-row" role="row"><span role="cell" class="vr-lvl">VIP 3</span><span role="cell" class="vr-cost">5,000</span><span role="cell" class="vr-cum">7,500</span><span role="cell" class="vr-perk" data-i18n="vip.table.perk3">resource +6% · storehouse +200k</span></div>
+      <div class="vr-row milestone" role="row"><span role="cell" class="vr-lvl">VIP 4</span><span role="cell" class="vr-cost">12,500</span><span role="cell" class="vr-cum">20,000</span><span role="cell" class="vr-perk" data-i18n="vip.table.perk4">construction +10%</span></div>
+      <div class="vr-row" role="row"><span role="cell" class="vr-lvl">VIP 5</span><span role="cell" class="vr-cost">30,000</span><span role="cell" class="vr-cum">50,000</span><span role="cell" class="vr-perk" data-i18n="vip.table.perk5">formations +1</span></div>
+      <div class="vr-row milestone" role="row"><span role="cell" class="vr-lvl">VIP 6</span><span role="cell" class="vr-cost">40,000</span><span role="cell" class="vr-cum">90,000</span><span role="cell" class="vr-perk" data-i18n="vip.table.perk6">march queue +1</span></div>
+      <div class="vr-row" role="row"><span role="cell" class="vr-lvl">VIP 7</span><span role="cell" class="vr-cost">60,000</span><span role="cell" class="vr-cum">150,000</span><span role="cell" class="vr-perk" data-i18n="vip.table.perk7">resource +14%</span></div>
+      <div class="vr-row" role="row"><span role="cell" class="vr-lvl">VIP 8</span><span role="cell" class="vr-cost">100,000</span><span role="cell" class="vr-cum">250,000</span><span role="cell" class="vr-perk" data-i18n="vip.table.perk8">formations +2</span></div>
+      <div class="vr-row milestone" role="row"><span role="cell" class="vr-lvl">VIP 9</span><span role="cell" class="vr-cost">350,000</span><span role="cell" class="vr-cum">600,000</span><span role="cell" class="vr-perk" data-i18n="vip.table.perk9">construction +20% · squads' defence +10%</span></div>
+      <div class="vr-row" role="row"><span role="cell" class="vr-lvl">VIP 10</span><span role="cell" class="vr-cost">600,000</span><span role="cell" class="vr-cum">1,200,000</span><span role="cell" class="vr-perk" data-i18n="vip.table.perk10">squads' attack +12%</span></div>
+      <div class="vr-row" role="row"><span role="cell" class="vr-lvl">VIP 11</span><span role="cell" class="vr-cost">1,200,000</span><span role="cell" class="vr-cum">2,400,000</span><span role="cell" class="vr-perk" data-i18n="vip.table.perk11">squads' health +14%</span></div>
+      <div class="vr-row" role="row"><span role="cell" class="vr-lvl">VIP 12</span><span role="cell" class="vr-cost">2,400,000</span><span role="cell" class="vr-cum">4,800,000</span><span role="cell" class="vr-perk" data-i18n="vip.table.perk12">squads' lethality +16%</span></div>
+    </div>
+
+    <p class="note" data-i18n-html="vip.table.note">From the in-game VIP screen (March 2026 patch), via the
+      <a href="https://kingshotmastery.com/guides/kingshot-vip-guide">Kingshot Mastery VIP guide</a>. Community
+      numbers, not official. Past VIP 9 the cost doubles every level.</p>
+      </div>
   </section>
 </main>

@@ -880,5 +880,11 @@ window.__BH_I18N_DATA["pl"] = {
   "ks.today.prepPlan": "Zaplanuj wydatki na KvK przed rozpoczęciem przygotowań w dniu 22.",
   "ks.today.kvkWeek": "Przygotowania i bitwa KvK",
   "ks.today.cycleRange": "Dni {from}–{to}",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">BEZ TAJEMNIC</span>",
+  "home.hero.lede": "Wydarzenia sojuszu prostymi słowami — jak zdobywa się punkty, co robić i gdzie ich szukać.",
+  "sw.hero.lede": "Dwa wyniki: przedział sojuszu i twój osobisty próg. Decyduje o nim jedna liczba: <strong>180,000</strong>. Strategia zależy od przeciwnika, cel pozostaje ten sam.",
+  "sw.hero.chip1": "55 min na mecz",
+  "sw.hero.chip2": "dwa legiony",
+  "sw.hero.chip3": "bez strat, tylko ranni"
 }
 ;

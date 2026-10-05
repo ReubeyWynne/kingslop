@@ -57,6 +57,7 @@
 
     // Mirror the clamped values back into the controls.
     xpEl.max = next;
+    xpEl.disabled = L === MAX;
     var lOut = document.getElementById('vip-l-out');
     if (lOut) lOut.textContent = L + '/' + MAX;
     var xpOut = document.getElementById('vip-xp-out');
@@ -97,21 +98,21 @@
     if (out) {
       var html = '';
       if (s.ok && s.D >= 1 && s.earned >= 1) {
-        html = '<div class="vip-head">' +
-          '<span>' + BH.tr('vip.calc.thLevel', 'Level') + '</span>' +
-          '<span class="vip-need">' + BH.tr('vip.calc.thNeed', 'XP still needed') + '</span>' +
-          '<span>' + BH.tr('vip.calc.thDays', 'Days') + '</span>' +
-          '<span>' + BH.tr('vip.calc.thDate', 'Date') + '</span></div>';
+        html = '<div class="vip-head" role="row">' +
+          '<span role="columnheader">' + BH.tr('vip.calc.thLevel', 'Level') + '</span>' +
+          '<span class="vip-need" role="columnheader">' + BH.tr('vip.calc.thNeed', 'XP still needed') + '</span>' +
+          '<span role="columnheader">' + BH.tr('vip.calc.thDays', 'Days') + '</span>' +
+          '<span role="columnheader">' + BH.tr('vip.calc.thDate', 'Date') + '</span></div>';
         for (var T = s.L + 1; T <= MAX; T++) {
           var need = CUM[T] - s.earned;
           var days = Math.ceil(need / s.rate);
           var date = addDays(new Date(), days);
           var ms = MILESTONES.indexOf(T) !== -1;
-          html += '<div class="vip-row' + (ms ? ' milestone' : '') + '">' +
-            '<span class="vip-lvl">VIP ' + T + (ms ? '<small>' + milestoneTag(BH, T) + '</small>' : '') + '</span>' +
-            '<span class="vip-need">' + BH.fmt(need) + '</span>' +
-            '<span class="vip-days">' + BH.fmt(days) + '</span>' +
-            '<span class="vip-date">' + fmtDate(date) + '</span></div>';
+          html += '<div class="vip-row' + (ms ? ' milestone' : '') + '" role="row">' +
+            '<span role="cell" class="vip-lvl">VIP ' + T + (ms ? '<small>' + milestoneTag(BH, T) + '</small>' : '') + '</span>' +
+            '<span role="cell" class="vip-need">' + BH.fmt(need) + '</span>' +
+            '<span role="cell" class="vip-days">' + BH.fmt(days) + '</span>' +
+            '<span role="cell" class="vip-date">' + fmtDate(date) + '</span></div>';
         }
       }
       out.innerHTML = html;

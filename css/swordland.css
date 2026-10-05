@@ -130,3 +130,5 @@ html[data-page="swordland"] .tag-them::before { content: "❧ "; }
 @media (min-width: 900px) {
   .games { grid-template-columns: 1fr 1fr 1fr; gap: var(--space-l) var(--space-m); align-items: start; }
 }
+
+#swcalc input[type="range"] { min-height: 44px; }

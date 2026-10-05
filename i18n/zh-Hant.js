@@ -880,5 +880,11 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "ks.today.prepPlan": "在第 22 天備戰開始前，規劃好 KvK 材料消耗。",
   "ks.today.kvkWeek": "KvK 備戰與戰鬥",
   "ks.today.cycleRange": "第 {from}–{to} 天",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">解密</span>",
+  "home.hero.lede": "用簡單的話講清聯盟活動——每項活動如何計分、你該怎麼做，以及哪裡能獲得積分。",
+  "sw.hero.lede": "兩張計分榜：聯盟檔位和你的個人檔位。決定你個人檔位的數字是 <strong>180,000</strong>。策略隨對手而變，目標不變。",
+  "sw.hero.chip1": "每場55分鐘",
+  "sw.hero.chip2": "兩個軍團",
+  "sw.hero.chip3": "沒有陣亡，只有傷兵"
 }
 ;

@@ -880,5 +880,11 @@ window.__BH_I18N_DATA["ja"] = {
   "ks.today.prepPlan": "22日目に準備が始まる前に、KvKで使う素材を計画してください。",
   "ks.today.kvkWeek": "KvK 準備と戦闘",
   "ks.today.cycleRange": "{from}–{to}日目",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">解明</span>",
+  "home.hero.lede": "同盟イベントをわかりやすく解説 — 各イベントの得点の仕組み、やるべきこと、ポイントを稼ぐ場所。",
+  "sw.hero.lede": "同盟の報酬区分と個人の報酬段階、2つのスコアボード。個人の段階を決める数字は <strong>180,000</strong>。戦略は対戦相手によって変わりますが、目標は変わりません。",
+  "sw.hero.chip1": "1試合55分",
+  "sw.hero.chip2": "2つの軍団",
+  "sw.hero.chip3": "損失なし、負傷のみ"
 }
 ;

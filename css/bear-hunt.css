@@ -9,52 +9,6 @@ html[data-page="bearhunt"] .strategy-list li {
   padding-block: 0.3rem;
 }
 
-html[data-page="bearhunt"] .section[data-collapse] > h2 {
-  margin-bottom: 0;
-}
-
-html[data-page="bearhunt"] .section-toggle {
-  all: unset;
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  cursor: pointer;
-  color: inherit;
-}
-
-html[data-page="bearhunt"] .section-toggle:focus-visible {
-  outline: 2px solid var(--amber);
-  outline-offset: 0.2rem;
-  border-radius: 0.15rem;
-}
-
-html[data-page="bearhunt"] .section-chevron {
-  display: inline-block;
-  color: var(--amber);
-  font-family: var(--body);
-  font-size: 0.72em;
-  transform: rotate(0deg);
-  transform-origin: center;
-  transition: transform 0.2s ease, color 0.2s ease;
-}
-
-html[data-page="bearhunt"] .section[data-collapsed] .section-chevron {
-  transform: rotate(-90deg);
-}
-
-html[data-page="bearhunt"] .section[data-collapsed] h2 {
-  color: var(--ink-dim);
-}
-
-html[data-page="bearhunt"] .section-body {
-  padding-top: var(--space-m);
-}
-
-html[data-page="bearhunt"] .section-body[hidden] {
-  display: none !important;
-}
-
 html[data-page="bearhunt"] .anchor-alias {
   display: block;
   position: relative;

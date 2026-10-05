@@ -891,5 +891,11 @@ window.__BH_I18N_DATA["id"] = {
   "ks.today.prepPlan": "Rencanakan penggunaan bahan KvK sebelum persiapan dimulai pada hari ke-22.",
   "ks.today.kvkWeek": "Persiapan dan pertempuran KvK",
   "ks.today.cycleRange": "Hari {from}–{to}",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">DIBONGKAR</span>",
+  "home.hero.lede": "Event aliansi dengan bahasa sederhana — cara setiap event memberi poin, apa yang perlu kamu lakukan, dan tempat mendapatkan poin.",
+  "sw.hero.lede": "Dua papan skor, kelompok aliansi dan tingkat pribadi, dengan satu angka penentu tingkatmu: <strong>180,000</strong>. Strategi berubah sesuai lawan; target tetap.",
+  "sw.hero.chip1": "55 menit per pertandingan",
+  "sw.hero.chip2": "dua legiun",
+  "sw.hero.chip3": "tanpa kehilangan, hanya terluka"
 }
 ;

@@ -880,5 +880,11 @@ window.__BH_I18N_DATA["ko"] = {
   "ks.today.prepPlan": "22일 차 준비가 시작되기 전에 KvK 재료 사용을 계획하세요.",
   "ks.today.kvkWeek": "KvK 준비 및 전투",
   "ks.today.cycleRange": "{from}–{to}일 차",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">해부</span>",
+  "home.hero.lede": "연맹 이벤트를 쉽게 설명합니다 — 각 이벤트의 점수 계산 방식, 해야 할 일, 점수를 얻는 곳.",
+  "sw.hero.lede": "두 개의 점수판, 연맹의 등급과 개인 보상 단계. 개인 단계를 결정하는 수치는 <strong>180,000</strong>입니다. 상대에 따라 전략은 달라지지만 목표는 같습니다.",
+  "sw.hero.chip1": "경기당 55분",
+  "sw.hero.chip2": "두 군단",
+  "sw.hero.chip3": "손실 없이 부상만"
 }
 ;

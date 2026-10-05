@@ -112,3 +112,14 @@
 }
 .vip-target-date b { color: var(--amber); font-size: var(--step-0); }
 .vip-target-date.done { color: var(--ink-muted); }
+
+.vip-head, .vip-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(3rem, auto) minmax(0, 8rem); }
+.vip-head > span, .vip-row > span, .vr-head > span, .vr-row > span { min-width: 0; overflow-wrap: anywhere; }
+.vip-date { white-space: normal; }
+.vip-out, .vip-ref { font-variant-numeric: tabular-nums; }
+.vip-input-wrap { flex-wrap: wrap; }
+.vip-input-wrap input { min-height: 44px; }
+@media (max-width: 640px) {
+  .vip-head, .vip-row { grid-template-columns: minmax(0, 1fr) minmax(3rem, auto) minmax(0, 7rem); }
+  .vr-head, .vr-row { grid-template-columns: minmax(0, 3.2rem) minmax(0, 5.4rem) minmax(0, 1fr); }
+}
