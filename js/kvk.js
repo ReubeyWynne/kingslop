@@ -35,6 +35,14 @@
     ['Forgehammer',     ['no',   'no',   'no',   'best', 'best']]
   ];
 
+  var PTS = {
+    'Truegold': '2,000', 'Tempered TG': '30,000', 'Hero shard': '3,040+',
+    'Master emblem': '6,000', 'Building': '30/min', 'Troop': '75 (T11)',
+    'Research': '30/min', 'Hero roulette': '8,000', 'Gathering': '2',
+    'Intel missions': '6,000', 'Pets advance': '15,000', 'Gov charm': '70',
+    'Gov gear': '—', 'Widget gear': '8,000', 'Mithril': '40,000', 'Forgehammer': '4,000'
+  };
+
   var GLYPH = { best: '\u2705', ok: '\uD83C\uDD97', no: '\uD83D\uDEAB' }; // ✅ 🆗 🚫
 
   var KOP_THEMES = ['City Construction', 'Basic Skills Up', 'Pet Training', 'Gear & Troops', 'Combined'];
@@ -330,7 +338,7 @@
         html += '<details class="today-stored"><summary>' + (state === 'hold' ? ITEM_GLYPH.Truegold + ITEM_GLYPH['Hero shard'] : '📋 ') + labels[state] + '</summary>' + groups[state] + '</details>';
       } else html += zone(labels[state], groups[state]);
     }
-    if (!ctx.prepN && (groups.best || groups.ok)) html += '<p class="today-meta">' + BH.tr('ks.today.units', 'Points shown are per task unit. Use the day’s table for the exact units and unlocked tiers.') + '</p>';
+    if (groups.best || groups.ok) html += '<p class="today-meta">' + BH.tr('ks.today.units', 'Points shown are per task unit. Use the day’s table for the exact units and unlocked tiers.') + '</p>';
     return '<div class="today-value">' + html + '</div>';
   }
 
@@ -340,7 +348,7 @@
       '<p class="today-title">' + theme + '</p>' +
       '<p class="today-meta">' + BH.tr('ks.today.prepGuide', 'Check today’s tasks and reward milestones in game.') + '</p>';
 
-    var ctx = { prepN: n, sgN: null, brawlIds: null, sgIds: new Set(), lowIds: runLowIds(), ptsById: {}, freeActions: null };
+    var ctx = { prepN: n, sgN: null, brawlIds: null, sgIds: new Set(), lowIds: runLowIds(), ptsById: PTS, freeActions: null };
     var body = todayValueHtml(ctx, BH);
 
     return { head: head, body: body, copy: dayBlock(n), copyTitle: BH.tr('ks.today.copyToday', 'copy today for KingShot') };

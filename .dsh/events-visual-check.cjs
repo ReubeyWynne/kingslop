@@ -82,7 +82,8 @@ function displayCells(line) {
         assert.ok(copy.y >= tasks.y + tasks.height, lang + ': copy interrupts tasks ' + d);
         assert.equal(await page.locator('#ks-copy-btn').evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(0, 0, 0, 0)', lang + ': prominent copy background');
         if (d >= 22 && d <= 26) {
-          assert.equal(await page.locator('#ks-card .tpts').count(), 0, lang + ': KvK point figures');
+          assert.ok(await page.locator('#ks-card .tpts').count() > 0, lang + ': missing KvK item scores');
+          assert.ok((await page.locator('#ks-card .today-meta').allTextContents()).includes(dictionaries[lang]['ks.today.units']), lang + ': missing scoring units');
           assert.equal(await page.locator('#ks-card').innerText().then(text => /200[,.\s]?000/.test(text)), false, lang + ': fixed chest target');
         }
         if (d === 20) {
@@ -128,7 +129,17 @@ function displayCells(line) {
       if (lang === 'en' && width === 1280) {
         for (let d = 1; d <= 28; d++) {
           await page.locator('[data-cycle-day="' + d + '"]').click();
-          if (d >= 22 && d <= 26) assert.equal(await page.locator('#ks-card .tpts').count(), 0, 'KvK day ' + d + ': point figures');
+          if (d >= 22 && d <= 26) {
+            assert.ok(await page.locator('#ks-card .tpts').count() > 0, 'KvK day ' + d + ': missing item scores');
+            const reference = page.locator('#days .day').nth(d - 22);
+            assert.ok(await reference.locator('.pt .pts').count() > 0, 'KvK day ' + d + ': missing scoring table');
+            assert.equal(await page.locator('#ks-card, #days').allTextContents().then(texts => /200[,.\s]?000/.test(texts.join(' '))), false, 'KvK day ' + d + ': fixed reward total');
+          }
+          if (d === 22) assert.equal(await page.locator('#ks-card .trow').filter({ hasText: 'Tempered TG' }).locator('.tpts').textContent(), '30,000');
+          if (d === 25) {
+            assert.equal(await page.locator('#ks-card .trow').filter({ hasText: 'Mithril' }).locator('.tpts').textContent(), '40,000');
+            assert.equal(await page.locator('#ks-card .trow').filter({ hasText: 'Troop' }).locator('.tpts').textContent(), '75 (T11)');
+          }
           const parts = page.locator('#ks-copy-parts button');
           const count = Math.max(1, await parts.count());
           for (let n = 0; n < count; n++) {
