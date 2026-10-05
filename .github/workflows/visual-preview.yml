@@ -1,0 +1,44 @@
+name: Visual preview
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: visual-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/jekyll-build-pages@44a6e6beabd48582f863aeeb6cb2151cc1716697
+      - name: Install preview browser
+        run: |
+          npm install --prefix "$RUNNER_TEMP/visuals" --no-audit --no-fund playwright@1.63.0
+          node "$RUNNER_TEMP/visuals/node_modules/playwright/cli.js" install --with-deps chromium
+      - name: Check pages and capture previews
+        env:
+          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        run: |
+          node .dsh/bear-hunt-visual-check.cjs
+          node .dsh/events-visual-check.cjs
+          node .dsh/remaining-pages-visual-check.cjs
+      - name: Upload built site and screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: visual-preview
+          include-hidden-files: true
+          retention-days: 7
+          path: |
+            _site/
+            .dsh/visual-preview/
+            .dsh/events-preview/
+            .dsh/remaining-pages-preview/
