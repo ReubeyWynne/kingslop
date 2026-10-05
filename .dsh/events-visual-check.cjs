@@ -180,8 +180,18 @@ function displayCells(line) {
         await page.locator('#ks-copy-btn').click();
         await page.waitForFunction(() => document.getElementById('ks-copy-preview').open);
         assert.equal(await page.locator('#ks-copy-status').textContent(), dictionaries.en['ks.today.copyFailed']);
-        await page.evaluate(() => window.I18N.switchTo('ar'));
-        await page.waitForFunction(() => window.I18N.lang === 'ar');
+        await page.route('**/i18n/ar.js*', async route => {
+          const response = await route.fetch();
+          await new Promise(resolve => setTimeout(resolve, 250));
+          await route.fulfill({ response });
+        });
+        // switchTo sets lang before the dictionary arrives; the change event
+        // fires after applying it and repainting the page's dynamic controls.
+        await page.evaluate(() => new Promise(resolve => {
+          document.addEventListener('i18n:change', () => resolve(), { once: true });
+          window.I18N.switchTo('ar');
+        }));
+        assert.equal(await page.evaluate(() => window.I18N.lang), 'ar');
         assert.equal(await page.locator('#ks-cycle [aria-pressed="true"]').getAttribute('data-cycle-day'), '28');
         assert.equal(await page.locator('#ks-copy-link').isChecked(), true, 'site-link choice survives language change');
         assert.equal(await page.locator('.copy-link-option span').textContent(), dictionaries.ar['ks.today.includeLink']);
