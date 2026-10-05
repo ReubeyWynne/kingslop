@@ -70,6 +70,9 @@ async function overflow(page, message) {
           assert.ok(bounds.height >= 44 && bounds.width >= 44);
         }
         await overflow(page, lang + ' ' + route + ' ' + width);
+        if (route === 'vikings-vengeance/' && ['en', 'ar'].includes(lang) && width === 390) {
+          await page.screenshot({ path: path.join(output, 'vikings-collapsed-' + lang + '-390.png'), fullPage: true });
+        }
         if (width <= 760 && await buttons.count()) {
           const href = await page.locator('.toc a').evaluateAll(links => links.find(a => document.querySelector(a.getAttribute('href') + '[data-collapse]'))?.getAttribute('href'));
           await page.evaluate(() => { window.testHashDone = false; window.addEventListener('hashchange', () => { window.testHashDone = true; }, { once: true }); });
@@ -122,6 +125,9 @@ async function overflow(page, message) {
             assert.equal(await page.locator('.sim-panel:visible').count(), 1);
             assert.ok(page.url().includes('lang=' + lang));
             await overflow(page, lang + ' simulator mode ' + mode);
+            if (mode === 'mystic' && ['en', 'ar'].includes(lang) && [390, 1280].includes(width)) {
+              await page.locator('#sim-rooms').screenshot({ path: path.join(output, 'mystic-rooms-' + lang + '-' + width + '.png') });
+            }
           }
           assert.equal(await page.locator('#sim-atk-inf').inputValue(), '333');
           await page.goBack();
