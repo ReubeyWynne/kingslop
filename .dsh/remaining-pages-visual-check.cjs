@@ -112,10 +112,11 @@ async function overflow(page, message) {
           assert.equal(await page.locator('#sw-total').innerText(), await page.evaluate(() => BH.fmt(181000)));
         }
         if (route === 'vikings-vengeance/') {
-          await setRange(page, '#vv-cities', '0');
-          assert.ok((await page.locator('#vv-outline').innerText()).includes('0'));
-          await setRange(page, '#vv-cities', '6');
-          assert.ok((await page.locator('#vv-outline').innerText()).includes('6'));
+          for (const n of [1, 5, 6, 15]) {
+            await setRange(page, '#vv-reinforcers', String(n));
+            const expected = await page.evaluate(n => BH.fmt(10000) + ' ÷ ' + BH.fmt(n) + ' ≈ ' + BH.fmt(10000 / n), n);
+            assert.equal(await page.locator('#vv-outline').innerText(), expected);
+          }
         }
         if (route === 'battle-simulator/') {
           await page.locator('#sim-atk-inf').fill('333');
