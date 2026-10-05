@@ -29,6 +29,10 @@ async function setRange(page, id, value) {
 }
 async function overflow(page, message) {
   const bad = await page.evaluate(() => [...document.querySelectorAll('main, main section, main .calc, main .sim-report, main .vip-out, main .vip-ref')].filter(el => el.getClientRects().length && el.scrollWidth > el.clientWidth + 2).map(el => el.id || el.className));
+  if (bad.length) {
+    await page.screenshot({ path: path.join(output, 'failure-' + message.replace(/[^a-z0-9]+/gi, '-') + '.png'), fullPage: true });
+    console.error(await page.locator('main').evaluate(el => [...el.querySelectorAll('*')].filter(node => node.getClientRects().length && node.getBoundingClientRect().right > innerWidth + 1).map(node => ({ tag: node.tagName, id: node.id, className: node.className, width: node.getBoundingClientRect().width }))));
+  }
   assert.deepEqual(bad, [], message + ': overflow');
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), message + ': page overflow');
 }

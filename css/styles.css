@@ -706,8 +706,12 @@ html { scrollbar-width: thin; scrollbar-color: var(--ink-muted) var(--void); }
 .lang-menu .flag { width: 1.6rem; height: 0.96rem; flex: 0 0 auto; border-radius: 1px; }
 
 .section[data-collapse] > h2 {
+  display: flex;
+  align-items: center;
   margin-bottom: 0;
 }
+
+.section[data-collapse] > h2::before { flex: none; }
 
 .section-toggle {
   all: unset;
@@ -716,7 +720,8 @@ html { scrollbar-width: thin; scrollbar-color: var(--ink-muted) var(--void); }
   align-items: center;
   gap: 0.55rem;
   min-height: 44px;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   justify-content: space-between;
   cursor: pointer;
   color: inherit;
