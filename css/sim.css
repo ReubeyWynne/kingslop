@@ -385,13 +385,15 @@ html[lang="ar"] .alpha-stamp { letter-spacing: 0; text-indent: 0; }
 .sim-report input, .march input, .march select, .sim-a, .sim-w, .sim-share, .sim-n { text-align: end; }
 
 /* Ratios keep infantry / cavalry / archer order in every reading direction.
-   Content-sized tracks accommodate localized digits without clipping them. */
+   Font-sized tracks accommodate localized digits and align headers with rows. */
 .room-ratio, .room-alt { direction: ltr; unicode-bidi: isolate; }
 .sim-out.rooms .sim-head, .sim-out.rooms .sim-row {
-  grid-template-columns: 9.5rem minmax(0, 1fr) max-content max-content;
+  grid-template-columns: 9.5rem minmax(0, 1fr) 5.3em 5.3em;
 }
 @media (max-width: 660px) {
   .sim-out.rooms .sim-head, .sim-out.rooms .sim-row {
-    grid-template-columns: minmax(0, 1fr) max-content max-content;
+    grid-template-columns: minmax(0, 1fr) 4.4em 4.4em;
   }
 }
+
+.sim-out.rooms .sim-head span:nth-child(2) { text-align: start; }

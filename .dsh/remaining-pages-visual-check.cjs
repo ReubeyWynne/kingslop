@@ -125,6 +125,14 @@ async function overflow(page, message) {
             assert.equal(await page.locator('.sim-panel:visible').count(), 1);
             assert.ok(page.url().includes('lang=' + lang));
             await overflow(page, lang + ' simulator mode ' + mode);
+            if (mode === 'mystic') {
+              assert.ok(await page.locator('#sim-rooms').evaluate(table => {
+                const headers = table.querySelector('.sim-head').children;
+                return [...table.querySelectorAll('.sim-row')].every(row =>
+                  Math.abs(row.querySelector('.room-ratio').getBoundingClientRect().right - headers[2].getBoundingClientRect().right) < 1 &&
+                  Math.abs(row.querySelector('.room-alt').getBoundingClientRect().right - headers[3].getBoundingClientRect().right) < 1);
+              }), lang + ': Mystic headers align with their values');
+            }
             if (mode === 'mystic' && ['en', 'ar'].includes(lang) && [390, 1280].includes(width)) {
               await page.locator('#sim-rooms').screenshot({ path: path.join(output, 'mystic-rooms-' + lang + '-' + width + '.png') });
             }
