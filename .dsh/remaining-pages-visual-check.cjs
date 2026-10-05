@@ -32,7 +32,7 @@ async function overflow(page, message) {
   const bad = await page.evaluate(() => [...document.querySelectorAll('main, main section, main .calc, main .sim-report, main .vip-out, main .vip-ref')].filter(el => el.getClientRects().length && el.scrollWidth > el.clientWidth + 2).map(el => el.id || el.className));
   if (bad.length) {
     await page.screenshot({ path: path.join(output, 'failure-' + message.replace(/[^a-z0-9]+/gi, '-') + '.png'), fullPage: true });
-    console.error(await page.locator('main').evaluate(el => [...el.querySelectorAll('*')].filter(node => node.getClientRects().length && node.getBoundingClientRect().right > innerWidth + 1).map(node => ({ tag: node.tagName, id: node.id, className: node.className, width: node.getBoundingClientRect().width }))));
+    console.error(await page.locator('main section').evaluateAll(els => els.filter(el => el.scrollWidth > el.clientWidth + 2).map(el => ({ id: el.id, client: el.clientWidth, scroll: el.scrollWidth, nodes: [...el.querySelectorAll('*')].filter(node => node.getClientRects().length && (node.getBoundingClientRect().right > el.getBoundingClientRect().right + 1 || node.scrollWidth > node.clientWidth + 2)).map(node => ({ tag: node.tagName, id: node.id, className: node.className, client: node.clientWidth, scroll: node.scrollWidth, width: node.getBoundingClientRect().width, right: node.getBoundingClientRect().right })) }))));
   }
   if (bad.length) layoutFailures.push({ message, elements: bad });
   if (!await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)) layoutFailures.push({ message, elements: ['page'] });
@@ -72,7 +72,9 @@ async function overflow(page, message) {
         await overflow(page, lang + ' ' + route + ' ' + width);
         if (width <= 760 && await buttons.count()) {
           const href = await page.locator('.toc a').evaluateAll(links => links.find(a => document.querySelector(a.getAttribute('href') + '[data-collapse]'))?.getAttribute('href'));
+          await page.evaluate(() => { window.testHashDone = false; window.addEventListener('hashchange', () => { window.testHashDone = true; }, { once: true }); });
           await page.locator('.toc a[href="' + href + '"]').click();
+          await page.waitForFunction(() => window.testHashDone);
           assert.equal(await page.locator(href + ' .section-toggle').getAttribute('aria-expanded'), 'true');
           await page.locator(href + ' .section-toggle').focus();
           await page.keyboard.press('Enter');
