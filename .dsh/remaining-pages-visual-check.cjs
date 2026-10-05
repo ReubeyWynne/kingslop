@@ -9,6 +9,7 @@ const output = path.resolve('.dsh/remaining-pages-preview');
 const langs = ['en', 'es', 'pt-BR', 'de', 'fr', 'it', 'ru', 'pl', 'tr', 'zh-Hans', 'zh-Hant', 'ko', 'ja', 'th', 'id', 'vi', 'ar'];
 const routes = ['', 'vikings-vengeance/', 'swordland-showdown/', 'vip-calculator/', 'battle-simulator/'];
 const first = ['top', 'routine', 'checklist', 'calc', 'console'];
+const layoutFailures = [];
 for (const lang of langs) {
   const scope = { window: {} };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'i18n', lang + '.js'), 'utf8'), scope);
@@ -33,8 +34,8 @@ async function overflow(page, message) {
     await page.screenshot({ path: path.join(output, 'failure-' + message.replace(/[^a-z0-9]+/gi, '-') + '.png'), fullPage: true });
     console.error(await page.locator('main').evaluate(el => [...el.querySelectorAll('*')].filter(node => node.getClientRects().length && node.getBoundingClientRect().right > innerWidth + 1).map(node => ({ tag: node.tagName, id: node.id, className: node.className, width: node.getBoundingClientRect().width }))));
   }
-  assert.deepEqual(bad, [], message + ': overflow');
-  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), message + ': page overflow');
+  if (bad.length) layoutFailures.push({ message, elements: bad });
+  if (!await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)) layoutFailures.push({ message, elements: ['page'] });
 }
 (async () => {
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -152,6 +153,8 @@ async function overflow(page, message) {
       await p.close();
     }
     fs.writeFileSync(path.join(output, 'report.json'), JSON.stringify(report, null, 2));
+    fs.writeFileSync(path.join(output, 'layout-failures.json'), JSON.stringify(layoutFailures, null, 2));
+    assert.deepEqual(layoutFailures, [], 'remaining-page layout failures');
     console.log(report.length + ' remaining-page layout and interaction checks passed');
   } finally {
     if (browser) await browser.close();
