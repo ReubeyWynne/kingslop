@@ -145,7 +145,7 @@
       "url": "../vikings-vengeance/",
       "page": "vikings",
       "title": "Vikings Vengeance",
-      "lede": "kills are points, and every city your troops stand in is a kill surface."
+      "lede": "all queues, all deployable troops, and fixed kill-point pools."
     },
     "css": [
       "../css/styles.css",
@@ -185,18 +185,18 @@
     "titleKey": "vv.meta.title",
     "titleText": "Vikings Vengeance, Demystified",
     "metaDescKey": "vv.meta.description",
-    "metaDesc": "Vikings Vengeance, demystified. Kills are points — send everyone out, infantry first, and be online for waves 7, 14 and 17.",
+    "metaDesc": "Vikings Vengeance: all queues, all deployable troops, HQ equal shares and the maths of fixed kill-point pools.",
     "ogTitleKey": "vv.meta.ogTitle",
     "ogTitle": "Vikings Vengeance, Demystified",
     "ogDescKey": "vv.meta.ogDescription",
-    "ogDesc": "Kills are points, and every city your troops stand in is a kill surface — in plain words.",
+    "ogDesc": "Empty towns, full clears, and kill-based reinforcement shares — with practical queue and HQ planning.",
     "skipHref": "#waves",
     "skipKey": "vv.skip",
     "skipText": "Skip to the guide",
     "dust": "<i></i><i></i><i></i>",
     "brand": "VIKINGS VENGEANCE",
     "brandNoteKey": "vv.brandNote",
-    "brandNote": "just the kill surface",
+    "brandNote": "just the kills",
     "swipePrev": {
       "url": "../bear-hunt/",
       "page": "bearhunt",
@@ -224,7 +224,7 @@
     "footSubs": [
       {
         "key": "vv.foot.note",
-        "html": "Numbers here are for our server: reinforced garrisons of\n    200–300k T8/T9 hold difficulty 11. Your server will differ — <b>the principles don't.</b>"
+        "html": "Our baseline: all queues, all deployable troops, and full clears. Difficulty and power can change the best allocation — check your reports."
       },
       {
         "key": "vv.foot.credit",
@@ -258,7 +258,7 @@
       "url": "../vikings-vengeance/",
       "page": "vikings",
       "title": "Vikings Vengeance",
-      "lede": "kills are points, and every city your troops stand in is a kill surface."
+      "lede": "all queues, all deployable troops, and fixed kill-point pools."
     },
     "swipeNext": {
       "url": "../vip-calculator/",
