@@ -734,7 +734,12 @@ html { scrollbar-width: thin; scrollbar-color: var(--ink-muted) var(--void); }
 }
 
 .section-chevron {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
   color: var(--amber);
   font-family: var(--body);
   font-size: 0.72em;
