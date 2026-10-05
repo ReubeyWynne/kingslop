@@ -276,6 +276,8 @@ window.__BH_I18N_DATA["vi"] = {
   "vv.stand.p1": "Thưởng đầy đủ của thành không phụ thuộc ai hạ gục. Người tiếp viện nhận điểm riêng cho số hạ gục của mình. Nhắm tới <strong>100% tiêu diệt</strong> — sống sót chưa phải điểm tối đa.",
   "vv.stand.benchmark": "Không có số quân an toàn cho mọi trường hợp. Độ khó, cấp quân, sức mạnh đồn trú và kỹ năng đang hoạt động quyết định khả năng tiêu diệt cả đợt.",
   "vv.stand.p2": "Gửi <strong>mọi loại quân, kể cả cung thủ</strong>. Giới hạn là sức chứa từng đội và hàng đợi khả dụng. Chỉ khi không chở hết mới để cung thủ ở nhà trước; họ vẫn có thể hạ gục ở đợt sau.",
+  "vv.stand.overflow": "Giới hạn vận chuyển là tổng sức chứa các đội hành quân — khi bằng nhau, sức chứa đội × hàng đợi khả dụng. Ví dụ 5 × 160k = 800k và 6 × 150k = 900k. Vì thế một số người không thể làm trống thành từ khoảng 800–900k quân; dùng giới hạn của chính bạn. Để cung thủ lại trước. Đạo quân rất lớn không thiên về cung thủ có thể sau đó phải để cả kỵ binh lại.",
+  "vv.stand.priority": "Thành mà quân chủ thành chắc chắn lấy một phần số hạ có ưu tiên thấp hơn cho tiếp viện kiếm điểm: quân đó lấy số hạ lẽ ra mang lại điểm tiếp viện cho đồng minh. Ưu tiên thành trống hoặc ít cạnh tranh hơn, nhưng vẫn bảo đảm đủ hỗ trợ để sống sót và tiêu diệt toàn bộ mỗi đợt. Ưu tiên thấp không có nghĩa là bỏ mặc.",
   "vv.stand.capNote": "Tăng sức chứa hành quân — nhiều quân ra ngoài, ít quân ở nhà. Với thành, dùng sức chứa hành quân/triển khai, không phải sức chứa rally HQ.",
   "vv.stand.calcTitle": "THỬ — MỘT QUỸ ĐIỂM TIẾP VIỆN CỐ ĐỊNH",
   "vv.stand.citiesLabel": "Người tiếp viện cùng chia một thành tiêu diệt toàn bộ",

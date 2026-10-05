@@ -276,6 +276,8 @@ window.__BH_I18N_DATA["pl"] = {
   "vv.stand.p1": "Pełna nagroda miasta nie zależy od tego, kto zabija. Wsparcie zdobywa osobne punkty za własne zabicia. Celuj w <strong>100% zabitych</strong> — samo przetrwanie nie daje pełnego wyniku.",
   "vv.stand.benchmark": "Nie ma uniwersalnej bezpiecznej liczby wojsk. Trudność, poziomy, siła garnizonu i aktywne umiejętności decydują o pełnym pokonaniu fali.",
   "vv.stand.p2": "Wyślij <strong>wszystkie rodzaje wojsk, także łuczników</strong>. Limit to pojemność każdego marszu i dostępne kolejki. Dopiero gdy nie zmieści się wszystko, zostaw najpierw łuczników; w późniejszych falach nadal mogą zabijać.",
+  "vv.stand.overflow": "Limit transportu to suma pojemności marszów — przy równych limitach: pojemność × dostępne kolejki. Na przykład 5 × 160k = 800k i 6 × 150k = 900k. Dlatego niektóre osoby nie mogą opróżnić miasta przy około 800–900k wojsk; licz własny limit. Najpierw zostawiaj łuczników. Bardzo duże armie bez przewagi łuczników mogą później wymagać pozostawienia także kawalerii.",
+  "vv.stand.priority": "Miasta, w których własne wojska nieuchronnie zdobędą zabicia, mają niższy priorytet dla wsparcia zbierającego punkty: te zabicia mogłyby dać sojusznikom punkty wsparcia. Wybieraj puste miasta lub te z mniejszą konkurencją, ale zapewnij dość pomocy do przetrwania i pełnego pokonania każdej fali. Niższy priorytet nie oznacza braku ochrony.",
   "vv.stand.capNote": "Zwiększ pojemność marszu — więcej wojsk poza domem. Dla miast licz pojemność marszu/wysłania, nie rajdu HQ.",
   "vv.stand.calcTitle": "SPRAWDŹ — JEDNA STAŁA PULA PUNKTÓW WSPARCIA",
   "vv.stand.citiesLabel": "Osoby wspierające miasto z pełnym pokonaniem fali",

@@ -77,6 +77,14 @@ that increase need not occur. HQ transfers temporarily reduce city queues.
   × queues when equal. Rally/HQ garrison capacity is a different limit. If all
   troops cannot fit, prioritize infantry and cavalry; surplus archers may remain
   and may score owner kills on later waves.
+  For equal caps, 5 × 160k = 800k and 6 × 150k = 900k illustrate why
+  overflow can begin around 800–900k troops. These are capacity examples, not
+  a universal troop threshold. Very large armies without an archer-heavy troop
+  mix may also need to leave cavalry after archers.
+- Towns with unavoidable owner kills are lower priority for reinforcement scoring:
+  those kills cannot earn allies reinforcement points. Prefer empty or less
+  contested towns, while preserving enough coverage for full clears and continued
+  wave eligibility. Lower scoring priority does not mean leaving a town uncovered.
 - The HQ whitelist reserves one queue per player and an exact share of the largest
   player's effective HQ garrison cap, using 75/25/0. Share = cap ÷ assigned players
   (15 only for a full whitelist). Officers reconcile whole-troop and ratio rounding
