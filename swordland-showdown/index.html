@@ -5,17 +5,16 @@ self: swordland
 
 
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
-  <a href="#score" data-i18n="sw.nav.score">The scoreboards</a>
-  <a href="#sources" data-i18n="sw.nav.sources">How you score</a>
+  <a href="#checklist" data-i18n="sw.nav.checklist">The checklist</a>
   <a href="#target" data-i18n="sw.nav.target">The 180,000</a>
-  <a href="#arena" data-i18n="sw.nav.arena">The arena</a>
   <a href="#matchup" data-i18n="sw.nav.matchup">Your matchup</a>
   <a href="#matchday" data-i18n="sw.nav.matchday">Match day</a>
-  <a href="#checklist" data-i18n="sw.nav.checklist">The checklist</a>
+  <a href="#score" data-i18n="sw.nav.score">The scoreboards</a>
+  <a href="#sources" data-i18n="sw.nav.sources">How you score</a>
+  <a href="#arena" data-i18n="sw.nav.arena">The arena</a>
 </nav>
 
 <main>
-  <!-- ═══════════ HERO ═══════════ -->
   <section class="section hero" id="top">
     <h1 data-i18n-html="sw.hero.h1">SWORDLAND SHOWDOWN,<br><span class="accent">DEMYSTIFIED</span></h1>
     <p class="lede" data-i18n-html="sw.hero.lede">Two scoreboards, the alliance's
@@ -27,76 +26,20 @@ self: swordland
       <span data-i18n="sw.hero.chip4">free recharging teleports</span></p>
   </section>
 
-  <!-- ═══════════ 1 · THE SCOREBOARDS ═══════════ -->
-  <section class="section" id="score">
-    <h2 data-i18n="sw.score.title">The scoreboards</h2>
-    <p class="lede" data-i18n-html="sw.score.lede">Two scoreboards decide your rewards, and each runs on a different
-      point total. Worth separating them before anything else:</p>
-    <div class="sboard">
-      <div class="sb-row">
-        <span class="sb-tag" data-i18n="sw.score.row1.tag">THE ALLIANCE'S BRACKET</span>
-        <span class="sb-body" data-i18n-html="sw.score.row1.body">The alliance with the most
-          <strong>alliance relic points</strong> takes the winner's bracket; the loser takes the loser's. That single
-          total decides it, not how long a building was held or who fought the most.</span>
-      </div>
-      <div class="sb-row">
-        <span class="sb-tag" data-i18n="sw.score.row2.tag">YOUR TIER</span>
-        <span class="sb-body" data-i18n-html="sw.score.row2.body">Your <strong>personal relic points</strong> fix your
-          own tier inside that bracket. They're earned at a different rate, sometimes by different activities, so
-          chasing the alliance score and your own can pull against each other.</span>
-      </div>
-    </div>
-    <p class="sboard-note" data-i18n-html="sw.score.truth">The reward sheet is where the surprise lives: the
-      <strong>top tier of the loser's bracket beats the bottom two tiers of the winner's</strong>. Losing pays a bit
-      better than half the winner's take, and the lowest personal tier is a quarter of the top one. So the real job is
-      the same in every match: get as many players past <b>180,000 personal points</b> as possible, win or lose.</p>
+  <section class="section" id="checklist">
+    <h2 data-i18n="sw.checklist.title">The checklist</h2>
+    <p class="lede" data-i18n-html="sw.checklist.lede">The whole page, in the order you'll actually do it:</p>
+    <ol class="checklist">
+      <li><span class="check-num">1</span><div><h3 data-i18n="sw.checklist.c1.title">Monday — sign up</h3><p data-i18n-html="sw.checklist.c1.body">The signup opens; the R4/R5 team enters the legions. Easy to confuse with the second deadline.</p></div></li>
+      <li><span class="check-num">2</span><div><h3 data-i18n="sw.checklist.c2.title">Thursday — request battle</h3><p data-i18n-html="sw.checklist.c2.body">Confirm you're actually fighting. Skip it and you miss the participation rewards; there's no spectating.</p></div></li>
+      <li><span class="check-num">3</span><div><h3 data-i18n="sw.checklist.c3.title">Clear the infirmary</h3><p data-i18n-html="sw.checklist.c3.body">You can't enter with troops healing or any march queues running. Heal up, finish your marches, then queue.</p></div></li>
+      <li><span class="check-num">4</span><div><h3 data-i18n="sw.checklist.c4.title">Read your matchup</h3><p data-i18n-html="sw.checklist.c4.body">Favoured, even or outgunned: the game changes, the 180,000 doesn't.</p></div></li>
+      <li><span class="check-num">5</span><div><h3 data-i18n="sw.checklist.c5.title">Hold buildings, hunt points</h3><p data-i18n-html="sw.checklist.c5.body">Occupation alone caps at 165,000 in a perfect match. Everyone fights, scoops loot and mines the undercellers, you included: we want everyone over the line.</p></div></li>
+      <li><span class="check-num">6</span><div><h3 data-i18n="sw.checklist.c6.title">Out of troops? Leave</h3><p data-i18n-html="sw.checklist.c6.body">Score banner → leave button → 12 minutes → fresh army: the heal that costs nothing but the wait. Closing the app doesn't count as leaving.</p></div></li>
+      <li><span class="check-num">7</span><div><h3 data-i18n="sw.checklist.c7.title">Past 180,000? Step back</h3><p data-i18n-html="sw.checklist.c7.body">Leave crates and kills for the rest of the alliance — past the target there are no more rewards to collect.</p></div></li>
+    </ol>
   </section>
 
-  <!-- ═══════════ 2 · HOW YOU SCORE ═══════════ -->
-  <section class="section blue" id="sources">
-    <h2 data-i18n="sw.sources.title">How you score</h2>
-    <p class="lede" data-i18n-html="sw.sources.lede">Four activities make relic points. Three feed both scoreboards;
-      one feeds only yours, and it's the one that usually carries you over the line.</p>
-
-    <div class="matrix" role="table" aria-label="The four ways to score" data-i18n-key="sw.sources.matrixAria" data-i18n-attr="aria-label">
-      <div class="mx-row mx-head">
-        <span class="mx-name" data-i18n="sw.sources.mh1">Source</span>
-        <span class="mx-ally" data-i18n="sw.sources.mh2">Alliance pts</span>
-        <span class="mx-me" data-i18n="sw.sources.mh3">Personal pts</span>
-        <span class="mx-note" data-i18n="sw.sources.mh4">What it is</span>
-      </div>
-      <div class="mx-row">
-        <span class="mx-name" data-i18n="sw.sources.m1.name">Buildings</span>
-        <span class="mx-ally" data-i18n="sw.sources.m1.ally">both</span>
-        <span class="mx-me" data-i18n="sw.sources.m1.me">half the alliance rate</span>
-        <span class="mx-note" data-i18n="sw.sources.m1.note">Capture pays an instant bonus to both scoreboards; occupation pays over time. The shrine and the two sanctums pay the most.</span>
-      </div>
-      <div class="mx-row">
-        <span class="mx-name" data-i18n="sw.sources.m2.name">Arsenal loot</span>
-        <span class="mx-ally" data-i18n="sw.sources.m2.ally">both</span>
-        <span class="mx-me" data-i18n="sw.sources.m2.me">both</span>
-        <span class="mx-note" data-i18n="sw.sources.m2.note">Crates scatter when a building changes hands; the first march sent claims them. Amounts are randomised, and the longer a building was held, the bigger the pile. It costs a regular march slot, so send several at once.</span>
-      </div>
-      <div class="mx-row">
-        <span class="mx-name" data-i18n="sw.sources.m3.name">Undercellers</span>
-        <span class="mx-ally" data-i18n="sw.sources.m3.ally">both</span>
-        <span class="mx-me" data-i18n="sw.sources.m3.me">both, same rate</span>
-        <span class="mx-note" data-i18n="sw.sources.m3.note">Late-match nodes roughly equidistant from the shrine. Gather like resources, slower than buildings.</span>
-      </div>
-      <div class="mx-row">
-        <span class="mx-name" data-i18n="sw.sources.m4.name">Combat</span>
-        <span class="mx-ally mx-no" data-i18n="sw.sources.m4.ally">none</span>
-        <span class="mx-me" data-i18n="sw.sources.m4.me">personal only</span>
-        <span class="mx-note" data-i18n="sw.sources.m4.note">80 personal points per 10,000 power you defeat attacking, 40 per 10,000 defending. The only source that's yours alone.</span>
-      </div>
-    </div>
-
-    <p class="note" data-i18n-html="sw.sources.note">Read the matrix sideways: everything except combat serves the
-      alliance, but combat is the fastest personal points in the game. Both scoreboards need feeding, usually by
-      different people.</p>
-  </section>
-
-  <!-- ═══════════ 3 · THE 180,000 ═══════════ -->
   <section class="section" id="target">
     <h2 data-i18n="sw.target.title">The 180,000</h2>
     <p class="lede" data-i18n-html="sw.target.lede">The top personal tier sits at <strong>180,000 points</strong>.
@@ -130,45 +73,16 @@ self: swordland
         <label for="sw-def" data-i18n-html="sw.target.defLabel">Enemy power you defeat while defending <output id="sw-def-out">0</output></label>
         <input id="sw-def" type="range" min="0" max="50000000" step="500000" value="0">
       </div>
-      <p class="calc-out" data-i18n-html="sw.target.out"><b id="sw-total">75,000</b> personal points, <b id="sw-pct">42%</b> of the 180,000 line.</p>
+      <p class="calc-out" role="status" data-i18n-html="sw.target.out"><b id="sw-total">75,000</b> personal points, <b id="sw-pct">42%</b> of the 180,000 line.</p>
     </div>
     <p class="note" data-i18n-html="sw.target.calcNote">The toy stops where the published numbers stop: loot crates are
       randomised and undercellers are slower, so they're not in the sum; they're the bonus on top. The lesson is the
       top line: occupation alone caps at <b>165,000 in a perfect match</b>.</p>
   </section>
 
-  <!-- ═══════════ 4 · THE ARENA ═══════════ -->
-  <section class="section blue" id="arena">
-    <h2 data-i18n="sw.arena.title">The arena</h2>
-    <p class="lede" data-i18n-html="sw.arena.lede">Buildings are the map's spine: first control pays a bonus to both
-      scoreboards, occupation trickles in, and every flip scatters arsenal loot. The sword shrine is the big one —
-      <strong>1,800 alliance points a minute, about a quarter of the whole map's 7,560</strong>. It's a lot. It is
-      not the match.</p>
-
-    <div class="btable" role="table" aria-label="The buildings" data-i18n-key="sw.arena.tableAria" data-i18n-attr="aria-label">
-      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b1.name">Sword Shrine</span><span class="bt-pts" data-i18n="sw.arena.b1.pts">1,800 alliance/min</span><span class="bt-note" data-i18n="sw.arena.b1.note">Opens around minute ten. The biggest income on the map, and a magnet for mercenary waves. Turtling here while giving up the rest of the map loses.</span></div>
-      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b2.name">Sanctums ×2</span><span class="bt-pts" data-i18n="sw.arena.b2.pts">next-biggest income</span><span class="bt-note" data-i18n="sw.arena.b2.note">The tanks' first targets. Hold both and the map tilts.</span></div>
-      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b3.name">Abbeys ×4</span><span class="bt-pts" data-i18n="sw.arena.b3.pts">steady income</span><span class="bt-note" data-i18n="sw.arena.b3.note">The rest of the map's occupation: easy to hold, easy to ignore, and it adds up fast.</span></div>
-      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b4.name">Bell Tower</span><span class="bt-pts" data-i18n="sw.arena.b4.pts">capture speed up</span><span class="bt-note" data-i18n="sw.arena.b4.note">First control is worth about five minutes of holding. Capture faster and you win the race for every bonus.</span></div>
-      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b5.name">Royal Stables</span><span class="bt-pts" data-i18n="sw.arena.b5.pts">teleport cooldown down</span><span class="bt-note" data-i18n="sw.arena.b5.note">The free teleporter is on a cooldown, and holding the stables shortens that cooldown for your whole team.</span></div>
-      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b6.name">Hall of Reformation</span><span class="bt-pts" data-i18n="sw.arena.b6.pts">teamwide +15% damage, −15% taken</span><span class="bt-note" data-i18n="sw.arena.b6.note">A combat edge for your side, and since combat is the fastest personal points, it feeds both scoreboards.</span></div>
-      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b7.name">Mercenary Camp</span><span class="bt-pts" data-i18n="sw.arena.b7.pts">mercs at enemy garrisons</span><span class="bt-note" data-i18n="sw.arena.b7.note">Those kills score no personal points. Useful, but the last priority.</span></div>
-      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b8.name">Undercellers</span><span class="bt-pts" data-i18n="sw.arena.b8.pts">late-match nodes</span><span class="bt-note" data-i18n="sw.arena.b8.note">Gather like resources, slower, both scoreboards at the same rate. Points for whoever has spare marches.</span></div>
-    </div>
-
-    <div class="wavetable" role="table" aria-label="The three phases" data-i18n-key="sw.arena.phaseAria" data-i18n-attr="aria-label">
-      <div class="wt-row"><span class="wt-waves" data-i18n="sw.arena.phase1.waves">Phase 1</span><span class="wt-type city" data-i18n="sw.arena.phase1.type">The map</span><span class="wt-note" data-i18n="sw.arena.phase1.note">Sanctums, abbeys, bell tower and stables: the first fights.</span></div>
-      <div class="wt-row"><span class="wt-waves" data-i18n="sw.arena.phase2.waves">Phase 2</span><span class="wt-type online" data-i18n="sw.arena.phase2.type">~10:00</span><span class="wt-note" data-i18n="sw.arena.phase2.note">Sword shrine, hall of reformation and mercenary camp open.</span></div>
-      <div class="wt-row"><span class="wt-waves" data-i18n="sw.arena.phase3.waves">Phase 3</span><span class="wt-type hq" data-i18n="sw.arena.phase3.type">The endgame</span><span class="wt-note" data-i18n="sw.arena.phase3.note">Undercellers appear; the shrine becomes the big prize.</span></div>
-    </div>
-
-    <p class="note" data-i18n-html="sw.arena.note">Nobody needs the shrine to win. A team holding the bell tower, the
-      stables and the hall can out-point a team camped on the centre.</p>
-  </section>
-
-  <!-- ═══════════ 5 · YOUR MATCHUP ═══════════ -->
-  <section class="section" id="matchup">
-    <h2 data-i18n="sw.matchup.title">Your matchup</h2>
+  <section class="section" id="matchup" data-collapse>
+    <h2><button type="button" class="section-toggle" aria-expanded="true" aria-controls="matchup-body"><span data-i18n="sw.matchup.title">Your matchup</span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
+    <div class="section-body" id="matchup-body">
     <p class="lede" data-i18n-html="sw.matchup.lede">Swordland is three different games, and the matchup decides which
       one you're playing. Read it first; the tactics follow. The 180,000 never changes.</p>
 
@@ -267,11 +181,12 @@ self: swordland
 
     <p class="note" data-i18n-html="sw.matchup.note">Read the game first. The target — <b>180,000</b> — never
       changes.</p>
+      </div>
   </section>
 
-  <!-- ═══════════ 6 · MATCH DAY ═══════════ -->
-  <section class="section blue" id="matchday">
-    <h2 data-i18n="sw.matchday.title">Match day</h2>
+  <section class="section blue" id="matchday" data-collapse>
+    <h2><button type="button" class="section-toggle" aria-expanded="true" aria-controls="matchday-body"><span data-i18n="sw.matchday.title">Match day</span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
+    <div class="section-body" id="matchday-body">
     <p class="lede" data-i18n-html="sw.matchday.lede">Most of Swordland is decided before the first march leaves.</p>
 
     <div class="wavetable" role="table" aria-label="The event timeline" data-i18n-key="sw.matchday.tlAria" data-i18n-attr="aria-label">
@@ -327,20 +242,107 @@ self: swordland
         </details>
       </div>
     </div>
+      </div>
   </section>
 
-  <!-- ═══════════ 7 · THE CHECKLIST ═══════════ -->
-  <section class="section" id="checklist">
-    <h2 data-i18n="sw.checklist.title">The checklist</h2>
-    <p class="lede" data-i18n-html="sw.checklist.lede">The whole page, in the order you'll actually do it:</p>
-    <ol class="checklist">
-      <li><span class="check-num">1</span><div><h3 data-i18n="sw.checklist.c1.title">Monday — sign up</h3><p data-i18n-html="sw.checklist.c1.body">The signup opens; the R4/R5 team enters the legions. Easy to confuse with the second deadline.</p></div></li>
-      <li><span class="check-num">2</span><div><h3 data-i18n="sw.checklist.c2.title">Thursday — request battle</h3><p data-i18n-html="sw.checklist.c2.body">Confirm you're actually fighting. Skip it and you miss the participation rewards; there's no spectating.</p></div></li>
-      <li><span class="check-num">3</span><div><h3 data-i18n="sw.checklist.c3.title">Clear the infirmary</h3><p data-i18n-html="sw.checklist.c3.body">You can't enter with troops healing or any march queues running. Heal up, finish your marches, then queue.</p></div></li>
-      <li><span class="check-num">4</span><div><h3 data-i18n="sw.checklist.c4.title">Read your matchup</h3><p data-i18n-html="sw.checklist.c4.body">Favoured, even or outgunned: the game changes, the 180,000 doesn't.</p></div></li>
-      <li><span class="check-num">5</span><div><h3 data-i18n="sw.checklist.c5.title">Hold buildings, hunt points</h3><p data-i18n-html="sw.checklist.c5.body">Occupation alone caps at 165,000 in a perfect match. Everyone fights, scoops loot and mines the undercellers, you included: we want everyone over the line.</p></div></li>
-      <li><span class="check-num">6</span><div><h3 data-i18n="sw.checklist.c6.title">Out of troops? Leave</h3><p data-i18n-html="sw.checklist.c6.body">Score banner → leave button → 12 minutes → fresh army: the heal that costs nothing but the wait. Closing the app doesn't count as leaving.</p></div></li>
-      <li><span class="check-num">7</span><div><h3 data-i18n="sw.checklist.c7.title">Past 180,000? Step back</h3><p data-i18n-html="sw.checklist.c7.body">Leave crates and kills for the rest of the alliance — past the target there are no more rewards to collect.</p></div></li>
-    </ol>
+  <section class="section" id="score" data-collapse>
+    <h2><button type="button" class="section-toggle" aria-expanded="true" aria-controls="score-body"><span data-i18n="sw.score.title">The scoreboards</span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
+    <div class="section-body" id="score-body">
+    <p class="lede" data-i18n-html="sw.score.lede">Two scoreboards decide your rewards, and each runs on a different
+      point total. Worth separating them before anything else:</p>
+    <div class="sboard">
+      <div class="sb-row">
+        <span class="sb-tag" data-i18n="sw.score.row1.tag">THE ALLIANCE'S BRACKET</span>
+        <span class="sb-body" data-i18n-html="sw.score.row1.body">The alliance with the most
+          <strong>alliance relic points</strong> takes the winner's bracket; the loser takes the loser's. That single
+          total decides it, not how long a building was held or who fought the most.</span>
+      </div>
+      <div class="sb-row">
+        <span class="sb-tag" data-i18n="sw.score.row2.tag">YOUR TIER</span>
+        <span class="sb-body" data-i18n-html="sw.score.row2.body">Your <strong>personal relic points</strong> fix your
+          own tier inside that bracket. They're earned at a different rate, sometimes by different activities, so
+          chasing the alliance score and your own can pull against each other.</span>
+      </div>
+    </div>
+    <p class="sboard-note" data-i18n-html="sw.score.truth">The reward sheet is where the surprise lives: the
+      <strong>top tier of the loser's bracket beats the bottom two tiers of the winner's</strong>. Losing pays a bit
+      better than half the winner's take, and the lowest personal tier is a quarter of the top one. So the real job is
+      the same in every match: get as many players past <b>180,000 personal points</b> as possible, win or lose.</p>
+      </div>
+  </section>
+
+  <section class="section blue" id="sources" data-collapse>
+    <h2><button type="button" class="section-toggle" aria-expanded="true" aria-controls="sources-body"><span data-i18n="sw.sources.title">How you score</span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
+    <div class="section-body" id="sources-body">
+    <p class="lede" data-i18n-html="sw.sources.lede">Four activities make relic points. Three feed both scoreboards;
+      one feeds only yours, and it's the one that usually carries you over the line.</p>
+
+    <div class="matrix" role="table" aria-label="The four ways to score" data-i18n-key="sw.sources.matrixAria" data-i18n-attr="aria-label">
+      <div class="mx-row mx-head">
+        <span class="mx-name" data-i18n="sw.sources.mh1">Source</span>
+        <span class="mx-ally" data-i18n="sw.sources.mh2">Alliance pts</span>
+        <span class="mx-me" data-i18n="sw.sources.mh3">Personal pts</span>
+        <span class="mx-note" data-i18n="sw.sources.mh4">What it is</span>
+      </div>
+      <div class="mx-row">
+        <span class="mx-name" data-i18n="sw.sources.m1.name">Buildings</span>
+        <span class="mx-ally" data-i18n="sw.sources.m1.ally">both</span>
+        <span class="mx-me" data-i18n="sw.sources.m1.me">half the alliance rate</span>
+        <span class="mx-note" data-i18n="sw.sources.m1.note">Capture pays an instant bonus to both scoreboards; occupation pays over time. The shrine and the two sanctums pay the most.</span>
+      </div>
+      <div class="mx-row">
+        <span class="mx-name" data-i18n="sw.sources.m2.name">Arsenal loot</span>
+        <span class="mx-ally" data-i18n="sw.sources.m2.ally">both</span>
+        <span class="mx-me" data-i18n="sw.sources.m2.me">both</span>
+        <span class="mx-note" data-i18n="sw.sources.m2.note">Crates scatter when a building changes hands; the first march sent claims them. Amounts are randomised, and the longer a building was held, the bigger the pile. It costs a regular march slot, so send several at once.</span>
+      </div>
+      <div class="mx-row">
+        <span class="mx-name" data-i18n="sw.sources.m3.name">Undercellers</span>
+        <span class="mx-ally" data-i18n="sw.sources.m3.ally">both</span>
+        <span class="mx-me" data-i18n="sw.sources.m3.me">both, same rate</span>
+        <span class="mx-note" data-i18n="sw.sources.m3.note">Late-match nodes roughly equidistant from the shrine. Gather like resources, slower than buildings.</span>
+      </div>
+      <div class="mx-row">
+        <span class="mx-name" data-i18n="sw.sources.m4.name">Combat</span>
+        <span class="mx-ally mx-no" data-i18n="sw.sources.m4.ally">none</span>
+        <span class="mx-me" data-i18n="sw.sources.m4.me">personal only</span>
+        <span class="mx-note" data-i18n="sw.sources.m4.note">80 personal points per 10,000 power you defeat attacking, 40 per 10,000 defending. The only source that's yours alone.</span>
+      </div>
+    </div>
+
+    <p class="note" data-i18n-html="sw.sources.note">Read the matrix sideways: everything except combat serves the
+      alliance, but combat is the fastest personal points in the game. Both scoreboards need feeding, usually by
+      different people.</p>
+      </div>
+  </section>
+
+  <section class="section blue" id="arena" data-collapse>
+    <h2><button type="button" class="section-toggle" aria-expanded="true" aria-controls="arena-body"><span data-i18n="sw.arena.title">The arena</span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
+    <div class="section-body" id="arena-body">
+    <p class="lede" data-i18n-html="sw.arena.lede">Buildings are the map's spine: first control pays a bonus to both
+      scoreboards, occupation trickles in, and every flip scatters arsenal loot. The sword shrine is the big one —
+      <strong>1,800 alliance points a minute, about a quarter of the whole map's 7,560</strong>. It's a lot. It is
+      not the match.</p>
+
+    <div class="btable" role="table" aria-label="The buildings" data-i18n-key="sw.arena.tableAria" data-i18n-attr="aria-label">
+      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b1.name">Sword Shrine</span><span class="bt-pts" data-i18n="sw.arena.b1.pts">1,800 alliance/min</span><span class="bt-note" data-i18n="sw.arena.b1.note">Opens around minute ten. The biggest income on the map, and a magnet for mercenary waves. Turtling here while giving up the rest of the map loses.</span></div>
+      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b2.name">Sanctums ×2</span><span class="bt-pts" data-i18n="sw.arena.b2.pts">next-biggest income</span><span class="bt-note" data-i18n="sw.arena.b2.note">The tanks' first targets. Hold both and the map tilts.</span></div>
+      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b3.name">Abbeys ×4</span><span class="bt-pts" data-i18n="sw.arena.b3.pts">steady income</span><span class="bt-note" data-i18n="sw.arena.b3.note">The rest of the map's occupation: easy to hold, easy to ignore, and it adds up fast.</span></div>
+      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b4.name">Bell Tower</span><span class="bt-pts" data-i18n="sw.arena.b4.pts">capture speed up</span><span class="bt-note" data-i18n="sw.arena.b4.note">First control is worth about five minutes of holding. Capture faster and you win the race for every bonus.</span></div>
+      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b5.name">Royal Stables</span><span class="bt-pts" data-i18n="sw.arena.b5.pts">teleport cooldown down</span><span class="bt-note" data-i18n="sw.arena.b5.note">The free teleporter is on a cooldown, and holding the stables shortens that cooldown for your whole team.</span></div>
+      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b6.name">Hall of Reformation</span><span class="bt-pts" data-i18n="sw.arena.b6.pts">teamwide +15% damage, −15% taken</span><span class="bt-note" data-i18n="sw.arena.b6.note">A combat edge for your side, and since combat is the fastest personal points, it feeds both scoreboards.</span></div>
+      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b7.name">Mercenary Camp</span><span class="bt-pts" data-i18n="sw.arena.b7.pts">mercs at enemy garrisons</span><span class="bt-note" data-i18n="sw.arena.b7.note">Those kills score no personal points. Useful, but the last priority.</span></div>
+      <div class="bt-row"><span class="bt-name" data-i18n="sw.arena.b8.name">Undercellers</span><span class="bt-pts" data-i18n="sw.arena.b8.pts">late-match nodes</span><span class="bt-note" data-i18n="sw.arena.b8.note">Gather like resources, slower, both scoreboards at the same rate. Points for whoever has spare marches.</span></div>
+    </div>
+
+    <div class="wavetable" role="table" aria-label="The three phases" data-i18n-key="sw.arena.phaseAria" data-i18n-attr="aria-label">
+      <div class="wt-row"><span class="wt-waves" data-i18n="sw.arena.phase1.waves">Phase 1</span><span class="wt-type city" data-i18n="sw.arena.phase1.type">The map</span><span class="wt-note" data-i18n="sw.arena.phase1.note">Sanctums, abbeys, bell tower and stables: the first fights.</span></div>
+      <div class="wt-row"><span class="wt-waves" data-i18n="sw.arena.phase2.waves">Phase 2</span><span class="wt-type online" data-i18n="sw.arena.phase2.type">~10:00</span><span class="wt-note" data-i18n="sw.arena.phase2.note">Sword shrine, hall of reformation and mercenary camp open.</span></div>
+      <div class="wt-row"><span class="wt-waves" data-i18n="sw.arena.phase3.waves">Phase 3</span><span class="wt-type hq" data-i18n="sw.arena.phase3.type">The endgame</span><span class="wt-note" data-i18n="sw.arena.phase3.note">Undercellers appear; the shrine becomes the big prize.</span></div>
+    </div>
+
+    <p class="note" data-i18n-html="sw.arena.note">Nobody needs the shrine to win. A team holding the bell tower, the
+      stables and the hall can out-point a team camped on the centre.</p>
+      </div>
   </section>
 </main>

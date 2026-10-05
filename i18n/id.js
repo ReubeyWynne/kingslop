@@ -418,7 +418,7 @@ window.__BH_I18N_DATA["id"] = {
   "vip.table.lede": "Setiap level, XP yang dibutuhkan dan total sejauh ini, beserta perk yang dibukanya:",
   "vip.table.aria": "Tabel VIP XP, level 1 sampai 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP ke level berikutnya",
+  "vip.table.thCost": "XP untuk mencapai",
   "vip.table.thCum": "Total sejauh ini",
   "vip.table.thPerk": "Baru di level ini",
   "vip.table.perk1": "sumber daya +2% · gudang +100k",
@@ -891,5 +891,11 @@ window.__BH_I18N_DATA["id"] = {
   "ks.today.prepPlan": "Rencanakan penggunaan bahan KvK sebelum persiapan dimulai pada hari ke-22.",
   "ks.today.kvkWeek": "Persiapan dan pertempuran KvK",
   "ks.today.cycleRange": "Hari {from}–{to}",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">DIBONGKAR</span>",
+  "home.hero.lede": "Event aliansi dengan bahasa sederhana — cara setiap event memberi poin, apa yang perlu kamu lakukan, dan tempat mendapatkan poin.",
+  "sw.hero.lede": "Dua papan skor, kelompok aliansi dan tingkat pribadi, dengan satu angka penentu tingkatmu: <strong>180,000</strong>. Strategi berubah sesuai lawan; target tetap.",
+  "sw.hero.chip1": "55 menit per pertandingan",
+  "sw.hero.chip2": "dua legiun",
+  "sw.hero.chip3": "tanpa kehilangan, hanya terluka"
 }
 ;

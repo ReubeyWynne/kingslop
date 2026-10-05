@@ -5,17 +5,16 @@ self: vikings
 
 
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
+  <a href="#routine" data-i18n="vv.nav.routine">The routine</a>
   <a href="#waves" data-i18n="vv.nav.waves">The twenty waves</a>
   <a href="#stand" data-i18n="vv.nav.stand">Where your troops stand</a>
-  <a href="#online" data-i18n="vv.nav.online">The online waves</a>
   <a href="#composition" data-i18n="vv.nav.composition">The composition</a>
+  <a href="#online" data-i18n="vv.nav.online">The online waves</a>
   <a href="#hq" data-i18n="vv.nav.hq">The HQ waves</a>
   <a href="#heroes" data-i18n="vv.nav.heroes">The heroes</a>
-  <a href="#routine" data-i18n="vv.nav.routine">The routine</a>
 </nav>
 
 <main>
-  <!-- ═══════════ HERO ═══════════ -->
   <section class="section hero" id="top">
     <h1 data-i18n-html="vv.hero.h1">VIKINGS VENGEANCE,<br><span class="accent">DEMYSTIFIED</span></h1>
     <p class="lede" data-i18n-html="vv.hero.lede">Vikings come at your alliance's
@@ -27,7 +26,20 @@ self: vikings
       <span data-i18n="vv.hero.chip4">satin &amp; gilded threads</span></p>
   </section>
 
-  <!-- ═══════════ 1 · THE TWENTY WAVES ═══════════ -->
+  <section class="section" id="routine">
+    <h2 data-i18n="vv.routine.title">The routine</h2>
+    <p class="lede" data-i18n-html="vv.routine.lede">The whole page, in the order you'll actually do it:</p>
+    <ol class="checklist">
+      <li><span class="check-num">1</span><div><h3 data-i18n="vv.routine.r1.title">Set the guard station</h3><p data-i18n-html="vv.routine.r1.body">Your 3 strongest heroes stay home and lead the garrison — before wave 1.</p></div></li>
+      <li><span class="check-num">2</span><div><h3 data-i18n="vv.routine.r2.title">Build 75/25/0</h3><p data-i18n-html="vv.routine.r2.body">Every march: infantry-heavy, offence lead. Archers stay home unless you must fill.</p></div></li>
+      <li><span class="check-num">3</span><div><h3 data-i18n="vv.routine.r3.title">Reinforce before wave 1</h3><p data-i18n-html="vv.routine.r3.body">Fill online members' cities, not your own. Every queue, different players.</p></div></li>
+      <li><span class="check-num">4</span><div><h3 data-i18n="vv.routine.r4.title">Be online for 7, 14, 17</h3><p data-i18n-html="vv.routine.r4.body">Those waves only hit online cities. Check the Members tab for gaps first.</p></div></li>
+      <li><span class="check-num">5</span><div><h3 data-i18n="vv.routine.r5.title">Fill the HQ on 10 and 20</h3><p data-i18n-html="vv.routine.r5.body">Infantry, fair share, no camping between waves.</p></div></li>
+      <li><span class="check-num">6</span><div><h3 data-i18n="vv.routine.r6.title">Skip the healing between rounds</h3><p data-i18n-html="vv.routine.r6.body">Healed troops steal kills at home. Time any heal for just before an HQ wave.</p></div></li>
+      <li><span class="check-num">7</span><div><h3 data-i18n="vv.routine.r7.title">Read the reports after wave 20</h3><p data-i18n-html="vv.routine.r7.body">Check the kill reports and adjust the archer share and the garrison lead for next time.</p></div></li>
+    </ol>
+  </section>
+
   <section class="section" id="waves">
     <h2 data-i18n="vv.waves.title">The twenty waves</h2>
     <p class="lede" data-i18n-html="vv.waves.lede">The whole event is one schedule, and almost everything on this page
@@ -56,9 +68,9 @@ self: vikings
       won. The rest of the schedule is just the city rhythm in between.</p>
   </section>
 
-  <!-- ═══════════ 2 · WHERE YOUR TROOPS STAND ═══════════ -->
-  <section class="section" id="stand">
-    <h2 data-i18n="vv.stand.title">Where your troops stand</h2>
+  <section class="section" id="stand" data-collapse>
+    <h2><button type="button" class="section-toggle" aria-expanded="true" aria-controls="stand-body"><span data-i18n="vv.stand.title">Where your troops stand</span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
+    <div class="section-body" id="stand-body">
     <p class="lede" data-i18n-html="vv.stand.lede">Kills are points wherever your troops are standing — your city or
       somebody else's. That one fact decides most of the strategy:</p>
     <p data-i18n-html="vv.stand.p1">Your own city pays a <strong>fixed wave reward</strong> no matter how many kills
@@ -81,7 +93,7 @@ self: vikings
         <label for="vv-cities" data-i18n="vv.stand.citiesLabel">Cities you reinforce (marches out)</label>
         <input id="vv-cities" type="range" min="0" max="6" step="1" value="3">
       </div>
-      <p class="calc-out" id="vv-outline"><b>3</b> garrisons score for you at once — <b>3×</b> the kill surface of staying home.</p>
+      <p class="calc-out" id="vv-outline" role="status"><b>3</b> garrisons score for you at once — <b>3×</b> the kill surface of staying home.</p>
     </div>
     <p class="note" data-i18n="vv.stand.calcNote">This isn't a damage formula — there's no published one. It's the
       kill-surface idea: what decides your points per wave is your share of each garrison, not how many you're in.</p>
@@ -99,26 +111,12 @@ self: vikings
           whole alliance doing it and the event's total output multiplies.</p>
       </div>
     </details>
+      </div>
   </section>
 
-  <!-- ═══════════ 3 · THE ONLINE WAVES ═══════════ -->
-  <section class="section" id="online">
-    <h2 data-i18n="vv.online.title">The online waves</h2>
-    <p class="lede" data-i18n-html="vv.online.lede">Waves 7, 14 and 17 only hit cities whose player is
-      <strong>online when the wave fires</strong>. Go offline and it's not just your points that vanish — your
-      reinforcers lose theirs too.</p>
-    <p data-i18n-html="vv.online.p1">Every wave pays more than the last, and two of the three online waves sit in the
-      back half, so the cost adds up fast. Set everything up perfectly and then log off, and you'll still struggle to
-      crack the top 50. Leave the game open if you can, even if you're not really playing.</p>
-    <p class="note" data-i18n-html="vv.online.note">A city that falls once still gets the next wave. Fall twice and
-      the Vikings stop coming — pull your troops and redeploy to a live city.</p>
-    <p class="note" data-i18n-html="vv.online.members">The event's <b>Members tab</b> shows who's online and how full
-      their garrisons are — faster than asking in chat, and the easiest way to spot the gaps before wave 7.</p>
-  </section>
-
-  <!-- ═══════════ 4 · THE COMPOSITION ═══════════ -->
-  <section class="section" id="composition">
-    <h2 data-i18n="vv.composition.title">The composition</h2>
+  <section class="section" id="composition" data-collapse>
+    <h2><button type="button" class="section-toggle" aria-expanded="true" aria-controls="composition-body"><span data-i18n="vv.composition.title">The composition</span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
+    <div class="section-body" id="composition-body">
     <p class="lede" data-i18n-html="vv.composition.lede">The garrison fires first, and the Vikings take hits in a fixed
       order: <strong>infantry, then cavalry, then archers</strong>. Get enough infantry in and the wave is over before
       archers get a turn.</p>
@@ -153,11 +151,28 @@ self: vikings
           exchange and the archers never fire. Their kills only become real when the wave outlasts the infantry.</p>
       </div>
     </details>
+      </div>
   </section>
 
-  <!-- ═══════════ 5 · THE HQ WAVES ═══════════ -->
-  <section class="section" id="hq">
-    <h2 data-i18n="vv.hq.title">The HQ waves</h2>
+  <section class="section" id="online" data-collapse>
+    <h2><button type="button" class="section-toggle" aria-expanded="true" aria-controls="online-body"><span data-i18n="vv.online.title">The online waves</span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
+    <div class="section-body" id="online-body">
+    <p class="lede" data-i18n-html="vv.online.lede">Waves 7, 14 and 17 only hit cities whose player is
+      <strong>online when the wave fires</strong>. Go offline and it's not just your points that vanish — your
+      reinforcers lose theirs too.</p>
+    <p data-i18n-html="vv.online.p1">Every wave pays more than the last, and two of the three online waves sit in the
+      back half, so the cost adds up fast. Set everything up perfectly and then log off, and you'll still struggle to
+      crack the top 50. Leave the game open if you can, even if you're not really playing.</p>
+    <p class="note" data-i18n-html="vv.online.note">A city that falls once still gets the next wave. Fall twice and
+      the Vikings stop coming — pull your troops and redeploy to a live city.</p>
+    <p class="note" data-i18n-html="vv.online.members">The event's <b>Members tab</b> shows who's online and how full
+      their garrisons are — faster than asking in chat, and the easiest way to spot the gaps before wave 7.</p>
+      </div>
+  </section>
+
+  <section class="section" id="hq" data-collapse>
+    <h2><button type="button" class="section-toggle" aria-expanded="true" aria-controls="hq-body"><span data-i18n="vv.hq.title">The HQ waves</span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
+    <div class="section-body" id="hq-body">
     <p class="lede" data-i18n-html="vv.hq.lede">The headquarters only gets attacked on <strong>waves 10 and 20</strong>,
       and it only takes <strong>15 reinforcement marches</strong>. It's the one place where everyone's fighting over
       the same finite points.</p>
@@ -179,11 +194,12 @@ self: vikings
           garrison/defence leads like Howard — the job is killing Vikings fast, not surviving.</p>
       </div>
     </details>
+      </div>
   </section>
 
-  <!-- ═══════════ 6 · THE HEROES ═══════════ -->
-  <section class="section" id="heroes">
-    <h2 data-i18n="vv.heroes.title">The heroes</h2>
+  <section class="section" id="heroes" data-collapse>
+    <h2><button type="button" class="section-toggle" aria-expanded="true" aria-controls="heroes-body"><span data-i18n="vv.heroes.title">The heroes</span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
+    <div class="section-body" id="heroes-body">
     <p class="lede" data-i18n-html="vv.heroes.lede">Two jobs, two lists. Your own city is led by your
       <strong>guard station</strong>; the cities you reinforce run on the <strong>joiner leads</strong> you send.</p>
     <div class="cards">
@@ -285,20 +301,6 @@ self: vikings
           Vikings job is leading the HQ garrison as the bonus source, not joining a march.</p>
       </div>
     </details>
-  </section>
-
-  <!-- ═══════════ 7 · THE ROUTINE ═══════════ -->
-  <section class="section" id="routine">
-    <h2 data-i18n="vv.routine.title">The routine</h2>
-    <p class="lede" data-i18n-html="vv.routine.lede">The whole page, in the order you'll actually do it:</p>
-    <ol class="checklist">
-      <li><span class="check-num">1</span><div><h3 data-i18n="vv.routine.r1.title">Set the guard station</h3><p data-i18n-html="vv.routine.r1.body">Your 3 strongest heroes stay home and lead the garrison — before wave 1.</p></div></li>
-      <li><span class="check-num">2</span><div><h3 data-i18n="vv.routine.r2.title">Build 75/25/0</h3><p data-i18n-html="vv.routine.r2.body">Every march: infantry-heavy, offence lead. Archers stay home unless you must fill.</p></div></li>
-      <li><span class="check-num">3</span><div><h3 data-i18n="vv.routine.r3.title">Reinforce before wave 1</h3><p data-i18n-html="vv.routine.r3.body">Fill online members' cities, not your own. Every queue, different players.</p></div></li>
-      <li><span class="check-num">4</span><div><h3 data-i18n="vv.routine.r4.title">Be online for 7, 14, 17</h3><p data-i18n-html="vv.routine.r4.body">Those waves only hit online cities. Check the Members tab for gaps first.</p></div></li>
-      <li><span class="check-num">5</span><div><h3 data-i18n="vv.routine.r5.title">Fill the HQ on 10 and 20</h3><p data-i18n-html="vv.routine.r5.body">Infantry, fair share, no camping between waves.</p></div></li>
-      <li><span class="check-num">6</span><div><h3 data-i18n="vv.routine.r6.title">Skip the healing between rounds</h3><p data-i18n-html="vv.routine.r6.body">Healed troops steal kills at home. Time any heal for just before an HQ wave.</p></div></li>
-      <li><span class="check-num">7</span><div><h3 data-i18n="vv.routine.r7.title">Read the reports after wave 20</h3><p data-i18n-html="vv.routine.r7.body">Check the kill reports and adjust the archer share and the garrison lead for next time.</p></div></li>
-    </ol>
+      </div>
   </section>
 </main>

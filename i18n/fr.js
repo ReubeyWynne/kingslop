@@ -412,7 +412,7 @@ window.__BH_I18N_DATA["fr"] = {
   "vip.table.lede": "Chaque niveau, la XP qu'il coûte et le total jusqu'ici, avec le bonus qu'il débloque :",
   "vip.table.aria": "Le tableau de VIP XP, niveaux 1 à 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP pour le prochain",
+  "vip.table.thCost": "XP pour atteindre",
   "vip.table.thCum": "Total jusqu'ici",
   "vip.table.thPerk": "Nouveau à ce niveau",
   "vip.table.perk1": "ressources +2% · entrepôt +100k",
@@ -881,5 +881,11 @@ window.__BH_I18N_DATA["fr"] = {
   "ks.today.prepPlan": "Prévoyez vos dépenses de KvK avant le début de la préparation au jour 22.",
   "ks.today.kvkWeek": "Préparation et bataille KvK",
   "ks.today.cycleRange": "Jours {from}–{to}",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">DÉMYSTIFIÉ</span>",
+  "home.hero.lede": "Les événements d’alliance en termes simples — comment chacun rapporte des points, quoi faire et où les gagner.",
+  "sw.hero.lede": "Deux scores, le classement de l’alliance et ton palier personnel, et un nombre qui décide du tien : <strong>180,000</strong>. La stratégie change selon l’adversaire ; l’objectif reste.",
+  "sw.hero.chip1": "55 min par match",
+  "sw.hero.chip2": "deux légions",
+  "sw.hero.chip3": "aucune perte, seulement des blessés"
 }
 ;

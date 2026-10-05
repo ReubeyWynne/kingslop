@@ -25,60 +25,6 @@
     if (window.I18N && window.I18N.refresh) window.I18N.refresh(root);
   }
 
-  function setSectionOpen(section, open) {
-    if (!section) return;
-    var button = section.querySelector(':scope > h2 .section-toggle');
-    var body = section.querySelector(':scope > .section-body');
-    if (!button || !body) return;
-
-    button.setAttribute('aria-expanded', open ? 'true' : 'false');
-    body.hidden = !open;
-    if (open) section.removeAttribute('data-collapsed');
-    else section.setAttribute('data-collapsed', '');
-  }
-
-  function sectionForHash(hash) {
-    if (!hash || hash.length < 2) return null;
-    var target = document.getElementById(hash.slice(1));
-    if (!target) return null;
-    if (target.matches && target.matches('section[data-collapse]')) return target;
-    return target.closest ? target.closest('section[data-collapse]') : null;
-  }
-
-  function wireSections() {
-    var sections = Array.prototype.slice.call(document.querySelectorAll('section[data-collapse]'));
-    if (!sections.length) return;
-
-    var mobile = window.matchMedia && window.matchMedia('(max-width: 760px)').matches;
-    sections.forEach(function (section) {
-      setSectionOpen(section, !mobile);
-      var button = section.querySelector(':scope > h2 .section-toggle');
-      if (!button) return;
-      button.addEventListener('click', function () {
-        setSectionOpen(section, button.getAttribute('aria-expanded') !== 'true');
-      });
-    });
-
-    function openHash(hash) {
-      var section = sectionForHash(hash);
-      if (section) setSectionOpen(section, true);
-    }
-
-    openHash(window.location.hash);
-
-    var toc = document.getElementById('toc');
-    if (toc) {
-      toc.addEventListener('click', function (event) {
-        var link = event.target.closest && event.target.closest('a[href^="#"]');
-        if (link) openHash(link.getAttribute('href'));
-      });
-    }
-
-    window.addEventListener('hashchange', function () {
-      openHash(window.location.hash);
-    });
-  }
-
   function numberValue(id, fallback) {
     var el = document.getElementById(id);
     if (!el) return fallback;
@@ -449,7 +395,6 @@
   }
 
   function init() {
-    wireSections();
     wireAllocator();
     wireHeroExplorer();
   }

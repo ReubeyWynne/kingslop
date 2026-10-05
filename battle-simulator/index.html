@@ -10,7 +10,6 @@ self: sim
 </nav>
 
 <main>
-  <!-- ═══════════ HERO ═══════════ -->
   <section class="section hero" id="top">
     <h1 data-i18n-html="sim.hero.h1">BATTLE SIMULATOR,<br><span class="accent">DEMYSTIFIED</span></h1>
     <p class="alpha-stamp" data-i18n="sim.hero.stamp">first draft</p>
@@ -26,7 +25,6 @@ self: sim
       <span data-i18n="sim.hero.chip4">pve beasts</span></p>
   </section>
 
-  <!-- ═══════════ 1 · THE CONSOLE ═══════════ -->
   <section class="section" id="console">
     <h2 data-i18n="sim.console.title">The console</h2>
     <p class="lede" data-i18n-html="sim.console.lede">One report, four fights. Import a battle screenshot or type the
@@ -308,9 +306,9 @@ self: sim
     </div>
   </section>
 
-  <!-- ═══════════ 2 · THE MATHS ═══════════ -->
-  <section class="section" id="maths">
-    <h2 data-i18n="sim.maths.title">The maths</h2>
+  <section class="section" id="maths" data-collapse>
+    <h2><button type="button" class="section-toggle" aria-expanded="true" aria-controls="maths-body"><span data-i18n="sim.maths.title">The maths</span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
+    <div class="section-body" id="maths-body">
     <p class="lede" data-i18n-html="sim.maths.lede">How the console works it out:</p>
     <p data-i18n-html="sim.maths.p1">Each troop type's <b>A factor</b> is its attack times its lethality:
       <b>(1 + attack%) × (1 + lethality%)</b>. One factor per type, from the lead's report.</p>
@@ -343,5 +341,6 @@ self: sim
       every split — which is why the ratio holds at any scale. Hero skills are the exception: an all-troop buff
       cancels out too, a <b>type-specific</b> one moves the mix. More sims (heroes, the damage constant, PvP) are
       being researched; these are the first four.</p>
+      </div>
   </section>
 </main>

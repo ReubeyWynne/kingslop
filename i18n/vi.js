@@ -418,7 +418,7 @@ window.__BH_I18N_DATA["vi"] = {
   "vip.table.lede": "Từng cấp, XP nó tốn và tổng đến nay, cùng đặc quyền nó mở khóa:",
   "vip.table.aria": "Bảng VIP XP, cấp 1 đến 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP đến cấp kế tiếp",
+  "vip.table.thCost": "XP để đạt cấp",
   "vip.table.thCum": "Tổng đến nay",
   "vip.table.thPerk": "Mới ở cấp này",
   "vip.table.perk1": "tài nguyên +2% · kho +100k",
@@ -891,5 +891,11 @@ window.__BH_I18N_DATA["vi"] = {
   "ks.today.prepPlan": "Lên kế hoạch dùng vật liệu KvK trước khi giai đoạn chuẩn bị bắt đầu vào ngày 22.",
   "ks.today.kvkWeek": "Chuẩn bị và chiến đấu KvK",
   "ks.today.cycleRange": "Ngày {from}–{to}",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">GIẢI MÃ</span>",
+  "home.hero.lede": "Các sự kiện liên minh bằng lời dễ hiểu — cách tính điểm, việc bạn cần làm và nơi kiếm điểm.",
+  "sw.hero.lede": "Hai bảng điểm: bậc của liên minh và bậc cá nhân của bạn. Một con số quyết định bậc của bạn: <strong>180,000</strong>. Chiến thuật thay đổi theo đối thủ; mục tiêu không đổi.",
+  "sw.hero.chip1": "55 phút mỗi trận",
+  "sw.hero.chip2": "hai quân đoàn",
+  "sw.hero.chip3": "không tổn thất, chỉ bị thương"
 }
 ;

@@ -368,6 +368,8 @@
   }
 
   function setMode(m, push) {
+    var report = document.getElementById('sim-load');
+    if (report) report.hidden = m === 'mystic' || m === 'pve';
     MODES.forEach(function (k) {
       var panel = document.querySelector('.sim-panel[data-mode="' + k + '"]');
       if (panel) panel.hidden = k !== m;

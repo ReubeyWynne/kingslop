@@ -412,7 +412,7 @@ window.__BH_I18N_DATA["de"] = {
   "vip.table.lede": "Jede Stufe, die XP, die sie kostet, und die Summe bisher, mit dem Bonus, den sie freischaltet:",
   "vip.table.aria": "Die Tabelle der VIP XP, Stufen 1 bis 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP bis zur nächsten",
+  "vip.table.thCost": "XP zum Erreichen",
   "vip.table.thCum": "Summe bisher",
   "vip.table.thPerk": "Neues auf dieser Stufe",
   "vip.table.perk1": "Ressourcen +2% · Lagerhaus +100k",
@@ -880,5 +880,11 @@ window.__BH_I18N_DATA["de"] = {
   "ks.today.prepPlan": "Plane deine KvK-Ausgaben, bevor die Vorbereitung an Tag 22 beginnt.",
   "ks.today.kvkWeek": "KvK-Vorbereitung und Kampf",
   "ks.today.cycleRange": "Tage {from}–{to}",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">ENTMYSTIFIZIERT</span>",
+  "home.hero.lede": "Die Allianz-Events in klaren Worten — wie jedes punktet, was du tun solltest und wo die Punkte liegen.",
+  "sw.hero.lede": "Zwei Punktestände, der Rang der Allianz und deine persönliche Stufe, und eine Zahl, die deine bestimmt: <strong>180,000</strong>. Die Strategie ändert sich mit dem Gegner; das Ziel bleibt.",
+  "sw.hero.chip1": "55 Min. pro Match",
+  "sw.hero.chip2": "zwei Legionen",
+  "sw.hero.chip3": "keine Verluste, nur Verletzte"
 }
 ;

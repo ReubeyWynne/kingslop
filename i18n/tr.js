@@ -412,7 +412,7 @@ window.__BH_I18N_DATA["tr"] = {
   "vip.table.lede": "Her seviye, maliyeti olan XP ve şu ana kadarki toplam, açtığı avantajla birlikte:",
   "vip.table.aria": "VIP XP tablosu, 1'den 12'ye seviyeler",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "Sıradakine XP",
+  "vip.table.thCost": "Ulaşmak için XP",
   "vip.table.thCum": "Şu ana kadar toplam",
   "vip.table.thPerk": "Bu seviyede yeni",
   "vip.table.perk1": "kaynak +%2 · depo +100k",
@@ -879,5 +879,11 @@ window.__BH_I18N_DATA["tr"] = {
   "ks.today.prepPlan": "22. gün hazırlık başlamadan önce KvK harcamalarını planla.",
   "ks.today.kvkWeek": "KvK hazırlığı ve savaşı",
   "ks.today.cycleRange": "{from}–{to}. günler",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">GİZEMİ ÇÖZÜLDÜ</span>",
+  "home.hero.lede": "İttifak etkinlikleri sade bir dille — her birinde nasıl puan kazanılır, ne yapmalısın ve puanlar nerede.",
+  "sw.hero.lede": "İki skor tablosu: ittifakın kademesi ve kişisel seviyen. Seninkini belirleyen tek sayı: <strong>180,000</strong>. Strateji rakibe göre değişir; hedef değişmez.",
+  "sw.hero.chip1": "maç başına 55 dk",
+  "sw.hero.chip2": "iki lejyon",
+  "sw.hero.chip3": "kayıp yok, yalnızca yaralılar"
 }
 ;

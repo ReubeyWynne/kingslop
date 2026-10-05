@@ -412,7 +412,7 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "vip.table.lede": "每一级、它需要的 XP 和累计总数，以及它解锁的特权：",
   "vip.table.aria": "VIP XP 表格，等级 1 到 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "到下一级所需 XP",
+  "vip.table.thCost": "达到该级所需XP",
   "vip.table.thCum": "累计至今",
   "vip.table.thPerk": "本等级新增",
   "vip.table.perk1": "资源 +2% · 仓库 +100k",
@@ -880,5 +880,11 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "ks.today.prepPlan": "在第 22 天备战开始前，规划好 KvK 材料消耗。",
   "ks.today.kvkWeek": "KvK 备战与战斗",
   "ks.today.cycleRange": "第 {from}–{to} 天",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">解密</span>",
+  "home.hero.lede": "用简单的话讲清联盟活动——每项活动如何计分、你该怎么做，以及哪里能获得积分。",
+  "sw.hero.lede": "两张计分榜：联盟档位和你的个人档位。决定你个人档位的数字是 <strong>180,000</strong>。策略随对手而变，目标不变。",
+  "sw.hero.chip1": "每场55分钟",
+  "sw.hero.chip2": "两个军团",
+  "sw.hero.chip3": "没有阵亡，只有伤兵"
 }
 ;

@@ -406,7 +406,7 @@ window.__BH_I18N_DATA["ar"] = {
   "vip.table.lede": "كل مستوى، وXP التي يكلفها، والإجمالي حتى الآن، مع الميزة التي يفتحها:",
   "vip.table.aria": "جدول VIP XP، المستويات من 1 إلى 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP إلى التالي",
+  "vip.table.thCost": "XP لبلوغ المستوى",
   "vip.table.thCum": "الإجمالي حتى الآن",
   "vip.table.thPerk": "الجديد في هذا المستوى",
   "vip.table.perk1": "الموارد +2% · المستودع +100k",
@@ -877,4 +877,10 @@ window.__BH_I18N_DATA["ar"] = {
   "ks.today.prepPlan": "خطط لإنفاق مواد KvK قبل بدء التحضير في اليوم 22.",
   "ks.today.kvkWeek": "تحضير ومعركة KvK",
   "ks.today.cycleRange": "الأيام {from}–{to}",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">بلا أسرار</span>",
+  "home.hero.lede": "فعاليات التحالف بكلمات واضحة — كيف تُحتسب النقاط في كل فعالية، وما عليك فعله، وأين تكسب النقاط.",
+  "sw.hero.lede": "لوحتا نقاط: فئة التحالف ومستواك الشخصي، ورقم واحد يحدد مستواك: <strong>180,000</strong>. تتغير الاستراتيجية حسب الخصم، ويبقى الهدف ثابتًا.",
+  "sw.hero.chip1": "55 دقيقة للمباراة",
+  "sw.hero.chip2": "فيلقان",
+  "sw.hero.chip3": "لا خسائر، إصابات فقط"
 };

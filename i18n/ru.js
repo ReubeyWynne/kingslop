@@ -412,7 +412,7 @@ window.__BH_I18N_DATA["ru"] = {
   "vip.table.lede": "Каждый уровень, его стоимость в XP и итог на данный момент, с бонусом, который он открывает:",
   "vip.table.aria": "Таблица VIP XP, уровни с 1 по 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP до следующего",
+  "vip.table.thCost": "XP для достижения",
   "vip.table.thCum": "Итого накоплено",
   "vip.table.thPerk": "Новое на этом уровне",
   "vip.table.perk1": "ресурсы +2% · склад +100k",
@@ -880,5 +880,11 @@ window.__BH_I18N_DATA["ru"] = {
   "ks.today.prepPlan": "Спланируйте траты на KvK до начала подготовки на 22-й день.",
   "ks.today.kvkWeek": "Подготовка и бой KvK",
   "ks.today.cycleRange": "Дни {from}–{to}",
+  "home.hero.h1": "KINGSHOT,<br><span class=\"accent\">БЕЗ ЗАГАДОК</span>",
+  "home.hero.lede": "События альянса простыми словами — как начисляются очки, что делать и где их получать.",
+  "sw.hero.lede": "Два счёта: категория альянса и твоя личная ступень. Её определяет одно число: <strong>180,000</strong>. Стратегия меняется в зависимости от соперника, цель остаётся.",
+  "sw.hero.chip1": "55 мин за матч",
+  "sw.hero.chip2": "два легиона",
+  "sw.hero.chip3": "без потерь, только раненые"
 }
 ;
