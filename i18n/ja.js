@@ -412,7 +412,7 @@ window.__BH_I18N_DATA["ja"] = {
   "vip.table.lede": "各レベル、必要なXPとこれまでの合計、そして解放される特典：",
   "vip.table.aria": "VIP XPの表、レベル1から12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "次へのXP",
+  "vip.table.thCost": "到達に必要なXP",
   "vip.table.thCum": "ここまでの合計",
   "vip.table.thPerk": "このレベルで新規",
   "vip.table.perk1": "資源 +2% · 倉庫 +100k",

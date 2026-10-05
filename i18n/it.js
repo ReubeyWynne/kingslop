@@ -412,7 +412,7 @@ window.__BH_I18N_DATA["it"] = {
   "vip.table.lede": "Ogni livello, la XP che costa e il totale finora, con il perk che sblocca:",
   "vip.table.aria": "La tabella della VIP XP, livelli da 1 a 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP al prossimo",
+  "vip.table.thCost": "XP per raggiungere",
   "vip.table.thCum": "Totale finora",
   "vip.table.thPerk": "Nuovo a questo livello",
   "vip.table.perk1": "risorse +2% · magazzino +100k",

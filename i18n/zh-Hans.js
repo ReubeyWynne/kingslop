@@ -412,7 +412,7 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "vip.table.lede": "每一级、它需要的 XP 和累计总数，以及它解锁的特权：",
   "vip.table.aria": "VIP XP 表格，等级 1 到 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "到下一级所需 XP",
+  "vip.table.thCost": "达到该级所需XP",
   "vip.table.thCum": "累计至今",
   "vip.table.thPerk": "本等级新增",
   "vip.table.perk1": "资源 +2% · 仓库 +100k",

@@ -715,6 +715,9 @@ html { scrollbar-width: thin; scrollbar-color: var(--ink-muted) var(--void); }
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
+  min-height: 44px;
+  width: 100%;
+  justify-content: space-between;
   cursor: pointer;
   color: inherit;
 }
@@ -752,7 +755,6 @@ html { scrollbar-width: thin; scrollbar-color: var(--ink-muted) var(--void); }
 }
 
 
-.section-toggle { min-height: 44px; width: 100%; justify-content: space-between; }
 .section-toggle > span:first-child { min-width: 0; }
 .section-chevron { flex: none; }
 .section[data-collapsed] { padding-block: var(--space-m); }

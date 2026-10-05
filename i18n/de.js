@@ -412,7 +412,7 @@ window.__BH_I18N_DATA["de"] = {
   "vip.table.lede": "Jede Stufe, die XP, die sie kostet, und die Summe bisher, mit dem Bonus, den sie freischaltet:",
   "vip.table.aria": "Die Tabelle der VIP XP, Stufen 1 bis 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP bis zur nächsten",
+  "vip.table.thCost": "XP zum Erreichen",
   "vip.table.thCum": "Summe bisher",
   "vip.table.thPerk": "Neues auf dieser Stufe",
   "vip.table.perk1": "Ressourcen +2% · Lagerhaus +100k",

@@ -38,7 +38,7 @@
 .vip-out { margin: var(--space-m) 0; border-top: 1px solid rgba(157, 149, 127, 0.25); }
 .vip-head, .vip-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 4.6rem 6.4rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(3rem, auto) minmax(0, 8rem);
   gap: 0.7rem;
   align-items: baseline;
   padding: 0.5rem 0;
@@ -65,11 +65,11 @@
 }
 .vip-need { color: var(--ink-dim); text-align: right; }
 .vip-days { color: var(--ink); text-align: right; }
-.vip-date { color: var(--amber); text-align: right; white-space: nowrap; }
+.vip-date { color: var(--amber); text-align: end; white-space: normal; }
 .vip-row.milestone .vip-lvl { color: var(--amber); }
 .vip-row.milestone .vip-date { color: var(--ink); }
 @media (max-width: 640px) {
-  .vip-head, .vip-row { grid-template-columns: 1fr 4.4rem 6.2rem; }
+  .vip-head, .vip-row { grid-template-columns: minmax(0, 1fr) minmax(3rem, auto) minmax(0, 7rem); }
   .vip-need { display: none; }
 }
 
@@ -98,7 +98,7 @@
 .vr-row.milestone .vr-lvl { color: var(--amber); }
 .vr-row.milestone .vr-perk { color: var(--ink); }
 @media (max-width: 640px) {
-  .vr-head, .vr-row { grid-template-columns: 3.2rem 5.4rem 1fr; }
+  .vr-head, .vr-row { grid-template-columns: minmax(0, 3.2rem) minmax(0, 5.4rem) minmax(0, 1fr); }
   .vr-cum { display: none; }
 }
 
@@ -113,13 +113,7 @@
 .vip-target-date b { color: var(--amber); font-size: var(--step-0); }
 .vip-target-date.done { color: var(--ink-muted); }
 
-.vip-head, .vip-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(3rem, auto) minmax(0, 8rem); }
 .vip-head > span, .vip-row > span, .vr-head > span, .vr-row > span { min-width: 0; overflow-wrap: anywhere; }
-.vip-date { white-space: normal; }
 .vip-out, .vip-ref { font-variant-numeric: tabular-nums; }
 .vip-input-wrap { flex-wrap: wrap; }
 .vip-input-wrap input { min-height: 44px; }
-@media (max-width: 640px) {
-  .vip-head, .vip-row { grid-template-columns: minmax(0, 1fr) minmax(3rem, auto) minmax(0, 7rem); }
-  .vr-head, .vr-row { grid-template-columns: minmax(0, 3.2rem) minmax(0, 5.4rem) minmax(0, 1fr); }
-}

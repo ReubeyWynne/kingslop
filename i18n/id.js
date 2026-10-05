@@ -418,7 +418,7 @@ window.__BH_I18N_DATA["id"] = {
   "vip.table.lede": "Setiap level, XP yang dibutuhkan dan total sejauh ini, beserta perk yang dibukanya:",
   "vip.table.aria": "Tabel VIP XP, level 1 sampai 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP ke level berikutnya",
+  "vip.table.thCost": "XP untuk mencapai",
   "vip.table.thCum": "Total sejauh ini",
   "vip.table.thPerk": "Baru di level ini",
   "vip.table.perk1": "sumber daya +2% · gudang +100k",

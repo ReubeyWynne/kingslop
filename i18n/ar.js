@@ -406,7 +406,7 @@ window.__BH_I18N_DATA["ar"] = {
   "vip.table.lede": "كل مستوى، وXP التي يكلفها، والإجمالي حتى الآن، مع الميزة التي يفتحها:",
   "vip.table.aria": "جدول VIP XP، المستويات من 1 إلى 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP إلى التالي",
+  "vip.table.thCost": "XP لبلوغ المستوى",
   "vip.table.thCum": "الإجمالي حتى الآن",
   "vip.table.thPerk": "الجديد في هذا المستوى",
   "vip.table.perk1": "الموارد +2% · المستودع +100k",

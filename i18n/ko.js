@@ -412,7 +412,7 @@ window.__BH_I18N_DATA["ko"] = {
   "vip.table.lede": "각 레벨, 그 XP 비용과 지금까지의 누적, 그리고 해금되는 특전:",
   "vip.table.aria": "VIP XP 표, 레벨 1부터 12까지",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "다음까지 XP",
+  "vip.table.thCost": "달성에 필요한 XP",
   "vip.table.thCum": "지금까지 합계",
   "vip.table.thPerk": "이 레벨의 새 특전",
   "vip.table.perk1": "자원 +2% · 창고 +100k",

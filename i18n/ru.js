@@ -412,7 +412,7 @@ window.__BH_I18N_DATA["ru"] = {
   "vip.table.lede": "Каждый уровень, его стоимость в XP и итог на данный момент, с бонусом, который он открывает:",
   "vip.table.aria": "Таблица VIP XP, уровни с 1 по 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP до следующего",
+  "vip.table.thCost": "XP для достижения",
   "vip.table.thCum": "Итого накоплено",
   "vip.table.thPerk": "Новое на этом уровне",
   "vip.table.perk1": "ресурсы +2% · склад +100k",

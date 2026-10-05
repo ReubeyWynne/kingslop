@@ -412,7 +412,7 @@ window.__BH_I18N_DATA["tr"] = {
   "vip.table.lede": "Her seviye, maliyeti olan XP ve şu ana kadarki toplam, açtığı avantajla birlikte:",
   "vip.table.aria": "VIP XP tablosu, 1'den 12'ye seviyeler",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "Sıradakine XP",
+  "vip.table.thCost": "Ulaşmak için XP",
   "vip.table.thCum": "Şu ana kadar toplam",
   "vip.table.thPerk": "Bu seviyede yeni",
   "vip.table.perk1": "kaynak +%2 · depo +100k",

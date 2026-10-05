@@ -412,7 +412,7 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "vip.table.lede": "每一級、它需要的 XP 和累計總數，以及它解鎖的特權：",
   "vip.table.aria": "VIP XP 表格，等級 1 到 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "到下一級所需 XP",
+  "vip.table.thCost": "達到該級所需XP",
   "vip.table.thCum": "累計至今",
   "vip.table.thPerk": "本等級新增",
   "vip.table.perk1": "資源 +2% · 倉庫 +100k",

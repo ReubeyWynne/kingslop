@@ -18,7 +18,7 @@ fs.mkdirSync(output, { recursive: true });
 const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png' };
 const server = http.createServer((request, response) => {
   let file = path.resolve(root, '.' + decodeURIComponent(new URL(request.url, 'http://localhost').pathname));
-  if (!file.startsWith(root + path.sep)) return response.writeHead(403).end();
+  if (file !== root && !file.startsWith(root + path.sep)) return response.writeHead(403).end();
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
   if (!fs.existsSync(file)) return response.writeHead(404).end();
   response.setHeader('Content-Type', mime[path.extname(file)] || 'application/octet-stream');
@@ -47,6 +47,7 @@ async function overflow(page, message) {
         page.on('pageerror', e => errors.push(e.message));
         await page.setViewportSize({ width, height: 900 });
         await page.goto(origin + '/' + route + '?lang=' + lang, { waitUntil: 'networkidle' });
+        assert.deepEqual(errors, [], lang + ' ' + route + ': initial script errors');
         await page.waitForFunction(() => !!window.BH && !!window.I18N);
         await page.evaluate(() => document.fonts.ready);
         assert.equal(await page.evaluate(() => document.documentElement.lang), lang);

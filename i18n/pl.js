@@ -412,7 +412,7 @@ window.__BH_I18N_DATA["pl"] = {
   "vip.table.lede": "Każdy poziom, XP, które kosztuje, i suma dotychczas, z bonusem, który odblokowuje:",
   "vip.table.aria": "Tabela VIP XP, poziomy od 1 do 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP do następnego",
+  "vip.table.thCost": "XP do osiągnięcia",
   "vip.table.thCum": "Suma dotychczas",
   "vip.table.thPerk": "Nowe na tym poziomie",
   "vip.table.perk1": "zasoby +2% · magazyn +100k",

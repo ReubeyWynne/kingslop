@@ -4,7 +4,7 @@
    preview that turns the whole page into the hovered event's world. */
 
 /* ─── Home — the event list as rank lines ─────────────── */
-.event-grid { display: grid; gap: var(--space-xl); margin: var(--space-l) 0; }
+.event-grid { display: grid; gap: var(--space-l); margin: var(--space-l) 0; }
 .event-card {
   display: block;
   color: inherit;
@@ -32,8 +32,6 @@
 }
 .event-chips span { color: var(--ink-muted); }
 .event-card:hover .event-chips span { color: var(--amber-dim); }
-.event-ghost { opacity: 0.55; pointer-events: none; }
-.event-ghost h3 { color: var(--ink-muted); }
 
 /* ─── Home preview — the hovered event's dust ──────────── */
 /* The home page stacks one extra mote group per event inside .dust
@@ -94,7 +92,6 @@ html[data-hover="kvksg"] .dust-g.dust-kvk i:nth-child(3) { background-size: 260p
 .event-card { min-width: 0; }
 .event-card:focus-visible { outline: 2px solid var(--amber); outline-offset: 6px; }
 .event-card h3 { overflow-wrap: anywhere; }
-.event-grid { gap: var(--space-l); }
 @media (min-width: 640px) {
   .event-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .event-card h3 { font-size: var(--step-2); }

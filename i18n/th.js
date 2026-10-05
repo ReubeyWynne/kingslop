@@ -418,7 +418,7 @@ window.__BH_I18N_DATA["th"] = {
   "vip.table.lede": "แต่ละระดับ, XP ที่ใช้และยอดรวมจนถึงตอนนี้ พร้อมสิทธิพิเศษที่ปลดล็อก:",
   "vip.table.aria": "ตาราง VIP XP, ระดับ 1 ถึง 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP สู่ระดับถัดไป",
+  "vip.table.thCost": "XP เพื่อถึงระดับ",
   "vip.table.thCum": "รวมสะสม",
   "vip.table.thPerk": "ใหม่ในระดับนี้",
   "vip.table.perk1": "ทรัพยากร +2% · ยุ้งฉาง +100k",

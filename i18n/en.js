@@ -429,7 +429,7 @@ window.__BH_I18N_DATA["en"] = {
   "vip.table.lede": "Every level, the XP it costs and the total so far, with the perk it unlocks:",
   "vip.table.aria": "The VIP XP table, levels 1 to 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP to next",
+  "vip.table.thCost": "XP to reach",
   "vip.table.thCum": "Total so far",
   "vip.table.thPerk": "New at this level",
   "vip.table.perk1": "resource +2% · storehouse +100k",

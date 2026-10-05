@@ -418,7 +418,7 @@ window.__BH_I18N_DATA["vi"] = {
   "vip.table.lede": "Từng cấp, XP nó tốn và tổng đến nay, cùng đặc quyền nó mở khóa:",
   "vip.table.aria": "Bảng VIP XP, cấp 1 đến 12",
   "vip.table.thLevel": "VIP",
-  "vip.table.thCost": "XP đến cấp kế tiếp",
+  "vip.table.thCost": "XP để đạt cấp",
   "vip.table.thCum": "Tổng đến nay",
   "vip.table.thPerk": "Mới ở cấp này",
   "vip.table.perk1": "tài nguyên +2% · kho +100k",
