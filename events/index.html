@@ -30,14 +30,14 @@ self: events
       <h2 id="ks-view-title" data-i18n="ks.today.title">Today</h2>
       <p id="ks-date"></p>
     </div>
+    <div class="cycle-controls">
+      <button type="button" id="ks-prev" class="kb" aria-label="previous day" data-i18n-key="ks.today.prevAria" data-i18n-attr="aria-label"><svg class="day-step" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <output id="ks-day-out" class="cycle-day-out" aria-live="polite"><span class="cycle-weekday"></span> <span class="cycle-position"></span></output>
+      <button type="button" id="ks-next" class="kb" aria-label="next day" data-i18n-key="ks.today.nextAria" data-i18n-attr="aria-label"><svg class="day-step" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" id="ks-today" class="kb" data-i18n="ks.today.btn">Today</button>
+    </div>
     <div id="ks-card" class="today-card" aria-live="polite">
       <p class="today-empty" data-i18n="ks.today.empty">Loading today’s events.</p>
-    </div>
-    <div class="cycle-controls">
-      <button type="button" id="ks-prev" class="kb" aria-label="previous day" data-i18n-key="ks.today.prevAria" data-i18n-attr="aria-label">−</button>
-      <output id="ks-day-out" class="cycle-day-out" aria-live="polite"></output>
-      <button type="button" id="ks-next" class="kb" aria-label="next day" data-i18n-key="ks.today.nextAria" data-i18n-attr="aria-label">+</button>
-      <button type="button" id="ks-today" class="kb" data-i18n="ks.today.btn">Today</button>
     </div>
     <div class="cycle-quick week-jumps" role="group" aria-label="Jump to an event" data-i18n-key="ks.today.weeks" data-i18n-attr="aria-label">
       <button type="button" class="kb" data-jump="1" data-end="7"><span class="week-jump-icon" aria-hidden="true">⚔️</span><span class="week-jump-copy"><span data-i18n="ks.brawl.title">Alliance Brawl</span><small class="week-jump-range">Days 1–7</small></span></button>

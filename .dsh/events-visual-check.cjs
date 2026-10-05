@@ -66,6 +66,17 @@ function displayCells(line) {
         assert.equal(metrics.pageOverflow, false, lang + ': page overflow ' + d);
         assert.equal(metrics.images, true, lang + ': missing icons ' + d);
         assert.equal(metrics.direction, lang === 'ar' ? 'rtl' : 'ltr');
+        const selector = await page.locator('.cycle-controls').boundingBox();
+        const card = await page.locator('#ks-card').boundingBox();
+        assert.ok(selector.y + selector.height <= card.y, lang + ': selector below event ' + d);
+        assert.ok(selector.height <= 72, lang + ': oversized selector ' + d);
+        const buttons = [];
+        for (const id of ['ks-prev', 'ks-next', 'ks-today']) {
+          const bounds = await page.locator('#' + id).boundingBox();
+          assert.ok(bounds.width >= 44 && bounds.height >= 44, lang + ': selector tap size ' + id);
+          buttons.push(bounds);
+        }
+        assert.ok(buttons.every(bounds => Math.abs(bounds.y - buttons[0].y) <= 1), lang + ': selector buttons wrap');
         const copy = await page.locator('#ks-copy-btn').boundingBox();
         const tasks = await page.locator('.today-value').boundingBox();
         assert.ok(copy.y >= tasks.y + tasks.height, lang + ': copy interrupts tasks ' + d);
@@ -100,6 +111,10 @@ function displayCells(line) {
       assert.equal(await page.locator('#ks-cycle [aria-pressed="true"]').getAttribute('data-cycle-day'), '28');
       await page.locator('#ks-next').click();
       assert.equal(await page.locator('#ks-cycle [aria-pressed="true"]').getAttribute('data-cycle-day'), '1');
+      await page.locator('#ks-prev').focus();
+      await page.keyboard.press('Enter');
+      assert.equal(await page.locator('#ks-cycle [aria-pressed="true"]').getAttribute('data-cycle-day'), '28');
+      assert.equal(await page.locator('#ks-prev').evaluate(el => document.activeElement === el), true);
       await page.locator('#ks-today').click();
       assert.equal(await page.locator('#ks-cycle [aria-pressed="true"]').getAttribute('data-cycle-day'), '21');
       await page.evaluate(() => { window.testNow += 86400000; window.dispatchEvent(new Event('focus')); });

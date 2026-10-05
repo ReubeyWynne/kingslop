@@ -499,8 +499,8 @@
       var uw = (day - 1) % 7;
       var weekday = (Array.isArray(dows) ? dows[uw] : '') ||
         ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][uw];
-      out.textContent = weekday + ' \u00B7 ' + BH.tpl('ks.today.dayOut', 'day {n} of 28', { n: day }) +
-        (followingToday ? ' ' + BH.tr('ks.today.isToday', '\u00B7 today') : '');
+      out.querySelector('.cycle-weekday').textContent = weekday;
+      out.querySelector('.cycle-position').textContent = BH.tpl('ks.today.dayOut', 'day {n} of 28', { n: BH.fmt(day) });
     }
     paintCycle(BH);
     highlightMatrix(BH);
