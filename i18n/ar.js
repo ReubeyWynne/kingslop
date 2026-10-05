@@ -867,6 +867,7 @@ window.__BH_I18N_DATA["ar"] = {
   "ks.today.btn": "اليوم",
   "ks.nav.today": "اليوم",
   "ks.today.copyRun": "نسخ لـ KingShot",
+  "ks.today.includeLink": "إضافة رابط الموقع",
   "ks.today.holdIntel": "احتفظ بمهام الاستطلاع من 08:00 UTC لتحضير الغد.",
   "ks.today.swordSunday": "Swordland: راجع موعد معركة تحالفك التي تستمر ساعة.",
   "ks.today.prepGuide": "راجع مهام اليوم ومراحل المكافآت في اللعبة.",

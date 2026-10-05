@@ -363,6 +363,10 @@ section[data-phase][hidden], .toc a[hidden] { display: none !important; }
 .today-stored > summary .ks-ico { width: 1.5rem; height: 1.5rem; }
 .copy-box { margin: 0.8rem 0 0; padding-top: 0.5rem; border-top: 1px solid var(--signal-line); }
 .copy-btns { align-items: center; }
+.copy-link-option { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 44px; max-width: 100%; color: var(--ink-dim); font-size: var(--step--1); cursor: pointer; }
+.copy-link-option input { flex: none; width: 1.1rem; height: 1.1rem; accent-color: var(--amber); }
+.copy-link-option span { min-width: 0; }
+.copy-link-option input:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 .copy-btns .copy-action { background: transparent; color: var(--ink-dim); border-color: var(--signal-line); min-height: 44px; font-size: var(--step--1); font-weight: 400; text-transform: none; letter-spacing: 0; }
 .copy-btns .copy-action:hover { color: var(--ink); border-color: var(--ink-muted); }
 .copy-btns .copy-action:disabled { opacity: 0.65; cursor: wait; }

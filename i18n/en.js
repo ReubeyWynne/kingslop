@@ -674,6 +674,7 @@ window.__BH_I18N_DATA["en"] = {
   "ks.today.copyBattle": "copy the battle reminder for KingShot",
   "ks.today.copySave": "copy the save list for KingShot",
   "ks.today.copyRun": "Copy for KingShot",
+  "ks.today.includeLink": "Include site link",
   "ks.today.openTables": "open the tables",
   "ks.today.brawlLive": "Alliance Brawl is live beside it — {when}. one spend can score both; the day tables live in the brawl section.",
   "ks.today.brawlDay": "Day {n} \u00B7 {theme}",

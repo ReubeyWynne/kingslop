@@ -881,6 +881,7 @@ window.__BH_I18N_DATA["th"] = {
   "ks.today.btn": "วันนี้",
   "ks.nav.today": "วันนี้",
   "ks.today.copyRun": "คัดลอกสำหรับ KingShot",
+  "ks.today.includeLink": "แนบลิงก์เว็บไซต์",
   "ks.today.holdIntel": "เก็บภารกิจข่าวกรองตั้งแต่ 08:00 UTC สำหรับช่วงเตรียมการพรุ่งนี้",
   "ks.today.swordSunday": "Swordland: ตรวจสอบเวลาการต่อสู้หนึ่งชั่วโมงของพันธมิตร",
   "ks.today.prepGuide": "ตรวจสอบภารกิจและเงื่อนไขรับรางวัลของวันนี้ในเกม",
