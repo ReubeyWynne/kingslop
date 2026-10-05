@@ -769,3 +769,5 @@ html { scrollbar-width: thin; scrollbar-color: var(--ink-muted) var(--void); }
 .section-chevron { flex: none; }
 .section[data-collapsed] { padding-block: var(--space-m); }
 .section-body { min-width: 0; }
+
+.section-chevron svg { display: block; width: 100%; height: 100%; }

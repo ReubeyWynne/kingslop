@@ -383,3 +383,15 @@ html[lang="ar"] .alpha-stamp { letter-spacing: 0; text-indent: 0; }
 .sim-report .sim-head span { white-space: normal; }
 .sim-head span:first-child { text-align: start; }
 .sim-report input, .march input, .march select, .sim-a, .sim-w, .sim-share, .sim-n { text-align: end; }
+
+/* Ratios keep infantry / cavalry / archer order in every reading direction.
+   Content-sized tracks accommodate localized digits without clipping them. */
+.room-ratio, .room-alt { direction: ltr; unicode-bidi: isolate; }
+.sim-out.rooms .sim-head, .sim-out.rooms .sim-row {
+  grid-template-columns: 9.5rem minmax(0, 1fr) max-content max-content;
+}
+@media (max-width: 660px) {
+  .sim-out.rooms .sim-head, .sim-out.rooms .sim-row {
+    grid-template-columns: minmax(0, 1fr) max-content max-content;
+  }
+}
