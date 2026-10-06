@@ -118,6 +118,7 @@
     if (p.level < max) levels.push(p.level + 1);
     if (p.quality === 'mythic') {
       [20, 40, 60, 80, 100].forEach(function (l) { if (l > p.level) levels.push(l); });
+      levels.push(101);
     }
     if (p.quality !== 'epic') MILESTONES.forEach(function (l) { if (l > p.level) levels.push(l); });
     levels.forEach(function (l) {

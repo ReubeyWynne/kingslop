@@ -30,6 +30,12 @@ assert.equal(E.stats(first, 'gloves').defense, 20);
 assert.equal(E.stats({ quality: 'red', level: 200, mastery: 20 }, 'chest').attack, 70);
 assert.deepEqual(E.gap({ xp: 10, hammers: 20, mythic: 5, mithril: 10 }, { xp: 20, hammers: 2, mythic: 3, mithril: 0 }), { xp: 0, hammers: 18, mythic: 2, mithril: 10 });
 assert.deepEqual(E.normaliseState({ version: 1, weights: { inf: [2] } }).weights.inf, [2, 1.5]);
+const ascensionOnly = E.defaults();
+ascensionOnly.pieces['inf-helm'] = mythic;
+ascensionOnly.resources.mythic = 2;
+const ascended = E.optimise(ascensionOnly);
+assert.deepEqual(ascended.pieces['inf-helm'], { quality: 'red', level: 101, mastery: 10 });
+assert.deepEqual(ascended.remaining, { xp: 0, hammers: 0, mythic: 0, mithril: 0 });
 
 let seed = 2129;
 function random(max) { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed % max; }
