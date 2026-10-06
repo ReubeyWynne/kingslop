@@ -34,7 +34,7 @@
   function defaults() {
     var pieces = {};
     TYPES.forEach(function (type) { SLOTS.forEach(function (slot) { pieces[type + '-' + slot] = normalisePiece(); }); });
-    return { version: 1, pieces: pieces, resources: emptyCost(), included: { inf: true, cav: true, arc: true }, weights: copy(PROFILES.growth), profile: 'growth', reforge: false, troop: 'inf', mode: 'milestones', selected: 'inf-helm', goal: 'mithril', target: 120, targetMastery: 11 };
+    return { version: 1, pieces: pieces, resources: emptyCost(), included: { inf: true, cav: true, arc: true }, weights: copy(PROFILES.growth), profile: 'growth', reforge: false, troop: 'inf', mode: 'milestones', view: 'gear', selected: 'inf-helm', goal: 'mithril', target: 120, targetMastery: 11 };
   }
   function normaliseState(input) {
     var s = defaults();
@@ -48,6 +48,7 @@
     if (input.profile === 'custom' || PROFILES[input.profile]) s.profile = input.profile;
     if (TYPES.indexOf(input.troop) >= 0) s.troop = input.troop;
     if (['milestones', 'plan', 'optimise'].indexOf(input.mode) >= 0) s.mode = input.mode;
+    if (input.view === 'plan') s.view = 'plan';
     if (s.pieces[input.selected]) s.selected = input.selected;
     if (['red', 'mithril', 'level'].indexOf(input.goal) >= 0) s.goal = input.goal;
     s.reforge = !!input.reforge;

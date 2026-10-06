@@ -1114,6 +1114,18 @@ window.__BH_I18N_DATA["en"] = {
   "gear.importConflict": "each shot needs a different slot. check the levels and quality: epic ≤80, mythic ≤100, red ≥100.",
   "gear.planner": "Hero gear planner",
   "gear.troopType": "Troop type",
-  "gear.mode": "Planner mode"
+  "gear.mode": "Planner mode",
+  "gear.editPiece": "edit selected piece",
+  "gear.manageSave": "manage your save",
+  "gear.choosePiece": "choose another piece",
+  "gear.searchMethod": "how recommendations work",
+  "gear.workspaceView": "Workspace view",
+  "gear.gearView": "Gear",
+  "gear.planView": "Plan",
+  "gear.done": "done",
+  "gear.missingShort": "missing",
+  "gear.viewPlan": "view costs",
+  "gear.applyMilestone": "mark this upgrade done",
+  "gear.costIncludes": "what these costs include"
 }
 ;

@@ -4,6 +4,8 @@
   var STORAGE = 'bh:hero-gear:v1', imports = [], reader, readerSequence = 0, readerPending = {};
   var scriptURL = new URL(document.currentScript.src);
   var base = new URL('./', scriptURL);
+  var art = new URL('../img/hero-gear/', base), troopArt = { inf: 'infantry', cav: 'cavalry', arc: 'archer' };
+  var resourceArt = { xp: 'xp-part-100', hammers: 'forgehammer', mythic: 'mythic-gear', mithril: 'mithril' };
   var parts = { ten: 0, hundred: 0 };
   function el(id) { return document.getElementById('gear-' + id); }
   function tr(key) { return BH.tr('gear.' + key, key); }
@@ -12,6 +14,9 @@
   function copy(s) { return JSON.parse(JSON.stringify(s)); }
   function name(id) { var p = id.split('-'); return tr(p[0]) + ' · ' + tr(p[1]); }
   function quality(q) { return tr(q === 'mythic' ? 'mythicQuality' : q); }
+  function image(filename, cls) { return '<img class="' + cls + '" src="' + new URL(filename + '.webp', art).href + '" alt="" width="256" height="256">'; }
+  function gearImage(id, cls) { var p = id.split('-'); return image(troopArt[p[0]] + '-' + p[1], cls); }
+  function levelLabel(p) { return '+' + (p.quality === 'red' ? p.level - 100 : p.level); }
   function pieceLabel(p) { return quality(p.quality) + ' ' + (p.quality === 'red' ? '+' + (p.level - 100) : p.level) + ' · ' + tr('mastery') + ' ' + p.mastery; }
   function note(key) { el('status').hidden = false; el('status').textContent = tr(key); }
   function persist() {
@@ -30,6 +35,19 @@
   function numberInput(id, key, p, max) {
     return '<label><span>' + esc(tr(key)) + '</span><input type="number" inputmode="numeric" min="' + (key === 'level' && p.quality === 'red' ? 100 : 0) + '" max="' + max + '" step="1" data-piece="' + id + '" data-field="' + key + '" value="' + p[key] + '" aria-label="' + esc(name(id) + ' · ' + tr(key)) + '"' + (key === 'mastery' && p.quality === 'epic' ? ' disabled' : '') + '></label>';
   }
+  function paintView() {
+    el('forge').dataset.view = state.view;
+    el('views').querySelectorAll('[data-view]').forEach(function (button) {
+      var active = button.dataset.view === state.view;
+      button.setAttribute('aria-selected', String(active)); button.tabIndex = active ? 0 : -1;
+    });
+  }
+  function paintEdit() {
+    var id = state.selected, p = state.pieces[id];
+    el('edit-title').textContent = name(id);
+    el('edit-fields').innerHTML = '<div class="gear-edit-art">' + gearImage(id, 'gear-art') + '<span>' + esc(pieceLabel(p)) + '</span></div><div class="gear-edit-inputs"><label><span>' + esc(tr('quality')) + '</span><select data-piece="' + id + '" data-field="quality">' + ['epic','mythic','red'].map(function (q) { return '<option value="' + q + '"' + (q === p.quality ? ' selected' : '') + '>' + esc(quality(q)) + '</option>'; }).join('') + '</select></label>' + numberInput(id, 'level', p, E.cap(p)) + numberInput(id, 'mastery', p, 20) + '</div>';
+  }
+  function editPiece(id) { if (id) selectPiece(id); paintEdit(); el('edit-dialog').showModal(); }
   function paintEditor() {
     el('troops').querySelectorAll('[data-troop]').forEach(function (button) {
       var active = button.dataset.troop === state.troop;
@@ -40,9 +58,7 @@
     el('include').checked = state.included[state.troop];
     el('rows').innerHTML = E.SLOTS.map(function (slot) {
       var id = state.troop + '-' + slot, p = state.pieces[id];
-      return '<div class="gear-row" data-selected="' + (state.selected === id) + '"><button type="button" class="gear-slot" data-select="' + id + '" aria-pressed="' + (state.selected === id) + '">' + esc(tr(slot)) + '<small>' + esc(tr(slot === 'helm' || slot === 'boots' ? 'lethality' : 'health')) + '</small></button>' +
-        '<label><span>' + esc(tr('quality')) + '</span><select data-piece="' + id + '" data-field="quality" aria-label="' + esc(name(id) + ' · ' + tr('quality')) + '">' + ['epic','mythic','red'].map(function (q) { return '<option value="' + q + '"' + (q === p.quality ? ' selected' : '') + '>' + esc(quality(q)) + '</option>'; }).join('') + '</select></label>' +
-        numberInput(id, 'level', p, E.cap(p)) + numberInput(id, 'mastery', p, 20) + '</div>';
+      return '<button type="button" class="gear-row" data-select="' + id + '" data-selected="' + (state.selected === id) + '" aria-pressed="' + (state.selected === id) + '" aria-label="' + esc(name(id) + ' · ' + pieceLabel(p)) + '">' + gearImage(id, 'gear-art') + '<span class="gear-piece-info"><span class="gear-slot">' + esc(tr(slot)) + '</span><strong class="gear-level">' + levelLabel(p) + '</strong><span class="gear-rarity gear-rarity-' + p.quality + '">' + esc(quality(p.quality)) + '</span><small>' + esc(tr('mastery')) + ' ' + p.mastery + '</small></span></button>';
     }).join('');
     el('selected').innerHTML = Object.keys(state.pieces).map(function (id) { return '<option value="' + id + '"' + (id === state.selected ? ' selected' : '') + '>' + esc(name(id)) + '</option>'; }).join('');
     el('profile').value = state.profile;
@@ -56,9 +72,13 @@
   }
   function costTable(costs) {
     var gaps = E.gap(costs, state.resources);
-    return '<table class="gear-cost-table"><thead><tr><th scope="col">' + esc(tr('resource')) + '</th><th scope="col">' + esc(tr('cost')) + '</th><th scope="col">' + esc(tr('have')) + '</th><th scope="col">' + esc(tr('shortfall')) + '</th></tr></thead><tbody>' + E.RES.map(function (r) {
-      return '<tr><th scope="row">' + esc(tr(r)) + '</th><td>' + fmt(costs[r]) + '</td><td>' + fmt(state.resources[r]) + '</td><td class="' + (gaps[r] ? 'gear-short' : 'gear-ready') + '">' + (gaps[r] ? fmt(gaps[r]) : '—') + '</td></tr>';
-    }).join('') + '</tbody></table>';
+    return '<div class="gear-cost-ledger" role="list">' + E.RES.map(function (r) {
+      var progress = costs[r] ? Math.min(100, state.resources[r] / costs[r] * 100) : 100;
+      return '<div class="gear-cost-row" data-cost-resource="' + r + '" role="listitem">' + image(resourceArt[r], 'gear-resource-art') + '<div class="gear-cost-info"><span>' + esc(tr(r)) + '</span><progress max="100" value="' + progress + '" aria-label="' + esc(tr(r)) + '"></progress><small>' + esc(tr('have')) + ' ' + fmt(state.resources[r]) + '</small></div><div class="gear-cost-numbers"><strong>' + fmt(costs[r]) + '</strong><small class="' + (gaps[r] ? 'gear-short' : 'gear-ready') + '">' + (gaps[r] ? fmt(gaps[r]) + ' ' + esc(tr('missingShort')) : esc(tr('readyShort'))) + '</small></div></div>';
+    }).join('') + '</div>';
+  }
+  function paintPreview(from, to) {
+    el('preview').innerHTML = '<button type="button" data-view="plan" class="gear-preview-button">' + gearImage(state.selected, 'gear-preview-art') + '<span><strong>' + esc(name(state.selected)) + '</strong><span>' + levelLabel(from) + (to ? ' → ' + levelLabel(to) : '') + '</span></span><span class="gear-preview-link">' + esc(tr('viewPlan')) + ' →</span></button>';
   }
   function nextTarget() {
     var p = state.pieces[state.selected];
@@ -79,15 +99,14 @@
     el('target').value = state.target;
     el('target-mastery').value = state.targetMastery;
     el('goals').querySelectorAll('[data-goal]').forEach(function (button) { button.setAttribute('aria-pressed', String(button.dataset.goal === state.goal)); });
-    if (isOptimise) return;
+    if (isOptimise) { paintPreview(state.pieces[state.selected], null); return; }
     var from = state.pieces[state.selected], to = nextTarget(), out = el('milestone-out');
+    paintPreview(from, to);
     if (!to) { out.innerHTML = '<p class="gear-gloss">' + esc(tr(from.quality === 'epic' ? 'epicBlocked' : state.goal === 'red' ? 'alreadyRed' : 'maxed')) + '</p>' + nearList(); return; }
-    var costs = E.cost(from, to), gaps = E.gap(costs, state.resources);
-    var need = E.RES.filter(function (r) { return costs[r] > 0; });
-    var progress = need.length ? Math.min.apply(null, need.map(function (r) { return Math.min(1, state.resources[r] / costs[r]); })) : 1;
-    out.innerHTML = '<h3>' + esc(name(state.selected)) + '</h3><p class="gear-target-caption">' + esc(pieceLabel(from)) + ' → <b>' + esc(pieceLabel(to)) + '</b></p>' + costTable(costs) +
-      '<progress max="100" value="' + Math.round(progress * 100) + '" aria-label="' + esc(tr('progress')) + '"></progress><p class="gear-gloss">' + esc(tr(E.affordable(costs, state.resources) ? 'ready' : 'saving')) + '</p>' +
-      '<p class="gear-gloss">' + esc(tr('includesMastery')) + '</p>' + (isPlan ? '' : nearList());
+    var costs = E.cost(from, to), ready = E.affordable(costs, state.resources);
+    out.innerHTML = '<h3>' + esc(name(state.selected)) + '</h3><button type="button" class="gear-upgrade" data-edit-piece="' + state.selected + '" aria-label="' + esc(tr('editPiece')) + '">' + gearImage(state.selected, 'gear-upgrade-art') + '<span><span class="gear-upgrade-levels">' + levelLabel(from) + ' <span>→</span> ' + levelLabel(to) + '</span><small>' + esc(tr('mastery')) + ' ' + from.mastery + ' → ' + to.mastery + '</small><small>' + esc(quality(from.quality)) + (from.quality !== to.quality ? ' → ' + esc(quality(to.quality)) : '') + '</small></span></button>' + costTable(costs) +
+      (ready ? '<p class="gear-gloss">' + esc(tr('ready')) + '</p><button type="button" id="gear-apply-milestone" class="gear-primary">' + esc(tr('applyMilestone')) + '</button>' : '') +
+      '<details class="gear-cost-note"><summary>' + esc(tr('costIncludes')) + '</summary><p class="gear-gloss">' + esc(tr('includesMastery')) + '</p><p class="gear-gloss">' + esc(tr('applyHint')) + '</p></details>' + (isPlan ? '' : nearList());
   }
   function nearList() {
     var candidates = Object.keys(state.pieces).filter(function (id) { return state.included[id.split('-')[0]]; }).map(function (id) {
@@ -106,7 +125,7 @@
     E.RES.forEach(function (r) { el(r).value = state.resources[r]; });
     el('parts10').value = parts.ten;
     el('parts100').value = parts.hundred;
-    paintEditor(); paintAnswer();
+    paintEditor(); paintAnswer(); paintView();
   }
   function selectPiece(id) {
     state.selected = id; state.troop = id.split('-')[0];
@@ -234,7 +253,7 @@
       }
     } catch (error) { note('loadFailed'); }
     paint(); persist();
-    el('forge').addEventListener('input', function (event) {
+    document.addEventListener('input', function (event) {
       var node = event.target;
       if (node.dataset.resource) state.resources[node.dataset.resource] = Math.min(1e9, Math.max(0, Math.floor(Number(node.value) || 0)));
       else if (node.dataset.piece && node.dataset.field !== 'quality') {
@@ -253,11 +272,13 @@
         var value = node.value; paintAnswer(); node.value = value;
       }
     });
-    el('forge').addEventListener('change', function (event) {
+    document.addEventListener('change', function (event) {
       var node = event.target;
       if (node.dataset.piece) {
         if (node.dataset.field === 'quality') state.pieces[node.dataset.piece] = E.normalisePiece(Object.assign({}, state.pieces[node.dataset.piece], { quality: node.value }));
         changed(); paintEditor();
+        if (node.dataset.field === 'quality') paintEdit();
+        else node.value = state.pieces[node.dataset.piece][node.dataset.field];
       } else if (node.dataset.resource) node.value = state.resources[node.dataset.resource];
       else if (node.id === 'gear-include') { state.included[state.troop] = node.checked; changed(); }
       else if (node.id === 'gear-reforge') { state.reforge = node.checked; changed(); }
@@ -269,16 +290,32 @@
     });
     el('forge').addEventListener('click', function (event) {
       var button = event.target.closest('button'); if (!button) return;
-      if (button.dataset.troop) { state.troop = button.dataset.troop; persist(); paintEditor(); }
+      if (button.dataset.troop) selectPiece(button.dataset.troop + '-' + state.selected.split('-')[1]);
+      else if (button.dataset.select && button.classList.contains('gear-row')) editPiece(button.dataset.select);
       else if (button.dataset.select) selectPiece(button.dataset.select);
+      else if (button.dataset.editPiece) editPiece(button.dataset.editPiece);
+      else if (button.dataset.view) { state.view = button.dataset.view; persist(); paintView(); }
       else if (button.dataset.mode) { state.mode = button.dataset.mode; persist(); paintAnswer(); }
       else if (button.dataset.goal) { state.goal = button.dataset.goal; persist(); paintAnswer(); }
       else if (button.id === 'gear-apply-result' && result) {
         var next = copy(state); next.pieces = result.pieces; next.resources = result.remaining;
         applyState(next); note('applied');
+      } else if (button.id === 'gear-apply-milestone') {
+        var target = nextTarget(); if (!target) return;
+        var costs = E.cost(state.pieces[state.selected], target); if (!E.affordable(costs, state.resources)) return;
+        var updated = copy(state); updated.pieces[state.selected] = target;
+        E.RES.forEach(function (r) { updated.resources[r] -= costs[r]; });
+        applyState(updated); note('applied');
       }
     });
-    tabKeys(el('troops'), 'data-troop'); tabKeys(el('modes'), 'data-mode');
+    tabKeys(el('troops'), 'data-troop'); tabKeys(el('modes'), 'data-mode'); tabKeys(el('views'), 'data-view');
+    el('edit').addEventListener('click', function () { editPiece(); });
+    el('close-edit').addEventListener('click', function () { el('edit-dialog').close(); });
+    el('edit-dialog').addEventListener('close', function () {
+      var button = document.querySelector('.gear-row[data-select="' + state.selected + '"]');
+      if (button && button.getClientRects().length) button.focus();
+      else { button = document.querySelector('.gear-upgrade'); if (button) button.focus(); }
+    });
     el('run').addEventListener('click', run);
     el('count-parts').addEventListener('click', function () { state.resources.xp = Math.min(1e9, parts.ten * 10 + parts.hundred * 100); changed(); paint(); });
     el('undo').addEventListener('click', function () { if (!previous) return; state = previous.state; parts = previous.parts; previous = null; changed(); paint(); el('undo').hidden = true; note('undone'); });

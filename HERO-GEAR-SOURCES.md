@@ -99,6 +99,21 @@ extra marches, purchase simulation and the reference near-miss API are outside
 this first implementation. Calculations assume the relevant gear system is
 unlocked and count whole levels; partial XP already invested is not subtracted.
 
+## Visual interface and artwork
+
+The forge uses four illustrated gear tiles with enhancement/mastery readouts.
+Tapping a tile opens its editing dialog; desktop keeps the upgrade ledger next
+to the grid. Mobile switches between Gear and Plan rather than stacking the
+editor and all results. Resource rows show exact costs, saved quantities,
+shortfalls and individual progress bars. An affordable milestone can be marked
+done with resource subtraction and one-step undo. The chosen mobile view is
+saved alongside the existing ledger, with backward-compatible defaults.
+
+Game gear/resource artwork is served locally; no generated assets are
+included. `img/hero-gear/SOURCES.md` lists the original URLs and lossless
+conversion details. The surrounding interface retains the site's fonts, flat
+surfaces, hairline rules and restrained signal colour.
+
 ## Screenshot import and local state
 
 The simulator's existing `js/ocr-worker.js` supplies PaddleOCR words and polygons
@@ -116,7 +131,7 @@ worker's `poly` item format. The recognition engine itself is reused unchanged.
 
 Only the structured ledger is saved in `localStorage['bh:hero-gear:v1']`.
 Screenshots remain on-device, and temporary preview URLs are revoked on close.
-Resources, twelve pieces, exclusions, priorities, mode, selected piece, targets,
+Resources, twelve pieces, exclusions, priorities, mode, mobile view, selected piece, targets,
 reforge choice and XP-part counts persist. Unavailable storage is reported;
 JSON export/import provides a fallback. Applying an upgrade plan updates local
 levels and subtracts its resource costs; reset, import and apply offer one-step
