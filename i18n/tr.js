@@ -276,6 +276,8 @@ window.__BH_I18N_DATA["tr"] = {
   "vv.stand.p1": "Şehrin tam ödülü öldürmeleri kimin aldığına bağlı değildir. Takviyeler kendi öldürmeleri için ayrı puan alır. <strong>100% öldürme</strong> hedefle — hayatta kalmak tam puan demek değildir.",
   "vv.stand.benchmark": "Evrensel güvenli asker sayısı yoktur. Zorluk, asker seviyeleri, garnizon gücü ve aktif beceriler tam temizlemeyi belirler.",
   "vv.stand.p2": "<strong>Okçular dahil bütün asker türlerini</strong> gönder. Sınır her yürüyüşün kapasitesi ve açık kuyruklardır. Ancak herkesi taşıyamıyorsan önce okçuları evde bırak; sonraki dalgalarda yine öldürme alabilirler.",
+  "vv.stand.overflow": "Taşıma sınırın tüm yürüyüş kapasitelerinin toplamıdır — eşit kapasitelerde yürüyüş kapasitesi × kullanılabilir kuyruklar. Örneğin 5 × 160k = 800k ve 6 × 150k = 900k. Bu yüzden bazı oyuncular yaklaşık 800–900k askerde şehirlerini boşaltamaz; kendi sınırını kullan. Önce okçuları bırak. Okçu ağırlıklı olmayan çok büyük ordular daha sonra süvarileri de bırakmak zorunda kalabilir.",
+  "vv.stand.priority": "Ev askerlerinin kaçınılmaz öldürmeler aldığı şehirler, puan amaçlı takviyeler için daha düşük önceliklidir: bu askerler, müttefiklere takviye puanı kazandırabilecek öldürmeleri alır. Boş veya daha az rekabetli şehirleri tercih et; ancak her dalgada hayatta kalmak ve tam temizlemek için yeterli desteği koru. Düşük öncelik, savunmasız bırakmak değildir.",
   "vv.stand.capNote": "Yürüyüş kapasitesini artır — daha çok asker dışarıda, daha azı evde. Şehirler için yürüyüş/konuşlandırma kapasitesini kullan, HQ ralli kapasitesini değil.",
   "vv.stand.calcTitle": "DENE — SABİT BİR TAKVİYE PUAN HAVUZU",
   "vv.stand.citiesLabel": "Tam temizlenen bir şehri paylaşan takviyeciler",

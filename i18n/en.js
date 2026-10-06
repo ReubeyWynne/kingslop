@@ -287,6 +287,8 @@ window.__BH_I18N_DATA["en"] = {
   "vv.stand.p1": "The town's full reward does not depend on who makes the kills. Reinforcers earn separate points for their own kills. Aim for <strong>100% kills</strong> — merely surviving is not the same as a full score.",
   "vv.stand.benchmark": "There is no universal safe troop count. Difficulty, troop tiers, garrison power and active skills decide whether your reinforcements can clear the wave.",
   "vv.stand.p2": "Send <strong>all troop types, including archers</strong>. Your total deployment is limited by each march's capacity and your available queues. Only when those queues cannot carry everyone should you leave archers home first; they can still take kills on later waves.",
+  "vv.stand.overflow": "Your carrying limit is the sum of your march capacities — with equal caps, march cap × available queues. For example, 5 × 160k = 800k and 6 × 150k = 900k. This is why some players cannot empty their cities around 800–900k troops; use your own limit. Leave archers first. Very large armies without an archer-heavy troop mix may then need to leave cavalry too.",
+  "vv.stand.priority": "Towns with unavoidable home kills are lower priority for scoring reinforcements: the owner's troops take kills that would otherwise earn allies reinforcement points. Prefer empty or less contested towns, while ensuring enough support to survive and clear every wave. Lower priority does not mean no cover.",
   "vv.stand.capNote": "Increase march capacity where possible — more troops deployed, fewer left at home. Use actual march/deployment capacity, not HQ rally capacity, for city marches.",
   "vv.stand.calcTitle": "TRY IT — ONE FIXED REINFORCEMENT POOL",
   "vv.stand.citiesLabel": "Reinforcers sharing one fully cleared town",
