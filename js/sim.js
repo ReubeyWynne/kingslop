@@ -515,7 +515,7 @@
 
   function ocrWorker() {
     if (worker) return worker;
-    worker = new Worker(scriptBase() + 'js/ocr-worker.js', { type: 'module' });
+    worker = new Worker(scriptBase() + 'js/ocr-worker.js' + (window.__BH_BUILD ? '?v=' + encodeURIComponent(window.__BH_BUILD) : ''), { type: 'module' });
     worker.onmessage = function (e) {
       var m = e.data || {}, p = pending[m.id];
       if (!p) return;

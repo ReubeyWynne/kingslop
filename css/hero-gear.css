@@ -43,8 +43,14 @@
 .gear-main .gear-primary, .gear-dialog .gear-primary { border-bottom-color: var(--amber); font-weight: 700; }
 .gear-gloss { font-size: .88rem; color: var(--ink-muted); margin: .45rem 0; line-height: 1.35; }
 .gear-tools { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: .3rem; }
-.gear-parts, .gear-targets, .gear-edit-inputs { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .8rem; align-items: end; }
-.gear-parts button { grid-column: 1 / -1; justify-self: start; }
+.gear-targets, .gear-edit-inputs { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .8rem; align-items: end; }
+.gear-parts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)) minmax(0,1.4fr); gap: .8rem; align-items: center; padding-block: .5rem; border-bottom: 1px solid var(--signal-line); }
+.gear-parts label { display: grid; grid-template-columns: 2rem minmax(0,1fr); gap: 0 .5rem; }
+.gear-parts img { grid-row: 1 / 3; width: 2rem; height: 2rem; object-fit: contain; }
+.gear-parts label > span { font-size: .8rem; }
+.gear-parts-total { display: flex; flex-wrap: wrap; align-items: center; gap: .2rem .75rem; }
+.gear-parts-total output { color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+.gear-parts-total button { font-size: .85rem; }
 .gear-edit-inputs > label:first-child { grid-column: 1 / -1; }
 .gear-edit-art { display: flex; align-items: center; gap: 1rem; margin-block: .6rem 1rem; }
 .gear-profile { margin: .7rem 0; }
@@ -82,7 +88,7 @@
 .gear-result-list { max-height: 18rem; overflow-y: auto; overscroll-behavior: contain; }
 .gear-preview, .gear-mobile-nav { display: none; }
 .gear-notes { max-width: 46rem; }
-.gear-dialog { width: min(38rem, calc(100% - 2rem)); max-height: 85dvh; overflow: auto; border: 1px solid var(--signal-line); border-radius: 2px; padding: 1.2rem; color: var(--ink); background: var(--void-2); font: 1rem/1.4 var(--body); }
+.gear-dialog { position: fixed; inset: 0; margin: auto; width: min(38rem, calc(100% - 2rem)); max-height: calc(100vh - 2rem); max-height: calc(100dvh - 2rem); overflow: auto; overscroll-behavior: contain; border: 1px solid var(--signal-line); border-radius: 2px; padding: 1.2rem; color: var(--ink); background: var(--void-2); font: 1rem/1.4 var(--body); }
 .gear-edit-dialog { max-width: 26rem; }
 .gear-dialog::backdrop { background: rgba(11,14,22,.82); }
 .gear-dialog h2 { font-size: 1.4rem; }
@@ -111,6 +117,11 @@
   .gear-answer { border-inline-start: 0; padding-inline-start: 0; }
   #gear-forge[data-view="gear"] .gear-answer, #gear-forge[data-view="plan"] .gear-editor { display: none; }
   #gear-forge[data-view="plan"] > .gear-xp-help { display: none; }
+  .gear-parts { gap: .5rem; }
+  .gear-parts label { grid-template-columns: 1.4rem minmax(0,1fr); column-gap: .3rem; }
+  .gear-parts img { width: 1.4rem; height: 1.4rem; }
+  .gear-parts-total { gap: 0; }
+  .gear-parts-total button { padding-block: 0; line-height: 1.2; }
   .gear-preview { display: block; margin-top: .4rem; }
   .gear-main .gear-preview-button { display: flex; align-items: center; gap: .7rem; text-align: start; border-bottom: 1px solid var(--signal-line); width: 100%; padding-block: .4rem; }
   .gear-preview-art { width: 2.75rem; height: 2.75rem; object-fit: contain; }

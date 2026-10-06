@@ -1008,7 +1008,7 @@ window.__BH_I18N_DATA["en"] = {
   "gear.xpHelper": "count XP parts instead",
   "gear.greenParts": "10 XP parts",
   "gear.purpleParts": "100 XP parts",
-  "gear.replaceXP": "use this XP total",
+  "gear.replaceXP": "set XP total from parts",
   "gear.yourGear": "Your gear",
   "gear.import": "read screenshots",
   "gear.inf": "Infantry",
