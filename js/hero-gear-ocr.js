@@ -123,7 +123,7 @@ function signature(image,tile,dx,dy){
     function number(band, mastery) {
       if (!band.length) return present && present[mastery ? 1 : 0] ? null : 0;
       var text = band.join(' ').replace(/[Il|](?=\d)/g, '1').replace(/[Oo](?=\d|$)/g, '0').replace(/(\d)G\b/g, function (_, n) { return n + '0'; });
-      var matches = text.match(mastery ? /(?:lv\.?|level)\s*[:.]?\s*(\d{1,2})(?!\d)/i : /\+\s*(\d{1,3})(?!\d)/);
+      var matches = text.match(mastery ? /(?:lv\.?|level)\s*[:.]?\s*(\d{1,2})(?![\dA-Za-z])/i : /\+\s*(\d{1,3})(?![\dA-Za-z])/);
       if (!matches && !mastery) matches = text.match(/(?:^|[^\d])(\d{1,3})\s*$/);
       if (!matches && /^\s*\d{1,3}\s*$/.test(text)) matches = [text, text.trim()];
       if (!matches) return null;
@@ -143,6 +143,7 @@ function signature(image,tile,dx,dy){
     var width = Math.round(size * .76), height = Math.round(size * (mastery ? .24 : .35));
     var band = canvas(width, height), ctx = band.getContext('2d', { willReadFrequently: true });
     ctx.drawImage(bitmap, x + size * .28, y + size * (mastery ? .74 : -.04), size * .76, size * (mastery ? .24 : .35), 0, 0, width, height);
+    var raw = canvas(width, height); raw.getContext('2d').drawImage(band, 0, 0);
     var image = ctx.getImageData(0, 0, width, height), data = image.data, mask = new Uint8Array(width * height), seen = new Uint8Array(mask.length), queue = new Int32Array(mask.length), components = [];
     for (var i = 0; i < mask.length; i++) {
       var r = data[i * 4], g = data[i * 4 + 1], b = data[i * 4 + 2];
@@ -168,7 +169,7 @@ function signature(image,tile,dx,dy){
     if (anchors.length) components.forEach(function (c) { if (Math.abs(c.y - anchors[0].y) < size * .09) c.pixels.forEach(function (p) { clean[p] = 1; }); });
     for (var p = 0; p < clean.length; p++) { data[p * 4] = data[p * 4 + 1] = data[p * 4 + 2] = clean[p] ? 255 : 0; data[p * 4 + 3] = 255; }
     ctx.putImageData(image, 0, 0);
-    return { canvas: band, present: anchors.length > 0 };
+    return { canvas: band, raw: raw, present: anchors.length > 0 };
   }
   async function overview(file, recognise) {
     var bitmap = await createImageBitmap(file);
@@ -190,6 +191,14 @@ function signature(image,tile,dx,dy){
         var values, failed = false;
         try {
           values = enhancement.present || mastery.present ? overviewLabels((await recognise(await blob(labels))).items, tile.quality, 110, [enhancement.present, mastery.present]) : { level: tile.quality === 'red' ? 100 : 0, mastery: 0 };
+          if ((enhancement.present && values.level === null) || (mastery.present && values.mastery === null)) {
+            labelCtx.fillStyle = '#000'; labelCtx.fillRect(0, 0, 320, 220);
+            if (enhancement.present) labelCtx.drawImage(enhancement.raw, 15, 8, 290, 92);
+            if (mastery.present) labelCtx.drawImage(mastery.raw, 15, 124, 290, 84);
+            var retry = overviewLabels((await recognise(await blob(labels))).items, tile.quality, 110, [enhancement.present, mastery.present]);
+            if (values.level === null) values.level = retry.level;
+            if (values.mastery === null) values.mastery = retry.mastery;
+          }
           if (!enhancement.present) values.level = tile.quality === 'red' ? 100 : 0;
           if (!mastery.present) values.mastery = 0;
         }
