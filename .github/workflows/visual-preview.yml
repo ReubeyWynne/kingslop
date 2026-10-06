@@ -30,6 +30,7 @@ jobs:
           node .dsh/bear-hunt-visual-check.cjs
           node .dsh/events-visual-check.cjs
           node .dsh/remaining-pages-visual-check.cjs
+          node .dsh/hero-gear-visual-check.cjs
       - name: Upload built site and screenshots
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -42,3 +43,4 @@ jobs:
             .dsh/visual-preview/
             .dsh/events-preview/
             .dsh/remaining-pages-preview/
+            .dsh/gear-preview/

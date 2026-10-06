@@ -884,6 +884,7 @@ window.__BH_I18N_DATA["es"] = {
   "sw.hero.lede": "Dos marcadores, el grupo de la alianza y tu nivel personal, y una cifra que decide el tuyo: <strong>180,000</strong>. La estrategia cambia según el rival; el objetivo no.",
   "sw.hero.chip1": "55 min por partida",
   "sw.hero.chip2": "dos legiones",
-  "sw.hero.chip3": "sin bajas, solo heridos"
+  "sw.hero.chip3": "sin bajas, solo heridos",
+  "ev.switch.gear": "Equipo"
 }
 ;

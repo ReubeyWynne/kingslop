@@ -884,6 +884,7 @@ window.__BH_I18N_DATA["it"] = {
   "sw.hero.lede": "Due punteggi, la fascia dell’alleanza e il tuo livello personale, e un numero che decide il tuo: <strong>180,000</strong>. La strategia cambia con l’avversario; l’obiettivo no.",
   "sw.hero.chip1": "55 min a partita",
   "sw.hero.chip2": "due legioni",
-  "sw.hero.chip3": "nessuna perdita, solo feriti"
+  "sw.hero.chip3": "nessuna perdita, solo feriti",
+  "ev.switch.gear": "Equipaggiamento"
 }
 ;

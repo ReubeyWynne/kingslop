@@ -881,6 +881,7 @@ window.__BH_I18N_DATA["tr"] = {
   "sw.hero.lede": "İki skor tablosu: ittifakın kademesi ve kişisel seviyen. Seninkini belirleyen tek sayı: <strong>180,000</strong>. Strateji rakibe göre değişir; hedef değişmez.",
   "sw.hero.chip1": "maç başına 55 dk",
   "sw.hero.chip2": "iki lejyon",
-  "sw.hero.chip3": "kayıp yok, yalnızca yaralılar"
+  "sw.hero.chip3": "kayıp yok, yalnızca yaralılar",
+  "ev.switch.gear": "Ekipman"
 }
 ;

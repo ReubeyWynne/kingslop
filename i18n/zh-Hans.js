@@ -882,6 +882,7 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "sw.hero.lede": "两张计分榜：联盟档位和你的个人档位。决定你个人档位的数字是 <strong>180,000</strong>。策略随对手而变，目标不变。",
   "sw.hero.chip1": "每场55分钟",
   "sw.hero.chip2": "两个军团",
-  "sw.hero.chip3": "没有阵亡，只有伤兵"
+  "sw.hero.chip3": "没有阵亡，只有伤兵",
+  "ev.switch.gear": "装备"
 }
 ;

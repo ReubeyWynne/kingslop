@@ -882,6 +882,7 @@ window.__BH_I18N_DATA["de"] = {
   "sw.hero.lede": "Zwei Punktestände, der Rang der Allianz und deine persönliche Stufe, und eine Zahl, die deine bestimmt: <strong>180,000</strong>. Die Strategie ändert sich mit dem Gegner; das Ziel bleibt.",
   "sw.hero.chip1": "55 Min. pro Match",
   "sw.hero.chip2": "zwei Legionen",
-  "sw.hero.chip3": "keine Verluste, nur Verletzte"
+  "sw.hero.chip3": "keine Verluste, nur Verletzte",
+  "ev.switch.gear": "Ausrüstung"
 }
 ;

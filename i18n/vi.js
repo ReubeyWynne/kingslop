@@ -893,6 +893,7 @@ window.__BH_I18N_DATA["vi"] = {
   "sw.hero.lede": "Hai bảng điểm: bậc của liên minh và bậc cá nhân của bạn. Một con số quyết định bậc của bạn: <strong>180,000</strong>. Chiến thuật thay đổi theo đối thủ; mục tiêu không đổi.",
   "sw.hero.chip1": "55 phút mỗi trận",
   "sw.hero.chip2": "hai quân đoàn",
-  "sw.hero.chip3": "không tổn thất, chỉ bị thương"
+  "sw.hero.chip3": "không tổn thất, chỉ bị thương",
+  "ev.switch.gear": "Trang bị"
 }
 ;

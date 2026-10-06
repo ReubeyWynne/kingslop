@@ -882,6 +882,7 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "sw.hero.lede": "兩張計分榜：聯盟檔位和你的個人檔位。決定你個人檔位的數字是 <strong>180,000</strong>。策略隨對手而變，目標不變。",
   "sw.hero.chip1": "每場55分鐘",
   "sw.hero.chip2": "兩個軍團",
-  "sw.hero.chip3": "沒有陣亡，只有傷兵"
+  "sw.hero.chip3": "沒有陣亡，只有傷兵",
+  "ev.switch.gear": "裝備"
 }
 ;

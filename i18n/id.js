@@ -893,6 +893,7 @@ window.__BH_I18N_DATA["id"] = {
   "sw.hero.lede": "Dua papan skor, kelompok aliansi dan tingkat pribadi, dengan satu angka penentu tingkatmu: <strong>180,000</strong>. Strategi berubah sesuai lawan; target tetap.",
   "sw.hero.chip1": "55 menit per pertandingan",
   "sw.hero.chip2": "dua legiun",
-  "sw.hero.chip3": "tanpa kehilangan, hanya terluka"
+  "sw.hero.chip3": "tanpa kehilangan, hanya terluka",
+  "ev.switch.gear": "Perlengkapan"
 }
 ;
