@@ -116,6 +116,7 @@
   .gear-workspace { display: block; margin-top: .25rem; }
   .gear-answer { border-inline-start: 0; padding-inline-start: 0; }
   #gear-forge[data-view="gear"] .gear-answer, #gear-forge[data-view="plan"] .gear-editor { display: none; }
+  #gear-forge[data-view="plan"] > .gear-xp-help { display: none; }
   .gear-parts { gap: .5rem; }
   .gear-parts label { grid-template-columns: 1.4rem minmax(0,1fr); column-gap: .3rem; }
   .gear-parts img { width: 1.4rem; height: 1.4rem; }
