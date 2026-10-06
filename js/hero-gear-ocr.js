@@ -212,7 +212,7 @@ function signature(image,tile,dx,dy){
           if (!enhancement.present) values.level = tile.quality === 'red' ? 100 : 0;
           if (!mastery.present) values.mastery = 0;
         }
-        catch (error) { values = { level: null, mastery: null }; failed = true; }
+        catch (error) { values = values || { level: null, mastery: null }; failed = true; }
         result.push(Object.assign({ troop: type, slot: tile.slot, quality: tile.quality, overview: true, failed: failed, preview: await blob(preview) }, values));
       }
       return result;

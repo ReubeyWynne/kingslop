@@ -1115,6 +1115,7 @@ window.__BH_I18N_DATA["en"] = {
   "gear.planner": "Hero gear planner",
   "gear.troopType": "Troop type",
   "gear.mode": "Planner mode",
+  "gear.importLevels": "enhancement uses total levels: red +20 is 120.",
   "gear.overviewHint": "upload a hero's gear overview or an individual gear detail screen. overviews read all four pieces; unlevelled pieces read as zero. check each crop before applying. include one piece per troop and slot; unread fields keep saved values.",
   "gear.chooseTroop": "choose troop",
   "gear.includeImport": "include",
