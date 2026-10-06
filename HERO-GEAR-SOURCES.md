@@ -130,9 +130,11 @@ Unknown badges leave troop assignment empty for review rather than borrowing
 the selected troop. Hero names and their language are not needed.
 
 Each detected tile is cropped from the original-resolution image. Its enhancement
-and mastery bands are enlarged into separate rows and passed to the unchanged
-production OCR worker. An absent recognised label reads as zero on an overview;
-unrecognised text or a reader failure leaves the field unread. Red enhancement
+and mastery bands are filtered to their white/yellow glyphs, with glyph size,
+position and baseline checks removing item-art shapes. The resulting bands are
+enlarged into separate rows and passed to the unchanged production OCR worker.
+Absent label pixels read as zero; a present label without recognised numbers or
+a reader failure leaves the field unread. Red enhancement
 is converted to total level `100 + displayed enhancement`, while `Lv.` in the
 lower band is mastery. Each crop appears separately for review, with editable
 troop, slot, rarity, numbers and an include checkbox. Only one included piece

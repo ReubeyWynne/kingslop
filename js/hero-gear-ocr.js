@@ -112,7 +112,7 @@ function signature(image,tile,dx,dy){
     var types = Object.keys(votes).sort(function (a, b) { return votes[b] - votes[a]; });
     return votes[types[0]] >= 3 ? types[0] : null;
   }
-  function overviewLabels(items, quality, split) {
+  function overviewLabels(items, quality, split, present) {
     var bands = [[], []];
     (items || []).forEach(function (item) {
       var points = item.poly || item.box || item.points || [];
@@ -121,9 +121,10 @@ function signature(image,tile,dx,dy){
       bands[y < split ? 0 : 1].push(String(item.text || '').trim());
     });
     function number(band, mastery) {
-      if (!band.length) return 0;
-      var text = band.join(' ').replace(/[Il|](?=\d)/g, '1').replace(/[Oo](?=\d|$)/g, '0');
+      if (!band.length) return present && present[mastery ? 1 : 0] ? null : 0;
+      var text = band.join(' ').replace(/[Il|](?=\d)/g, '1').replace(/[Oo](?=\d|$)/g, '0').replace(/(\d)G\b/g, function (_, n) { return n + '0'; });
       var matches = text.match(mastery ? /(?:lv\.?|level)\s*[:.]?\s*(\d{1,2})(?!\d)/i : /\+\s*(\d{1,3})(?!\d)/);
+      if (!matches && !mastery) matches = text.match(/(?:^|[^\d])(\d{1,3})\s*$/);
       if (!matches && /^\s*\d{1,3}\s*$/.test(text)) matches = [text, text.trim()];
       if (!matches) return null;
       var value = Number(matches[1]), limit = mastery ? 20 : quality === 'epic' ? 80 : 100;
@@ -138,6 +139,37 @@ function signature(image,tile,dx,dy){
   function blob(canvas) {
     return new Promise(function (resolve, reject) { canvas.toBlob(function (out) { if (out) resolve(out); else reject(new Error('Image unavailable')); }, 'image/png'); });
   }
+  function labelBand(bitmap, x, y, size, mastery) {
+    var width = Math.round(size * .76), height = Math.round(size * (mastery ? .24 : .35));
+    var band = canvas(width, height), ctx = band.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(bitmap, x + size * .28, y + size * (mastery ? .74 : -.04), size * .76, size * (mastery ? .24 : .35), 0, 0, width, height);
+    var image = ctx.getImageData(0, 0, width, height), data = image.data, mask = new Uint8Array(width * height), seen = new Uint8Array(mask.length), queue = new Int32Array(mask.length), components = [];
+    for (var i = 0; i < mask.length; i++) {
+      var r = data[i * 4], g = data[i * 4 + 1], b = data[i * 4 + 2];
+      mask[i] = mastery ? r > 160 && g > 170 && b < 160 && g >= r * .85 : Math.min(r, g, b) > 185 && Math.max(r, g, b) - Math.min(r, g, b) < 60;
+    }
+    for (var start = 0; start < mask.length; start++) {
+      if (!mask[start] || seen[start]) continue;
+      var n = 1, pixels = [], minx = width, miny = height, maxx = 0, maxy = 0;
+      queue[0] = start; seen[start] = 1;
+      while (n) {
+        var pixel = queue[--n], px = pixel % width, py = Math.floor(pixel / width);
+        pixels.push(pixel); minx = Math.min(minx, px); maxx = Math.max(maxx, px); miny = Math.min(miny, py); maxy = Math.max(maxy, py);
+        var neighbours = [px ? pixel - 1 : -1, px < width - 1 ? pixel + 1 : -1, py ? pixel - width : -1, py < height - 1 ? pixel + width : -1];
+        for (var j = 0; j < neighbours.length; j++) {
+          var next = neighbours[j]; if (next >= 0 && mask[next] && !seen[next]) { seen[next] = 1; queue[n++] = next; }
+        }
+      }
+      var h = maxy - miny + 1, w = maxx - minx + 1;
+      if (pixels.length > 5 && h > size * .035 && h < size * .2 && w < size * .23 && minx > 0 && miny > 0 && maxx < width - 1 && maxy < height - 1) components.push({ pixels: pixels, right: maxx, h: h, y: (miny + maxy) / 2 });
+    }
+    var anchors = components.filter(function (c) { return c.h > size * .1 && c.right > size * .52; }).sort(function (a, b) { return b.right - a.right; });
+    var clean = new Uint8Array(mask.length);
+    if (anchors.length) components.forEach(function (c) { if (Math.abs(c.y - anchors[0].y) < size * .09) c.pixels.forEach(function (p) { clean[p] = 1; }); });
+    for (var p = 0; p < clean.length; p++) { data[p * 4] = data[p * 4 + 1] = data[p * 4 + 2] = clean[p] ? 255 : 0; data[p * 4 + 3] = 255; }
+    ctx.putImageData(image, 0, 0);
+    return { canvas: band, present: anchors.length > 0 };
+  }
   async function overview(file, recognise) {
     var bitmap = await createImageBitmap(file);
     try {
@@ -151,11 +183,16 @@ function signature(image,tile,dx,dy){
         var tile = tiles[i], x = tile.x * scale, y = tile.y * scale, size = tile.w * scale;
         var preview = canvas(180, 180), labels = canvas(320, 220), labelCtx = labels.getContext('2d');
         preview.getContext('2d').drawImage(bitmap, x - size * .1, y - size * .1, size * 1.15, size * 1.15, 0, 0, 180, 180);
-        labelCtx.fillStyle = '#678f9a'; labelCtx.fillRect(0, 0, 320, 220);
-        labelCtx.drawImage(bitmap, x + size * .32, y + size * .06, size * .65, size * .24, 15, 12, 290, 80);
-        labelCtx.drawImage(bitmap, x + size * .32, y + size * .74, size * .65, size * .24, 15, 128, 290, 80);
+        var enhancement = labelBand(bitmap, x, y, size, false), mastery = labelBand(bitmap, x, y, size, true);
+        labelCtx.fillStyle = '#000'; labelCtx.fillRect(0, 0, 320, 220);
+        labelCtx.drawImage(enhancement.canvas, 15, 8, 290, 92);
+        labelCtx.drawImage(mastery.canvas, 15, 124, 290, 84);
         var values, failed = false;
-        try { values = overviewLabels((await recognise(await blob(labels))).items, tile.quality, 110); }
+        try {
+          values = enhancement.present || mastery.present ? overviewLabels((await recognise(await blob(labels))).items, tile.quality, 110, [enhancement.present, mastery.present]) : { level: tile.quality === 'red' ? 100 : 0, mastery: 0 };
+          if (!enhancement.present) values.level = tile.quality === 'red' ? 100 : 0;
+          if (!mastery.present) values.mastery = 0;
+        }
         catch (error) { values = { level: null, mastery: null }; failed = true; }
         result.push(Object.assign({ troop: type, slot: tile.slot, quality: tile.quality, overview: true, failed: failed, preview: await blob(preview) }, values));
       }
