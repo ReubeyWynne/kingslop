@@ -39,6 +39,7 @@ async function fits(page, label) {
     await page.locator('[data-piece="inf-helm"][data-field="level"]').press('Tab');
     await page.locator('[data-piece="inf-helm"][data-field="mastery"]').fill('10');
     await page.locator('[data-piece="inf-helm"][data-field="mastery"]').press('Tab');
+    assert.match(await page.locator('.gear-row[data-select="inf-helm"]').textContent(), /\+100/);
     await page.locator('#gear-close-edit').click();
     const cells=await page.locator('.gear-cost-row').allTextContents();
     assert.match(cells[0],/52,650/);assert.match(cells[1],/110/);assert.match(cells[2],/6/);assert.match(cells[3],/10/);
@@ -63,7 +64,7 @@ async function fits(page, label) {
     await page.locator('#gear-apply-result').click();
     await page.locator('#gear-undo').click();
     assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),100);
-    await page.route('**/js/ocr-worker.js',route=>route.fulfill({contentType:'text/javascript',body:`self.onmessage=e=>{let texts=['Infantry Helm','Lv. +19','Forge Mastery 10'];self.postMessage({id:e.data.id,ok:true,items:texts.map((text,i)=>({text,poly:[[0,i*30],[250,i*30],[250,i*30+20],[0,i*30+20]]}))});};`}));
+    await page.route('**/js/ocr-worker.js**',route=>route.fulfill({contentType:'text/javascript',body:`self.onmessage=e=>{let texts=['Infantry Helm','Lv. +19','Forge Mastery 10'];self.postMessage({id:e.data.id,ok:true,items:texts.map((text,i)=>({text,poly:[[0,i*30],[250,i*30],[250,i*30+20],[0,i*30+20]]}))});};`}));
     await page.locator('#gear-import').click();
     await page.locator('#gear-images').setInputFiles({name:'gear.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6vGQAAAAASUVORK5CYII=','base64')});
     await page.locator('[data-import-field="level"]').waitFor();
@@ -134,7 +135,7 @@ async function fits(page, label) {
       const NativeWorker=window.Worker;
       window.__gearReads=[];
       window.Worker=class extends NativeWorker {
-        constructor(url,options){super(url,options);if(String(url).endsWith('ocr-worker.js'))this.addEventListener('message',event=>window.__gearReads.push({ok:event.data.ok,items:event.data.items,error:event.data.error}));}
+        constructor(url,options){super(url,options);if(String(url).includes('ocr-worker.js'))this.addEventListener('message',event=>window.__gearReads.push({ok:event.data.ok,items:event.data.items,error:event.data.error}));}
       };
     });
     try {

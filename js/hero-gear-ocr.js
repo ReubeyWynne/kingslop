@@ -122,10 +122,11 @@ function signature(image,tile,dx,dy){
     });
     function number(band, mastery) {
       if (!band.length) return present && present[mastery ? 1 : 0] ? null : 0;
-      var text = band.join(' ').replace(/[Il|](?=\d)/g, '1').replace(/[Oo](?=\d|$)/g, '0').replace(/(\d)G\b/g, function (_, n) { return n + '0'; });
-      var matches = text.match(mastery ? /(?:lv\.?|level)\s*[:.]?\s*(\d{1,2})(?![\dA-Za-z])/i : /\+\s*(\d{1,3})(?![\dA-Za-z])/);
+      var text = band.join(' ').replace(/[Il|](?=\d)/g, '1').replace(/[Oo](?=\d|$)/g, '0').replace(/[Ww](?=\d)/g, 'v').replace(/(\d)G\b/g, function (_, n) { return n + '0'; });
+      var matches = text.match(mastery ? /(?:mastery|forge\s*(?:level|mastery)|l[vw]?\.?|level)\s*[:.]?\s*(\d{1,2})(?![\dA-Za-z])/i : /(?:\+|lv\.?|level|enhancement\s*(?:level)?)\s*[:.]?\s*(\d{1,3})(?![\dA-Za-z])/i);
       if (!matches && !mastery) matches = text.match(/(?:^|[^\d])(\d{1,3})\s*$/);
       if (!matches && /^\s*\d{1,3}\s*$/.test(text)) matches = [text, text.trim()];
+      if (!matches && /^[\s+.:_-]*\d{1,3}[\s+.:_-]*$/.test(text)) matches = text.match(/\d{1,3}/);
       if (!matches) return null;
       var value = Number(matches[1]), limit = mastery ? 20 : quality === 'epic' ? 80 : 100;
       return value <= limit ? value : null;

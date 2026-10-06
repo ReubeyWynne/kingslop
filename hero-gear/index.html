@@ -19,14 +19,13 @@ self: gear
       <label><img src="../img/hero-gear/mythic-gear.webp" width="40" height="40" alt=""><span data-i18n="gear.mythic">Spare mythic gear</span><input id="gear-mythic" data-resource="mythic" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Spare mythic gear" data-i18n-key="gear.mythic" data-i18n-attr="aria-label"></label>
       <label><img src="../img/hero-gear/mithril.webp" width="40" height="40" alt=""><span data-i18n="gear.mithril">Mithril</span><input id="gear-mithril" data-resource="mithril" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Mithril" data-i18n-key="gear.mithril" data-i18n-attr="aria-label"></label>
     </div>
-    <details class="gear-xp-help">
-      <summary data-i18n="gear.xpHelper">count XP parts instead</summary>
+    <div class="gear-xp-help">
       <div class="gear-parts">
-        <label><span data-i18n="gear.greenParts">10 XP parts</span><input id="gear-parts10" type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0"></label>
-        <label><span data-i18n="gear.purpleParts">100 XP parts</span><input id="gear-parts100" type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0"></label>
-        <button id="gear-count-parts" type="button" data-i18n="gear.replaceXP">use this XP total</button>
+        <label><img src="../img/hero-gear/xp-part-10.webp" width="32" height="32" alt=""><span data-i18n="gear.greenParts">10 XP parts</span><input id="gear-parts10" type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0"></label>
+        <label><img src="../img/hero-gear/xp-part-100.webp" width="32" height="32" alt=""><span data-i18n="gear.purpleParts">100 XP parts</span><input id="gear-parts100" type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0"></label>
+        <div class="gear-parts-total"><output id="gear-parts-total" for="gear-parts10 gear-parts100">0 XP</output><button id="gear-count-parts" type="button" data-i18n="gear.replaceXP">use this XP total</button></div>
       </div>
-    </details>
+    </div>
 
     <div class="gear-workspace">
       <div class="gear-editor">

@@ -3,6 +3,8 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const E = require('../js/hero-gear-engine.js');
 const OCR = require('../js/hero-gear-ocr.js');
+assert.deepEqual(OCR.overviewLabels([{text:'Lv. 2',poly:[[0,120],[20,120],[20,140],[0,140]]}], 'mythic', 110, [false,true]), {level:0,mastery:2});
+assert.deepEqual(OCR.overviewLabels([{text:'69',poly:[[0,10],[20,10],[20,30],[0,30]]}], 'mythic', 110, [true,false]), {level:69,mastery:0});
 
 assert.equal(E.XP.length, 201);
 assert.equal(E.CUM[80], 34820);

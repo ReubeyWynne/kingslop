@@ -7,6 +7,7 @@
   var art = new URL('../img/hero-gear/', base), troopArt = { inf: 'infantry', cav: 'cavalry', arc: 'archer' };
   var resourceArt = { xp: 'xp-part-100', hammers: 'forgehammer', mythic: 'mythic-gear', mithril: 'mithril' };
   var parts = { ten: 0, hundred: 0 };
+  function workerURL(filename) { var url = new URL(filename, base); url.search = scriptURL.search; return url; }
   function el(id) { return document.getElementById('gear-' + id); }
   function tr(key) { return BH.tr('gear.' + key, key); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -125,8 +126,10 @@
     E.RES.forEach(function (r) { el(r).value = state.resources[r]; });
     el('parts10').value = parts.ten;
     el('parts100').value = parts.hundred;
+    paintParts();
     paintEditor(); paintAnswer(); paintView();
   }
+  function paintParts() { el('parts-total').textContent = fmt(parts.ten * 10 + parts.hundred * 100) + ' XP'; }
   function selectPiece(id) {
     state.selected = id; state.troop = id.split('-')[0];
     persist(); paintEditor(); paintAnswer();
@@ -156,7 +159,7 @@
     function done() { running = false; el('run').disabled = false; el('run').textContent = tr('run'); if (worker) worker.terminate(); }
     var timer = setTimeout(function () { done(); note('runFailed'); }, 60000);
     try {
-      worker = new Worker(new URL('hero-gear-worker.js', base));
+      worker = new Worker(workerURL('hero-gear-worker.js'));
       worker.onmessage = function (event) {
         clearTimeout(timer); done();
         if (currentRevision !== revision) { note('stale'); return; }
@@ -181,7 +184,7 @@
       };
       try {
         if (!reader) {
-          reader = new Worker(new URL('ocr-worker.js', base), { type: 'module' });
+          reader = new Worker(workerURL('ocr-worker.js'), { type: 'module' });
           reader.onmessage = function (event) {
             var response = event.data, waiting = readerPending[response.id];
             if (response.preview) response.preview.close();
@@ -264,13 +267,15 @@
       if (node.dataset.resource) state.resources[node.dataset.resource] = Math.min(1e9, Math.max(0, Math.floor(Number(node.value) || 0)));
       else if (node.dataset.piece && node.dataset.field !== 'quality') {
         state.pieces[node.dataset.piece] = E.normalisePiece(Object.assign({}, state.pieces[node.dataset.piece], { [node.dataset.field]: Number(node.value) }));
+        paintEditor();
+        el('edit-fields').querySelector('.gear-edit-art span').textContent = pieceLabel(state.pieces[node.dataset.piece]);
       } else if (node.dataset.weight) {
         state.profile = 'custom'; el('profile').value = 'custom';
         state.weights[node.dataset.weight][Number(node.dataset.stat)] = Math.min(100, Math.max(0, Number(node.value) || 0));
       } else if (node.id === 'gear-target') state.target = Math.min(200, Math.max(0, Math.floor(Number(node.value) || 0)));
       else if (node.id === 'gear-target-mastery') state.targetMastery = Math.min(20, Math.max(0, Math.floor(Number(node.value) || 0)));
       else if (node.id === 'gear-parts10' || node.id === 'gear-parts100') {
-        parts[node.id === 'gear-parts10' ? 'ten' : 'hundred'] = Math.min(1e7, Math.max(0, Math.floor(Number(node.value) || 0))); persist(); return;
+        parts[node.id === 'gear-parts10' ? 'ten' : 'hundred'] = Math.min(1e7, Math.max(0, Math.floor(Number(node.value) || 0))); paintParts(); persist(); return;
       } else return;
       revision++; result = null; el('results').textContent = ''; persist();
       if (node.id !== 'gear-target' && node.id !== 'gear-target-mastery') paintAnswer();
@@ -318,6 +323,7 @@
     el('edit').addEventListener('click', function () { editPiece(); });
     el('close-edit').addEventListener('click', function () { el('edit-dialog').close(); });
     el('edit-dialog').addEventListener('close', function () {
+      paintEditor(); paintAnswer();
       var button = document.querySelector('.gear-row[data-select="' + state.selected + '"]');
       if (button && button.getClientRects().length) button.focus();
       else { button = document.querySelector('.gear-upgrade'); if (button) button.focus(); }

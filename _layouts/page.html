@@ -16,7 +16,7 @@
 
 {% include foot.html %}
 
-<script src="{{ p.depth }}js/server-age.js"></script>
-{% for s in p.scripts %}<script src="{{ s }}"></script>
+<script src="{{ p.depth }}js/server-age.js?v={{ site.time | date: '%s' }}"></script>
+{% for s in p.scripts %}<script src="{{ s }}?v={{ site.time | date: '%s' }}"></script>
 {% endfor %}</body>
 </html>
