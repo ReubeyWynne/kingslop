@@ -31,7 +31,7 @@
 .gear-row .gear-slot { text-align: start; color: var(--ink); line-height: 1.15; }
 .gear-slot small { display: block; font-size: .8rem; color: var(--ink-muted); margin-top: .3rem; }
 .gear-row label { font-size: .8rem; }
-.gear-row input, .gear-row select { font-size: 1rem; min-height: 2.25rem; }
+.gear-main .gear-row input, .gear-main .gear-row select { font-size: 1rem; min-height: 2.25rem; }
 .gear-gloss { font-size: .92rem; color: var(--ink-muted); margin: .6rem 0; line-height: 1.4; }
 .gear-tools { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: .5rem; }
 .gear-main .gear-primary, .gear-dialog .gear-primary { border-bottom-color: var(--amber); font-weight: 700; }
