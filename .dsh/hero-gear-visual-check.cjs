@@ -25,8 +25,9 @@ async function fits(page, label) {
   const browser=await chromium.launch({headless:true});
   const origin='http://127.0.0.1:'+server.address().port;
   fs.mkdirSync(output,{recursive:true});
+  let page;
   try {
-    const page=await browser.newPage({viewport:{width:1280,height:900},reducedMotion:'reduce'});
+    page=await browser.newPage({viewport:{width:1280,height:900},reducedMotion:'reduce'});
     const errors=[];page.on('pageerror',e=>errors.push(e.message));
     await page.goto(origin+'/hero-gear/?lang=en');
     await page.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
@@ -80,5 +81,8 @@ async function fits(page, label) {
     }
     assert.deepEqual(errors,[]);
     console.log('Gear UI, costs, persistence, exclusions, keyboard tabs, worker search, apply/undo, screenshot review, 5 widths and 17 language layouts passed. OCR delivery was stubbed; parser fixtures use real worker item shapes.');
+  }catch(error){
+    if(page){await page.screenshot({path:path.join(output,'failure.png'),fullPage:true});fs.writeFileSync(path.join(output,'failure.txt'),page.url()+'\n'+error.stack);}
+    throw error;
   }finally{await browser.close();server.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;server.close();});

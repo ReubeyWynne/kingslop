@@ -112,7 +112,7 @@
   // Keyboard: ← previous event, → next event (never while typing, inside the
   // language menu, or focused on the lang button / TOC rail).
   document.addEventListener('keydown', function (e) {
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
     var t = e.target;
     if (t && t.closest && t.closest('input, select, textarea, [contenteditable], #lang-menu, #lang-btn, #ledger, #toc')) return;
