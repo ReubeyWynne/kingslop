@@ -90,9 +90,11 @@ async function fits(page, label) {
     assert.match(await page.locator('[data-cost-resource="xp"]').textContent(),/74,100/);
     assert.match(await page.locator('[data-cost-resource="mithril"]').textContent(),/10 missing/);
     await page.waitForFunction(()=>[...document.querySelectorAll('.gear-main img')].every(img=>img.complete&&img.naturalWidth>0));
+    await page.evaluate(()=>scrollTo(0,0));
     await page.screenshot({path:path.join(output,'desktop.png')});
     for(const width of [320,390,768,1280,1440]){
-      await page.setViewportSize({width,height:900});await fits(page,'width '+width);
+      const height=width===390?844:900;
+      await page.setViewportSize({width,height});await fits(page,'width '+width);
       await page.locator('#gear-import').click();await fits(page,'dialog '+width);await page.locator('#gear-close-import').click();
       if(width<=768){
         await page.locator('#gear-view-gear').click();
@@ -102,14 +104,20 @@ async function fits(page, label) {
         assert.equal(await page.locator('.gear-answer').isVisible(),true);
         assert.equal(await page.locator('.gear-editor').isVisible(),false);
         await fits(page,'plan '+width);
-        if(width===390)await page.screenshot({path:path.join(output,'mobile-plan.png')});
+        if(width===390){
+          await page.evaluate(()=>scrollTo(0,0));
+          const ledger=await page.locator('.gear-cost-ledger').boundingBox();
+          const views=await page.locator('#gear-views').boundingBox();
+          assert.ok(ledger.y+ledger.height<=views.y,'upgrade resource costs remain above mobile view controls');
+          await page.screenshot({path:path.join(output,'mobile-plan.png')});
+        }
         await page.reload();await page.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
         assert.equal(await page.locator('#gear-forge').getAttribute('data-view'),'plan');
         await page.locator('#gear-view-gear').click();
         await page.locator('.gear-row[data-select="inf-gloves"]').click();await fits(page,'edit '+width);
         await page.locator('#gear-close-edit').click();
         const bottom=await page.locator('#gear-views').evaluate(el=>el.getBoundingClientRect().bottom);
-        assert.ok(bottom<=900,'gear controls fit viewport at '+width);
+        assert.ok(bottom<=height,'gear controls fit viewport at '+width);
       }
       if(width===390)await page.screenshot({path:path.join(output,'mobile.png')});
     }

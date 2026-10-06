@@ -99,7 +99,7 @@
   .gear-header-tools { max-width: 8rem; }
   .gear-header-tools button { font-size: .85rem; padding-block: 0; }
   .gear-save { font-size: .7rem; }
-  .gear-kicker { font-size: .65rem; }
+  .gear-kicker { display: none; }
   .gear-bag { gap: .6rem; padding-block: .5rem; }
   .gear-bag label { display: flex; gap: .15rem; align-items: center; }
   .gear-bag label > span { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -108,6 +108,7 @@
   .gear-workspace { display: block; margin-top: .25rem; }
   .gear-answer { border-inline-start: 0; padding-inline-start: 0; }
   #gear-forge[data-view="gear"] .gear-answer, #gear-forge[data-view="plan"] .gear-editor { display: none; }
+  #gear-forge[data-view="plan"] > .gear-xp-help { display: none; }
   .gear-preview { display: block; margin-top: .4rem; }
   .gear-main .gear-preview-button { display: flex; align-items: center; gap: .7rem; text-align: start; border-bottom: 1px solid var(--signal-line); width: 100%; padding-block: .4rem; }
   .gear-preview-art { width: 2.75rem; height: 2.75rem; object-fit: contain; }
