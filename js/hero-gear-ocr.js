@@ -162,14 +162,24 @@ function signature(image,tile,dx,dy){
         }
       }
       var h = maxy - miny + 1, w = maxx - minx + 1;
-      if (pixels.length > 5 && h > size * .035 && h < size * .2 && w < size * .23 && minx > 0 && miny > 0 && maxx < width - 1 && maxy < height - 1) components.push({ pixels: pixels, right: maxx, h: h, y: (miny + maxy) / 2 });
+      if (pixels.length > 5 && h > size * .035 && h < size * .2 && w < size * .23 && minx > 0 && miny > 0 && maxx < width - 1 && maxy < height - 1) components.push({ pixels: pixels, left: minx, top: miny, bottom: maxy, right: maxx, h: h, y: (miny + maxy) / 2 });
     }
     var anchors = components.filter(function (c) { return c.h > size * .1 && c.right > size * .52; }).sort(function (a, b) { return b.right - a.right; });
     var clean = new Uint8Array(mask.length);
     if (anchors.length) components.forEach(function (c) { if (Math.abs(c.y - anchors[0].y) < size * .09) c.pixels.forEach(function (p) { clean[p] = 1; }); });
     for (var p = 0; p < clean.length; p++) { data[p * 4] = data[p * 4 + 1] = data[p * 4 + 2] = clean[p] ? 255 : 0; data[p * 4 + 3] = 255; }
     ctx.putImageData(image, 0, 0);
-    return { canvas: band, raw: raw, present: anchors.length > 0 };
+    var digits = raw;
+    if (!mastery && anchors.length) {
+      var glyphs = components.filter(function (c) { return c.h > size * .1 && c.right > anchors[0].right - size * .42 && Math.abs(c.y - anchors[0].y) < size * .045; });
+      var left = Math.min.apply(null, glyphs.map(function (c) { return c.left; })) - 4;
+      var top = Math.min.apply(null, glyphs.map(function (c) { return c.top; })) - 4;
+      var right = Math.max.apply(null, glyphs.map(function (c) { return c.right; })) + 5;
+      var bottom = Math.max.apply(null, glyphs.map(function (c) { return c.bottom; })) + 5;
+      digits = canvas(right - left, bottom - top);
+      digits.getContext('2d').drawImage(raw, left, top, right - left, bottom - top, 0, 0, digits.width, digits.height);
+    }
+    return { canvas: band, raw: raw, digits: digits, present: anchors.length > 0 };
   }
   async function overview(file, recognise) {
     var bitmap = await createImageBitmap(file);
@@ -193,7 +203,7 @@ function signature(image,tile,dx,dy){
           values = enhancement.present || mastery.present ? overviewLabels((await recognise(await blob(labels))).items, tile.quality, 110, [enhancement.present, mastery.present]) : { level: tile.quality === 'red' ? 100 : 0, mastery: 0 };
           if ((enhancement.present && values.level === null) || (mastery.present && values.mastery === null)) {
             labelCtx.fillStyle = '#000'; labelCtx.fillRect(0, 0, 320, 220);
-            if (enhancement.present) labelCtx.drawImage(enhancement.raw, 15, 8, 290, 92);
+            if (enhancement.present) labelCtx.drawImage(enhancement.digits, 15, 8, Math.min(290, 92 * enhancement.digits.width / enhancement.digits.height), 92);
             if (mastery.present) labelCtx.drawImage(mastery.raw, 15, 124, 290, 84);
             var retry = overviewLabels((await recognise(await blob(labels))).items, tile.quality, 110, [enhancement.present, mastery.present]);
             if (values.level === null) values.level = retry.level;
