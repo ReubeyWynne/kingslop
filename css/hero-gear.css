@@ -89,6 +89,8 @@
 .gear-dialog input[type="file"] { width: 100%; margin: .5rem 0; font: inherit; }
 .gear-import-item { display: grid; grid-template-columns: 5rem minmax(0,1fr); gap: .9rem; border-top: 1px solid var(--signal-line); padding-block: .8rem; }
 .gear-import-item img { width: 5rem; max-height: 10rem; object-fit: contain; }
+.gear-import-source .gear-include { display: flex; flex-direction: row; font-size: .75rem; margin-top: .4rem; }
+.gear-import-fields .gear-gloss { overflow-wrap: anywhere; }
 .gear-import-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .6rem; }
 .gear-import-fields .gear-gloss { grid-column: 1 / -1; }
 #gear-status { display: block; margin-top: .5rem; color: var(--amber); font-size: .9rem; }

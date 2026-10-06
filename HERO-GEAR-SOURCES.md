@@ -117,17 +117,36 @@ surfaces, hairline rules and restrained signal colour.
 ## Screenshot import and local state
 
 The simulator's existing `js/ocr-worker.js` supplies PaddleOCR words and polygons
-using the existing self-hosted models. A new parser reads gear detail screenshots,
-recognising English level/mastery labels and slot aliases. A review dialog allows
-troop/slot/quality assignment and numeric correction for each image. Unknown
-values preserve saved inputs. Duplicate target slots and incompatible
-quality/level combinations are rejected. No values apply before review.
+using the existing self-hosted models. Detail screens use English level/mastery
+labels and slot aliases. Hero overviews are detected locally from connected
+orange/red/purple regions, repeated tile dimensions, two aligned rows and
+mirrored columns. Border samples identify mythic/red/epic rarity; the layout
+assigns helm, gloves, chest and boots. The centred exclusive widget is excluded.
 
-The initial import supports detail screenshots, not an automatic four-icon hero
-overview parser. Icon-only mastery numbers and non-English labels may need manual
-entry. Real in-game screenshots were not supplied for accuracy validation.
-The UI integration test stubs OCR word delivery; parser fixtures match the real
-worker's `poly` item format. The recognition engine itself is reused unchanged.
+Troop identification compares the four corner badges against 16 × 16 luminance
+signatures extracted from the supplied Zoe, Marlin and Petra screenshots. Small
+position shifts are compared; three confident agreeing badges are required.
+Unknown badges leave troop assignment empty for review rather than borrowing
+the selected troop. Hero names and their language are not needed.
+
+Each detected tile is cropped from the original-resolution image. Its enhancement
+and mastery bands are enlarged into separate rows and passed to the unchanged
+production OCR worker. An absent recognised label reads as zero on an overview;
+unrecognised text or a reader failure leaves the field unread. Red enhancement
+is converted to total level `100 + displayed enhancement`, while `Lv.` in the
+lower band is mastery. Each crop appears separately for review, with editable
+troop, slot, rarity, numbers and an include checkbox. Only one included piece
+per troop/slot is allowed; overlapping hero sets must be deselected. Unknown
+fields preserve saved values. No values apply before review, and import supports
+one-step undo. This planner stores one transferable set per troop, not per hero.
+
+Six original supplied screenshots are test fixtures in `.dsh/gear-fixtures/`.
+The browser test reads all 24 pieces through the actual worker without word
+stubs, checks every field, review-before-apply, duplicate selection, unlevelled
+imports, resource preservation and undo. Detail-import UI orchestration also has
+a separate stubbed test. Current overview detection targets the portrait gear
+screen and three supported rarities; other crops/layouts and unread labels still
+need manual review. The underlying recognition engine is reused unchanged.
 
 Only the structured ledger is saved in `localStorage['bh:hero-gear:v1']`.
 Screenshots remain on-device, and temporary preview URLs are revoked on close.

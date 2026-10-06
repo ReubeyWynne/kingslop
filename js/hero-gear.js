@@ -202,8 +202,8 @@
   }
   function importItem(item, index) {
     function input(key, max) { return '<label><span>' + esc(tr(key)) + '</span><input type="number" min="0" max="' + max + '" step="1" data-import-index="' + index + '" data-import-field="' + key + '" value="' + (item[key] === null ? '' : item[key]) + '" placeholder="' + esc(tr('unread')) + '"></label>'; }
-    function select(key, values) { return '<label><span>' + esc(tr(key)) + '</span><select data-import-index="' + index + '" data-import-field="' + key + '">' + values.map(function (v) { return '<option value="' + v + '"' + (item[key] === v ? ' selected' : '') + '>' + esc(v === 'mythic' ? tr('mythicQuality') : tr(v)) + '</option>'; }).join('') + '</select></label>'; }
-    return '<div class="gear-import-item"><img src="' + esc(item.url) + '" alt="' + esc(item.filename) + '"><div class="gear-import-fields">' + select('troop', E.TYPES) + select('slot', E.SLOTS) + select('quality', ['keep','epic','mythic','red']) + input('level', 200) + input('mastery', 20) + '<p class="gear-gloss">' + esc(tr(item.failed ? 'readFailed' : item.level === null && item.mastery === null ? 'readEmpty' : 'readReview')) + '</p></div></div>';
+    function select(key, values) { return '<label><span>' + esc(tr(key)) + '</span><select data-import-index="' + index + '" data-import-field="' + key + '">' + values.map(function (v) { return '<option value="' + v + '"' + (item[key] === v ? ' selected' : '') + '>' + esc(v === '' ? tr('chooseTroop') : v === 'mythic' ? tr('mythicQuality') : tr(v)) + '</option>'; }).join('') + '</select></label>'; }
+    return '<div class="gear-import-item"><div class="gear-import-source"><img src="' + esc(item.url) + '" alt="' + esc(item.filename) + '"><label class="gear-include"><input type="checkbox" checked data-import-index="' + index + '" data-import-field="included"><span>' + esc(tr('includeImport')) + '</span></label></div><div class="gear-import-fields">' + select('troop', item.overview ? [''].concat(E.TYPES) : E.TYPES) + select('slot', E.SLOTS) + select('quality', ['keep','epic','mythic','red']) + input('level', 200) + input('mastery', 20) + '<p class="gear-gloss">' + esc(item.filename) + '</p><p class="gear-gloss">' + esc(tr(item.failed ? 'readFailed' : item.level === null && item.mastery === null ? 'readEmpty' : 'readReview')) + '</p></div></div>';
   }
   async function readImages() {
     var files = Array.from(el('images').files || []);
@@ -216,12 +216,18 @@
     try {
       for (var i = 0; i < files.length; i++) {
         el('read-status').textContent = BH.fill(tr('reading'), { n: i + 1, total: files.length });
-        var parsed, failed = false;
-        try { parsed = window.HeroGearOCR.parse((await read(files[i])).items); }
-        catch (error) { failed = true; parsed = { level: null, mastery: null }; }
-        var item = Object.assign({}, parsed, { troop: parsed.troop || state.troop, slot: parsed.slot || state.selected.split('-')[1], quality: parsed.quality || 'keep', filename: files[i].name, url: URL.createObjectURL(files[i]), failed: failed });
-        imports.push(item);
-        el('import-review').insertAdjacentHTML('beforeend', importItem(item, i));
+        var pieces;
+        try { pieces = await window.HeroGearOCR.overview(files[i], read); }
+        catch (error) { pieces = null; }
+        try {
+          if (!pieces) pieces = [window.HeroGearOCR.parse((await read(files[i])).items)];
+        } catch (error) { pieces = [{ level: null, mastery: null, failed: true }]; }
+        pieces.forEach(function (parsed) {
+          var item = Object.assign({}, parsed, { troop: parsed.overview ? parsed.troop || '' : parsed.troop || state.troop, slot: parsed.slot || state.selected.split('-')[1], quality: parsed.quality || 'keep', filename: files[i].name, url: URL.createObjectURL(parsed.preview || files[i]), included: true });
+          delete item.preview;
+          imports.push(item);
+          el('import-review').insertAdjacentHTML('beforeend', importItem(item, imports.length - 1));
+        });
       }
       el('read-status').textContent = tr('readReview');
       el('apply-import').disabled = false;
@@ -343,12 +349,14 @@
     el('import-review').addEventListener('input', function (event) {
       var node = event.target, i = node.dataset.importIndex, field = node.dataset.importField;
       if (i === undefined || !field) return;
-      imports[i][field] = field === 'level' || field === 'mastery' ? (node.value === '' ? null : Math.max(0, Math.min(field === 'level' ? 200 : 20, Math.floor(Number(node.value) || 0)))) : node.value;
+      imports[i][field] = field === 'included' ? node.checked : field === 'level' || field === 'mastery' ? (node.value === '' ? null : Math.max(0, Math.min(field === 'level' ? 200 : 20, Math.floor(Number(node.value) || 0)))) : node.value;
     });
     el('apply-import').addEventListener('click', function () {
       var next = copy(state), seen = {}, invalid = false;
       imports.forEach(function (item) {
+        if (!item.included) return;
         var id = item.troop + '-' + item.slot;
+        if (!next.pieces[id]) { invalid = true; return; }
         if (seen[id]) invalid = true; seen[id] = true;
         var old = next.pieces[id], p = Object.assign({}, old);
         if (item.quality !== 'keep') p.quality = item.quality;
@@ -357,7 +365,8 @@
         if ((p.quality === 'epic' && (p.level > 80 || p.mastery > 0)) || (p.quality === 'mythic' && p.level > 100) || (p.quality === 'red' && p.level < 100)) invalid = true;
         next.pieces[id] = E.normalisePiece(p);
       });
-      if (invalid) { el('read-status').textContent = tr('importConflict'); return; }
+      if (invalid) { el('read-status').textContent = tr('overviewConflict'); return; }
+      if (!Object.keys(seen).length) { el('read-status').textContent = tr('includeOne'); return; }
       applyState(next); el('import-dialog').close(); clearImports(); note('imported');
     });
   }

@@ -77,6 +77,15 @@ assert.equal(redRead.mastery, 10);
 assert.equal(OCR.parse(words(['Cavalry Gauntlet', 'Enhancement Level 80', 'Mastery 8'])).level, 80);
 assert.equal(OCR.parse(words(['Attack 250%', 'XP 100 / 200', '10 → 11'])).level, null);
 assert.equal(OCR.parse(words(['Helm', 'Boots'])).slot, null);
+const tileWords = [
+  { text: '+20', poly: [[20,12],[180,12],[180,70],[20,70]] },
+  { text: 'Lv. 11', poly: [[20,130],[180,130],[180,200],[20,200]] }
+];
+assert.deepEqual(OCR.overviewLabels(tileWords, 'red', 110), { level: 120, mastery: 11 });
+assert.deepEqual(OCR.overviewLabels([], 'mythic', 110), { level: 0, mastery: 0 });
+assert.deepEqual(OCR.overviewLabels([{ text: '?', poly: tileWords[0].poly }], 'mythic', 110), { level: null, mastery: 0 });
+assert.deepEqual(OCR.overviewLabels([{ text: '+99', poly: tileWords[0].poly }], 'epic', 110), { level: null, mastery: 0 });
+assert.equal(OCR.detect({ width: 16, height: 16, data: new Uint8Array(16*16*4) }), null);
 const scope = { window: {} };
 vm.runInNewContext(fs.readFileSync('i18n/en.js', 'utf8'), scope);
 const dict = scope.window.__BH_I18N_DATA.en;

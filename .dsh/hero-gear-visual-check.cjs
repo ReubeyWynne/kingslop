@@ -128,6 +128,55 @@ async function fits(page, label) {
       await page.locator('#gear-view-plan').click();await fits(page,'narrow plan '+lang);
       await page.locator('#gear-view-gear').click();await page.setViewportSize({width:1440,height:900});
     }
+    const overviewPage=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
+    overviewPage.setDefaultTimeout(180000);
+    await overviewPage.addInitScript(()=>{
+      const NativeWorker=window.Worker;
+      window.__gearReads=[];
+      window.Worker=class extends NativeWorker {
+        constructor(url,options){super(url,options);if(String(url).endsWith('ocr-worker.js'))this.addEventListener('message',event=>window.__gearReads.push({ok:event.data.ok,items:event.data.items,error:event.data.error}));}
+      };
+    });
+    try {
+      await overviewPage.goto(origin+'/hero-gear/?lang=en');
+      await overviewPage.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+      await overviewPage.locator('#gear-import').click();
+      const fixtures=['zoe','marlin','petra','jabel','diana','howard'];
+      await overviewPage.locator('#gear-images').setInputFiles(fixtures.map(name=>path.resolve('.dsh/gear-fixtures/'+name+'.jpg')));
+      await overviewPage.locator('#gear-apply-import:enabled').waitFor({timeout:240000});
+      const actual=await overviewPage.locator('.gear-import-item').evaluateAll(items=>items.map(item=>Object.fromEntries([...item.querySelectorAll('[data-import-field]')].filter(el=>el.type!=='checkbox').map(el=>[el.dataset.importField,el.value]))));
+      fs.writeFileSync(path.join(output,'overview-reads.json'),JSON.stringify(actual,null,2));
+      fs.writeFileSync(path.join(output,'overview-ocr.json'),JSON.stringify(await overviewPage.evaluate(()=>window.__gearReads),null,2));
+      const expected=[
+        ['inf',[['mythic',69,2],['red',120,11],['mythic',100,6],['mythic',72,3]]],
+        ['arc',[['mythic',100,6],['mythic',69,2],['mythic',69,2],['mythic',100,6]]],
+        ['cav',[['mythic',63,2],['mythic',39,1],['mythic',40,1],['mythic',63,1]]],
+        ['cav',[['epic',0,0],['mythic',0,0],['mythic',0,0],['mythic',0,0]]],
+        ['arc',[['mythic',0,0],['mythic',0,0],['mythic',0,0],['epic',0,0]]],
+        ['inf',[['mythic',0,0],['mythic',0,0],['mythic',0,0],['mythic',0,0]]]
+      ].flatMap(([troop,pieces])=>pieces.map(([quality,level,mastery],i)=>({troop,slot:E.SLOTS[i],quality,level:String(level),mastery:String(mastery)})));
+      assert.deepEqual(actual,expected,'real overview screenshots using the production OCR worker');
+      assert.equal(await overviewPage.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),0,'review has not applied any values');
+      await fits(overviewPage,'real overview review');
+      await overviewPage.locator('#gear-apply-import').click();
+      assert.equal(await overviewPage.locator('#gear-import-dialog').evaluate(el=>el.open),true,'duplicate slots require selection');
+      await overviewPage.locator('#gear-import-dialog').evaluate(el=>el.scrollTop=0);
+      await overviewPage.screenshot({path:path.join(output,'overview-review.png')});
+      for(let i=12;i<24;i++)await overviewPage.locator('[data-import-index="'+i+'"][data-import-field="included"]').uncheck();
+      await overviewPage.locator('#gear-apply-import').click();
+      const imported=await overviewPage.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')));
+      for(const item of expected.slice(0,12))assert.deepEqual(imported.pieces[item.troop+'-'+item.slot],{quality:item.quality,level:Number(item.level),mastery:Number(item.mastery)});
+      assert.deepEqual(imported.resources,E.defaults().resources);
+      await overviewPage.locator('#gear-undo').click();
+      assert.equal(await overviewPage.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),0);
+      await overviewPage.locator('#gear-import').click();
+      await overviewPage.locator('#gear-images').setInputFiles(fixtures.slice(3).map(name=>path.resolve('.dsh/gear-fixtures/'+name+'.jpg')));
+      await overviewPage.locator('#gear-apply-import:enabled').waitFor({timeout:180000});
+      await overviewPage.locator('#gear-apply-import').click();
+      const unlevelled=await overviewPage.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')));
+      for(const item of expected.slice(12))assert.deepEqual(unlevelled.pieces[item.troop+'-'+item.slot],{quality:item.quality,level:0,mastery:0});
+      console.log('Production OCR: all 24 pieces in six supplied hero overviews matched rarity, troop, enhancement and mastery; duplicate selection, review, apply, unlevelled pieces and undo passed.');
+    } catch(error) { await overviewPage.screenshot({path:path.join(output,'overview-failure.png')});throw error; } finally { await overviewPage.close(); }
     assert.deepEqual(errors,[]);
     console.log('Visual gear, original assets, edit dialogs, resource bars, persistence, exclusions, keyboard tabs, worker search, milestone/search apply and undo, screenshot review, JSON import, mobile Gear/Plan, 5 widths and 17 language layouts passed. OCR delivery was stubbed; parser fixtures use real worker item shapes.');
   }catch(error){
