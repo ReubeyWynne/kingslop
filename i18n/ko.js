@@ -882,6 +882,7 @@ window.__BH_I18N_DATA["ko"] = {
   "sw.hero.lede": "두 개의 점수판, 연맹의 등급과 개인 보상 단계. 개인 단계를 결정하는 수치는 <strong>180,000</strong>입니다. 상대에 따라 전략은 달라지지만 목표는 같습니다.",
   "sw.hero.chip1": "경기당 55분",
   "sw.hero.chip2": "두 군단",
-  "sw.hero.chip3": "손실 없이 부상만"
+  "sw.hero.chip3": "손실 없이 부상만",
+  "ev.switch.gear": "장비"
 }
 ;

@@ -70,7 +70,7 @@ body.swiping { user-select: none; -webkit-user-select: none; }
 }
 .ev-foot a:hover { color: var(--amber); }
 
-@media (max-width: 1239px) {
+@media (max-width: 1439px) {
   .ev-switch { display: none; }
 }
 
@@ -101,7 +101,7 @@ body.swiping { user-select: none; -webkit-user-select: none; }
 }
 /* The drawer replaces the strip wherever the strip can't fit (see .ev-switch),
    not just on phones — a squeezed strip is worse than an honest drawer. */
-@media (min-width: 1240px) {
+@media (min-width: 1440px) {
   .ledger-btn { display: none; }
 }
 .ledger {
@@ -696,4 +696,14 @@ html[data-page="bearhunt"] .section-fold:not([open]) > summary h2::before {
     min-height: 2.75rem;
     align-items: center;
   }
+}
+
+html[data-page="gear"], html[data-hover="gear"], .swipe-peek[data-page="gear"] {
+  --void: #120d0c;
+  --void-2: #1b1512;
+  --amber: #e6b56a;
+  --amber-dim: #b38446;
+  --chrome: rgba(18, 13, 12, .94);
+  --signal-line: rgba(230, 181, 106, .35);
+  --signal-tint: rgba(230, 181, 106, .07);
 }

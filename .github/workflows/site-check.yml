@@ -14,7 +14,7 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -31,4 +31,22 @@ jobs:
           node -e "const fs = require('node:fs'); for (const file of fs.readdirSync('_data')) if (file.endsWith('.json')) JSON.parse(fs.readFileSync('_data/' + file, 'utf8'));"
       - name: Check troop allocation
         run: node .dsh/bear-allocator-check.cjs
+      - name: Check hero gear costs and search
+        run: node .dsh/hero-gear-check.cjs
       - uses: actions/jekyll-build-pages@44a6e6beabd48582f863aeeb6cb2151cc1716697
+      - name: Install gear preview browser
+        run: |
+          npm install --prefix "$RUNNER_TEMP/visuals" --no-audit --no-fund playwright@1.63.0
+          node "$RUNNER_TEMP/visuals/node_modules/playwright/cli.js" install --with-deps chromium
+      - name: Check hero gear UI
+        env:
+          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        run: node .dsh/hero-gear-visual-check.cjs
+      - name: Upload gear previews
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hero-gear-preview
+          include-hidden-files: true
+          retention-days: 7
+          path: .dsh/gear-preview/

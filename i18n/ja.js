@@ -882,6 +882,7 @@ window.__BH_I18N_DATA["ja"] = {
   "sw.hero.lede": "同盟の報酬区分と個人の報酬段階、2つのスコアボード。個人の段階を決める数字は <strong>180,000</strong>。戦略は対戦相手によって変わりますが、目標は変わりません。",
   "sw.hero.chip1": "1試合55分",
   "sw.hero.chip2": "2つの軍団",
-  "sw.hero.chip3": "損失なし、負傷のみ"
+  "sw.hero.chip3": "損失なし、負傷のみ",
+  "ev.switch.gear": "装備"
 }
 ;

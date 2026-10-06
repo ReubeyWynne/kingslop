@@ -884,6 +884,7 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "sw.hero.lede": "Dois placares, a faixa da aliança e seu nível pessoal, e um número que decide o seu: <strong>180,000</strong>. A estratégia muda conforme o adversário; a meta não.",
   "sw.hero.chip1": "55 min por partida",
   "sw.hero.chip2": "duas legiões",
-  "sw.hero.chip3": "sem perdas, só ferimentos"
+  "sw.hero.chip3": "sem perdas, só ferimentos",
+  "ev.switch.gear": "Equipamento"
 }
 ;

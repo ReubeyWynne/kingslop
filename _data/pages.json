@@ -21,10 +21,10 @@
     "brandNoteKey": "home.brandNote",
     "brandNote": "just the guides",
     "swipePrev": {
-      "url": "battle-simulator/",
-      "page": "sim",
-      "title": "Battle Simulator",
-      "lede": "the maths of your battles — the bear ratio, your march, and the Mystic Trial rooms."
+      "url": "hero-gear/",
+      "page": "gear",
+      "title": "Hero gear",
+      "lede": "your next red upgrade, your next mithril use — every cost, in one ledger."
     },
     "swipeNext": {
       "url": "events/",
@@ -375,10 +375,10 @@
       "lede": "your VIP XP is a straight line at your rate — here's the date for every remaining level."
     },
     "swipeNext": {
-      "url": "../",
-      "page": "home",
-      "title": "The events",
-      "lede": "the alliance events in plain words — how each one scores, what to do about it."
+      "url": "../hero-gear/",
+      "page": "gear",
+      "title": "Hero gear",
+      "lede": "your next red upgrade, your next mithril use — every cost, in one ledger."
     },
     "css": [
       "../css/styles.css",
@@ -400,6 +400,61 @@
       {
         "key": "sim.foot.credit",
         "html": "Bear damage model from the <a href=\"https://frakinator.streamlit.app/\">Frakinator</a> by [685] Frak — a tested\n    community model, not official · built for the [2129]MadNess alliance"
+      }
+    ],
+    "headScripts": []
+  },
+  "gear": {
+    "token": "gear",
+    "depth": "../",
+    "canonicalPath": "/hero-gear/",
+    "themeColor": "#120d0c",
+    "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23120d0c'/%3E%3Cpath d='M7 8h18v6H7zM14 14h4v12h-4z' fill='%23e6b56a'/%3E%3C/svg%3E\">",
+    "titleKey": "gear.metaTitle",
+    "titleText": "Hero gear, Demystified — dey.ci",
+    "metaDescKey": "gear.metaDescription",
+    "metaDesc": "Plan hero gear upgrades, see the resources missing for your next red ascension or mithril milestone, and read gear screenshots on your device.",
+    "ogTitleKey": "gear.metaTitle",
+    "ogTitle": "Hero gear, Demystified — dey.ci",
+    "ogDescKey": "gear.metaDescription",
+    "ogDesc": "Plan hero gear upgrades, see the resources missing for your next red ascension or mithril milestone, and read gear screenshots on your device.",
+    "skipHref": "#gear-forge",
+    "skipKey": "gear.skip",
+    "skipText": "Skip to the forge",
+    "dust": "<i></i><i></i><i></i>",
+    "brand": "HERO GEAR",
+    "brandNoteKey": "gear.kicker",
+    "brandNote": "the forge ledger",
+    "swipePrev": {
+      "url": "../battle-simulator/",
+      "page": "sim",
+      "title": "Battle Simulator",
+      "lede": "the maths of your battles — the bear ratio, your march, and the Mystic Trial rooms."
+    },
+    "swipeNext": {
+      "url": "../",
+      "page": "home",
+      "title": "The events",
+      "lede": "the alliance events in plain words — how each one scores, what to do about it."
+    },
+    "css": [
+      "../css/styles.css",
+      "../css/events.css",
+      "../css/hero-gear.css"
+    ],
+    "scripts": [
+      "../js/i18n.js",
+      "../js/common.js",
+      "../js/hero-gear-engine.js",
+      "../js/hero-gear-ocr.js",
+      "../js/hero-gear.js"
+    ],
+    "footMainKey": "gear.kicker",
+    "footMain": "the forge ledger",
+    "footSubs": [
+      {
+        "key": "gear.foot",
+        "html": "game values from <a href=\"https://kingshotoptimizer.com/hero-gear/references/xp-costs/\">Kingshot Optimizer</a> · independently built for the [2129]MadNess alliance"
       }
     ],
     "headScripts": []

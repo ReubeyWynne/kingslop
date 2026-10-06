@@ -883,6 +883,7 @@ window.__BH_I18N_DATA["fr"] = {
   "sw.hero.lede": "Deux scores, le classement de l’alliance et ton palier personnel, et un nombre qui décide du tien : <strong>180,000</strong>. La stratégie change selon l’adversaire ; l’objectif reste.",
   "sw.hero.chip1": "55 min par match",
   "sw.hero.chip2": "deux légions",
-  "sw.hero.chip3": "aucune perte, seulement des blessés"
+  "sw.hero.chip3": "aucune perte, seulement des blessés",
+  "ev.switch.gear": "Équipement"
 }
 ;

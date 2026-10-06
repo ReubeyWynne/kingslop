@@ -208,12 +208,12 @@ strong, b { color: var(--ink); font-weight: 700; }
    produces — Turkish's "Ana sayfa · Etkinlik Döngüsü …" at 664px, not English's
    588px — so a longer translation shrinks the masthead everywhere rather than
    clipping it in one language. For the longest brand ("KINGSHOT · DEMYSTIFIED",
-   16.04em at 0.08em tracking) that is (100vw - 47.5rem)/32.1. Every page
+   16.04em at 0.08em tracking) that is (100vw - 54rem)/32.1. Every page
    inherits the same size, so the masthead keeps one scale across the site
    instead of a different one per brand length; above ~1740px the cap stops
    biting and the brand is its full size. */
-@media (min-width: 1240px) {
-  .topbar .brand { font-size: clamp(0.9rem, min(var(--step-brand), calc((100vw - 47.5rem) / 32.1)), 1.9rem); }
+@media (min-width: 1440px) {
+  .topbar .brand { font-size: clamp(0.9rem, min(var(--step-brand), calc((100vw - 54rem) / 32.1)), 1.9rem); }
 }
 /* Strip down (events.css), so the bar is two tracks and the masthead owns
    everything left of the controls. */

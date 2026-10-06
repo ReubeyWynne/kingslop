@@ -47,5 +47,12 @@
     "labelKey": "ev.switch.sim",
     "label": "Simulator",
     "group": "tools"
+  },
+  {
+    "self": "gear",
+    "tail": "hero-gear/",
+    "labelKey": "ev.switch.gear",
+    "label": "Gear",
+    "group": "tools"
   }
 ]
