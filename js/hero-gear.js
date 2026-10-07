@@ -323,6 +323,12 @@
     el('import-dialog').removeAttribute('aria-busy');
     el('import-scroll').scrollTop = 0;
   }
+  function fitImportViewport() {
+    var viewport = window.visualViewport, dialog = el('import-dialog');
+    if (!viewport || !dialog.open) return;
+    dialog.style.setProperty('--gear-view-height', Math.round(viewport.height) + 'px');
+    dialog.style.setProperty('--gear-view-top', Math.round(viewport.offsetTop) + 'px');
+  }
   function importItem(item, index) {
     function input(key, max) { var value = item[key] === null ? '' : item[key] - (key === 'level' && item.quality === 'red' ? 100 : 0); return '<label><span>' + esc(tr(key === 'level' ? 'importEnhancement' : key)) + '</span><input type="number" inputmode="numeric" min="0" max="' + max + '" step="1" data-import-index="' + index + '" data-import-field="' + key + '" value="' + value + '" placeholder="' + esc(tr('unread')) + '"></label>'; }
     function select(key, values) { return '<label><span>' + esc(tr(key)) + '</span><select data-import-index="' + index + '" data-import-field="' + key + '">' + values.map(function (v) { return '<option value="' + v + '"' + (item[key] === v ? ' selected' : '') + '>' + esc(v === '' ? tr('chooseTroop') : v === 'mythic' ? tr('mythicQuality') : tr(v)) + '</option>'; }).join('') + '</select></label>'; }
@@ -473,7 +479,8 @@
     el('reset').addEventListener('click', function () { el('reset-dialog').showModal(); });
     el('cancel-reset').addEventListener('click', function () { el('reset-dialog').close(); });
     el('confirm-reset').addEventListener('click', function () { applyState(Object.assign(E.defaults(), { parts: { ten: 0, hundred: 0 } })); el('reset-dialog').close(); note('resetDone'); });
-    el('import').addEventListener('click', function () { clearImports(); document.documentElement.classList.add('gear-import-open'); el('import-dialog').showModal(); });
+    el('import').addEventListener('click', function () { clearImports(); document.documentElement.classList.add('gear-import-open'); el('import-dialog').showModal(); fitImportViewport(); });
+    if (window.visualViewport) { window.visualViewport.addEventListener('resize', fitImportViewport); window.visualViewport.addEventListener('scroll', fitImportViewport); }
     ['close-import', 'cancel-import'].forEach(function (id) { el(id).addEventListener('click', function () { clearImports(); el('import-dialog').close(); }); });
     el('import-dialog').addEventListener('close', function () { document.documentElement.classList.remove('gear-import-open'); });
     el('import-dialog').addEventListener('cancel', clearImports);

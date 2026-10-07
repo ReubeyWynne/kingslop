@@ -187,7 +187,7 @@ html[data-page="gear"] .topbar h1.brand { margin: 0; line-height: 1.2; }
 .gear-dialog::backdrop { background: rgba(11,14,22,.82); }
 .gear-dialog h2 { font-size: 1.4rem; }
 .gear-dialog input[type="file"] { width: 100%; margin: .5rem 0; font: inherit; }
-.gear-import-dialog { padding: 0; overflow: hidden; max-height: calc(100dvh - 1rem); width: min(38rem, calc(100% - 1rem)); }
+.gear-import-dialog { padding: 0; overflow: hidden; inset-block-start: var(--gear-view-top, 0px); inset-block-end: max(0px, calc(100% - var(--gear-view-top, 0px) - var(--gear-view-height, 100dvh))); max-height: calc(var(--gear-view-height, 100dvh) - 1rem); width: min(38rem, calc(100% - 1rem)); }
 html.gear-import-open, .gear-import-open body { overflow: hidden; }
 .gear-import-dialog[open] { display: grid; grid-template-rows: auto minmax(0,1fr) auto; }
 .gear-import-header, .gear-import-actions { padding: .6rem 1rem; background: var(--void-2); }

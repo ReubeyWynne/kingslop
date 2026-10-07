@@ -257,6 +257,16 @@ async function fits(page, label) {
       }
       await overviewPage.screenshot({path:path.join(output,'mobile-import-short.png')});
       await overviewPage.setViewportSize({width:390,height:844});
+      await overviewPage.evaluate(()=>{
+        Object.defineProperty(visualViewport,'height',{configurable:true,value:440});
+        Object.defineProperty(visualViewport,'offsetTop',{configurable:true,value:40});
+        visualViewport.dispatchEvent(new Event('resize'));
+      });
+      for(const selector of ['#gear-import-title','#gear-close-import','#gear-apply-import']){
+        const box=await overviewPage.locator(selector).boundingBox();assert.ok(box.y>=40&&box.y+box.height<=480,'keyboard visual viewport '+selector);
+      }
+      await overviewPage.screenshot({path:path.join(output,'mobile-import-keyboard.png')});
+      await overviewPage.evaluate(()=>{delete visualViewport.height;delete visualViewport.offsetTop;visualViewport.dispatchEvent(new Event('resize'));});
       const enhancement=overviewPage.locator('[data-import-index="0"][data-import-field="level"]');
       await enhancement.fill('101');await overviewPage.locator('#gear-apply-import').click();
       assert.equal(await overviewPage.locator('#gear-import-dialog').evaluate(el=>el.open),true,'invalid visible numbers cannot apply a silently clamped value');
