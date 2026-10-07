@@ -8,6 +8,9 @@
   var resourceArt = { xp: 'xp-part-100', hammers: 'forgehammer', mythic: 'mythic-gear', mithril: 'mithril' };
   var parts = { ten: 0, hundred: 0 };
   function workerURL(filename) { var url = new URL(filename, base); url.search = scriptURL.search; return url; }
+  function partsTotal() { return Math.min(1e9, parts.ten * 10 + parts.hundred * 100); }
+  function partsFromXP(xp) { xp = Math.max(0, Math.floor(Number(xp) || 0)); return { ten: Math.floor((xp % 100) / 10), hundred: Math.floor(xp / 100) }; }
+  function syncXP() { state.resources.xp = partsTotal(); }
   function el(id) { return document.getElementById('gear-' + id); }
   function tr(key) { return BH.tr('gear.' + key, key); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -85,6 +88,26 @@
     var p = state.pieces[state.selected];
     return state.mode === 'plan' ? E.target(p, state.target, state.targetMastery, state.target > 100) : E.milestone(p, state.goal);
   }
+  function statText(delta) {
+    return ['core', 'attack', 'defense'].filter(function (key) { return Math.abs(delta[key]) > .01; }).map(function (key) {
+      return '+' + (Math.abs(delta[key]) < 10 ? delta[key].toFixed(1) : Math.round(delta[key])) + ' ' + tr(key);
+    }).join(' · ') || tr('noStatChange');
+  }
+  function costText(costs) {
+    return E.RES.filter(function (r) { return costs[r]; }).map(function (r) { return fmt(costs[r]) + ' ' + tr(r); }).join(' · ') || tr('noCost');
+  }
+  function planCards() {
+    return Object.keys(state.pieces).filter(function (id) { return state.included[id.split('-')[0]]; }).map(function (id) {
+      var from = state.pieces[id], to = E.target(from, state.target, state.targetMastery, state.target > 100);
+      if (!to || (to.level === from.level && to.mastery === from.mastery && to.quality === from.quality)) return '';
+      var slot = id.split('-')[1], before = E.stats(from, slot), after = E.stats(to, slot), delta = { core: after.core - before.core, attack: after.attack - before.attack, defense: after.defense - before.defense }, costs = E.cost(from, to), gap = E.gap(costs, state.resources), ready = E.affordable(costs, state.resources);
+      return '<article class="gear-plan-card' + (ready ? ' gear-plan-ready' : '') + (id === state.selected ? ' gear-plan-selected' : '') + '"><button type="button" class="gear-plan-select" data-select="' + id + '"><span class="gear-plan-art">' + gearImage(id, 'gear-art') + '</span><span class="gear-plan-main"><strong>' + esc(name(id)) + '</strong><span class="gear-plan-destination">' + esc(pieceLabel(from)) + ' → ' + esc(pieceLabel(to)) + '</span><span class="gear-plan-stats">' + esc(statText(delta)) + '</span></span><span class="gear-plan-state">' + (ready ? esc(tr('ready')) : esc(tr('saving'))) + '</span></button><div class="gear-plan-cost"><span>' + esc(costText(costs)) + '</span><small>' + (ready ? esc(tr('costReady')) : esc(tr('missingShort')) + ': ' + esc(costText(gap))) + '</small></div></article>';
+    }).filter(Boolean).join('');
+  }
+  function planOutput() {
+    var cards = planCards();
+    return '<div class="gear-plan-intro"><h3>' + esc(tr('planTitle')) + '</h3><p class="gear-gloss">' + esc(tr('planHint')) + '</p></div><div class="gear-plan-cards">' + (cards || '<p class="gear-gloss">' + esc(tr('planEmpty')) + '</p>') + '</div>';
+  }
   function paintAnswer() {
     var isOptimise = state.mode === 'optimise', isPlan = state.mode === 'plan';
     el('modes').querySelectorAll('[data-mode]').forEach(function (button) {
@@ -95,12 +118,14 @@
     el('piece-select').hidden = isOptimise;
     el('goals').hidden = isOptimise || isPlan;
     el('targets').hidden = !isPlan;
+    el('target-presets').hidden = !isPlan;
     el('optimise-panel').hidden = !isOptimise;
     el('milestone-out').hidden = isOptimise;
     el('target').value = state.target;
     el('target-mastery').value = state.targetMastery;
     el('goals').querySelectorAll('[data-goal]').forEach(function (button) { button.setAttribute('aria-pressed', String(button.dataset.goal === state.goal)); });
     if (isOptimise) { paintPreview(state.pieces[state.selected], null); return; }
+    if (isPlan) { paintPreview(state.pieces[state.selected], nextTarget()); el('milestone-out').innerHTML = planOutput(); return; }
     var from = state.pieces[state.selected], to = nextTarget(), out = el('milestone-out');
     paintPreview(from, to);
     if (!to) { out.innerHTML = '<p class="gear-gloss">' + esc(tr(from.quality === 'epic' ? 'epicBlocked' : state.goal === 'red' ? 'alreadyRed' : 'maxed')) + '</p>' + nearList(); return; }
@@ -123,13 +148,13 @@
     }).join('') + '</details>';
   }
   function paint() {
-    E.RES.forEach(function (r) { el(r).value = state.resources[r]; });
+    E.RES.forEach(function (r) { if (el(r)) el(r).value = state.resources[r]; });
     el('parts10').value = parts.ten;
     el('parts100').value = parts.hundred;
     paintParts();
     paintEditor(); paintAnswer(); paintView();
   }
-  function paintParts() { el('parts-total').textContent = fmt(parts.ten * 10 + parts.hundred * 100) + ' XP'; }
+  function paintParts() { el('xp-total').textContent = fmt(partsTotal()); }
   function selectPiece(id) {
     state.selected = id; state.troop = id.split('-')[0];
     persist(); paintEditor(); paintAnswer();
@@ -138,15 +163,18 @@
     previous = { state: copy(state), parts: copy(parts) };
     state = E.normaliseState(next);
     if (next.parts) parts = { ten: Math.min(1e7, Math.max(0, Math.floor(Number(next.parts.ten) || 0))), hundred: Math.min(1e7, Math.max(0, Math.floor(Number(next.parts.hundred) || 0))) };
+    else parts = partsFromXP(state.resources.xp);
+    syncXP();
     changed(); paint(); el('undo').hidden = false;
   }
   function paintResults() {
     if (!result) return;
     var percent = result.baseline > 0 ? 100 * result.gain / result.baseline : 0;
     var summary = BH.fill(tr('gain'), { n: percent.toFixed(2) });
-    el('results').innerHTML = '<h3>' + esc(result.changes.length ? summary : tr('noUpgrades')) + '</h3>' + (result.changes.length ?
-      '<div class="gear-result-list">' + result.changes.map(function (id) {
-        return '<div class="gear-result"><strong>' + esc(name(id)) + '</strong><span>' + esc(pieceLabel(state.pieces[id])) + ' → ' + esc(pieceLabel(result.pieces[id])) + '</span></div>';
+    var details = result.details || result.changes.map(function (id) { return { id: id, from: state.pieces[id], to: result.pieces[id], costs: E.cost(state.pieces[id], result.pieces[id]), delta: { core: 0, attack: 0, defense: 0 }, gain: 0 }; });
+    el('results').innerHTML = '<h3>' + esc(result.changes.length ? tr('recommendationTitle') : tr('noUpgrades')) + '</h3>' + (result.changes.length ?
+      '<p class="gear-result-lede">' + esc(summary) + '. ' + esc(tr('recommendationHint')) + '</p><div class="gear-result-list">' + details.map(function (detail) {
+        return '<article class="gear-result"><div class="gear-result-head"><strong>' + esc(name(detail.id)) + '</strong><span>' + esc(pieceLabel(detail.from)) + ' → ' + esc(pieceLabel(detail.to)) + '</span></div><p>' + esc(tr('spend')) + ': ' + (detail.reforged ? esc(tr('reforged')) : esc(costText(detail.costs))) + '</p><p>' + esc(tr('impact')) + ': ' + esc(statText(detail.delta)) + '</p></article>';
       }).join('') + '</div><p class="gear-gloss">' + esc(tr('remaining')) + ': ' + E.RES.map(function (r) { return fmt(result.remaining[r]) + ' ' + esc(tr(r)); }).join(' · ') + '</p>' +
       (result.refund ? '<p class="gear-gloss">' + esc(tr('refunded')) + ': ' + fmt(result.refund) + ' XP</p>' : '') + '<p class="gear-gloss">' + esc(tr('applyHint')) + '</p><button type="button" id="gear-apply-result" class="gear-primary">' + esc(tr('applyResult')) + '</button>' : '<p class="gear-gloss">' + esc(tr('noUpgradesHint')) + '</p>');
   }
@@ -259,12 +287,17 @@
         if (input.version !== 1) throw new Error('Unknown save');
         state = E.normaliseState(input);
         if (input.parts) parts = { ten: Math.min(1e7, Math.max(0, Math.floor(Number(input.parts.ten) || 0))), hundred: Math.min(1e7, Math.max(0, Math.floor(Number(input.parts.hundred) || 0))) };
+        else parts = partsFromXP(state.resources.xp);
       }
     } catch (error) { note('loadFailed'); }
+    syncXP();
     paint(); persist();
     document.addEventListener('input', function (event) {
       var node = event.target;
-      if (node.dataset.resource) state.resources[node.dataset.resource] = Math.min(1e9, Math.max(0, Math.floor(Number(node.value) || 0)));
+      if (node.dataset.resourcePart) {
+        parts[node.dataset.resourcePart] = Math.min(1e7, Math.max(0, Math.floor(Number(node.value) || 0)));
+        syncXP(); paintParts(); revision++; result = null; el('results').textContent = ''; persist(); paintAnswer(); return;
+      } else if (node.dataset.resource) state.resources[node.dataset.resource] = Math.min(1e9, Math.max(0, Math.floor(Number(node.value) || 0)));
       else if (node.dataset.piece && node.dataset.field !== 'quality') {
         state.pieces[node.dataset.piece] = E.normalisePiece(Object.assign({}, state.pieces[node.dataset.piece], { [node.dataset.field]: Number(node.value) }));
         paintEditor();
@@ -274,9 +307,7 @@
         state.weights[node.dataset.weight][Number(node.dataset.stat)] = Math.min(100, Math.max(0, Number(node.value) || 0));
       } else if (node.id === 'gear-target') state.target = Math.min(200, Math.max(0, Math.floor(Number(node.value) || 0)));
       else if (node.id === 'gear-target-mastery') state.targetMastery = Math.min(20, Math.max(0, Math.floor(Number(node.value) || 0)));
-      else if (node.id === 'gear-parts10' || node.id === 'gear-parts100') {
-        parts[node.id === 'gear-parts10' ? 'ten' : 'hundred'] = Math.min(1e7, Math.max(0, Math.floor(Number(node.value) || 0))); paintParts(); persist(); return;
-      } else return;
+      else return;
       revision++; result = null; el('results').textContent = ''; persist();
       if (node.id !== 'gear-target' && node.id !== 'gear-target-mastery') paintAnswer();
       else {
@@ -290,7 +321,8 @@
         changed(); paintEditor();
         if (node.dataset.field === 'quality') paintEdit();
         else node.value = state.pieces[node.dataset.piece][node.dataset.field];
-      } else if (node.dataset.resource) node.value = state.resources[node.dataset.resource];
+      } else if (node.dataset.resourcePart) { node.value = parts[node.dataset.resourcePart]; }
+      else if (node.dataset.resource) node.value = state.resources[node.dataset.resource];
       else if (node.id === 'gear-include') { state.included[state.troop] = node.checked; changed(); }
       else if (node.id === 'gear-reforge') { state.reforge = node.checked; changed(); }
       else if (node.id === 'gear-profile') {
@@ -305,6 +337,7 @@
       else if (button.dataset.select && button.classList.contains('gear-row')) editPiece(button.dataset.select);
       else if (button.dataset.select) selectPiece(button.dataset.select);
       else if (button.dataset.editPiece) editPiece(button.dataset.editPiece);
+      else if (button.dataset.targetLevel) { state.target = Number(button.dataset.targetLevel); state.targetMastery = Math.max(state.targetMastery, state.target > 100 ? 10 + Math.floor((state.target - 100) / 20) : 0); persist(); paintAnswer(); }
       else if (button.dataset.view) { state.view = button.dataset.view; persist(); paintView(); }
       else if (button.dataset.mode) { state.mode = button.dataset.mode; persist(); paintAnswer(); }
       else if (button.dataset.goal) { state.goal = button.dataset.goal; persist(); paintAnswer(); }
@@ -329,7 +362,6 @@
       else { button = document.querySelector('.gear-upgrade'); if (button) button.focus(); }
     });
     el('run').addEventListener('click', run);
-    el('count-parts').addEventListener('click', function () { state.resources.xp = Math.min(1e9, parts.ten * 10 + parts.hundred * 100); changed(); paint(); });
     el('undo').addEventListener('click', function () { if (!previous) return; state = previous.state; parts = previous.parts; previous = null; changed(); paint(); el('undo').hidden = true; note('undone'); });
     el('export').addEventListener('click', function () {
       var blob = new Blob([JSON.stringify(Object.assign({}, state, { parts: parts }), null, 2)], { type: 'application/json' }), url = URL.createObjectURL(blob), link = document.createElement('a');
