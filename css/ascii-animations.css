@@ -1,0 +1,22 @@
+.ascii-scene{position:relative;display:block;margin:1.5rem auto;width:32ch;height:15em;overflow:hidden;font:clamp(8px,2.4vw,12px)/1 monospace;white-space:pre;direction:ltr;font-variant-ligatures:none;color:#e08a3c}.ascii-scene pre{position:absolute;margin:0;font:inherit;white-space:pre}.ascii-scene span{position:absolute;white-space:pre}.ascii-scene span::before{display:block;white-space:pre}
+.ascii-logs{left:0;bottom:0;color:#9d957f;z-index:3}
+.ascii-flame{bottom:4em;z-index:2}.ascii-flame--left{left:5ch}.ascii-flame--middle{left:11ch;color:#f5c851}.ascii-flame--right{left:18ch}
+.ascii-flame--left::before{content:"   .\A  :*.\A :##:\A.*@@*\A#@@@#";animation:ascii-left 1.15s steps(1,end) infinite}
+.ascii-flame--middle::before{content:"    .\A   :*.\A  :#@:\A .#@@*\A :@@@@#\A#@@@@@@";animation:ascii-middle 1.45s steps(1,end) infinite -.39s}
+.ascii-flame--right::before{content:"  .\A :*.\A:#@:\A*@@*\A@@@@#";animation:ascii-right 1.3s steps(1,end) infinite -.7s}
+@keyframes ascii-left{0%,100%{content:"   .\A  :*.\A :##:\A.*@@*\A#@@@#"}25%{content:"  .\A :*.\A .#@:\A:@@@*\A#@@@#"}50%{content:"    \A   :\A  :#*\A.#@@:\A#@@@#"}75%{content:" .\A :*.\A *#:\A:#@@*\A#@@@#"}}
+@keyframes ascii-middle{0%,100%{content:"    .\A   :*.\A  :#@:\A .#@@*\A :@@@@#\A#@@@@@@"}25%{content:"   .\A   :\A  +#:\A .#@@#\A :@@@@@\A#@@@@@@"}50%{content:"     \A    .\A   *#:\A  #@@*\A +@@@@#\A#@@@@@@"}75%{content:"   .\A  :*.\A .#@:\A :@@@*\A:#@@@@#\A#@@@@@@"}}
+@keyframes ascii-right{0%,100%{content:"  .\A :*.\A:#@:\A*@@*\A@@@@#"}25%{content:"   \A  .\A :#*\A*@@:\A@@@@#"}50%{content:" .\A:*:\A#@*\A@@@:\A@@@@#"}75%{content:"  .\A :#\A:@@\A*@@#\A@@@@#"}}
+.ascii-coals{left:10ch;bottom:1em;z-index:4;color:#f5c851}.ascii-coals::before{content:":;*##*;:";animation:ascii-coals .67s steps(1,end) infinite}
+@keyframes ascii-coals{0%,100%{content:":;*##*;:"}50%{content:";+#%%#+;"}}
+.ascii-spark{bottom:10em;z-index:5;color:#f5c851}.ascii-spark--a{left:10ch}.ascii-spark--b{left:17ch}.ascii-spark--c{left:22ch}
+.ascii-spark::before{content:"";animation:ascii-spark 3.8s steps(1,end) infinite}.ascii-spark--b::before{animation-delay:-1.1s;animation-duration:4.3s}.ascii-spark--c::before{animation-delay:-2.8s;animation-duration:3.4s}
+@keyframes ascii-spark{0%,100%{content:"*"}20%{content:" \A+"}40%{content:" \A \A'"}60%{content:" \A \A \A."}80%{content:" \A \A \A \A."}}
+.ascii-forge{height:13em}.ascii-anvil{left:6ch;bottom:0;color:#c7bc9d;z-index:2}.ascii-hammer{left:12ch;top:0;color:#d3a33e}
+.ascii-hammer::before{content:"    ____\A   |####|\A   |####|\A     ||\A     ||";animation:ascii-hammer 2.4s steps(1,end) infinite}
+@keyframes ascii-hammer{0%,30%,100%{content:"    ____\A   |####|\A   |####|\A     ||\A     ||"}31%,55%{content:"\A  ____\A |####|\A |####|\A   ||\A   ||"}56%,72%{content:"\A\A    ____\A   |####|\A   |####|\A     ||"}73%,85%{content:"\A\A\A    ____\A   |####|\A   |####|"}}
+.ascii-impact{left:14ch;bottom:6em;color:#f5c851;z-index:4}.ascii-impact::before{content:"";animation:ascii-impact 2.4s steps(1,end) infinite}
+@keyframes ascii-impact{0%,72%,100%{content:" "}73%,80%{content:"*#@#*"}81%,92%{content:":+*+:"}}
+.ascii-forge-sparks{left:9ch;bottom:8em;color:#e08a3c;z-index:4}.ascii-forge-sparks::before{content:"";animation:ascii-forge-sparks 2.4s steps(1,end) infinite}
+@keyframes ascii-forge-sparks{0%,72%,100%{content:" "}73%,81%{content:"  .  *  +  '  ."}82%,90%{content:" .  '  .   +  ."}91%,99%{content:"    .   '  ."}}
+@media(prefers-reduced-motion:reduce){.ascii-scene span::before{animation:none!important}}

@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel:wght@400..900&family=Cinzel+Decorative:wght@400;700;900&family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ p.depth }}css/ascii-animations.css?v={{ site.time | date: '%s' }}">
 {% for c in p.css %}<link rel="stylesheet" href="{{ c }}?v={{ site.time | date: '%s' }}">
 {% endfor %}{% if page.self == 'bear' %}<link rel="stylesheet" href="../css/bear-hunt.css?v={{ site.time | date: '%s' }}">
 {% endif %}<link rel="canonical" href="{{ site.url }}{{ p.canonicalPath }}">
