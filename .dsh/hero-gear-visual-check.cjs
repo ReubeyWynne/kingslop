@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
-const { chromium } = require('playwright');
+const { chromium, devices } = require('playwright');
 const E = require('../js/hero-gear-engine.js');
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/gear-preview');
@@ -74,7 +74,7 @@ async function fits(page, label) {
     await page.locator('#gear-import').click();
     await page.locator('#gear-images').setInputFiles({name:'gear.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6vGQAAAAASUVORK5CYII=','base64')});
     await page.locator('[data-import-field="level"]').waitFor();
-    assert.equal(await page.locator('[data-import-field="level"]').inputValue(),'119');
+    assert.equal(await page.locator('[data-import-field="level"]').inputValue(),'19');
     assert.equal(await page.locator('[data-import-field="quality"]').inputValue(),'red');
     await page.locator('#gear-apply-import').click();
     assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),119);
@@ -196,13 +196,15 @@ async function fits(page, label) {
       await page.locator('#gear-view-plan').click();await fits(page,'narrow plan '+lang);
       await page.locator('#gear-view-gear').click();await page.setViewportSize({width:1440,height:900});
     }
-    const overviewPage=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
+    const mobileContext=await browser.newContext({...devices['Pixel 7'], viewport:{width:390,height:844}, reducedMotion:'reduce'});
+    const overviewPage=await mobileContext.newPage();
     overviewPage.setDefaultTimeout(180000);
     await overviewPage.addInitScript(()=>{
       const NativeWorker=window.Worker;
       window.__gearReads=[];
+      window.__gearWorkerURLs=[];
       window.Worker=class extends NativeWorker {
-        constructor(url,options){super(url,options);if(String(url).includes('ocr-worker.js'))this.addEventListener('message',event=>window.__gearReads.push({ok:event.data.ok,items:event.data.items,error:event.data.error}));}
+        constructor(url,options){super(url,options);if(String(url).includes('ocr-worker.js')){window.__gearWorkerURLs.push(String(url));this.addEventListener('message',event=>window.__gearReads.push({ok:event.data.ok,items:event.data.items,error:event.data.error}));}}
       };
     });
     try {
@@ -212,7 +214,13 @@ async function fits(page, label) {
       const fixtures=['zoe','marlin','petra','jabel','diana','howard'];
       await overviewPage.locator('#gear-images').setInputFiles(fixtures.map(name=>path.resolve('.dsh/gear-fixtures/'+name+'.jpg')));
       await overviewPage.locator('#gear-apply-import:enabled').waitFor({timeout:240000});
-      const actual=await overviewPage.locator('.gear-import-item').evaluateAll(items=>items.map(item=>Object.fromEntries([...item.querySelectorAll('[data-import-field]')].filter(el=>el.type!=='checkbox').map(el=>[el.dataset.importField,el.value]))));
+      assert.ok(await overviewPage.evaluate(()=>navigator.userAgent.includes('Android')));
+      assert.ok(await overviewPage.evaluate(()=>window.__gearWorkerURLs.every(url=>new URL(url).searchParams.get('backend')==='wasm')),'gear number recognition bypasses mobile GPU inference');
+      const actual=await overviewPage.locator('.gear-import-item').evaluateAll(items=>items.map(item=>{
+        const values=Object.fromEntries([...item.querySelectorAll('[data-import-field]')].filter(el=>el.type!=='checkbox').map(el=>[el.dataset.importField,el.value]));
+        if(values.quality==='red' && values.level!=='')values.level=String(Number(values.level)+100);
+        return values;
+      }));
       fs.writeFileSync(path.join(output,'overview-reads.json'),JSON.stringify(actual,null,2));
       fs.writeFileSync(path.join(output,'overview-ocr.json'),JSON.stringify(await overviewPage.evaluate(()=>window.__gearReads),null,2));
       const expected=[
@@ -224,11 +232,34 @@ async function fits(page, label) {
         ['inf',[['mythic',0,0],['mythic',0,0],['mythic',0,0],['mythic',0,0]]]
       ].flatMap(([troop,pieces])=>pieces.map(([quality,level,mastery],i)=>({troop,slot:E.SLOTS[i],quality,level:String(level),mastery:String(mastery)})));
       assert.deepEqual(actual,expected,'real overview screenshots using the production OCR worker');
+      assert.equal(await overviewPage.locator('[data-import-index="1"][data-import-field="level"]').inputValue(),'20','red enhancement matches the crop');
+      await overviewPage.locator('#gear-import-scroll').evaluate(el=>el.scrollTop=el.scrollHeight);
+      const dialog=await overviewPage.locator('#gear-import-dialog').boundingBox();
+      for(const selector of ['#gear-import-title','#gear-close-import','#gear-apply-import']){
+        const box=await overviewPage.locator(selector).boundingBox();
+        assert.ok(box.y>=dialog.y && box.y+box.height<=dialog.y+dialog.height,'review chrome remains visible while scrolling '+selector);
+      }
+      assert.equal(await overviewPage.locator('#gear-import-dialog').evaluate(el=>el.scrollTop),0,'only the list scrolls');
+      await overviewPage.locator('#gear-import-scroll').evaluate(el=>el.scrollTop=0);
+      await overviewPage.screenshot({path:path.join(output,'mobile-import-review.png')});
+      for(const width of [320,390,768,1280]){
+        await overviewPage.setViewportSize({width,height:844});await fits(overviewPage,'populated review '+width);
+        await overviewPage.locator('.gear-import-identity').first().locator('summary').click();
+        await fits(overviewPage,'identity controls '+width);
+        await overviewPage.locator('.gear-import-identity').first().locator('summary').click();
+      }
+      await overviewPage.setViewportSize({width:390,height:500});
+      await overviewPage.locator('[data-import-index="0"][data-import-field="level"]').focus();
+      for(const selector of ['#gear-close-import','#gear-apply-import']){
+        const box=await overviewPage.locator(selector).boundingBox();assert.ok(box.y>=0&&box.y+box.height<=500,'short viewport actions '+selector);
+      }
+      await overviewPage.screenshot({path:path.join(output,'mobile-import-short.png')});
+      await overviewPage.setViewportSize({width:390,height:844});
       assert.equal(await overviewPage.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),0,'review has not applied any values');
       await fits(overviewPage,'real overview review');
       await overviewPage.locator('#gear-apply-import').click();
       assert.equal(await overviewPage.locator('#gear-import-dialog').evaluate(el=>el.open),true,'duplicate slots require selection');
-      await overviewPage.locator('#gear-import-dialog').evaluate(el=>el.scrollTop=0);
+      await overviewPage.locator('#gear-import-scroll').evaluate(el=>el.scrollTop=0);
       await overviewPage.screenshot({path:path.join(output,'overview-review.png')});
       for(let i=12;i<24;i++)await overviewPage.locator('[data-import-index="'+i+'"][data-import-field="included"]').uncheck();
       await overviewPage.locator('#gear-apply-import').click();
@@ -244,7 +275,17 @@ async function fits(page, label) {
       const unlevelled=await overviewPage.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')));
       for(const item of expected.slice(12))assert.deepEqual(unlevelled.pieces[item.troop+'-'+item.slot],{quality:item.quality,level:0,mastery:0});
       console.log('Production OCR: all 24 pieces in six supplied hero overviews matched rarity, troop, enhancement and mastery; duplicate selection, review, apply, unlevelled pieces and undo passed.');
-    } catch(error) { await overviewPage.screenshot({path:path.join(output,'overview-failure.png')});throw error; } finally { await overviewPage.close(); }
+      await overviewPage.locator('#gear-import').click();
+      await overviewPage.route('**/js/ocr-worker.js**',route=>route.fulfill({contentType:'text/javascript',body:'self.onmessage=()=>{};'}));
+      await overviewPage.locator('#gear-images').setInputFiles(path.resolve('.dsh/gear-fixtures/zoe.jpg'));
+      await overviewPage.locator('#gear-import-dialog[aria-busy="true"]').waitFor();
+      await overviewPage.locator('#gear-close-import').click();
+      assert.equal(await overviewPage.locator('#gear-import-dialog').evaluate(el=>el.open),false,'a cold or stalled mobile read is cancellable');
+      await overviewPage.locator('#gear-import').click();
+      assert.equal(await overviewPage.locator('.gear-import-item').count(),0,'cancelled results cannot populate the next review');
+      assert.equal(await overviewPage.locator('#gear-images').isEnabled(),true);
+      await overviewPage.locator('#gear-cancel-import').click();
+    } catch(error) { await overviewPage.screenshot({path:path.join(output,'overview-failure.png')});throw error; } finally { await mobileContext.close(); }
     assert.deepEqual(errors,[]);
     console.log('Visual gear, original assets, edit dialogs, resource bars, persistence, exclusions, keyboard tabs, worker search, milestone/search apply and undo, screenshot review, JSON import, mobile Gear/Plan, 5 widths and 17 language layouts passed. OCR delivery was stubbed; parser fixtures use real worker item shapes.');
   }catch(error){

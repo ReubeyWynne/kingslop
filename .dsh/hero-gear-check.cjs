@@ -128,6 +128,7 @@ assert.deepEqual(OCR.overviewLabels(tileWords, 'red', 110), { level: 120, master
 assert.deepEqual(OCR.overviewLabels([{ text: '+2C', poly: tileWords[0].poly }], 'red', 110, [true,false]), { level: null, mastery: 0 });
 assert.deepEqual(OCR.overviewLabels([], 'mythic', 110), { level: 0, mastery: 0 });
 assert.deepEqual(OCR.overviewLabels([], 'mythic', 110, [true,true]), { level: null, mastery: null });
+assert.deepEqual(OCR.overviewLabels([{ text: ': 11 .', poly: tileWords[1].poly }], 'red', 110, [false,true]), { level: 100, mastery: 11 });
 assert.deepEqual(OCR.overviewLabels([{ text: '?', poly: tileWords[0].poly }], 'mythic', 110), { level: null, mastery: 0 });
 assert.deepEqual(OCR.overviewLabels([{ text: '+99', poly: tileWords[0].poly }], 'epic', 110), { level: null, mastery: 0 });
 assert.equal(OCR.detect({ width: 16, height: 16, data: new Uint8Array(16*16*4) }), null);

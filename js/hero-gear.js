@@ -2,7 +2,7 @@
   'use strict';
   var E = window.HeroGear, BH, state, previous, result, running = false, revision = 0, planIndex = 0, resultTroop = 'inf';
   var searchWorker, searchTimer, searchDelay, searchFailed = false;
-  var STORAGE = 'bh:hero-gear:v1', imports = [], reader, readerSequence = 0, readerPending = {};
+  var STORAGE = 'bh:hero-gear:v1', imports = [], reader, readerSequence = 0, readerPending = {}, importSequence = 0;
   var scriptURL = new URL(document.currentScript.src);
   var base = new URL('./', scriptURL);
   var art = new URL('../img/hero-gear/', base), troopArt = { inf: 'infantry', cav: 'cavalry', arc: 'archer' };
@@ -298,7 +298,8 @@
       };
       try {
         if (!reader) {
-          reader = new Worker(workerURL('ocr-worker.js'), { type: 'module' });
+          var url = workerURL('ocr-worker.js'); url.searchParams.set('backend', 'wasm');
+          reader = new Worker(url, { type: 'module' });
           reader.onmessage = function (event) {
             var response = event.data, waiting = readerPending[response.id];
             if (response.preview) response.preview.close();
@@ -313,32 +314,39 @@
     });
   }
   function clearImports() {
+    importSequence++;
+    killReader();
     imports.forEach(function (item) { URL.revokeObjectURL(item.url); }); imports = [];
     el('import-review').textContent = ''; el('read-status').textContent = ''; el('apply-import').disabled = true;
-    el('images').value = '';
+    el('images').value = ''; el('images').disabled = false;
+    el('import-dialog').removeAttribute('aria-busy');
+    el('import-scroll').scrollTop = 0;
   }
   function importItem(item, index) {
-    function input(key, max) { return '<label><span>' + esc(tr(key)) + '</span><input type="number" min="0" max="' + max + '" step="1" data-import-index="' + index + '" data-import-field="' + key + '" value="' + (item[key] === null ? '' : item[key]) + '" placeholder="' + esc(tr('unread')) + '"></label>'; }
+    function input(key, max) { var value = item[key] === null ? '' : item[key] - (key === 'level' && item.quality === 'red' ? 100 : 0); return '<label><span>' + esc(tr(key === 'level' ? 'importEnhancement' : key)) + '</span><input type="number" inputmode="numeric" min="0" max="' + max + '" step="1" data-import-index="' + index + '" data-import-field="' + key + '" value="' + value + '" placeholder="' + esc(tr('unread')) + '"></label>'; }
     function select(key, values) { return '<label><span>' + esc(tr(key)) + '</span><select data-import-index="' + index + '" data-import-field="' + key + '">' + values.map(function (v) { return '<option value="' + v + '"' + (item[key] === v ? ' selected' : '') + '>' + esc(v === '' ? tr('chooseTroop') : v === 'mythic' ? tr('mythicQuality') : tr(v)) + '</option>'; }).join('') + '</select></label>'; }
-    return '<div class="gear-import-item"><div class="gear-import-source"><img src="' + esc(item.url) + '" alt="' + esc(item.filename) + '"><label class="gear-include"><input type="checkbox" checked data-import-index="' + index + '" data-import-field="included"><span>' + esc(tr('includeImport')) + '</span></label></div><div class="gear-import-fields">' + select('troop', item.overview ? [''].concat(E.TYPES) : E.TYPES) + select('slot', E.SLOTS) + select('quality', ['keep','epic','mythic','red']) + input('level', 200) + input('mastery', 20) + '<p class="gear-gloss">' + esc(item.filename) + '</p><p class="gear-gloss">' + esc(tr(item.failed ? 'readFailed' : item.level === null && item.mastery === null ? 'readEmpty' : 'readReview')) + '</p></div></div>';
+    return '<div class="gear-import-item" data-review-index="' + index + '"><div class="gear-import-source"><img src="' + esc(item.url) + '" alt="' + esc(item.filename) + '"><label class="gear-include"><input type="checkbox" checked data-import-index="' + index + '" data-import-field="included"><span>' + esc(tr('includeImport')) + '</span></label></div><div class="gear-import-fields"><strong class="gear-import-name">' + esc((item.troop ? tr(item.troop) : tr('chooseTroop')) + ' · ' + tr(item.slot)) + '<small>' + esc(quality(item.quality)) + '</small></strong>' + input('level', item.quality === 'epic' ? 80 : 100) + input('mastery', 20) + '<details class="gear-import-identity"' + (!item.troop ? ' open' : '') + '><summary>' + esc(tr('changeImportPiece')) + '</summary><div>' + select('troop', item.overview ? [''].concat(E.TYPES) : E.TYPES) + select('slot', E.SLOTS) + select('quality', ['keep','epic','mythic','red']) + '</div></details>' + (item.level === null || item.mastery === null ? '<p class="gear-import-warning">' + esc(tr(item.failed ? 'importReaderFailed' : 'importUnread')) + '</p>' : '') + '</div></div>';
   }
   async function readImages() {
     var files = Array.from(el('images').files || []);
     clearImports();
     if (!files.length) return;
     if (files.length > 12 || files.some(function (file) { return !file.type.startsWith('image/') || file.size > 20 * 1024 * 1024; })) { el('read-status').textContent = tr('imageLimit'); return; }
+    var sequence = importSequence;
     el('images').disabled = true;
-    el('close-import').disabled = true;
-    el('cancel-import').disabled = true;
+    el('import-dialog').setAttribute('aria-busy', 'true');
     try {
       for (var i = 0; i < files.length; i++) {
         el('read-status').textContent = BH.fill(tr('reading'), { n: i + 1, total: files.length });
         var pieces;
-        try { pieces = await window.HeroGearOCR.overview(files[i], read); }
+        try { pieces = await window.HeroGearOCR.overview(files[i], function (file) { if (sequence !== importSequence) return Promise.reject(new Error('Cancelled')); return read(file); }); }
         catch (error) { pieces = null; }
+        if (sequence !== importSequence) return;
         try {
           if (!pieces) pieces = [window.HeroGearOCR.parse((await read(files[i])).items)];
         } catch (error) { pieces = [{ level: null, mastery: null, failed: true }]; }
+        if (sequence !== importSequence) return;
+        el('import-review').insertAdjacentHTML('beforeend', '<p class="gear-import-file">' + esc(files[i].name) + '</p>');
         pieces.forEach(function (parsed) {
           var item = Object.assign({}, parsed, { troop: parsed.overview ? parsed.troop || '' : parsed.troop || state.troop, slot: parsed.slot || state.selected.split('-')[1], quality: parsed.quality || 'keep', filename: files[i].name, url: URL.createObjectURL(parsed.preview || files[i]), included: true });
           delete item.preview;
@@ -346,10 +354,10 @@
           el('import-review').insertAdjacentHTML('beforeend', importItem(item, imports.length - 1));
         });
       }
-      el('read-status').textContent = tr('readReview');
+      el('read-status').textContent = BH.fill(tr('importReady'), { n: imports.length });
       el('apply-import').disabled = false;
     } finally {
-      el('images').disabled = false; el('close-import').disabled = false; el('cancel-import').disabled = false;
+      if (sequence === importSequence) { el('images').disabled = false; el('import-dialog').removeAttribute('aria-busy'); }
     }
   }
   function tabKeys(container, attr) {
@@ -463,14 +471,23 @@
     el('reset').addEventListener('click', function () { el('reset-dialog').showModal(); });
     el('cancel-reset').addEventListener('click', function () { el('reset-dialog').close(); });
     el('confirm-reset').addEventListener('click', function () { applyState(Object.assign(E.defaults(), { parts: { ten: 0, hundred: 0 } })); el('reset-dialog').close(); note('resetDone'); });
-    el('import').addEventListener('click', function () { clearImports(); el('import-dialog').showModal(); });
-    ['close-import', 'cancel-import'].forEach(function (id) { el(id).addEventListener('click', function () { el('import-dialog').close(); clearImports(); }); });
-    el('import-dialog').addEventListener('cancel', function (event) { if (el('images').disabled) event.preventDefault(); else clearImports(); });
+    el('import').addEventListener('click', function () { clearImports(); document.documentElement.classList.add('gear-import-open'); el('import-dialog').showModal(); });
+    ['close-import', 'cancel-import'].forEach(function (id) { el(id).addEventListener('click', function () { clearImports(); el('import-dialog').close(); }); });
+    el('import-dialog').addEventListener('close', function () { document.documentElement.classList.remove('gear-import-open'); });
+    el('import-dialog').addEventListener('cancel', clearImports);
     el('images').addEventListener('change', readImages);
     el('import-review').addEventListener('input', function (event) {
       var node = event.target, i = node.dataset.importIndex, field = node.dataset.importField;
       if (i === undefined || !field) return;
-      imports[i][field] = field === 'included' ? node.checked : field === 'level' || field === 'mastery' ? (node.value === '' ? null : Math.max(0, Math.min(field === 'level' ? 200 : 20, Math.floor(Number(node.value) || 0)))) : node.value;
+      var item = imports[i]; if (!item) return;
+      if (field === 'quality' && item.level !== null) item.level += (node.value === 'red' ? 100 : 0) - (item.quality === 'red' ? 100 : 0);
+      item[field] = field === 'included' ? node.checked : field === 'level' || field === 'mastery' ? (node.value === '' ? null : Math.max(0, Math.min(field === 'level' ? item.quality === 'epic' ? 80 : 100 : 20, Math.floor(Number(node.value) || 0))) + (field === 'level' && item.quality === 'red' ? 100 : 0)) : node.value;
+      var row = node.closest('.gear-import-item');
+      row.dataset.included = String(item.included);
+      if (['troop', 'slot', 'quality'].includes(field)) {
+        row.querySelector('.gear-import-name').innerHTML = esc((item.troop ? tr(item.troop) : tr('chooseTroop')) + ' · ' + tr(item.slot)) + '<small>' + esc(quality(item.quality)) + '</small>';
+        row.querySelector('[data-import-field="level"]').max = item.quality === 'epic' ? 80 : 100;
+      }
     });
     el('apply-import').addEventListener('click', function () {
       var next = copy(state), seen = {}, invalid = false;
