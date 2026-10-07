@@ -63,7 +63,7 @@ async function fits(page, label) {
     assert.ok(await page.locator('.gear-route').count()<=3);
     assert.equal(await page.locator('#gear-target').count(),0);
     assert.match(await page.locator('.gear-route-head').textContent(),/weighted gain/);
-    await page.locator('#gear-mode-optimise').click();await page.locator('#gear-run').click();
+    await page.locator('#gear-mode-optimise').click();
     await page.locator('#gear-apply-result').waitFor();
     await page.locator('#gear-apply-result').click();
     await page.locator('#gear-undo').click();
@@ -155,7 +155,7 @@ async function fits(page, label) {
     await page.locator('#gear-reforge').check();
     await page.locator('#gear-settings summary').click();
     for(const [id,value]of [['parts10','0'],['parts100','120'],['hammers','180'],['mythic','4'],['mithril','0']])await page.locator('#gear-'+id).fill(value);
-    await page.locator('#gear-mode-optimise').click();await page.locator('#gear-run').click();
+    await page.locator('#gear-mode-optimise').click();
     await page.locator('#gear-apply-result').waitFor();
     assert.equal(await page.locator('.gear-result-grid .gear-row').count(),4);
     assert.match(await page.locator('.gear-result-grid').textContent(),/before.*after/s);

@@ -1,6 +1,7 @@
 (function () {
   'use strict';
   var E = window.HeroGear, BH, state, previous, result, running = false, revision = 0, planIndex = 0, resultTroop = 'inf';
+  var searchWorker, searchTimer, searchDelay, searchFailed = false;
   var STORAGE = 'bh:hero-gear:v1', imports = [], reader, readerSequence = 0, readerPending = {};
   var scriptURL = new URL(document.currentScript.src);
   var base = new URL('./', scriptURL);
@@ -28,7 +29,7 @@
   function pieceInfo(slot, p) { return '<span class="gear-piece-info"><span class="gear-slot">' + esc(tr(slot)) + '</span><strong class="gear-level">' + levelLabel(p) + '</strong><span class="gear-rarity gear-rarity-' + p.quality + '">' + esc(quality(p.quality)) + '</span><small>' + esc(tr('mastery')) + ' ' + p.mastery + '</small></span>'; }
   function comparison(id, from, to, detail) {
     var direction = detail && detail.refund ? 'down' : detail && detail.costs.xp ? 'up' : 'same';
-    return '<article class="gear-row gear-change" data-direction="' + direction + '" data-piece-id="' + id + '">' + gearImage(id, 'gear-art') + '<span class="gear-piece-info"><span class="gear-slot">' + esc(tr(id.split('-')[1])) + '</span><span class="gear-rarity gear-rarity-' + to.quality + '">' + esc(quality(to.quality)) + '</span></span><div class="gear-before-after"><span><small>' + esc(tr('before')) + '</small><strong>' + levelLabel(from) + '</strong><small>' + esc(tr('mastery')) + ' ' + from.mastery + '</small></span><span class="gear-change-arrow" aria-hidden="true">→</span><span><small>' + esc(tr('after')) + '</small><strong>' + levelLabel(to) + '</strong><small>' + esc(tr('mastery')) + ' ' + to.mastery + '</small></span></div>' + (detail ? '<div class="gear-xp-flow">' + (direction === 'down' ? '↓ ' + fmt(detail.refund) + ' XP · ' + esc(tr('recoverXP')) : direction === 'up' ? '↑ ' + fmt(detail.costs.xp) + ' XP · ' + esc(tr('redistributeXP')) : esc(tr('noXPNeeded'))) + '</div><small class="gear-tile-impact">' + esc(statText(detail.delta).replace(tr('core'), tr(id.split('-')[1] === 'helm' || id.split('-')[1] === 'boots' ? 'lethality' : 'health'))) + '</small>' : '<small class="gear-tile-impact">' + esc(tr('unchangedPiece')) + '</small>') + '</article>';
+    return '<article class="gear-row gear-change" data-direction="' + direction + '" data-changed="' + Boolean(detail) + '" data-piece-id="' + id + '">' + gearImage(id, 'gear-art') + '<span class="gear-piece-info"><span class="gear-slot">' + esc(tr(id.split('-')[1])) + '</span><span class="gear-rarity gear-rarity-' + to.quality + '">' + esc(from.quality !== to.quality ? quality(from.quality) + ' → ' + quality(to.quality) : quality(to.quality)) + '</span></span><div class="gear-before-after"><span><small>' + esc(tr('before')) + '</small><strong>' + levelLabel(from) + '</strong><small>' + esc(tr('mastery')) + ' ' + from.mastery + '</small></span><span class="gear-change-arrow" aria-hidden="true">→</span><span><small>' + esc(tr('after')) + '</small><strong>' + levelLabel(to) + '</strong><small>' + esc(tr('mastery')) + ' ' + to.mastery + '</small></span></div>' + (detail ? '<div class="gear-xp-flow">' + (direction === 'down' ? '↓ ' + fmt(detail.refund) + ' XP · ' + esc(tr('recoverXP')) : direction === 'up' ? '↑ ' + fmt(detail.costs.xp) + ' XP · ' + esc(tr('redistributeXP')) : esc(tr('noXPNeeded'))) + '</div><small class="gear-tile-impact">' + esc(statText(detail.delta).replace(tr('core'), tr(id.split('-')[1] === 'helm' || id.split('-')[1] === 'boots' ? 'lethality' : 'health'))) + '</small>' : '<small class="gear-tile-impact">' + esc(tr('unchangedPiece')) + '</small>') + '</article>';
   }
   function levelLabel(p) { return '+' + (p.quality === 'red' ? p.level - 100 : p.level); }
   function pieceLabel(p) { return quality(p.quality) + ' ' + (p.quality === 'red' ? '+' + (p.level - 100) : p.level) + ' · ' + tr('mastery') + ' ' + p.mastery; }
@@ -40,9 +41,13 @@
     } catch (error) { el('save').textContent = tr('saveFailed'); }
   }
   function changed() {
+    cancelSearch();
     revision++;
+    planIndex = 0;
+    searchFailed = false;
     result = null;
     el('results').textContent = '';
+    el('status').hidden = true;
     persist();
     paintAnswer();
   }
@@ -55,6 +60,7 @@
       var active = button.dataset.view === state.view;
       button.setAttribute('aria-selected', String(active)); button.tabIndex = active ? 0 : -1;
     });
+    scheduleSearch(0);
   }
   function paintEdit() {
     var id = state.selected, p = state.pieces[id];
@@ -138,10 +144,10 @@
     el('piece-select').hidden = isOptimise || isPlan;
     el('goals').hidden = isOptimise || isPlan;
     el('optimise-panel').hidden = !isOptimise;
-    el('run').hidden = !!result;
     el('milestone-out').hidden = isOptimise;
     el('goals').querySelectorAll('[data-goal]').forEach(function (button) { button.setAttribute('aria-pressed', String(button.dataset.goal === state.goal)); });
-    if (isOptimise) { paintPreview(state.pieces[state.selected], null); return; }
+    if (isOptimise) { paintPreview(state.pieces[state.selected], null); scheduleSearch(250); return; }
+    cancelSearch();
     if (isPlan) { paintPreview(state.pieces[state.selected], nextTarget()); el('milestone-out').innerHTML = planOutput(); return; }
     var from = state.pieces[state.selected], to = nextTarget(), out = el('milestone-out');
     paintPreview(from, to);
@@ -185,35 +191,79 @@
   }
   function paintResults() {
     if (!result) return;
+    el('results').setAttribute('aria-busy', 'false');
+    el('search-status').hidden = true;
     el('run').hidden = true;
-    if (!result.changes.length) { el('results').innerHTML = '<p class="gear-gloss">' + esc(tr('noSpendMoves')) + '</p>'; return; }
+    if (!result.changes.length) {
+      var included = E.TYPES.filter(function (type) { return state.included[type]; });
+      var message = !included.length ? 'noTroopsSelected' : included.every(function (type) { return state.weights[type].every(function (w) { return w === 0; }); }) ? 'noWeightsSelected' : E.RES.every(function (r) { return !state.resources[r]; }) && !state.reforge ? 'addBudgetHint' : 'noSpendMoves';
+      el('results').innerHTML = '<div class="gear-empty"><p class="gear-gloss">' + esc(tr(message)) + '</p>' + (message === 'noTroopsSelected' ? '<button type="button" class="gear-action" data-view="gear">' + esc(tr('chooseTroops')) + '</button>' : message === 'noWeightsSelected' ? '<button type="button" class="gear-action" data-show-weights="true">' + esc(tr('editWeights')) + '</button>' : '<button type="button" class="gear-action" data-mode="plan">' + esc(tr('seeSavingCosts')) + '</button>') + '</div>'; return;
+    }
     if (!state.included[resultTroop]) resultTroop = result.changes[0].split('-')[0];
     var details = result.details, tabs = E.TYPES.filter(function (type) { return state.included[type]; }).map(function (type) { var count = details.filter(function (d) { return d.id.startsWith(type + '-'); }).length; return '<button type="button" data-result-troop="' + type + '" aria-pressed="' + (type === resultTroop) + '">' + esc(tr(type)) + ' <small>' + count + '</small></button>'; }).join('');
     var tiles = E.SLOTS.map(function (slot) {
       var id = resultTroop + '-' + slot, detail = details.find(function (d) { return d.id === id; });
       return comparison(id, state.pieces[id], result.pieces[id], detail);
     }).join('');
-    el('results').innerHTML = '<div class="gear-result-summary"><strong>+' + result.gain.toFixed(1) + '</strong><span>' + esc(tr('weightedGain')) + '</span><small>' + result.changes.length + ' ' + esc(tr('piecesChanged')) + '</small></div><div class="gear-rail gear-result-troops">' + tabs + '</div><div class="gear-grid gear-result-grid">' + tiles + '</div>' + (result.refund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.refund) + ' XP ' + esc(tr('recoverXP')) + ' → ↑ ' + fmt(result.spent.xp) + ' XP ' + esc(tr('redistributeXP')) + '</p>' : '') + '<div class="gear-cost-title"><strong>' + esc(tr('spend')) + '</strong></div>' + costStrip(result.spent) + cavalryNote(result.pieces) + '<details><summary>' + esc(tr('remaining')) + '</summary>' + costStrip(result.remaining) + '<p class="gear-gloss">' + esc(tr('applyHint')) + '</p></details><button type="button" id="gear-apply-result" class="gear-primary">' + esc(tr('applyResult')) + '</button>';
+    el('results').innerHTML = '<div class="gear-result-summary"><strong>+' + result.gain.toFixed(1) + '</strong><span>' + esc(tr('weightedGain')) + '</span><small>' + result.changes.length + ' ' + esc(tr('piecesChanged')) + '</small></div><div class="gear-rail gear-result-troops">' + tabs + '</div><div class="gear-grid gear-result-grid">' + tiles + '</div>' + (result.refund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.refund) + ' XP ' + esc(tr('recoverXP')) + ' → ↑ ' + fmt(result.spent.xp) + ' XP ' + esc(tr('redistributeXP')) + '</p>' : '') + '<div class="gear-cost-title"><strong>' + esc(tr('spend')) + '</strong></div>' + costStrip(result.spent) + cavalryNote(result.pieces) + '<details><summary>' + esc(tr('remaining')) + '</summary>' + costStrip(result.remaining) + '</details><div class="gear-record-action"><button type="button" id="gear-apply-result" class="gear-primary gear-action" aria-describedby="gear-record-hint">' + esc(tr('applyResult')) + '</button><p id="gear-record-hint" class="gear-gloss">' + esc(tr('applyHint')) + '</p></div>';
+  }
+  function searchVisible() { return state.mode === 'optimise' && el('answer-panel').getClientRects().length > 0; }
+  function cancelSearch() {
+    clearTimeout(searchDelay); clearTimeout(searchTimer);
+    if (searchWorker) searchWorker.terminate();
+    searchWorker = null; running = false;
+    el('results').setAttribute('aria-busy', 'false');
+    el('search-status').hidden = true;
+  }
+  function scheduleSearch(delay) {
+    if (!searchVisible()) { cancelSearch(); return; }
+    if (result) { paintResults(); return; }
+    el('run').hidden = !searchFailed;
+    el('search-status').hidden = false;
+    el('search-status').textContent = tr(searchFailed ? 'calculationFailed' : 'calculatingBudget');
+    el('results').setAttribute('aria-busy', String(!searchFailed));
+    if (searchFailed || running) return;
+    clearTimeout(searchDelay);
+    searchDelay = setTimeout(run, delay);
   }
   function run() {
-    if (running) return;
+    if (running || !searchVisible()) return;
+    clearTimeout(searchDelay);
+    searchFailed = false;
     running = true;
-    el('run').disabled = true;
-    el('run').textContent = tr('running');
+    el('run').hidden = true;
+    el('search-status').hidden = false;
+    el('search-status').textContent = tr('calculatingBudget');
+    el('results').setAttribute('aria-busy', 'true');
     var currentRevision = revision, worker;
-    function done() { running = false; el('run').disabled = false; el('run').textContent = tr('run'); if (worker) worker.terminate(); }
-    var timer = setTimeout(function () { done(); note('runFailed'); }, 60000);
+    function fail() {
+      if ((worker && worker !== searchWorker) || currentRevision !== revision) return;
+      cancelSearch(); searchFailed = true; scheduleSearch(0);
+    }
     try {
-      worker = new Worker(workerURL('hero-gear-worker.js'));
+      worker = searchWorker = new Worker(workerURL('hero-gear-worker.js'));
+      searchTimer = setTimeout(fail, 60000);
       worker.onmessage = function (event) {
-        clearTimeout(timer); done();
-        if (currentRevision !== revision) { note('stale'); return; }
-        if (!event.data.ok) { note('runFailed'); return; }
-        result = event.data.result; paintResults();
+        if (worker !== searchWorker || currentRevision !== revision) return;
+        if (!event.data || !event.data.ok || !event.data.result) { fail(); return; }
+        cancelSearch();
+        result = event.data.result;
+        if (result.changes.length) {
+          resultTroop = E.TYPES.filter(function (type) { return state.included[type]; }).sort(function (a, b) {
+            function gain(type) { return result.details.reduce(function (sum, d) { return sum + (d.id.startsWith(type + '-') ? d.gain : 0); }, 0); }
+            return gain(b) - gain(a);
+          })[0];
+        }
+        paintResults();
       };
-      worker.onerror = function () { clearTimeout(timer); done(); note('runFailed'); };
-      worker.postMessage(state);
-    } catch (error) { clearTimeout(timer); done(); note('runFailed'); }
+      worker.onerror = fail;
+      worker.postMessage(copy(state));
+    } catch (error) { fail(); }
+  }
+  function editWeights() {
+    el('settings').open = true;
+    el('settings').scrollIntoView({ block: 'nearest' });
+    el('weights').querySelector('input').focus({ preventScroll: true });
   }
   function killReader() {
     if (reader) reader.terminate(); reader = null;
@@ -312,7 +362,7 @@
       var node = event.target;
       if (node.dataset.resourcePart) {
         parts[node.dataset.resourcePart] = Math.min(1e7, Math.max(0, Math.floor(Number(node.value) || 0)));
-        syncXP(); paintParts(); revision++; result = null; el('results').textContent = ''; persist(); paintAnswer(); return;
+        syncXP(); paintParts(); changed(); return;
       } else if (node.dataset.resource) state.resources[node.dataset.resource] = Math.min(1e9, Math.max(0, Math.floor(Number(node.value) || 0)));
       else if (node.dataset.piece && node.dataset.field !== 'quality') {
         state.pieces[node.dataset.piece] = E.normalisePiece(Object.assign({}, state.pieces[node.dataset.piece], { [node.dataset.field]: Number(node.value) }));
@@ -322,8 +372,7 @@
         state.profile = 'custom'; el('profile').value = 'custom';
         state.weights[node.dataset.weight][Number(node.dataset.stat)] = Math.min(100, Math.max(0, Number(node.value) || 0));
       } else return;
-      revision++; result = null; el('results').textContent = ''; persist();
-      paintAnswer();
+      changed();
     });
     document.addEventListener('change', function (event) {
       var node = event.target;
@@ -340,18 +389,20 @@
         state.profile = node.value;
         if (E.PROFILES[node.value]) state.weights = copy(E.PROFILES[node.value]);
         changed(); paintEditor();
+        if (node.value === 'custom') editWeights();
       } else if (node.id === 'gear-selected') selectPiece(node.value);
     });
     el('forge').addEventListener('click', function (event) {
       var button = event.target.closest('button'); if (!button) return;
-      if (button.dataset.resultTroop) { resultTroop = button.dataset.resultTroop; paintResults(); }
+      if (button.dataset.showWeights) editWeights();
+      else if (button.dataset.resultTroop) { resultTroop = button.dataset.resultTroop; paintResults(); }
       else if (button.dataset.route) { planIndex = Number(button.dataset.route); paintAnswer(); }
       else if (button.dataset.troop) selectPiece(button.dataset.troop + '-' + state.selected.split('-')[1]);
       else if (button.dataset.select && button.classList.contains('gear-row')) editPiece(button.dataset.select);
       else if (button.dataset.select) selectPiece(button.dataset.select);
       else if (button.dataset.editPiece) editPiece(button.dataset.editPiece);
       else if (button.dataset.view) { state.view = button.dataset.view; persist(); paintView(); }
-      else if (button.dataset.mode) { state.mode = button.dataset.mode; persist(); paintAnswer(); }
+      else if (button.dataset.mode) { state.mode = button.dataset.mode; persist(); paintAnswer(); scheduleSearch(0); }
       else if (button.dataset.goal) { state.goal = button.dataset.goal; persist(); paintAnswer(); }
       else if (button.id === 'gear-apply-result' && result) {
         var next = copy(state); next.pieces = result.pieces; next.resources = result.remaining;
@@ -374,6 +425,7 @@
       else { button = document.querySelector('.gear-upgrade'); if (button) button.focus(); }
     });
     el('run').addEventListener('click', run);
+    window.addEventListener('resize', function () { scheduleSearch(250); });
     el('undo').addEventListener('click', function () { if (!previous) return; state = previous.state; parts = previous.parts; previous = null; changed(); paint(); el('undo').hidden = true; note('undone'); });
     el('export').addEventListener('click', function () {
       var blob = new Blob([JSON.stringify(Object.assign({}, state, { parts: parts }), null, 2)], { type: 'application/json' }), url = URL.createObjectURL(blob), link = document.createElement('a');
@@ -417,6 +469,9 @@
       });
       if (invalid) { el('read-status').textContent = tr('overviewConflict'); return; }
       if (!Object.keys(seen).length) { el('read-status').textContent = tr('includeOne'); return; }
+      next.selected = Object.keys(seen)[0];
+      next.troop = next.selected.split('-')[0];
+      next.view = 'gear';
       applyState(next); el('import-dialog').close(); clearImports(); note('imported');
     });
   }

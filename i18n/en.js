@@ -1185,6 +1185,16 @@ window.__BH_I18N_DATA["en"] = {
   "gear.mythicUnit": "mythic",
   "gear.mithrilUnit": "mithril",
   "gear.noRedRoutes": "no scored red upgrade remains. include a mythic or red piece with an available milestone and a non-zero profile weight.",
-  "gear.noSpendMoves": "no gain fits this bag. add resources, change your profile, or check Save for red."
+  "gear.noSpendMoves": "no gain fits this bag. add resources, change your profile, or check Save for red.",
+  "gear.tapToEdit": "tap a slot to edit",
+  "gear.retryCalculation": "retry calculation",
+  "gear.calculatingBudget": "calculating upgrades for your current gear & budget…",
+  "gear.calculationFailed": "could not calculate upgrades. retry below; your saved gear and resources are unchanged.",
+  "gear.addBudgetHint": "add resources in the bar above to see what you can spend now, or check the costs of your next red upgrades.",
+  "gear.noTroopsSelected": "choose at least one troop to include in recommendations.",
+  "gear.noWeightsSelected": "your included troops have zero stat weights. choose a build profile or edit the weights.",
+  "gear.chooseTroops": "choose troops in Gear",
+  "gear.editWeights": "edit stat weights",
+  "gear.seeSavingCosts": "see what to save"
 }
 ;
