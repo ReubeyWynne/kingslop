@@ -173,3 +173,55 @@ The sixteen new navigation translations are AI-pass and need native review.
 The local environment has no Ruby/Jekyll installation. A temporary LiquidJS
 renderer is used only for local UI checks. The repository's GitHub Actions
 Jekyll build is the authoritative production-template build.
+# Visual budget routes — 7 October 2026
+
+The forward planner compares independent red destinations at total levels 120,
+160 and 200 (game +20, +60, +100), the expedition bonus milestones. It never
+requests a numeric target from the player. Each destination preserves already
+invested mastery and includes all missing enhancement, mastery, ascension and
+intervening imbuements in its cost. Levels 140 and 180 remain included in costs;
+their conquest bonuses are outside the expedition score.
+
+For one piece, weighted gain is the change in `core × coreWeight + attack ×
+lethalityWeight + defence × healthWeight`. Core means lethality for helms/boots,
+health for gloves/chests. These are additive priority points, not predicted
+battle damage. Each profile's weights are visible and editable. New rally
+weights are infantry `[0.7,1.2]`, cavalry `[0.6,0.4]`, archer `[1.8,0.8]`;
+garrison weights are infantry `[1,1.8]`, cavalry `[0.6,0.5]`, archer `[1.1,0.8]`.
+Those two presets implement the owner's requested role preferences; they are
+planning choices, not mined game constants or validated combat optima.
+
+Each resource uses a common reference `scale[r] = max(bag[r], baseline[r])`,
+where baseline is 52,650 XP, 550 hammers, 6 mythic pieces and 10 mithril. These
+are comparison scales, not exchange prices. A route's cost load is
+`Σ(cost[r] / scale[r])`; displayed efficiency is weighted gain divided by that
+load. All displayed routes share the same denominators, making their ratios
+comparable. A future budget is `bag[r] + t × scale[r]` for every resource. A
+route first fits at `t = max(0, max((cost[r] - bag[r]) / scale[r]))`. At each
+unlock threshold, choose the affordable route with greatest weighted gain,
+breaking ties by efficiency and then piece ID. Display the first three changes
+in that winner. This gives increasing budget alternatives, each starting from
+the original gear, rather than a cumulative purchase queue. Actual collection
+rates may differ; entering a different bag recalculates the recommendations.
+This planner intentionally prioritises absolute impact within a budget; its
+displayed efficiency is separate and is not claimed to be the optimiser's
+greedy ranking. The spend-now optimiser retains its multi-pass local search.
+
+With the owner's Zoe/Marlin/Petra gear and an empty bag, the growth profile
+first recommends archer helm 120 (52,650 XP / 450 hammers / 6 mythic / 10
+mithril), then infantry gloves 160 at a larger saving budget. Rally and garrison
+presets produce different frontiers. Tests assert this change, per-resource
+affordability, consistent efficiency denominators, exclusions and no mutation.
+
+Cavalry catch-up advice appears when its summed core stats are below 65% of the
+weaker included infantry/archer set. The threshold is an explicit interface
+heuristic, not a game mechanic or hidden score adjustment. Role annotations are
+advice requested by the owner; gear stats themselves have no role restriction.
+
+Spend-now results use net per-piece XP refunds. A downgrade can also receive
+mastery, whose cost must still be shown. Sum positive XP costs as spending,
+negative XP differences as recoverable XP, and all mastery costs independently;
+`bag + recovered XP - spending = remaining` is checked for every resource.
+This avoids charging for a full reset/rebuild when the final level is the same.
+Item saves retain sub-10 XP remainders, and the resource ledger is authoritative
+when migrating older saves whose item counts disagree with the XP total.

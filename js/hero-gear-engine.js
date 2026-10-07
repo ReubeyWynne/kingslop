@@ -13,6 +13,8 @@
     growth: { inf: [0.7, 1.5], cav: [0.4, 0.2], arc: [1.4, 0.7] },
     combat: { inf: [0.7, 1.5], cav: [1.2, 0.4], arc: [1.3, 0.6] },
     gen4: { inf: [1.1, 1.5], cav: [1.2, 0.4], arc: [1.2, 0.6] },
+    rally: { inf: [0.7, 1.2], cav: [0.6, 0.4], arc: [1.8, 0.8] },
+    garrison: { inf: [1, 1.8], cav: [0.6, 0.5], arc: [1.1, 0.8] },
     equal: { inf: [1, 1], cav: [1, 1], arc: [1, 1] }
   };
 
@@ -114,6 +116,32 @@
   function total(pieces, state) {
     return Object.keys(pieces).reduce(function (sum, id) { return sum + (state.included[id.split('-')[0]] ? score(id, pieces[id], state.weights) : 0); }, 0);
   }
+  function redPlans(input) {
+    var state = normaliseState(input), units = { xp: 52650, hammers: 550, mythic: 6, mithril: 10 };
+    var scale = emptyCost(), routes = [];
+    RES.forEach(function (r) { scale[r] = Math.max(units[r], state.resources[r]); });
+    Object.keys(state.pieces).forEach(function (id) {
+      var from = state.pieces[id], slot = id.split('-')[1];
+      if (!state.included[id.split('-')[0]] || from.quality === 'epic') return;
+      [120, 160, 200].forEach(function (level) {
+        if (from.level >= level) return;
+        var to = target(from, level, from.mastery, true), costs = cost(from, to);
+        var before = stats(from, slot), after = stats(to, slot), gain = score(id, to, state.weights) - score(id, from, state.weights);
+        var load = RES.reduce(function (sum, r) { return sum + costs[r] / scale[r]; }, 0);
+        var distance = RES.reduce(function (max, r) { return Math.max(max, (costs[r] - state.resources[r]) / scale[r]); }, 0);
+        if (gain > 0) routes.push({ id: id, from: from, to: to, costs: costs, gap: gap(costs, state.resources), gain: gain, efficiency: gain / Math.max(load, 1e-12), distance: distance, delta: { core: after.core - before.core, attack: after.attack - before.attack, defense: after.defense - before.defense } });
+      });
+    });
+    var thresholds = routes.map(function (route) { return route.distance; }).sort(function (a, b) { return a - b; });
+    var frontier = [], last;
+    thresholds.forEach(function (distance) {
+      var available = routes.filter(function (route) { return route.distance <= distance + 1e-10; });
+      available.sort(function (a, b) { return b.gain - a.gain || b.efficiency - a.efficiency || a.id.localeCompare(b.id); });
+      var winner = available[0];
+      if (winner && winner !== last) { frontier.push(winner); last = winner; }
+    });
+    return { routes: frontier.slice(0, 3), scale: scale };
+  }
   function candidates(p) {
     var out = [], levels = [p.level], max = cap(p);
     if (p.level < max) levels.push(p.level + 1);
@@ -170,14 +198,22 @@
     best.baseline = baseline;
     best.gain = best.score - baseline;
     best.changes = Object.keys(original).filter(function (id) { return JSON.stringify(original[id]) !== JSON.stringify(best.pieces[id]); });
+    best.refund = 0;
+    best.spent = emptyCost();
     best.details = best.changes.map(function (id) {
       var slot = id.split('-')[1], before = stats(original[id], slot), after = stats(best.pieces[id], slot), reforged = best.pieces[id].level < original[id].level;
-      return { id: id, from: original[id], to: best.pieces[id], costs: reforged ? emptyCost() : cost(original[id], best.pieces[id]), reforged: reforged, before: before, after: after, delta: { core: after.core - before.core, attack: after.attack - before.attack, defense: after.defense - before.defense }, gain: score(id, best.pieces[id], state.weights) - score(id, original[id], state.weights) };
+      var refund = reforged ? CUM[original[id].level] - CUM[best.pieces[id].level] : 0;
+      var start = copy(original[id]);
+      if (reforged) start.level = best.pieces[id].level;
+      var costs = cost(start, best.pieces[id]);
+      best.refund += refund;
+      RES.forEach(function (r) { best.spent[r] += costs[r]; });
+      return { id: id, from: original[id], to: best.pieces[id], costs: costs, refund: refund, reforged: reforged, before: before, after: after, delta: { core: after.core - before.core, attack: after.attack - before.attack, defense: after.defense - before.defense }, gain: score(id, best.pieces[id], state.weights) - score(id, original[id], state.weights) };
     });
     return best;
   }
 
-  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, optimise: optimise };
+  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, redPlans: redPlans, optimise: optimise };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.HeroGear = api;
 })(typeof window !== 'undefined' ? window : globalThis);
