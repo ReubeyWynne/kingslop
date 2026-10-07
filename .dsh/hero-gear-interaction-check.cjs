@@ -50,7 +50,7 @@ function fixture() {
     let requests = 0;
     await page.route('**/js/hero-gear-worker.js**', route => route.fulfill({ contentType:'text/javascript', body:options.failFirst && requests++ === 0 ? 'self.onmessage=()=>self.postMessage({ok:false});' : workerBody }));
     await page.goto(url);
-    await page.locator('#gear-rows .gear-row').first().waitFor();
+    await page.locator('#gear-rows .gear-row').first().waitFor({ state:'attached' });
   }
   async function ready() { await page.locator('#gear-apply-result').waitFor(); }
   async function saved() { return page.evaluate(key => JSON.parse(localStorage.getItem(key)), key); }
