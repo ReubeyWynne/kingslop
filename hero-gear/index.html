@@ -97,14 +97,21 @@ self: gear
   <div id="gear-edit-fields"></div>
   <p class="gear-gloss" data-i18n="gear.levelHint">use total levels: red +20 is level 120. select a piece to see its next milestone.</p>
 </dialog>
-<dialog id="gear-import-dialog" class="gear-dialog" aria-labelledby="gear-import-title">
-  <div class="gear-heading"><h2 id="gear-import-title" data-i18n="gear.importTitle">Read your gear</h2><button type="button" id="gear-close-import" data-i18n="gear.close">close</button></div>
-  <p data-i18n="gear.overviewHint">upload a hero's gear overview or an individual gear detail screen. overviews read all four pieces; unlevelled pieces read as zero. check each crop before applying. include one piece per troop and slot; unread fields keep saved values.</p>
-  <p class="gear-gloss" data-i18n="gear.importLevels">enhancement uses total levels: red +20 is 120.</p>
-  <input type="file" id="gear-images" accept="image/*" multiple>
-  <output id="gear-read-status" role="status"></output>
-  <div id="gear-import-review"></div>
-  <div class="gear-tools"><button type="button" id="gear-apply-import" class="gear-primary" disabled data-i18n="gear.applyImport">apply reviewed gear</button><button type="button" id="gear-cancel-import" data-i18n="gear.cancel">cancel</button></div>
+<dialog id="gear-import-dialog" class="gear-dialog gear-import-dialog" aria-labelledby="gear-import-title">
+  <header class="gear-import-header">
+    <div class="gear-heading"><h2 id="gear-import-title" data-i18n="gear.importTitle">Read your gear</h2><button type="button" id="gear-close-import" data-i18n="gear.close">close</button></div>
+    <output id="gear-read-status" role="status" aria-live="polite"></output>
+  </header>
+  <div id="gear-import-scroll" class="gear-import-scroll">
+    <div id="gear-import-pick">
+      <p class="gear-import-intro" data-i18n="gear.importIntro">choose hero gear overviews or piece detail screens, then check the crops and numbers.</p>
+      <label class="gear-import-picker"><span data-i18n="gear.chooseScreenshots">choose screenshots</span><input type="file" id="gear-images" accept="image/*" multiple></label>
+    </div>
+    <button type="button" id="gear-replace-images" hidden data-i18n="gear.replaceScreenshots">choose other screenshots</button>
+    <p class="gear-gloss gear-import-hint" data-i18n="gear.importNumbers">use the numbers on the crop: red +20 stays 20 here. blank fields keep your saved values.</p>
+    <div id="gear-import-review"></div>
+  </div>
+  <footer class="gear-tools gear-import-actions"><button type="button" id="gear-apply-import" class="gear-primary" disabled data-i18n="gear.applyImport">apply reviewed gear</button><button type="button" id="gear-cancel-import" data-i18n="gear.cancel">cancel</button></footer>
 </dialog>
 <dialog id="gear-reset-dialog" class="gear-dialog" aria-labelledby="gear-reset-title">
   <h2 id="gear-reset-title" data-i18n="gear.resetTitle">Reset this ledger?</h2>

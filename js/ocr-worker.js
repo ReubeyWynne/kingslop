@@ -107,7 +107,7 @@ function warmPipelines(ocr) {
 }
 
 var enginePromise = null;
-var engineKind = 'auto';
+var engineKind = new URL(self.location.href).searchParams.get('backend') === 'wasm' ? 'wasm' : 'auto';
 
 // Import + session build happen once, inside this worker. `worker: false` is
 // deliberate: this file *is* the worker, so the pipeline runs directly here

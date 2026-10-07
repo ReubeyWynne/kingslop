@@ -126,10 +126,10 @@ function signature(image,tile,dx,dy){
       var matches = text.match(mastery ? /(?:mastery|forge\s*(?:level|mastery)|l[vw]?\.?|level)\s*[:.]?\s*(\d{1,2})(?![\dA-Za-z])/i : /(?:\+|lv\.?|level|enhancement\s*(?:level)?)\s*[:.]?\s*(\d{1,3})(?![\dA-Za-z])/i);
       if (!matches && !mastery) matches = text.match(/(?:^|[^\d])(\d{1,3})\s*$/);
       if (!matches && /^\s*\d{1,3}\s*$/.test(text)) matches = [text, text.trim()];
-      if (!matches && /^[\s+.:_-]*\d{1,3}[\s+.:_-]*$/.test(text)) matches = text.match(/\d{1,3}/);
+      if (!matches && /^[\s+.:_-]*\d{1,3}[\s+.:_-]*$/.test(text)) matches = text.match(/(\d{1,3})/);
       if (!matches) return null;
       var value = Number(matches[1]), limit = mastery ? 20 : quality === 'epic' ? 80 : 100;
-      return value <= limit ? value : null;
+      return Number.isFinite(value) && value >= 0 && value <= limit ? value : null;
     }
     var level = number(bands[0], false);
     return { level: level === null ? null : level + (quality === 'red' ? 100 : 0), mastery: number(bands[1], true) };
