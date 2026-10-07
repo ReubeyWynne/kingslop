@@ -89,6 +89,7 @@ async function fits(page, label) {
     await page.locator('#gear-save-file').setInputFiles({name:'gear.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(fixture))});
     await page.waitForFunction(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-gloves'].level===120);
     await page.locator('.gear-save-tools summary').click();
+    await page.locator('#gear-mode-milestones').click();
     assert.match(await page.locator('[data-cost-resource="xp"]').textContent(),/74,100/);
     assert.match(await page.locator('[data-cost-resource="mithril"]').textContent(),/10 missing/);
     await page.waitForFunction(()=>[...document.querySelectorAll('.gear-main img')].every(img=>img.complete&&img.naturalWidth>0));
