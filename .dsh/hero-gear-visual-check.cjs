@@ -57,7 +57,7 @@ async function fits(page, label) {
     await page.locator('#gear-mode-plan').click();
     assert.ok(await page.locator('.gear-route').count()<=3);
     assert.equal(await page.locator('#gear-target').count(),0);
-    assert.match(await page.locator('.gear-routes').textContent(),/weighted gain/);
+    assert.match(await page.locator('.gear-route-head').textContent(),/weighted gain/);
     await page.locator('#gear-mode-optimise').click();await page.locator('#gear-run').click();
     await page.locator('#gear-apply-result').waitFor();
     await page.locator('#gear-apply-result').click();
@@ -127,6 +127,8 @@ async function fits(page, label) {
           await page.evaluate(()=>scrollTo(0,0));
           assert.equal(await page.locator('#gear-profile').isVisible(),true);
           assert.equal(await page.locator('.gear-route').count(),3);
+          const costs=await page.locator('.gear-route-detail .gear-cost-strip').boundingBox();
+          assert.ok(costs.y+costs.height<=height,'three recommendations and costs fit the mobile viewport');
           await page.screenshot({path:path.join(output,'mobile-plan.png')});
         }
         await page.reload();await page.waitForFunction(()=>document.querySelectorAll('#gear-rows .gear-row').length===4);
@@ -153,6 +155,8 @@ async function fits(page, label) {
     assert.ok(await page.locator('.gear-change[data-direction="down"]').count()>0);
     assert.match(await page.locator('.gear-change[data-direction="down"]').first().textContent(),/↓.*recover/);
     await fits(page,'mobile optimise');await page.evaluate(()=>scrollTo(0,0));
+    const resultGrid=await page.locator('.gear-result-grid').boundingBox();
+    assert.ok(resultGrid.y+resultGrid.height<=844,'all four before/after gear tiles fit the mobile viewport');
     await page.screenshot({path:path.join(output,'mobile-optimise.png')});
     await page.setViewportSize({width:1280,height:900});await fits(page,'desktop optimise');
     await page.screenshot({path:path.join(output,'desktop-optimise.png')});

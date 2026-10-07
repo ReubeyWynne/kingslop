@@ -1177,6 +1177,12 @@ window.__BH_I18N_DATA["en"] = {
   "gear.costUnitFormula": "gain / cost = weighted gain ÷ Σ(resource cost ÷ reference amount). the same amounts apply to every choice: your budget or 52,650 XP / 550 hammers / 6 mythic / 10 mithril, whichever is larger per resource. these are comparison scales, not exchange prices. current reference amounts",
   "gear.budgetGrowthFormula": "future budgets increase every resource by the same fraction of those reference amounts. this makes comparable saving steps, not a prediction of how fast you collect resources. change your bag to rerank. role profiles are editable planning preferences; cavalry’s 65% catch-up reminder does not secretly change the score.",
   "gear.piecesChanged": "pieces changed",
-  "gear.unchangedPiece": "keep this piece"
+  "gear.unchangedPiece": "keep this piece",
+  "gear.savingChoices": "saving alternatives · tap for costs & impact.",
+  "gear.upgradeChoice": "as resources grow",
+  "gear.xpUnit": "XP",
+  "gear.hammersUnit": "hammers",
+  "gear.mythicUnit": "mythic",
+  "gear.mithrilUnit": "mithril"
 }
 ;

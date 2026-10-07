@@ -21,6 +21,7 @@ self: gear
       <label><img src="../img/hero-gear/mithril.webp" width="40" height="40" alt=""><span data-i18n="gear.mithril">Mithril</span><input id="gear-mithril" data-resource="mithril" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Mithril" data-i18n-key="gear.mithril" data-i18n-attr="aria-label"></label>
     </div>
     <div class="gear-budget-caption"><span><span data-i18n="gear.xpTotal">XP total</span> <output id="gear-xp-total">0</output></span><span id="gear-save" role="status" data-i18n="gear.saved">saved on this device</span></div>
+    <div class="gear-controls">
     <div class="gear-mobile-nav gear-rail" id="gear-views" role="tablist" aria-label="Workspace view" data-i18n-key="gear.workspaceView" data-i18n-attr="aria-label">
       <button type="button" id="gear-view-gear" role="tab" aria-controls="gear-editor-panel" aria-selected="true" data-view="gear" data-i18n="gear.gearView">Gear</button>
       <button type="button" id="gear-view-plan" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-view="plan" data-i18n="gear.planView">Plan</button>
@@ -35,7 +36,7 @@ self: gear
         <option value="equal" data-i18n="gear.equal">Equal stats</option>
         <option value="custom" data-i18n="gear.custom">Custom</option>
       </select></label>
-      <details id="gear-settings"><summary data-i18n="gear.weightSettings">weights & reforge</summary><div id="gear-weights"></div><label class="gear-include"><input id="gear-reforge" type="checkbox"><span data-i18n="gear.reforge">allow XP reforge on epic & mythic gear</span></label><p class="gear-gloss" data-i18n="gear.reforgeHint">mastery and red gear stay invested. weights describe your priorities, not predicted battle damage.</p></details>
+    </div>
     </div>
     <div class="gear-workspace">
       <div class="gear-editor">
@@ -82,6 +83,7 @@ self: gear
         </div>
       </div>
     </div>
+    <details id="gear-settings"><summary data-i18n="gear.weightSettings">weights & reforge</summary><div id="gear-weights"></div><label class="gear-include"><input id="gear-reforge" type="checkbox"><span data-i18n="gear.reforge">allow XP reforge on epic & mythic gear</span></label><p class="gear-gloss" data-i18n="gear.reforgeHint">mastery and red gear stay invested. weights describe your priorities, not predicted battle damage.</p></details>
     <output id="gear-status" role="status" hidden></output>
     <button id="gear-undo" type="button" hidden data-i18n="gear.undo">undo last update</button>
     <noscript><p data-i18n="gear.noJS">enable JavaScript to use the planner. the cost references below remain available.</p></noscript>
