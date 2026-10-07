@@ -91,10 +91,11 @@ function fixture() {
     assert.equal(await page.evaluate(() => window.__searches.length), 0, 'hidden mobile Plan does not start a search');
     await page.locator('#gear-view-plan').click();
     await page.waitForFunction(() => window.__searches.length === 1);
-    await page.screenshot({ path:path.join(output, 'mobile-calculating.png') });
     await page.locator('#gear-view-gear').click();
     assert.equal(await page.evaluate(() => window.__terminated), 1, 'leaving mobile Plan cancels work');
-    await page.locator('#gear-view-plan').click(); await ready();
+    await page.locator('#gear-view-plan').click();
+    await page.screenshot({ path:path.join(output, 'mobile-calculating.png') });
+    await ready();
     assert.equal(await page.evaluate(() => window.__searches.length), 2);
     await page.locator('#gear-view-gear').click(); await page.locator('#gear-view-plan').click();
     await page.waitForTimeout(350);
