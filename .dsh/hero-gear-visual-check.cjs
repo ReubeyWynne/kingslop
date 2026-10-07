@@ -72,6 +72,8 @@ async function fits(page, label) {
     await page.locator('#gear-apply-import').click();
     assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),119);
     await page.locator('#gear-mode-milestones').click();
+    await page.locator('#gear-piece-select summary').click();
+    await page.locator('#gear-selected').selectOption('inf-helm');
     await page.locator('#gear-apply-milestone').click();
     assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),120);
     await page.locator('#gear-undo').click();

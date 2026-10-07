@@ -173,7 +173,8 @@ The sixteen new navigation translations are AI-pass and need native review.
 The local environment has no Ruby/Jekyll installation. A temporary LiquidJS
 renderer is used only for local UI checks. The repository's GitHub Actions
 Jekyll build is the authoritative production-template build.
-# Visual budget routes — 7 October 2026
+
+## Visual budget routes — 7 October 2026
 
 The forward planner compares independent red destinations at total levels 120,
 160 and 200 (game +20, +60, +100), the expedition bonus milestones. It never

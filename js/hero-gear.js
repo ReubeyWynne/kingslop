@@ -110,9 +110,10 @@
   function costStrip(costs, remaining) {
     return '<div class="gear-cost-strip">' + E.RES.map(function (r) { return '<div data-cost-resource="' + r + '">' + image(resourceArt[r], 'gear-resource-art') + '<strong>' + fmt(costs[r]) + '</strong><small>' + esc(tr(r)) + '</small>' + (remaining ? '<span>' + fmt(remaining[r]) + ' ' + esc(tr('missingShort')) + '</span>' : '') + '</div>'; }).join('') + '</div>';
   }
-  function cavalryNote() {
+  function cavalryNote(pieces) {
     if (!state.included.cav) return '';
-    function core(type) { return E.SLOTS.reduce(function (sum, slot) { return sum + E.stats(state.pieces[type + '-' + slot], slot).core; }, 0); }
+    pieces = pieces || state.pieces;
+    function core(type) { return E.SLOTS.reduce(function (sum, slot) { return sum + E.stats(pieces[type + '-' + slot], slot).core; }, 0); }
     var leaders = ['inf','arc'].filter(function (type) { return state.included[type]; });
     var lag = leaders.length && core('cav') < .65 * Math.min.apply(null, leaders.map(core));
     return lag ? '<p class="gear-catchup">' + esc(tr('cavalryCatchup')) + '</p>' : '';
@@ -190,7 +191,7 @@
       var id = resultTroop + '-' + slot, detail = details.find(function (d) { return d.id === id; });
       return comparison(id, state.pieces[id], result.pieces[id], detail);
     }).join('');
-    el('results').innerHTML = '<div class="gear-result-summary"><strong>+' + result.gain.toFixed(1) + '</strong><span>' + esc(tr('weightedGain')) + '</span><small>' + result.changes.length + ' ' + esc(tr('piecesChanged')) + '</small></div><div class="gear-rail gear-result-troops">' + tabs + '</div><div class="gear-grid gear-result-grid">' + tiles + '</div>' + (result.refund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.refund) + ' XP ' + esc(tr('recoverXP')) + ' → ↑ ' + fmt(result.spent.xp) + ' XP ' + esc(tr('redistributeXP')) + '</p>' : '') + '<div class="gear-cost-title"><strong>' + esc(tr('spend')) + '</strong></div>' + costStrip(result.spent) + '<details><summary>' + esc(tr('remaining')) + '</summary>' + costStrip(result.remaining) + '<p class="gear-gloss">' + esc(tr('applyHint')) + '</p></details><button type="button" id="gear-apply-result" class="gear-primary">' + esc(tr('applyResult')) + '</button>';
+    el('results').innerHTML = '<div class="gear-result-summary"><strong>+' + result.gain.toFixed(1) + '</strong><span>' + esc(tr('weightedGain')) + '</span><small>' + result.changes.length + ' ' + esc(tr('piecesChanged')) + '</small></div><div class="gear-rail gear-result-troops">' + tabs + '</div><div class="gear-grid gear-result-grid">' + tiles + '</div>' + (result.refund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.refund) + ' XP ' + esc(tr('recoverXP')) + ' → ↑ ' + fmt(result.spent.xp) + ' XP ' + esc(tr('redistributeXP')) + '</p>' : '') + '<div class="gear-cost-title"><strong>' + esc(tr('spend')) + '</strong></div>' + costStrip(result.spent) + cavalryNote(result.pieces) + '<details><summary>' + esc(tr('remaining')) + '</summary>' + costStrip(result.remaining) + '<p class="gear-gloss">' + esc(tr('applyHint')) + '</p></details><button type="button" id="gear-apply-result" class="gear-primary">' + esc(tr('applyResult')) + '</button>';
   }
   function run() {
     if (running) return;
