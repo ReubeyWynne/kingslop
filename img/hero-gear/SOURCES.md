@@ -15,6 +15,8 @@ No generated artwork is included.
 
 PNG gear icons are losslessly re-encoded to WebP; resource WebP files are
 unchanged. Assets are served from this repository, without runtime hotlinks.
-The source's gear icons use a gold item backdrop. The planner labels the saved
-rarity separately; that icon backdrop does not represent the piece's current
-quality. These files are game art, not the reference site's interface or code.
+The source's gear icons use a baked-in gold item backdrop. The shared item
+component adds a CSS rarity frame and labelled band, plus enhancement and
+mastery overlays. The original bitmaps remain unchanged; their baked-in
+backdrop does not represent the piece's current quality. These files are game
+art, not the reference site's interface or code.

@@ -1195,6 +1195,9 @@ window.__BH_I18N_DATA["en"] = {
   "gear.noWeightsSelected": "your included troops have zero stat weights. choose a build profile or edit the weights.",
   "gear.chooseTroops": "choose troops in Gear",
   "gear.editWeights": "edit stat weights",
-  "gear.seeSavingCosts": "see what to save"
+  "gear.seeSavingCosts": "see what to save",
+  "gear.mithrilCheckpoint": "mithril checkpoint",
+  "gear.redMasteryUpgrade": "red mastery upgrade",
+  "gear.unchangedSlots": "unchanged"
 }
 ;
