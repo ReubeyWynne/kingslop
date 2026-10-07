@@ -121,7 +121,7 @@
   function planOutput() {
     var forecast = E.redPlans(state), routes = forecast.routes;
     planIndex = Math.min(planIndex, Math.max(0, routes.length - 1));
-    if (!routes.length) return '<p class="gear-gloss">' + esc(tr('planEmpty')) + '</p>';
+    if (!routes.length) return '<p class="gear-gloss">' + esc(tr('noRedRoutes')) + '</p>';
     var active = routes[planIndex], slot = active.id.split('-')[1], w = state.weights[active.id.split('-')[0]];
     var cards = routes.map(function (route, i) {
       return '<button type="button" class="gear-route" data-route="' + i + '" aria-pressed="' + (i === planIndex) + '">' + gearImage(route.id, 'gear-art') + '<span class="gear-route-piece"><small>' + esc(tr(route.distance === 0 ? 'readyShort' : ['nearBudget','largerBudget','furtherBudget'][i])) + '</small><strong>' + esc(name(route.id)) + '</strong><span class="gear-route-levels">' + levelLabel(route.from) + ' → <b class="gear-rarity-red">' + esc(quality('red')) + ' ' + levelLabel(route.to) + '</b><small>' + esc(tr('mastery')) + ' ' + route.from.mastery + ' → ' + route.to.mastery + '</small></span></span><span class="gear-route-metrics"><span aria-label="' + esc(tr('weightedGain')) + '"><b>+' + route.gain.toFixed(1) + '</b></span><span aria-label="' + esc(tr('perCostUnit')) + '"><b>' + route.efficiency.toFixed(1) + '</b></span></span></button>';
@@ -186,7 +186,7 @@
   function paintResults() {
     if (!result) return;
     el('run').hidden = true;
-    if (!result.changes.length) { el('results').innerHTML = '<p class="gear-gloss">' + esc(tr('noUpgradesHint')) + '</p>'; return; }
+    if (!result.changes.length) { el('results').innerHTML = '<p class="gear-gloss">' + esc(tr('noSpendMoves')) + '</p>'; return; }
     if (!state.included[resultTroop]) resultTroop = result.changes[0].split('-')[0];
     var details = result.details, tabs = E.TYPES.filter(function (type) { return state.included[type]; }).map(function (type) { var count = details.filter(function (d) { return d.id.startsWith(type + '-'); }).length; return '<button type="button" data-result-troop="' + type + '" aria-pressed="' + (type === resultTroop) + '">' + esc(tr(type)) + ' <small>' + count + '</small></button>'; }).join('');
     var tiles = E.SLOTS.map(function (slot) {

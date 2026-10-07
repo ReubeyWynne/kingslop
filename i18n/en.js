@@ -1183,6 +1183,8 @@ window.__BH_I18N_DATA["en"] = {
   "gear.xpUnit": "XP",
   "gear.hammersUnit": "hammers",
   "gear.mythicUnit": "mythic",
-  "gear.mithrilUnit": "mithril"
+  "gear.mithrilUnit": "mithril",
+  "gear.noRedRoutes": "no scored red upgrade remains. include a mythic or red piece with an available milestone and a non-zero profile weight.",
+  "gear.noSpendMoves": "no gain fits this bag. add resources, change your profile, or check Save for red."
 }
 ;
