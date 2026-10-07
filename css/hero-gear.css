@@ -47,7 +47,7 @@ html[data-page="gear"] .topbar h1.brand { margin: 0; line-height: 1.2; }
 .gear-item-level { position: absolute; inset-block-start: .12rem; inset-inline-end: .1rem; padding: .03rem .12rem; background: var(--void-2); color: var(--ink); font: 700 .9rem/1.05 var(--display-2); border-radius: 2px; }
 .gear-item-mastery { position: absolute; inset-block-end: .85rem; inset-inline-end: .1rem; display: flex; align-items: center; gap: .05rem; padding: .02rem .1rem; background: var(--void-2); color: var(--ink); font: 700 .7rem/1.1 var(--body); border-radius: 2px; }
 .gear-item .gear-mastery-art { width: .75rem; height: .75rem; object-fit: contain; }
-.gear-item-rarity { position: absolute; inset-inline: 0; inset-block-end: 0; padding: .1rem .05rem; color: #fff0d4; background: var(--item-band); font: 700 .6rem/1.05 var(--body); text-align: center; overflow-wrap: anywhere; }
+.gear-item-rarity { position: absolute; inset-inline: 0; inset-block-end: 0; padding: .1rem .05rem; color: #fff0d4; background: var(--item-band); font: 700 .6rem/1.05 var(--body); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gear-editor .gear-item-level { font-size: 1.1rem; }
 .gear-editor .gear-item-mastery { font-size: .8rem; }
 .gear-edit-art > .gear-item { flex: 0 0 6rem; }
@@ -226,7 +226,8 @@ html[data-page="gear"] .topbar h1.brand { margin: 0; line-height: 1.2; }
   .gear-preview-button > span.gear-preview-link { margin-inline-start: auto; white-space: nowrap; font-size: .85rem; }
   .gear-mobile-nav { display: flex; margin: .4rem 0; border: 1px solid var(--signal-line); }
   .gear-mobile-nav button[aria-selected="true"] { background: color-mix(in srgb, var(--amber) 8%, transparent); }
-  .gear-main .gear-route { grid-template-columns: 3rem minmax(0,1fr) 6.5rem; gap: .4rem; }
+  .gear-main .gear-route { grid-template-columns: 3rem minmax(0,1fr) 6.5rem; gap: .4rem; padding-block: .25rem; }
+  .gear-route-piece { gap: .05rem; }
   .gear-route-head { grid-template-columns: minmax(0,1fr) 6.5rem; }
   .gear-route-caption { font-size: .8rem; margin: .3rem 0; }
   .gear-route-piece > strong { font-size: .9rem; }
