@@ -66,8 +66,49 @@ for (let i = 0; i < 40; i++) {
   for (const r of E.RES) {
     assert.ok(result.remaining[r] >= 0);
     assert.equal(state.resources[r] - spent[r], result.remaining[r]);
+    assert.equal(state.resources[r] + (r === 'xp' ? result.refund : 0) - result.spent[r], result.remaining[r]);
   }
 }
+
+const planning = E.defaults();
+Object.assign(planning.pieces, {
+  'inf-helm': {quality:'mythic',level:69,mastery:2},
+  'inf-gloves': {quality:'red',level:120,mastery:11},
+  'inf-chest': {quality:'mythic',level:100,mastery:6},
+  'inf-boots': {quality:'mythic',level:72,mastery:3},
+  'arc-helm': {quality:'mythic',level:100,mastery:6},
+  'arc-gloves': {quality:'mythic',level:69,mastery:2},
+  'arc-chest': {quality:'mythic',level:69,mastery:2},
+  'arc-boots': {quality:'mythic',level:100,mastery:6},
+  'cav-helm': {quality:'mythic',level:63,mastery:2},
+  'cav-gloves': {quality:'mythic',level:39,mastery:1},
+  'cav-chest': {quality:'mythic',level:40,mastery:1},
+  'cav-boots': {quality:'mythic',level:63,mastery:1}
+});
+const untouched = JSON.stringify(planning);
+const forecast = E.redPlans(planning);
+assert.equal(JSON.stringify(planning), untouched);
+assert.equal(forecast.routes.length, 3);
+assert.equal(forecast.routes[0].id, 'arc-helm');
+assert.equal(forecast.routes[0].to.level, 120);
+assert.equal(forecast.routes[1].id, 'inf-gloves');
+assert.equal(forecast.routes[1].to.level, 160);
+assert.deepEqual(forecast.routes[0].costs, {xp:52650,hammers:450,mythic:6,mithril:10});
+for (let i = 0; i < forecast.routes.length; i++) {
+  const route = forecast.routes[i];
+  if (i) assert.ok(route.distance > forecast.routes[i-1].distance && route.gain > forecast.routes[i-1].gain);
+  const budget = Object.fromEntries(E.RES.map(r=>[r,planning.resources[r]+route.distance*forecast.scale[r]+1e-7]));
+  assert.ok(E.affordable(route.costs, budget));
+  assert.ok(Math.abs(route.efficiency - route.gain/E.RES.reduce((sum,r)=>sum+route.costs[r]/forecast.scale[r],0)) < 1e-8);
+}
+planning.profile = 'garrison';planning.weights = E.PROFILES.garrison;
+assert.ok(E.redPlans(planning).routes.every(route=>route.id.startsWith('inf-')));
+planning.profile = 'rally';planning.weights = E.PROFILES.rally;
+assert.ok(E.redPlans(planning).routes.every(route=>route.id.startsWith('arc-')));
+planning.included.arc = false;
+assert.ok(E.redPlans(planning).routes.every(route=>!route.id.startsWith('arc-')));
+planning.weights = {inf:[0,0],cav:[0,0],arc:[0,0]};
+assert.equal(E.redPlans(planning).routes.length,0);
 
 function words(lines) { return lines.map((text, i) => ({ text, poly: [[0,i*30],[250,i*30],[250,i*30+20],[0,i*30+20]] })); }
 const redRead = OCR.parse(words(['Infantry Helm', 'Lv. +19', 'Forge Mastery 10', '120 → 140', 'XP 1,234 / 2,500']));

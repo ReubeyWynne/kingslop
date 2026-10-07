@@ -422,7 +422,8 @@
     "skipKey": "gear.skip",
     "skipText": "Skip to the forge",
     "dust": "<i></i><i></i><i></i>",
-    "brand": "HERO GEAR",
+    "brand": "Hero gear",
+    "brandHeadingKey": "gear.title",
     "brandNoteKey": "gear.kicker",
     "brandNote": "the forge ledger",
     "swipePrev": {

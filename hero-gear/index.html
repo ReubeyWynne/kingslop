@@ -4,28 +4,24 @@ self: gear
 ---
 
 <main class="gear-main">
-  <section class="section hero gear-hero" id="top">
-    <div>
-      <p class="gear-kicker" data-i18n="gear.kicker">the forge ledger</p>
-      <h1 data-i18n="gear.title">Hero gear</h1>
-    </div>
-    <div class="gear-header-tools"><button type="button" id="gear-import" data-i18n="gear.import">read screenshots</button></div>
-  </section>
-
   <section class="section gear-console" id="gear-forge" aria-label="Hero gear planner" data-i18n-key="gear.planner" data-i18n-attr="aria-label">
     <div class="gear-bag" id="gear-bag">
       <label><img src="../img/hero-gear/xp-part-10.webp" width="40" height="40" alt=""><span data-i18n="gear.greenParts">10 XP parts</span><input id="gear-parts10" data-resource-part="ten" type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0" aria-label="10 XP parts" data-i18n-key="gear.greenParts" data-i18n-attr="aria-label"></label>
       <label><img src="../img/hero-gear/xp-part-100.webp" width="40" height="40" alt=""><span data-i18n="gear.purpleParts">100 XP parts</span><input id="gear-parts100" data-resource-part="hundred" type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0" aria-label="100 XP parts" data-i18n-key="gear.purpleParts" data-i18n-attr="aria-label"></label>
-      <div class="gear-resource-total"><img src="../img/hero-gear/xp-part-100.webp" width="40" height="40" alt=""><span data-i18n="gear.xpTotal">XP total</span><output id="gear-xp-total">0</output></div>
       <label><img src="../img/hero-gear/forgehammer.webp" width="40" height="40" alt=""><span data-i18n="gear.hammers">Forgehammers</span><input id="gear-hammers" data-resource="hammers" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Forgehammers" data-i18n-key="gear.hammers" data-i18n-attr="aria-label"></label>
       <label><img src="../img/hero-gear/mythic-gear.webp" width="40" height="40" alt=""><span data-i18n="gear.mythic">Spare mythic gear</span><input id="gear-mythic" data-resource="mythic" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Spare mythic gear" data-i18n-key="gear.mythic" data-i18n-attr="aria-label"></label>
       <label><img src="../img/hero-gear/mithril.webp" width="40" height="40" alt=""><span data-i18n="gear.mithril">Mithril</span><input id="gear-mithril" data-resource="mithril" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Mithril" data-i18n-key="gear.mithril" data-i18n-attr="aria-label"></label>
+    </div>
+    <div class="gear-budget-caption"><span><span data-i18n="gear.xpTotal">XP total</span> <output id="gear-xp-total">0</output></span><span id="gear-save" role="status" data-i18n="gear.saved">saved on this device</span></div>
+    <div class="gear-mobile-nav gear-rail" id="gear-views" role="tablist" aria-label="Workspace view" data-i18n-key="gear.workspaceView" data-i18n-attr="aria-label">
+      <button type="button" id="gear-view-gear" role="tab" aria-controls="gear-editor-panel" aria-selected="true" data-view="gear" data-i18n="gear.gearView">Gear</button>
+      <button type="button" id="gear-view-plan" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-view="plan" data-i18n="gear.planView">Plan</button>
     </div>
     <div class="gear-workspace">
       <div class="gear-editor">
         <div class="gear-heading">
           <h2 data-i18n="gear.yourGear">Your gear</h2>
-          <button type="button" id="gear-edit" data-i18n="gear.editPiece">edit selected piece</button>
+          <button type="button" id="gear-import" data-i18n="gear.import">read screenshots</button>
         </div>
         <div class="gear-rail" id="gear-troops" role="tablist" aria-label="Troop type" data-i18n-key="gear.troopType" data-i18n-attr="aria-label">
           <button type="button" id="gear-tab-inf" role="tab" aria-controls="gear-editor-panel" aria-selected="true" data-troop="inf" data-i18n="gear.inf">Infantry</button>
@@ -37,20 +33,8 @@ self: gear
           <div id="gear-rows" class="gear-grid"></div>
         </div>
         <div id="gear-preview" class="gear-preview"></div>
-        <details id="gear-settings">
-          <summary data-i18n="gear.priorities">build priorities & XP reforge</summary>
-          <label class="gear-profile"><span data-i18n="gear.profile">Build profile</span><select id="gear-profile">
-            <option value="growth" data-i18n="gear.growth">Early growth</option>
-            <option value="combat" data-i18n="gear.combat">Early combat</option>
-            <option value="gen4" data-i18n="gear.gen4">Generation 4+</option>
-            <option value="equal" data-i18n="gear.equal">Equal stats</option>
-            <option value="custom" data-i18n="gear.custom">Custom</option>
-          </select></label>
-          <div id="gear-weights"></div>
-          <label class="gear-include"><input id="gear-reforge" type="checkbox"><span data-i18n="gear.reforge">allow XP reforge on epic & mythic gear</span></label>
-          <p class="gear-gloss" data-i18n="gear.reforgeHint">mastery and red gear stay invested. weights describe your priorities, not predicted battle damage.</p>
-        </details>
         <details class="gear-save-tools"><summary data-i18n="gear.manageSave">manage your save</summary><div class="gear-tools">
+          <button type="button" id="gear-edit" data-i18n="gear.editPiece">edit selected piece</button>
           <button type="button" id="gear-export" data-i18n="gear.export">export save</button>
           <button type="button" id="gear-load" data-i18n="gear.load">import save</button>
           <button type="button" id="gear-reset" data-i18n="gear.reset">reset ledger</button>
@@ -60,38 +44,39 @@ self: gear
 
       <div class="gear-answer">
         <div class="gear-rail" id="gear-modes" role="tablist" aria-label="Planner mode" data-i18n-key="gear.mode" data-i18n-attr="aria-label">
-          <button type="button" id="gear-mode-plan" class="gear-mode-primary" role="tab" aria-controls="gear-answer-panel" aria-selected="true" data-mode="plan" data-i18n="gear.plan">Plan upgrades</button>
-          <button type="button" id="gear-mode-milestones" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-mode="milestones" data-i18n="gear.next">Next step</button>
-          <button type="button" id="gear-mode-optimise" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-mode="optimise" data-i18n="gear.optimise">Optimise</button>
+          <button type="button" id="gear-mode-plan" role="tab" aria-controls="gear-answer-panel" aria-selected="true" data-mode="plan" data-i18n="gear.saveForRed">Save for red</button>
+          <button type="button" id="gear-mode-optimise" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-mode="optimise" data-i18n="gear.spendNow">Spend now</button>
+          <button type="button" id="gear-mode-milestones" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-mode="milestones" data-i18n="gear.pieceCosts">Piece costs</button>
         </div>
         <div id="gear-answer-panel" role="tabpanel" aria-labelledby="gear-mode-milestones">
+          <div class="gear-priority-bar">
+            <label class="gear-profile"><span data-i18n="gear.profile">Build profile</span><select id="gear-profile">
+              <option value="growth" data-i18n="gear.growth">Early growth</option>
+              <option value="combat" data-i18n="gear.combat">Early combat</option>
+              <option value="gen4" data-i18n="gear.gen4">Generation 4+</option>
+              <option value="rally" data-i18n="gear.rallyProfile">Archer rally lead</option>
+              <option value="garrison" data-i18n="gear.garrisonProfile">Garrison lead</option>
+              <option value="equal" data-i18n="gear.equal">Equal stats</option>
+              <option value="custom" data-i18n="gear.custom">Custom</option>
+            </select></label>
+          </div>
           <details id="gear-piece-select" class="gear-piece-select"><summary data-i18n="gear.choosePiece">choose another piece</summary><label><span data-i18n="gear.piece">Gear piece</span><select id="gear-selected"></select></label></details>
           <div id="gear-goals" class="gear-goals">
             <button type="button" data-goal="red" aria-pressed="false" data-i18n="gear.ascend">Ascend to red</button>
             <button type="button" data-goal="mithril" aria-pressed="true" data-i18n="gear.nextMithril">Next mithril use</button>
           </div>
-          <div id="gear-targets" class="gear-targets" hidden>
-            <label><span data-i18n="gear.targetLevel">Target level</span><input type="number" min="0" max="200" step="1" inputmode="numeric" id="gear-target" value="120"></label>
-            <label><span data-i18n="gear.targetMastery">Target mastery</span><input type="number" min="0" max="20" step="1" inputmode="numeric" id="gear-target-mastery" value="11"></label>
-          </div>
-          <div id="gear-target-presets" class="gear-target-presets" aria-label="Target milestones">
-            <button type="button" data-target-level="120">+20</button><button type="button" data-target-level="140">+40</button><button type="button" data-target-level="160">+60</button><button type="button" data-target-level="180">+80</button><button type="button" data-target-level="200">+100</button>
-          </div>
           <div id="gear-milestone-out" aria-live="polite"></div>
           <div id="gear-optimise-panel" hidden>
-            <details><summary data-i18n="gear.searchMethod">how recommendations work</summary><p class="gear-gloss" data-i18n="gear.optimiseHint">compare upgrade paths using your budget and priorities. milestone costs are exact; recommendations are a local search, not a guaranteed global optimum.</p></details>
             <button type="button" id="gear-run" class="gear-primary" data-i18n="gear.run">find upgrades</button>
             <div id="gear-results" aria-live="polite"></div>
+            <details><summary data-i18n="gear.searchMethod">how recommendations work</summary><p class="gear-gloss" data-i18n="gear.optimiseHint">compare upgrade paths using your budget and priorities. milestone costs are exact; recommendations are a local search, not a guaranteed global optimum.</p></details>
           </div>
         </div>
       </div>
     </div>
-    <output id="gear-status" role="status" hidden></output><p id="gear-save" class="gear-save" role="status" data-i18n="gear.saved">saved on this device</p>
+    <details id="gear-settings"><summary data-i18n="gear.weightSettings">weights & reforge</summary><div id="gear-weights"></div><label class="gear-include"><input id="gear-reforge" type="checkbox"><span data-i18n="gear.reforge">allow XP reforge on epic & mythic gear</span></label><p class="gear-gloss" data-i18n="gear.reforgeHint">mastery and red gear stay invested. weights describe your priorities, not predicted battle damage.</p></details>
+    <output id="gear-status" role="status" hidden></output>
     <button id="gear-undo" type="button" hidden data-i18n="gear.undo">undo last update</button>
-    <div class="gear-mobile-nav gear-rail" id="gear-views" role="tablist" aria-label="Workspace view" data-i18n-key="gear.workspaceView" data-i18n-attr="aria-label">
-      <button type="button" id="gear-view-gear" role="tab" aria-controls="gear-editor-panel" aria-selected="true" data-view="gear" data-i18n="gear.gearView">Gear</button>
-      <button type="button" id="gear-view-plan" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-view="plan" data-i18n="gear.planView">Plan</button>
-    </div>
     <noscript><p data-i18n="gear.noJS">enable JavaScript to use the planner. the cost references below remain available.</p></noscript>
   </section>
 

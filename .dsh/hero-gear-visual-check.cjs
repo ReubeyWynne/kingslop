@@ -34,6 +34,11 @@ async function fits(page, label) {
     await page.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
     assert.deepEqual(errors,[]);
     assert.equal(await page.locator('h1').textContent(),'Hero gear');
+    assert.equal(await page.locator('h1').count(),1);
+    assert.equal(await page.locator('.topbar .brand').count(),1);
+    assert.equal(await page.locator('.gear-hero').count(),0);
+    assert.equal(await page.locator('.gear-editor #gear-import').count(),1);
+    assert.equal(await page.locator('.gear-answer #gear-profile').count(),1);
     await page.locator('.gear-row[data-select="inf-helm"]').click();
     await page.locator('[data-piece="inf-helm"][data-field="level"]').fill('100');
     await page.locator('[data-piece="inf-helm"][data-field="level"]').press('Tab');
@@ -55,11 +60,9 @@ async function fits(page, label) {
     await page.locator('#gear-tab-cav').focus();await page.keyboard.press('ArrowRight');
     assert.equal(await page.locator('#gear-tab-arc').getAttribute('aria-selected'),'true');
     await page.locator('#gear-mode-plan').click();
-    await page.locator('#gear-piece-select summary').click();
-    await page.locator('#gear-selected').selectOption('inf-helm');
-    await page.locator('#gear-target').fill('200');
-    await page.locator('#gear-target-mastery').fill('20');
-    assert.match(await page.locator('.gear-plan-cards').textContent(),/501,050/);
+    assert.ok(await page.locator('.gear-route').count()<=3);
+    assert.equal(await page.locator('#gear-target').count(),0);
+    assert.match(await page.locator('.gear-route-head').textContent(),/weighted gain/);
     await page.locator('#gear-mode-optimise').click();await page.locator('#gear-run').click();
     await page.locator('#gear-apply-result').waitFor();
     await page.locator('#gear-apply-result').click();
@@ -74,6 +77,8 @@ async function fits(page, label) {
     await page.locator('#gear-apply-import').click();
     assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),119);
     await page.locator('#gear-mode-milestones').click();
+    await page.locator('#gear-piece-select summary').click();
+    await page.locator('#gear-selected').selectOption('inf-helm');
     await page.locator('#gear-apply-milestone').click();
     assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),120);
     await page.locator('#gear-undo').click();
@@ -83,6 +88,14 @@ async function fits(page, label) {
     fixture.pieces['inf-gloves']={quality:'red',level:120,mastery:11};
     fixture.pieces['inf-chest']={quality:'mythic',level:100,mastery:6};
     fixture.pieces['inf-boots']={quality:'mythic',level:72,mastery:3};
+    fixture.pieces['arc-helm']={quality:'mythic',level:100,mastery:6};
+    fixture.pieces['arc-gloves']={quality:'mythic',level:69,mastery:2};
+    fixture.pieces['arc-chest']={quality:'mythic',level:69,mastery:2};
+    fixture.pieces['arc-boots']={quality:'mythic',level:100,mastery:6};
+    fixture.pieces['cav-helm']={quality:'mythic',level:63,mastery:2};
+    fixture.pieces['cav-gloves']={quality:'mythic',level:39,mastery:1};
+    fixture.pieces['cav-chest']={quality:'mythic',level:40,mastery:1};
+    fixture.pieces['cav-boots']={quality:'mythic',level:63,mastery:1};
     fixture.selected='inf-gloves';fixture.resources={xp:52650,hammers:110,mythic:6,mithril:10};
     await page.locator('.gear-save-tools summary').click();
     await page.locator('#gear-load').click();
@@ -93,6 +106,14 @@ async function fits(page, label) {
     assert.match(await page.locator('[data-cost-resource="xp"]').textContent(),/74,100/);
     assert.match(await page.locator('[data-cost-resource="mithril"]').textContent(),/10 missing/);
     await page.waitForFunction(()=>[...document.querySelectorAll('.gear-main img')].every(img=>img.complete&&img.naturalWidth>0));
+    await page.locator('#gear-mode-plan').click();
+    assert.equal(await page.locator('.gear-route').count(),3);
+    await page.locator('.gear-route[data-route="1"]').click();
+    assert.match(await page.locator('.gear-route-detail').textContent(),/garrison lead/);
+    await page.locator('#gear-profile').selectOption('rally');
+    assert.match(await page.locator('.gear-route').first().textContent(),/Archer/);
+    await page.locator('#gear-profile').selectOption('growth');
+    await page.locator('.gear-route[data-route="0"]').click();
     await page.evaluate(()=>scrollTo(0,0));
     await page.screenshot({path:path.join(output,'desktop.png')});
     for(const width of [320,390,768,1280,1440]){
@@ -103,18 +124,22 @@ async function fits(page, label) {
         await page.locator('#gear-view-gear').click();
         assert.equal(await page.locator('.gear-answer').isVisible(),false);
         assert.equal(await page.locator('.gear-editor').isVisible(),true);
+        assert.equal(await page.locator('#gear-import').isVisible(),true);
+        assert.equal(await page.locator('#gear-profile').isVisible(),false);
         await page.locator('#gear-view-plan').click();
         assert.equal(await page.locator('.gear-answer').isVisible(),true);
         assert.equal(await page.locator('.gear-editor').isVisible(),false);
+        assert.equal(await page.locator('#gear-profile').isVisible(),true);
         await fits(page,'plan '+width);
         if(width===390){
           await page.evaluate(()=>scrollTo(0,0));
-          const ledger=await page.locator('.gear-cost-ledger').boundingBox();
-          const views=await page.locator('#gear-views').boundingBox();
-          assert.ok(ledger.y+ledger.height<=views.y,'upgrade resource costs remain above mobile view controls');
+          assert.equal(await page.locator('#gear-profile').isVisible(),true);
+          assert.equal(await page.locator('.gear-route').count(),3);
+          const costs=await page.locator('.gear-route-detail .gear-cost-strip').boundingBox();
+          assert.ok(costs.y+costs.height<=height,'three recommendations and costs fit the mobile viewport');
           await page.screenshot({path:path.join(output,'mobile-plan.png')});
         }
-        await page.reload();await page.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+        await page.reload();await page.waitForFunction(()=>document.querySelectorAll('#gear-rows .gear-row').length===4);
         assert.equal(await page.locator('#gear-forge').getAttribute('data-view'),'plan');
         await page.locator('#gear-view-gear').click();
         await page.locator('.gear-row[data-select="inf-gloves"]').click();await fits(page,'edit '+width);
@@ -124,9 +149,33 @@ async function fits(page, label) {
       }
       if(width===390)await page.screenshot({path:path.join(output,'mobile.png')});
     }
+    await page.setViewportSize({width:390,height:844});
+    await page.locator('#gear-view-plan').click();
+    await page.locator('#gear-settings summary').click();
+    await page.locator('#gear-reforge').check();
+    await page.locator('#gear-settings summary').click();
+    for(const [id,value]of [['parts10','0'],['parts100','120'],['hammers','180'],['mythic','4'],['mithril','0']])await page.locator('#gear-'+id).fill(value);
+    await page.locator('#gear-mode-optimise').click();await page.locator('#gear-run').click();
+    await page.locator('#gear-apply-result').waitFor();
+    assert.equal(await page.locator('.gear-result-grid .gear-row').count(),4);
+    assert.match(await page.locator('.gear-result-grid').textContent(),/before.*after/s);
+    await page.locator('[data-result-troop="cav"]').click();
+    assert.ok(await page.locator('.gear-change[data-direction="down"]').count()>0);
+    assert.match(await page.locator('.gear-change[data-direction="down"]').first().textContent(),/↓.*recover/);
+    await fits(page,'mobile optimise');await page.evaluate(()=>scrollTo(0,0));
+    const resultGrid=await page.locator('.gear-result-grid').boundingBox();
+    assert.ok(resultGrid.y+resultGrid.height<=844,'all four before/after gear tiles fit the mobile viewport');
+    await page.screenshot({path:path.join(output,'mobile-optimise.png')});
+    await page.setViewportSize({width:1280,height:900});await fits(page,'desktop optimise');
+    await page.screenshot({path:path.join(output,'desktop-optimise.png')});
+    await page.locator('#gear-apply-result').click();
+    const applied=await page.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')));
+    assert.equal(applied.resources.xp,applied.parts.ten*10+applied.parts.hundred*100+applied.parts.remainder);
+    await page.reload();await page.waitForFunction(()=>document.querySelectorAll('#gear-rows .gear-row').length===4);
+    assert.equal(await page.locator('#gear-xp-total').textContent(),new Intl.NumberFormat('en-GB').format(applied.resources.xp));
     await page.setViewportSize({width:1440,height:900});
     for(const lang of langs){
-      await page.goto(origin+'/hero-gear/?lang='+lang);await page.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);await fits(page,'language '+lang);
+      await page.goto(origin+'/hero-gear/?lang='+lang);await page.waitForFunction(()=>document.querySelectorAll('#gear-rows .gear-row').length===4);await fits(page,'language '+lang);
       await page.setViewportSize({width:320,height:900});await fits(page,'narrow '+lang);
       await page.locator('#gear-view-plan').click();await fits(page,'narrow plan '+lang);
       await page.locator('#gear-view-gear').click();await page.setViewportSize({width:1440,height:900});
