@@ -386,7 +386,7 @@
       else if (node.dataset.piece && node.dataset.field !== 'quality') {
         state.pieces[node.dataset.piece] = E.normalisePiece(Object.assign({}, state.pieces[node.dataset.piece], { [node.dataset.field]: Number(node.value) }));
         paintEditor();
-        el('edit-fields').querySelector('.gear-edit-art span').textContent = pieceLabel(state.pieces[node.dataset.piece]);
+        el('edit-fields').querySelector('.gear-edit-art').innerHTML = gearItem(node.dataset.piece, state.pieces[node.dataset.piece]) + '<span>' + esc(pieceLabel(state.pieces[node.dataset.piece])) + '</span>';
       } else if (node.dataset.weight) {
         state.profile = 'custom'; el('profile').value = 'custom';
         state.weights[node.dataset.weight][Number(node.dataset.stat)] = Math.min(100, Math.max(0, Number(node.value) || 0));

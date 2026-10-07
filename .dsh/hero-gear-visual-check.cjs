@@ -44,6 +44,8 @@ async function fits(page, label) {
     await page.locator('[data-piece="inf-helm"][data-field="level"]').press('Tab');
     await page.locator('[data-piece="inf-helm"][data-field="mastery"]').fill('10');
     await page.locator('[data-piece="inf-helm"][data-field="mastery"]').press('Tab');
+    assert.equal(await page.locator('.gear-edit-art .gear-item-level').textContent(),'+100');
+    assert.equal(await page.locator('.gear-edit-art .gear-item-mastery').textContent(),'10');
     assert.match(await page.locator('.gear-row[data-select="inf-helm"]').textContent(), /\+100/);
     await page.locator('#gear-close-edit').click();
     await page.locator('#gear-mode-milestones').click();
