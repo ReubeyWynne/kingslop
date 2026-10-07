@@ -232,6 +232,8 @@ async function fits(page, label) {
         ['inf',[['mythic',0,0],['mythic',0,0],['mythic',0,0],['mythic',0,0]]]
       ].flatMap(([troop,pieces])=>pieces.map(([quality,level,mastery],i)=>({troop,slot:E.SLOTS[i],quality,level:String(level),mastery:String(mastery)})));
       assert.deepEqual(actual,expected,'real overview screenshots using the production OCR worker');
+      assert.equal(await overviewPage.locator('#gear-import-pick').isVisible(),false,'upload instructions yield to the gear review');
+      assert.equal(await overviewPage.locator('#gear-replace-images').isVisible(),true);
       assert.equal(await overviewPage.locator('[data-import-index="1"][data-import-field="level"]').inputValue(),'20','red enhancement matches the crop');
       await overviewPage.locator('#gear-import-scroll').evaluate(el=>el.scrollTop=el.scrollHeight);
       const dialog=await overviewPage.locator('#gear-import-dialog').boundingBox();
@@ -255,6 +257,10 @@ async function fits(page, label) {
       }
       await overviewPage.screenshot({path:path.join(output,'mobile-import-short.png')});
       await overviewPage.setViewportSize({width:390,height:844});
+      const enhancement=overviewPage.locator('[data-import-index="0"][data-import-field="level"]');
+      await enhancement.fill('101');await overviewPage.locator('#gear-apply-import').click();
+      assert.equal(await overviewPage.locator('#gear-import-dialog').evaluate(el=>el.open),true,'invalid visible numbers cannot apply a silently clamped value');
+      await enhancement.fill('69');
       assert.equal(await overviewPage.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),0,'review has not applied any values');
       await fits(overviewPage,'real overview review');
       await overviewPage.locator('#gear-apply-import').click();

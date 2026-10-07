@@ -1125,6 +1125,7 @@ window.__BH_I18N_DATA["en"] = {
   "gear.readReview": "check the troop, slot, quality and numbers before applying.",
   "gear.importIntro": "choose hero gear overviews or piece detail screens, then check the crops and numbers.",
   "gear.chooseScreenshots": "choose screenshots",
+  "gear.replaceScreenshots": "choose other screenshots",
   "gear.importNumbers": "use the numbers on the crop: red +20 stays 20 here. blank fields keep your saved values.",
   "gear.importEnhancement": "Enhancement +",
   "gear.changeImportPiece": "change piece or quality",

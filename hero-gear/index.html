@@ -103,8 +103,11 @@ self: gear
     <output id="gear-read-status" role="status" aria-live="polite"></output>
   </header>
   <div id="gear-import-scroll" class="gear-import-scroll">
-    <p class="gear-import-intro" data-i18n="gear.importIntro">choose hero gear overviews or piece detail screens, then check the crops and numbers.</p>
-    <label class="gear-import-picker"><span data-i18n="gear.chooseScreenshots">choose screenshots</span><input type="file" id="gear-images" accept="image/*" multiple></label>
+    <div id="gear-import-pick">
+      <p class="gear-import-intro" data-i18n="gear.importIntro">choose hero gear overviews or piece detail screens, then check the crops and numbers.</p>
+      <label class="gear-import-picker"><span data-i18n="gear.chooseScreenshots">choose screenshots</span><input type="file" id="gear-images" accept="image/*" multiple></label>
+    </div>
+    <button type="button" id="gear-replace-images" hidden data-i18n="gear.replaceScreenshots">choose other screenshots</button>
     <p class="gear-gloss gear-import-hint" data-i18n="gear.importNumbers">use the numbers on the crop: red +20 stays 20 here. blank fields keep your saved values.</p>
     <div id="gear-import-review"></div>
   </div>

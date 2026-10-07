@@ -319,6 +319,7 @@
     imports.forEach(function (item) { URL.revokeObjectURL(item.url); }); imports = [];
     el('import-review').textContent = ''; el('read-status').textContent = ''; el('apply-import').disabled = true;
     el('images').value = ''; el('images').disabled = false;
+    el('import-pick').hidden = false; el('replace-images').hidden = true;
     el('import-dialog').removeAttribute('aria-busy');
     el('import-scroll').scrollTop = 0;
   }
@@ -334,6 +335,7 @@
     if (files.length > 12 || files.some(function (file) { return !file.type.startsWith('image/') || file.size > 20 * 1024 * 1024; })) { el('read-status').textContent = tr('imageLimit'); return; }
     var sequence = importSequence;
     el('images').disabled = true;
+    el('import-pick').hidden = true; el('replace-images').hidden = false; el('replace-images').disabled = true;
     el('import-dialog').setAttribute('aria-busy', 'true');
     try {
       for (var i = 0; i < files.length; i++) {
@@ -357,7 +359,7 @@
       el('read-status').textContent = BH.fill(tr('importReady'), { n: imports.length });
       el('apply-import').disabled = false;
     } finally {
-      if (sequence === importSequence) { el('images').disabled = false; el('import-dialog').removeAttribute('aria-busy'); }
+      if (sequence === importSequence) { el('images').disabled = false; el('replace-images').disabled = false; el('import-dialog').removeAttribute('aria-busy'); }
     }
   }
   function tabKeys(container, attr) {
@@ -476,6 +478,7 @@
     el('import-dialog').addEventListener('close', function () { document.documentElement.classList.remove('gear-import-open'); });
     el('import-dialog').addEventListener('cancel', clearImports);
     el('images').addEventListener('change', readImages);
+    el('replace-images').addEventListener('click', function () { el('images').click(); });
     el('import-review').addEventListener('input', function (event) {
       var node = event.target, i = node.dataset.importIndex, field = node.dataset.importField;
       if (i === undefined || !field) return;
@@ -490,6 +493,8 @@
       }
     });
     el('apply-import').addEventListener('click', function () {
+      var invalidInput = Array.from(el('import-review').querySelectorAll('input[type="number"]')).find(function (node) { return imports[node.dataset.importIndex].included && !node.validity.valid; });
+      if (invalidInput) { el('read-status').textContent = tr('overviewConflict'); invalidInput.reportValidity(); return; }
       var next = copy(state), seen = {}, invalid = false;
       imports.forEach(function (item) {
         if (!item.included) return;
