@@ -20,7 +20,7 @@ self: gear
     <div class="gear-workspace">
       <div class="gear-editor">
         <div class="gear-heading">
-          <h2 data-i18n="gear.yourGear">Your gear</h2>
+          <div><h2 data-i18n="gear.yourGear">Your gear</h2><small class="gear-edit-hint" data-i18n="gear.tapToEdit">tap a slot to edit</small></div>
           <button type="button" id="gear-import" data-i18n="gear.import">read screenshots</button>
         </div>
         <div class="gear-rail" id="gear-troops" role="tablist" aria-label="Troop type" data-i18n-key="gear.troopType" data-i18n-attr="aria-label">
@@ -67,8 +67,9 @@ self: gear
           </div>
           <div id="gear-milestone-out" aria-live="polite"></div>
           <div id="gear-optimise-panel" hidden>
-            <button type="button" id="gear-run" class="gear-primary" data-i18n="gear.run">find upgrades</button>
-            <div id="gear-results" aria-live="polite"></div>
+            <output id="gear-search-status" class="gear-search-status" role="status" hidden></output>
+            <button type="button" id="gear-run" class="gear-primary gear-action" data-i18n="gear.retryCalculation" hidden>retry calculation</button>
+            <div id="gear-results" aria-live="polite" aria-busy="false"></div>
             <details><summary data-i18n="gear.searchMethod">how recommendations work</summary><p class="gear-gloss" data-i18n="gear.optimiseHint">compare upgrade paths using your budget and priorities. milestone costs are exact; recommendations are a local search, not a guaranteed global optimum.</p></details>
           </div>
         </div>

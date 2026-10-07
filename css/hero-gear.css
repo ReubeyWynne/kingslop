@@ -150,7 +150,14 @@ html[data-page="gear"] .topbar h1.brand { margin: 0; line-height: 1.2; }
 .gear-change-arrow { color: var(--amber); }
 .gear-xp-flow, .gear-tile-impact { grid-column: 1 / -1; font-size: .75rem; color: var(--ink-muted); }
 .gear-change[data-direction="down"] .gear-xp-flow { color: var(--amber); }
-.gear-change[data-direction="same"] { opacity: .7; }
+.gear-change[data-changed="false"] { opacity: .7; }
+.gear-edit-hint { display: block; font-size: .75rem; color: var(--ink-muted); line-height: 1.2; }
+.gear-search-status { display: block; color: var(--ink-dim); font-size: .9rem; padding-block: .7rem; }
+.gear-search-status::before { content: "❧ "; color: var(--amber); }
+.gear-main .gear-action { border: 1px solid var(--amber-dim); padding: .35rem .7rem; background: color-mix(in srgb, var(--amber) 5%, transparent); }
+.gear-record-action { margin-top: .5rem; }
+.gear-record-action .gear-gloss { max-width: 30rem; font-size: .8rem; }
+.gear-empty { border-block: 1px solid var(--signal-line); padding-block: .6rem; margin-top: .5rem; }
 .gear-reforge-flow { color: var(--amber); font-size: .85rem; margin: .5rem 0; }
 .gear-notes { max-width: 46rem; }
 .gear-dialog { position: fixed; inset: 0; margin: auto; width: min(38rem, calc(100% - 2rem)); max-height: calc(100vh - 2rem); max-height: calc(100dvh - 2rem); overflow: auto; overscroll-behavior: contain; border: 1px solid var(--signal-line); border-radius: 2px; padding: 1.2rem; color: var(--ink); background: var(--void-2); font: 1rem/1.4 var(--body); }

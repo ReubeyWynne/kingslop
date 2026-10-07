@@ -42,6 +42,10 @@ jobs:
         env:
           NODE_PATH: ${{ runner.temp }}/visuals/node_modules
         run: node .dsh/hero-gear-visual-check.cjs
+      - name: Check hero gear automatic recommendations
+        env:
+          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        run: node .dsh/hero-gear-interaction-check.cjs
       - name: Upload gear previews
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
