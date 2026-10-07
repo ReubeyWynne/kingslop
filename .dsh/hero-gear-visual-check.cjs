@@ -41,12 +41,13 @@ async function fits(page, label) {
     await page.locator('[data-piece="inf-helm"][data-field="mastery"]').press('Tab');
     assert.match(await page.locator('.gear-row[data-select="inf-helm"]').textContent(), /\+100/);
     await page.locator('#gear-close-edit').click();
+    await page.locator('#gear-mode-milestones').click();
     const cells=await page.locator('.gear-cost-row').allTextContents();
     assert.match(cells[0],/52,650/);assert.match(cells[1],/110/);assert.match(cells[2],/6/);assert.match(cells[3],/10/);
-    for(const [id,value]of [['xp','52650'],['hammers','110'],['mythic','6'],['mithril','10']])await page.locator('#gear-'+id).fill(value);
+    for(const [id,value]of [['parts10','5'],['parts100','526'],['hammers','110'],['mythic','6'],['mithril','10']])await page.locator('#gear-'+id).fill(value);
     assert.match(await page.locator('#gear-milestone-out').textContent(),/you have every resource/);
     await page.reload();await page.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
-    assert.equal(await page.locator('#gear-xp').inputValue(),'52650');
+    assert.equal(await page.locator('#gear-xp-total').textContent(),'52,650');
     assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),100);
     await page.locator('#gear-troops [data-troop="cav"]').click();
     assert.equal(await page.locator('#gear-include').isChecked(),true);
@@ -58,7 +59,7 @@ async function fits(page, label) {
     await page.locator('#gear-selected').selectOption('inf-helm');
     await page.locator('#gear-target').fill('200');
     await page.locator('#gear-target-mastery').fill('20');
-    assert.match(await page.locator('.gear-cost-ledger').textContent(),/501,050/);
+    assert.match(await page.locator('.gear-plan-cards').textContent(),/501,050/);
     await page.locator('#gear-mode-optimise').click();await page.locator('#gear-run').click();
     await page.locator('#gear-apply-result').waitFor();
     await page.locator('#gear-apply-result').click();

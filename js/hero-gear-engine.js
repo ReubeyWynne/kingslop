@@ -34,7 +34,7 @@
   function defaults() {
     var pieces = {};
     TYPES.forEach(function (type) { SLOTS.forEach(function (slot) { pieces[type + '-' + slot] = normalisePiece(); }); });
-    return { version: 1, pieces: pieces, resources: emptyCost(), included: { inf: true, cav: true, arc: true }, weights: copy(PROFILES.growth), profile: 'growth', reforge: false, troop: 'inf', mode: 'milestones', view: 'gear', selected: 'inf-helm', goal: 'mithril', target: 120, targetMastery: 11 };
+    return { version: 1, pieces: pieces, resources: emptyCost(), included: { inf: true, cav: true, arc: true }, weights: copy(PROFILES.growth), profile: 'growth', reforge: false, troop: 'inf', mode: 'plan', view: 'gear', selected: 'inf-helm', goal: 'mithril', target: 120, targetMastery: 11 };
   }
   function normaliseState(input) {
     var s = defaults();
@@ -170,6 +170,10 @@
     best.baseline = baseline;
     best.gain = best.score - baseline;
     best.changes = Object.keys(original).filter(function (id) { return JSON.stringify(original[id]) !== JSON.stringify(best.pieces[id]); });
+    best.details = best.changes.map(function (id) {
+      var slot = id.split('-')[1], before = stats(original[id], slot), after = stats(best.pieces[id], slot), reforged = best.pieces[id].level < original[id].level;
+      return { id: id, from: original[id], to: best.pieces[id], costs: reforged ? emptyCost() : cost(original[id], best.pieces[id]), reforged: reforged, before: before, after: after, delta: { core: after.core - before.core, attack: after.attack - before.attack, defense: after.defense - before.defense }, gain: score(id, best.pieces[id], state.weights) - score(id, original[id], state.weights) };
+    });
     return best;
   }
 
