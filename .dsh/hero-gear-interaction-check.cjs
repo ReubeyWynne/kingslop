@@ -64,6 +64,9 @@ function fixture() {
     assert.equal(await page.locator('#gear-record-hint').isVisible(), true);
     assert.equal(await page.locator('#gear-apply-result').getAttribute('aria-describedby'), 'gear-record-hint');
     assert.equal(await page.locator('.gear-change[data-direction="same"][data-changed="true"]').first().evaluate(el => getComputedStyle(el).opacity), '1');
+    assert.equal(await page.locator('.gear-change').count(), 1, 'unchanged pieces do not create comparison rows');
+    assert.equal(await page.locator('.gear-change .gear-item').count(), 2);
+    assert.match(await page.locator('.gear-kept').textContent(), /unchanged/);
     await page.locator('#gear-mode-plan').click(); await page.locator('#gear-mode-optimise').click();
     await page.waitForTimeout(350);
     assert.equal(await page.evaluate(() => window.__searches.length), 1, 'valid results survive tab navigation');
@@ -140,7 +143,35 @@ function fixture() {
       }
       await page.close();
     }
-    console.log('Automatic Spend now, cached tab navigation, debounced edits, cancelled searches, latest-result recording, undo/reload, mobile visibility, worker failure/retry, empty states, custom weights and mastery-only highlighting passed.');
+    for (const kind of ['ascension', 'mithril', 'mastery']) {
+      const state = fixture();
+      for (const slot of E.SLOTS) state.pieces['arc-' + slot] = { quality:'epic', level:80, mastery:0 };
+      const from = kind === 'ascension' ? { quality:'mythic', level:100, mastery:10 } : { quality:'red', level:120, mastery:11 };
+      const to = { quality:'red', level:kind === 'mithril' ? 160 : 120, mastery:kind === 'mithril' ? 13 : kind === 'mastery' ? 12 : 11 };
+      state.pieces['arc-helm'] = from; state.resources = E.cost(from, to);
+      await open(state); await ready();
+      const row = page.locator('.gear-change[data-checkpoint="' + kind + '"]');
+      assert.equal(await row.count(), 1);
+      assert.equal(await row.locator('.gear-item').count(), 2);
+      assert.equal(await row.locator('.gear-item').first().getAttribute('data-quality'), from.quality);
+      assert.equal(await row.locator('.gear-item').last().getAttribute('data-quality'), 'red');
+      assert.equal(await row.locator('.gear-item-level').last().textContent(), '+' + (to.level - 100));
+      assert.equal(await row.locator('.gear-item-mastery').last().textContent(), String(to.mastery));
+      assert.match(await row.locator('.gear-item').last().getAttribute('aria-label'), /Red.*Mastery/);
+      assert.equal(await row.locator('.gear-checkpoint-label').isVisible(), true);
+      assert.equal(await page.locator('.gear-change').count(), 1);
+      await page.screenshot({ path:path.join(output, 'mobile-red-' + kind + '.png') });
+      await page.setViewportSize({ width:1280,height:900 });
+      await page.screenshot({ path:path.join(output, 'desktop-red-' + kind + '.png') });
+      await page.locator('#gear-mode-plan').click();
+      if (kind !== 'mastery') {
+        assert.ok(await page.locator('.gear-route[data-checkpoint] .gear-item[data-quality="red"]').count() > 0);
+        await page.setViewportSize({ width:390,height:844 });
+        await page.screenshot({ path:path.join(output, 'mobile-saving-' + kind + '.png') });
+      }
+      await page.close();
+    }
+    console.log('Automatic Spend now, cached tab navigation, debounced edits, cancelled searches, latest-result recording, undo/reload, mobile visibility, worker failure/retry, empty states, custom weights and mastery-only highlighting passed. Shared before/after rarity frames, enhancement/mastery overlays, changed-only rows and ascension/mithril/mastery checkpoint treatments passed.');
   } catch (error) {
     if (page && !page.isClosed()) await page.screenshot({ path:path.join(output, 'interaction-failure.png'), fullPage:true });
     fs.writeFileSync(path.join(output, 'interaction-failure.txt'), error.stack); throw error;
