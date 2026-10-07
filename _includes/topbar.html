@@ -1,6 +1,6 @@
 {% assign p = site.data.pages[page.self] %}
 <header class="topbar">
-  <span class="brand">{{ p.brand }}</span>
+  {% if p.brandHeadingKey %}<h1 class="brand" data-i18n="{{ p.brandHeadingKey }}">{{ p.brand }}</h1>{% else %}<span class="brand">{{ p.brand }}</span>{% endif %}
   <nav class="ev-switch" aria-label="Events" data-i18n-key="ev.switchAria" data-i18n-attr="aria-label">
     {% for n in site.data.nav %}{% if n.self == page.self %}{% if n.self == 'home' %}<a href="./" class="active" aria-current="page" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% else %}<a href="{{ p.depth }}{{ n.tail }}" class="active" aria-current="page" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>

@@ -34,6 +34,11 @@ async function fits(page, label) {
     await page.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
     assert.deepEqual(errors,[]);
     assert.equal(await page.locator('h1').textContent(),'Hero gear');
+    assert.equal(await page.locator('h1').count(),1);
+    assert.equal(await page.locator('.topbar .brand').count(),1);
+    assert.equal(await page.locator('.gear-hero').count(),0);
+    assert.equal(await page.locator('.gear-editor #gear-import').count(),1);
+    assert.equal(await page.locator('.gear-answer #gear-profile').count(),1);
     await page.locator('.gear-row[data-select="inf-helm"]').click();
     await page.locator('[data-piece="inf-helm"][data-field="level"]').fill('100');
     await page.locator('[data-piece="inf-helm"][data-field="level"]').press('Tab');
@@ -119,9 +124,12 @@ async function fits(page, label) {
         await page.locator('#gear-view-gear').click();
         assert.equal(await page.locator('.gear-answer').isVisible(),false);
         assert.equal(await page.locator('.gear-editor').isVisible(),true);
+        assert.equal(await page.locator('#gear-import').isVisible(),true);
+        assert.equal(await page.locator('#gear-profile').isVisible(),false);
         await page.locator('#gear-view-plan').click();
         assert.equal(await page.locator('.gear-answer').isVisible(),true);
         assert.equal(await page.locator('.gear-editor').isVisible(),false);
+        assert.equal(await page.locator('#gear-profile').isVisible(),true);
         await fits(page,'plan '+width);
         if(width===390){
           await page.evaluate(()=>scrollTo(0,0));
