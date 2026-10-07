@@ -127,11 +127,11 @@
   .gear-save { font-size: .7rem; }
   .gear-kicker { display: none; }
   .gear-bag { gap: .6rem; padding-block: .5rem; }
-  .gear-bag { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .gear-bag { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .2rem; }
   .gear-bag label { display: flex; gap: .15rem; align-items: center; }
   .gear-bag label > span { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .gear-bag img { width: 1.8rem; height: 1.8rem; }
-  .gear-bag input[type="number"] { font-size: 1rem; text-align: center; }
+  .gear-bag input[type="number"] { font-size: .9rem; text-align: center; }
   .gear-resource-total { grid-template-columns: 1.8rem minmax(0,1fr); column-gap: .15rem; }
   .gear-resource-total img { width: 1.8rem; height: 1.8rem; }
   .gear-resource-total span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
