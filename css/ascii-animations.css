@@ -34,61 +34,193 @@
   }
 }
 
-/* The full forge is a reward-side vignette; characters change without moving their grid. */
-.ascii-scene { position: relative; display: block; width: 32ch; height: 13em; overflow: hidden; color: #e08a3c; font: 10px/1 ui-monospace,Consolas,monospace; font-variant-ligatures: none; direction: ltr; white-space: pre; }
-.ascii-scene pre { position: absolute; margin: 0; font: inherit; white-space: pre; }
-.ascii-scene span { position: absolute; white-space: pre; }
-.ascii-scene span::before { display: block; white-space: pre; }
-.ascii-anvil { left: 6ch; bottom: 0; color: #c7bc9d; z-index: 2; }
-.ascii-hammer { left: 12ch; top: 0; color: #d3a33e; }
-.ascii-hammer::before { content: "    ____\A   |####|\A   |####|\A     ||\A     ||"; animation: ascii-hammer 2.4s steps(1,end) infinite; }
-@keyframes ascii-hammer {
-  0%,30%,100% { content: "    ____\A   |####|\A   |####|\A     ||\A     ||"; }
-  31%,55% { content: "\A  ____\A |####|\A |####|\A   ||\A   ||"; }
-  56%,72% { content: "\A\A    ____\A   |####|\A   |####|\A     ||"; }
-  73%,85% { content: "\A\A\A    ____\A   |####|\A   |####|"; }
+.ascii-scene{position:relative;display:block;width:32ch;height:13em;overflow:hidden;color:#e08a3c;font:10px/1 ui-monospace,Consolas,monospace;font-variant-ligatures:none;direction:ltr;white-space:pre;isolation:isolate}
+.ascii-scene pre{position:absolute;margin:0;font:inherit;white-space:pre}
+.ascii-scene span{position:absolute;white-space:pre;pointer-events:none}
+.ascii-scene span::before,.ascii-hammer-loader>span::before{display:block;white-space:pre}
+.ascii-anvil{left:6ch;bottom:0;color:#c7bc9d;z-index:2}
+.ascii-hammer{left:0;top:0;color:#d3a33e;z-index:1}
+.ascii-impact{left:14ch;top:5em;color:#f5c851;z-index:4}
+.ascii-forge-sparks{left:0;top:0;color:#e08a3c;z-index:4}
+.ascii-hammer-loader{display:none;position:relative;width:17ch;height:9em;margin:.25rem 0;color:#d3a33e;font:9px/1 ui-monospace,Consolas,monospace;font-variant-ligatures:none;direction:ltr;white-space:pre;isolation:isolate}
+.ascii-hammer-loader>span{position:absolute;white-space:pre;pointer-events:none}
+.ascii-loader-anvil{position:absolute;left:0;bottom:0;margin:0;color:#c7bc9d;font:inherit;white-space:pre;z-index:2}
+.ascii-loader-hammer{left:0;top:0;z-index:1}
+.ascii-loader-impact{left:0;top:0;color:#f5c851;z-index:3}
+.gear-import-dialog[aria-busy="true"] .ascii-hammer-loader,#sim-ocr-status.busy + .ascii-hammer-loader{display:inline-block}
+.ascii-hammer::before{content:"              //#\\\\\\\A               /\\=###//\A                \\\\\\\\//\\\\\A                   \\/  \\\\\\\A                          \\\\\A \A ";animation:ascii-hammer 2.4s steps(1,end) infinite}
+@keyframes ascii-hammer{
+0.00000%{content:"              //#\\\\\\\A               /\\=###//\A                \\\\\\\\//\\\\\A                   \\/  \\\\\\\A                          \\\\\A \A "}
+3.12500%{content:"              //##\\\\\\\A               /\\\\=##//\A                 \\\\\\//\\\\\A                    /  \\\\\\\\\A                          \\\\\A \A "}
+6.25000%{content:"              //##\\\\\\\\\A                \\\\\\=#//\A                  \\\\//\\\\\A                       \\\\\\\\\A                          \\\\\A \A "}
+9.37500%{content:"              //=##\\\\\\\A                \\\\\\=#//\A                   \\//\\\\\\\A                        \\\\\\\A                          \\\\\A \A "}
+12.50000%{content:"               /=##\\\\\\\A                 \\\\\\#\\//\A                   \\//\\\\\\\A                        \\\\\\\A                          \\\\\A \A "}
+15.62500%{content:"               /\\##\\\\\\\A                 \\\\\\=///\A                   \\//\\\\\\\A                        \\\\\\\A                          \\\\\A \A "}
+18.75000%{content:"               /\\##\\\\\\\A                 \\\\\\#///\A                   \\//\\\\\\\A                        \\\\\\\A                          \\\\\A \A "}
+21.87500%{content:"               /=##\\\\\\\A                \\\\\\=#//\A                   \\//\\\\\\\A                        \\\\\\\A                          \\\\\A \A "}
+25.00000%{content:"              //##\\\\\\\\\A                \\\\\\=#|/\A                  \\\\//\\\\\A                       \\\\\\\\\A                          \\\\\A \A "}
+28.12500%{content:"              //##\\\\\\\A               /\\\\=##//\A                 \\\\\\//\\\\\A                    /  \\\\\\\\\A                          \\\\\A \A "}
+31.25000%{content:"              //#\\\\\\\A               /\\=###//\A                 \\\\\\//\\\\\A                   \\/  \\\\\\\A                          \\\\\A \A "}
+34.37500%{content:"              //\\\\\\\\\A               /\\=##\\//\A                \\\\\\\\//\\\\\A                   \\/  \\\\\\\A                          \\\\\A \A "}
+37.50000%{content:"              //\\\\\\\A               /=##\\\\//\A               \\\\\\\\=//\\\A                  \\\\/ \\\\\\\\\A                          \\\\\A \A "}
+40.62500%{content:"              //\\\A               /#\\\\\\\\/\A              //\\=##\\/\A                \\\\\\\\/\\\\\\\\\\\A                         \\\\\\\A \A "}
+43.75000%{content:"\A               /\\\\\A              //#\\\\\\//\A              /\\\\==#/\\\\\\\\\A                \\\\\\\\/   \\\\\\\\\A \A "}
+46.87500%{content:"\A \A              |__\A              ||#___|\A              |=====|=======\A              ______|\A "}
+50.00000%{content:"\A \A              |___\A              ||#___|\A              |=====|=======\A               _____|\A "}
+53.12500%{content:"\A \A              |_____\A              ||###_|\A              |___==|=======\A                 ___|\A "}
+56.25000%{content:"\A \A \A              |_____|\A              |#####|=======\A              |_____|\A "}
+59.37500%{content:"\A \A \A              |_____|\A              |#####|=======\A              |_____|\A "}
+62.50000%{content:"\A \A \A              |_____|\A              |#####|=======\A              |_____|\A "}
+65.62500%{content:"\A \A \A              |_____|\A              |=====|=======\A              |_____|\A "}
+68.75000%{content:"\A \A              |_____|\A              ||####|==\A              |_____| ======\A \A "}
+71.87500%{content:"\A               /\\\\\\\A              //##\\\\//\A              /\\\\\\==/\\\\\\\\\A                 \\\\\\/   \\\\\\\\\A \A "}
+75.00000%{content:"              /\\\A               /\\\\\\\\\\\A              //=###|/\A               \\\\\\\\\\/\\\\\\\\\A                    /    \\\\\\\A \A "}
+78.12500%{content:"              //\\\\\A               /##\\\\\\/\A              //\\\\=#|/\A                 \\\\\\/ \\\\\\\\\A                         \\\\\\\A \A "}
+81.25000%{content:"              //\\\\\\\A               /=###\\//\A               \\\\\\\\=//\\\A                   \\/ \\\\\\\\\A                          \\\\\A \A "}
+84.37500%{content:"              //\\\\\\\\\A               /\\=##\\//\A                \\\\\\\\//\\\A                   \\/  \\\\\\\A                          \\\\\A \A "}
+87.50000%{content:"              //#\\\\\\\A               /\\=##\\//\A                \\\\\\\\//\\\\\A                   \\/  \\\\\\\A                          \\\\\A \A "}
+90.62500%{content:"              //#\\\\\\\A               /\\=###//\A                \\\\\\\\//\\\\\A                   \\/  \\\\\\\A                          \\\\\A \A "}
+93.75000%{content:"              //#\\\\\\\A               /\\=###//\A                \\\\\\\\//\\\\\A                   \\/  \\\\\\\A                          \\\\\A \A "}
+96.87500%{content:"              //#\\\\\\\A               /\\=###//\A                \\\\\\\\//\\\\\A                   \\/  \\\\\\\A                          \\\\\A \A "}
 }
-.ascii-impact { left: 14ch; bottom: 6em; color: #f5c851; z-index: 4; }
-.ascii-impact::before { content: " "; animation: ascii-impact 2.4s steps(1,end) infinite; }
-@keyframes ascii-impact {
-  0%,72%,100% { content: " "; }
-  73%,80% { content: "*#@#*"; }
-  81%,92% { content: ":+*+:"; }
+.ascii-impact::before{content:"";animation:ascii-impact 2.4s steps(1,end) infinite}
+@keyframes ascii-impact{
+0.00000%{content:""}
+3.12500%{content:""}
+6.25000%{content:""}
+9.37500%{content:""}
+12.50000%{content:""}
+15.62500%{content:""}
+18.75000%{content:""}
+21.87500%{content:""}
+25.00000%{content:""}
+28.12500%{content:""}
+31.25000%{content:""}
+34.37500%{content:""}
+37.50000%{content:""}
+40.62500%{content:""}
+43.75000%{content:""}
+46.87500%{content:""}
+50.00000%{content:" +*+"}
+53.12500%{content:" +*+"}
+56.25000%{content:" .:."}
+59.37500%{content:" .:."}
+62.50000%{content:""}
+65.62500%{content:""}
+68.75000%{content:""}
+71.87500%{content:""}
+75.00000%{content:""}
+78.12500%{content:""}
+81.25000%{content:""}
+84.37500%{content:""}
+87.50000%{content:""}
+90.62500%{content:""}
+93.75000%{content:""}
+96.87500%{content:""}
 }
-.ascii-forge-sparks { left: 9ch; bottom: 8em; color: #e08a3c; z-index: 4; }
-.ascii-forge-sparks::before { content: " "; animation: ascii-forge-sparks 2.4s steps(1,end) infinite; }
-@keyframes ascii-forge-sparks {
-  0%,72%,100% { content: " "; }
-  73%,81% { content: "  .  *  +  '  ."; }
-  82%,90% { content: " .  '  .   +  ."; }
-  91%,99% { content: "    .   '  ."; }
+.ascii-forge-sparks::before{content:"\A \A \A \A \A \A ";animation:ascii-forge-sparks 2.4s steps(1,end) infinite}
+@keyframes ascii-forge-sparks{
+0.00000%{content:"\A \A \A \A \A \A "}
+3.12500%{content:"\A \A \A \A \A \A "}
+6.25000%{content:"\A \A \A \A \A \A "}
+9.37500%{content:"\A \A \A \A \A \A "}
+12.50000%{content:"\A \A \A \A \A \A "}
+15.62500%{content:"\A \A \A \A \A \A "}
+18.75000%{content:"\A \A \A \A \A \A "}
+21.87500%{content:"\A \A \A \A \A \A "}
+25.00000%{content:"\A \A \A \A \A \A "}
+28.12500%{content:"\A \A \A \A \A \A "}
+31.25000%{content:"\A \A \A \A \A \A "}
+34.37500%{content:"\A \A \A \A \A \A "}
+37.50000%{content:"\A \A \A \A \A \A "}
+40.62500%{content:"\A \A \A \A \A \A "}
+43.75000%{content:"\A \A \A \A \A \A "}
+46.87500%{content:"\A \A \A \A \A \A "}
+50.00000%{content:"\A \A \A \A \A                 **\A "}
+53.12500%{content:"\A \A \A \A                * *\A                ****\A "}
+56.25000%{content:"\A \A \A \A               ++ ++\A                +   +\A "}
+59.37500%{content:"\A \A \A \A              ++  ++\A                +    +\A "}
+62.50000%{content:"\A \A \A \A             + +   ++\A                +     +\A "}
+65.62500%{content:"\A \A \A              .      .\A             .     .\A               .       .\A "}
+68.75000%{content:"\A \A \A              .       .\A            .       .\A               .       .\A "}
+71.87500%{content:"\A \A \A             .\A                    .\A                        .\A "}
+75.00000%{content:"\A \A \A             .\A                    .\A                         .\A "}
+78.12500%{content:"\A \A \A            .\A                     .\A                          .\A "}
+81.25000%{content:"\A \A \A \A \A \A "}
+84.37500%{content:"\A \A \A \A \A \A "}
+87.50000%{content:"\A \A \A \A \A \A "}
+90.62500%{content:"\A \A \A \A \A \A "}
+93.75000%{content:"\A \A \A \A \A \A "}
+96.87500%{content:"\A \A \A \A \A \A "}
 }
-
-/* The miniature hammer only exists during actual screenshot-processing waits. */
-.ascii-hammer-loader { display: none; position: relative; width: 17ch; height: 9em; margin: .25rem 0; color: #d3a33e; font: 9px/1 ui-monospace,Consolas,monospace; font-variant-ligatures: none; direction: ltr; white-space: pre; }
-.ascii-hammer-loader > span { position: absolute; white-space: pre; }
-.ascii-hammer-loader > span::before { display: block; white-space: pre; }
-.ascii-loader-anvil { position: absolute; left: 0; bottom: 0; margin: 0; color: #c7bc9d; font: inherit; white-space: pre; }
-.ascii-loader-hammer { left: 3ch; top: 0; z-index: 2; }
-.ascii-loader-hammer::before { content: "  ____\A |####|\A |####|\A   ||\A   ||"; animation: ascii-loader-strike 1.45s steps(1,end) infinite; }
-@keyframes ascii-loader-strike {
-  0%,24%,100% { content: "  ____\A |####|\A |####|\A   ||\A   ||"; }
-  25%,44% { content: "\A   ____\A  |####|\A  |####|\A    ||"; }
-  45%,61% { content: "\A\A    ____\A   |####|\A   |####|"; }
-  62%,79% { content: "  ____\A |####|\A |####|\A   ||\A   ||"; }
+.ascii-loader-hammer::before{content:"    /|###\\//\A     /\\\\\\=|/\\\\\A         \\//  \\\\\\\A \A ";animation:ascii-loader-strike 1.6s steps(1,end) infinite}
+@keyframes ascii-loader-strike{
+0.00000%{content:"    /|###\\//\A     /\\\\\\=|/\\\\\A         \\//  \\\\\\\A \A "}
+3.12500%{content:"    /|###\\//\A     /\\\\\\\\|/\\\\\\\A         \\//  \\\\\\\A \A "}
+6.25000%{content:"    /|=###//\A      \\\\\\\\|/\\\\\\\A          //  \\\\\\\A \A "}
+9.37500%{content:"    /\\=###//\A      \\\\\\\\\\/\\\\\\\A          //  \\\\\\\A \A "}
+12.50000%{content:"    /\\=###//\A      \\\\\\\\\\/\\\\\\\A          /   \\\\\\\A \A "}
+15.62500%{content:"    /\\=###//\A      \\\\\\\\\\/\\\\\\\A          /   \\\\\\\A \A "}
+18.75000%{content:"    /\\=###//\A      \\\\\\\\\\/\\\\\\\A          /   \\\\\\\A \A "}
+21.87500%{content:"    /\\=###//\A      \\\\\\\\\\/\\\\\\\A          //  \\\\\\\A \A "}
+25.00000%{content:"    /|=###//\A      \\\\\\\\|/\\\\\\\A          //  \\\\\\\A \A "}
+28.12500%{content:"    /|###\\//\A     \\\\\\\\\\|/\\\\\\\A         \\//  \\\\\\\A \A "}
+31.25000%{content:"    /|###\\//\A     /\\\\\\=|/\\\\\A         \\//  \\\\\\\A \A "}
+34.37500%{content:"    /|##\\\\//\A     /\\\\\\=|/\\\\\A        \\\\//  \\\\\\\A \A "}
+37.50000%{content:"    /|##\\\\/\A     /\\\\==|/\\\\\A        \\\\// \\\\\\\\\A \A "}
+40.62500%{content:"    /\\\\\\\\\\/\A     /==##|/\\\A     \\\\\\\\\\// \\\\\\\\\A \A "}
+43.75000%{content:"    |_____|\A     |####||\A     |_____|=====\A          |\A "}
+46.87500%{content:"\A     |_____|\A     |===#||=====\A     |_____|\A "}
+50.00000%{content:"\A     |_____|\A     |====||=====\A     |_____|\A "}
+53.12500%{content:"\A     |_____|\A     |====||=====\A     |_____|\A "}
+56.25000%{content:"\A     |_____|\A     |####||=====\A     |_____|\A "}
+59.37500%{content:"\A     |_____|\A     |####||=====\A     |_____|\A "}
+62.50000%{content:"\A     |_____|\A     |####||=====\A     |_____|\A "}
+65.62500%{content:"\A     |_____|\A     |=###||=====\A     |_____|\A "}
+68.75000%{content:"    |____\A     |###__|\A     |__==||=====\A       ____|\A "}
+71.87500%{content:"    |_____|\A     |####||\A     |____||=====\A          |\A "}
+75.00000%{content:"    /\\\\\\\\\\/\A     /==##|/\\\A     /\\\\\\\\//\\\\\\\\\\\A \A "}
+78.12500%{content:"    /|#\\\\\\/\A     /\\==#|/\\\\\A       \\\\\\// \\\\\\\\\A \A "}
+81.25000%{content:"    /|##\\\\/\A     /\\\\\\=|/\\\\\A        \\\\// \\\\\\\\\A \A "}
+84.37500%{content:"    /|##\\\\//\A     /\\\\\\=|/\\\\\A        \\\\//  \\\\\\\A \A "}
+87.50000%{content:"    /|##\\\\//\A     /\\\\\\=|/\\\\\A         \\//  \\\\\\\A \A "}
+90.62500%{content:"    /|###\\//\A     /\\\\\\=|/\\\\\A         \\//  \\\\\\\A \A "}
+93.75000%{content:"    /|###\\//\A     /\\\\\\=|/\\\\\A         \\//  \\\\\\\A \A "}
+96.87500%{content:"    /|###\\//\A     /\\\\\\=|/\\\\\A         \\//  \\\\\\\A \A "}
 }
-.ascii-loader-impact { left: 1ch; top: 4em; color: #f5c851; z-index: 3; }
-.ascii-loader-impact::before { content: " "; animation: ascii-loader-sparks 1.45s steps(1,end) infinite; }
-@keyframes ascii-loader-sparks {
-  0%,44%,85%,100% { content: " "; }
-  45%,55% { content: "*  + # *   '"; }
-  56%,69% { content: " . *  +  ."; }
-  70%,84% { content: "    '  ."; }
+.ascii-loader-impact::before{content:"\A \A \A \A ";animation:ascii-loader-sparks 1.6s steps(1,end) infinite}
+@keyframes ascii-loader-sparks{
+0.00000%{content:"\A \A \A \A "}
+3.12500%{content:"\A \A \A \A "}
+6.25000%{content:"\A \A \A \A "}
+9.37500%{content:"\A \A \A \A "}
+12.50000%{content:"\A \A \A \A "}
+15.62500%{content:"\A \A \A \A "}
+18.75000%{content:"\A \A \A \A "}
+21.87500%{content:"\A \A \A \A "}
+25.00000%{content:"\A \A \A \A "}
+28.12500%{content:"\A \A \A \A "}
+31.25000%{content:"\A \A \A \A "}
+34.37500%{content:"\A \A \A \A "}
+37.50000%{content:"\A \A \A \A "}
+40.62500%{content:"\A \A \A \A "}
+43.75000%{content:"\A \A \A \A "}
+46.87500%{content:"\A \A \A \A "}
+50.00000%{content:"\A \A \A       ***\A "}
+53.12500%{content:"\A \A       * *\A       ****\A "}
+56.25000%{content:"\A \A      ++ ++\A       +   +\A "}
+59.37500%{content:"\A \A     ++  ++\A       +    +\A "}
+62.50000%{content:"\A \A    + +   ++\A       +     +\A "}
+65.62500%{content:"\A     .      .\A    .     .\A      .       .\A "}
+68.75000%{content:"\A     .       .\A   .       .\A      .       .\A "}
+71.87500%{content:"\A    .\A           .\A               .\A "}
+75.00000%{content:"\A    .\A           .\A                .\A "}
+78.12500%{content:"\A   .\A            .\A                 .\A "}
+81.25000%{content:"\A \A \A \A "}
+84.37500%{content:"\A \A \A \A "}
+87.50000%{content:"\A \A \A \A "}
+90.62500%{content:"\A \A \A \A "}
+93.75000%{content:"\A \A \A \A "}
+96.87500%{content:"\A \A \A \A "}
 }
-.gear-import-dialog[aria-busy="true"] .ascii-hammer-loader,
-#sim-ocr-status.busy + .ascii-hammer-loader { display: inline-block; }
-
-@media (prefers-reduced-motion: reduce) {
-  .ascii-scene span::before, .ascii-hammer-loader span::before { animation: none !important; }
-  .ascii-hammer-loader { height: 7em; }
-}
+@media(prefers-reduced-motion:reduce){.ascii-scene span::before,.ascii-hammer-loader span::before{animation:none!important}}
