@@ -12,7 +12,7 @@
     <div class="deck-viewport">
       {% for n in site.data.nav %}{% assign entry = site.data.pages[n.self] %}
       <a class="deck-card" href="{{ p.depth }}{{ n.tail }}" data-page="{{ entry.token }}" data-group="{{ n.group }}"{% if n.self == page.self %} aria-current="page"{% endif %} tabindex="-1">
-        <span class="deck-mark" aria-hidden="true">❧</span>
+        <span class="deck-ascii" aria-hidden="true"></span>
         <span class="deck-card-title" data-i18n="{{ n.labelKey }}">{{ n.label }}</span>
         <span class="deck-card-lede" data-i18n="{{ n.ledeKey }}">{{ n.lede }}</span>
         <span class="deck-card-action" data-i18n="ev.deck.open">tap to open</span>
