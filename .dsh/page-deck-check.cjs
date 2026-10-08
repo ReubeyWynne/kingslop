@@ -327,5 +327,15 @@ test('every cover has an ASCII HTML scene with a static fallback and reduced-mot
   assert.equal(/[^\x00-\x7F]/.test(scene), false);
   assert.match(css, /top: 50%;[\s\S]*left: 50%;/);
   assert.match(css, /prefers-reduced-motion: reduce[\s\S]*animation: none !important/);
-  assert.doesNotMatch(css, /steps\(|content: "[^"\n]+"/);
+  assert.match(css, /steps\(1,end\)/);
+  assert.doesNotMatch(css, /transform:|animation-timeline:|scene-breathe|ambient-drift/);
+  const flame = css.match(/@keyframes deck-reference-flame-main \{([\s\S]*?)\n\}/)[1];
+  assert.equal([...flame.matchAll(/content:/g)].length, 64);
+  const campfire = fs.readFileSync(path.join(root, '_includes/ascii/deck-campfire.html'), 'utf8');
+  assert.equal([...campfire.matchAll(/class="patch patch-/g)].length, 6);
+  assert.equal([...campfire.matchAll(/class="spark"/g)].length, 18);
+  assert.ok(campfire.includes('class="logs-back"') && campfire.includes('class="logs-front"'));
+  assert.ok(scene.includes('ascii-mini--bear') && scene.includes('ascii-mini--crown') && scene.includes('ascii-mini--dice'));
+
 });
+

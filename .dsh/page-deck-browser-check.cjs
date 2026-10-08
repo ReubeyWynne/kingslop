@@ -54,8 +54,8 @@ async function fits(page) {
       for (const token of ['home', 'kvksg', 'bearhunt', 'vikings', 'swordland', 'vip', 'sim', 'gear']) {
         await selected(page, token);
         await fits(page);
-        assert.equal(await page.locator('.deck-card.is-selected .deck-ascii > span').count() > 0, true);
-        assert.deepEqual(await page.locator('.deck-ascii > span,.ascii-ambient > span').evaluateAll(elements => [...new Set(elements.map(el => getComputedStyle(el).animationName))]), ['none']);
+        assert.equal(await page.locator('.deck-card.is-selected .deck-ascii > *').count() > 0, true);
+        assert.deepEqual(await page.locator('.deck-ascii > *,.ascii-ambient > span').evaluateAll(elements => [...new Set(elements.flatMap(el => ['', '::before', '::after'].map(pseudo => getComputedStyle(el, pseudo || null).animationName)))]), ['none']);
         await page.screenshot({ path: path.join(output, `${viewport.width}-${token}.png`) });
         await page.locator('.deck-next').click();
       }
@@ -81,6 +81,12 @@ async function fits(page) {
     await page.locator('#ledger-btn').click();
     await selected(page, 'home');
     await page.waitForTimeout(1100);
+    const flameBefore = await page.locator('.deck-fire .main-flame').evaluate(el => getComputedStyle(el, '::before').content);
+    await page.waitForTimeout(180);
+    const flameAfter = await page.locator('.deck-fire .main-flame').evaluate(el => getComputedStyle(el, '::before').content);
+    assert.notEqual(flameBefore, flameAfter);
+    assert.equal(await page.locator('.deck-fire .main-flame').evaluate(el => getComputedStyle(el).transform), 'none');
+    assert.match(await page.locator('.deck-fire .main-flame').evaluate(el => getComputedStyle(el, '::before').animationTimingFunction), /steps/);
     const start = await page.locator('#page-deck').evaluate(el => getComputedStyle(el).backgroundColor);
     await page.locator('[data-deck-group="tools"]').click();
     await selected(page, 'vip');
@@ -91,8 +97,8 @@ async function fits(page) {
     assert.notEqual(start, end);
     assert.notEqual(middle, end);
     assert.notEqual(middle, start);
-    assert.equal(await page.locator('.deck-card.is-selected .scene-base').evaluate(el => getComputedStyle(el).animationPlayState), 'running');
-    assert.equal(await page.locator('.deck-card:not(.is-selected) .scene-base').first().evaluate(el => getComputedStyle(el).animationPlayState), 'paused');
+    assert.equal(await page.locator('.deck-card.is-selected .ascii-mini--crown').evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'running');
+    assert.equal(await page.locator('.deck-card:not(.is-selected) .ascii-mini--bear').first().evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'paused');
     for (const lang of ['de', 'ar']) {
       await page.goto(origin + '/?lang=' + lang);
       await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
@@ -112,3 +118,4 @@ async function fits(page) {
     await new Promise(resolve => server.close(resolve));
   }
 })().catch(error => { console.error(error); server.close(); process.exitCode = 1; });
+
