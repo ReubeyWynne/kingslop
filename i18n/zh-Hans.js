@@ -994,8 +994,14 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "directory.explain.joiner": "将指定英雄放在第1位。其第一远征技能可进入四个共享增援技能位之一。按目标搭配进攻或防御效果并协调技能等级。其余两位英雄不贡献额外加入技能。",
   "directory.explain.rally": "发起者提供账号属性和三位英雄的完整远征技能组。集结Widget可作为参考；比较实际培养阵容和对手。适合领队不代表适合在第1位加入。",
   "directory.explain.bear": "Bear以伤害为目标。领队使用完整技能组；加入者提供部队及符合条件的第一技能。防御效果不增加Bear伤害。遵守联盟允许名单，尤其留意有条件及重复敏感选项。",
-  "directory.sourceNote": "目录快照：2026-09-11。角色审核：2026-10-08。社区建议不是官方验证。推断候选依据已记录技能或Widget定位，联盟规则可覆盖。代数反映此目录，不是实时解锁日历。",
-  "directory.anomaly": "第2代星级成长曲线异常尚未验证。本目录不使用这些属性值给英雄排名。",
-  "directory.reason.bearAlternative": "第2代可替代Amadeus的选择；比较已培养的伤害技能，而非防御Widget技能。"
+  "directory.sourceNote": "头像和技能说明已于2026-10-08对照官方英雄维基核查。角色建议也参考社区指南和本站的猎熊规则。推断候选依据英雄技能的适配性，并非官方推荐。",
+  "directory.anomaly": "依据 Kingshot Data 和共同曲线，将第2代英雄在4★第3阶的数值修正为199.02%。原始对比来源仍有差异；这些数值不用于英雄排名。",
+  "directory.reason.bearAlternative": "第2代可替代Amadeus的选择；比较已培养的伤害技能，而非防御Widget技能。",
+  "gear.sharedSaveHint": "装备和活动库存共用一个存档。导入前请保留备份。",
+  "ks.available.showAll": "显示今天不计分的物品",
+  "directory.heroSource": "查看官方英雄页面",
+  "gear.reset": "重置英雄装备",
+  "gear.resetTitle": "重置英雄装备？",
+  "gear.resetHint": "装备、装备材料和规划偏好将恢复默认。其他活动物品会保留。此操作可以撤销。"
 }
 ;

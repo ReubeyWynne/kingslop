@@ -996,8 +996,14 @@ window.__BH_I18N_DATA["it"] = {
   "directory.explain.joiner": "Metti l’eroe assegnato nella posizione 1. La sua prima abilità di spedizione può occupare uno dei quattro posti condivisi. Adatta effetti offensivi o difensivi all’obiettivo e coordina i livelli. Gli altri due eroi non forniscono abilità aggiuntive da rinforzo.",
   "directory.explain.rally": "Chi guida fornisce statistiche e il kit completo di tre eroi. I widget da rally sono un punto di partenza; confronta formazione sviluppata e avversario. Una raccomandazione da capo non garantisce un buon rinforzo in posizione 1.",
   "directory.explain.bear": "Bear è un obiettivo di danno. I capi usano tutto il kit; i partecipanti forniscono truppe e una prima abilità idonea. Gli effetti difensivi non migliorano il danno. Segui gli eroi consentiti dall’alleanza, soprattutto per scelte condizionali o sensibili ai duplicati.",
-  "directory.sourceNote": "Catalogo: 2026-09-11. Revisione ruoli: 2026-10-08. La guida comunitaria non è verifica ufficiale. I candidati dedotti seguono abilità o widget registrati; l’alleanza può modificarli. Le generazioni riflettono il catalogo, non un calendario di sblocchi in tempo reale.",
-  "directory.anomaly": "L’anomalia della progressione a stelle della generazione 2 non è verificata. Il catalogo non classifica gli eroi secondo quei valori.",
-  "directory.reason.bearAlternative": "Alternativa ad Amadeus in generazione 2; confronta abilità di danno sviluppate, non il widget difensivo."
+  "directory.sourceNote": "Ritratti e note sulle abilità confrontati con la wiki ufficiale degli eroi il 2026-10-08. I consigli sui ruoli si basano anche sulle guide della comunità e sulle nostre regole di Caccia all’orso. I candidati dedotti sono scelti in base alle abilità, non sono raccomandazioni ufficiali.",
+  "directory.anomaly": "I valori di generazione 2 a 4★ livello 3 sono corretti a 199.02% secondo Kingshot Data e la curva comune. La fonte originale di confronto resta diversa; questi valori non classificano gli eroi.",
+  "directory.reason.bearAlternative": "Alternativa ad Amadeus in generazione 2; confronta abilità di danno sviluppate, non il widget difensivo.",
+  "gear.sharedSaveHint": "Un salvataggio per equipaggiamento e inventario. Conserva una copia prima di importarne un altro.",
+  "ks.available.showAll": "mostra oggetti che oggi non danno punti",
+  "directory.heroSource": "consulta la pagina ufficiale dell’eroe",
+  "gear.reset": "reimposta equipaggiamento eroe",
+  "gear.resetTitle": "Reimpostare l’equipaggiamento?",
+  "gear.resetHint": "Equipaggiamento, risorse dedicate e preferenze tornano ai valori iniziali. Gli altri oggetti evento restano salvati. Puoi annullare."
 }
 ;

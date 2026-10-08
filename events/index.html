@@ -52,7 +52,7 @@ self: events
 
   <section class="section event-availability" id="availability" data-module="event-availability">
     <h2 data-i18n="ks.available.title">Your available points</h2>
-    <p class="lede" data-i18n="ks.available.intro">A point budget from confirmed inventory. Blank counts are unknown; enter 0 only when confirmed.</p>
+    <p class="lede" data-i18n="ks.available.intro">Count what is in your bag, choose the day, and see how far it takes you. Leave a count blank until you know it; zero means none.</p>
     <div class="availability-controls">
       <label><span data-i18n="ks.available.event">Event</span><select data-target="event-availability.event" data-action="event-availability.select">
         <option value="prep" data-i18n="ks.today.kickerPrep">KvK prep</option>
@@ -63,32 +63,33 @@ self: events
       <label><span data-i18n="ks.available.target">Point target</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-target="event-availability.target" data-action="event-availability.target"></label>
     </div>
     <div class="availability-result" aria-live="polite">
-      <p><span data-i18n="ks.available.spendable">Spendable point budget</span> <output data-target="event-availability.total">—</output></p>
-      <p><span data-i18n="ks.available.reservedPoints">Withheld points</span> <output data-target="event-availability.reserved">—</output></p>
-      <p><span data-i18n="ks.available.shortfall">Target shortfall</span> <output data-target="event-availability.shortfall">—</output></p>
+      <p><span data-i18n="ks.available.spendable">points in reach</span> <output data-target="event-availability.total">—</output></p>
+      <p><span data-i18n="ks.available.reservedPoints">kept for later</span> <output data-target="event-availability.reserved">—</output></p>
+      <p><span data-i18n="ks.available.shortfall">still to find</span> <output data-target="event-availability.shortfall">—</output></p>
       <p class="note" data-target="event-availability.coverage"></p>
     </div>
-    <p class="note" data-i18n="ks.available.limit">Rates assume eligible in-game upgrades. Holdings do not prove capacity to use them. Day totals are alternatives; the same items cannot be spent twice.</p>
-    <h3 data-i18n="ks.available.inventory">Confirmed inventory</h3>
+    <p class="note" data-i18n="ks.available.limit">These points need upgrades you can actually make. Check the in-game requirements before spending. Comparing days does not give you a second bag of items.</p>
+    <div class="availability-inventory-heading"><h3 data-i18n="ks.available.inventory">Your inventory</h3><label class="availability-show-all"><input type="checkbox" data-target="event-availability.all" data-action="event-availability.showAll"><span data-i18n="ks.available.showAll">show items that do not score today</span></label></div>
     <div class="availability-items">
       {% for item in site.data.event_rules.items %}
       <div class="availability-item" data-item="{{ item.id }}">
         <h3 data-i18n="{{ item.key }}">{{ item.label | escape }}</h3>
-        <label data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed"><span data-i18n="ks.available.owned">Available now</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize"><small data-target="ledger-form.save" aria-live="polite"></small></label>
-        <label><span data-i18n="ks.available.held">Withhold for another target</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" data-held="{{ item.id }}" data-action="event-availability.reserve"></label>
-        <p><span data-i18n="ks.available.rate">Points per item today</span> <output data-rate>—</output></p>
-        <p><span data-i18n="ks.available.contribution">Contribution</span> <output data-points>—</output></p>
+        <label data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed"><span data-i18n="ks.available.owned">in your bag</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize"><small data-target="ledger-form.save" aria-live="polite"></small></label>
+        <label><span data-i18n="ks.available.held">keep for later</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" data-held="{{ item.id }}" data-action="event-availability.reserve"></label>
+        <p><span data-i18n="ks.available.rate">points each</span> <output data-rate>—</output></p>
+        <p><span data-i18n="ks.available.contribution">points available</span> <output data-points>—</output></p>
       </div>
       {% endfor %}
     </div>
-    <p class="note" data-i18n="ks.available.reserveNote">Withheld amounts apply only to this open calculator and are never deducted from inventory. Export saves confirmed holdings, not this scenario.</p>
-    <h3 data-i18n="ks.available.potential">Potential but unquantified</h3>
-    <p class="note" data-i18n="ks.available.potentialNote">These actions may add points. Inventory cannot safely infer their capacity, so they are excluded from this budget.</p>
+    <p class="note" data-i18n="ks.available.reserveNote">Keeping items aside changes this calculation, not your saved bag. A backup includes your inventory; it does not include this plan.</p>
+    <h3 data-i18n="ks.available.potential">Other ways to score</h3>
+    <p class="note" data-i18n="ks.available.potentialNote">There may be more points here. They need an in-game check, so they are not included in the total above.</p>
     <ul class="availability-potential" data-target="event-availability.unquantified"></ul>
     <details data-module="save-transfer disclosure" data-status-scope="event-availability" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
-      <summary data-i18n="gear.manageSave">Save tools</summary>
-      <button type="button" class="kb" data-action="save-transfer.export" data-i18n="gear.export">Export save</button>
-      <button type="button" class="kb" data-action="save-transfer.choose" data-i18n="gear.load">Load save</button>
+      <summary data-i18n="gear.manageSave">your save &amp; backups</summary>
+      <p class="note" data-i18n="gear.sharedSaveHint">One save for your gear and event inventory. Keep a backup before importing another.</p>
+      <button type="button" class="kb" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
+      <button type="button" class="kb" data-action="save-transfer.choose" data-i18n="gear.load">import backup</button>
       <input type="file" accept="application/json,.json" hidden data-target="save-transfer.file" data-action="save-transfer.import">
     </details>
     <output hidden aria-live="polite" data-module="result-panel" data-status-scope="event-availability" data-target="result-panel.message"></output>

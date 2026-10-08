@@ -17,7 +17,10 @@ try{
  await field('query').fill('<script>');assert.equal(await visible(),0);await page.locator('[data-action="hero-directory.reset"]').click();await page.locator('#hero-chenko summary').click();assert.equal(await page.locator('#hero-chenko .hero-skills').isVisible(),true);
  assert.equal(await page.locator('.ev-switch a[aria-current="page"]').getAttribute('href'),'../heroes/');assert.equal(await page.locator('.ev-switch a').count(),nav.length);assert.equal(await page.locator('.ev-foot a').count(),nav.length);assert.equal(await page.locator('#page-deck .deck-card').count(),nav.length);
  const portraits=await page.locator('.directory-hero-heading img').evaluateAll(imgs=>imgs.map(i=>i.getAttribute('src')));for(const src of portraits)assert(fs.existsSync(path.resolve(root,'heroes',src)),src);
- assert.equal(await page.locator('.directory-hero-heading img').count(),19);
+ assert.equal(await page.locator('.directory-hero-heading img').count(),34);
+ assert.equal(await page.locator('.hero-dossier[open]').count(),1);
+ assert.equal(await page.locator('.hero-first-skill').count(),34);
+ await field('query').fill('quinn');await page.locator('#hero-quinn summary').click();assert.match(await page.locator('#hero-quinn .hero-skills').textContent(),/50% chance/);await page.locator('[data-action="hero-directory.reset"]').click();
  const langs=fs.readdirSync('i18n').filter(f=>f.endsWith('.js')).map(f=>f.slice(0,-3));
  for(const lang of langs){await page.goto(origin+'/heroes/?lang='+lang);await page.waitForFunction(lang=>document.documentElement.lang===lang&&!document.querySelector('.hero-filters').disabled,lang);
   for(const width of [320,390,768,1280,1600,1920]){await page.setViewportSize({width,height:900});const failures=await page.evaluate(()=>[...document.querySelectorAll('.hero-filters,.directory-hero,.hero-role-list,.topbar,.ev-switch')].filter(el=>el.getClientRects().length&&el.scrollWidth>el.clientWidth+2).map(el=>el.className));assert.deepEqual(failures,[],lang+' at '+width);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}

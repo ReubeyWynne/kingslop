@@ -3,7 +3,7 @@
   'use strict';
   window.Interactions.register('event-availability', function (context) {
     var engine = window.EventRules, store = window.PlayerLedger.shared(), held = Object.create(null);
-    var event = context.targets('event')[0], day = context.targets('day')[0], target = context.targets('target')[0];
+    var event = context.targets('event')[0], day = context.targets('day')[0], target = context.targets('target')[0], all = context.targets('all')[0];
     function text(key, fallback) { return context.api.tr('ks.available.' + key, fallback); }
     function put(key, value) { context.targets(key).forEach(function (node) { node.textContent = value; }); }
     function dayOptions() {
@@ -26,6 +26,7 @@
       context.nodes('[data-item]').forEach(function (row) {
         var item = result.items.find(function (item) { return item.id === row.dataset.item; });
         row.dataset.eligible = String(item.eligible);
+        row.hidden = !item.eligible && !all.checked;
         row.querySelector('[data-rate]').textContent = item.eligible ? context.api.fmt(item.rate) : '—';
         row.querySelector('[data-points]').textContent = !item.eligible ? '—' : item.points === null ? text('unknown') : context.api.fmt(item.points);
         var reserve = row.querySelector('[data-held]');
@@ -43,6 +44,7 @@
     return { refresh: function () { dayOptions(); render(); }, actions: {
       select: { events: ['change'], run: function (node) { if (node === event) dayOptions(); render(); } },
       target: { events: ['input'], run: render },
+      showAll: { events: ['change'], run: render },
       reserve: { events: ['input', 'change'], run: function (node, event) {
         if (node.validity.valid) { held[node.dataset.held] = node.value === '' ? 0 : Number(node.value); render(); }
         else if (event.type === 'change') render();
