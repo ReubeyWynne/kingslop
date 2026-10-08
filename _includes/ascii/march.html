@@ -1,1 +1,5 @@
-<div class="ascii-march-band" aria-hidden="true"><span class="ascii-march"></span></div>
+<div class="ascii-march-band" aria-hidden="true">
+  <div class="ascii-march-track">
+    {% for tile in (1..8) %}<span class="ascii-march{% if include.kind == 'hunt' %} ascii-march--hunt{% endif %}"></span>{% endfor %}
+  </div>
+</div>

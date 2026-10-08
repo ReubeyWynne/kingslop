@@ -186,18 +186,34 @@ def motifs():
  path=ROOT/'css/ascii-motifs.css';old=path.read_text()
  css=old.split('.ascii-mini--charm::before')[0]
  css=css.replace('content:".";animation:ascii-mote','content:" ";animation:ascii-mote')
+ css=css.replace('height:9em;', 'height:11.25em;').replace('vw,11px)/1 ', 'vw,11px)/1.25 ')
+ css=re.sub(r'\.ascii-mini--crown\{[^}]*\}\n', '', css)
+ css+='.ascii-mini--crown{height:16.25em}\n'
+ MINI['crown']=[row.ljust(29) for row in '''             .
+            /\\
+           /  \\
+     .    /    \\    .
+    /\\   /      \\   /\\
+   /  \\_/        \\_/  \\
+  /                    \\
+  |   <>     <>     <> |
+  |     .--------.     |
+  |=====|########|=====|
+  |     '--------'     |
+   \\__________________/
+     '--------------' '''.splitlines()]
  for kind in ['charm','bear','banner','crown','dice']:
   rows=[list(row) for row in MINI[kind]]
   frames=[]
   for i in range(32):
    arr=[row[:] for row in rows]
    if kind in ['charm','crown']:
-    for r in ([0,8] if kind=='charm' else [8]): arr[r]=list(' '*29)
     if kind=='charm':
+     for r in [0,8]: arr[r]=list(' '*29)
      for r,c in [(4,12),(5,12),(6,12)]: arr[r][c]='#'
     if 8<=i<20:
      col=8+(i-8)
-     for r in ([3,4,5,6] if kind=='charm' else [4,5]):
+     for r in ([3,4,5,6] if kind=='charm' else [7,9]):
       if arr[r][col] not in ' /\\|<>': arr[r][col]='+' if (i+r)%3 else '*'
    elif kind=='bear':
     if i in [22,23]:
@@ -229,20 +245,31 @@ def motifs():
      if i%2:
       arr=[list(' '*29)]+arr[:8]
    frames.append(arr)
-  css+=animation('.ascii-mini--'+kind+'::before','ascii-mini-'+kind,frames,{'charm':4.8,'bear':7.2,'banner':4,'crown':6.4,'dice':5.6}[kind])
- css+='''.ascii-march-band{display:flex;justify-content:center;align-items:center;margin:.35rem 0 .75rem;padding:.2rem 0;border-block:1px solid var(--signal-line);overflow:hidden;max-width:100%;direction:ltr}
-.ascii-march{display:block;width:40ch;height:5em;max-width:100%;overflow:hidden;color:var(--amber);white-space:pre;flex:none;font:clamp(8px,2.2vw,10px)/1 ui-monospace,Consolas,monospace;font-variant-ligatures:none}
+  css+=animation('.ascii-mini--'+kind+'::before','ascii-mini-'+kind,frames,{'charm':6.4,'bear':7.2,'banner':6,'crown':8,'dice':5.6}[kind])
+ deck=ROOT/'css/ascii-deck.css'
+ deck_css=deck.read_text()
+ deck_css=re.sub(r'^\.deck-card\[data-page="vip"\] \.deck-ascii::before[^\n]*\n?', '', deck_css, flags=re.M)
+ deck_css=re.sub(r'^@keyframes deck-ascii-vip[^\n]*\n?', '', deck_css, flags=re.M)
+ deck_css=deck_css.rstrip()+'\n.deck-card[data-page="vip"] .deck-ascii::before{content:'+content(MINI['crown'])+';animation:ascii-mini-crown 8s steps(1,end) infinite}\n'
+ write('css/ascii-deck.css',deck_css)
+ css+='''.ascii-march-band{display:block;margin:.6rem 0 1rem;padding:.5rem 0;border-block:1px solid var(--signal-line);overflow:hidden;width:100%;direction:ltr}
+.ascii-march-track{display:flex;width:max-content}
+.ascii-march{display:block;width:40ch;height:10em;overflow:hidden;color:var(--amber);white-space:pre;flex:none;font:clamp(9px,2.6vw,11px)/1.25 ui-monospace,Consolas,monospace;font-variant-ligatures:none}
 .ascii-march::before{display:block;white-space:pre}
+@media(max-width:700px){.ascii-march-band{width:100vw;margin-inline:calc(50% - 50vw)}}
 '''
- frames=[]
- for i in range(40):
-  arr=grid(40,5)
-  for origin in range(-10,50,10):
-   x=origin+i%10
-   stride=(i//2+origin//10-i//10)%4
-   for r,text in enumerate([' _ ', '/_\\',' o ','/|#]', [' /\\',' ||',' \\/','/ \\'][stride]]): put(arr,x,r,text)
-  frames.append(arr)
- css+=animation('.ascii-march::before','ascii-march',frames,5)
+ for hunt in [False,True]:
+  frames=[]
+  for i in range(40):
+   arr=grid(40,8)
+   for origin in range(0,60,10):
+    x=origin-i%10
+    stride=(i//2+origin//10+i//10)%4
+    head=[' .--. ', ' /__\\', ' <o  ', ' (|\\ '] if hunt else ['  _  ', ' /_\\ ', ' <o  ', '[#|\\ ']
+    legs=[[' / \\','/   |'],['  ||','  ||'],[' \\ /','  X '],[' / \\',' |   \\']][stride]
+    for r,text in enumerate(head+['  |  ']+legs+['']): put(arr,x,r,text)
+   frames.append(arr)
+  css+=animation('.ascii-march--hunt::before' if hunt else '.ascii-march::before','ascii-hunt-march' if hunt else 'ascii-march',frames,14)
  css+='@media(prefers-reduced-motion:reduce){.ascii-march::before{animation:none!important}}\n'
  write('css/ascii-motifs.css',css)
 
@@ -250,4 +277,5 @@ if __name__=='__main__':
  campfire()
  forge()
  motifs()
+
 

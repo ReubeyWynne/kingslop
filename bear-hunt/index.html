@@ -105,6 +105,7 @@ self: bear
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="marches-body"><span><span data-i18n="bh.page.70">Build your marches</span></span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
     <div class="section-body" id="marches-body">
       <p class="lede"><strong><span data-i18n="bh.page.71">Keep all active join marches the same size.</span></strong> <span data-i18n="bh.page.72">Divide archers evenly first, then cavalry, then use infantry to fill the remaining space. When you have enough troops to fill every join march,</span> <strong>5 / 15 / 80</strong> <span data-i18n="bh.page.73">is the practical preset we use.</span></p>
+      {% include ascii/march.html kind="hunt" %}
 
       <figure class="hunt-diagram march-composition" aria-labelledby="march-composition-title">
         <figcaption class="allocator-heading">
