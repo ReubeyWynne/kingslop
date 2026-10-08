@@ -1,26 +1,16 @@
 # Kingshot, Demystified — dey.ci
-# GH Pages builds this with Jekyll; the shared page chrome (head, topbar
-# navs, footer, swipe-ring) is templated once here instead of hand-synced
-# into every page. Runtime i18n (i18n/*.js) and per-page toys are untouched.
+# GitHub Pages builds this with Jekyll. Shared page chrome lives in layouts and
+# includes; runtime translations and page tools remain plain client-side assets.
 url: "https://dey.ci"
 
-# Static files Jekyll must not treat as source: hidden tooling, docs and
-# legacy artifacts. Old-URL redirect stubs (root *.html + kvk-strongest-
-# governor/) are real pages and must ship, so they are NOT excluded.
+# Documentation and local validation material must not be published with the site.
 exclude:
-  - ".agents"
-  - ".codex"
   - ".dsh"
   - ".impeccable"
   - ".gitignore"
-  - "AGENTS.md"
   - "DESIGN.md"
   - "MATHS.md"
   - "NAV-PROPOSAL.md"
   - "PRODUCT.md"
   - "*.md"
   - "**/*.md"
-  - "fly.toml"
-  - "Dockerfile"
-  - ".dockerignore"
-  - "BearHunt.slnx"

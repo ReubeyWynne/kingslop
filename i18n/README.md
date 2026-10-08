@@ -91,7 +91,7 @@ window.__BH_I18N_DATA["en"] = {
   (fixed in-game genders) and the bear easter-egg character. Where a language's
   grammar forces a gender (Arabic 2nd person; Russian/Polish partly), keep that
   language's existing conventions — the rule is "no player is assumed male or
-  female", not "strip gender out of the grammar". Full rule: see `AGENTS.md`.
+  female", not "strip gender out of the grammar". Apply this rule consistently across every language.
 - **Changes propagate.** `en.js` is the source of truth; a copy change lands in all
   16 translated dictionaries, not just English. A stale translation that contradicts
   the corrected English is worse than the English fallback.
