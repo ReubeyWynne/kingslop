@@ -1,12 +1,3 @@
-<figure class="ascii-scene ascii-forge" role="img" aria-label="An anvil and hammer throwing off sparks">
-  <span class="ascii-hammer" aria-hidden="true"></span>
-  <pre class="ascii-anvil" aria-hidden="true">       ___
-  ____/###\____
- /______________\
-      |####|
-      |####|
-   ___|####|___
-  /____________\</pre>
-  <span class="ascii-impact" aria-hidden="true"></span>
-  <span class="ascii-forge-sparks" aria-hidden="true"></span>
-</figure>
+<span class="ascii ascii-forge"{% if include.label %} role="img" aria-label="{{ include.label }}"{% else %} aria-hidden="true"{% endif %}>
+  <span class="anvil"></span><span class="bar"></span><span class="hammer"></span><span class="sparks"></span>
+</span>

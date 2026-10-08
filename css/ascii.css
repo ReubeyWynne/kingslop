@@ -1,0 +1,227 @@
+/* ascii.css — layout and colour for the ASCII scenes.
+
+   The frames themselves are generated into css/ascii-frames.css by
+   .dsh/build-ascii.py. Every scene is a fixed monospace grid whose glyphs
+   change with steps(1, end); marks that travel jump whole ch/em cells.
+   Nothing here may skew, rotate, scale, bob or smoothly drift the art, and
+   no JavaScript drives it (DESIGN.md, "Animation style"). */
+
+:root {
+  --ascii-font: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Cascadia Mono', 'Liberation Mono', monospace;
+}
+
+/* ─── The grid every scene shares ─────────────────────── */
+.ascii,
+.ascii-mini,
+.ascii-march {
+  font-family: var(--ascii-font);
+  font-variant-ligatures: none;
+  font-kerning: none;
+  letter-spacing: 0;
+  white-space: pre;
+  direction: ltr;
+}
+.ascii { position: relative; display: block; line-height: 1; isolation: isolate; }
+.ascii pre { position: absolute; inset: 0 auto auto 0; margin: 0; font: inherit; white-space: pre; letter-spacing: 0; }
+.ascii span { position: absolute; display: block; white-space: pre; pointer-events: none; }
+.ascii span::before { display: block; white-space: pre; }
+
+/* ─── Campfire — the reference scene ──────────────────── */
+.ascii-campfire { width: 52ch; height: 22em; font-size: clamp(7px, 0.87vw, 11px); }
+.ascii-campfire .logs-back { z-index: 0; color: #67513a; }
+.ascii-campfire .coals { left: 0; top: 18em; z-index: 2; color: #ec7138; }
+.ascii-campfire .flame { left: 8ch; top: 0; z-index: 2; }
+.ascii-campfire .patch { left: calc(var(--col) * 1ch); top: calc(var(--row) * 1em); z-index: 2; }
+.ascii-campfire .flame::before,
+.ascii-campfire .patch::before,
+.ascii-hearth .flame::before {
+  color: transparent;
+  background: linear-gradient(to bottom, #da642f 10%, #f99a3f 46%, #fff1b1 89%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.ascii-campfire .logs-front { z-index: 3; color: #ae8155; }
+.ascii-campfire .spark {
+  z-index: 4;
+  color: #ffd180;
+  opacity: 0;
+  animation-duration: var(--dur);
+  animation-delay: var(--delay);
+  animation-timing-function: steps(1, end);
+  animation-iteration-count: infinite;
+}
+
+/* ─── Hearth — the campfire in miniature, closing every page ─ */
+.ascii-hearth-rail { display: flex; align-items: flex-end; gap: clamp(.5rem, 3vw, 1.2rem); margin: 0 auto var(--space-m); max-width: var(--maxw, 46rem); }
+.ascii-hearth-rail::before,
+.ascii-hearth-rail::after { content: ""; flex: 1 1 0; height: 1px; margin-bottom: .45em; background: linear-gradient(to right, transparent, var(--signal-line, rgba(245, 200, 81, .35))); }
+.ascii-hearth-rail::after { background: linear-gradient(to left, transparent, var(--signal-line, rgba(245, 200, 81, .35))); }
+.ascii-hearth { width: 13ch; height: 6em; flex: none; font-size: 11px; }
+.ascii-hearth .flame { left: 0; top: 0; }
+.ascii-hearth .log { left: 0; top: 5em; color: #ae8155; }
+
+/* ─── Forge — anvil, hammer, hot bar and sparks ───────── */
+.ascii-forge { width: 34ch; height: 13em; font-size: 10px; color: var(--amber, #e08a3c); }
+.ascii-forge span { left: 0; top: 0; }
+.ascii-forge .anvil { z-index: 1; color: #c7bc9d; }
+.ascii-forge .bar { z-index: 2; color: #f08a3c; }
+.ascii-forge .hammer { z-index: 3; color: #d3a33e; }
+.ascii-forge .sparks { z-index: 4; color: #f5c851; }
+
+/* The same forge, small, while screenshots are being read. */
+.ascii-hammer-loader { display: none; margin: .25rem 0; }
+.ascii-hammer-loader .ascii-forge { font-size: 6px; }
+.gear-import-dialog[aria-busy="true"] .ascii-hammer-loader,
+#sim-ocr-status.busy + .ascii-hammer-loader { display: inline-block; }
+
+/* ─── Emblems — the small scene under each hero ───────── */
+.ascii-motif-rail { display: flex; align-items: center; gap: clamp(.5rem, 3vw, 1.2rem); margin: clamp(1rem, 3vw, 1.4rem) 0 0; isolation: isolate; direction: ltr; }
+.ascii-motif-rail::before,
+.ascii-motif-rail::after { content: ""; height: 1px; flex: 1 1 0; background: linear-gradient(to right, transparent, var(--signal-line, rgba(245, 200, 81, .35))); }
+.ascii-motif-rail::after { background: linear-gradient(to left, transparent, var(--signal-line, rgba(245, 200, 81, .35))); }
+.ascii-mini {
+  display: block;
+  position: relative;
+  flex: none;
+  width: 29ch;
+  height: 11.25em;
+  overflow: hidden;
+  font-size: clamp(9px, 2.8vw, 11px);
+  line-height: 1.25;
+  color: var(--amber, #f5c851);
+}
+.ascii-mini::before { display: block; white-space: pre; }
+.ascii-mini--charm { color: var(--amber-dim, #d3a33e); }
+.ascii-mini--crown { height: 16.25em; }
+@media (max-width: 400px) { .ascii-motif-rail { gap: .5rem; margin-top: 1rem; } .ascii-mini { font-size: 9px; } }
+
+/* ─── The march — a procession across a ruled band ────── */
+.ascii-march-band { display: block; margin: .6rem 0 1rem; padding: .5rem 0; border-block: 1px solid var(--signal-line); overflow: hidden; width: 100%; direction: ltr; }
+.ascii-march-track { display: flex; width: max-content; }
+.ascii-march { display: block; flex: none; width: 40ch; height: 10em; overflow: hidden; color: var(--amber); font-size: clamp(9px, 2.6vw, 11px); line-height: 1.25; }
+.ascii-march::before { display: block; white-space: pre; }
+@media (max-width: 700px) { .ascii-march-band { width: 100vw; margin-inline: calc(50% - 50vw); } }
+
+/* ─── Ambient twinkles — glyphs that wake at fixed places ─ */
+.ascii-ambient { position: absolute; inset: 0; display: block; pointer-events: none; overflow: hidden; color: var(--amber); }
+.ascii-ambient > span { position: absolute; font: 11px/1 var(--ascii-font); opacity: .3; }
+.ascii-ambient > span::before { content: ' '; animation: ascii-twinkle 11s steps(1, end) infinite; }
+.ascii-ambient > span:nth-child(3n)::before { animation-name: ascii-twinkle-faint; animation-duration: 13s; }
+.ascii-ambient > span:nth-child(3n+1)::before { animation-duration: 17s; }
+.ascii-ambient > span:nth-child(1) { left: 6%; top: 18%; }
+.ascii-ambient > span:nth-child(2) { left: 14%; top: 62%; }
+.ascii-ambient > span:nth-child(3) { left: 24%; top: 8%; }
+.ascii-ambient > span:nth-child(4) { left: 33%; top: 82%; }
+.ascii-ambient > span:nth-child(5) { left: 42%; top: 32%; }
+.ascii-ambient > span:nth-child(6) { left: 53%; top: 91%; }
+.ascii-ambient > span:nth-child(7) { left: 62%; top: 12%; }
+.ascii-ambient > span:nth-child(8) { left: 72%; top: 68%; }
+.ascii-ambient > span:nth-child(9) { left: 81%; top: 38%; }
+.ascii-ambient > span:nth-child(10) { left: 89%; top: 86%; }
+.ascii-ambient > span:nth-child(11) { left: 94%; top: 14%; }
+.ascii-ambient > span:nth-child(12) { left: 4%; top: 44%; }
+.ascii-ambient > span:nth-child(13) { left: 19%; top: 36%; }
+.ascii-ambient > span:nth-child(14) { left: 47%; top: 6%; }
+.ascii-ambient > span:nth-child(15) { left: 58%; top: 52%; }
+.ascii-ambient > span:nth-child(16) { left: 77%; top: 24%; }
+.ascii-ambient > span:nth-child(17) { left: 28%; top: 95%; }
+.ascii-ambient > span:nth-child(18) { left: 96%; top: 58%; }
+.ascii-ambient > span:nth-child(1)::before { animation-delay: -2s; }
+.ascii-ambient > span:nth-child(2)::before { animation-delay: -8s; }
+.ascii-ambient > span:nth-child(3)::before { animation-delay: -5s; }
+.ascii-ambient > span:nth-child(4)::before { animation-delay: -1s; }
+.ascii-ambient > span:nth-child(5)::before { animation-delay: -9s; }
+.ascii-ambient > span:nth-child(6)::before { animation-delay: -4s; }
+.ascii-ambient > span:nth-child(7)::before { animation-delay: -7s; }
+.ascii-ambient > span:nth-child(8)::before { animation-delay: -3s; }
+.ascii-ambient > span:nth-child(9)::before { animation-delay: -10s; }
+.ascii-ambient > span:nth-child(10)::before { animation-delay: -6s; }
+.ascii-ambient > span:nth-child(11)::before { animation-delay: -2.5s; }
+.ascii-ambient > span:nth-child(12)::before { animation-delay: -8.5s; }
+.ascii-ambient > span:nth-child(13)::before { animation-delay: -12s; }
+.ascii-ambient > span:nth-child(14)::before { animation-delay: -3.5s; }
+.ascii-ambient > span:nth-child(15)::before { animation-delay: -6.5s; }
+.ascii-ambient > span:nth-child(16)::before { animation-delay: -11s; }
+.ascii-ambient > span:nth-child(17)::before { animation-delay: -1.5s; }
+.ascii-ambient > span:nth-child(18)::before { animation-delay: -9.5s; }
+@keyframes ascii-twinkle {
+  0%, 70%, 96% { content: ' '; }
+  72%, 92% { content: '.'; }
+  76%, 88% { content: '+'; }
+  80%, 84% { content: '*'; }
+}
+@keyframes ascii-twinkle-faint {
+  0%, 60%, 90% { content: ' '; }
+  64%, 84% { content: '.'; }
+  70%, 78% { content: "'"; }
+}
+html.deck-open .dust .ascii-ambient > span::before { animation-play-state: paused; }
+
+/* ─── Placement in the page ───────────────────────────── */
+/* Illustrations live in the margin of the manuscript, not in the text flow. */
+.ascii-home-hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; column-gap: 1rem; }
+.ascii-home-copy { display: contents; }
+.ascii-home-hero h1 { grid-column: 1 / -1; }
+.ascii-home-hero .lede { grid-column: 1; grid-row: 2; max-width: 26rem; }
+.ascii-home-hero .ascii-campfire { margin: 0; justify-self: end; grid-column: 2; grid-row: 2; }
+@media (max-width: 1023px) {
+  .ascii-home-hero { display: block; }
+  .ascii-home-copy { display: block; }
+  .ascii-home-hero > .ascii-campfire {
+    margin: var(--space-s) auto 0;
+    font-size: clamp(6px, 2.35vw, 10px);
+    border-top: 1px solid var(--signal-line);
+    padding-top: .4rem;
+    box-sizing: content-box;
+  }
+}
+.ascii-rewards-intro { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 1.5rem; }
+.ascii-rewards-intro > .lede { min-width: 0; }
+.ascii-rewards-intro .ascii-forge { margin: 0; }
+@media (max-width: 700px) {
+  .ascii-rewards-intro { display: block; }
+  .ascii-rewards-intro > .lede { margin-bottom: .5rem; }
+  .ascii-rewards-intro .ascii-forge {
+    margin: .5rem auto .75rem;
+    font-size: clamp(8px, 2.6vw, 10px);
+    padding-top: .5rem;
+    border-top: 1px solid var(--signal-line);
+    box-sizing: content-box;
+  }
+}
+
+/* ─── Page deck covers ────────────────────────────────── */
+.deck-ascii {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(100% - 2 * clamp(1.25rem, 5vw, 2rem));
+  height: 14rem;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  color: var(--amber);
+  direction: ltr;
+  font-size: clamp(9px, 2.4vw, 12px);
+  pointer-events: none;
+}
+.deck-ascii .ascii-mini { font-size: inherit; }
+.deck-ascii .ascii-mini--crown { font-size: clamp(8px, 2.1vw, 10.5px); }
+.deck-ascii .ascii-march { font-size: clamp(8px, 2.1vw, 11px); }
+.deck-ascii .ascii-campfire { font-size: clamp(6px, 1.75vw, 9.5px); }
+.deck-ascii .ascii-forge { font-size: clamp(8px, 2.2vw, 11px); }
+.deck-atmosphere { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+
+/* Only the cover in front animates; the rest hold their first frame. */
+.deck-ascii *, .deck-ascii *::before, .deck-ascii *::after { animation-play-state: paused !important; }
+.page-deck[open] .deck-card.is-selected .deck-ascii *,
+.page-deck[open] .deck-card.is-selected .deck-ascii *::before,
+.page-deck[open] .deck-card.is-selected .deck-ascii *::after { animation-play-state: running !important; }
+
+/* ─── Reduced motion: every scene rests on its first frame ─ */
+@media (prefers-reduced-motion: reduce) {
+  .ascii *, .ascii *::before, .ascii *::after,
+  .ascii-mini::before, .ascii-mini::after, .ascii-march::before,
+  .ascii-ambient > span::before { animation: none !important; }
+  .ascii-campfire .spark { opacity: 0; }
+}
