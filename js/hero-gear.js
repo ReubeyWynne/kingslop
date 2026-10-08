@@ -467,6 +467,7 @@
       else if (button.dataset.select) selectPiece(button.dataset.select);
       else if (button.dataset.editPiece) editPiece(button.dataset.editPiece);
       else if (button.dataset.view && !button.dataset.action) { state.view = button.dataset.view; persist(); paintView(); }
+      else if (button.dataset.mode && !button.dataset.action) { state.mode = button.dataset.mode; persist(); paintAnswer(); scheduleSearch(0); }
       else if (button.dataset.goal) { state.goal = button.dataset.goal; persist(); paintAnswer(); }
       else if (button.id === 'gear-apply-result' && result) {
         var next = copy(state); next.pieces = result.pieces; next.resources = result.remaining;
