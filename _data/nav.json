@@ -4,55 +4,71 @@
     "tail": "",
     "labelKey": "ev.switch.home",
     "label": "Home",
-    "group": "home"
+    "group": "home",
+    "ledeKey": "ev.deck.lede.home",
+    "lede": "the guides, the tools, and the maths behind them."
   },
   {
     "self": "events",
     "tail": "events/",
     "labelKey": "ev.switch.cycle",
     "label": "Event Cycle",
-    "group": "events"
+    "group": "events",
+    "ledeKey": "ev.deck.lede.events",
+    "lede": "what’s on today, what scores, and what to save."
   },
   {
     "self": "bear",
     "tail": "bear-hunt/",
     "labelKey": "ev.switch.bear",
     "label": "Bear Hunt",
-    "group": "events"
+    "group": "events",
+    "ledeKey": "ev.deck.lede.bear",
+    "lede": "build your marches, fill rallies, and run the hunt."
   },
   {
     "self": "vikings",
     "tail": "vikings-vengeance/",
     "labelKey": "ev.switch.vikings",
     "label": "Vikings",
-    "group": "events"
+    "group": "events",
+    "ledeKey": "ev.deck.lede.vikings",
+    "lede": "send your troops, reinforce towns, and share HQ."
   },
   {
     "self": "swordland",
     "tail": "swordland-showdown/",
     "labelKey": "ev.switch.swordland",
     "label": "Swordland",
-    "group": "events"
+    "group": "events",
+    "ledeKey": "ev.deck.lede.swordland",
+    "lede": "two scoreboards, one battlefield — plan your match."
   },
   {
     "self": "vip",
     "tail": "vip-calculator/",
     "labelKey": "ev.switch.vip",
     "label": "VIP",
-    "group": "tools"
+    "group": "tools",
+    "ledeKey": "ev.deck.lede.vip",
+    "lede": "your progress today, your next VIP level."
   },
   {
     "self": "sim",
     "tail": "battle-simulator/",
     "labelKey": "ev.switch.sim",
     "label": "Simulator",
-    "group": "tools"
+    "group": "tools",
+    "ledeKey": "ev.deck.lede.sim",
+    "lede": "your battles, your marches, and the maths."
   },
   {
     "self": "gear",
     "tail": "hero-gear/",
     "labelKey": "ev.switch.gear",
     "label": "Gear",
-    "group": "tools"
+    "group": "tools",
+    "ledeKey": "ev.deck.lede.gear",
+    "lede": "plan your next upgrade and the resources it needs."
   }
 ]

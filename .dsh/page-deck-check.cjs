@@ -1,0 +1,290 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const { test } = require('node:test');
+const root = path.resolve(__dirname, '..');
+const nav = JSON.parse(fs.readFileSync(path.join(root, '_data/nav.json'), 'utf8'));
+const pages = JSON.parse(fs.readFileSync(path.join(root, '_data/pages.json'), 'utf8'));
+const source = fs.readFileSync(path.join(root, 'js/common.js'), 'utf8');
+
+class Element {
+  constructor(name, attrs = {}) {
+    this.name = name;
+    this.attrs = { ...attrs };
+    this.listeners = {};
+    this.children = [];
+    this.style = {};
+    this.offsetWidth = 281;
+    this.clientWidth = 390;
+    this.textContent = '';
+    this.isConnected = true;
+    this.hidden = false;
+    const classes = new Set();
+    this.classList = {
+      add: value => classes.add(value),
+      remove: value => classes.delete(value),
+      contains: value => classes.has(value),
+      toggle: (value, on) => on ? classes.add(value) : classes.delete(value)
+    };
+  }
+  getAttribute(name) { return this.attrs[name] ?? null; }
+  setAttribute(name, value) { this.attrs[name] = String(value); }
+  removeAttribute(name) { delete this.attrs[name]; }
+  hasAttribute(name) { return Object.hasOwn(this.attrs, name); }
+  addEventListener(name, callback) { (this.listeners[name] ??= []).push(callback); }
+  appendChild(child) { this.children.push(child); child.parentNode = this; }
+  querySelector(selector) { return this.querySelectorAll(selector)[0] ?? null; }
+  querySelectorAll(selector) { return this.children.flatMap(child => [...(child.matches(selector) ? [child] : []), ...child.querySelectorAll(selector)]); }
+  matches(selector) {
+    return selector.split(',').some(raw => {
+      const s = raw.trim();
+      if (s.startsWith('.')) return this.classList.contains(s.slice(1));
+      if (s.startsWith('#')) return this.attrs.id === s.slice(1);
+      const attr = s.match(/^\[([^=\]]+)(?:="([^"]*)")?\]$/);
+      if (attr) return attr[2] === undefined ? this.hasAttribute(attr[1]) : this.getAttribute(attr[1]) === attr[2];
+      return s === this.name;
+    });
+  }
+  closest(selector) { return this.matches(selector) ? this : this.parentNode?.closest(selector) ?? null; }
+  focus() { this.owner.activeElement = this; }
+}
+
+function setup(current = 'home', reduced = false) {
+  let time = 0;
+  let nextFrame = 0;
+  const frames = new Map();
+  const timers = new Map();
+  const document = new Element('document');
+  const html = new Element('html', { 'data-page': pages[current].token, 'data-prev-url': pages[current].swipePrev.url, 'data-next-url': pages[current].swipeNext.url });
+  html.scrollTop = 0;
+  html.clientHeight = 844;
+  html.scrollHeight = 2000;
+  document.documentElement = html;
+  document.body = new Element('body');
+  document.head = new Element('head');
+  document.readyState = 'complete';
+  document.activeElement = document.body;
+  document.appendChild(document.body);
+  const ledgerButton = new Element('button', { id: 'ledger-btn' });
+  const ledger = new Element('nav', { id: 'ledger' });
+  const deck = new Element('dialog', { id: 'page-deck' });
+  deck.open = false;
+  const element = (name, cls, parent = deck, attrs = {}) => {
+    const el = new Element(name, attrs);
+    if (cls) el.classList.add(cls);
+    parent.appendChild(el);
+    return el;
+  };
+  const close = element('button', 'deck-close');
+  const groupButtons = ['home', 'events', 'tools'].map(group => element('button', '', deck, { 'data-deck-group': group }));
+  const viewport = element('div', 'deck-viewport');
+  const cards = nav.map(n => {
+    const card = element('a', 'deck-card', viewport, { 'data-page': pages[n.self].token, 'data-group': n.group, ...(n.self === current ? { 'aria-current': 'page' } : {}) });
+    card.href = 'https://dey.ci/' + n.tail;
+    element('span', 'deck-card-title', card).textContent = n.label;
+    element('span', 'deck-card-lede', card).textContent = pages[n.self].metaDesc;
+    return card;
+  });
+  const status = element('span', 'deck-position');
+  const previous = element('button', 'deck-prev');
+  const next = element('button', 'deck-next');
+  const main = new Element('main');
+  const input = element('input', '', main);
+  const toc = element('nav', '', main, { id: 'toc' });
+  const link = element('a', '', main);
+  const button = element('button', '', main);
+  document.body.appendChild(ledgerButton);
+  document.body.appendChild(ledger);
+  document.body.appendChild(main);
+  document.body.appendChild(deck);
+  function own(node) { node.owner = document; node.children.forEach(own); }
+  own(document);
+  document.getElementById = id => document.querySelector('#' + id);
+  document.createElement = name => new Element(name);
+  const fire = (target, type, extra = {}) => {
+    const event = { target, type, detail: 1, cancelable: true, defaultPrevented: false, ...extra,
+      preventDefault() { this.defaultPrevented = true; },
+      stopImmediatePropagation() { this.stopped = true; }
+    };
+    for (let node = target; node; node = node.parentNode) {
+      for (const handler of node.listeners[type] ?? []) { handler(event); if (event.stopped) return event; }
+    }
+    return event;
+  };
+  deck.showModal = () => { deck.open = true; close.focus(); };
+  deck.close = () => { deck.open = false; fire(deck, 'close'); };
+  const media = { matches: reduced, addEventListener() {} };
+  const compact = { matches: true, addEventListener() {} };
+  const storage = new Map();
+  const window = new Element('window');
+  const location = { href: 'https://dey.ci' + pages[current].canonicalPath, origin: 'https://dey.ci', hash: '' };
+  const scope = {
+    document, window, location, URL, Intl, console, performance: { now: () => time }, navigator: {},
+    sessionStorage: { getItem: k => storage.get(k) ?? null, setItem: (k, v) => storage.set(k, v) },
+    setTimeout: (fn, ms) => { const id = ++nextFrame; timers.set(id, { fn, at: time + ms }); return id; },
+    clearTimeout: id => timers.delete(id)
+  };
+  Object.assign(window, {
+    I18N: { locale: 'en-GB', tr: (k, fallback) => fallback, onReady: fn => { window.boot = fn; } },
+    matchMedia: query => query.includes('reduced') ? media : compact,
+    requestAnimationFrame: fn => { const id = ++nextFrame; frames.set(id, fn); return id; },
+    cancelAnimationFrame: id => frames.delete(id),
+    setTimeout: scope.setTimeout, clearTimeout: scope.clearTimeout,
+    scrollTo: args => { html.scrollTop = args.top; },
+    requestIdleCallback() {}
+  });
+  scope.fetch = () => Promise.resolve({ ok: false });
+  vm.runInNewContext(source, scope, { filename: 'common.js' });
+  window.boot();
+  function advance(ms) {
+    const end = time + ms;
+    while (time < end) {
+      time = Math.min(end, time + 16);
+      const running = [...frames.values()]; frames.clear(); running.forEach(fn => fn(time));
+      for (const [id, timer] of timers) if (timer.at <= time) { timers.delete(id); timer.fn(); }
+    }
+  }
+  const touch = (target, type, x, y = 300, count = 1) => fire(target, type, {
+    touches: type === 'touchend' || type === 'touchcancel' ? [] : Array.from({ length: count }, () => ({ clientX: x, clientY: y })),
+    changedTouches: [{ clientX: x, clientY: y }]
+  });
+  function swipe(target, duration, dx = -220, dy = 0, hold = 0) {
+    touch(target, 'touchstart', 300);
+    for (let i = 1; i <= 10; i++) { advance(duration / 10); touch(target, 'touchmove', 300 + dx * i / 10, 300 + dy * i / 10); }
+    advance(hold);
+    touch(target, 'touchend', 300 + dx, 300 + dy);
+  }
+  const selected = () => cards.findIndex(card => card.classList.contains('is-selected'));
+  return { deck, cards, main, input, toc, link, button, ledgerButton, close, status, groupButtons, previous, next, location, media, window, storage, document, fire, touch, swipe, advance, selected, frames };
+}
+
+test('opening swipe retains velocity: a flick settles farther than a slow drag', () => {
+  const slow = setup(); slow.swipe(slow.main, 1200); slow.advance(1000);
+  const fast = setup(); fast.swipe(fast.main, 80); fast.advance(1000);
+  assert.equal(slow.selected(), 1);
+  assert.ok(fast.selected() > slow.selected());
+  assert.ok(fast.selected() <= 5);
+  assert.equal(fast.deck.open, true);
+  assert.equal(fast.location.href, 'https://dey.ci/');
+});
+
+test('a held release sheds momentum and deliberate long drags retain distance', () => {
+  const held = setup(); held.swipe(held.main, 80, -220, 0, 200); held.advance(1000);
+  assert.equal(held.selected(), 1);
+  const long = setup(); long.swipe(long.main, 2200, -660); long.advance(1000);
+  assert.equal(long.selected(), 2);
+});
+
+test('touch catches the coasting deck without navigating, even after a long hold', () => {
+  const s = setup(); s.swipe(s.main, 80); s.advance(64);
+  assert.ok(s.frames.size > 0);
+  const card = s.cards[s.selected()];
+  s.touch(card, 'touchstart', 180);
+  assert.equal(s.frames.size, 0);
+  const transform = card.style.transform;
+  s.advance(500);
+  assert.equal(card.style.transform, transform);
+  s.touch(card, 'touchend', 180);
+  const click = s.fire(card, 'click');
+  assert.equal(click.defaultPrevented, true);
+  assert.equal(s.location.href, 'https://dey.ci/');
+  s.advance(1000);
+  assert.ok(s.status.textContent);
+});
+
+test('vertical reading, calculator controls and TOC interactions never open the deck', () => {
+  for (const target of ['main', 'input', 'toc', 'link', 'button']) {
+    const s = setup(); s.swipe(s[target], 500, target === 'main' ? 20 : -220, target === 'main' ? 220 : 0); s.advance(1000);
+    assert.equal(s.deck.open, false, target);
+  }
+});
+
+test('dragging a cover cannot activate its link; a settled tap can', () => {
+  const s = setup(); s.fire(s.ledgerButton, 'click');
+  const card = s.cards[0]; s.swipe(card, 1200); s.advance(100);
+  assert.equal(s.fire(card, 'click').defaultPrevented, true);
+  s.advance(1000);
+  const destination = s.cards[s.selected()];
+  assert.equal(s.fire(destination, 'click').defaultPrevented, false);
+  assert.equal(s.storage.get('bh:deck'), new URL(destination.href).pathname);
+});
+
+test('ledger, groups, keyboard and Escape share a modal and restore focus and scroll', () => {
+  const s = setup('bear'); s.ledgerButton.focus(); s.document.documentElement.scrollTop = 540;
+  s.fire(s.ledgerButton, 'click');
+  assert.equal(s.selected(), 2);
+  assert.equal(s.ledgerButton.getAttribute('aria-controls'), 'page-deck');
+  s.fire(s.groupButtons[2], 'click'); s.advance(1000);
+  assert.equal(s.selected(), 5);
+  const url = s.location.href;
+  s.fire(s.next, 'keydown', { key: 'ArrowRight' }); s.advance(1000);
+  assert.equal(s.selected(), 6);
+  assert.equal(s.document.activeElement, s.cards[6]);
+  assert.equal(s.location.href, url);
+  s.fire(s.deck, 'cancel');
+  assert.equal(s.deck.open, false);
+  assert.equal(s.document.activeElement, s.ledgerButton);
+  assert.equal(s.document.documentElement.scrollTop, 540);
+  assert.equal(s.document.documentElement.classList.contains('deck-open'), false);
+});
+
+test('ring browsing works in both directions and reduced motion settles immediately', () => {
+  const s = setup('home', true); s.swipe(s.main, 1200, 220);
+  assert.equal(s.selected(), 7);
+  assert.equal(s.frames.size, 0);
+  assert.equal(s.deck.open, true);
+  s.fire(s.next, 'click');
+  assert.equal(s.selected(), 0);
+  assert.equal(s.fire(s.cards[0], 'click', { detail: 0 }).defaultPrevented, true);
+  assert.equal(s.deck.open, false);
+});
+
+test('cancelled and multitouch gestures leave a usable deck and history restores close it', () => {
+  const s = setup(); s.touch(s.main, 'touchstart', 300); s.advance(50); s.touch(s.main, 'touchmove', 160);
+  s.touch(s.main, 'touchcancel', 160); s.advance(1000);
+  assert.equal(s.deck.open, true);
+  assert.ok(s.status.textContent);
+  s.touch(s.cards[s.selected()], 'touchstart', 200, 300, 2);
+  s.touch(s.cards[s.selected()], 'touchend', 200); s.advance(1000);
+  s.fire(s.window, 'pageshow', { persisted: true });
+  assert.equal(s.deck.open, false);
+});
+
+test('all dictionaries carry plain-text deck labels and the template covers the nav data', () => {
+  const template = fs.readFileSync(path.join(root, '_includes/page-deck.html'), 'utf8');
+  const keys = [...template.matchAll(/data-i18n(?:-key)?="(ev\.deck\.[^"]+)"/g)].map(match => match[1]);
+  assert.equal(new Set(keys).size, 6);
+  for (const file of fs.readdirSync(path.join(root, 'i18n')).filter(name => name.endsWith('.js'))) {
+    const scope = { window: {} };
+    vm.runInNewContext(fs.readFileSync(path.join(root, 'i18n', file), 'utf8'), scope);
+    const dictionary = Object.values(scope.window.__BH_I18N_DATA)[0];
+    for (const key of keys) { assert.ok(dictionary[key], file + ': ' + key); assert.equal(/<[^>]+>/.test(dictionary[key]), false); }
+    for (const n of nav) { assert.ok(dictionary[n.labelKey], file + ': ' + n.labelKey); assert.ok(dictionary[n.ledeKey], file + ': ' + pages[n.self].metaDescKey); }
+  }
+  assert.ok(template.includes('for n in site.data.nav'));
+  assert.ok(template.includes('site.data.pages[n.self]'));
+  assert.ok(fs.readFileSync(path.join(root, '_layouts/page.html'), 'utf8').includes('include page-deck.html'));
+});
+
+test('background taps dismiss and pagehide cleans up synchronously before bfcache freezes', () => {
+  const s = setup(); s.fire(s.ledgerButton, 'click'); s.fire(s.status, 'click');
+  assert.equal(s.deck.open, false);
+  s.fire(s.ledgerButton, 'click');
+  s.deck.close = () => { s.deck.open = false; };
+  s.fire(s.window, 'pagehide');
+  assert.equal(s.document.documentElement.classList.contains('deck-open'), false);
+  assert.equal(s.ledgerButton.getAttribute('aria-expanded'), 'false');
+});
+
+test('a reversal uses the final movement and keyboard direction follows the physical deck in RTL', () => {
+  const s = setup(); s.touch(s.main, 'touchstart', 300);
+  s.advance(100); s.touch(s.main, 'touchmove', 100);
+  s.advance(40); s.touch(s.main, 'touchmove', 280);
+  s.touch(s.main, 'touchend', 280); s.advance(1000);
+  assert.ok(s.selected() === 0 || s.selected() >= 4);
+  s.document.documentElement.setAttribute('dir', 'rtl');
+  s.fire(s.next, 'keydown', { key: 'Home' }); s.advance(1000);
+  s.fire(s.next, 'keydown', { key: 'ArrowRight' }); s.advance(1000);
+  assert.equal(s.selected(), 1);
+});

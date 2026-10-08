@@ -1,7 +1,6 @@
 /* events.css — shared multi-event chrome for the dey.ci guide site.
    Loaded on every page (home, bear-hunt, vikings-vengeance, swordland-showdown,
-   vip-calculator) after styles.css. Adds: the event switcher, the swipe preview
-   panel, the page themes, and the components shared between events (the
+   vip-calculator) after styles.css. Adds: the event switcher, the page deck, the page themes, and the components shared between events (the
    wave/phase ruled rows, the practical checklist). Page-specific components
    live next to their page: home.css (event cards, hover preview), vikings.css
    (troop composition), swordland.css (buildings, scoreboards, matrix, games),
@@ -12,12 +11,12 @@
    parchment ink, oxblood rubrication, manuscript voice — stays shared. */
 
 /* ─── Swipe setup ──────────────────────────────────────── */
-/* The browser's edge-swipe navigation must not fight the peek. touch-action
+/* The browser's edge-swipe navigation must not fight the deck. touch-action
    stays untouched on purpose: an ancestor pan-y would break the range sliders
    in the calculators (touch-action intersects down the tree), and the gesture
    handler already requires |dx| > |dy| before it activates. */
 html, body { overscroll-behavior-x: none; }
-body.swiping { user-select: none; -webkit-user-select: none; }
+
 
 /* ─── Event switcher — the topbar tabs ────────────────── */
 /* Sits between brand and lang-picker; hidden below 1240px, where the bar can
@@ -149,82 +148,133 @@ body.swiping { user-select: none; -webkit-user-select: none; }
 .ledger a.active { color: var(--amber); }
 .ledger a.active::before { content: "\2767 "; }
 
-/* ─── The swipe preview — the neighbour event's cover ─── */
-/* Parked off-screen at ±100% (its own width); the finger pulls it in with
-   resistance; past ~14% of the viewport it springs fully open so its content
-   is readable, and a release past the commit bar navigates (short drags snap
-   back — the .snap class supplies the spring, added and removed in
-   common.js). A committed swipe animates the card nowhere: it hands the frame
-   straight to the page move, which cross-fades the two documents through each
-   other with the card riding along in the outgoing one (see the fold rules
-   below). Nothing is painted between the two pages. */
-.swipe-peek {
+.page-deck {
   position: fixed;
-  top: 0; bottom: 0;
-  z-index: 80;
-  width: min(78vw, 24rem);
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--ink);
+  background: transparent;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.page-deck::backdrop { background: rgba(5, 8, 13, 0.8); }
+html.deck-open { overflow-y: hidden; }
+.deck-sheet {
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: var(--space-s);
-  padding: var(--space-l) var(--space-m);
-  background: var(--void-2);
-  border-inline: 1px solid var(--amber-dim);
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.55);
-  pointer-events: none;
-  will-change: transform;
+  gap: 1rem;
+  padding-block: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-bottom));
 }
-.swipe-peek.prev { left: 0; transform: translateX(-100%); }
-.swipe-peek.next { right: 0; transform: translateX(100%); }
-.swipe-peek.snap { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
-.swipe-peek .peek-kicker {
+.deck-header, .deck-groups, .deck-footer, #deck-hint {
+  width: min(90%, 38rem);
+  margin-inline: auto;
+}
+.deck-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.deck-header h2 {
+  margin: 0;
   font-family: var(--body);
   font-size: var(--step--1);
   font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  letter-spacing: 0.08em;
   color: var(--ink-muted);
 }
-.swipe-peek .peek-title {
+.deck-header h2::before { content: none; }
+.page-deck button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-dim);
+  font: inherit;
+  cursor: pointer;
+}
+.page-deck button:hover, .page-deck button:focus-visible { color: var(--amber); border-color: var(--signal-line); }
+.page-deck :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.deck-groups { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.15rem 0.4rem; }
+.deck-groups button {
+  padding: 0.25rem 0.55rem;
+  font-size: var(--step--1);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.deck-groups button[aria-pressed="true"] { color: var(--amber); border-color: var(--signal-line); }
+.deck-viewport {
+  position: relative;
+  height: clamp(18rem, 49dvh, 29rem);
+  flex-shrink: 0;
+  overflow: hidden;
+  direction: ltr;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.deck-card {
+  position: absolute;
+  top: 0.75rem;
+  bottom: 0.75rem;
+  left: 50%;
+  width: min(72vw, 23rem);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: clamp(1.25rem, 5vw, 2rem);
+  background: var(--void-2);
+  border: 1px solid var(--amber-dim);
+  border-radius: 3px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  color: var(--ink);
+  text-decoration: none;
+  will-change: transform;
+  -webkit-user-drag: none;
+}
+.deck-card.is-selected { border-color: var(--amber); }
+.deck-mark { color: var(--amber-dim); font-size: 2.2rem; line-height: 1; }
+.deck-card-title {
   font-family: var(--display-2);
   font-weight: 700;
-  /* The cover's title is the one line that can outgrow the card. At --step-3
-     (9.6vw on a phone) "SWORDLAND" measures ~7.2em, wider than the card's
-     inside, so the inherited `overflow-wrap: break-word` and `hyphens: auto`
-     split it mid-word and "Swordland Showdown" fell over four lines. --step-2
-     under an 8vw cap fits the longest title on two lines at every width, and
-     still reads as a cover rather than a caption. */
-  font-size: min(var(--step-2), 8vw);
-  letter-spacing: 0.04em;
+  font-size: min(var(--step-2), 7vw);
+  line-height: 1.2;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--amber);
+  overflow-wrap: anywhere;
 }
-.swipe-peek .peek-lede { color: var(--ink-dim); font-size: var(--step--1); }
-.swipe-peek .peek-hint { color: var(--amber); font-style: italic; font-size: var(--step--1); transition: opacity 0.12s linear; }
-.swipe-peek.prev .peek-kicker::before { content: "\276E "; color: var(--amber-dim); }
-.swipe-peek.next .peek-kicker::after  { content: " \276F"; color: var(--amber-dim); }
-main { will-change: transform; }
-main.snap { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+.deck-card-lede {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  font-size: var(--step--1);
+  line-height: 1.45;
+  color: var(--ink-dim);
+}
+.deck-card-action { margin-top: auto; color: var(--amber); font-size: var(--step--1); }
+.deck-footer { direction: ltr; padding: 0; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+.deck-footer button { font-size: 2rem; line-height: 1; }
+.deck-position { min-width: 0; text-align: center; color: var(--ink-dim); font-size: var(--step--1); }
+#deck-hint { margin-block: 0; text-align: center; color: var(--ink-muted); font-size: var(--step--1); }
+html[dir="rtl"] .deck-card { direction: rtl; }
+@media (prefers-reduced-motion: no-preference) {
+  main { transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: 50% 20vh; }
+  .deck-open main { transform: scale(0.94); }
+  .page-deck[open] .deck-sheet { animation: deck-reveal 0.22s ease-out; }
+  @keyframes deck-reveal { from { opacity: 0; transform: scale(0.96); } }
+}
+@media (max-height: 540px) {
+  .deck-sheet { gap: 0.4rem; }
+  .deck-viewport { height: 18rem; }
+}
 
-/* ─── Paging the ledger — the cross-document view transition ─── */
-/* Moving between pages is a leaf turned in the same ledger: the chrome holds
-   still (`.topbar` is named, so it is cut out of the root snapshot and simply
-   is, on both sides) while the leaf itself moves. Forward through the ring the
-   pages travel left, back they travel right — the same physical motion as the
-   swipe that usually causes it, on the same spring the peek uses, so a
-   committed swipe finishes as one gesture instead of cutting to a fresh page.
-   The direction is the incoming document's to know (it runs the transition):
-   head.html compares the referrer against its own two neighbours and stamps
-   data-nav on <html>; no direction — a link in from outside the ring — gets
-   the quiet dissolve.
 
-   Both documents must opt in, so this rides in the sheet every page loads.
-   The opt-in is a top-level rule on purpose: nested inside a query Chrome
-   parses it but never acts on it (the document simply does the plain
-   navigation). Reduced motion is opted out of by neutralising the
-   transition's own animations below — an instant swap, which is what the
-   site's blanket `transition: none !important` says, and it cannot reach
-   these pseudos (they have no element to match). */
 @view-transition { navigation: auto; }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -254,21 +304,9 @@ main.snap { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
   html[data-nav="prev"]::view-transition-old(root) { animation: vt-out-right 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
   html[data-nav="prev"]::view-transition-new(root) { animation: vt-in-left 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
-  /* A committed swipe is a dissolve, and the text is what the reader watches
-     arrive. The new page fades in over the old one, which is held: a swipe is
-     a gesture the reader made, so the move gets a longer beat than a link does.
-
-     One layer stays opaque, and that is the whole trick — fading *both* roots
-     leaves the backdrop showing through the middle of the move. At the halfway
-     point the composite is 0.5·new + 0.25·old + 0.25·backdrop, so a quarter of
-     the ink is simply missing and the frame dims: measured, that was a 13% drop
-     (28.7 to 25.0 mean luminance) — visible as the screen going grey and coming
-     back. Holding the old root and fading only the new one keeps the frame
-     opaque throughout, so the ink goes out exactly as the new ink comes in.
-
-     A fold arrival carries data-entry and *no* data-nav (head.html), so it
-     never competes with the directional rules above. */
+  html[data-entry="deck"]::view-transition-old(root),
   html[data-entry="fold"]::view-transition-old(root) { animation: none; }
+  html[data-entry="deck"]::view-transition-new(root),
   html[data-entry="fold"]::view-transition-new(root) { animation: vt-dissolve-in 0.4s ease both; }
 
   @keyframes vt-dissolve-in { from { opacity: 0; } }
@@ -295,14 +333,8 @@ main.snap { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
    just these token overrides. Home is the canonical theme — the
    tokens in styles.css, no overrides.
 
-   The theme blocks are grouped with .swipe-peek[data-page=…] so the
-   mobile swipe preview wears the destination page's theme (common.js
-   stamps data-page from data-prev-page / data-next-page), not the
-   theme of the page you're on. Home has no theme block, so its peek
-   rule sits below as a small copy — the ground (--void) as well as the
-   field tone, since a committed swipe spreads the paper onto the
-   destination's ground and home's is the canonical navy-black. */
-.swipe-peek[data-page="home"] {
+   Each .deck-card carries its destination's data-page theme. */
+.deck-card[data-page="home"] {
   --void: #0B0E16;        /* ground — the same night home lands on */
   --void-2: #121726;      /* one step up (fields)            */
   --amber: #F5C851;       /* the one signal — active         */
@@ -363,7 +395,7 @@ html {
 
 html[data-page="bearhunt"],
 html[data-hover="bearhunt"],
-.swipe-peek[data-page="bearhunt"] {
+.deck-card[data-page="bearhunt"] {
   --void: #0B110C;        /* pine night — black-green        */
   --void-2: #121B13;      /* one step up (fields)            */
   --amber: #AEC878;       /* moss-verdigris — the hunt signal */
@@ -380,7 +412,7 @@ html[data-hover="bearhunt"],
 
 html[data-page="vikings"],
 html[data-hover="vikings"],
-.swipe-peek[data-page="vikings"] {
+.deck-card[data-page="vikings"] {
   --void: #150D08;        /* forge night — ember brown         */
   --void-2: #1E140D;      /* one step up (fields)             */
   --amber: #E08A3C;       /* ember orange — the forge signal  */
@@ -436,7 +468,7 @@ html[data-page="vikings"] .dust i:nth-child(3) {
    the enemy steel-blue, and the .tag-them accent stays blue. */
 html[data-page="swordland"],
 html[data-hover="swordland"],
-.swipe-peek[data-page="swordland"] {
+.deck-card[data-page="swordland"] {
   --void: #120A0D;        /* duel night — black-red            */
   --void-2: #1B1115;      /* one step up (fields)              */
   --amber: #E05555;       /* duel crimson — your side          */
@@ -481,7 +513,7 @@ html[data-page="swordland"] .dust i:nth-child(3) { animation: dust-drift 80s lin
    site, for the page that keeps the ledger. */
 html[data-page="vip"],
 html[data-hover="vip"],
-.swipe-peek[data-page="vip"] {
+.deck-card[data-page="vip"] {
   --void: #120A1E;        /* court night — violet-black        */
   --void-2: #1C1330;      /* one step up (fields)              */
   --amber: #C5A3EE;       /* amethyst — the court signal       */
@@ -512,7 +544,7 @@ html[data-page="vip"] .dust i:nth-child(3) { background-size: 300px 300px; anima
    colder, for the page that does the arithmetic. */
 html[data-page="sim"],
 html[data-hover="sim"],
-.swipe-peek[data-page="sim"] {
+.deck-card[data-page="sim"] {
   --void: #0E0A12;        /* war-room night — near-black        */
   --void-2: #16111C;      /* one step up (fields)              */
   --amber: #E0B24A;       /* antique gold — the ledger signal  */
@@ -541,7 +573,7 @@ html[data-page="sim"] .dust i:nth-child(3) { background-size: 300px 300px; anima
    weekend borrows the shared --enemy red. */
 html[data-page="kvksg"],
 html[data-hover="kvksg"],
-.swipe-peek[data-page="kvksg"] {
+.deck-card[data-page="kvksg"] {
   --void: #081315;        /* sea night — black-teal            */
   --void-2: #0F1F1E;      /* one step up (fields)              */
   --amber: #D9B25A;       /* sceptre gold — the campaign signal */
@@ -698,7 +730,7 @@ html[data-page="bearhunt"] .section-fold:not([open]) > summary h2::before {
   }
 }
 
-html[data-page="gear"], html[data-hover="gear"], .swipe-peek[data-page="gear"] {
+html[data-page="gear"], html[data-hover="gear"], .deck-card[data-page="gear"] {
   --void: #120d0c;
   --void-2: #1b1512;
   --amber: #e6b56a;

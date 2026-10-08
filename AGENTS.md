@@ -74,40 +74,25 @@ and never alter numbers, math symbols (`√ × ÷ ≈ Σ ∝ ≤ →`), `{n}`, o
   `css/…`/`js/…` (root-relative from the page's depth: `../css/…` from subdirs).
 - The TOC scrollspy and front-layer observer in `js/common.js` pick up new sections
   (`<section class="section" id="…">` + matching `.toc a[href="#…"]`) automatically.
-- **Paging between pages (prefetch + view transition):** after boot, once the
-  browser is idle, `js/common.js` fetches each of the two neighbour pages a swipe
-  can reach, reads the markup the browser will read, and prefetches the sheets and
-  toys that neighbour asks for (this page's own, and anything off-origin, are
-  dropped) — skipped under data-saver / 2G, and deliberately after the page is
-  whole so a speculative download never competes with the dictionary. The
-  neighbours are the layout's `data-prev-url`/`data-next-url`, so it is still one
-  `_data/pages.json` edit. The move itself is a cross-document view transition in
-  `css/events.css`: `@view-transition { navigation: auto; }` **must stay a
-  top-level rule** (nested inside a media query Chrome parses it and then ignores
-  it, silently dropping the whole transition), it names `.topbar` so the chrome
-  holds still while the leaf moves, and the direction is the incoming document's
-  to know — the script in `head.html` compares `document.referrer` against
-  `data-prev-url`/`data-next-url` and stamps `data-nav="next|prev"` on `<html>`.
-  No direction (a link from outside the ring) = plain dissolve; reduced motion =
-  the transition's animations are neutralised, so the swap is instant. A committed
-  swipe gets the same dissolve over a longer beat (0.4s vs 0.3s) — it is a gesture
-  the reader made, so the move answers rather than simply being over. The old root
-  is **held** and only the new one fades: fading both leaves the backdrop showing
-  through the middle of the move, where the composite is
-  `0.5·new + 0.25·old + 0.25·backdrop` and a quarter of the ink is missing — a
-  measured 13% luminance dip, which is the flash this move was rebuilt to remove.
-  One opaque layer keeps the frame flat (fold: 27.9–29.2, link: 27.5–28.5). Both
-  root images are forced to `mix-blend-mode: normal` (the UA's `plus-lighter`
-  *adds* them, so a fade brightens as it goes).
-  `sessionStorage['bh:fold']` (this page's own address, read once and deleted by
-  `head.html`, which stamps `data-entry="fold"` and withholds `data-nav`) tells
-  the arriving page which move it is. A navigation that never lands springs the
-  cover away. The swipe ring is the `_data/nav.json` order read as a cycle
-  (home → Event Cycle → the four events → VIP → Simulator → home): both
-  `swipePrev`/`swipeNext` on every page, so no page is unreachable from either
-  side.
-  The dictionary URL is build-stamped (`window.__BH_BUILD` = `site.time`, read by
-  `js/i18n.js`): cacheable on the live site, still no-cache on localhost/`file://`.
+- **Mobile page deck:** `_includes/page-deck.html` renders one themed cover per
+  `_data/nav.json` entry using `_data/pages.json` for identity and the nav entries for translated ledes.
+  The compact ledger button opens the same native modal dialog as a horizontal
+  swipe. `js/common.js` carries the opening drag into the carousel: slow drags
+  track the finger, release velocity from the last 100 ms adds a capped throw,
+  and the deck settles without navigating. Touch catches momentum; only a card
+  tap follows its real link. Group buttons jump within the stable nav order.
+  Forms, links, buttons and TOC rails retain their own gestures. Escape, the
+  close button and background taps dismiss; focus and reading position return.
+  Reduced motion retains direct dragging but settles instantly. Keyboard arrows
+  browse within the dialog; outside it, the existing neighbour shortcuts remain.
+- **Paging and prefetch:** idle neighbour prefetch remains data-saver / 2G aware.
+  A settled deck cover also warms its destination. Keep `@view-transition {
+  navigation: auto; }` at top level in `css/events.css`. A deck link writes its
+  target pathname to `sessionStorage['bh:deck']`; `head.html` consumes it for
+  a dissolve even when the target is outside the neighbour ring. Reduced motion
+  neutralises transition animations. `pageshow` / `pagehide` close the deck for
+  clean history restores. Dictionaries remain pinned to `window.__BH_BUILD`.
+  Run `node --test .dsh/page-deck-check.cjs` for gesture, modal and translation checks.
 - A new event page = one directory with a front-matter `index.html` (its TOC +
   `<main>` body only), a `data-page` theme block + dust rules in `css/events.css`,
   a per-page CSS file for bespoke components, a per-page JS file registering its
