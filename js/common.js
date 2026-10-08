@@ -1,19 +1,4 @@
-/* common.js — shared chrome for every page (home, bear-hunt, vikings-vengeance,
-   swordland-showdown, vip-calculator).
-   The pages are fully readable without this file; it only adds a scroll progress
-   bar, section highlighting, the cracktro depth pull (front layer), the language
-   picker, the event switcher, keyboard/swipe navigation between events, and a
-   functional toast for genuine feedback (e.g. copy confirmation). It also warms
-   two neighbouring pages once the browser is idle, so a swipe (or an arrow
-   key) lands on a page that is already in cache — the cross-document view
-   transition that carries the move is in css/events.css. A committed swipe
-   hands the frame straight to that move: the card under the finger is the
-   destination's cover, the two documents cross-fade through each other, and
-   nothing is drawn in between. No dependencies, no data collected.
-   i18n: all user-visible strings come from i18n/<lang>.js via window.I18N;
-   numbers format per the active locale. Page-specific toys register through
-   window.BH.registerPage(...) and live in the per-page files (bear-hunt.js,
-   vikings.js, swordland.js, kvk.js, vip.js). */
+/* common.js — shared chrome, page registration and the swipe-open page deck. */
 (function () {
   'use strict';
 
@@ -115,253 +100,269 @@
     if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
     var t = e.target;
-    if (t && t.closest && t.closest('input, select, textarea, [contenteditable], #lang-menu, #lang-btn, #ledger, #toc')) return;
+    if (t && t.closest && t.closest('input, select, textarea, [contenteditable], #lang-menu, #lang-btn, #ledger, #toc, #page-deck')) return;
     var url = neighbor(e.key === 'ArrowLeft' ? -1 : 1);
     if (url) { e.preventDefault(); window.location.href = url; }
   });
 
-  // Swipe: full-page horizontal drag with a preview panel and a commit bar.
-  // Horizontal intent requires |dx| > |dy| before the peek activates, so
-  // reading a long page never triggers it (overscroll-behavior-x: none in
-  // events.css keeps the browser's edge-swipe from fighting us). Drags
-  // starting on form controls or the TOC rail are ignored. The preview
-  // follows the finger in both directions: past ~14% of the viewport it
-  // springs fully open so its content is readable, and it stays fully in
-  // only while the finger holds it there — pull back and it re-parks at
-  // the finger. Committing is deliberate and positional: releasing while
-  // still holding at/past ~38% navigates; every other release springs
-  // back, so short or fast drags never navigate on their own.
-  //
-  // What a commit does is a dissolve, not a turn. The card the finger was
-  // holding is the destination's own cover and it is already on screen; the
-  // release hands the frame to the page move, which cross-fades this document
-  // into the next with the card riding along inside it, and the arriving page
-  // is told so by one flag (bh:fold → data-entry="fold", stamped by
-  // head.html). Nothing is drawn in between — see the fold rules in
-  // css/events.css for why a drawn frame is exactly what flashed.
-  var peek = null;
-  var peekMain = null;
-  var peekHint = null;
-  // OPEN_FRAC: how far the finger must travel (fraction of viewport width)
-  // before the preview springs fully open — the content is readable long
-  // before the release point. COMMIT_FRAC: releasing while still holding
-  // at/past this navigates; any release below it springs back.
-  var OPEN_FRAC = 0.14;
-  var COMMIT_FRAC = 0.38;
-  // FAILSAFE: a committed swipe must never leave the reader holding a card
-  // over a page that did not move (a dead link, a load they stopped).
-  var FAILSAFE = 1500;
-  var committing = false;
-  // g.opened is a live view of "the finger is at/past OPEN_FRAC right now",
-  // recomputed on every move — never a one-way latch.
-  var g = { startX: null, startY: null, active: false, opened: false, dir: 0 };
-  var peekHintText = '';
+  var deck = document.getElementById('page-deck');
+  var cards = deck ? Array.prototype.slice.call(deck.querySelectorAll('.deck-card')) : [];
+  var groups = deck ? Array.prototype.slice.call(deck.querySelectorAll('[data-deck-group]')) : [];
+  var position = 0;
+  var step = 1;
+  var frame = 0;
+  var suppressUntil = 0;
+  var returnFocus = null;
+  var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var gesture = null;
+  var wheelTimer = 0;
+  var warmingCard = '';
 
-  function makePeek() {
-    peek = document.createElement('div');
-    peek.className = 'swipe-peek';
-    peek.setAttribute('aria-hidden', 'true');
-    peek.innerHTML =
-      '<span class="peek-kicker"></span>' +
-      '<h3 class="peek-title"></h3>' +
-      '<p class="peek-lede"></p>' +
-      '<span class="peek-hint"></span>';
-    document.body.appendChild(peek);
-    peekMain = document.querySelector('main');
-    peekHint = peek.querySelector('.peek-hint');
+  function wrap(n) { return (n % cards.length + cards.length) % cards.length; }
+
+  function paintDeck() {
+    var selected = wrap(Math.round(position));
+    cards.forEach(function (card, i) {
+      var delta = wrap(i - position + cards.length / 2) - cards.length / 2;
+      var distance = Math.abs(delta);
+      card.style.transform = 'translateX(calc(-50% + ' + (delta * step) + 'px)) scale(' + (1 - Math.min(distance, 2) * 0.065) + ')';
+      card.style.opacity = String(Math.max(0, 1 - Math.max(0, distance - 1) * 0.65));
+      card.style.zIndex = String(cards.length - Math.round(distance));
+      card.classList.toggle('is-selected', i === selected);
+      card.tabIndex = i === selected ? 0 : -1;
+      card.inert = distance > 1.7;
+    });
+    groups.forEach(function (button) {
+      button.setAttribute('aria-pressed', cards[selected].getAttribute('data-group') === button.getAttribute('data-deck-group') ? 'true' : 'false');
+    });
   }
 
-  function peekData(dir) {
-    var d = document.documentElement;
-    var p = dir === 1 ? 'next' : 'prev';
-    return {
-      url: d.getAttribute('data-' + p + '-url') || '',
-      page: d.getAttribute('data-' + p + '-page') || '',
-      title: d.getAttribute('data-' + p + '-title') || '',
-      lede: d.getAttribute('data-' + p + '-lede') || '',
-      kicker: dir === 1 ? tr('ev.peek.next', 'next event') : tr('ev.peek.prev', 'previous event')
-    };
+  function measureDeck() {
+    if (!deck || !deck.open || !cards.length) return;
+    step = cards[0].offsetWidth + Math.min(24, deck.clientWidth * 0.045);
+    paintDeck();
   }
 
-  function setPeekHint(text) {
-    if (!peekHint || peekHintText === text) return;
-    peekHintText = text;
-    peekHint.textContent = text;
+  function stopDeck() {
+    var moving = !!frame;
+    window.cancelAnimationFrame(frame);
+    frame = 0;
+    window.clearTimeout(wheelTimer);
+    wheelTimer = 0;
+    return moving;
   }
 
-  function showPeek(dir) {
-    if (!peek) makePeek();
-    var d = peekData(dir);
-    peek.className = 'swipe-peek ' + (dir === 1 ? 'next' : 'prev');
-    // The panel wears the destination page's theme (events.css groups the
-    // page-theme tokens with .swipe-peek[data-page=…]) so the card reads as
-    // the page being navigated to, not the page you're on.
-    if (d.page) peek.setAttribute('data-page', d.page);
-    else peek.removeAttribute('data-page');
-    peek.querySelector('.peek-kicker').textContent = d.kicker;
-    peek.querySelector('.peek-title').textContent = d.title;
-    peek.querySelector('.peek-lede').textContent = d.lede;
-    setPeekHint(tr('ev.peek.dismiss', 'pull back to dismiss'));
-    document.body.classList.add('swiping');
-  }
-
-  function positionPeek(dx) {
-    if (!peek) return;
-    // The panel is parked off-screen (translateX ±100%); the finger pulls it
-    // toward full reveal with slight resistance, capped so it never blocks.
-    var px = dx * 0.7;
-    if (g.dir === 1) {
-      peek.style.transform = 'translateX(calc(100% + ' + Math.min(0, px) + 'px))';
-    } else {
-      peek.style.transform = 'translateX(calc(-100% + ' + Math.max(0, px) + 'px))';
+  function announceDeck() {
+    var i = wrap(Math.round(position));
+    var card = cards[i];
+    deck.querySelector('.deck-position').textContent = card.querySelector('.deck-card-title').textContent + ' · ' + fmt(i + 1) + ' / ' + fmt(cards.length);
+    var c = navigator.connection;
+    if (warmingCard !== card.href && !(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || '')))) {
+      warmingCard = card.href;
+      if (!card.hasAttribute('aria-current')) warmNeighbour(card.href);
     }
   }
 
-  function openPeek() {
-    if (!peek) return;
-    // Spring the preview fully open — readable well before the natural
-    // release point. Fires only on a clean crossing into the open zone,
-    // while the finger holds at/past OPEN_FRAC. If the finger pulls back
-    // below it, touchmove drops .snap and re-parks the panel at the
-    // finger, so the spring never fights a reversal.
-    peek.classList.add('snap');
-    peek.style.transform = 'translateX(0)';
+  function settleDeck(target, velocity, focusCard) {
+    stopDeck();
+    var from = position;
+    var distance = target - from;
+    function done() {
+      frame = 0;
+      position = wrap(target);
+      paintDeck();
+      announceDeck();
+      if (focusCard) cards[wrap(Math.round(position))].focus({ preventScroll: true });
+    }
+    if (motion.matches || Math.abs(distance) < 0.001) { done(); return; }
+    var duration = velocity && distance * velocity > 0
+      ? Math.max(180, Math.min(850, 3 * Math.abs(distance / velocity)))
+      : 300;
+    var began = performance.now();
+    function tick(now) {
+      var t = Math.min(1, (now - began) / duration);
+      position = from + distance * (1 - Math.pow(1 - t, 3));
+      paintDeck();
+      if (t < 1) frame = window.requestAnimationFrame(tick);
+      else done();
+    }
+    frame = window.requestAnimationFrame(tick);
   }
 
-  function parallaxMain(dx) {
-    if (peekMain) peekMain.style.transform = 'translateX(' + (dx * 0.12) + 'px)';
+  function openDeck() {
+    if (!deck || !cards.length || typeof deck.showModal !== 'function') return false;
+    if (deck.open) return true;
+    returnFocus = document.activeElement;
+    position = Math.max(0, cards.findIndex(function (card) { return card.hasAttribute('aria-current'); }));
+    var ledger = document.getElementById('ledger');
+    var ledgerBtn = document.getElementById('ledger-btn');
+    var langMenu = document.getElementById('lang-menu');
+    if (ledger) ledger.hidden = true;
+    if (langMenu) langMenu.hidden = true;
+    if (ledgerBtn) { ledgerBtn.setAttribute('aria-expanded', 'true'); ledgerBtn.classList.add('open'); }
+    var langBtn = document.getElementById('lang-btn');
+    if (langBtn) { langBtn.setAttribute('aria-expanded', 'false'); langBtn.classList.remove('open'); }
+    deck.showModal();
+    document.documentElement.classList.add('deck-open');
+    measureDeck();
+    announceDeck();
+    return true;
   }
 
-  function resetPeek() {
-    // Add the spring (events.css .snap transition), clear the drag transform,
-    // then drop the class once the spring has settled.
-    if (peek) { peek.classList.add('snap'); peek.style.transform = ''; }
-    if (peekMain) { peekMain.classList.add('snap'); peekMain.style.transform = ''; }
-    document.body.classList.remove('swiping');
-    setTimeout(function () {
-      if (peek) peek.classList.remove('snap');
-      if (peekMain) peekMain.classList.remove('snap');
-    }, 400);
+  function cleanDeck() {
+    stopDeck();
+    gesture = null;
+    document.documentElement.classList.remove('deck-open');
+    var btn = document.getElementById('ledger-btn');
+    if (btn) { btn.setAttribute('aria-expanded', 'false'); btn.classList.remove('open'); }
+    if (returnFocus && returnFocus.isConnected) returnFocus.focus({ preventScroll: true });
+    returnFocus = null;
+  }
+
+  function closeDeck() {
+    if (!deck || !deck.open) return;
+    deck.close();
+    cleanDeck();
+  }
+
+  function sampleGesture(x) {
+    var now = performance.now();
+    gesture.samples.push({ x: x, time: now });
+    gesture.samples = gesture.samples.filter(function (sample) { return now - sample.time <= 100; });
   }
 
   document.addEventListener('touchstart', function (e) {
-    if (e.touches.length !== 1) return;
-    // A committed swipe has already left the reader's hand: the cover is on
-    // its way to the frame and the navigation follows it, so a stray finger
-    // in that window must not start a second drag on top.
-    if (committing) return;
+    if (!deck || !cards.length || e.touches.length !== 1) {
+      if (gesture && gesture.active && deck.open) settleDeck(Math.round(position), 0);
+      gesture = null;
+      return;
+    }
     var t = e.target;
-    if (t && t.closest && t.closest('input, select, textarea, [contenteditable], #ledger, #toc')) return;
+    if (!deck.open && t.closest && t.closest('a, button, input, select, textarea, dialog, [role="dialog"], [contenteditable], #ledger, #toc, .toc, [role="slider"], [data-swipe-ignore]')) return;
+    if (deck.open && t.closest && t.closest('button')) return;
+    var caught = deck.open && stopDeck();
+    if (caught) suppressUntil = performance.now() + 400;
     var touch = e.touches[0];
-    g.startX = touch.clientX;
-    g.startY = touch.clientY;
-    g.active = false;
-    g.opened = false;
-    g.dir = 0;
+    gesture = { x: touch.clientX, y: touch.clientY, start: position, active: false, caught: caught, samples: [] };
+    sampleGesture(touch.clientX);
   }, { passive: true });
 
   document.addEventListener('touchmove', function (e) {
-    if (g.startX === null) return;
+    if (!gesture || e.touches.length !== 1) return;
     var touch = e.touches[0];
-    var dx = touch.clientX - g.startX;
-    var dy = touch.clientY - g.startY;
-    if (!g.active) {
-      if (Math.abs(dx) < 10) return;
-      if (Math.abs(dy) > Math.abs(dx)) { g.startX = null; return; } // vertical intent
-      g.dir = dx < 0 ? 1 : -1;
-      if (!neighbor(g.dir)) { g.startX = null; return; } // nowhere to go
-      g.active = true;
-      showPeek(g.dir);
-      // A leftover release spring (resetPeek clears .snap after 400 ms) must
-      // never rubber-band a drag that starts inside that window.
-      if (peek) peek.classList.remove('snap');
-      if (peekMain) peekMain.classList.remove('snap');
-    }
-    if (g.active) {
-      e.preventDefault(); // horizontal drag: never a click, never a scroll
-      var vw = document.documentElement.clientWidth || window.innerWidth;
-      // Drive the preview from the live drag, in both directions, at every
-      // stage. "opened" means "|dx| is at/past OPEN_FRAC right now": while
-      // the finger holds there the panel stays fully in; pulling back below
-      // re-parks it at the finger instead of leaving it locked open.
-      if (Math.abs(dx) >= vw * OPEN_FRAC) {
-        if (!g.opened) { g.opened = true; openPeek(); }
-      } else {
-        if (g.opened) {
-          g.opened = false;
-          // Reversal: drop the spring so the panel snaps back to the finger
-          // instantly — the transition must never fight the pull-back.
-          if (peek) peek.classList.remove('snap');
-          if (peekMain) peekMain.classList.remove('snap');
-        }
-        positionPeek(dx);
+    var dx = touch.clientX - gesture.x;
+    var dy = touch.clientY - gesture.y;
+    sampleGesture(touch.clientX);
+    if (!gesture.active) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 12) return;
+      if (Math.abs(dy) >= Math.abs(dx)) {
+        if (gesture.caught && deck.open) settleDeck(Math.round(position), 0);
+        gesture = null;
+        return;
       }
-      parallaxMain(dx);
-      setPeekHint(Math.abs(dx) >= vw * COMMIT_FRAC
-        ? tr('ev.peek.release', 'release to open')
-        : tr('ev.peek.dismiss', 'pull back to dismiss'));
+      if (Math.abs(dx) < Math.abs(dy) * 1.2) return;
+      if (!deck.open) {
+        if (!openDeck()) { gesture = null; return; }
+        gesture.start = position;
+      }
+      gesture.active = true;
     }
+    if (e.cancelable) e.preventDefault();
+    position = gesture.start - dx / step;
+    paintDeck();
   }, { passive: false });
 
-  function finishDrag(e) {
-    if (!g.active) { g.startX = null; return; }
-    var touch = e.changedTouches[0];
-    var dx = touch.clientX - g.startX;
-    var vw = document.documentElement.clientWidth || window.innerWidth;
-    // Position-only, held-on-release commit: navigate only when the finger
-    // lifts while still at/past the commit bar. Any release below it —
-    // however fast the flick — springs back via resetPeek, so a short swipe
-    // can never navigate, and pulling back before lifting always cancels.
-    var url = Math.abs(dx) >= vw * COMMIT_FRAC ? neighbor(g.dir) : '';
-    if (url) {
-      // The card has done its work: it is the destination's cover, it is
-      // already on screen, and the reader has just told us to take it. So
-      // nothing else is drawn — the page move cross-fades this document into
-      // the next one with the card riding along inside it (css/events.css,
-      // data-entry="fold"), and the reader watches the cover they were holding
-      // dissolve into the page it was promising.
-      //
-      // The earlier version spread that cover to the whole frame first, and
-      // that is what made the move flash: a full-frame cover is a flat field
-      // about 40% darker than either page, so the screen dimmed and came back
-      // over ~660ms of layered motion. Both pages are the same night; fading
-      // one into the other is nearly invisible by comparison.
-      //
-      // The flag is this page's own address, left for the arriving page to
-      // read once and delete — the one thing the move needs to say.
-      committing = true;
-      try { sessionStorage.setItem('bh:fold', location.href.split(/[?#]/)[0]); } catch (err) { /* private mode: the move falls back to the plain one */ }
-      // The page behind the card was pulled off its rest position by the drag
-      // (parallaxMain), and this document is about to become the outgoing half
-      // of a cross-fade: left where the finger put it, its text would sit a
-      // dozen-odd pixels off the incoming page's for the whole dissolve, which
-      // reads as a smear rather than a dissolve. So it settles on the same
-      // spring the card does, under cover of the fade.
-      if (peekMain) { peekMain.classList.add('snap'); peekMain.style.transform = ''; }
-      window.location.href = url;
-      // Only the failure path reaches this: the reader keeps the page they
-      // were on rather than a card held over a page that never moved.
-      window.setTimeout(function () { committing = false; resetPeek(); }, FAILSAFE);
-    } else {
-      resetPeek();
+  document.addEventListener('touchend', function (e) {
+    if (!gesture) return;
+    var g = gesture;
+    sampleGesture(e.changedTouches[0].clientX);
+    gesture = null;
+    if (!g.active) {
+      if (g.caught) { suppressUntil = performance.now() + 400; settleDeck(Math.round(position), 0); }
+      return;
     }
-    g.startX = null;
-    g.active = false;
-    g.opened = false;
-    g.dir = 0;
-  }
-  document.addEventListener('touchend', finishDrag, { passive: true });
-  document.addEventListener('touchcancel', function () {
-    if (g.active) { resetPeek(); g.startX = null; g.active = false; g.opened = false; g.dir = 0; }
+    suppressUntil = performance.now() + 400;
+    var first = g.samples[0];
+    var last = g.samples[g.samples.length - 1];
+    var elapsed = last.time - first.time;
+    var velocity = elapsed > 0 ? -(last.x - first.x) / elapsed / step : 0;
+    var limit = Math.min(4, cards.length - 1);
+    var throwDistance = Math.max(-limit, Math.min(limit, velocity * 240));
+    if (Math.abs(velocity * step) < 0.18) throwDistance = 0;
+    settleDeck(Math.round(position + throwDistance), velocity);
   }, { passive: true });
-  // A back gesture can hand this very document back out of bfcache, fold and
-  // all — the turn happened on a page the reader has since left, so the page
-  // they return to must be whole and ready for the next swipe.
+
+  document.addEventListener('touchcancel', function () {
+    if (gesture && deck.open) {
+      suppressUntil = performance.now() + 400;
+      settleDeck(Math.round(position), 0);
+    }
+    gesture = null;
+  }, { passive: true });
+
+  function wireDeck() {
+    if (!deck || !cards.length || typeof deck.showModal !== 'function') return;
+    deck.querySelector('.deck-close').addEventListener('click', closeDeck);
+    deck.addEventListener('cancel', function (e) { e.preventDefault(); closeDeck(); });
+    deck.addEventListener('close', cleanDeck);
+    deck.addEventListener('click', function (e) {
+      if (performance.now() < suppressUntil && e.detail !== 0) { e.preventDefault(); return; }
+      var card = e.target.closest('.deck-card');
+      if (card) {
+        if (frame) { e.preventDefault(); stopDeck(); settleDeck(Math.round(position), 0); return; }
+        if (card.hasAttribute('aria-current')) { e.preventDefault(); closeDeck(); return; }
+        try { sessionStorage.setItem('bh:deck', new URL(card.href).pathname); } catch (err) {}
+        return;
+      }
+      if (!e.target.closest('button')) closeDeck();
+    });
+    deck.addEventListener('keydown', function (e) {
+      if (e.altKey || e.metaKey || e.ctrlKey) return;
+      var delta = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (delta) { e.preventDefault(); settleDeck(Math.round(position) + delta, 0, true); }
+      else if (e.key === 'Home' || e.key === 'End') {
+        e.preventDefault();
+        settleDeck(e.key === 'Home' ? 0 : cards.length - 1, 0, true);
+      }
+    });
+    deck.querySelector('.deck-prev').addEventListener('click', function () { settleDeck(Math.round(position) - 1, 0); });
+    deck.querySelector('.deck-next').addEventListener('click', function () { settleDeck(Math.round(position) + 1, 0); });
+    groups.forEach(function (button) {
+      button.addEventListener('click', function () {
+        var i = cards.findIndex(function (card) { return card.getAttribute('data-group') === button.getAttribute('data-deck-group'); });
+        var delta = wrap(i - position + cards.length / 2) - cards.length / 2;
+        settleDeck(position + delta, 0);
+      });
+    });
+    deck.querySelector('.deck-viewport').addEventListener('wheel', function (e) {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      e.preventDefault();
+      stopDeck();
+      position += e.deltaX * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? step : 1) / step;
+      paintDeck();
+      wheelTimer = window.setTimeout(function () { settleDeck(Math.round(position), 0); }, 120);
+    }, { passive: false });
+    window.addEventListener('resize', function () {
+      if (!deck.open) return;
+      gesture = null;
+      stopDeck();
+      position = Math.round(position);
+      measureDeck();
+      announceDeck();
+    });
+    motion.addEventListener('change', function () {
+      if (deck.open && motion.matches) settleDeck(Math.round(position), 0);
+    });
+    document.addEventListener('i18n:change', function () {
+      if (deck.open) { measureDeck(); announceDeck(); }
+    });
+  }
+
+  window.addEventListener('pagehide', function () {
+    if (deck && deck.open) closeDeck();
+  });
   window.addEventListener('pageshow', function (e) {
-    if (!e.persisted) return;
-    committing = false;
-    if (peek) peek.style.removeProperty('--fold');
-    resetPeek();
+    if (e.persisted && deck && deck.open) closeDeck();
   });
 
   // ── Neighbour warm-up — the other half of the swipe ────
@@ -671,6 +672,25 @@
     var ledgerBtn = document.getElementById('ledger-btn');
     var ledger = document.getElementById('ledger');
     if (ledgerBtn && ledger) {
+      if (deck && typeof deck.showModal === 'function') {
+        var compact = window.matchMedia('(max-width: 1439px)');
+        function syncLedgerTrigger() {
+          ledgerBtn.setAttribute('aria-controls', compact.matches ? 'page-deck' : 'ledger');
+          ledgerBtn.setAttribute('aria-haspopup', compact.matches ? 'dialog' : 'true');
+        }
+        syncLedgerTrigger();
+        compact.addEventListener('change', syncLedgerTrigger);
+        function showCompactDeck(e) {
+          if (!compact.matches) return;
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          openDeck();
+        }
+        ledgerBtn.addEventListener('click', showCompactDeck);
+        ledgerBtn.addEventListener('keydown', function (e) {
+          if (e.key === 'ArrowDown' || e.key === 'ArrowUp') showCompactDeck(e);
+        });
+      }
       disclosure(ledgerBtn, ledger, {
         items: 'a',
         initial: function () { return ledger.querySelector('a.active'); }
@@ -737,9 +757,8 @@
     wireToc();
     wireFrontLayer();
     wireHomePreview();
+    wireDeck();
     wireTopbar();
-    // Event chrome — the preview panel and swipe handles are created lazily
-    // on the first drag; no persistent affordances, so nothing to wire.
 
     // Language change: let the page repaint (BH.fmt reformats itself)
     document.addEventListener('i18n:change', function () {

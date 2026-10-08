@@ -1,0 +1,29 @@
+<dialog id="page-deck" class="page-deck" aria-labelledby="deck-title" aria-describedby="deck-hint">
+  <div class="deck-sheet">
+    <header class="deck-header">
+      <h2 id="deck-title" data-i18n="ev.ledger.aria">the ledger — every page</h2>
+      <button type="button" class="deck-close" data-i18n="ev.deck.close" autofocus>close</button>
+    </header>
+    <nav class="deck-groups" aria-label="Page groups" data-i18n-key="ev.deck.groups" data-i18n-attr="aria-label">
+      <button type="button" data-deck-group="home" data-i18n="ev.ledger.home">the index</button>
+      <button type="button" data-deck-group="events" data-i18n="ev.ledger.guides">the events</button>
+      <button type="button" data-deck-group="tools" data-i18n="ev.ledger.tools">the tools</button>
+    </nav>
+    <div class="deck-viewport">
+      {% for n in site.data.nav %}{% assign entry = site.data.pages[n.self] %}
+      <a class="deck-card" href="{{ p.depth }}{{ n.tail }}" data-page="{{ entry.token }}" data-group="{{ n.group }}"{% if n.self == page.self %} aria-current="page"{% endif %} tabindex="-1">
+        <span class="deck-mark" aria-hidden="true">❧</span>
+        <span class="deck-card-title" data-i18n="{{ n.labelKey }}">{{ n.label }}</span>
+        <span class="deck-card-lede" data-i18n="{{ n.ledeKey }}">{{ n.lede }}</span>
+        <span class="deck-card-action" data-i18n="ev.deck.open">tap to open</span>
+      </a>
+      {% endfor %}
+    </div>
+    <footer class="deck-footer">
+      <button type="button" class="deck-prev" aria-label="Previous page" data-i18n-key="ev.deck.prev" data-i18n-attr="aria-label">‹</button>
+      <span class="deck-position" aria-live="polite" aria-atomic="true"></span>
+      <button type="button" class="deck-next" aria-label="Next page" data-i18n-key="ev.deck.next" data-i18n-attr="aria-label">›</button>
+    </footer>
+    <p id="deck-hint" data-i18n="ev.deck.hint">swipe to browse · tap to go</p>
+  </div>
+</dialog>

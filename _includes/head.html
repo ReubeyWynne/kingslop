@@ -47,6 +47,12 @@ window.__BH_BUILD = '{{ site.time | date: "%s" }}';
 (function () {
   var root = document.documentElement;
   var here = location.href.split(/[?#]/)[0];
+  var deckTarget = '';
+  try {
+    deckTarget = sessionStorage.getItem('bh:deck') || '';
+    sessionStorage.removeItem('bh:deck');
+  } catch (e) {}
+  if (deckTarget === location.pathname) { root.setAttribute('data-entry', 'deck'); return; }
   var from = '';
   try {
     from = sessionStorage.getItem('bh:fold') || '';
