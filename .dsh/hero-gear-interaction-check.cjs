@@ -32,7 +32,8 @@ function fixture() {
   fs.mkdirSync(output, { recursive:true });
   let page;
   async function open(state, options = {}) {
-    page = await browser.newPage({ viewport:options.desktop ? { width:1280,height:900 } : { width:390,height:844 }, reducedMotion:'reduce' });
+    const context = await browser.newContext({ viewport:options.desktop ? { width:1280,height:900 } : { width:390,height:844 }, reducedMotion:'reduce' });
+    page = await context.newPage();
     await page.addInitScript(({ state, key, failConstructor }) => {
       if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify(state));
       const NativeWorker = window.Worker;
@@ -87,7 +88,7 @@ function fixture() {
     await ready(); assert.deepEqual((await saved()).resources, latest.resources);
     await page.reload(); await ready();
     assert.equal(await page.evaluate(() => window.__searches.length), 1, 'saved Spend now recalculates after reload');
-    await page.close();
+    await page.context().close();
 
     const mobile = fixture(); mobile.view = 'gear';
     await open(mobile);
@@ -107,7 +108,7 @@ function fixture() {
     await page.locator('#gear-profile').selectOption('custom');
     assert.equal(await page.locator('#gear-settings').evaluate(el => el.open), true);
     assert.equal(await page.locator('#gear-weights input').first().evaluate(el => el === document.activeElement), true);
-    await page.close();
+    await page.context().close();
 
     for (const options of [{ failFirst:true }, { failConstructor:true }]) {
       await open(fixture(), options);
@@ -121,7 +122,7 @@ function fixture() {
       if (options.failFirst) await page.screenshot({ path:path.join(output, 'mobile-retry.png') });
       await page.locator('#gear-run').click(); await ready();
       assert.deepEqual((await saved()).pieces, before.pieces); assert.deepEqual((await saved()).resources, before.resources);
-      await page.close();
+      await page.context().close();
     }
 
     for (const empty of ['budget', 'troops', 'weights']) {
@@ -142,7 +143,7 @@ function fixture() {
         await page.locator('.gear-empty [data-show-weights]').click();
         assert.equal(await page.locator('#gear-settings').evaluate(el => el.open), true);
       }
-      await page.close();
+      await page.context().close();
     }
     for (const kind of ['ascension', 'mithril', 'mastery']) {
       const state = fixture();
@@ -173,7 +174,7 @@ function fixture() {
         await page.setViewportSize({ width:390,height:844 });
         await page.screenshot({ path:path.join(output, 'mobile-saving-' + kind + '.png') });
       }
-      await page.close();
+      await page.context().close();
     }
     await open(fixture(), { desktop: true }); await ready();
     const legacySave = await page.evaluate(key => localStorage.getItem(key), key);
@@ -206,7 +207,7 @@ function fixture() {
     await page.reload();
     await page.locator('#gear-rows .gear-row').first().waitFor({ state: 'attached' });
     assert.equal(await page.locator('#gear-hammers').inputValue(), '5');
-    await sibling.close(); await page.close();
+    await sibling.close(); await page.context().close();
     console.log('Automatic Spend now, cached tab navigation, debounced edits, cancelled searches, latest-result recording, undo/reload, mobile visibility, worker failure/retry, empty states, custom weights and mastery-only highlighting passed. Shared before/after rarity frames, enhancement/mastery overlays, changed-only rows and ascension/mithril/mastery checkpoint treatments passed.');
   } catch (error) {
     if (page && !page.isClosed()) await page.screenshot({ path:path.join(output, 'interaction-failure.png'), fullPage:true });
