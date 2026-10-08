@@ -36,6 +36,9 @@ The product gap is a **shared, versioned player ledger** and a **small declarati
 
 ## Milestone 1 — unified player ledger
 
+**Implementation:** shared ledger and hero-gear integration are prepared for review. `js/player-ledger.js` owns versioned inventory, equipment facts, preferences and confirmed import history. Legacy saves are migrated without deleting the original; hero gear reads/writes shared balances, exports the whole player save, accepts both save formats and observes cross-tab changes. Governor sections remain explicitly unsupported. See [PLAYER-LEDGER.md](PLAYER-LEDGER.md) for the contract, recovery behaviour and checks. The next deliverable is milestone 2's shared interaction layer.
+
+
 Define the data contract before adding more screens. It should include:
 
 - Schema version and update timestamp.
@@ -52,6 +55,9 @@ The ledger stays local to the browser. Export/import ships with it from day one.
 
 ## Milestone 2 — declarative interaction architecture
 
+**Implementation:** `js/interactions.js` supplies scoped discovery, delegated actions, target ownership and lifecycle cleanup through `BH.modules`. `js/player-modules.js` adds ledger forms, save transfer, tabs, disclosure and result messages. Hero gear consumes these attributes and events in its existing markup. See [INTERACTIONS.md](INTERACTIONS.md) for the contracts and browser checks. The next deliverable is milestone 3's event availability calculator.
+
+
 Use a small DOM-oriented convention, not an SPA framework and not a generic virtual DOM.
 
 - HTML declares module roots (`data-module`), actions (`data-action`), targets (`data-target`) and state/binding keys (`data-bind` or equivalent).
@@ -65,6 +71,8 @@ The goal is an HTMX/Alpine/Datastar *feel*: inspectable markup, local behaviour 
 
 ## Milestone 3 — event calculator
 
+**Implementation:** `events/#availability` calculates conditional point budgets for KvK Prep, Strongest Governor and Brawl from confirmed shared inventory. `_data/event_rules.json` is the shared guide/rules source; `js/event-rules.js` supplies pure arithmetic and `event-availability` composes the shared ledger and save modules. Unknowns, ephemeral withheld amounts, unquantified actions and target shortfall remain distinct. See [EVENT-AVAILABILITY.md](EVENT-AVAILABILITY.md) for units, limits and checks. The next deliverable is milestone 4's hero directory.
+
 `js/kvk.js` already contains the useful domain foundation: the 28-day cycle, day-specific Strongest Governor tasks, Brawl/Officer/Armament runs, KvK prep matrix and normalised tracked item labels. Extract those rules without changing their current output first.
 
 The calculator must distinguish:
@@ -77,6 +85,8 @@ The calculator must distinguish:
 The first release is arithmetic, not an optimiser: totals by event and a target shortfall. Allocation optimisation belongs only in milestone 7 once overlap and reserve semantics are proven.
 
 ## Milestone 4 — hero directory
+
+**Implementation:** `heroes/` renders all 34 canonical heroes with combined name, generation, troop and role filters. `_data/hero_roles.json` records source-linked candidates, confidence and conditional alliance guidance. The directory shares server generation with existing tools, explains lead versus joiner roles, includes all 17 languages and participates in the complete navigation sequence. See [HERO-DIRECTORY.md](HERO-DIRECTORY.md) for source limits and checks. The next deliverable is milestone 5's governor gear and charms planner.
 
 The existing `_data/heroes.json` is the canonical hero catalogue. Extend it or add a companion role map keyed by hero ID; do not create a second hero list.
 
@@ -138,3 +148,4 @@ Start with one stable backpack screen and the high-value event items already tra
 ## Sequencing rationale
 
 The unified ledger is first because it makes hero gear, manual inventory and event calculations mutually useful from the outset. The declarative layer immediately afterwards prevents every new page from becoming another large imperative script. The hero directory is a content/data extension of assets already present. Governor optimisation then reuses the same ledger and interaction grammar. Screenshot import remains later because it is the least reliable input path and needs the review and provenance infrastructure already in place.
+

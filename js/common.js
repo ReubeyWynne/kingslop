@@ -648,7 +648,7 @@
     var ledger = document.getElementById('ledger');
     if (ledgerBtn && ledger) {
       if (deck && typeof deck.showModal === 'function') {
-        var compact = window.matchMedia('(max-width: 1439px)');
+        var compact = window.matchMedia('(max-width: 1599px)');
         function syncLedgerTrigger() {
           ledgerBtn.setAttribute('aria-controls', compact.matches ? 'page-deck' : 'ledger');
           ledgerBtn.setAttribute('aria-haspopup', compact.matches ? 'dialog' : 'true');
@@ -737,9 +737,11 @@
     // Language change: let the page repaint (BH.fmt reformats itself)
     document.addEventListener('i18n:change', function () {
       pageCfg.onChange();
+      if (window.Interactions) window.Interactions.refresh();
     });
 
     // Page toys (calculators)
+    if (window.Interactions) window.Interactions.start(BH);
     pageCfg.boot(BH);
 
     // The page in front of the reader is whole now — only then spend bytes on
@@ -756,6 +758,7 @@
     tpl: tpl,
     fill: fill,
     showNote: showNote,
+    modules: window.Interactions,
     registerPage: function (cfg) {
       if (!cfg) return;
       if (cfg.boot) pageCfg.boot = cfg.boot;

@@ -196,7 +196,7 @@ Everything a hero contributes to a march, in four layers. All figures below are
 - A hero grants **attack and defence — always equal — on its own troop type**,
   worth `ceiling × curve[index]`. The curve is **identical for every hero**:
   normalising five heroes' full 31-point ladders (Amadeus, Zoe, Jabel, Hilde,
-  Marlin) agrees to two decimals.
+  Marlin) agrees within source rounding after the generation-2 correction below.
 
   ```
   12.61 13.79 14.96 16.14 17.31 18.49 20.60 22.24 23.89 25.53 27.17 28.82
@@ -306,13 +306,29 @@ page's JS payload as `stats:[…]`),
 **Landed as data (2026-09-11).** All 34 heroes — their 31-point ladders, ceilings,
 published `attackPct`/`defensePct`, expedition skill values and widget specs — sit in
 `_data/heroes.json`, with `.dsh/verify-heroes.mjs` holding the §10 checks: ladder
-length, monotonicity, ceiling parity, and the shared-curve claim (every normalised
-ladder reproduces `curve` within source rounding, and the only deviations beyond that
-are the three recorded gen-2 anomalies — asserted, so a source fix surfaces as a test
-change rather than silent drift). It is the **audit table, not a runtime asset**; it is
+length, monotonicity, ceiling parity, and the shared-curve claim. Current checks live
+in `.dsh/hero-directory-check.cjs`: generation-2 normalised ladders reproduce `curve`
+within source rounding, and the three generation-2 corrections are asserted with their
+previous values and source links. It is the **audit table, not a runtime asset**; it is
 deliberately not served to browsers. Two gaps it records rather than fills: 12 heroes
 have an empty widget row in the mined bundle, and the four heroes with
 `skillsSource: "kingshotoptimizer"` take their skill labels from their descriptions.
+
+**Source corrections (2026-10-08).** Zoe, Hilde and Marlin have **199.02%** at index
+27 (4★ tier 3) in the progression tables at `kingshotdata.com/heroes/zoe/`,
+`kingshotdata.com/heroes/hilde/` and `kingshotdata.com/heroes/marlin/`. This agrees
+with `240.19 × 82.86 / 100 = 199.021434`, rounded to two decimals. The previously
+suggested 199.06 was an incorrect estimate. A fresh Kingshot.net comparison payload
+still contains 192.02; this disagreement is preserved in `_data/heroes.json`
+`corrections`, rather than silently rewriting the audit history. This is a sourced
+community-data correction, not independent in-game verification. Other ladder
+entries and ceilings are retained.
+
+Olive's **Forager's Luck** increases wilderness **bread** gathering speed by
+5/10/15/20/25%. The official wiki has an unresolved localization token in the
+resource name. `kingshotoptimizer.com/heroes/olive/` names Bread in its in-game
+skill listing; `kingshot.net/heroes/olive` labels the scale Bread Gathering Speed.
+The directory uses the supported effect and links the alternate listing.
 
 ### Private endpoints (informational — not ours, do not build on)
 

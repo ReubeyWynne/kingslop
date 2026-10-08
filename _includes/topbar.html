@@ -8,7 +8,7 @@
 {% endif %}{% endfor %}
   </nav>
   <div class="topbar-right">
-    <span class="brand-note{% if p.brandNoteKey %} data-i18n="{{ p.brandNoteKey }}"{% endif %}>{{ p.brandNote }}</span>
+    <span class="brand-note"{% if p.brandNoteKey %} data-i18n="{{ p.brandNoteKey }}"{% endif %}>{{ p.brandNote }}</span>
     <button type="button" id="ledger-btn" class="ledger-btn" aria-haspopup="true" aria-expanded="false" aria-controls="ledger" aria-label="the ledger — every page" data-i18n-key="ev.ledger.aria" data-i18n-attr="aria-label">❧</button>
 <div class="lang-picker">
       <button type="button" id="lang-btn" class="lang-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Language" data-i18n-key="ui.lang" data-i18n-attr="aria-label">

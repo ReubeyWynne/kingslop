@@ -65,7 +65,7 @@ html, body { overscroll-behavior-x: none; }
 }
 .ev-foot a:hover { color: var(--amber); }
 
-@media (max-width: 1439px) {
+@media (max-width: 1599px) {
   .ev-switch { display: none; }
 }
 
@@ -96,7 +96,7 @@ html, body { overscroll-behavior-x: none; }
 }
 /* The drawer replaces the strip wherever the strip can't fit (see .ev-switch),
    not just on phones — a squeezed strip is worse than an honest drawer. */
-@media (min-width: 1440px) {
+@media (min-width: 1600px) {
   .ledger-btn { display: none; }
 }
 .ledger {
@@ -175,6 +175,7 @@ html, body { overscroll-behavior-x: none; }
 .page-deck:has(.deck-card.is-selected[data-page="sim"]) { --deck-accent: #E0B24A; }
 .page-deck:has(.deck-card.is-selected[data-page="kvksg"]) { --deck-accent: #D9B25A; }
 .page-deck:has(.deck-card.is-selected[data-page="gear"]) { --deck-accent: #e6b56a; }
+.page-deck:has(.deck-card.is-selected[data-page="heroes"]) { --deck-accent: #c7ba85; }
 /* The ground behind the cards: one wash per page, stacked, with only the
    selected page's wash showing. Moving between pages cross-fades two washes
    by opacity, so the colour blends rather than flashes — and it blends the
@@ -196,6 +197,7 @@ html, body { overscroll-behavior-x: none; }
 .deck-wash[data-page="sim"] { --wash: #E0B24A; }
 .deck-wash[data-page="kvksg"] { --wash: #D9B25A; }
 .deck-wash[data-page="gear"] { --wash: #e6b56a; }
+.deck-wash[data-page="heroes"] { --wash: #c7ba85; }
 .page-deck:has(.deck-card.is-selected[data-page="home"]) .deck-wash[data-page="home"],
 .page-deck:has(.deck-card.is-selected[data-page="bearhunt"]) .deck-wash[data-page="bearhunt"],
 .page-deck:has(.deck-card.is-selected[data-page="vikings"]) .deck-wash[data-page="vikings"],
@@ -203,7 +205,8 @@ html, body { overscroll-behavior-x: none; }
 .page-deck:has(.deck-card.is-selected[data-page="vip"]) .deck-wash[data-page="vip"],
 .page-deck:has(.deck-card.is-selected[data-page="sim"]) .deck-wash[data-page="sim"],
 .page-deck:has(.deck-card.is-selected[data-page="kvksg"]) .deck-wash[data-page="kvksg"],
-.page-deck:has(.deck-card.is-selected[data-page="gear"]) .deck-wash[data-page="gear"] { opacity: 1; }
+.page-deck:has(.deck-card.is-selected[data-page="gear"]) .deck-wash[data-page="gear"],
+.page-deck:has(.deck-card.is-selected[data-page="heroes"]) .deck-wash[data-page="heroes"] { opacity: 1; }
 .page-deck .ascii-ambient > span { opacity: 0.18; }
 .page-deck::backdrop { background: rgba(5, 8, 13, 0.8); }
 html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
@@ -810,4 +813,13 @@ html[data-page="gear"], html[data-page="home"]:has(.event-card[data-hover-page="
 }
 
 
+html[data-page="heroes"], html[data-page="home"]:has(.event-card[data-hover-page="heroes"]:is(:hover, :focus-within)), .deck-card[data-page="heroes"] {
+  --void: #11130d;
+  --void-2: #1b1f15;
+  --amber: #c7ba85;
+  --amber-dim: #a3996f;
+  --chrome: rgba(17, 19, 13, .94);
+  --signal-line: rgba(199, 186, 133, .35);
+  --signal-tint: rgba(199, 186, 133, .07);
+}
 

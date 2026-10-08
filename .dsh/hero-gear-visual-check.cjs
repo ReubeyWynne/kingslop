@@ -57,7 +57,7 @@ async function fits(page, label) {
     assert.match(await page.locator('#gear-milestone-out').textContent(),/you have every resource/);
     await page.reload();await page.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
     assert.equal(await page.locator('#gear-xp-total').textContent(),'52,650');
-    assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),100);
+    assert.equal(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),100);
     await page.locator('#gear-troops [data-troop="cav"]').click();
     assert.equal(await page.locator('#gear-include').isChecked(),true);
     await page.locator('#gear-include').uncheck();
@@ -71,7 +71,7 @@ async function fits(page, label) {
     await page.locator('#gear-apply-result').waitFor();
     await page.locator('#gear-apply-result').click();
     await page.locator('#gear-undo').click();
-    assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),100);
+    assert.equal(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),100);
     await page.route('**/js/ocr-worker.js**',route=>route.fulfill({contentType:'text/javascript',body:`self.onmessage=e=>{let texts=['Infantry Helm','Lv. +19','Forge Mastery 10'];self.postMessage({id:e.data.id,ok:true,items:texts.map((text,i)=>({text,poly:[[0,i*30],[250,i*30],[250,i*30+20],[0,i*30+20]]}))});};`}));
     await page.locator('#gear-import').click();
     await page.locator('#gear-images').setInputFiles({name:'gear.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6vGQAAAAASUVORK5CYII=','base64')});
@@ -79,14 +79,14 @@ async function fits(page, label) {
     assert.equal(await page.locator('[data-import-field="level"]').inputValue(),'19');
     assert.equal(await page.locator('[data-import-field="quality"]').inputValue(),'red');
     await page.locator('#gear-apply-import').click();
-    assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),119);
+    assert.equal(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),119);
     await page.locator('#gear-mode-milestones').click();
     await page.locator('#gear-piece-select summary').click();
     await page.locator('#gear-selected').selectOption('inf-helm');
     await page.locator('#gear-apply-milestone').click();
-    assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),120);
+    assert.equal(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),120);
     await page.locator('#gear-undo').click();
-    assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),119);
+    assert.equal(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),119);
     const fixture=E.defaults();
     fixture.pieces['inf-helm']={quality:'mythic',level:69,mastery:2};
     fixture.pieces['inf-gloves']={quality:'red',level:120,mastery:11};
@@ -104,7 +104,7 @@ async function fits(page, label) {
     await page.locator('.gear-save-tools summary').click();
     await page.locator('#gear-load').click();
     await page.locator('#gear-save-file').setInputFiles({name:'gear.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(fixture))});
-    await page.waitForFunction(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-gloves'].level===120);
+    await page.waitForFunction(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-gloves'].level===120);
     await page.locator('.gear-save-tools summary').click();
     await page.locator('#gear-mode-milestones').click();
     assert.match(await page.locator('[data-cost-resource="xp"]').textContent(),/74,100/);
@@ -213,7 +213,7 @@ async function fits(page, label) {
     await page.setViewportSize({width:1280,height:900});await fits(page,'desktop optimise');
     await page.screenshot({path:path.join(output,'desktop-optimise.png')});
     await page.locator('#gear-apply-result').click();
-    const applied=await page.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')));
+    const applied=await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear));
     assert.equal(applied.resources.xp,applied.parts.ten*10+applied.parts.hundred*100+applied.parts.remainder);
     await page.reload();await page.waitForFunction(()=>document.querySelectorAll('#gear-rows .gear-row').length===4);
     assert.equal(await page.locator('#gear-xp-total').textContent(),new Intl.NumberFormat('en-GB').format(applied.resources.xp));
@@ -299,7 +299,7 @@ async function fits(page, label) {
       await enhancement.fill('101');await overviewPage.locator('#gear-apply-import').click();
       assert.equal(await overviewPage.locator('#gear-import-dialog').evaluate(el=>el.open),true,'invalid visible numbers cannot apply a silently clamped value');
       await enhancement.fill('69');
-      assert.equal(await overviewPage.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),0,'review has not applied any values');
+      assert.equal(await overviewPage.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),0,'review has not applied any values');
       await fits(overviewPage,'real overview review');
       await overviewPage.locator('#gear-apply-import').click();
       assert.equal(await overviewPage.locator('#gear-import-dialog').evaluate(el=>el.open),true,'duplicate slots require selection');
@@ -307,16 +307,16 @@ async function fits(page, label) {
       await overviewPage.screenshot({path:path.join(output,'overview-review.png')});
       for(let i=12;i<24;i++)await overviewPage.locator('[data-import-index="'+i+'"][data-import-field="included"]').uncheck();
       await overviewPage.locator('#gear-apply-import').click();
-      const imported=await overviewPage.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')));
+      const imported=await overviewPage.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear));
       for(const item of expected.slice(0,12))assert.deepEqual(imported.pieces[item.troop+'-'+item.slot],{quality:item.quality,level:Number(item.level),mastery:Number(item.mastery)});
       assert.deepEqual(imported.resources,E.defaults().resources);
       await overviewPage.locator('#gear-undo').click();
-      assert.equal(await overviewPage.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')).pieces['inf-helm'].level),0);
+      assert.equal(await overviewPage.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),0);
       await overviewPage.locator('#gear-import').click();
       await overviewPage.locator('#gear-images').setInputFiles(fixtures.slice(3).map(name=>path.resolve('.dsh/gear-fixtures/'+name+'.jpg')));
       await overviewPage.locator('#gear-apply-import:enabled').waitFor({timeout:180000});
       await overviewPage.locator('#gear-apply-import').click();
-      const unlevelled=await overviewPage.evaluate(()=>JSON.parse(localStorage.getItem('bh:hero-gear:v1')));
+      const unlevelled=await overviewPage.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear));
       for(const item of expected.slice(12))assert.deepEqual(unlevelled.pieces[item.troop+'-'+item.slot],{quality:item.quality,level:0,mastery:0});
       console.log('Production OCR: all 24 pieces in six supplied hero overviews matched rarity, troop, enhancement and mastery; duplicate selection, review, apply, unlevelled pieces and undo passed.');
       await overviewPage.locator('#gear-import').click();
@@ -337,3 +337,4 @@ async function fits(page, label) {
     throw error;
   }finally{await browser.close();server.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;server.close();});
+

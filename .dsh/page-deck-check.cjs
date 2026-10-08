@@ -226,7 +226,7 @@ test('ledger, groups, keyboard and Escape share a modal and restore focus and sc
 
 test('ring browsing works in both directions and reduced motion settles immediately', () => {
   const s = setup('home', true); s.swipe(s.main, 1200, 220);
-  assert.equal(s.selected(), 7);
+  assert.equal(s.selected(), nav.length - 1);
   assert.equal(s.frames.size, 0);
   assert.equal(s.deck.open, true);
   s.fire(s.next, 'click');

@@ -16,51 +16,18 @@
 
   // The alliance's prep chart, validated against the community tables:
   // 16 materials × the 5 prep days, each cell best|ok|no.
-  var MATRIX = [
-    ['Truegold',        ['best', 'ok',  'no',   'no',   'ok']],
-    ['Tempered TG',     ['best', 'ok',  'no',   'no',   'ok']],
-    ['Hero shard',      ['no',   'best', 'best', 'no',   'no']],
-    ['Master emblem',   ['no',   'best', 'best', 'no',   'no']],
-    ['Building',        ['ok',   'best', 'no',   'no',   'no']],
-    ['Troop',           ['no',   'no',   'no',   'best', 'ok']],
-    ['Research',        ['ok',   'best', 'no',   'no',   'ok']],
-    ['Hero roulette',   ['no',   'best', 'best', 'no',   'no']],
-    ['Gathering',       ['no',   'best', 'no',   'best', 'best']],
-    ['Intel missions',  ['best', 'no',   'best', 'no',   'best']],
-    ['Pets advance',    ['no',   'no',   'best', 'no',   'best']],
-    ['Gov charm',       ['best', 'no',   'best', 'best', 'no']],
-    ['Gov gear',        ['no',   'no',   'no',   'no',   'best']],
-    ['Widget gear',     ['no',   'no',   'no',   'best', 'best']],
-    ['Mithril',         ['no',   'no',   'no',   'best', 'best']],
-    ['Forgehammer',     ['no',   'no',   'no',   'best', 'best']]
-  ];
+  var MATRIX = window.EventRules.data.legacy.MATRIX;
 
-  var PTS = {
-    'Truegold': '2,000', 'Tempered TG': '30,000', 'Hero shard': '3,040+',
-    'Master emblem': '6,000', 'Building': '30/min', 'Troop': '75 (T11)',
-    'Research': '30/min', 'Hero roulette': '8,000', 'Gathering': '2',
-    'Intel missions': '6,000', 'Pets advance': '15,000', 'Gov charm': '70',
-    'Gov gear': '—', 'Widget gear': '8,000', 'Mithril': '40,000', 'Forgehammer': '4,000'
-  };
+  var PTS = window.EventRules.data.legacy.PTS;
 
   var GLYPH = { best: '\u2705', ok: '\uD83C\uDD97', no: '\uD83D\uDEAB' }; // ✅ 🆗 🚫
 
-  var KOP_THEMES = ['City Construction', 'Basic Skills Up', 'Pet Training', 'Gear & Troops', 'Combined'];
-  var SG_THEMES = ['City Construction', 'Hero Development', 'Skill Up', 'Combat Training', 'Skill Up', 'Combat Training', 'Hero Development'];
-  var SG_TASKS = [
-    [['Tempered Truegold', 30000], ['Truegold', 2000], ['Gov charm', 70], ['Speedups', 30]],
-    [['Mithril', 40000], ['Widget gear', 8000], ['Hero Roulette', 8000], ['Forgehammer', 4000], ['Mythic shard', 3040], ['Truegold', 2000], ['Epic shard', 1220], ['Rare shard', 350]],
-    [['Advanced Taming Mark', 15000], ['Hero Roulette', 8000], ['Master emblem', 6000], ['Mythic shard', 3040], ['Epic shard', 1220], ['Common Taming Mark', 1150], ['Rare shard', 350], ['Gov charm', 70], ['Pet Advancement', 50]],
-    [['Mithril', 40000], ['Widget gear', 8000], ['Forgehammer', 4000], ['Gov charm', 70], ['T10 troops', 39]],
-    [['Mithril', 40000], ['Widget gear', 8000], ['Forgehammer', 4000], ['Truegold', 2000], ['Speedups', 30]],
-    [['Gov charm', 36], ['T10 troops', 39]],
-    [['Advanced Taming Mark', 15000], ['Mythic shard', 3040], ['Truegold', 2000], ['Epic shard', 1220], ['Common Taming Mark', 1150], ['Rare shard', 350], ['Pet Advancement', 50], ['Gathering', 3]]
-  ];
+  var KOP_THEMES = window.EventRules.data.legacy.KOP_THEMES;
+  var SG_THEMES = window.EventRules.data.legacy.SG_THEMES;
+  var SG_TASKS = window.EventRules.data.legacy.SG_TASKS;
   // Canonical tracked items — the prep chart's 16 materials. Every row shown
   // in any phase maps back to one of these; ids ARE the MATRIX row names.
-  var VITEMS = ['Truegold','Tempered TG','Hero shard','Master emblem','Building',
-    'Troop','Research','Hero roulette','Gathering','Intel missions','Pets advance',
-    'Gov charm','Gov gear','Widget gear','Mithril','Forgehammer'];
+  var VITEMS = window.EventRules.data.legacy.VITEMS;
 
   var KS_IMG = (function () {
     try {
@@ -84,29 +51,7 @@
   // Map any row label (prep/SG/brawl tables, run task rows) back to a tracked
   // item: an id, 'free' (nothing from the hoard), or null (skip — not a
   // tracked material). Lowercased, first match wins in this order.
-  function labelToItemId(label) {
-    var l = String(label).toLowerCase();
-    if (/truck|beast|terror|rally and hunt|wilderness/.test(l)) return 'free';
-    if (/tempered truegold|temp tg/.test(l)) return 'Tempered TG';
-    if (/mithril/.test(l)) return 'Mithril';
-    if (/widget/.test(l)) return 'Widget gear';
-    if (/forgehammer|hammer/.test(l)) return 'Forgehammer';
-    if (/governor charm|charm/.test(l)) return 'Gov charm';
-    if (/governor gear|gear max score|gov gear/.test(l)) return 'Gov gear';
-    if (/master emblem/.test(l)) return 'Master emblem';
-    if (/mythic|epic|rare|hero shard|shard/.test(l)) return 'Hero shard';
-    if (/roulette/.test(l)) return 'Hero roulette';
-    if (/taming mark|pet advancement|pet refinement|pets/.test(l)) return 'Pets advance';
-    if (/intel mission/.test(l)) return 'Intel missions';
-    if (/truegold dust/.test(l)) return null; // dust is not a tracked material
-    if (/t10|t11|t[0-9] troop|troop training|training/.test(l)) return 'Troop';
-    if (/construction/.test(l)) return 'Building';
-    if (/research/.test(l)) return 'Research';
-    if (/gather/.test(l)) return 'Gathering';
-    if (/truegold/.test(l)) return 'Truegold';
-    if (/master\u2019s manuscript|manuscript/.test(l)) return null;
-    return null;
-  }
+  var labelToItemId = window.EventRules.labelToItemId;
 
   // ── The light weeks — day-aware runs, orthogonal to the phase axis ──
   // Owner-confirmed schedule. Alliance Brawl fills week 1 (days 1–7, the
@@ -118,47 +63,14 @@
   // 3–4, 17–18), Type B from Sunday (days 7–8, 21–22) — Type B's second
   // day spills into Strongest Governor day 1 (day 8) and KvK prep day 1
   // (day 22). Every run's task set changes with the day it started.
-  var ARMAMENT_RUNS = [
-    { start: 1,  end: 2,  type: 1, label: 'Type 1' },
-    { start: 5,  end: 6,  type: 2, label: 'Type 2' },
-    { start: 15, end: 16, type: 1, label: 'Type 1' },
-    { start: 19, end: 20, type: 2, label: 'Type 2' }
-  ];
-  var OFFICER_RUNS = [
-    { start: 3,  end: 4,  type: 'A', label: 'Type A' },
-    { start: 7,  end: 8,  type: 'B', label: 'Type B' },
-    { start: 17, end: 18, type: 'A', label: 'Type A' },
-    { start: 21, end: 22, type: 'B', label: 'Type B' }
-  ];
+  var ARMAMENT_RUNS = window.EventRules.data.legacy.ARMAMENT_RUNS;
+  var OFFICER_RUNS = window.EventRules.data.legacy.OFFICER_RUNS;
 
   // Points per action for each run type — owner-confirmed task tables; the
   // page sections carry the same numbers. Row = [task label, points] (a
   // string points value is used verbatim, e.g. the officer troop ladder).
-  var ARM_TASKS = {
-    1: [
-      ['Tempered Truegold (building upgrade)', 1500], ['Mythic hero shard', 125],
-      ['Truegold (building upgrade)', 100], ['Epic hero shard', 50],
-      ['Truegold Dust (tech research)', 50], ['Rare hero shard', 15],
-      ['Governor Gear max score +1', 3], ['1m construction / research / training speedup', 1]
-    ],
-    2: [
-      ['Mithril', 8000], ['Widget', 1600], ['Tempered Truegold (building upgrade)', 1500],
-      ['Forgehammer', 800], ['Truegold (building upgrade)', 100],
-      ['Truegold Dust (tech research)', 50], ['Governor Gear max score +1', 3],
-      ['1m construction / research / training speedup', 1]
-    ]
-  };
-  var OFF_TASKS = {
-    A: [
-      ['Widget', 12000], ['Forgehammer', 6000], ['Mithril', 60000],
-      ['Governor Charm max score +1', 70], ['Troop training (T1\u2013T11)', '1\u201337']
-    ],
-    B: [
-      ['Widget', 12000], ['Forgehammer', 6000], ['Mythic hero shard', 3040],
-      ['Epic hero shard', 1220], ['Rare hero shard', 350],
-      ['Governor Gear max score +1', 70]
-    ]
-  };
+  var ARM_TASKS = window.EventRules.data.legacy.ARM_TASKS;
+  var OFF_TASKS = window.EventRules.data.legacy.OFF_TASKS;
   // Which run (if any) is live on cycle day d. Armament and Officer never
   // overlap in the confirmed schedule, so at most one is returned.
   function liveRun(d) {
@@ -384,7 +296,7 @@
   // ── The light weeks — day-aware cards ──────────────────
   // The brawl's six themed days: five 24-hour challenge days, then the
   // ~36-hour Full-Scale finale spilling from day 6 into Sunday day 7.
-  var BRAWL_THEMES = ['Rise of the City', 'Hero Development', 'Pet Training', 'Gear Enhancement', 'Trade Baron', 'Full-Scale Competition'];
+  var BRAWL_THEMES = window.EventRules.data.legacy.BRAWL_THEMES;
   function brawlThemeIdx(d) { return d > 6 ? 6 : d; }
 
   // ── The week's main event feeds the card (single source: the section DOM) ──

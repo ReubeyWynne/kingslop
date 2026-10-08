@@ -1,0 +1,47 @@
+.directory-jumps { display: flex; flex-wrap: wrap; gap: .6rem 1.6rem; margin-top: var(--space-m); }
+.hero-filters { border: 0; border-block: 1px solid var(--signal-line); padding: var(--space-s) 0 var(--space-m); margin: var(--space-m) 0 .75rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem 1.5rem; }
+.hero-filters legend { padding-inline-end: .75rem; font-size: var(--step--1); color: var(--amber); letter-spacing: .12em; text-transform: uppercase; }
+.hero-filters label { display: grid; gap: .35rem; min-width: 0; }
+.hero-filters label > span { font-size: var(--step--1); color: var(--ink-dim); }
+.hero-filters input, .hero-filters select { width: 100%; min-width: 0; min-height: 44px; padding: .3rem 0; font: inherit; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; }
+.hero-filters option { background: var(--void); color: var(--ink); }
+.hero-filters :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.hero-filters button { align-self: end; justify-self: start; min-height: 44px; padding: .35rem .2rem; border: 0; border-bottom: 1px solid transparent; background: transparent; color: var(--amber); font: inherit; cursor: pointer; }
+.hero-filters button:hover { color: var(--ink); border-bottom-color: var(--signal-line); }
+.directory-server-note { font-size: var(--step--1); }
+.directory-results { display: flex; align-items: baseline; gap: 1rem 2rem; padding-block: var(--space-s); border-bottom: 1px solid var(--signal-line); }
+.directory-results .note { margin: 0; max-width: 30rem; font-size: var(--step--1); }
+.hero-count { flex: none; color: var(--amber); font-family: var(--display-2); font-variant-numeric: tabular-nums; }
+.hero-catalogue { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2rem; }
+.directory-hero { min-width: 0; padding-block: 1.5rem; border-bottom: 1px solid var(--signal-line); scroll-margin-top: calc(var(--topbar-h) + 1rem); }
+.directory-hero:target { border-bottom-color: var(--amber); }
+.directory-hero-heading { display: flex; align-items: center; gap: .85rem; }
+.directory-hero-heading div { min-width: 0; }
+.directory-hero-heading h3 { margin: 0 0 .3rem; font-size: var(--step-1); overflow-wrap: anywhere; }
+.directory-hero-heading p { margin: 0; font-size: var(--step--1); line-height: 1.4; color: var(--ink-muted); }
+.directory-hero-heading img { flex: none; width: 4.4rem; height: 4.4rem; border: 1px solid var(--amber-dim); border-radius: 2px; object-fit: cover; }
+.hero-role-tags { display: flex; flex-wrap: wrap; gap: .4rem .8rem; margin-top: .9rem; }
+.hero-role-tags span { color: var(--amber-dim); font-size: .8rem; line-height: 1.4; letter-spacing: .03em; }
+.hero-role-tags:empty { display: none; }
+.hero-first-skill { margin-block: .75rem; color: var(--ink-dim); font-size: var(--step--1); line-height: 1.5; }
+.hero-first-skill b { color: var(--ink); }
+.hero-dossier > summary { min-height: 44px; display: flex; align-items: center; padding-block: .3rem; font-size: var(--step--1); }
+.hero-dossier > .note { font-size: var(--step--1); }
+.hero-role-list { list-style: none; padding: 0; margin-block: var(--space-s); }
+.hero-role-list li { margin-block: 1rem; min-width: 0; }
+.hero-role-list b { font-size: var(--step--1); }
+.hero-role-list small { display: block; color: var(--ink-muted); font-size: .8rem; }
+.hero-role-list p { margin-block: .25rem; font-size: var(--step--1); }
+.hero-role-list a, .hero-source-link { font-size: .85rem; }
+.hero-skills { list-style: none; padding: 0; margin: var(--space-s) 0; }
+.hero-skills li { padding-block: .85rem; border-top: 1px solid var(--signal-line); }
+.hero-skills h4 { display: flex; gap: .65rem; align-items: baseline; margin: 0; font-family: var(--body); font-size: var(--step-0); }
+.hero-skill-number { color: var(--amber); font-variant-numeric: tabular-nums; }
+.hero-skills p { overflow-wrap: anywhere; margin-block: .4rem 0; font-size: var(--step--1); }
+.hero-skill-levels { color: var(--amber-dim); font-variant-numeric: tabular-nums; }
+.hero-skill-levels span { display: block; color: var(--ink-muted); font-size: .8rem; }
+.directory-role-guide { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 2rem; margin-block: var(--space-m); }
+.directory-role-guide > div { border-top: 1px solid var(--signal-line); padding-top: 1rem; }
+.directory-role-guide h3 { font-size: var(--step-0); }
+.directory-role-guide p { font-size: var(--step--1); color: var(--ink-dim); }
+@media (max-width: 650px) { .hero-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hero-filters label:first-of-type { grid-column: 1 / -1; } .hero-catalogue, .directory-role-guide { grid-template-columns: minmax(0, 1fr); } .directory-results { flex-wrap: wrap; gap: .5rem; } }

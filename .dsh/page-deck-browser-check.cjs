@@ -4,6 +4,9 @@ const path = require('node:path');
 const http = require('node:http');
 const { chromium } = require('playwright');
 const root = path.resolve('_site');
+const nav = require('../_data/nav.json');
+const pages = require('../_data/pages.json');
+const tokens = nav.map(entry => pages[entry.self].token);
 const output = path.resolve('.dsh/deck-preview');
 const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json' };
 const server = http.createServer((request, response) => {
@@ -51,7 +54,7 @@ async function fits(page) {
       await page.goto(origin + '/?lang=en');
       await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
       await page.locator('#ledger-btn').click();
-      for (const token of ['home', 'kvksg', 'bearhunt', 'vikings', 'swordland', 'vip', 'sim', 'gear']) {
+      for (const token of tokens) {
         await selected(page, token);
         await fits(page);
         assert.equal(await page.locator('.deck-card.is-selected .deck-ascii > *').count() > 0, true);
@@ -118,9 +121,9 @@ async function fits(page) {
       const v = document.querySelector('.deck-viewport');
       const c = v.scrollLeft + v.clientWidth / 2;
       const at = [...v.querySelectorAll('.deck-card')].sort((a, b) => Math.abs(a.offsetLeft + a.offsetWidth / 2 - c) - Math.abs(b.offsetLeft + b.offsetWidth / 2 - c))[0];
-      return { copy: at.classList.contains('deck-copy'), page: at.dataset.page, copies: v.querySelectorAll('.deck-copy[inert][aria-hidden="true"]').length };
+      return { copy: at.classList.contains('deck-copy'), page: at.dataset.page, copies: v.querySelectorAll('.deck-copy[inert][aria-hidden="true"]').length / v.querySelectorAll('.deck-card:not(.deck-copy)').length };
     });
-    assert.deepEqual(ring, { copy: false, page: 'gear', copies: 16 });
+    assert.deepEqual(ring, { copy: false, page: 'gear', copies: 2 });
     await page.locator('.deck-next').click();
     await selected(page, 'home');
     assert.ok(Math.abs(await page.locator('.deck-viewport').evaluate(el => el.scrollLeft) - startLeft) < 2);
@@ -132,7 +135,7 @@ async function fits(page) {
       await page.goto(origin + '/?lang=' + lang);
       await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
       await page.locator('#ledger-btn').click();
-      for (const token of ['home', 'kvksg', 'bearhunt', 'vikings', 'swordland', 'vip', 'sim', 'gear']) {
+      for (const token of tokens) {
         await selected(page, token); await fits(page);
         await page.locator('.deck-next').click();
       }

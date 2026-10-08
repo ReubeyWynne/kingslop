@@ -6,6 +6,7 @@ self: events
 
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
   <a href="#today" data-i18n="ks.nav.today">Today</a>
+  <a href="#availability" data-i18n="ks.available.title">Your available points</a>
   <a href="#cycle" data-i18n="ks.nav.cycle">The 28-day clock</a>
   <a href="#brawl" data-i18n="ks.nav.brawl">Alliance Brawl</a>
   <a href="#governor" data-i18n="ks.nav.governor">Strongest Governor</a>
@@ -47,6 +48,52 @@ self: events
       <button type="button" class="kb" data-jump="22" data-end="28"><span class="week-jump-icon" aria-hidden="true">🏰</span><span class="week-jump-copy"><span data-i18n="ks.today.kvkWeek">KvK prep &amp; battle</span><small class="week-jump-range">Days 22–28</small></span></button>
     </div>
     <div class="next-day" id="ks-next-day"></div>
+  </section>
+
+  <section class="section event-availability" id="availability" data-module="event-availability">
+    <h2 data-i18n="ks.available.title">Your available points</h2>
+    <p class="lede" data-i18n="ks.available.intro">Count what is in your bag, choose the day, and see how far it takes you. Leave a count blank until you know it; zero means none.</p>
+    <div class="availability-controls">
+      <label><span data-i18n="ks.available.event">Event</span><select data-target="event-availability.event" data-action="event-availability.select">
+        <option value="prep" data-i18n="ks.today.kickerPrep">KvK prep</option>
+        <option value="sg" data-i18n="ks.governor.title">Strongest Governor</option>
+        <option value="brawl" data-i18n="ks.brawl.title">Alliance Brawl</option>
+      </select></label>
+      <label><span data-i18n="ks.today.day">day</span><select data-target="event-availability.day" data-action="event-availability.select"><option value="1">1</option></select></label>
+      <label><span data-i18n="ks.available.target">Point target</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-target="event-availability.target" data-action="event-availability.target"></label>
+    </div>
+    <div class="availability-result" aria-live="polite">
+      <p><span data-i18n="ks.available.spendable">points in reach</span> <output data-target="event-availability.total">—</output></p>
+      <p><span data-i18n="ks.available.reservedPoints">kept for later</span> <output data-target="event-availability.reserved">—</output></p>
+      <p><span data-i18n="ks.available.shortfall">still to find</span> <output data-target="event-availability.shortfall">—</output></p>
+      <p class="note" data-target="event-availability.coverage"></p>
+    </div>
+    <p class="note" data-i18n="ks.available.limit">These points need upgrades you can actually make. Check the in-game requirements before spending. Comparing days does not give you a second bag of items.</p>
+    <div class="availability-inventory-heading"><h3 data-i18n="ks.available.inventory">Your inventory</h3><label class="availability-show-all"><input type="checkbox" data-target="event-availability.all" data-action="event-availability.showAll"><span data-i18n="ks.available.showAll">show items that do not score today</span></label></div>
+    <div class="availability-items">
+      {% for item in site.data.event_rules.items %}
+      <div class="availability-item" data-item="{{ item.id }}">
+        <h3 data-i18n="{{ item.key }}">{{ item.label | escape }}</h3>
+        <label data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed"><span data-i18n="ks.available.owned">in your bag</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize"><small data-target="ledger-form.save" aria-live="polite"></small></label>
+        <label><span data-i18n="ks.available.held">keep for later</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" data-held="{{ item.id }}" data-action="event-availability.reserve"></label>
+        <p><span data-i18n="ks.available.rate">points each</span> <output data-rate>—</output></p>
+        <p><span data-i18n="ks.available.contribution">points available</span> <output data-points>—</output></p>
+      </div>
+      {% endfor %}
+    </div>
+    <p class="note" data-i18n="ks.available.reserveNote">Keeping items aside changes this calculation, not your saved bag. A backup includes your inventory; it does not include this plan.</p>
+    <h3 data-i18n="ks.available.potential">Other ways to score</h3>
+    <p class="note" data-i18n="ks.available.potentialNote">There may be more points here. They need an in-game check, so they are not included in the total above.</p>
+    <ul class="availability-potential" data-target="event-availability.unquantified"></ul>
+    <details data-module="save-transfer disclosure" data-status-scope="event-availability" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
+      <summary data-i18n="gear.manageSave">your save &amp; backups</summary>
+      <p class="note" data-i18n="gear.sharedSaveHint">One save for your gear and event inventory. Keep a backup before importing another.</p>
+      <button type="button" class="kb" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
+      <button type="button" class="kb" data-action="save-transfer.choose" data-i18n="gear.load">import backup</button>
+      <input type="file" accept="application/json,.json" hidden data-target="save-transfer.file" data-action="save-transfer.import">
+    </details>
+    <output hidden aria-live="polite" data-module="result-panel" data-status-scope="event-availability" data-target="result-panel.message"></output>
+    <noscript><p data-i18n="ks.available.nojs">Enable JavaScript to read local inventory and calculate points. Reference tables below remain available.</p></noscript>
   </section>
 
   <!-- ═══════════ 2 · THE 28-DAY CLOCK ═══════════ -->
@@ -103,14 +150,9 @@ self: events
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 1 · Rise of the City</span>
       <span class="day-meta">24h · building and gathering day</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Escort a truck (any grade)</td><td class="pts">10,000</td></tr>
-        <tr><td>Raid a truck (any grade)</td><td class="pts">10,000</td></tr>
-        <tr><td>Master Emblem</td><td class="pts">3,600</td></tr>
-        <tr><td>Truegold (building upgrade)</td><td class="pts">1,250</td></tr>
-        <tr><td>Truegold Dust (tech research)</td><td class="pts">625</td></tr>
-        <tr><td>Master's Manuscript</td><td class="pts">36</td></tr>
-        <tr><td>1m construction / research / training / master speedup</td><td class="pts">18</td></tr>
-        <tr><td>Gather in the wilderness (bread / wood / stone / iron)</td><td class="pts">2</td></tr>
+        {% for row in site.data.event_rules.events.brawl[0].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
       <p class="note">Trucks are the Merchant Empire overlap — one escort scores in both. Master emblems pay 3,600
         here; if you hold them for prep days 2–3, weigh it against today's rate.</p>
@@ -119,17 +161,9 @@ self: events
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 2 · Hero Development</span>
       <span class="day-meta">24h · hero day</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Escort a truck (any grade)</td><td class="pts">10,000</td></tr>
-        <tr><td>Raid a truck (any grade)</td><td class="pts">10,000</td></tr>
-        <tr><td>Master Emblem</td><td class="pts">3,600</td></tr>
-        <tr><td>Finish an intel mission</td><td class="pts">3,000</td></tr>
-        <tr><td>Mythic hero shard</td><td class="pts">1,875</td></tr>
-        <tr><td>Truegold (building upgrade)</td><td class="pts">1,250</td></tr>
-        <tr><td>Epic hero shard</td><td class="pts">750</td></tr>
-        <tr><td>Truegold Dust (tech research)</td><td class="pts">625</td></tr>
-        <tr><td>Rare hero shard</td><td class="pts">210</td></tr>
-        <tr><td>Master's Manuscript</td><td class="pts">36</td></tr>
-        <tr><td>1m construction / research / training / master speedup</td><td class="pts">18</td></tr>
+        {% for row in site.data.event_rules.events.brawl[1].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
       <p class="note">Shards ascend at better than half the KvK rate, so the fixed rewards can make this the month's
         cheapest shard spend — but every shard is one Strongest Governor week wants.</p>
@@ -138,13 +172,9 @@ self: events
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 3 · Pet Training</span>
       <span class="day-meta">24h · pet and charm day</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Escort a truck (any grade)</td><td class="pts">10,000</td></tr>
-        <tr><td>Raid a truck (any grade)</td><td class="pts">10,000</td></tr>
-        <tr><td>Advanced Taming Mark (pet refinement)</td><td class="pts">9,370</td></tr>
-        <tr><td>Common Taming Mark (pet refinement)</td><td class="pts">680</td></tr>
-        <tr><td>Governor Charm max score +1</td><td class="pts">45</td></tr>
-        <tr><td>Pet Advancement score +1</td><td class="pts">30</td></tr>
-        <tr><td>Gather in the wilderness (bread / wood / stone / iron)</td><td class="pts">2</td></tr>
+        {% for row in site.data.event_rules.events.brawl[2].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
       <p class="note">Levelling a charm or pet also pays a one-time level-up score on top of the per-point rows — the
         amounts climb steeply with level. Pets here pay less per taming mark than prep day 3 (9,370 vs 15,000): spend
@@ -154,24 +184,9 @@ self: events
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 4 · Gear Enhancement</span>
       <span class="day-meta">24h · gear and troop day</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Escort a truck (any grade)</td><td class="pts">10,000</td></tr>
-        <tr><td>Raid a truck (any grade)</td><td class="pts">10,000</td></tr>
-        <tr><td>Mithril</td><td class="pts">18,750</td></tr>
-        <tr><td>Widget (hero exclusive gear)</td><td class="pts">3,750</td></tr>
-        <tr><td>Finish an intel mission</td><td class="pts">3,000</td></tr>
-        <tr><td>Hero Gear Forgehammer</td><td class="pts">1,875</td></tr>
-        <tr><td>T11 troop</td><td class="pts">30</td></tr>
-        <tr><td>T10 troop</td><td class="pts">24</td></tr>
-        <tr><td>T9 troop</td><td class="pts">18</td></tr>
-        <tr><td>T8 troop</td><td class="pts">14</td></tr>
-        <tr><td>T7 troop</td><td class="pts">10</td></tr>
-        <tr><td>T6 troop</td><td class="pts">7</td></tr>
-        <tr><td>T5 troop</td><td class="pts">4</td></tr>
-        <tr><td>T4 troop</td><td class="pts">3</td></tr>
-        <tr><td>T3 troop</td><td class="pts">2</td></tr>
-        <tr><td>T2 troop</td><td class="pts">1</td></tr>
-        <tr><td>T1 troop</td><td class="pts">1</td></tr>
-        <tr><td>Governor Charm max score +1</td><td class="pts">45</td></tr>
+        {% for row in site.data.event_rules.events.brawl[3].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
       <p class="note" data-i18n="ks.today.budget">Choose your reward target before spending. Keep materials reserved for another event unless you decide to use them here.</p>
     </details>
@@ -179,18 +194,9 @@ self: events
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 5 · Trade Baron</span>
       <span class="day-meta">24h · beast day</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Escort a truck (any grade)</td><td class="pts">10,000</td></tr>
-        <tr><td>Raid a truck (any grade)</td><td class="pts">10,000</td></tr>
-        <tr><td>Call a rally and hunt a Terror</td><td class="pts">15,000</td></tr>
-        <tr><td>Defeat a level 26–30 beast</td><td class="pts">6,000</td></tr>
-        <tr><td>Defeat a level 21–25 beast</td><td class="pts">5,500</td></tr>
-        <tr><td>Defeat a level 16–20 beast</td><td class="pts">5,000</td></tr>
-        <tr><td>Defeat a level 11–15 beast</td><td class="pts">4,500</td></tr>
-        <tr><td>Defeat a level 1–10 beast</td><td class="pts">4,000</td></tr>
-        <tr><td>Truegold (building upgrade)</td><td class="pts">1,250</td></tr>
-        <tr><td>Truegold Dust (tech research)</td><td class="pts">625</td></tr>
-        <tr><td>Governor Gear max score +1</td><td class="pts">22</td></tr>
-        <tr><td>1m construction / research / training / master speedup</td><td class="pts">18</td></tr>
+        {% for row in site.data.event_rules.events.brawl[4].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
       <p class="note">The free day — beasts, the terror, your own marches; nothing here touches the KvK hoard. If the
         alliance pushes a day, this is the one that costs you no prep.</p>
@@ -199,28 +205,9 @@ self: events
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 6 · Full-Scale Competition</span>
       <span class="day-meta">~36h finale · every day's tasks at once, into Sunday</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Escort a truck (any grade)</td><td class="pts">10,000</td></tr>
-        <tr><td>Raid a truck (any grade)</td><td class="pts">10,000</td></tr>
-        <tr><td>Mithril</td><td class="pts">18,750</td></tr>
-        <tr><td>Call a rally and hunt a Terror</td><td class="pts">15,000</td></tr>
-        <tr><td>Advanced Taming Mark (pet refinement)</td><td class="pts">9,370</td></tr>
-        <tr><td>Defeat a level 26–30 beast</td><td class="pts">6,000</td></tr>
-        <tr><td>Defeat a level 21–25 beast</td><td class="pts">5,500</td></tr>
-        <tr><td>Defeat a level 16–20 beast</td><td class="pts">5,000</td></tr>
-        <tr><td>Defeat a level 11–15 beast</td><td class="pts">4,500</td></tr>
-        <tr><td>Defeat a level 1–10 beast</td><td class="pts">4,000</td></tr>
-        <tr><td>Widget (hero exclusive gear)</td><td class="pts">3,750</td></tr>
-        <tr><td>Mythic hero shard</td><td class="pts">1,875</td></tr>
-        <tr><td>Hero Gear Forgehammer</td><td class="pts">1,875</td></tr>
-        <tr><td>Truegold (building upgrade)</td><td class="pts">1,250</td></tr>
-        <tr><td>Epic hero shard</td><td class="pts">750</td></tr>
-        <tr><td>Common Taming Mark (pet refinement)</td><td class="pts">680</td></tr>
-        <tr><td>Truegold Dust (tech research)</td><td class="pts">625</td></tr>
-        <tr><td>Rare hero shard</td><td class="pts">210</td></tr>
-        <tr><td>Governor Charm max score +1</td><td class="pts">45</td></tr>
-        <tr><td>Pet Advancement score +1</td><td class="pts">30</td></tr>
-        <tr><td>Governor Gear max score +1</td><td class="pts">22</td></tr>
-        <tr><td>1m construction / research / training / master speedup</td><td class="pts">18</td></tr>
+        {% for row in site.data.event_rules.events.brawl[5].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
       <p class="note">The finale mixes every day's table (plus day-2's shards) over ~36 hours. Every brawl day also
         scores 1 point per gem and 6 per top-up point — small, and never worth spending for.</p>
@@ -294,76 +281,44 @@ self: events
     <details class="day">
       <summary><span class="day-title">Day 1: City Construction</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Tempered Truegold (building upgrade)</td><td class="pts">30,000</td></tr>
-        <tr><td>Watchtower Intel Mission</td><td class="pts">6,000</td></tr>
-        <tr><td>Truegold (building upgrade)</td><td class="pts">2,000</td></tr>
-        <tr><td>Truegold Dust (tech research)</td><td class="pts">1,000</td></tr>
-        <tr><td>Governor Charm max score +1</td><td class="pts">70</td></tr>
-        <tr><td>1 min construction / research / training / learning speedup</td><td class="pts">30</td></tr>
+        {% for row in site.data.event_rules.events.prep[0].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
 
     </details>
     <details class="day">
       <summary><span class="day-title">Day 2: Basic Skills Up</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Tempered Truegold</td><td class="pts">30,000</td></tr>
-        <tr><td>Hero Roulette (1 spin)</td><td class="pts">8,000</td></tr>
-        <tr><td>Master Emblem</td><td class="pts">6,000</td></tr>
-        <tr><td>Mythic hero shard</td><td class="pts">3,040</td></tr>
-        <tr><td>Truegold</td><td class="pts">2,000</td></tr>
-        <tr><td>Epic hero shard</td><td class="pts">1,220</td></tr>
-        <tr><td>Truegold Dust</td><td class="pts">1,000</td></tr>
-        <tr><td>Rare hero shard</td><td class="pts">350</td></tr>
-        <tr><td>Master's Manuscript</td><td class="pts">60</td></tr>
-        <tr><td>1 min speedups (all kinds)</td><td class="pts">30</td></tr>
-        <tr><td>Gather 1,000 bread/wood, 200 stone, 50 iron</td><td class="pts">2</td></tr>
+        {% for row in site.data.event_rules.events.prep[1].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
     </details>
     <details class="day">
       <summary><span class="day-title">Day 3: Pet Training</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Advanced Taming Mark (pet refinement)</td><td class="pts">15,000</td></tr>
-        <tr><td>Hero Roulette</td><td class="pts">8,000</td></tr>
-        <tr><td>Master Emblem</td><td class="pts">6,000</td></tr>
-        <tr><td>Watchtower Intel Mission</td><td class="pts">6,000</td></tr>
-        <tr><td>Mythic hero shard</td><td class="pts">3,040</td></tr>
-        <tr><td>Epic hero shard</td><td class="pts">1,220</td></tr>
-        <tr><td>Common Taming Mark</td><td class="pts">1,150</td></tr>
-        <tr><td>Rare hero shard</td><td class="pts">350</td></tr>
-        <tr><td>Governor Charm max score +1</td><td class="pts">70</td></tr>
-        <tr><td>Master's Manuscript</td><td class="pts">60</td></tr>
-        <tr><td>Pet Advancement score +1</td><td class="pts">50</td></tr>
+        {% for row in site.data.event_rules.events.prep[2].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
 
     </details>
     <details class="day">
       <summary><span class="day-title">Day 4: Gear &amp; Troops</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Mithril</td><td class="pts">40,000</td></tr>
-        <tr><td>Widget (hero exclusive gear)</td><td class="pts">8,000</td></tr>
-        <tr><td>Hero Gear Forgehammer</td><td class="pts">4,000</td></tr>
-        <tr><td>Governor Charm max score +1</td><td class="pts">70</td></tr>
-        <tr><td>T11 troop</td><td class="pts">75</td></tr>
-        <tr><td>T10 troop</td><td class="pts">60</td></tr>
-        <tr><td>T9 troop</td><td class="pts">45</td></tr>
-        <tr><td>T8 troop</td><td class="pts">35</td></tr>
-        <tr><td>T7 troop</td><td class="pts">25</td></tr>
-        <tr><td>T6 troop</td><td class="pts">18</td></tr>
-        <tr><td>T5 troop</td><td class="pts">12</td></tr>
-        <tr><td>T4 troop</td><td class="pts">8</td></tr>
+        {% for row in site.data.event_rules.events.prep[3].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
       <p class="note" data-i18n="ks.days.troopsNote">Troop training and promotion score today, alongside eligible gear upgrades. Check the available tasks and troop tiers in your event.</p>
     </details>
     <details class="day">
       <summary><span class="day-title">Day 5: Combined</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Governor gear</td><td class="pts">·</td></tr>
-        <tr><td>Truegold + Tempered Truegold</td><td class="pts">2,000 / 30,000</td></tr>
-        <tr><td>Mithril / widget / forgehammer</td><td class="pts">40,000 / 8,000 / 4,000</td></tr>
-        <tr><td>1 min construction / research / training speedups</td><td class="pts">30</td></tr>
-        <tr><td>Watchtower Intel Mission</td><td class="pts">6,000</td></tr>
-        <tr><td>Gathering</td><td class="pts">2</td></tr>
-        <tr><td>Pets advance</td><td class="pts">50</td></tr>
+        {% for row in site.data.event_rules.events.prep[4].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
 
     </details>
@@ -384,48 +339,33 @@ self: events
     <details class="day">
       <summary><span class="day-title">Day 1: City Construction</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Tempered Truegold</td><td class="pts">30,000</td></tr>
-        <tr><td>Truegold</td><td class="pts">2,000</td></tr>
-        <tr><td>Governor Charm max score +1</td><td class="pts">70</td></tr>
-        <tr><td>1 min construction / research / training speedup</td><td class="pts">30</td></tr>
+        {% for row in site.data.event_rules.events.sg[0].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
     </details>
     <details class="day">
       <summary><span class="day-title">Day 2: Hero Development</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Mithril</td><td class="pts">40,000</td></tr>
-        <tr><td>Widget (hero exclusive gear)</td><td class="pts">8,000</td></tr>
-        <tr><td>Hero Roulette</td><td class="pts">8,000</td></tr>
-        <tr><td>Hero Gear Forgehammer</td><td class="pts">4,000</td></tr>
-        <tr><td>Mythic hero shard</td><td class="pts">3,040</td></tr>
-        <tr><td>Truegold</td><td class="pts">2,000</td></tr>
-        <tr><td>Epic hero shard</td><td class="pts">1,220</td></tr>
-        <tr><td>Rare hero shard</td><td class="pts">350</td></tr>
-        <tr><td>1 min speedups</td><td class="pts">30</td></tr>
+        {% for row in site.data.event_rules.events.sg[1].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
     </details>
     <details class="day">
       <summary><span class="day-title">Day 3: Skill Up</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Advanced Taming Mark</td><td class="pts">15,000</td></tr>
-        <tr><td>Hero Roulette</td><td class="pts">8,000</td></tr>
-        <tr><td>Master Emblem</td><td class="pts">6,000</td></tr>
-        <tr><td>Mythic hero shard</td><td class="pts">3,040</td></tr>
-        <tr><td>Epic hero shard</td><td class="pts">1,220</td></tr>
-        <tr><td>Common Taming Mark</td><td class="pts">1,150</td></tr>
-        <tr><td>Rare hero shard</td><td class="pts">350</td></tr>
-        <tr><td>Governor Charm max score +1</td><td class="pts">70</td></tr>
-        <tr><td>Pet Advancement score +1</td><td class="pts">50</td></tr>
+        {% for row in site.data.event_rules.events.sg[2].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
     </details>
     <details class="day">
       <summary><span class="day-title">Day 4: Combat Training</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Mithril</td><td class="pts">40,000</td></tr>
-        <tr><td>Widget</td><td class="pts">8,000</td></tr>
-        <tr><td>Hero Gear Forgehammer</td><td class="pts">4,000</td></tr>
-        <tr><td>Governor Charm max score +1</td><td class="pts">70</td></tr>
-        <tr><td>T10 → T1 troop</td><td class="pts">39 → 1</td></tr>
+        {% for row in site.data.event_rules.events.sg[3].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
       <p class="note">The troop ladder here is <b>not</b> the KvK ladder: SG pays T10 at 39, KvK pays T10 at 60 and
         adds T11 at 75. Train hard either way; just know the rates differ.</p>
@@ -433,11 +373,9 @@ self: events
     <details class="day">
       <summary><span class="day-title">Day 5: Skill Up</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Mithril</td><td class="pts">40,000</td></tr>
-        <tr><td>Widget</td><td class="pts">8,000</td></tr>
-        <tr><td>Hero Gear Forgehammer</td><td class="pts">4,000</td></tr>
-        <tr><td>Truegold</td><td class="pts">2,000</td></tr>
-        <tr><td>1 min construction / research / training speedup</td><td class="pts">30</td></tr>
+        {% for row in site.data.event_rules.events.sg[4].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
       <p class="note">The second "Skill Up" is a different list from day 3: the truegold and speedup baseline returns,
         the pets don't.</p>
@@ -445,8 +383,9 @@ self: events
     <details class="day">
       <summary><span class="day-title">Day 6: Combat Training</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Governor Charm max score +1</td><td class="pts">36</td></tr>
-        <tr><td>T10 → T1 troop</td><td class="pts">39 → 1</td></tr>
+        {% for row in site.data.event_rules.events.sg[5].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
       <p class="note">The bare troop day: no mithril, no gear. If you saved a troop push, this is the second chance
         for it.</p>
@@ -454,16 +393,9 @@ self: events
     <details class="day">
       <summary><span class="day-title">Day 7: Hero Development</span></summary>
       <table class="pt"><tbody>
-        <tr><td>Advanced Taming Mark</td><td class="pts">15,000</td></tr>
-        <tr><td>Mythic hero shard</td><td class="pts">3,040</td></tr>
-        <tr><td>Truegold</td><td class="pts">2,000</td></tr>
-        <tr><td>Epic hero shard</td><td class="pts">1,220</td></tr>
-        <tr><td>Common Taming Mark</td><td class="pts">1,150</td></tr>
-        <tr><td>Rare hero shard</td><td class="pts">350</td></tr>
-        <tr><td>Pet Advancement score +1</td><td class="pts">50</td></tr>
-        <tr><td>Governor Charm max score +1</td><td class="pts">36</td></tr>
-        <tr><td>1 min speedups</td><td class="pts">30</td></tr>
-        <tr><td>Gather 2,500 bread/wood, 500 stone, 100 iron</td><td class="pts">3</td></tr>
+        {% for row in site.data.event_rules.events.sg[6].rows %}
+        <tr><td>{{ row.label | escape }}</td><td class="pts">{{ row.points | escape }}</td></tr>
+        {% endfor %}
       </tbody></table>
     </details>
     <p class="note" data-i18n-html="ks.governor.note">Two things shape every SG plan: <b>milestones scale with your
