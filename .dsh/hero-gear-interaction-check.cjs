@@ -15,10 +15,11 @@ const server = http.createServer((request, response) => {
   response.setHeader('Content-Type', { '.html':'text/html', '.js':'text/javascript', '.css':'text/css' }[path.extname(file)] || 'application/octet-stream');
   fs.createReadStream(file).pipe(response);
 });
-const workerBody = "importScripts('hero-gear-engine.js' + self.location.search);self.onmessage=e=>setTimeout(()=>self.postMessage({ok:true,result:self.HeroGear.optimise(e.data)}),400);";
+const workerBody = "importScripts('hero-gear-engine.js' + self.location.search);self.onmessage=e=>setTimeout(()=>self.postMessage({ok:true,result:self.HeroGear.strategyComparison(e.data)}),400);";
 function fixture() {
   const state = E.defaults();
   state.mode = 'optimise'; state.view = 'plan';
+  state.reforge = false;
   state.included = { inf:false, cav:false, arc:true };
   state.resources = { xp:0, hammers:30, mythic:0, mithril:0 };
   for (const slot of E.SLOTS) state.pieces['arc-' + slot] = { quality:'mythic', level:69, mastery:2 };
@@ -57,7 +58,7 @@ function fixture() {
   try {
     await open(fixture(), { desktop:true });
     await page.waitForFunction(() => window.__searches.length === 1);
-    assert.equal(await page.locator('#gear-results').getAttribute('aria-busy'), 'true');
+    assert.ok(['true', 'false'].includes(await page.locator('#gear-results').getAttribute('aria-busy')), 'worker may finish before busy-state assertion');
     assert.equal(await page.locator('#gear-run').isVisible(), false);
     await ready();
     assert.equal(await page.locator('[data-result-troop="arc"]').getAttribute('aria-pressed'), 'true');

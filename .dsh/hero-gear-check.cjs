@@ -33,6 +33,7 @@ assert.equal(E.stats({ quality: 'red', level: 200, mastery: 20 }, 'chest').attac
 assert.deepEqual(E.gap({ xp: 10, hammers: 20, mythic: 5, mithril: 10 }, { xp: 20, hammers: 2, mythic: 3, mithril: 0 }), { xp: 0, hammers: 18, mythic: 2, mithril: 10 });
 assert.deepEqual(E.normaliseState({ version: 1, weights: { inf: [2] } }).weights.inf, [2, 1.5]);
 const ascensionOnly = E.defaults();
+ascensionOnly.reforge = false;
 ascensionOnly.pieces['inf-helm'] = mythic;
 ascensionOnly.resources.mythic = 2;
 const ascended = E.optimise(ascensionOnly);
@@ -142,4 +143,33 @@ const scope = { window: {} };
 vm.runInNewContext(fs.readFileSync('i18n/en.js', 'utf8'), scope);
 const dict = scope.window.__BH_I18N_DATA.en;
 for (const match of fs.readFileSync('hero-gear/index.html', 'utf8').matchAll(/data-i18n(?:-key)?="(gear\.[^"]+)"/g)) assert.ok(dict[match[1]], match[1]);
+
+const nearMilestone = E.defaults();
+Object.assign(nearMilestone.pieces, {
+  'inf-helm': {quality:'mythic',level:69,mastery:2},
+  'inf-gloves': {quality:'red',level:120,mastery:11},
+  'inf-chest': {quality:'mythic',level:100,mastery:6},
+  'inf-boots': {quality:'mythic',level:72,mastery:3},
+  'cav-helm': {quality:'mythic',level:63,mastery:2},
+  'cav-gloves': {quality:'mythic',level:39,mastery:1},
+  'cav-chest': {quality:'mythic',level:40,mastery:1},
+  'cav-boots': {quality:'mythic',level:63,mastery:1},
+  'arc-helm': {quality:'red',level:111,mastery:11},
+  'arc-gloves': {quality:'mythic',level:69,mastery:2},
+  'arc-chest': {quality:'mythic',level:69,mastery:2},
+  'arc-boots': {quality:'mythic',level:100,mastery:6}
+});
+nearMilestone.resources = {xp:23000,hammers:84,mythic:7,mithril:10};
+nearMilestone.reforge = false;
+const comparison = E.strategyComparison(nearMilestone);
+const archer = comparison.alternatives.find(route => route.id === 'arc-helm');
+assert.ok(archer);
+assert.deepEqual(archer.gap, {xp:2400,hammers:0,mythic:0,mithril:0});
+assert.equal(archer.afterSpendGap.xp, 6410);
+assert.ok(archer.reforgeNow);
+assert.equal(archer.optimalAtThreshold, true);
+assert.ok(archer.futurePlan.score >= comparison.now.score);
+assert.equal(E.defaults().mode, 'optimise');
+assert.equal(E.defaults().reforge, true);
+
 console.log('Gear costs, milestones, 40 optimiser conservation cases, OCR parsing and copy checks passed.');

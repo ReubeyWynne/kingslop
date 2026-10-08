@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  var E = window.HeroGear, BH, state, previous, result, running = false, revision = 0, planIndex = 0, resultTroop = 'inf';
+  var E = window.HeroGear, BH, state, previous, result, running = false, revision = 0, planIndex = 0, resultTroop = 'inf', strategyResult = null;
   var searchWorker, searchTimer, searchDelay, searchFailed = false;
   var STORAGE = 'bh:hero-gear:v1', imports = [], reader, readerSequence = 0, readerPending = {}, importSequence = 0;
   var scriptURL = new URL(document.currentScript.src);
@@ -66,7 +66,9 @@
     planIndex = 0;
     searchFailed = false;
     result = null;
+    strategyResult = null;
     el('results').textContent = '';
+    el('opportunities').textContent = '';
     el('status').hidden = true;
     persist();
     paintAnswer();
@@ -210,7 +212,33 @@
     syncXP();
     changed(); paint(); el('undo').hidden = false;
   }
+  function paintOpportunities(comparison) {
+    var host = el('opportunities');
+    if (!host) return;
+    var alternatives = comparison && comparison.alternatives || [];
+    host.innerHTML = alternatives.filter(function (r) {
+      return E.RES.some(function (key) { return r.gap[key] > 0; }) || r.reforgeNow;
+    }).map(function (r) {
+      var missing = E.RES.filter(function (key) { return r.gap[key] > 0; })
+        .map(function (key) { return fmt(r.gap[key]) + ' ' + esc(tr(key)); }).join(' · ');
+      var delayed = r.afterSpendGap && E.RES.some(function (key) { return r.afterSpendGap[key] > r.gap[key]; });
+      var note = r.reforgeNow ? 'Reforging can reach this milestone now. Compare the full plan before applying it.' :
+        r.optimalAtThreshold ? 'This milestone is part of a highest-scoring plan at that budget.' :
+        r.beatsCurrentPlan ? 'A milestone-first plan beats today’s spend-now score once these resources are available, but other plans may do better.' :
+        'Reaching this milestone does not currently outperform the spend-now result.';
+      return '<article class="gear-opportunity">' +
+        '<div class="gear-opportunity-head">' + gearImage(r.id, 'gear-opportunity-art') +
+        '<div><strong>' + esc(name(r.id)) + ' · ' + r.from.level + ' → ' + r.to.level + '</strong>' +
+        '<small>' + esc(tr('mithrilCheckpoint')) + ' · +' + r.milestoneGain.toFixed(1) + ' ' + esc(tr('weightedGain')) + '</small></div></div>' +
+        '<p>' + (missing ? esc(missing) + ' short. ' : 'Affordable now. ') + esc(note) + '</p>' +
+        (delayed ? '<p>Spending now increases the milestone shortfall to ' + E.RES.filter(function (key) { return r.afterSpendGap[key]; }).map(function (key) { return fmt(r.afterSpendGap[key]) + ' ' + esc(tr(key)); }).join(' · ') + '.</p>' : '') +
+        (r.futurePlan ? '<p>At this resource threshold: +' + (r.futurePlan.score - r.futurePlan.baseline).toFixed(1) + ' weighted gain for the milestone-first plan; best found +' + (r.futureBestScore - r.futurePlan.baseline).toFixed(1) + '.</p>' : '') +
+        (r.reforgeNow ? '<p>Reforge plan: +' + (r.reforgeNow.score - r.reforgeNow.baseline).toFixed(1) + ' weighted gain, including changes to other gear.</p>' : '') +
+        '<button type="button" data-mode="plan">Inspect saving routes →</button></article>';
+    }).join('');
+  }
   function paintResults() {
+    paintOpportunities(strategyResult);
     if (!result) return;
     el('results').setAttribute('aria-busy', 'false');
     el('search-status').hidden = true;
@@ -271,7 +299,8 @@
         if (worker !== searchWorker || currentRevision !== revision) return;
         if (!event.data || !event.data.ok || !event.data.result) { fail(); return; }
         cancelSearch();
-        result = event.data.result;
+        strategyResult = event.data.result;
+        result = strategyResult.now;
         if (result.changes.length) {
           resultTroop = E.TYPES.filter(function (type) { return state.included[type]; }).sort(function (a, b) {
             function gain(type) { return result.details.reduce(function (sum, d) { return sum + (d.id.startsWith(type + '-') ? d.gain : 0); }, 0); }

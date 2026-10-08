@@ -38,7 +38,7 @@
   function defaults() {
     var pieces = {};
     TYPES.forEach(function (type) { SLOTS.forEach(function (slot) { pieces[type + '-' + slot] = normalisePiece(); }); });
-    return { version: 1, pieces: pieces, resources: emptyCost(), included: { inf: true, cav: true, arc: true }, weights: copy(PROFILES.growth), profile: 'growth', reforge: false, troop: 'inf', mode: 'plan', view: 'gear', selected: 'inf-helm', goal: 'mithril', target: 120, targetMastery: 11 };
+    return { version: 1, pieces: pieces, resources: emptyCost(), included: { inf: true, cav: true, arc: true }, weights: copy(PROFILES.growth), profile: 'growth', reforge: true, troop: 'inf', mode: 'optimise', view: 'gear', selected: 'inf-helm', goal: 'mithril', target: 120, targetMastery: 11 };
   }
   function normaliseState(input) {
     var s = defaults();
@@ -160,7 +160,29 @@
     });
     return out;
   }
-  function optimise(input) {
+  function nearbyMilestones(input) {
+    var state = normaliseState(input), routes = [];
+    Object.keys(state.pieces).forEach(function (id) {
+      if (!state.included[id.split('-')[0]]) return;
+      var from = state.pieces[id], to = milestone(from, 'mithril');
+      if (!to) return;
+      var costs = cost(from, to), shortfall = gap(costs, state.resources);
+      var gain = score(id, to, state.weights) - score(id, from, state.weights);
+      if (gain <= 0) return;
+      var refund = 0;
+      if (state.reforge) Object.keys(state.pieces).forEach(function (other) {
+        if (other !== id && state.included[other.split('-')[0]] && state.pieces[other].quality !== 'red')
+          refund += CUM[state.pieces[other].level];
+      });
+      routes.push({ id: id, from: from, to: to, costs: costs, gap: shortfall, gain: gain, reforgeXpAvailable: refund });
+    });
+    return routes.sort(function (a, b) {
+      var aMissing = RES.filter(function (r) { return a.gap[r] > 0; }).length;
+      var bMissing = RES.filter(function (r) { return b.gap[r] > 0; }).length;
+      return aMissing - bMissing || a.gap.xp - b.gap.xp || b.gain - a.gain;
+    }).slice(0, 3);
+  }
+  function optimise(input, required) {
     var state = normaliseState(input), original = copy(state.pieces), baseline = total(original, state), best;
     var modes = state.reforge ? [false, true] : [false];
     modes.forEach(function (reforge) {
@@ -171,6 +193,14 @@
           if (state.included[id.split('-')[0]] && p.quality !== 'red') { refund += CUM[p.level]; p.level = 0; }
         });
         bag.xp += refund;
+        if (required) {
+          var current = pieces[required.id], forced = target(current, required.to.level, required.to.mastery, required.to.quality === 'red');
+          if (!forced) return;
+          var forcedCost = cost(current, forced);
+          if (!affordable(forcedCost, bag)) return;
+          pieces[required.id] = forced;
+          RES.forEach(function (r) { bag[r] -= forcedCost[r]; });
+        }
         var budget = copy(bag);
         for (var iteration = 0; iteration < 2700; iteration++) {
           var winner = null;
@@ -196,6 +226,7 @@
         if (!best || value > best.score + 1e-8) best = { pieces: pieces, remaining: bag, refund: refund, score: value };
       });
     });
+    if (!best && required) return null;
     if (!best) best = { pieces: original, remaining: copy(state.resources), refund: 0, score: baseline };
     best.baseline = baseline;
     best.gain = best.score - baseline;
@@ -215,7 +246,32 @@
     return best;
   }
 
-  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, redPlans: redPlans, optimise: optimise };
+  function strategyComparison(input) {
+    var state = normaliseState(input), now = optimise(state), options = nearbyMilestones(state).slice(0, 1);
+    var alternatives = options.map(function (route) {
+      var afterPiece = now.pieces[route.id], afterTarget = milestone(afterPiece, 'mithril');
+      var afterSpendGap = afterTarget ? gap(cost(afterPiece, afterTarget), now.remaining) : emptyCost();
+      var withReforge = copy(state);
+      withReforge.reforge = true;
+      var reforgeNow = optimise(withReforge, route);
+      var needed = copy(route.gap);
+      var future = copy(state);
+      RES.forEach(function (r) { future.resources[r] += needed[r]; });
+      var futurePlan = optimise(future, route);
+      var futureBest = optimise(future);
+      return {
+        id: route.id, from: route.from, to: route.to, costs: route.costs, gap: needed, afterSpendGap: afterSpendGap,
+        milestoneGain: route.gain,
+        reforgeNow: reforgeNow && reforgeNow.score > now.baseline + 1e-8 ? reforgeNow : null,
+        futurePlan: futurePlan,
+        futureBestScore: futureBest.score,
+        beatsCurrentPlan: !!futurePlan && futurePlan.score > now.score + 1e-8,
+        optimalAtThreshold: !!futurePlan && futurePlan.score >= futureBest.score - 1e-8
+      };
+    });
+    return { now: now, alternatives: alternatives };
+  }
+  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, redPlans: redPlans, nearbyMilestones: nearbyMilestones, optimise: optimise, strategyComparison: strategyComparison };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.HeroGear = api;
 })(typeof window !== 'undefined' ? window : globalThis);
