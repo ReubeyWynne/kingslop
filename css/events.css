@@ -207,7 +207,7 @@ html, body { overscroll-behavior-x: none; }
 .page-deck:has(.deck-card.is-selected[data-page="kvksg"]) .deck-wash[data-page="kvksg"],
 .page-deck:has(.deck-card.is-selected[data-page="gear"]) .deck-wash[data-page="gear"],
 .page-deck:has(.deck-card.is-selected[data-page="heroes"]) .deck-wash[data-page="heroes"] { opacity: 1; }
-.page-deck .ascii-ambient > span { opacity: 0.22; }
+.page-deck .ascii-ambient > span { opacity: 0.18; }
 .page-deck::backdrop { background: rgba(5, 8, 13, 0.8); }
 html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
 .deck-sheet {
@@ -332,6 +332,10 @@ html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
   line-height: 1.45;
   color: var(--ink-dim);
 }
+/* Title and lede scroll only if a translation overflows them; their scroll
+   bars would otherwise flash on every swipe in mobile browsers. */
+.deck-card-title, .deck-card-lede { scrollbar-width: none; }
+.deck-card-title::-webkit-scrollbar, .deck-card-lede::-webkit-scrollbar { display: none; }
 .deck-card-action { display: block; margin-top: auto; color: var(--amber); font-size: var(--step--1); }
 .deck-footer { direction: ltr; padding: 0; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
 .deck-footer button { font-size: 2rem; line-height: 1; }

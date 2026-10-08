@@ -145,10 +145,9 @@
 .ascii-ambient > span:nth-child(17)::before { animation-delay: -1.5s; }
 .ascii-ambient > span:nth-child(18)::before { animation-delay: -9.5s; }
 @keyframes ascii-twinkle {
-  0%, 70%, 96% { content: ' '; }
-  72%, 92% { content: '.'; }
-  76%, 88% { content: '+'; }
-  80%, 84% { content: '*'; }
+  0%, 74%, 94% { content: ' '; }
+  76%, 90% { content: '.'; }
+  80%, 86% { content: '+'; }
 }
 @keyframes ascii-twinkle-faint {
   0%, 60%, 90% { content: ' '; }
