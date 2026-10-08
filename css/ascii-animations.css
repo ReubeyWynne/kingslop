@@ -8,12 +8,31 @@
 @media (max-width: 1023px) {
   .ascii-home-hero { display: block; }
   .ascii-home-copy { display: block; }
-  .ascii-home-hero > .ascii-campfire { display: none; }
+  .ascii-home-hero > .ascii-campfire {
+    display: block;
+    margin: var(--space-s) auto 0;
+    font-size: clamp(7px, 2.35vw, 10px);
+    border-top: 1px solid var(--signal-line);
+    padding-top: .4rem;
+    height: calc(22em + .4rem);
+  }
 }
 .ascii-rewards-intro { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: start; gap: 1.5rem; }
 .ascii-rewards-intro > .lede { min-width: 0; }
 .ascii-rewards-intro .ascii-forge { margin: 0; font-size: 10px; }
-@media (max-width: 700px) { .ascii-rewards-intro { display: block; } .ascii-rewards-intro .ascii-forge { display: none; } }
+@media (max-width: 700px) {
+  .ascii-rewards-intro { display: block; }
+  .ascii-rewards-intro > .lede { margin-bottom: .5rem; }
+  .ascii-rewards-intro .ascii-forge {
+    display: block;
+    font-size: clamp(9px, 2.8vw, 10px);
+    margin: .5rem auto .75rem;
+    max-width: 100%;
+    padding-top: .5rem;
+    border-top: 1px solid var(--signal-line);
+    height: calc(13em + .5rem);
+  }
+}
 
 /* The full forge is a reward-side vignette; characters change without moving their grid. */
 .ascii-scene { position: relative; display: block; width: 32ch; height: 13em; overflow: hidden; color: #e08a3c; font: 10px/1 ui-monospace,Consolas,monospace; font-variant-ligatures: none; direction: ltr; white-space: pre; }
