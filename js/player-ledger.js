@@ -114,6 +114,18 @@
         if (key === ITEMS.xp) next.heroGear.parts = null;
       });
     }
+    function setHeroGearPart(key, amount) {
+      valid(['ten', 'hundred'].includes(key) && count(amount) && amount <= 1e7);
+      return transaction(function (next) {
+        var entry = next.inventory[ITEMS.xp], xp = entry && entry.status === 'confirmed' ? entry.amount : 0;
+        var parts = next.heroGear.parts || { ten: Math.floor(xp % 100 / 10), hundred: Math.floor(xp / 100), remainder: xp % 10 };
+        parts[key] = amount;
+        xp = parts.ten * 10 + parts.hundred * 100 + parts.remainder;
+        valid(count(xp));
+        next.heroGear.parts = parts;
+        next.inventory[ITEMS.xp] = { amount: xp, status: 'confirmed', provenance: { source: 'manual', at: new Date().toISOString() } };
+      });
+    }
     function legacy(input, engine) {
       valid(object(input) && input.version === 1 && object(input.pieces) && object(input.resources));
       PIECES.forEach(function (key) { valid(piece(input.pieces[key]) && input.pieces[key].quality !== null && input.pieces[key].level !== null && input.pieces[key].mastery !== null); });
@@ -168,7 +180,7 @@
     if (events && events.addEventListener) events.addEventListener('storage', function (event) {
       if ((event.key === KEY || event.key === null) && (!event.storageArea || event.storageArea === storage)) { try { current = read(); notify(); } catch (error) { if (events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:error', { detail: error.message })); } }
     });
-    return { snapshot: snapshot, balance: balance, setBalance: setBalance, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
+    return { snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
   }
   return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), empty: empty, validate: validate, create: create };
 });

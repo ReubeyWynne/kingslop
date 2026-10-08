@@ -53,7 +53,7 @@
   }
   function levelLabel(p) { return '+' + (p.quality === 'red' ? p.level - 100 : p.level); }
   function pieceLabel(p) { return quality(p.quality) + ' ' + (p.quality === 'red' ? '+' + (p.level - 100) : p.level) + ' · ' + tr('mastery') + ' ' + p.mastery; }
-  function note(key) { el('status').hidden = false; el('status').textContent = tr(key); }
+  function note(key) { document.dispatchEvent(new CustomEvent('player-status', { detail: { scope: 'hero-gear', key: key ? 'gear.' + key : null } })); }
   function persist(options) {
     try {
       saving = true;
@@ -76,7 +76,7 @@
     strategyResult = null;
     el('results').textContent = '';
     el('opportunities').textContent = '';
-    el('status').hidden = true;
+    note(null);
     var saved = persist(options);
     paintAnswer();
     return saved;
@@ -202,13 +202,8 @@
     }).join('') + '</details>';
   }
   function paint() {
-    E.RES.forEach(function (r) { if (el(r)) el(r).value = state.resources[r]; });
-    el('parts10').value = parts.ten;
-    el('parts100').value = parts.hundred;
-    paintParts();
     paintEditor(); paintAnswer(); paintView();
   }
-  function paintParts() { el('xp-total').textContent = fmt(partsTotal()); }
   function selectPiece(id) {
     state.selected = id; state.troop = id.split('-')[0];
     persist(); paintEditor(); paintAnswer();
@@ -414,18 +409,6 @@
       if (sequence === importSequence) { el('images').disabled = false; el('replace-images').disabled = false; el('import-dialog').removeAttribute('aria-busy'); }
     }
   }
-  function tabKeys(container, attr) {
-    container.addEventListener('keydown', function (event) {
-      if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
-      var buttons = Array.from(container.querySelectorAll('[' + attr + ']')), index = buttons.indexOf(document.activeElement);
-      if (index < 0) return;
-      event.preventDefault();
-      var rtl = document.documentElement.dir === 'rtl';
-      var step = event.key === 'ArrowRight' ? (rtl ? -1 : 1) : (rtl ? 1 : -1);
-      var next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 : (index + step + buttons.length) % buttons.length;
-      buttons[next].click(); buttons[next].focus();
-    });
-  }
   function boot(api) {
     BH = api; state = E.defaults();
     try {
@@ -449,11 +432,7 @@
     window.addEventListener('player-ledger:error', function () { note('loadFailed'); cancelSearch(); });
     document.addEventListener('input', function (event) {
       var node = event.target;
-      if (node.dataset.resourcePart) {
-        parts[node.dataset.resourcePart] = Math.min(1e7, Math.max(0, Math.floor(Number(node.value) || 0)));
-        syncXP(); paintParts(); changed({ resource: 'xp' }); return;
-      } else if (node.dataset.resource) state.resources[node.dataset.resource] = Math.min(1e9, Math.max(0, Math.floor(Number(node.value) || 0)));
-      else if (node.dataset.piece && node.dataset.field !== 'quality') {
+      if (node.dataset.piece && node.dataset.field !== 'quality') {
         state.pieces[node.dataset.piece] = E.normalisePiece(Object.assign({}, state.pieces[node.dataset.piece], { [node.dataset.field]: Number(node.value) }));
         paintEditor();
         el('edit-fields').querySelector('.gear-edit-art').innerHTML = gearItem(node.dataset.piece, state.pieces[node.dataset.piece]) + '<span>' + esc(pieceLabel(state.pieces[node.dataset.piece])) + '</span>';
@@ -470,9 +449,7 @@
         changed({ piece: node.dataset.piece }); paintEditor();
         if (node.dataset.field === 'quality') paintEdit();
         else node.value = state.pieces[node.dataset.piece][node.dataset.field];
-      } else if (node.dataset.resourcePart) { node.value = parts[node.dataset.resourcePart]; }
-      else if (node.dataset.resource) node.value = state.resources[node.dataset.resource];
-      else if (node.id === 'gear-include') { state.included[state.troop] = node.checked; changed(); }
+      } else if (node.id === 'gear-include') { state.included[state.troop] = node.checked; changed(); }
       else if (node.id === 'gear-reforge') { state.reforge = node.checked; changed(); }
       else if (node.id === 'gear-profile') {
         state.profile = node.value;
@@ -486,12 +463,10 @@
       if (button.dataset.showWeights) editWeights();
       else if (button.dataset.resultTroop) { resultTroop = button.dataset.resultTroop; paintResults(); }
       else if (button.dataset.route) { planIndex = Number(button.dataset.route); paintAnswer(); }
-      else if (button.dataset.troop) selectPiece(button.dataset.troop + '-' + state.selected.split('-')[1]);
       else if (button.dataset.select && button.classList.contains('gear-row')) editPiece(button.dataset.select);
       else if (button.dataset.select) selectPiece(button.dataset.select);
       else if (button.dataset.editPiece) editPiece(button.dataset.editPiece);
-      else if (button.dataset.view) { state.view = button.dataset.view; persist(); paintView(); }
-      else if (button.dataset.mode) { state.mode = button.dataset.mode; persist(); paintAnswer(); scheduleSearch(0); }
+      else if (button.dataset.view && !button.dataset.action) { state.view = button.dataset.view; persist(); paintView(); }
       else if (button.dataset.goal) { state.goal = button.dataset.goal; persist(); paintAnswer(); }
       else if (button.id === 'gear-apply-result' && result) {
         var next = copy(state); next.pieces = result.pieces; next.resources = result.remaining;
@@ -504,7 +479,13 @@
         if (applyState(updated, { source: 'plan' })) note('applied');
       }
     });
-    tabKeys(el('troops'), 'data-troop'); tabKeys(el('modes'), 'data-mode'); tabKeys(el('views'), 'data-view');
+    document.addEventListener('tabs:select', function (event) {
+      if (![el('troops'), el('modes'), el('views')].includes(event.target)) return;
+      var detail = event.detail;
+      if (detail.binding === 'troop') selectPiece(detail.value + '-' + state.selected.split('-')[1]);
+      else if (detail.binding === 'view') { state.view = detail.value; persist(); paintView(); }
+      else if (detail.binding === 'mode') { state.mode = detail.value; persist(); paintAnswer(); scheduleSearch(0); }
+    });
     el('edit').addEventListener('click', function () { editPiece(); });
     el('close-edit').addEventListener('click', function () { el('edit-dialog').close(); });
     el('edit-dialog').addEventListener('close', function () {
@@ -525,26 +506,9 @@
         previous = null; changed(); paint(); el('undo').hidden = true; note('undone');
       } catch (error) { note('loadFailed'); } finally { saving = false; }
     });
-    el('export').addEventListener('click', function () {
-      try {
-        var blob = new Blob([ledger.exportJSON()], { type: 'application/json' }), url = URL.createObjectURL(blob), link = document.createElement('a');
-        link.href = url; link.download = 'kingshot-player.json'; link.click(); setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-      } catch (error) { note('loadFailed'); }
-    });
-    el('load').addEventListener('click', function () { el('save-file').click(); });
-    el('save-file').addEventListener('change', async function () {
-      var file = this.files[0]; this.value = ''; if (!file) return;
-      try {
-        if (file.size > 1024 * 1024) throw new Error('Too large');
-        var data = JSON.parse(await file.text()), before = ledger.snapshot();
-        saving = true;
-        var loaded = ledger.importJSON(data, E, ledgerRevision);
-        ledgerRevision = loaded.revision;
-        var input = ledger.heroGear(E); state = E.normaliseState(input); readParts(input);
-        previous = { ledger: before }; cancelSearch(); revision++; result = null; strategyResult = null;
-        el('results').textContent = ''; el('opportunities').textContent = '';
-        paint(); el('undo').hidden = false; note('loaded');
-      } catch (error) { note('invalidSave'); } finally { saving = false; }
+    document.addEventListener('player-save:imported', function (event) {
+      if (event.target !== el('export').closest('[data-module]')) return;
+      previous = { ledger: event.detail.before }; el('undo').hidden = false;
     });
     el('reset').addEventListener('click', function () { el('reset-dialog').showModal(); });
     el('cancel-reset').addEventListener('click', function () { el('reset-dialog').close(); });

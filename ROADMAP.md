@@ -55,6 +55,9 @@ The ledger stays local to the browser. Export/import ships with it from day one.
 
 ## Milestone 2 — declarative interaction architecture
 
+**Implementation:** `js/interactions.js` supplies scoped discovery, delegated actions, target ownership and lifecycle cleanup through `BH.modules`. `js/player-modules.js` adds ledger forms, save transfer, tabs, disclosure and result messages. Hero gear consumes these attributes and events in its existing markup. See [INTERACTIONS.md](INTERACTIONS.md) for the contracts and browser checks. The next deliverable is milestone 3's event availability calculator.
+
+
 Use a small DOM-oriented convention, not an SPA framework and not a generic virtual DOM.
 
 - HTML declares module roots (`data-module`), actions (`data-action`), targets (`data-target`) and state/binding keys (`data-bind` or equivalent).

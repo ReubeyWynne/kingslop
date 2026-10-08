@@ -4,19 +4,19 @@ self: gear
 ---
 
 <main class="gear-main">
-  <section class="section gear-console" id="gear-forge" aria-label="Hero gear planner" data-i18n-key="gear.planner" data-i18n-attr="aria-label">
+  <section class="section gear-console" id="gear-forge" data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed" aria-label="Hero gear planner" data-i18n-key="gear.planner" data-i18n-attr="aria-label">
     <h2 class="gear-section-title" data-i18n="gear.resources">Resources</h2>
     <div class="gear-bag" id="gear-bag">
-      <label><img src="../img/hero-gear/xp-part-10.webp" width="40" height="40" alt=""><span data-i18n="gear.greenParts">10 XP parts</span><input id="gear-parts10" data-resource-part="ten" type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0" aria-label="10 XP parts" data-i18n-key="gear.greenParts" data-i18n-attr="aria-label"></label>
-      <label><img src="../img/hero-gear/xp-part-100.webp" width="40" height="40" alt=""><span data-i18n="gear.purpleParts">100 XP parts</span><input id="gear-parts100" data-resource-part="hundred" type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0" aria-label="100 XP parts" data-i18n-key="gear.purpleParts" data-i18n-attr="aria-label"></label>
-      <label><img src="../img/hero-gear/forgehammer.webp" width="40" height="40" alt=""><span data-i18n="gear.hammers">Forgehammers</span><input id="gear-hammers" data-resource="hammers" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Forgehammers" data-i18n-key="gear.hammers" data-i18n-attr="aria-label"></label>
-      <label><img src="../img/hero-gear/mythic-gear.webp" width="40" height="40" alt=""><span data-i18n="gear.mythic">Spare mythic gear</span><input id="gear-mythic" data-resource="mythic" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Spare mythic gear" data-i18n-key="gear.mythic" data-i18n-attr="aria-label"></label>
-      <label><img src="../img/hero-gear/mithril.webp" width="40" height="40" alt=""><span data-i18n="gear.mithril">Mithril</span><input id="gear-mithril" data-resource="mithril" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Mithril" data-i18n-key="gear.mithril" data-i18n-attr="aria-label"></label>
+      <label><img src="../img/hero-gear/xp-part-10.webp" width="40" height="40" alt=""><span data-i18n="gear.greenParts">10 XP parts</span><input id="gear-parts10" data-resource-part="ten" data-bind="heroGear.parts.ten" data-action="ledger-form.set ledger-form.normalize" type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0" aria-label="10 XP parts" data-i18n-key="gear.greenParts" data-i18n-attr="aria-label"></label>
+      <label><img src="../img/hero-gear/xp-part-100.webp" width="40" height="40" alt=""><span data-i18n="gear.purpleParts">100 XP parts</span><input id="gear-parts100" data-resource-part="hundred" data-bind="heroGear.parts.hundred" data-action="ledger-form.set ledger-form.normalize" type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0" aria-label="100 XP parts" data-i18n-key="gear.purpleParts" data-i18n-attr="aria-label"></label>
+      <label><img src="../img/hero-gear/forgehammer.webp" width="40" height="40" alt=""><span data-i18n="gear.hammers">Forgehammers</span><input id="gear-hammers" data-resource="hammers" data-bind="inventory.forgehammer" data-action="ledger-form.set ledger-form.normalize" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Forgehammers" data-i18n-key="gear.hammers" data-i18n-attr="aria-label"></label>
+      <label><img src="../img/hero-gear/mythic-gear.webp" width="40" height="40" alt=""><span data-i18n="gear.mythic">Spare mythic gear</span><input id="gear-mythic" data-resource="mythic" data-bind="inventory.spare-mythic-gear" data-action="ledger-form.set ledger-form.normalize" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Spare mythic gear" data-i18n-key="gear.mythic" data-i18n-attr="aria-label"></label>
+      <label><img src="../img/hero-gear/mithril.webp" width="40" height="40" alt=""><span data-i18n="gear.mithril">Mithril</span><input id="gear-mithril" data-resource="mithril" data-bind="inventory.mithril" data-action="ledger-form.set ledger-form.normalize" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Mithril" data-i18n-key="gear.mithril" data-i18n-attr="aria-label"></label>
     </div>
-    <div class="gear-budget-caption"><span><span data-i18n="gear.xpTotal">XP total</span> <output id="gear-xp-total">0</output></span><span id="gear-save" role="status" data-i18n="gear.saved">saved on this device</span></div>
-    <div class="gear-mobile-nav gear-rail" id="gear-views" role="tablist" aria-label="Workspace view" data-i18n-key="gear.workspaceView" data-i18n-attr="aria-label">
-      <button type="button" id="gear-view-gear" role="tab" aria-controls="gear-editor-panel" aria-selected="true" data-view="gear" data-i18n="gear.gearView">Gear</button>
-      <button type="button" id="gear-view-plan" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-view="plan" data-i18n="gear.planView">Plan</button>
+    <div class="gear-budget-caption"><span><span data-i18n="gear.xpTotal">XP total</span> <output id="gear-xp-total" data-bind="inventory.hero-gear-xp" data-unknown="0">0</output></span><span id="gear-save" data-target="ledger-form.save" role="status" data-i18n="gear.saved">saved on this device</span></div>
+    <div class="gear-mobile-nav gear-rail" id="gear-views" data-module="tabs" data-tabs-bind="view" role="tablist" aria-label="Workspace view" data-i18n-key="gear.workspaceView" data-i18n-attr="aria-label">
+      <button type="button" id="gear-view-gear" role="tab" aria-controls="gear-editor-panel" aria-selected="true" data-view="gear" data-value="gear" data-action="tabs.select" data-i18n="gear.gearView">Gear</button>
+      <button type="button" id="gear-view-plan" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-view="plan" data-value="plan" data-action="tabs.select" data-i18n="gear.planView">Plan</button>
     </div>
     <div class="gear-workspace">
       <div class="gear-editor">
@@ -24,31 +24,31 @@ self: gear
           <div><h2 data-i18n="gear.yourGear">Your gear</h2><small class="gear-edit-hint" data-i18n="gear.tapToEdit">tap a slot to edit</small></div>
           <button type="button" id="gear-import" data-i18n="gear.import">read screenshots</button>
         </div>
-        <div class="gear-rail" id="gear-troops" role="tablist" aria-label="Troop type" data-i18n-key="gear.troopType" data-i18n-attr="aria-label">
-          <button type="button" id="gear-tab-inf" role="tab" aria-controls="gear-editor-panel" aria-selected="true" data-troop="inf" data-i18n="gear.inf">Infantry</button>
-          <button type="button" id="gear-tab-cav" role="tab" aria-controls="gear-editor-panel" aria-selected="false" tabindex="-1" data-troop="cav" data-i18n="gear.cav">Cavalry</button>
-          <button type="button" id="gear-tab-arc" role="tab" aria-controls="gear-editor-panel" aria-selected="false" tabindex="-1" data-troop="arc" data-i18n="gear.arc">Archer</button>
+        <div class="gear-rail" id="gear-troops" data-module="tabs" data-tabs-bind="troop" role="tablist" aria-label="Troop type" data-i18n-key="gear.troopType" data-i18n-attr="aria-label">
+          <button type="button" id="gear-tab-inf" role="tab" aria-controls="gear-editor-panel" aria-selected="true" data-troop="inf" data-value="inf" data-action="tabs.select" data-i18n="gear.inf">Infantry</button>
+          <button type="button" id="gear-tab-cav" role="tab" aria-controls="gear-editor-panel" aria-selected="false" tabindex="-1" data-troop="cav" data-value="cav" data-action="tabs.select" data-i18n="gear.cav">Cavalry</button>
+          <button type="button" id="gear-tab-arc" role="tab" aria-controls="gear-editor-panel" aria-selected="false" tabindex="-1" data-troop="arc" data-value="arc" data-action="tabs.select" data-i18n="gear.arc">Archer</button>
         </div>
         <div id="gear-editor-panel" role="tabpanel" aria-labelledby="gear-tab-inf">
           <label class="gear-include"><input type="checkbox" id="gear-include" checked><span data-i18n="gear.include">include this troop in recommendations</span></label>
           <div id="gear-rows" class="gear-grid"></div>
         </div>
         <div id="gear-preview" class="gear-preview"></div>
-        <details class="gear-save-tools"><summary data-i18n="gear.manageSave">manage your save</summary><div class="gear-tools">
+        <details class="gear-save-tools" data-module="save-transfer disclosure" data-status-scope="hero-gear" data-import-success="gear.loaded" data-import-failure="gear.invalidSave"><summary data-i18n="gear.manageSave">manage your save</summary><div class="gear-tools">
           <button type="button" id="gear-edit" data-i18n="gear.editPiece">edit selected piece</button>
-          <button type="button" id="gear-export" data-i18n="gear.export">export player save</button>
-          <button type="button" id="gear-load" data-i18n="gear.load">import player save</button>
+          <button type="button" id="gear-export" data-action="save-transfer.export" data-i18n="gear.export">export player save</button>
+          <button type="button" id="gear-load" data-action="save-transfer.choose" data-i18n="gear.load">import player save</button>
           <button type="button" id="gear-reset" data-i18n="gear.reset">reset ledger</button>
-          <input type="file" id="gear-save-file" accept="application/json,.json" hidden>
+          <input type="file" id="gear-save-file" data-action="save-transfer.import" data-target="save-transfer.file" accept="application/json,.json" hidden>
         </div></details>
       </div>
 
       <div class="gear-answer">
         <h2 class="gear-section-title" data-i18n="gear.yourPlan">Your plan</h2>
-        <div class="gear-rail" id="gear-modes" role="tablist" aria-label="Planner mode" data-i18n-key="gear.mode" data-i18n-attr="aria-label">
-          <button type="button" id="gear-mode-plan" role="tab" aria-controls="gear-answer-panel" aria-selected="true" data-mode="plan" data-i18n="gear.saveForRed">Save for red</button>
-          <button type="button" id="gear-mode-optimise" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-mode="optimise" data-i18n="gear.spendNow">Spend now</button>
-          <button type="button" id="gear-mode-milestones" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-mode="milestones" data-i18n="gear.pieceCosts">Piece costs</button>
+        <div class="gear-rail" id="gear-modes" data-module="tabs" data-tabs-bind="mode" role="tablist" aria-label="Planner mode" data-i18n-key="gear.mode" data-i18n-attr="aria-label">
+          <button type="button" id="gear-mode-plan" role="tab" aria-controls="gear-answer-panel" aria-selected="true" data-mode="plan" data-value="plan" data-action="tabs.select" data-i18n="gear.saveForRed">Save for red</button>
+          <button type="button" id="gear-mode-optimise" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-mode="optimise" data-value="optimise" data-action="tabs.select" data-i18n="gear.spendNow">Spend now</button>
+          <button type="button" id="gear-mode-milestones" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-mode="milestones" data-value="milestones" data-action="tabs.select" data-i18n="gear.pieceCosts">Piece costs</button>
         </div>
         <div id="gear-answer-panel" role="tabpanel" aria-labelledby="gear-mode-optimise">
           <div class="gear-priority-bar">
@@ -79,7 +79,7 @@ self: gear
       </div>
     </div>
     <details id="gear-settings"><summary data-i18n="gear.weightSettings">weights & reforge</summary><div id="gear-weights"></div><label class="gear-include gear-reforge-option"><input id="gear-reforge" type="checkbox" checked><span data-i18n="gear.reforge">allow XP reforge on epic & mythic gear</span></label><p class="gear-gloss" data-i18n="gear.reforgeHint">mastery and red gear stay invested. weights describe your priorities, not predicted battle damage.</p></details>
-    <output id="gear-status" role="status" hidden></output>
+    <output id="gear-status" data-module="result-panel" data-target="result-panel.message" data-status-scope="hero-gear" role="status" hidden></output>
     <button id="gear-undo" type="button" hidden data-i18n="gear.undo">undo last update</button>
     <noscript><p data-i18n="gear.noJS">enable JavaScript to use the planner. the cost references below remain available.</p></noscript>
   </section>

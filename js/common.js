@@ -798,9 +798,11 @@
     // Language change: let the page repaint (BH.fmt reformats itself)
     document.addEventListener('i18n:change', function () {
       pageCfg.onChange();
+      if (window.Interactions) window.Interactions.refresh();
     });
 
     // Page toys (calculators)
+    if (window.Interactions) window.Interactions.start(BH);
     pageCfg.boot(BH);
 
     // The page in front of the reader is whole now — only then spend bytes on
@@ -817,6 +819,7 @@
     tpl: tpl,
     fill: fill,
     showNote: showNote,
+    modules: window.Interactions,
     registerPage: function (cfg) {
       if (!cfg) return;
       if (cfg.boot) pageCfg.boot = cfg.boot;
