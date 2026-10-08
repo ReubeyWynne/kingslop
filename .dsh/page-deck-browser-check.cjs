@@ -4,6 +4,9 @@ const path = require('node:path');
 const http = require('node:http');
 const { chromium } = require('playwright');
 const root = path.resolve('_site');
+const nav = require('../_data/nav.json');
+const pages = require('../_data/pages.json');
+const tokens = nav.map(entry => pages[entry.self].token);
 const output = path.resolve('.dsh/deck-preview');
 const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json' };
 const server = http.createServer((request, response) => {
@@ -51,7 +54,7 @@ async function fits(page) {
       await page.goto(origin + '/?lang=en');
       await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
       await page.locator('#ledger-btn').click();
-      for (const token of ['home', 'kvksg', 'bearhunt', 'vikings', 'swordland', 'vip', 'sim', 'gear']) {
+      for (const token of tokens) {
         await selected(page, token);
         await fits(page);
         assert.equal(await page.locator('.deck-card.is-selected .deck-ascii > *').count() > 0, true);
@@ -110,7 +113,7 @@ async function fits(page) {
       await page.goto(origin + '/?lang=' + lang);
       await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
       await page.locator('#ledger-btn').click();
-      for (const token of ['home', 'kvksg', 'bearhunt', 'vikings', 'swordland', 'vip', 'sim', 'gear']) {
+      for (const token of tokens) {
         await selected(page, token); await fits(page);
         await page.locator('.deck-next').click();
       }

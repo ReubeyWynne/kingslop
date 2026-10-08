@@ -38,6 +38,12 @@ jobs:
           node .dsh/ascii-style-check.cjs
       - name: Check troop allocation
         run: node .dsh/bear-allocator-check.cjs
+      - name: Check player ledger and migration
+        run: node .dsh/player-ledger-check.cjs
+      - name: Check hero directory data and filters
+        run: node .dsh/hero-directory-check.cjs
+      - name: Check event rules and availability arithmetic
+        run: node .dsh/event-rules-check.cjs
       - name: Check hero gear costs and search
         run: node .dsh/hero-gear-check.cjs
       - name: Check OCR backend recovery
@@ -47,6 +53,18 @@ jobs:
         run: |
           npm install --prefix "$RUNNER_TEMP/visuals" --no-audit --no-fund playwright@1.63.0
           node "$RUNNER_TEMP/visuals/node_modules/playwright/cli.js" install --with-deps chromium
+      - name: Check shared interaction modules
+        env:
+          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        run: node .dsh/interaction-modules-check.cjs
+      - name: Check hero directory UI
+        env:
+          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        run: node .dsh/hero-directory-ui-check.cjs
+      - name: Check event availability UI
+        env:
+          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        run: node .dsh/event-availability-check.cjs
       - name: Check page navigation in browser
         env:
           NODE_PATH: ${{ runner.temp }}/visuals/node_modules
@@ -68,5 +86,7 @@ jobs:
           retention-days: 7
           path: |
             .dsh/gear-preview/
+            .dsh/event-preview/
+            .dsh/hero-directory-preview/
             .dsh/deck-preview/
 

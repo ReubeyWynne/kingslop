@@ -63,6 +63,15 @@
     "lede": "your battles, your marches, and the maths."
   },
   {
+    "self": "heroes",
+    "tail": "heroes/",
+    "labelKey": "directory.nav",
+    "label": "Heroes",
+    "group": "tools",
+    "ledeKey": "directory.intro",
+    "lede": "Find a hero by generation, troop and role. Compare the skills that matter for the job."
+  },
+  {
     "self": "gear",
     "tail": "hero-gear/",
     "labelKey": "ev.switch.gear",

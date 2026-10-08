@@ -1,0 +1,1907 @@
+{
+  "version": 1,
+  "source": "Existing events guide and alliance-confirmed kvk.js tables, extracted 2026-10-08",
+  "legacy": {
+    "MATRIX": [
+      [
+        "Truegold",
+        [
+          "best",
+          "ok",
+          "no",
+          "no",
+          "ok"
+        ]
+      ],
+      [
+        "Tempered TG",
+        [
+          "best",
+          "ok",
+          "no",
+          "no",
+          "ok"
+        ]
+      ],
+      [
+        "Hero shard",
+        [
+          "no",
+          "best",
+          "best",
+          "no",
+          "no"
+        ]
+      ],
+      [
+        "Master emblem",
+        [
+          "no",
+          "best",
+          "best",
+          "no",
+          "no"
+        ]
+      ],
+      [
+        "Building",
+        [
+          "ok",
+          "best",
+          "no",
+          "no",
+          "no"
+        ]
+      ],
+      [
+        "Troop",
+        [
+          "no",
+          "no",
+          "no",
+          "best",
+          "ok"
+        ]
+      ],
+      [
+        "Research",
+        [
+          "ok",
+          "best",
+          "no",
+          "no",
+          "ok"
+        ]
+      ],
+      [
+        "Hero roulette",
+        [
+          "no",
+          "best",
+          "best",
+          "no",
+          "no"
+        ]
+      ],
+      [
+        "Gathering",
+        [
+          "no",
+          "best",
+          "no",
+          "best",
+          "best"
+        ]
+      ],
+      [
+        "Intel missions",
+        [
+          "best",
+          "no",
+          "best",
+          "no",
+          "best"
+        ]
+      ],
+      [
+        "Pets advance",
+        [
+          "no",
+          "no",
+          "best",
+          "no",
+          "best"
+        ]
+      ],
+      [
+        "Gov charm",
+        [
+          "best",
+          "no",
+          "best",
+          "best",
+          "no"
+        ]
+      ],
+      [
+        "Gov gear",
+        [
+          "no",
+          "no",
+          "no",
+          "no",
+          "best"
+        ]
+      ],
+      [
+        "Widget gear",
+        [
+          "no",
+          "no",
+          "no",
+          "best",
+          "best"
+        ]
+      ],
+      [
+        "Mithril",
+        [
+          "no",
+          "no",
+          "no",
+          "best",
+          "best"
+        ]
+      ],
+      [
+        "Forgehammer",
+        [
+          "no",
+          "no",
+          "no",
+          "best",
+          "best"
+        ]
+      ]
+    ],
+    "PTS": {
+      "Truegold": "2,000",
+      "Tempered TG": "30,000",
+      "Hero shard": "3,040+",
+      "Master emblem": "6,000",
+      "Building": "30/min",
+      "Troop": "75 (T11)",
+      "Research": "30/min",
+      "Hero roulette": "8,000",
+      "Gathering": "2",
+      "Intel missions": "6,000",
+      "Pets advance": "15,000",
+      "Gov charm": "70",
+      "Gov gear": "—",
+      "Widget gear": "8,000",
+      "Mithril": "40,000",
+      "Forgehammer": "4,000"
+    },
+    "KOP_THEMES": [
+      "City Construction",
+      "Basic Skills Up",
+      "Pet Training",
+      "Gear & Troops",
+      "Combined"
+    ],
+    "SG_THEMES": [
+      "City Construction",
+      "Hero Development",
+      "Skill Up",
+      "Combat Training",
+      "Skill Up",
+      "Combat Training",
+      "Hero Development"
+    ],
+    "SG_TASKS": [
+      [
+        [
+          "Tempered Truegold",
+          30000
+        ],
+        [
+          "Truegold",
+          2000
+        ],
+        [
+          "Gov charm",
+          70
+        ],
+        [
+          "Speedups",
+          30
+        ]
+      ],
+      [
+        [
+          "Mithril",
+          40000
+        ],
+        [
+          "Widget gear",
+          8000
+        ],
+        [
+          "Hero Roulette",
+          8000
+        ],
+        [
+          "Forgehammer",
+          4000
+        ],
+        [
+          "Mythic shard",
+          3040
+        ],
+        [
+          "Truegold",
+          2000
+        ],
+        [
+          "Epic shard",
+          1220
+        ],
+        [
+          "Rare shard",
+          350
+        ]
+      ],
+      [
+        [
+          "Advanced Taming Mark",
+          15000
+        ],
+        [
+          "Hero Roulette",
+          8000
+        ],
+        [
+          "Master emblem",
+          6000
+        ],
+        [
+          "Mythic shard",
+          3040
+        ],
+        [
+          "Epic shard",
+          1220
+        ],
+        [
+          "Common Taming Mark",
+          1150
+        ],
+        [
+          "Rare shard",
+          350
+        ],
+        [
+          "Gov charm",
+          70
+        ],
+        [
+          "Pet Advancement",
+          50
+        ]
+      ],
+      [
+        [
+          "Mithril",
+          40000
+        ],
+        [
+          "Widget gear",
+          8000
+        ],
+        [
+          "Forgehammer",
+          4000
+        ],
+        [
+          "Gov charm",
+          70
+        ],
+        [
+          "T10 troops",
+          39
+        ]
+      ],
+      [
+        [
+          "Mithril",
+          40000
+        ],
+        [
+          "Widget gear",
+          8000
+        ],
+        [
+          "Forgehammer",
+          4000
+        ],
+        [
+          "Truegold",
+          2000
+        ],
+        [
+          "Speedups",
+          30
+        ]
+      ],
+      [
+        [
+          "Gov charm",
+          36
+        ],
+        [
+          "T10 troops",
+          39
+        ]
+      ],
+      [
+        [
+          "Advanced Taming Mark",
+          15000
+        ],
+        [
+          "Mythic shard",
+          3040
+        ],
+        [
+          "Truegold",
+          2000
+        ],
+        [
+          "Epic shard",
+          1220
+        ],
+        [
+          "Common Taming Mark",
+          1150
+        ],
+        [
+          "Rare shard",
+          350
+        ],
+        [
+          "Pet Advancement",
+          50
+        ],
+        [
+          "Gathering",
+          3
+        ]
+      ]
+    ],
+    "VITEMS": [
+      "Truegold",
+      "Tempered TG",
+      "Hero shard",
+      "Master emblem",
+      "Building",
+      "Troop",
+      "Research",
+      "Hero roulette",
+      "Gathering",
+      "Intel missions",
+      "Pets advance",
+      "Gov charm",
+      "Gov gear",
+      "Widget gear",
+      "Mithril",
+      "Forgehammer"
+    ],
+    "ARMAMENT_RUNS": [
+      {
+        "start": 1,
+        "end": 2,
+        "type": 1,
+        "label": "Type 1"
+      },
+      {
+        "start": 5,
+        "end": 6,
+        "type": 2,
+        "label": "Type 2"
+      },
+      {
+        "start": 15,
+        "end": 16,
+        "type": 1,
+        "label": "Type 1"
+      },
+      {
+        "start": 19,
+        "end": 20,
+        "type": 2,
+        "label": "Type 2"
+      }
+    ],
+    "OFFICER_RUNS": [
+      {
+        "start": 3,
+        "end": 4,
+        "type": "A",
+        "label": "Type A"
+      },
+      {
+        "start": 7,
+        "end": 8,
+        "type": "B",
+        "label": "Type B"
+      },
+      {
+        "start": 17,
+        "end": 18,
+        "type": "A",
+        "label": "Type A"
+      },
+      {
+        "start": 21,
+        "end": 22,
+        "type": "B",
+        "label": "Type B"
+      }
+    ],
+    "ARM_TASKS": {
+      "1": [
+        [
+          "Tempered Truegold (building upgrade)",
+          1500
+        ],
+        [
+          "Mythic hero shard",
+          125
+        ],
+        [
+          "Truegold (building upgrade)",
+          100
+        ],
+        [
+          "Epic hero shard",
+          50
+        ],
+        [
+          "Truegold Dust (tech research)",
+          50
+        ],
+        [
+          "Rare hero shard",
+          15
+        ],
+        [
+          "Governor Gear max score +1",
+          3
+        ],
+        [
+          "1m construction / research / training speedup",
+          1
+        ]
+      ],
+      "2": [
+        [
+          "Mithril",
+          8000
+        ],
+        [
+          "Widget",
+          1600
+        ],
+        [
+          "Tempered Truegold (building upgrade)",
+          1500
+        ],
+        [
+          "Forgehammer",
+          800
+        ],
+        [
+          "Truegold (building upgrade)",
+          100
+        ],
+        [
+          "Truegold Dust (tech research)",
+          50
+        ],
+        [
+          "Governor Gear max score +1",
+          3
+        ],
+        [
+          "1m construction / research / training speedup",
+          1
+        ]
+      ]
+    },
+    "OFF_TASKS": {
+      "A": [
+        [
+          "Widget",
+          12000
+        ],
+        [
+          "Forgehammer",
+          6000
+        ],
+        [
+          "Mithril",
+          60000
+        ],
+        [
+          "Governor Charm max score +1",
+          70
+        ],
+        [
+          "Troop training (T1–T11)",
+          "1–37"
+        ]
+      ],
+      "B": [
+        [
+          "Widget",
+          12000
+        ],
+        [
+          "Forgehammer",
+          6000
+        ],
+        [
+          "Mythic hero shard",
+          3040
+        ],
+        [
+          "Epic hero shard",
+          1220
+        ],
+        [
+          "Rare hero shard",
+          350
+        ],
+        [
+          "Governor Gear max score +1",
+          70
+        ]
+      ]
+    },
+    "BRAWL_THEMES": [
+      "Rise of the City",
+      "Hero Development",
+      "Pet Training",
+      "Gear Enhancement",
+      "Trade Baron",
+      "Full-Scale Competition"
+    ]
+  },
+  "events": {
+    "prep": [
+      {
+        "day": 1,
+        "rows": [
+          {
+            "label": "Tempered Truegold (building upgrade)",
+            "points": "30,000",
+            "items": [
+              {
+                "id": "tempered-truegold",
+                "rate": 30000
+              }
+            ]
+          },
+          {
+            "label": "Watchtower Intel Mission",
+            "points": "6,000"
+          },
+          {
+            "label": "Truegold (building upgrade)",
+            "points": "2,000",
+            "items": [
+              {
+                "id": "truegold",
+                "rate": 2000
+              }
+            ]
+          },
+          {
+            "label": "Truegold Dust (tech research)",
+            "points": "1,000",
+            "items": [
+              {
+                "id": "truegold-dust",
+                "rate": 1000
+              }
+            ]
+          },
+          {
+            "label": "Governor Charm max score +1",
+            "points": "70"
+          },
+          {
+            "label": "1 min construction / research / training / learning speedup",
+            "points": "30"
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "rows": [
+          {
+            "label": "Tempered Truegold",
+            "points": "30,000",
+            "items": [
+              {
+                "id": "tempered-truegold",
+                "rate": 30000
+              }
+            ]
+          },
+          {
+            "label": "Hero Roulette (1 spin)",
+            "points": "8,000"
+          },
+          {
+            "label": "Master Emblem",
+            "points": "6,000",
+            "items": [
+              {
+                "id": "master-emblem",
+                "rate": 6000
+              }
+            ]
+          },
+          {
+            "label": "Mythic hero shard",
+            "points": "3,040",
+            "items": [
+              {
+                "id": "mythic-hero-shard",
+                "rate": 3040
+              }
+            ]
+          },
+          {
+            "label": "Truegold",
+            "points": "2,000",
+            "items": [
+              {
+                "id": "truegold",
+                "rate": 2000
+              }
+            ]
+          },
+          {
+            "label": "Epic hero shard",
+            "points": "1,220",
+            "items": [
+              {
+                "id": "epic-hero-shard",
+                "rate": 1220
+              }
+            ]
+          },
+          {
+            "label": "Truegold Dust",
+            "points": "1,000",
+            "items": [
+              {
+                "id": "truegold-dust",
+                "rate": 1000
+              }
+            ]
+          },
+          {
+            "label": "Rare hero shard",
+            "points": "350",
+            "items": [
+              {
+                "id": "rare-hero-shard",
+                "rate": 350
+              }
+            ]
+          },
+          {
+            "label": "Master's Manuscript",
+            "points": "60",
+            "items": [
+              {
+                "id": "masters-manuscript",
+                "rate": 60
+              }
+            ]
+          },
+          {
+            "label": "1 min speedups (all kinds)",
+            "points": "30"
+          },
+          {
+            "label": "Gather 1,000 bread/wood, 200 stone, 50 iron",
+            "points": "2"
+          }
+        ]
+      },
+      {
+        "day": 3,
+        "rows": [
+          {
+            "label": "Advanced Taming Mark (pet refinement)",
+            "points": "15,000",
+            "items": [
+              {
+                "id": "advanced-taming-mark",
+                "rate": 15000
+              }
+            ]
+          },
+          {
+            "label": "Hero Roulette",
+            "points": "8,000"
+          },
+          {
+            "label": "Master Emblem",
+            "points": "6,000",
+            "items": [
+              {
+                "id": "master-emblem",
+                "rate": 6000
+              }
+            ]
+          },
+          {
+            "label": "Watchtower Intel Mission",
+            "points": "6,000"
+          },
+          {
+            "label": "Mythic hero shard",
+            "points": "3,040",
+            "items": [
+              {
+                "id": "mythic-hero-shard",
+                "rate": 3040
+              }
+            ]
+          },
+          {
+            "label": "Epic hero shard",
+            "points": "1,220",
+            "items": [
+              {
+                "id": "epic-hero-shard",
+                "rate": 1220
+              }
+            ]
+          },
+          {
+            "label": "Common Taming Mark",
+            "points": "1,150",
+            "items": [
+              {
+                "id": "common-taming-mark",
+                "rate": 1150
+              }
+            ]
+          },
+          {
+            "label": "Rare hero shard",
+            "points": "350",
+            "items": [
+              {
+                "id": "rare-hero-shard",
+                "rate": 350
+              }
+            ]
+          },
+          {
+            "label": "Governor Charm max score +1",
+            "points": "70"
+          },
+          {
+            "label": "Master's Manuscript",
+            "points": "60",
+            "items": [
+              {
+                "id": "masters-manuscript",
+                "rate": 60
+              }
+            ]
+          },
+          {
+            "label": "Pet Advancement score +1",
+            "points": "50"
+          }
+        ]
+      },
+      {
+        "day": 4,
+        "rows": [
+          {
+            "label": "Mithril",
+            "points": "40,000",
+            "items": [
+              {
+                "id": "mithril",
+                "rate": 40000
+              }
+            ]
+          },
+          {
+            "label": "Widget (hero exclusive gear)",
+            "points": "8,000",
+            "items": [
+              {
+                "id": "hero-widget",
+                "rate": 8000
+              }
+            ]
+          },
+          {
+            "label": "Hero Gear Forgehammer",
+            "points": "4,000",
+            "items": [
+              {
+                "id": "forgehammer",
+                "rate": 4000
+              }
+            ]
+          },
+          {
+            "label": "Governor Charm max score +1",
+            "points": "70"
+          },
+          {
+            "label": "T11 troop",
+            "points": "75"
+          },
+          {
+            "label": "T10 troop",
+            "points": "60"
+          },
+          {
+            "label": "T9 troop",
+            "points": "45"
+          },
+          {
+            "label": "T8 troop",
+            "points": "35"
+          },
+          {
+            "label": "T7 troop",
+            "points": "25"
+          },
+          {
+            "label": "T6 troop",
+            "points": "18"
+          },
+          {
+            "label": "T5 troop",
+            "points": "12"
+          },
+          {
+            "label": "T4 troop",
+            "points": "8"
+          }
+        ]
+      },
+      {
+        "day": 5,
+        "rows": [
+          {
+            "label": "Governor gear",
+            "points": "·"
+          },
+          {
+            "label": "Truegold + Tempered Truegold",
+            "points": "2,000 / 30,000",
+            "items": [
+              {
+                "id": "truegold",
+                "rate": 2000
+              },
+              {
+                "id": "tempered-truegold",
+                "rate": 30000
+              }
+            ]
+          },
+          {
+            "label": "Mithril / widget / forgehammer",
+            "points": "40,000 / 8,000 / 4,000",
+            "items": [
+              {
+                "id": "mithril",
+                "rate": 40000
+              },
+              {
+                "id": "hero-widget",
+                "rate": 8000
+              },
+              {
+                "id": "forgehammer",
+                "rate": 4000
+              }
+            ]
+          },
+          {
+            "label": "1 min construction / research / training speedups",
+            "points": "30"
+          },
+          {
+            "label": "Watchtower Intel Mission",
+            "points": "6,000"
+          },
+          {
+            "label": "Gathering",
+            "points": "2"
+          },
+          {
+            "label": "Pets advance",
+            "points": "50"
+          }
+        ]
+      }
+    ],
+    "sg": [
+      {
+        "day": 1,
+        "rows": [
+          {
+            "label": "Tempered Truegold",
+            "points": "30,000",
+            "items": [
+              {
+                "id": "tempered-truegold",
+                "rate": 30000
+              }
+            ]
+          },
+          {
+            "label": "Truegold",
+            "points": "2,000",
+            "items": [
+              {
+                "id": "truegold",
+                "rate": 2000
+              }
+            ]
+          },
+          {
+            "label": "Governor Charm max score +1",
+            "points": "70"
+          },
+          {
+            "label": "1 min construction / research / training speedup",
+            "points": "30"
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "rows": [
+          {
+            "label": "Mithril",
+            "points": "40,000",
+            "items": [
+              {
+                "id": "mithril",
+                "rate": 40000
+              }
+            ]
+          },
+          {
+            "label": "Widget (hero exclusive gear)",
+            "points": "8,000",
+            "items": [
+              {
+                "id": "hero-widget",
+                "rate": 8000
+              }
+            ]
+          },
+          {
+            "label": "Hero Roulette",
+            "points": "8,000"
+          },
+          {
+            "label": "Hero Gear Forgehammer",
+            "points": "4,000",
+            "items": [
+              {
+                "id": "forgehammer",
+                "rate": 4000
+              }
+            ]
+          },
+          {
+            "label": "Mythic hero shard",
+            "points": "3,040",
+            "items": [
+              {
+                "id": "mythic-hero-shard",
+                "rate": 3040
+              }
+            ]
+          },
+          {
+            "label": "Truegold",
+            "points": "2,000",
+            "items": [
+              {
+                "id": "truegold",
+                "rate": 2000
+              }
+            ]
+          },
+          {
+            "label": "Epic hero shard",
+            "points": "1,220",
+            "items": [
+              {
+                "id": "epic-hero-shard",
+                "rate": 1220
+              }
+            ]
+          },
+          {
+            "label": "Rare hero shard",
+            "points": "350",
+            "items": [
+              {
+                "id": "rare-hero-shard",
+                "rate": 350
+              }
+            ]
+          },
+          {
+            "label": "1 min speedups",
+            "points": "30"
+          }
+        ]
+      },
+      {
+        "day": 3,
+        "rows": [
+          {
+            "label": "Advanced Taming Mark",
+            "points": "15,000",
+            "items": [
+              {
+                "id": "advanced-taming-mark",
+                "rate": 15000
+              }
+            ]
+          },
+          {
+            "label": "Hero Roulette",
+            "points": "8,000"
+          },
+          {
+            "label": "Master Emblem",
+            "points": "6,000",
+            "items": [
+              {
+                "id": "master-emblem",
+                "rate": 6000
+              }
+            ]
+          },
+          {
+            "label": "Mythic hero shard",
+            "points": "3,040",
+            "items": [
+              {
+                "id": "mythic-hero-shard",
+                "rate": 3040
+              }
+            ]
+          },
+          {
+            "label": "Epic hero shard",
+            "points": "1,220",
+            "items": [
+              {
+                "id": "epic-hero-shard",
+                "rate": 1220
+              }
+            ]
+          },
+          {
+            "label": "Common Taming Mark",
+            "points": "1,150",
+            "items": [
+              {
+                "id": "common-taming-mark",
+                "rate": 1150
+              }
+            ]
+          },
+          {
+            "label": "Rare hero shard",
+            "points": "350",
+            "items": [
+              {
+                "id": "rare-hero-shard",
+                "rate": 350
+              }
+            ]
+          },
+          {
+            "label": "Governor Charm max score +1",
+            "points": "70"
+          },
+          {
+            "label": "Pet Advancement score +1",
+            "points": "50"
+          }
+        ]
+      },
+      {
+        "day": 4,
+        "rows": [
+          {
+            "label": "Mithril",
+            "points": "40,000",
+            "items": [
+              {
+                "id": "mithril",
+                "rate": 40000
+              }
+            ]
+          },
+          {
+            "label": "Widget",
+            "points": "8,000",
+            "items": [
+              {
+                "id": "hero-widget",
+                "rate": 8000
+              }
+            ]
+          },
+          {
+            "label": "Hero Gear Forgehammer",
+            "points": "4,000",
+            "items": [
+              {
+                "id": "forgehammer",
+                "rate": 4000
+              }
+            ]
+          },
+          {
+            "label": "Governor Charm max score +1",
+            "points": "70"
+          },
+          {
+            "label": "T10 → T1 troop",
+            "points": "39 → 1"
+          }
+        ]
+      },
+      {
+        "day": 5,
+        "rows": [
+          {
+            "label": "Mithril",
+            "points": "40,000",
+            "items": [
+              {
+                "id": "mithril",
+                "rate": 40000
+              }
+            ]
+          },
+          {
+            "label": "Widget",
+            "points": "8,000",
+            "items": [
+              {
+                "id": "hero-widget",
+                "rate": 8000
+              }
+            ]
+          },
+          {
+            "label": "Hero Gear Forgehammer",
+            "points": "4,000",
+            "items": [
+              {
+                "id": "forgehammer",
+                "rate": 4000
+              }
+            ]
+          },
+          {
+            "label": "Truegold",
+            "points": "2,000",
+            "items": [
+              {
+                "id": "truegold",
+                "rate": 2000
+              }
+            ]
+          },
+          {
+            "label": "1 min construction / research / training speedup",
+            "points": "30"
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "rows": [
+          {
+            "label": "Governor Charm max score +1",
+            "points": "36"
+          },
+          {
+            "label": "T10 → T1 troop",
+            "points": "39 → 1"
+          }
+        ]
+      },
+      {
+        "day": 7,
+        "rows": [
+          {
+            "label": "Advanced Taming Mark",
+            "points": "15,000",
+            "items": [
+              {
+                "id": "advanced-taming-mark",
+                "rate": 15000
+              }
+            ]
+          },
+          {
+            "label": "Mythic hero shard",
+            "points": "3,040",
+            "items": [
+              {
+                "id": "mythic-hero-shard",
+                "rate": 3040
+              }
+            ]
+          },
+          {
+            "label": "Truegold",
+            "points": "2,000",
+            "items": [
+              {
+                "id": "truegold",
+                "rate": 2000
+              }
+            ]
+          },
+          {
+            "label": "Epic hero shard",
+            "points": "1,220",
+            "items": [
+              {
+                "id": "epic-hero-shard",
+                "rate": 1220
+              }
+            ]
+          },
+          {
+            "label": "Common Taming Mark",
+            "points": "1,150",
+            "items": [
+              {
+                "id": "common-taming-mark",
+                "rate": 1150
+              }
+            ]
+          },
+          {
+            "label": "Rare hero shard",
+            "points": "350",
+            "items": [
+              {
+                "id": "rare-hero-shard",
+                "rate": 350
+              }
+            ]
+          },
+          {
+            "label": "Pet Advancement score +1",
+            "points": "50"
+          },
+          {
+            "label": "Governor Charm max score +1",
+            "points": "36"
+          },
+          {
+            "label": "1 min speedups",
+            "points": "30"
+          },
+          {
+            "label": "Gather 2,500 bread/wood, 500 stone, 100 iron",
+            "points": "3"
+          }
+        ]
+      }
+    ],
+    "brawl": [
+      {
+        "day": 1,
+        "rows": [
+          {
+            "label": "Escort a truck (any grade)",
+            "points": "10,000"
+          },
+          {
+            "label": "Raid a truck (any grade)",
+            "points": "10,000"
+          },
+          {
+            "label": "Master Emblem",
+            "points": "3,600",
+            "items": [
+              {
+                "id": "master-emblem",
+                "rate": 3600
+              }
+            ]
+          },
+          {
+            "label": "Truegold (building upgrade)",
+            "points": "1,250",
+            "items": [
+              {
+                "id": "truegold",
+                "rate": 1250
+              }
+            ]
+          },
+          {
+            "label": "Truegold Dust (tech research)",
+            "points": "625",
+            "items": [
+              {
+                "id": "truegold-dust",
+                "rate": 625
+              }
+            ]
+          },
+          {
+            "label": "Master's Manuscript",
+            "points": "36",
+            "items": [
+              {
+                "id": "masters-manuscript",
+                "rate": 36
+              }
+            ]
+          },
+          {
+            "label": "1m construction / research / training / master speedup",
+            "points": "18"
+          },
+          {
+            "label": "Gather in the wilderness (bread / wood / stone / iron)",
+            "points": "2"
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "rows": [
+          {
+            "label": "Escort a truck (any grade)",
+            "points": "10,000"
+          },
+          {
+            "label": "Raid a truck (any grade)",
+            "points": "10,000"
+          },
+          {
+            "label": "Master Emblem",
+            "points": "3,600",
+            "items": [
+              {
+                "id": "master-emblem",
+                "rate": 3600
+              }
+            ]
+          },
+          {
+            "label": "Finish an intel mission",
+            "points": "3,000"
+          },
+          {
+            "label": "Mythic hero shard",
+            "points": "1,875",
+            "items": [
+              {
+                "id": "mythic-hero-shard",
+                "rate": 1875
+              }
+            ]
+          },
+          {
+            "label": "Truegold (building upgrade)",
+            "points": "1,250",
+            "items": [
+              {
+                "id": "truegold",
+                "rate": 1250
+              }
+            ]
+          },
+          {
+            "label": "Epic hero shard",
+            "points": "750",
+            "items": [
+              {
+                "id": "epic-hero-shard",
+                "rate": 750
+              }
+            ]
+          },
+          {
+            "label": "Truegold Dust (tech research)",
+            "points": "625",
+            "items": [
+              {
+                "id": "truegold-dust",
+                "rate": 625
+              }
+            ]
+          },
+          {
+            "label": "Rare hero shard",
+            "points": "210",
+            "items": [
+              {
+                "id": "rare-hero-shard",
+                "rate": 210
+              }
+            ]
+          },
+          {
+            "label": "Master's Manuscript",
+            "points": "36",
+            "items": [
+              {
+                "id": "masters-manuscript",
+                "rate": 36
+              }
+            ]
+          },
+          {
+            "label": "1m construction / research / training / master speedup",
+            "points": "18"
+          }
+        ]
+      },
+      {
+        "day": 3,
+        "rows": [
+          {
+            "label": "Escort a truck (any grade)",
+            "points": "10,000"
+          },
+          {
+            "label": "Raid a truck (any grade)",
+            "points": "10,000"
+          },
+          {
+            "label": "Advanced Taming Mark (pet refinement)",
+            "points": "9,370",
+            "items": [
+              {
+                "id": "advanced-taming-mark",
+                "rate": 9370
+              }
+            ]
+          },
+          {
+            "label": "Common Taming Mark (pet refinement)",
+            "points": "680",
+            "items": [
+              {
+                "id": "common-taming-mark",
+                "rate": 680
+              }
+            ]
+          },
+          {
+            "label": "Governor Charm max score +1",
+            "points": "45"
+          },
+          {
+            "label": "Pet Advancement score +1",
+            "points": "30"
+          },
+          {
+            "label": "Gather in the wilderness (bread / wood / stone / iron)",
+            "points": "2"
+          }
+        ]
+      },
+      {
+        "day": 4,
+        "rows": [
+          {
+            "label": "Escort a truck (any grade)",
+            "points": "10,000"
+          },
+          {
+            "label": "Raid a truck (any grade)",
+            "points": "10,000"
+          },
+          {
+            "label": "Mithril",
+            "points": "18,750",
+            "items": [
+              {
+                "id": "mithril",
+                "rate": 18750
+              }
+            ]
+          },
+          {
+            "label": "Widget (hero exclusive gear)",
+            "points": "3,750",
+            "items": [
+              {
+                "id": "hero-widget",
+                "rate": 3750
+              }
+            ]
+          },
+          {
+            "label": "Finish an intel mission",
+            "points": "3,000"
+          },
+          {
+            "label": "Hero Gear Forgehammer",
+            "points": "1,875",
+            "items": [
+              {
+                "id": "forgehammer",
+                "rate": 1875
+              }
+            ]
+          },
+          {
+            "label": "T11 troop",
+            "points": "30"
+          },
+          {
+            "label": "T10 troop",
+            "points": "24"
+          },
+          {
+            "label": "T9 troop",
+            "points": "18"
+          },
+          {
+            "label": "T8 troop",
+            "points": "14"
+          },
+          {
+            "label": "T7 troop",
+            "points": "10"
+          },
+          {
+            "label": "T6 troop",
+            "points": "7"
+          },
+          {
+            "label": "T5 troop",
+            "points": "4"
+          },
+          {
+            "label": "T4 troop",
+            "points": "3"
+          },
+          {
+            "label": "T3 troop",
+            "points": "2"
+          },
+          {
+            "label": "T2 troop",
+            "points": "1"
+          },
+          {
+            "label": "T1 troop",
+            "points": "1"
+          },
+          {
+            "label": "Governor Charm max score +1",
+            "points": "45"
+          }
+        ]
+      },
+      {
+        "day": 5,
+        "rows": [
+          {
+            "label": "Escort a truck (any grade)",
+            "points": "10,000"
+          },
+          {
+            "label": "Raid a truck (any grade)",
+            "points": "10,000"
+          },
+          {
+            "label": "Call a rally and hunt a Terror",
+            "points": "15,000"
+          },
+          {
+            "label": "Defeat a level 26–30 beast",
+            "points": "6,000"
+          },
+          {
+            "label": "Defeat a level 21–25 beast",
+            "points": "5,500"
+          },
+          {
+            "label": "Defeat a level 16–20 beast",
+            "points": "5,000"
+          },
+          {
+            "label": "Defeat a level 11–15 beast",
+            "points": "4,500"
+          },
+          {
+            "label": "Defeat a level 1–10 beast",
+            "points": "4,000"
+          },
+          {
+            "label": "Truegold (building upgrade)",
+            "points": "1,250",
+            "items": [
+              {
+                "id": "truegold",
+                "rate": 1250
+              }
+            ]
+          },
+          {
+            "label": "Truegold Dust (tech research)",
+            "points": "625",
+            "items": [
+              {
+                "id": "truegold-dust",
+                "rate": 625
+              }
+            ]
+          },
+          {
+            "label": "Governor Gear max score +1",
+            "points": "22"
+          },
+          {
+            "label": "1m construction / research / training / master speedup",
+            "points": "18"
+          }
+        ]
+      },
+      {
+        "day": 6,
+        "rows": [
+          {
+            "label": "Escort a truck (any grade)",
+            "points": "10,000"
+          },
+          {
+            "label": "Raid a truck (any grade)",
+            "points": "10,000"
+          },
+          {
+            "label": "Mithril",
+            "points": "18,750",
+            "items": [
+              {
+                "id": "mithril",
+                "rate": 18750
+              }
+            ]
+          },
+          {
+            "label": "Call a rally and hunt a Terror",
+            "points": "15,000"
+          },
+          {
+            "label": "Advanced Taming Mark (pet refinement)",
+            "points": "9,370",
+            "items": [
+              {
+                "id": "advanced-taming-mark",
+                "rate": 9370
+              }
+            ]
+          },
+          {
+            "label": "Defeat a level 26–30 beast",
+            "points": "6,000"
+          },
+          {
+            "label": "Defeat a level 21–25 beast",
+            "points": "5,500"
+          },
+          {
+            "label": "Defeat a level 16–20 beast",
+            "points": "5,000"
+          },
+          {
+            "label": "Defeat a level 11–15 beast",
+            "points": "4,500"
+          },
+          {
+            "label": "Defeat a level 1–10 beast",
+            "points": "4,000"
+          },
+          {
+            "label": "Widget (hero exclusive gear)",
+            "points": "3,750",
+            "items": [
+              {
+                "id": "hero-widget",
+                "rate": 3750
+              }
+            ]
+          },
+          {
+            "label": "Mythic hero shard",
+            "points": "1,875",
+            "items": [
+              {
+                "id": "mythic-hero-shard",
+                "rate": 1875
+              }
+            ]
+          },
+          {
+            "label": "Hero Gear Forgehammer",
+            "points": "1,875",
+            "items": [
+              {
+                "id": "forgehammer",
+                "rate": 1875
+              }
+            ]
+          },
+          {
+            "label": "Truegold (building upgrade)",
+            "points": "1,250",
+            "items": [
+              {
+                "id": "truegold",
+                "rate": 1250
+              }
+            ]
+          },
+          {
+            "label": "Epic hero shard",
+            "points": "750",
+            "items": [
+              {
+                "id": "epic-hero-shard",
+                "rate": 750
+              }
+            ]
+          },
+          {
+            "label": "Common Taming Mark (pet refinement)",
+            "points": "680",
+            "items": [
+              {
+                "id": "common-taming-mark",
+                "rate": 680
+              }
+            ]
+          },
+          {
+            "label": "Truegold Dust (tech research)",
+            "points": "625",
+            "items": [
+              {
+                "id": "truegold-dust",
+                "rate": 625
+              }
+            ]
+          },
+          {
+            "label": "Rare hero shard",
+            "points": "210",
+            "items": [
+              {
+                "id": "rare-hero-shard",
+                "rate": 210
+              }
+            ]
+          },
+          {
+            "label": "Governor Charm max score +1",
+            "points": "45"
+          },
+          {
+            "label": "Pet Advancement score +1",
+            "points": "30"
+          },
+          {
+            "label": "Governor Gear max score +1",
+            "points": "22"
+          },
+          {
+            "label": "1m construction / research / training / master speedup",
+            "points": "18"
+          }
+        ]
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "truegold",
+      "label": "Truegold",
+      "key": "ks.available.item.truegold"
+    },
+    {
+      "id": "tempered-truegold",
+      "label": "Tempered Truegold",
+      "key": "ks.available.item.tempered-truegold"
+    },
+    {
+      "id": "truegold-dust",
+      "label": "Truegold Dust",
+      "key": "ks.available.item.truegold-dust"
+    },
+    {
+      "id": "master-emblem",
+      "label": "Master Emblem",
+      "key": "ks.available.item.master-emblem"
+    },
+    {
+      "id": "masters-manuscript",
+      "label": "Master's Manuscript",
+      "key": "ks.available.item.masters-manuscript"
+    },
+    {
+      "id": "mythic-hero-shard",
+      "label": "Mythic hero shard",
+      "key": "ks.available.item.mythic-hero-shard"
+    },
+    {
+      "id": "epic-hero-shard",
+      "label": "Epic hero shard",
+      "key": "ks.available.item.epic-hero-shard"
+    },
+    {
+      "id": "rare-hero-shard",
+      "label": "Rare hero shard",
+      "key": "ks.available.item.rare-hero-shard"
+    },
+    {
+      "id": "advanced-taming-mark",
+      "label": "Advanced Taming Mark",
+      "key": "ks.available.item.advanced-taming-mark"
+    },
+    {
+      "id": "common-taming-mark",
+      "label": "Common Taming Mark",
+      "key": "ks.available.item.common-taming-mark"
+    },
+    {
+      "id": "hero-widget",
+      "label": "Widget",
+      "key": "ks.available.item.hero-widget"
+    },
+    {
+      "id": "mithril",
+      "label": "Mithril",
+      "key": "gear.mithril"
+    },
+    {
+      "id": "forgehammer",
+      "label": "Forgehammer",
+      "key": "gear.hammers"
+    }
+  ]
+}
