@@ -899,6 +899,15 @@ window.__BH_I18N_DATA["it"] = {
   "sw.hero.chip1": "55 min a partita",
   "sw.hero.chip2": "due legioni",
   "sw.hero.chip3": "nessuna perdita, solo feriti",
-  "ev.switch.gear": "Equipaggiamento"
+  "ev.switch.gear": "Equipaggiamento",
+  "gear.resources": "Risorse",
+  "gear.yourPlan": "Il tuo piano",
+  "gear.savingChoices": "scegli un miglioramento per vederne il costo.",
+  "gear.shortfalls": "ancora necessario",
+  "gear.scoreCostExplained": "classifica e ipotesi",
+  "gear.levelHint": "usa i livelli totali: rosso +20 è livello 120.",
+  "gear.applyHint": "hai fatto questi miglioramenti nel gioco? segnali come completati per salvare i livelli e sottrarre il costo.",
+  "gear.budgetRoutes": "miglioramenti per cui risparmiare",
+  "gear.lede": "confronta i miglioramenti, verifica i costi e scopri cosa ti manca."
 }
 ;

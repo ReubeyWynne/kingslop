@@ -896,6 +896,15 @@ window.__BH_I18N_DATA["tr"] = {
   "sw.hero.chip1": "maç başına 55 dk",
   "sw.hero.chip2": "iki lejyon",
   "sw.hero.chip3": "kayıp yok, yalnızca yaralılar",
-  "ev.switch.gear": "Ekipman"
+  "ev.switch.gear": "Ekipman",
+  "gear.resources": "Kaynaklar",
+  "gear.yourPlan": "Planın",
+  "gear.savingChoices": "maliyetini görmek için bir yükseltme seç.",
+  "gear.shortfalls": "hâlâ gereken",
+  "gear.scoreCostExplained": "sıralama ve varsayımlar",
+  "gear.levelHint": "toplam seviyeyi kullan: kırmızı +20, seviye 120 demektir.",
+  "gear.applyHint": "bu yükseltmeleri oyunda yaptın mı? seviyeleri kaydetmek ve maliyeti düşmek için tamamlandı olarak işaretle.",
+  "gear.budgetRoutes": "birikim yapmaya değer yükseltmeler",
+  "gear.lede": "yükseltmeleri karşılaştır, maliyetleri kontrol et ve eksikleri gör."
 }
 ;

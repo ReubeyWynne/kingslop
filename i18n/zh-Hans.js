@@ -897,6 +897,15 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "sw.hero.chip1": "每场55分钟",
   "sw.hero.chip2": "两个军团",
   "sw.hero.chip3": "没有阵亡，只有伤兵",
-  "ev.switch.gear": "装备"
+  "ev.switch.gear": "装备",
+  "gear.resources": "资源",
+  "gear.yourPlan": "你的计划",
+  "gear.savingChoices": "选择升级以查看费用。",
+  "gear.shortfalls": "仍需",
+  "gear.scoreCostExplained": "排名与假设",
+  "gear.levelHint": "使用总等级：红色 +20 即等级 120。",
+  "gear.applyHint": "已在游戏中完成这些升级？标记完成以保存等级并扣除资源。",
+  "gear.budgetRoutes": "值得攒资源的升级",
+  "gear.lede": "比较升级、查看费用，了解还缺哪些资源。"
 }
 ;

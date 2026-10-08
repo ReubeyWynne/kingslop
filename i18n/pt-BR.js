@@ -899,6 +899,15 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "sw.hero.chip1": "55 min por partida",
   "sw.hero.chip2": "duas legiões",
   "sw.hero.chip3": "sem perdas, só ferimentos",
-  "ev.switch.gear": "Equipamento"
+  "ev.switch.gear": "Equipamento",
+  "gear.resources": "Recursos",
+  "gear.yourPlan": "Seu plano",
+  "gear.savingChoices": "escolha uma melhoria para ver o custo.",
+  "gear.shortfalls": "ainda falta",
+  "gear.scoreCostExplained": "classificação e premissas",
+  "gear.levelHint": "use níveis totais: vermelho +20 é nível 120.",
+  "gear.applyHint": "fez estas melhorias no jogo? marque como concluídas para salvar os níveis e descontar o custo.",
+  "gear.budgetRoutes": "melhorias para as quais poupar",
+  "gear.lede": "compare melhorias, confira os custos e veja o que ainda falta."
 }
 ;

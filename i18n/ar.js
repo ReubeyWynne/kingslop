@@ -894,5 +894,14 @@ window.__BH_I18N_DATA["ar"] = {
   "sw.hero.chip1": "55 دقيقة للمباراة",
   "sw.hero.chip2": "فيلقان",
   "sw.hero.chip3": "لا خسائر، إصابات فقط",
-  "ev.switch.gear": "العتاد"
+  "ev.switch.gear": "العتاد",
+  "gear.resources": "الموارد",
+  "gear.yourPlan": "خطتك",
+  "gear.savingChoices": "اختر ترقية لعرض تكلفتها.",
+  "gear.shortfalls": "ما زال مطلوبًا",
+  "gear.scoreCostExplained": "الترتيب والافتراضات",
+  "gear.levelHint": "استخدم المستويات الإجمالية: الأحمر +20 هو المستوى 120.",
+  "gear.applyHint": "هل أتممت هذه الترقيات في اللعبة؟ سجّلها كمكتملة لحفظ المستويات وخصم التكلفة.",
+  "gear.budgetRoutes": "ترقيات تستحق ادخار الموارد",
+  "gear.lede": "قارن الترقيات، وتحقق من التكاليف وما ينقصك."
 };

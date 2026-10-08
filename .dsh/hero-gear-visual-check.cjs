@@ -113,10 +113,16 @@ async function fits(page, label) {
     await page.locator('#gear-mode-plan').click();
     assert.equal(await page.locator('.gear-route').count(),3);
     const forecasts=E.redPlans(fixture).routes;
-    for(let i=0;i<3;i++)assert.equal(await page.locator('.gear-route[data-route="'+i+'"] .gear-kvk-points').getAttribute('data-kvk-points'),String(forecasts[i].costs.hammers*4000+forecasts[i].costs.mithril*40000));
-    assert.equal(await page.locator('.gear-route').first().locator('.gear-kvk-points').getAttribute('data-kvk-points'),'2200000','saving points cover the full cost, including resources already owned');
+    assert.equal(await page.locator('.gear-route .gear-kvk-points').count(),0);
+    for(let i=0;i<3;i++){
+      await page.locator('.gear-route[data-route="'+i+'"]').click();
+      assert.equal(await page.locator('#gear-milestone-out > .gear-kvk-summary').getAttribute('data-kvk-points'),String(E.kvkPoints(forecasts[i].costs)));
+    }
+    await page.locator('.gear-route[data-route="0"]').click();
+    assert.equal(await page.locator('#gear-milestone-out > .gear-kvk-summary').getAttribute('data-kvk-points'),'2200000','saving points cover the full cost, including resources already owned');
     await page.locator('.gear-route[data-route="1"]').click();
-    assert.match(await page.locator('.gear-route-detail').textContent(),/garrison lead/);
+    assert.match(await page.locator('.gear-score-explainer').textContent(),/garrison lead/);
+    assert.equal(await page.locator('.gear-score-explainer').getAttribute('open'),null);
     await page.locator('#gear-profile').selectOption('rally');
     assert.match(await page.locator('.gear-route').first().textContent(),/Archer/);
     await page.locator('#gear-profile').selectOption('growth');

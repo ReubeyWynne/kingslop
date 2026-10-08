@@ -908,6 +908,15 @@ window.__BH_I18N_DATA["id"] = {
   "sw.hero.chip1": "55 menit per pertandingan",
   "sw.hero.chip2": "dua legiun",
   "sw.hero.chip3": "tanpa kehilangan, hanya terluka",
-  "ev.switch.gear": "Perlengkapan"
+  "ev.switch.gear": "Perlengkapan",
+  "gear.resources": "Sumber daya",
+  "gear.yourPlan": "Rencanamu",
+  "gear.savingChoices": "pilih peningkatan untuk melihat biayanya.",
+  "gear.shortfalls": "masih dibutuhkan",
+  "gear.scoreCostExplained": "peringkat & asumsi",
+  "gear.levelHint": "gunakan level total: merah +20 berarti level 120.",
+  "gear.applyHint": "sudah melakukan peningkatan ini di game? tandai selesai untuk menyimpan level dan mengurangi biaya.",
+  "gear.budgetRoutes": "peningkatan yang layak ditabung",
+  "gear.lede": "bandingkan peningkatan, periksa biaya, dan lihat apa yang masih kurang."
 }
 ;

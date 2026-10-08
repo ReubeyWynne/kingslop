@@ -898,6 +898,15 @@ window.__BH_I18N_DATA["fr"] = {
   "sw.hero.chip1": "55 min par match",
   "sw.hero.chip2": "deux légions",
   "sw.hero.chip3": "aucune perte, seulement des blessés",
-  "ev.switch.gear": "Équipement"
+  "ev.switch.gear": "Équipement",
+  "gear.resources": "Ressources",
+  "gear.yourPlan": "Ton plan",
+  "gear.savingChoices": "choisis une amélioration pour voir son coût.",
+  "gear.shortfalls": "encore nécessaire",
+  "gear.scoreCostExplained": "classement et hypothèses",
+  "gear.levelHint": "utilise les niveaux totaux : rouge +20 correspond au niveau 120.",
+  "gear.applyHint": "ces améliorations sont faites en jeu ? marque-les comme terminées pour enregistrer les niveaux et déduire le coût.",
+  "gear.budgetRoutes": "améliorations pour lesquelles économiser",
+  "gear.lede": "compare les améliorations, vérifie les coûts et vois ce qui te manque."
 }
 ;

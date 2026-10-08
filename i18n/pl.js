@@ -897,6 +897,15 @@ window.__BH_I18N_DATA["pl"] = {
   "sw.hero.chip1": "55 min na mecz",
   "sw.hero.chip2": "dwa legiony",
   "sw.hero.chip3": "bez strat, tylko ranni",
-  "ev.switch.gear": "Ekwipunek"
+  "ev.switch.gear": "Ekwipunek",
+  "gear.resources": "Zasoby",
+  "gear.yourPlan": "Twój plan",
+  "gear.savingChoices": "wybierz ulepszenie, aby zobaczyć jego koszt.",
+  "gear.shortfalls": "jeszcze potrzeba",
+  "gear.scoreCostExplained": "ranking i założenia",
+  "gear.levelHint": "używaj pełnych poziomów: czerwone +20 to poziom 120.",
+  "gear.applyHint": "te ulepszenia są już zrobione w grze? oznacz je jako ukończone, aby zapisać poziomy i odjąć koszt.",
+  "gear.budgetRoutes": "ulepszenia, na które warto oszczędzać",
+  "gear.lede": "porównaj ulepszenia, sprawdź koszty i zobacz, czego brakuje."
 }
 ;

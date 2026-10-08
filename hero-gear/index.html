@@ -5,6 +5,7 @@ self: gear
 
 <main class="gear-main">
   <section class="section gear-console" id="gear-forge" aria-label="Hero gear planner" data-i18n-key="gear.planner" data-i18n-attr="aria-label">
+    <h2 class="gear-section-title" data-i18n="gear.resources">Resources</h2>
     <div class="gear-bag" id="gear-bag">
       <label><img src="../img/hero-gear/xp-part-10.webp" width="40" height="40" alt=""><span data-i18n="gear.greenParts">10 XP parts</span><input id="gear-parts10" data-resource-part="ten" type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0" aria-label="10 XP parts" data-i18n-key="gear.greenParts" data-i18n-attr="aria-label"></label>
       <label><img src="../img/hero-gear/xp-part-100.webp" width="40" height="40" alt=""><span data-i18n="gear.purpleParts">100 XP parts</span><input id="gear-parts100" data-resource-part="hundred" type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0" aria-label="100 XP parts" data-i18n-key="gear.purpleParts" data-i18n-attr="aria-label"></label>
@@ -43,6 +44,7 @@ self: gear
       </div>
 
       <div class="gear-answer">
+        <h2 class="gear-section-title" data-i18n="gear.yourPlan">Your plan</h2>
         <div class="gear-rail" id="gear-modes" role="tablist" aria-label="Planner mode" data-i18n-key="gear.mode" data-i18n-attr="aria-label">
           <button type="button" id="gear-mode-plan" role="tab" aria-controls="gear-answer-panel" aria-selected="true" data-mode="plan" data-i18n="gear.saveForRed">Save for red</button>
           <button type="button" id="gear-mode-optimise" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-mode="optimise" data-i18n="gear.spendNow">Spend now</button>
@@ -67,17 +69,16 @@ self: gear
           </div>
           <div id="gear-milestone-out" aria-live="polite"></div>
           <div id="gear-optimise-panel" hidden>
-            <div id="gear-opportunities" aria-live="polite"></div>
             <output id="gear-search-status" class="gear-search-status" role="status" hidden></output>
             <button type="button" id="gear-run" class="gear-primary gear-action" data-i18n="gear.retryCalculation" hidden>retry calculation</button>
             <div id="gear-results" aria-live="polite" aria-busy="false"></div>
+            <div id="gear-opportunities" aria-live="polite"></div>
             <details><summary data-i18n="gear.searchMethod">how recommendations work</summary><p class="gear-gloss" data-i18n="gear.optimiseHint">compare upgrade paths using your budget and priorities. milestone costs are exact; recommendations are a local search, not a guaranteed global optimum.</p></details>
           </div>
         </div>
       </div>
     </div>
-    <label class="gear-include gear-reforge-option"><input id="gear-reforge" type="checkbox" checked><span data-i18n="gear.reforge">allow XP reforge on epic & mythic gear</span></label>
-    <details id="gear-settings"><summary data-i18n="gear.weightSettings">weights & reforge</summary><div id="gear-weights"></div><p class="gear-gloss" data-i18n="gear.reforgeHint">mastery and red gear stay invested. weights describe your priorities, not predicted battle damage.</p></details>
+    <details id="gear-settings"><summary data-i18n="gear.weightSettings">weights & reforge</summary><div id="gear-weights"></div><label class="gear-include gear-reforge-option"><input id="gear-reforge" type="checkbox" checked><span data-i18n="gear.reforge">allow XP reforge on epic & mythic gear</span></label><p class="gear-gloss" data-i18n="gear.reforgeHint">mastery and red gear stay invested. weights describe your priorities, not predicted battle damage.</p></details>
     <output id="gear-status" role="status" hidden></output>
     <button id="gear-undo" type="button" hidden data-i18n="gear.undo">undo last update</button>
     <noscript><p data-i18n="gear.noJS">enable JavaScript to use the planner. the cost references below remain available.</p></noscript>
@@ -97,7 +98,7 @@ self: gear
 <dialog id="gear-edit-dialog" class="gear-dialog gear-edit-dialog" aria-labelledby="gear-edit-title">
   <div class="gear-heading"><h2 id="gear-edit-title" data-i18n="gear.editPiece">edit selected piece</h2><button type="button" id="gear-close-edit" data-i18n="gear.done">done</button></div>
   <div id="gear-edit-fields"></div>
-  <p class="gear-gloss" data-i18n="gear.levelHint">use total levels: red +20 is level 120. select a piece to see its next milestone.</p>
+  <p class="gear-gloss" data-i18n="gear.levelHint">use total levels: red +20 is level 120.</p>
 </dialog>
 <dialog id="gear-import-dialog" class="gear-dialog gear-import-dialog" aria-labelledby="gear-import-title">
   <header class="gear-import-header">
