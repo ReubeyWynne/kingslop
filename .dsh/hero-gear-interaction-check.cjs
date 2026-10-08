@@ -19,6 +19,7 @@ const workerBody = "importScripts('hero-gear-engine.js' + self.location.search);
 function fixture() {
   const state = E.defaults();
   state.mode = 'optimise'; state.view = 'plan';
+  state.reforge = false;
   state.included = { inf:false, cav:false, arc:true };
   state.resources = { xp:0, hammers:30, mythic:0, mithril:0 };
   for (const slot of E.SLOTS) state.pieces['arc-' + slot] = { quality:'mythic', level:69, mastery:2 };
