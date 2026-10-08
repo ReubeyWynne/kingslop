@@ -117,6 +117,7 @@
   var gesture = null;
   var wheelTimer = 0;
   var warmingCard = '';
+  var navigatingDeck = false;
 
   function wrap(n) { return (n % cards.length + cards.length) % cards.length; }
 
@@ -176,7 +177,7 @@
     }
     if (motion.matches || Math.abs(distance) < 0.001) { done(); return; }
     var duration = velocity && distance * velocity > 0
-      ? Math.max(180, Math.min(850, 3 * Math.abs(distance / velocity)))
+      ? 3 * Math.abs(distance / velocity)
       : 300;
     var began = performance.now();
     function tick(now) {
@@ -185,6 +186,25 @@
       paintDeck();
       if (t < 1) frame = window.requestAnimationFrame(tick);
       else done();
+    }
+    frame = window.requestAnimationFrame(tick);
+  }
+
+  function coastDeck(velocity) {
+    stopDeck();
+    if (motion.matches || Math.abs(velocity * step) < 0.18) {
+      settleDeck(Math.round(position), 0);
+      return;
+    }
+    var from = position;
+    var decayTime = Math.min(400, Math.min(4, cards.length - 1) / Math.abs(velocity));
+    var began = performance.now();
+    function tick(now) {
+      var decay = Math.exp(-(now - began) / decayTime);
+      position = from + velocity * decayTime * (1 - decay);
+      paintDeck();
+      if (Math.abs(velocity * step * decay) > 0.08) frame = window.requestAnimationFrame(tick);
+      else settleDeck(Math.round(position), velocity * decay);
     }
     frame = window.requestAnimationFrame(tick);
   }
@@ -202,6 +222,7 @@
     if (ledgerBtn) { ledgerBtn.setAttribute('aria-expanded', 'true'); ledgerBtn.classList.add('open'); }
     var langBtn = document.getElementById('lang-btn');
     if (langBtn) { langBtn.setAttribute('aria-expanded', 'false'); langBtn.classList.remove('open'); }
+    navigatingDeck = false;
     deck.showModal();
     document.documentElement.classList.add('deck-open');
     measureDeck();
@@ -286,10 +307,7 @@
     var last = g.samples[g.samples.length - 1];
     var elapsed = last.time - first.time;
     var velocity = elapsed > 0 ? -(last.x - first.x) / elapsed / step : 0;
-    var limit = Math.min(4, cards.length - 1);
-    var throwDistance = Math.max(-limit, Math.min(limit, velocity * 240));
-    if (Math.abs(velocity * step) < 0.18) throwDistance = 0;
-    settleDeck(Math.round(position + throwDistance), velocity);
+    coastDeck(velocity);
   }, { passive: true });
 
   document.addEventListener('touchcancel', function () {
@@ -311,6 +329,9 @@
       if (card) {
         if (frame) { e.preventDefault(); stopDeck(); settleDeck(Math.round(position), 0); return; }
         if (card.hasAttribute('aria-current')) { e.preventDefault(); closeDeck(); return; }
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        navigatingDeck = true;
+        document.documentElement.setAttribute('data-entry', 'deck');
         try { sessionStorage.setItem('bh:deck', new URL(card.href).pathname); } catch (err) {}
         return;
       }
@@ -359,10 +380,12 @@
   }
 
   window.addEventListener('pagehide', function () {
-    if (deck && deck.open) closeDeck();
+    if (deck && deck.open && !navigatingDeck) closeDeck();
   });
   window.addEventListener('pageshow', function (e) {
     if (e.persisted && deck && deck.open) closeDeck();
+    navigatingDeck = false;
+    document.documentElement.removeAttribute('data-entry');
   });
 
   // ── Neighbour warm-up — the other half of the swipe ────

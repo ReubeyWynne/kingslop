@@ -160,12 +160,12 @@ html, body { overscroll-behavior-x: none; }
   padding: 0;
   border: 0;
   color: var(--ink);
-  background: transparent;
+  background: rgba(9, 13, 20, 0.94);
   overflow: auto;
   overscroll-behavior: contain;
 }
 .page-deck::backdrop { background: rgba(5, 8, 13, 0.8); }
-html.deck-open { overflow-y: hidden; }
+html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
 .deck-sheet {
   min-height: 100%;
   display: flex;
@@ -185,16 +185,16 @@ html.deck-open { overflow-y: hidden; }
   font-size: var(--step--1);
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: var(--ink-muted);
+  color: var(--ink);
 }
 .deck-header h2::before { content: none; }
 .page-deck button {
   min-width: 44px;
   min-height: 44px;
-  border: 1px solid transparent;
+  border: 1px solid var(--signal-line);
   border-radius: 2px;
-  background: transparent;
-  color: var(--ink-dim);
+  background: var(--void-2);
+  color: var(--ink);
   font: inherit;
   cursor: pointer;
 }
@@ -261,13 +261,11 @@ html.deck-open { overflow-y: hidden; }
 .deck-footer { direction: ltr; padding: 0; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
 .deck-footer button { font-size: 2rem; line-height: 1; }
 .deck-position { min-width: 0; text-align: center; color: var(--ink-dim); font-size: var(--step--1); }
-#deck-hint { margin-block: 0; text-align: center; color: var(--ink-muted); font-size: var(--step--1); }
+#deck-hint { margin-block: 0; text-align: center; color: var(--ink-dim); font-size: var(--step--1); }
 html[dir="rtl"] .deck-card { direction: rtl; }
 @media (prefers-reduced-motion: no-preference) {
-  main { transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: 50% 20vh; }
-  .deck-open main { transform: scale(0.94); }
-  .page-deck[open] .deck-sheet { animation: deck-reveal 0.22s ease-out; }
-  @keyframes deck-reveal { from { opacity: 0; transform: scale(0.96); } }
+  .page-deck[open] { animation: deck-reveal 0.16s ease-out; }
+  @keyframes deck-reveal { from { opacity: 0; } }
 }
 @media (max-height: 540px) {
   .deck-sheet { gap: 0.4rem; }
@@ -276,6 +274,9 @@ html[dir="rtl"] .deck-card { direction: rtl; }
 
 
 @view-transition { navigation: auto; }
+
+html[data-entry="deck"]::view-transition { background: #090d14; }
+html[data-entry="deck"]::view-transition-group(root) { animation-duration: 0.4s; }
 
 @media (prefers-reduced-motion: no-preference) {
   .topbar { view-transition-name: topbar; }
