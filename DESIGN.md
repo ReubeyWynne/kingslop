@@ -214,6 +214,18 @@ The system's "buttons" are **margin prompts, not button chrome** — controls re
 - **The Dust** — drifting ember motes per theme (gold fireflies, ember sparks, crimson motes, candlelight, survey motes) behind the content.
 - **The Forge stamp** — a small hammer icon + italic count marking Forgehammer rewards.
 
+## Animation style
+
+All authored animations must use the site's distinct ASCII character-grid style. The campfire in `_includes/ascii/deck-campfire.html` and its `deck-reference-*` sequences in `css/ascii-deck.css` are the reference; the existing motifs and forge animations follow the same approach.
+
+- Animate by changing complete character frames or sparse glyph layers with CSS `steps(1, end)`. Preserve a coherent silhouette and a fixed monospace grid.
+- Sparks and other moving marks may jump between integer character cells (`ch`/`em`) with stepped timing. Ambient twinkles change glyphs at fixed positions.
+- Never skew, rotate, stretch, squash, scale, bend, bob, bounce or smoothly drift the artwork or its glyph layers. Do not use animated transforms or scroll-driven scaling as a substitute for ASCII frames.
+- Use HTML and CSS for runtime animation. Offline generators may produce frames; JavaScript must not drive animation through frame loops, timers, Web Animations or canvas.
+- Smooth background colour interpolation is explicitly allowed. It must blend colours rather than flash between palettes; this does not permit smooth deformation or movement of ASCII artwork.
+- Centre navigation scenes within their cards and keep headings and descriptions clear of the art. Fixed placement and responsive sizing must preserve character proportions.
+- Respect `prefers-reduced-motion` and retain a legible static ASCII frame when animation is disabled.
+
 ## Do's and Don'ts
 
 ### Do:

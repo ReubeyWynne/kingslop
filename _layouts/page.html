@@ -8,7 +8,7 @@
 <body>
 <a class="skip-link" href="{{ p.skipHref }}"{% if p.skipKey %} data-i18n="{{ p.skipKey }}"{% endif %}>{{ p.skipText }}</a>
 
-<div class="dust" aria-hidden="true">{{ p.dust }}</div>
+<div class="dust" aria-hidden="true">{{ p.dust }}{% include ascii/ambient.html %}</div>
 
 {% include topbar.html %}
 
