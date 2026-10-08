@@ -66,7 +66,9 @@
     planIndex = 0;
     searchFailed = false;
     result = null;
+    strategyResult = null;
     el('results').textContent = '';
+    el('opportunities').textContent = '';
     el('status').hidden = true;
     persist();
     paintAnswer();
@@ -219,6 +221,7 @@
     }).map(function (r) {
       var missing = E.RES.filter(function (key) { return r.gap[key] > 0; })
         .map(function (key) { return fmt(r.gap[key]) + ' ' + esc(tr(key)); }).join(' · ');
+      var delayed = r.afterSpendGap && E.RES.some(function (key) { return r.afterSpendGap[key] > r.gap[key]; });
       var note = r.reforgeNow ? 'Reforging can reach this milestone now. Compare the full plan before applying it.' :
         r.optimalAtThreshold ? 'This milestone is part of a highest-scoring plan at that budget.' :
         r.beatsCurrentPlan ? 'A milestone-first plan beats today’s spend-now score once these resources are available, but other plans may do better.' :
@@ -228,6 +231,7 @@
         '<div><strong>' + esc(name(r.id)) + ' · ' + r.from.level + ' → ' + r.to.level + '</strong>' +
         '<small>' + esc(tr('mithrilCheckpoint')) + ' · +' + r.milestoneGain.toFixed(1) + ' ' + esc(tr('weightedGain')) + '</small></div></div>' +
         '<p>' + (missing ? esc(missing) + ' short. ' : 'Affordable now. ') + esc(note) + '</p>' +
+        (delayed ? '<p>Spending now increases the milestone shortfall to ' + E.RES.filter(function (key) { return r.afterSpendGap[key]; }).map(function (key) { return fmt(r.afterSpendGap[key]) + ' ' + esc(tr(key)); }).join(' · ') + '.</p>' : '') +
         (r.futurePlan ? '<p>At this resource threshold: +' + (r.futurePlan.score - r.futurePlan.baseline).toFixed(1) + ' weighted gain for the milestone-first plan; best found +' + (r.futureBestScore - r.futurePlan.baseline).toFixed(1) + '.</p>' : '') +
         (r.reforgeNow ? '<p>Reforge plan: +' + (r.reforgeNow.score - r.reforgeNow.baseline).toFixed(1) + ' weighted gain, including changes to other gear.</p>' : '') +
         '<button type="button" data-mode="plan">Inspect saving routes →</button></article>';
