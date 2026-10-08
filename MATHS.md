@@ -310,3 +310,20 @@ rallies fill**; preserving all 14 joiner slots with an alliance-specific cap (~8
 rally capacities); using **5/15/80 as the default composition for each full join march**; keeping
 active join marches equal when the preset cannot be fielded everywhere; and allowing designated
 outsized leads to full-send only their own lead march.
+
+
+## Hero gear — KvK prep points
+
+On KvK preparation **day 4 or 5**, hero gear material consumption scores:
+
+`KvK points = Forgehammers spent × 4,000 + Mithril spent × 40,000`
+
+Enhancement XP, XP reforge refunds and sacrificed mythic gear do not score.
+Saving alternatives use the full upgrade cost from current gear, rather than the
+resource shortfall or an assumed sequence of all three alternatives. Spend now
+sums actual material costs across all changed pieces, including hidden troop tabs.
+The same spend scores once on its eligible day; day 4 and day 5 are alternatives.
+
+This matches `js/kvk.js` and `events/RESEARCH.md`. Rates and eligible days checked
+2026-10-08 against <https://kingshotoptimizer.com/events/kingdom-of-power/event-guide/>
+and <https://kingshotmastery.com/guides/kingshot-kvk-prep-guide>.

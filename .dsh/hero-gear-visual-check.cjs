@@ -51,6 +51,8 @@ async function fits(page, label) {
     await page.locator('#gear-mode-milestones').click();
     const cells=await page.locator('.gear-cost-row').allTextContents();
     assert.match(cells[0],/52,650/);assert.match(cells[1],/110/);assert.match(cells[2],/6/);assert.match(cells[3],/10/);
+    assert.equal(await page.locator('#gear-milestone-out .gear-kvk-summary').getAttribute('data-kvk-points'),'840000');
+    assert.match(await page.locator('#gear-milestone-out .gear-kvk-summary').textContent(),/840,000.*KvK points.*4 \/ 5/);
     for(const [id,value]of [['parts10','5'],['parts100','526'],['hammers','110'],['mythic','6'],['mithril','10']])await page.locator('#gear-'+id).fill(value);
     assert.match(await page.locator('#gear-milestone-out').textContent(),/you have every resource/);
     await page.reload();await page.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
@@ -110,6 +112,9 @@ async function fits(page, label) {
     await page.waitForFunction(()=>[...document.querySelectorAll('.gear-main img')].every(img=>img.complete&&img.naturalWidth>0));
     await page.locator('#gear-mode-plan').click();
     assert.equal(await page.locator('.gear-route').count(),3);
+    const forecasts=E.redPlans(fixture).routes;
+    for(let i=0;i<3;i++)assert.equal(await page.locator('.gear-route[data-route="'+i+'"] .gear-kvk-points').getAttribute('data-kvk-points'),String(forecasts[i].costs.hammers*4000+forecasts[i].costs.mithril*40000));
+    assert.equal(await page.locator('.gear-route').first().locator('.gear-kvk-points').getAttribute('data-kvk-points'),'2200000','saving points cover the full cost, including resources already owned');
     await page.locator('.gear-route[data-route="1"]').click();
     assert.match(await page.locator('.gear-route-detail').textContent(),/garrison lead/);
     await page.locator('#gear-profile').selectOption('rally');
@@ -159,6 +164,14 @@ async function fits(page, label) {
     for(const [id,value]of [['parts10','2299'],['parts100','1'],['hammers','501'],['mythic','10'],['mithril','10']])await page.locator('#gear-'+id).fill(value);
     await page.locator('#gear-mode-optimise').click();
     await page.locator('#gear-apply-result').waitFor();
+    assert.equal(await page.locator('#gear-results > .gear-kvk-summary').getAttribute('data-kvk-points'),'2400000');
+    let tabPoints=0;
+    for(const type of E.TYPES){
+      await page.locator('[data-result-troop="'+type+'"]').click();
+      tabPoints+=await page.locator('.gear-change .gear-kvk-points').evaluateAll(items=>items.reduce((sum,item)=>sum+Number(item.dataset.kvkPoints),0));
+      assert.equal(await page.locator('#gear-results > .gear-kvk-summary').getAttribute('data-kvk-points'),'2400000','batch total includes hidden troop tabs');
+    }
+    assert.equal(tabPoints,2400000,'per-piece scores sum to the batch total');
     await page.locator('[data-result-troop="arc"]').click();
     assert.equal(await page.locator('.gear-change').first().getAttribute('data-checkpoint'),'ascension');
     assert.equal(await page.locator('.gear-change').first().locator('.gear-item[data-quality="red"]').count(),1);
@@ -177,6 +190,7 @@ async function fits(page, label) {
     assert.match(await page.locator('.gear-result-grid').textContent(),/before.*after/s);
     await page.locator('[data-result-troop="cav"]').click();
     assert.ok(await page.locator('.gear-change[data-direction="down"]').count()>0);
+    for(const row of await page.locator('.gear-change[data-direction="down"]').all())assert.equal(await row.locator('.gear-kvk-points').getAttribute('data-kvk-points'),'0','XP reforge does not earn points');
     assert.match(await page.locator('.gear-change[data-direction="down"]').first().textContent(),/↓.*recover/);
     await fits(page,'mobile optimise');await page.evaluate(()=>scrollTo(0,0));
     const resultGrid=await page.locator('.gear-result-grid').boundingBox();

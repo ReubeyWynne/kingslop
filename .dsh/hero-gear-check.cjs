@@ -86,6 +86,12 @@ Object.assign(planning.pieces, {
   'cav-boots': {quality:'mythic',level:63,mastery:1}
 });
 const untouched = JSON.stringify(planning);
+assert.equal(E.kvkPoints({xp:52650,hammers:450,mythic:6,mithril:10}),2200000);
+assert.equal(E.kvkPoints({xp:100000,hammers:0,mythic:10,mithril:0}),0);
+assert.equal(E.kvkPoints({hammers:30,mithril:0}),120000);
+assert.equal(E.kvkPoints({hammers:0,mithril:20}),800000);
+assert.equal(E.kvkPoints(E.cost({quality:'mythic',level:100,mastery:10},{quality:'red',level:100,mastery:10})),0);
+assert.equal(E.kvkPoints(E.cost({quality:'red',level:120,mastery:11},{quality:'red',level:160,mastery:13})),3000000);
 const forecast = E.redPlans(planning);
 assert.equal(JSON.stringify(planning), untouched);
 assert.equal(forecast.routes.length, 3);

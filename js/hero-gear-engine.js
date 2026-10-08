@@ -7,6 +7,7 @@
   var TYPES = ['inf', 'cav', 'arc'];
   var SLOTS = ['helm', 'gloves', 'chest', 'boots'];
   var RES = ['xp', 'hammers', 'mythic', 'mithril'];
+  var KVK_RATES = { hammers: 4000, mithril: 40000 };
   var MILESTONES = [120, 140, 160, 180, 200];
   var MYTHIC = [3, 5, 5, 10, 10];
   var PROFILES = {
@@ -20,6 +21,7 @@
 
   function number(n, max) { return Math.min(max, Math.max(0, Math.floor(Number(n) || 0))); }
   function emptyCost() { return { xp: 0, hammers: 0, mythic: 0, mithril: 0 }; }
+  function kvkPoints(costs) { costs = costs || {}; return number(costs.hammers, 1e9) * KVK_RATES.hammers + number(costs.mithril, 1e9) * KVK_RATES.mithril; }
   function copy(x) { return JSON.parse(JSON.stringify(x)); }
   function statType(slot) { return slot === 'helm' || slot === 'boots' ? 0 : 1; }
   function masteryNeeded(level) { return level < 120 ? (level >= 100 ? 10 : 0) : 10 + Math.floor((level - 100) / 20); }
@@ -213,7 +215,7 @@
     return best;
   }
 
-  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, redPlans: redPlans, optimise: optimise };
+  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, redPlans: redPlans, optimise: optimise };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.HeroGear = api;
 })(typeof window !== 'undefined' ? window : globalThis);
