@@ -1,10 +1,13 @@
 
 /* Illustrations live in the margin of the manuscript, not in the text flow. */
-.ascii-home-hero { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: clamp(1rem,3vw,2.5rem); }
-.ascii-home-copy { min-width: 0; }
-.ascii-home-hero .ascii-campfire { margin: 0; justify-self: end; }
+.ascii-home-hero { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: start; column-gap: 1rem; }
+.ascii-home-copy { display: contents; }
+.ascii-home-hero h1 { grid-column: 1 / -1; }
+.ascii-home-hero .lede { grid-column: 1; grid-row: 2; max-width: 26rem; }
+.ascii-home-hero .ascii-campfire { margin: 0; justify-self: end; grid-column: 2; grid-row: 2; }
 @media (max-width: 1023px) {
   .ascii-home-hero { display: block; }
+  .ascii-home-copy { display: block; }
   .ascii-home-hero > .ascii-campfire { display: none; }
 }
 .ascii-rewards-intro { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: start; gap: 1.5rem; }
