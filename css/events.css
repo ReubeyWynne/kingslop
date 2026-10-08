@@ -227,7 +227,7 @@ html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
   position: relative;
   display: flex;
   gap: clamp(1rem, 4vw, 1.5rem);
-  height: clamp(29rem, 64dvh, 36rem);
+  height: clamp(32rem, 70dvh, 39rem);
   flex-shrink: 0;
   padding: 0.75rem calc((100% - var(--card-width)) / 2);
   overflow-x: auto;
@@ -247,7 +247,7 @@ html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
   width: var(--card-width);
   display: grid;
   grid-template-rows: 1fr 1fr;
-  gap: 11rem;
+  gap: 14rem;
   padding: clamp(1.25rem, 5vw, 2rem);
   background: var(--void-2);
   border: 1px solid var(--amber-dim);
@@ -312,7 +312,7 @@ html[dir="rtl"] .deck-card { direction: rtl; }
 }
 @media (max-height: 540px) {
   .deck-sheet { gap: 0.4rem; }
-  .deck-viewport { height: 29rem; }
+  .deck-viewport { height: 32rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .page-deck, .deck-card, .deck-card::before { transition: none; }
@@ -774,5 +774,6 @@ html[data-page="gear"], html[data-page="home"]:has(.event-card[data-hover-page="
   --signal-line: rgba(230, 181, 106, .35);
   --signal-tint: rgba(230, 181, 106, .07);
 }
+
 
 

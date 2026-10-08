@@ -1,101 +1,29 @@
 {% case include.token %}
 {% when 'home' %}
-<span class="scene-base">       /\    /\
-      /  \__/  \
-     /__________\
-    ==\########/==
-       '------'</span>
-<span class="scene-flame">        (  )
-       ( /\ )
-        /##\
-       /####\
-       '----'</span>
-<span class="scene-spark">.</span><span class="scene-spark scene-spark--second">+</span>
+{% include ascii/deck-campfire.html %}
 {% when 'kvksg' %}
-<span class="scene-base">   .----------------.
-   | .    /\     .  |
-   |     /  \  /\   |
-   |  . /    \/  \  |
-   |     .     .    |
-   | .      .       |
-   '----------------'</span>
-<span class="scene-scout">  |
---+--
-  |</span>
-<span class="scene-spark">*</span><span class="scene-spark scene-spark--second">.</span>
+<span class="deck-map"></span>
 {% when 'bearhunt' %}
-<span class="scene-base">    .---.     .---.
-   /     '---'     \
-  /                \
- |                  |
- |       .--.       |
-  \      (__)      /
-   '.__   /\   __.'
-       '------'</span>
-<span class="scene-eyes">(o)     (o)</span>
-<span class="scene-spark">.</span><span class="scene-spark scene-spark--second">+</span>
+<span class="ascii-mini ascii-mini--bear"></span>
 {% when 'vikings' %}
-<span class="scene-ship">          |
-     .----|----.
-     |## /|\ ##|
-     |# / | \ #|
-     '----|----'
-    _     |      _
-   \ '----+-----' /
-    '-----------'</span>
-<span class="scene-water"> ~    ~     ~    ~
-   ~    ~     ~
- ~    ~     ~    ~</span>
+<span class="ascii-march"></span>
 {% when 'swordland' %}
-<span class="scene-sword">       /\
-       ||
-       ||
-       ||
-     ==++==
-       ##
-       ()</span>
-<span class="scene-sword scene-sword--second">       /\
-       ||
-       ||
-       ||
-     ==++==
-       ##
-       ()</span>
-<span class="scene-spark">+</span><span class="scene-spark scene-spark--second">*</span>
+<span class="ascii-mini ascii-mini--banner"></span>
 {% when 'vip' %}
-<span class="scene-base">          /\
-    /\   /  \   /\
-   /  \_/    \_/  \
-  |  &lt;&gt;   &lt;&gt;   &lt;&gt;  |
-  | .------------. |
-  | |############| |
-  | '------------' |
-   '--------------'</span>
-<span class="scene-spark">*</span><span class="scene-spark scene-spark--second">+</span>
+<span class="ascii-mini ascii-mini--crown"></span>
 {% when 'sim' %}
-<span class="scene-die"> .-------.
- | o   o |
- |   o   |
- | o   o |
- '-------'</span>
-<span class="scene-die scene-die--second"> .-------.
- | o     |
- |   o   |
- |     o |
- '-------'</span>
-<span class="scene-spark">+</span><span class="scene-spark scene-spark--second">.</span>
+<span class="ascii-mini ascii-mini--dice"></span>
 {% when 'gear' %}
-<span class="scene-base">    ______________
-   /_____________/\
-   \#############\/
-       |#####|
-     __|#####|__
-    '-----------'</span>
-<span class="scene-hammer"> .------.
- |######|
- '---++-'
-     ||
-     ||
-     ()</span>
-<span class="scene-spark">*</span><span class="scene-spark scene-spark--second">+</span>
+<div class="ascii-scene ascii-forge">
+  <span class="ascii-hammer"></span>
+  <pre class="ascii-anvil">       ___
+  ____/###\____
+ /______________\
+      |####|
+      |####|
+   ___|####|___
+  /____________\</pre>
+  <span class="ascii-impact"></span>
+  <span class="ascii-forge-sparks"></span>
+</div>
 {% endcase %}
