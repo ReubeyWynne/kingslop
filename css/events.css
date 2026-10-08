@@ -162,51 +162,27 @@ html, body { overscroll-behavior-x: none; }
   --amber: var(--deck-accent);
   --amber-dim: color-mix(in srgb, var(--deck-accent) 76%, #090d14);
   --signal-line: color-mix(in srgb, var(--deck-accent) 35%, transparent);
-  transition: --deck-accent 0.9s ease;
+  transition: --deck-accent 0.9s ease, background-color 0.9s ease;
   isolation: isolate;
   overflow: auto;
   overscroll-behavior: contain;
 }
-.page-deck:has(.deck-card.is-selected[data-page="home"]) { --deck-accent: #F5C851; }
-.page-deck:has(.deck-card.is-selected[data-page="bearhunt"]) { --deck-accent: #AEC878; }
-.page-deck:has(.deck-card.is-selected[data-page="vikings"]) { --deck-accent: #E08A3C; }
-.page-deck:has(.deck-card.is-selected[data-page="swordland"]) { --deck-accent: #E05555; }
-.page-deck:has(.deck-card.is-selected[data-page="vip"]) { --deck-accent: #C5A3EE; }
-.page-deck:has(.deck-card.is-selected[data-page="sim"]) { --deck-accent: #E0B24A; }
-.page-deck:has(.deck-card.is-selected[data-page="kvksg"]) { --deck-accent: #D9B25A; }
-.page-deck:has(.deck-card.is-selected[data-page="gear"]) { --deck-accent: #e6b56a; }
-.page-deck:has(.deck-card.is-selected[data-page="heroes"]) { --deck-accent: #c7ba85; }
-/* The ground behind the cards: one wash per page, stacked, with only the
-   selected page's wash showing. Moving between pages cross-fades two washes
-   by opacity, so the colour blends rather than flashes — and it blends the
-   same way in a browser that cannot interpolate --deck-accent. */
-.deck-wash {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 46%, color-mix(in srgb, var(--wash) 13%, transparent), transparent 72%),
-    color-mix(in srgb, #090d14 88%, var(--wash) 12%);
-  transition: opacity 0.9s ease;
-}
-.deck-wash[data-page="home"] { --wash: #F5C851; }
-.deck-wash[data-page="bearhunt"] { --wash: #AEC878; }
-.deck-wash[data-page="vikings"] { --wash: #E08A3C; }
-.deck-wash[data-page="swordland"] { --wash: #E05555; }
-.deck-wash[data-page="vip"] { --wash: #C5A3EE; }
-.deck-wash[data-page="sim"] { --wash: #E0B24A; }
-.deck-wash[data-page="kvksg"] { --wash: #D9B25A; }
-.deck-wash[data-page="gear"] { --wash: #e6b56a; }
-.deck-wash[data-page="heroes"] { --wash: #c7ba85; }
-.page-deck:has(.deck-card.is-selected[data-page="home"]) .deck-wash[data-page="home"],
-.page-deck:has(.deck-card.is-selected[data-page="bearhunt"]) .deck-wash[data-page="bearhunt"],
-.page-deck:has(.deck-card.is-selected[data-page="vikings"]) .deck-wash[data-page="vikings"],
-.page-deck:has(.deck-card.is-selected[data-page="swordland"]) .deck-wash[data-page="swordland"],
-.page-deck:has(.deck-card.is-selected[data-page="vip"]) .deck-wash[data-page="vip"],
-.page-deck:has(.deck-card.is-selected[data-page="sim"]) .deck-wash[data-page="sim"],
-.page-deck:has(.deck-card.is-selected[data-page="kvksg"]) .deck-wash[data-page="kvksg"],
-.page-deck:has(.deck-card.is-selected[data-page="gear"]) .deck-wash[data-page="gear"],
-.page-deck:has(.deck-card.is-selected[data-page="heroes"]) .deck-wash[data-page="heroes"] { opacity: 1; }
+.page-deck:has(.deck-card.is-selected[data-page="home"]) { --deck-accent: #F5C851; background-color: #25231b; }
+.page-deck:has(.deck-card.is-selected[data-page="bearhunt"]) { --deck-accent: #AEC878; background-color: #1d2320; }
+.page-deck:has(.deck-card.is-selected[data-page="vikings"]) { --deck-accent: #E08A3C; background-color: #231c19; }
+.page-deck:has(.deck-card.is-selected[data-page="swordland"]) { --deck-accent: #E05555; background-color: #23161c; }
+.page-deck:has(.deck-card.is-selected[data-page="vip"]) { --deck-accent: #C5A3EE; background-color: #201f2e; }
+.page-deck:has(.deck-card.is-selected[data-page="sim"]) { --deck-accent: #E0B24A; background-color: #23211a; }
+.page-deck:has(.deck-card.is-selected[data-page="kvksg"]) { --deck-accent: #D9B25A; background-color: #22211c; }
+.page-deck:has(.deck-card.is-selected[data-page="gear"]) { --deck-accent: #e6b56a; background-color: #24211e; }
+.page-deck:has(.deck-card.is-selected[data-page="heroes"]) { --deck-accent: #c7ba85; background-color: #202222; }
+/* The ground takes the selected page's colour (its signal, 12% into the
+   night) and moves to the next one as a plain background-color transition.
+   That interpolates in every browser and never dims on the way: stacking a
+   wash per page and cross-fading their opacity did, pulsing the whole
+   screen darker at the midpoint of every change. The soft centre glow is
+   one static, colourless layer. */
+.deck-atmosphere { background: radial-gradient(ellipse 80% 60% at 50% 46%, rgba(241, 227, 194, 0.035), transparent 72%); }
 .page-deck .ascii-ambient > span { opacity: 0.18; }
 .page-deck::backdrop { background: rgba(5, 8, 13, 0.8); }
 html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
@@ -351,8 +327,8 @@ html[dir="rtl"] .deck-card { direction: rtl; }
   .deck-viewport { height: 32rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .page-deck, .deck-card, .deck-card::before { transition: none; }
-  .deck-wash { transition-duration: 0.3s; }
+  .deck-card, .deck-card::before { transition: none; }
+  .page-deck { transition: --deck-accent 0.3s ease, background-color 0.3s ease; }
   .deck-viewport { scroll-behavior: auto; }
 }
 

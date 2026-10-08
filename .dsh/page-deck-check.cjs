@@ -308,7 +308,8 @@ test('modified cover clicks do not mark the current tab as navigating', () => {
 test('palette selection is declared in CSS without JavaScript colour writes or frame loops', () => {
   const css = fs.readFileSync(path.join(root, 'css/events.css'), 'utf8');
   assert.match(css, /@property --deck-accent/);
-  assert.match(css, /transition: --deck-accent 0\.9s ease/);
+  assert.match(css, /transition: --deck-accent 0\.9s ease, background-color 0\.9s ease/);
+  assert.doesNotMatch(css, /deck-wash/);
   for (const n of nav) assert.ok(css.includes(`.page-deck:has(.deck-card.is-selected[data-page="${pages[n.self].token}"])`));
   assert.doesNotMatch(source, /requestAnimationFrame|cancelAnimationFrame|getComputedStyle/);
   const s = setup(); s.fire(s.ledgerButton, 'click'); s.fire(s.next, 'click');
@@ -328,7 +329,6 @@ test('every cover has an ASCII HTML scene with a static fallback and reduced-mot
   for (const entry of nav) {
     const token = pages[entry.self].token;
     assert.ok(scene.includes(`when '${token}'`));
-    assert.ok(template.includes('class="deck-wash"'));
   }
   assert.equal(/[^\x00-\x7F]/.test(scene), false);
   assert.match(css, /\.deck-ascii \{[\s\S]*?top: 50%;[\s\S]*?left: 50%;/);

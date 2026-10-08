@@ -90,25 +90,32 @@ async function fits(page) {
     assert.notEqual(flameBefore, flameAfter);
     assert.equal(await page.locator('.deck-card.is-selected .ascii-campfire .flame').evaluate(el => getComputedStyle(el).transform), 'none');
     assert.match(await page.locator('.deck-card.is-selected .ascii-campfire .flame').evaluate(el => getComputedStyle(el, '::before').animationTimingFunction), /steps/);
-    // A jump across several cards cross-fades straight from the old wash to
-    // the new one; the cards it passes never light up their own palettes.
-    const washes = () => page.locator('.deck-wash').evaluateAll(els => Object.fromEntries(els.map(el => [el.dataset.page, +getComputedStyle(el).opacity])));
-    const seen = new Set();
-    const blends = [];
+    // A jump across several cards moves the ground straight from the old
+    // page's colour to the new one: no stop at the cards it passes, and no
+    // dip in brightness on the way (a cross-fade of two washes used to pulse).
+    const ground = () => page.locator('#page-deck').evaluate(el => {
+      const c = document.createElement('canvas').getContext('2d');
+      c.fillStyle = getComputedStyle(el).backgroundColor; c.fillRect(0, 0, 1, 1);
+      return [...c.getImageData(0, 0, 1, 1).data].slice(0, 3);
+    });
+    const lightness = rgb => rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
+    const start = await ground();
+    const trail = [];
+    const picked = new Set();
     await page.locator('[data-deck-group="tools"]').click();
-    for (let i = 0; i < 12; i++) {
-      const now = await washes();
-      for (const [token, opacity] of Object.entries(now)) if (opacity > 0.01) seen.add(token);
-      blends.push(now.vip);
+    for (let i = 0; i < 30; i++) {
+      trail.push(await ground());
+      picked.add(await page.locator('.deck-card.is-selected').getAttribute('data-page'));
       await page.waitForTimeout(40);
     }
     await selected(page, 'vip');
-    await page.waitForTimeout(1200);
-    const end = await washes();
-    assert.deepEqual([...seen].sort(), ['home', 'vip']);
-    assert.ok(blends.some(v => v > 0.05 && v < 0.95), String(blends));
-    assert.equal(end.vip, 1);
-    assert.equal(end.home, 0);
+    await page.waitForTimeout(1000);
+    const end = await ground();
+    assert.deepEqual([...picked], ['vip']);
+    assert.notDeepEqual(start, end);
+    assert.ok(trail.some(rgb => rgb.join() !== start.join() && rgb.join() !== end.join()), 'the ground blends');
+    const floor = Math.min(lightness(start), lightness(end)) - 1.5;
+    assert.ok(trail.every(rgb => lightness(rgb) >= floor), JSON.stringify({ start, end, trail }));
     // The deck is a ring: past either end it carries on into a copy of the
     // covers and settles back on the real one without a visible jump.
     await page.keyboard.press('Home');
