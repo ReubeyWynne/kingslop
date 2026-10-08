@@ -29,6 +29,8 @@ jobs:
       - name: Check site data
         run: |
           node -e "const fs = require('node:fs'); for (const file of fs.readdirSync('_data')) if (file.endsWith('.json')) JSON.parse(fs.readFileSync('_data/' + file, 'utf8'));"
+      - name: Check page navigation
+        run: node --test .dsh/page-deck-check.cjs
       - name: Check troop allocation
         run: node .dsh/bear-allocator-check.cjs
       - name: Check hero gear costs and search
@@ -40,6 +42,10 @@ jobs:
         run: |
           npm install --prefix "$RUNNER_TEMP/visuals" --no-audit --no-fund playwright@1.63.0
           node "$RUNNER_TEMP/visuals/node_modules/playwright/cli.js" install --with-deps chromium
+      - name: Check page navigation in browser
+        env:
+          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        run: node .dsh/page-deck-browser-check.cjs
       - name: Check hero gear UI
         env:
           NODE_PATH: ${{ runner.temp }}/visuals/node_modules
@@ -55,4 +61,7 @@ jobs:
           name: hero-gear-preview
           include-hidden-files: true
           retention-days: 7
-          path: .dsh/gear-preview/
+          path: |
+            .dsh/gear-preview/
+            .dsh/deck-preview/
+

@@ -79,8 +79,10 @@ function setup(current = 'home', reduced = false) {
   const close = element('button', 'deck-close');
   const groupButtons = ['home', 'events', 'tools'].map(group => element('button', '', deck, { 'data-deck-group': group }));
   const viewport = element('div', 'deck-viewport');
-  const cards = nav.map(n => {
+  viewport.scrollLeft = 0;
+  const cards = nav.map((n, i) => {
     const card = element('a', 'deck-card', viewport, { 'data-page': pages[n.self].token, 'data-group': n.group, ...(n.self === current ? { 'aria-current': 'page' } : {}) });
+    card.offsetLeft = (viewport.clientWidth - card.offsetWidth) / 2 + i * 305;
     card.href = 'https://dey.ci/' + n.tail;
     element('span', 'deck-card-title', card).textContent = n.label;
     element('span', 'deck-card-lede', card).textContent = pages[n.self].metaDesc;
@@ -112,6 +114,7 @@ function setup(current = 'home', reduced = false) {
     }
     return event;
   };
+  viewport.scrollTo = args => { viewport.scrollLeft = args.left; fire(viewport, 'scroll'); fire(viewport, 'scrollend'); };
   deck.showModal = () => { deck.open = true; close.focus(); };
   deck.close = () => { deck.open = false; fire(deck, 'close'); };
   const media = { matches: reduced, addEventListener() {} };
@@ -160,41 +163,27 @@ function setup(current = 'home', reduced = false) {
     touch(target, 'touchend', 300 + dx, 300 + dy);
   }
   const selected = () => cards.findIndex(card => card.classList.contains('is-selected'));
-  return { deck, cards, main, input, toc, link, button, ledgerButton, close, status, groupButtons, previous, next, location, media, window, storage, document, fire, touch, swipe, advance, selected, frames };
+  return { deck, viewport, cards, main, input, toc, link, button, ledgerButton, close, status, groupButtons, previous, next, location, media, window, storage, document, fire, touch, swipe, advance, selected, frames };
 }
 
-test('opening swipe retains velocity: a flick settles farther than a slow drag', () => {
-  const slow = setup(); slow.swipe(slow.main, 1200); slow.advance(1000);
-  const fast = setup(); fast.swipe(fast.main, 80); fast.advance(2200);
-  assert.equal(slow.selected(), 1);
-  assert.ok(fast.selected() > slow.selected());
-  assert.ok(fast.selected() < fast.cards.length);
-  assert.equal(fast.deck.open, true);
-  assert.equal(fast.location.href, 'https://dey.ci/');
+test('an opening swipe browses one neighbour without scheduling animation frames', () => {
+  for (const duration of [80, 1200]) {
+    const s = setup(); s.swipe(s.main, duration); s.advance(1000);
+    assert.equal(s.selected(), 1);
+    assert.equal(s.frames.size, 0);
+    assert.equal(s.deck.open, true);
+    assert.equal(s.location.href, 'https://dey.ci/');
+  }
 });
 
-test('a held release sheds momentum and deliberate long drags retain distance', () => {
-  const held = setup(); held.swipe(held.main, 80, -220, 0, 200); held.advance(1000);
-  assert.equal(held.selected(), 1);
-  const long = setup(); long.swipe(long.main, 2200, -660); long.advance(1000);
-  assert.equal(long.selected(), 2);
-});
-
-test('touch catches the coasting deck without navigating, even after a long hold', () => {
-  const s = setup(); s.swipe(s.main, 80); s.advance(64);
-  assert.ok(s.frames.size > 0);
-  const card = s.cards[s.selected()];
-  s.touch(card, 'touchstart', 180);
+test('native scroll position selects the centred cover and announces after settling', () => {
+  const s = setup(); s.fire(s.ledgerButton, 'click');
+  s.viewport.scrollLeft = 305 * 4;
+  s.fire(s.viewport, 'scroll');
+  assert.equal(s.selected(), 4);
+  s.fire(s.viewport, 'scrollend');
+  assert.match(s.status.textContent, /Swordland/);
   assert.equal(s.frames.size, 0);
-  const transform = card.style.transform;
-  s.advance(500);
-  assert.equal(card.style.transform, transform);
-  s.touch(card, 'touchend', 180);
-  const click = s.fire(card, 'click');
-  assert.equal(click.defaultPrevented, true);
-  assert.equal(s.location.href, 'https://dey.ci/');
-  s.advance(1000);
-  assert.ok(s.status.textContent);
 });
 
 test('vertical reading, calculator controls and TOC interactions never open the deck', () => {
@@ -207,6 +196,7 @@ test('vertical reading, calculator controls and TOC interactions never open the 
 test('dragging a cover cannot activate its link; a settled tap can', () => {
   const s = setup(); s.fire(s.ledgerButton, 'click');
   const card = s.cards[0]; s.swipe(card, 1200); s.advance(100);
+  s.viewport.scrollLeft = 305; s.fire(s.viewport, 'scroll'); s.fire(s.viewport, 'scrollend');
   assert.equal(s.fire(card, 'click').defaultPrevented, true);
   s.advance(1000);
   const destination = s.cards[s.selected()];
@@ -281,28 +271,16 @@ test('background taps dismiss and pagehide cleans up synchronously before bfcach
   assert.equal(s.ledgerButton.getAttribute('aria-expanded'), 'false');
 });
 
-test('a reversal uses the final movement and keyboard direction follows the physical deck in RTL', () => {
-  const s = setup(); s.touch(s.main, 'touchstart', 300);
-  s.advance(100); s.touch(s.main, 'touchmove', 100);
-  s.advance(40); s.touch(s.main, 'touchmove', 280);
-  s.touch(s.main, 'touchend', 280); s.advance(1000);
-  assert.ok(s.selected() === 0 || s.selected() >= 4);
-  s.document.documentElement.setAttribute('dir', 'rtl');
-  s.fire(s.next, 'keydown', { key: 'Home' }); s.advance(1000);
-  s.fire(s.next, 'keydown', { key: 'ArrowRight' }); s.advance(1000);
-  assert.equal(s.selected(), 1);
-});
-
-test('opening flick keeps its release speed into the first coasting frame', () => {
-  const s = setup();
-  s.swipe(s.main, 200, -100);
-  const x = () => Number(s.cards[0].style.transform.match(/\+ ([-\d.]+)px/)[1]);
-  const before = x();
-  s.advance(16);
-  const speed = (before - x()) / 16;
-  assert.ok(speed > 0.45 && speed < 0.55, String(speed));
-  s.advance(2400);
+test('deck touch movement is left to native scrolling and keyboard direction stays physical in RTL', () => {
+  const s = setup(); s.fire(s.ledgerButton, 'click');
+  s.touch(s.cards[0], 'touchstart', 300);
+  const move = s.touch(s.cards[0], 'touchmove', 100);
+  assert.equal(move.defaultPrevented, false);
   assert.equal(s.frames.size, 0);
+  s.document.documentElement.setAttribute('dir', 'rtl');
+  s.fire(s.next, 'keydown', { key: 'Home' });
+  s.fire(s.next, 'keydown', { key: 'ArrowRight' });
+  assert.equal(s.selected(), 1);
 });
 
 test('deck navigation retains the cover for capture and cleans it on history restore', () => {
@@ -326,29 +304,28 @@ test('modified cover clicks do not mark the current tab as navigating', () => {
   assert.equal(s.deck.open, false);
 });
 
-test('the deck palette follows selection without changing the current page theme', () => {
-  const s = setup('home', true);
-  s.fire(s.ledgerButton, 'click');
-  for (let i = 0; i < s.cards.length; i++) {
-    const token = s.cards[s.selected()].getAttribute('data-page');
-    assert.equal(s.deck.getAttribute('data-selected-page'), token);
-    assert.equal(s.deck.style['--deck-accent'], s.window.getComputedStyle(s.cards[s.selected()]).getPropertyValue('--amber'));
-    assert.equal(s.document.documentElement.getAttribute('data-page'), 'home');
-    s.fire(s.next, 'click');
-  }
+test('palette selection is declared in CSS without JavaScript colour writes or frame loops', () => {
+  const css = fs.readFileSync(path.join(root, 'css/events.css'), 'utf8');
+  assert.match(css, /@property --deck-accent/);
+  assert.match(css, /transition: --deck-accent 0\.9s ease/);
+  for (const n of nav) assert.ok(css.includes(`.page-deck:has(.deck-card.is-selected[data-page="${pages[n.self].token}"])`));
+  assert.doesNotMatch(source, /requestAnimationFrame|cancelAnimationFrame|getComputedStyle/);
+  const s = setup(); s.fire(s.ledgerButton, 'click'); s.fire(s.next, 'click');
+  assert.equal(s.document.documentElement.getAttribute('data-page'), 'home');
+  assert.equal(s.deck.style['--deck-accent'], undefined);
 });
 
-test('carousel illustrations survive asset generation and expose static fallbacks', () => {
+test('every cover has an ASCII HTML scene with a static fallback and reduced-motion styling', () => {
   const css = fs.readFileSync(path.join(root, 'css/ascii-deck.css'), 'utf8');
   const head = fs.readFileSync(path.join(root, '_includes/head.html'), 'utf8');
-  const motifs = fs.readFileSync(path.join(root, 'css/ascii-motifs.css'), 'utf8');
+  const scene = fs.readFileSync(path.join(root, '_includes/ascii/deck-scene.html'), 'utf8');
+  const template = fs.readFileSync(path.join(root, '_includes/page-deck.html'), 'utf8');
   assert.ok(head.includes('css/ascii-deck.css'));
-  for (const entry of nav) {
-    const token = pages[entry.self].token;
-    assert.ok(css.includes(`.deck-card[data-page="${token}"] .deck-ascii::before{content:`), token);
-  }
-  assert.match(css, /prefers-reduced-motion:reduce[\s\S]*animation:none!important/);
-  assert.match(motifs, /\.ascii-march--hunt::before\{content:/);
-  assert.match(motifs, /prefers-reduced-motion:reduce[\s\S]*\.ascii-march::before\{animation:none!important/);
+  assert.ok(template.indexOf('deck-card-title') < template.indexOf('class="deck-ascii"'));
+  assert.ok(template.includes('include ascii/deck-scene.html'));
+  for (const entry of nav) assert.ok(scene.includes(`when '${pages[entry.self].token}'`));
+  assert.equal(/[^\x00-\x7F]/.test(scene), false);
+  assert.match(css, /top: 50%;[\s\S]*left: 50%;/);
+  assert.match(css, /prefers-reduced-motion: reduce[\s\S]*animation: none !important/);
+  assert.doesNotMatch(css, /steps\(|content: "[^"\n]+"/);
 });
-
