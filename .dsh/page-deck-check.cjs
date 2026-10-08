@@ -14,7 +14,7 @@ class Element {
     this.attrs = { ...attrs };
     this.listeners = {};
     this.children = [];
-    this.style = {};
+    this.style = { setProperty(name, value) { this[name] = value; } };
     this.offsetWidth = 281;
     this.clientWidth = 390;
     this.textContent = '';
@@ -126,6 +126,10 @@ function setup(current = 'home', reduced = false) {
     clearTimeout: id => timers.delete(id)
   };
   Object.assign(window, {
+    getComputedStyle: card => ({ getPropertyValue: token => {
+      const accent = { home: '#F5C851', bearhunt: '#AEC878', vikings: '#E08A3C', swordland: '#E05555', vip: '#C5A3EE', sim: '#E0B24A', kvksg: '#D9B25A', gear: '#e6b56a' }[card.getAttribute('data-page')];
+      return token === '--signal-line' ? accent + '55' : accent;
+    } }),
     I18N: { locale: 'en-GB', tr: (k, fallback) => fallback, onReady: fn => { window.boot = fn; } },
     matchMedia: query => query.includes('reduced') ? media : compact,
     requestAnimationFrame: fn => { const id = ++nextFrame; frames.set(id, fn); return id; },
@@ -321,3 +325,30 @@ test('modified cover clicks do not mark the current tab as navigating', () => {
   s.fire(s.window, 'pagehide');
   assert.equal(s.deck.open, false);
 });
+
+test('the deck palette follows selection without changing the current page theme', () => {
+  const s = setup('home', true);
+  s.fire(s.ledgerButton, 'click');
+  for (let i = 0; i < s.cards.length; i++) {
+    const token = s.cards[s.selected()].getAttribute('data-page');
+    assert.equal(s.deck.getAttribute('data-selected-page'), token);
+    assert.equal(s.deck.style['--deck-accent'], s.window.getComputedStyle(s.cards[s.selected()]).getPropertyValue('--amber'));
+    assert.equal(s.document.documentElement.getAttribute('data-page'), 'home');
+    s.fire(s.next, 'click');
+  }
+});
+
+test('carousel illustrations survive asset generation and expose static fallbacks', () => {
+  const css = fs.readFileSync(path.join(root, 'css/ascii-deck.css'), 'utf8');
+  const head = fs.readFileSync(path.join(root, '_includes/head.html'), 'utf8');
+  const motifs = fs.readFileSync(path.join(root, 'css/ascii-motifs.css'), 'utf8');
+  assert.ok(head.includes('css/ascii-deck.css'));
+  for (const entry of nav) {
+    const token = pages[entry.self].token;
+    assert.ok(css.includes(`.deck-card[data-page="${token}"] .deck-ascii::before{content:`), token);
+  }
+  assert.match(css, /prefers-reduced-motion:reduce[\s\S]*animation:none!important/);
+  assert.match(motifs, /\.ascii-march--hunt::before\{content:/);
+  assert.match(motifs, /prefers-reduced-motion:reduce[\s\S]*\.ascii-march::before\{animation:none!important/);
+});
+

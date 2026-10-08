@@ -160,7 +160,9 @@ html, body { overscroll-behavior-x: none; }
   padding: 0;
   border: 0;
   color: var(--ink);
-  background: rgba(9, 13, 20, 0.94);
+  background: #090d14;
+  background-color: color-mix(in srgb, #090d14 86%, var(--deck-accent, var(--amber)) 14%);
+  transition: background-color 0.7s ease;
   overflow: auto;
   overscroll-behavior: contain;
 }
@@ -210,7 +212,7 @@ html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
 .deck-groups button[aria-pressed="true"] { color: var(--amber); border-color: var(--signal-line); }
 .deck-viewport {
   position: relative;
-  height: clamp(18rem, 49dvh, 29rem);
+  height: clamp(25rem, 62dvh, 34rem);
   flex-shrink: 0;
   overflow: hidden;
   direction: ltr;
@@ -240,6 +242,7 @@ html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
 .deck-card.is-selected { border-color: var(--amber); }
 .deck-mark { color: var(--amber-dim); font-size: 2.2rem; line-height: 1; }
 .deck-card-title {
+  flex: none;
   font-family: var(--display-2);
   font-weight: 700;
   font-size: min(var(--step-2), 7vw);
@@ -250,6 +253,7 @@ html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
   overflow-wrap: anywhere;
 }
 .deck-card-lede {
+  flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -257,7 +261,7 @@ html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
   line-height: 1.45;
   color: var(--ink-dim);
 }
-.deck-card-action { margin-top: auto; color: var(--amber); font-size: var(--step--1); }
+.deck-card-action { flex: none; margin-top: auto; color: var(--amber); font-size: var(--step--1); }
 .deck-footer { direction: ltr; padding: 0; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
 .deck-footer button { font-size: 2rem; line-height: 1; }
 .deck-position { min-width: 0; text-align: center; color: var(--ink-dim); font-size: var(--step--1); }
@@ -269,7 +273,10 @@ html[dir="rtl"] .deck-card { direction: rtl; }
 }
 @media (max-height: 540px) {
   .deck-sheet { gap: 0.4rem; }
-  .deck-viewport { height: 18rem; }
+  .deck-viewport { height: 25rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-deck { transition: none; }
 }
 
 
@@ -740,3 +747,4 @@ html[data-page="gear"], html[data-hover="gear"], .deck-card[data-page="gear"] {
   --signal-line: rgba(230, 181, 106, .35);
   --signal-tint: rgba(230, 181, 106, .07);
 }
+

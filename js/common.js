@@ -118,11 +118,23 @@
   var wheelTimer = 0;
   var warmingCard = '';
   var navigatingDeck = false;
+  var deckTheme = '';
 
   function wrap(n) { return (n % cards.length + cards.length) % cards.length; }
 
   function paintDeck() {
     var selected = wrap(Math.round(position));
+    var selectedCard = cards[selected];
+    var theme = selectedCard.getAttribute('data-page');
+    if (theme !== deckTheme) {
+      deckTheme = theme;
+      var palette = window.getComputedStyle(selectedCard);
+      deck.style.setProperty('--deck-accent', palette.getPropertyValue('--amber').trim());
+      ['--amber', '--amber-dim', '--signal-line'].forEach(function (token) {
+        deck.style.setProperty(token, palette.getPropertyValue(token).trim());
+      });
+      deck.setAttribute('data-selected-page', theme);
+    }
     cards.forEach(function (card, i) {
       var delta = wrap(i - position + cards.length / 2) - cards.length / 2;
       var distance = Math.abs(delta);
@@ -821,3 +833,4 @@
     setTimeout(boot, 0);
   }
 })();
+
