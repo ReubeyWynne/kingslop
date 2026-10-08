@@ -29,6 +29,8 @@ jobs:
       - name: Check site data
         run: |
           node -e "const fs = require('node:fs'); for (const file of fs.readdirSync('_data')) if (file.endsWith('.json')) JSON.parse(fs.readFileSync('_data/' + file, 'utf8'));"
+      - name: Check page navigation
+        run: node --test .dsh/page-deck-check.cjs
       - name: Check troop allocation
         run: node .dsh/bear-allocator-check.cjs
       - name: Check player ledger and migration
@@ -52,6 +54,10 @@ jobs:
         env:
           NODE_PATH: ${{ runner.temp }}/visuals/node_modules
         run: node .dsh/event-availability-check.cjs
+      - name: Check page navigation in browser
+        env:
+          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        run: node .dsh/page-deck-browser-check.cjs
       - name: Check hero gear UI
         env:
           NODE_PATH: ${{ runner.temp }}/visuals/node_modules
@@ -70,4 +76,5 @@ jobs:
           path: |
             .dsh/gear-preview/
             .dsh/event-preview/
+            .dsh/deck-preview/
 

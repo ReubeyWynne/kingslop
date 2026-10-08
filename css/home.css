@@ -33,13 +33,6 @@
 .event-chips span { color: var(--ink-muted); }
 .event-card:hover .event-chips span { color: var(--amber-dim); }
 
-/* ─── Home preview — the hovered event's dust ──────────── */
-/* The home page stacks one extra mote group per event inside .dust
-   (index.html); while html[data-hover=…] is set, the home embers
-   dim out and the destination world's motes dissolve in — fireflies,
-   falling ash, or the two duelling tides. Mirrors the page rules in
-   events.css, but scoped to the group so it never touches the real
-   pages (which have no .dust-g and no data-hover). */
 .dust-g {
   position: absolute; inset: -40%;
   opacity: 0;
@@ -48,46 +41,46 @@
 }
 .dust-g i { position: absolute; inset: 0; }
 .dust > i { transition: opacity var(--theme-shift) cubic-bezier(0.16, 1, 0.3, 1); }
-html[data-hover] .dust > i { opacity: 0; }
+html[data-page="home"]:has(.event-card[data-hover-page]:is(:hover, :focus-within)) .dust > i { opacity: 0; }
 
-html[data-hover="bearhunt"] .dust-g.bear,
-html[data-hover="vikings"] .dust-g.vikings,
-html[data-hover="swordland"] .dust-g.sword,
-html[data-hover="vip"] .dust-g.vip { opacity: 1; }
+html[data-page="home"]:has(.event-card[data-hover-page="bearhunt"]:is(:hover, :focus-within)) .dust-g.dust-bear,
+html[data-page="home"]:has(.event-card[data-hover-page="vikings"]:is(:hover, :focus-within)) .dust-g.dust-vikings,
+html[data-page="home"]:has(.event-card[data-hover-page="swordland"]:is(:hover, :focus-within)) .dust-g.dust-sword,
+html[data-page="home"]:has(.event-card[data-hover-page="vip"]:is(:hover, :focus-within)) .dust-g.dust-vip { opacity: 1; }
 
-html[data-hover="bearhunt"] .dust-g.bear i:nth-child(1) { background-size: 120px 120px; animation: mote-drift 120s linear infinite; }
-html[data-hover="bearhunt"] .dust-g.bear i:nth-child(2) { background-size: 190px 190px; animation: mote-drift 170s linear infinite reverse; }
-html[data-hover="bearhunt"] .dust-g.bear i:nth-child(3) { background-size: 260px 260px; animation: mote-drift 220s linear infinite; }
+html[data-page="home"]:has(.event-card[data-hover-page="bearhunt"]:is(:hover, :focus-within)) .dust-g.dust-bear i:nth-child(1) { background-size: 120px 120px; animation: mote-drift 120s linear infinite; }
+html[data-page="home"]:has(.event-card[data-hover-page="bearhunt"]:is(:hover, :focus-within)) .dust-g.dust-bear i:nth-child(2) { background-size: 190px 190px; animation: mote-drift 170s linear infinite reverse; }
+html[data-page="home"]:has(.event-card[data-hover-page="bearhunt"]:is(:hover, :focus-within)) .dust-g.dust-bear i:nth-child(3) { background-size: 260px 260px; animation: mote-drift 220s linear infinite; }
 
-html[data-hover="vikings"] .dust-g.vikings i:nth-child(1) {
+html[data-page="home"]:has(.event-card[data-hover-page="vikings"]:is(:hover, :focus-within)) .dust-g.dust-vikings i:nth-child(1) {
   background-image: radial-gradient(circle, var(--ember) 1px, transparent 1.9px);
   background-size: 130px 130px;
   animation: ash-fall 80s linear infinite;
 }
-html[data-hover="vikings"] .dust-g.vikings i:nth-child(2) {
+html[data-page="home"]:has(.event-card[data-hover-page="vikings"]:is(:hover, :focus-within)) .dust-g.dust-vikings i:nth-child(2) {
   background-image: radial-gradient(circle, var(--ember-2) 1.7px, transparent 2.6px);
   background-size: 220px 220px;
   animation: ash-fall 130s linear infinite reverse;
 }
-html[data-hover="vikings"] .dust-g.vikings i:nth-child(3) {
+html[data-page="home"]:has(.event-card[data-hover-page="vikings"]:is(:hover, :focus-within)) .dust-g.dust-vikings i:nth-child(3) {
   background-image: radial-gradient(circle, var(--ember-3) 1.6px, transparent 2.4px);
   background-size: 280px 280px;
   animation: ash-fall 180s linear infinite;
 }
 
-html[data-hover="swordland"] .dust-g.sword i:nth-child(1) { animation: duel-tide 150s linear infinite; }
-html[data-hover="swordland"] .dust-g.sword i:nth-child(2) { background-size: 150px 150px; animation: duel-tide 190s linear infinite reverse; }
-html[data-hover="swordland"] .dust-g.sword i:nth-child(3) { animation: dust-drift 80s linear infinite; }
+html[data-page="home"]:has(.event-card[data-hover-page="swordland"]:is(:hover, :focus-within)) .dust-g.dust-sword i:nth-child(1) { animation: duel-tide 150s linear infinite; }
+html[data-page="home"]:has(.event-card[data-hover-page="swordland"]:is(:hover, :focus-within)) .dust-g.dust-sword i:nth-child(2) { background-size: 150px 150px; animation: duel-tide 190s linear infinite reverse; }
+html[data-page="home"]:has(.event-card[data-hover-page="swordland"]:is(:hover, :focus-within)) .dust-g.dust-sword i:nth-child(3) { animation: dust-drift 80s linear infinite; }
 
-html[data-hover="vip"] .dust-g.vip i:nth-child(1) { animation: candle-rise 90s linear infinite; }
-html[data-hover="vip"] .dust-g.vip i:nth-child(2) { background-size: 200px 200px; animation: candle-rise 140s linear infinite reverse; }
-html[data-hover="vip"] .dust-g.vip i:nth-child(3) { background-size: 300px 300px; animation: candle-rise 200s linear infinite; }
+html[data-page="home"]:has(.event-card[data-hover-page="vip"]:is(:hover, :focus-within)) .dust-g.dust-vip i:nth-child(1) { animation: candle-rise 90s linear infinite; }
+html[data-page="home"]:has(.event-card[data-hover-page="vip"]:is(:hover, :focus-within)) .dust-g.dust-vip i:nth-child(2) { background-size: 200px 200px; animation: candle-rise 140s linear infinite reverse; }
+html[data-page="home"]:has(.event-card[data-hover-page="vip"]:is(:hover, :focus-within)) .dust-g.dust-vip i:nth-child(3) { background-size: 300px 300px; animation: candle-rise 200s linear infinite; }
 
 /* ─── KvK / Governor — the hovered world's banners ────── */
-html[data-hover="kvksg"] .dust-g.dust-kvk { opacity: 1; }
-html[data-hover="kvksg"] .dust-g.dust-kvk i:nth-child(1) { animation: mote-rise 110s linear infinite; }
-html[data-hover="kvksg"] .dust-g.dust-kvk i:nth-child(2) { background-size: 180px 180px; animation: mote-rise 160s linear infinite reverse; }
-html[data-hover="kvksg"] .dust-g.dust-kvk i:nth-child(3) { background-size: 260px 260px; animation: mote-rise 210s linear infinite; }
+html[data-page="home"]:has(.event-card[data-hover-page="kvksg"]:is(:hover, :focus-within)) .dust-g.dust-kvk { opacity: 1; }
+html[data-page="home"]:has(.event-card[data-hover-page="kvksg"]:is(:hover, :focus-within)) .dust-g.dust-kvk i:nth-child(1) { animation: mote-rise 110s linear infinite; }
+html[data-page="home"]:has(.event-card[data-hover-page="kvksg"]:is(:hover, :focus-within)) .dust-g.dust-kvk i:nth-child(2) { background-size: 180px 180px; animation: mote-rise 160s linear infinite reverse; }
+html[data-page="home"]:has(.event-card[data-hover-page="kvksg"]:is(:hover, :focus-within)) .dust-g.dust-kvk i:nth-child(3) { background-size: 260px 260px; animation: mote-rise 210s linear infinite; }
 
 .event-card { min-width: 0; }
 .event-card:focus-visible { outline: 2px solid var(--amber); outline-offset: 6px; }
@@ -96,3 +89,4 @@ html[data-hover="kvksg"] .dust-g.dust-kvk i:nth-child(3) { background-size: 260p
   .event-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .event-card h3 { font-size: var(--step-2); }
 }
+

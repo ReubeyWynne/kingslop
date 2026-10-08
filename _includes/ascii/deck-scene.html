@@ -1,0 +1,29 @@
+{% case include.token %}
+{% when 'home' %}
+{% include ascii/deck-campfire.html %}
+{% when 'kvksg' %}
+<span class="deck-map"></span>
+{% when 'bearhunt' %}
+<span class="ascii-mini ascii-mini--bear"></span>
+{% when 'vikings' %}
+<span class="ascii-march"></span>
+{% when 'swordland' %}
+<span class="ascii-mini ascii-mini--banner"></span>
+{% when 'vip' %}
+<span class="ascii-mini ascii-mini--crown"></span>
+{% when 'sim' %}
+<span class="ascii-mini ascii-mini--dice"></span>
+{% when 'gear' %}
+<div class="ascii-scene ascii-forge">
+  <span class="ascii-hammer"></span>
+  <pre class="ascii-anvil">       ___
+  ____/###\____
+ /______________\
+      |####|
+      |####|
+   ___|####|___
+  /____________\</pre>
+  <span class="ascii-impact"></span>
+  <span class="ascii-forge-sparks"></span>
+</div>
+{% endcase %}
