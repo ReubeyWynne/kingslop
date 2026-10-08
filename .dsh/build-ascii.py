@@ -344,6 +344,7 @@ def forge():
 
 # ── the small emblems ────────────────────────────────────────────────────
 # Each is 29 cells wide, 9 rows tall (crown 13), set at line-height 1.25.
+# The helm stands over the hero directory.
 
 MW = 29
 
@@ -391,6 +392,16 @@ DICE = r'''
   |       | /   |       | /
   '-------'/    '-------'/
 '''
+HELM = r'''
+            .-^-.
+         .-'  |  '-.
+        /     |     \
+       |      |      |
+       |======+======|
+       |  ==  |  ==  |
+       |  . . | . .  |
+        \     |     /
+         '-.__|__.-' '''
 PIPS = {1: [(2, 1)], 2: [(0, 0), (4, 2)], 3: [(0, 0), (2, 1), (4, 2)],
         4: [(0, 0), (4, 0), (0, 2), (4, 2)], 5: [(0, 0), (4, 0), (2, 1), (0, 2), (4, 2)],
         6: [(0, 0), (4, 0), (0, 1), (4, 1), (0, 2), (4, 2)]}
@@ -436,6 +447,26 @@ def mini_frames(kind):
                             arr[r][cc] = '+' if (i + r) % 3 else '*'
             if i in (25, 26):
                 put(arr, 13, 0, '*' if i == 25 else '+')
+            frames.append(arr)
+    elif kind == 'helm':
+        base = [list(r.ljust(MW)) for r in art(HELM)]
+        for i in range(32):
+            arr = [r[:] for r in base]
+            # A glint walks the brow band two cells at a time.
+            if 6 <= i < 20:
+                col = 8 + i - 6
+                for cc in (col, col + 1):
+                    if arr[4][cc] == '=':
+                        arr[4][cc] = '*' if (i + cc) % 3 == 0 else '+'
+            # Then the crest catches the light.
+            if i in (22, 23, 24):
+                put(arr, 14, 0, '*+*'[i - 22])
+            # The eye slits darken for a beat: someone is looking out.
+            if 26 <= i < 29:
+                put(arr, 10, 5, '--'); put(arr, 17, 5, '--')
+            for n, (r, c) in enumerate([(1, 3), (0, 23), (5, 25), (8, 4)]):
+                cycle = (i + n * 8) % 32
+                put(arr, c, r, '.+*+.'[cycle - 2] if 2 <= cycle < 7 else ' ')
             frames.append(arr)
     elif kind == 'dice':
         base = [list(r.ljust(MW)) for r in art(DICE)]
@@ -521,7 +552,7 @@ def moon_frames():
 
 def minis():
     css = ['/* emblems */']
-    durations = {'charm': 6.4, 'bear': 7.2, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 19.6}
+    durations = {'charm': 6.4, 'bear': 7.2, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 19.6, 'helm': 8}
     for kind, duration in durations.items():
         frames, holds = mini_frames(kind)
         css.append(animation(f'.ascii-mini--{kind}::before', f'ascii-mini-{kind}', frames, duration, holds))

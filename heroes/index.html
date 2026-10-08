@@ -3,7 +3,7 @@ layout: page
 self: heroes
 ---
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
-  <a href="#directory" data-i18n="directory.title">Hero directory</a>
+  <a href="#directory" data-i18n="directory.browse">Browse heroes</a>
   <a href="#roles" data-i18n="directory.roles">Choose a role</a>
   <a href="#hero-sources" data-i18n="directory.sources">Sources &amp; confidence</a>
 </nav>
@@ -11,50 +11,63 @@ self: heroes
   <section class="section hero" id="top">
     <h1 data-i18n="directory.title">Hero directory</h1>
     <p class="lede" data-i18n="directory.intro">Choose the job first. Then find the hero whose skills fit it.</p>
-    <div class="directory-jumps"><a class="kb" href="#directory" data-i18n="directory.browse">Browse heroes</a><a class="kb" href="#roles" data-i18n="directory.roles">Choose a role</a></div>
+    {% include ascii/motif.html kind="helm" %}
   </section>
   <section class="section" id="directory" data-module="hero-directory">
     <h2 data-i18n="directory.browse">Browse heroes</h2>
+    {% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}
     <fieldset class="hero-filters" disabled data-target="hero-directory.filters">
       <legend data-i18n="directory.filters">Find your hero</legend>
       <label><span data-i18n="directory.search">Hero name</span><input type="search" data-target="hero-directory.query" data-action="hero-directory.filter"></label>
-      <label><span data-i18n="directory.server">Server generation</span><select data-target="hero-directory.server" data-action="hero-directory.server"><option value="" data-i18n="directory.unspecified">Any generation</option>{% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}{% for generation in generations %}<option value="{{ generation }}">{{ generation }}</option>{% endfor %}</select></label>
-      <label><span data-i18n="directory.generation">Generation</span><select data-target="hero-directory.generation" data-action="hero-directory.filter"><option value="" data-i18n="directory.all">All</option>{% for generation in generations %}<option value="{{ generation }}">{{ generation }}</option>{% endfor %}</select></label>
       <label><span data-i18n="directory.troop">Troop</span><select data-target="hero-directory.troop" data-action="hero-directory.filter"><option value="" data-i18n="directory.all">All</option><option value="inf" data-i18n="sim.calc.inf">Infantry</option><option value="cav" data-i18n="sim.calc.cav">Cavalry</option><option value="arc" data-i18n="sim.calc.arc">Archers</option></select></label>
       <label><span data-i18n="directory.role">Role</span><select data-target="hero-directory.role" data-action="hero-directory.filter"><option value="" data-i18n="directory.all">All</option>{% assign role_ids = 'garrison-lead,defence-joiner,rally-lead,attack-joiner,bear-lead,bear-joiner' | split: ',' %}{% for role in role_ids %}<option value="{{ role }}" data-i18n="directory.role.{{ role }}">{{ role | replace: '-', ' ' }}</option>{% endfor %}</select></label>
-      <button type="button" class="kb" data-action="hero-directory.reset" data-i18n="directory.reset">Reset filters</button>
+      <label><span data-i18n="directory.generation">Generation</span><select data-target="hero-directory.generation" data-action="hero-directory.filter"><option value="" data-i18n="directory.all">All</option>{% for generation in generations %}<option value="{{ generation }}">{{ generation }}</option>{% endfor %}</select></label>
+      <label><span data-i18n="directory.server">Server generation</span><select data-target="hero-directory.server" data-action="hero-directory.server"><option value="" data-i18n="directory.unspecified">Any generation</option>{% for generation in generations %}<option value="{{ generation }}">{{ generation }}</option>{% endfor %}</select></label>
+      <button type="button" data-action="hero-directory.reset" data-i18n="directory.reset">Reset filters</button>
+      <p class="directory-server-note" data-i18n="directory.serverNote">Set your server’s generation to hide heroes you cannot use yet. Other tools share this setting; resetting filters keeps it.</p>
     </fieldset>
-    <p class="note directory-server-note" data-i18n="directory.serverNote">Set your server’s generation to hide heroes you cannot use yet. Other tools share this setting; resetting filters keeps it.</p>
     <div class="directory-results"><output class="hero-count" aria-live="polite" data-target="hero-directory.count">{{ site.data.heroes.heroes.size }}</output><p class="note" data-i18n="directory.candidateNote">Role labels are a shortlist. Your stars, skills and alliance plan make the final call.</p></div>
-    <p hidden data-target="hero-directory.empty" data-i18n="directory.empty">No heroes match. Adjust the filters or server generation.</p>
-    <div class="hero-catalogue">
+    <p class="directory-empty" hidden data-target="hero-directory.empty" data-i18n="directory.empty">No heroes match. Adjust the filters or server generation.</p>
     {% assign sorted_heroes = site.data.heroes.heroes | sort: 'generation' %}
-    {% for hero in sorted_heroes %}{% assign metadata = site.data.hero_roles.heroes[hero.key] %}
-      <article class="directory-hero" id="hero-{{ hero.key }}" data-hero="{{ hero.key }}" data-name="{{ hero.name | escape }}" data-generation="{{ hero.generation }}" data-troop="{{ hero.type }}" data-roles="{% for rec in metadata.recommendations %}{{ rec.role }} {% endfor %}">
-        <header class="directory-hero-heading">
-          {% if metadata.portrait %}<img src="../img/heroes/{{ metadata.portrait }}" width="70" height="70" alt="" loading="lazy" decoding="async">{% else %}<span class="hero-initial" aria-hidden="true">{{ hero.name | slice: 0 }}</span>{% endif %}
-          <div><h3>{{ hero.name | escape }}</h3><p><span data-i18n="directory.generation">Generation</span> {{ hero.generation }} · <span data-i18n="sim.calc.{{ hero.type }}">{{ site.data.heroes._units.type[hero.type] }}</span> · <span data-i18n="directory.rarity.{{ hero.rarity }}">{{ hero.rarity }}</span></p></div>
-        </header>
-        <div class="hero-role-tags" aria-label="Roles" data-i18n-key="directory.role" data-i18n-attr="aria-label">{% for rec in metadata.recommendations %}<span data-i18n="directory.role.{{ rec.role }}">{{ rec.role | replace: '-', ' ' }}</span>{% endfor %}</div>
-        <p class="hero-first-skill" lang="en"><b>{{ metadata.skillNotes[0].name | escape }}</b> — {{ metadata.skillNotes[0].summary | escape }}</p>
-        <details class="hero-dossier" data-module="disclosure">
-          <summary data-i18n="directory.skills">skills &amp; field notes</summary>
-        {% if metadata.recommendations.size > 0 %}
-        <ul class="hero-role-list">
-          {% for rec in metadata.recommendations %}{% assign source = site.data.hero_roles.sources[rec.source] %}
-          <li><b data-i18n="directory.role.{{ rec.role }}">{{ rec.role | replace: '-', ' ' }}</b> <small data-i18n="directory.confidence.{{ rec.confidence }}">{{ rec.confidence }}</small><p data-i18n="directory.reason.{{ rec.reason }}">{{ site.data.hero_roles.reasons[rec.reason] | escape }}</p><a href="{{ source.url }}">{{ source.label | escape }}</a></li>
-          {% endfor %}
-        </ul>
-        {% else %}<p class="note" data-i18n="directory.unreviewed">This kit is listed for reference. Use the first skill below to check whether it fits your march.</p>{% endif %}
-
-          <p class="note" data-i18n="directory.skillNote">The numbered skills are in Expedition order. Joiners use the first one. Names, effects and level values are shown in English; a chance to trigger is not a guaranteed bonus.</p>
-          <ol class="hero-skills">
-            {% for skill in hero.skills %}{% assign skill_note = metadata.skillNotes[forloop.index0] %}<li><h4><span class="hero-skill-number">{{ forloop.index }}</span>{{ skill_note.name | escape }}</h4><p class="hero-skill-effect" lang="en">{{ skill_note.summary | escape }}</p>{% for scale in skill.scales %}<p class="hero-skill-levels" lang="en"><span>{{ scale.label | escape }}</span> {{ scale.levels | join: ' / ' | escape }}</p>{% endfor %}{% if skill_note.source %}<p class="hero-source-link" lang="en"><a href="{{ skill_note.source.url }}">{{ skill_note.source.label | escape }}</a></p>{% endif %}</li>{% endfor %}
-          </ol>
-          <p class="hero-source-link"><a href="{{ metadata.wiki }}" data-i18n="directory.heroSource">Check the official hero page</a></p>
-          <p><span data-i18n="directory.widget">widget role</span>: {% if hero.widget %}<span data-i18n="directory.widget.{{ hero.widget.role }}">{{ hero.widget.role }}</span>{% else %}<span data-i18n="directory.none">no widget</span>{% endif %}</p>
-        </details>
-      </article>
+    <div class="hero-roster">
+    {% for generation in generations %}
+    <div class="hero-gen">
+      <p class="gen-title"><span data-i18n="directory.generation">Generation</span> <b>{{ generation }}</b></p>
+      <div class="hero-catalogue">
+      {% for hero in sorted_heroes %}{% if hero.generation == generation %}{% assign metadata = site.data.hero_roles.heroes[hero.key] %}
+        <article class="directory-hero" id="hero-{{ hero.key }}" data-hero="{{ hero.key }}" data-name="{{ hero.name | escape }}" data-generation="{{ hero.generation }}" data-troop="{{ hero.type }}" data-rarity="{{ hero.rarity }}" data-roles="{% for rec in metadata.recommendations %}{{ rec.role }} {% endfor %}">
+          <details class="hero-dossier" name="hero-dossier" data-module="disclosure">
+            <summary class="directory-hero-heading">
+              {% if metadata.portrait %}<img src="../img/heroes/{{ metadata.portrait }}" width="70" height="70" alt="" loading="lazy" decoding="async">{% else %}<span class="hero-initial" aria-hidden="true">{{ hero.name | slice: 0 }}</span>{% endif %}
+              <span class="directory-hero-name"><h3>{{ hero.name | escape }}</h3><span class="directory-hero-meta"><span class="hero-meta-extra"><span data-i18n="directory.generation">Generation</span> {{ hero.generation }} · </span><span data-i18n="sim.calc.{{ hero.type }}">{{ site.data.heroes._units.type[hero.type] }}</span><span class="hero-meta-extra"> · <span data-i18n="directory.rarity.{{ hero.rarity }}">{{ hero.rarity }}</span></span></span></span>
+            </summary>
+            <div class="hero-dossier-body">
+              <div class="hero-dossier-brief">
+                <div class="hero-role-tags" aria-label="Roles" data-i18n-key="directory.role" data-i18n-attr="aria-label">{% for rec in metadata.recommendations %}<span data-i18n="directory.role.{{ rec.role }}">{{ rec.role | replace: '-', ' ' }}</span>{% endfor %}</div>
+                <p class="hero-first-skill" lang="en"><b>{{ metadata.skillNotes[0].name | escape }}</b> — {{ metadata.skillNotes[0].summary | escape }}</p>
+                {% if metadata.recommendations.size > 0 %}
+                <ul class="hero-role-list">
+                  {% for rec in metadata.recommendations %}{% assign source = site.data.hero_roles.sources[rec.source] %}
+                  <li><b data-i18n="directory.role.{{ rec.role }}">{{ rec.role | replace: '-', ' ' }}</b> <small data-i18n="directory.confidence.{{ rec.confidence }}">{{ rec.confidence }}</small><p data-i18n="directory.reason.{{ rec.reason }}">{{ site.data.hero_roles.reasons[rec.reason] | escape }}</p><a href="{{ source.url }}">{{ source.label | escape }}</a></li>
+                  {% endfor %}
+                </ul>
+                {% else %}<p class="note" data-i18n="directory.unreviewed">This kit is listed for reference. Use the first skill below to check whether it fits your march.</p>{% endif %}
+                <p class="hero-widget"><span data-i18n="directory.widget">widget role</span>: {% if hero.widget %}<span data-i18n="directory.widget.{{ hero.widget.role }}">{{ hero.widget.role }}</span>{% else %}<span data-i18n="directory.none">no widget</span>{% endif %}</p>
+              </div>
+              <div class="hero-dossier-skills">
+                <p class="hero-skills-title" data-i18n="directory.skills">skills &amp; field notes</p>
+                <ol class="hero-skills">
+                  {% for skill in hero.skills %}{% assign skill_note = metadata.skillNotes[forloop.index0] %}<li><h4><span class="hero-skill-number">{{ forloop.index }}</span>{{ skill_note.name | escape }}</h4><p class="hero-skill-effect" lang="en">{{ skill_note.summary | escape }}</p>{% for scale in skill.scales %}<p class="hero-skill-levels" lang="en"><span>{{ scale.label | escape }}</span> {{ scale.levels | join: ' / ' | escape }}</p>{% endfor %}{% if skill_note.source %}<p class="hero-source-link" lang="en"><a href="{{ skill_note.source.url }}">{{ skill_note.source.label | escape }}</a></p>{% endif %}</li>{% endfor %}
+                </ol>
+                <p class="note" data-i18n="directory.skillNote">The numbered skills are in Expedition order. Joiners use the first one. Names, effects and level values are shown in English; a chance to trigger is not a guaranteed bonus.</p>
+                <p class="hero-source-link"><a href="{{ metadata.wiki }}" data-i18n="directory.heroSource">Check the official hero page</a></p>
+              </div>
+            </div>
+          </details>
+        </article>
+      {% endif %}{% endfor %}
+      </div>
+    </div>
     {% endfor %}
     </div>
   </section>
@@ -64,7 +77,7 @@ self: heroes
     </div><div><h3 data-i18n="directory.joinerTitle">Joining &amp; reinforcing</h3><p data-i18n="directory.explain.joiner">Slot 1 is the important one. Its first Expedition skill can take one of four shared joiner slots. Send the hero and skill level your alliance asks for; slots 2 and 3 do not add joiner skills.</p>
     </div><div><h3 data-i18n="directory.role.rally-lead">Offensive rally lead</h3><p data-i18n="directory.explain.rally">The caller brings the account stats and all three heroes’ Expedition kits. A rally widget helps, but compare the lineup you have built. A good caller is not automatically a good slot-1 joiner.</p>
     </div><div><h3 data-i18n="directory.bearTitle">Bear Hunt</h3><p data-i18n="directory.explain.bear">The Bear rewards damage. A caller uses the full kit; a joiner brings troops and a useful first skill. Defensive bonuses do not add Bear damage. Follow your alliance’s joiner list and duplicate rules.</p>
-    </div></div><a class="kb" href="../bear-hunt/#heroes" data-i18n="directory.bearGuide">read the Bear Hunt lineup rules</a>
+    </div></div><a class="directory-more" href="../bear-hunt/#heroes" data-i18n="directory.bearGuide">read the Bear Hunt lineup rules</a>
   </section>
   <section class="section" id="hero-sources">
     <h2 data-i18n="directory.sources">Sources &amp; confidence</h2>
