@@ -210,7 +210,27 @@
     syncXP();
     changed(); paint(); el('undo').hidden = false;
   }
+  function paintOpportunities() {
+    var routes = E.nearbyMilestones(state), host = el('opportunities');
+    if (!host) return;
+    host.innerHTML = routes.filter(function (r) {
+      return E.RES.some(function (key) { return r.gap[key] > 0; });
+    }).map(function (r) {
+      var missing = E.RES.filter(function (key) { return r.gap[key] > 0; })
+        .map(function (key) { return fmt(r.gap[key]) + ' ' + esc(tr(key)); }).join(' · ');
+      var reforge = r.gap.xp > 0 && r.reforgeXpAvailable >= r.gap.xp &&
+        E.RES.every(function (key) { return key === 'xp' || !r.gap[key]; });
+      return '<article class="gear-opportunity">' +
+        '<div class="gear-opportunity-head">' + gearImage(r.id, 'gear-opportunity-art') +
+        '<div><strong>' + esc(name(r.id)) + ' · ' + r.from.level + ' → ' + r.to.level + '</strong>' +
+        '<small>' + esc(tr('mithrilCheckpoint')) + ' · +' + r.gain.toFixed(1) + ' ' + esc(tr('weightedGain')) + '</small></div></div>' +
+        '<p>' + esc(missing) + ' needed to reach this milestone.</p>' +
+        (reforge ? '<p>XP reforge could cover the shortfall, but may reduce power on other pieces.</p>' : '') +
+        '<button type="button" data-mode="plan">Compare saving routes →</button></article>';
+    }).join('');
+  }
   function paintResults() {
+    paintOpportunities();
     if (!result) return;
     el('results').setAttribute('aria-busy', 'false');
     el('search-status').hidden = true;
