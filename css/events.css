@@ -11,10 +11,6 @@
    parchment ink, oxblood rubrication, manuscript voice — stays shared. */
 
 /* ─── Swipe setup ──────────────────────────────────────── */
-/* The browser's edge-swipe navigation must not fight the deck. touch-action
-   stays untouched on purpose: an ancestor pan-y would break the range sliders
-   in the calculators (touch-action intersects down the tree), and the gesture
-   handler already requires |dx| > |dy| before it activates. */
 html, body { overscroll-behavior-x: none; }
 
 
@@ -148,6 +144,8 @@ html, body { overscroll-behavior-x: none; }
 .ledger a.active { color: var(--amber); }
 .ledger a.active::before { content: "\2767 "; }
 
+@property --deck-accent { syntax: '<color>'; inherits: true; initial-value: #F5C851; }
+
 .page-deck {
   position: fixed;
   inset: 0;
@@ -162,13 +160,27 @@ html, body { overscroll-behavior-x: none; }
   color: var(--ink);
   background: #090d14;
   background-color: color-mix(in srgb, #090d14 86%, var(--deck-accent, var(--amber)) 14%);
-  transition: background-color 0.7s ease;
+  --amber: var(--deck-accent);
+  --amber-dim: color-mix(in srgb, var(--deck-accent) 76%, #090d14);
+  --signal-line: color-mix(in srgb, var(--deck-accent) 35%, transparent);
+  transition: --deck-accent 0.9s ease, background-color 0.9s ease;
+  isolation: isolate;
   overflow: auto;
   overscroll-behavior: contain;
 }
+.page-deck:has(.deck-card.is-selected[data-page="home"]) { --deck-accent: #F5C851; }
+.page-deck:has(.deck-card.is-selected[data-page="bearhunt"]) { --deck-accent: #AEC878; }
+.page-deck:has(.deck-card.is-selected[data-page="vikings"]) { --deck-accent: #E08A3C; }
+.page-deck:has(.deck-card.is-selected[data-page="swordland"]) { --deck-accent: #E05555; }
+.page-deck:has(.deck-card.is-selected[data-page="vip"]) { --deck-accent: #C5A3EE; }
+.page-deck:has(.deck-card.is-selected[data-page="sim"]) { --deck-accent: #E0B24A; }
+.page-deck:has(.deck-card.is-selected[data-page="kvksg"]) { --deck-accent: #D9B25A; }
+.page-deck:has(.deck-card.is-selected[data-page="gear"]) { --deck-accent: #e6b56a; }
 .page-deck::backdrop { background: rgba(5, 8, 13, 0.8); }
 html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
 .deck-sheet {
+  position: relative;
+  z-index: 1;
   min-height: 100%;
   display: flex;
   flex-direction: column;
@@ -211,24 +223,31 @@ html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
 }
 .deck-groups button[aria-pressed="true"] { color: var(--amber); border-color: var(--signal-line); }
 .deck-viewport {
+  --card-width: min(76vw, 23rem);
   position: relative;
-  height: clamp(25rem, 62dvh, 34rem);
+  display: flex;
+  gap: clamp(1rem, 4vw, 1.5rem);
+  height: clamp(32rem, 70dvh, 39rem);
   flex-shrink: 0;
-  overflow: hidden;
+  padding: 0.75rem calc((100% - var(--card-width)) / 2);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
   direction: ltr;
   user-select: none;
   -webkit-user-select: none;
 }
+.deck-viewport::-webkit-scrollbar { display: none; }
 .deck-card {
-  position: absolute;
-  top: 0.75rem;
-  bottom: 0.75rem;
-  left: 50%;
-  width: min(72vw, 23rem);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1rem;
+  position: relative;
+  flex: 0 0 var(--card-width);
+  width: var(--card-width);
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 14rem;
   padding: clamp(1.25rem, 5vw, 2rem);
   background: var(--void-2);
   border: 1px solid var(--amber-dim);
@@ -236,13 +255,31 @@ html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
   color: var(--ink);
   text-decoration: none;
-  will-change: transform;
+  scroll-snap-align: center;
+  scroll-margin-inline: 1rem;
+  transition: border-color 0.6s ease;
   -webkit-user-drag: none;
+  isolation: isolate;
 }
+.deck-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--amber) 7%, transparent), transparent 70%);
+  opacity: 0.45;
+  transition: opacity 0.8s ease;
+}
+.deck-card:is(.is-selected, :hover, :focus-visible)::before { opacity: 1; }
+.deck-card-copy { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 0.75rem; min-height: 0; }
 .deck-card.is-selected { border-color: var(--amber); }
 .deck-mark { color: var(--amber-dim); font-size: 2.2rem; line-height: 1; }
 .deck-card-title {
-  flex: none;
+  min-height: 0;
+  overflow-y: auto;
+  align-self: start;
+  max-height: 100%;
   font-family: var(--display-2);
   font-weight: 700;
   font-size: min(var(--step-2), 7vw);
@@ -253,6 +290,8 @@ html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
   overflow-wrap: anywhere;
 }
 .deck-card-lede {
+  align-self: end;
+  max-height: 100%;
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
@@ -261,7 +300,7 @@ html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
   line-height: 1.45;
   color: var(--ink-dim);
 }
-.deck-card-action { flex: none; margin-top: auto; color: var(--amber); font-size: var(--step--1); }
+.deck-card-action { display: block; margin-top: auto; color: var(--amber); font-size: var(--step--1); }
 .deck-footer { direction: ltr; padding: 0; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
 .deck-footer button { font-size: 2rem; line-height: 1; }
 .deck-position { min-width: 0; text-align: center; color: var(--ink-dim); font-size: var(--step--1); }
@@ -273,10 +312,11 @@ html[dir="rtl"] .deck-card { direction: rtl; }
 }
 @media (max-height: 540px) {
   .deck-sheet { gap: 0.4rem; }
-  .deck-viewport { height: 25rem; }
+  .deck-viewport { height: 32rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .page-deck { transition: none; }
+  .page-deck, .deck-card, .deck-card::before { transition: none; }
+  .deck-viewport { scroll-behavior: auto; }
 }
 
 
@@ -349,19 +389,6 @@ html[data-entry="deck"]::view-transition-group(root) { animation-duration: 0.4s;
   --amber-dim: #D3A33E;   /* antique gold — secondary signal */
 }
 
-/* ─── Home preview — hover an event, and the page becomes it ──
-   The home page previews each event while its card is hovered or
-   focused (common.js stamps data-hover="bearhunt|vikings|swordland"
-   on <html>; the theme blocks below accept html[data-hover=…] as a
-   second owner). Every themed token is registered with @property so
-   the shift interpolates as one slow dissolve — night, signal,
-   hairlines, glows and mote colours all move in lockstep at
-   --theme-shift — and the dust crossfades into the destination
-   world's motes. Browsers without @property fall back to an instant
-   switch; reduced motion collapses the transition (styles.css
-   blanket rule) while the state change stays legible. The hovered
-   dust groups themselves are styled in home.css — they only exist
-   on the home page. */
 @property --void { syntax: '<color>'; inherits: true; initial-value: #0B0E16; }
 @property --void-2 { syntax: '<color>'; inherits: true; initial-value: #121726; }
 @property --amber { syntax: '<color>'; inherits: true; initial-value: #F5C851; }
@@ -402,7 +429,7 @@ html {
 }
 
 html[data-page="bearhunt"],
-html[data-hover="bearhunt"],
+html[data-page="home"]:has(.event-card[data-hover-page="bearhunt"]:is(:hover, :focus-within)),
 .deck-card[data-page="bearhunt"] {
   --void: #0B110C;        /* pine night — black-green        */
   --void-2: #121B13;      /* one step up (fields)            */
@@ -419,7 +446,7 @@ html[data-hover="bearhunt"],
 }
 
 html[data-page="vikings"],
-html[data-hover="vikings"],
+html[data-page="home"]:has(.event-card[data-hover-page="vikings"]:is(:hover, :focus-within)),
 .deck-card[data-page="vikings"] {
   --void: #150D08;        /* forge night — ember brown         */
   --void-2: #1E140D;      /* one step up (fields)             */
@@ -475,7 +502,7 @@ html[data-page="vikings"] .dust i:nth-child(3) {
    duel crimson (your side), even sections (.section.blue) carry
    the enemy steel-blue, and the .tag-them accent stays blue. */
 html[data-page="swordland"],
-html[data-hover="swordland"],
+html[data-page="home"]:has(.event-card[data-hover-page="swordland"]:is(:hover, :focus-within)),
 .deck-card[data-page="swordland"] {
   --void: #120A0D;        /* duel night — black-red            */
   --void-2: #1B1115;      /* one step up (fields)              */
@@ -520,7 +547,7 @@ html[data-page="swordland"] .dust i:nth-child(3) { animation: dust-drift 80s lin
    motes, and a pale amethyst signal — the one cool signal on the
    site, for the page that keeps the ledger. */
 html[data-page="vip"],
-html[data-hover="vip"],
+html[data-page="home"]:has(.event-card[data-hover-page="vip"]:is(:hover, :focus-within)),
 .deck-card[data-page="vip"] {
   --void: #120A1E;        /* court night — violet-black        */
   --void-2: #1C1330;      /* one step up (fields)              */
@@ -551,7 +578,7 @@ html[data-page="vip"] .dust i:nth-child(3) { background-size: 300px 300px; anima
    signal — the same palette as the ledger tool, but a step darker and
    colder, for the page that does the arithmetic. */
 html[data-page="sim"],
-html[data-hover="sim"],
+html[data-page="home"]:has(.event-card[data-hover-page="sim"]:is(:hover, :focus-within)),
 .deck-card[data-page="sim"] {
   --void: #0E0A12;        /* war-room night — near-black        */
   --void-2: #16111C;      /* one step up (fields)              */
@@ -580,7 +607,7 @@ html[data-page="sim"] .dust i:nth-child(3) { background-size: 300px 300px; anima
    the way Swordland alternates to the enemy blue. The wheel's battle
    weekend borrows the shared --enemy red. */
 html[data-page="kvksg"],
-html[data-hover="kvksg"],
+html[data-page="home"]:has(.event-card[data-hover-page="kvksg"]:is(:hover, :focus-within)),
 .deck-card[data-page="kvksg"] {
   --void: #081315;        /* sea night — black-teal            */
   --void-2: #0F1F1E;      /* one step up (fields)              */
@@ -738,7 +765,7 @@ html[data-page="bearhunt"] .section-fold:not([open]) > summary h2::before {
   }
 }
 
-html[data-page="gear"], html[data-hover="gear"], .deck-card[data-page="gear"] {
+html[data-page="gear"], html[data-page="home"]:has(.event-card[data-hover-page="gear"]:is(:hover, :focus-within)), .deck-card[data-page="gear"] {
   --void: #120d0c;
   --void-2: #1b1512;
   --amber: #e6b56a;
@@ -747,4 +774,6 @@ html[data-page="gear"], html[data-hover="gear"], .deck-card[data-page="gear"] {
   --signal-line: rgba(230, 181, 106, .35);
   --signal-tint: rgba(230, 181, 106, .07);
 }
+
+
 

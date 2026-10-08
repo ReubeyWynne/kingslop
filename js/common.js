@@ -108,67 +108,32 @@
   var deck = document.getElementById('page-deck');
   var cards = deck ? Array.prototype.slice.call(deck.querySelectorAll('.deck-card')) : [];
   var groups = deck ? Array.prototype.slice.call(deck.querySelectorAll('[data-deck-group]')) : [];
+  var viewport = deck ? deck.querySelector('.deck-viewport') : null;
   var position = 0;
-  var step = 1;
-  var frame = 0;
+  var targetPosition = null;
   var suppressUntil = 0;
   var returnFocus = null;
-  var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   var gesture = null;
-  var wheelTimer = 0;
+  var announceTimer = 0;
   var warmingCard = '';
   var navigatingDeck = false;
-  var deckTheme = '';
 
   function wrap(n) { return (n % cards.length + cards.length) % cards.length; }
 
-  function paintDeck() {
-    var selected = wrap(Math.round(position));
-    var selectedCard = cards[selected];
-    var theme = selectedCard.getAttribute('data-page');
-    if (theme !== deckTheme) {
-      deckTheme = theme;
-      var palette = window.getComputedStyle(selectedCard);
-      deck.style.setProperty('--deck-accent', palette.getPropertyValue('--amber').trim());
-      ['--amber', '--amber-dim', '--signal-line'].forEach(function (token) {
-        deck.style.setProperty(token, palette.getPropertyValue(token).trim());
-      });
-      deck.setAttribute('data-selected-page', theme);
-    }
+  function selectDeck(index) {
+    position = index;
     cards.forEach(function (card, i) {
-      var delta = wrap(i - position + cards.length / 2) - cards.length / 2;
-      var distance = Math.abs(delta);
-      card.style.transform = 'translateX(calc(-50% + ' + (delta * step) + 'px)) scale(' + (1 - Math.min(distance, 2) * 0.065) + ')';
-      card.style.opacity = String(Math.max(0, 1 - Math.max(0, distance - 1) * 0.65));
-      card.style.zIndex = String(cards.length - Math.round(distance));
-      card.classList.toggle('is-selected', i === selected);
-      card.tabIndex = i === selected ? 0 : -1;
-      card.inert = distance > 1.7;
+      card.classList.toggle('is-selected', i === index);
+      card.tabIndex = i === index ? 0 : -1;
     });
     groups.forEach(function (button) {
-      button.setAttribute('aria-pressed', cards[selected].getAttribute('data-group') === button.getAttribute('data-deck-group') ? 'true' : 'false');
+      button.setAttribute('aria-pressed', cards[index].getAttribute('data-group') === button.getAttribute('data-deck-group') ? 'true' : 'false');
     });
-  }
-
-  function measureDeck() {
-    if (!deck || !deck.open || !cards.length) return;
-    step = cards[0].offsetWidth + Math.min(24, deck.clientWidth * 0.045);
-    paintDeck();
-  }
-
-  function stopDeck() {
-    var moving = !!frame;
-    window.cancelAnimationFrame(frame);
-    frame = 0;
-    window.clearTimeout(wheelTimer);
-    wheelTimer = 0;
-    return moving;
   }
 
   function announceDeck() {
-    var i = wrap(Math.round(position));
-    var card = cards[i];
-    deck.querySelector('.deck-position').textContent = card.querySelector('.deck-card-title').textContent + ' · ' + fmt(i + 1) + ' / ' + fmt(cards.length);
+    var card = cards[position];
+    deck.querySelector('.deck-position').textContent = card.querySelector('.deck-card-title').textContent + ' · ' + fmt(position + 1) + ' / ' + fmt(cards.length);
     var c = navigator.connection;
     if (warmingCard !== card.href && !(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || '')))) {
       warmingCard = card.href;
@@ -176,56 +141,44 @@
     }
   }
 
-  function settleDeck(target, velocity, focusCard) {
-    stopDeck();
-    var from = position;
-    var distance = target - from;
-    function done() {
-      frame = 0;
-      position = wrap(target);
-      paintDeck();
-      announceDeck();
-      if (focusCard) cards[wrap(Math.round(position))].focus({ preventScroll: true });
-    }
-    if (motion.matches || Math.abs(distance) < 0.001) { done(); return; }
-    var duration = velocity && distance * velocity > 0
-      ? 3 * Math.abs(distance / velocity)
-      : 300;
-    var began = performance.now();
-    function tick(now) {
-      var t = Math.min(1, (now - began) / duration);
-      position = from + distance * (1 - Math.pow(1 - t, 3));
-      paintDeck();
-      if (t < 1) frame = window.requestAnimationFrame(tick);
-      else done();
-    }
-    frame = window.requestAnimationFrame(tick);
+  function browseDeck(index, focusCard, instant) {
+    index = wrap(index);
+    targetPosition = index;
+    selectDeck(index);
+    viewport.scrollTo({
+      left: cards[index].offsetLeft - (viewport.clientWidth - cards[index].offsetWidth) / 2,
+      behavior: instant ? 'instant' : 'auto'
+    });
+    announceDeck();
+    if (focusCard) cards[index].focus({ preventScroll: true });
   }
 
-  function coastDeck(velocity) {
-    stopDeck();
-    if (motion.matches || Math.abs(velocity * step) < 0.18) {
-      settleDeck(Math.round(position), 0);
-      return;
-    }
-    var from = position;
-    var decayTime = Math.min(400, Math.min(4, cards.length - 1) / Math.abs(velocity));
-    var began = performance.now();
-    function tick(now) {
-      var decay = Math.exp(-(now - began) / decayTime);
-      position = from + velocity * decayTime * (1 - decay);
-      paintDeck();
-      if (Math.abs(velocity * step * decay) > 0.08) frame = window.requestAnimationFrame(tick);
-      else settleDeck(Math.round(position), velocity * decay);
-    }
-    frame = window.requestAnimationFrame(tick);
+  function syncDeckScroll() {
+    if (!deck.open) return;
+    var center = viewport.scrollLeft + viewport.clientWidth / 2;
+    var index = 0;
+    var distance = Infinity;
+    cards.forEach(function (card, i) {
+      var next = Math.abs(card.offsetLeft + card.offsetWidth / 2 - center);
+      if (next < distance) { distance = next; index = i; }
+    });
+    selectDeck(index);
+    window.clearTimeout(announceTimer);
+    announceTimer = window.setTimeout(finishDeckScroll, 180);
+  }
+
+  function finishDeckScroll() {
+    window.clearTimeout(announceTimer);
+    announceTimer = 0;
+    targetPosition = null;
+    if (deck.open) announceDeck();
   }
 
   function openDeck() {
     if (!deck || !cards.length || typeof deck.showModal !== 'function') return false;
     if (deck.open) return true;
     returnFocus = document.activeElement;
-    position = Math.max(0, cards.findIndex(function (card) { return card.hasAttribute('aria-current'); }));
+    var index = Math.max(0, cards.findIndex(function (card) { return card.hasAttribute('aria-current'); }));
     var ledger = document.getElementById('ledger');
     var ledgerBtn = document.getElementById('ledger-btn');
     var langMenu = document.getElementById('lang-menu');
@@ -237,13 +190,13 @@
     navigatingDeck = false;
     deck.showModal();
     document.documentElement.classList.add('deck-open');
-    measureDeck();
-    announceDeck();
+    browseDeck(index, false, true);
     return true;
   }
 
   function cleanDeck() {
-    stopDeck();
+    window.clearTimeout(announceTimer);
+    targetPosition = null;
     gesture = null;
     document.documentElement.classList.remove('deck-open');
     var btn = document.getElementById('ledger-btn');
@@ -258,88 +211,61 @@
     cleanDeck();
   }
 
-  function sampleGesture(x) {
-    var now = performance.now();
-    gesture.samples.push({ x: x, time: now });
-    gesture.samples = gesture.samples.filter(function (sample) { return now - sample.time <= 100; });
-  }
-
   document.addEventListener('touchstart', function (e) {
-    if (!deck || !cards.length || e.touches.length !== 1) {
-      if (gesture && gesture.active && deck.open) settleDeck(Math.round(position), 0);
-      gesture = null;
-      return;
-    }
+    gesture = null;
+    if (!deck || !cards.length || e.touches.length !== 1) return;
     var t = e.target;
+    if (deck.open && !t.closest('.deck-viewport')) return;
     if (!deck.open && t.closest && t.closest('a, button, input, select, textarea, dialog, [role="dialog"], [contenteditable], #ledger, #toc, .toc, [role="slider"], [data-swipe-ignore]')) return;
-    if (deck.open && t.closest && t.closest('button')) return;
-    var caught = deck.open && stopDeck();
-    if (caught) suppressUntil = performance.now() + 400;
     var touch = e.touches[0];
-    gesture = { x: touch.clientX, y: touch.clientY, start: position, active: false, caught: caught, samples: [] };
-    sampleGesture(touch.clientX);
+    gesture = { x: touch.clientX, y: touch.clientY, inDeck: deck.open, active: false };
+    if (deck.open) targetPosition = null;
   }, { passive: true });
 
   document.addEventListener('touchmove', function (e) {
-    if (!gesture || e.touches.length !== 1) return;
-    var touch = e.touches[0];
-    var dx = touch.clientX - gesture.x;
-    var dy = touch.clientY - gesture.y;
-    sampleGesture(touch.clientX);
+    if (!gesture || e.touches.length !== 1) { gesture = null; return; }
+    var dx = e.touches[0].clientX - gesture.x;
+    var dy = e.touches[0].clientY - gesture.y;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 12) return;
+    if (Math.abs(dy) >= Math.abs(dx) && !gesture.active) { gesture = null; return; }
+    if (Math.abs(dx) < Math.abs(dy) * 1.2 && !gesture.active) return;
+    if (gesture.inDeck) {
+      gesture.active = true;
+      suppressUntil = performance.now() + 400;
+      return;
+    }
     if (!gesture.active) {
-      if (Math.max(Math.abs(dx), Math.abs(dy)) < 12) return;
-      if (Math.abs(dy) >= Math.abs(dx)) {
-        if (gesture.caught && deck.open) settleDeck(Math.round(position), 0);
-        gesture = null;
-        return;
-      }
-      if (Math.abs(dx) < Math.abs(dy) * 1.2) return;
-      if (!deck.open) {
-        if (!openDeck()) { gesture = null; return; }
-        gesture.start = position;
-      }
+      if (!openDeck()) { gesture = null; return; }
       gesture.active = true;
     }
     if (e.cancelable) e.preventDefault();
-    position = gesture.start - dx / step;
-    paintDeck();
   }, { passive: false });
 
   document.addEventListener('touchend', function (e) {
     if (!gesture) return;
     var g = gesture;
-    sampleGesture(e.changedTouches[0].clientX);
     gesture = null;
-    if (!g.active) {
-      if (g.caught) { suppressUntil = performance.now() + 400; settleDeck(Math.round(position), 0); }
-      return;
-    }
+    if (!g.active) return;
     suppressUntil = performance.now() + 400;
-    var first = g.samples[0];
-    var last = g.samples[g.samples.length - 1];
-    var elapsed = last.time - first.time;
-    var velocity = elapsed > 0 ? -(last.x - first.x) / elapsed / step : 0;
-    coastDeck(velocity);
+    if (!g.inDeck && e.changedTouches.length) {
+      var dx = e.changedTouches[0].clientX - g.x;
+      browseDeck(position + (dx < 0 ? 1 : -1));
+    }
   }, { passive: true });
 
-  document.addEventListener('touchcancel', function () {
-    if (gesture && deck.open) {
-      suppressUntil = performance.now() + 400;
-      settleDeck(Math.round(position), 0);
-    }
-    gesture = null;
-  }, { passive: true });
+  document.addEventListener('touchcancel', function () { gesture = null; }, { passive: true });
 
   function wireDeck() {
     if (!deck || !cards.length || typeof deck.showModal !== 'function') return;
     deck.querySelector('.deck-close').addEventListener('click', closeDeck);
     deck.addEventListener('cancel', function (e) { e.preventDefault(); closeDeck(); });
     deck.addEventListener('close', cleanDeck);
+    viewport.addEventListener('scroll', syncDeckScroll, { passive: true });
+    viewport.addEventListener('scrollend', finishDeckScroll);
     deck.addEventListener('click', function (e) {
       if (performance.now() < suppressUntil && e.detail !== 0) { e.preventDefault(); return; }
       var card = e.target.closest('.deck-card');
       if (card) {
-        if (frame) { e.preventDefault(); stopDeck(); settleDeck(Math.round(position), 0); return; }
         if (card.hasAttribute('aria-current')) { e.preventDefault(); closeDeck(); return; }
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         navigatingDeck = true;
@@ -352,42 +278,24 @@
     deck.addEventListener('keydown', function (e) {
       if (e.altKey || e.metaKey || e.ctrlKey) return;
       var delta = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-      if (delta) { e.preventDefault(); settleDeck(Math.round(position) + delta, 0, true); }
+      if (delta) { e.preventDefault(); browseDeck((targetPosition === null ? position : targetPosition) + delta, true); }
       else if (e.key === 'Home' || e.key === 'End') {
         e.preventDefault();
-        settleDeck(e.key === 'Home' ? 0 : cards.length - 1, 0, true);
+        browseDeck(e.key === 'Home' ? 0 : cards.length - 1, true);
       }
     });
-    deck.querySelector('.deck-prev').addEventListener('click', function () { settleDeck(Math.round(position) - 1, 0); });
-    deck.querySelector('.deck-next').addEventListener('click', function () { settleDeck(Math.round(position) + 1, 0); });
+    deck.querySelector('.deck-prev').addEventListener('click', function () { browseDeck((targetPosition === null ? position : targetPosition) - 1); });
+    deck.querySelector('.deck-next').addEventListener('click', function () { browseDeck((targetPosition === null ? position : targetPosition) + 1); });
     groups.forEach(function (button) {
       button.addEventListener('click', function () {
-        var i = cards.findIndex(function (card) { return card.getAttribute('data-group') === button.getAttribute('data-deck-group'); });
-        var delta = wrap(i - position + cards.length / 2) - cards.length / 2;
-        settleDeck(position + delta, 0);
+        browseDeck(cards.findIndex(function (card) { return card.getAttribute('data-group') === button.getAttribute('data-deck-group'); }));
       });
     });
-    deck.querySelector('.deck-viewport').addEventListener('wheel', function (e) {
-      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-      e.preventDefault();
-      stopDeck();
-      position += e.deltaX * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? step : 1) / step;
-      paintDeck();
-      wheelTimer = window.setTimeout(function () { settleDeck(Math.round(position), 0); }, 120);
-    }, { passive: false });
     window.addEventListener('resize', function () {
-      if (!deck.open) return;
-      gesture = null;
-      stopDeck();
-      position = Math.round(position);
-      measureDeck();
-      announceDeck();
-    });
-    motion.addEventListener('change', function () {
-      if (deck.open && motion.matches) settleDeck(Math.round(position), 0);
+      if (deck.open) browseDeck(position, false, true);
     });
     document.addEventListener('i18n:change', function () {
-      if (deck.open) { measureDeck(); announceDeck(); }
+      if (deck.open) { syncDeckScroll(); announceDeck(); }
     });
   }
 
@@ -577,24 +485,6 @@
     contentSections.forEach(function (s) { front.observe(s); });
     var hero = document.querySelector('main .hero');
     if (hero) hero.classList.add('front');
-  }
-
-  // Home — hover (or focus) an event card and the page previews that event's
-  // world: events.css animates every themed token into the destination palette
-  // and the dust dissolves into its motes. The ghost card carries no
-  // data-hover-page, so it never shifts anything.
-  function wireHomePreview() {
-    var rootEl = document.documentElement;
-    Array.prototype.slice.call(document.querySelectorAll('.event-card[data-hover-page]'))
-      .forEach(function (card) {
-        var hoverPage = card.getAttribute('data-hover-page');
-        function on() { rootEl.setAttribute('data-hover', hoverPage); }
-        function off() { rootEl.removeAttribute('data-hover'); }
-        card.addEventListener('mouseenter', on);
-        card.addEventListener('mouseleave', off);
-        card.addEventListener('focusin', on);
-        card.addEventListener('focusout', off);
-      });
   }
 
   // ── The two topbar disclosures ─────────────────────────
@@ -791,7 +681,6 @@
     wireProgress();
     wireToc();
     wireFrontLayer();
-    wireHomePreview();
     wireDeck();
     wireTopbar();
 
@@ -833,4 +722,5 @@
     setTimeout(boot, 0);
   }
 })();
+
 
