@@ -211,11 +211,13 @@ html.deck-open .dust .ascii-ambient > span::before { animation-play-state: pause
 .deck-ascii .ascii-forge { font-size: clamp(8px, 2.2vw, 11px); }
 .deck-atmosphere { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
 
-/* Only the cover in front animates; the rest hold their first frame. */
+/* Only the cover in front animates; the rest hold their frame. The ring's
+   copies of that cover run with it, so settling back from a copy onto the
+   real cover shows the same frame. */
 .deck-ascii *, .deck-ascii *::before, .deck-ascii *::after { animation-play-state: paused !important; }
-.page-deck[open] .deck-card.is-selected .deck-ascii *,
-.page-deck[open] .deck-card.is-selected .deck-ascii *::before,
-.page-deck[open] .deck-card.is-selected .deck-ascii *::after { animation-play-state: running !important; }
+.page-deck[open] .deck-card.is-running .deck-ascii *,
+.page-deck[open] .deck-card.is-running .deck-ascii *::before,
+.page-deck[open] .deck-card.is-running .deck-ascii *::after { animation-play-state: running !important; }
 
 /* ─── Reduced motion: every scene rests on its first frame ─ */
 @media (prefers-reduced-motion: reduce) {

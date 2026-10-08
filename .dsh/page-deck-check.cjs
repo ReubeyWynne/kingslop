@@ -32,7 +32,8 @@ class Element {
   setAttribute(name, value) { this.attrs[name] = String(value); }
   removeAttribute(name) { delete this.attrs[name]; }
   hasAttribute(name) { return Object.hasOwn(this.attrs, name); }
-  addEventListener(name, callback) { (this.listeners[name] ??= []).push(callback); }
+  addEventListener(name, callback, options) { (this.listeners[name] ??= []).push(callback); (this.passive ??= new Map()).set(callback, !!options?.passive); }
+  removeEventListener(name, callback) { this.listeners[name] = (this.listeners[name] ?? []).filter(fn => fn !== callback); }
   appendChild(child) { this.children.push(child); child.parentNode = this; }
   querySelector(selector) { return this.querySelectorAll(selector)[0] ?? null; }
   querySelectorAll(selector) { return this.children.flatMap(child => [...(child.matches(selector) ? [child] : []), ...child.querySelectorAll(selector)]); }
@@ -176,11 +177,11 @@ test('an opening swipe browses one neighbour without scheduling animation frames
   }
 });
 
-test('native scroll position selects the centred cover once it settles', () => {
+test('native scroll position selects the centred cover as the strip moves', () => {
   const s = setup(); s.fire(s.ledgerButton, 'click');
   s.viewport.scrollLeft = 305 * 4;
   s.fire(s.viewport, 'scroll');
-  assert.equal(s.selected(), 0, 'a moving strip does not reselect');
+  assert.equal(s.selected(), 4, 'selection follows the strip, so nothing changes when it stops');
   s.fire(s.viewport, 'scrollend');
   assert.equal(s.selected(), 4);
   assert.match(s.status.textContent, /Swordland/);
@@ -277,6 +278,10 @@ test('deck touch movement is left to native scrolling and keyboard direction sta
   s.touch(s.cards[0], 'touchstart', 300);
   const move = s.touch(s.cards[0], 'touchmove', 100);
   assert.equal(move.defaultPrevented, false);
+  assert.deepEqual([...s.document.passive.entries()].filter(([fn]) => s.document.listeners.touchmove.includes(fn)).map(([, passive]) => passive), [true], 'an open deck never holds touch scrolling for script');
+  s.fire(s.deck, 'cancel');
+  assert.deepEqual([...s.document.passive.entries()].filter(([fn]) => s.document.listeners.touchmove.includes(fn)).map(([, passive]) => passive), [false]);
+  s.fire(s.ledgerButton, 'click');
   assert.equal(s.frames.size, 0);
   s.document.documentElement.setAttribute('dir', 'rtl');
   s.fire(s.next, 'keydown', { key: 'Home' });
@@ -308,9 +313,13 @@ test('modified cover clicks do not mark the current tab as navigating', () => {
 test('palette selection is declared in CSS without JavaScript colour writes or frame loops', () => {
   const css = fs.readFileSync(path.join(root, 'css/events.css'), 'utf8');
   assert.match(css, /@property --deck-accent/);
-  assert.match(css, /transition: --deck-accent 0\.9s ease, background-color 0\.9s ease/);
+  assert.match(css, /transition: --deck-accent 0\.6s ease, background-color 0\.6s ease/);
+  assert.doesNotMatch(css, /^\.deck-card[^{]*is-selected/m, 'covers look the same whichever is selected');
   assert.doesNotMatch(css, /deck-wash/);
-  for (const n of nav) assert.ok(css.includes(`.page-deck:has(.deck-card.is-selected[data-page="${pages[n.self].token}"])`));
+  for (const n of nav) {
+    assert.ok(css.includes(`.page-deck:has(.deck-card.is-selected[data-page="${pages[n.self].token}"])`));
+    assert.ok(css.includes(`.deck-card[data-page="${pages[n.self].token}"] { --deck-accent:`));
+  }
   assert.doesNotMatch(source, /requestAnimationFrame|cancelAnimationFrame|getComputedStyle/);
   const s = setup(); s.fire(s.ledgerButton, 'click'); s.fire(s.next, 'click');
   assert.equal(s.document.documentElement.getAttribute('data-page'), 'home');

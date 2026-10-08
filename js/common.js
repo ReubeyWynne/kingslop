@@ -167,6 +167,7 @@
     cards.forEach(function (card, i) {
       card.classList.toggle('is-selected', i === index);
       card.tabIndex = i === index ? 0 : -1;
+      copiesOf(i).forEach(function (el) { el.classList.toggle('is-running', i === index); });
     });
     groups.forEach(function (button) {
       button.setAttribute('aria-pressed', cards[index].getAttribute('data-group') === button.getAttribute('data-deck-group') ? 'true' : 'false');
@@ -192,12 +193,17 @@
     if (focusCard) cards[index].focus({ preventScroll: true });
   }
 
-  // Selection follows the strip only once it comes to rest. Covers the strip
-  // merely passes — under a finger, in a fling, or on the way to a button's
-  // target — never take a turn at being selected, so the ground colour, the
-  // borders and the running scene change once per move instead of flickering.
+  // Selection follows the cover in the centre while the strip moves, so the
+  // ground drifts with the finger and nothing changes when it comes to rest.
+  // Covers keep their own colours, so only the ground moves. A jump from a
+  // button or key holds its target rather than passing through the covers
+  // on the way.
   function syncDeckScroll() {
     if (!deck.open) return;
+    if (targetPosition === null) {
+      var at = centred();
+      if (at.index !== position) selectDeck(at.index);
+    }
     window.clearTimeout(announceTimer);
     announceTimer = window.setTimeout(finishDeckScroll, 180);
   }
@@ -231,6 +237,10 @@
     var langBtn = document.getElementById('lang-btn');
     if (langBtn) { langBtn.setAttribute('aria-expanded', 'false'); langBtn.classList.remove('open'); }
     navigatingDeck = false;
+    // While the deck is open, touch only marks a drag; the strip scrolls
+    // natively. A passive listener never makes that scroll wait for script.
+    document.removeEventListener('touchmove', trackTouch, { passive: false });
+    document.addEventListener('touchmove', trackTouch, { passive: true });
     deck.showModal();
     document.documentElement.classList.add('deck-open');
     browseDeck(index, false, true);
@@ -239,6 +249,8 @@
 
   function cleanDeck() {
     window.clearTimeout(announceTimer);
+    document.removeEventListener('touchmove', trackTouch, { passive: true });
+    document.addEventListener('touchmove', trackTouch, { passive: false });
     targetPosition = null;
     gesture = null;
     document.documentElement.classList.remove('deck-open');
@@ -265,7 +277,7 @@
     if (deck.open) targetPosition = null;
   }, { passive: true });
 
-  document.addEventListener('touchmove', function (e) {
+  function trackTouch(e) {
     if (!gesture || e.touches.length !== 1) { gesture = null; return; }
     var dx = e.touches[0].clientX - gesture.x;
     var dy = e.touches[0].clientY - gesture.y;
@@ -282,7 +294,8 @@
       gesture.active = true;
     }
     if (e.cancelable) e.preventDefault();
-  }, { passive: false });
+  }
+  document.addEventListener('touchmove', trackTouch, { passive: false });
 
   document.addEventListener('touchend', function (e) {
     if (!gesture) return;

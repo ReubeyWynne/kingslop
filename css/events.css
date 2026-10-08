@@ -162,7 +162,7 @@ html, body { overscroll-behavior-x: none; }
   --amber: var(--deck-accent);
   --amber-dim: color-mix(in srgb, var(--deck-accent) 76%, #090d14);
   --signal-line: color-mix(in srgb, var(--deck-accent) 35%, transparent);
-  transition: --deck-accent 0.9s ease, background-color 0.9s ease;
+  transition: --deck-accent 0.6s ease, background-color 0.6s ease;
   isolation: isolate;
   overflow: auto;
   overscroll-behavior: contain;
@@ -181,7 +181,9 @@ html, body { overscroll-behavior-x: none; }
    That interpolates in every browser and never dims on the way: stacking a
    wash per page and cross-fading their opacity did, pulsing the whole
    screen darker at the midpoint of every change. The soft centre glow is
-   one static, colourless layer. */
+   one static, colourless layer.
+   Selection follows the card in the centre while the strip moves, so
+   the ground drifts with the finger and nothing changes when it stops. */
 .deck-atmosphere { background: radial-gradient(ellipse 80% 60% at 50% 46%, rgba(241, 227, 194, 0.035), transparent 72%); }
 .page-deck .ascii-ambient > span { opacity: 0.18; }
 .page-deck::backdrop { background: rgba(5, 8, 13, 0.8); }
@@ -242,6 +244,9 @@ html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
+  /* Sideways only: a slightly diagonal swipe on the covers must not be
+     taken by the sheet's vertical scroll and stall the strip. */
+  touch-action: pan-x;
   scrollbar-width: none;
   overscroll-behavior-x: contain;
   direction: ltr;
@@ -265,10 +270,22 @@ html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
   text-decoration: none;
   scroll-snap-align: center;
   scroll-margin-inline: 1rem;
-  transition: border-color 0.6s ease;
   -webkit-user-drag: none;
   isolation: isolate;
+  --amber: var(--deck-accent);
+  --amber-dim: color-mix(in srgb, var(--deck-accent) 76%, #090d14);
 }
+/* Each cover keeps its own page's colour, whichever card is selected, so
+   covers never recolour as the selection moves. */
+.deck-card[data-page="home"] { --deck-accent: #F5C851; }
+.deck-card[data-page="bearhunt"] { --deck-accent: #AEC878; }
+.deck-card[data-page="vikings"] { --deck-accent: #E08A3C; }
+.deck-card[data-page="swordland"] { --deck-accent: #E05555; }
+.deck-card[data-page="vip"] { --deck-accent: #C5A3EE; }
+.deck-card[data-page="sim"] { --deck-accent: #E0B24A; }
+.deck-card[data-page="kvksg"] { --deck-accent: #D9B25A; }
+.deck-card[data-page="gear"] { --deck-accent: #e6b56a; }
+.deck-card[data-page="heroes"] { --deck-accent: #c7ba85; }
 .deck-card::before {
   content: '';
   position: absolute;
@@ -276,12 +293,8 @@ html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
   z-index: -1;
   pointer-events: none;
   background: radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--amber) 7%, transparent), transparent 70%);
-  opacity: 0.45;
-  transition: opacity 0.8s ease;
 }
-.deck-card:is(.is-selected, :hover, :focus-visible)::before { opacity: 1; }
 .deck-card-copy { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 0.75rem; min-height: 0; }
-.deck-card.is-selected { border-color: var(--amber); }
 .deck-mark { color: var(--amber-dim); font-size: 2.2rem; line-height: 1; }
 .deck-card-title {
   min-height: 0;
@@ -327,7 +340,6 @@ html[dir="rtl"] .deck-card { direction: rtl; }
   .deck-viewport { height: 32rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .deck-card, .deck-card::before { transition: none; }
   .page-deck { transition: --deck-accent 0.3s ease, background-color 0.3s ease; }
   .deck-viewport { scroll-behavior: auto; }
 }

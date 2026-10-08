@@ -138,6 +138,15 @@ async function fits(page) {
     await selected(page, 'vip');
     assert.equal(await page.locator('.deck-card.is-selected .ascii-mini--crown').evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'running');
     assert.equal(await page.locator('.deck-card:not(.is-selected) .ascii-mini--bear').first().evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'paused');
+    // Covers keep their own colours whichever is selected, and the ring's
+    // copies of the selected cover run with it.
+    const covers = () => page.locator('.deck-card').evaluateAll(cards => cards.map(card => getComputedStyle(card.querySelector('.deck-card-title')).color + getComputedStyle(card).borderTopColor));
+    const vipCovers = await covers();
+    await page.keyboard.press('Home');
+    await selected(page, 'home');
+    await page.waitForTimeout(800);
+    assert.deepEqual(await covers(), vipCovers);
+    assert.deepEqual(await page.locator('.deck-card.is-running').evaluateAll(cards => cards.map(card => card.dataset.page)), ['home', 'home', 'home']);
     for (const lang of ['de', 'ar']) {
       await page.goto(origin + '/?lang=' + lang);
       await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
