@@ -897,6 +897,15 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "sw.hero.chip1": "每場55分鐘",
   "sw.hero.chip2": "兩個軍團",
   "sw.hero.chip3": "沒有陣亡，只有傷兵",
-  "ev.switch.gear": "裝備"
+  "ev.switch.gear": "裝備",
+  "gear.resources": "資源",
+  "gear.yourPlan": "你的計畫",
+  "gear.savingChoices": "選擇升級以查看費用。",
+  "gear.shortfalls": "仍需",
+  "gear.scoreCostExplained": "排名與假設",
+  "gear.levelHint": "使用總等級：紅色 +20 即等級 120。",
+  "gear.applyHint": "已在遊戲中完成這些升級？標記完成以儲存等級並扣除資源。",
+  "gear.budgetRoutes": "值得攢資源的升級",
+  "gear.lede": "比較升級、查看費用，了解還缺哪些資源。"
 }
 ;

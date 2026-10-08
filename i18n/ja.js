@@ -897,6 +897,15 @@ window.__BH_I18N_DATA["ja"] = {
   "sw.hero.chip1": "1試合55分",
   "sw.hero.chip2": "2つの軍団",
   "sw.hero.chip3": "損失なし、負傷のみ",
-  "ev.switch.gear": "装備"
+  "ev.switch.gear": "装備",
+  "gear.resources": "資源",
+  "gear.yourPlan": "あなたの計画",
+  "gear.savingChoices": "アップグレードを選ぶと費用を確認できます。",
+  "gear.shortfalls": "あと必要",
+  "gear.scoreCostExplained": "順位と前提",
+  "gear.levelHint": "合計レベルを入力：赤 +20 はレベル 120。",
+  "gear.applyHint": "ゲーム内でアップグレード済み？完了として記録すると、レベルを保存して資源を差し引きます。",
+  "gear.budgetRoutes": "資源を貯めたいアップグレード",
+  "gear.lede": "アップグレードを比較し、費用と不足分を確認しよう。"
 }
 ;

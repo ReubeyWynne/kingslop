@@ -897,6 +897,15 @@ window.__BH_I18N_DATA["de"] = {
   "sw.hero.chip1": "55 Min. pro Match",
   "sw.hero.chip2": "zwei Legionen",
   "sw.hero.chip3": "keine Verluste, nur Verletzte",
-  "ev.switch.gear": "Ausrüstung"
+  "ev.switch.gear": "Ausrüstung",
+  "gear.resources": "Ressourcen",
+  "gear.yourPlan": "Dein Plan",
+  "gear.savingChoices": "wähle eine Verbesserung, um ihre Kosten zu sehen.",
+  "gear.shortfalls": "noch benötigt",
+  "gear.scoreCostExplained": "Rangfolge & Annahmen",
+  "gear.levelHint": "nutze Gesamtlevel: rot +20 ist Level 120.",
+  "gear.applyHint": "im Spiel verbessert? markiere die Verbesserungen als erledigt, um Level zu speichern und Kosten abzuziehen.",
+  "gear.budgetRoutes": "Verbesserungen zum Ansparen",
+  "gear.lede": "vergleiche Verbesserungen, prüfe die Kosten und sieh, was noch fehlt."
 }
 ;

@@ -908,6 +908,15 @@ window.__BH_I18N_DATA["vi"] = {
   "sw.hero.chip1": "55 phút mỗi trận",
   "sw.hero.chip2": "hai quân đoàn",
   "sw.hero.chip3": "không tổn thất, chỉ bị thương",
-  "ev.switch.gear": "Trang bị"
+  "ev.switch.gear": "Trang bị",
+  "gear.resources": "Tài nguyên",
+  "gear.yourPlan": "Kế hoạch của bạn",
+  "gear.savingChoices": "chọn nâng cấp để xem chi phí.",
+  "gear.shortfalls": "vẫn cần",
+  "gear.scoreCostExplained": "xếp hạng và giả định",
+  "gear.levelHint": "dùng cấp tổng: đỏ +20 là cấp 120.",
+  "gear.applyHint": "đã nâng cấp trong game? đánh dấu hoàn tất để lưu cấp và trừ tài nguyên.",
+  "gear.budgetRoutes": "nâng cấp đáng tích tài nguyên",
+  "gear.lede": "so sánh nâng cấp, kiểm tra chi phí và xem còn thiếu gì."
 }
 ;

@@ -897,6 +897,15 @@ window.__BH_I18N_DATA["ko"] = {
   "sw.hero.chip1": "경기당 55분",
   "sw.hero.chip2": "두 군단",
   "sw.hero.chip3": "손실 없이 부상만",
-  "ev.switch.gear": "장비"
+  "ev.switch.gear": "장비",
+  "gear.resources": "자원",
+  "gear.yourPlan": "내 계획",
+  "gear.savingChoices": "업그레이드를 선택하면 비용을 볼 수 있어요.",
+  "gear.shortfalls": "더 필요함",
+  "gear.scoreCostExplained": "순위와 가정",
+  "gear.levelHint": "총 레벨을 입력하세요: 빨강 +20은 레벨 120이에요.",
+  "gear.applyHint": "게임에서 업그레이드를 마쳤나요? 완료로 표시하면 레벨을 저장하고 비용을 차감해요.",
+  "gear.budgetRoutes": "자원을 모을 만한 업그레이드",
+  "gear.lede": "업그레이드를 비교하고 비용과 부족한 자원을 확인하세요."
 }
 ;

@@ -899,6 +899,15 @@ window.__BH_I18N_DATA["es"] = {
   "sw.hero.chip1": "55 min por partida",
   "sw.hero.chip2": "dos legiones",
   "sw.hero.chip3": "sin bajas, solo heridos",
-  "ev.switch.gear": "Equipo"
+  "ev.switch.gear": "Equipo",
+  "gear.resources": "Recursos",
+  "gear.yourPlan": "Tu plan",
+  "gear.savingChoices": "elige una mejora para ver su coste.",
+  "gear.shortfalls": "aún falta",
+  "gear.scoreCostExplained": "clasificación y supuestos",
+  "gear.levelHint": "usa niveles totales: rojo +20 es nivel 120.",
+  "gear.applyHint": "¿ya hiciste estas mejoras en el juego? márcalas como hechas para guardar los niveles y descontar el coste.",
+  "gear.budgetRoutes": "mejoras para las que ahorrar",
+  "gear.lede": "compara mejoras, consulta los costes y descubre qué te falta."
 }
 ;
