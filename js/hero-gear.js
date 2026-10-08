@@ -228,6 +228,7 @@
         '<div><strong>' + esc(name(r.id)) + ' · ' + r.from.level + ' → ' + r.to.level + '</strong>' +
         '<small>' + esc(tr('mithrilCheckpoint')) + ' · +' + r.milestoneGain.toFixed(1) + ' ' + esc(tr('weightedGain')) + '</small></div></div>' +
         '<p>' + (missing ? esc(missing) + ' short. ' : 'Affordable now. ') + esc(note) + '</p>' +
+        (r.futurePlan ? '<p>At this resource threshold: +' + (r.futurePlan.score - r.futurePlan.baseline).toFixed(1) + ' weighted gain for the milestone-first plan; best found +' + (r.futureBestScore - r.futurePlan.baseline).toFixed(1) + '.</p>' : '') +
         (r.reforgeNow ? '<p>Reforge plan: +' + (r.reforgeNow.score - r.reforgeNow.baseline).toFixed(1) + ' weighted gain, including changes to other gear.</p>' : '') +
         '<button type="button" data-mode="plan">Inspect saving routes →</button></article>';
     }).join('');
