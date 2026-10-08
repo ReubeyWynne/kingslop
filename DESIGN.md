@@ -216,7 +216,21 @@ The system's "buttons" are **margin prompts, not button chrome** — controls re
 
 ## Animation style
 
-All authored animations must use the site's distinct ASCII character-grid style. The campfire in `_includes/ascii/deck-campfire.html` and its `deck-reference-*` sequences in `css/ascii-deck.css` are the reference; the existing motifs and forge animations follow the same approach.
+All authored animations must use the site's distinct ASCII character-grid style. The campfire is the reference. `.dsh/build-ascii.py` samples a procedural flame field offline into 72 stepped frames that loop seamlessly, adds sparse flicker patches that only ever add hot glyphs, and adds sparks that climb cell by cell. Every other scene follows the same approach.
+
+**The scenes.** Each has one job and one place:
+
+| Scene | Where | What moves |
+| --- | --- | --- |
+| Campfire | home hero, Home deck cover | flame frames, coal glyphs, cell-stepped sparks |
+| Hearth | above every page footer | the campfire's own flame field, sampled small |
+| Forge | Bear Hunt rewards, Hero Gear cover, screenshot-reading loader | three hand-drawn hammer poses, a hot bar, cell-stepped sparks |
+| Moon | Event Cycle hero and cover | a 28-frame lunar cycle, the 28-day clock |
+| Bear, charm, banner, crown, dice | the hero of their page and its deck cover | blinks, glints, cloth ripple in four glyph heights, a dice roll that lands |
+| March | Bear Hunt and Vikings bands, Vikings cover | marchers stepping whole cells |
+| Ambient twinkles | behind every page and the page deck | glyphs waking at fixed places |
+
+**The pipeline.** `.dsh/build-ascii.py` writes `css/ascii-frames.css` and `_includes/ascii/campfire.html`. Never hand-edit either file. `css/ascii.css` holds layout, colour and placement. `node .dsh/ascii-style-check.cjs` enforces the rules below, and CI also fails when the committed frames differ from the generator's output.
 
 - Animate by changing complete character frames or sparse glyph layers with CSS `steps(1, end)`. Preserve a coherent silhouette and a fixed monospace grid.
 - Sparks and other moving marks may jump between integer character cells (`ch`/`em`) with stepped timing. Ambient twinkles change glyphs at fixed positions.
@@ -224,6 +238,8 @@ All authored animations must use the site's distinct ASCII character-grid style.
 - Use HTML and CSS for runtime animation. Offline generators may produce frames; JavaScript must not drive animation through frame loops, timers, Web Animations or canvas.
 - Smooth background colour interpolation is explicitly allowed. It must blend colours rather than flash between palettes; this does not permit smooth deformation or movement of ASCII artwork.
 - Centre navigation scenes within their cards and keep headings and descriptions clear of the art. Fixed placement and responsive sizing must preserve character proportions.
+- The page deck changes colour by cross-fading one wash per page (`.deck-wash`, opacity only). It never flashes through the palettes of the cards it passes, and its twinkles stay small and quiet.
+- Draw rotation as poses. A hammer swing, for example, is three hand-drawn frames on a fixed grip, never one drawing rasterised or transformed at an angle.
 - Respect `prefers-reduced-motion` and retain a legible static ASCII frame when animation is disabled.
 
 ## Do's and Don'ts

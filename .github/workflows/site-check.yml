@@ -31,6 +31,11 @@ jobs:
           node -e "const fs = require('node:fs'); for (const file of fs.readdirSync('_data')) if (file.endsWith('.json')) JSON.parse(fs.readFileSync('_data/' + file, 'utf8'));"
       - name: Check page navigation
         run: node --test .dsh/page-deck-check.cjs
+      - name: Check ASCII animation style
+        run: |
+          python3 .dsh/build-ascii.py
+          git diff --exit-code -- css/ascii-frames.css _includes/ascii/campfire.html || { echo "::error::ASCII frames are stale or hand-edited. Change .dsh/build-ascii.py and regenerate."; exit 1; }
+          node .dsh/ascii-style-check.cjs
       - name: Check troop allocation
         run: node .dsh/bear-allocator-check.cjs
       - name: Check hero gear costs and search

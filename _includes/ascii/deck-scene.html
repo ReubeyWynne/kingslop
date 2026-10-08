@@ -1,8 +1,8 @@
 {% case include.token %}
 {% when 'home' %}
-{% include ascii/deck-campfire.html %}
+{% include ascii/campfire.html %}
 {% when 'kvksg' %}
-<span class="deck-map"></span>
+<span class="ascii-mini ascii-mini--moon"></span>
 {% when 'bearhunt' %}
 <span class="ascii-mini ascii-mini--bear"></span>
 {% when 'vikings' %}
@@ -14,16 +14,5 @@
 {% when 'sim' %}
 <span class="ascii-mini ascii-mini--dice"></span>
 {% when 'gear' %}
-<div class="ascii-scene ascii-forge">
-  <span class="ascii-hammer"></span>
-  <pre class="ascii-anvil">       ___
-  ____/###\____
- /______________\
-      |####|
-      |####|
-   ___|####|___
-  /____________\</pre>
-  <span class="ascii-impact"></span>
-  <span class="ascii-forge-sparks"></span>
-</div>
+{% include ascii/forge.html %}
 {% endcase %}
