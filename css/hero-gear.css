@@ -2,7 +2,7 @@
 html[data-page="gear"] .topbar h1.brand { margin: 0; line-height: 1.2; }
 .gear-main .section { padding: .75rem 0; }
 .gear-main .gear-section-title { font-size: 1.3rem; line-height: 1.25; margin: 0 0 .75rem; }
-.gear-section-title::before { display: none; }
+.gear-main .gear-section-title::before { display: none; }
 .gear-hero { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
 .gear-hero h1 { font-size: clamp(1.75rem, 3vw, 2.7rem); }
 .gear-kicker { color: var(--ink-muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .15em; margin-bottom: .35rem; }
