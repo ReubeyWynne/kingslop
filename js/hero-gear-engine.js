@@ -38,7 +38,7 @@
   function defaults() {
     var pieces = {};
     TYPES.forEach(function (type) { SLOTS.forEach(function (slot) { pieces[type + '-' + slot] = normalisePiece(); }); });
-    return { version: 1, pieces: pieces, resources: emptyCost(), included: { inf: true, cav: true, arc: true }, weights: copy(PROFILES.growth), profile: 'growth', reforge: false, troop: 'inf', mode: 'plan', view: 'gear', selected: 'inf-helm', goal: 'mithril', target: 120, targetMastery: 11 };
+    return { version: 1, pieces: pieces, resources: emptyCost(), included: { inf: true, cav: true, arc: true }, weights: copy(PROFILES.growth), profile: 'growth', reforge: true, troop: 'inf', mode: 'optimise', view: 'gear', selected: 'inf-helm', goal: 'mithril', target: 120, targetMastery: 11 };
   }
   function normaliseState(input) {
     var s = defaults();
@@ -160,6 +160,28 @@
     });
     return out;
   }
+  function nearbyMilestones(input) {
+    var state = normaliseState(input), routes = [];
+    Object.keys(state.pieces).forEach(function (id) {
+      if (!state.included[id.split('-')[0]]) return;
+      var from = state.pieces[id], to = milestone(from, 'mithril');
+      if (!to) return;
+      var costs = cost(from, to), shortfall = gap(costs, state.resources);
+      var gain = score(id, to, state.weights) - score(id, from, state.weights);
+      if (gain <= 0) return;
+      var refund = 0;
+      if (state.reforge) Object.keys(state.pieces).forEach(function (other) {
+        if (other !== id && state.included[other.split('-')[0]] && state.pieces[other].quality !== 'red')
+          refund += CUM[state.pieces[other].level];
+      });
+      routes.push({ id: id, from: from, to: to, costs: costs, gap: shortfall, gain: gain, reforgeXpAvailable: refund });
+    });
+    return routes.sort(function (a, b) {
+      var aMissing = RES.filter(function (r) { return a.gap[r] > 0; }).length;
+      var bMissing = RES.filter(function (r) { return b.gap[r] > 0; }).length;
+      return aMissing - bMissing || a.gap.xp - b.gap.xp || b.gain - a.gain;
+    }).slice(0, 3);
+  }
   function optimise(input) {
     var state = normaliseState(input), original = copy(state.pieces), baseline = total(original, state), best;
     var modes = state.reforge ? [false, true] : [false];
@@ -215,7 +237,7 @@
     return best;
   }
 
-  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, redPlans: redPlans, optimise: optimise };
+  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, redPlans: redPlans, nearbyMilestones: nearbyMilestones, optimise: optimise };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.HeroGear = api;
 })(typeof window !== 'undefined' ? window : globalThis);
