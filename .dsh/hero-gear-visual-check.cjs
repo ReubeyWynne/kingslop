@@ -190,7 +190,11 @@ async function fits(page, label) {
     assert.match(await page.locator('.gear-result-grid').textContent(),/before.*after/s);
     await page.locator('[data-result-troop="cav"]').click();
     assert.ok(await page.locator('.gear-change[data-direction="down"]').count()>0);
-    for(const row of await page.locator('.gear-change[data-direction="down"]').all())assert.equal(await row.locator('.gear-kvk-points').getAttribute('data-kvk-points'),'0','XP reforge does not earn points');
+    for(const row of await page.locator('.gear-change[data-direction="down"]').all()){
+      const [from,to]=(await row.locator('.gear-item-mastery').allTextContents()).map(Number);
+      const hammerPoints=(to*(to+1)-from*(from+1))*5*4000;
+      assert.equal(await row.locator('.gear-kvk-points').getAttribute('data-kvk-points'),String(hammerPoints),'reforge scores only any new mastery materials, never recovered XP');
+    }
     assert.match(await page.locator('.gear-change[data-direction="down"]').first().textContent(),/↓.*recover/);
     await fits(page,'mobile optimise');await page.evaluate(()=>scrollTo(0,0));
     const resultGrid=await page.locator('.gear-result-grid').boundingBox();
