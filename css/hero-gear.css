@@ -249,7 +249,10 @@ html.gear-import-open, .gear-import-open body { overflow: hidden; }
   .gear-resource-total img { width: 1.8rem; height: 1.8rem; }
   .gear-resource-total span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   .gear-resource-total output { font-size: 1rem; text-align: center; }
-  .gear-workspace { display: block; margin-top: 1rem; }
+  .gear-workspace { display: block; margin-top: .5rem; }
+  .gear-answer > .gear-section-title { display: none; }
+  .gear-console > .gear-section-title { font-size: 1rem; margin-bottom: .35rem; }
+  .gear-route-detail { margin-top: .5rem; padding-block: .4rem; }
   .gear-answer { border-inline-start: 0; padding-inline-start: 0; }
   #gear-forge[data-view="gear"] .gear-answer, #gear-forge[data-view="plan"] .gear-editor { display: none; }
   .gear-hero h1 { font-size: 1.4rem; }
