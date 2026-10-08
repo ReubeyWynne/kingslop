@@ -290,3 +290,12 @@ html.gear-import-open, .gear-import-open body { overflow: hidden; }
   .gear-resource-art { width: 1.7rem; height: 1.7rem; }
   .gear-cost-numbers strong { font-size: 1rem; }
 }
+
+.gear-reforge-option { margin-block: .5rem; }
+.gear-opportunity { border: 1px solid var(--signal-line); padding: .65rem; margin-block: .6rem; }
+.gear-opportunity-head { display: flex; gap: .6rem; align-items: center; }
+.gear-opportunity-head strong { display: block; }
+.gear-opportunity-head small { color: var(--ink-muted); }
+.gear-opportunity-art { width: 2.8rem; height: 2.8rem; object-fit: contain; }
+.gear-opportunity p { margin: .35rem 0; color: var(--ink-dim); font-size: .85rem; }
+.gear-opportunity button { color: var(--amber); font-size: .85rem; }
