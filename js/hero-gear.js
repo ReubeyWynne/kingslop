@@ -595,7 +595,8 @@
       imports.filter(function (item) { return item.included; }).forEach(function (item) {
         var hash = item.contentHash, id = item.troop + '-' + item.slot;
         if (!records[hash]) records[hash] = { id: 'gear-' + hash, sourceType: 'hero-gear', at: new Date().toISOString(), contentHash: hash, confirmation: 'confirmed', itemDelta: {} };
-        records[hash].itemDelta[id] = { before: snapshot.heroGear.pieces[id] || null, after: copy(next.pieces[id]) };
+        var old = snapshot.heroGear.pieces[id] || { quality: null, level: null, mastery: null };
+        records[hash].itemDelta[id] = { before: snapshot.heroGear.pieces[id] || null, after: { quality: item.quality === 'keep' ? old.quality : item.quality, level: item.level === null ? old.level : next.pieces[id].level, mastery: item.mastery === null ? old.mastery : next.pieces[id].mastery } };
       });
       if (snapshot.imports.some(function (record) { return records[record.contentHash]; })) { el('read-status').textContent = tr('overviewConflict'); return; }
       if (applyState(next, { source: 'screenshot', records: Object.values(records) })) { el('import-dialog').close(); clearImports(); note('imported'); }

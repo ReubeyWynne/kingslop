@@ -27,7 +27,7 @@
     return object(value) && ['manual', 'legacy', 'screenshot', 'plan', 'reset', 'file'].includes(value.source) && timestamp(value.at) && (value.importId === undefined || id(value.importId));
   }
   function piece(value) {
-    return object(value) && ['epic', 'mythic', 'red'].includes(value.quality) && count(value.level) && count(value.mastery) && value.mastery <= 20 && value.level <= (value.quality === 'epic' ? 80 : value.quality === 'red' ? 200 : 100) && (value.quality !== 'epic' || value.mastery === 0) && (value.quality !== 'red' || value.level >= 100 && value.mastery >= (value.level < 120 ? 10 : 10 + Math.floor((value.level - 100) / 20)));
+    return object(value) && (value.quality === null || ['epic', 'mythic', 'red'].includes(value.quality)) && (value.level === null || count(value.level) && value.level <= (value.quality === 'epic' ? 80 : value.quality === 'mythic' ? 100 : 200)) && (value.mastery === null || count(value.mastery) && value.mastery <= 20) && (value.quality !== 'epic' || value.mastery === null || value.mastery === 0) && (value.quality !== 'red' || (value.level === null || value.level >= 100) && (value.mastery === null || value.mastery >= (value.level === null || value.level < 120 ? 10 : 10 + Math.floor((value.level - 100) / 20))));
   }
   function empty() {
     return { format: 'kingshot-player', schemaVersion: 1, revision: 0, updatedAt: new Date().toISOString(), inventory: {}, heroGear: { pieces: {}, provenance: {}, parts: null }, governorGear: { status: 'unsupported', pieces: {} }, governorCharms: { status: 'unsupported', slots: {} }, imports: [], preferences: { heroGear: {} }, migration: null };
@@ -116,7 +116,7 @@
     }
     function legacy(input, engine) {
       valid(object(input) && input.version === 1 && object(input.pieces) && object(input.resources));
-      PIECES.forEach(function (key) { valid(piece(input.pieces[key])); });
+      PIECES.forEach(function (key) { valid(piece(input.pieces[key]) && input.pieces[key].quality !== null && input.pieces[key].level !== null && input.pieces[key].mastery !== null); });
       Object.keys(ITEMS).forEach(function (key) { valid(count(input.resources[key])); });
       var normal = engine ? engine.normaliseState(input) : copy(input);
       normal.parts = input.parts || null;
@@ -124,7 +124,7 @@
     }
     function project(value, engine) {
       var result = engine.normaliseState(Object.assign(engine.defaults(), value.preferences.heroGear));
-      Object.keys(value.heroGear.pieces).forEach(function (key) { result.pieces[key] = copy(value.heroGear.pieces[key]); });
+      Object.keys(value.heroGear.pieces).forEach(function (key) { result.pieces[key] = engine.normalisePiece(value.heroGear.pieces[key]); });
       Object.keys(ITEMS).forEach(function (key) { var entry = value.inventory[ITEMS[key]]; result.resources[key] = entry && entry.status === 'confirmed' ? entry.amount : 0; });
       var xp = result.resources.xp;
       result.parts = value.heroGear.parts || { ten: Math.floor(xp % 100 / 10), hundred: Math.floor(xp / 100), remainder: xp % 10 };
@@ -151,7 +151,7 @@
       if (options.records) options.records.forEach(function (record) {
         if (next.imports.some(function (old) { return old.contentHash === record.contentHash; })) throw new Error('Screenshot already confirmed');
         next.imports.push(copy(record));
-        Object.keys(record.itemDelta).forEach(function (key) { next.heroGear.provenance[key] = { source: 'screenshot', at: at, importId: record.id }; });
+        Object.keys(record.itemDelta).forEach(function (key) { next.heroGear.pieces[key] = copy(record.itemDelta[key].after); next.heroGear.provenance[key] = { source: 'screenshot', at: at, importId: record.id }; });
       });
       return commit(next, next.revision);
     }
