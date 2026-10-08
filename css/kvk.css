@@ -423,3 +423,21 @@ section[data-phase], #checklist { padding: var(--space-s) 0; border-top: 1px sol
   .today-value .trow { grid-template-columns: 1.8rem minmax(0, 1fr); }
   .today-value .tpts { grid-column: 2; }
 }
+
+/* Personal inventory is a ruled ledger, with fields that wrap at phone widths. */
+.availability-controls { display: flex; flex-wrap: wrap; gap: var(--space-m); margin-block: var(--space-m); }
+.event-availability label { display: grid; gap: .35rem; min-width: 0; }
+.availability-controls label { flex: 1 1 10rem; }
+.event-availability input, .event-availability select { width: 100%; min-width: 0; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; padding: .45rem 0; font: inherit; }
+.event-availability select option { color: var(--ink); background: var(--void); }
+.event-availability input:focus-visible, .event-availability select:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.availability-result { border-block: 1px solid var(--signal-line); padding-block: var(--space-s); }
+.availability-result p, .availability-item p { display: flex; justify-content: space-between; gap: 1rem; }
+.availability-result output { color: var(--amber); font-variant-numeric: tabular-nums; }
+.availability-item { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem 1.5rem; padding-block: var(--space-m); border-bottom: 1px solid var(--signal-line); }
+.availability-item h3 { grid-column: 1 / -1; margin: 0; }
+.availability-item p { margin: 0; flex-wrap: wrap; }
+.availability-item small { color: var(--ink-muted); }
+.availability-item[data-eligible="false"] [data-points] { color: var(--ink-muted); }
+.availability-potential { padding-inline-start: 1.3rem; }
+@media (max-width: 420px) { .availability-item { grid-template-columns: minmax(0, 1fr); } }

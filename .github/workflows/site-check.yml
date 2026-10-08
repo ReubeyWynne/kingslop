@@ -33,6 +33,8 @@ jobs:
         run: node .dsh/bear-allocator-check.cjs
       - name: Check player ledger and migration
         run: node .dsh/player-ledger-check.cjs
+      - name: Check event rules and availability arithmetic
+        run: node .dsh/event-rules-check.cjs
       - name: Check hero gear costs and search
         run: node .dsh/hero-gear-check.cjs
       - name: Check OCR backend recovery
@@ -46,6 +48,10 @@ jobs:
         env:
           NODE_PATH: ${{ runner.temp }}/visuals/node_modules
         run: node .dsh/interaction-modules-check.cjs
+      - name: Check event availability UI
+        env:
+          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        run: node .dsh/event-availability-check.cjs
       - name: Check hero gear UI
         env:
           NODE_PATH: ${{ runner.temp }}/visuals/node_modules
@@ -61,5 +67,7 @@ jobs:
           name: hero-gear-preview
           include-hidden-files: true
           retention-days: 7
-          path: .dsh/gear-preview/
+          path: |
+            .dsh/gear-preview/
+            .dsh/event-preview/
 

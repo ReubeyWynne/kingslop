@@ -98,6 +98,10 @@
     "scripts": [
       "../js/i18n.js",
       "../js/common.js",
+      "../js/event-data.js",
+      "../js/event-rules.js",
+      "../js/hero-gear-engine.js",
+      "../js/event-availability.js",
       "../js/kvk.js"
     ],
     "footMainKey": "ks.foot.main",

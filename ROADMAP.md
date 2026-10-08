@@ -71,6 +71,8 @@ The goal is an HTMX/Alpine/Datastar *feel*: inspectable markup, local behaviour 
 
 ## Milestone 3 — event calculator
 
+**Implementation:** `events/#availability` calculates conditional point budgets for KvK Prep, Strongest Governor and Brawl from confirmed shared inventory. `_data/event_rules.json` is the shared guide/rules source; `js/event-rules.js` supplies pure arithmetic and `event-availability` composes the shared ledger and save modules. Unknowns, ephemeral withheld amounts, unquantified actions and target shortfall remain distinct. See [EVENT-AVAILABILITY.md](EVENT-AVAILABILITY.md) for units, limits and checks. The next deliverable is milestone 4's hero directory.
+
 `js/kvk.js` already contains the useful domain foundation: the 28-day cycle, day-specific Strongest Governor tasks, Brawl/Officer/Armament runs, KvK prep matrix and normalised tracked item labels. Extract those rules without changing their current output first.
 
 The calculator must distinguish:
