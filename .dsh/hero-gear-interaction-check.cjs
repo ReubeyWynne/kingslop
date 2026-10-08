@@ -160,6 +160,9 @@ function fixture() {
       assert.match(await row.locator('.gear-item').last().getAttribute('aria-label'), /Red.*Mastery/);
       assert.equal(await row.locator('.gear-checkpoint-label').isVisible(), true);
       assert.equal(await page.locator('.gear-change').count(), 1);
+      const points=state.resources.hammers*4000+state.resources.mithril*40000;
+      assert.equal(await row.locator('.gear-kvk-points').getAttribute('data-kvk-points'),String(points));
+      assert.equal(await page.locator('#gear-results > .gear-kvk-summary').getAttribute('data-kvk-points'),String(points));
       await page.screenshot({ path:path.join(output, 'mobile-red-' + kind + '.png') });
       await page.setViewportSize({ width:1280,height:900 });
       await page.screenshot({ path:path.join(output, 'desktop-red-' + kind + '.png') });
