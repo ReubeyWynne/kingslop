@@ -4,8 +4,8 @@
 })(typeof window === 'object' ? window : globalThis, function () {
   'use strict';
   function matches(hero, filters) {
-    var query = String(filters.query || '').trim().toLocaleLowerCase();
-    return (!query || (hero.name + ' ' + hero.key).toLocaleLowerCase().includes(query)) &&
+    var query = String(filters.query || '').trim().toLowerCase();
+    return (!query || (hero.name + ' ' + hero.key).toLowerCase().includes(query)) &&
       (!filters.troop || hero.type === filters.troop) &&
       (!filters.generation || hero.generation === Number(filters.generation)) &&
       (!filters.server || hero.generation <= Number(filters.server)) &&

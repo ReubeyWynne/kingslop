@@ -4,7 +4,7 @@ const records=heroes.map(h=>({...h,roles:roles.heroes[h.key].recommendations.map
 assert.equal(heroes.length,34);assert.equal(new Set(heroes.map(h=>h.key)).size,34);assert.deepEqual(Object.keys(roles.heroes).sort(),heroes.map(h=>h.key).sort());
 const filter=f=>records.filter(h=>engine.matches(h,f));
 assert.equal(filter({}).length,34);assert.deepEqual(filter({query:'  ChEnKo '}).map(h=>h.key),['chenko']);
-assert.equal(filter({generation:2}).length,3);assert.equal(filter({generation:2,troop:'cav'})[0].key,'hilde');assert.equal(filter({server:1,generation:2}).length,0);
+assert.deepEqual(filter({query:'HILDE'}).map(h=>h.key),['hilde']);assert.equal(filter({generation:2}).length,3);assert.equal(filter({generation:2,troop:'cav'})[0].key,'hilde');assert.equal(filter({server:1,generation:2}).length,0);
 assert(filter({server:3}).every(h=>h.generation<=3));assert.equal(filter({role:'defence-joiner'}).length,4);
 assert.deepEqual(filter({role:'bear-joiner',server:1,troop:'cav'}).map(h=>h.key),['chenko']);assert.equal(filter({query:'<script>'}).length,0);
 assert.equal(filter({role:'unknown'}).length,0);assert.equal(filter({server:99}).length,34);
