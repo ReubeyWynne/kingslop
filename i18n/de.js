@@ -995,7 +995,7 @@ window.__BH_I18N_DATA["de"] = {
   "directory.explain.rally": "Die Rallyführung liefert Kontowerte und das vollständige Kit aus drei Helden. Rally-Widgets sind ein Ansatz; die entwickelte Aufstellung und den Gegner vergleichen. Eine Führungsempfehlung bedeutet nicht automatisch einen guten Beitritt auf Platz 1.",
   "directory.explain.bear": "Bear ist ein Schadensziel. Die Führung nutzt das ganze Kit; Beitritte liefern Truppen und eine passende erste Fähigkeit. Defensive Effekte erhöhen den Bear-Schaden nicht. Die erlaubten Allianzhelden beachten, besonders bei bedingten oder doppelsensiblen Optionen.",
   "directory.sourceNote": "Porträts und Fähigkeitshinweise wurden am 08.10.2026 mit dem offiziellen Helden-Wiki abgeglichen. Rollentipps stützen sich auch auf Community-Anleitungen und unsere Bärenjagd-Regeln. Abgeleitete Kandidaten passen aufgrund ihrer Fähigkeiten; sie sind keine offizielle Empfehlung.",
-  "directory.anomaly": "Die Auffälligkeit in der Sternkurve von Generation 2 ist ungeprüft. Das Verzeichnis bewertet Helden nicht anhand dieser Werte.",
+  "directory.anomaly": "Gen-2-Werte bei 4★ Stufe 3 wurden anhand von Kingshot Data und der gemeinsamen Kurve auf 199.02% korrigiert. Die ursprüngliche Vergleichsquelle weicht weiterhin ab; die Werte dienen nicht als Rangliste.",
   "directory.reason.bearAlternative": "Alternative zu Amadeus in Generation 2; entwickelte Schadensfähigkeiten vergleichen, nicht die defensive Widget-Fähigkeit.",
   "gear.sharedSaveHint": "Ein Spielstand für Ausrüstung und Eventinventar. Vor dem Import eine Sicherung behalten.",
   "ks.available.showAll": "Gegenstände ohne heutige Punkte anzeigen",

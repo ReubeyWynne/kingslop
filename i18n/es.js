@@ -997,7 +997,7 @@ window.__BH_I18N_DATA["es"] = {
   "directory.explain.rally": "Quien inicia aporta estadísticas y el kit completo de tres héroes. Los widgets de rally son un punto de partida; compara el equipo desarrollado y el rival. Ser buen líder no implica ser buen participante en la posición 1.",
   "directory.explain.bear": "Bear es un objetivo de daño. Los líderes usan todo el kit; los participantes aportan tropas y una primera habilidad elegible. Los efectos defensivos no mejoran el daño. Sigue la lista permitida de la alianza, especialmente en opciones condicionales o sensibles a duplicados.",
   "directory.sourceNote": "Retratos y notas de habilidades contrastados con la wiki oficial de héroes el 2026-10-08. Los consejos de roles también se apoyan en guías de la comunidad y nuestras reglas de Caza del Oso. Los candidatos inferidos encajan por sus habilidades; no son una recomendación oficial.",
-  "directory.anomaly": "La anomalía de estadísticas por estrellas de generación 2 sigue sin verificar. El directorio no clasifica héroes por esos valores.",
+  "directory.anomaly": "Los valores de generación 2 en 4★ nivel 3 se corrigieron a 199.02% según Kingshot Data y la curva común. La fuente original de comparación aún difiere; estos valores no clasifican a los héroes.",
   "directory.reason.bearAlternative": "Alternativa de generación 2 a Amadeus; compara habilidades de daño desarrolladas, no el widget defensivo.",
   "gear.sharedSaveHint": "Una partida guardada para equipo e inventario. Guarda una copia antes de importar otra.",
   "ks.available.showAll": "mostrar objetos que no puntúan hoy",

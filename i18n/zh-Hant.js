@@ -995,7 +995,7 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "directory.explain.rally": "發起者提供帳號屬性和三位英雄的完整遠征技能組。集結Widget可作為參考；比較實際培養陣容和對手。適合領隊不代表適合在第1位加入。",
   "directory.explain.bear": "Bear以傷害為目標。領隊使用完整技能組；加入者提供部隊及符合條件的第一技能。防禦效果不增加Bear傷害。遵守聯盟允許名單，尤其留意有條件及重複敏感選項。",
   "directory.sourceNote": "頭像和技能說明已於2026-10-08對照官方英雄維基核查。角色建議也參考社群指南和本站的獵熊規則。推斷候選依據英雄技能的適配性，並非官方推薦。",
-  "directory.anomaly": "第2代星級成長曲線異常尚未驗證。本目錄不使用這些屬性值給英雄排名。",
+  "directory.anomaly": "依據 Kingshot Data 和共同曲線，將第2代英雄在4★第3階的數值修正為199.02%。原始對比來源仍有差異；這些數值不用於英雄排名。",
   "directory.reason.bearAlternative": "第2代可替代Amadeus的選擇；比較已培養的傷害技能，而非防禦Widget技能。",
   "gear.sharedSaveHint": "裝備和活動庫存共用一個存檔。匯入前請保留備份。",
   "ks.available.showAll": "顯示今天不計分的物品",

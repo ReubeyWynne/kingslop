@@ -49,7 +49,7 @@ self: heroes
 
           <p class="note" data-i18n="directory.skillNote">The numbered skills are in Expedition order. Joiners use the first one. Names, effects and level values are shown in English; a chance to trigger is not a guaranteed bonus.</p>
           <ol class="hero-skills">
-            {% for skill in hero.skills %}{% assign skill_note = metadata.skillNotes[forloop.index0] %}<li><h4><span class="hero-skill-number">{{ forloop.index }}</span>{{ skill_note.name | escape }}</h4><p class="hero-skill-effect" lang="en">{{ skill_note.summary | escape }}</p>{% for scale in skill.scales %}<p class="hero-skill-levels" lang="en"><span>{{ scale.label | escape }}</span> {{ scale.levels | join: ' / ' | escape }}</p>{% endfor %}</li>{% endfor %}
+            {% for skill in hero.skills %}{% assign skill_note = metadata.skillNotes[forloop.index0] %}<li><h4><span class="hero-skill-number">{{ forloop.index }}</span>{{ skill_note.name | escape }}</h4><p class="hero-skill-effect" lang="en">{{ skill_note.summary | escape }}</p>{% for scale in skill.scales %}<p class="hero-skill-levels" lang="en"><span>{{ scale.label | escape }}</span> {{ scale.levels | join: ' / ' | escape }}</p>{% endfor %}{% if skill_note.source %}<p class="hero-source-link" lang="en"><a href="{{ skill_note.source.url }}">{{ skill_note.source.label | escape }}</a></p>{% endif %}</li>{% endfor %}
           </ol>
           <p class="hero-source-link"><a href="{{ metadata.wiki }}" data-i18n="directory.heroSource">Check the official hero page</a></p>
           <p><span data-i18n="directory.widget">widget role</span>: {% if hero.widget %}<span data-i18n="directory.widget.{{ hero.widget.role }}">{{ hero.widget.role }}</span>{% else %}<span data-i18n="directory.none">no widget</span>{% endif %}</p>
@@ -70,6 +70,6 @@ self: heroes
     <h2 data-i18n="directory.sources">Sources &amp; confidence</h2>
     <p data-i18n="directory.sourceNote">Portraits and skill notes were checked against the official hero wiki on 8 October 2026. Role advice also draws on community guides and our Bear Hunt rules. “Skill fit” is an inference from the kit, not an official recommendation.</p>
     <ul>{% for entry in site.data.hero_roles.sources %}<li><a href="{{ entry[1].url }}">{{ entry[1].label | escape }}</a></li>{% endfor %}</ul>
-    <p class="note" data-i18n="directory.anomaly">The generation-2 star values contain an unresolved source error. They are not used to rank these heroes.</p>
+    <p class="note" data-i18n="directory.anomaly">Generation-2 values at 4★ tier 3 are corrected to 199.02% using Kingshot Data and the shared curve. The original comparison source still differs; these values do not rank the heroes.</p>
   </section>
 </main>

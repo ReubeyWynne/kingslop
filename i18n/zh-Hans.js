@@ -995,7 +995,7 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "directory.explain.rally": "发起者提供账号属性和三位英雄的完整远征技能组。集结Widget可作为参考；比较实际培养阵容和对手。适合领队不代表适合在第1位加入。",
   "directory.explain.bear": "Bear以伤害为目标。领队使用完整技能组；加入者提供部队及符合条件的第一技能。防御效果不增加Bear伤害。遵守联盟允许名单，尤其留意有条件及重复敏感选项。",
   "directory.sourceNote": "头像和技能说明已于2026-10-08对照官方英雄维基核查。角色建议也参考社区指南和本站的猎熊规则。推断候选依据英雄技能的适配性，并非官方推荐。",
-  "directory.anomaly": "第2代星级成长曲线异常尚未验证。本目录不使用这些属性值给英雄排名。",
+  "directory.anomaly": "依据 Kingshot Data 和共同曲线，将第2代英雄在4★第3阶的数值修正为199.02%。原始对比来源仍有差异；这些数值不用于英雄排名。",
   "directory.reason.bearAlternative": "第2代可替代Amadeus的选择；比较已培养的伤害技能，而非防御Widget技能。",
   "gear.sharedSaveHint": "装备和活动库存共用一个存档。导入前请保留备份。",
   "ks.available.showAll": "显示今天不计分的物品",

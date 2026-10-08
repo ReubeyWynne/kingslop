@@ -17,7 +17,7 @@ Evidence labels are deliberately explicit:
 
 Defender-widget heroes are candidates for garrison leadership; rally-widget heroes are candidates for offensive leadership. The Bear list includes those damage-oriented candidates and a sourced generation-2 Zoe alternative. Defensive widget skills are not claimed to improve Bear damage. Garrison joiner examples are Saul, Gordon, Howard, Fahd, Quinn and Eric. Bear joiner options retain the existing alliance choices, including Petra's duplicate caveat and Amadeus's leader priority. No new numerical combat weights or tier scores are added.
 
-Catalogue snapshot: **2026-09-11**. Role-source review: **2026-10-08**. The generation-2 star-ladder anomaly remains unverified and is not used to rank heroes. Canonical names, skill labels and progression values remain in their recorded source language, with this limitation visible next to the skills.
+Catalogue snapshot: **2026-09-11**. Role-source review: **2026-10-08**. Generation-2 index-27 values are corrected to 199.02% using Kingshot Data progression tables, corroborated by the shared curve. The original comparison payload still contains 192.02%; the correction preserves this provenance and is not independently verified in-game. Star values are not used to rank heroes. Canonical names, skill labels and progression values remain in their recorded source language, with this limitation visible next to the skills.
 
 Sources consulted:
 
@@ -46,7 +46,7 @@ The ninth navigation entry raises the desktop strip threshold to 1600px and adju
 
 ## Completion pass · 2026-10-08
 
-All 34 canonical heroes have local 256×256 WebP portraits, individual official-wiki links and paraphrased notes for every Expedition skill. Notes preserve fixed proc chances, turn timing, damage multipliers and troop scope. Percentages remain the existing catalogue level ladders. Quinn’s two Expedition names, Petra’s Attack label and Diana’s Beast/Terror march scope are corrected against the wiki. Wiki spelling variants remain in the field notes without changing canonical IDs. Olive’s wiki gathering-resource placeholder is explicitly unresolved. No star-ladder values or combat formulas change.
+All 34 canonical heroes have local 256×256 WebP portraits, individual official-wiki links and paraphrased notes for every Expedition skill. Notes preserve fixed proc chances, turn timing, damage multipliers and troop scope. Quinn’s two Expedition names, Petra’s Attack label and Diana’s Beast/Terror march scope are corrected against the wiki. Wiki spelling variants remain in the field notes without changing canonical IDs. Olive’s bread-gathering effect is corroborated by Kingshot Optimizer’s in-game skill listing and Kingshot.net’s Bread Gathering Speed label; her note links the supporting listing because the official wiki has a broken resource placeholder. Three generation-2 star-ladder entries change as documented above; no combat formulas change.
 
 Quinn and Eric are defensive-joiner candidates inferred from their official first skills; this is not an official lineup recommendation. Existing Bear policy and conditional recommendations are retained.
 

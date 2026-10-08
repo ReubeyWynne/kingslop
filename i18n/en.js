@@ -1293,7 +1293,7 @@ window.__BH_I18N_DATA["en"] = {
   "directory.explain.bear": "The Bear rewards damage. A caller uses the full kit; a joiner brings troops and a useful first skill. Defensive bonuses do not add Bear damage. Follow your alliance’s joiner list and duplicate rules.",
   "directory.bearGuide": "read the Bear Hunt lineup rules",
   "directory.sourceNote": "Portraits and skill notes were checked against the official hero wiki on 8 October 2026. Role advice also draws on community guides and our Bear Hunt rules. “Skill fit” is an inference from the kit, not an official recommendation.",
-  "directory.anomaly": "The generation-2 star values contain an unresolved source error. They are not used to rank these heroes.",
+  "directory.anomaly": "Generation-2 values at 4★ tier 3 are corrected to 199.02% using Kingshot Data and the shared curve. The original comparison source still differs; these values do not rank the heroes.",
   "directory.nav": "Heroes",
   "directory.count": "{n} of {total} heroes",
   "directory.role.defence-joiner": "Defensive joiner",

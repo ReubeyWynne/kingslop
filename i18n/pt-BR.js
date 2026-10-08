@@ -997,7 +997,7 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "directory.explain.rally": "Quem inicia fornece atributos e o conjunto completo de três heróis. Widgets de rally são um ponto inicial; compare o conjunto desenvolvido e o adversário. Uma indicação para liderar não garante boa participação na posição 1.",
   "directory.explain.bear": "Bear é um objetivo de dano. Líderes usam todo o conjunto; participantes fornecem tropas e uma primeira habilidade elegível. Efeitos defensivos não melhoram o dano. Siga a lista permitida da aliança, especialmente para opções condicionais ou sensíveis a duplicação.",
   "directory.sourceNote": "Retratos e notas de habilidades conferidos na wiki oficial de heróis em 2026-10-08. Os conselhos de funções também usam guias da comunidade e nossas regras de Caça ao Urso. Candidatos inferidos se baseiam nas habilidades, não são recomendações oficiais.",
-  "directory.anomaly": "A anomalia de atributos por estrelas da geração 2 continua sem verificação. O diretório não classifica heróis por esses valores.",
+  "directory.anomaly": "Os valores da geração 2 em 4★ nível 3 foram corrigidos para 199.02% com Kingshot Data e a curva comum. A fonte original de comparação ainda difere; esses valores não classificam os heróis.",
   "directory.reason.bearAlternative": "Alternativa da geração 2 a Amadeus; compare habilidades de dano desenvolvidas, não o widget defensivo.",
   "gear.sharedSaveHint": "Um save para equipamento e inventário. Guarde uma cópia antes de importar outro.",
   "ks.available.showAll": "mostrar itens que não pontuam hoje",

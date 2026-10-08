@@ -1,5 +1,10 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const heroes=require('../_data/heroes.json').heroes,roles=require('../_data/hero_roles.json'),engine=require('../js/hero-directory-engine.js');
+const catalogue=require('../_data/heroes.json'),heroes=catalogue.heroes,roles=require('../_data/hero_roles.json'),engine=require('../js/hero-directory-engine.js');
+assert.equal(catalogue.anomalies.length,0);
+assert.deepEqual(catalogue.corrections.map(c=>c.key).sort(),['hilde','marlin','zoe']);
+for(const hero of heroes){assert.equal(hero.ladder.length,31);assert.equal(hero.ladder[30],hero.ceiling);assert(hero.ladder.every((v,i)=>i===0||v>=hero.ladder[i-1]));if(hero.generation===2)for(let i=0;i<31;i++)assert(Math.abs(hero.ladder[i]/hero.ceiling*100-catalogue.curve[i])<.05);}
+for(const correction of catalogue.corrections){const hero=heroes.find(h=>h.key===correction.key);assert.equal(correction.index,27);assert.equal(correction.previous,192.02);assert.equal(correction.value,199.02);assert.equal(hero.ladder[27],correction.value);assert.equal(correction.source,'https://kingshotdata.com/heroes/'+hero.key+'/');}
+assert.equal(roles.heroes.olive.skillNotes[1].source.url,'https://kingshotoptimizer.com/heroes/olive/');
 const records=heroes.map(h=>({...h,roles:roles.heroes[h.key].recommendations.map(r=>r.role)}));
 assert.equal(heroes.length,34);assert.equal(new Set(heroes.map(h=>h.key)).size,34);assert.deepEqual(Object.keys(roles.heroes).sort(),heroes.map(h=>h.key).sort());
 const filter=f=>records.filter(h=>engine.matches(h,f));

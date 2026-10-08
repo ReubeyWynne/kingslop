@@ -995,7 +995,7 @@ window.__BH_I18N_DATA["pl"] = {
   "directory.explain.rally": "Dowodzące konto zapewnia statystyki i pełny zestaw trzech bohaterów. Widgety rajdowe są punktem wyjścia; porównaj rozwinięty skład i przeciwnika. Dobry lider nie musi być dobrym wsparciem na pozycji 1.",
   "directory.explain.bear": "Bear to cel wymagający obrażeń. Dowodzenie używa całego zestawu; uczestnicy dostarczają wojska i kwalifikującą się pierwszą umiejętność. Obrona nie zwiększa obrażeń. Przestrzegaj listy sojuszu, szczególnie przy opcjach warunkowych i wrażliwych na duplikaty.",
   "directory.sourceNote": "Portrety i opisy umiejętności sprawdzono w oficjalnej wiki bohaterów 2026-10-08. Porady dotyczące ról uwzględniają też poradniki społeczności i nasze zasady polowania na niedźwiedzia. Kandydaci wynikają z umiejętności, nie z oficjalnych rekomendacji.",
-  "directory.anomaly": "Anomalia statystyk gwiazdkowych generacji 2 nie została potwierdzona. Katalog nie ocenia bohaterów na podstawie tych wartości.",
+  "directory.anomaly": "Wartości generacji 2 przy 4★, etap 3, poprawiono na 199.02% według Kingshot Data i wspólnej krzywej. Pierwotne źródło porównania nadal się różni; wartości nie służą do rankingu bohaterów.",
   "directory.reason.bearAlternative": "Alternatywa dla Amadeus w generacji 2; porównaj rozwinięte umiejętności obrażeń, nie defensywny widget.",
   "gear.sharedSaveHint": "Jeden zapis dla ekwipunku i przedmiotów wydarzeń. Zachowaj kopię przed importem.",
   "ks.available.showAll": "pokaż przedmioty bez punktów na dziś",

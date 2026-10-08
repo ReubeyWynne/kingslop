@@ -1006,7 +1006,7 @@ window.__BH_I18N_DATA["id"] = {
   "directory.explain.rally": "Pemimpin menyediakan statistik akun dan seluruh kit ekspedisi tiga hero. Widget rally adalah titik awal; bandingkan susunan yang dikembangkan dan lawan. Rekomendasi pemimpin tidak otomatis berarti peserta slot 1 yang baik.",
   "directory.explain.bear": "Bear adalah target damage. Pemimpin memakai seluruh kit; peserta menyumbang pasukan dan skill pertama yang memenuhi syarat. Efek defensif tidak meningkatkan damage Bear. Ikuti daftar aliansi, terutama pilihan bersyarat atau sensitif terhadap duplikasi.",
   "directory.sourceNote": "Potret dan catatan skill diperiksa dengan wiki hero resmi pada 2026-10-08. Saran peran juga memakai panduan komunitas dan aturan Bear Hunt kami. Kandidat disimpulkan dari skill hero, bukan rekomendasi resmi.",
-  "directory.anomaly": "Anomali kurva bintang generasi 2 belum diverifikasi. Direktori ini tidak memberi peringkat hero berdasarkan nilai tersebut.",
+  "directory.anomaly": "Nilai generasi 2 pada 4★ tahap 3 dikoreksi menjadi 199.02% berdasarkan Kingshot Data dan kurva bersama. Sumber perbandingan awal masih berbeda; nilai ini bukan peringkat hero.",
   "directory.reason.bearAlternative": "Alternatif Amadeus generasi 2; bandingkan skill damage yang dikembangkan, bukan skill widget defensif.",
   "gear.sharedSaveHint": "Satu simpanan untuk perlengkapan dan inventaris acara. Buat cadangan sebelum mengimpor.",
   "ks.available.showAll": "tampilkan item tanpa poin hari ini",

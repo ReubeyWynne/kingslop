@@ -16,7 +16,7 @@
   "ladder[30] == ceiling, and == the published attackPct/defensePct where published",
   "normalising a ladder by its ceiling reproduces curve within source rounding, except anomalies"
  ],
- "_anomalies": "The gen-2 family (Zoe, Hilde, Marlin) carries one bad value at index 27: 192.02 where the curve wants 199.06 — a +3.84 step among ~+10.84 neighbours. Read as a typo in the source, not a real curve break. ⚠ verify",
+ "_anomalies": "The recorded gen-2 index-27 source anomaly is corrected to 199.02 using Kingshot Data, cross-checked against the shared curve; see corrections and KINGSHOT-SOURCES.md. This pass does not re-audit other generations.",
  "curve": [
   12.61,
   13.79,
@@ -50,35 +50,7 @@
   91.88,
   100.0
  ],
- "anomalies": [
-  {
-   "hero": "Hilde",
-   "type": "cav",
-   "index": 27,
-   "value": 192.02,
-   "pct": 79.95,
-   "curve": 82.86,
-   "delta": -2.91
-  },
-  {
-   "hero": "Marlin",
-   "type": "arc",
-   "index": 27,
-   "value": 192.02,
-   "pct": 79.95,
-   "curve": 82.86,
-   "delta": -2.91
-  },
-  {
-   "hero": "Zoe",
-   "type": "inf",
-   "index": 27,
-   "value": 192.02,
-   "pct": 79.95,
-   "curve": 82.86,
-   "delta": -2.91
-  }
- ],
+ "anomalies": [],
  "heroes": [
   {
    "name": "Amadeus",
@@ -1476,7 +1448,7 @@
     166.52,
     177.34,
     188.18,
-    192.02,
+    199.02,
     209.85,
     220.69,
     240.19
@@ -1584,7 +1556,7 @@
     166.52,
     177.34,
     188.18,
-    192.02,
+    199.02,
     209.85,
     220.69,
     240.19
@@ -1682,7 +1654,7 @@
     166.52,
     177.34,
     188.18,
-    192.02,
+    199.02,
     209.85,
     220.69,
     240.19
@@ -3281,6 +3253,41 @@
     "role": "defender",
     "effect": "attack"
    }
+  }
+ ],
+ "corrections": [
+  {
+   "hero": "Hilde",
+   "key": "hilde",
+   "index": 27,
+   "previous": 192.02,
+   "value": 199.02,
+   "source": "https://kingshotdata.com/heroes/hilde/",
+   "originalSource": "https://kingshot.net/hero-stat-comparison",
+   "reviewedAt": "2026-10-08",
+   "basis": "Published progression table, corroborated by ceiling × shared curve; original comparison payload still disagrees. Not independently checked in-game."
+  },
+  {
+   "hero": "Marlin",
+   "key": "marlin",
+   "index": 27,
+   "previous": 192.02,
+   "value": 199.02,
+   "source": "https://kingshotdata.com/heroes/marlin/",
+   "originalSource": "https://kingshot.net/hero-stat-comparison",
+   "reviewedAt": "2026-10-08",
+   "basis": "Published progression table, corroborated by ceiling × shared curve; original comparison payload still disagrees. Not independently checked in-game."
+  },
+  {
+   "hero": "Zoe",
+   "key": "zoe",
+   "index": 27,
+   "previous": 192.02,
+   "value": 199.02,
+   "source": "https://kingshotdata.com/heroes/zoe/",
+   "originalSource": "https://kingshot.net/hero-stat-comparison",
+   "reviewedAt": "2026-10-08",
+   "basis": "Published progression table, corroborated by ceiling × shared curve; original comparison payload still disagrees. Not independently checked in-game."
   }
  ]
 }

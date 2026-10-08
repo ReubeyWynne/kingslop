@@ -996,7 +996,7 @@ window.__BH_I18N_DATA["fr"] = {
   "directory.explain.rally": "Le chef fournit les statistiques et le kit complet de trois héros. Les widgets de rally donnent une piste ; comparez l’équipe développée et l’adversaire. Un bon chef n’est pas automatiquement un bon renfort en position 1.",
   "directory.explain.bear": "Bear est un objectif de dégâts. Les chefs utilisent tout leur kit ; les participants fournissent troupes et première compétence admissible. Les effets défensifs n’améliorent pas les dégâts. Suivez la liste autorisée par l’alliance, surtout pour les choix conditionnels ou sensibles aux doublons.",
   "directory.sourceNote": "Portraits et notes de compétences vérifiés dans le wiki officiel des héros le 2026-10-08. Les conseils de rôles s’appuient aussi sur les guides communautaires et nos règles de Chasse à l’ours. Les candidats déduits correspondent aux compétences ; ce ne sont pas des recommandations officielles.",
-  "directory.anomaly": "L’anomalie de progression par étoiles en génération 2 reste non vérifiée. Cet annuaire ne classe pas les héros selon ces valeurs.",
+  "directory.anomaly": "Les valeurs de génération 2 à 4★ palier 3 sont corrigées à 199.02% d’après Kingshot Data et la courbe commune. La source de comparaison initiale diffère encore ; ces valeurs ne classent pas les héros.",
   "directory.reason.bearAlternative": "Alternative à Amadeus en génération 2 ; comparez les compétences de dégâts développées, pas le widget défensif.",
   "gear.sharedSaveHint": "Une sauvegarde pour l’équipement et l’inventaire. Gardez une copie avant tout import.",
   "ks.available.showAll": "afficher les objets sans points aujourd’hui",

@@ -32,6 +32,11 @@
       "label": "Kingshot · official hero wiki",
       "url": "https://kingshotwiki.com/heroes/",
       "status": "official"
+    },
+    "heroProgression": {
+      "label": "Kingshot Data · hero progression tables",
+      "url": "https://kingshotdata.com/heroes/",
+      "status": "community"
     }
   },
   "heroes": {
@@ -327,7 +332,11 @@
         },
         {
           "name": "Forager's Luck",
-          "summary": "Speeds up bread gathering; the wiki currently has a broken resource label."
+          "summary": "Increases bread gathering speed in the wilderness.",
+          "source": {
+            "label": "Kingshot Optimizer · in-game skill listing",
+            "url": "https://kingshotoptimizer.com/heroes/olive/"
+          }
         }
       ]
     },
