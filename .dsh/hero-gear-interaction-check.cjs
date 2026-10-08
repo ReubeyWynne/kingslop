@@ -196,7 +196,7 @@ function fixture() {
     const originalBackup = JSON.stringify(backup);
     backup.schemaVersion = 2;
     await page.locator('#gear-save-file').setInputFiles({ name: 'future.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
-    await page.waitForFunction(() => document.getElementById('gear-status').textContent.includes('not a valid'));
+    await page.waitForFunction(() => document.getElementById('gear-status').textContent === window.__BH_I18N_DATA.en['gear.invalidSave']);
     assert.equal(await page.locator('#gear-hammers').inputValue(), '123');
     await page.evaluate(() => window.PlayerLedger.shared().setBalance('forgehammer', 5));
     await page.locator('#gear-save-file').setInputFiles({ name: 'player.json', mimeType: 'application/json', buffer: Buffer.from(originalBackup) });
