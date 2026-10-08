@@ -1005,7 +1005,7 @@ window.__BH_I18N_DATA["vi"] = {
   "directory.explain.joiner": "Đặt anh hùng được phân công vào ô 1. Kỹ năng viễn chinh đầu có thể vào một trong bốn ô dùng chung. Chọn hiệu ứng tấn công hoặc phòng thủ theo mục tiêu và phối hợp cấp kỹ năng. Hai anh hùng còn lại không cung cấp kỹ năng tiếp viện bổ sung.",
   "directory.explain.rally": "Người chỉ huy cung cấp chỉ số tài khoản và toàn bộ kỹ năng của ba anh hùng. Widget tập kết là điểm bắt đầu; so sánh đội đã phát triển và đối thủ. Đề xuất chỉ huy không tự động phù hợp với ô 1 khi tham gia.",
   "directory.explain.bear": "Bear là mục tiêu gây sát thương. Chỉ huy dùng toàn bộ bộ kỹ năng; người tham gia cung cấp quân và kỹ năng đầu hợp lệ. Hiệu ứng phòng thủ không tăng sát thương Bear. Theo danh sách liên minh, nhất là lựa chọn có điều kiện hoặc nhạy với trùng lặp.",
-  "directory.sourceNote": "Danh mục: 2026-09-11. Đánh giá vai trò: 2026-10-08. Hướng dẫn cộng đồng không phải xác minh chính thức. Ứng viên được suy ra từ kỹ năng hoặc widget đã ghi nhận; liên minh có thể thay đổi. Thế hệ theo danh mục, không phải lịch mở khóa trực tiếp.",
+  "directory.sourceNote": "Ảnh chân dung và ghi chú kỹ năng đã được đối chiếu với wiki anh hùng chính thức ngày 2026-10-08. Lời khuyên vai trò cũng dựa trên hướng dẫn cộng đồng và quy tắc Săn Gấu của chúng tôi. Ứng viên được suy ra từ kỹ năng, không phải đề xuất chính thức.",
   "directory.anomaly": "Bất thường đường chỉ số sao thế hệ 2 chưa được xác minh. Danh mục không xếp hạng anh hùng bằng các giá trị đó.",
   "directory.reason.bearAlternative": "Lựa chọn thay Amadeus ở thế hệ 2; so sánh kỹ năng sát thương đã phát triển, không phải widget phòng thủ.",
   "gear.sharedSaveHint": "Một bản lưu cho trang bị và kho sự kiện. Giữ bản sao trước khi nhập bản khác.",

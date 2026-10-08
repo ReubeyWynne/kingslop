@@ -993,7 +993,7 @@ window.__BH_I18N_DATA["tr"] = {
   "directory.explain.joiner": "Atanan kahramanı 1. yuvaya koy. İlk Sefer becerisi dört ortak katılımcı yuvasından birine girebilir. Saldırı veya savunma etkilerini hedefle eşleştir ve seviyeleri koordine et. Diğer iki kahraman ek katılımcı becerisi sağlamaz.",
   "directory.explain.rally": "Lider hesap istatistiklerini ve üç kahramanın tüm Sefer kitini sağlar. Ralli widget'ları başlangıç noktasıdır; geliştirilmiş dizilimi ve rakibi karşılaştır. Lider önerisi otomatik olarak iyi bir 1. yuva katılımcısı demek değildir.",
   "directory.explain.bear": "Bear bir hasar hedefidir. Liderler tüm kiti kullanır; katılımcılar birlik ve uygun ilk beceriyi sağlar. Savunma etkileri Bear hasarını artırmaz. Özellikle koşullu veya tekrara duyarlı seçeneklerde ittifakın izinli listesini izle.",
-  "directory.sourceNote": "Katalog: 2026-09-11. Rol incelemesi: 2026-10-08. Topluluk önerileri resmî doğrulama değildir. Adaylar kayıtlı beceri veya widget yöneliminden çıkarılır; ittifak politikası bunları değiştirebilir. Nesiller katalogla sınırlıdır, canlı açılış takvimi değildir.",
+  "directory.sourceNote": "Portreler ve beceri notları 2026-10-08 tarihinde resmî kahraman wikisiyle karşılaştırıldı. Rol önerileri topluluk rehberlerine ve Ayı Avı kurallarımıza da dayanır. Çıkarılan adaylar becerilerine göre seçilir; resmî öneri değildir.",
   "directory.anomaly": "Nesil 2 yıldız eğrisi anomalisi doğrulanmadı. Bu katalog kahramanları o istatistiklerle sıralamaz.",
   "directory.reason.bearAlternative": "Nesil 2'de Amadeus alternatifi; savunma widget'ını değil, geliştirilmiş hasar becerilerini karşılaştır.",
   "gear.sharedSaveHint": "Ekipman ve etkinlik envanteri için tek kayıt. İçe aktarmadan önce yedek alın.",
