@@ -783,7 +783,7 @@
       file.value = '';
       if (!f || ocrBusy) return;
       ocrBusy = true;
-      ocrStatus(BH, 'sim.ocr.loading', 'Reading the screenshot\u2026');
+      ocrStatus(BH, 'sim.ocr.loading', 'Reading the screenshot\u2026', 'busy');
       readShot(f)
         .then(function (out) {
           if (out.filled) paint(BH);

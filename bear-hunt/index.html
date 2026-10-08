@@ -295,7 +295,10 @@ self: bear
   <section class="section" id="rewards" data-collapse>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="rewards-body"><span><span data-i18n="bh.page.132">Rewards</span></span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
     <div class="section-body" id="rewards-body">
-      <p class="lede"><span data-i18n="bh.page.133">Your reward bracket is based on your own total Bear damage. Each step adds one Forgehammer.</span></p>
+      <div class="ascii-rewards-intro">
+        <p class="lede"><span data-i18n="bh.page.133">Your reward bracket is based on your own total Bear damage. Each step adds one Forgehammer.</span></p>
+        {% include ascii/forge.html %}
+      </div>
       <ul class="brackets compact-brackets">
         <li><b><span data-i18n="bh.page.134">47M</span></b><span>8</span></li>
         <li><b><span data-i18n="bh.page.135">90M</span></b><span>9</span></li>
