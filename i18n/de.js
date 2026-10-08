@@ -906,6 +906,10 @@ window.__BH_I18N_DATA["de"] = {
   "gear.levelHint": "nutze Gesamtlevel: rot +20 ist Level 120.",
   "gear.applyHint": "im Spiel verbessert? markiere die Verbesserungen als erledigt, um Level zu speichern und Kosten abzuziehen.",
   "gear.budgetRoutes": "Verbesserungen zum Ansparen",
-  "gear.lede": "vergleiche Verbesserungen, prüfe die Kosten und sieh, was noch fehlt."
+  "gear.lede": "vergleiche Verbesserungen, prüfe die Kosten und sieh, was noch fehlt.",
+  "gear.export": "Spielerdaten exportieren",
+  "gear.load": "Spielerdaten importieren",
+  "gear.invalidSave": "Das ist kein gültiger Spielerdatenstand. Deine Daten wurden beibehalten."
 }
 ;
+

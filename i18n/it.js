@@ -908,6 +908,10 @@ window.__BH_I18N_DATA["it"] = {
   "gear.levelHint": "usa i livelli totali: rosso +20 è livello 120.",
   "gear.applyHint": "hai fatto questi miglioramenti nel gioco? segnali come completati per salvare i livelli e sottrarre il costo.",
   "gear.budgetRoutes": "miglioramenti per cui risparmiare",
-  "gear.lede": "confronta i miglioramenti, verifica i costi e scopri cosa ti manca."
+  "gear.lede": "confronta i miglioramenti, verifica i costi e scopri cosa ti manca.",
+  "gear.export": "esporta dati del giocatore",
+  "gear.load": "importa dati del giocatore",
+  "gear.invalidSave": "questo non è un salvataggio valido del giocatore. i tuoi dati sono stati conservati."
 }
 ;
+

@@ -907,6 +907,10 @@ window.__BH_I18N_DATA["fr"] = {
   "gear.levelHint": "utilise les niveaux totaux : rouge +20 correspond au niveau 120.",
   "gear.applyHint": "ces améliorations sont faites en jeu ? marque-les comme terminées pour enregistrer les niveaux et déduire le coût.",
   "gear.budgetRoutes": "améliorations pour lesquelles économiser",
-  "gear.lede": "compare les améliorations, vérifie les coûts et vois ce qui te manque."
+  "gear.lede": "compare les améliorations, vérifie les coûts et vois ce qui te manque.",
+  "gear.export": "exporter les données du joueur",
+  "gear.load": "importer les données du joueur",
+  "gear.invalidSave": "ce fichier ne contient pas une sauvegarde valide du joueur. vos données ont été conservées."
 }
 ;
+

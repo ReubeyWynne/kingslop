@@ -917,6 +917,10 @@ window.__BH_I18N_DATA["id"] = {
   "gear.levelHint": "gunakan level total: merah +20 berarti level 120.",
   "gear.applyHint": "sudah melakukan peningkatan ini di game? tandai selesai untuk menyimpan level dan mengurangi biaya.",
   "gear.budgetRoutes": "peningkatan yang layak ditabung",
-  "gear.lede": "bandingkan peningkatan, periksa biaya, dan lihat apa yang masih kurang."
+  "gear.lede": "bandingkan peningkatan, periksa biaya, dan lihat apa yang masih kurang.",
+  "gear.export": "ekspor data pemain",
+  "gear.load": "impor data pemain",
+  "gear.invalidSave": "ini bukan berkas simpanan pemain yang valid. datamu tetap tersimpan."
 }
 ;
+

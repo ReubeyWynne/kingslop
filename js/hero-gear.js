@@ -2,7 +2,7 @@
   'use strict';
   var E = window.HeroGear, BH, state, previous, result, running = false, revision = 0, planIndex = 0, resultTroop = 'inf', strategyResult = null;
   var searchWorker, searchTimer, searchDelay, searchFailed = false;
-  var STORAGE = 'bh:hero-gear:v1', imports = [], reader, readerSequence = 0, readerPending = {}, importSequence = 0;
+  var ledger, ledgerRevision = 0, saving = false, imports = [], reader, readerSequence = 0, readerPending = {}, importSequence = 0;
   var scriptURL = new URL(document.currentScript.src);
   var base = new URL('./', scriptURL);
   var art = new URL('../img/hero-gear/', base), troopArt = { inf: 'infantry', cav: 'cavalry', arc: 'archer' };
@@ -54,13 +54,20 @@
   function levelLabel(p) { return '+' + (p.quality === 'red' ? p.level - 100 : p.level); }
   function pieceLabel(p) { return quality(p.quality) + ' ' + (p.quality === 'red' ? '+' + (p.level - 100) : p.level) + ' · ' + tr('mastery') + ' ' + p.mastery; }
   function note(key) { el('status').hidden = false; el('status').textContent = tr(key); }
-  function persist() {
+  function persist(options) {
     try {
-      localStorage.setItem(STORAGE, JSON.stringify(Object.assign({}, state, { parts: parts })));
+      saving = true;
+      var saved = ledger.writeHeroGear(Object.assign({}, state, { parts: parts }), E, Object.assign({ expectedRevision: ledgerRevision }, options));
+      ledgerRevision = saved.revision;
       el('save').textContent = tr('saved');
-    } catch (error) { el('save').textContent = tr('saveFailed'); }
+      return true;
+    } catch (error) {
+      el('save').textContent = tr('saveFailed');
+      try { var restored = ledger.heroGear(E); state = E.normaliseState(restored); readParts(restored); ledgerRevision = ledger.snapshot().revision; paint(); } catch (ignored) {}
+      return false;
+    } finally { saving = false; }
   }
-  function changed() {
+  function changed(options) {
     cancelSearch();
     revision++;
     planIndex = 0;
@@ -70,8 +77,9 @@
     el('results').textContent = '';
     el('opportunities').textContent = '';
     el('status').hidden = true;
-    persist();
+    var saved = persist(options);
     paintAnswer();
+    return saved;
   }
   function numberInput(id, key, p, max) {
     return '<label><span>' + esc(tr(key)) + '</span><input type="number" inputmode="numeric" min="' + (key === 'level' && p.quality === 'red' ? 100 : 0) + '" max="' + max + '" step="1" data-piece="' + id + '" data-field="' + key + '" value="' + p[key] + '" aria-label="' + esc(name(id) + ' · ' + tr(key)) + '"' + (key === 'mastery' && p.quality === 'epic' ? ' disabled' : '') + '></label>';
@@ -205,12 +213,13 @@
     state.selected = id; state.troop = id.split('-')[0];
     persist(); paintEditor(); paintAnswer();
   }
-  function applyState(next) {
-    previous = { state: copy(state), parts: copy(parts) };
+  function applyState(next, options) {
+    previous = { state: copy(state), parts: copy(parts), ledger: ledger.snapshot() };
     state = E.normaliseState(next);
     readParts(next);
     syncXP();
-    changed(); paint(); el('undo').hidden = false;
+    var saved = changed(options); paint(); el('undo').hidden = !saved;
+    return saved;
   }
   function paintOpportunities(comparison) {
     var host = el('opportunities');
@@ -381,7 +390,7 @@
     try {
       for (var i = 0; i < files.length; i++) {
         el('read-status').textContent = BH.fill(tr('reading'), { n: i + 1, total: files.length });
-        var pieces;
+        var pieces, contentHash = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', await files[i].arrayBuffer()))).map(function (n) { return n.toString(16).padStart(2, '0'); }).join('');
         try { pieces = await window.HeroGearOCR.overview(files[i], function (file) { if (sequence !== importSequence) return Promise.reject(new Error('Cancelled')); return read(file); }); }
         catch (error) { pieces = null; }
         if (sequence !== importSequence) return;
@@ -391,7 +400,7 @@
         if (sequence !== importSequence) return;
         el('import-review').insertAdjacentHTML('beforeend', '<p class="gear-import-file">' + esc(files[i].name) + '</p>');
         pieces.forEach(function (parsed) {
-          var item = Object.assign({}, parsed, { troop: parsed.overview ? parsed.troop || '' : parsed.troop || state.troop, slot: parsed.slot || state.selected.split('-')[1], quality: parsed.quality || 'keep', filename: files[i].name, url: URL.createObjectURL(parsed.preview || files[i]), included: true });
+          var item = Object.assign({}, parsed, { troop: parsed.overview ? parsed.troop || '' : parsed.troop || state.troop, slot: parsed.slot || state.selected.split('-')[1], quality: parsed.quality || 'keep', filename: files[i].name, contentHash: contentHash, url: URL.createObjectURL(parsed.preview || files[i]), included: true });
           delete item.preview;
           imports.push(item);
           el('import-review').insertAdjacentHTML('beforeend', importItem(item, imports.length - 1));
@@ -399,6 +408,8 @@
       }
       el('read-status').textContent = BH.fill(tr('importReady'), { n: imports.length });
       el('apply-import').disabled = false;
+    } catch (error) {
+      if (sequence === importSequence) { el('read-status').textContent = tr('importReaderFailed'); el('apply-import').disabled = true; }
     } finally {
       if (sequence === importSequence) { el('images').disabled = false; el('replace-images').disabled = false; el('import-dialog').removeAttribute('aria-busy'); }
     }
@@ -418,21 +429,29 @@
   function boot(api) {
     BH = api; state = E.defaults();
     try {
-      var saved = localStorage.getItem(STORAGE);
-      if (saved) {
-        var input = JSON.parse(saved);
-        if (input.version !== 1) throw new Error('Unknown save');
-        state = E.normaliseState(input);
-        readParts(input);
-      }
-    } catch (error) { note('loadFailed'); }
+      ledger = window.PlayerLedger.shared();
+      var saved = ledger.migrate(E), input = ledger.heroGear(E);
+      ledgerRevision = saved.revision;
+      state = E.normaliseState(input); readParts(input);
+    } catch (error) { note('loadFailed'); el('save').textContent = tr('saveFailed'); }
     syncXP();
-    paint(); persist();
+    paint();
+    if (ledger) ledger.subscribe(function (saved) {
+      if (saving) return;
+      ledgerRevision = saved.revision;
+      var input = ledger.heroGear(E);
+      state = E.normaliseState(input); readParts(input);
+      previous = null; el('undo').hidden = true;
+      cancelSearch(); revision++; result = null; strategyResult = null;
+      el('results').textContent = ''; el('opportunities').textContent = '';
+      paint();
+    });
+    window.addEventListener('player-ledger:error', function () { note('loadFailed'); cancelSearch(); });
     document.addEventListener('input', function (event) {
       var node = event.target;
       if (node.dataset.resourcePart) {
         parts[node.dataset.resourcePart] = Math.min(1e7, Math.max(0, Math.floor(Number(node.value) || 0)));
-        syncXP(); paintParts(); changed(); return;
+        syncXP(); paintParts(); changed({ resource: 'xp' }); return;
       } else if (node.dataset.resource) state.resources[node.dataset.resource] = Math.min(1e9, Math.max(0, Math.floor(Number(node.value) || 0)));
       else if (node.dataset.piece && node.dataset.field !== 'quality') {
         state.pieces[node.dataset.piece] = E.normalisePiece(Object.assign({}, state.pieces[node.dataset.piece], { [node.dataset.field]: Number(node.value) }));
@@ -442,13 +461,13 @@
         state.profile = 'custom'; el('profile').value = 'custom';
         state.weights[node.dataset.weight][Number(node.dataset.stat)] = Math.min(100, Math.max(0, Number(node.value) || 0));
       } else return;
-      changed();
+      changed({ resource: node.dataset.resource, piece: node.dataset.piece });
     });
     document.addEventListener('change', function (event) {
       var node = event.target;
       if (node.dataset.piece) {
         if (node.dataset.field === 'quality') state.pieces[node.dataset.piece] = E.normalisePiece(Object.assign({}, state.pieces[node.dataset.piece], { quality: node.value }));
-        changed(); paintEditor();
+        changed({ piece: node.dataset.piece }); paintEditor();
         if (node.dataset.field === 'quality') paintEdit();
         else node.value = state.pieces[node.dataset.piece][node.dataset.field];
       } else if (node.dataset.resourcePart) { node.value = parts[node.dataset.resourcePart]; }
@@ -476,13 +495,13 @@
       else if (button.dataset.goal) { state.goal = button.dataset.goal; persist(); paintAnswer(); }
       else if (button.id === 'gear-apply-result' && result) {
         var next = copy(state); next.pieces = result.pieces; next.resources = result.remaining;
-        applyState(next); note('applied');
+        if (applyState(next, { source: 'plan' })) note('applied');
       } else if (button.id === 'gear-apply-milestone') {
         var target = nextTarget(); if (!target) return;
         var costs = E.cost(state.pieces[state.selected], target); if (!E.affordable(costs, state.resources)) return;
         var updated = copy(state); updated.pieces[state.selected] = target;
         E.RES.forEach(function (r) { updated.resources[r] -= costs[r]; });
-        applyState(updated); note('applied');
+        if (applyState(updated, { source: 'plan' })) note('applied');
       }
     });
     tabKeys(el('troops'), 'data-troop'); tabKeys(el('modes'), 'data-mode'); tabKeys(el('views'), 'data-view');
@@ -496,24 +515,40 @@
     });
     el('run').addEventListener('click', run);
     window.addEventListener('resize', function () { scheduleSearch(250); });
-    el('undo').addEventListener('click', function () { if (!previous) return; state = previous.state; parts = previous.parts; previous = null; changed(); paint(); el('undo').hidden = true; note('undone'); });
+    el('undo').addEventListener('click', function () {
+      if (!previous) return;
+      try {
+        saving = true;
+        var restored = ledger.importJSON(previous.ledger, E, ledgerRevision);
+        ledgerRevision = restored.revision;
+        var input = ledger.heroGear(E); state = E.normaliseState(input); readParts(input);
+        previous = null; changed(); paint(); el('undo').hidden = true; note('undone');
+      } catch (error) { note('loadFailed'); } finally { saving = false; }
+    });
     el('export').addEventListener('click', function () {
-      var blob = new Blob([JSON.stringify(Object.assign({}, state, { parts: parts }), null, 2)], { type: 'application/json' }), url = URL.createObjectURL(blob), link = document.createElement('a');
-      link.href = url; link.download = 'kingshot-hero-gear.json'; link.click(); setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      try {
+        var blob = new Blob([ledger.exportJSON()], { type: 'application/json' }), url = URL.createObjectURL(blob), link = document.createElement('a');
+        link.href = url; link.download = 'kingshot-player.json'; link.click(); setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      } catch (error) { note('loadFailed'); }
     });
     el('load').addEventListener('click', function () { el('save-file').click(); });
     el('save-file').addEventListener('change', async function () {
       var file = this.files[0]; this.value = ''; if (!file) return;
       try {
         if (file.size > 1024 * 1024) throw new Error('Too large');
-        var data = JSON.parse(await file.text());
-        if (data.version !== 1 || !data.pieces || !data.resources || Object.keys(E.defaults().pieces).some(function (id) { return !data.pieces[id]; })) throw new Error('Invalid save');
-        applyState(data); note('loaded');
-      } catch (error) { note('invalidSave'); }
+        var data = JSON.parse(await file.text()), before = ledger.snapshot();
+        saving = true;
+        var loaded = ledger.importJSON(data, E, ledgerRevision);
+        ledgerRevision = loaded.revision;
+        var input = ledger.heroGear(E); state = E.normaliseState(input); readParts(input);
+        previous = { ledger: before }; cancelSearch(); revision++; result = null; strategyResult = null;
+        el('results').textContent = ''; el('opportunities').textContent = '';
+        paint(); el('undo').hidden = false; note('loaded');
+      } catch (error) { note('invalidSave'); } finally { saving = false; }
     });
     el('reset').addEventListener('click', function () { el('reset-dialog').showModal(); });
     el('cancel-reset').addEventListener('click', function () { el('reset-dialog').close(); });
-    el('confirm-reset').addEventListener('click', function () { applyState(Object.assign(E.defaults(), { parts: { ten: 0, hundred: 0 } })); el('reset-dialog').close(); note('resetDone'); });
+    el('confirm-reset').addEventListener('click', function () { if (applyState(Object.assign(E.defaults(), { parts: { ten: 0, hundred: 0, remainder: 0 } }), { all: true, source: 'reset' })) { el('reset-dialog').close(); note('resetDone'); } });
     el('import').addEventListener('click', function () { clearImports(); document.documentElement.classList.add('gear-import-open'); el('import-dialog').showModal(); fitImportViewport(); });
     if (window.visualViewport) { window.visualViewport.addEventListener('resize', fitImportViewport); window.visualViewport.addEventListener('scroll', fitImportViewport); }
     ['close-import', 'cancel-import'].forEach(function (id) { el(id).addEventListener('click', function () { clearImports(); el('import-dialog').close(); }); });
@@ -555,8 +590,17 @@
       next.selected = Object.keys(seen)[0];
       next.troop = next.selected.split('-')[0];
       next.view = 'gear';
-      applyState(next); el('import-dialog').close(); clearImports(); note('imported');
+      var records = {}, snapshot;
+      try { snapshot = ledger.snapshot(); } catch (error) { note('loadFailed'); return; }
+      imports.filter(function (item) { return item.included; }).forEach(function (item) {
+        var hash = item.contentHash, id = item.troop + '-' + item.slot;
+        if (!records[hash]) records[hash] = { id: 'gear-' + hash, sourceType: 'hero-gear', at: new Date().toISOString(), contentHash: hash, confirmation: 'confirmed', itemDelta: {} };
+        records[hash].itemDelta[id] = { before: snapshot.heroGear.pieces[id] || null, after: copy(next.pieces[id]) };
+      });
+      if (snapshot.imports.some(function (record) { return records[record.contentHash]; })) { el('read-status').textContent = tr('overviewConflict'); return; }
+      if (applyState(next, { source: 'screenshot', records: Object.values(records) })) { el('import-dialog').close(); clearImports(); note('imported'); }
     });
   }
   window.BH.registerPage({ boot: boot, onChange: function () { if (!state) return; paint(); persist(); paintResults(); } });
 })();
+

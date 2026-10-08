@@ -906,6 +906,10 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "gear.levelHint": "使用總等級：紅色 +20 即等級 120。",
   "gear.applyHint": "已在遊戲中完成這些升級？標記完成以儲存等級並扣除資源。",
   "gear.budgetRoutes": "值得攢資源的升級",
-  "gear.lede": "比較升級、查看費用，了解還缺哪些資源。"
+  "gear.lede": "比較升級、查看費用，了解還缺哪些資源。",
+  "gear.export": "匯出玩家存檔",
+  "gear.load": "匯入玩家存檔",
+  "gear.invalidSave": "這不是有效的玩家存檔。你的資料已保留。"
 }
 ;
+

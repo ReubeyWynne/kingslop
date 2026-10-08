@@ -908,6 +908,10 @@ window.__BH_I18N_DATA["es"] = {
   "gear.levelHint": "usa niveles totales: rojo +20 es nivel 120.",
   "gear.applyHint": "¿ya hiciste estas mejoras en el juego? márcalas como hechas para guardar los niveles y descontar el coste.",
   "gear.budgetRoutes": "mejoras para las que ahorrar",
-  "gear.lede": "compara mejoras, consulta los costes y descubre qué te falta."
+  "gear.lede": "compara mejoras, consulta los costes y descubre qué te falta.",
+  "gear.export": "exportar datos del jugador",
+  "gear.load": "importar datos del jugador",
+  "gear.invalidSave": "ese archivo no es un guardado válido del jugador. se conservó tu registro."
 }
 ;
+

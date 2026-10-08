@@ -908,6 +908,10 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "gear.levelHint": "use níveis totais: vermelho +20 é nível 120.",
   "gear.applyHint": "fez estas melhorias no jogo? marque como concluídas para salvar os níveis e descontar o custo.",
   "gear.budgetRoutes": "melhorias para as quais poupar",
-  "gear.lede": "compare melhorias, confira os custos e veja o que ainda falta."
+  "gear.lede": "compare melhorias, confira os custos e veja o que ainda falta.",
+  "gear.export": "exportar dados do jogador",
+  "gear.load": "importar dados do jogador",
+  "gear.invalidSave": "esse arquivo não é um salvamento válido do jogador. seu registro foi mantido."
 }
 ;
+

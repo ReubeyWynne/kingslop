@@ -906,6 +906,9 @@ window.__BH_I18N_DATA["pl"] = {
   "gear.levelHint": "używaj pełnych poziomów: czerwone +20 to poziom 120.",
   "gear.applyHint": "te ulepszenia są już zrobione w grze? oznacz je jako ukończone, aby zapisać poziomy i odjąć koszt.",
   "gear.budgetRoutes": "ulepszenia, na które warto oszczędzać",
-  "gear.lede": "porównaj ulepszenia, sprawdź koszty i zobacz, czego brakuje."
+  "gear.lede": "porównaj ulepszenia, sprawdź koszty i zobacz, czego brakuje.",
+  "gear.export": "eksportuj dane gracza",
+  "gear.load": "importuj dane gracza",
+  "gear.invalidSave": "to nie jest prawidłowy zapis danych gracza. twoje dane zostały zachowane."
 }
 ;

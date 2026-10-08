@@ -917,6 +917,10 @@ window.__BH_I18N_DATA["vi"] = {
   "gear.levelHint": "dùng cấp tổng: đỏ +20 là cấp 120.",
   "gear.applyHint": "đã nâng cấp trong game? đánh dấu hoàn tất để lưu cấp và trừ tài nguyên.",
   "gear.budgetRoutes": "nâng cấp đáng tích tài nguyên",
-  "gear.lede": "so sánh nâng cấp, kiểm tra chi phí và xem còn thiếu gì."
+  "gear.lede": "so sánh nâng cấp, kiểm tra chi phí và xem còn thiếu gì.",
+  "gear.export": "xuất dữ liệu người chơi",
+  "gear.load": "nhập dữ liệu người chơi",
+  "gear.invalidSave": "đây không phải tệp lưu người chơi hợp lệ. dữ liệu của bạn được giữ nguyên."
 }
 ;
+

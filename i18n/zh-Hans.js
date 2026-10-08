@@ -906,6 +906,10 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "gear.levelHint": "使用总等级：红色 +20 即等级 120。",
   "gear.applyHint": "已在游戏中完成这些升级？标记完成以保存等级并扣除资源。",
   "gear.budgetRoutes": "值得攒资源的升级",
-  "gear.lede": "比较升级、查看费用，了解还缺哪些资源。"
+  "gear.lede": "比较升级、查看费用，了解还缺哪些资源。",
+  "gear.export": "导出玩家存档",
+  "gear.load": "导入玩家存档",
+  "gear.invalidSave": "这不是有效的玩家存档。你的数据已保留。"
 }
 ;
+

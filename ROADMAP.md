@@ -36,6 +36,9 @@ The product gap is a **shared, versioned player ledger** and a **small declarati
 
 ## Milestone 1 — unified player ledger
 
+**Implementation:** shared ledger and hero-gear integration are prepared for review. `js/player-ledger.js` owns versioned inventory, equipment facts, preferences and confirmed import history. Legacy saves are migrated without deleting the original; hero gear reads/writes shared balances, exports the whole player save, accepts both save formats and observes cross-tab changes. Governor sections remain explicitly unsupported. See [PLAYER-LEDGER.md](PLAYER-LEDGER.md) for the contract, recovery behaviour and checks. The next deliverable is milestone 2's shared interaction layer.
+
+
 Define the data contract before adding more screens. It should include:
 
 - Schema version and update timestamp.
@@ -138,3 +141,4 @@ Start with one stable backpack screen and the high-value event items already tra
 ## Sequencing rationale
 
 The unified ledger is first because it makes hero gear, manual inventory and event calculations mutually useful from the outset. The declarative layer immediately afterwards prevents every new page from becoming another large imperative script. The hero directory is a content/data extension of assets already present. Governor optimisation then reuses the same ledger and interaction grammar. Screenshot import remains later because it is the least reliable input path and needs the review and provenance infrastructure already in place.
+

@@ -905,6 +905,10 @@ window.__BH_I18N_DATA["tr"] = {
   "gear.levelHint": "toplam seviyeyi kullan: kırmızı +20, seviye 120 demektir.",
   "gear.applyHint": "bu yükseltmeleri oyunda yaptın mı? seviyeleri kaydetmek ve maliyeti düşmek için tamamlandı olarak işaretle.",
   "gear.budgetRoutes": "birikim yapmaya değer yükseltmeler",
-  "gear.lede": "yükseltmeleri karşılaştır, maliyetleri kontrol et ve eksikleri gör."
+  "gear.lede": "yükseltmeleri karşılaştır, maliyetleri kontrol et ve eksikleri gör.",
+  "gear.export": "oyuncu verilerini dışa aktar",
+  "gear.load": "oyuncu verilerini içe aktar",
+  "gear.invalidSave": "bu geçerli bir oyuncu kayıt dosyası değil. verilerin korundu."
 }
 ;
+

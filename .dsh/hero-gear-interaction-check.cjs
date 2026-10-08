@@ -54,7 +54,7 @@ function fixture() {
     await page.locator('#gear-rows .gear-row').first().waitFor({ state:'attached' });
   }
   async function ready() { await page.locator('#gear-apply-result').waitFor(); }
-  async function saved() { return page.evaluate(key => JSON.parse(localStorage.getItem(key)), key); }
+  async function saved() { return page.evaluate(() => window.PlayerLedger.shared().heroGear(window.HeroGear)); }
   try {
     await open(fixture(), { desktop:true });
     await page.waitForFunction(() => window.__searches.length === 1);
@@ -175,9 +175,42 @@ function fixture() {
       }
       await page.close();
     }
+    await open(fixture(), { desktop: true }); await ready();
+    const legacySave = await page.evaluate(key => localStorage.getItem(key), key);
+    await page.evaluate(() => window.PlayerLedger.shared().setBalance('forgehammer', 123));
+    assert.equal(await page.locator('#gear-hammers').inputValue(), '123');
+    assert.equal(await page.locator('#gear-apply-result').count(), 0);
+    assert.equal(await page.evaluate(key => localStorage.getItem(key), key), legacySave);
+    const sibling = await page.context().newPage();
+    await sibling.goto(url);
+    await sibling.locator('#gear-rows .gear-row').first().waitFor({ state: 'attached' });
+    await sibling.evaluate(() => window.PlayerLedger.shared().setBalance('mithril', 17));
+    await page.waitForFunction(() => document.getElementById('gear-mithril').value === '17');
+    const downloadPromise = page.waitForEvent('download');
+    await page.locator('#gear-export').click();
+    const download = await downloadPromise;
+    assert.equal(download.suggestedFilename(), 'kingshot-player.json');
+    const backup = JSON.parse(fs.readFileSync(await download.path(), 'utf8'));
+    assert.equal(backup.inventory.forgehammer.amount, 123);
+    assert.equal(backup.inventory.mithril.amount, 17);
+    const originalBackup = JSON.stringify(backup);
+    backup.schemaVersion = 2;
+    await page.locator('#gear-save-file').setInputFiles({ name: 'future.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
+    await page.waitForFunction(() => document.getElementById('gear-status').textContent.includes('not a valid'));
+    assert.equal(await page.locator('#gear-hammers').inputValue(), '123');
+    await page.evaluate(() => window.PlayerLedger.shared().setBalance('forgehammer', 5));
+    await page.locator('#gear-save-file').setInputFiles({ name: 'player.json', mimeType: 'application/json', buffer: Buffer.from(originalBackup) });
+    await page.waitForFunction(() => document.getElementById('gear-hammers').value === '123');
+    await page.locator('#gear-undo').click();
+    assert.equal(await page.locator('#gear-hammers').inputValue(), '5');
+    await page.reload();
+    await page.locator('#gear-rows .gear-row').first().waitFor({ state: 'attached' });
+    assert.equal(await page.locator('#gear-hammers').inputValue(), '5');
+    await sibling.close(); await page.close();
     console.log('Automatic Spend now, cached tab navigation, debounced edits, cancelled searches, latest-result recording, undo/reload, mobile visibility, worker failure/retry, empty states, custom weights and mastery-only highlighting passed. Shared before/after rarity frames, enhancement/mastery overlays, changed-only rows and ascension/mithril/mastery checkpoint treatments passed.');
   } catch (error) {
     if (page && !page.isClosed()) await page.screenshot({ path:path.join(output, 'interaction-failure.png'), fullPage:true });
     fs.writeFileSync(path.join(output, 'interaction-failure.txt'), error.stack); throw error;
   } finally { await browser.close(); server.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; server.close(); });
+

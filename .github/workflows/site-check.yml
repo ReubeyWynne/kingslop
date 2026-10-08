@@ -31,6 +31,8 @@ jobs:
           node -e "const fs = require('node:fs'); for (const file of fs.readdirSync('_data')) if (file.endsWith('.json')) JSON.parse(fs.readFileSync('_data/' + file, 'utf8'));"
       - name: Check troop allocation
         run: node .dsh/bear-allocator-check.cjs
+      - name: Check player ledger and migration
+        run: node .dsh/player-ledger-check.cjs
       - name: Check hero gear costs and search
         run: node .dsh/hero-gear-check.cjs
       - name: Check OCR backend recovery
@@ -56,3 +58,4 @@ jobs:
           include-hidden-files: true
           retention-days: 7
           path: .dsh/gear-preview/
+

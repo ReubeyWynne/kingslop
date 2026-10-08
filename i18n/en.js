@@ -1042,8 +1042,8 @@ window.__BH_I18N_DATA["en"] = {
   "gear.custom": "Custom",
   "gear.reforge": "allow XP reforge on epic & mythic gear",
   "gear.reforgeHint": "mastery and red gear stay invested. weights describe your priorities, not predicted battle damage.",
-  "gear.export": "export save",
-  "gear.load": "import save",
+  "gear.export": "export player save",
+  "gear.load": "import player save",
   "gear.reset": "reset ledger",
   "gear.next": "Next milestone",
   "gear.plan": "Plan upgrades",
@@ -1129,7 +1129,7 @@ window.__BH_I18N_DATA["en"] = {
   "gear.applied": "gear and resources updated.",
   "gear.undone": "last update undone.",
   "gear.loaded": "save imported.",
-  "gear.invalidSave": "that is not a valid hero gear save. your ledger was kept.",
+  "gear.invalidSave": "that is not a valid player save. your ledger was kept.",
   "gear.resetDone": "ledger reset. you can undo this update.",
   "gear.imported": "reviewed gear saved.",
   "gear.keep": "Keep current quality",
@@ -1232,3 +1232,4 @@ window.__BH_I18N_DATA["en"] = {
   "gear.unchangedSlots": "unchanged"
 }
 ;
+
