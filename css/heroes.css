@@ -1,0 +1,23 @@
+.hero-filters { border: 0; padding: 0; margin-block: var(--space-m); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-s); }
+.hero-filters legend { margin-bottom: var(--space-s); }
+.hero-filters label { display: grid; gap: .4rem; min-width: 0; }
+.hero-filters input, .hero-filters select { width: 100%; min-width: 0; padding: .4rem 0; font: inherit; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; }
+.hero-filters option { background: var(--void); color: var(--ink); }
+.hero-filters :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.hero-count { color: var(--amber); font-variant-numeric: tabular-nums; }
+.directory-hero { padding-block: var(--space-m); border-bottom: 1px solid var(--signal-line); }
+.directory-hero-heading { display: flex; align-items: center; gap: var(--space-s); }
+.directory-hero-heading div { min-width: 0; }
+.directory-hero-heading h3, .directory-hero-heading p { margin: 0; }
+.directory-hero-heading img, .hero-initial { flex: none; width: 4.4rem; height: 4.4rem; border: 1px solid var(--amber-dim); border-radius: 2px; object-fit: cover; }
+.hero-initial { display: grid; place-items: center; color: var(--amber); font-family: var(--headline); font-size: 2rem; }
+.hero-role-list { list-style: none; padding: 0; margin-block: var(--space-s); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-s); }
+.hero-role-list li { min-width: 0; }
+.hero-role-list small { display: block; color: var(--amber); }
+.hero-role-list p { margin-block: .25rem; }
+.hero-role-list a { font-size: var(--step--1); }
+.hero-skills { padding-inline-start: 1.5rem; }
+.hero-skills h4 { margin-block: var(--space-s) .3rem; }
+.hero-skills p { overflow-wrap: anywhere; margin-block: .3rem; }
+@media (max-width: 650px) { .hero-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hero-role-list { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 380px) { .hero-filters { grid-template-columns: minmax(0, 1fr); } }

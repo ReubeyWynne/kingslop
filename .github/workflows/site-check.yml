@@ -33,6 +33,8 @@ jobs:
         run: node .dsh/bear-allocator-check.cjs
       - name: Check player ledger and migration
         run: node .dsh/player-ledger-check.cjs
+      - name: Check hero directory data and filters
+        run: node .dsh/hero-directory-check.cjs
       - name: Check event rules and availability arithmetic
         run: node .dsh/event-rules-check.cjs
       - name: Check hero gear costs and search
@@ -48,6 +50,10 @@ jobs:
         env:
           NODE_PATH: ${{ runner.temp }}/visuals/node_modules
         run: node .dsh/interaction-modules-check.cjs
+      - name: Check hero directory UI
+        env:
+          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        run: node .dsh/hero-directory-ui-check.cjs
       - name: Check event availability UI
         env:
           NODE_PATH: ${{ runner.temp }}/visuals/node_modules
@@ -70,4 +76,5 @@ jobs:
           path: |
             .dsh/gear-preview/
             .dsh/event-preview/
+            .dsh/hero-directory-preview/
 

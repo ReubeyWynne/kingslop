@@ -86,6 +86,8 @@ The first release is arithmetic, not an optimiser: totals by event and a target 
 
 ## Milestone 4 — hero directory
 
+**Implementation:** `heroes/` renders all 34 canonical heroes with combined name, generation, troop and role filters. `_data/hero_roles.json` records source-linked candidates, confidence and conditional alliance guidance. The directory shares server generation with existing tools, explains lead versus joiner roles, includes all 17 languages and participates in the complete navigation sequence. See [HERO-DIRECTORY.md](HERO-DIRECTORY.md) for source limits and checks. The next deliverable is milestone 5's governor gear and charms planner.
+
 The existing `_data/heroes.json` is the canonical hero catalogue. Extend it or add a companion role map keyed by hero ID; do not create a second hero list.
 
 Directory content must separate **role explanation** from **hero recommendation**:

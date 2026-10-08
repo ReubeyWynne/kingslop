@@ -231,3 +231,7 @@ The system's "buttons" are **margin prompts, not button chrome** — controls re
 - **Don't** add ambient drop shadows or glows to flat surfaces — lift only what floats.
 - **Don't** italicise display or headline text (Cinzel has no italic).
 - **Don't** break the 46rem measure to fit more on a line.
+
+## Hero directory integration
+
+The directory adds a ninth navigation entry. The desktop strip now starts at 1600px, with a 62rem masthead width allowance; the shared drawer carries navigation below that width. The complete strip and directory are checked in all 17 languages at phone, tablet and desktop widths. Directory sections use flat ruled rows, existing portraits or initials, and a single parchment signal hue.

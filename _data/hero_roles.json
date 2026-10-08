@@ -1,0 +1,499 @@
+{
+  "version": 1,
+  "reviewedAt": "2026-10-08",
+  "catalogueAsOf": "2026-09-11",
+  "sources": {
+    "catalogue": {
+      "label": "Catalogue audit",
+      "url": "https://github.com/ReubeyWynne/kingslop/blob/main/KINGSHOT-SOURCES.md",
+      "status": "snapshot"
+    },
+    "rally": {
+      "label": "Daryl · Advanced Rally Guide",
+      "url": "https://kingshotguides.com/guide/advanced-rally-guide/",
+      "status": "community"
+    },
+    "garrison": {
+      "label": "Garrison guide",
+      "url": "https://heaven-guardian.com/kingshot-garrison-guide/",
+      "status": "community"
+    },
+    "bear": {
+      "label": "Kingshot Wiki · Bear Hunt",
+      "url": "https://kingshotwiki.com/beginner-bear-hunt-guide/",
+      "status": "community"
+    },
+    "policy": {
+      "label": "Bear Hunt · alliance policy",
+      "url": "../bear-hunt/#heroes",
+      "status": "policy"
+    }
+  },
+  "heroes": {
+    "amadeus": {
+      "recommendations": [
+        {
+          "role": "rally-lead",
+          "confidence": "inferred",
+          "reason": "rallyWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-lead",
+          "confidence": "community",
+          "reason": "rallyWidget",
+          "source": "bear"
+        },
+        {
+          "role": "attack-joiner",
+          "confidence": "inferred",
+          "reason": "firstDamage",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-joiner",
+          "confidence": "policy",
+          "reason": "amadeus",
+          "source": "policy"
+        }
+      ],
+      "portrait": "amadeus.webp"
+    },
+    "amane": {
+      "recommendations": [
+        {
+          "role": "attack-joiner",
+          "confidence": "inferred",
+          "reason": "firstDamage",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-joiner",
+          "confidence": "policy",
+          "reason": "firstDamage",
+          "source": "policy"
+        }
+      ],
+      "portrait": "amane.webp"
+    },
+    "chenko": {
+      "recommendations": [
+        {
+          "role": "attack-joiner",
+          "confidence": "community",
+          "reason": "firstDamage",
+          "source": "rally"
+        },
+        {
+          "role": "bear-joiner",
+          "confidence": "policy",
+          "reason": "firstDamage",
+          "source": "policy"
+        }
+      ],
+      "portrait": "chenko.webp"
+    },
+    "diana": {
+      "recommendations": []
+    },
+    "edwin": {
+      "recommendations": []
+    },
+    "fahd": {
+      "recommendations": [
+        {
+          "role": "defence-joiner",
+          "confidence": "community",
+          "reason": "firstDefence",
+          "source": "garrison"
+        }
+      ]
+    },
+    "forrest": {
+      "recommendations": []
+    },
+    "gordon": {
+      "recommendations": [
+        {
+          "role": "defence-joiner",
+          "confidence": "community",
+          "reason": "firstDefence",
+          "source": "garrison"
+        }
+      ]
+    },
+    "helga": {
+      "recommendations": [
+        {
+          "role": "rally-lead",
+          "confidence": "inferred",
+          "reason": "rallyWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-lead",
+          "confidence": "community",
+          "reason": "rallyWidget",
+          "source": "bear"
+        }
+      ],
+      "portrait": "helga.webp"
+    },
+    "howard": {
+      "recommendations": [
+        {
+          "role": "defence-joiner",
+          "confidence": "community",
+          "reason": "firstDefence",
+          "source": "garrison"
+        }
+      ]
+    },
+    "jabel": {
+      "recommendations": [
+        {
+          "role": "garrison-lead",
+          "confidence": "inferred",
+          "reason": "defenderWidget",
+          "source": "catalogue"
+        }
+      ],
+      "portrait": "jabel.webp"
+    },
+    "olive": {
+      "recommendations": []
+    },
+    "quinn": {
+      "recommendations": []
+    },
+    "saul": {
+      "recommendations": [
+        {
+          "role": "garrison-lead",
+          "confidence": "inferred",
+          "reason": "defenderWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "defence-joiner",
+          "confidence": "community",
+          "reason": "firstDefence",
+          "source": "garrison"
+        }
+      ],
+      "portrait": "saul.webp"
+    },
+    "seth": {
+      "recommendations": []
+    },
+    "yeonwoo": {
+      "recommendations": [
+        {
+          "role": "attack-joiner",
+          "confidence": "inferred",
+          "reason": "firstDamage",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-joiner",
+          "confidence": "policy",
+          "reason": "firstDamage",
+          "source": "policy"
+        }
+      ],
+      "portrait": "yeonwoo.webp"
+    },
+    "hilde": {
+      "recommendations": [
+        {
+          "role": "garrison-lead",
+          "confidence": "inferred",
+          "reason": "defenderWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-joiner",
+          "confidence": "conditional",
+          "reason": "hilde",
+          "source": "policy"
+        }
+      ],
+      "portrait": "hilde.webp"
+    },
+    "marlin": {
+      "recommendations": [
+        {
+          "role": "rally-lead",
+          "confidence": "inferred",
+          "reason": "rallyWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-lead",
+          "confidence": "inferred",
+          "reason": "rallyWidget",
+          "source": "catalogue"
+        }
+      ],
+      "portrait": "marlin.webp"
+    },
+    "zoe": {
+      "recommendations": [
+        {
+          "role": "garrison-lead",
+          "confidence": "inferred",
+          "reason": "defenderWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-lead",
+          "confidence": "community",
+          "reason": "bearAlternative",
+          "source": "bear"
+        }
+      ],
+      "portrait": "zoe.webp"
+    },
+    "eric": {
+      "recommendations": [
+        {
+          "role": "garrison-lead",
+          "confidence": "inferred",
+          "reason": "defenderWidget",
+          "source": "catalogue"
+        }
+      ]
+    },
+    "jaeger": {
+      "recommendations": [
+        {
+          "role": "garrison-lead",
+          "confidence": "inferred",
+          "reason": "defenderWidget",
+          "source": "catalogue"
+        }
+      ]
+    },
+    "petra": {
+      "recommendations": [
+        {
+          "role": "rally-lead",
+          "confidence": "inferred",
+          "reason": "rallyWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-lead",
+          "confidence": "inferred",
+          "reason": "rallyWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-joiner",
+          "confidence": "policy",
+          "reason": "petra",
+          "source": "policy"
+        }
+      ],
+      "portrait": "petra.webp"
+    },
+    "alcar": {
+      "recommendations": [
+        {
+          "role": "garrison-lead",
+          "confidence": "inferred",
+          "reason": "defenderWidget",
+          "source": "catalogue"
+        }
+      ],
+      "portrait": "alcar.webp"
+    },
+    "margot": {
+      "recommendations": [
+        {
+          "role": "garrison-lead",
+          "confidence": "inferred",
+          "reason": "defenderWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-joiner",
+          "confidence": "policy",
+          "reason": "firstDamage",
+          "source": "policy"
+        }
+      ],
+      "portrait": "margot.webp"
+    },
+    "rosa": {
+      "recommendations": [
+        {
+          "role": "rally-lead",
+          "confidence": "inferred",
+          "reason": "rallyWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-lead",
+          "confidence": "inferred",
+          "reason": "rallyWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-joiner",
+          "confidence": "policy",
+          "reason": "firstDamage",
+          "source": "policy"
+        }
+      ],
+      "portrait": "rosa.webp"
+    },
+    "longfei": {
+      "recommendations": [
+        {
+          "role": "garrison-lead",
+          "confidence": "inferred",
+          "reason": "defenderWidget",
+          "source": "catalogue"
+        }
+      ]
+    },
+    "thrud": {
+      "recommendations": [
+        {
+          "role": "rally-lead",
+          "confidence": "inferred",
+          "reason": "rallyWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-lead",
+          "confidence": "inferred",
+          "reason": "rallyWidget",
+          "source": "catalogue"
+        }
+      ],
+      "portrait": "thrud.webp"
+    },
+    "vivian": {
+      "recommendations": [
+        {
+          "role": "garrison-lead",
+          "confidence": "inferred",
+          "reason": "defenderWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-joiner",
+          "confidence": "policy",
+          "reason": "firstDamage",
+          "source": "policy"
+        }
+      ],
+      "portrait": "vivian.webp"
+    },
+    "sophia": {
+      "recommendations": [
+        {
+          "role": "garrison-lead",
+          "confidence": "inferred",
+          "reason": "defenderWidget",
+          "source": "catalogue"
+        }
+      ]
+    },
+    "triton": {
+      "recommendations": [
+        {
+          "role": "garrison-lead",
+          "confidence": "inferred",
+          "reason": "defenderWidget",
+          "source": "catalogue"
+        }
+      ]
+    },
+    "yang": {
+      "recommendations": [
+        {
+          "role": "rally-lead",
+          "confidence": "inferred",
+          "reason": "rallyWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-lead",
+          "confidence": "inferred",
+          "reason": "rallyWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-joiner",
+          "confidence": "policy",
+          "reason": "firstDamage",
+          "source": "policy"
+        }
+      ],
+      "portrait": "yang.webp"
+    },
+    "ava": {
+      "recommendations": [
+        {
+          "role": "rally-lead",
+          "confidence": "inferred",
+          "reason": "rallyWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-lead",
+          "confidence": "inferred",
+          "reason": "rallyWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-joiner",
+          "confidence": "policy",
+          "reason": "firstDamage",
+          "source": "policy"
+        }
+      ],
+      "portrait": "ava.webp"
+    },
+    "charles": {
+      "recommendations": [
+        {
+          "role": "garrison-lead",
+          "confidence": "inferred",
+          "reason": "defenderWidget",
+          "source": "catalogue"
+        }
+      ]
+    },
+    "weewoo": {
+      "recommendations": [
+        {
+          "role": "garrison-lead",
+          "confidence": "inferred",
+          "reason": "defenderWidget",
+          "source": "catalogue"
+        },
+        {
+          "role": "bear-joiner",
+          "confidence": "policy",
+          "reason": "firstDamage",
+          "source": "policy"
+        }
+      ],
+      "portrait": "weewoo.webp"
+    }
+  },
+  "reasons": {
+    "defenderWidget": "Recorded defender widget; compare the full developed kit.",
+    "rallyWidget": "Recorded rally widget; compare the full developed kit.",
+    "firstDefence": "First skill supports defence; use in slot 1 when assigned.",
+    "firstDamage": "First skill supports damage; coordinate slot 1 and skill level.",
+    "petra": "Avoid duplicate Petras in one rally; follow the alliance policy.",
+    "amadeus": "Use as a joiner when not needed to lead a rally.",
+    "hilde": "Some alliances exclude Hilde from Bear joins; permission is required.",
+    "bearAlternative": "Generation 2 alternative to Amadeus; compare developed damage skills, not the defensive widget skill."
+  }
+}

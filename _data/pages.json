@@ -379,10 +379,10 @@
       "lede": "your VIP XP is a straight line at your rate — here's the date for every remaining level."
     },
     "swipeNext": {
-      "url": "../hero-gear/",
-      "page": "gear",
-      "title": "Hero gear",
-      "lede": "your next red upgrade, your next mithril use — every cost, in one ledger."
+      "url": "../heroes/",
+      "page": "heroes",
+      "title": "Heroes",
+      "lede": "heroes by generation, troop and role."
     },
     "css": [
       "../css/styles.css",
@@ -431,10 +431,10 @@
     "brandNoteKey": "gear.kicker",
     "brandNote": "the forge ledger",
     "swipePrev": {
-      "url": "../battle-simulator/",
-      "page": "sim",
-      "title": "Battle Simulator",
-      "lede": "the maths of your battles — the bear ratio, your march, and the Mystic Trial rooms."
+      "url": "../heroes/",
+      "page": "heroes",
+      "title": "Heroes",
+      "lede": "heroes by generation, troop and role."
     },
     "swipeNext": {
       "url": "../",
@@ -460,6 +460,60 @@
       {
         "key": "gear.foot",
         "html": "game values from <a href=\"https://kingshotoptimizer.com/hero-gear/references/xp-costs/\">Kingshot Optimizer</a> · independently built for the [2129]MadNess alliance"
+      }
+    ],
+    "headScripts": []
+  },
+  "heroes": {
+    "token": "heroes",
+    "depth": "../",
+    "canonicalPath": "/heroes/",
+    "themeColor": "#11130d",
+    "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230B0E16'/%3E%3Ctext x='16' y='24' font-size='22' text-anchor='middle' fill='%23F0C45A'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E\">",
+    "titleKey": "directory.title",
+    "titleText": "Hero directory — dey.ci",
+    "metaDescKey": "directory.intro",
+    "metaDesc": "Find a hero by generation, troop and role. Compare the skills that matter for the job.",
+    "ogTitleKey": "directory.title",
+    "ogTitle": "Hero directory",
+    "ogDescKey": "directory.intro",
+    "ogDesc": "Find a hero by generation, troop and role. Compare the skills that matter for the job.",
+    "skipHref": "#directory",
+    "skipKey": "directory.browse",
+    "skipText": "Browse heroes",
+    "dust": "<i></i><i></i><i></i>",
+    "brand": "Heroes",
+    "brandNoteKey": "directory.roles",
+    "brandNote": "Choose a role",
+    "swipePrev": {
+      "url": "../battle-simulator/",
+      "page": "sim",
+      "title": "Battle Simulator",
+      "lede": "your battles, your marches, and the maths."
+    },
+    "swipeNext": {
+      "url": "../hero-gear/",
+      "page": "gear",
+      "title": "Hero gear",
+      "lede": "your next upgrade and the resources it needs."
+    },
+    "css": [
+      "../css/styles.css",
+      "../css/events.css",
+      "../css/heroes.css"
+    ],
+    "scripts": [
+      "../js/i18n.js",
+      "../js/common.js",
+      "../js/hero-directory-engine.js",
+      "../js/hero-directory.js"
+    ],
+    "footMainKey": "directory.title",
+    "footMain": "Hero directory",
+    "footSubs": [
+      {
+        "key": "directory.candidateNote",
+        "html": "Role labels identify candidates, not a ranking. Stars, skill levels, widgets, account stats and alliance policy decide the lineup."
       }
     ],
     "headScripts": []
