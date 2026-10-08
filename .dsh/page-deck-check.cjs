@@ -161,10 +161,10 @@ function setup(current = 'home', reduced = false) {
 
 test('opening swipe retains velocity: a flick settles farther than a slow drag', () => {
   const slow = setup(); slow.swipe(slow.main, 1200); slow.advance(1000);
-  const fast = setup(); fast.swipe(fast.main, 80); fast.advance(1000);
+  const fast = setup(); fast.swipe(fast.main, 80); fast.advance(2200);
   assert.equal(slow.selected(), 1);
   assert.ok(fast.selected() > slow.selected());
-  assert.ok(fast.selected() <= 5);
+  assert.ok(fast.selected() < fast.cards.length);
   assert.equal(fast.deck.open, true);
   assert.equal(fast.location.href, 'https://dey.ci/');
 });
@@ -287,4 +287,37 @@ test('a reversal uses the final movement and keyboard direction follows the phys
   s.fire(s.next, 'keydown', { key: 'Home' }); s.advance(1000);
   s.fire(s.next, 'keydown', { key: 'ArrowRight' }); s.advance(1000);
   assert.equal(s.selected(), 1);
+});
+
+test('opening flick keeps its release speed into the first coasting frame', () => {
+  const s = setup();
+  s.swipe(s.main, 200, -100);
+  const x = () => Number(s.cards[0].style.transform.match(/\+ ([-\d.]+)px/)[1]);
+  const before = x();
+  s.advance(16);
+  const speed = (before - x()) / 16;
+  assert.ok(speed > 0.45 && speed < 0.55, String(speed));
+  s.advance(2400);
+  assert.equal(s.frames.size, 0);
+});
+
+test('deck navigation retains the cover for capture and cleans it on history restore', () => {
+  const s = setup();
+  s.fire(s.ledgerButton, 'click');
+  s.fire(s.cards[1], 'click');
+  assert.equal(s.document.documentElement.getAttribute('data-entry'), 'deck');
+  s.fire(s.window, 'pagehide');
+  assert.equal(s.deck.open, true);
+  s.fire(s.window, 'pageshow', { persisted: true });
+  assert.equal(s.deck.open, false);
+  assert.equal(s.document.documentElement.getAttribute('data-entry'), null);
+});
+
+test('modified cover clicks do not mark the current tab as navigating', () => {
+  const s = setup();
+  s.fire(s.ledgerButton, 'click');
+  s.fire(s.cards[1], 'click', { ctrlKey: true });
+  assert.equal(s.storage.get('bh:deck'), undefined);
+  s.fire(s.window, 'pagehide');
+  assert.equal(s.deck.open, false);
 });

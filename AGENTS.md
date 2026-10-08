@@ -78,7 +78,8 @@ and never alter numbers, math symbols (`√ × ÷ ≈ Σ ∝ ≤ →`), `{n}`, o
   `_data/nav.json` entry using `_data/pages.json` for identity and the nav entries for translated ledes.
   The compact ledger button opens the same native modal dialog as a horizontal
   swipe. `js/common.js` carries the opening drag into the carousel: slow drags
-  track the finger, release velocity from the last 100 ms adds a capped throw,
+  track the finger, release velocity from the last 100 ms feeds an exponential coast (400 ms
+  decay, at most four additional cards),
   and the deck settles without navigating. Touch catches momentum; only a card
   tap follows its real link. Group buttons jump within the stable nav order.
   Forms, links, buttons and TOC rails retain their own gestures. Escape, the
@@ -90,8 +91,8 @@ and never alter numbers, math symbols (`√ × ÷ ≈ Σ ∝ ≤ →`), `{n}`, o
   navigation: auto; }` at top level in `css/events.css`. A deck link writes its
   target pathname to `sessionStorage['bh:deck']`; `head.html` consumes it for
   a dissolve even when the target is outside the neighbour ring. Reduced motion
-  neutralises transition animations. `pageshow` / `pagehide` close the deck for
-  clean history restores. Dictionaries remain pinned to `window.__BH_BUILD`.
+  neutralises transition animations. Keep the departing deck visible through `pagehide` for transition capture;
+  `pageshow` closes it on history restore. Ordinary departures still close it. Dictionaries remain pinned to `window.__BH_BUILD`.
   Run `node --test .dsh/page-deck-check.cjs` for gesture, modal and translation checks.
 - A new event page = one directory with a front-matter `index.html` (its TOC +
   `<main>` body only), a `data-page` theme block + dust rules in `css/events.css`,
