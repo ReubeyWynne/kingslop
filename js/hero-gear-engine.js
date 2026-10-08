@@ -247,8 +247,10 @@
   }
 
   function strategyComparison(input) {
-    var state = normaliseState(input), now = optimise(state), options = nearbyMilestones(state);
+    var state = normaliseState(input), now = optimise(state), options = nearbyMilestones(state).slice(0, 1);
     var alternatives = options.map(function (route) {
+      var afterPiece = now.pieces[route.id], afterTarget = milestone(afterPiece, 'mithril');
+      var afterSpendGap = afterTarget ? gap(cost(afterPiece, afterTarget), now.remaining) : emptyCost();
       var withReforge = copy(state);
       withReforge.reforge = true;
       var reforgeNow = optimise(withReforge, route);
@@ -258,7 +260,7 @@
       var futurePlan = optimise(future, route);
       var futureBest = optimise(future);
       return {
-        id: route.id, from: route.from, to: route.to, costs: route.costs, gap: needed,
+        id: route.id, from: route.from, to: route.to, costs: route.costs, gap: needed, afterSpendGap: afterSpendGap,
         milestoneGain: route.gain,
         reforgeNow: reforgeNow && reforgeNow.score > now.baseline + 1e-8 ? reforgeNow : null,
         futurePlan: futurePlan,
