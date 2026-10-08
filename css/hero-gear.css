@@ -170,7 +170,8 @@ html[data-page="gear"] .topbar h1.brand { margin: 0; line-height: 1.2; }
 .gear-row-cost { display: inline-flex; align-items: center; gap: .1rem; font-size: .75rem; color: var(--ink-dim); }
 .gear-row-cost .gear-resource-art { width: 1rem; height: 1rem; }
 .gear-kvk-points { color: var(--amber); font-size: .72rem; line-height: 1.2; }
-.gear-route-metrics > .gear-kvk-points { grid-column: 1 / -1; font-size: .68rem; }
+.gear-route-metrics > .gear-kvk-points { grid-column: 1 / -1; font-size: .85rem; }
+.gear-route-metrics .gear-kvk-points > span { display: block; font-size: .7rem; }
 .gear-row-costs > .gear-kvk-points { width: 100%; }
 .gear-kvk-summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .45rem; padding-block: .25rem; border-bottom: 1px solid var(--signal-line); font-size: .85rem; }
 .gear-kvk-summary > strong { font: 1.1rem/1.2 var(--display-2); }
