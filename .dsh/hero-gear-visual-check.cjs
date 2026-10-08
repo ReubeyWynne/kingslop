@@ -198,7 +198,11 @@ async function fits(page, label) {
     assert.match(await page.locator('.gear-change[data-direction="down"]').first().textContent(),/↓.*recover/);
     await fits(page,'mobile optimise');await page.evaluate(()=>scrollTo(0,0));
     const resultGrid=await page.locator('.gear-result-grid').boundingBox();
-    assert.ok(resultGrid.y+resultGrid.height<=844,'changed-piece comparison rows fit the mobile viewport');
+    assert.ok(resultGrid.width<=390,'changed-piece comparison rows fit the mobile viewport width');
+    assert.ok(await page.locator('.gear-result-grid .gear-row').evaluateAll(rows =>
+      rows.every(row => { const box=row.getBoundingClientRect(); return box.left>=-1 && box.right<=window.innerWidth+1; })
+    ),'changed-piece rows do not overflow the mobile viewport horizontally');
+    await page.locator('.gear-result-grid').scrollIntoViewIfNeeded();
     await page.screenshot({path:path.join(output,'mobile-optimise.png')});
     await page.setViewportSize({width:1280,height:900});await fits(page,'desktop optimise');
     await page.screenshot({path:path.join(output,'desktop-optimise.png')});
