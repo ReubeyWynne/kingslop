@@ -162,7 +162,10 @@
       var next = Math.abs(card.offsetLeft + card.offsetWidth / 2 - center);
       if (next < distance) { distance = next; index = i; }
     });
-    selectDeck(index);
+    // A jump made with the buttons, keys or group tabs already chose its card;
+    // the cards it glides past on the way must not each take a turn at being
+    // selected, or the palette strobes through every theme in between.
+    if (targetPosition === null) selectDeck(index);
     window.clearTimeout(announceTimer);
     announceTimer = window.setTimeout(finishDeckScroll, 180);
   }

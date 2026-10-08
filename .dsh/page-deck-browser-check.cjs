@@ -81,22 +81,29 @@ async function fits(page) {
     await page.locator('#ledger-btn').click();
     await selected(page, 'home');
     await page.waitForTimeout(1100);
-    const flameBefore = await page.locator('.deck-fire .main-flame').evaluate(el => getComputedStyle(el, '::before').content);
+    const flameBefore = await page.locator('.deck-card.is-selected .ascii-campfire .flame').evaluate(el => getComputedStyle(el, '::before').content);
     await page.waitForTimeout(180);
-    const flameAfter = await page.locator('.deck-fire .main-flame').evaluate(el => getComputedStyle(el, '::before').content);
+    const flameAfter = await page.locator('.deck-card.is-selected .ascii-campfire .flame').evaluate(el => getComputedStyle(el, '::before').content);
     assert.notEqual(flameBefore, flameAfter);
-    assert.equal(await page.locator('.deck-fire .main-flame').evaluate(el => getComputedStyle(el).transform), 'none');
-    assert.match(await page.locator('.deck-fire .main-flame').evaluate(el => getComputedStyle(el, '::before').animationTimingFunction), /steps/);
-    const start = await page.locator('#page-deck').evaluate(el => getComputedStyle(el).backgroundColor);
+    assert.equal(await page.locator('.deck-card.is-selected .ascii-campfire .flame').evaluate(el => getComputedStyle(el).transform), 'none');
+    assert.match(await page.locator('.deck-card.is-selected .ascii-campfire .flame').evaluate(el => getComputedStyle(el, '::before').animationTimingFunction), /steps/);
+    // A jump across several cards cross-fades straight from the old wash to
+    // the new one; the cards it passes never light up their own palettes.
+    const washes = () => page.locator('.deck-wash').evaluateAll(els => Object.fromEntries(els.map(el => [el.dataset.page, +getComputedStyle(el).opacity])));
+    const seen = new Set();
     await page.locator('[data-deck-group="tools"]').click();
+    for (let i = 0; i < 12; i++) {
+      for (const [token, opacity] of Object.entries(await washes())) if (opacity > 0.01) seen.add(token);
+      await page.waitForTimeout(40);
+    }
     await selected(page, 'vip');
-    await page.waitForTimeout(120);
-    const middle = await page.locator('#page-deck').evaluate(el => getComputedStyle(el).backgroundColor);
+    const middle = (await washes()).vip;
     await page.waitForTimeout(1200);
-    const end = await page.locator('#page-deck').evaluate(el => getComputedStyle(el).backgroundColor);
-    assert.notEqual(start, end);
-    assert.notEqual(middle, end);
-    assert.notEqual(middle, start);
+    const end = await washes();
+    assert.deepEqual([...seen].sort(), ['home', 'vip']);
+    assert.ok(middle > 0 && middle < 1, String(middle));
+    assert.equal(end.vip, 1);
+    assert.equal(end.home, 0);
     assert.equal(await page.locator('.deck-card.is-selected .ascii-mini--crown').evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'running');
     assert.equal(await page.locator('.deck-card:not(.is-selected) .ascii-mini--bear').first().evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'paused');
     for (const lang of ['de', 'ar']) {
