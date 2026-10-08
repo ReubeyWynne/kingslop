@@ -1,5 +1,5 @@
 <dialog id="page-deck" class="page-deck" aria-labelledby="deck-title" aria-describedby="deck-hint">
-  <div class="deck-atmosphere" aria-hidden="true">{% include ascii/ambient.html %}</div>
+  <div class="deck-atmosphere" aria-hidden="true">{% for n in site.data.nav %}<i class="deck-wash" data-page="{{ site.data.pages[n.self].token }}"></i>{% endfor %}{% include ascii/ambient.html %}</div>
   <div class="deck-sheet">
     <header class="deck-header">
       <h2 id="deck-title" data-i18n="ev.ledger.aria">the ledger — every page</h2>

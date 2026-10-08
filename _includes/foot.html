@@ -1,5 +1,6 @@
 {% assign p = site.data.pages[page.self] %}
 <footer>
+  {% include ascii/hearth.html %}
   <nav class="ev-foot" aria-label="Events" data-i18n-key="ev.switchAria" data-i18n-attr="aria-label">
     {% for n in site.data.nav %}{% if n.self == page.self %}<a href="{% if n.self == 'home' %}./{% else %}{{ p.depth }}{{ n.tail }}{% endif %}" aria-current="page" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% else %}<a href="{% if n.self == 'home' %}{{ p.depth }}{% else %}{{ p.depth }}{{ n.tail }}{% endif %}" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
