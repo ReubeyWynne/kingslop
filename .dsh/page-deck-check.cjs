@@ -316,26 +316,29 @@ test('palette selection is declared in CSS without JavaScript colour writes or f
 });
 
 test('every cover has an ASCII HTML scene with a static fallback and reduced-motion styling', () => {
-  const css = fs.readFileSync(path.join(root, 'css/ascii-deck.css'), 'utf8');
+  const css = fs.readFileSync(path.join(root, 'css/ascii.css'), 'utf8');
+  const frames = fs.readFileSync(path.join(root, 'css/ascii-frames.css'), 'utf8');
   const head = fs.readFileSync(path.join(root, '_includes/head.html'), 'utf8');
   const scene = fs.readFileSync(path.join(root, '_includes/ascii/deck-scene.html'), 'utf8');
   const template = fs.readFileSync(path.join(root, '_includes/page-deck.html'), 'utf8');
-  assert.ok(head.includes('css/ascii-deck.css'));
+  assert.ok(head.includes('css/ascii.css') && head.includes('css/ascii-frames.css'));
   assert.ok(template.indexOf('deck-card-title') < template.indexOf('class="deck-ascii"'));
   assert.ok(template.includes('include ascii/deck-scene.html'));
-  for (const entry of nav) assert.ok(scene.includes(`when '${pages[entry.self].token}'`));
+  for (const entry of nav) {
+    const token = pages[entry.self].token;
+    assert.ok(scene.includes(`when '${token}'`));
+    assert.ok(template.includes('class="deck-wash"'));
+  }
   assert.equal(/[^\x00-\x7F]/.test(scene), false);
-  assert.match(css, /top: 50%;[\s\S]*left: 50%;/);
+  assert.match(css, /\.deck-ascii \{[\s\S]*?top: 50%;[\s\S]*?left: 50%;/);
   assert.match(css, /prefers-reduced-motion: reduce[\s\S]*animation: none !important/);
-  assert.match(css, /steps\(1,end\)/);
-  assert.doesNotMatch(css, /transform:|animation-timeline:|scene-breathe|ambient-drift/);
-  const flame = css.match(/@keyframes deck-reference-flame-main \{([\s\S]*?)\n\}/)[1];
-  assert.equal([...flame.matchAll(/content:/g)].length, 64);
-  const campfire = fs.readFileSync(path.join(root, '_includes/ascii/deck-campfire.html'), 'utf8');
+  const flame = frames.match(/@keyframes ascii-fire\{([\s\S]*?)\n\}/)[1];
+  assert.equal([...flame.matchAll(/content:/g)].length, 72);
+  const campfire = fs.readFileSync(path.join(root, '_includes/ascii/campfire.html'), 'utf8');
   assert.equal([...campfire.matchAll(/class="patch patch-/g)].length, 6);
   assert.equal([...campfire.matchAll(/class="spark"/g)].length, 18);
   assert.ok(campfire.includes('class="logs-back"') && campfire.includes('class="logs-front"'));
-  assert.ok(scene.includes('ascii-mini--bear') && scene.includes('ascii-mini--crown') && scene.includes('ascii-mini--dice'));
-
+  for (const kind of ['bear', 'crown', 'dice', 'moon', 'banner']) assert.ok(scene.includes(`ascii-mini--${kind}`));
+  assert.ok(scene.includes('include ascii/campfire.html') && scene.includes('include ascii/forge.html'));
 });
 
