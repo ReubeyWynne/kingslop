@@ -48,7 +48,7 @@ self: gear
           <button type="button" id="gear-mode-optimise" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-mode="optimise" data-i18n="gear.spendNow">Spend now</button>
           <button type="button" id="gear-mode-milestones" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-mode="milestones" data-i18n="gear.pieceCosts">Piece costs</button>
         </div>
-        <div id="gear-answer-panel" role="tabpanel" aria-labelledby="gear-mode-milestones">
+        <div id="gear-answer-panel" role="tabpanel" aria-labelledby="gear-mode-optimise">
           <div class="gear-priority-bar">
             <label class="gear-profile"><span data-i18n="gear.profile">Build profile</span><select id="gear-profile">
               <option value="growth" data-i18n="gear.growth">Early growth</option>
@@ -66,7 +66,7 @@ self: gear
             <button type="button" data-goal="mithril" aria-pressed="true" data-i18n="gear.nextMithril">Next mithril use</button>
           </div>
           <div id="gear-milestone-out" aria-live="polite"></div>
-          <div id="gear-optimise-panel" hidden>
+          <div id="gear-optimise-panel" hidden>\n            <div id="gear-opportunities" aria-live="polite"></div>
             <output id="gear-search-status" class="gear-search-status" role="status" hidden></output>
             <button type="button" id="gear-run" class="gear-primary gear-action" data-i18n="gear.retryCalculation" hidden>retry calculation</button>
             <div id="gear-results" aria-live="polite" aria-busy="false"></div>
@@ -75,7 +75,7 @@ self: gear
         </div>
       </div>
     </div>
-    <details id="gear-settings"><summary data-i18n="gear.weightSettings">weights & reforge</summary><div id="gear-weights"></div><label class="gear-include"><input id="gear-reforge" type="checkbox"><span data-i18n="gear.reforge">allow XP reforge on epic & mythic gear</span></label><p class="gear-gloss" data-i18n="gear.reforgeHint">mastery and red gear stay invested. weights describe your priorities, not predicted battle damage.</p></details>
+    <label class="gear-include gear-reforge-option"><input id="gear-reforge" type="checkbox" checked><span data-i18n="gear.reforge">allow XP reforge on epic & mythic gear</span></label>\n    <details id="gear-settings"><summary data-i18n="gear.weightSettings">weights & reforge</summary><div id="gear-weights"></div><p class="gear-gloss" data-i18n="gear.reforgeHint">mastery and red gear stay invested. weights describe your priorities, not predicted battle damage.</p></details>
     <output id="gear-status" role="status" hidden></output>
     <button id="gear-undo" type="button" hidden data-i18n="gear.undo">undo last update</button>
     <noscript><p data-i18n="gear.noJS">enable JavaScript to use the planner. the cost references below remain available.</p></noscript>
