@@ -6,11 +6,7 @@
 .ascii-mini::after{position:absolute;display:block;white-space:pre;top:1em;left:22ch;color:var(--amber);content:".";animation:ascii-mote 4.7s steps(1,end) infinite}
 @keyframes ascii-mote{0%,25%,100%{content:" "}28%,37%{content:"."}38%,45%{content:"*"}46%,54%{content:"'"}55%,65%{content:"+"}}
 .ascii-mini--charm{color:#d3a33e}
-.ascii-mini--crown{color:#f0ce7a}
-.ascii-mini--dice{color:var(--amber,#f5c851)}
 .ascii-mini--charm::after{animation-delay:-1.1s}
-.ascii-mini--crown::after{animation-delay:-2.3s}
-.ascii-mini--dice::after{animation-delay:-3.7s}
 @media(prefers-reduced-motion:reduce){.ascii-mini::before,.ascii-mini::after{animation:none!important}.ascii-mini::after{content:" "}}
 @media(max-width:400px){.ascii-motif-rail{gap:.5rem;margin-top:1rem}.ascii-mini{font-size:9px}}
 .ascii-mini--charm::before{content:"         .     *             \A           \\   /              \A            \\ /               \A          .-=#=-.             \A         /  /@\\  \\            \A        |  <#@#>  |           \A         \\  \\#/  /            \A          '.___.'             \A            '                 ";animation:ascii-mini-charm 2.76s steps(1,end) infinite}
