@@ -15,7 +15,7 @@ const server = http.createServer((request, response) => {
   response.setHeader('Content-Type', { '.html':'text/html', '.js':'text/javascript', '.css':'text/css' }[path.extname(file)] || 'application/octet-stream');
   fs.createReadStream(file).pipe(response);
 });
-const workerBody = "importScripts('hero-gear-engine.js' + self.location.search);self.onmessage=e=>setTimeout(()=>self.postMessage({ok:true,result:self.HeroGear.optimise(e.data)}),400);";
+const workerBody = "importScripts('hero-gear-engine.js' + self.location.search);self.onmessage=e=>setTimeout(()=>self.postMessage({ok:true,result:self.HeroGear.strategyComparison(e.data)}),400);";
 function fixture() {
   const state = E.defaults();
   state.mode = 'optimise'; state.view = 'plan';
