@@ -187,9 +187,8 @@ function fixture() {
     await sibling.locator('#gear-rows .gear-row').first().waitFor({ state: 'attached' });
     await sibling.evaluate(() => window.PlayerLedger.shared().setBalance('mithril', 17));
     await page.waitForFunction(() => document.getElementById('gear-mithril').value === '17');
-    const downloadPromise = page.waitForEvent('download');
-    await page.locator('#gear-export').click();
-    const download = await downloadPromise;
+    await page.locator('.gear-save-tools summary').click();
+    const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#gear-export').click()]);
     assert.equal(download.suggestedFilename(), 'kingshot-player.json');
     const backup = JSON.parse(fs.readFileSync(await download.path(), 'utf8'));
     assert.equal(backup.inventory.forgehammer.amount, 123);
