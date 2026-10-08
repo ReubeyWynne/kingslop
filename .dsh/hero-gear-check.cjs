@@ -33,6 +33,7 @@ assert.equal(E.stats({ quality: 'red', level: 200, mastery: 20 }, 'chest').attac
 assert.deepEqual(E.gap({ xp: 10, hammers: 20, mythic: 5, mithril: 10 }, { xp: 20, hammers: 2, mythic: 3, mithril: 0 }), { xp: 0, hammers: 18, mythic: 2, mithril: 10 });
 assert.deepEqual(E.normaliseState({ version: 1, weights: { inf: [2] } }).weights.inf, [2, 1.5]);
 const ascensionOnly = E.defaults();
+ascensionOnly.reforge = false;
 ascensionOnly.pieces['inf-helm'] = mythic;
 ascensionOnly.resources.mythic = 2;
 const ascended = E.optimise(ascensionOnly);
