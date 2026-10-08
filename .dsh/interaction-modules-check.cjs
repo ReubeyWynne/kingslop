@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
 const { chromium } = require('playwright');
-const markup = `<!doctype html><html><body>
+const markup = `<!doctype html><html><head><meta charset="utf-8"></head><body>
 <section id="ledger" data-module="ledger-form" data-saved-key="saved" data-save-failed-key="failed">
 <input id="hammers" type="number" min="0" max="1000000000" step="1" data-bind="inventory.forgehammer" data-action="ledger-form.set ledger-form.normalize">
 <input id="parts" type="number" min="0" max="10000000" step="1" data-bind="heroGear.parts.ten" data-action="ledger-form.set ledger-form.normalize">
@@ -18,10 +18,10 @@ const markup = `<!doctype html><html><body>
 <script>window.errors=[];document.addEventListener('module:error',e=>errors.push(e.detail));window.testAPI={fmt:n=>new Intl.NumberFormat('en-GB').format(n),tr:(key,fallback)=>({saved:'Saved',failed:'Failed',loaded:'Loaded',invalid:'Invalid'})[key]||fallback,fill:(text)=>text};Interactions.start(testAPI);</script>
 </body></html>`;
 const server = http.createServer((req, res) => {
-  if (req.url === '/') return res.writeHead(200, { 'Content-Type': 'text/html' }).end(markup);
+  if (req.url === '/') return res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }).end(markup);
   const file = path.resolve('.' + new URL(req.url, 'http://localhost').pathname);
   if (!file.startsWith(path.resolve('js') + path.sep) || !fs.existsSync(file)) return res.writeHead(404).end();
-  res.writeHead(200, { 'Content-Type': 'text/javascript' }); fs.createReadStream(file).pipe(res);
+  res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8' }); fs.createReadStream(file).pipe(res);
 });
 (async () => {
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));

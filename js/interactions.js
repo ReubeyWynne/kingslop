@@ -22,7 +22,7 @@
         var instance = factories.get(name)(context) || {};
         modules.set(name, { context: context, instance: instance, dispose: function () { cleanups.reverse().forEach(function (fn) { fn(); }); if (instance.dispose) instance.dispose(); } });
         if (instance.refresh) instance.refresh();
-      } catch (cause) { cleanups.reverse().forEach(function (fn) { fn(); }); error(root, name, cause); }
+      } catch (cause) { modules.delete(name); cleanups.reverse().forEach(function (fn) { fn(); }); error(root, name, cause); }
     });
   }
   function scan(node) {
