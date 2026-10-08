@@ -294,7 +294,8 @@
         if (worker !== searchWorker || currentRevision !== revision) return;
         if (!event.data || !event.data.ok || !event.data.result) { fail(); return; }
         cancelSearch();
-        strategyResult = event.data.result;\n        result = strategyResult.now;
+        strategyResult = event.data.result;
+        result = strategyResult.now;
         if (result.changes.length) {
           resultTroop = E.TYPES.filter(function (type) { return state.included[type]; }).sort(function (a, b) {
             function gain(type) { return result.details.reduce(function (sum, d) { return sum + (d.id.startsWith(type + '-') ? d.gain : 0); }, 0); }
