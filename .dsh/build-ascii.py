@@ -521,7 +521,7 @@ def moon_frames():
 
 def minis():
     css = ['/* emblems */']
-    durations = {'charm': 6.4, 'bear': 7.2, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 9.8}
+    durations = {'charm': 6.4, 'bear': 7.2, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 19.6}
     for kind, duration in durations.items():
         frames, holds = mini_frames(kind)
         css.append(animation(f'.ascii-mini--{kind}::before', f'ascii-mini-{kind}', frames, duration, holds))

@@ -120,6 +120,48 @@
 
   function wrap(n) { return (n % cards.length + cards.length) % cards.length; }
 
+  // The deck is a ring. A full copy of the covers sits on either side of the
+  // real ones, so a swipe past either end keeps going; once the strip settles
+  // on a copy it is moved, instantly and invisibly, to the matching real cover.
+  var before = [];
+  var after = [];
+  function copyCard(card) {
+    var copy = card.cloneNode(true);
+    copy.classList.add('deck-copy');
+    copy.classList.remove('is-selected');
+    copy.removeAttribute('aria-current');
+    copy.setAttribute('aria-hidden', 'true');
+    copy.setAttribute('tabindex', '-1');
+    copy.inert = true;
+    return copy;
+  }
+  function buildRing() {
+    if (cards.length < 2 || typeof viewport.insertBefore !== 'function' || typeof cards[0].cloneNode !== 'function') return;
+    after = cards.map(function (card) { return viewport.appendChild(copyCard(card)); });
+    before = cards.map(function (card) { return viewport.insertBefore(copyCard(card), cards[0]); });
+  }
+  function centreOf(el) { return el.offsetLeft + el.offsetWidth / 2; }
+  function viewCentre() { return viewport.scrollLeft + viewport.clientWidth / 2; }
+  function copiesOf(i) { return [before[i], cards[i], after[i]].filter(Boolean); }
+  function nearestCopy(i) {
+    var c = viewCentre();
+    return copiesOf(i).reduce(function (best, el) { return Math.abs(centreOf(el) - c) < Math.abs(centreOf(best) - c) ? el : best; });
+  }
+  function centred() {
+    var c = viewCentre();
+    var best = { index: 0, el: cards[0], distance: Infinity };
+    cards.forEach(function (card, i) {
+      copiesOf(i).forEach(function (el) {
+        var d = Math.abs(centreOf(el) - c);
+        if (d < best.distance) best = { index: i, el: el, distance: d };
+      });
+    });
+    return best;
+  }
+  function scrollToCard(el, instant) {
+    viewport.scrollTo({ left: el.offsetLeft - (viewport.clientWidth - el.offsetWidth) / 2, behavior: instant ? 'instant' : 'auto' });
+  }
+
   function selectDeck(index) {
     position = index;
     cards.forEach(function (card, i) {
@@ -145,27 +187,17 @@
     index = wrap(index);
     targetPosition = index;
     selectDeck(index);
-    viewport.scrollTo({
-      left: cards[index].offsetLeft - (viewport.clientWidth - cards[index].offsetWidth) / 2,
-      behavior: instant ? 'instant' : 'auto'
-    });
+    scrollToCard(instant ? cards[index] : nearestCopy(index), instant);
     announceDeck();
     if (focusCard) cards[index].focus({ preventScroll: true });
   }
 
+  // Selection follows the strip only once it comes to rest. Covers the strip
+  // merely passes — under a finger, in a fling, or on the way to a button's
+  // target — never take a turn at being selected, so the ground colour, the
+  // borders and the running scene change once per move instead of flickering.
   function syncDeckScroll() {
     if (!deck.open) return;
-    var center = viewport.scrollLeft + viewport.clientWidth / 2;
-    var index = 0;
-    var distance = Infinity;
-    cards.forEach(function (card, i) {
-      var next = Math.abs(card.offsetLeft + card.offsetWidth / 2 - center);
-      if (next < distance) { distance = next; index = i; }
-    });
-    // A jump made with the buttons, keys or group tabs already chose its card;
-    // the cards it glides past on the way must not each take a turn at being
-    // selected, or the palette strobes through every theme in between.
-    if (targetPosition === null) selectDeck(index);
     window.clearTimeout(announceTimer);
     announceTimer = window.setTimeout(finishDeckScroll, 180);
   }
@@ -173,8 +205,16 @@
   function finishDeckScroll() {
     window.clearTimeout(announceTimer);
     announceTimer = 0;
+    if (!deck.open) { targetPosition = null; return; }
+    if (gesture && gesture.inDeck) return;
+    var at = centred();
+    // A jump interrupted on its way (a relayout, a tap on the strip) finishes
+    // at its own card rather than wherever the strip happened to stop.
+    if (targetPosition !== null && at.index !== targetPosition) at = { index: targetPosition, el: null };
+    if (at.el !== cards[at.index] || Math.abs(centreOf(cards[at.index]) - viewCentre()) > 1) scrollToCard(cards[at.index], true);
     targetPosition = null;
-    if (deck.open) announceDeck();
+    if (at.index !== position || !cards[at.index].classList.contains('is-selected')) selectDeck(at.index);
+    announceDeck();
   }
 
   function openDeck() {
@@ -248,6 +288,7 @@
     if (!gesture) return;
     var g = gesture;
     gesture = null;
+    if (g.inDeck) { window.clearTimeout(announceTimer); announceTimer = window.setTimeout(finishDeckScroll, 180); }
     if (!g.active) return;
     suppressUntil = performance.now() + 400;
     if (!g.inDeck && e.changedTouches.length) {
@@ -260,6 +301,7 @@
 
   function wireDeck() {
     if (!deck || !cards.length || typeof deck.showModal !== 'function') return;
+    buildRing();
     deck.querySelector('.deck-close').addEventListener('click', closeDeck);
     deck.addEventListener('cancel', function (e) { e.preventDefault(); closeDeck(); });
     deck.addEventListener('close', cleanDeck);
@@ -297,6 +339,11 @@
     window.addEventListener('resize', function () {
       if (deck.open) browseDeck(position, false, true);
     });
+    // Covers are sized in rem, so a text-size change moves them without
+    // resizing the window; keep the selected one centred.
+    if (typeof ResizeObserver === 'function') {
+      new ResizeObserver(function () { if (deck.open) browseDeck(position, false, true); }).observe(cards[0]);
+    }
     document.addEventListener('i18n:change', function () {
       if (deck.open) { syncDeckScroll(); announceDeck(); }
     });

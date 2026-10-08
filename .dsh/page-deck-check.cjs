@@ -176,12 +176,13 @@ test('an opening swipe browses one neighbour without scheduling animation frames
   }
 });
 
-test('native scroll position selects the centred cover and announces after settling', () => {
+test('native scroll position selects the centred cover once it settles', () => {
   const s = setup(); s.fire(s.ledgerButton, 'click');
   s.viewport.scrollLeft = 305 * 4;
   s.fire(s.viewport, 'scroll');
-  assert.equal(s.selected(), 4);
+  assert.equal(s.selected(), 0, 'a moving strip does not reselect');
   s.fire(s.viewport, 'scrollend');
+  assert.equal(s.selected(), 4);
   assert.match(s.status.textContent, /Swordland/);
   assert.equal(s.frames.size, 0);
 });

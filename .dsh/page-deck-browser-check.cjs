@@ -91,19 +91,41 @@ async function fits(page) {
     // the new one; the cards it passes never light up their own palettes.
     const washes = () => page.locator('.deck-wash').evaluateAll(els => Object.fromEntries(els.map(el => [el.dataset.page, +getComputedStyle(el).opacity])));
     const seen = new Set();
+    const blends = [];
     await page.locator('[data-deck-group="tools"]').click();
     for (let i = 0; i < 12; i++) {
-      for (const [token, opacity] of Object.entries(await washes())) if (opacity > 0.01) seen.add(token);
+      const now = await washes();
+      for (const [token, opacity] of Object.entries(now)) if (opacity > 0.01) seen.add(token);
+      blends.push(now.vip);
       await page.waitForTimeout(40);
     }
     await selected(page, 'vip');
-    const middle = (await washes()).vip;
     await page.waitForTimeout(1200);
     const end = await washes();
     assert.deepEqual([...seen].sort(), ['home', 'vip']);
-    assert.ok(middle > 0 && middle < 1, String(middle));
+    assert.ok(blends.some(v => v > 0.05 && v < 0.95), String(blends));
     assert.equal(end.vip, 1);
     assert.equal(end.home, 0);
+    // The deck is a ring: past either end it carries on into a copy of the
+    // covers and settles back on the real one without a visible jump.
+    await page.keyboard.press('Home');
+    await selected(page, 'home');
+    const startLeft = await page.locator('.deck-viewport').evaluate(el => el.scrollLeft);
+    await page.locator('.deck-prev').click();
+    await page.waitForTimeout(900);
+    await selected(page, 'gear');
+    const ring = await page.evaluate(() => {
+      const v = document.querySelector('.deck-viewport');
+      const c = v.scrollLeft + v.clientWidth / 2;
+      const at = [...v.querySelectorAll('.deck-card')].sort((a, b) => Math.abs(a.offsetLeft + a.offsetWidth / 2 - c) - Math.abs(b.offsetLeft + b.offsetWidth / 2 - c))[0];
+      return { copy: at.classList.contains('deck-copy'), page: at.dataset.page, copies: v.querySelectorAll('.deck-copy[inert][aria-hidden="true"]').length };
+    });
+    assert.deepEqual(ring, { copy: false, page: 'gear', copies: 16 });
+    await page.locator('.deck-next').click();
+    await selected(page, 'home');
+    assert.ok(Math.abs(await page.locator('.deck-viewport').evaluate(el => el.scrollLeft) - startLeft) < 2);
+    await page.locator('[data-deck-group="tools"]').click();
+    await selected(page, 'vip');
     assert.equal(await page.locator('.deck-card.is-selected .ascii-mini--crown').evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'running');
     assert.equal(await page.locator('.deck-card:not(.is-selected) .ascii-mini--bear').first().evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'paused');
     for (const lang of ['de', 'ar']) {
