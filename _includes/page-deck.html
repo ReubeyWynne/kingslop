@@ -1,4 +1,5 @@
 <dialog id="page-deck" class="page-deck" aria-labelledby="deck-title" aria-describedby="deck-hint">
+  <div class="deck-atmosphere" aria-hidden="true">{% include ascii/ambient.html %}</div>
   <div class="deck-sheet">
     <header class="deck-header">
       <h2 id="deck-title" data-i18n="ev.ledger.aria">the ledger — every page</h2>
@@ -12,10 +13,12 @@
     <div class="deck-viewport">
       {% for n in site.data.nav %}{% assign entry = site.data.pages[n.self] %}
       <a class="deck-card" href="{{ p.depth }}{{ n.tail }}" data-page="{{ entry.token }}" data-group="{{ n.group }}"{% if n.self == page.self %} aria-current="page"{% endif %} tabindex="-1">
-        <span class="deck-ascii" aria-hidden="true"></span>
         <span class="deck-card-title" data-i18n="{{ n.labelKey }}">{{ n.label }}</span>
-        <span class="deck-card-lede" data-i18n="{{ n.ledeKey }}">{{ n.lede }}</span>
-        <span class="deck-card-action" data-i18n="ev.deck.open">tap to open</span>
+        <span class="deck-ascii" aria-hidden="true">{% include ascii/deck-scene.html token=entry.token %}</span>
+        <span class="deck-card-copy">
+          <span class="deck-card-lede" data-i18n="{{ n.ledeKey }}">{{ n.lede }}</span>
+          <span class="deck-card-action" data-i18n="ev.deck.open">tap to open</span>
+        </span>
       </a>
       {% endfor %}
     </div>
@@ -27,3 +30,4 @@
     <p id="deck-hint" data-i18n="ev.deck.hint">swipe to browse · tap to go</p>
   </div>
 </dialog>
+

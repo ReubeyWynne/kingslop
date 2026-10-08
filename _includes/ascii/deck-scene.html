@@ -1,0 +1,101 @@
+{% case include.token %}
+{% when 'home' %}
+<span class="scene-base">       /\    /\
+      /  \__/  \
+     /__________\
+    ==\########/==
+       '------'</span>
+<span class="scene-flame">        (  )
+       ( /\ )
+        /##\
+       /####\
+       '----'</span>
+<span class="scene-spark">.</span><span class="scene-spark scene-spark--second">+</span>
+{% when 'kvksg' %}
+<span class="scene-base">   .----------------.
+   | .    /\     .  |
+   |     /  \  /\   |
+   |  . /    \/  \  |
+   |     .     .    |
+   | .      .       |
+   '----------------'</span>
+<span class="scene-scout">  |
+--+--
+  |</span>
+<span class="scene-spark">*</span><span class="scene-spark scene-spark--second">.</span>
+{% when 'bearhunt' %}
+<span class="scene-base">    .---.     .---.
+   /     '---'     \
+  /                \
+ |                  |
+ |       .--.       |
+  \      (__)      /
+   '.__   /\   __.'
+       '------'</span>
+<span class="scene-eyes">(o)     (o)</span>
+<span class="scene-spark">.</span><span class="scene-spark scene-spark--second">+</span>
+{% when 'vikings' %}
+<span class="scene-ship">          |
+     .----|----.
+     |## /|\ ##|
+     |# / | \ #|
+     '----|----'
+    _     |      _
+   \ '----+-----' /
+    '-----------'</span>
+<span class="scene-water"> ~    ~     ~    ~
+   ~    ~     ~
+ ~    ~     ~    ~</span>
+{% when 'swordland' %}
+<span class="scene-sword">       /\
+       ||
+       ||
+       ||
+     ==++==
+       ##
+       ()</span>
+<span class="scene-sword scene-sword--second">       /\
+       ||
+       ||
+       ||
+     ==++==
+       ##
+       ()</span>
+<span class="scene-spark">+</span><span class="scene-spark scene-spark--second">*</span>
+{% when 'vip' %}
+<span class="scene-base">          /\
+    /\   /  \   /\
+   /  \_/    \_/  \
+  |  &lt;&gt;   &lt;&gt;   &lt;&gt;  |
+  | .------------. |
+  | |############| |
+  | '------------' |
+   '--------------'</span>
+<span class="scene-spark">*</span><span class="scene-spark scene-spark--second">+</span>
+{% when 'sim' %}
+<span class="scene-die"> .-------.
+ | o   o |
+ |   o   |
+ | o   o |
+ '-------'</span>
+<span class="scene-die scene-die--second"> .-------.
+ | o     |
+ |   o   |
+ |     o |
+ '-------'</span>
+<span class="scene-spark">+</span><span class="scene-spark scene-spark--second">.</span>
+{% when 'gear' %}
+<span class="scene-base">    ______________
+   /_____________/\
+   \#############\/
+       |#####|
+     __|#####|__
+    '-----------'</span>
+<span class="scene-hammer"> .------.
+ |######|
+ '---++-'
+     ||
+     ||
+     ()</span>
+<span class="scene-spark">*</span><span class="scene-spark scene-spark--second">+</span>
+{% endcase %}

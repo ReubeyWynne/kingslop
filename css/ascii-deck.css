@@ -1,22 +1,110 @@
-.deck-ascii { display:block; flex:none; width:18ch; height:5em; overflow:hidden; max-width:100%; color:var(--amber-dim); direction:ltr; white-space:pre; font:clamp(9px,2.7vw,11px)/1.25 ui-monospace,SFMono-Regular,Consolas,monospace; font-variant-ligatures:none; align-self:flex-start }
-.deck-ascii::before { display:block; white-space:pre; animation-play-state:paused!important }
-.page-deck[open] .deck-card.is-selected .deck-ascii::before { animation-play-state:running!important }
-@media(prefers-reduced-motion:reduce) { .page-deck .deck-ascii::before { animation:none!important } }
-.deck-card[data-page="home"] .deck-ascii::before{content:"       .  .       \A       :*:         \A      :#@@#:       \A    ==####==       ";animation:deck-ascii-home 5.6s steps(1,end) infinite}
-@keyframes deck-ascii-home{0.00%{content:"       .  .       \A       :*:         \A      :#@@#:       \A    ==####==       "}25.00%{content:"     .  ' .       \A       *#*         \A      *#@@*:       \A    ==####==       "}50.00%{content:"        :         \A      .:##:        \A      :@@@*:       \A    ==####==       "}75.00%{content:"      .  .        \A       :#*.        \A     .#@@@*:       \A    ==####==       "}100%{content:"       .  .       \A       :*:         \A      :#@@#:       \A    ==####==       "}}
-.deck-card[data-page="kvksg"] .deck-ascii::before{content:"   .----------.   \A    |  *  .  * |   \A    |  --+--> |    \A    '----------'   ";animation:deck-ascii-kvksg 4.4s steps(1,end) infinite}
-@keyframes deck-ascii-kvksg{0.00%{content:"   .----------.   \A    |  *  .  * |   \A    |  --+--> |    \A    '----------'   "}25.00%{content:"   .----------.   \A    |  *  .  * |   \A    | <--+--  |    \A    '----------'   "}50.00%{content:"   .----------.   \A    |  *  .  * |   \A    |  -<+>-  |    \A    '----------'   "}75.00%{content:"   .----------.   \A    |  *  .  * |   \A    | -->+--  |    \A    '----------'   "}100%{content:"   .----------.   \A    |  *  .  * |   \A    |  --+--> |    \A    '----------'   "}}
-.deck-card[data-page="bearhunt"] .deck-ascii::before{content:"   .--.   .--.    \A   /    '-'    \\   \A  | (o)   (o)  |   \A   \\___ ^ ___/     ";animation:deck-ascii-bearhunt 5.8s steps(1,end) infinite}
-@keyframes deck-ascii-bearhunt{0.00%{content:"   .--.   .--.    \A   /    '-'    \\   \A  | (o)   (o)  |   \A   \\___ ^ ___/     "}25.00%{content:"   .--.   .--.    \A   /    '-'    \\   \A  | (-)   (-)  |   \A   \\___ ^ ___/     "}50.00%{content:"   .--.   .--.    \A   /    '-'    \\   \A  | (o)   (o)  |   \A   \\__ * __/       "}75.00%{content:"   .--.   .--.    \A   /    '-'    \\   \A  | (o)   (o)  |   \A   \\___ ^ ___/     "}100%{content:"   .--.   .--.    \A   /    '-'    \\   \A  | (o)   (o)  |   \A   \\___ ^ ___/     "}}
-.deck-card[data-page="vikings"] .deck-ascii::before{content:"   /\\     /\\      \A   /##\\   /##\\     \A   |##|   |##|     \A   \\__/   \\__/     ";animation:deck-ascii-vikings 6.6s steps(1,end) infinite}
-@keyframes deck-ascii-vikings{0.00%{content:"   /\\     /\\      \A   /##\\   /##\\     \A   |##|   |##|     \A   \\__/   \\__/     "}25.00%{content:"    /\\     /\\     \A    /##\\   /##\\    \A    |##|   |##|    \A    \\__/   \\__/    "}50.00%{content:"     /\\     /\\    \A     /##\\   /##\\   \A     |##|   |##|   \A     \\__/   \\__/   "}75.00%{content:"    /\\     /\\     \A    /##\\   /##\\    \A    |##|   |##|    \A    \\__/   \\__/    "}100%{content:"   /\\     /\\      \A   /##\\   /##\\     \A   |##|   |##|     \A   \\__/   \\__/     "}}
-.deck-card[data-page="swordland"] .deck-ascii::before{content:"   |\\________     \A    ||   \\ /  |    \A    ||    X   |    \A    ||--------'    ";animation:deck-ascii-swordland 7.2s steps(1,end) infinite}
-@keyframes deck-ascii-swordland{0.00%{content:"   |\\________     \A    ||   \\ /  |    \A    ||    X   |    \A    ||--------'    "}25.00%{content:"   |\\_______      \A    ||   \\ /  \\    \A    ||    X    |   \A    ||--------'    "}50.00%{content:"   |\\________.    \A    ||   \\ /  |    \A    ||    X  /     \A    ||-------'     "}75.00%{content:"   |\\_______      \A    ||   \\ /  |    \A    ||    X   |    \A    ||--------'    "}100%{content:"   |\\________     \A    ||   \\ /  |    \A    ||    X   |    \A    ||--------'    "}}
-.deck-card[data-page="sim"] .deck-ascii::before{content:"   +---+  +---+   \A    |o o|  | o |   \A    | o |  |o o|   \A    +---+  +---+   ";animation:deck-ascii-sim 5.2s steps(1,end) infinite}
-@keyframes deck-ascii-sim{0.00%{content:"   +---+  +---+   \A    |o o|  | o |   \A    | o |  |o o|   \A    +---+  +---+   "}25.00%{content:"   +---+  +---+   \A    | o |  |o o|   \A    |o o|  | o |   \A    +---+  +---+   "}50.00%{content:"   +---+  +---+   \A    |o o|  |o o|   \A    |o o|  |o o|   \A    +---+  +---+   "}75.00%{content:"   +---+  +---+   \A    |o  |  |  o|   \A    |  o|  |o  |   \A    +---+  +---+   "}100%{content:"   +---+  +---+   \A    |o o|  | o |   \A    | o |  |o o|   \A    +---+  +---+   "}}
-.deck-card[data-page="gear"] .deck-ascii::before{content:"    ______        \A    |######|       \A       ||    .     \A   ==[####]==      ";animation:deck-ascii-gear 4.8s steps(1,end) infinite}
-@keyframes deck-ascii-gear{0.00%{content:"    ______        \A    |######|       \A       ||    .     \A   ==[####]==      "}25.00%{content:"       ______     \A       |######|    \A         ||   *    \A   ==[####]==      "}50.00%{content:"          ___     \A         |###|     \A          ||  +    \A   ==[####]==      "}75.00%{content:"    ______        \A    |######|       \A       ||    .     \A   ==[####]==      "}100%{content:"    ______        \A    |######|       \A       ||    .     \A   ==[####]==      "}}
+.deck-ascii {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 26ch;
+  height: 11em;
+  transform: translate(-50%, -50%);
+  color: var(--amber);
+  direction: ltr;
+  font: clamp(10px, 3vw, 14px)/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-variant-ligatures: none;
+  pointer-events: none;
+}
+.deck-ascii > span {
+  display: block;
+  position: absolute;
+  white-space: pre;
+  font: inherit;
+  animation-play-state: paused !important;
+}
+.page-deck[open] .deck-card.is-selected .deck-ascii > span { animation-play-state: running !important; }
+.scene-base { top: 2em; left: 1ch; animation: scene-breathe 7s ease-in-out infinite; }
+.scene-spark { top: 1em; left: 5ch; opacity: 0.3; animation: scene-spark 6s ease-in-out infinite; }
+.scene-spark--second { top: 3em; left: 23ch; animation-delay: -3.4s; }
+.deck-card[data-page="home"] .scene-base { top: 5em; }
+.scene-flame { top: 1em; left: 1ch; transform-origin: 50% 100%; animation: scene-flame 2.8s ease-in-out infinite; }
+.deck-card[data-page="home"] .scene-spark { top: 3em; left: 11ch; animation: scene-ember 4.8s ease-out infinite; }
+.deck-card[data-page="home"] .scene-spark--second { left: 17ch; animation-delay: -2.6s; }
+.deck-card[data-page="kvksg"] .scene-base { left: 0; }
+.scene-scout { top: 4em; left: 11ch; animation: scene-survey 12s ease-in-out infinite; }
+.scene-eyes { top: 5.75em; left: 7ch; transform-origin: 50% 50%; animation: scene-blink 7.5s ease-in-out infinite; }
+.deck-card[data-page="bearhunt"] .scene-base { animation: none; }
+.scene-ship { top: 0; left: 1ch; transform-origin: 50% 80%; animation: scene-ship 7s ease-in-out infinite; }
+.scene-water { top: 9em; left: 3ch; opacity: 0.5; animation: scene-water 9s ease-in-out infinite; }
+.scene-sword { top: 1em; left: 2ch; transform-origin: 7ch 7em; transform: rotate(-32deg); animation: scene-duel 5.6s ease-in-out infinite; }
+.scene-sword--second { left: 9ch; transform: rotate(32deg); animation-name: scene-duel-second; animation-delay: -0.1s; }
+.deck-card[data-page="swordland"] .scene-spark { top: 5em; left: 12ch; animation: scene-clash 5.6s ease-in-out infinite; }
+.deck-card[data-page="swordland"] .scene-spark--second { top: 4em; left: 14ch; animation-delay: -0.2s; }
+.deck-card[data-page="vip"] .scene-base { top: 2em; left: 2ch; animation-duration: 9s; }
+.deck-card[data-page="vip"] .scene-spark { left: 13ch; top: 1em; }
+.scene-die { top: 2em; left: 1ch; transform: rotate(-12deg); animation: scene-die 8s ease-in-out infinite; }
+.scene-die--second { top: 4em; left: 15ch; transform: rotate(12deg); animation-name: scene-die-second; animation-delay: -1.8s; }
+.deck-card[data-page="gear"] .scene-base { top: 4.5em; left: 2ch; animation: none; }
+.scene-hammer { top: 0; left: 7ch; transform-origin: 5ch 6em; transform: rotate(-25deg); animation: scene-strike 4.8s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.deck-card[data-page="gear"] .scene-spark { top: 6.5em; left: 17ch; animation: scene-forge-spark 4.8s ease-out infinite; }
+.deck-card[data-page="gear"] .scene-spark--second { left: 11ch; animation-delay: -0.15s; }
+@keyframes scene-breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-0.18em); } }
+@keyframes scene-spark { 0%, 100% { opacity: 0.12; transform: scale(0.8); } 45%, 55% { opacity: 0.8; transform: scale(1); } }
+@keyframes scene-flame { 0%, 100% { transform: scale(0.96, 0.95) skewX(-3deg); opacity: 0.7; } 40% { transform: scale(1.02, 1.08) skewX(3deg); opacity: 1; } 70% { transform: scale(0.98, 1.02) skewX(-1deg); opacity: 0.85; } }
+@keyframes scene-ember { 0% { transform: translate(0, 0); opacity: 0; } 25% { opacity: 0.65; } 100% { transform: translate(1ch, -2.5em); opacity: 0; } }
+@keyframes scene-survey { 0%, 100% { transform: translate(-3ch, 0); } 35% { transform: translate(3ch, -1em); } 65% { transform: translate(1ch, 1em); } }
+@keyframes scene-blink { 0%, 42%, 46%, 100% { transform: scaleY(1); } 44% { transform: scaleY(0.08); } }
+@keyframes scene-ship { 0%, 100% { transform: translateY(0.1em) rotate(-2deg); } 50% { transform: translateY(-0.2em) rotate(2deg); } }
+@keyframes scene-water { 0%, 100% { transform: translateX(-0.5ch); opacity: 0.3; } 50% { transform: translateX(0.5ch); opacity: 0.6; } }
+@keyframes scene-duel { 0%, 100% { transform: rotate(-32deg); } 45%, 55% { transform: rotate(-43deg); } }
+@keyframes scene-duel-second { 0%, 100% { transform: rotate(32deg); } 45%, 55% { transform: rotate(43deg); } }
+@keyframes scene-clash { 0%, 35%, 75%, 100% { opacity: 0; transform: scale(0.7); } 50% { opacity: 0.8; transform: scale(1.2); } }
+@keyframes scene-die { 0%, 100% { transform: translateY(0) rotate(-12deg); } 50% { transform: translateY(-0.6em) rotate(6deg); } }
+@keyframes scene-die-second { 0%, 100% { transform: translateY(0) rotate(12deg); } 50% { transform: translateY(0.5em) rotate(-6deg); } }
+@keyframes scene-strike { 0%, 15%, 100% { transform: rotate(-25deg); } 40%, 46% { transform: rotate(-85deg); } 52%, 60% { transform: rotate(-15deg); } 68% { transform: rotate(-22deg); } }
+@keyframes scene-forge-spark { 0%, 48%, 85%, 100% { opacity: 0; transform: translate(0, 0); } 55% { opacity: 0.8; } 80% { opacity: 0; transform: translate(2ch, -2em); } }
+.deck-atmosphere { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.deck-atmosphere::before {
+  content: '';
+  position: absolute;
+  inset: -15%;
+  background: radial-gradient(ellipse at 40% 45%, color-mix(in srgb, var(--deck-accent) 8%, transparent), transparent 65%);
+  animation: atmosphere-drift 28s ease-in-out infinite alternate;
+}
+.ascii-ambient { position: absolute; inset: 0; display: block; pointer-events: none; overflow: hidden; color: var(--amber); }
+.ascii-ambient > span {
+  position: absolute;
+  font: 12px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  opacity: 0.15;
+  animation: ambient-twinkle 11s ease-in-out infinite, ambient-drift 32s ease-in-out infinite alternate;
+}
+.ascii-ambient > span:nth-child(1) { left: 6%; top: 18%; animation-delay: -2s, -8s; }
+.ascii-ambient > span:nth-child(2) { left: 14%; top: 62%; animation-delay: -8s, -16s; }
+.ascii-ambient > span:nth-child(3) { left: 24%; top: 8%; animation-delay: -5s, -3s; }
+.ascii-ambient > span:nth-child(4) { left: 33%; top: 82%; animation-delay: -1s, -24s; }
+.ascii-ambient > span:nth-child(5) { left: 42%; top: 32%; animation-delay: -9s, -11s; }
+.ascii-ambient > span:nth-child(6) { left: 53%; top: 91%; animation-delay: -4s, -19s; }
+.ascii-ambient > span:nth-child(7) { left: 62%; top: 12%; animation-delay: -7s, -6s; }
+.ascii-ambient > span:nth-child(8) { left: 72%; top: 68%; animation-delay: -3s, -28s; }
+.ascii-ambient > span:nth-child(9) { left: 81%; top: 38%; animation-delay: -10s, -13s; }
+.ascii-ambient > span:nth-child(10) { left: 89%; top: 86%; animation-delay: -6s, -22s; }
+.ascii-ambient > span:nth-child(11) { left: 94%; top: 14%; animation-delay: -2.5s, -4s; }
+.ascii-ambient > span:nth-child(12) { left: 4%; top: 44%; animation-delay: -8.5s, -17s; }
+@keyframes ambient-twinkle { 0%, 100% { opacity: 0.08; } 50% { opacity: 0.32; } }
+@keyframes ambient-drift { from { transform: translate(0, 0); } to { transform: translate(0.8rem, -1.2rem); } }
+@keyframes atmosphere-drift { from { transform: translate(-2%, 1%) scale(1); opacity: 0.6; } to { transform: translate(2%, -1%) scale(1.08); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .page-deck .deck-ascii > span, .ascii-ambient > span, .deck-atmosphere::before { animation: none !important; }
+  .scene-spark { opacity: 0.3; }
+}
 
-
-.deck-card[data-page="vip"] .deck-ascii{width:29ch;height:16.25em;font-size:9px}
-.deck-card[data-page="vip"] .deck-ascii::before{content:"             .\A             /\\\A            /  \\\A      .    /    \\    .\A     /\\   /      \\   /\\\A    /  \\_/        \\_/  \\\A   /                    \\\A   |   <>     <>     <> |\A   |     .--------.     |\A   |=====|########|=====|\A   |     '--------'     |\A    \\__________________/\A      '--------------'";animation:ascii-mini-crown 8s steps(1,end) infinite}
+html.deck-open .dust .ascii-ambient > span { animation-play-state: paused; }
+@supports (animation-timeline: view(inline)) {
+  @media (prefers-reduced-motion: no-preference) {
+    .deck-card {
+      animation: deck-card-depth linear both;
+      animation-timeline: view(inline);
+      animation-range: entry 0% exit 100%;
+    }
+    @keyframes deck-card-depth {
+      0%, 100% { transform: scale(0.94); opacity: 0.5; }
+      40%, 60% { transform: scale(1); opacity: 1; }
+    }
+  }
+}
