@@ -1007,6 +1007,12 @@ window.__BH_I18N_DATA["vi"] = {
   "directory.explain.bear": "Bear là mục tiêu gây sát thương. Chỉ huy dùng toàn bộ bộ kỹ năng; người tham gia cung cấp quân và kỹ năng đầu hợp lệ. Hiệu ứng phòng thủ không tăng sát thương Bear. Theo danh sách liên minh, nhất là lựa chọn có điều kiện hoặc nhạy với trùng lặp.",
   "directory.sourceNote": "Danh mục: 2026-09-11. Đánh giá vai trò: 2026-10-08. Hướng dẫn cộng đồng không phải xác minh chính thức. Ứng viên được suy ra từ kỹ năng hoặc widget đã ghi nhận; liên minh có thể thay đổi. Thế hệ theo danh mục, không phải lịch mở khóa trực tiếp.",
   "directory.anomaly": "Bất thường đường chỉ số sao thế hệ 2 chưa được xác minh. Danh mục không xếp hạng anh hùng bằng các giá trị đó.",
-  "directory.reason.bearAlternative": "Lựa chọn thay Amadeus ở thế hệ 2; so sánh kỹ năng sát thương đã phát triển, không phải widget phòng thủ."
+  "directory.reason.bearAlternative": "Lựa chọn thay Amadeus ở thế hệ 2; so sánh kỹ năng sát thương đã phát triển, không phải widget phòng thủ.",
+  "gear.sharedSaveHint": "Một bản lưu cho trang bị và kho sự kiện. Giữ bản sao trước khi nhập bản khác.",
+  "ks.available.showAll": "hiện vật phẩm không tính điểm hôm nay",
+  "directory.heroSource": "xem trang anh hùng chính thức",
+  "gear.reset": "đặt lại trang bị anh hùng",
+  "gear.resetTitle": "Đặt lại trang bị anh hùng?",
+  "gear.resetHint": "Trang bị, nguyên liệu trang bị và tùy chọn trở về mặc định. Vật phẩm sự kiện khác được giữ lại. Bạn có thể hoàn tác."
 }
 ;

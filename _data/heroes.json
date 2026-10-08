@@ -400,7 +400,7 @@
      "name": "Quick Paced",
      "scales": [
       {
-       "label": "Wilderness March Speed",
+       "label": "Beast & Terror March Speed",
        "levels": [
         "20%",
         "40%",
@@ -1128,7 +1128,7 @@
    ],
    "skills": [
     {
-     "name": "Sixth Sense",
+     "name": "Precision Shot",
      "scales": [
       {
        "label": "Damage Taken Down",
@@ -1143,7 +1143,7 @@
      ]
     },
     {
-     "name": "Precision Shot",
+     "name": "Burst Fire",
      "scales": [
       {
        "label": "Damage Up",
@@ -1158,7 +1158,7 @@
      ]
     }
    ],
-   "skillsSource": "kingshot.net",
+   "skillsSource": "kingshotwiki.com · checked 2026-10-08",
    "widget": null
   },
   {
@@ -2001,7 +2001,7 @@
      "name": "The Favor",
      "scales": [
       {
-       "label": "Damage Up",
+       "label": "Attack Up",
        "levels": [
         "10%",
         "20%",

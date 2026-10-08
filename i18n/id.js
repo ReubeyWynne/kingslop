@@ -1007,6 +1007,12 @@ window.__BH_I18N_DATA["id"] = {
   "directory.explain.bear": "Bear adalah target damage. Pemimpin memakai seluruh kit; peserta menyumbang pasukan dan skill pertama yang memenuhi syarat. Efek defensif tidak meningkatkan damage Bear. Ikuti daftar aliansi, terutama pilihan bersyarat atau sensitif terhadap duplikasi.",
   "directory.sourceNote": "Katalog: 2026-09-11. Tinjauan peran: 2026-10-08. Panduan komunitas bukan verifikasi resmi. Kandidat ditarik dari skill atau widget tercatat; kebijakan aliansi dapat mengesampingkannya. Generasi mengikuti katalog, bukan jadwal pembukaan langsung.",
   "directory.anomaly": "Anomali kurva bintang generasi 2 belum diverifikasi. Direktori ini tidak memberi peringkat hero berdasarkan nilai tersebut.",
-  "directory.reason.bearAlternative": "Alternatif Amadeus generasi 2; bandingkan skill damage yang dikembangkan, bukan skill widget defensif."
+  "directory.reason.bearAlternative": "Alternatif Amadeus generasi 2; bandingkan skill damage yang dikembangkan, bukan skill widget defensif.",
+  "gear.sharedSaveHint": "Satu simpanan untuk perlengkapan dan inventaris acara. Buat cadangan sebelum mengimpor.",
+  "ks.available.showAll": "tampilkan item tanpa poin hari ini",
+  "directory.heroSource": "buka halaman resmi hero",
+  "gear.reset": "reset perlengkapan hero",
+  "gear.resetTitle": "Reset perlengkapan hero?",
+  "gear.resetHint": "Perlengkapan, sumber dayanya, dan preferensi kembali ke awal. Item acara lainnya tetap tersimpan. Perubahan ini dapat dibatalkan."
 }
 ;

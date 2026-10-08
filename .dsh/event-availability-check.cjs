@@ -10,6 +10,7 @@ const server=http.createServer((req,res)=>{let file=path.resolve(root,'.'+decode
  try{
   await page.goto(origin+'/events/?lang=en');await page.waitForFunction(()=>window.EventRules&&document.querySelector('[data-target="event-availability.total"]').textContent==='0');
   await select('day').selectOption('4');assert.equal(await owned('mithril').inputValue(),'');assert.equal(await held('mithril').isDisabled(),true);
+  assert.equal(await page.locator('[data-item="truegold"]').isVisible(),false);await select('all').check();assert.equal(await page.locator('[data-item="truegold"]').isVisible(),true);await select('all').uncheck();
   assert.equal(await page.locator('[data-item="mithril"] [data-points]').textContent(),'Unknown');
   await owned('mithril').fill('10');await owned('forgehammer').fill('25');await owned('hero-widget').fill('3');assert.equal(await select('total').textContent(),'524,000');
   await held('mithril').fill('2');await held('forgehammer').fill('5');await select('target').fill('1000000');

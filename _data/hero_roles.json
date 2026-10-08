@@ -27,6 +27,11 @@
       "label": "Bear Hunt · alliance policy",
       "url": "../bear-hunt/#heroes",
       "status": "policy"
+    },
+    "official": {
+      "label": "Kingshot · official hero wiki",
+      "url": "https://kingshotwiki.com/heroes/",
+      "status": "official"
     }
   },
   "heroes": {
@@ -57,7 +62,23 @@
           "source": "policy"
         }
       ],
-      "portrait": "amadeus.webp"
+      "portrait": "amadeus.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50011_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Battle Ready",
+          "summary": "Raises lethality for every troop type."
+        },
+        {
+          "name": "Way of the Blade",
+          "summary": "Raises attack across the march."
+        },
+        {
+          "name": "Unrighteous Strike",
+          "summary": "A proc can add 50% damage; levelling raises the chance."
+        }
+      ]
     },
     "amane": {
       "recommendations": [
@@ -74,7 +95,19 @@
           "source": "policy"
         }
       ],
-      "portrait": "amane.webp"
+      "portrait": "amane.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50027_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Tri-Phalanx",
+          "summary": "Raises attack for every troop type."
+        },
+        {
+          "name": "Exorcism",
+          "summary": "Speeds up infirmary healing."
+        }
+      ]
     },
     "chenko": {
       "recommendations": [
@@ -91,13 +124,51 @@
           "source": "policy"
         }
       ],
-      "portrait": "chenko.webp"
+      "portrait": "chenko.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50007_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Stand of Arms",
+          "summary": "Raises lethality for every troop type."
+        },
+        {
+          "name": "Shield Wall",
+          "summary": "Reduces incoming damage across the march."
+        }
+      ]
     },
     "diana": {
-      "recommendations": []
+      "recommendations": [],
+      "portrait": "diana.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50008_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Iron Constitution",
+          "summary": "Cuts stamina spent on hunting."
+        },
+        {
+          "name": "Quick Paced",
+          "summary": "Speeds up marches and rallies against Beasts and Terrors."
+        }
+      ]
     },
     "edwin": {
-      "recommendations": []
+      "recommendations": [],
+      "portrait": "edwin.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50002_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Demolitions Expert",
+          "summary": "Increases quarry production in town."
+        },
+        {
+          "name": "Stone Mining",
+          "summary": "Speeds up stone gathering in the wilderness."
+        }
+      ]
     },
     "fahd": {
       "recommendations": [
@@ -107,10 +178,36 @@
           "reason": "firstDefence",
           "source": "garrison"
         }
+      ],
+      "portrait": "fahd.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50029_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Desert Eclipse",
+          "summary": "Reduces damage dealt by every enemy troop type."
+        },
+        {
+          "name": "Pathfinder",
+          "summary": "Speeds up solo hunting marches."
+        }
       ]
     },
     "forrest": {
-      "recommendations": []
+      "recommendations": [],
+      "portrait": "forrest.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50000_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Woodland Inheritor",
+          "summary": "Increases sawmill production in town."
+        },
+        {
+          "name": "Master Woodcutter",
+          "summary": "Speeds up wood gathering in the wilderness."
+        }
+      ]
     },
     "gordon": {
       "recommendations": [
@@ -119,6 +216,19 @@
           "confidence": "community",
           "reason": "firstDefence",
           "source": "garrison"
+        }
+      ],
+      "portrait": "gordon.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50005_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Super Nutrients",
+          "summary": "Raises health for every troop type."
+        },
+        {
+          "name": "Trash Talk",
+          "summary": "Raises attack across the march."
         }
       ]
     },
@@ -137,7 +247,23 @@
           "source": "bear"
         }
       ],
-      "portrait": "helga.webp"
+      "portrait": "helga.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50009_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Oath of Guardian",
+          "summary": "A proc halves incoming damage; levelling raises the chance."
+        },
+        {
+          "name": "Echoes of Valhalla",
+          "summary": "Raises attack across the march."
+        },
+        {
+          "name": "Nature's Balance",
+          "summary": "Raises lethality across the march."
+        }
+      ]
     },
     "howard": {
       "recommendations": [
@@ -146,6 +272,19 @@
           "confidence": "community",
           "reason": "firstDefence",
           "source": "garrison"
+        }
+      ],
+      "portrait": "howard.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50004_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Defenders' Edge",
+          "summary": "Reduces incoming damage for every troop type."
+        },
+        {
+          "name": "Weaken",
+          "summary": "Lowers attack across the enemy march."
         }
       ]
     },
@@ -158,13 +297,62 @@
           "source": "catalogue"
         }
       ],
-      "portrait": "jabel.webp"
+      "portrait": "jabel.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50012_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Rally Flag",
+          "summary": "A proc halves incoming damage; levelling raises the chance."
+        },
+        {
+          "name": "Hero's Domain",
+          "summary": "Each attack has a 50% chance to gain the listed damage bonus."
+        },
+        {
+          "name": "Youthful Rage",
+          "summary": "Raises lethality across the march."
+        }
+      ]
     },
     "olive": {
-      "recommendations": []
+      "recommendations": [],
+      "portrait": "olive.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50003_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Green Thumb",
+          "summary": "Increases mill production in town."
+        },
+        {
+          "name": "Forager's Luck",
+          "summary": "Speeds up bread gathering; the wiki currently has a broken resource label."
+        }
+      ]
     },
     "quinn": {
-      "recommendations": []
+      "recommendations": [
+        {
+          "role": "defence-joiner",
+          "confidence": "inferred",
+          "reason": "firstDefence",
+          "source": "official"
+        }
+      ],
+      "portrait": "quinn.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50006_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Precision Shot",
+          "summary": "Reduces incoming damage for every troop type."
+        },
+        {
+          "name": "Burst Fire",
+          "summary": "Each attack has a 50% chance to gain the listed damage bonus."
+        }
+      ]
     },
     "saul": {
       "recommendations": [
@@ -181,10 +369,39 @@
           "source": "garrison"
         }
       ],
-      "portrait": "saul.webp"
+      "portrait": "saul.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50017_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Taskforce Training",
+          "summary": "Raises defence and health for every troop type."
+        },
+        {
+          "name": "Resourceful",
+          "summary": "Builds faster and spends fewer construction resources."
+        },
+        {
+          "name": "Positional Batter",
+          "summary": "Raises lethality across the march."
+        }
+      ]
     },
     "seth": {
-      "recommendations": []
+      "recommendations": [],
+      "portrait": "seth.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50001_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Burnished Iron",
+          "summary": "Increases iron production in town."
+        },
+        {
+          "name": "Craftsmanship",
+          "summary": "Speeds up iron gathering in the wilderness."
+        }
+      ]
     },
     "yeonwoo": {
       "recommendations": [
@@ -201,7 +418,19 @@
           "source": "policy"
         }
       ],
-      "portrait": "yeonwoo.webp"
+      "portrait": "yeonwoo.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50028_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "On Guard",
+          "summary": "Raises lethality for every troop type."
+        },
+        {
+          "name": "Well-Traveled",
+          "summary": "Speeds up research."
+        }
+      ]
     },
     "hilde": {
       "recommendations": [
@@ -218,7 +447,23 @@
           "source": "policy"
         }
       ],
-      "portrait": "hilde.webp"
+      "portrait": "hilde.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50013_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Noble Path",
+          "summary": "Raises attack and defence for every troop type."
+        },
+        {
+          "name": "Elixir of Strength",
+          "summary": "Attacks have a 25% chance to deal the listed damage multiplier."
+        },
+        {
+          "name": "Trial by Fire",
+          "summary": "A proc halves incoming damage; levelling raises the chance."
+        }
+      ]
     },
     "marlin": {
       "recommendations": [
@@ -235,7 +480,23 @@
           "source": "catalogue"
         }
       ],
-      "portrait": "marlin.webp"
+      "portrait": "marlin.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50018_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Wild Card",
+          "summary": "A proc adds 50% damage; levelling raises the chance."
+        },
+        {
+          "name": "Rumhead",
+          "summary": "On attack, a 20% proc lowers enemy lethality for two turns."
+        },
+        {
+          "name": "Dynamo",
+          "summary": "Attacks have a 50% chance to gain the listed damage bonus."
+        }
+      ]
     },
     "zoe": {
       "recommendations": [
@@ -252,7 +513,23 @@
           "source": "bear"
         }
       ],
-      "portrait": "zoe.webp"
+      "portrait": "zoe.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50021_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Sundering Wound",
+          "summary": "A 20% proc applies damage over time for three turns."
+        },
+        {
+          "name": "Stoic",
+          "summary": "Raises attack across the march."
+        },
+        {
+          "name": "Infinite Arsenal",
+          "summary": "A 50% proc makes the enemy take more damage."
+        }
+      ]
     },
     "eric": {
       "recommendations": [
@@ -261,6 +538,29 @@
           "confidence": "inferred",
           "reason": "defenderWidget",
           "source": "catalogue"
+        },
+        {
+          "role": "defence-joiner",
+          "confidence": "inferred",
+          "reason": "firstDefence",
+          "source": "official"
+        }
+      ],
+      "portrait": "eric.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50010_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Holy Warrior",
+          "summary": "Lowers attack for every enemy troop type."
+        },
+        {
+          "name": "Conviction",
+          "summary": "Reduces incoming damage across the march."
+        },
+        {
+          "name": "Exhortation",
+          "summary": "Raises health across the march."
         }
       ]
     },
@@ -271,6 +571,23 @@
           "confidence": "inferred",
           "reason": "defenderWidget",
           "source": "catalogue"
+        }
+      ],
+      "portrait": "jaeger.webp",
+      "wiki": "https://kingshotwiki.com/heroes/jaegar/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "The Tempest",
+          "summary": "A 20% proc raises march damage for three turns."
+        },
+        {
+          "name": "The Resistance",
+          "summary": "On attack, a 20% proc lowers enemy lethality for two turns."
+        },
+        {
+          "name": "The Celebration",
+          "summary": "Raises health across the march."
         }
       ]
     },
@@ -295,7 +612,23 @@
           "source": "policy"
         }
       ],
-      "portrait": "petra.webp"
+      "portrait": "petra.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50016_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Evil Eye",
+          "summary": "A 50% proc makes the target take more damage."
+        },
+        {
+          "name": "The Favor",
+          "summary": "A 50% proc raises march attack, not the damage stat."
+        },
+        {
+          "name": "The Shield",
+          "summary": "A 40% proc reduces incoming damage across the march."
+        }
+      ]
     },
     "alcar": {
       "recommendations": [
@@ -306,7 +639,23 @@
           "source": "catalogue"
         }
       ],
-      "portrait": "alcar.webp"
+      "portrait": "alcar.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50023_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Rescuing Hands",
+          "summary": "Infantry and archers take less damage for two turns out of every five."
+        },
+        {
+          "name": "Praetorian Will",
+          "summary": "Raises infantry damage, with a smaller bonus for cavalry and archers."
+        },
+        {
+          "name": "Carpe Diem",
+          "summary": "Infantry attacks gain extra damage and expose the target for one turn."
+        }
+      ]
     },
     "margot": {
       "recommendations": [
@@ -323,7 +672,23 @@
           "source": "policy"
         }
       ],
-      "portrait": "margot.webp"
+      "portrait": "margot.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50014_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Warbringer",
+          "summary": "Raises attack for every troop type."
+        },
+        {
+          "name": "Subterfuge",
+          "summary": "Gives every troop type a chance to dodge normal attacks."
+        },
+        {
+          "name": "Sleight Hand",
+          "summary": "Cavalry have a 25% chance to make an extra attack at the listed multiplier."
+        }
+      ]
     },
     "rosa": {
       "recommendations": [
@@ -346,7 +711,23 @@
           "source": "policy"
         }
       ],
-      "portrait": "rosa.webp"
+      "portrait": "rosa.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50022_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Chaos Gambit",
+          "summary": "A 40% proc raises damage across the march."
+        },
+        {
+          "name": "Rose of War",
+          "summary": "Reduces damage dealt by every enemy troop type."
+        },
+        {
+          "name": "Golden Rhythm",
+          "summary": "Raises archer attack; the other troop types do not receive this bonus."
+        }
+      ]
     },
     "longfei": {
       "recommendations": [
@@ -355,6 +736,23 @@
           "confidence": "inferred",
           "reason": "defenderWidget",
           "source": "catalogue"
+        }
+      ],
+      "portrait": "longfei.webp",
+      "wiki": "https://kingshotwiki.com/heroes/long-fei/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Mighty Paragon",
+          "summary": "A 40% proc reduces incoming damage across the march."
+        },
+        {
+          "name": "Celestial Sustenance",
+          "summary": "Raises defence across the march."
+        },
+        {
+          "name": "Art of War",
+          "summary": "Attacks have a 25% chance to deal the listed damage multiplier."
         }
       ]
     },
@@ -373,7 +771,23 @@
           "source": "catalogue"
         }
       ],
-      "portrait": "thrud.webp"
+      "portrait": "thrud.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50025_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Battle Hunger",
+          "summary": "Infantry and archers deal more damage and take less."
+        },
+        {
+          "name": "Reckless Charge",
+          "summary": "Cavalry attacks have a 20% chance to gain extra damage."
+        },
+        {
+          "name": "Ancestral Guidance",
+          "summary": "Every fourth cavalry attack grants two turns of higher damage and lower damage taken."
+        }
+      ]
     },
     "vivian": {
       "recommendations": [
@@ -390,7 +804,23 @@
           "source": "policy"
         }
       ],
-      "portrait": "vivian.webp"
+      "portrait": "vivian.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50026_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Crouching Tiger",
+          "summary": "March attacks make the enemy take more damage."
+        },
+        {
+          "name": "Focus Fire",
+          "summary": "Every fourth attack adds damage and exposes the target to its next hit."
+        },
+        {
+          "name": "Trap of Greed",
+          "summary": "Archers add extra damage to every fourth attack."
+        }
+      ]
     },
     "sophia": {
       "recommendations": [
@@ -399,6 +829,23 @@
           "confidence": "inferred",
           "reason": "defenderWidget",
           "source": "catalogue"
+        }
+      ],
+      "portrait": "sophia.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50030_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Arcane Pact",
+          "summary": "A proc halves incoming damage; levelling raises the chance."
+        },
+        {
+          "name": "Terror - Deathblow",
+          "summary": "Every second turn applies Terror, increasing the next turn’s cavalry damage."
+        },
+        {
+          "name": "Terror - Annihilation",
+          "summary": "Every troop type deals more damage to a Terrified target."
         }
       ]
     },
@@ -409,6 +856,23 @@
           "confidence": "inferred",
           "reason": "defenderWidget",
           "source": "catalogue"
+        }
+      ],
+      "portrait": "triton.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50019_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Command of Power",
+          "summary": "Raises defence for every troop type."
+        },
+        {
+          "name": "Warfare of Power",
+          "summary": "Raises skill damage across the march."
+        },
+        {
+          "name": "Oath of Power",
+          "summary": "Raises troop health, with a larger bonus for cavalry and archers."
         }
       ]
     },
@@ -433,7 +897,23 @@
           "source": "policy"
         }
       ],
-      "portrait": "yang.webp"
+      "portrait": "yang.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50031_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Avalanche",
+          "summary": "Every fourth turn adds a strike from every troop type."
+        },
+        {
+          "name": "Ice Zone",
+          "summary": "Archer attacks have a 40% chance to gain extra damage."
+        },
+        {
+          "name": "Ambush",
+          "summary": "A proc adds 50% damage; levelling raises the chance."
+        }
+      ]
     },
     "ava": {
       "recommendations": [
@@ -456,7 +936,23 @@
           "source": "policy"
         }
       ],
-      "portrait": "ava.webp"
+      "portrait": "ava.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50015_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Dissolution",
+          "summary": "Lowers defence for every enemy troop type."
+        },
+        {
+          "name": "Chiaroscuro",
+          "summary": "Enemies take more damage for two turns out of every four."
+        },
+        {
+          "name": "Light and Cold",
+          "summary": "Raises lethality across the march."
+        }
+      ]
     },
     "charles": {
       "recommendations": [
@@ -465,6 +961,23 @@
           "confidence": "inferred",
           "reason": "defenderWidget",
           "source": "catalogue"
+        }
+      ],
+      "portrait": "charles.webp",
+      "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50032_kingshot_end/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Intimidation",
+          "summary": "Lowers lethality for every enemy troop type."
+        },
+        {
+          "name": "Iron Bodies",
+          "summary": "Reduces incoming damage across the march."
+        },
+        {
+          "name": "Great Justice",
+          "summary": "Raises health across the march."
         }
       ]
     },
@@ -483,7 +996,23 @@
           "source": "policy"
         }
       ],
-      "portrait": "weewoo.webp"
+      "portrait": "weewoo.webp",
+      "wiki": "https://kingshotwiki.com/heroes/weewoo/",
+      "reviewedAt": "2026-10-08",
+      "skillNotes": [
+        {
+          "name": "Artillerymen",
+          "summary": "Raises attack and lethality for every troop type."
+        },
+        {
+          "name": "Chain Shelling",
+          "summary": "Raises damage against enemy archers and infantry by different amounts."
+        },
+        {
+          "name": "Boom Boom",
+          "summary": "A proc adds 50% damage; levelling raises the chance."
+        }
+      ]
     }
   },
   "reasons": {

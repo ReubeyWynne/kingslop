@@ -996,6 +996,12 @@ window.__BH_I18N_DATA["ko"] = {
   "directory.explain.bear": "Bear는 피해량 목표입니다. 지휘관은 전체 구성을 쓰고 참여자는 병력과 조건에 맞는 첫 스킬을 제공합니다. 방어 효과는 Bear 피해량을 늘리지 않습니다. 특히 조건부 또는 중복 제한 선택은 연맹의 허용 목록을 따르세요.",
   "directory.sourceNote": "목록 기록일: 2026-09-11. 역할 검토일: 2026-10-08. 커뮤니티 지침은 공식 검증이 아닙니다. 추론 후보는 기록된 스킬이나 Widget을 바탕으로 하며 연맹 방침이 우선할 수 있습니다. 세대는 목록 기준이며 실시간 해금 일정이 아닙니다.",
   "directory.anomaly": "2세대 별 성장 곡선의 이상은 검증되지 않았습니다. 이 목록은 해당 능력치로 영웅 순위를 매기지 않습니다.",
-  "directory.reason.bearAlternative": "2세대 Amadeus 대안입니다. 방어 Widget 스킬 대신 성장한 피해 스킬을 비교하세요."
+  "directory.reason.bearAlternative": "2세대 Amadeus 대안입니다. 방어 Widget 스킬 대신 성장한 피해 스킬을 비교하세요.",
+  "gear.sharedSaveHint": "장비와 이벤트 재고를 하나의 파일에 저장합니다. 가져오기 전에 백업을 보관하세요.",
+  "ks.available.showAll": "오늘 점수를 주지 않는 아이템 표시",
+  "directory.heroSource": "공식 영웅 페이지 확인",
+  "gear.reset": "영웅 장비 초기화",
+  "gear.resetTitle": "영웅 장비를 초기화할까요?",
+  "gear.resetHint": "장비, 장비 재료와 설정이 기본값으로 돌아갑니다. 다른 이벤트 아이템은 유지됩니다. 이 변경은 되돌릴 수 있습니다."
 }
 ;

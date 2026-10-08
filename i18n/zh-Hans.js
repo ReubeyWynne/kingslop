@@ -996,6 +996,12 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "directory.explain.bear": "Bear以伤害为目标。领队使用完整技能组；加入者提供部队及符合条件的第一技能。防御效果不增加Bear伤害。遵守联盟允许名单，尤其留意有条件及重复敏感选项。",
   "directory.sourceNote": "目录快照：2026-09-11。角色审核：2026-10-08。社区建议不是官方验证。推断候选依据已记录技能或Widget定位，联盟规则可覆盖。代数反映此目录，不是实时解锁日历。",
   "directory.anomaly": "第2代星级成长曲线异常尚未验证。本目录不使用这些属性值给英雄排名。",
-  "directory.reason.bearAlternative": "第2代可替代Amadeus的选择；比较已培养的伤害技能，而非防御Widget技能。"
+  "directory.reason.bearAlternative": "第2代可替代Amadeus的选择；比较已培养的伤害技能，而非防御Widget技能。",
+  "gear.sharedSaveHint": "装备和活动库存共用一个存档。导入前请保留备份。",
+  "ks.available.showAll": "显示今天不计分的物品",
+  "directory.heroSource": "查看官方英雄页面",
+  "gear.reset": "重置英雄装备",
+  "gear.resetTitle": "重置英雄装备？",
+  "gear.resetHint": "装备、装备材料和规划偏好将恢复默认。其他活动物品会保留。此操作可以撤销。"
 }
 ;

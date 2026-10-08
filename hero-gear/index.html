@@ -34,11 +34,11 @@ self: gear
           <div id="gear-rows" class="gear-grid"></div>
         </div>
         <div id="gear-preview" class="gear-preview"></div>
-        <details class="gear-save-tools" data-module="save-transfer disclosure" data-status-scope="hero-gear" data-import-success="gear.loaded" data-import-failure="gear.invalidSave"><summary data-i18n="gear.manageSave">manage your save</summary><div class="gear-tools">
+        <details class="gear-save-tools" data-module="save-transfer disclosure" data-status-scope="hero-gear" data-import-success="gear.loaded" data-import-failure="gear.invalidSave"><summary data-i18n="gear.manageSave">your save &amp; backups</summary><p class="gear-gloss" data-i18n="gear.sharedSaveHint">One save for your gear and event inventory. Keep a backup before importing another.</p><div class="gear-tools">
           <button type="button" id="gear-edit" data-i18n="gear.editPiece">edit selected piece</button>
-          <button type="button" id="gear-export" data-action="save-transfer.export" data-i18n="gear.export">export player save</button>
-          <button type="button" id="gear-load" data-action="save-transfer.choose" data-i18n="gear.load">import player save</button>
-          <button type="button" id="gear-reset" data-i18n="gear.reset">reset ledger</button>
+          <button type="button" id="gear-export" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
+          <button type="button" id="gear-load" data-action="save-transfer.choose" data-i18n="gear.load">import backup</button>
+          <button type="button" id="gear-reset" data-i18n="gear.reset">reset hero gear</button>
           <input type="file" id="gear-save-file" data-action="save-transfer.import" data-target="save-transfer.file" accept="application/json,.json" hidden>
         </div></details>
       </div>
@@ -118,8 +118,8 @@ self: gear
   <footer class="gear-tools gear-import-actions"><button type="button" id="gear-apply-import" class="gear-primary" disabled data-i18n="gear.applyImport">apply reviewed gear</button><button type="button" id="gear-cancel-import" data-i18n="gear.cancel">cancel</button></footer>
 </dialog>
 <dialog id="gear-reset-dialog" class="gear-dialog" aria-labelledby="gear-reset-title">
-  <h2 id="gear-reset-title" data-i18n="gear.resetTitle">Reset this ledger?</h2>
-  <p data-i18n="gear.resetHint">your saved gear, resources and priorities will return to the defaults. you can undo this update.</p>
-  <div class="gear-tools"><button type="button" id="gear-confirm-reset" data-i18n="gear.reset">reset ledger</button><button type="button" id="gear-cancel-reset" data-i18n="gear.cancel">cancel</button></div>
+  <h2 id="gear-reset-title" data-i18n="gear.resetTitle">Reset your hero gear?</h2>
+  <p data-i18n="gear.resetHint">Your gear, gear resources and planner preferences return to defaults. Other event items stay in your bag. You can undo this.</p>
+  <div class="gear-tools"><button type="button" id="gear-confirm-reset" data-i18n="gear.reset">reset hero gear</button><button type="button" id="gear-cancel-reset" data-i18n="gear.cancel">cancel</button></div>
 </dialog>
 

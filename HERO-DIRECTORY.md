@@ -43,3 +43,11 @@ Canonical navigation order is Home → Event Cycle → Bear Hunt → Vikings →
 The ninth navigation entry raises the desktop strip threshold to 1600px and adjusts the common masthead width allowance. The drawer remains available below it. Styling follows flat manuscript sections, logical spacing and one page signal hue.
 
 `.dsh/hero-directory-check.cjs` checks catalogue coverage, metadata referential integrity, reason/widget consistency, source/confidence labels, combined filters, conditional choices, the complete navigation cycle and all translation keys. `.dsh/hero-directory-ui-check.cjs` checks the actual Jekyll page, live filtering, saved/shared/cross-tab generation, future generations, native disclosure, all 19 portrait paths, navigation/home links, static fallback and 17 languages at 320/390/768/1280/1600/1920px. Existing event, ledger, module, gear and OCR CI checks remain enabled.
+
+## Completion pass · 2026-10-08
+
+All 34 canonical heroes have local 256×256 WebP portraits, individual official-wiki links and paraphrased notes for every Expedition skill. Notes preserve fixed proc chances, turn timing, damage multipliers and troop scope. Percentages remain the existing catalogue level ladders. Quinn’s two Expedition names, Petra’s Attack label and Diana’s Beast/Terror march scope are corrected against the wiki. Wiki spelling variants remain in the field notes without changing canonical IDs. Olive’s wiki gathering-resource placeholder is explicitly unresolved. No star-ladder values or combat formulas change.
+
+Quinn and Eric are defensive-joiner candidates inferred from their official first skills; this is not an official lineup recommendation. Existing Bear policy and conditional recommendations are retained.
+
+The roster is ordered by generation, uses a two-column ruled layout on larger screens and keeps skill/recommendation dossiers in native disclosures. Core source notes remain English and carry an explicit language marker. The event inventory defaults to items scoring on the selected day, with an all-items switch; hidden counts are retained. Save tools describe one shared backup, and gear reset is labelled as gear-scoped.

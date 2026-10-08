@@ -997,6 +997,12 @@ window.__BH_I18N_DATA["fr"] = {
   "directory.explain.bear": "Bear est un objectif de dégâts. Les chefs utilisent tout leur kit ; les participants fournissent troupes et première compétence admissible. Les effets défensifs n’améliorent pas les dégâts. Suivez la liste autorisée par l’alliance, surtout pour les choix conditionnels ou sensibles aux doublons.",
   "directory.sourceNote": "Catalogue : 2026-09-11. Examen des rôles : 2026-10-08. Les conseils communautaires ne sont pas une vérification officielle. Les candidats déduits suivent les compétences ou widgets enregistrés ; l’alliance peut les modifier. Les générations reflètent le catalogue, pas un calendrier de déblocage en direct.",
   "directory.anomaly": "L’anomalie de progression par étoiles en génération 2 reste non vérifiée. Cet annuaire ne classe pas les héros selon ces valeurs.",
-  "directory.reason.bearAlternative": "Alternative à Amadeus en génération 2 ; comparez les compétences de dégâts développées, pas le widget défensif."
+  "directory.reason.bearAlternative": "Alternative à Amadeus en génération 2 ; comparez les compétences de dégâts développées, pas le widget défensif.",
+  "gear.sharedSaveHint": "Une sauvegarde pour l’équipement et l’inventaire. Gardez une copie avant tout import.",
+  "ks.available.showAll": "afficher les objets sans points aujourd’hui",
+  "directory.heroSource": "voir la page officielle du héros",
+  "gear.reset": "réinitialiser l’équipement",
+  "gear.resetTitle": "Réinitialiser l’équipement des héros ?",
+  "gear.resetHint": "L’équipement, ses ressources et les préférences sont réinitialisés. Les autres objets d’événements restent sauvegardés. Vous pouvez annuler."
 }
 ;

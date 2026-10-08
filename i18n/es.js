@@ -998,6 +998,12 @@ window.__BH_I18N_DATA["es"] = {
   "directory.explain.bear": "Bear es un objetivo de daño. Los líderes usan todo el kit; los participantes aportan tropas y una primera habilidad elegible. Los efectos defensivos no mejoran el daño. Sigue la lista permitida de la alianza, especialmente en opciones condicionales o sensibles a duplicados.",
   "directory.sourceNote": "Catálogo: 2026-09-11. Revisión de roles: 2026-10-08. La guía comunitaria no es verificación oficial. Los candidatos inferidos siguen habilidades o widgets registrados; la alianza puede cambiarlos. Las generaciones son las del catálogo, no un calendario de desbloqueos en vivo.",
   "directory.anomaly": "La anomalía de estadísticas por estrellas de generación 2 sigue sin verificar. El directorio no clasifica héroes por esos valores.",
-  "directory.reason.bearAlternative": "Alternativa de generación 2 a Amadeus; compara habilidades de daño desarrolladas, no el widget defensivo."
+  "directory.reason.bearAlternative": "Alternativa de generación 2 a Amadeus; compara habilidades de daño desarrolladas, no el widget defensivo.",
+  "gear.sharedSaveHint": "Una partida guardada para equipo e inventario. Guarda una copia antes de importar otra.",
+  "ks.available.showAll": "mostrar objetos que no puntúan hoy",
+  "directory.heroSource": "consultar la página oficial del héroe",
+  "gear.reset": "reiniciar equipo de héroe",
+  "gear.resetTitle": "¿Reiniciar el equipo de héroe?",
+  "gear.resetHint": "Se reinician el equipo, sus recursos y las preferencias. Los demás objetos de eventos se conservan. Puedes deshacerlo."
 }
 ;

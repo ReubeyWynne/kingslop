@@ -995,6 +995,12 @@ window.__BH_I18N_DATA["tr"] = {
   "directory.explain.bear": "Bear bir hasar hedefidir. Liderler tüm kiti kullanır; katılımcılar birlik ve uygun ilk beceriyi sağlar. Savunma etkileri Bear hasarını artırmaz. Özellikle koşullu veya tekrara duyarlı seçeneklerde ittifakın izinli listesini izle.",
   "directory.sourceNote": "Katalog: 2026-09-11. Rol incelemesi: 2026-10-08. Topluluk önerileri resmî doğrulama değildir. Adaylar kayıtlı beceri veya widget yöneliminden çıkarılır; ittifak politikası bunları değiştirebilir. Nesiller katalogla sınırlıdır, canlı açılış takvimi değildir.",
   "directory.anomaly": "Nesil 2 yıldız eğrisi anomalisi doğrulanmadı. Bu katalog kahramanları o istatistiklerle sıralamaz.",
-  "directory.reason.bearAlternative": "Nesil 2'de Amadeus alternatifi; savunma widget'ını değil, geliştirilmiş hasar becerilerini karşılaştır."
+  "directory.reason.bearAlternative": "Nesil 2'de Amadeus alternatifi; savunma widget'ını değil, geliştirilmiş hasar becerilerini karşılaştır.",
+  "gear.sharedSaveHint": "Ekipman ve etkinlik envanteri için tek kayıt. İçe aktarmadan önce yedek alın.",
+  "ks.available.showAll": "bugün puan vermeyen eşyaları göster",
+  "directory.heroSource": "kahramanın resmî sayfasını aç",
+  "gear.reset": "kahraman ekipmanını sıfırla",
+  "gear.resetTitle": "Kahraman ekipmanı sıfırlansın mı?",
+  "gear.resetHint": "Ekipman, ekipman kaynakları ve tercihler varsayılana döner. Diğer etkinlik eşyaları korunur. Bu değişikliği geri alabilirsiniz."
 }
 ;

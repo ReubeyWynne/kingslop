@@ -996,6 +996,12 @@ window.__BH_I18N_DATA["pl"] = {
   "directory.explain.bear": "Bear to cel wymagający obrażeń. Dowodzenie używa całego zestawu; uczestnicy dostarczają wojska i kwalifikującą się pierwszą umiejętność. Obrona nie zwiększa obrażeń. Przestrzegaj listy sojuszu, szczególnie przy opcjach warunkowych i wrażliwych na duplikaty.",
   "directory.sourceNote": "Katalog: 2026-09-11. Przegląd ról: 2026-10-08. Porady społeczności nie są oficjalną weryfikacją. Kandydaci wynikają z zapisanych umiejętności lub widgetów; sojusz może zmienić zasady. Generacje opisują katalog, nie bieżący kalendarz odblokowania.",
   "directory.anomaly": "Anomalia statystyk gwiazdkowych generacji 2 nie została potwierdzona. Katalog nie ocenia bohaterów na podstawie tych wartości.",
-  "directory.reason.bearAlternative": "Alternatywa dla Amadeus w generacji 2; porównaj rozwinięte umiejętności obrażeń, nie defensywny widget."
+  "directory.reason.bearAlternative": "Alternatywa dla Amadeus w generacji 2; porównaj rozwinięte umiejętności obrażeń, nie defensywny widget.",
+  "gear.sharedSaveHint": "Jeden zapis dla ekwipunku i przedmiotów wydarzeń. Zachowaj kopię przed importem.",
+  "ks.available.showAll": "pokaż przedmioty bez punktów na dziś",
+  "directory.heroSource": "zobacz oficjalną stronę bohatera",
+  "gear.reset": "zresetuj ekwipunek bohatera",
+  "gear.resetTitle": "Zresetować ekwipunek bohatera?",
+  "gear.resetHint": "Ekwipunek, jego zasoby i ustawienia wrócą do wartości domyślnych. Inne przedmioty wydarzeń pozostaną zapisane. Możesz cofnąć zmianę."
 }
 ;

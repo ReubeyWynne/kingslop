@@ -996,6 +996,12 @@ window.__BH_I18N_DATA["ja"] = {
   "directory.explain.bear": "Bearはダメージを目的とします。リーダーは全構成を使い、参加者は兵と条件に合う第1スキルを提供します。防衛効果はBearダメージを増やしません。条件付きや重複制限のある候補は特に同盟の許可リストに従います。",
   "directory.sourceNote": "記録日：2026-09-11。役割確認日：2026-10-08。コミュニティの指針は公式確認ではありません。推定候補は記録されたスキルやWidgetに基づき、同盟方針が優先されます。世代は記録上の区分であり、最新の解放日程ではありません。",
   "directory.anomaly": "第2世代の星成長曲線の異常は未確認です。この一覧では該当能力値による順位付けは行いません。",
-  "directory.reason.bearAlternative": "第2世代のAmadeus代替候補。防衛Widgetスキルではなく育成済みのダメージスキルを比較。"
+  "directory.reason.bearAlternative": "第2世代のAmadeus代替候補。防衛Widgetスキルではなく育成済みのダメージスキルを比較。",
+  "gear.sharedSaveHint": "装備とイベント在庫を一つのデータに保存します。読み込む前にバックアップを残してください。",
+  "ks.available.showAll": "今日のポイント対象外のアイテムを表示",
+  "directory.heroSource": "公式ヒーローページを確認",
+  "gear.reset": "英雄装備をリセット",
+  "gear.resetTitle": "英雄装備をリセットしますか？",
+  "gear.resetHint": "装備、装備用素材、設定が初期値に戻ります。他のイベントアイテムは保持されます。元に戻すことができます。"
 }
 ;

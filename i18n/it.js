@@ -998,6 +998,12 @@ window.__BH_I18N_DATA["it"] = {
   "directory.explain.bear": "Bear è un obiettivo di danno. I capi usano tutto il kit; i partecipanti forniscono truppe e una prima abilità idonea. Gli effetti difensivi non migliorano il danno. Segui gli eroi consentiti dall’alleanza, soprattutto per scelte condizionali o sensibili ai duplicati.",
   "directory.sourceNote": "Catalogo: 2026-09-11. Revisione ruoli: 2026-10-08. La guida comunitaria non è verifica ufficiale. I candidati dedotti seguono abilità o widget registrati; l’alleanza può modificarli. Le generazioni riflettono il catalogo, non un calendario di sblocchi in tempo reale.",
   "directory.anomaly": "L’anomalia della progressione a stelle della generazione 2 non è verificata. Il catalogo non classifica gli eroi secondo quei valori.",
-  "directory.reason.bearAlternative": "Alternativa ad Amadeus in generazione 2; confronta abilità di danno sviluppate, non il widget difensivo."
+  "directory.reason.bearAlternative": "Alternativa ad Amadeus in generazione 2; confronta abilità di danno sviluppate, non il widget difensivo.",
+  "gear.sharedSaveHint": "Un salvataggio per equipaggiamento e inventario. Conserva una copia prima di importarne un altro.",
+  "ks.available.showAll": "mostra oggetti che oggi non danno punti",
+  "directory.heroSource": "consulta la pagina ufficiale dell’eroe",
+  "gear.reset": "reimposta equipaggiamento eroe",
+  "gear.resetTitle": "Reimpostare l’equipaggiamento?",
+  "gear.resetHint": "Equipaggiamento, risorse dedicate e preferenze tornano ai valori iniziali. Gli altri oggetti evento restano salvati. Puoi annullare."
 }
 ;

@@ -996,6 +996,12 @@ window.__BH_I18N_DATA["de"] = {
   "directory.explain.bear": "Bear ist ein Schadensziel. Die Führung nutzt das ganze Kit; Beitritte liefern Truppen und eine passende erste Fähigkeit. Defensive Effekte erhöhen den Bear-Schaden nicht. Die erlaubten Allianzhelden beachten, besonders bei bedingten oder doppelsensiblen Optionen.",
   "directory.sourceNote": "Katalogstand: 2026-09-11. Rollenprüfung: 2026-10-08. Community-Tipps sind keine offizielle Bestätigung. Abgeleitete Kandidaten folgen erfassten Fähigkeiten oder Widgets; Allianzregeln können abweichen. Generationen entsprechen dem Katalog, keinem aktuellen Freischaltkalender.",
   "directory.anomaly": "Die Auffälligkeit in der Sternkurve von Generation 2 ist ungeprüft. Das Verzeichnis bewertet Helden nicht anhand dieser Werte.",
-  "directory.reason.bearAlternative": "Alternative zu Amadeus in Generation 2; entwickelte Schadensfähigkeiten vergleichen, nicht die defensive Widget-Fähigkeit."
+  "directory.reason.bearAlternative": "Alternative zu Amadeus in Generation 2; entwickelte Schadensfähigkeiten vergleichen, nicht die defensive Widget-Fähigkeit.",
+  "gear.sharedSaveHint": "Ein Spielstand für Ausrüstung und Eventinventar. Vor dem Import eine Sicherung behalten.",
+  "ks.available.showAll": "Gegenstände ohne heutige Punkte anzeigen",
+  "directory.heroSource": "offizielle Heldenseite ansehen",
+  "gear.reset": "Heldenausrüstung zurücksetzen",
+  "gear.resetTitle": "Heldenausrüstung zurücksetzen?",
+  "gear.resetHint": "Ausrüstung, Ausrüstungsressourcen und Planereinstellungen werden zurückgesetzt. Andere Eventgegenstände bleiben erhalten. Rückgängig ist möglich."
 }
 ;
