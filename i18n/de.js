@@ -912,4 +912,3 @@ window.__BH_I18N_DATA["de"] = {
   "gear.invalidSave": "Das ist kein gültiger Spielerdatenstand. Deine Daten wurden beibehalten."
 }
 ;
-

@@ -923,4 +923,3 @@ window.__BH_I18N_DATA["vi"] = {
   "gear.invalidSave": "đây không phải tệp lưu người chơi hợp lệ. dữ liệu của bạn được giữ nguyên."
 }
 ;
-

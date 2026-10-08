@@ -914,4 +914,3 @@ window.__BH_I18N_DATA["es"] = {
   "gear.invalidSave": "ese archivo no es un guardado válido del jugador. se conservó tu registro."
 }
 ;
-

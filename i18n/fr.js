@@ -913,4 +913,3 @@ window.__BH_I18N_DATA["fr"] = {
   "gear.invalidSave": "ce fichier ne contient pas une sauvegarde valide du joueur. vos données ont été conservées."
 }
 ;
-

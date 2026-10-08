@@ -914,4 +914,3 @@ window.__BH_I18N_DATA["it"] = {
   "gear.invalidSave": "questo non è un salvataggio valido del giocatore. i tuoi dati sono stati conservati."
 }
 ;
-

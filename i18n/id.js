@@ -923,4 +923,3 @@ window.__BH_I18N_DATA["id"] = {
   "gear.invalidSave": "ini bukan berkas simpanan pemain yang valid. datamu tetap tersimpan."
 }
 ;
-

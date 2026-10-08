@@ -912,4 +912,3 @@ window.__BH_I18N_DATA["ko"] = {
   "gear.invalidSave": "유효한 플레이어 저장 파일이 아닙니다. 기존 데이터는 유지됩니다."
 }
 ;
-

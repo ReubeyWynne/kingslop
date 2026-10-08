@@ -912,4 +912,3 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "gear.invalidSave": "这不是有效的玩家存档。你的数据已保留。"
 }
 ;
-

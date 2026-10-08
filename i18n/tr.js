@@ -911,4 +911,3 @@ window.__BH_I18N_DATA["tr"] = {
   "gear.invalidSave": "bu geçerli bir oyuncu kayıt dosyası değil. verilerin korundu."
 }
 ;
-

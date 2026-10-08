@@ -1232,4 +1232,3 @@ window.__BH_I18N_DATA["en"] = {
   "gear.unchangedSlots": "unchanged"
 }
 ;
-
