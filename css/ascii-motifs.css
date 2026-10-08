@@ -97,3 +97,36 @@
  21.75%{content:"                             \A     .------.      .------.   \A    / o  o /|     / o  o /|   \A   +-------+ |   +-------+ |  \A   |o      |o|   |o    o |o|  \A   |       | |   |   o   | |  \A   |     o | /   |o    o | /  \A   '-------'/    '-------'/   \A                              "}
  100%{content:"                             \A     .------.      .------.   \A    / o  o /|     / o  o /|   \A   +-------+ |   +-------+ |  \A   |o      |o|   |o    o |o|  \A   |       | |   |   o   | |  \A   |     o | /   |o    o | /  \A   '-------'/    '-------'/   \A                              "}
 }
+
+
+/* A narrow moving line of ASCII shields in the Vikings wave introduction. */
+.ascii-march-band{display:flex;justify-content:center;align-items:center;margin:.35rem 0 .75rem;padding:.2rem 0;border-block:1px solid var(--signal-line);overflow:hidden;max-width:100%;direction:ltr}
+.ascii-march{display:block;width:40ch;height:5em;max-width:100%;overflow:hidden;color:var(--amber);white-space:pre;flex:none;font:clamp(8px,2.2vw,10px)/1 ui-monospace,Consolas,monospace;font-variant-ligatures:none}
+.ascii-march::before{display:block;white-space:pre;content:"    _          _          _          _  \A    /_\\        /_\\        /_\\        /_\\ \A     o          o          o          o  \A    /|#]       /|#]       /|#]       /|#]\A    |\\         /|         \\|         / \\ ";animation:ascii-march 6s steps(1,end) infinite}
+@keyframes ascii-march{
+ 0.000%{content:"    _          _          _          _  \A    /_\\        /_\\        /_\\        /_\\ \A     o          o          o          o  \A    /|#]       /|#]       /|#]       /|#]\A    |\\         /|         \\|         / \\ "}
+ 4.167%{content:"      _          _          _          _\A      /_\\        /_\\        /_\\        /_\A       o          o          o          o\A      /|#]       /|#]       /|#]       /|\A      /|         \\|         / \\        |\\"}
+ 8.333%{content:"        _          _          _         \A        /_\\        /_\\        /_\\        \A         o          o          o         \A        /|#]       /|#]       /|#]       \A        \\|         / \\        |\\         "}
+ 12.500%{content:"          _          _          _       \A \\        /_\\        /_\\        /_\\      \A           o          o          o       \A #]       /|#]       /|#]       /|#]     \A          / \\        |\\         /|       "}
+ 16.667%{content:" _          _          _          _     \A /_\\        /_\\        /_\\        /_\\    \A  o          o          o          o     \A /|#]       /|#]       /|#]       /|#]   \A / \\        |\\         /|         \\|     "}
+ 20.833%{content:"   _          _          _          _   \A   /_\\        /_\\        /_\\        /_\\  \A    o          o          o          o   \A   /|#]       /|#]       /|#]       /|#] \A   |\\         /|         \\|         / \\  "}
+ 25.000%{content:"     _          _          _          _ \A     /_\\        /_\\        /_\\        /_\\\A      o          o          o          o \A ]   /|#]       /|#]       /|#]       /|#\A     /|         \\|         / \\        |\\ "}
+ 29.167%{content:"_      _          _          _          \A _\\    /_\\        /_\\        /_\\        /\A o      o          o          o          \A |#]   /|#]       /|#]       /|#]       /\A |     \\|         / \\        |\\         /"}
+ 33.333%{content:"  _      _          _          _        \A  /_\\    /_\\        /_\\        /_\\       \A   o      o          o          o        \A  /|#]   /|#]       /|#]       /|#]      \A  / \\    / \\        |\\         /|        "}
+ 37.500%{content:"    _      _          _          _      \A    /_\\    /_\\        /_\\        /_\\     \A     o      o          o          o      \A    /|#]   /|#]       /|#]       /|#]    \A    |\\     |\\         /|         \\|      "}
+ 41.667%{content:"      _      _          _          _    \A      /_\\    /_\\        /_\\        /_\\   \A       o      o          o          o    \A      /|#]   /|#]       /|#]       /|#]  \A      /|     /|         \\|         / \\   "}
+ 45.833%{content:"        _      _          _          _  \A        /_\\    /_\\        /_\\        /_\\ \A         o      o          o          o  \A        /|#]   /|#]       /|#]       /|#]\A        \\|     \\|         / \\        |\\  "}
+ 50.000%{content:"          _      _          _          _\A \\        /_\\    /_\\        /_\\        /_\A           o      o          o          o\A #]       /|#]   /|#]       /|#]       /|\A          / \\    / \\        |\\         /|"}
+ 54.167%{content:" _          _      _          _         \A /_\\        /_\\    /_\\        /_\\        \A  o          o      o          o         \A /|#]       /|#]   /|#]       /|#]       \A / \\        |\\     |\\         /|         "}
+ 58.333%{content:"   _          _      _          _       \A   /_\\        /_\\    /_\\        /_\\      \A    o          o      o          o       \A   /|#]       /|#]   /|#]       /|#]     \A   |\\         /|     /|         \\|       "}
+ 62.500%{content:"     _          _      _          _     \A     /_\\        /_\\    /_\\        /_\\    \A      o          o      o          o     \A     /|#]       /|#]   /|#]       /|#]   \A     /|         \\|     \\|         / \\    "}
+ 66.667%{content:"       _          _      _          _   \A       /_\\        /_\\    /_\\        /_\\  \A        o          o      o          o   \A       /|#]       /|#]   /|#]       /|#] \A       \\|         / \\    / \\        |\\   "}
+ 70.833%{content:"         _          _      _          _ \A         /_\\        /_\\    /_\\        /_\\\A          o          o      o          o \A ]       /|#]       /|#]   /|#]       /|#\A         / \\        |\\     |\\         /| "}
+ 75.000%{content:"_          _          _      _          \A _\\        /_\\        /_\\    /_\\        /\A o          o          o      o          \A |#]       /|#]       /|#]   /|#]       /\A  \\        |\\         /|     /|         \\"}
+ 79.167%{content:"  _          _          _      _        \A  /_\\        /_\\        /_\\    /_\\       \A   o          o          o      o        \A  /|#]       /|#]       /|#]   /|#]      \A  |\\         /|         \\|     \\|        "}
+ 83.333%{content:"    _          _          _      _      \A    /_\\        /_\\        /_\\    /_\\     \A     o          o          o      o      \A    /|#]       /|#]       /|#]   /|#]    \A    /|         \\|         / \\    / \\     "}
+ 87.500%{content:"      _          _          _      _    \A      /_\\        /_\\        /_\\    /_\\   \A       o          o          o      o    \A      /|#]       /|#]       /|#]   /|#]  \A      \\|         / \\        |\\     |\\    "}
+ 91.667%{content:"        _          _          _      _  \A        /_\\        /_\\        /_\\    /_\\ \A         o          o          o      o  \A        /|#]       /|#]       /|#]   /|#]\A        / \\        |\\         /|     /|  "}
+ 95.833%{content:"          _          _          _      _\A \\        /_\\        /_\\        /_\\    /_\A           o          o          o      o\A #]       /|#]       /|#]       /|#]   /|\A \\        |\\         /|         \\|     \\|"}
+}
+@media(prefers-reduced-motion:reduce){.ascii-march::before{animation:none!important}}
