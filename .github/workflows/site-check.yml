@@ -69,6 +69,10 @@ jobs:
         env:
           NODE_PATH: ${{ runner.temp }}/visuals/node_modules
         run: node .dsh/page-deck-browser-check.cjs
+      - name: Check ASCII scenes frame by frame
+        env:
+          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        run: node .dsh/ascii-capture.cjs
       - name: Check hero gear UI
         env:
           NODE_PATH: ${{ runner.temp }}/visuals/node_modules

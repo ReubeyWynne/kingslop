@@ -63,10 +63,12 @@
 /* ─── Forge — anvil, hammer, hot bar and sparks ───────── */
 .ascii-forge { width: 34ch; height: 13em; font-size: 10px; color: var(--amber, #e08a3c); }
 .ascii-forge span { left: 0; top: 0; }
-.ascii-forge .anvil { z-index: 1; color: #c7bc9d; }
-.ascii-forge .bar { z-index: 2; color: #f08a3c; }
-.ascii-forge .hammer { z-index: 3; color: #d3a33e; }
-.ascii-forge .sparks { z-index: 4; color: #f5c851; }
+/* Iron is ink; heat is the page's one signal hue, so the forge never brings
+   orange onto a page that signals in another colour. */
+.ascii-forge .anvil { z-index: 1; color: var(--ink-muted, #9d957f); }
+.ascii-forge .bar { z-index: 2; color: var(--amber, #e08a3c); }
+.ascii-forge .hammer { z-index: 3; color: var(--ink-dim, #c7bc9d); }
+.ascii-forge .sparks { z-index: 4; color: var(--amber, #f5c851); }
 
 /* The same forge, small, while screenshots are being read. */
 .ascii-hammer-loader { display: none; margin: .25rem 0; }
@@ -92,13 +94,14 @@
 }
 .ascii-mini::before { display: block; white-space: pre; }
 .ascii-mini--charm { color: var(--amber-dim, #d3a33e); }
+.ascii-mini--bear { height: 13.75em; }
 .ascii-mini--crown { height: 16.25em; }
 @media (max-width: 400px) { .ascii-motif-rail { gap: .5rem; margin-top: 1rem; } .ascii-mini { font-size: 9px; } }
 
 /* ─── The march — a procession across a ruled band ────── */
 .ascii-march-band { display: block; margin: .6rem 0 1rem; padding: .5rem 0; border-block: 1px solid var(--signal-line); overflow: hidden; width: 100%; direction: ltr; }
 .ascii-march-track { display: flex; width: max-content; }
-.ascii-march { display: block; flex: none; width: 40ch; height: 10em; overflow: hidden; color: var(--amber); font-size: clamp(9px, 2.6vw, 11px); line-height: 1.25; }
+.ascii-march { display: block; flex: none; width: 48ch; height: 10em; overflow: hidden; color: var(--amber); font-size: clamp(9px, 2.6vw, 11px); line-height: 1.25; }
 .ascii-march::before { display: block; white-space: pre; }
 @media (max-width: 700px) { .ascii-march-band { width: 100vw; margin-inline: calc(50% - 50vw); } }
 

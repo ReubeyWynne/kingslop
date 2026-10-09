@@ -228,7 +228,7 @@ All authored animations must use the site's distinct ASCII character-grid style.
 | Moon | Event Cycle hero and cover | a 28-frame lunar cycle, the 28-day clock |
 | Bear, charm, banner, crown, dice | the hero of their page and its deck cover | blinks, glints, cloth ripple in four glyph heights, a dice roll that lands |
 | Helm | Heroes hero and deck cover | a glint walking the brow band, the crest catching light, the eye slits darkening |
-| March | Bear Hunt and Vikings bands, Vikings cover | marchers stepping whole cells |
+| March | Bear Hunt and Vikings bands, Vikings cover | a column walking in step, one cell per pose, with a pennant bearer |
 | Ambient twinkles | behind every page and the page deck | glyphs waking at fixed places |
 
 **The pipeline.** `.dsh/build-ascii.py` writes `css/ascii-frames.css` and `_includes/ascii/campfire.html`. Never hand-edit either file. `css/ascii.css` holds layout, colour and placement. `node .dsh/ascii-style-check.cjs` enforces the rules below, and CI also fails when the committed frames differ from the generator's output.
@@ -242,6 +242,22 @@ All authored animations must use the site's distinct ASCII character-grid style.
 - The page deck is a ring: swiping past either end carries on into the other. Each cover keeps its own page's colour, and covers look the same whether or not they are selected. Selection follows the cover in the centre while the strip moves, so the ground drifts with the finger and nothing changes when the strip comes to rest; a jump from a button or key goes straight to its target. Only the selected cover's scene runs, together with the ring's copies of it. Touch handling in the open deck is passive and the strip pans sideways only, so nothing holds up native scrolling. The ground changes colour as a single `background-color` transition, which interpolates directly and never dims on the way. Do not cross-fade stacked colour layers by opacity: at the midpoint both are half transparent and the whole screen pulses darker. The twinkles stay small and quiet.
 - Draw rotation as poses. A hammer swing, for example, is three hand-drawn frames on a fixed grip, never one drawing rasterised or transformed at an angle.
 - Respect `prefers-reduced-motion` and retain a legible static ASCII frame when animation is disabled.
+
+### Animation quality
+
+Following the rules is not enough; a scene also has to look good frame by frame. These are the bar every scene is held to. The items marked *(checked)* fail CI.
+
+- **Look at every frame before you push.** Build the site and run `node .dsh/ascii-capture.cjs --frames`. It pauses every animation and steps it one authored frame at a time, writing exact PNGs to `.dsh/ascii-preview/`. Read the whole loop, not just frame 0. *(checked: a scene that overflows a 320px screen, leaves the centre of its rail, or holds one frame for its whole loop fails)*
+- **Walks plant their feet.** A walking figure advances exactly as far per pose as its planted foot recedes, so the foot stays on one ground cell from contact to contact and nothing moonwalks. Every leg pose is a real walk pose: contact, push-off, passing, reach. No crossed `X` legs, and no pose that only one figure in a crowd is in. *(checked in `march()`)*
+- **Crowds move in step.** Figures in a band share one walk phase. Out-of-step legs on repeated figures read as flicker, not a column.
+- **Travelling figures step at 6 fps or more.** A one-cell jump at 3 fps reads as a stutter. Ambient scenes (a moon's phases, a blink) may be slower. *(checked)*
+- **Poses keep their pivot and their parts.** A posed rotation keeps the pivot glyph (a hammer's grip) on the same cell in every pose, and a part (the hammer's head) keeps its size from pose to pose. Impact effects start at the point of contact. *(the forge's grip is checked in `forge()`)*
+- **Every frame fits its box.** No frame may be wider or taller than the `ch`/`em` box `css/ascii.css` gives the scene, so nothing is clipped. Art sits on the box's rows deliberately: a figure stands on a ground row, not floating with a gap below. *(checked)*
+- **Single strokes only.** Drawings are raw strings; a `\\` there draws two backslashes. *(checked)*
+- **One signal hue.** Scenes take colour from the page's tokens (`--amber`, `--amber-dim`, `--ink-dim`, `--ink-muted`), so a scene never brings another page's colour along. Only the fire scenes keep a literal fire palette. *(checked)*
+- **Every mark belongs to the drawing.** A twitch, flick or glint changes glyphs on the part that moves, inside the silhouette. A glyph that blinks on outside the outline reads as a rendering fault. Embers glow where the fire is, not under the logs.
+- **Saturation needs texture.** A sampled field that saturates (a flame's base) becomes a flat row of `@`. Move the sampling window or cap the ramp until the densest row still varies.
+- **Repetition needs rhythm.** A tiled band repeats on a period that divides its tile (ground included, so seams vanish) and carries a landmark, such as a pennant bearer, so it reads as a procession rather than wallpaper.
 
 ## Do's and Don'ts
 

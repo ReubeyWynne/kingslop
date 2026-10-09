@@ -77,8 +77,63 @@ for (const [, selector, name] of frames.matchAll(/([^\n{}]+)\{content:"[^\n]*?";
 }
 assert.match(read('css/ascii.css'), /prefers-reduced-motion: reduce[\s\S]*animation: none !important/);
 
+// ─── Quality bar (DESIGN.md, "Animation quality") ─────────────────────────
+const layout = read('css/ascii.css');
+// Every top-level rule whose selector is exactly this one, later rules winning.
+const rule = selector => [...layout.matchAll(new RegExp('(?:^|\\n)' + selector.replace(/[.-]/g, '\\$&') + '\\s*\\{([^}]*)\\}', 'g'))]
+  .map(m => m[1]).reverse().join(';');
+const decl = (body, prop) => (body.match(new RegExp('(?:^|[;{\\s])' + prop + '\\s*:\\s*([^;]+)')) || [])[1];
+const decode = body => body.split('\\A ').map(line => line.replace(/\\(.)/g, '$1'));
+
+// Every frame of a scene fits the box ascii.css gives it, so nothing is clipped.
+function box(selector) {
+  const scene = (selector.match(/\.ascii-(mini--\w+|march|forge|hearth)\b/) || [])[1];
+  if (!scene) return null;
+  const base = scene.startsWith('mini--') ? rule('.ascii-mini') : rule('.ascii-' + scene);
+  const own = scene.startsWith('mini--') ? rule('.ascii-' + scene) : '';
+  const width = decl(own, 'width') || decl(base, 'width');
+  const height = decl(own, 'height') || decl(base, 'height');
+  const lineHeight = parseFloat(decl(own, 'line-height') || decl(base, 'line-height') || '1');
+  if (!/ch$/.test(width || '') || !/em$/.test(height || '')) return null;
+  return { scene, cols: parseFloat(width), rows: Math.round(parseFloat(height) / lineHeight * 100) / 100 };
+}
+const frameBodies = (selector, name) => {
+  const block = keyframes(frames).find(k => k.name === name);
+  return block ? [...block.body.matchAll(/content:"((?:[^"\\]|\\.)*)"/g)].map(m => m[1]) : [];
+};
+for (const [, selector, still, name, seconds] of frames.matchAll(/([^\n{}]+)\{content:"((?:[^"\\]|\\.)*)";animation:([\w-]+) ([\d.]+)s/g)) {
+  const bodies = [still, ...frameBodies(selector, name)];
+  for (const body of bodies) {
+    check(!body.includes('\\\\\\\\'), `${selector}: a frame draws a doubled backslash — use single backslashes in raw-string art`);
+  }
+  const limits = box(selector);
+  if (limits) {
+    for (const body of bodies) {
+      const lines = decode(body);
+      const wide = Math.max(...lines.map(line => line.length));
+      check(lines.length <= limits.rows, `${selector}: a frame is ${lines.length} rows; .ascii-${limits.scene} holds ${limits.rows}`);
+      check(wide <= limits.cols, `${selector}: a frame is ${wide} columns; .ascii-${limits.scene} holds ${limits.cols}`);
+    }
+  }
+  // Figures that travel across the band step at least 6 times a second; slower
+  // than that a one-cell jump reads as a stutter.
+  if (/ascii-(hunt-)?march/.test(name)) {
+    const fps = (bodies.length - 1) / parseFloat(seconds);
+    check(fps >= 6, `${name}: travelling figures step at ${fps.toFixed(1)} fps; keep them at 6 or more`);
+  }
+}
+
+// Colour comes from the page's tokens. Only the fire scenes keep a literal
+// fire palette; everything else follows the one-signal rule.
+for (const [, selector, body] of layout.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+  if (/campfire|hearth/.test(selector)) continue;
+  for (const [, value] of body.matchAll(/(?:^|[;\s])color\s*:\s*([^;]+)/g)) {
+    check(/^(var\(|transparent|inherit|currentColor)/.test(value.trim()), `css/ascii.css: "${selector.trim()}" hard-codes color ${value.trim()}; use the page's tokens`);
+  }
+}
+
 if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);
 }
-console.log('ASCII scenes: stepped character frames only, no transforms, no script animation.');
+console.log('ASCII scenes: stepped character frames only, no transforms, no script animation; every frame fits its box, marchers step at 6 fps or more, colours come from tokens.');

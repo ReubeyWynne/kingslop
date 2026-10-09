@@ -214,9 +214,13 @@ def campfire():
 
     far, near = logs()
 
-    # The coal bed glows by changing glyphs in place.
+    # The coal bed glows by changing glyphs in place, only in the pit the logs
+    # enclose: a coal under or beside the logs reads as debris, not embers.
+    def enclosed(r, c):
+        logs_on = lambda cols: any(far[r][k] != ' ' or near[r][k] != ' ' for k in cols)
+        return logs_on(range(c - 16, c)) and logs_on(range(c + 1, c + 17))
     bed = [(r, c) for r in range(18, 22) for c in range(16, 36)
-           if far[r][c] == ' ' and near[r][c] == ' ' and hash2(c, r + 60) < .45]
+           if far[r][c] == ' ' and near[r][c] == ' ' and enclosed(r, c) and hash2(c, r + 60) < .8]
     ramp = ' .:;+*#'
     coal_frames = []
     for j in range(16):
@@ -257,7 +261,10 @@ def campfire():
 # ── hearth: the campfire in miniature, signing off every page ────────────
 
 def hearth():
-    """The same flame field, sampled 2 x 3 cells at a time."""
+    """The same flame field, sampled 2 x 3 cells at a time.
+
+    The window sits three rows above the log line: lower down every sample is
+    saturated and the base collapses into a flat row of '@'."""
     w, rows = 13, 5
     frames = []
     for i in range(int(LOOP * FPS / 2)):
@@ -265,7 +272,7 @@ def hearth():
         arr = grid(w, rows)
         for r in range(rows):
             for c in range(w):
-                heat = sorted(flame_heat(26 - w + c * 2 + dc + .5 - W / 2, 18.4 - (19 - rows * 3 + r * 3 + dr + .5), t)
+                heat = sorted(flame_heat(26 - w + c * 2 + dc + .5 - W / 2, 18.4 - (16 - rows * 3 + r * 3 + dr + .5), t)
                               for dc in range(2) for dr in range(3))
                 arr[r][c] = heat_glyph(heat[4])
         frames.append(arr)
@@ -275,62 +282,58 @@ def hearth():
 
 # ── forge: hammer, anvil and a hot bar ───────────────────────────────────
 # The hammer is hand-drawn in three poses on a fixed wrist (the grip "o"),
-# the way a flip-book is drawn, rather than rasterised at an angle.
+# the way a flip-book is drawn, rather than rasterised at an angle. Every
+# pose uses the same four-row head, and the grip sits on GRIP in all of them.
 
-HAMMER_UP = r'''
-              .--.
-             /##/\\
-            '--'   \\
-                     \\
-                       \\
-                         \\o'''
-HAMMER_MID = r'''
+GRIP = (27, 5)
+HAMMER = {  # (column, row, text) placements on the 34 x 13 forge grid
+    'up': [(16, 0, '.--.'), (15, 1, '/##/\\'), (14, 2, '/##/  \\'), (14, 3, "'--'"),
+           (21, 3, '\\'), (22, 4, '`.'), (24, 5, '`--o')],
+    'mid': [(11, 2, '.--.'), (11, 3, '|##|__'), (11, 4, '|##|  ``--..__'), (11, 5, "'--'"),
+            (25, 5, '``o')],
+    'down': [(11, 3, '.--.'), (11, 4, '|##|'), (11, 5, '|##|============o'), (11, 6, "'--'")],
+}
+BAR = (11, 7)  # the hot bar sits directly under the head's striking face
 
-            .-.
-           /##/
-          /##/=-._
-          '-'     `-._
-                      `-.__o'''
-HAMMER_DOWN = r'''
-
-
-
-          .--.
-          |##|
-          |##|=============o
-          '--' '''
-
-ANVIL = r'''
+ANVIL = r"""
      .-----------------.
   -==|_________________|
          \_________/
          _|#######|_
-       _|___________|_'''
+       _|___________|_"""
 
 
 def forge():
     w, h = 34, 13
-    poses = {'up': HAMMER_UP, 'mid': HAMMER_MID, 'down': HAMMER_DOWN}
+    for pose, parts in HAMMER.items():
+        arr = grid(w, h)
+        for x, y, text in parts:
+            put(arr, x, y, text)
+        assert arr[GRIP[1]][GRIP[0]] == 'o', f'forge: the {pose} pose moves the grip'
+        assert '\\\\' not in ''.join(''.join(row) for row in arr), f'forge: the {pose} pose draws a doubled backslash'
     script = ['up'] * 9 + ['mid', 'down', 'down', 'down', 'down', 'down', 'mid', 'mid'] + ['up'] * 7
+    # Sparks leave the strike point on both sides of the head, rise and fall.
+    burst = [(-1, 1, 1), (-1, 2, 1), (-1, 1, 2), (1, 1, 1), (1, 2, 1), (1, 1, 2)]
     hammer, sparks, bar = [], [], []
-    burst = [(-2, 0, -1), (-1, -1, -1), (1, -1, 1), (2, 0, 1), (-3, 1, -1), (3, 1, 1)]
     for i, pose in enumerate(script):
         arr = grid(w, h)
-        stamp(arr, 1, 0, poses[pose])
+        for x, y, text in HAMMER[pose]:
+            put(arr, x, y, text)
         hammer.append(arr)
         s = grid(w, h)
         k = i - 10
         if k == 0:
-            put(s, 9, 6, '-', '')
-            put(s, 16, 6, '-', '')
-        if 0 <= k < 6:
-            for n, (dx, dy, side) in enumerate(burst):
-                if k < 3 + n % 3:
-                    put(s, 13 + dx * (k + 1) + side, 6 + dy * (k + 1) // 2 - k // 2, '*' if k < 2 else '+' if k < 4 else '.')
+            put(s, BAR[0] - 1, BAR[1] - 1, '-', '')
+            put(s, BAR[0] + 4, BAR[1] - 1, '-', '')
+        elif 0 < k < 7:
+            for side, speed, rise in burst:
+                if k <= 6 - speed:
+                    x = (BAR[0] - 1 if side < 0 else BAR[0] + 4) + side * speed * k
+                    y = BAR[1] - 1 - rise * min(k, 2) + max(0, k - 3)
+                    put(s, x, y, '*' if k < 3 else '+' if k < 5 else '.')
         sparks.append(s)
         b = grid(w, h)
-        glow = '=@@=' if 0 <= k < 2 else '=##=' if 0 <= k < 7 else '=**=' if k < 0 or k >= 7 else '=##='
-        put(b, 11, 7, glow)
+        put(b, *BAR, '=@@=' if 0 <= k < 2 else '=##=' if 0 <= k < 7 else '=**=')
         bar.append(b)
     anvil = grid(w, h)
     stamp(anvil, 1, 8, ANVIL)
@@ -343,7 +346,7 @@ def forge():
 
 
 # ── the small emblems ────────────────────────────────────────────────────
-# Each is 29 cells wide, 9 rows tall (crown 13), set at line-height 1.25.
+# Each is 29 cells wide, 9 rows tall (bear 11, crown 13), set at line-height 1.25.
 # The helm stands over the hero directory.
 
 MW = 29
@@ -359,15 +362,17 @@ CHARM = r'''
           '.___.'
 '''
 BEAR = r'''
-         .--.   .--.
-        /    `-'    \
-       /             \
-      |  (o)     (o)  |
-      |       ^       |
-      |     .---.     |
-       \    '---'    /
-        '._       _.'
-           '-----' '''
+   .--.               .--.
+  / .. \.-"""""""""-./ .. \
+  \  .-'             '-.  /
+   '/                   \'
+   |                     |
+   |      (o)   (o)      |
+   |        .---.        |
+    \      / (_) \      /
+     '.    '._Y_.'    .'
+       '-.         .-'
+          '-.___.-' '''
 CROWN = r'''
              .
             /\
@@ -392,6 +397,14 @@ DICE = r'''
   |       | /   |       | /
   '-------'/    '-------'/
 '''
+DIE_ON_CORNER = r'''
+     .
+   .' '.
+ .' o   '.
+ |'.   .'|
+ |o '.' o|
+ '. o|o .'
+   '.|.' '''
 HELM = r'''
             .-^-.
          .-'  |  '-.
@@ -426,12 +439,12 @@ def mini_frames(kind):
         for i in range(36):
             arr = [r[:] for r in base]
             if i in (22, 23, 30):
-                put(arr, 9, 3, '(-)'); put(arr, 17, 3, '(-)')
-            if 7 <= i < 16:
-                put(arr, 12, 6, '---')
-            if 26 <= i < 33:
-                put(arr, 7, 0, ['.', '/', '/'][min(2, i - 26)] if i < 29 else '.')
-            for n, (r, c) in enumerate([(1, 2), (0, 24), (5, 26), (8, 3)]):
+                put(arr, 10, 5, '(-)'); put(arr, 16, 5, '(-)')
+            if i in (7, 8, 10, 11):  # a sniff: the nostrils flare
+                put(arr, 13, 7, '{_}')
+            if i in (26, 27, 29):  # an ear flick, drawn on the ear itself
+                put(arr, 3, 0, ".-'.")
+            for n, (r, c) in enumerate([(4, 0), (0, 28), (8, 27), (10, 2)]):
                 cycle = (i + n * 9) % 36
                 put(arr, c, r, '.+*+.'[cycle - 2] if 2 <= cycle < 7 else ' ')
             frames.append(arr)
@@ -476,7 +489,14 @@ def mini_frames(kind):
         # The landed roll comes first so the still for reduced motion is a result.
         for i, faces in enumerate([landed] + tumble):
             arr = [r[:] for r in base]
-            for x, face in zip((4, 18), faces):
+            for n, (x, face) in enumerate(zip((4, 18), faces)):
+                # Mid-tumble each die shows a pose balanced on a corner, the two
+                # out of step, so the roll reads as turning rather than flickering.
+                if 0 < i < len(tumble) - 1 and (i + n) % 2:
+                    for r in range(1, 9):
+                        put(arr, x - 2, r, ' ' * 11, '')
+                    stamp(arr, x - 2, 1, DIE_ON_CORNER)
+                    continue
                 for dx, dy in PIPS[face]:
                     put(arr, x + dx, 4 + dy, 'o')
             if i:
@@ -560,23 +580,70 @@ def minis():
 
 
 # ── the march ────────────────────────────────────────────────────────────
+# A column walking left in step. Each figure stands on a hip column; its legs
+# are a four-pose walk drawn so that the planted foot never slides: the body
+# advances one cell per pose and the planted foot recedes one cell, so it
+# stays on the same ground cell from contact to contact. Every third figure
+# carries a pennant, so a band of repeated tiles still reads as a column.
+
+MARCH_W, MARCH_H, MARCH_GAP = 48, 8, 16
+MARCH_FPS = 8
+STRIDE = [  # (dx from the hip, row below the hip, glyph): contact, push, passing, reach
+    [(-1, 0, '/'), (1, 0, '\\'), (-2, 1, '/'), (2, 1, '\\')],
+    [(0, 0, '|'), (1, 0, '\\'), (-1, 1, '/'), (1, 1, '|')],
+    [(-1, 0, '/'), (0, 0, '|'), (-1, 1, '\\'), (0, 1, '|')],
+    [(-1, 0, '/'), (0, 0, '\\'), (-2, 1, '/'), (1, 1, '\\')],
+]
+PLANTED = [-2, -1, 0, 1]  # where the weight-bearing foot is, relative to the hip
+MARCHERS = {
+    'hunt': [(-1, 1, '.-.'), (-1, 2, '(o)'), (-5, 3, '<---/|\\'), (0, 4, '|')],
+    'raid': [(-1, 1, '/^\\'), (-1, 2, '(o)'), (-3, 3, '[#]|\\'), (0, 4, '|')],
+}
+BEARER = [(0, 4, '|'), (2, 0, 'o')] + [(2, r, '|') for r in range(1, 5)]
+
+
+def pennant(arr, x, i):
+    """A two-edged pennant trailing behind the pole, rippling away from it."""
+    phase = TAU * i / (MARCH_GAP * 2)
+    level = lambda c: math.sin(phase - c * .9) * min(1, (c + 1) / 2)
+    glyph = lambda v: "'" if v > .5 else '-' if v > -.05 else '.' if v > -.6 else '_'
+    put(arr, x, 1, ''.join(glyph(level(c)) for c in range(5)), '')
+    put(arr, x, 2, ''.join(glyph(level(c)) for c in range(4)), '')
+
+
+def march_frame(kind, i):
+    arr = grid(MARCH_W, MARCH_H)
+    for c in range(MARCH_W):  # the ground repeats with the tile, so the band has no seams
+        if c % 16 in (5, 12):
+            arr[MARCH_H - 1][c] = '.' if c % 16 == 5 else '_'
+    for origin in range(-MARCH_GAP, MARCH_W + 2 * MARCH_GAP, MARCH_GAP):
+        hip = origin - i
+        if origin % MARCH_W == 0:
+            for dx, r, text in MARCHERS[kind][:2] + [(-1, 3, '/|\\')] + BEARER:
+                put(arr, hip + dx, r, text)
+            pennant(arr, hip + 3, i)
+        else:
+            for dx, r, text in MARCHERS[kind]:
+                put(arr, hip + dx, r, text)
+        for dx, r, glyph in STRIDE[i % 4]:
+            put(arr, hip + dx, 5 + r, glyph)
+    return arr
+
 
 def march():
+    # The planted foot stays on its ground cell for a whole step: as the hip
+    # advances one cell per pose, the foot recedes one cell, and the step
+    # ends with it as the trailing foot of the next contact pose.
+    for pose, planted in enumerate(PLANTED):
+        feet = {dx for dx, row, _ in STRIDE[pose] if row == 1}
+        assert planted in feet and planted - pose == PLANTED[0], f'march pose {pose} slides'
+    assert PLANTED[-1] + 1 in {dx for dx, row, _ in STRIDE[0] if row == 1}, 'march loop slides'
     css = ['/* march */']
-    for hunt in (False, True):
-        frames = []
-        for i in range(40):
-            arr = grid(40, 8)
-            for origin in range(0, 60, 10):
-                x = origin - i % 10
-                stride = (i // 2 + origin // 10 + i // 10) % 4
-                head = [' .--. ', ' /__\\', ' <o  ', ' (|\\ '] if hunt else ['  _  ', ' /_\\ ', ' <o  ', '[#|\\ ']
-                legs = [[' / \\', '/   |'], ['  ||', '  ||'], [' \\ /', '  X '], [' / \\', ' |   \\']][stride]
-                for r, text in enumerate(head + ['  |  '] + legs):
-                    put(arr, x, r, text)
-            frames.append(arr)
-        name = 'ascii-hunt-march' if hunt else 'ascii-march'
-        css.append(animation('.ascii-march--hunt::before' if hunt else '.ascii-march::before', name, frames, 14))
+    loop = MARCH_W  # every figure has moved one tile on, so the band repeats exactly
+    for kind, selector, name in (('raid', '.ascii-march::before', 'ascii-march'),
+                                 ('hunt', '.ascii-march--hunt::before', 'ascii-hunt-march')):
+        frames = [march_frame(kind, i) for i in range(loop)]
+        css.append(animation(selector, name, frames, loop / MARCH_FPS))
     return '\n'.join(css) + '\n'
 
 
