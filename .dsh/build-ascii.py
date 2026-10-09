@@ -362,21 +362,21 @@ def forge():
 
 
 # ── the small emblems ────────────────────────────────────────────────────
-# Each is 29 cells wide, 9 rows tall (crown 10, bear 11), set at line-height 1.25.
+# Each is 29 cells wide, 9 rows tall (crown and charm 10, bear 11), set at line-height 1.25.
 # The helm stands over the hero directory.
 
 MW = 29
 
 CHARM = r'''
-             .-.
-            (   )
-             '-'
-             |=|
-             |=|
-         ____|=|____
-       /#############\
-      |###############|
-       \___/     \___/ '''
+              |
+       .------+------.
+       |# # # # # # #|
+       | # # # # # # |
+       |# # # # # # #|
+ ,_    '------+------'    _,
+(o \__________|__________/ o)
+  \ (@)(@)(@)(@)(@)(@)(@) /
+   \_____________________/ '''
 BEAR = r'''
    .--.               .--.
   / .. \.-"""""""""-./ .. \
@@ -400,34 +400,38 @@ CROWN = r'''
   |   <>     (o)     <>   |
   |=======================|
   '-----------------------' '''
-DICE = r'''
-
-    .------.      .------.
-   / o  o /|     / o  o /|
-  +-------+ |   +-------+ |
-  |       | |   |       | |
-  |       | |   |       | |
-  |       | /   |       | /
-  '-------'/    '-------'/
-'''
+# A die seen from above and to one side. The top and front faces carry pips;
+# the narrow right face is left in shadow.
+DIE = r'''
+    ________
+   /       /|
+  /       / |
+ /       /  |
++-------+   |
+|       |   +
+|       |  /
+|       | /
++-------+/ '''
 DIE_ON_CORNER = r'''
-     .
-   .' '.
- .' o   '.
- |'.   .'|
- |o '.' o|
- '. o|o .'
-   '.|.' '''
+      .
+    .' '.
+  .'  o  '.
+ |'.     .'|
+ | o '.' o |
+ |    |    |
+ | o  |  o |
+  '.  |  .'
+    '.|.' '''
 HELM = r'''
-         _.,.,.,.,._
-       .-"""""""""""-.
-     .'               '.
-    /                   \
-   |   _______________   |
-   |  |______   ______|  |
-    \       |   |       /
-     '.     |   |     .'
-       '----'   '----' '''
+        _,;;;;;;;;;,_
+     ,;;;;;;;;;;;;;;;;;,
+   ,;;'  _.-"""""-._  ';;,
+        /           \
+       |             |
+       |        .----'
+       |       (__
+       |   |\     \
+      _/___| \_____\ '''
 PIPS = {1: [(2, 1)], 2: [(0, 0), (4, 2)], 3: [(0, 0), (2, 1), (4, 2)],
         4: [(0, 0), (4, 0), (0, 2), (4, 2)], 5: [(0, 0), (4, 0), (2, 1), (0, 2), (4, 2)],
         6: [(0, 0), (4, 0), (0, 1), (4, 1), (0, 2), (4, 2)]}
@@ -436,20 +440,17 @@ PIPS = {1: [(2, 1)], 2: [(0, 0), (4, 2)], 3: [(0, 0), (2, 1), (4, 2)],
 def mini_frames(kind):
     frames, holds = [], None
     if kind == 'charm':
-        # Thor's hammer on its cord. A glint crosses the head on a slant,
-        # then the bail catches the light.
-        base = [list(r.ljust(MW)) for r in art(CHARM)]
+        # A longship under a chequered sail, shields along the rail. The sea
+        # rolls past a cell at a time, the pennant snaps, and a glint runs
+        # down the shields.
+        base = [list(r.ljust(MW)) for r in art(CHARM)] + [[' '] * MW]
+        swell = '~~^~~   '
         for i in range(32):
             arr = [r[:] for r in base]
-            if 8 <= i < 26:
-                for r, lead in ((6, 1), (7, 0)):
-                    for cc in (6 + i - 8 + lead, 7 + i - 8 + lead):
-                        if cc < MW and arr[r][cc] == '#':
-                            arr[r][cc] = '+' if (i + cc) % 3 else '*'
-            if i in (27, 28):
-                put(arr, 14, 1, '*' if i == 27 else '+')
-            for n, (r, c) in enumerate([(1, 4), (3, 24), (6, 2), (8, 26)]):
-                put(arr, c, r, " .+*+. "[(i // 2 + n * 4) % 7] if (i // 2 + n * 4) % 16 < 7 else ' ')
+            put(arr, 1, 9, ''.join(swell[(c + i // 4) % len(swell)] for c in range(1, MW - 1)))
+            put(arr, 15, 0, '>' if (i // 2) % 2 == 0 else '~')
+            if 12 <= i < 26:
+                put(arr, 5 + 3 * ((i - 12) // 2), 7, '*')
             frames.append(arr)
     elif kind == 'bear':
         base = [list(r.ljust(MW)) for r in art(BEAR)]
@@ -481,48 +482,49 @@ def mini_frames(kind):
                     put(arr, c, r, '*' if i == start else '+')
             frames.append(arr)
     elif kind == 'helm':
-        # A crested helm seen from the front. A glint walks the crest, the
-        # dome catches the light, and the T-slit darkens for a beat: someone
-        # is looking out.
+        # A crested Spartan helm in profile. Wind runs back through the
+        # horsehair crest, the dome catches the light, and stars come and go.
         base = [list(r.ljust(MW)) for r in art(HELM)]
         for i in range(32):
             arr = [r[:] for r in base]
-            if 6 <= i < 18:
-                cc = 9 + i - 6
-                if arr[0][cc] in '.,':
-                    arr[0][cc] = '*'
-            if i in (20, 21):
-                put(arr, 8, 2, '*' if i == 20 else '+')
-            if 25 <= i < 28:
-                put(arr, 7, 5, '======'); put(arr, 16, 5, '======')
-            for n, (r, c) in enumerate([(1, 3), (0, 25), (6, 26), (8, 3)]):
+            if 4 <= i < 20:
+                gust = 25 - (i - 4) * 3 // 2
+                for r in range(3):
+                    for cc in (gust, gust + 1):
+                        if 0 <= cc < MW and arr[r][cc] == ';':
+                            arr[r][cc] = ','
+            if i in (22, 23):
+                put(arr, 10, 3, '*' if i == 22 else '+')
+            for n, (r, c) in enumerate([(4, 3), (0, 25), (7, 24), (8, 2)]):
                 cycle = (i + n * 8) % 32
                 put(arr, c, r, '.+*+.'[cycle - 2] if 2 <= cycle < 7 else ' ')
             frames.append(arr)
     elif kind == 'dice':
-        base = [list(r.ljust(MW)) for r in art(DICE)]
-        landed = (5, 3)
-        tumble = [(2, 6), (4, 1), (6, 5), (1, 2), (3, 4), (5, 6), (2, 3)]
+        # Two dice tumble side over side, each through a pose balanced on a
+        # corner, out of step with each other, and land with a puff of dust.
+        def die(front, top):
+            arr = [list(r.ljust(13)) for r in art(DIE)]
+            for dx, dy in PIPS[front]:
+                arr[5 + dy][2 + dx] = 'o'
+            for dx, dy in PIPS[top]:
+                arr[1 + dy][5 + dx - dy] = 'o'
+            return [''.join(r) for r in arr]
+
+        landed = ((5, 1), (3, 2))
+        # One pose per beat; None is the die up on its corner.
+        rolls = [((2, 4), None), (None, (6, 2)), ((4, 5), None), (None, (1, 3)),
+                 ((6, 3), None), (None, (5, 4)), ((1, 2), None), (None, (2, 6))]
         holds = []
-        # The landed roll comes first so the still for reduced motion is a result.
-        for i, faces in enumerate([landed] + tumble):
-            arr = [r[:] for r in base]
-            for n, (x, face) in enumerate(zip((4, 18), faces)):
-                # Mid-tumble each die shows a pose balanced on a corner, the two
-                # out of step, so the roll reads as turning rather than flickering.
-                if 0 < i < len(tumble) - 1 and (i + n) % 2:
-                    for r in range(1, 9):
-                        put(arr, x - 2, r, ' ' * 11, '')
-                    stamp(arr, x - 2, 1, DIE_ON_CORNER)
-                    continue
-                for dx, dy in PIPS[face]:
-                    put(arr, x + dx, 4 + dy, 'o')
-            if i:
-                for r, c, g in ((1, 1, "'"), (8, 27, ','), (2, 27, "'"), (8, 1, '.')):
-                    if (i + c) % 2:
-                        put(arr, c, r, g)
+        for i, poses in enumerate([landed] + rolls + [landed]):
+            arr = [[' '] * MW for _ in range(9)]
+            for n, (x, pose) in enumerate(zip((0, 16), poses)):
+                for r, row in enumerate(art(DIE_ON_CORNER) if pose is None else die(*pose)):
+                    put(arr, x, r, row, ' ')
+            if i == len(rolls) + 1:  # the landing kicks up dust
+                for c, r, g in ((11, 8, '.'), (15, 8, ','), (27, 8, '.'), (13, 7, "'")):
+                    put(arr, c, r, g)
             frames.append(arr)
-            holds.append(18 if i == 0 else 1)
+            holds.append(16 if i == 0 else 1)
     elif kind == 'banner':
         for i in range(24):
             frames.append(banner(TAU * i / 24))
@@ -599,7 +601,8 @@ def symmetrical(drawing):
 
 def minis():
     # Emblems that face the viewer are drawn symmetrical (DESIGN.md, "Animation quality").
-    for name, drawing in (('bear', BEAR), ('crown', CROWN), ('charm', CHARM), ('helm', HELM)):
+    # The helm is drawn in profile, the way a Spartan helm is best known.
+    for name, drawing in (('bear', BEAR), ('crown', CROWN), ('charm', CHARM)):
         assert symmetrical(drawing), f'{name}: the emblem is not symmetrical about column {MW // 2}'
     css = ['/* emblems */']
     durations = {'charm': 6.4, 'bear': 7.2, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 19.6, 'helm': 8}
