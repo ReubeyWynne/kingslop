@@ -605,6 +605,7 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "ev.deck.lede.vip": "查看目前進度，規劃下一個VIP等級。",
   "ev.deck.lede.sim": "你的戰鬥、行軍與計算。",
   "ev.deck.lede.gear": "規劃下一次升級和所需資源。",
+  "ev.deck.lede.heroes": "按世代、兵種和定位查找英雄。",
   "bh.page.0": "計畫",
   "bh.page.1": "原理",
   "bh.page.2": "填滿集結",

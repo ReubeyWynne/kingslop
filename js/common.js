@@ -140,7 +140,17 @@
     after = cards.map(function (card) { return viewport.appendChild(copyCard(card)); });
     before = cards.map(function (card) { return viewport.insertBefore(copyCard(card), cards[0]); });
   }
-  function centreOf(el) { return el.offsetLeft + el.offsetWidth / 2; }
+  // Cover centres are measured once per layout, not on every scroll event:
+  // reading them right after a selection change forced a style and layout
+  // pass in the middle of a fling.
+  var centres = null;
+  function measureDeck() { centres = null; }
+  function centreOf(el) {
+    if (!centres) centres = new Map();
+    var c = centres.get(el);
+    if (c === undefined) { c = el.offsetLeft + el.offsetWidth / 2; centres.set(el, c); }
+    return c;
+  }
   function viewCentre() { return viewport.scrollLeft + viewport.clientWidth / 2; }
   function copiesOf(i) { return [before[i], cards[i], after[i]].filter(Boolean); }
   function nearestCopy(i) {
@@ -162,7 +172,20 @@
     viewport.scrollTo({ left: el.offsetLeft - (viewport.clientWidth - el.offsetWidth) / 2, behavior: instant ? 'instant' : 'auto' });
   }
 
-  function selectDeck(index) {
+  // While the finger or a fling moves the strip, the scene of a cover it
+  // passes is not started; the cover the strip comes to rest on starts its
+  // scene then. Starting scenes cover by cover loaded every frame of a
+  // long swipe with work nobody saw.
+  var runningIndex = -1;
+  function runScene(index) {
+    if (runningIndex === index) return;
+    runningIndex = index;
+    cards.forEach(function (card, i) {
+      copiesOf(i).forEach(function (el) { el.classList.toggle('is-running', i === index); });
+    });
+  }
+
+  function selectDeck(index, moving) {
     position = index;
     // CSS keys the ground and the accent off this attribute rather than a
     // :has() rule: :has() made every text change in the deck (the position
@@ -171,8 +194,8 @@
     cards.forEach(function (card, i) {
       card.classList.toggle('is-selected', i === index);
       card.tabIndex = i === index ? 0 : -1;
-      copiesOf(i).forEach(function (el) { el.classList.toggle('is-running', i === index); });
     });
+    if (!moving) runScene(index);
     groups.forEach(function (button) {
       button.setAttribute('aria-pressed', cards[index].getAttribute('data-group') === button.getAttribute('data-deck-group') ? 'true' : 'false');
     });
@@ -208,14 +231,19 @@
   // Covers keep their own colours, so only the ground moves. A jump from a
   // button or key holds its target rather than passing through the covers
   // on the way.
+  // Where the browser reports scrollend, the strip settles only on that
+  // event. A quiet-time timer can fire while a fling is still coasting
+  // (a busy frame delays the next scroll event), and settling then stopped
+  // the strip dead on the nearest cover: the stickiness on long swipes.
+  var hasScrollEnd = 'onscrollend' in window;
   function syncDeckScroll() {
     if (!deck.open) return;
     if (targetPosition === null) {
       var at = centred();
-      if (at.index !== position) selectDeck(at.index);
+      if (at.index !== position) selectDeck(at.index, true);
     }
     window.clearTimeout(announceTimer);
-    announceTimer = window.setTimeout(finishDeckScroll, 180);
+    announceTimer = hasScrollEnd ? 0 : window.setTimeout(finishDeckScroll, 180);
   }
 
   function finishDeckScroll() {
@@ -230,6 +258,7 @@
     if (at.el !== cards[at.index] || Math.abs(centreOf(cards[at.index]) - viewCentre()) > 1) scrollToCard(cards[at.index], true);
     targetPosition = null;
     if (at.index !== position || !cards[at.index].classList.contains('is-selected')) selectDeck(at.index);
+    else runScene(at.index);
     announceDeck();
   }
 
@@ -253,12 +282,14 @@
     document.addEventListener('touchmove', trackTouch, { passive: true });
     deck.showModal();
     document.documentElement.classList.add('deck-open');
+    measureDeck();
     browseDeck(index, false, true);
     return true;
   }
 
   function cleanDeck() {
     window.clearTimeout(announceTimer);
+    runningIndex = -1;
     document.removeEventListener('touchmove', trackTouch, { passive: true });
     document.addEventListener('touchmove', trackTouch, { passive: false });
     targetPosition = null;
@@ -311,6 +342,8 @@
     if (!gesture) return;
     var g = gesture;
     gesture = null;
+    // A release that moves nothing gets no scrollend, so settle after a
+    // pause; any scroll that does follow clears this and waits for its end.
     if (g.inDeck) { window.clearTimeout(announceTimer); announceTimer = window.setTimeout(finishDeckScroll, 180); }
     if (!g.active) return;
     suppressUntil = performance.now() + 400;
@@ -360,12 +393,13 @@
       });
     });
     window.addEventListener('resize', function () {
+      measureDeck();
       if (deck.open) browseDeck(position, false, true);
     });
     // Covers are sized in rem, so a text-size change moves them without
     // resizing the window; keep the selected one centred.
     if (typeof ResizeObserver === 'function') {
-      new ResizeObserver(function () { if (deck.open) browseDeck(position, false, true); }).observe(cards[0]);
+      new ResizeObserver(function () { measureDeck(); if (deck.open) browseDeck(position, false, true); }).observe(cards[0]);
     }
     document.addEventListener('i18n:change', function () {
       if (deck.open) { syncDeckScroll(); announceDeck(); }

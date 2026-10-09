@@ -604,6 +604,7 @@ window.__BH_I18N_DATA["fr"] = {
   "ev.deck.lede.vip": "ta progression actuelle, ton prochain niveau VIP.",
   "ev.deck.lede.sim": "tes batailles, tes marches et les calculs.",
   "ev.deck.lede.gear": "prépare ta prochaine amélioration et les ressources nécessaires.",
+  "ev.deck.lede.heroes": "les héros par génération, troupe et rôle.",
   "bh.page.0": "Plan",
   "bh.page.1": "Pourquoi cela fonctionne",
   "bh.page.2": "Remplir les rallies",

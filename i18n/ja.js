@@ -605,6 +605,7 @@ window.__BH_I18N_DATA["ja"] = {
   "ev.deck.lede.vip": "現在の進捗と次のVIPレベル。",
   "ev.deck.lede.sim": "戦闘、行軍、そして計算。",
   "ev.deck.lede.gear": "次の強化と必要な資源を計画しよう。",
+  "ev.deck.lede.heroes": "世代・兵種・役割で探す英雄。",
   "bh.page.0": "計画",
   "bh.page.1": "仕組み",
   "bh.page.2": "集結を満員にする",

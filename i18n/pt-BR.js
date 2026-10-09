@@ -605,6 +605,7 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "ev.deck.lede.vip": "seu progresso hoje, seu próximo nível VIP.",
   "ev.deck.lede.sim": "suas batalhas, suas marchas e a matemática.",
   "ev.deck.lede.gear": "planeje sua próxima melhoria e os recursos necessários.",
+  "ev.deck.lede.heroes": "heróis por geração, tropa e função.",
   "bh.page.0": "Plano",
   "bh.page.1": "Por que funciona",
   "bh.page.2": "Encher rallies",

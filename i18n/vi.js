@@ -613,6 +613,7 @@ window.__BH_I18N_DATA["vi"] = {
   "ev.deck.lede.vip": "tiến độ hiện tại, cấp VIP tiếp theo.",
   "ev.deck.lede.sim": "trận chiến, đội hành quân và các phép tính.",
   "ev.deck.lede.gear": "lên kế hoạch nâng cấp tiếp theo và tài nguyên cần thiết.",
+  "ev.deck.lede.heroes": "tướng theo thế hệ, binh chủng và vai trò.",
 
   "bh.page.0": "Kế hoạch",
   "bh.page.1": "Vì sao hiệu quả",

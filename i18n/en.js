@@ -624,6 +624,7 @@ window.__BH_I18N_DATA["en"] = {
   "ev.deck.lede.vip": "your progress today, your next VIP level.",
   "ev.deck.lede.sim": "your battles, your marches, and the maths.",
   "ev.deck.lede.gear": "plan your next upgrade and the resources it needs.",
+  "ev.deck.lede.heroes": "heroes by generation, troop and role.",
   "home.card.cycle.title": "Event Cycle",
   "home.card.cycle.lede": "One <b>28-day clock</b> runs the recurring events — KvK, Strongest Governor, and the armament and officer runs. Set it to your kingdom’s day: what’s on today, what to save, what to copy into KingShot.",
   "home.card.cycle.chip1": "every 28 days",

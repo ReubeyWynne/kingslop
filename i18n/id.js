@@ -613,6 +613,7 @@ window.__BH_I18N_DATA["id"] = {
   "ev.deck.lede.vip": "progresmu hari ini, level VIP berikutnya.",
   "ev.deck.lede.sim": "pertempuranmu, pasukanmu, dan perhitungannya.",
   "ev.deck.lede.gear": "rencanakan peningkatan berikutnya dan sumber daya yang diperlukan.",
+  "ev.deck.lede.heroes": "pahlawan menurut generasi, pasukan, dan peran.",
 
   "bh.page.0": "Rencana",
   "bh.page.1": "Mengapa berhasil",

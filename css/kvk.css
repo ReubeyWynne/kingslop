@@ -48,7 +48,7 @@
 }
 .cell.brawl { background: rgba(157, 149, 127, 0.28); }
 .cell.sg { background: rgba(217, 178, 90, 0.55); }
-.cell.mob { background: rgba(217, 178, 90, 0.2); }
+.cell.mob { background: color-mix(in srgb, var(--amber) 22%, transparent); }
 .cell.prep { background: var(--amber-dim); }
 .cell.battle { background: var(--enemy); }
 .cell.now { outline: 2px solid var(--amber); outline-offset: 1px; }

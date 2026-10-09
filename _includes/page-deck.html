@@ -11,6 +11,7 @@
       <button type="button" data-deck-group="events" data-i18n="ev.ledger.guides">the events</button>
       <button type="button" data-deck-group="tools" data-i18n="ev.ledger.tools">the tools</button>
     </nav>
+    <div class="deck-stage">
     <div class="deck-viewport">
       {% for n in site.data.nav %}{% assign entry = site.data.pages[n.self] %}
       <a class="deck-card" href="{{ p.depth }}{{ n.tail }}" data-page="{{ entry.token }}" data-group="{{ n.group }}"{% if n.self == page.self %} aria-current="page"{% endif %} tabindex="-1">
@@ -29,6 +30,7 @@
       <button type="button" class="deck-next" aria-label="Next page" data-i18n-key="ev.deck.next" data-i18n-attr="aria-label">›</button>
     </footer>
     <p id="deck-hint" data-i18n="ev.deck.hint">swipe to browse · tap to go</p>
+    </div>
   </div>
 </dialog>
 
