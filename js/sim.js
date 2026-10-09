@@ -670,7 +670,6 @@
     paintFight(BH);
     paintSweepSize(BH);
     paintSweep(BH);
-    paintLedger(BH);
   }
 
   // ── Modes — the rail, the panels, the URL ─────────────
@@ -732,17 +731,19 @@
   // Every sheet value is kept in this browser, so a reload or tomorrow's
   // stage starts from the last report. A convenience only: storage can be
   // missing or full, and the page works the same without it.
+  // The player save (your stats, the troops you own) is a separate concern:
+  // js/sim-player.js reads the same key off #console[data-sheet-key] to know
+  // whether this sheet has a save of its own before filling from it.
   var STORE_KEY = 'bh:sim:v1';
 
   function fields() {
     return document.querySelectorAll('#console input[id^="sim-"]:not([type="file"]), #console select[id^="sim-"]');
   }
 
-  // Returns whether the sheets had a save of their own.
   function restore() {
     var saved = null;
     try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { saved = null; }
-    if (!saved || typeof saved !== 'object') return false;
+    if (!saved || typeof saved !== 'object') return;
     Array.prototype.forEach.call(fields(), function (f) {
       var v = saved[f.id];
       if (typeof v !== 'string') return;
@@ -753,7 +754,6 @@
       }
     });
     if (typeof saved.room === 'string') pickedRoom = saved.room || null;
-    return true;
   }
 
   var saveTimer = null;
@@ -766,128 +766,7 @@
     }, 250);
   }
 
-  // ── The shared player save (PLAYER-LEDGER.md) ─────────
-  // Your stats and the troops you own live in the same local player save as
-  // hero gear and event inventory, so they travel with its export/import.
-  // Only the fight modes touch it: in a bear report the left column is the
-  // rally lead's, not yours. Reading and writing are explicit buttons, plus one
-  // automatic fill on a first visit, when the sheets have nothing of their own.
-  var LEDGER_STATS = { atk: 'attack', let: 'lethality', def: 'defense', hea: 'health' };
-  var ledgerNote = null; // the last load/save, until the save changes again
-
-  function ledger() {
-    try { return window.PlayerLedger ? window.PlayerLedger.shared() : null; } catch (e) { return null; }
-  }
-
-  function ledgerCombat() {
-    var store = ledger();
-    if (!store) return null;
-    try { return store.combat(); } catch (e) { return null; }
-  }
-
-  function setField(id, value) {
-    var f = el(id);
-    if (!f) return;
-    f.value = String(value);
-  }
-
-  // Fills the sheets from the save; returns whether anything was there.
-  function ledgerLoad() {
-    var data = ledgerCombat();
-    if (!data) return false;
-    var any = false;
-    TYPES.forEach(function (t) {
-      var row = data.stats[t.key];
-      if (row) {
-        any = true;
-        STATS.forEach(function (s) { setField('sim-' + s.key + '-' + t.key, row[LEDGER_STATS[s.key]]); });
-      }
-      // Troops come sorted best tier first; the march fights at one tier per type.
-      var best = data.troops.filter(function (r) { return r.type === t.key; })[0];
-      if (best) {
-        any = true;
-        setField('sim-n-' + t.key, best.amount);
-        setField('sim-tier-' + t.key, best.tier);
-        setField('sim-tg-' + t.key, best.tg);
-      }
-    });
-    return any;
-  }
-
-  function ledgerSave() {
-    var store = ledger();
-    if (!store) return false;
-    var stats = {}, troops = [];
-    if (anyStatEntered('sim-')) {
-      TYPES.forEach(function (t) {
-        stats[t.key] = {};
-        STATS.forEach(function (s) { stats[t.key][LEDGER_STATS[s.key]] = Math.max(0, Math.round(num('sim-' + s.key + '-' + t.key) * 100) / 100); });
-      });
-    }
-    TYPES.forEach(function (t) {
-      var n = Math.max(0, Math.floor(num('sim-n-' + t.key)));
-      if (n > 0) troops.push({ type: t.key, tier: pick('sim-tier-' + t.key, 10), tg: pick('sim-tg-' + t.key, 0), amount: n });
-    });
-    if (!troops.length && !Object.keys(stats).length) return false;
-    store.setCombat({ stats: stats, troops: troops }, 'manual');
-    return true;
-  }
-
-  function paintLedger(BH) {
-    var line = el('sim-ledger-status');
-    if (!line) return;
-    var data = ledgerCombat();
-    var load = el('sim-ledger-load');
-    if (!data) {
-      line.textContent = BH.tr('sim.ledger.off', 'Your player save is unavailable in this browser.');
-      if (load) load.disabled = true;
-      return;
-    }
-    var types = TYPES.filter(function (t) { return data.stats[t.key]; }).length;
-    var troops = 0;
-    data.troops.forEach(function (r) { troops += r.amount; });
-    if (load) load.disabled = !types && !troops;
-    var text = !types && !troops
-      ? BH.tr('sim.ledger.empty', 'Your player save has no stats or troops yet. Save these, and they are here next time — and in your exported save.')
-      : BH.fill(BH.tr('sim.ledger.has', 'Your player save has your stats for {types} of 3 troop types and {troops} troops.'),
-        { types: numFmt(types, 0), troops: numFmt(troops, 0) });
-    if (ledgerNote) text += ' ' + BH.tr(ledgerNote.key, ledgerNote.fallback);
-    line.textContent = text;
-  }
-
-  function wireLedger(BH) {
-    var store = ledger();
-    var load = el('sim-ledger-load'), keep = el('sim-ledger-save');
-    if (load) load.addEventListener('click', function () {
-      if (!ledgerLoad()) return;
-      ledgerNote = { key: 'sim.ledger.loaded', fallback: 'Loaded.' };
-      save();
-      paint(BH);
-    });
-    if (keep) keep.addEventListener('click', function () {
-      var ok = false;
-      try { ok = ledgerSave(); } catch (e) { ok = false; }
-      ledgerNote = ok ? { key: 'sim.ledger.saved', fallback: 'Saved — each march row counts as the troops you have at that tier.' } : { key: 'sim.ledger.failed', fallback: 'Nothing was saved — enter your stats or troops first.' };
-      paintLedger(BH);
-    });
-    if (store && store.subscribe) store.subscribe(function () { paintLedger(BH); });
-  }
-
   // ── Wiring ────────────────────────────────────────────
-  function fillSelects() {
-    Array.prototype.forEach.call(document.querySelectorAll('#console select[data-fill]'), function (s) {
-      if (s.options.length) return;
-      var i;
-      if (s.getAttribute('data-fill') === 'tier') {
-        for (i = 1; i <= E.TIERS; i++) s.appendChild(new Option('T' + i, String(i)));
-        s.value = '10';
-      } else {
-        for (i = 0; i < E.TGS; i++) s.appendChild(new Option('TG' + i, String(i)));
-        s.value = '0';
-      }
-    });
-  }
-
   var paintTimer = null;
   function wireInputs(BH) {
     function later() {
@@ -913,10 +792,8 @@
   }
 
   function boot(BH) {
-    fillSelects();
-    if (!restore() && GROUPS[mode].indexOf('fight') !== -1) ledgerLoad();
+    restore();
     wireInputs(BH);
-    wireLedger(BH);
     wireOcr(BH);
     paint(BH);
   }

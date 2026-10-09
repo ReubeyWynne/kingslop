@@ -163,7 +163,9 @@
           next.combat.provenance[type] = copy(facts);
         });
         troops.forEach(function (row) {
-          next.inventory[troopId(row.type, row.tier, row.tg)] = row.amount === null ? { amount: null, status: 'unknown', provenance: null } : { amount: row.amount, status: 'confirmed', provenance: copy(facts) };
+          // A cleared row is forgotten, not stored as unknown: a missing troop key already means unknown.
+          if (row.amount === null) delete next.inventory[troopId(row.type, row.tier, row.tg)];
+          else next.inventory[troopId(row.type, row.tier, row.tg)] = { amount: row.amount, status: 'confirmed', provenance: copy(facts) };
         });
       }, expected);
     }

@@ -140,6 +140,7 @@ assert.equal(combatStore.balance(Ledger.troopId('inf', 10, 2)).amount, 120000);
 assert.equal(combatStore.balance('forgehammer').amount, 12);
 combatStore.setCombat({ troops: [{ type: 'arc', tier: 9, tg: 0, amount: null }] });
 assert.equal(combatStore.combat().troops.length, 2);
+assert.equal(Object.hasOwn(combatStore.snapshot().inventory, Ledger.troopId('arc', 9, 0)), false);
 assert.equal(combatStore.combat().stats.inf.health, 163);
 const combatBefore = combatStore.exportJSON();
 assert.throws(() => combatStore.setCombat({ stats: { inf: { attack: -1, lethality: 0, defense: 0, health: 0 } } }));

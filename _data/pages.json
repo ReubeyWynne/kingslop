@@ -393,6 +393,7 @@
       "../js/i18n.js",
       "../js/common.js",
       "../js/battle-engine.js",
+      "../js/sim-player.js",
       "../js/sim.js"
     ],
     "footMainKey": "sim.foot.main",

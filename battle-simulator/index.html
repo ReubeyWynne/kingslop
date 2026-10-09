@@ -8,7 +8,7 @@ self: sim
   English label the markup ships with.
 {%- endcomment -%}
 {%- assign types = "inf|sim.calc.inf|Infantry,cav|sim.calc.cav|Cavalry,arc|sim.calc.arc|Archery" | split: "," -%}
-{%- assign stats = "atk|sim.calc.atk|Attack %,let|sim.calc.let|Lethality %,def|sim.load.def|Defense %,hea|sim.load.hea|Health %" | split: "," -%}
+{%- assign stats = "atk|sim.calc.atk|Attack %|attack,let|sim.calc.let|Lethality %|lethality,def|sim.load.def|Defense %|defense,hea|sim.load.hea|Health %|health" | split: "," -%}
 
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
   <a href="#console" data-i18n="sim.nav.console">The console</a>
@@ -31,7 +31,7 @@ self: sim
       {% include ascii/motif.html kind="dice" %}
   </section>
 
-  <section class="section" id="console">
+  <section class="section" id="console" data-module="sim-player" data-sheet-key="bh:sim:v1">
     <h2 data-i18n="sim.console.title">The console</h2>
     <p class="lede" data-i18n-html="sim.console.lede">One report, four fights. Import a battle screenshot or type the
       numbers in — the <b>Bonus Details</b> panel from the mail — then pick the fight. Nothing leaves the page; the
@@ -69,11 +69,41 @@ self: sim
         </a>
       </figure>
 
+      <!-- Your stats and troops in the shared player save (js/sim-player.js, troop-roster) -->
       <div class="sim-ocr sim-ledger sim-for" data-for="fight" id="sim-ledger" hidden>
-        <button type="button" id="sim-ledger-load" data-i18n="sim.ledger.load">Use my saved stats and troops</button>
-        <button type="button" id="sim-ledger-save" data-i18n="sim.ledger.save">Save these as mine</button>
-        <output class="sim-ocr-hint" id="sim-ledger-status" aria-live="polite"></output>
+        <button type="button" data-action="sim-player.load" data-i18n="sim.ledger.load">Use my saved stats and troops</button>
+        <button type="button" data-action="sim-player.save" data-i18n="sim.ledger.save">Save these as mine</button>
+        <output class="sim-ocr-hint" data-target="sim-player.status" aria-live="polite"
+          data-empty-key="sim.ledger.empty" data-has-key="sim.ledger.has"
+          data-has-stats-key="sim.ledger.hasStats" data-has-troops-key="sim.ledger.hasTroops" data-loaded-key="sim.ledger.loaded"
+          data-saved-key="sim.ledger.saved" data-failed-key="sim.ledger.failed"></output>
       </div>
+      <details class="roster sim-for" data-for="fight" id="sim-roster" hidden
+        data-module="troop-roster" data-total-key="sim.roster.total" data-empty-key="sim.roster.empty">
+        <summary data-i18n="sim.roster.title">Your troops</summary>
+        <p class="note" data-i18n-html="sim.roster.lede">Every tier you own, kept in your player save. <b>Use my saved
+          stats and troops</b> takes the best tier of each type into your march.</p>
+        {%- for t in types %}{% assign tp = t | split: "|" %}
+        <fieldset class="roster-type" data-troop-type="{{ tp[0] }}">
+          <legend data-i18n="{{ tp[1] }}">{{ tp[2] }}</legend>
+          <ol class="roster-rows" data-target="troop-roster.rows"></ol>
+          <button type="button" class="roster-add" data-action="troop-roster.add" data-i18n="sim.roster.add">Add a tier</button>
+        </fieldset>
+        {%- endfor %}
+        <output class="roster-total" data-target="troop-roster.total" aria-live="polite"></output>
+        <template data-target="troop-roster.row">
+          <li class="roster-row">
+            <label class="sim-field"><span data-i18n="sim.dmg.thTier">tier</span>
+              <select data-field="tier" data-action="troop-roster.move">{% for i in (1..11) %}<option value="{{ i }}"{% if i == 10 %} selected{% endif %}>T{{ i }}</option>{% endfor %}</select></label>
+            <label class="sim-field"><span data-i18n="sim.dmg.thTg">TG</span>
+              <select data-field="tg" data-action="troop-roster.move">{% for i in (0..5) %}<option value="{{ i }}">TG{{ i }}</option>{% endfor %}</select></label>
+            <label class="sim-field"><span data-i18n="sim.dmg.thCount">troops</span>
+              <input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="0" data-field="amount" data-action="troop-roster.set"></label>
+            <button type="button" class="roster-remove" data-action="troop-roster.remove" aria-label="Remove this tier"
+              data-i18n-key="sim.roster.remove" data-i18n-attr="aria-label">×</button>
+          </li>
+        </template>
+      </details>
 
       <h4 class="sheet-title sim-for" data-for="fight" hidden data-i18n="sim.load.you">Your stats</h4>
       <div class="sim-report" id="sim-report" role="table" aria-label="The report's Bonus Details values" data-i18n-key="sim.load.aria" data-i18n-attr="aria-label">
@@ -89,7 +119,7 @@ self: sim
           {%- for s in stats %}{% assign sp = s | split: "|" %}
           <span class="sim-field" role="cell">
             <label for="sim-{{ sp[0] }}-{{ tp[0] }}" data-i18n="{{ sp[1] }}">{{ sp[2] }}</label>
-            <input id="sim-{{ sp[0] }}-{{ tp[0] }}" type="number" min="0" step="0.1" inputmode="decimal" value="{% if sp[0] == 'atk' or sp[0] == 'def' %}250{% else %}163{% endif %}">
+            <input id="sim-{{ sp[0] }}-{{ tp[0] }}" type="number" min="0" step="0.1" inputmode="decimal" value="{% if sp[0] == 'atk' or sp[0] == 'def' %}250{% else %}163{% endif %}" data-player-stat="{{ sp[3] }}" data-troop="{{ tp[0] }}">
           </span>
           {%- endfor %}
         </div>
@@ -120,15 +150,15 @@ self: sim
           <span class="sim-type" role="rowheader" data-i18n="{{ tp[1] }}">{{ tp[2] }}</span>
           <span class="sim-field" role="cell">
             <label for="sim-n-{{ tp[0] }}" data-i18n="sim.dmg.thCount">troops</label>
-            <input id="sim-n-{{ tp[0] }}" type="number" min="0" step="1000" inputmode="numeric" value="50000" placeholder="0">
+            <input id="sim-n-{{ tp[0] }}" type="number" min="0" step="1000" inputmode="numeric" value="50000" placeholder="0" data-player-march="amount" data-troop="{{ tp[0] }}">
           </span>
           <span class="sim-field" role="cell">
             <label for="sim-tier-{{ tp[0] }}" data-i18n="sim.dmg.thTier">tier</label>
-            <select id="sim-tier-{{ tp[0] }}" data-fill="tier"></select>
+            <select id="sim-tier-{{ tp[0] }}" data-player-march="tier" data-troop="{{ tp[0] }}">{% for i in (1..11) %}<option value="{{ i }}"{% if i == 10 %} selected{% endif %}>T{{ i }}</option>{% endfor %}</select>
           </span>
           <span class="sim-field" role="cell">
             <label for="sim-tg-{{ tp[0] }}" data-i18n="sim.dmg.thTg">TG</label>
-            <select id="sim-tg-{{ tp[0] }}" data-fill="tg"></select>
+            <select id="sim-tg-{{ tp[0] }}" data-player-march="tg" data-troop="{{ tp[0] }}">{% for i in (0..5) %}<option value="{{ i }}">TG{{ i }}</option>{% endfor %}</select>
           </span>
         </div>
         {%- endfor %}
@@ -176,11 +206,11 @@ self: sim
           </span>
           <span class="sim-field" role="cell">
             <label for="sim-foe-tier-{{ tp[0] }}" data-i18n="sim.dmg.thTier">tier</label>
-            <select id="sim-foe-tier-{{ tp[0] }}" data-fill="tier"></select>
+            <select id="sim-foe-tier-{{ tp[0] }}">{% for i in (1..11) %}<option value="{{ i }}"{% if i == 10 %} selected{% endif %}>T{{ i }}</option>{% endfor %}</select>
           </span>
           <span class="sim-field" role="cell">
             <label for="sim-foe-tg-{{ tp[0] }}" data-i18n="sim.dmg.thTg">TG</label>
-            <select id="sim-foe-tg-{{ tp[0] }}" data-fill="tg"></select>
+            <select id="sim-foe-tg-{{ tp[0] }}">{% for i in (0..5) %}<option value="{{ i }}">TG{{ i }}</option>{% endfor %}</select>
           </span>
         </div>
         {%- endfor %}

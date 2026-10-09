@@ -131,13 +131,22 @@ async function overflow(page, message) {
               assert.match(await page.locator('#sim-fight-headline').innerText(), /\S/, lang + ': the fight answers as typed');
               assert.equal(await page.locator('#sim-fight-out .sim-row').count(), 4);
               assert.equal(await page.locator('#sim-ledger').isVisible(), true);
-              await page.locator('#sim-ledger-save').click();
+              await page.locator('[data-action="sim-player.save"]').click();
               const saved = await page.evaluate(() => window.PlayerLedger.shared().combat());
               assert.equal(saved.stats.inf.attack, 333, lang + ': your stats reach the shared player save');
               assert.ok(saved.troops.length > 0);
               await page.locator('#sim-atk-inf').fill('1');
-              await page.locator('#sim-ledger-load').click();
+              await page.locator('[data-action="sim-player.load"]').click();
               assert.equal(await page.locator('#sim-atk-inf').inputValue(), '333', lang + ': the player save fills your stats back');
+              await page.locator('#sim-roster > summary').click();
+              const roster = page.locator('#sim-roster [data-troop-type="cav"]');
+              const before = await roster.locator('.roster-row').count();
+              await roster.locator('[data-action="troop-roster.add"]').click();
+              await roster.locator('.roster-row').nth(before).locator('[data-field="amount"]').fill('4321');
+              assert.ok((await page.evaluate(() => window.PlayerLedger.shared().combat().troops)).some(t => t.type === 'cav' && t.amount === 4321), lang + ': the roster writes troops to the player save');
+              await roster.locator('.roster-row').nth(before).locator('[data-action="troop-roster.remove"]').click();
+              assert.equal(await roster.locator('.roster-row').count(), before);
+              await page.locator('#sim-roster > summary').click();
               if (width === 390) {
                 await page.locator('#sim-sweep-btn').click();
                 await page.locator('#sim-sweep-result').waitFor({ state: 'visible', timeout: 30000 });
