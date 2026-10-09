@@ -226,8 +226,8 @@ All authored animations must use the site's distinct ASCII character-grid style.
 | Hearth | above every page footer | the campfire's own flame field, sampled small |
 | Forge | Bear Hunt rewards, Hero Gear cover, screenshot-reading loader | three hand-drawn hammer poses, a hot bar, cell-stepped sparks |
 | Moon | Event Cycle hero and cover | a 28-frame lunar cycle, the 28-day clock |
-| Bear, charm, banner, crown, dice | the hero of their page and its deck cover | blinks, glints, cloth ripple in four glyph heights, a dice roll that lands |
-| Helm | Heroes hero and deck cover | a glint walking the brow band, the crest catching light, the eye slits darkening |
+| Bear, charm, banner, crown, dice | the hero of their page and its deck cover | a bear that blinks and sniffs, a glint across Thor's hammer and along a crown's band, cloth ripple in four glyph heights, a dice roll that lands |
+| Helm | Heroes hero and deck cover | a glint walking the crest, the dome catching light, the T-slit darkening |
 | March | Bear Hunt and Vikings bands, Vikings cover | a column walking in step, one cell per pose, with a pennant bearer |
 | Ambient twinkles | behind every page and the page deck | glyphs waking at fixed places |
 
@@ -252,6 +252,8 @@ Following the rules is not enough; a scene also has to look good frame by frame.
 - **Crowds move in step.** Figures in a band share one walk phase. Out-of-step legs on repeated figures read as flicker, not a column.
 - **Travelling figures step at 6 fps or more.** A one-cell jump at 3 fps reads as a stutter. Ambient scenes (a moon's phases, a blink) may be slower. *(checked)*
 - **Poses keep their pivot and their parts.** A posed rotation keeps the pivot glyph (a hammer's grip) on the same cell in every pose, and a part (the hammer's head) keeps its size from pose to pose. Impact effects start at the point of contact. *(the forge's grip is checked in `forge()`)*
+- **Rigid parts stay rigid.** A straight part (a handle, a pole, a spear) is drawn in every pose as one glyph run repeated at a constant step. Switching runs part-way (`` `. `` then `` `-- ``) draws a curve, and the part reads as bending. Effects never draw across the object that makes them: sparks fly around the hammer, not over its handle. *(both checked in `forge()`)*
+- **Emblems read at a glance.** Each emblem is the thing it names in its most familiar silhouette: a crown is a band with points and jewels, the Vikings charm is Thor's hammer on its cord, the helm has a crest and a T-slit. Draw it symmetrical about the centre column, and check it from across the room at 9px before animating it.
 - **Every frame fits its box.** No frame may be wider or taller than the `ch`/`em` box `css/ascii.css` gives the scene, so nothing is clipped. Art sits on the box's rows deliberately: a figure stands on a ground row, not floating with a gap below. *(checked)*
 - **Single strokes only.** Drawings are raw strings; a `\\` there draws two backslashes. *(checked)*
 - **One signal hue.** Scenes take colour from the page's tokens (`--amber`, `--amber-dim`, `--ink-dim`, `--ink-muted`), so a scene never brings another page's colour along. Only the fire scenes keep a literal fire palette. *(checked)*
