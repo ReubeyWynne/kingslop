@@ -346,7 +346,7 @@ def forge():
 
 
 # ── the small emblems ────────────────────────────────────────────────────
-# Each is 29 cells wide, 9 rows tall (crown 13), set at line-height 1.25.
+# Each is 29 cells wide, 9 rows tall (bear 11, crown 13), set at line-height 1.25.
 # The helm stands over the hero directory.
 
 MW = 29
@@ -362,15 +362,17 @@ CHARM = r'''
           '.___.'
 '''
 BEAR = r'''
-         .--.   .--.
-        /    `-'    \
-       /             \
-      |  (o)     (o)  |
-      |     _.-._     |
-      |    ( (_) )    |
-       \    `-v-'    /
-        '._       _.'
-           '-----' '''
+   .--.               .--.
+  / .. \.-"""""""""-./ .. \
+  \  .-'             '-.  /
+   '/                   \'
+   |                     |
+   |      (o)   (o)      |
+   |        .---.        |
+    \      / (_) \      /
+     '.    '._Y_.'    .'
+       '-.         .-'
+          '-.___.-' '''
 CROWN = r'''
              .
             /\
@@ -437,12 +439,12 @@ def mini_frames(kind):
         for i in range(36):
             arr = [r[:] for r in base]
             if i in (22, 23, 30):
-                put(arr, 9, 3, '(-)'); put(arr, 17, 3, '(-)')
+                put(arr, 10, 5, '(-)'); put(arr, 16, 5, '(-)')
             if i in (7, 8, 10, 11):  # a sniff: the nostrils flare
-                put(arr, 13, 5, '{_}')
+                put(arr, 13, 7, '{_}')
             if i in (26, 27, 29):  # an ear flick, drawn on the ear itself
-                put(arr, 9, 0, ".-'.")
-            for n, (r, c) in enumerate([(1, 2), (0, 24), (5, 26), (8, 3)]):
+                put(arr, 3, 0, ".-'.")
+            for n, (r, c) in enumerate([(4, 0), (0, 28), (8, 27), (10, 2)]):
                 cycle = (i + n * 9) % 36
                 put(arr, c, r, '.+*+.'[cycle - 2] if 2 <= cycle < 7 else ' ')
             frames.append(arr)

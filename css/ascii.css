@@ -94,6 +94,7 @@
 }
 .ascii-mini::before { display: block; white-space: pre; }
 .ascii-mini--charm { color: var(--amber-dim, #d3a33e); }
+.ascii-mini--bear { height: 13.75em; }
 .ascii-mini--crown { height: 16.25em; }
 @media (max-width: 400px) { .ascii-motif-rail { gap: .5rem; margin-top: 1rem; } .ascii-mini { font-size: 9px; } }
 

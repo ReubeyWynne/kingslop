@@ -31,6 +31,7 @@ const scenes = [
   ['crown', '/vip-calculator/', '.ascii-mini--crown', 0.25, 32],
   ['dice', '/battle-simulator/', '.ascii-mini--dice', 0.224, 25],
   ['moon', '/events/', '.ascii-mini--moon', 0.7, 28],
+  ['helm', '/heroes/', '.ascii-mini--helm', 0.25, 32],
 ];
 
 const server = http.createServer((request, response) => {
