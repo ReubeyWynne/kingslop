@@ -227,6 +227,7 @@ All authored animations must use the site's distinct ASCII character-grid style.
 | Forge | Bear Hunt rewards, Hero Gear cover, screenshot-reading loader | three hand-drawn hammer poses, a hot bar, cell-stepped sparks |
 | Moon | Event Cycle hero and cover | a 28-frame lunar cycle, the 28-day clock |
 | Bear, charm, banner, crown, dice | the hero of their page and its deck cover | blinks, glints, cloth ripple in four glyph heights, a dice roll that lands |
+| Helm | Heroes hero and deck cover | a glint walking the brow band, the crest catching light, the eye slits darkening |
 | March | Bear Hunt and Vikings bands, Vikings cover | marchers stepping whole cells |
 | Ambient twinkles | behind every page and the page deck | glyphs waking at fixed places |
 
@@ -262,4 +263,4 @@ All authored animations must use the site's distinct ASCII character-grid style.
 
 ## Hero directory integration
 
-The directory adds a ninth navigation entry. The desktop strip now starts at 1600px, with a 62rem masthead width allowance; the shared drawer carries navigation below that width. The complete strip and directory are checked in all 17 languages at phone, tablet and desktop widths. Directory sections use flat ruled rows, existing portraits or initials, and a single parchment signal hue.
+The directory adds a ninth navigation entry. The desktop strip now starts at 1600px, with a 62rem masthead width allowance; the shared drawer carries navigation below that width. The complete strip and directory are checked in all 17 languages at phone, tablet and desktop widths. The directory is a roster, not a scroll: heroes sit as portrait tiles under Bear Hunt-style generation rank lines (short generations pair up from 651px), rarity reads as border brightness (legendary full signal, epic dim, rare muted), and tapping a tile opens one dossier at a time across the full row on a void-2 field. A single parchment signal hue throughout.
