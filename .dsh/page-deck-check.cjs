@@ -131,7 +131,7 @@ function setup(current = 'home', reduced = false) {
   };
   Object.assign(window, {
     getComputedStyle: card => ({ getPropertyValue: token => {
-      const accent = { home: '#F5C851', bearhunt: '#AEC878', vikings: '#E08A3C', swordland: '#E05555', vip: '#C5A3EE', sim: '#E0B24A', kvksg: '#D9B25A', gear: '#e6b56a' }[card.getAttribute('data-page')];
+      const accent = { home: '#F5C851', bearhunt: '#AEC878', vikings: '#E08A3C', swordland: '#E05555', vip: '#C5A3EE', sim: '#88A8F0', kvksg: '#5FC8A6', gear: '#72CBDD', heroes: '#E68AB4' }[card.getAttribute('data-page')];
       return token === '--signal-line' ? accent + '55' : accent;
     } }),
     I18N: { locale: 'en-GB', tr: (k, fallback) => fallback, onReady: fn => { window.boot = fn; } },

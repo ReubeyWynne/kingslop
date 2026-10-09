@@ -605,6 +605,7 @@ window.__BH_I18N_DATA["ko"] = {
   "ev.deck.lede.vip": "현재 진행 상황과 다음 VIP 레벨.",
   "ev.deck.lede.sim": "전투와 행군, 그리고 계산.",
   "ev.deck.lede.gear": "다음 업그레이드와 필요한 자원을 계획하세요.",
+  "ev.deck.lede.heroes": "세대, 병종, 역할별 영웅.",
   "bh.page.0": "계획",
   "bh.page.1": "작동 원리",
   "bh.page.2": "랠리 채우기",

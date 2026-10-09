@@ -58,7 +58,7 @@ html[data-page="gear"] .topbar h1.brand { margin: 0; line-height: 1.2; }
 .gear-slot { font-size: 1rem; color: var(--ink); }
 .gear-level { font: 1.8rem/1.2 var(--display-2); color: var(--ink); }
 .gear-piece-info small, .gear-rarity { font-size: .78rem; color: var(--ink-muted); }
-.gear-rarity-red { color: var(--amber); }
+.gear-rarity-red { color: #E5775F; }
 .gear-main .gear-primary, .gear-dialog .gear-primary { border-bottom-color: var(--amber); font-weight: 700; }
 .gear-gloss { font-size: .88rem; color: var(--ink-muted); margin: .45rem 0; line-height: 1.35; }
 .gear-tools { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: .3rem; }

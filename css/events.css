@@ -169,10 +169,10 @@ html, body { overscroll-behavior-x: none; }
 .page-deck[data-selected="vikings"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E08A3C; --deck-ground: #231c19; }
 .page-deck[data-selected="swordland"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E05555; --deck-ground: #23161c; }
 .page-deck[data-selected="vip"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #C5A3EE; --deck-ground: #201f2e; }
-.page-deck[data-selected="sim"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E0B24A; --deck-ground: #23211a; }
-.page-deck[data-selected="kvksg"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #D9B25A; --deck-ground: #22211c; }
-.page-deck[data-selected="gear"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #e6b56a; --deck-ground: #24211e; }
-.page-deck[data-selected="heroes"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #c7ba85; --deck-ground: #202222; }
+.page-deck[data-selected="sim"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #88A8F0; --deck-ground: #18202e; }
+.page-deck[data-selected="kvksg"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #5FC8A6; --deck-ground: #132326; }
+.page-deck[data-selected="gear"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #72CBDD; --deck-ground: #16242c; }
+.page-deck[data-selected="heroes"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E68AB4; --deck-ground: #241c27; }
 /* The selected page's colours land only on the parts that use them, not on
    the strip, so a change restyles a handful of elements rather than every
    cover in the ring. */
@@ -259,14 +259,37 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
   letter-spacing: 0.05em;
 }
 .deck-groups button[aria-pressed="true"] { color: var(--amber); border-color: var(--signal-line); }
+/* The strip reaches under the position label and the hint, so a swipe
+   where the thumb naturally rests, below the covers, still moves it.
+   The footer sits on top of the strip and lets touches through to it;
+   only its buttons take taps. */
+.deck-stage {
+  --strip-height: clamp(32rem, 70dvh, 39rem);
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: calc(var(--strip-height) - 0.75rem) auto auto;
+  row-gap: 1rem;
+  flex-shrink: 0;
+}
+.deck-stage > .deck-footer, .deck-stage > #deck-hint {
+  grid-column: 1;
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+.deck-stage > .deck-footer { grid-row: 2; }
+.deck-stage > #deck-hint { grid-row: 3; }
+.deck-footer button { pointer-events: auto; }
 .deck-viewport {
   --card-width: min(76vw, 23rem);
   position: relative;
+  grid-row: 1 / -1;
+  grid-column: 1;
   display: flex;
+  align-items: flex-start;
   gap: clamp(1rem, 4vw, 1.5rem);
-  height: clamp(32rem, 70dvh, 39rem);
-  flex-shrink: 0;
-  padding: 0.75rem calc((100% - var(--card-width)) / 2);
+  min-height: 0;
+  padding: 0.75rem calc((100% - var(--card-width)) / 2) 0;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
@@ -285,6 +308,7 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
   position: relative;
   flex: 0 0 var(--card-width);
   width: var(--card-width);
+  height: calc(var(--strip-height) - 1.5rem);
   display: grid;
   grid-template-rows: 1fr 1fr;
   gap: 14rem;
@@ -309,10 +333,10 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
 .deck-card[data-page="vikings"] { --deck-accent: #E08A3C; }
 .deck-card[data-page="swordland"] { --deck-accent: #E05555; }
 .deck-card[data-page="vip"] { --deck-accent: #C5A3EE; }
-.deck-card[data-page="sim"] { --deck-accent: #E0B24A; }
-.deck-card[data-page="kvksg"] { --deck-accent: #D9B25A; }
-.deck-card[data-page="gear"] { --deck-accent: #e6b56a; }
-.deck-card[data-page="heroes"] { --deck-accent: #c7ba85; }
+.deck-card[data-page="sim"] { --deck-accent: #88A8F0; }
+.deck-card[data-page="kvksg"] { --deck-accent: #5FC8A6; }
+.deck-card[data-page="gear"] { --deck-accent: #72CBDD; }
+.deck-card[data-page="heroes"] { --deck-accent: #E68AB4; }
 .deck-card::before {
   content: '';
   position: absolute;
@@ -325,7 +349,7 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
 .deck-mark { color: var(--amber-dim); font-size: 2.2rem; line-height: 1; }
 .deck-card-title {
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
   align-self: start;
   max-height: 100%;
   font-family: var(--display-2);
@@ -342,16 +366,16 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
   max-height: 100%;
   flex: 1 1 auto;
   min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  overflow: hidden;
   font-size: var(--step--1);
   line-height: 1.45;
   color: var(--ink-dim);
 }
-/* Title and lede scroll only if a translation overflows them; their scroll
-   bars would otherwise flash on every swipe in mobile browsers. */
-.deck-card-title, .deck-card-lede { scrollbar-width: none; }
-.deck-card-title::-webkit-scrollbar, .deck-card-lede::-webkit-scrollbar { display: none; }
+/* Title and lede are never scroll boxes of their own. As one (the lede
+   also contained its overscroll) they caught a sideways swipe started on
+   the text, the lower half of the cover where the thumb rests, and the
+   strip never moved. The strip only pans sideways anyway, so they could
+   not be scrolled by touch. */
 .deck-card-action { display: block; margin-top: auto; color: var(--amber); font-size: var(--step--1); }
 .deck-footer { direction: ltr; padding: 0; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
 .deck-footer button { font-size: 2rem; line-height: 1; }
@@ -364,7 +388,7 @@ html[dir="rtl"] .deck-card { direction: rtl; }
 }
 @media (max-height: 540px) {
   .deck-sheet { gap: 0.4rem; }
-  .deck-viewport { height: 32rem; }
+  .deck-stage { --strip-height: 32rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .deck-ground { transition-duration: 0.3s; }
@@ -626,25 +650,24 @@ html[data-page="vip"] .dust i:nth-child(3) { background-size: 300px 300px; anima
 
 /* ─── Battle Simulator — the war room's night ─────────── */
 /* Another tool, not an event: the page where the maths of a fight gets
-   worked out on paper. A near-black war-room night with an antique-gold
-   signal — the same palette as the ledger tool, but a step darker and
-   colder, for the page that does the arithmetic. */
+   worked out on a map table. A blue-black war-room night with a war-map
+   blue signal, cold and exact, for the page that does the arithmetic. */
 html[data-page="sim"],
 html[data-page="home"]:has(.event-card[data-hover-page="sim"]:is(:hover, :focus-within)),
 .deck-card[data-page="sim"] {
-  --void: #0E0A12;        /* war-room night — near-black        */
-  --void-2: #16111C;      /* one step up (fields)              */
-  --amber: #E0B24A;       /* antique gold — the ledger signal  */
-  --amber-dim: #B3873A;   /* deep gold — secondary             */
+  --void: #090C18;        /* war-room night — blue-black        */
+  --void-2: #10172A;      /* one step up (fields)              */
+  --amber: #88A8F0;       /* war-map blue — the simulator signal */
+  --amber-dim: #5D7CC2;   /* deep map blue — secondary          */
   --rubric: #E05555;      /* rubrication red — draft marks only (oxblood is too dark on this night) */
-  --ember: rgba(224, 178, 74, 0.16); /* ember motes             */
-  --ember-2: rgba(196, 150, 52, 0.10);
+  --ember: rgba(136, 168, 240, 0.16); /* lamp motes on the map  */
+  --ember-2: rgba(100, 132, 210, 0.10);
   --ember-3: rgba(241, 227, 194, 0.07); /* pale parchment motes */
-  --chrome: rgba(14, 10, 18, 0.9);
-  --signal-line: rgba(224, 178, 74, 0.35);
-  --signal-tint: rgba(224, 178, 74, 0.07);
-  --signal-glow: rgba(224, 178, 74, 0.22);
-  --signal-halo: rgba(224, 178, 74, 0.28);
+  --chrome: rgba(9, 12, 24, 0.9);
+  --signal-line: rgba(136, 168, 240, 0.35);
+  --signal-tint: rgba(136, 168, 240, 0.07);
+  --signal-glow: rgba(136, 168, 240, 0.22);
+  --signal-halo: rgba(136, 168, 240, 0.28);
 }
 
 /* Embers drift slow and straight — the war room's quiet dust. */
@@ -653,33 +676,31 @@ html[data-page="sim"] .dust i:nth-child(2) { background-size: 200px 200px; anima
 html[data-page="sim"] .dust i:nth-child(3) { background-size: 300px 300px; animation: candle-rise 200s linear infinite; }
 
 /* ─── KvK & Strongest Governor — one wheel, two crowns ─── */
-/* The 2-in-1 page: KvK is the campaign of kings, so gold is its
-   primary — sceptre gold for the kingdom territory war, with the
-   Strongest Governor sections stepping up to a brighter crown gold,
-   the way Swordland alternates to the enemy blue. The wheel's battle
-   weekend borrows the shared --enemy red. */
+/* The event cycle: one 28-day clock on a sea night, so its signal is
+   tide jade. The Strongest Governor sections step up to crown gold, the
+   way Swordland alternates to the enemy blue. The wheel's battle weekend
+   borrows the shared --enemy red. */
 html[data-page="kvksg"],
 html[data-page="home"]:has(.event-card[data-hover-page="kvksg"]:is(:hover, :focus-within)),
 .deck-card[data-page="kvksg"] {
   --void: #081315;        /* sea night — black-teal            */
   --void-2: #0F1F1E;      /* one step up (fields)              */
-  --amber: #D9B25A;       /* sceptre gold — the campaign signal */
-  --amber-dim: #A9823B;   /* deep gold — secondary             */
-  --ember: rgba(217, 178, 90, 0.16); /* campaign motes          */
-  --ember-2: rgba(196, 152, 66, 0.10);
+  --amber: #5FC8A6;       /* tide jade — the cycle signal      */
+  --amber-dim: #3E9A7E;   /* deep jade — secondary             */
+  --ember: rgba(95, 200, 166, 0.16); /* sea-spray motes         */
+  --ember-2: rgba(70, 168, 140, 0.10);
   --ember-3: rgba(240, 222, 178, 0.07); /* pale gold light      */
   --chrome: rgba(8, 19, 21, 0.9);
-  --signal-line: rgba(217, 178, 90, 0.35);
-  --signal-tint: rgba(217, 178, 90, 0.07);
-  --signal-glow: rgba(217, 178, 90, 0.22);
-  --signal-halo: rgba(217, 178, 90, 0.28);
+  --signal-line: rgba(95, 200, 166, 0.35);
+  --signal-tint: rgba(95, 200, 166, 0.07);
+  --signal-glow: rgba(95, 200, 166, 0.22);
+  --signal-halo: rgba(95, 200, 166, 0.28);
   --enemy: #E05555;       /* the enemy kingdom — battle red    */
   --enemy-dim: #B04040;
 }
 
-/* Strongest Governor sections wear a brighter crown gold — a step up
-   from the page's sceptre gold, so the SG blocks read as the peak of
-   the campaign. Scoping the signal tokens flips every amber accent in
+/* Strongest Governor sections wear crown gold against the page's tide
+   jade, so the SG blocks read as the peak of the campaign. Scoping the signal tokens flips every amber accent in
    the section at once. */
 html[data-page="kvksg"] .section.sg {
   --amber: #F0CE7A;
@@ -817,24 +838,36 @@ html[data-page="bearhunt"] .section-fold:not([open]) > summary h2::before {
   }
 }
 
+/* ─── Hero gear — mithril on a steel night ─────────────── */
 html[data-page="gear"], html[data-page="home"]:has(.event-card[data-hover-page="gear"]:is(:hover, :focus-within)), .deck-card[data-page="gear"] {
-  --void: #120d0c;
-  --void-2: #1b1512;
-  --amber: #e6b56a;
-  --amber-dim: #b38446;
-  --chrome: rgba(18, 13, 12, .94);
-  --signal-line: rgba(230, 181, 106, .35);
-  --signal-tint: rgba(230, 181, 106, .07);
+  --void: #08111A;        /* steel night — blue-black          */
+  --void-2: #101C27;      /* one step up (fields)              */
+  --amber: #72CBDD;       /* mithril — the smith's signal      */
+  --amber-dim: #4C9DB0;   /* tempered mithril — secondary      */
+  --ember: rgba(114, 203, 221, 0.15); /* quench sparks          */
+  --ember-2: rgba(86, 170, 190, 0.10);
+  --ember-3: rgba(236, 240, 242, 0.07);
+  --chrome: rgba(8, 17, 26, .94);
+  --signal-line: rgba(114, 203, 221, .35);
+  --signal-tint: rgba(114, 203, 221, .07);
+  --signal-glow: rgba(114, 203, 221, .22);
+  --signal-halo: rgba(114, 203, 221, .28);
 }
 
 
+/* ─── Heroes — the hall of banners ─────────────────────── */
 html[data-page="heroes"], html[data-page="home"]:has(.event-card[data-hover-page="heroes"]:is(:hover, :focus-within)), .deck-card[data-page="heroes"] {
-  --void: #11130d;
-  --void-2: #1b1f15;
-  --amber: #c7ba85;
-  --amber-dim: #a3996f;
-  --chrome: rgba(17, 19, 13, .94);
-  --signal-line: rgba(199, 186, 133, .35);
-  --signal-tint: rgba(199, 186, 133, .07);
+  --void: #150A11;        /* hall night — wine-black           */
+  --void-2: #20121B;      /* one step up (fields)              */
+  --amber: #E68AB4;       /* banner rose — the roster signal   */
+  --amber-dim: #B5628A;   /* deep rose — secondary             */
+  --ember: rgba(230, 138, 180, 0.15); /* banner motes           */
+  --ember-2: rgba(196, 110, 152, 0.10);
+  --ember-3: rgba(241, 227, 194, 0.07);
+  --chrome: rgba(21, 10, 17, .94);
+  --signal-line: rgba(230, 138, 180, .35);
+  --signal-tint: rgba(230, 138, 180, .07);
+  --signal-glow: rgba(230, 138, 180, .22);
+  --signal-halo: rgba(230, 138, 180, .30);
 }
 

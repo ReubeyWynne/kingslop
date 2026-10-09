@@ -605,6 +605,7 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "ev.deck.lede.vip": "查看当前进度，规划下一个VIP等级。",
   "ev.deck.lede.sim": "你的战斗、行军与计算。",
   "ev.deck.lede.gear": "规划下一次升级和所需资源。",
+  "ev.deck.lede.heroes": "按世代、兵种和定位查找英雄。",
   "bh.page.0": "计划",
   "bh.page.1": "原理",
   "bh.page.2": "填满集结",

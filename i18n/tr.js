@@ -604,6 +604,7 @@ window.__BH_I18N_DATA["tr"] = {
   "ev.deck.lede.vip": "bugünkü ilerlemen, bir sonraki VIP seviyen.",
   "ev.deck.lede.sim": "savaşların, yürüyüşlerin ve hesaplar.",
   "ev.deck.lede.gear": "bir sonraki yükseltmeni ve gereken kaynakları planla.",
+  "ev.deck.lede.heroes": "nesil, birlik ve role göre kahramanlar.",
   "bh.page.0": "Plan",
   "bh.page.1": "Neden işe yarıyor",
   "bh.page.2": "Rallileri doldur",

@@ -24,8 +24,8 @@ async function selected(page, token) {
     return card?.dataset.page === token && Math.abs(card.offsetLeft + card.offsetWidth / 2 - viewport.scrollLeft - viewport.clientWidth / 2) < 2;
   }, token);
 }
-async function fits(page) {
-  const geometry = await page.locator('.deck-card.is-selected').evaluate(card => {
+async function fits(page, zoomed = false) {
+  const geometry = await page.locator('.deck-card.is-selected').evaluate((card, zoomed) => {
     const r = card.getBoundingClientRect();
     const art = card.querySelector('.deck-ascii').getBoundingClientRect();
     const title = card.querySelector('.deck-card-title').getBoundingClientRect();
@@ -35,9 +35,11 @@ async function fits(page) {
       y: Math.abs((art.top + art.bottom) / 2 - (r.top + r.bottom) / 2),
       titleClear: title.bottom <= art.top + 1,
       copyClear: copy.top >= art.bottom - 1,
-      clipped: [...card.querySelectorAll('.deck-card-title,.deck-card-copy,.deck-card-lede')].some(el => el.scrollWidth > el.clientWidth + 2)
+      // Title and lede are not scroll boxes (one would catch the swipe), so
+      // they must fit. At double text size only the lede may lose lines.
+      clipped: [...card.querySelectorAll('.deck-card-title,.deck-card-copy,.deck-card-lede')].some(el => el.scrollWidth > el.clientWidth + 2 || (!(zoomed && el.matches('.deck-card-lede, .deck-card-copy')) && el.scrollHeight > el.clientHeight + 6))
     };
-  });
+  }, zoomed);
   assert.ok(geometry.x < 1 && geometry.y < 1, JSON.stringify(geometry));
   assert.ok(geometry.titleClear && geometry.copyClear && !geometry.clipped, JSON.stringify(geometry));
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
@@ -155,6 +157,29 @@ async function fits(page) {
     await page.waitForTimeout(800);
     assert.deepEqual(await covers(), vipCovers);
     assert.deepEqual(await page.locator('.deck-card.is-running').evaluateAll(cards => cards.map(card => card.dataset.page)), ['home', 'home', 'home']);
+    // A sideways swipe moves the strip wherever the thumb lands on it: the
+    // art, the title, the lede in the lower half of the cover, and the
+    // position label and hint under the covers.
+    const touchPage = await (await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true })).newPage();
+    await touchPage.goto(origin + '/?lang=de');
+    await touchPage.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
+    await touchPage.locator('#ledger-btn').click();
+    await selected(touchPage, 'home');
+    const cdp = await touchPage.context().newCDPSession(touchPage);
+    const zones = ['.deck-card.is-selected .deck-ascii', '.deck-card.is-selected .deck-card-title', '.deck-card.is-selected .deck-card-lede', '.deck-position', '#deck-hint'];
+    for (const [i, zone] of zones.entries()) {
+      const box = await touchPage.locator(zone).boundingBox();
+      const x = Math.round(box.x + box.width / 2), y = Math.round(box.y + box.height / 2);
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+      for (let step = 1; step <= 12; step++) {
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x - step * 20, y }] });
+        await touchPage.waitForTimeout(16);
+      }
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      await selected(touchPage, tokens[i + 1]);
+    }
+    assert.equal(await touchPage.locator('#page-deck').evaluate(el => el.open), true);
+    await touchPage.close();
     for (const lang of ['de', 'ar']) {
       await page.goto(origin + '/?lang=' + lang);
       await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
@@ -166,7 +191,7 @@ async function fits(page) {
     }
     await page.evaluate(() => document.documentElement.style.fontSize = '200%');
     await selected(page, 'home');
-    await fits(page);
+    await fits(page, true);
     await page.close();
     console.log('Deck geometry, native scrolling, keyboard, colour interpolation, translations and reduced motion passed.');
   } finally {

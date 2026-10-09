@@ -1,6 +1,5 @@
 /* ─── Hero directory — a roster, not a scroll ─────────── */
-/* The page wears its own parchment signal, so the portrait glow follows it. */
-html[data-page="heroes"] { --signal-glow: rgba(199, 186, 133, .22); --signal-halo: rgba(199, 186, 133, .3); }
+/* The portrait glow follows the page's banner-rose signal (events.css). */
 
 /* Filters — ink lines in a ruled band. */
 .hero-filters { border: 0; border-block: 1px solid var(--signal-line); padding: var(--space-s) 0; margin: var(--space-m) 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem 1.5rem; }
