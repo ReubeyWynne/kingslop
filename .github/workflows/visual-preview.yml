@@ -31,6 +31,7 @@ jobs:
           node .dsh/events-visual-check.cjs
           node .dsh/remaining-pages-visual-check.cjs
           node .dsh/hero-gear-visual-check.cjs
+          node .dsh/ascii-capture.cjs --frames
       - name: Upload built site and screenshots
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -44,3 +45,4 @@ jobs:
             .dsh/events-preview/
             .dsh/remaining-pages-preview/
             .dsh/gear-preview/
+            .dsh/ascii-preview/
