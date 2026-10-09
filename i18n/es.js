@@ -1005,6 +1005,11 @@ window.__BH_I18N_DATA["es"] = {
   "directory.heroSource": "consultar la página oficial del héroe",
   "gear.reset": "reiniciar equipo de héroe",
   "gear.resetTitle": "¿Reiniciar el equipo de héroe?",
-  "gear.resetHint": "Se reinician el equipo, sus recursos y las preferencias. Los demás objetos de eventos se conservan. Puedes deshacerlo."
+  "gear.resetHint": "Se reinician el equipo, sus recursos y las preferencias. Los demás objetos de eventos se conservan. Puedes deshacerlo.",
+  "gov.nav": "Gobernador",
+  "ev.deck.lede.governor": "equipo y amuletos del gobernador, planificados con tu inventario.",
+  "gov.title": "Equipo de gobernador",
+  "gov.cardLede": "Planifica el equipo y los amuletos del gobernador con tus propios materiales y mira cuánto vale la puntuación en los eventos.",
+  "gov.kicker": "el vestuario del gobernador"
 }
 ;

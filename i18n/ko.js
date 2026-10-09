@@ -1003,6 +1003,11 @@ window.__BH_I18N_DATA["ko"] = {
   "directory.heroSource": "공식 영웅 페이지 확인",
   "gear.reset": "영웅 장비 초기화",
   "gear.resetTitle": "영웅 장비를 초기화할까요?",
-  "gear.resetHint": "장비, 장비 재료와 설정이 기본값으로 돌아갑니다. 다른 이벤트 아이템은 유지됩니다. 이 변경은 되돌릴 수 있습니다."
+  "gear.resetHint": "장비, 장비 재료와 설정이 기본값으로 돌아갑니다. 다른 이벤트 아이템은 유지됩니다. 이 변경은 되돌릴 수 있습니다.",
+  "gov.nav": "총독",
+  "ev.deck.lede.governor": "총독 장비와 부적을 내 가방에 맞춰 계획합니다.",
+  "gov.title": "총독 장비",
+  "gov.cardLede": "내 재료로 총독 장비와 부적 강화를 계획하고, 점수가 이벤트에서 얼마나 되는지 확인하세요.",
+  "gov.kicker": "총독의 옷장"
 }
 ;

@@ -1005,6 +1005,11 @@ window.__BH_I18N_DATA["it"] = {
   "directory.heroSource": "consulta la pagina ufficiale dell’eroe",
   "gear.reset": "reimposta equipaggiamento eroe",
   "gear.resetTitle": "Reimpostare l’equipaggiamento?",
-  "gear.resetHint": "Equipaggiamento, risorse dedicate e preferenze tornano ai valori iniziali. Gli altri oggetti evento restano salvati. Puoi annullare."
+  "gear.resetHint": "Equipaggiamento, risorse dedicate e preferenze tornano ai valori iniziali. Gli altri oggetti evento restano salvati. Puoi annullare.",
+  "gov.nav": "Governatore",
+  "ev.deck.lede.governor": "equipaggiamento e amuleti del governatore, pianificati dal tuo inventario.",
+  "gov.title": "Equipaggiamento del governatore",
+  "gov.cardLede": "Pianifica equipaggiamento e amuleti del governatore con i tuoi materiali e scopri quanto vale il punteggio negli eventi.",
+  "gov.kicker": "il guardaroba del governatore"
 }
 ;

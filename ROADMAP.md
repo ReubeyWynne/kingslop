@@ -101,6 +101,8 @@ This ships as a directory first. Per-hero deep pages are optional follow-up work
 
 ## Milestone 5 — governor gear and charms
 
+**Implementation:** `governor-gear/` plans gear and charm upgrades from the shared ledger. `_data/governor.json` holds cross-checked cost, stat and score tables with per-row sources; `js/governor-engine.js` supplies pure plans, target costs and event-point estimates from the shared event rules. Levels and planner choices are typed ledger sections. Set bonuses stay out until a second source confirms them. See [GOVERNOR-GEAR.md](GOVERNOR-GEAR.md) for sources, limits and checks. The next deliverable is milestone 6's screenshot import.
+
 Governor progression deserves its own domain model. Hero-gear levels, mastery, parts and mithril cannot be repurposed as governor gear/charm facts. It should nevertheless feel like the same product:
 
 - a ledger-backed resource view;
