@@ -159,31 +159,50 @@ html, body { overscroll-behavior-x: none; }
   border: 0;
   color: var(--ink);
   background: #090d14;
-  --amber: var(--deck-accent);
-  --amber-dim: color-mix(in srgb, var(--deck-accent) 76%, #090d14);
-  --signal-line: color-mix(in srgb, var(--deck-accent) 35%, transparent);
-  transition: --deck-accent 0.6s ease, background-color 0.6s ease;
   isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
   overflow: auto;
   overscroll-behavior: contain;
 }
-.page-deck:has(.deck-card.is-selected[data-page="home"]) { --deck-accent: #F5C851; background-color: #25231b; }
-.page-deck:has(.deck-card.is-selected[data-page="bearhunt"]) { --deck-accent: #AEC878; background-color: #1d2320; }
-.page-deck:has(.deck-card.is-selected[data-page="vikings"]) { --deck-accent: #E08A3C; background-color: #231c19; }
-.page-deck:has(.deck-card.is-selected[data-page="swordland"]) { --deck-accent: #E05555; background-color: #23161c; }
-.page-deck:has(.deck-card.is-selected[data-page="vip"]) { --deck-accent: #C5A3EE; background-color: #201f2e; }
-.page-deck:has(.deck-card.is-selected[data-page="sim"]) { --deck-accent: #E0B24A; background-color: #23211a; }
-.page-deck:has(.deck-card.is-selected[data-page="kvksg"]) { --deck-accent: #D9B25A; background-color: #22211c; }
-.page-deck:has(.deck-card.is-selected[data-page="gear"]) { --deck-accent: #e6b56a; background-color: #24211e; }
-.page-deck:has(.deck-card.is-selected[data-page="heroes"]) { --deck-accent: #c7ba85; background-color: #202222; }
+.page-deck[data-selected="home"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #F5C851; --deck-ground: #25231b; }
+.page-deck[data-selected="bearhunt"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #AEC878; --deck-ground: #1d2320; }
+.page-deck[data-selected="vikings"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E08A3C; --deck-ground: #231c19; }
+.page-deck[data-selected="swordland"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E05555; --deck-ground: #23161c; }
+.page-deck[data-selected="vip"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #C5A3EE; --deck-ground: #201f2e; }
+.page-deck[data-selected="sim"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E0B24A; --deck-ground: #23211a; }
+.page-deck[data-selected="kvksg"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #D9B25A; --deck-ground: #22211c; }
+.page-deck[data-selected="gear"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #e6b56a; --deck-ground: #24211e; }
+.page-deck[data-selected="heroes"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #c7ba85; --deck-ground: #202222; }
+/* The selected page's colours land only on the parts that use them, not on
+   the strip, so a change restyles a handful of elements rather than every
+   cover in the ring. */
+.page-deck :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) {
+  --amber: var(--deck-accent);
+  --amber-dim: color-mix(in srgb, var(--deck-accent) 76%, #090d14);
+  --signal-line: color-mix(in srgb, var(--deck-accent) 35%, transparent);
+}
 /* The ground takes the selected page's colour (its signal, 12% into the
    night) and moves to the next one as a plain background-color transition.
    That interpolates in every browser and never dims on the way: stacking a
    wash per page and cross-fading their opacity did, pulsing the whole
-   screen darker at the midpoint of every change. The soft centre glow is
-   one static, colourless layer.
+   screen darker at the midpoint of every change.
+   The fade runs on its own empty, full-screen layer. A plain colour layer
+   is the cheapest thing to redraw; fading the dialog's own background
+   repainted the header, buttons and glow every frame, and Android Chrome
+   sometimes showed a frame with the dialog missing. The accent the header
+   and buttons use switches once rather than fading, so the deck restyles
+   once per change instead of every frame.
    Selection follows the card in the centre while the strip moves, so
    the ground drifts with the finger and nothing changes when it stops. */
+.deck-ground {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: var(--deck-ground, #090d14);
+  transition: background-color 0.6s ease;
+  will-change: opacity;
+}
 .deck-atmosphere { background: radial-gradient(ellipse 80% 60% at 50% 46%, rgba(241, 227, 194, 0.035), transparent 72%); }
 .page-deck .ascii-ambient > span { opacity: 0.18; }
 .page-deck::backdrop { background: rgba(5, 8, 13, 0.8); }
@@ -340,7 +359,7 @@ html[dir="rtl"] .deck-card { direction: rtl; }
   .deck-viewport { height: 32rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .page-deck { transition: --deck-accent 0.3s ease, background-color 0.3s ease; }
+  .deck-ground { transition-duration: 0.3s; }
   .deck-viewport { scroll-behavior: auto; }
 }
 

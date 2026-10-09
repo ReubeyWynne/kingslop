@@ -93,27 +93,35 @@ async function fits(page) {
     // A jump across several cards moves the ground straight from the old
     // page's colour to the new one: no stop at the cards it passes, and no
     // dip in brightness on the way (a cross-fade of two washes used to pulse).
-    const ground = () => page.locator('#page-deck').evaluate(el => {
+    const ground = () => page.locator('#page-deck .deck-ground').evaluate(el => {
       const c = document.createElement('canvas').getContext('2d');
       c.fillStyle = getComputedStyle(el).backgroundColor; c.fillRect(0, 0, 1, 1);
       return [...c.getImageData(0, 0, 1, 1).data].slice(0, 3);
     });
     const lightness = rgb => rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
     const start = await ground();
-    const trail = [];
-    const picked = new Set();
-    await page.locator('[data-deck-group="tools"]').click();
-    for (let i = 0; i < 30; i++) {
-      trail.push(await ground());
-      picked.add(await page.locator('.deck-card.is-selected').getAttribute('data-page'));
-      await page.waitForTimeout(40);
-    }
+    // Sample every frame inside the page, starting with the click, so a slow
+    // runner's round trips cannot skip past the whole fade.
+    const samples = await page.evaluate(() => new Promise(resolve => {
+      const el = document.querySelector('#page-deck .deck-ground');
+      const c = document.createElement('canvas').getContext('2d');
+      const out = [];
+      const t0 = performance.now();
+      document.querySelector('[data-deck-group="tools"]').click();
+      (function tick() {
+        c.fillStyle = getComputedStyle(el).backgroundColor; c.fillRect(0, 0, 1, 1);
+        out.push({ rgb: [...c.getImageData(0, 0, 1, 1).data].slice(0, 3), page: document.querySelector('.deck-card.is-selected').dataset.page });
+        if (performance.now() - t0 < 900) requestAnimationFrame(tick); else resolve(out);
+      })();
+    }));
+    const trail = samples.map(sample => sample.rgb);
+    const picked = new Set(samples.map(sample => sample.page));
     await selected(page, 'vip');
     await page.waitForTimeout(1000);
     const end = await ground();
     assert.deepEqual([...picked], ['vip']);
     assert.notDeepEqual(start, end);
-    assert.ok(trail.some(rgb => rgb.join() !== start.join() && rgb.join() !== end.join()), 'the ground blends');
+    assert.ok(trail.some(rgb => rgb.join() !== start.join() && rgb.join() !== end.join()), 'the ground blends: ' + JSON.stringify({ start, end, trail }));
     const floor = Math.min(lightness(start), lightness(end)) - 1.5;
     assert.ok(trail.every(rgb => lightness(rgb) >= floor), JSON.stringify({ start, end, trail }));
     // The deck is a ring: past either end it carries on into a copy of the
