@@ -360,11 +360,11 @@
     "titleKey": "sim.meta.title",
     "titleText": "Battle Simulator, Demystified",
     "metaDescKey": "sim.meta.description",
-    "metaDesc": "The maths of your battles, in one place — the bear ratio, your own march against the bear, and the Mystic Trial rooms. One report in, one answer out.",
+    "metaDesc": "The maths of your battles, in one place — the bear ratio, your own march against the bear, a Mystic Trial mix finder and a battle simulator. One report in, one answer out.",
     "ogTitleKey": "sim.meta.ogTitle",
     "ogTitle": "Battle Simulator, Demystified",
     "ogDescKey": "sim.meta.ogDescription",
-    "ogDesc": "Four fights, one console: the bear ratio, your bear march, the Mystic Trial rooms, and the PvE bench.",
+    "ogDesc": "Four fights, one console: the bear ratio, your bear march, the Mystic Trial mix that clears, and any battle you can type.",
     "skipHref": "#console",
     "skipKey": "sim.skip",
     "skipText": "Skip to the console",
@@ -392,6 +392,7 @@
     "scripts": [
       "../js/i18n.js",
       "../js/common.js",
+      "../js/battle-engine.js",
       "../js/sim.js"
     ],
     "footMainKey": "sim.foot.main",
@@ -403,7 +404,7 @@
       },
       {
         "key": "sim.foot.credit",
-        "html": "Bear damage model from the <a href=\"https://frakinator.streamlit.app/\">Frakinator</a> by [685] Frak — a tested\n    community model, not official · built for the [2129]MadNess alliance"
+        "html": "Battle engine and bear model from the <a href=\"https://frakinator.streamlit.app/\">Frakinator</a> by [685] Frak — a tested\n    community model, not official · built for the [2129]MadNess alliance"
       }
     ],
     "headScripts": []

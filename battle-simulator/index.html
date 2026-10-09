@@ -2,7 +2,13 @@
 layout: page
 self: sim
 ---
-
+{%- comment -%}
+  The three troop types, in troop-table order. key = the id suffix behind
+  every input, name = the dictionary key of the visible label, fallback = the
+  English label the markup ships with.
+{%- endcomment -%}
+{%- assign types = "inf|sim.calc.inf|Infantry,cav|sim.calc.cav|Cavalry,arc|sim.calc.arc|Archery" | split: "," -%}
+{%- assign stats = "atk|sim.calc.atk|Attack %,let|sim.calc.let|Lethality %,def|sim.load.def|Defense %,hea|sim.load.hea|Health %" | split: "," -%}
 
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
   <a href="#console" data-i18n="sim.nav.console">The console</a>
@@ -12,17 +18,16 @@ self: sim
 <main>
   <section class="section hero" id="top">
     <h1 data-i18n-html="sim.hero.h1">BATTLE SIMULATOR,<br><span class="accent">DEMYSTIFIED</span></h1>
-    <p class="alpha-stamp" data-i18n="sim.hero.stamp">first draft</p>
-    <p class="draft-note" data-i18n-html="sim.hero.alpha">an <b>early alpha</b> — the ratio and the march maths are
-      community-tested, not official, and heroes aren't in it yet. one branch is still missing its constant and one
-      mode is running on empty. treat the numbers as a starting point.</p>
-    <p class="lede" data-i18n-html="sim.hero.lede">The maths of your battles, in one place. Read a report once and the
-      same numbers answer every fight: your lead's <b>bear ratio</b>, your own march's <b>bear damage</b>, the
-      <b>Mystic Trial</b> room worth pushing, and — when the tables land — <b>PvE beasts</b>.</p>
+    <p class="draft-note" data-i18n-html="sim.hero.alpha">a <b>community model</b>, not the game's own code — the
+      battle engine is the one the Frakinator reverse-engineered and tested against real reports. heroes aren't in
+      it yet, so read a hero fight as a starting point.</p>
+    <p class="lede" data-i18n-html="sim.hero.lede">The maths of your battles, in one place. Read a report once and
+      the same numbers answer every fight: your lead's <b>bear ratio</b>, your own <b>bear march</b>, the
+      <b>Mystic Trial</b> mix that clears, and any <b>battle</b> you can type both sides of.</p>
     <p class="chips"><span data-i18n="sim.hero.chip1">bear ratio</span> <span aria-hidden="true">·</span>
-      <span data-i18n="sim.hero.chip2">bear damage</span> <span aria-hidden="true">·</span>
+      <span data-i18n="sim.hero.chip2">bear march</span> <span aria-hidden="true">·</span>
       <span data-i18n="sim.hero.chip3">mystic trial</span> <span aria-hidden="true">·</span>
-      <span data-i18n="sim.hero.chip4">pve beasts</span></p>
+      <span data-i18n="sim.hero.chip4">battle</span></p>
       {% include ascii/motif.html kind="dice" %}
   </section>
 
@@ -30,26 +35,28 @@ self: sim
     <h2 data-i18n="sim.console.title">The console</h2>
     <p class="lede" data-i18n-html="sim.console.lede">One report, four fights. Import a battle screenshot or type the
       numbers in — the <b>Bonus Details</b> panel from the mail — then pick the fight. Nothing leaves the page; the
-      read happens in your browser.</p>
+      read and every battle run in your browser.</p>
 
     <nav class="mode-rail" id="mode-rail" aria-label="Pick the fight" data-i18n-key="sim.rail.aria" data-i18n-attr="aria-label">
       <a href="?mode=bear-ratio" data-mode="bear-ratio"><span data-i18n="sim.rail.ratio">Bear ratio</span></a>
-      <a href="?mode=bear-damage" data-mode="bear-damage"><span data-i18n="sim.rail.damage">Bear damage</span></a>
+      <a href="?mode=bear-damage" data-mode="bear-damage"><span data-i18n="sim.rail.damage">Bear march</span></a>
       <a href="?mode=mystic" data-mode="mystic"><span data-i18n="sim.rail.mystic">Mystic Trial</span></a>
-      <a href="?mode=pve" data-mode="pve"><span data-i18n="sim.rail.pve">PvE beasts</span>
-        <span class="rail-tag" data-i18n="sim.rail.benchTag">bench</span></a>
+      <a href="?mode=battle" data-mode="battle"><span data-i18n="sim.rail.battle">Battle</span></a>
     </nav>
 
-    <!-- ── The loadout: one report, read once ── -->
+    <!-- ── The report: one screenshot, both columns ── -->
     <div class="load" id="sim-load">
       <h3 class="calc-title" data-i18n="sim.load.title">The report</h3>
-      <p class="lede" data-i18n-html="sim.load.lede">The <b>Bonus Details</b> panel, as read. On a bear report the
-        left column is the <b>rally lead's shared stats</b> — every participant sees that same panel, so those are
-        the lead's numbers, not yours. Every value stays editable.</p>
+      <p class="lede sim-for" data-for="bear" data-i18n-html="sim.load.lede">The <b>Bonus Details</b> panel, as read.
+        On a bear report the left column is the <b>rally lead's shared stats</b> — every participant sees that same
+        panel, so those are the lead's numbers, not yours. Every value stays editable.</p>
+      <p class="lede sim-for" data-for="fight" hidden data-i18n-html="sim.load.ledeFight">The <b>Bonus Details</b>
+        panel, as read: the <b>left column is you</b>, the right column is the opponent — the screenshot fills both.
+        Every value stays editable.</p>
 
       <div class="sim-ocr">
         <button type="button" id="sim-ocr-btn" data-i18n="sim.ocr.btn">Read a battle screenshot</button>
-        <span class="sim-ocr-hint" data-i18n="sim.ocr.hint">fills the twelve Bonus Details values</span>
+        <span class="sim-ocr-hint" data-i18n="sim.ocr.hint">fills both Bonus Details columns — or paste one</span>
         <input type="file" id="sim-ocr-file" accept="image/*" hidden>
       </div>
       <output id="sim-ocr-status" class="sim-ocr-status" aria-live="polite" hidden></output>
@@ -62,74 +69,116 @@ self: sim
         </a>
       </figure>
 
+      <h4 class="sheet-title sim-for" data-for="fight" hidden data-i18n="sim.load.you">Your stats</h4>
       <div class="sim-report" id="sim-report" role="table" aria-label="The report's Bonus Details values" data-i18n-key="sim.load.aria" data-i18n-attr="aria-label">
         <div class="sim-head" role="row">
           <span role="columnheader" data-i18n="sim.load.thType">Type</span>
-          <span role="columnheader" data-i18n="sim.calc.atk">Attack %</span>
-          <span role="columnheader" data-i18n="sim.calc.let">Lethality %</span>
-          <span role="columnheader" data-i18n="sim.load.def">Defense %</span>
-          <span role="columnheader" data-i18n="sim.load.hea">Health %</span>
+          {%- for s in stats %}{% assign sp = s | split: "|" %}
+          <span role="columnheader" data-i18n="{{ sp[1] }}">{{ sp[2] }}</span>
+          {%- endfor %}
         </div>
+        {%- for t in types %}{% assign tp = t | split: "|" %}
         <div class="sim-row" role="row">
-          <span class="sim-type" role="rowheader" data-i18n="sim.calc.inf">Infantry</span>
+          <span class="sim-type" role="rowheader" data-i18n="{{ tp[1] }}">{{ tp[2] }}</span>
+          {%- for s in stats %}{% assign sp = s | split: "|" %}
           <span class="sim-field" role="cell">
-            <label for="sim-atk-inf" data-i18n="sim.calc.atk">Attack %</label>
-            <input id="sim-atk-inf" type="number" min="0" step="0.1" inputmode="decimal" value="250">
+            <label for="sim-{{ sp[0] }}-{{ tp[0] }}" data-i18n="{{ sp[1] }}">{{ sp[2] }}</label>
+            <input id="sim-{{ sp[0] }}-{{ tp[0] }}" type="number" min="0" step="0.1" inputmode="decimal" value="{% if sp[0] == 'atk' or sp[0] == 'def' %}250{% else %}163{% endif %}">
           </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-let-inf" data-i18n="sim.calc.let">Lethality %</label>
-            <input id="sim-let-inf" type="number" min="0" step="0.1" inputmode="decimal" value="163">
-          </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-def-inf" data-i18n="sim.load.def">Defense %</label>
-            <input id="sim-def-inf" type="number" min="0" step="0.1" inputmode="decimal" value="250">
-          </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-hea-inf" data-i18n="sim.load.hea">Health %</label>
-            <input id="sim-hea-inf" type="number" min="0" step="0.1" inputmode="decimal" value="163">
-          </span>
+          {%- endfor %}
         </div>
-        <div class="sim-row" role="row">
-          <span class="sim-type" role="rowheader" data-i18n="sim.calc.cav">Cavalry</span>
-          <span class="sim-field" role="cell">
-            <label for="sim-atk-cav" data-i18n="sim.calc.atk">Attack %</label>
-            <input id="sim-atk-cav" type="number" min="0" step="0.1" inputmode="decimal" value="250">
-          </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-let-cav" data-i18n="sim.calc.let">Lethality %</label>
-            <input id="sim-let-cav" type="number" min="0" step="0.1" inputmode="decimal" value="163">
-          </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-def-cav" data-i18n="sim.load.def">Defense %</label>
-            <input id="sim-def-cav" type="number" min="0" step="0.1" inputmode="decimal" value="250">
-          </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-hea-cav" data-i18n="sim.load.hea">Health %</label>
-            <input id="sim-hea-cav" type="number" min="0" step="0.1" inputmode="decimal" value="163">
-          </span>
-        </div>
-        <div class="sim-row" role="row">
-          <span class="sim-type" role="rowheader" data-i18n="sim.calc.arc">Archery</span>
-          <span class="sim-field" role="cell">
-            <label for="sim-atk-arc" data-i18n="sim.calc.atk">Attack %</label>
-            <input id="sim-atk-arc" type="number" min="0" step="0.1" inputmode="decimal" value="250">
-          </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-let-arc" data-i18n="sim.calc.let">Lethality %</label>
-            <input id="sim-let-arc" type="number" min="0" step="0.1" inputmode="decimal" value="163">
-          </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-def-arc" data-i18n="sim.load.def">Defense %</label>
-            <input id="sim-def-arc" type="number" min="0" step="0.1" inputmode="decimal" value="250">
-          </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-hea-arc" data-i18n="sim.load.hea">Health %</label>
-            <input id="sim-hea-arc" type="number" min="0" step="0.1" inputmode="decimal" value="163">
-          </span>
-        </div>
+        {%- endfor %}
       </div>
-      <p class="note" data-i18n-html="sim.load.note"><b>Defense</b> and <b>health</b> never move a bear fight — only
-        attack and lethality do. They're on the sheet because the same twelve values decide the other fights.</p>
+      <p class="note sim-for" data-for="bear" data-i18n-html="sim.load.note"><b>Defense</b> and <b>health</b> never
+        move a bear fight — only attack and lethality do. They're on the sheet because the same twelve values decide
+        the other fights.</p>
+
+    </div>
+
+    <!-- ── Your march: the troops you send (bear march, Mystic, battle) ── -->
+    <div class="load sim-for" data-for="march" id="sim-march-block" hidden>
+      <h3 class="calc-title" data-i18n="sim.march.title">Your march</h3>
+      <p class="lede sim-for" data-for="bear" data-i18n-html="sim.dmg.lede">The <b>troops you send</b> — not the
+        rally's. Counts by type, and the tier each one marches at.</p>
+      <p class="lede sim-for" data-for="fight" hidden data-i18n-html="sim.march.ledeFight">The troops you bring, by
+        type, and the tier each one fights at. The <b>total</b> is what the mix finder shares out.</p>
+      <div class="march" id="sim-march" role="table" aria-label="Your march" data-i18n-key="sim.dmg.aria" data-i18n-attr="aria-label">
+        <div class="sim-head" role="row">
+          <span role="columnheader" data-i18n="sim.calc.thType">Troop</span>
+          <span role="columnheader" data-i18n="sim.dmg.thCount">troops</span>
+          <span role="columnheader" data-i18n="sim.dmg.thTier">tier</span>
+          <span role="columnheader" data-i18n="sim.dmg.thTg">TG</span>
+        </div>
+        {%- for t in types %}{% assign tp = t | split: "|" %}
+        <div class="sim-row" role="row">
+          <span class="sim-type" role="rowheader" data-i18n="{{ tp[1] }}">{{ tp[2] }}</span>
+          <span class="sim-field" role="cell">
+            <label for="sim-n-{{ tp[0] }}" data-i18n="sim.dmg.thCount">troops</label>
+            <input id="sim-n-{{ tp[0] }}" type="number" min="0" step="1000" inputmode="numeric" value="50000" placeholder="0">
+          </span>
+          <span class="sim-field" role="cell">
+            <label for="sim-tier-{{ tp[0] }}" data-i18n="sim.dmg.thTier">tier</label>
+            <select id="sim-tier-{{ tp[0] }}" data-fill="tier"></select>
+          </span>
+          <span class="sim-field" role="cell">
+            <label for="sim-tg-{{ tp[0] }}" data-i18n="sim.dmg.thTg">TG</label>
+            <select id="sim-tg-{{ tp[0] }}" data-fill="tg"></select>
+          </span>
+        </div>
+        {%- endfor %}
+      </div>
+      <p class="calc-out sim-total" id="sim-total"></p>
+    </div>
+
+    <!-- ── The opponent: the report's right column, plus the troops they field ── -->
+    <div class="load foe sim-for" data-for="fight" id="sim-foe" hidden>
+      <h3 class="calc-title" data-i18n="sim.foe.title">The opponent</h3>
+      <p class="lede" data-i18n-html="sim.foe.lede">Their stats from the report's right column, and the troops they
+        field. On a Mystic Trial report, switch it to show <b>troop numbers</b>, not percentages.</p>
+      <div class="sim-report" id="sim-foe-report" role="table" aria-label="The opponent's Bonus Details values" data-i18n-key="sim.foe.aria" data-i18n-attr="aria-label">
+        <div class="sim-head" role="row">
+          <span role="columnheader" data-i18n="sim.load.thType">Type</span>
+          {%- for s in stats %}{% assign sp = s | split: "|" %}
+          <span role="columnheader" data-i18n="{{ sp[1] }}">{{ sp[2] }}</span>
+          {%- endfor %}
+        </div>
+        {%- for t in types %}{% assign tp = t | split: "|" %}
+        <div class="sim-row" role="row">
+          <span class="sim-type" role="rowheader" data-i18n="{{ tp[1] }}">{{ tp[2] }}</span>
+          {%- for s in stats %}{% assign sp = s | split: "|" %}
+          <span class="sim-field" role="cell">
+            <label for="sim-foe-{{ sp[0] }}-{{ tp[0] }}" data-i18n="{{ sp[1] }}">{{ sp[2] }}</label>
+            <input id="sim-foe-{{ sp[0] }}-{{ tp[0] }}" type="number" min="0" step="0.1" inputmode="decimal" value="200">
+          </span>
+          {%- endfor %}
+        </div>
+        {%- endfor %}
+      </div>
+      <div class="march" id="sim-foe-march" role="table" aria-label="The opponent's troops" data-i18n-key="sim.foe.marchAria" data-i18n-attr="aria-label">
+        <div class="sim-head" role="row">
+          <span role="columnheader" data-i18n="sim.calc.thType">Troop</span>
+          <span role="columnheader" data-i18n="sim.dmg.thCount">troops</span>
+          <span role="columnheader" data-i18n="sim.dmg.thTier">tier</span>
+          <span role="columnheader" data-i18n="sim.dmg.thTg">TG</span>
+        </div>
+        {%- for t in types %}{% assign tp = t | split: "|" %}
+        <div class="sim-row" role="row">
+          <span class="sim-type" role="rowheader" data-i18n="{{ tp[1] }}">{{ tp[2] }}</span>
+          <span class="sim-field" role="cell">
+            <label for="sim-foe-n-{{ tp[0] }}" data-i18n="sim.dmg.thCount">troops</label>
+            <input id="sim-foe-n-{{ tp[0] }}" type="number" min="0" step="1000" inputmode="numeric" value="50000" placeholder="0">
+          </span>
+          <span class="sim-field" role="cell">
+            <label for="sim-foe-tier-{{ tp[0] }}" data-i18n="sim.dmg.thTier">tier</label>
+            <select id="sim-foe-tier-{{ tp[0] }}" data-fill="tier"></select>
+          </span>
+          <span class="sim-field" role="cell">
+            <label for="sim-foe-tg-{{ tp[0] }}" data-i18n="sim.dmg.thTg">TG</label>
+            <select id="sim-foe-tg-{{ tp[0] }}" data-fill="tg"></select>
+          </span>
+        </div>
+        {%- endfor %}
+      </div>
     </div>
 
     <!-- ── Mode panels — only the active one is shown ── -->
@@ -142,67 +191,16 @@ self: sim
       <div class="sim-out" id="sim-out" role="table" data-i18n-key="sim.calc.tableAria" data-i18n-attr="aria-label" hidden></div>
       <p class="calc-out" id="sim-k"></p>
 
-      <p class="note">The exact mix depends on the lead's attack factors — not your stats or the march size. For ordinary join marches, the guide uses <b>5 / 15 / 80</b> because it has been very close to the exact optimum for the rally leaders we have tested; this panel shows the selected lead's exact optimum. <b>Heroes are not in it yet</b> — a type-specific skill would move this mix.</p>
+      <p class="note" data-i18n-html="sim.calc.note">The exact mix depends on the lead's attack factors — not your
+        stats or the march size. For ordinary join marches the guide uses <b>5 / 15 / 80</b>, which has been very close
+        to the exact optimum for the rally leads tested so far; this panel shows the selected lead's exact optimum.
+        <b>Heroes are not in it yet</b> — a type-specific skill would move this mix.</p>
     </div>
 
     <div class="sim-panel" data-mode="bear-damage" hidden>
-      <h3 class="calc-title" data-i18n="sim.dmg.titleTag">TRY IT — YOUR MARCH</h3>
-      <p class="lede" data-i18n-html="sim.dmg.lede">The <b>troops you send</b> — not the rally's. Counts by type, and
-        the tier each one marches at. The console compares your split with the lead's optimum for that same march.</p>
-
-      <div class="march" id="sim-march" role="table" aria-label="Your march" data-i18n-key="sim.dmg.aria" data-i18n-attr="aria-label">
-        <div class="sim-head" role="row">
-          <span role="columnheader" data-i18n="sim.calc.thType">Troop</span>
-          <span role="columnheader" data-i18n="sim.dmg.thCount">troops</span>
-          <span role="columnheader" data-i18n="sim.dmg.thTier">tier</span>
-          <span role="columnheader" data-i18n="sim.dmg.thTg">TG</span>
-        </div>
-        <div class="sim-row" role="row">
-          <span class="sim-type" role="rowheader" data-i18n="sim.calc.inf">Infantry</span>
-          <span class="sim-field" role="cell">
-            <label for="sim-n-inf" data-i18n="sim.dmg.thCount">troops</label>
-            <input id="sim-n-inf" type="number" min="0" step="1000" inputmode="numeric" value="0" placeholder="0">
-          </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-tier-inf" data-i18n="sim.dmg.thTier">tier</label>
-            <select id="sim-tier-inf" data-fill="tier"></select>
-          </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-tg-inf" data-i18n="sim.dmg.thTg">TG</label>
-            <select id="sim-tg-inf" data-fill="tg"></select>
-          </span>
-        </div>
-        <div class="sim-row" role="row">
-          <span class="sim-type" role="rowheader" data-i18n="sim.calc.cav">Cavalry</span>
-          <span class="sim-field" role="cell">
-            <label for="sim-n-cav" data-i18n="sim.dmg.thCount">troops</label>
-            <input id="sim-n-cav" type="number" min="0" step="1000" inputmode="numeric" value="0" placeholder="0">
-          </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-tier-cav" data-i18n="sim.dmg.thTier">tier</label>
-            <select id="sim-tier-cav" data-fill="tier"></select>
-          </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-tg-cav" data-i18n="sim.dmg.thTg">TG</label>
-            <select id="sim-tg-cav" data-fill="tg"></select>
-          </span>
-        </div>
-        <div class="sim-row" role="row">
-          <span class="sim-type" role="rowheader" data-i18n="sim.calc.arc">Archery</span>
-          <span class="sim-field" role="cell">
-            <label for="sim-n-arc" data-i18n="sim.dmg.thCount">troops</label>
-            <input id="sim-n-arc" type="number" min="0" step="1000" inputmode="numeric" value="0" placeholder="0">
-          </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-tier-arc" data-i18n="sim.dmg.thTier">tier</label>
-            <select id="sim-tier-arc" data-fill="tier"></select>
-          </span>
-          <span class="sim-field" role="cell">
-            <label for="sim-tg-arc" data-i18n="sim.dmg.thTg">TG</label>
-            <select id="sim-tg-arc" data-fill="tg"></select>
-          </span>
-        </div>
-      </div>
+      <h3 class="calc-title" data-i18n="sim.dmg.titleTag">TRY IT — YOUR BEAR MARCH</h3>
+      <p class="lede" data-i18n-html="sim.dmg.ledeOut">Your march, weighed against the lead's optimum for that same
+        march size.</p>
 
       <p class="calc-out" id="sim-dmg-headline"></p>
       <div class="sim-out march-out" id="sim-dmg-out" role="table" data-i18n-key="sim.dmg.tableAria" data-i18n-attr="aria-label" hidden></div>
@@ -214,16 +212,17 @@ self: sim
       <p class="note" data-i18n-html="sim.dmg.sqrt">Absolute damage scales with <b>√(troops)</b> of each type — double
         the march and you get <b>×1.41</b>, not ×2. Every split rule holds at any scale, which is what lets the
         console answer before the constant is fitted.</p>
-      <p class="note" data-i18n-html="sim.dmg.bench"><b>Damage — and the bracket it lands in — is on the bench.</b>
-        Turning a split into a number needs one constant fitted from real reports: the bear's defence, the troops'
-        base attack and the lead's hero skills all ride in it. The Frakinator's ladder doubles from <b>47M</b> to
-        <b>38.4B</b>; until that constant is fitted, this panel shows the split, not a damage figure.</p>
+      <p class="note bench" data-i18n-html="sim.dmg.bench"><b>A damage figure — and the bracket it lands in — needs
+        heroes.</b> The bear's own skills and the lead's and joiners' hero kits ride on every hit, and those are not in
+        this engine yet. The Frakinator's ladder doubles from <b>47M</b> to <b>38.4B</b>; until heroes land, this panel
+        shows the split, not a damage figure.</p>
     </div>
 
     <div class="sim-panel" data-mode="mystic" hidden>
-      <h3 class="calc-title" data-i18n="sim.mystic.titleTag">TRY IT — WHICH ROOM</h3>
-      <p class="lede" data-i18n-html="sim.mystic.lede">Six rooms, one event screen, and every room an account check.
-        Today's rooms are marked; the ratios are <b>infantry / cavalry / archers</b> to open with.</p>
+      <h3 class="calc-title" data-i18n="sim.mystic.titleTag">TRY IT — CLEAR THE STAGE</h3>
+      <p class="lede" data-i18n-html="sim.mystic.ledeSweep">Type the stage from its report — your stats on the left,
+        the trial's on the right, and the trial's troop numbers — then let the console try every mix of your march
+        against it. Today's rooms are marked; tap a room to compare its starting ratio.</p>
 
       <p class="calc-out" id="sim-mystic-today"></p>
       <div class="sim-out rooms" id="sim-rooms" role="table" data-i18n-key="sim.mystic.tableAria" data-i18n-attr="aria-label">
@@ -233,78 +232,145 @@ self: sim
           <span role="columnheader" data-i18n="sim.mystic.thStart">start</span>
           <span role="columnheader" data-i18n="sim.mystic.thAlt">first alt</span>
         </div>
-        <div class="sim-row" role="row" data-days="1 2">
-          <span class="room-name" role="rowheader"><span data-i18n="sim.mystic.r.coliseum">Coliseum</span>
+        <div class="sim-row" role="row" data-days="1 2" data-room="coliseum" data-start="50 10 40">
+          <span class="room-name" role="rowheader"><button type="button" class="room-pick" aria-pressed="false"><span data-i18n="sim.mystic.r.coliseum">Coliseum</span></button>
             <em class="room-days" data-i18n="sim.mystic.d.monTue">Mon–Tue</em></span>
           <span class="room-checks" role="cell" data-i18n="sim.mystic.c.coliseum">Heroes + hero gear</span>
           <span class="room-ratio" role="cell">50 / 10 / 40</span>
           <span class="room-alt" role="cell">55 / 15 / 30</span>
         </div>
-        <div class="sim-row" role="row" data-days="3 4">
-          <span class="room-name" role="rowheader"><span data-i18n="sim.mystic.r.forest">Forest of Life</span>
+        <div class="sim-row" role="row" data-days="3 4" data-room="forest" data-start="50 15 35">
+          <span class="room-name" role="rowheader"><button type="button" class="room-pick" aria-pressed="false"><span data-i18n="sim.mystic.r.forest">Forest of Life</span></button>
             <em class="room-days" data-i18n="sim.mystic.d.wedThu">Wed–Thu</em></span>
           <span class="room-checks" role="cell" data-i18n="sim.mystic.c.forest">Pets</span>
           <span class="room-ratio" role="cell">50 / 15 / 35</span>
           <span class="room-alt" role="cell">55 / 10 / 35</span>
         </div>
-        <div class="sim-row" role="row" data-days="3 4">
-          <span class="room-name" role="rowheader"><span data-i18n="sim.mystic.r.crystal">Crystal Cave</span>
+        <div class="sim-row" role="row" data-days="3 4" data-room="crystal" data-start="60 20 20">
+          <span class="room-name" role="rowheader"><button type="button" class="room-pick" aria-pressed="false"><span data-i18n="sim.mystic.r.crystal">Crystal Cave</span></button>
             <em class="room-days" data-i18n="sim.mystic.d.wedThu">Wed–Thu</em></span>
           <span class="room-checks" role="cell" data-i18n="sim.mystic.c.crystal">Governor charms</span>
           <span class="room-ratio" role="cell">60 / 20 / 20</span>
           <span class="room-alt" role="cell">65 / 15 / 20</span>
         </div>
-        <div class="sim-row" role="row" data-days="5 6">
-          <span class="room-name" role="rowheader"><span data-i18n="sim.mystic.r.nexus">Knowledge Nexus</span>
+        <div class="sim-row" role="row" data-days="5 6" data-room="nexus" data-start="50 20 30">
+          <span class="room-name" role="rowheader"><button type="button" class="room-pick" aria-pressed="false"><span data-i18n="sim.mystic.r.nexus">Knowledge Nexus</span></button>
             <em class="room-days" data-i18n="sim.mystic.d.friSat">Fri–Sat</em></span>
           <span class="room-checks" role="cell" data-i18n="sim.mystic.c.nexus">Academy + War Academy research</span>
           <span class="room-ratio" role="cell">50 / 20 / 30</span>
           <span class="room-alt" role="cell">55 / 15 / 30</span>
         </div>
-        <div class="sim-row" role="row" data-days="5 6">
-          <span class="room-name" role="rowheader"><span data-i18n="sim.mystic.r.molten">Molten Fort</span>
+        <div class="sim-row" role="row" data-days="5 6" data-room="molten" data-start="60 15 25">
+          <span class="room-name" role="rowheader"><button type="button" class="room-pick" aria-pressed="false"><span data-i18n="sim.mystic.r.molten">Molten Fort</span></button>
             <em class="room-days" data-i18n="sim.mystic.d.friSat">Fri–Sat</em></span>
           <span class="room-checks" role="cell" data-i18n="sim.mystic.c.molten">Governor gear</span>
           <span class="room-ratio" role="cell">60 / 15 / 25</span>
           <span class="room-alt" role="cell">65 / 15 / 20</span>
         </div>
-        <div class="sim-row" role="row" data-days="0">
-          <span class="room-name" role="rowheader"><span data-i18n="sim.mystic.r.spire">Radiant Spire</span>
+        <div class="sim-row" role="row" data-days="0" data-room="spire" data-start="50 15 35">
+          <span class="room-name" role="rowheader"><button type="button" class="room-pick" aria-pressed="false"><span data-i18n="sim.mystic.r.spire">Radiant Spire</span></button>
             <em class="room-days" data-i18n="sim.mystic.d.sun">Sunday</em></span>
           <span class="room-checks" role="cell" data-i18n="sim.mystic.c.spire">the full combat build — your own troops</span>
           <span class="room-ratio" role="cell">50 / 15 / 35</span>
           <span class="room-alt" role="cell">55 / 10 / 35</span>
         </div>
       </div>
-
       <p class="note" data-i18n-html="sim.mystic.ratioGloss">A ratio is the share of your march per type —
         <b>infantry / cavalry / archers</b>. The <b>alt</b> is the first fallback when the starting line still
         doesn't clear.</p>
-      <p class="note" data-i18n-html="sim.mystic.fixed"><b>Five of the six rooms fix your troops at Level 10</b> —
-        training more won't clear them; upgrading the system they check will. Only the <b>Coliseum</b> and the
-        <b>Radiant Spire</b> let you pick your heroes.</p>
-      <p class="note" data-i18n-html="sim.mystic.attempts">Five attempts per room per day, refreshed at
-        <b>00:00 UTC</b> — and an attempt is only spent on a <b>loss</b>. Clear <b>Stages 1–10</b> in a room and its
-        <b>Raid</b> opens: <b>+10 Trial Crystals</b> a stage, every week.</p>
-      <p class="note" data-i18n-html="sim.mystic.shop">Once the Trial Shop shows <b>Truegold Dust</b>, that's the buy
-        — T11 gear wants it in volume.</p>
-      <p class="note" data-i18n-html="sim.mystic.caveat">Community tables put the <b>Crystal Cave</b> in the same
-        Wed–Thu window as the Forest of Life; older notes list the pets alone. The event screen is the tiebreaker.</p>
-      <p class="note" data-i18n-html="sim.mystic.bench"><b>The clear predictor is on the bench.</b> It needs
-        per-stage enemy stats — readable from the right column of a trial report, the same way this page reads the
-        left — before it can call a stage a clear. Until then: the room, the ratio, and what to upgrade.</p>
     </div>
 
-    <div class="sim-panel" data-mode="pve" hidden>
-      <h3 class="calc-title" data-i18n="sim.pve.titleTag">PVE BEASTS — ON THE BENCH</h3>
-      <p class="lede" data-i18n-html="sim.pve.lede">World-map beasts and monsters, fought with <b>your own army and
-        heroes</b> — no rally, no shared stats. The console is framed and waiting.</p>
-      <p class="note" data-i18n-html="sim.pve.frame">What already holds: your stats above, your march by type and
-        tier, and the same <b>√</b> rules that decide the bear. When the tables land, the answer has the same shape —
-        <b>what to send, and what it gets you</b>.</p>
-      <p class="note" data-i18n-html="sim.pve.bench"><b>What's missing:</b> the enemy tables. Nothing here gets
-        invented, so the panel carries no numbers until they're collected — from the right column of a beast report,
-        the way this page reads a bear one.</p>
+    <div class="sim-panel" data-mode="battle" hidden>
+      <h3 class="calc-title" data-i18n="sim.battle.titleTag">TRY IT — ANY BATTLE</h3>
+      <p class="lede" data-i18n-html="sim.battle.lede">Both sides of a fight — your stats and march, their stats and
+        troops — and the console fights it out, round by round. A beast, a rival's city, a garrison you scouted: if
+        you can read its report, you can fight it here first.</p>
+    </div>
+
+    <!-- ── The fight: shared by the Mystic and battle modes ── -->
+    <div class="fight sim-for" data-for="fight" id="sim-fight" hidden>
+      <h3 class="calc-title" data-i18n="sim.fight.title">The fight, as typed</h3>
+      <p class="calc-out" id="sim-fight-headline"></p>
+      <div class="sim-out fight-out" id="sim-fight-out" role="table" data-i18n-key="sim.fight.tableAria" data-i18n-attr="aria-label" hidden></div>
+
+      <h3 class="calc-title" data-i18n="sim.sweep.title">Find the mix that wins</h3>
+      <p class="lede" data-i18n-html="sim.sweep.lede">Your total march, shared out every way on the grid below and
+        fought against the same opponent. Each mix is fought many times, because two troop skills are chance — the
+        <b>win chance</b> is the share of those battles you take.</p>
+      <div class="sweep-set" id="sim-sweep-set">
+        <span class="sim-field">
+          <label for="sim-sw-step" data-i18n="sim.sweep.step">grid step</label>
+          <select id="sim-sw-step">
+            <option value="0.1">10%</option>
+            <option value="0.05" selected>5%</option>
+            <option value="0.025">2.5%</option>
+            <option value="0.02">2%</option>
+          </select>
+        </span>
+        <span class="sim-field">
+          <label for="sim-sw-battles" data-i18n="sim.sweep.battles">battles per mix</label>
+          <select id="sim-sw-battles">
+            <option value="20">20</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+            <option value="250">250</option>
+          </select>
+        </span>
+        <span class="sim-field">
+          <label for="sim-sw-mininf" data-i18n="sim.sweep.minInf">infantry from</label>
+          <input id="sim-sw-mininf" type="number" min="0" max="100" step="5" inputmode="numeric" value="0">
+        </span>
+        <span class="sim-field">
+          <label for="sim-sw-maxinf" data-i18n="sim.sweep.maxInf">infantry to</label>
+          <input id="sim-sw-maxinf" type="number" min="0" max="100" step="5" inputmode="numeric" value="100">
+        </span>
+        <span class="sim-field">
+          <label for="sim-sw-mincav" data-i18n="sim.sweep.minCav">cavalry from</label>
+          <input id="sim-sw-mincav" type="number" min="0" max="100" step="5" inputmode="numeric" value="0">
+        </span>
+        <span class="sim-field">
+          <label for="sim-sw-maxcav" data-i18n="sim.sweep.maxCav">cavalry to</label>
+          <input id="sim-sw-maxcav" type="number" min="0" max="100" step="5" inputmode="numeric" value="100">
+        </span>
+      </div>
+      <div class="sim-ocr sweep-go">
+        <button type="button" id="sim-sweep-btn" data-i18n="sim.sweep.btn">Try every mix</button>
+        <span class="sim-ocr-hint" id="sim-sweep-size"></span>
+      </div>
+      <output id="sim-sweep-status" class="sim-ocr-status" aria-live="polite" hidden></output>
+      {% include ascii/hammer-loader.html %}
+
+      <div class="sweep-result" id="sim-sweep-result" hidden>
+        <p class="calc-out" id="sim-sweep-headline"></p>
+        <figure class="tri" id="sim-tri">
+          <svg id="sim-tri-svg" viewBox="0 0 320 300" role="img" aria-labelledby="sim-tri-cap"></svg>
+          <figcaption id="sim-tri-cap" data-i18n-html="sim.sweep.cap">Every mix you tried: the brighter the cell, the
+            likelier the win. Corners are all infantry, all cavalry, all archers; <b>❧</b> marks the best mix.</figcaption>
+        </figure>
+        <div class="sim-out sweep-out" id="sim-sweep-out" role="table" data-i18n-key="sim.sweep.tableAria" data-i18n-attr="aria-label"></div>
+        <p class="calc-out" id="sim-sweep-room"></p>
+      </div>
+
+      <div class="sim-for" data-for="mystic">
+        <p class="note" data-i18n-html="sim.mystic.fixed"><b>Five of the six rooms fix your troops at Level 10</b> —
+          training more won't clear them; upgrading the system they check will. Only the <b>Coliseum</b> and the
+          <b>Radiant Spire</b> let you pick your heroes.</p>
+        <p class="note" data-i18n-html="sim.mystic.heroes">The engine has <b>no heroes</b>, so it is exact for the four
+          hero-less rooms. For the <b>Coliseum</b> and the <b>Radiant Spire</b>, try fewer enemy troops in the same
+          proportions — it points at a mix, it doesn't promise a clear.</p>
+        <p class="note" data-i18n-html="sim.mystic.attempts">Five attempts per room per day, refreshed at
+          <b>00:00 UTC</b> — and an attempt is only spent on a <b>loss</b>. Clear <b>Stages 1–10</b> in a room and its
+          <b>Raid</b> opens: <b>+10 Trial Crystals</b> a stage, every week.</p>
+        <p class="note" data-i18n-html="sim.mystic.shop">Once the Trial Shop shows <b>Truegold Dust</b>, that's the buy
+          — T11 gear wants it in volume.</p>
+        <p class="note" data-i18n-html="sim.mystic.caveat">Community tables put the <b>Crystal Cave</b> in the same
+          Wed–Thu window as the Forest of Life; older notes list the pets alone. The event screen is the tiebreaker.</p>
+      </div>
+      <div class="sim-for" data-for="battle" hidden>
+        <p class="note" data-i18n-html="sim.battle.heroes"><b>Heroes are not in it yet.</b> Their stats already sit in
+          a report's Bonus Details, so a beast or a scouted march reads close — but their skills don't, and a skill-heavy
+          lineup can swing the fight either way.</p>
+      </div>
     </div>
   </section>
 
@@ -313,10 +379,25 @@ self: sim
     <div class="section-body" id="maths-body">
     <p class="lede" data-i18n-html="sim.maths.lede">How the console works it out:</p>
     <p data-i18n-html="sim.maths.p1">Each troop type's <b>A factor</b> is its attack times its lethality:
-      <b>(1 + attack%) × (1 + lethality%)</b>. One factor per type, from the lead's report.</p>
-    <p data-i18n-html="sim.maths.p2">The damage weights are the troops' <b>base attacks</b> from the troop table —
-      <b>infantry ⅓, cavalry 1, archers 4.4/3</b> at T6, the archers' <b>×1.1</b> coming from the all-infantry bear.
-      The ideal share is the weighted factor squared, normalised:
+      <b>(1 + attack%) × (1 + lethality%)</b>. Its <b>D factor</b> is defence times health, the same way. One pair per
+      type, from the report.</p>
+    <p data-i18n-html="sim.maths.battle">A battle runs in rounds, both sides at once. Each troop type hits the
+      front-most enemy type still standing — infantry, then cavalry, then archers — and kills
+      <b>√(its troops × the smaller army) × A ÷ D ÷ 100</b>, with the troops' base attack and the target's base
+      health inside A and D. A <b>0.01%</b> fatigue a round slows it down until one side is gone.</p>
+    <p data-i18n-html="sim.maths.skills">On top sit the troop skills: every type deals <b>+10%</b> to the one it
+      counters (infantry → cavalry → archers → infantry). From <b>T7</b> infantry take <b>10%</b> less from cavalry,
+      cavalry have a <b>20%</b> chance to ride past the infantry onto the archers, and archers a <b>10%</b> chance to
+      strike twice — the two chances are why the console fights every mix many times.</p>
+    <details>
+      <summary data-i18n="sim.maths.details3">The kill formula, in one line</summary>
+      <div class="d-body">
+        <p class="d-formula" data-i18n-html="sim.maths.d3">dead = ⌈ √(N<sub>t</sub>·N<sub>0</sub>) · A<sub>t</sub> / D<sub>target</sub> / 100 · (1 − 0.0001·round) ⌉ · N<sub>0</sub> = min(N<sub>you</sub>, N<sub>them</sub>)</p>
+      </div>
+    </details>
+    <p data-i18n-html="sim.maths.p2">For the bear, the damage weights are the troops' <b>base attacks</b> from the
+      troop table — <b>infantry ⅓, cavalry 1, archers 4.4/3</b> at T6, the archers' <b>×1.1</b> coming from the
+      all-infantry bear. The ideal share is the weighted factor squared, normalised:
       <b>f<sub>t</sub> ∝ (weight<sub>t</sub>·A<sub>t</sub>)²</b>.</p>
     <details>
       <summary data-i18n="sim.maths.details">The formula, in one line</summary>
@@ -324,25 +405,21 @@ self: sim
         <p class="d-formula" data-i18n-html="sim.maths.d">f<sub>t</sub> ∝ (A<sub>inf</sub>/3, A<sub>cav</sub>, 4.4·A<sub>arc</sub>/3)² · K = √(Σ w<sub>t</sub>²)</p>
       </div>
     </details>
-    <p data-i18n-html="sim.maths.p3">A march adds its damage up per type: <b>√(troops) × base attack × A</b>, summed
-      over infantry, cavalry and archers. The absolute figure carries a constant for the bear's defence and army,
-      plus the heroes' skills on top — that constant is the piece still missing.</p>
-    <p data-i18n-html="sim.maths.p4">Which leaves the march verdict a pure ratio: your split converts the
-      <b>cosine</b> of what the same troops could do for this lead. The nearer your shares sit to
-      <b>f<sub>t</sub></b>, the nearer that number gets to 100%.</p>
+    <p data-i18n-html="sim.maths.p4">Your bear march is the same sum per type: <b>√(troops) × base attack × A</b>.
+      The verdict is a pure ratio — your split converts the <b>cosine</b> of what the same troops could do for this
+      lead. The nearer your shares sit to <b>f<sub>t</sub></b>, the nearer that number gets to 100%.</p>
     <details>
       <summary data-i18n="sim.maths.details2">The march, in one line</summary>
       <div class="d-body">
         <p class="d-formula" data-i18n-html="sim.maths.d2">D ∝ Σ<sub>t</sub> √N<sub>t</sub>·base<sub>t</sub>·A<sub>t</sub> · split efficiency = Σ(b<sub>t</sub>A<sub>t</sub>√f<sub>t</sub>) / √(Σ(b<sub>t</sub>A<sub>t</sub>)²)</p>
       </div>
     </details>
-    <p class="note" data-i18n-html="sim.maths.mystic">The Mystic Trial rooms are <b>community tables</b>
-      (Kingshot Mastery), not extracted formulas — the ratios are a starting line, not a law. The bear maths is the
-      Frakinator's.</p>
-    <p class="note" data-i18n-html="sim.maths.note">The bear factor multiplies absolute damage but cancels out of
-      every split — which is why the ratio holds at any scale. Hero skills are the exception: an all-troop buff
-      cancels out too, a <b>type-specific</b> one moves the mix. More sims (heroes, the damage constant, PvP) are
-      being researched; these are the first four.</p>
+    <p class="note" data-i18n-html="sim.maths.mystic">The Mystic Trial starting ratios are <b>community tables</b>
+      (Kingshot Mastery), not extracted formulas — the sweep is what tests them against your stage. The battle
+      engine and the bear maths are the Frakinator's.</p>
+    <p class="note" data-i18n-html="sim.maths.note">Hero skills are the piece still missing: an all-troop buff cancels
+      out of a bear split, a <b>type-specific</b> one moves it, and in a battle every skill counts. Until heroes land,
+      treat a hero fight's answer as a starting point.</p>
       </div>
   </section>
 </main>

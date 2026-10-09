@@ -1,25 +1,25 @@
 /* sim.js — the Battle Simulator page (battle-simulator/).
    Registers with common.js via window.BH.registerPage.
 
-   One report read once, four fights answered from it: the lead's bear ratio
-   (MATHS.md §4–5), your own march's split measured against that ratio, the
-   Mystic Trial room roster, and the PvE bench. Strings come from the active
-   dictionary (sim.* keys, English fallback) and the page re-paints on
-   i18n:change, so a language switch mid-session shows the new language and
-   locale-formatted numbers.
+   One report read once, four fights answered from it:
+   - Bear ratio: the lead's ideal troop mix (MATHS.md §4–5).
+   - Bear march: your own march's split measured against that ratio.
+   - Mystic Trial: the stage from its report, fought by the battle engine
+     (js/battle-engine.js), plus a sweep of every mix of your march.
+   - Battle: any two sides you can type, fought the same way.
+   Strings come from the active dictionary (sim.* keys, English fallback) and
+   the page re-paints on i18n:change, so a language switch mid-session shows
+   the new language and locale-formatted numbers.
 
-   Two deliberate omissions. Heroes: only the lead's attack factors and the
-   troops' base attacks enter a split — an ALL-TROOP hero skill multiplies the
-   whole march and cancels out of every ratio, so it belongs with the damage
-   constant rather than here. A TYPE-SPECIFIC skill is the exception: it lifts
-   one troop type only, so it does not cancel and it moves the mix. That, plus
-   the star/skill/gear model now mined in KINGSHOT-SOURCES.md §6, is why heroes
-   get their own module (SIM-PROPOSAL.md §10) instead of a factor here. And the
-   constant itself: absolute damage carries the bear's defence, the troops' base
-   attack and the lead's hero skills, and it is not fitted yet — so the march
-   panel prints a ratio and never a damage figure or a reward bracket. */
+   Heroes are the deliberate omission. In a bear split an ALL-TROOP skill
+   cancels out, a TYPE-SPECIFIC one does not (SIM-PROPOSAL.md §10); in a
+   battle every skill counts. The engine fights troops and stats only — the
+   Frakinator's own scope for the hero-less Mystic Trial rooms — and the copy
+   says so wherever heroes would change the answer. */
 (function () {
   'use strict';
+
+  var E = window.BattleEngine;
 
   // ── The three troop types, in troop-table order ───────
   // block = the row label on a battle report (what the OCR reads), key = the
@@ -31,8 +31,7 @@
   ];
 
   // The report sheet's four stat columns, in Bonus-Details order. ocr = the
-  // row label on the report (what the OCR matches), key = the internal id
-  // behind every input.
+  // row label on the report (what the OCR matches).
   var STATS = [
     { key: 'atk', ocr: 'Attack', nameKey: 'sim.calc.atk', fallback: 'Attack %' },
     { key: 'let', ocr: 'Lethality', nameKey: 'sim.calc.let', fallback: 'Lethality %' },
@@ -40,57 +39,36 @@
     { key: 'hea', ocr: 'Health', nameKey: 'sim.load.hea', fallback: 'Health %' }
   ];
 
-  var MODES = ['bear-ratio', 'bear-damage', 'mystic', 'pve'];
+  var MODES = ['bear-ratio', 'bear-damage', 'mystic', 'battle'];
   var DEFAULT_MODE = 'bear-ratio';
+  // Old links: the PvE bench became the battle mode, which fights beasts too.
+  var ALIASES = { pve: 'battle' };
 
-  // ── The troop table (KINGSHOT-SOURCES.md §1) ──────────
-  // Base attack per type × tier 1–11 × TG 0–5, in source order: infantry
-  // (tier-major, TG-minor), then cavalry, then archers. The attack ratios are
-  // 1 : 3 : 4 in every row, so one tier across a march is a common factor that
-  // cancels out of every share — tier only bites when a march mixes tiers.
-  var TROOP_ATK = [
-    63, 66, 69, 72, 76, 80, 94, 98, 103, 108, 113, 119,
-    132, 137, 144, 151, 159, 167, 172, 179, 188, 197, 207, 217,
-    206, 214, 225, 236, 248, 260, 243, 253, 265, 279, 293, 307,
-    287, 298, 313, 329, 346, 363, 339, 353, 370, 389, 408, 429,
-    400, 416, 437, 459, 482, 506, 472, 491, 515, 541, 568, 597,
-    566, 589, 618, 649, 681, 716, 189, 197, 206, 217, 228, 239,
-    283, 294, 309, 324, 341, 358, 397, 413, 434, 455, 478, 502,
-    516, 537, 563, 592, 621, 652, 619, 644, 676, 710, 745, 782,
-    730, 759, 797, 837, 879, 923, 862, 896, 941, 988, 1038, 1090,
-    1017, 1058, 1111, 1166, 1224, 1286, 1200, 1248, 1310, 1376, 1445, 1517,
-    1416, 1473, 1546, 1624, 1705, 1790, 1699, 1767, 1855, 1948, 2045, 2148,
-    252, 262, 275, 289, 303, 319, 378, 393, 413, 433, 455, 478,
-    529, 550, 578, 607, 637, 669, 688, 716, 751, 789, 828, 870,
-    825, 858, 901, 946, 993, 1043, 974, 1013, 1064, 1117, 1173, 1231,
-    1149, 1195, 1255, 1317, 1383, 1452, 1356, 1410, 1481, 1555, 1633, 1714,
-    1600, 1664, 1747, 1835, 1926, 2023, 1888, 1964, 2062, 2165, 2273, 2387,
-    2266, 2357, 2474, 2598, 2728, 2865,
-  ];
-  var ROWS = 66; // 11 tiers × 6 TG groups, per type
+  // Which blocks each mode shows (.sim-for[data-for]).
+  var GROUPS = {
+    'bear-ratio': ['bear'],
+    'bear-damage': ['bear', 'march'],
+    'mystic': ['fight', 'march', 'mystic'],
+    'battle': ['fight', 'march', 'battle']
+  };
 
-  function baseAtk(t, tier, tg) {
-    return TROOP_ATK[t * ROWS + (tier - 1) * 6 + tg] || 0;
-  }
-
-  // The published weights (MATHS.md §2) at the table's reference row, T6/TG0 —
-  // which is exactly where ⅓ / 1 / 4.4⁄3 comes from. Tier then enters as ONE
-  // shared scale for the whole march, taken from the table's infantry series —
-  // the base every other type is derived from (attack 1 : 3 : 4, MATHS.md §6.2).
-  // So a uniform tier multiplies all three weights by the same factor and
-  // cancels exactly, and the march panel can never disagree with the ratio
-  // panel about the same lead; only a mixed-tier march moves the optimum.
+  // ── The bear weights (MATHS.md §2) ────────────────────
+  // The published weights at the table's reference row, T6/TG0 — exactly
+  // where ⅓ / 1 / 4.4⁄3 comes from. Tier enters as ONE shared scale for the
+  // whole march, taken from the infantry series (attack 1 : 3 : 4, MATHS.md
+  // §6.2), so a uniform tier cancels exactly and the march panel can never
+  // disagree with the ratio panel; only a mixed-tier march moves the optimum.
   var WEIGHTS = [1 / 3, 1, 4.4 / 3];
   var REF_TIER = 6, REF_TG = 0;
 
   function tierScale(tier, tg) {
-    return baseAtk(0, tier, tg) / baseAtk(0, REF_TIER, REF_TG);
+    return E.baseAtk(0, tier, tg) / E.baseAtk(0, REF_TIER, REF_TG);
   }
 
   // The archers' second ×1.1 vs the all-infantry bear, from T7+ / TG3+
   // (MATHS.md §2); the flat ×1.1 is already inside WEIGHTS[2].
   function typeWeight(i, tier, tg) {
-    return WEIGHTS[i] * tierScale(tier, tg) * (i === 2 && (tier >= 7 || tg >= 3) ? 1.1 : 1);
+    return WEIGHTS[i] * tierScale(tier, tg) * (i === 2 && E.hasSecondSkill(tier, tg) ? 1.1 : 1);
   }
 
   function el(id) { return document.getElementById(id); }
@@ -121,11 +99,16 @@
   }
 
   function pct(x) { return numFmt(x, 1) + '%'; }
+  function pct0(x) { return numFmt(Math.round(x), 0) + '%'; }
 
+  // "50 / 15 / 35" — a mix in infantry / cavalry / archer order, always LTR.
+  function mixText(f) {
+    return f.map(function (x) { return numFmt(Math.round(x * 1000) / 10, x * 1000 % 10 ? 1 : 0); }).join(' / ');
+  }
+
+  // ── Reading the sheets ────────────────────────────────
   // The lead's A factor per type, straight off the report sheet. A negative
-  // percentage is not a stat — a report never carries one, and letting it
-  // through produced "A factor −23.64×" with a negative weight and a nonsense
-  // share. Floored at zero.
+  // percentage is not a stat — floored at zero.
   function leadA() {
     var A = {};
     TYPES.forEach(function (t) {
@@ -135,15 +118,12 @@
   }
 
   // Has the reader entered any Bonus Details value at all? An empty sheet is
-  // not a lead with zeroes — it is no answer yet, and the headline already
-  // carries the sentence for that ("Fill in the lead's attack and lethality
-  // above"). Without this the ratio table printed a confident 8/25/67% split
-  // from an empty form, because A = 1 for every type.
-  function anyStatEntered() {
+  // not a lead with zeroes — it is no answer yet.
+  function anyStatEntered(prefix) {
     var found = false;
     STATS.forEach(function (s) {
       TYPES.forEach(function (t) {
-        var e = el('sim-' + s.key + '-' + t.key);
+        var e = el(prefix + s.key + '-' + t.key);
         var v = e ? parseFloat(e.value) : NaN;
         if (isFinite(v) && v > 0) found = true;
       });
@@ -151,66 +131,79 @@
     return found;
   }
 
+  // One side as the engine takes it. prefix 'sim-' is you, 'sim-foe-' them.
+  function readSide(prefix) {
+    var side = { n: [], tier: [], tg: [], atk: [], let: [], def: [], hea: [] };
+    TYPES.forEach(function (t, i) {
+      side.n[i] = Math.max(0, Math.floor(num(prefix + 'n-' + t.key)));
+      side.tier[i] = pick(prefix + 'tier-' + t.key, 10);
+      side.tg[i] = pick(prefix + 'tg-' + t.key, 0);
+      STATS.forEach(function (s) { side[s.key][i] = Math.max(0, num(prefix + s.key + '-' + t.key)); });
+    });
+    return side;
+  }
+
+  function total(n) { return n[0] + n[1] + n[2]; }
+
   // ── The ratio (MATHS.md §4–5) ─────────────────────────
-  // A_t = (1 + attack/100)(1 + lethality/100)
   // w = (A_inf/3, A_cav, 4.4·A_arc/3)      f_t ∝ w_t²      K = √(Σ w_t²)
   function ratioCompute() {
-    var A = leadA(), w = {}, share = {}, sum = 0;
+    var A = leadA(), w = {}, share = {}, sum;
     w.inf = A.inf / 3;
     w.cav = A.cav;
     w.arc = (4.4 * A.arc) / 3;
     sum = w.inf * w.inf + w.cav * w.cav + w.arc * w.arc;
-    if (sum > 0) {
-      share.inf = (w.inf * w.inf) / sum;
-      share.cav = (w.cav * w.cav) / sum;
-      share.arc = (w.arc * w.arc) / sum;
-    } else {
-      share.inf = share.cav = share.arc = 0;
-    }
-    return { A: A, w: w, share: share, k: Math.sqrt(sum), ok: sum > 0 && anyStatEntered() };
+    TYPES.forEach(function (t) { share[t.key] = sum > 0 ? (w[t.key] * w[t.key]) / sum : 0; });
+    return { A: A, w: w, share: share, k: Math.sqrt(sum), ok: sum > 0 && anyStatEntered('sim-') };
   }
 
-  // ── The march (MATHS.md §1–3) ─────────────────────────
-  // Damage per type is √N_t · base_t · A_t, summed over the three types, so
-  // the best a march of N troops can do for a given lead is √N · K_b with
-  // K_b = √(Σ (base_t·A_t)²) — and the ratio between the two is the cosine
-  // between (base_t·A_t) and the square roots of your shares. It reads 100%
-  // exactly when your split is the lead's optimum, at any march size, which
-  // is what lets the panel answer without the absolute constant.
+  // ── The bear march (MATHS.md §1–3) ────────────────────
+  // Damage per type is √N_t · base_t · A_t, so the best a march of N troops
+  // can do for a given lead is √N · K_b with K_b = √(Σ (base_t·A_t)²) — and
+  // the ratio between the two is the cosine between (base_t·A_t) and the
+  // square roots of your shares. 100% exactly at the lead's optimum, at any
+  // march size, which is what lets the panel answer without a damage scale.
   function marchCompute(A) {
-    var n = [], q = [], total = 0, dot = 0, kk = 0;
+    var n = [], q = [], sum = 0, dot = 0, kk = 0;
     TYPES.forEach(function (t, i) {
       var count = Math.max(0, num('sim-n-' + t.key));
-      var tier = pick('sim-tier-' + t.key, 6);
-      var tg = pick('sim-tg-' + t.key, 0);
       n[i] = count;
-      total += count;
-      q[i] = typeWeight(i, tier, tg) * A[t.key];
+      sum += count;
+      q[i] = typeWeight(i, pick('sim-tier-' + t.key, 10), pick('sim-tg-' + t.key, 0)) * A[t.key];
       dot += q[i] * Math.sqrt(count);
       kk += q[i] * q[i];
     });
     var K = Math.sqrt(kk);
-    var share = [];
-    TYPES.forEach(function (t, i) {
-      share[i] = kk > 0 ? (q[i] * q[i]) / kk : 0;
-    });
-    return { n: n, share: share, total: total, eff: (total > 0 && K > 0) ? dot / (Math.sqrt(total) * K) : 0, ok: total > 0 && K > 0 && anyStatEntered() };
+    var share = q.map(function (x) { return kk > 0 ? (x * x) / kk : 0; });
+    return { n: n, share: share, total: sum, eff: (sum > 0 && K > 0) ? dot / (Math.sqrt(sum) * K) : 0, ok: sum > 0 && K > 0 && anyStatEntered('sim-') };
   }
 
-  // ── Painting ──────────────────────────────────────────
-  // The visible labels live in the markup; this only keeps the composed
-  // accessible names (type + stat) in the active language.
+  // ── Painting: names ───────────────────────────────────
+  // The visible labels live in the markup; this keeps the composed accessible
+  // names (side + type + stat) in the active language.
   function paintNames(BH) {
+    var foe = BH.tr('sim.foe.title', 'The opponent');
     TYPES.forEach(function (t) {
+      var name = BH.tr(t.nameKey, t.fallback);
       STATS.forEach(function (s) {
-        var e = el('sim-' + s.key + '-' + t.key);
-        if (e) e.setAttribute('aria-label', BH.tr(t.nameKey, t.fallback) + ' — ' + BH.tr(s.nameKey, s.fallback));
+        var label = BH.tr(s.nameKey, s.fallback);
+        var mine = el('sim-' + s.key + '-' + t.key), theirs = el('sim-foe-' + s.key + '-' + t.key);
+        if (mine) mine.setAttribute('aria-label', name + ' — ' + label);
+        if (theirs) theirs.setAttribute('aria-label', foe + ' — ' + name + ' — ' + label);
       });
-      var count = el('sim-n-' + t.key), tier = el('sim-tier-' + t.key), tg = el('sim-tg-' + t.key);
-      if (count) count.setAttribute('aria-label', BH.tr(t.nameKey, t.fallback) + ' — ' + BH.tr('sim.dmg.thCount', 'troops'));
-      if (tier) tier.setAttribute('aria-label', BH.tr(t.nameKey, t.fallback) + ' — ' + BH.tr('sim.dmg.thTier', 'tier'));
-      if (tg) tg.setAttribute('aria-label', BH.tr(t.nameKey, t.fallback) + ' — ' + BH.tr('sim.dmg.thTg', 'TG'));
+      [['n-', 'sim.dmg.thCount', 'troops'], ['tier-', 'sim.dmg.thTier', 'tier'], ['tg-', 'sim.dmg.thTg', 'TG']].forEach(function (c) {
+        var label = BH.tr(c[1], c[2]);
+        var mine = el('sim-' + c[0] + t.key), theirs = el('sim-foe-' + c[0] + t.key);
+        if (mine) mine.setAttribute('aria-label', name + ' — ' + label);
+        if (theirs) theirs.setAttribute('aria-label', foe + ' — ' + name + ' — ' + label);
+      });
     });
+  }
+
+  function head(cells) {
+    return '<div class="sim-head" role="row">' + cells.map(function (c) {
+      return '<span role="columnheader">' + c + '</span>';
+    }).join('') + '</div>';
   }
 
   function paintRatio(BH) {
@@ -218,29 +211,23 @@
 
     var headline = el('sim-headline');
     if (headline) {
-      if (!s.ok) {
-        headline.innerHTML = BH.tr('sim.calc.noStats',
-          'Fill in the lead\u2019s <b>attack</b> and <b>lethality</b> above — the ratio comes from their stats.');
-      } else {
-        headline.innerHTML = BH.tpl('sim.calc.headline',
+      headline.innerHTML = !s.ok
+        ? BH.tr('sim.calc.noStats', 'Fill in the lead’s <b>attack</b> and <b>lethality</b> above — the ratio comes from their stats.')
+        : BH.tpl('sim.calc.headline',
           'With this lead, the ideal march is <b>{inf}</b> infantry, <b>{cav}</b> cavalry, <b>{arc}</b> archers.',
           { inf: pct(s.share.inf * 100), cav: pct(s.share.cav * 100), arc: pct(s.share.arc * 100) });
-      }
     }
 
     var out = el('sim-out');
     if (out) {
       var html = '';
       if (s.ok) {
-        html = '<div class="sim-head" role="row">' +
-          '<span role="columnheader">' + BH.tr('sim.calc.thType', 'Troop') + '</span>' +
-          '<span role="columnheader">' + BH.tr('sim.calc.thA', 'A factor') + '</span>' +
-          '<span role="columnheader">' + BH.tr('sim.calc.thWeight', 'weight') + '</span>' +
-          '<span role="columnheader">' + BH.tr('sim.calc.thShare', 'ideal share') + '</span></div>';
+        html = head([BH.tr('sim.calc.thType', 'Troop'), BH.tr('sim.calc.thA', 'A factor'),
+          BH.tr('sim.calc.thWeight', 'weight'), BH.tr('sim.calc.thShare', 'ideal share')]);
         TYPES.forEach(function (t) {
           html += '<div class="sim-row" role="row">' +
             '<span class="sim-type" role="cell">' + BH.tr(t.nameKey, t.fallback) + '</span>' +
-            '<span class="sim-a" role="cell">' + numFmt(s.A[t.key], 2) + '\u00D7</span>' +
+            '<span class="sim-a" role="cell">' + numFmt(s.A[t.key], 2) + '×</span>' +
             '<span class="sim-w" role="cell">' + numFmt(s.w[t.key], 2) + '</span>' +
             '<span class="sim-share" role="cell">' + pct(s.share[t.key] * 100) + '</span></div>';
         });
@@ -250,11 +237,7 @@
     }
 
     var kEl = el('sim-k');
-    if (kEl) {
-      kEl.innerHTML = s.ok
-        ? BH.tpl('sim.calc.k', 'Leader strength K = <b>{k}</b>', { k: numFmt(s.k, 2) })
-        : '';
-    }
+    if (kEl) kEl.innerHTML = s.ok ? BH.tpl('sim.calc.k', 'Leader strength K = <b>{k}</b>', { k: numFmt(s.k, 2) }) : '';
   }
 
   function paintMarch(BH) {
@@ -263,22 +246,16 @@
     var headline = el('sim-dmg-headline');
     if (headline) {
       headline.innerHTML = m.ok
-        ? BH.tpl('sim.dmg.headline',
-          'Your split converts <b>{eff}</b> of what these troops could do for this lead.',
-          { eff: pct(m.eff * 100) })
-        : BH.tr('sim.dmg.noStats',
-          'Fill in the lead\u2019s stats above and your troop counts — the split needs both.');
+        ? BH.tpl('sim.dmg.headline', 'Your split converts <b>{eff}</b> of what these troops could do for this lead.', { eff: pct(m.eff * 100) })
+        : BH.tr('sim.dmg.noStats', 'Fill in the lead’s stats above and your troop counts — the split needs both.');
     }
 
     var out = el('sim-dmg-out');
     if (out) {
       var html = '';
       if (m.ok) {
-        html = '<div class="sim-head" role="row">' +
-          '<span role="columnheader">' + BH.tr('sim.calc.thType', 'Troop') + '</span>' +
-          '<span role="columnheader">' + BH.tr('sim.dmg.thCount', 'troops') + '</span>' +
-          '<span role="columnheader">' + BH.tr('sim.dmg.thYours', 'your share') + '</span>' +
-          '<span role="columnheader">' + BH.tr('sim.dmg.thIdeal', 'ideal share') + '</span></div>';
+        html = head([BH.tr('sim.calc.thType', 'Troop'), BH.tr('sim.dmg.thCount', 'troops'),
+          BH.tr('sim.dmg.thYours', 'your share'), BH.tr('sim.dmg.thIdeal', 'ideal share')]);
         TYPES.forEach(function (t, i) {
           html += '<div class="sim-row" role="row">' +
             '<span class="sim-type" role="cell">' + BH.tr(t.nameKey, t.fallback) + '</span>' +
@@ -295,7 +272,7 @@
     if (ideal) {
       ideal.innerHTML = m.ok
         ? BH.tpl('sim.dmg.ideal',
-          'Split the lead\u2019s way, that same march is <b>\u2248{inf}</b> infantry, <b>\u2248{cav}</b> cavalry, <b>\u2248{arc}</b> archers.',
+          'Split the lead’s way, that same march is <b>≈{inf}</b> infantry, <b>≈{cav}</b> cavalry, <b>≈{arc}</b> archers.',
           {
             inf: numFmt(Math.round(m.total * m.share[0]), 0),
             cav: numFmt(Math.round(m.total * m.share[1]), 0),
@@ -305,24 +282,60 @@
     }
   }
 
+  function paintTotal(BH) {
+    var line = el('sim-total');
+    if (!line) return;
+    var n = readSide('sim-').n, sum = total(n);
+    line.innerHTML = sum > 0
+      ? BH.tpl('sim.march.total', 'March total <b>{n}</b> — {mix} as typed.', { n: numFmt(sum, 0), mix: '<span class="mix">' + mixText(n.map(function (x) { return x / sum; })) + '</span>' })
+      : '';
+  }
+
   // ── The rooms (Mystic Trial) ──────────────────────────
   // Rooms open on a weekday roster; the reset is 00:00 UTC, so "today" is
   // UTC, not the reader's midnight. The roster itself is markup + i18n; this
-  // only marks today's rows and names them in the line above.
+  // marks today's rows, the picked room, and names today's in the line above.
+  var pickedRoom = null;
+
+  function roomRows() { return document.querySelectorAll('#sim-rooms .sim-row[data-room]'); }
+
+  function roomStart(row) {
+    var f = (row.getAttribute('data-start') || '').split(/\s+/).map(Number);
+    return f.length === 3 ? f.map(function (x) { return x / 100; }) : null;
+  }
+
+  function roomName(row) {
+    var label = row.querySelector('.room-pick span');
+    return label ? label.textContent : '';
+  }
+
+  // The room a sweep compares against: the one tapped, else today's only
+  // room (Monday's Coliseum, Sunday's Spire), else none.
+  function activeRoom() {
+    var rows = roomRows(), today = [];
+    for (var i = 0; i < rows.length; i++) {
+      if (pickedRoom && rows[i].getAttribute('data-room') === pickedRoom) return rows[i];
+      if (rows[i].classList.contains('today')) today.push(rows[i]);
+    }
+    return !pickedRoom && today.length === 1 ? today[0] : null;
+  }
+
   function paintMystic(BH) {
     var day = new Date().getUTCDay();
-    var rows = document.querySelectorAll('#sim-rooms .sim-row');
     var open = [];
-    Array.prototype.forEach.call(rows, function (row) {
+    Array.prototype.forEach.call(roomRows(), function (row) {
       var days = (row.getAttribute('data-days') || '').split(/\s+/);
       var on = days.indexOf(String(day)) !== -1;
+      var picked = row.getAttribute('data-room') === pickedRoom;
       row.classList.toggle('today', on);
+      row.classList.toggle('picked', picked);
+      var btn = row.querySelector('.room-pick');
+      if (btn) btn.setAttribute('aria-pressed', picked ? 'true' : 'false');
       var holder = row.querySelector('.room-name');
       var old = holder && holder.querySelector('.room-today');
       if (old) holder.removeChild(old);
       if (!on || !holder) return;
-      var label = holder.querySelector('span');
-      if (label && label.textContent) open.push(label.textContent);
+      if (roomName(row)) open.push(roomName(row));
       var tag = document.createElement('span');
       tag.className = 'room-today';
       tag.textContent = BH.tr('sim.mystic.today', 'open today');
@@ -335,26 +348,340 @@
     if (!open.length) return;
     // Keep the template's markup and put the names in as text: the labels come
     // from the dictionary, so they must never be parsed as HTML.
-    line.innerHTML = BH.fill(BH.tr('sim.mystic.todayLine', 'Open today: <b>{rooms}</b>.'),
-      { rooms: '<span class="room-slot"></span>' });
+    line.innerHTML = BH.fill(BH.tr('sim.mystic.todayLine', 'Open today: <b>{rooms}</b>.'), { rooms: '<span class="room-slot"></span>' });
     var slot = line.querySelector('.room-slot');
-    if (slot) slot.textContent = open.join(' \u00B7 ');
+    if (slot) slot.textContent = open.join(' · ');
+  }
+
+  // ── The fight, as typed ───────────────────────────────
+  // Fought on every edit: a few hundred battles of a few dozen rounds is a
+  // few milliseconds, so the answer keeps up with the typing.
+  var FIGHT_BATTLES = 200;
+
+  function fightReady() {
+    return total(readSide('sim-').n) > 0 && total(readSide('sim-foe-').n) > 0;
+  }
+
+  function paintFight(BH) {
+    var headline = el('sim-fight-headline'), out = el('sim-fight-out');
+    if (!headline || !out) return;
+    if (!fightReady()) {
+      headline.innerHTML = BH.tr('sim.fight.empty', 'Give both sides some troops — the fight needs two armies.');
+      out.hidden = true;
+      out.innerHTML = '';
+      return;
+    }
+    var you = readSide('sim-'), foe = readSide('sim-foe-');
+    var r = E.run(you, foe, FIGHT_BATTLES, E.seedOf([you, foe]));
+    var win = r.win * 100;
+    var key, fb;
+    if (!r.random) {
+      key = r.win ? 'sim.fight.sure' : 'sim.fight.never';
+      fb = r.win ? 'You <b>win</b> — every time, in <b>{rounds}</b> rounds. Nothing in this fight is chance.'
+        : 'You <b>lose</b> — every time, in <b>{rounds}</b> rounds. Nothing in this fight is chance.';
+    } else {
+      key = 'sim.fight.odds';
+      fb = 'You win <b>{win}</b> of {n} battles, in about <b>{rounds}</b> rounds.';
+    }
+    headline.innerHTML = BH.tpl(key, fb, { win: pct0(win), n: numFmt(r.battles, 0), rounds: numFmt(Math.round(r.rounds), 0) });
+
+    var html = head([BH.tr('sim.calc.thType', 'Troop'), BH.tr('sim.fight.thYou', 'you'),
+      BH.tr('sim.fight.thLeft', 'left'), BH.tr('sim.fight.thFoe', 'them'), BH.tr('sim.fight.thLeft', 'left')]);
+    TYPES.forEach(function (t, i) {
+      html += '<div class="sim-row" role="row">' +
+        '<span class="sim-type" role="cell">' + BH.tr(t.nameKey, t.fallback) + '</span>' +
+        '<span class="sim-n" role="cell">' + numFmt(r.startA[i], 0) + '</span>' +
+        '<span class="sim-share" role="cell">' + numFmt(Math.round(r.a[i]), 0) + '</span>' +
+        '<span class="sim-n" role="cell">' + numFmt(r.startB[i], 0) + '</span>' +
+        '<span class="sim-left-foe" role="cell">' + numFmt(Math.round(r.b[i]), 0) + '</span></div>';
+    });
+    html += '<div class="sim-row sim-sum" role="row">' +
+      '<span class="sim-type" role="cell">' + BH.tr('sim.fight.total', 'Total') + '</span>' +
+      '<span class="sim-n" role="cell">' + numFmt(total(r.startA), 0) + '</span>' +
+      '<span class="sim-share" role="cell">' + numFmt(Math.round(total(r.a)), 0) + '</span>' +
+      '<span class="sim-n" role="cell">' + numFmt(total(r.startB), 0) + '</span>' +
+      '<span class="sim-left-foe" role="cell">' + numFmt(Math.round(total(r.b)), 0) + '</span></div>';
+    out.innerHTML = html;
+    out.hidden = false;
+  }
+
+  // ── The sweep — every mix of your march ───────────────
+  var SWEEP_CAP = 100000;   // battles per sweep, mixes × battles
+  var lastSweep = null;     // { key, result, opts }
+
+  function sweepOpts() {
+    function frac(id, fb) {
+      var v = parseFloat((el(id) || {}).value);
+      return isFinite(v) ? Math.min(1, Math.max(0, v / 100)) : fb;
+    }
+    var you = readSide('sim-');
+    return {
+      step: parseFloat((el('sim-sw-step') || {}).value) || 0.05,
+      battles: parseInt((el('sim-sw-battles') || {}).value, 10) || 50,
+      minInf: frac('sim-sw-mininf', 0), maxInf: frac('sim-sw-maxinf', 1),
+      minCav: frac('sim-sw-mincav', 0), maxCav: frac('sim-sw-maxcav', 1),
+      total: total(you.n)
+    };
+  }
+
+  function sweepKey(you, foe, o) {
+    // The mix is what the sweep varies, so only the total enters the key.
+    var y = JSON.parse(JSON.stringify(you));
+    y.n = [o.total];
+    return JSON.stringify([y, foe, o]);
+  }
+
+  function paintSweepSize(BH) {
+    var line = el('sim-sweep-size'), btn = el('sim-sweep-btn');
+    if (!line || !btn) return;
+    var o = sweepOpts();
+    var cells = E.grid(o).cells.length;
+    var runs = cells * o.battles;
+    if (!cells) {
+      line.textContent = BH.tr('sim.sweep.none', 'no mix fits those limits');
+      btn.disabled = true;
+    } else if (runs > SWEEP_CAP) {
+      line.textContent = BH.tpl('sim.sweep.tooMany', '{mixes} mixes × {battles} battles is too many — raise the step or narrow the limits', { mixes: numFmt(cells, 0), battles: numFmt(o.battles, 0) });
+      btn.disabled = true;
+    } else {
+      line.textContent = BH.tpl('sim.sweep.size', '{mixes} mixes × {battles} battles', { mixes: numFmt(cells, 0), battles: numFmt(o.battles, 0) });
+      btn.disabled = sweepBusy;
+    }
+  }
+
+  function sweepStatus(BH, key, fb, cls, vars) {
+    var s = el('sim-sweep-status');
+    if (!s) return;
+    if (!key) { s.hidden = true; s.textContent = ''; s.className = 'sim-ocr-status'; return; }
+    s.hidden = false;
+    s.textContent = BH.fill(BH.tr(key, fb), vars);
+    s.className = 'sim-ocr-status' + (cls ? ' ' + cls : '');
+  }
+
+  // The worker keeps a long sweep off the page's thread. If it cannot start
+  // (an old browser, a blocked file:// worker), the same engine runs here.
+  function scriptBase() {
+    var tags = document.getElementsByTagName('script');
+    for (var i = 0; i < tags.length; i++) {
+      var src = tags[i].src || '';
+      if (src.indexOf('js/sim.js') !== -1) return src.replace(/js\/sim\.js[^/]*$/, '');
+    }
+    return '';
+  }
+
+  var sweepWorker = null, sweepSeq = 0, sweepBusy = false;
+
+  function runSweep(you, foe, o, onProgress) {
+    return new Promise(function (resolve, reject) {
+      var id = ++sweepSeq;
+      function local() {
+        try {
+          resolve(E.sweep(you, foe, o));
+        } catch (e) { reject(e); }
+      }
+      try {
+        if (!sweepWorker) {
+          var v = window.__BH_BUILD ? '?v=' + encodeURIComponent(window.__BH_BUILD) : '';
+          sweepWorker = new Worker(scriptBase() + 'js/sim-worker.js' + v);
+        }
+      } catch (e) {
+        sweepWorker = null;
+        setTimeout(local, 30);
+        return;
+      }
+      sweepWorker.onmessage = function (e) {
+        var m = e.data || {};
+        if (m.id !== id) return;
+        if (m.type === 'progress') onProgress(m.done, m.of);
+        else if (m.type === 'done') resolve(m.result);
+        else if (m.type === 'error') reject(new Error(m.error));
+      };
+      sweepWorker.onerror = function (e) {
+        if (e && e.preventDefault) e.preventDefault();
+        try { sweepWorker.terminate(); } catch (err) { /* already gone */ }
+        sweepWorker = null;
+        setTimeout(local, 30);
+      };
+      sweepWorker.postMessage({ id: id, you: you, foe: foe, opts: o });
+    });
+  }
+
+  function startSweep(BH) {
+    if (sweepBusy) return;
+    var you = readSide('sim-'), foe = readSide('sim-foe-'), o = sweepOpts();
+    if (!o.total || !total(foe.n)) {
+      sweepStatus(BH, 'sim.fight.empty', 'Give both sides some troops — the fight needs two armies.', 'bad');
+      return;
+    }
+    var key = sweepKey(you, foe, o);
+    o.seed = E.seedOf([you.tier, you.tg, you.atk, you.let, you.def, you.hea, foe, o.total]);
+    sweepBusy = true;
+    paintSweepSize(BH);
+    sweepStatus(BH, 'sim.sweep.running', 'Fighting every mix…', 'busy');
+    runSweep(you, foe, o, function (done, of) {
+      sweepStatus(BH, 'sim.sweep.progress', 'Fighting every mix… {done} of {of}', 'busy', { done: numFmt(done, 0), of: numFmt(of, 0) });
+    }).then(function (result) {
+      lastSweep = { key: key, result: result, you: you, foe: foe, opts: o };
+      sweepStatus(BH, null);
+      paintSweep(BH);
+      var res = el('sim-sweep-result');
+      if (res && res.scrollIntoView && !inView(res)) res.scrollIntoView({ block: 'nearest' });
+    }, function (err) {
+      if (window.console && console.error) console.error('[sim-sweep]', (err && err.message) || err);
+      sweepStatus(BH, 'sim.sweep.fail', 'The sweep stopped before it finished. Try a coarser grid.', 'bad');
+    }).then(function () {
+      sweepBusy = false;
+      paintSweepSize(BH);
+    });
+  }
+
+  function inView(node) {
+    var r = node.getBoundingClientRect();
+    return r.top >= 0 && r.top < (window.innerHeight || 0);
+  }
+
+  // ── The triangle — every mix on one ruled grid ────────
+  // Barycentric: infantry top, cavalry bottom-left, archers bottom-right. One
+  // square rule cell per mix, the signal's opacity carrying the win chance.
+  var TRI = { inf: [160, 22], cav: [26, 254], arc: [294, 254] };
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+
+  function triPoint(f) {
+    return [
+      f[0] * TRI.inf[0] + f[1] * TRI.cav[0] + f[2] * TRI.arc[0],
+      f[0] * TRI.inf[1] + f[1] * TRI.cav[1] + f[2] * TRI.arc[1]
+    ];
+  }
+
+  function svg(tag, attrs, text) {
+    var node = document.createElementNS(SVG_NS, tag);
+    for (var k in attrs) if (Object.prototype.hasOwnProperty.call(attrs, k)) node.setAttribute(k, attrs[k]);
+    if (text != null) node.textContent = text;
+    return node;
+  }
+
+  function paintTriangle(BH, result, top, room) {
+    var root = el('sim-tri-svg');
+    if (!root) return;
+    while (root.firstChild) root.removeChild(root.firstChild);
+    root.appendChild(svg('polygon', {
+      class: 'tri-frame',
+      points: [TRI.inf, TRI.cav, TRI.arc].map(function (p) { return p.join(','); }).join(' ')
+    }));
+    var size = Math.max(3, (TRI.arc[0] - TRI.cav[0]) / result.k * 0.62);
+    result.cells.forEach(function (c) {
+      var p = triPoint(c.f);
+      var cell = svg('rect', {
+        class: 'tri-cell', x: (p[0] - size / 2).toFixed(1), y: (p[1] - size / 2).toFixed(1),
+        width: size.toFixed(1), height: size.toFixed(1), 'fill-opacity': (0.08 + 0.92 * c.win).toFixed(3)
+      });
+      cell.appendChild(svg('title', {}, mixText(c.f) + ' — ' + pct0(c.win * 100)));
+      root.appendChild(cell);
+    });
+    if (room) {
+      var rp = triPoint(room.f);
+      root.appendChild(svg('circle', { class: 'tri-room', cx: rp[0].toFixed(1), cy: rp[1].toFixed(1), r: (size * 0.9).toFixed(1) }));
+    }
+    if (top) {
+      var bp = triPoint(top.f);
+      root.appendChild(svg('rect', {
+        class: 'tri-best', x: (bp[0] - size).toFixed(1), y: (bp[1] - size).toFixed(1),
+        width: (size * 2).toFixed(1), height: (size * 2).toFixed(1)
+      }));
+      root.appendChild(svg('text', { class: 'tri-fleuron', x: (bp[0] + size * 1.3).toFixed(1), y: (bp[1] + 4).toFixed(1) }, '❧'));
+    }
+    root.appendChild(svg('text', { class: 'tri-label', x: TRI.inf[0], y: TRI.inf[1] - 8, 'text-anchor': 'middle' }, BH.tr('sim.calc.inf', 'Infantry')));
+    root.appendChild(svg('text', { class: 'tri-label', x: TRI.cav[0], y: TRI.cav[1] + 22, 'text-anchor': 'start' }, BH.tr('sim.calc.cav', 'Cavalry')));
+    root.appendChild(svg('text', { class: 'tri-label', x: TRI.arc[0], y: TRI.arc[1] + 22, 'text-anchor': 'end' }, BH.tr('sim.calc.arc', 'Archery')));
+  }
+
+  function paintSweep(BH) {
+    var box = el('sim-sweep-result');
+    if (!box) return;
+    if (!lastSweep) { box.hidden = true; return; }
+    var result = lastSweep.result;
+    var top = E.best(result.cells);
+    var stale = sweepKey(readSide('sim-'), readSide('sim-foe-'), sweepOpts()) !== lastSweep.key;
+
+    var headline = el('sim-sweep-headline');
+    if (headline && top) {
+      var n = top.n;
+      var vars = {
+        mix: '<span class="mix">' + mixText(top.f) + '</span>', win: pct0(top.win * 100),
+        inf: numFmt(n[0], 0), cav: numFmt(n[1], 0), arc: numFmt(n[2], 0), left: numFmt(Math.round(top.left), 0)
+      };
+      headline.innerHTML = top.win > 0
+        ? BH.tpl('sim.sweep.best', 'Best mix <b>{mix}</b> — it wins <b>{win}</b> of the time: <b>{inf}</b> infantry, <b>{cav}</b> cavalry, <b>{arc}</b> archers, about {left} left standing.', vars)
+        : BH.tpl('sim.sweep.noWin', 'No mix wins yet. The closest is <b>{mix}</b> — the system the room checks needs upgrading before the stage falls.', vars);
+      if (stale) headline.innerHTML += ' <span class="stale">' + BH.tr('sim.sweep.stale', '(the inputs changed since — try again)') + '</span>';
+    }
+
+    // The room the reader picked (or today's only room), fought at its own
+    // starting ratio on the same total — the community line, tested.
+    var row = activeRoom(), room = null;
+    if (row) {
+      var f = roomStart(row);
+      if (f) {
+        var you = lastSweep.you, o = lastSweep.opts;
+        var sideA = JSON.parse(JSON.stringify(you));
+        var ni = Math.round(o.total * f[0]), nc = Math.round(o.total * f[1]);
+        sideA.n = [ni, nc, Math.max(0, o.total - ni - nc)];
+        var r = E.run(sideA, lastSweep.foe, o.battles, o.seed + 104729);
+        room = { f: f, win: r.win, name: roomName(row) };
+      }
+    }
+
+    paintTriangle(BH, result, top, room);
+
+    var table = el('sim-sweep-out');
+    if (table) {
+      var ranked = result.cells.slice().sort(function (a, b) {
+        return b.win - a.win || b.left - a.left || a.foe - b.foe;
+      }).slice(0, 5);
+      var html = head([BH.tr('sim.sweep.thMix', 'mix'), BH.tr('sim.sweep.thWin', 'win chance'), BH.tr('sim.sweep.thLeft', 'left standing')]);
+      ranked.forEach(function (c) {
+        html += '<div class="sim-row" role="row">' +
+          '<span class="mix" role="cell">' + mixText(c.f) + '</span>' +
+          '<span class="sim-share" role="cell">' + pct0(c.win * 100) + '</span>' +
+          '<span class="sim-n" role="cell">' + numFmt(Math.round(c.left), 0) + '</span></div>';
+      });
+      table.innerHTML = html;
+    }
+
+    var roomLine = el('sim-sweep-room');
+    if (roomLine) {
+      roomLine.textContent = '';
+      if (room) {
+        roomLine.innerHTML = BH.fill(BH.tr('sim.sweep.room', 'The <b>{room}</b> starting ratio, <b>{mix}</b>, wins <b>{win}</b> of the time on this stage.'),
+          { room: '<span class="room-slot"></span>', mix: '<span class="mix">' + mixText(room.f) + '</span>', win: pct0(room.win * 100) });
+        var slot = roomLine.querySelector('.room-slot');
+        if (slot) slot.textContent = room.name;
+      }
+    }
+    box.hidden = false;
   }
 
   function paint(BH) {
     paintNames(BH);
     paintRatio(BH);
     paintMarch(BH);
+    paintTotal(BH);
     paintMystic(BH);
+    paintFight(BH);
+    paintSweepSize(BH);
+    paintSweep(BH);
   }
 
   // ── Modes — the rail, the panels, the URL ─────────────
   // The URL is the state: ?mode=… opens a fight, and every other param
   // (?lang=…) survives a switch. Applied synchronously when this file runs,
   // so a deep link never flashes the default panel.
+  var mode = DEFAULT_MODE;
+
   function readMode() {
     var m = (location.search.match(/[?&]mode=([^&]+)/) || [])[1];
     m = m ? decodeURIComponent(m) : '';
+    m = ALIASES[m] || m;
     return MODES.indexOf(m) !== -1 ? m : DEFAULT_MODE;
   }
 
@@ -368,8 +695,11 @@
   }
 
   function setMode(m, push) {
-    var report = document.getElementById('sim-load');
-    if (report) report.hidden = m === 'mystic' || m === 'pve';
+    mode = m;
+    var groups = GROUPS[m] || [];
+    Array.prototype.forEach.call(document.querySelectorAll('.sim-for'), function (node) {
+      node.hidden = groups.indexOf(node.getAttribute('data-for')) === -1;
+    });
     MODES.forEach(function (k) {
       var panel = document.querySelector('.sim-panel[data-mode="' + k + '"]');
       if (panel) panel.hidden = k !== m;
@@ -397,54 +727,96 @@
     window.addEventListener('popstate', function () { setMode(readMode(), false); });
   }
 
-  // ── The march controls (tier + TG, built from the table) ──
-  function buildMarch(BH) {
-    TYPES.forEach(function (t) {
-      var tier = el('sim-tier-' + t.key), tg = el('sim-tg-' + t.key);
+  // ── Remembering the sheets ────────────────────────────
+  // Every sheet value is kept in this browser, so a reload or tomorrow's
+  // stage starts from the last report. A convenience only: storage can be
+  // missing or full, and the page works the same without it.
+  var STORE_KEY = 'bh:sim:v1';
+
+  function fields() {
+    return document.querySelectorAll('#console input[id^="sim-"]:not([type="file"]), #console select[id^="sim-"]');
+  }
+
+  function restore() {
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { saved = null; }
+    if (!saved || typeof saved !== 'object') return;
+    Array.prototype.forEach.call(fields(), function (f) {
+      var v = saved[f.id];
+      if (typeof v !== 'string') return;
+      if (f.tagName === 'SELECT') {
+        for (var i = 0; i < f.options.length; i++) if (f.options[i].value === v) { f.value = v; return; }
+      } else {
+        f.value = v;
+      }
+    });
+    if (typeof saved.room === 'string') pickedRoom = saved.room || null;
+  }
+
+  var saveTimer = null;
+  function save() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      var out = { room: pickedRoom || '' };
+      Array.prototype.forEach.call(fields(), function (f) { out[f.id] = f.value; });
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(out)); } catch (e) { /* private mode, full storage */ }
+    }, 250);
+  }
+
+  // ── Wiring ────────────────────────────────────────────
+  function fillSelects() {
+    Array.prototype.forEach.call(document.querySelectorAll('#console select[data-fill]'), function (s) {
+      if (s.options.length) return;
       var i;
-      if (tier && !tier.options.length) {
-        for (i = 1; i <= 11; i++) tier.appendChild(new Option('T' + i, String(i)));
-        tier.value = '6';
+      if (s.getAttribute('data-fill') === 'tier') {
+        for (i = 1; i <= E.TIERS; i++) s.appendChild(new Option('T' + i, String(i)));
+        s.value = '10';
+      } else {
+        for (i = 0; i < E.TGS; i++) s.appendChild(new Option('TG' + i, String(i)));
+        s.value = '0';
       }
-      if (tg && !tg.options.length) {
-        for (i = 0; i <= 5; i++) tg.appendChild(new Option('TG' + i, String(i)));
-        tg.value = '0';
-      }
-      [tier, tg].forEach(function (s) {
-        if (s) s.addEventListener('change', function () { paint(BH); });
-      });
     });
   }
 
+  var paintTimer = null;
   function wireInputs(BH) {
-    TYPES.forEach(function (t) {
-      STATS.forEach(function (s) {
-        var e = el('sim-' + s.key + '-' + t.key);
-        if (e) e.addEventListener('input', function () { paint(BH); });
-      });
-      var n = el('sim-n-' + t.key);
-      if (n) n.addEventListener('input', function () { paint(BH); });
+    function later() {
+      clearTimeout(paintTimer);
+      paintTimer = setTimeout(function () { paint(BH); }, 60);
+      save();
+    }
+    Array.prototype.forEach.call(fields(), function (f) {
+      f.addEventListener(f.tagName === 'SELECT' ? 'change' : 'input', later);
     });
+    Array.prototype.forEach.call(document.querySelectorAll('#sim-rooms .room-pick'), function (btn) {
+      btn.addEventListener('click', function () {
+        var row = btn.closest('.sim-row');
+        var id = row && row.getAttribute('data-room');
+        pickedRoom = pickedRoom === id ? null : id;
+        save();
+        paintMystic(BH);
+        paintSweep(BH);
+      });
+    });
+    var go = el('sim-sweep-btn');
+    if (go) go.addEventListener('click', function () { startSweep(BH); });
   }
 
   function boot(BH) {
-    buildMarch(BH);
+    fillSelects();
+    restore();
     wireInputs(BH);
     wireOcr(BH);
     paint(BH);
   }
 
   // ── The engine, on intent ─────────────────────────────
-  // Warming costs ~14 MB (models + wasm + OpenCV) and used to start on
-  // page-idle, so every reader of this page paid it — the ones who came for the
-  // ratio included, and on a phone on cellular data that is the heaviest thing
-  // the site does. It now waits for the reader's own first move towards the
-  // feature — a tap or a key focus on the button — and says so on the status
-  // line while it runs, so the wait is visible rather than the button seeming
-  // to hang. The worker keeps the engine, so a warm and a click race to the
-  // same download, not two. All of it runs in the worker: warming costs the
-  // page thread nothing. Skipped on data-saver / 2G — those readers still get
-  // OCR, it just pays the download on the click.
+  // Warming costs ~14 MB (models + wasm + OpenCV), so it waits for the
+  // reader's own first move towards the feature — a tap or a key focus on the
+  // button — and says so on the status line while it runs. The worker keeps
+  // the engine, so a warm and a click race to the same download, not two.
+  // Skipped on data-saver / 2G — those readers still get OCR, it just pays the
+  // download on the click.
   var warmState = 'idle'; // idle | warming | ready
   function warmOcr(BH) {
     if (warmState !== 'idle') return;
@@ -452,14 +824,12 @@
     if (conn && (conn.saveData || /2g/i.test(conn.effectiveType || ''))) return;
     warmState = 'warming';
     if (!ocrBusy) {
-      ocrStatus(BH, 'sim.ocr.warm',
-        'Warming the reader \u2014 the first read downloads about 14 MB of models, once per device.', 'busy');
+      ocrStatus(BH, 'sim.ocr.warm', 'Warming the reader — the first read downloads about 14 MB of models, once per device.', 'busy');
     }
     loadPaddle().then(function () {
       warmState = 'ready';
       if (ocrBusy) return; // a read is driving the status line; it owns it now
       ocrStatus(BH, 'sim.ocr.ready', 'The reader is ready.', 'ok');
-      // The line has done its job — put the page back to rest.
       setTimeout(function () {
         if (!ocrBusy && warmState === 'ready') ocrStatus(BH, null);
       }, 6000);
@@ -472,32 +842,14 @@
     });
   }
 
-  // ── OCR prefill — read a battle-report screenshot, fill the sheet ──
+  // ── OCR prefill — read a battle-report screenshot, fill the sheets ──
   // The whole pipeline runs client-side (static site, no server). The engine
   // itself lives in js/ocr-worker.js: PaddleOCR.js (PP-OCRv6 tiny) plus ONNX
-  // Runtime and OpenCV are megabytes of JS and a wasm session compile, and
-  // running them here froze the page for seconds mid-read. This side only
-  // posts the picked file and parses what comes back — each recognised word
-  // carries a box, so the 12 Bonus Details values are mapped by their row label
-  // (block + stat) and column (left = your green value). boot() warms the
-  // engine once the page is idle (warmOcr) so the first click doesn't also pay
-  // the download. The sheet stays the source of truth — this is a prefill, and
-  // every value is editable.
-
-  // Site root from this file's own URL (same trick as i18n.js), so the worker
-  // path resolves from any page depth.
-  function scriptBase() {
-    var s = document.currentScript;
-    var src = s && s.src;
-    if (!src) {
-      var tags = document.getElementsByTagName('script');
-      for (var i = 0; i < tags.length; i++) {
-        if ((tags[i].src || '').indexOf('js/sim.js') !== -1) { src = tags[i].src; break; }
-      }
-    }
-    return src ? src.replace(/js\/sim\.js[^/]*$/, '') : '';
-  }
-
+  // Runtime and OpenCV. This side only posts the picked file and parses what
+  // comes back — each recognised word carries a box, so the Bonus Details
+  // values are mapped by their row label (block + stat) and column: left of
+  // the label is your green value, right of it the opponent's. The sheets stay
+  // the source of truth — this is a prefill, and every value is editable.
   var worker = null, seq = 0, pending = {};
 
   // Drop the worker and fail everything in flight. A worker that a phone kills
@@ -534,12 +886,9 @@
   }
 
   // Long enough that a slow phone on a cold model download is never cut off —
-  // this is a hang-breaker, not a deadline. Without it a worker that dies
-  // mid-read leaves the status and the button stuck for good.
+  // this is a hang-breaker, not a deadline.
   var ASK_TIMEOUT_MS = 120000;
 
-  // One request, one reply, matched by id. 'warm' builds the engine; 'predict'
-  // implies it.
   function askWorker(type, blob) {
     return new Promise(function (resolve, reject) {
       var id = ++seq;
@@ -568,12 +917,12 @@
   }
 
   function ocrStatus(BH, key, fb, cls, vars) {
-    var el2 = el('sim-ocr-status');
-    if (!el2) return;
-    if (!key) { el2.hidden = true; el2.textContent = ''; return; }
-    el2.hidden = false;
-    el2.textContent = BH.fill(BH.tr(key, fb), vars);
-    el2.className = 'sim-ocr-status' + (cls ? ' ' + cls : '');
+    var s = el('sim-ocr-status');
+    if (!s) return;
+    if (!key) { s.hidden = true; s.textContent = ''; return; }
+    s.hidden = false;
+    s.textContent = BH.fill(BH.tr(key, fb), vars);
+    s.className = 'sim-ocr-status' + (cls ? ' ' + cls : '');
   }
 
   // ── Reading the sheet ─────────────────────────────────
@@ -581,9 +930,9 @@
   var STATS_EN = STATS.map(function (s) { return s.ocr; });
 
   // OCR misreads a letter here and there ("lnfantry", "Letha1ity"), and often
-  // returns a whole row label as one box ("Infantry Attack") rather than two.
-  // Fold the usual digit/letter lookalikes and keep the spaces: both the row and
-  // the wanted words go through the same fold, so exact matches stay exact.
+  // returns a whole row label as one box ("Infantry Attack"). Fold the usual
+  // digit/letter lookalikes and keep the spaces: both the row and the wanted
+  // words go through the same fold, so exact matches stay exact.
   function fold(s) {
     return String(s).toLowerCase().replace(/[^a-z0-9 ]/g, ' ')
       .replace(/[1li]/g, 'i').replace(/0/g, 'o').replace(/5/g, 's')
@@ -627,8 +976,11 @@
     return Math.max(8, hs[Math.floor(hs.length / 2)] * 0.55);
   }
 
-  // Group recognised words into visual rows, then read the left (your) column of
-  // every troop-type stat row. Returns { 'Block|Stat': value }.
+  var PCT = /[+\-]?\d+(?:[.,]\d+)?\s*%/g;
+  function pctValue(s) { return parseFloat(String(s).replace(',', '.')); }
+
+  // Group recognised words into visual rows, then read both columns of every
+  // troop-type stat row. Returns { 'L|Block|Stat': value, 'R|Block|Stat': value }.
   function parseItems(items) {
     var boxes = [];
     items.forEach(function (it) {
@@ -664,45 +1016,44 @@
       var stat = wordIn(folded, STATS_EN);
       if (!block || !stat) return;
       var label = block + '|' + stat;
-      if (label in out) return; // first (topmost) row wins
-      // The green (your) column sits left of the label and the red one right of
-      // it, so the value we want is the last percentage *before* the label —
-      // that survives the OCR fusing two numbers into one box. Joining the row
-      // first also survives it splitting "+457.5" and "%" apart.
+      if (('L|' + label) in out) return; // first (topmost) row wins
+      // The green (your) column sits left of the label and the red one right
+      // of it: the last percentage before the label is yours, the first after
+      // it is theirs. Joining the row first survives the OCR splitting
+      // "+457.5" and "%" apart; searching from the label survives it fusing
+      // two numbers into one box.
       var at = joined.search(new RegExp(block, 'i'));
-      var m = null;
+      var hits = [], hit;
+      PCT.lastIndex = 0;
+      while ((hit = PCT.exec(joined)) !== null) hits.push(hit);
+      if (!hits.length) return;
+      var left = null, right = null;
       if (at === -1) {
-        m = joined.match(/[+\-]?\d+(?:\.\d+)?\s*%/);
+        left = hits[0];
+        right = hits.length > 1 ? hits[hits.length - 1] : null;
       } else {
-        var pctRe = /[+\-]?\d+(?:\.\d+)?\s*%/g, hit;
-        while ((hit = pctRe.exec(joined)) !== null) {
-          if (hit.index >= at) break;
-          m = hit;
-        }
-        if (!m) m = joined.match(/[+\-]?\d+(?:\.\d+)?\s*%/);
+        hits.forEach(function (h) {
+          if (h.index < at) left = h;
+          else if (!right) right = h;
+        });
+        if (!left && !right) left = hits[0];
       }
-      if (!m) return;
-      var v = parseFloat(m[0]);
-      if (isFinite(v)) out[label] = v;
+      if (left && isFinite(pctValue(left[0]))) out['L|' + label] = pctValue(left[0]);
+      if (right && isFinite(pctValue(right[0]))) out['R|' + label] = pctValue(right[0]);
     });
     return out;
   }
 
-  // All twelve sheet cells are fillable; the modes each read their own slice
-  // (bear fights want attack + lethality, and nothing reads defense or health
-  // against a bear — they are on the sheet for the fights that do). One entry
-  // per cell, keyed by the report's own row label.
+  // One entry per sheet cell, both columns, keyed by the report's own label.
   var FIELDS = [];
   TYPES.forEach(function (t) {
     STATS.forEach(function (s) {
-      FIELDS.push({ label: t.block + '|' + s.ocr, id: 'sim-' + s.key + '-' + t.key });
+      FIELDS.push({ label: 'L|' + t.block + '|' + s.ocr, id: 'sim-' + s.key + '-' + t.key });
+      FIELDS.push({ label: 'R|' + t.block + '|' + s.ocr, id: 'sim-foe-' + s.key + '-' + t.key });
     });
   });
 
-  // Set every value we read and let the caller repaint once. Dispatching an
-  // `input` event per field repainted the whole console twelve times for one
-  // import (twelve style/layout invalidations for ~2 ms of work that costs
-  // ~0.3 ms).
+  // Set every value we read and let the caller repaint once.
   function fill(vals) {
     var filled = 0;
     FIELDS.forEach(function (f) {
@@ -723,10 +1074,6 @@
     if (!btn || !file) return;
 
     // The shot we just read, so the filled numbers can be checked against it.
-    // The inline preview is painted from the bitmap the worker already decoded
-    // (transferred, so nothing is copied or re-encoded); the link opens the
-    // original full size in a new tab, where its decode can't land on this
-    // page's thread.
     var shotEl = el('sim-ocr-shot');
     var shotCanvas = el('sim-ocr-preview');
     var shotLink = el('sim-ocr-shot-link');
@@ -746,7 +1093,6 @@
       shotEl.hidden = false;
     }
 
-    // One read: ask the worker, then fill whatever labels we recognise.
     function readOnce(f) {
       return askWorker('predict', f).then(function (res) {
         return { filled: fill(parseItems(res.items)), preview: res.preview };
@@ -754,11 +1100,8 @@
     }
 
     // A phone's GPU can run the engine without throwing and still hand back
-    // nothing usable — a failure mode a desktop's GPU driver doesn't show, and
-    // one the worker can't detect because it doesn't know which words matter.
-    // So if a read yields no values at all, drop the GPU for the session and
-    // read the shot once more on wasm before reporting failure. That second
-    // read is what made the phone work.
+    // nothing usable. If a read yields no values at all, drop the GPU for the
+    // session and read the shot once more on wasm before reporting failure.
     function readShot(f) {
       return readOnce(f).then(function (first) {
         if (first.filled > 0) return first;
@@ -769,9 +1112,34 @@
       });
     }
 
+    function read(f) {
+      if (!f || ocrBusy) return;
+      ocrBusy = true;
+      ocrStatus(BH, 'sim.ocr.loading', 'Reading the screenshot…', 'busy');
+      readShot(f)
+        .then(function (out) {
+          if (out.filled) { paint(BH); save(); }
+          showShot(f, out.preview);
+          if (out.filled === FIELDS.length) {
+            ocrStatus(BH, 'sim.ocr.done', 'Filled from your report — double-check the numbers.', 'ok');
+          } else if (out.filled > 0) {
+            // A partial read is still useful: keep what we got and say so. A
+            // bear report usually carries only the left column.
+            ocrStatus(BH, 'sim.ocr.partial', 'Read {n} of {total} values — fill in the rest above.', 'ok', { n: out.filled, total: FIELDS.length });
+          } else {
+            ocrStatus(BH, 'sim.ocr.fail', 'Couldn’t read that screenshot. Try a clearer shot, or enter the numbers above.', 'bad');
+          }
+        })
+        .catch(function (err) {
+          if (window.console && console.error) console.error('[sim-ocr]', (err && err.message) || err);
+          showShot(f, err && err.preview);
+          ocrStatus(BH, 'sim.ocr.fail', 'Couldn’t read that screenshot. Try a clearer shot, or enter the numbers above.', 'bad');
+        })
+        .then(function () { ocrBusy = false; });
+    }
+
     // The reader's first move towards the feature starts the engine (see
-    // warmOcr): a tap, a hover, or arriving by keyboard. Never on page-idle —
-    // the engine is far too heavy to hand to someone who never asked for it.
+    // warmOcr). Never on page-idle.
     ['pointerdown', 'mouseenter', 'focus'].forEach(function (ev) {
       btn.addEventListener(ev, function () { warmOcr(BH); });
     });
@@ -781,33 +1149,22 @@
       var f = file.files && file.files[0];
       // Clear the picker so choosing the same screenshot twice still fires.
       file.value = '';
-      if (!f || ocrBusy) return;
-      ocrBusy = true;
-      ocrStatus(BH, 'sim.ocr.loading', 'Reading the screenshot\u2026', 'busy');
-      readShot(f)
-        .then(function (out) {
-          if (out.filled) paint(BH);
-          showShot(f, out.preview);
-          if (out.filled === FIELDS.length) {
-            ocrStatus(BH, 'sim.ocr.done', 'Filled from your report \u2014 double-check the numbers.', 'ok');
-          } else if (out.filled > 0) {
-            // A partial read is still useful: keep what we got and say so,
-            // rather than discarding it behind a flat "couldn't read that".
-            // Amber like a full read — values landed; the count is the caveat.
-            ocrStatus(BH, 'sim.ocr.partial',
-              'Read {n} of 12 values \u2014 fill in the rest above.', 'ok', { n: out.filled });
-          } else {
-            ocrStatus(BH, 'sim.ocr.fail', 'Couldn\u2019t read that screenshot. Try a clearer shot, or enter the numbers above.', 'bad');
-          }
-        })
-        .catch(function (err) {
-          // A failed read still hands back the shot it saw, so the user can see
-          // what we were looking at.
-          if (window.console && console.error) console.error('[sim-ocr]', (err && err.message) || err);
-          showShot(f, err && err.preview);
-          ocrStatus(BH, 'sim.ocr.fail', 'Couldn\u2019t read that screenshot. Try a clearer shot, or enter the numbers above.', 'bad');
-        })
-        .then(function () { ocrBusy = false; });
+      read(f);
+    });
+
+    // A screenshot pasted anywhere on the page reads the same way — the
+    // quickest path from the game's share sheet on a desktop.
+    document.addEventListener('paste', function (e) {
+      var target = e.target;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
+      var items = (e.clipboardData && e.clipboardData.items) || [];
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].kind === 'file' && /^image\//.test(items[i].type)) {
+          var f = items[i].getAsFile();
+          if (f) { e.preventDefault(); warmOcr(BH); read(f); }
+          return;
+        }
+      }
     });
   }
 

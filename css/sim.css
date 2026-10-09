@@ -1,10 +1,9 @@
 /* sim.css — the Battle Simulator page only (battle-simulator/). Loaded after
    styles.css + events.css (the page's theme block lives there).
-   The console: the mode rail that picks the fight, the shared report sheet
-   (the twelve Bonus Details values, editable), the OCR prefill, and one
-   ruled output per mode — the bear ratio, your march against the bear, the
-   Mystic Trial rooms, and the PvE bench. Plus the early-alpha gloss that
-   demarks the page. Nothing else.
+   The console: the mode rail that picks the fight, the shared report sheets
+   (both Bonus Details columns, editable), the OCR prefill, your march, and
+   one ruled output per mode — the bear ratio, your march against the bear,
+   the Mystic Trial rooms, and the fight + mix sweep the last two share.
 
    DIRECTION CONTRACT (extension of the existing surface — one page, one
    world, one signal; no new palette, no new type, no new radii):
@@ -14,33 +13,12 @@
                .sim-head/.sim-row grammar.
    REFUSES     per-mode hue swaps, tabbed SaaS chrome, a hero portrait spine,
                invented brackets, spinners where an honest bench belongs.
-   SIGNATURE   one report read once, then re-answered per fight; the bench
-               modes say what they're missing instead of guessing.
-   STATES      first-run · importing · unreadable · bench · stale import ·
-               language switch · 320px → desktop. */
+   SIGNATURE   one report read once, then re-answered per fight; the mix
+               triangle draws every march you could send on one ruled grid.
+   STATES      first-run · importing · unreadable · sweeping · stale sweep ·
+               no winning mix · language switch · 320px → desktop. */
 
-/* ─── Early-alpha demarcation — this page is a work in progress ─
-   A red-ink "FIRST DRAFT" stamp on the proof sheet: rotated a couple of
-   degrees, thin double ring (1px border + 1px outline, the rubber-stamp
-   edge), rubrication red. Under it, the gloss names what alpha means in
-   the marginal voice. The stamp reads raw against the polished page —
-   a proof mark, not a product badge. */
-.alpha-stamp {
-  display: inline-block;
-  margin-top: var(--space-s);
-  padding: 0.26rem 0.9rem 0.24rem 0.95rem;
-  border: 1px solid var(--rubric);
-  outline: 1px solid var(--rubric);
-  outline-offset: 3px;
-  transform: rotate(-2deg);
-  font-family: var(--body);
-  font-size: var(--step-1);
-  font-weight: 700;
-  letter-spacing: 0.24em;
-  text-indent: 0.24em;      /* balance the last letter's tracking */
-  text-transform: uppercase;
-  color: var(--rubric);
-}
+/* ─── The model gloss — a community engine, said plainly ─ */
 .draft-note {
   margin-top: var(--space-s);
   max-width: 34rem;
@@ -53,9 +31,6 @@
   font-style: normal;
   font-weight: 700;
 }
-/* Arabic joins its letters — tracking and indentation would break the
-   script, so the stamp's Latin word keeps normal spacing. */
-html[lang="ar"] .alpha-stamp { letter-spacing: 0; text-indent: 0; }
 
 /* ─── The input rows — two labelled fields per troop type ──
    Each calc-row is "Infantry  [Attack %  input] [Lethality %  input]".
@@ -121,7 +96,7 @@ html[lang="ar"] .alpha-stamp { letter-spacing: 0; text-indent: 0; }
      orphaned on a second line and the amber shares sitting under WEIGHT. The
      march and rooms tables already drop the matching header; this is the one
      that was missed. */
-  .sim-out:not(.march-out):not(.rooms) .sim-head span:nth-child(3) { display: none; }
+  .sim-out:not(.march-out):not(.rooms):not(.fight-out):not(.sweep-out) .sim-head span:nth-child(3) { display: none; }
 }
 
 /* ─── OCR prefill — button + status ───────────────────── */
@@ -397,3 +372,119 @@ html[lang="ar"] .alpha-stamp { letter-spacing: 0; text-indent: 0; }
 }
 
 .sim-out.rooms .sim-head span:nth-child(2) { text-align: start; }
+
+/* ─── The opponent, your march, the fight — the battle half of the console ──
+   Same ruled grammar as the report sheet: a small label-caps title per
+   sheet, then the rows. Nothing here takes a new colour; the opponent's
+   numbers stay ink, yours take the signal. */
+.sheet-title {
+  margin: var(--space-m) 0 0;
+  font-family: var(--body);
+  font-size: var(--step--1);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.sheet-title::before { content: "❧ "; color: var(--amber-dim); }
+.sim-report + .sheet-title { margin-top: var(--space-m); }
+.sim-total { margin-top: var(--space-s); }
+.mix { direction: ltr; unicode-bidi: isolate; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+.fight { margin-top: var(--space-l); }
+.fight .calc-title + .calc-out { margin-top: var(--space-s); }
+.fight .sim-out + .calc-title { margin-top: var(--space-l); }
+
+/* The fight: troop | you | left | them | left. Your survivors in the signal,
+   theirs in ink; the total row closes the ledger with a heavier rule. */
+.sim-out.fight-out .sim-head, .sim-out.fight-out .sim-row { grid-template-columns: minmax(0, 1fr) repeat(4, 5.2em); }
+.sim-left-foe { text-align: end; color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sim-out .sim-n { text-align: end; color: var(--ink-dim); }
+.sim-row.sim-sum { border-top: 1px solid rgba(157, 149, 127, 0.25); }
+.sim-row.sim-sum .sim-type { color: var(--ink-dim); }
+/* Narrow: the starting counts are on the sheets just above, so the table
+   keeps only who is left — "you" and "them" head the two survivor columns. */
+@media (max-width: 560px) {
+  .sim-out.fight-out .sim-head, .sim-out.fight-out .sim-row { grid-template-columns: minmax(0, 1fr) 6em 6em; }
+  .sim-out.fight-out .sim-row > .sim-n,
+  .sim-out.fight-out .sim-head span:nth-child(3),
+  .sim-out.fight-out .sim-head span:nth-child(5) { display: none; }
+}
+
+/* The sweep settings — six small fields that wrap, three to a phone row. */
+.sweep-set {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.4rem, 1fr));
+  gap: 0.6rem 0.9rem;
+  margin: var(--space-s) 0;
+}
+.sweep-set .sim-field { min-width: 0; }
+.sweep-set select {
+  width: 100%;
+  padding: 0.35rem 0;
+  font-family: var(--body);
+  font-size: var(--step-0);
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--ink-muted);
+  border-radius: 0;
+}
+.sweep-set select:focus { border-bottom-color: var(--amber); outline: none; }
+.sweep-set option { background: var(--void-2); color: var(--ink); }
+.sweep-set input { text-align: end; font-variant-numeric: tabular-nums; }
+.sim-ocr button:disabled { color: var(--ink-muted); border-color: rgba(157, 149, 127, 0.25); cursor: not-allowed; }
+#sim-sweep-status.busy + .ascii-hammer-loader { display: inline-block; }
+.stale { color: var(--ink-muted); font-style: italic; font-weight: 400; }
+
+/* The triangle — every mix on one ruled grid. Square rule cells in the
+   signal, opacity for the win chance; the best mix gets a ruled frame and
+   the ❧, the picked room's starting ratio a hairline ring. */
+.tri { margin: var(--space-m) 0 var(--space-s); }
+.tri svg { display: block; width: 100%; max-width: 26rem; height: auto; margin: 0 auto; overflow: visible; }
+.tri-frame { fill: none; stroke: var(--ink-muted); stroke-width: 1; stroke-opacity: 0.5; }
+.tri-cell { fill: var(--amber); }
+.tri-best { fill: none; stroke: var(--ink); stroke-width: 1.2; }
+.tri-room { fill: none; stroke: var(--ink-dim); stroke-width: 1; stroke-dasharray: 2 2; }
+.tri-fleuron { fill: var(--ink); font-size: 14px; }
+.tri-label {
+  fill: var(--ink-muted);
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.tri figcaption {
+  max-width: 34rem;
+  margin: var(--space-s) auto 0;
+  font-size: var(--step--1);
+  font-style: italic;
+  color: var(--ink-dim);
+  text-align: center;
+}
+.tri figcaption b { color: var(--ink); font-style: normal; }
+
+/* Top mixes: mix | win chance | left standing. */
+.sim-out.sweep-out .sim-head, .sim-out.sweep-out .sim-row { grid-template-columns: minmax(0, 1fr) 6.4em 7em; }
+.sim-out.sweep-out .mix { color: var(--ink); font-family: var(--display-2); font-weight: 700; }
+
+/* The rooms are buttons now — tap one to test its starting ratio. They keep
+   the room-name type; only the focus ring and the picked state are new. */
+.room-pick {
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(157, 149, 127, 0.35);
+  text-underline-offset: 0.2em;
+}
+.room-pick:hover, .room-pick:focus-visible { text-decoration-color: var(--amber); }
+.room-pick:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.sim-out.rooms .sim-row.picked .room-name { color: var(--ink); }
+.sim-out.rooms .sim-row.picked .room-pick { text-decoration-color: var(--amber); text-decoration-thickness: 2px; }
+.load + .load { margin-top: var(--space-l); }

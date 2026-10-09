@@ -88,7 +88,7 @@ async function overflow(page, message) {
         await page.evaluate(() => document.querySelectorAll('.section-toggle[aria-expanded="false"]').forEach(b => b.click()));
         await overflow(page, lang + ' ' + route + ' expanded ' + width);
         if (!route) {
-          assert.equal(await page.locator('main .event-card[href]').count(), 6);
+          assert.equal(await page.locator('main .event-card[href]').count(), 8);
           assert.equal(await page.locator('.event-ghost').count(), 0);
           assert.ok(!(await page.locator('main').innerText()).includes('undefined'));
         }
@@ -120,10 +120,23 @@ async function overflow(page, message) {
         }
         if (route === 'battle-simulator/') {
           await page.locator('#sim-atk-inf').fill('333');
-          for (const mode of ['mystic', 'pve', 'bear-damage', 'bear-ratio']) {
+          for (const mode of ['mystic', 'battle', 'bear-damage', 'bear-ratio']) {
             await page.locator('.mode-rail a[data-mode="' + mode + '"]').click();
-            assert.equal(await page.locator('#sim-load').isVisible(), mode.startsWith('bear'));
+            assert.equal(await page.locator('#sim-load').isVisible(), true);
+            assert.equal(await page.locator('#sim-foe').isVisible(), !mode.startsWith('bear'));
+            assert.equal(await page.locator('#sim-march-block').isVisible(), mode !== 'bear-ratio');
+            assert.equal(await page.locator('#sim-fight').isVisible(), !mode.startsWith('bear'));
             assert.equal(await page.locator('.sim-panel:visible').count(), 1);
+            if (mode === 'battle') {
+              assert.match(await page.locator('#sim-fight-headline').innerText(), /\S/, lang + ': the fight answers as typed');
+              assert.equal(await page.locator('#sim-fight-out .sim-row').count(), 4);
+              if (width === 390) {
+                await page.locator('#sim-sweep-btn').click();
+                await page.locator('#sim-sweep-result').waitFor({ state: 'visible', timeout: 30000 });
+                assert.ok(await page.locator('#sim-tri-svg .tri-cell').count() > 100, lang + ': the sweep draws every mix');
+                assert.equal(await page.locator('#sim-sweep-out .sim-row').count(), 5);
+              }
+            }
             assert.ok(page.url().includes('lang=' + lang));
             await overflow(page, lang + ' simulator mode ' + mode);
             if (mode === 'mystic') {
