@@ -207,6 +207,14 @@ html, body { overscroll-behavior-x: none; }
 .page-deck .ascii-ambient > span { opacity: 0.18; }
 .page-deck::backdrop { background: rgba(5, 8, 13, 0.8); }
 html.deck-open { overflow-y: hidden; scrollbar-gutter: stable; }
+/* The deck covers the whole screen, so the page under it is hidden while
+   it is open. Android Chrome sometimes draws a frame without the dialog's
+   layers when the selection changes; with the page still painted, that
+   frame showed the page through the deck as a flash. Hidden, the page has
+   no layers to show, frees the memory its own layers held, and the root
+   under the dialog is the deck's own night colour. */
+html.deck-open, html.deck-open body { background: #090d14; }
+html.deck-open body > :not(.page-deck) { visibility: hidden; }
 .deck-sheet {
   position: relative;
   z-index: 1;

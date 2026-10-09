@@ -321,6 +321,8 @@ test('palette selection is declared in CSS without JavaScript colour writes or f
   assert.doesNotMatch(css, /transition:[^;]*--deck-accent/);
   assert.doesNotMatch(css, /\.page-deck:has\(/, 'a :has() rule on the dialog restyles the whole deck on any text change');
   assert.match(css.match(/\.page-deck \{[^}]*\}/)[0], /-webkit-tap-highlight-color: transparent/);
+  assert.ok(css.includes('html.deck-open body > :not(.page-deck) { visibility: hidden; }'));
+  assert.ok(css.includes('html.deck-open, html.deck-open body { background: #090d14; }'));
   assert.ok(fs.readFileSync(path.join(root, '_includes/page-deck.html'), 'utf8').includes('<div class="deck-ground" aria-hidden="true"></div>'));
   assert.doesNotMatch(css, /^\.deck-card[^{]*is-selected/m, 'covers look the same whichever is selected');
   assert.doesNotMatch(css, /deck-wash/);
