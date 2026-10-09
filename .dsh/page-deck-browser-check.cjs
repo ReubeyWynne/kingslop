@@ -93,7 +93,7 @@ async function fits(page) {
     // A jump across several cards moves the ground straight from the old
     // page's colour to the new one: no stop at the cards it passes, and no
     // dip in brightness on the way (a cross-fade of two washes used to pulse).
-    const ground = () => page.locator('#page-deck').evaluate(el => {
+    const ground = () => page.locator('#page-deck .deck-ground').evaluate(el => {
       const c = document.createElement('canvas').getContext('2d');
       c.fillStyle = getComputedStyle(el).backgroundColor; c.fillRect(0, 0, 1, 1);
       return [...c.getImageData(0, 0, 1, 1).data].slice(0, 3);

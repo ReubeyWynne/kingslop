@@ -313,16 +313,25 @@ test('modified cover clicks do not mark the current tab as navigating', () => {
 test('palette selection is declared in CSS without JavaScript colour writes or frame loops', () => {
   const css = fs.readFileSync(path.join(root, 'css/events.css'), 'utf8');
   assert.match(css, /@property --deck-accent/);
-  assert.match(css, /transition: --deck-accent 0\.6s ease, background-color 0\.6s ease/);
+  // The ground fades on its own empty layer; the dialog itself and the
+  // inherited accent never transition, so a change never repaints or
+  // restyles the whole deck frame by frame.
+  assert.match(css, /\.deck-ground \{[^}]*transition: background-color 0\.6s ease;/);
+  assert.doesNotMatch(css.match(/\.page-deck \{[^}]*\}/)[0], /transition/);
+  assert.doesNotMatch(css, /transition:[^;]*--deck-accent/);
+  assert.doesNotMatch(css, /\.page-deck:has\(/, 'a :has() rule on the dialog restyles the whole deck on any text change');
+  assert.match(css.match(/\.page-deck \{[^}]*\}/)[0], /-webkit-tap-highlight-color: transparent/);
+  assert.ok(fs.readFileSync(path.join(root, '_includes/page-deck.html'), 'utf8').includes('<div class="deck-ground" aria-hidden="true"></div>'));
   assert.doesNotMatch(css, /^\.deck-card[^{]*is-selected/m, 'covers look the same whichever is selected');
   assert.doesNotMatch(css, /deck-wash/);
   for (const n of nav) {
-    assert.ok(css.includes(`.page-deck:has(.deck-card.is-selected[data-page="${pages[n.self].token}"])`));
+    assert.ok(css.includes(`.page-deck[data-selected="${pages[n.self].token}"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint)`));
     assert.ok(css.includes(`.deck-card[data-page="${pages[n.self].token}"] { --deck-accent:`));
   }
   assert.doesNotMatch(source, /requestAnimationFrame|cancelAnimationFrame|getComputedStyle/);
   const s = setup(); s.fire(s.ledgerButton, 'click'); s.fire(s.next, 'click');
   assert.equal(s.document.documentElement.getAttribute('data-page'), 'home');
+  assert.equal(s.deck.getAttribute('data-selected'), s.cards[s.selected()].getAttribute('data-page'));
   assert.equal(s.deck.style['--deck-accent'], undefined);
 });
 

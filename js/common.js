@@ -164,6 +164,10 @@
 
   function selectDeck(index) {
     position = index;
+    // CSS keys the ground and the accent off this attribute rather than a
+    // :has() rule: :has() made every text change in the deck (the position
+    // label at each stop) restyle the whole dialog.
+    deck.setAttribute('data-selected', cards[index].getAttribute('data-page'));
     cards.forEach(function (card, i) {
       card.classList.toggle('is-selected', i === index);
       card.tabIndex = i === index ? 0 : -1;
@@ -176,7 +180,13 @@
 
   function announceDeck() {
     var card = cards[position];
-    deck.querySelector('.deck-position').textContent = card.querySelector('.deck-card-title').textContent + ' · ' + fmt(position + 1) + ' / ' + fmt(cards.length);
+    var label = deck.querySelector('.deck-position');
+    var text = card.querySelector('.deck-card-title').textContent + ' · ' + fmt(position + 1) + ' / ' + fmt(cards.length);
+    // Rewrite the label's text in place: inserting a new text node re-checks
+    // every :has() rule above it (the home page's hover themes sit on
+    // <html>), which restyled the whole document at each stop.
+    if (label.firstChild && label.firstChild.nodeType === 3 && !label.firstChild.nextSibling) label.firstChild.data = text;
+    else label.textContent = text;
     var c = navigator.connection;
     if (warmingCard !== card.href && !(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || '')))) {
       warmingCard = card.href;
