@@ -69,6 +69,12 @@ self: sim
         </a>
       </figure>
 
+      <div class="sim-ocr sim-ledger sim-for" data-for="fight" id="sim-ledger" hidden>
+        <button type="button" id="sim-ledger-load" data-i18n="sim.ledger.load">Use my saved stats and troops</button>
+        <button type="button" id="sim-ledger-save" data-i18n="sim.ledger.save">Save these as mine</button>
+        <output class="sim-ocr-hint" id="sim-ledger-status" aria-live="polite"></output>
+      </div>
+
       <h4 class="sheet-title sim-for" data-for="fight" hidden data-i18n="sim.load.you">Your stats</h4>
       <div class="sim-report" id="sim-report" role="table" aria-label="The report's Bonus Details values" data-i18n-key="sim.load.aria" data-i18n-attr="aria-label">
         <div class="sim-head" role="row">

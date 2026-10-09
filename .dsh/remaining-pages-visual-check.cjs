@@ -130,6 +130,14 @@ async function overflow(page, message) {
             if (mode === 'battle') {
               assert.match(await page.locator('#sim-fight-headline').innerText(), /\S/, lang + ': the fight answers as typed');
               assert.equal(await page.locator('#sim-fight-out .sim-row').count(), 4);
+              assert.equal(await page.locator('#sim-ledger').isVisible(), true);
+              await page.locator('#sim-ledger-save').click();
+              const saved = await page.evaluate(() => window.PlayerLedger.shared().combat());
+              assert.equal(saved.stats.inf.attack, 333, lang + ': your stats reach the shared player save');
+              assert.ok(saved.troops.length > 0);
+              await page.locator('#sim-atk-inf').fill('1');
+              await page.locator('#sim-ledger-load').click();
+              assert.equal(await page.locator('#sim-atk-inf').inputValue(), '333', lang + ': the player save fills your stats back');
               if (width === 390) {
                 await page.locator('#sim-sweep-btn').click();
                 await page.locator('#sim-sweep-result').waitFor({ state: 'visible', timeout: 30000 });

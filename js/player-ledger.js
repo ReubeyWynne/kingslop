@@ -15,6 +15,7 @@
   var KEY = 'bh:player-ledger:v1', LEGACY = 'bh:hero-gear:v1';
   var ITEMS = { xp: 'hero-gear-xp', hammers: 'forgehammer', mythic: 'spare-mythic-gear', mithril: 'mithril' };
   var PREFS = ['included', 'weights', 'profile', 'reforge', 'troop', 'mode', 'view', 'selected', 'goal', 'target', 'targetMastery'];
+  var TYPES = ['inf', 'cav', 'arc'], STATS = ['attack', 'lethality', 'defense', 'health'];
   var PIECES = ['inf', 'cav', 'arc'].flatMap(function (troop) { return ['helm', 'gloves', 'chest', 'boots'].map(function (slot) { return troop + '-' + slot; }); });
   function copy(value) { return JSON.parse(JSON.stringify(value)); }
   function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
@@ -23,6 +24,12 @@
   function count(value) { return Number.isSafeInteger(value) && value >= 0 && value <= 1e9; }
   function timestamp(value) { return typeof value === 'string' && Number.isFinite(Date.parse(value)); }
   function id(value) { return typeof value === 'string' && /^[a-z][a-z0-9-]{0,79}$/.test(value); }
+  function percent(value) { return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 100000; }
+  function troopId(type, tier, tg) { return 'troop-' + type + '-t' + tier + '-tg' + tg; }
+  function troopKey(key) {
+    var m = /^troop-(inf|cav|arc)-t([1-9]|1[01])-tg([0-5])$/.exec(key);
+    return m ? { type: m[1], tier: +m[2], tg: +m[3] } : null;
+  }
   function provenance(value) {
     return object(value) && ['manual', 'legacy', 'screenshot', 'plan', 'reset', 'file'].includes(value.source) && timestamp(value.at) && (value.importId === undefined || id(value.importId));
   }
@@ -30,7 +37,7 @@
     return object(value) && (value.quality === null || ['epic', 'mythic', 'red'].includes(value.quality)) && (value.level === null || count(value.level) && value.level <= (value.quality === 'epic' ? 80 : value.quality === 'mythic' ? 100 : 200)) && (value.mastery === null || count(value.mastery) && value.mastery <= 20) && (value.quality !== 'epic' || value.mastery === null || value.mastery === 0) && (value.quality !== 'red' || (value.level === null || value.level >= 100) && (value.mastery === null || value.mastery >= (value.level === null || value.level < 120 ? 10 : 10 + Math.floor((value.level - 100) / 20))));
   }
   function empty() {
-    return { format: 'kingshot-player', schemaVersion: 1, revision: 0, updatedAt: new Date().toISOString(), inventory: {}, heroGear: { pieces: {}, provenance: {}, parts: null }, governorGear: { status: 'unsupported', pieces: {} }, governorCharms: { status: 'unsupported', slots: {} }, imports: [], preferences: { heroGear: {} }, migration: null };
+    return { format: 'kingshot-player', schemaVersion: 1, revision: 0, updatedAt: new Date().toISOString(), inventory: {}, heroGear: { pieces: {}, provenance: {}, parts: null }, governorGear: { status: 'unsupported', pieces: {} }, governorCharms: { status: 'unsupported', slots: {} }, combat: { stats: {}, provenance: {} }, imports: [], preferences: { heroGear: {} }, migration: null };
   }
   function validate(value) {
     valid(object(value) && value.format === 'kingshot-player' && value.schemaVersion === 1 && Number.isSafeInteger(value.revision) && value.revision >= 0 && timestamp(value.updatedAt));
@@ -47,6 +54,14 @@
     if (parts !== null) valid(object(parts) && count(parts.ten) && count(parts.hundred) && count(parts.remainder) && parts.remainder < 10 && xp && xp.status === 'confirmed' && parts.ten * 10 + parts.hundred * 100 + parts.remainder === xp.amount);
     valid(object(value.governorGear) && value.governorGear.status === 'unsupported' && object(value.governorGear.pieces) && !Object.keys(value.governorGear.pieces).length);
     valid(object(value.governorCharms) && value.governorCharms.status === 'unsupported' && object(value.governorCharms.slots) && !Object.keys(value.governorCharms.slots).length);
+    if (value.combat !== undefined) {
+      valid(object(value.combat) && object(value.combat.stats) && object(value.combat.provenance));
+      Object.keys(value.combat.stats).forEach(function (type) {
+        var row = value.combat.stats[type];
+        valid(TYPES.includes(type) && object(row) && Object.keys(row).length === STATS.length && STATS.every(function (key) { return percent(row[key]); }) && provenance(value.combat.provenance[type]));
+      });
+      Object.keys(value.combat.provenance).forEach(function (type) { valid(Object.hasOwn(value.combat.stats, type)); });
+    }
     valid(object(value.preferences) && object(value.preferences.heroGear));
     valid(Object.keys(value.preferences).every(function (key) { return key === 'heroGear'; }) && Object.keys(value.preferences.heroGear).every(function (key) { return PREFS.includes(key); }));
     var prefs = value.preferences.heroGear;
@@ -126,6 +141,32 @@
         next.inventory[ITEMS.xp] = { amount: xp, status: 'confirmed', provenance: { source: 'manual', at: new Date().toISOString() } };
       });
     }
+    function combat() {
+      var value = snapshot(), section = value.combat || { stats: {}, provenance: {} }, troops = [];
+      Object.keys(value.inventory).forEach(function (key) {
+        var at = troopKey(key), entry = value.inventory[key];
+        if (at && entry.status === 'confirmed') troops.push({ type: at.type, tier: at.tier, tg: at.tg, amount: entry.amount, provenance: copy(entry.provenance) });
+      });
+      troops.sort(function (a, b) { return TYPES.indexOf(a.type) - TYPES.indexOf(b.type) || b.tier - a.tier || b.tg - a.tg; });
+      return { stats: copy(section.stats), provenance: copy(section.provenance), troops: troops };
+    }
+    function setCombat(input, source, expected) {
+      input = input || {};
+      var stats = input.stats || {}, troops = input.troops || [];
+      Object.keys(stats).forEach(function (type) { valid(TYPES.includes(type) && object(stats[type]) && STATS.every(function (key) { return percent(stats[type][key]); })); });
+      troops.forEach(function (row) { valid(object(row) && troopKey(troopId(row.type, row.tier, row.tg)) && (row.amount === null || count(row.amount))); });
+      return transaction(function (next) {
+        var facts = { source: source || 'manual', at: new Date().toISOString() };
+        if (!next.combat) next.combat = { stats: {}, provenance: {} };
+        Object.keys(stats).forEach(function (type) {
+          next.combat.stats[type] = {}; STATS.forEach(function (key) { next.combat.stats[type][key] = stats[type][key]; });
+          next.combat.provenance[type] = copy(facts);
+        });
+        troops.forEach(function (row) {
+          next.inventory[troopId(row.type, row.tier, row.tg)] = row.amount === null ? { amount: null, status: 'unknown', provenance: null } : { amount: row.amount, status: 'confirmed', provenance: copy(facts) };
+        });
+      }, expected);
+    }
     function legacy(input, engine) {
       valid(object(input) && input.version === 1 && object(input.pieces) && object(input.resources));
       PIECES.forEach(function (key) { valid(piece(input.pieces[key]) && input.pieces[key].quality !== null && input.pieces[key].level !== null && input.pieces[key].mastery !== null); });
@@ -180,7 +221,7 @@
     if (events && events.addEventListener) events.addEventListener('storage', function (event) {
       if ((event.key === KEY || event.key === null) && (!event.storageArea || event.storageArea === storage)) { try { current = read(); notify(); } catch (error) { if (events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:error', { detail: error.message })); } }
     });
-    return { snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
+    return { snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
   }
-  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), empty: empty, validate: validate, create: create };
+  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), TROOP_TYPES: TYPES.slice(), COMBAT_STATS: STATS.slice(), troopId: troopId, empty: empty, validate: validate, create: create };
 });

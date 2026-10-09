@@ -488,3 +488,7 @@
 .sim-out.rooms .sim-row.picked .room-name { color: var(--ink); }
 .sim-out.rooms .sim-row.picked .room-pick { text-decoration-color: var(--amber); text-decoration-thickness: 2px; }
 .load + .load { margin-top: var(--space-l); }
+
+/* The shared player save: load/save your stats and troops */
+.sim-ledger output { flex-basis: 100%; }
+.sim-ledger[hidden] { display: none; }

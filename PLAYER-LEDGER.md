@@ -19,6 +19,15 @@ An inventory entry contains `amount`, `status` and `provenance`. Confirmed amoun
 
 Hero equipment facts live in `heroGear.pieces`, with provenance keyed by piece ID. Missing pieces are unknown; unread quality, enhancement or mastery fields remain null in confirmed screenshot records and equipment facts. The adapter supplies existing engine defaults for editing and calculation without writing those defaults as confirmed facts. `heroGear.parts` preserves the 10-XP/100-XP split and remainder when its total matches the confirmed XP balance. Governor equipment and charms have distinct sections explicitly marked unsupported until their schemas and verified costs ship.
 
+Combat facts serve the battle simulator. `combat.stats` holds your Bonus Details percentages per troop type (`inf`, `cav`, `arc`), each row with all four of `attack`, `lethality`, `defense` and `health` and its own entry in `combat.provenance`. A missing type is unknown. Troops you own are ordinary inventory entries keyed `troop-{type}-t{tier}-tg{tg}` (tier 1–11, TG 0–5), so they share inventory's amount, status and provenance rules and its export/import. Saves written before the section existed have no `combat` key and stay valid; the next write adds it.
+
+```js
+store.combat(); // { stats, provenance, troops: [{ type, tier, tg, amount, provenance }] }, best tier first per type
+store.setCombat({ stats: { inf: { attack: 250, lethality: 163, defense: 250, health: 163 } }, troops: [{ type: 'inf', tier: 10, tg: 0, amount: 120000 }] }, 'manual');
+```
+
+The simulator reads and writes these only in its fight modes (Mystic Trial, Battle), where the report's left column is you; a bear report's left column is the rally lead's. Loading fills your stats and, per type, the best tier you own; saving stores your stats and each march row as the troops you have at that tier. On a first visit, with no simulator sheet saved, it fills from the ledger automatically.
+
 `preferences.heroGear` holds only optimisation/UI choices. Resource bags and piece lists are derived from the ledger, not duplicated in preferences. A write touches changed facts and explicitly edited fields, preserving unrelated inventory and provenance. `source` distinguishes manual, legacy, screenshot, plan, reset and file edits.
 
 ## Store API
