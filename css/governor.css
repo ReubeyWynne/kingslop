@@ -41,55 +41,48 @@
 .gov-main .gov-rail button { flex: 1; min-width: 0; color: var(--ink-muted); border-bottom: 2px solid transparent; font-weight: 700; }
 .gov-main .gov-rail button[aria-selected="true"] { color: var(--amber); border-bottom-color: var(--amber); }
 
-/* The board — three rows as in game: cavalry, infantry, archer. */
-.gov-board { margin-top: .75rem !important; padding: .75rem .5rem !important; border: 1px solid var(--signal-line) !important; background: radial-gradient(ellipse at 50% 45%, var(--signal-tint), transparent 70%), var(--void-2); }
+/* The board — a ruled ledger: one band per troop, two pieces to a band. */
+.gov-board { margin-top: .5rem !important; }
 .gov-board:disabled { opacity: .6; }
-.gov-row { display: grid; grid-template-columns: minmax(0, 6.5rem) minmax(0, 1fr) minmax(0, 6.5rem); gap: .5rem; align-items: center; justify-content: space-between; }
-.gov-row + .gov-row { margin-top: .6rem; }
-.gov-main .gov-tile { display: grid; justify-items: center; gap: .15rem; padding: .25rem; min-width: 0; border: 1px solid transparent; border-radius: .5rem; color: var(--ink); text-align: center; }
-.gov-main .gov-tile:hover { border-color: var(--signal-line); background: color-mix(in srgb, var(--amber) 6%, transparent); }
-.gov-tile-name { font-size: .8rem; font-weight: 700; line-height: 1.1; }
-.gov-tile-level { font: .78rem/1.1 var(--display-2); color: var(--amber); white-space: nowrap; }
-.gov-tile[data-state="unset"] .gov-tile-level { color: var(--ink-muted); }
-.gov-core { display: grid; justify-items: center; gap: .1rem; text-align: center; min-width: 0; }
-.gov-core img { width: 2.25rem; height: 2.25rem; }
-.gov-core strong { font-family: var(--display-2); font-size: 1rem; color: var(--ink); }
-.gov-core > span { display: grid; line-height: 1.15; }
-.gov-core output { font: 1.05rem var(--display-2); color: var(--ink); font-variant-numeric: tabular-nums; }
-.gov-core output[data-partial="true"]::after { content: "*"; color: var(--ink-muted); }
-.gov-core small { font-size: .65rem; color: var(--ink-muted); }
-.gov-totals { display: flex; justify-content: center; gap: .3rem 1.5rem; flex-wrap: wrap; margin: .5rem 0 0; color: var(--ink-muted); font-size: .8rem; }
+.gov-troop { border-top: 1px solid var(--signal-line); padding-block: .45rem .2rem; }
+.gov-troop-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .1rem 1rem; margin: 0; font-size: .8rem; color: var(--ink-muted); }
+.gov-troop-head strong { flex-basis: 100%; font: 700 var(--step--1) var(--body); color: var(--amber); letter-spacing: .14em; text-transform: uppercase; }
+.gov-troop-head strong::before { content: "❧ "; }
+.gov-troop-head output { font: .95rem var(--display-2); color: var(--ink); font-variant-numeric: tabular-nums; }
+.gov-troop-head output[data-partial="true"]::after { content: "*"; color: var(--ink-muted); }
+.gov-pieces { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1rem; }
+.gov-main .gov-tile { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: .7rem; align-items: center; padding: .5rem 0; min-width: 0; border-bottom: 1px solid transparent; color: var(--ink-dim); text-align: start; }
+.gov-main .gov-tile:hover { border-bottom-color: var(--amber); }
+.gov-tile-info { display: grid; gap: .1rem; min-width: 0; }
+.gov-tile-name { font-size: 1rem; color: var(--ink); }
+.gov-tile-level { font: 1.15rem/1.2 var(--display-2); color: var(--ink); }
+.gov-tile[data-state="unset"] .gov-tile-level { color: var(--ink-muted); font-size: .95rem; }
+.gov-totals { display: flex; gap: .3rem 1.5rem; flex-wrap: wrap; margin: 0; padding-top: .45rem; border-top: 1px solid var(--signal-line); color: var(--ink-muted); font-size: .8rem; }
 .gov-totals output { color: var(--ink); font: 1rem var(--display-2); font-variant-numeric: tabular-nums; margin-inline-start: .25rem; }
 
-/* A card: tier-framed art with the stars down its side; empty slots go grey. */
-.gov-card { position: relative; display: block; width: 100%; max-width: 5.5rem; aspect-ratio: 1; }
+/* Piece art carries its own tier frame; an unset or uncrafted piece shows it dimmed. */
+.gov-card { display: block; width: 100%; max-width: 4.5rem; aspect-ratio: 1; }
 .gov-card > img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.gov-stars { position: absolute; inset-inline-start: 6%; inset-block-end: 6%; display: flex; flex-direction: column-reverse; color: #ffd75e; font-size: 1.05rem; line-height: .9; text-shadow: 0 0 2px #5a3200, 0 1px 1px #5a3200; }
-.gov-card-mark { display: none; position: absolute; inset: 0; place-items: center; font: 1.6rem var(--display-2); color: var(--ink); }
-.gov-card[data-state="unset"] > img, .gov-card[data-state="empty"] > img { filter: grayscale(1) brightness(.55); opacity: .5; }
-.gov-card[data-state="unset"] .gov-card-mark, .gov-card[data-state="empty"] .gov-card-mark { display: grid; }
-.gov-card[data-state="unset"] { outline: 1px dashed var(--ink-muted); outline-offset: -2px; border-radius: .6rem; }
+.gov-card[data-state="unset"] > img, .gov-card[data-state="empty"] > img { filter: grayscale(1); opacity: .35; }
 
-/* Charm gems under each piece, three to a piece as in game. */
-.gov-gems { display: flex; justify-content: center; gap: .1rem; }
-.gov-gem { position: relative; display: inline-grid; justify-items: center; }
-.gov-gem img { display: block; width: 1.6rem; height: 1.6rem; object-fit: contain; }
-.gov-gem b { font: 700 .62rem/1 var(--body); color: var(--ink-dim); font-variant-numeric: tabular-nums; }
-.gov-gem[data-state="unset"] img, .gov-gem[data-state="empty"] img { filter: grayscale(1); opacity: .3; }
+/* Charms as three square rule cells. */
+.gov-gems { display: flex; gap: .25rem; margin-top: .15rem; }
+.gov-gems .gov-gem { display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border: 1px solid var(--signal-line); }
+.gov-gems .gov-gem b { font: .8rem var(--display-2); color: var(--amber); font-variant-numeric: tabular-nums; }
+.gov-gems .gov-gem[data-state="unset"] b, .gov-gems .gov-gem[data-state="empty"] b { color: var(--ink-muted); }
+.gov-gem img { display: block; width: 2.4rem; height: 2.4rem; object-fit: contain; }
+.gov-gem[data-state="unset"] img, .gov-gem[data-state="empty"] img { filter: grayscale(1); opacity: .35; }
 
 /* Quick fill tucked under the board. */
 .gov-fill { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem 1rem; align-items: end; }
 
 /* Plan. */
-.gov-kinds { display: flex; border: 1px solid var(--signal-line); }
-.gov-main .gov-kinds button { display: inline-flex; align-items: center; gap: .3rem; padding-inline: .6rem; color: var(--ink-muted); border: 0; }
-.gov-main .gov-kinds button[aria-selected="true"] { color: var(--ink); background: color-mix(in srgb, var(--amber) 12%, transparent); }
-.gov-kinds img { width: 1.4rem; height: 1.4rem; }
-.gov-chips { display: flex; flex-wrap: wrap; gap: .5rem 1rem; justify-content: space-between; margin-block: .5rem; }
-.gov-chips > div { display: flex; border: 1px solid var(--signal-line); }
-.gov-main .gov-chips button { min-width: 2.75rem; padding-inline: .6rem; color: var(--ink-muted); border: 0; font-size: .9rem; }
-.gov-main .gov-chips button[aria-pressed="true"] { color: var(--ink); background: color-mix(in srgb, var(--amber) 12%, transparent); }
-.gov-chips img { display: block; width: 1.4rem; height: 1.4rem; margin: auto; }
+.gov-modes, .gov-chips > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 .8rem; }
+.gov-main .gov-modes button, .gov-main .gov-chips button { color: var(--ink-muted); }
+.gov-main .gov-modes [aria-selected="true"], .gov-main .gov-chips [aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--amber); }
+.gov-chips { display: grid; gap: 0; margin-block: .25rem .5rem; }
+.gov-chips > div > span { font: 700 .75rem var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); min-width: 5.5rem; }
+.gov-main .gov-chips button { font-size: .95rem; }
 .gov-summary { display: flex; flex-wrap: wrap; gap: .25rem 2rem; padding-block: .4rem; }
 .gov-summary p { margin: 0; color: var(--ink-dim); font-size: .9rem; }
 .gov-summary output { color: var(--amber); font: 1.75rem var(--display-2); font-variant-numeric: tabular-nums; }
@@ -97,7 +90,6 @@
 .gov-steps li + li { border-top: 1px solid var(--signal-tint); }
 .gov-main .gov-step { display: grid; grid-template-columns: 3.25rem minmax(0, 1fr); gap: .65rem; align-items: center; width: 100%; padding: .35rem .2rem; color: var(--ink); text-align: start; border: 0; }
 .gov-step .gov-card { max-width: 3.25rem; }
-.gov-step .gov-stars { font-size: .7rem; }
 .gov-step .gov-gem img { width: 2.6rem; height: 2.6rem; }
 .gov-step-text { display: grid; gap: .1rem; min-width: 0; }
 .gov-step-item { font-weight: 700; font-size: .95rem; }
@@ -128,21 +120,19 @@
 .gov-dialog::backdrop { background: rgba(10, 19, 12, .82); }
 .gov-dialog h2 { font-size: 1.25rem; margin: 0; }
 .gov-dialog h3 { font-size: 1rem; margin: 1rem 0 .4rem; }
-.gov-dialog h3 small { font-weight: 400; color: var(--ink-muted); font-size: .8rem; }
+.gov-dialog h3 small { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--ink-muted); font-size: .8rem; }
 .gov-edit-gear { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 1rem; align-items: center; margin-top: .75rem; }
 .gov-edit-gear .gov-card { max-width: 6.5rem; }
-.gov-edit-gear .gov-stars { font-size: 1rem; }
 .gov-edit-info { display: grid; gap: .3rem; min-width: 0; }
 .gov-edit-info p { margin: 0; }
 .gov-edit-level { font: 1.4rem/1.15 var(--display-2); }
 .gov-edit-stat { color: var(--amber); font-size: .9rem; }
 .gov-edit-next { display: flex; flex-wrap: wrap; gap: .2rem .6rem; align-items: center; color: var(--ink-muted); font-size: .8rem; }
 .gov-stepper { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem; align-items: center; }
-.gov-dialog .gov-stepper button { font: 1.4rem/1 var(--display-2); border: 1px solid var(--signal-line); }
-.gov-dialog .gov-stepper button:hover { border-color: var(--amber); }
+.gov-dialog .gov-stepper button { font: 1.4rem/1 var(--display-2); }
 .gov-edit-charms { display: grid; gap: .5rem; }
-.gov-edit-charm { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); gap: .75rem; align-items: center; }
-.gov-edit-charm .gov-gem img { width: 2.6rem; height: 2.6rem; }
+.gov-edit-charm { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: .75rem; align-items: center; }
+.gov-charm-label { color: var(--ink-dim); font-size: .9rem; }
 
 /* Notes, save and reference tables. */
 .gov-notes { max-width: 46rem; }
@@ -175,17 +165,14 @@
   .gov-workspace { display: block; margin-top: .25rem; }
   .gov-answer { border-inline-start: 0; padding-inline-start: 0; }
   .gov-main[data-view="profile"] .gov-answer, .gov-main[data-view="plan"] .gov-profile { display: none; }
-  .gov-row { grid-template-columns: minmax(0, 5.5rem) minmax(0, 1fr) minmax(0, 5.5rem); gap: .25rem; }
-  .gov-board { padding: .5rem .25rem !important; }
-  .gov-card { max-width: 4.75rem; }
-  .gov-stars { font-size: .9rem; }
-  .gov-gem img { width: 1.4rem; height: 1.4rem; }
+  .gov-pieces { gap: 0 .75rem; }
+  .gov-main .gov-tile { grid-template-columns: 3.4rem minmax(0, 1fr); gap: .5rem; }
+  .gov-tile-level { font-size: 1rem; }
   .gov-main select, .gov-dialog select { font-size: max(1rem, 16px); }
 }
 @media (max-width: 360px) {
-  .gov-row { grid-template-columns: minmax(0, 4.75rem) minmax(0, 1fr) minmax(0, 4.75rem); }
-  .gov-card { max-width: 4.1rem; }
-  .gov-gem img { width: 1.2rem; height: 1.2rem; }
-  .gov-core small { font-size: .6rem; }
-  .gov-tile-name { font-size: .72rem; }
+  .gov-main .gov-tile { grid-template-columns: 2.8rem minmax(0, 1fr); gap: .4rem; }
+  .gov-tile-name { font-size: .9rem; }
+  .gov-tile-level { font-size: .9rem; }
+  .gov-gems .gov-gem { width: 1.4rem; height: 1.4rem; }
 }
