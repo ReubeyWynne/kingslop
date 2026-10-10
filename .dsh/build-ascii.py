@@ -362,7 +362,7 @@ def forge():
 
 
 # ── the small emblems ────────────────────────────────────────────────────
-# Each is 29 cells wide, 9 rows tall (crown, charm and seal 10, bear 11), set at line-height 1.25.
+# Each is 29 cells wide, 9 rows tall (crown and charm 10, bear and seal 11), set at line-height 1.25.
 # The helm stands over the hero directory; the seal over governor gear.
 
 MW = 29
@@ -432,19 +432,20 @@ HELM = r'''
        |       (__
        |   |\     \
       _/___| \_____\ '''
-# The governor's seal: a heater shield with a charm set at its heart, the
-# pendant chain dropping to the point.
+# The governor's seal: a heater shield, quartered, the way a coat of arms
+# is drawn. The field is counterchanged, so only the outline is mirrored.
 SEAL = r'''
-  _________________________
- |\_______________________/|
- | |                     | |
- | |        .-^-.        | |
- | |       ( <o> )       | |
-  \ \       '-.-'       / /
-   \ \        |        / /
-    \ \       |       / /
-     '.'.     |     .'.'
-       '-'-.__|__.-'-' '''
+   .---------------------.
+   |##########|          |
+   |##########|          |
+   |##########|          |
+   |----------+----------|
+   |          |##########|
+    \         |#########/
+     \        |########/
+      '.      |######.'
+        '-.   |###.-'
+           '-.|.-' '''
 PIPS = {1: [(2, 1)], 2: [(0, 0), (4, 2)], 3: [(0, 0), (2, 1), (4, 2)],
         4: [(0, 0), (4, 0), (0, 2), (4, 2)], 5: [(0, 0), (4, 0), (2, 1), (0, 2), (4, 2)],
         6: [(0, 0), (4, 0), (0, 1), (4, 1), (0, 2), (4, 2)]}
@@ -513,20 +514,25 @@ def mini_frames(kind):
                 put(arr, c, r, '.+*+.'[cycle - 2] if 2 <= cycle < 7 else ' ')
             frames.append(arr)
     elif kind == 'seal':
-        # A gleam runs down the pendant chain into the shield's point, then the
-        # charm catches the light. Every change is a glyph on the drawing.
+        # A shine sweeps across the shield on a slant: a '/' streak over the
+        # plain quarters and a gap through the filled ones. Then the corners
+        # and the point catch the light in turn.
         base = [list(r.ljust(MW)) for r in art(SEAL)]
+        def edges(row):
+            text = ''.join(row).rstrip()
+            return len(text) - len(text.lstrip()), len(text) - 1
+        inside = {(r, c) for r in range(1, 10) for c in range(edges(base[r])[0] + 1, edges(base[r])[1])
+                  if base[r][c] in ' #'}
         for i in range(32):
             arr = [r[:] for r in base]
-            if 6 <= i < 14:
-                r = 6 + (i - 6) // 2
-                if arr[r][14] == '|':
-                    arr[r][14] = ':'
-            if i in (18, 19, 20):
-                put(arr, 13, 4, '<*>' if i == 19 else '<O>')
-            if i in (24, 25):
-                put(arr, 13, 3, '.' if i == 24 else '*')
-                put(arr, 15, 3, '.' if i == 24 else '*')
+            if 4 <= i < 22:
+                lead = (i - 4) * 2 - 4
+                for r, c in inside:
+                    if c - 2 * (9 - r) in (lead, lead + 1):
+                        arr[r][c] = '/' if base[r][c] == ' ' else ' '
+            for start, (c, r) in zip((24, 26, 28), ((3, 0), (25, 0), (14, 10))):
+                if start <= i < start + 2:
+                    put(arr, c, r, '*' if i == start else '+')
             frames.append(arr)
     elif kind == 'dice':
         # Two dice tumble side over side, each through a pose balanced on a
@@ -630,8 +636,9 @@ def symmetrical(drawing):
 
 def minis():
     # Emblems that face the viewer are drawn symmetrical (DESIGN.md, "Animation quality").
-    # The helm is drawn in profile, the way a Spartan helm is best known.
-    for name, drawing in (('bear', BEAR), ('crown', CROWN), ('charm', CHARM), ('seal', SEAL)):
+    # The helm is drawn in profile, the way a Spartan helm is best known, and
+    # the seal's quartered field is counterchanged rather than mirrored.
+    for name, drawing in (('bear', BEAR), ('crown', CROWN), ('charm', CHARM)):
         assert symmetrical(drawing), f'{name}: the emblem is not symmetrical about column {MW // 2}'
     css = ['/* emblems */']
     durations = {'charm': 6.4, 'bear': 7.2, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 19.6, 'helm': 8, 'seal': 8}
