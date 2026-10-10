@@ -25,13 +25,17 @@ Set bonuses appear in only one table and are not modelled.
 
 `js/governor-planner.js` is the DOM adapter, registered as the `governor-planner` module. Materials use `ledger-form`; backups use `save-transfer`.
 
+## Page
+
+The page mirrors the in-game Governor Profile. Six tiles sit in three rows, cavalry (hat, amulet), infantry (armour, trousers) and archer (ring, staff), each with its three charm gems underneath; the middle of each row shows that troop's totals. Tapping a tile opens a dialog with steppers for the piece and its charms. The plan sits beside the board on a wide screen and behind a tab on a phone, with "Spend now" (back-to-back steps on one piece shown as one upgrade) and "Cost to reach". Art is game artwork listed in [img/governor/SOURCES.md](img/governor/SOURCES.md); each gear card is the zero-star art for its tier and grade, and the page draws the stars.
+
 ## Ledger
 
 Levels live in `governorGear.pieces` and `governorCharms.slots` of the shared ledger, with provenance per item. A section stays `unsupported` until the first level is set. Planner choices live in `preferences.governor`. See [PLAYER-LEDGER.md](PLAYER-LEDGER.md).
 
 ## Checks
 
-- `node .dsh/governor-check.cjs`: table shape and totals, plans, targets, event rates, ledger validation and dictionaries.
-- `node .dsh/governor-ui-check.cjs` after a Jekyll build: planning, troop focus, tabs, persistence, the shared bag, reset, RTL and phone widths.
+- `node .dsh/governor-check.cjs`: table shape and totals, plans, targets, event rates, ledger validation, dictionaries and that every card and gem image exists.
+- `node .dsh/governor-ui-check.cjs` after a Jekyll build: profile tiles, the edit dialog, planning, troop focus, tabs, persistence, the shared bag, reset, RTL and phone widths.
 
 Page copy is English in every language, like hero gear; navigation, the home card and the deck cover are translated into all 17.
