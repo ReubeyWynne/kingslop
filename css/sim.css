@@ -788,7 +788,7 @@
 .sim-main .hero .lede, .sim-main .hero .chips, .sim-heading { display: none; }
 .sim-console { padding-top: 0; }
 .sim-main .hero .draft-note { max-width: 46rem; margin-bottom: 0; }
-.sim-main .hero .ascii-motif-rail { display: none; }
+.sim-main .hero .ascii-motif-rail { margin-top: 0.35rem; }
 .sim-room-list { margin-bottom: 0.5rem; }
 .sim-run-metrics { display: block; font-size: var(--step--1); font-variant-numeric: tabular-nums; color: var(--ink-dim); }
 .sim-run-metrics[hidden], #sim-sweep-progress[hidden] { display: none; }
