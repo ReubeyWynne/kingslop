@@ -13,6 +13,9 @@ assert.deepEqual(filter({query:'HILDE'}).map(h=>h.key),['hilde']);assert.equal(f
 assert(filter({server:3}).every(h=>h.generation<=3));assert.equal(filter({role:'defence-joiner'}).length,6);
 assert.deepEqual(filter({role:'bear-joiner',server:1,troop:'cav'}).map(h=>h.key),['chenko']);assert.equal(filter({query:'<script>'}).length,0);
 assert.equal(filter({role:'unknown'}).length,0);assert.equal(filter({server:99}).length,34);
+const owned=records.map(h=>({...h,owned:['amadeus','zoe'].includes(h.key)}));assert.deepEqual(owned.filter(h=>engine.matches(h,{mine:'owned'})).map(h=>h.key).sort(),['amadeus','zoe']);assert.equal(owned.filter(h=>engine.matches(h,{mine:'missing'})).length,32);assert.deepEqual(owned.filter(h=>engine.matches(h,{mine:'owned',generation:1})).map(h=>h.key),['amadeus']);
+const gen1=heroes.filter(h=>h.generation===1).sort(engine.compare);assert.deepEqual(gen1.map(h=>h.key),['amadeus','helga','jabel','saul','howard','chenko','fahd','gordon','amane','diana','quinn','yeonwoo','forrest','seth','edwin','olive']);
+assert.deepEqual(engine.stars(27),{stars:4,tier:3});assert.deepEqual(engine.stars(30),{stars:5,tier:0});
 const allowed=['garrison-lead','defence-joiner','rally-lead','attack-joiner','bear-lead','bear-joiner'];
 for(const hero of records){const meta=roles.heroes[hero.key];assert.equal(new Set(meta.recommendations.map(r=>r.role)).size,meta.recommendations.length);
  assert.equal(meta.portrait,hero.key+'.webp');assert(fs.existsSync('img/heroes/'+meta.portrait));assert(meta.wiki.startsWith('https://kingshotwiki.com/heroes/'));assert.equal(meta.skillNotes.length,hero.skills.length);for(const skill of meta.skillNotes){assert(skill.name);assert(skill.summary);}
@@ -22,7 +25,7 @@ assert.equal(roles.heroes.hilde.recommendations.find(r=>r.role==='bear-joiner').
 const nav=require('../_data/nav.json'),pages=require('../_data/pages.json');assert.equal(nav.filter(n=>n.self==='heroes').length,1);
 for(let i=0;i<nav.length;i++){const p=pages[nav[i].self],previous=pages[nav[(i-1+nav.length)%nav.length].self],next=pages[nav[(i+1)%nav.length].self];assert.equal(p.swipePrev.page,previous.token);assert.equal(p.swipeNext.page,next.token);}
 const dictionaries=fs.readdirSync('i18n').filter(x=>x.endsWith('.js')).map(file=>{const ctx={window:{}};vm.runInNewContext(fs.readFileSync('i18n/'+file,'utf8'),ctx);return Object.values(ctx.window.__BH_I18N_DATA)[0];});
-const keys=Object.keys(dictionaries.find(d=>d['directory.title']==='Hero directory')).filter(k=>k.startsWith('directory.'));assert.equal(keys.length,57);
+const keys=Object.keys(dictionaries.find(d=>d['directory.title']==='Hero directory')).filter(k=>k.startsWith('directory.'));assert.equal(keys.length,74);
 for(const dictionary of dictionaries){for(const key of keys)assert.equal(typeof dictionary[key],'string',key);assert(dictionary['directory.count'].includes('{n}')&&dictionary['directory.count'].includes('{total}'));}
 const html=fs.readFileSync('heroes/index.html','utf8');assert(html.includes('site.data.heroes.heroes'));assert(!html.includes('window.HeroData'));
 console.log('Hero directory: canonical metadata, sources, filters, conditional guidance, navigation cycle and 17 dictionaries pass.');

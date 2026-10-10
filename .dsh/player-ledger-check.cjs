@@ -161,4 +161,42 @@ const combatCopy = Ledger.create(storage());
 combatCopy.importJSON(combatBefore, E);
 assert.deepEqual(combatCopy.combat().stats, combatStore.combat().stats);
 assert.equal(combatCopy.combat().troops.length, 2);
-console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, undo, revision, combat stat and troop checks passed.');
+const heroStore = Ledger.create(storage());
+assert.deepEqual(heroStore.heroes(), { roster: {}, provenance: {}, shards: {} });
+assert.equal(heroStore.snapshot().heroes, undefined);
+heroStore.setBalance('forgehammer', 7);
+heroStore.setHero('amadeus', { level: 80, stars: 27, widget: 6, skills: [5, 4, 5] });
+heroStore.setHero('seth', {});
+heroStore.setBalance(Ledger.heroShardId('amadeus'), 34);
+heroStore.setBalance(Ledger.heroShardId('zoe'), 9);
+heroStore.setBalance('mythic-hero-shard', 120);
+const owned = heroStore.heroes();
+assert.deepEqual(owned.roster.amadeus, { level: 80, stars: 27, widget: 6, skills: [5, 4, 5] });
+assert.deepEqual(owned.roster.seth, { level: null, stars: null, widget: null, skills: null });
+assert.deepEqual(owned.shards, { amadeus: 34, zoe: 9 });
+assert.equal(owned.provenance.amadeus.source, 'manual');
+assert.equal(heroStore.balance('forgehammer').amount, 7);
+const heroRevision = heroStore.snapshot().revision;
+heroStore.setHero('amadeus', { level: 80, stars: 27, widget: 6, skills: [5, 4, 5] });
+assert.equal(heroStore.snapshot().revision, heroRevision + 1);
+assert.deepEqual(heroStore.heroes().provenance.amadeus, owned.provenance.amadeus);
+heroStore.setHero('seth', null);
+assert.equal(Object.hasOwn(heroStore.heroes().roster, 'seth'), false);
+assert.equal(heroStore.heroes().shards.amadeus, 34);
+const heroBefore = heroStore.exportJSON();
+for (const bad of [{ level: 0 }, { level: 201 }, { stars: 31 }, { stars: 2.5 }, { widget: 11 }, { skills: [] }, { skills: [6] }, { skills: [1, 1, 1, 1] }, { power: 1 }]) assert.throws(() => heroStore.setHero('helga', bad));
+assert.throws(() => heroStore.setHero('Helga', {}));
+assert.equal(heroStore.exportJSON(), heroBefore);
+for (const mutate of [
+  data => { data.heroes.roster.amadeus.level = '80'; },
+  data => { delete data.heroes.provenance.amadeus; },
+  data => { data.heroes.roster.amadeus.power = 1; },
+  data => { data.heroes.provenance.zoe = { source: 'manual', at: data.updatedAt }; }
+]) {
+  const data = JSON.parse(heroBefore); mutate(data);
+  assert.throws(() => Ledger.create(storage()).importJSON(data, E));
+}
+const heroCopy = Ledger.create(storage());
+heroCopy.importJSON(heroBefore, E);
+assert.deepEqual(heroCopy.heroes(), heroStore.heroes());
+console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, undo, revision, combat stat, troop and hero roster checks passed.');

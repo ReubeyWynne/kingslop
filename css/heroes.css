@@ -1,61 +1,97 @@
 /* ─── Hero directory — a roster, not a scroll ─────────── */
 /* The portrait glow follows the page's banner-rose signal (events.css). */
 
-/* Filters — ink lines in a ruled band. */
-.hero-filters { border: 0; border-block: 1px solid var(--signal-line); padding: var(--space-s) 0; margin: var(--space-m) 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem 1.5rem; }
-.hero-filters legend { padding-inline-end: .75rem; font-size: var(--step--1); font-weight: 700; color: var(--amber); letter-spacing: .14em; text-transform: uppercase; }
-.hero-filters label { display: grid; gap: .2rem; min-width: 0; }
-.hero-filters label:first-of-type { grid-column: span 2; }
-.hero-filters label > span { font-size: var(--step--1); color: var(--ink-muted); }
-.hero-filters input, .hero-filters select { width: 100%; min-width: 0; min-height: 44px; padding: .3rem 0; font: inherit; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; }
-.hero-filters input:focus, .hero-filters select:focus { border-bottom-color: var(--amber); }
-.hero-filters option { background: var(--void); color: var(--ink); }
-.hero-filters :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
-.hero-filters button { grid-column: span 2; align-self: end; justify-self: start; min-height: 44px; padding: .35rem 0; border: 0; border-bottom: 1px solid transparent; background: transparent; color: var(--amber); font: 700 var(--step--1) var(--body); letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
-.hero-filters button:hover { color: var(--ink); border-bottom-color: var(--signal-line); }
-.directory-server-note { grid-column: 1 / -1; margin: 0; font-size: var(--step--1); font-style: italic; color: var(--ink-muted); }
+/* Filters — ink lines in one ruled band; labels sit tight above them. */
+.hero-filters { border: 0; border-block: 1px solid var(--signal-line); padding: .5rem 0 .6rem; margin: var(--space-s) 0 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .35rem 1.25rem; }
+.hero-filters legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.hero-filters label { display: grid; gap: 0; min-width: 0; }
+.hero-filters .hero-search { grid-column: 1 / -1; }
+.hero-filters label > span { font-size: .78rem; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hero-filters label:not(.hero-search) { grid-column: span 2; }
+:is(.hero-filters, .hero-mine, .hero-bag) :is(input, select) { width: 100%; min-width: 0; min-height: 40px; padding: .2rem 0; font: inherit; font-size: max(1rem, 16px); color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; }
+:is(.hero-filters, .hero-mine, .hero-bag) :is(input, select):focus { border-bottom-color: var(--amber); }
+:is(.hero-filters, .hero-mine, .hero-bag) option { background: var(--void); color: var(--ink); }
+:is(.hero-filters, .hero-mine, .hero-bag) :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+:is(.hero-mine, .hero-bag) input:disabled, .hero-mine select:disabled { opacity: .45; }
 
-.directory-results { display: flex; align-items: baseline; gap: .5rem 1.5rem; padding-block: .75rem; }
-.directory-results .note { margin: 0; font-size: var(--step--1); }
-.hero-count { flex: none; color: var(--amber); font-family: var(--display-2); font-variant-numeric: tabular-nums; }
+.directory-results { display: flex; align-items: baseline; justify-content: space-between; gap: .25rem 1rem; padding-block: .35rem; }
+.hero-count { color: var(--amber); font-family: var(--display-2); font-size: var(--step--1); font-variant-numeric: tabular-nums; }
+.directory-reset { min-height: 40px; padding: 0; border: 0; border-bottom: 1px solid transparent; background: transparent; color: var(--amber); font: 700 .78rem var(--body); letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
+.directory-reset:hover { color: var(--ink); border-bottom-color: var(--signal-line); }
+.directory-reset:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 .directory-empty { padding-block: var(--space-m); color: var(--ink-dim); }
 
-/* Generations — the Bear Hunt rank line, then a grid of portraits. */
-.hero-gen { margin-top: var(--space-m); }
-.hero-gen:not(:has(.directory-hero:not([hidden]))) { display: none; }
-.hero-gen .gen-title { margin-bottom: .75rem; }
-.hero-catalogue { display: grid; grid-template-columns: repeat(auto-fill, minmax(4.6rem, 1fr)); grid-auto-flow: row dense; gap: 1.1rem .6rem; }
+/* Your bag — the general shards and widget parts, shared with the event inventory. */
+.hero-bag { display: grid; grid-template-columns: auto repeat(4, minmax(0, 1fr)); align-items: end; gap: .2rem .9rem; padding: .3rem 0 .4rem; border-bottom: 1px solid var(--signal-line); }
+.hero-bag-title { margin: 0; align-self: center; font-size: .78rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); }
+.hero-bag label { display: grid; min-width: 0; }
+.hero-bag label > span { font-size: .72rem; line-height: 1.2; color: var(--ink-muted); overflow-wrap: anywhere; }
+.hero-bag-caption { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: .7rem; margin: 0; color: var(--ink-muted); font-size: .72rem; font-style: italic; }
 
-/* A closed hero is one tile: portrait, name, troop. */
+/* The roster — one band per generation (generation 1 per rarity tier), with its
+   rank in a narrow gutter so a short generation is a single row of tiles. */
+.troop-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.hero-roster { --band-label: 2.6rem; --band-gap: .6rem; display: grid; gap: .9rem; margin-top: .9rem; }
+.hero-gen { display: grid; gap: .9rem; }
+.hero-gen:not(:has(.directory-hero:not([hidden]))), .hero-band:not(:has(.directory-hero:not([hidden]))) { display: none; }
+.hero-band { display: grid; grid-template-columns: var(--band-label) minmax(0, 1fr); gap: var(--band-gap); align-items: start; }
+.band-label { display: grid; justify-items: center; gap: .3rem; margin: 0; padding-top: .2rem; border-top: 1px solid var(--signal-line); color: var(--ink-muted); text-align: center; }
+.band-gen { display: grid; justify-items: center; line-height: 1; }
+.band-gen-word { font-size: .6rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.band-gen b { font: 600 var(--step-2)/1 var(--display-2); color: var(--amber); }
+.hero-band[data-tier]:not([data-tier="legendary"]) .band-gen { display: none; }
+.band-tier { writing-mode: vertical-rl; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber-dim); }
+.hero-band[data-tier="legendary"] .band-tier { color: var(--amber); }
+.hero-catalogue { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem .5rem; }
+
+/* A closed hero is one tile: portrait with its troop mark, name, and your level and stars. */
 .directory-hero { min-width: 0; scroll-margin-top: calc(var(--topbar-h) + 4rem); }
 .hero-dossier { margin: 0; }
-.hero-dossier > summary.directory-hero-heading { display: flex; flex-direction: column; align-items: center; gap: .45rem; width: 100%; padding: 0; color: var(--ink); font: inherit; letter-spacing: 0; text-transform: none; text-align: center; }
+.hero-dossier > summary.directory-hero-heading { display: flex; flex-direction: column; align-items: center; gap: .3rem; width: 100%; padding: 0; color: var(--ink); font: inherit; letter-spacing: 0; text-transform: none; text-align: center; }
 .hero-dossier > summary::before { content: none; }
 .hero-dossier > summary:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; }
-.directory-hero-heading img, .hero-initial { flex: none; width: 100%; max-width: 5.5rem; height: auto; aspect-ratio: 1; object-fit: cover; border: 1px solid var(--amber-dim); border-radius: 2px; background: var(--void-2); box-shadow: inset 0 0 0 1px var(--signal-glow), 0 6px 18px rgba(0, 0, 0, .45); transition: box-shadow .3s cubic-bezier(.16, 1, .3, 1); }
+.directory-portrait { position: relative; display: block; width: 100%; max-width: 5.5rem; }
+.directory-hero-heading img, .hero-initial { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border: 1px solid var(--amber-dim); border-radius: 2px; background: var(--void-2); box-shadow: inset 0 0 0 1px var(--signal-glow), 0 6px 18px rgba(0, 0, 0, .45); transition: box-shadow .3s cubic-bezier(.16, 1, .3, 1); }
 .hero-initial { display: grid; place-items: center; font: 600 var(--step-2) var(--display-2); color: var(--amber); }
+.hero-troop-mark { position: absolute; inset-block-start: 3px; inset-inline-start: 3px; width: 1.05rem; height: 1.05rem; padding: 2px; fill: none; stroke: var(--ink); stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round; background: rgba(11, 14, 22, .78); border-radius: 2px; }
 /* Rarity reads as signal brightness: legendary full, epic dim, rare muted. */
 .directory-hero[data-rarity="legendary"] :is(img, .hero-initial) { border-color: var(--amber); }
 .directory-hero[data-rarity="rare"] :is(img, .hero-initial) { border-color: var(--ink-muted); }
 .hero-dossier > summary:hover :is(img, .hero-initial),
 .hero-dossier > summary:focus-visible :is(img, .hero-initial),
 .directory-hero:target :is(img, .hero-initial) { box-shadow: inset 0 0 0 1px var(--signal-glow), 0 0 0 1px var(--amber-dim), 0 0 22px var(--signal-halo); }
-.directory-hero-name { display: grid; gap: .1rem; min-width: 0; width: 100%; }
-.directory-hero-heading h3 { margin: 0; font: 600 .82rem/1.2 var(--display-2); letter-spacing: .04em; text-transform: uppercase; color: var(--ink); overflow-wrap: anywhere; }
+/* Once you record a hero, the ones you do not have yet step back. */
+[data-collection] .directory-hero[data-owned="false"] .hero-dossier:not([open]) :is(img, .hero-initial) { filter: grayscale(.85) brightness(.6); }
+[data-collection] .directory-hero[data-owned="false"] .hero-dossier:not([open]) h3 { color: var(--ink-muted); }
+.directory-hero-name { position: relative; display: grid; gap: .05rem; min-width: 0; width: 100%; }
+.directory-hero-heading h3 { margin: 0; font: 600 .74rem/1.2 var(--display-2); letter-spacing: .03em; text-transform: uppercase; color: var(--ink); overflow-wrap: anywhere; }
 .directory-hero-meta { font-size: .78rem; line-height: 1.3; color: var(--ink-muted); overflow-wrap: anywhere; hyphens: auto; }
-.hero-dossier:not([open]) .hero-meta-extra { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.hero-dossier:not([open]) :is(.hero-meta-extra, .directory-hero-meta) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.hero-mine-line { font-size: .68rem; line-height: 1.25; color: var(--amber); font-variant-numeric: tabular-nums; }
+.hero-mine-line:empty { display: none; }
 .hero-dossier > summary:hover h3 { color: var(--amber); }
 
-/* An open hero takes the whole row; the tiles after it close up behind. */
-.directory-hero:has(> .hero-dossier[open]) { grid-column: 1 / -1; padding: 1rem var(--space-s) var(--space-s); margin-inline: calc(var(--space-s) * -1); background: var(--void-2); border-block: 1px solid var(--signal-line); }
+/* An open hero takes the whole band, gutter included; the tiles after it close up behind. */
+.directory-hero:has(> .hero-dossier[open]) { grid-column: 1 / -1; padding: 1rem var(--space-s) var(--space-s); margin-inline: calc(-1 * (var(--band-label) + var(--band-gap) + var(--space-s))) calc(var(--space-s) * -1); background: var(--void-2); border-block: 1px solid var(--signal-line); }
 .hero-dossier[open] > summary.directory-hero-heading { flex-direction: row; align-items: center; gap: .9rem; text-align: start; }
-.hero-dossier[open] > summary :is(img, .hero-initial) { width: 4.4rem; }
+.hero-dossier[open] .directory-portrait { width: 4.4rem; flex: none; }
 .hero-dossier[open] > summary h3 { font-size: var(--step-1); letter-spacing: .06em; }
 .hero-dossier[open] > summary .directory-hero-meta { font-size: var(--step--1); }
+.hero-dossier[open] > summary .hero-mine-line { font-size: var(--step--1); }
 .hero-dossier[open] > summary::after { content: "×"; align-self: start; margin-inline-start: auto; font: 400 1.6rem/1 var(--body); color: var(--amber); }
 .hero-dossier[open] > summary:hover::after { color: var(--ink); }
 .hero-dossier:not([open]) > .hero-dossier-body { display: none; }
 .hero-dossier-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 0 2rem; margin-top: 1rem; padding-top: .25rem; border-top: 1px solid var(--signal-line); color: var(--ink-dim); }
+
+/* Your copy — what you own of this hero, saved with the rest of your inventory. */
+.hero-mine { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fill, minmax(5.2rem, 1fr)); gap: .3rem 1rem; margin: .5rem 0 0; padding: 0 0 .6rem; border: 0; border-bottom: 1px solid var(--signal-line); }
+.hero-mine legend { padding: 0; margin-bottom: .2rem; font-size: var(--step--1); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); }
+.hero-mine label { display: grid; min-width: 0; }
+.hero-mine label > span { font-size: .75rem; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hero-mine .hero-own { grid-column: 1 / -1; display: flex; align-items: center; gap: .6rem; min-height: 40px; }
+.hero-mine .hero-own input { width: 1.25rem; height: 1.25rem; min-height: 0; margin: 0; accent-color: var(--amber); }
+.hero-mine .hero-own span { font-size: var(--step--1); color: var(--ink); white-space: normal; }
+.hero-mine-note { grid-column: 1 / -1; margin: .2rem 0 0; font-size: .75rem; font-style: italic; color: var(--ink-muted); }
 
 .hero-role-tags { display: flex; flex-wrap: wrap; gap: .3rem 1rem; margin-top: .75rem; }
 .hero-role-tags span { color: var(--amber); font-size: .78rem; font-weight: 700; line-height: 1.4; letter-spacing: .1em; text-transform: uppercase; }
@@ -92,16 +128,33 @@
 .directory-more:hover { color: var(--ink); border-bottom-color: var(--signal-line); }
 #hero-sources ul { padding-inline-start: 1.1rem; font-size: var(--step--1); }
 
-/* Wider screens pair the short generations; a long one, or one with a hero
-   open, takes the full width so the dossier always has the measure. */
+/* Wider screens: generation 1's three tiers sit side by side (2 + 4 + 2 tiles)
+   and the short generations pair up. A band with a hero open takes the full width
+   so the dossier always has the measure. */
 @media (min-width: 651px) {
-  .hero-roster { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-flow: row dense; column-gap: 2rem; }
+  .hero-filters { grid-template-columns: minmax(0, 2fr) repeat(5, minmax(0, 1fr)); column-gap: 1rem; }
+  .hero-filters .hero-search, .hero-filters label:not(.hero-search) { grid-column: auto; }
+  .hero-roster { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1.5rem; }
+  .hero-gen { display: contents; }
+  .hero-gen[data-tiered] { display: grid; grid-column: 1 / -1; grid-template-columns: 1fr 2fr 1fr; gap: 1.5rem; }
   .hero-catalogue { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .hero-gen:is(:has(.directory-hero:nth-child(5)), :has(.hero-dossier[open])) { grid-column: 1 / -1; }
-  .hero-gen:is(:has(.directory-hero:nth-child(5)), :has(.hero-dossier[open])) .hero-catalogue { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .hero-gen[data-tiered] .hero-band { grid-template-columns: minmax(0, 1fr); --band-label: 0px; --band-gap: 0px; }
+  .hero-gen[data-tiered] .band-label { display: flex; justify-content: space-between; align-items: baseline; padding-top: .3rem; }
+  .hero-gen[data-tiered] .band-gen { display: flex; gap: .4rem; align-items: baseline; }
+  .hero-gen[data-tiered] .hero-band:not([data-tier="legendary"]) .band-gen { display: flex; visibility: hidden; }
+  .hero-gen[data-tiered] .band-gen b { font-size: var(--step-1); }
+  .hero-gen[data-tiered] .band-tier { writing-mode: horizontal-tb; }
+  .hero-gen[data-tiered] .hero-catalogue { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hero-gen[data-tiered] .hero-band[data-tier="epic"] .hero-catalogue { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .hero-gen[data-tiered]:has(.hero-dossier[open]) { grid-template-columns: minmax(0, 1fr); }
+  .hero-gen[data-tiered]:has(.hero-dossier[open]) .hero-catalogue { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .hero-band:has(.hero-dossier[open]) { grid-column: 1 / -1; }
+  .hero-gen:not([data-tiered]) .hero-band:has(.hero-dossier[open]) .hero-catalogue { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  .hero-bag-caption { grid-column: 2 / -1; }
 }
 @media (max-width: 650px) {
-  .hero-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem 1.25rem; }
+  .hero-filters { column-gap: .9rem; }
   .hero-dossier-body, .directory-role-guide { grid-template-columns: minmax(0, 1fr); }
-  .directory-results { flex-wrap: wrap; gap: .25rem; }
+  .hero-bag { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .hero-bag-title { grid-column: 1 / -1; }
 }

@@ -28,6 +28,14 @@ store.setCombat({ stats: { inf: { attack: 250, lethality: 163, defense: 250, hea
 
 The simulator's `troop-roster` module edits the troop entries directly, one row per tier you own; clearing a row deletes its key rather than storing an unknown. Its `sim-player` module (`js/sim-player.js`) moves stats and troops between the save and the sheet. The simulator reads and writes these only in its fight modes (Mystic Trial, Battle), where the report's left column is you; a bear report's left column is the rally lead's. Loading fills your stats and, per type, the best tier you own; saving stores your stats and each march row as the troops you have at that tier. On a first visit, with no simulator sheet saved, it fills from the ledger automatically.
 
+Hero collection facts serve the hero directory. `heroes.roster` holds the heroes you own, keyed by catalogue ID, each with `level` (1–200), `stars` (the catalogue's star index, 6 × stars + tier, 0–30), `widget` (0–10) and `skills` (one Expedition level 1–5 per skill, or null until every level is known), with its own entry in `heroes.provenance`. Unread fields are null; a hero missing from the roster is not owned. Per-hero shards are ordinary inventory entries keyed `hero-shards-{hero}`, so they can be counted before the hero is unlocked. General shards (`mythic-hero-shard`, `epic-hero-shard`, `rare-hero-shard`) and widget parts (`hero-widget`) are the same inventory balances the event planner reads. Saves without a `heroes` key stay valid.
+
+```js
+store.heroes(); // { roster: { amadeus: { level, stars, widget, skills } }, provenance, shards: { amadeus: 34 } }
+store.setHero('amadeus', { level: 80, stars: 27, widget: 6, skills: [5, 4, 5] }); // null forgets the hero
+store.setBalance(PlayerLedger.heroShardId('amadeus'), 34);
+```
+
 `preferences.heroGear` holds only optimisation/UI choices. Resource bags and piece lists are derived from the ledger, not duplicated in preferences. A write touches changed facts and explicitly edited fields, preserving unrelated inventory and provenance. `source` distinguishes manual, legacy, screenshot, plan, reset and file edits.
 
 ## Store API
