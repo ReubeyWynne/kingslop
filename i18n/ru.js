@@ -646,6 +646,7 @@ window.__BH_I18N_DATA["ru"] = {
   "sim.why": "как это читать",
   "sim.sweep.settings": "сетка и пределы",
   "sim.mystic.notes": "правила комнат и советы",
+  "sim.ledger.title": "твоё сохранение игрока",
   "sim.foot.main": "ТОЛЬКО МАТЕМАТИКА",
   "sim.foot.note": "Медвежье соотношение — для охот нашего сервера. На твоём сервере будет иначе — <b>математика не изменится.</b>",
   "sim.foot.credit": "Боевой движок и модель медведя от <a href=\"https://frakinator.streamlit.app/\">Frakinator</a>, автор [685] Frak — проверенная модель сообщества, не официальная · комнаты Mystic Trial по таблицам сообщества Kingshot Mastery · сделано для альянса [2129]MadNess",

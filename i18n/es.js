@@ -646,6 +646,7 @@ window.__BH_I18N_DATA["es"] = {
   "sim.why": "cómo se lee",
   "sim.sweep.settings": "cuadrícula y límites",
   "sim.mystic.notes": "reglas de las salas y consejos",
+  "sim.ledger.title": "tu guardado de jugador",
   "sim.foot.main": "SOLO LAS CUENTAS",
   "sim.foot.note": "La proporción de oso es para las cacerías de oso de nuestro servidor. Tu servidor será distinto — <b>las cuentas no.</b>",
   "sim.foot.credit": "Motor de batalla y modelo del oso del <a href=\"https://frakinator.streamlit.app/\">Frakinator</a> de [685] Frak — un modelo de la comunidad probado, no oficial · salas del Mystic Trial de las tablas de la comunidad de Kingshot Mastery · hecho para la alianza [2129]MadNess",

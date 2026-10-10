@@ -654,6 +654,7 @@ window.__BH_I18N_DATA["th"] = {
   "sim.why": "อ่านอย่างไร",
   "sim.sweep.settings": "ตารางและขอบเขต",
   "sim.mystic.notes": "กฎของห้องและเคล็ดลับ",
+  "sim.ledger.title": "เซฟผู้เล่นของคุณ",
   "sim.foot.main": "แค่คณิตศาสตร์",
   "sim.foot.note": "อัตราส่วนหมีใช้สำหรับการล่าหมีของเซิร์ฟเวอร์เรา. เซิร์ฟเวอร์ของคุณอาจต่างกัน — <b>คณิตศาสตร์ไม่ต่าง.</b>",
   "sim.foot.credit": "เอนจินการรบและแบบจำลองหมีจาก <a href=\"https://frakinator.streamlit.app/\">Frakinator</a> โดย [685] Frak — แบบจำลองชุมชนที่ผ่านการทดสอบ, ไม่เป็นทางการ · ห้อง Mystic Trial จากตารางชุมชนของ Kingshot Mastery · สร้างเพื่อพันธมิตร [2129]MadNess",

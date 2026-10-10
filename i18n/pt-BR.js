@@ -646,6 +646,7 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "sim.why": "como ler isto",
   "sim.sweep.settings": "grade e limites",
   "sim.mystic.notes": "regras das salas e dicas",
+  "sim.ledger.title": "seu save de jogador",
   "sim.foot.main": "SÓ A MATEMÁTICA",
   "sim.foot.note": "A razão do urso é para as caçadas de urso do nosso servidor. Seu servidor vai diferir — <b>a matemática não.</b>",
   "sim.foot.credit": "Motor de batalha e modelo do urso do <a href=\"https://frakinator.streamlit.app/\">Frakinator</a> de [685] Frak — um modelo da comunidade testado, não oficial · salas do Mystic Trial das tabelas da comunidade do Kingshot Mastery · feito para a aliança [2129]MadNess",

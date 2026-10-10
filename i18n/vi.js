@@ -654,6 +654,7 @@ window.__BH_I18N_DATA["vi"] = {
   "sim.why": "cách đọc",
   "sim.sweep.settings": "lưới & giới hạn",
   "sim.mystic.notes": "luật phòng & mẹo",
+  "sim.ledger.title": "bản lưu người chơi của bạn",
   "sim.foot.main": "CHỈ LÀ TOÁN HỌC",
   "sim.foot.note": "Tỷ lệ gấu là cho các cuộc săn gấu của server chúng tôi. Server của bạn có thể khác — <b>toán học thì không.</b>",
   "sim.foot.credit": "Engine trận đánh và mô hình gấu từ <a href=\"https://frakinator.streamlit.app/\">Frakinator</a> của [685] Frak — mô hình cộng đồng đã được kiểm chứng, không chính thức · các phòng Mystic Trial từ bảng cộng đồng Kingshot Mastery · làm cho liên minh [2129]MadNess",

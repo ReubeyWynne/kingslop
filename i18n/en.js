@@ -665,6 +665,7 @@ window.__BH_I18N_DATA["en"] = {
   "sim.why": "how this reads",
   "sim.sweep.settings": "grid & limits",
   "sim.mystic.notes": "room rules & tips",
+  "sim.ledger.title": "your player save",
   "sim.foot.main": "JUST THE MATHS",
   "sim.foot.note": "The bear ratio is for our server's bear hunts. Your server will differ — <b>the maths doesn't.</b>",
   "sim.foot.credit": "Battle engine and bear model from the <a href=\"https://frakinator.streamlit.app/\">Frakinator</a> by [685] Frak — a tested community model, not official · Mystic Trial rooms from Kingshot Mastery community tables · built for the [2129]MadNess alliance",

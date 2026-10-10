@@ -646,6 +646,7 @@ window.__BH_I18N_DATA["de"] = {
   "sim.why": "so liest man das",
   "sim.sweep.settings": "Raster & Grenzen",
   "sim.mystic.notes": "Raumregeln & Tipps",
+  "sim.ledger.title": "dein Spielerstand",
   "sim.foot.main": "NUR DIE MATHEMATIK",
   "sim.foot.note": "Das Bären-Verhältnis gilt für die Bärenjagden unseres Servers. Dein Server wird anders sein — <b>die Mathematik nicht.</b>",
   "sim.foot.credit": "Kampf-Engine und Bärenmodell vom <a href=\"https://frakinator.streamlit.app/\">Frakinator</a> von [685] Frak — ein getestetes Community-Modell, kein offizielles · Mystic-Trial-Räume aus den Community-Tabellen von Kingshot Mastery · gebaut für die Allianz [2129]MadNess",

@@ -645,6 +645,7 @@ window.__BH_I18N_DATA["tr"] = {
   "sim.why": "nasıl okunur",
   "sim.sweep.settings": "ızgara ve sınırlar",
   "sim.mystic.notes": "oda kuralları ve ipuçları",
+  "sim.ledger.title": "oyuncu kaydın",
   "sim.foot.main": "SADECE MATEMATİK",
   "sim.foot.note": "Ayı oranı, sunucumuzun ayı avları içindir. Senin sunucun farklı olacak — <b>matematik değil.</b>",
   "sim.foot.credit": "Savaş motoru ve ayı modeli [685] Frak'ın <a href=\"https://frakinator.streamlit.app/\">Frakinator</a>'ından — test edilmiş bir topluluk modeli, resmî değil · Mystic Trial odaları Kingshot Mastery topluluk tablolarından · [2129]MadNess ittifakı için yapıldı",

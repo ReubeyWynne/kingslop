@@ -150,6 +150,7 @@ async function overflow(page, message) {
               assert.equal(await page.locator('#sim-fight-out .sim-row').count(), 4);
               await view('armies');
               assert.equal(await page.locator('#sim-ledger').isVisible(), true);
+              await page.locator('#sim-ledger > summary').click();
               await page.locator('[data-action="sim-player.save"]').click();
               const saved = await page.evaluate(() => window.PlayerLedger.shared().combat());
               assert.equal(saved.stats.inf.attack, 333, lang + ': your stats reach the shared player save');
@@ -169,6 +170,8 @@ async function overflow(page, message) {
               await page.locator('#sim-roster-dialog [data-action="sim-army.close"]').click();
               if (width === 390) {
                 assert.match(await page.locator('.sim-peek').innerText(), /\S/, lang + ': the answer peeks in under the armies');
+                assert.equal(await page.locator('.sim-peek').evaluate(node => getComputedStyle(node).position), 'sticky');
+                assert.match(await page.locator('#sim-sweep-size').evaluate(node => getComputedStyle(node).display), /^(?!none)/, lang + ': the mix count shows beside the sweep button');
                 await page.locator('.sim-peek').click();
                 assert.equal(await page.locator('#sim-answer').isVisible(), true);
                 await page.locator('#sim-sweep-btn').click();
@@ -183,6 +186,8 @@ async function overflow(page, message) {
             if (mode === 'mystic') {
               assert.ok(await page.locator('#sim-rooms').evaluate(table => {
                 const headers = table.querySelector('.sim-head').children;
+                // Phones show the rooms as cards, with no header row to align to.
+                if (!table.querySelector('.sim-head').getClientRects().length) return true;
                 return [...table.querySelectorAll('.sim-row')].every(row =>
                   Math.abs(row.querySelector('.room-ratio').getBoundingClientRect().right - headers[2].getBoundingClientRect().right) < 1 &&
                   Math.abs(row.querySelector('.room-alt').getBoundingClientRect().right - headers[3].getBoundingClientRect().right) < 1);
