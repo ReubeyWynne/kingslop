@@ -172,20 +172,23 @@
     viewport.scrollTo({ left: el.offsetLeft - (viewport.clientWidth - el.offsetWidth) / 2, behavior: instant ? 'instant' : 'auto' });
   }
 
-  // While the finger or a fling moves the strip, the scene of a cover it
-  // passes is not started; the cover the strip comes to rest on starts its
-  // scene then. Starting scenes cover by cover loaded every frame of a
-  // long swipe with work nobody saw.
-  var runningIndex = -1;
-  function runScene(index) {
-    if (runningIndex === index) return;
-    runningIndex = index;
-    cards.forEach(function (card, i) {
-      copiesOf(i).forEach(function (el) { el.classList.toggle('is-running', i === index); });
+  // The selected cover and the cover on either side of it run their
+  // scenes, so a cover is already moving when a swipe brings it in. Only
+  // the copy of each that sits beside the selected one runs, never every
+  // copy in the ring, and the window moves one cover at a time: each
+  // crossing starts one scene and stops one.
+  var running = [];
+  function runScene(index, anchor) {
+    var at = centreOf(anchor || nearestCopy(index));
+    var next = [-1, 0, 1].map(function (d) {
+      return copiesOf(wrap(index + d)).reduce(function (best, el) { return Math.abs(centreOf(el) - at) < Math.abs(centreOf(best) - at) ? el : best; });
     });
+    running.forEach(function (el) { if (next.indexOf(el) < 0) el.classList.remove('is-running'); });
+    next.forEach(function (el) { if (running.indexOf(el) < 0) el.classList.add('is-running'); });
+    running = next;
   }
 
-  function selectDeck(index, moving) {
+  function selectDeck(index, anchor) {
     position = index;
     // CSS keys the ground and the accent off this attribute rather than a
     // :has() rule: :has() made every text change in the deck (the position
@@ -195,7 +198,7 @@
       card.classList.toggle('is-selected', i === index);
       card.tabIndex = i === index ? 0 : -1;
     });
-    if (!moving) runScene(index);
+    runScene(index, anchor);
     groups.forEach(function (button) {
       button.setAttribute('aria-pressed', cards[index].getAttribute('data-group') === button.getAttribute('data-deck-group') ? 'true' : 'false');
     });
@@ -220,8 +223,9 @@
   function browseDeck(index, focusCard, instant) {
     index = wrap(index);
     targetPosition = index;
-    selectDeck(index);
-    scrollToCard(instant ? cards[index] : nearestCopy(index), instant);
+    var to = instant ? cards[index] : nearestCopy(index);
+    selectDeck(index, to);
+    scrollToCard(to, instant);
     announceDeck();
     if (focusCard) cards[index].focus({ preventScroll: true });
   }
@@ -240,7 +244,7 @@
     if (!deck.open) return;
     if (targetPosition === null) {
       var at = centred();
-      if (at.index !== position) selectDeck(at.index, true);
+      if (at.index !== position) selectDeck(at.index, at.el);
     }
     window.clearTimeout(announceTimer);
     announceTimer = hasScrollEnd ? 0 : window.setTimeout(finishDeckScroll, 180);
@@ -257,8 +261,8 @@
     if (targetPosition !== null && at.index !== targetPosition) at = { index: targetPosition, el: null };
     if (at.el !== cards[at.index] || Math.abs(centreOf(cards[at.index]) - viewCentre()) > 1) scrollToCard(cards[at.index], true);
     targetPosition = null;
-    if (at.index !== position || !cards[at.index].classList.contains('is-selected')) selectDeck(at.index);
-    else runScene(at.index);
+    if (at.index !== position || !cards[at.index].classList.contains('is-selected')) selectDeck(at.index, cards[at.index]);
+    else runScene(at.index, cards[at.index]);
     announceDeck();
   }
 
@@ -289,7 +293,6 @@
 
   function cleanDeck() {
     window.clearTimeout(announceTimer);
-    runningIndex = -1;
     document.removeEventListener('touchmove', trackTouch, { passive: true });
     document.addEventListener('touchmove', trackTouch, { passive: false });
     targetPosition = null;
