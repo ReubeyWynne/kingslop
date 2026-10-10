@@ -175,6 +175,7 @@ jobs:
           python3 .dsh/build-ascii.py
           git diff --exit-code -- css/ascii-frames.css _includes/ascii/campfire.html || { echo "::error::ASCII frames are stale or hand-edited. Change .dsh/build-ascii.py and regenerate."; exit 1; }
           node .dsh/ascii-style-check.cjs
+          python3 .dsh/moon-check.py
       - name: Check troop allocation
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/bear-allocator-check.cjs
@@ -271,7 +272,10 @@ jobs:
         run: node .dsh/simulator-ui-check.cjs
       - name: Check ASCII scenes frame by frame
         if: matrix.group == 'ascii-capture'
-        run: node .dsh/ascii-capture.cjs
+        run: |
+          node .dsh/ascii-capture.cjs --frames
+          python3 -m pip install Pillow==11.3.0
+          python3 .dsh/moon-review-gif.py
       - name: Check hero gear UI
         if: matrix.group == 'hero-gear'
         run: node .dsh/hero-gear-visual-check.cjs
@@ -293,6 +297,7 @@ jobs:
             .dsh/governor-preview/
             .dsh/deck-preview/
             .dsh/sim-preview/
+            .dsh/ascii-preview/
 
   check:
     needs: [changes, logic, build, browser]

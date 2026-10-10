@@ -596,31 +596,61 @@ def banner(phase):
     return arr
 
 
+MOON_COLS, MOON_ROWS, MOON_FRAMES = 37, 13, 112
+
+
+def moon_surface():
+    samples = []
+    shadow = grid(MOON_COLS, MOON_ROWS)
+    maria = ((-.36, -.18, .43, .38), (.25, -.36, .32, .27),
+             (.48, .06, .25, .32), (-.16, .34, .26, .20))
+    craters = ((-.52, -.46, .14), (.12, -.08, .17), (.38, .42, .15),
+               (-.30, .57, .13), (-.62, .22, .11), (.58, -.39, .09))
+    for r in range(MOON_ROWS):
+        for c in range(MOON_COLS):
+            u, v = (c - 18) / 12.6, (r - 6) / 5.9
+            d = u * u + v * v
+            if d > 1:
+                continue
+            z = math.sqrt(1 - d)
+            albedo = .84 + .12 * noise(c * .7 + 3, r * 1.1 + 5)
+            for x, y, rx, ry in maria:
+                basin = ((u - x) / rx) ** 2 + ((v - y) / ry) ** 2
+                albedo -= .32 * math.exp(-basin * 1.8)
+            relief_x = relief_y = 0
+            for x, y, radius in craters:
+                dx, dy = (u - x) / radius, (v - y) / radius
+                distance = math.hypot(dx, dy)
+                albedo += .22 * math.exp(-((distance - 1) / .25) ** 2)
+                albedo -= .25 * math.exp(-distance * distance * 3)
+                slope = math.exp(-((distance - .8) / .4) ** 2) * .22
+                relief_x += dx * slope
+                relief_y += dy * slope
+            albedo = max(.25, min(1, albedo))
+            shadow[r][c] = '.:o'[min(2, int(albedo * (z * .6 + .4) * 3))]
+            samples.append((c, r, u, v, z, albedo, relief_x, relief_y))
+    return shadow, samples
+
+
 def moon_frames():
-    """The 28-day clock as a moon passing through its phases."""
-    ramp = " .:-=+*#"
-    rows, rx, ry = 9, 9.4, 4.4
-    cx, cy = 14, 4
+    ramp = ".,:;=+*#%@"
+    _, samples = moon_surface()
     frames = []
-    for day in range(28):
-        phi = TAU * ((day + 11) % 28) / 28
-        arr = grid(MW, rows)
-        for r in range(rows):
-            for c in range(MW):
-                u, v = (c - cx) / rx, (r - cy) / ry
-                d = u * u + v * v
-                if d > 1:
-                    continue
-                z = math.sqrt(1 - d)
-                lit = u * math.sin(phi) - z * math.cos(phi)
-                mare = .25 * noise(c * .55 + 3, r * .9 + 5)
-                if lit > 0:
-                    arr[r][c] = ramp[max(2, min(len(ramp) - 1, int((lit - mare + .2) * 6.5)))]
-                elif d > .72:
-                    arr[r][c] = '.'
-        for n, (r, c) in enumerate([(0, 2), (2, 26), (7, 1), (8, 25), (5, 27)]):
-            k = (day + n * 6) % 14
-            put(arr, c, r, '.+*+.'[k] if k < 5 else ' ')
+    for frame in range(MOON_FRAMES):
+        phi = TAU * (frame / MOON_FRAMES + 11 / 28)
+        sx, sz = math.sin(phi), -math.cos(phi)
+        arr = grid(MOON_COLS, MOON_ROWS)
+        for c, r, u, v, z, albedo, relief_x, relief_y in samples:
+            light = u * sx + z * sz
+            if light <= 0:
+                continue
+            relief = -relief_x * sx - relief_y * .18
+            brightness = albedo * (.20 + .80 * light ** .55) + relief
+            index = max(0, min(len(ramp) - 1, int(brightness * (len(ramp) - 1))))
+            arr[r][c] = ramp[index]
+        for n, (c, r) in enumerate(((2, 1), (33, 3), (4, 10), (31, 11), (35, 7))):
+            beat = (frame + n * 23) % MOON_FRAMES
+            put(arr, c, r, '+' if 8 <= beat < 12 else '.' if beat < 20 else ' ')
         frames.append(arr)
     return frames
 
@@ -644,7 +674,12 @@ def minis():
     durations = {'charm': 6.4, 'bear': 7.2, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 19.6, 'helm': 8, 'seal': 8}
     for kind, duration in durations.items():
         frames, holds = mini_frames(kind)
-        css.append(animation(f'.ascii-mini--{kind}::before', f'ascii-mini-{kind}', frames, duration, holds))
+        if kind == 'moon':
+            shadow, _ = moon_surface()
+            css.append(f'.ascii-mini--moon::before{{content:{content(shadow)}}}\n')
+            css.append(animation('.ascii-mini--moon::after', 'ascii-mini-moon', frames, duration))
+        else:
+            css.append(animation(f'.ascii-mini--{kind}::before', f'ascii-mini-{kind}', frames, duration, holds))
     return '\n'.join(css) + '\n'
 
 

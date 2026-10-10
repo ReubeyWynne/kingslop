@@ -93,6 +93,9 @@
   color: var(--amber, #f5c851);
 }
 .ascii-mini::before { display: block; white-space: pre; }
+.ascii-mini--moon { width: 37ch; height: 16.25em; }
+.ascii-mini--moon::before { color: var(--amber-dim); opacity: .25; }
+.ascii-mini--moon::after { position: absolute; inset: 0; display: block; white-space: pre; }
 .ascii-mini--charm { color: var(--amber-dim, #d3a33e); }
 .ascii-mini--bear { height: 13.75em; }
 .ascii-mini--crown { height: 12.5em; }

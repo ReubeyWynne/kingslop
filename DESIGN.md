@@ -228,7 +228,7 @@ All authored animations must use the site's distinct ASCII character-grid style.
 | Campfire | home hero, Home deck cover | flame frames, coal glyphs, cell-stepped sparks |
 | Hearth | above every page footer | the campfire's own flame field, sampled small |
 | Forge | Bear Hunt rewards, Hero Gear cover, screenshot-reading loader | three hand-drawn hammer poses, a hot bar, cell-stepped sparks |
-| Moon | Event Cycle hero and cover | a 28-frame lunar cycle, the 28-day clock |
+| Moon | Event Cycle hero and cover | a 112-frame lunar cycle, fixed crater relief and earthshine, the 28-day clock |
 | Bear, charm, banner, crown, dice | the hero of their page and its deck cover | a bear that blinks and sniffs, a longship's sea rolling past and its shields catching the light, a glint along a crown's band, cloth ripple in four glyph heights, two dice tumbling over their corners and landing in a puff of dust |
 | Helm | Heroes hero and deck cover | wind running back through a Spartan helm's horsehair crest, the dome catching light |
 | Seal | Governor Gear hero and deck cover | a quartered heater shield, a shine sweeping across it on a slant, then its corners and point catching the light |
