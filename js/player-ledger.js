@@ -17,6 +17,12 @@
   var PREFS = ['included', 'weights', 'profile', 'reforge', 'troop', 'mode', 'view', 'selected', 'goal', 'target', 'targetMastery'];
   var TYPES = ['inf', 'cav', 'arc'], STATS = ['attack', 'lethality', 'defense', 'health'];
   var PIECES = ['inf', 'cav', 'arc'].flatMap(function (troop) { return ['helm', 'gloves', 'chest', 'boots'].map(function (slot) { return troop + '-' + slot; }); });
+  // Governor equipment is tracked by level index: 0 is not crafted (or no charm), then one step per tier star or charm level.
+  var GOVERNOR = {
+    gear: { section: 'governorGear', field: 'pieces', max: 58, ids: ['inf', 'cav', 'arc'].flatMap(function (troop) { return [troop + '-1', troop + '-2']; }) },
+    charms: { section: 'governorCharms', field: 'slots', max: 22, ids: ['inf', 'cav', 'arc'].flatMap(function (troop) { return ['1-1', '1-2', '1-3', '2-1', '2-2', '2-3'].map(function (slot) { return troop + '-' + slot; }); }) }
+  };
+  var GOVERNOR_PREFS = { goal: ['stats', 'score'], focus: ['all', 'inf', 'cav', 'arc'], gearTarget: 58, charmTarget: 22 };
   function copy(value) { return JSON.parse(JSON.stringify(value)); }
   function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
   function valid(ok) { if (!ok) throw new Error('Invalid player ledger'); }
@@ -52,8 +58,14 @@
     Object.keys(value.heroGear.provenance).forEach(function (key) { valid(Object.hasOwn(value.heroGear.pieces, key)); });
     var parts = value.heroGear.parts, xp = value.inventory[ITEMS.xp];
     if (parts !== null) valid(object(parts) && count(parts.ten) && count(parts.hundred) && count(parts.remainder) && parts.remainder < 10 && xp && xp.status === 'confirmed' && parts.ten * 10 + parts.hundred * 100 + parts.remainder === xp.amount);
-    valid(object(value.governorGear) && value.governorGear.status === 'unsupported' && object(value.governorGear.pieces) && !Object.keys(value.governorGear.pieces).length);
-    valid(object(value.governorCharms) && value.governorCharms.status === 'unsupported' && object(value.governorCharms.slots) && !Object.keys(value.governorCharms.slots).length);
+    Object.keys(GOVERNOR).forEach(function (kind) {
+      var spec = GOVERNOR[kind], section = value[spec.section];
+      valid(object(section) && ['unsupported', 'tracked'].includes(section.status) && object(section[spec.field]));
+      var keys = Object.keys(section[spec.field]);
+      if (section.status === 'unsupported') return valid(!keys.length && section.provenance === undefined);
+      valid(object(section.provenance) && same(Object.keys(section.provenance).sort(), keys.slice().sort()));
+      keys.forEach(function (key) { var item = section[spec.field][key]; valid(spec.ids.includes(key) && object(item) && Object.keys(item).length === 1 && count(item.level) && item.level <= spec.max && provenance(section.provenance[key])); });
+    });
     if (value.combat !== undefined) {
       valid(object(value.combat) && object(value.combat.stats) && object(value.combat.provenance));
       Object.keys(value.combat.stats).forEach(function (type) {
@@ -63,7 +75,12 @@
       Object.keys(value.combat.provenance).forEach(function (type) { valid(Object.hasOwn(value.combat.stats, type)); });
     }
     valid(object(value.preferences) && object(value.preferences.heroGear));
-    valid(Object.keys(value.preferences).every(function (key) { return key === 'heroGear'; }) && Object.keys(value.preferences.heroGear).every(function (key) { return PREFS.includes(key); }));
+    valid(Object.keys(value.preferences).every(function (key) { return key === 'heroGear' || key === 'governor'; }) && Object.keys(value.preferences.heroGear).every(function (key) { return PREFS.includes(key); }));
+    if (value.preferences.governor !== undefined) {
+      var gov = value.preferences.governor;
+      valid(object(gov) && Object.keys(gov).every(function (key) { return Object.hasOwn(GOVERNOR_PREFS, key); }));
+      Object.keys(gov).forEach(function (key) { var rule = GOVERNOR_PREFS[key]; valid(Array.isArray(rule) ? rule.includes(gov[key]) : count(gov[key]) && gov[key] <= rule); });
+    }
     var prefs = value.preferences.heroGear;
     if (prefs.included !== undefined) valid(object(prefs.included) && ['inf', 'cav', 'arc'].every(function (key) { return typeof prefs.included[key] === 'boolean'; }));
     if (prefs.weights !== undefined) valid(object(prefs.weights) && ['inf', 'cav', 'arc'].every(function (key) { return Array.isArray(prefs.weights[key]) && prefs.weights[key].length === 2 && prefs.weights[key].every(function (n) { return Number.isFinite(n) && n >= 0 && n <= 100; }); }));
@@ -169,6 +186,34 @@
         });
       }, expected);
     }
+    function governorSpec(kind) { valid(Object.hasOwn(GOVERNOR, kind)); return GOVERNOR[kind]; }
+    function governor(kind) {
+      var spec = governorSpec(kind), section = snapshot()[spec.section], levels = {};
+      spec.ids.forEach(function (id) { levels[id] = section.status === 'tracked' && Object.hasOwn(section[spec.field], id) ? section[spec.field][id].level : null; });
+      return levels;
+    }
+    function setGovernor(kind, levels, source) {
+      var spec = governorSpec(kind);
+      valid(object(levels) && Object.keys(levels).every(function (id) { return spec.ids.includes(id) && (levels[id] === null || count(levels[id]) && levels[id] <= spec.max); }));
+      return transaction(function (next) {
+        var section = next[spec.section], facts = { source: source || 'manual', at: new Date().toISOString() };
+        if (section.status !== 'tracked') { section.status = 'tracked'; section[spec.field] = {}; section.provenance = {}; }
+        Object.keys(levels).forEach(function (id) {
+          if (levels[id] === null) { delete section[spec.field][id]; delete section.provenance[id]; }
+          else if (!Object.hasOwn(section[spec.field], id) || section[spec.field][id].level !== levels[id]) { section[spec.field][id] = { level: levels[id] }; section.provenance[id] = copy(facts); }
+        });
+      });
+    }
+    function setGovernorPreference(key, value) {
+      valid(Object.hasOwn(GOVERNOR_PREFS, key));
+      return transaction(function (next) { next.preferences.governor = Object.assign({}, next.preferences.governor); next.preferences.governor[key] = value; });
+    }
+    function resetGovernor(expected) {
+      return transaction(function (next) {
+        var blank = empty();
+        next.governorGear = blank.governorGear; next.governorCharms = blank.governorCharms; delete next.preferences.governor;
+      }, expected);
+    }
     function legacy(input, engine) {
       valid(object(input) && input.version === 1 && object(input.pieces) && object(input.resources));
       PIECES.forEach(function (key) { valid(piece(input.pieces[key]) && input.pieces[key].quality !== null && input.pieces[key].level !== null && input.pieces[key].mastery !== null); });
@@ -223,7 +268,7 @@
     if (events && events.addEventListener) events.addEventListener('storage', function (event) {
       if ((event.key === KEY || event.key === null) && (!event.storageArea || event.storageArea === storage)) { try { current = read(); notify(); } catch (error) { if (events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:error', { detail: error.message })); } }
     });
-    return { snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
+    return { snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
   }
-  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), TROOP_TYPES: TYPES.slice(), COMBAT_STATS: STATS.slice(), troopId: troopId, empty: empty, validate: validate, create: create };
+  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), COMBAT_STATS: STATS.slice(), troopId: troopId, empty: empty, validate: validate, create: create };
 });

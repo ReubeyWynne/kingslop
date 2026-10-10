@@ -79,5 +79,14 @@
     "group": "tools",
     "ledeKey": "ev.deck.lede.gear",
     "lede": "plan your next upgrade and the resources it needs."
+  },
+  {
+    "self": "governor",
+    "tail": "governor-gear/",
+    "labelKey": "gov.nav",
+    "label": "Governor",
+    "group": "tools",
+    "ledeKey": "ev.deck.lede.governor",
+    "lede": "governor gear and charms, planned from your bag."
   }
 ]

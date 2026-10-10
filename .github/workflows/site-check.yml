@@ -48,6 +48,8 @@ jobs:
         run: node .dsh/event-rules-check.cjs
       - name: Check hero gear costs and search
         run: node .dsh/hero-gear-check.cjs
+      - name: Check governor gear data, planner and ledger
+        run: node .dsh/governor-check.cjs
       - name: Check OCR backend recovery
         run: node .dsh/ocr-backend-check.cjs
       - uses: actions/jekyll-build-pages@44a6e6beabd48582f863aeeb6cb2151cc1716697
@@ -67,6 +69,10 @@ jobs:
         env:
           NODE_PATH: ${{ runner.temp }}/visuals/node_modules
         run: node .dsh/event-availability-check.cjs
+      - name: Check governor gear UI
+        env:
+          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        run: node .dsh/governor-ui-check.cjs
       - name: Check page navigation in browser
         env:
           NODE_PATH: ${{ runner.temp }}/visuals/node_modules
@@ -94,5 +100,6 @@ jobs:
             .dsh/gear-preview/
             .dsh/event-preview/
             .dsh/hero-directory-preview/
+            .dsh/governor-preview/
             .dsh/deck-preview/
 

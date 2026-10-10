@@ -32,6 +32,7 @@ const scenes = [
   ['dice', '/battle-simulator/', '.ascii-mini--dice', 0.224, 25],
   ['moon', '/events/', '.ascii-mini--moon', 0.7, 28],
   ['helm', '/heroes/', '.ascii-mini--helm', 0.25, 32],
+  ['seal', '/governor-gear/', '.ascii-mini--seal', 0.25, 32],
 ];
 
 const server = http.createServer((request, response) => {

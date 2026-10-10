@@ -21,10 +21,10 @@
     "brandNoteKey": "home.brandNote",
     "brandNote": "just the guides",
     "swipePrev": {
-      "url": "hero-gear/",
-      "page": "gear",
-      "title": "Hero gear",
-      "lede": "your next red upgrade, your next mithril use — every cost, in one ledger."
+      "url": "governor-gear/",
+      "page": "governor",
+      "title": "Governor gear",
+      "lede": "governor gear and charms, planned from your bag."
     },
     "swipeNext": {
       "url": "events/",
@@ -439,10 +439,10 @@
       "lede": "heroes by generation, troop and role."
     },
     "swipeNext": {
-      "url": "../",
-      "page": "home",
-      "title": "The events",
-      "lede": "the alliance events in plain words — how each one scores, what to do about it."
+      "url": "../governor-gear/",
+      "page": "governor",
+      "title": "Governor gear",
+      "lede": "governor gear and charms, planned from your bag."
     },
     "css": [
       "../css/styles.css",
@@ -516,6 +516,63 @@
       {
         "key": "directory.candidateNote",
         "html": "Role labels identify candidates, not a ranking. Stars, skill levels, widgets, account stats and alliance policy decide the lineup."
+      }
+    ],
+    "headScripts": []
+  },
+  "governor": {
+    "token": "governor",
+    "depth": "../",
+    "canonicalPath": "/governor-gear/",
+    "themeColor": "#0A130C",
+    "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230A130C'/%3E%3Cpath d='M8 7h16v9c0 5-4 8-8 10-4-2-8-5-8-10z' fill='%2386D48A'/%3E%3C/svg%3E\">",
+    "titleKey": "gov.metaTitle",
+    "titleText": "Governor gear, Demystified — dey.ci",
+    "metaDescKey": "gov.metaDescription",
+    "metaDesc": "Plan governor gear and charm upgrades from your own materials: the next steps your bag can pay for, the cost of any target, and what the score is worth in events.",
+    "ogTitleKey": "gov.metaTitle",
+    "ogTitle": "Governor gear, Demystified — dey.ci",
+    "ogDescKey": "gov.metaDescription",
+    "ogDesc": "Plan governor gear and charm upgrades from your own materials: the next steps your bag can pay for, the cost of any target, and what the score is worth in events.",
+    "skipHref": "#governor-bag",
+    "skipKey": "gov.skip",
+    "skipText": "Skip to the planner",
+    "dust": "<i></i><i></i><i></i>",
+    "brand": "Governor gear",
+    "brandHeadingKey": "gov.title",
+    "brandNoteKey": "gov.kicker",
+    "brandNote": "the governor's wardrobe",
+    "swipePrev": {
+      "url": "../hero-gear/",
+      "page": "gear",
+      "title": "Hero gear",
+      "lede": "your next upgrade and the resources it needs."
+    },
+    "swipeNext": {
+      "url": "../",
+      "page": "home",
+      "title": "The events",
+      "lede": "the alliance events in plain words — how each one scores, what to do about it."
+    },
+    "css": [
+      "../css/styles.css",
+      "../css/events.css",
+      "../css/governor.css"
+    ],
+    "scripts": [
+      "../js/i18n.js",
+      "../js/common.js",
+      "../js/event-data.js",
+      "../js/governor-data.js",
+      "../js/governor-engine.js",
+      "../js/governor-planner.js"
+    ],
+    "footMainKey": "gov.kicker",
+    "footMain": "the governor's wardrobe",
+    "footSubs": [
+      {
+        "key": "gov.foot",
+        "html": "game values cross-checked across <a href=\"https://kingshotdata.com/database/governor-gear/\">Kingshot Data</a> and other public tables · independently built for the [2129]MadNess alliance"
       }
     ],
     "headScripts": []

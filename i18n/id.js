@@ -1074,6 +1074,11 @@ window.__BH_I18N_DATA["id"] = {
   "directory.heroSource": "buka halaman resmi hero",
   "gear.reset": "reset perlengkapan hero",
   "gear.resetTitle": "Reset perlengkapan hero?",
-  "gear.resetHint": "Perlengkapan, sumber dayanya, dan preferensi kembali ke awal. Item acara lainnya tetap tersimpan. Perubahan ini dapat dibatalkan."
+  "gear.resetHint": "Perlengkapan, sumber dayanya, dan preferensi kembali ke awal. Item acara lainnya tetap tersimpan. Perubahan ini dapat dibatalkan.",
+  "gov.nav": "Gubernur",
+  "ev.deck.lede.governor": "perlengkapan dan jimat gubernur, direncanakan dari tasmu.",
+  "gov.title": "Perlengkapan gubernur",
+  "gov.cardLede": "Rencanakan perlengkapan dan jimat gubernur dari bahanmu sendiri, dan lihat nilai skornya di event.",
+  "gov.kicker": "lemari gubernur"
 }
 ;

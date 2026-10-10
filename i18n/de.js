@@ -1063,6 +1063,11 @@ window.__BH_I18N_DATA["de"] = {
   "directory.heroSource": "offizielle Heldenseite ansehen",
   "gear.reset": "Heldenausrüstung zurücksetzen",
   "gear.resetTitle": "Heldenausrüstung zurücksetzen?",
-  "gear.resetHint": "Ausrüstung, Ausrüstungsressourcen und Planereinstellungen werden zurückgesetzt. Andere Eventgegenstände bleiben erhalten. Rückgängig ist möglich."
+  "gear.resetHint": "Ausrüstung, Ausrüstungsressourcen und Planereinstellungen werden zurückgesetzt. Andere Eventgegenstände bleiben erhalten. Rückgängig ist möglich.",
+  "gov.nav": "Gouverneur",
+  "ev.deck.lede.governor": "Gouverneursausrüstung und Talismane, geplant aus deinem Inventar.",
+  "gov.title": "Gouverneursausrüstung",
+  "gov.cardLede": "Plane Gouverneursausrüstung und Talismane mit deinen eigenen Materialien und sieh, was die Wertung in Events bringt.",
+  "gov.kicker": "die Garderobe des Gouverneurs"
 }
 ;

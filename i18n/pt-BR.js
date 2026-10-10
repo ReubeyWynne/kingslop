@@ -1065,6 +1065,11 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "directory.heroSource": "ver a página oficial do herói",
   "gear.reset": "redefinir equipamento de herói",
   "gear.resetTitle": "Redefinir equipamento de herói?",
-  "gear.resetHint": "Equipamento, seus recursos e preferências voltam ao padrão. Os outros itens de eventos são mantidos. Você pode desfazer."
+  "gear.resetHint": "Equipamento, seus recursos e preferências voltam ao padrão. Os outros itens de eventos são mantidos. Você pode desfazer.",
+  "gov.nav": "Governador",
+  "ev.deck.lede.governor": "equipamento e amuletos do governador, planejados com o seu inventário.",
+  "gov.title": "Equipamento de governador",
+  "gov.cardLede": "Planeje o equipamento e os amuletos do governador com seus próprios materiais e veja quanto a pontuação vale nos eventos.",
+  "gov.kicker": "o guarda-roupa do governador"
 }
 ;

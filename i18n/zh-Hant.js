@@ -1063,6 +1063,11 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "directory.heroSource": "查看官方英雄頁面",
   "gear.reset": "重設英雄裝備",
   "gear.resetTitle": "重設英雄裝備？",
-  "gear.resetHint": "裝備、裝備材料和規劃偏好將恢復預設。其他活動物品會保留。此操作可以復原。"
+  "gear.resetHint": "裝備、裝備材料和規劃偏好將恢復預設。其他活動物品會保留。此操作可以復原。",
+  "gov.nav": "總督",
+  "ev.deck.lede.governor": "總督裝備與飾品，依你的背包規劃。",
+  "gov.title": "總督裝備",
+  "gov.cardLede": "用你自己的材料規劃總督裝備與飾品升級，並查看評分在活動中值多少分。",
+  "gov.kicker": "總督的衣櫥"
 }
 ;

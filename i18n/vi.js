@@ -1074,6 +1074,11 @@ window.__BH_I18N_DATA["vi"] = {
   "directory.heroSource": "xem trang anh hùng chính thức",
   "gear.reset": "đặt lại trang bị anh hùng",
   "gear.resetTitle": "Đặt lại trang bị anh hùng?",
-  "gear.resetHint": "Trang bị, nguyên liệu trang bị và tùy chọn trở về mặc định. Vật phẩm sự kiện khác được giữ lại. Bạn có thể hoàn tác."
+  "gear.resetHint": "Trang bị, nguyên liệu trang bị và tùy chọn trở về mặc định. Vật phẩm sự kiện khác được giữ lại. Bạn có thể hoàn tác.",
+  "gov.nav": "Thống đốc",
+  "ev.deck.lede.governor": "trang bị và bùa thống đốc, lên kế hoạch từ túi đồ của bạn.",
+  "gov.title": "Trang bị thống đốc",
+  "gov.cardLede": "Lên kế hoạch nâng cấp trang bị và bùa thống đốc từ nguyên liệu của bạn, và xem điểm số đáng bao nhiêu trong sự kiện.",
+  "gov.kicker": "tủ đồ của thống đốc"
 }
 ;

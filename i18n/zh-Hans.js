@@ -1063,6 +1063,11 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "directory.heroSource": "查看官方英雄页面",
   "gear.reset": "重置英雄装备",
   "gear.resetTitle": "重置英雄装备？",
-  "gear.resetHint": "装备、装备材料和规划偏好将恢复默认。其他活动物品会保留。此操作可以撤销。"
+  "gear.resetHint": "装备、装备材料和规划偏好将恢复默认。其他活动物品会保留。此操作可以撤销。",
+  "gov.nav": "总督",
+  "ev.deck.lede.governor": "总督装备与饰品，按你的背包规划。",
+  "gov.title": "总督装备",
+  "gov.cardLede": "用你自己的材料规划总督装备与饰品升级，并查看评分在活动中值多少分。",
+  "gov.kicker": "总督的衣橱"
 }
 ;

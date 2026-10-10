@@ -1063,6 +1063,11 @@ window.__BH_I18N_DATA["pl"] = {
   "directory.heroSource": "zobacz oficjalną stronę bohatera",
   "gear.reset": "zresetuj ekwipunek bohatera",
   "gear.resetTitle": "Zresetować ekwipunek bohatera?",
-  "gear.resetHint": "Ekwipunek, jego zasoby i ustawienia wrócą do wartości domyślnych. Inne przedmioty wydarzeń pozostaną zapisane. Możesz cofnąć zmianę."
+  "gear.resetHint": "Ekwipunek, jego zasoby i ustawienia wrócą do wartości domyślnych. Inne przedmioty wydarzeń pozostaną zapisane. Możesz cofnąć zmianę.",
+  "gov.nav": "Gubernator",
+  "ev.deck.lede.governor": "ekwipunek i amulety gubernatora, zaplanowane z twojego plecaka.",
+  "gov.title": "Ekwipunek gubernatora",
+  "gov.cardLede": "Zaplanuj ekwipunek i amulety gubernatora z własnych materiałów i zobacz, ile punktów da wynik w wydarzeniach.",
+  "gov.kicker": "garderoba gubernatora"
 }
 ;
