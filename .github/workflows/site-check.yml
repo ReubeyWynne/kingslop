@@ -11,8 +11,143 @@ concurrency:
   group: site-check-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# Each check runs only when a file it validates changes. A manual run, or a
+# change to this workflow, runs everything. The final `check` job is the one
+# status to require: it passes when every check that ran passed.
+
 jobs:
-  check:
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      logic: ${{ steps.plan.outputs.logic }}
+      ascii: ${{ steps.plan.outputs.ascii }}
+      browser: ${{ steps.plan.outputs.browser }}
+    steps:
+      - id: filter
+        if: github.event_name == 'pull_request'
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
+        with:
+          filters: |
+            # Chrome every page carries: layout, includes, shared scripts and
+            # styles, navigation data and every translation.
+            shared: &shared
+              - .github/workflows/site-check.yml
+              - _config.yml
+              - _layouts/**
+              - _includes/**
+              - _data/nav.json
+              - _data/pages.json
+              - _data/langs.json
+              - css/styles.css
+              - css/ascii.css
+              - css/ascii-frames.css
+              - js/common.js
+              - js/i18n.js
+              - js/interactions.js
+              - js/player-ledger.js
+              - js/player-modules.js
+              - js/server-age.js
+              - i18n/*.js
+              - img/kingshot/**
+            # Node checks: syntax, data, engines, page wiring.
+            logic:
+              - *shared
+              - '**/*.html'
+              - '**/*.css'
+              - '**/*.js'
+              - '**/*.cjs'
+              - '**/*.liquid'
+              - '**/*.json'
+              - .dsh/**
+            ascii:
+              - .github/workflows/site-check.yml
+              - .dsh/build-ascii.py
+              - .dsh/ascii-style-check.cjs
+              - _includes/ascii/**
+              - css/**
+              - js/*.js
+            interactions:
+              - *shared
+              - .dsh/interaction-modules-check.cjs
+            heroes:
+              - *shared
+              - .dsh/hero-directory-ui-check.cjs
+              - heroes/**
+              - js/hero-directory*.js
+              - _data/heroes.json
+              - _data/hero_roles.json
+              - css/heroes.css
+              - img/heroes/**
+            events:
+              - *shared
+              - .dsh/event-availability-check.cjs
+              - events/**
+              - js/event-*
+              - js/kvk.js
+              - js/hero-gear-engine.js
+              - _data/event_rules.json
+              - css/events.css
+            governor:
+              - *shared
+              - .dsh/governor-ui-check.cjs
+              - governor-gear/**
+              - js/governor-*
+              - js/event-data.liquid
+              - _data/governor.json
+              - _data/event_rules.json
+              - css/governor.css
+              - img/governor/**
+            # The deck walks every page and fails on any script error.
+            deck:
+              - *shared
+              - .dsh/page-deck-browser-check.cjs
+              - '**/index.html'
+              - css/**
+              - js/**
+              - _data/**
+            # Scenes sit in page cards, so page markup and styles matter too.
+            ascii-capture:
+              - *shared
+              - .dsh/ascii-capture.cjs
+              - .dsh/build-ascii.py
+              - '**/index.html'
+              - css/**
+            hero-gear:
+              - *shared
+              - .dsh/hero-gear-visual-check.cjs
+              - .dsh/hero-gear-interaction-check.cjs
+              - .dsh/gear-fixtures/**
+              - hero-gear/**
+              - js/hero-gear*.js
+              - js/ocr-worker.js
+              - css/hero-gear.css
+              - img/hero-gear/**
+      - id: plan
+        shell: bash
+        env:
+          FILTERED: ${{ github.event_name == 'pull_request' }}
+          CHANGES: ${{ steps.filter.outputs.changes || '[]' }}
+        run: |
+          all='["interactions","heroes","events","governor","deck","ascii-capture","hero-gear"]'
+          if [ "$FILTERED" != true ]; then
+            echo "logic=true" >> "$GITHUB_OUTPUT"
+            echo "ascii=true" >> "$GITHUB_OUTPUT"
+            echo "browser=$all" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          has() { jq -e --arg f "$1" 'index($f) != null' <<<"$CHANGES" >/dev/null && echo true || echo false; }
+          echo "logic=$(has logic)" >> "$GITHUB_OUTPUT"
+          echo "ascii=$(has ascii)" >> "$GITHUB_OUTPUT"
+          echo "browser=$(jq -c --argjson all "$all" '[.[] | select(. as $f | $all | index($f))]' <<<"$CHANGES")" >> "$GITHUB_OUTPUT"
+          echo "Changed groups: $CHANGES"
+
+  logic:
+    needs: changes
+    if: needs.changes.outputs.logic == 'true' || needs.changes.outputs.ascii == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -20,6 +155,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Check JavaScript syntax
+        if: needs.changes.outputs.logic == 'true'
         shell: bash
         run: |
           find js i18n .dsh -type f \( -name '*.js' -o -name '*.cjs' \) -print0 |
@@ -27,74 +163,125 @@ jobs:
             node --check "$file"
           done
       - name: Check site data
+        if: needs.changes.outputs.logic == 'true'
         run: |
           node -e "const fs = require('node:fs'); for (const file of fs.readdirSync('_data')) if (file.endsWith('.json')) JSON.parse(fs.readFileSync('_data/' + file, 'utf8'));"
       - name: Check page navigation
+        if: needs.changes.outputs.logic == 'true'
         run: node --test .dsh/page-deck-check.cjs
       - name: Check ASCII animation style
+        if: needs.changes.outputs.ascii == 'true'
         run: |
           python3 .dsh/build-ascii.py
           git diff --exit-code -- css/ascii-frames.css _includes/ascii/campfire.html || { echo "::error::ASCII frames are stale or hand-edited. Change .dsh/build-ascii.py and regenerate."; exit 1; }
           node .dsh/ascii-style-check.cjs
       - name: Check troop allocation
+        if: needs.changes.outputs.logic == 'true'
         run: node .dsh/bear-allocator-check.cjs
       - name: Check battle engine
+        if: needs.changes.outputs.logic == 'true'
         run: node .dsh/battle-engine-check.cjs
       - name: Check player ledger and migration
+        if: needs.changes.outputs.logic == 'true'
         run: node .dsh/player-ledger-check.cjs
       - name: Check hero directory data and filters
+        if: needs.changes.outputs.logic == 'true'
         run: node .dsh/hero-directory-check.cjs
       - name: Check event rules and availability arithmetic
+        if: needs.changes.outputs.logic == 'true'
         run: node .dsh/event-rules-check.cjs
       - name: Check hero gear costs and search
+        if: needs.changes.outputs.logic == 'true'
         run: node .dsh/hero-gear-check.cjs
       - name: Check governor gear data, planner and ledger
+        if: needs.changes.outputs.logic == 'true'
         run: node .dsh/governor-check.cjs
       - name: Check OCR backend recovery
+        if: needs.changes.outputs.logic == 'true'
         run: node .dsh/ocr-backend-check.cjs
+
+  build:
+    needs: changes
+    if: needs.changes.outputs.browser != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
       - uses: actions/jekyll-build-pages@44a6e6beabd48582f863aeeb6cb2151cc1716697
-      - name: Install gear preview browser
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: site
+          include-hidden-files: true
+          retention-days: 1
+          path: _site/
+
+  browser:
+    needs: [changes, build]
+    if: needs.changes.outputs.browser != '[]'
+    name: browser (${{ matrix.group }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        group: ${{ fromJSON(needs.changes.outputs.browser) }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: site
+          path: _site
+      - id: browser-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          key: playwright-1.63.0-chromium-${{ runner.os }}
+          path: |
+            ${{ runner.temp }}/visuals
+            ~/.cache/ms-playwright
+      - name: Install preview browser
+        if: steps.browser-cache.outputs.cache-hit != 'true'
         run: |
           npm install --prefix "$RUNNER_TEMP/visuals" --no-audit --no-fund playwright@1.63.0
-          node "$RUNNER_TEMP/visuals/node_modules/playwright/cli.js" install --with-deps chromium
+          node "$RUNNER_TEMP/visuals/node_modules/playwright/cli.js" install chromium
+      - name: Install browser system libraries
+        run: |
+          node "$RUNNER_TEMP/visuals/node_modules/playwright/cli.js" install-deps chromium
+          echo "NODE_PATH=$RUNNER_TEMP/visuals/node_modules" >> "$GITHUB_ENV"
       - name: Check shared interaction modules
-        env:
-          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        if: matrix.group == 'interactions'
         run: node .dsh/interaction-modules-check.cjs
       - name: Check hero directory UI
-        env:
-          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        if: matrix.group == 'heroes'
         run: node .dsh/hero-directory-ui-check.cjs
       - name: Check event availability UI
-        env:
-          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        if: matrix.group == 'events'
         run: node .dsh/event-availability-check.cjs
       - name: Check governor gear UI
-        env:
-          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        if: matrix.group == 'governor'
         run: node .dsh/governor-ui-check.cjs
       - name: Check page navigation in browser
-        env:
-          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        if: matrix.group == 'deck'
         run: node .dsh/page-deck-browser-check.cjs
       - name: Check ASCII scenes frame by frame
-        env:
-          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        if: matrix.group == 'ascii-capture'
         run: node .dsh/ascii-capture.cjs
       - name: Check hero gear UI
-        env:
-          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        if: matrix.group == 'hero-gear'
         run: node .dsh/hero-gear-visual-check.cjs
       - name: Check hero gear automatic recommendations
-        env:
-          NODE_PATH: ${{ runner.temp }}/visuals/node_modules
+        if: matrix.group == 'hero-gear'
         run: node .dsh/hero-gear-interaction-check.cjs
-      - name: Upload gear previews
+      - name: Upload previews
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hero-gear-preview
+          name: preview-${{ matrix.group }}
           include-hidden-files: true
+          if-no-files-found: ignore
           retention-days: 7
           path: |
             .dsh/gear-preview/
@@ -103,3 +290,17 @@ jobs:
             .dsh/governor-preview/
             .dsh/deck-preview/
 
+  check:
+    needs: [changes, logic, build, browser]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require every check that ran to pass
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "Results: $RESULTS"
+          for result in $RESULTS; do
+            case "$result" in success|skipped) ;; *) exit 1 ;; esac
+          done
