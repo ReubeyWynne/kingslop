@@ -156,7 +156,10 @@ async function fits(page, zoomed = false) {
     await selected(page, 'home');
     await page.waitForTimeout(800);
     assert.deepEqual(await covers(), vipCovers);
-    assert.deepEqual(await page.locator('.deck-card.is-running').evaluateAll(cards => cards.map(card => card.dataset.page)), ['home', 'home', 'home']);
+    // The selected cover and one cover either side of it run, so a swipe
+    // never brings in a still scene; the rest of the ring stays paused.
+    assert.deepEqual(await page.locator('.deck-card.is-running').evaluateAll(cards => cards.map(card => card.dataset.page)), [tokens[tokens.length - 1], tokens[0], tokens[1]]);
+    assert.equal(await page.locator('.deck-card.is-running[data-page="' + tokens[1] + '"] .deck-ascii > *').first().evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'running');
     // A sideways swipe moves the strip wherever the thumb lands on it: the
     // art, the title, the lede in the lower half of the cover, and the
     // position label and hint under the covers.
@@ -168,6 +171,8 @@ async function fits(page, zoomed = false) {
     const cdp = await touchPage.context().newCDPSession(touchPage);
     const zones = ['.deck-card.is-selected .deck-ascii', '.deck-card.is-selected .deck-card-title', '.deck-card.is-selected .deck-card-lede', '.deck-position', '#deck-hint'];
     for (const [i, zone] of zones.entries()) {
+      // The cover a swipe brings in is already running before it arrives.
+      assert.equal(await touchPage.locator('.deck-card.is-running[data-page="' + tokens[i + 1] + '"]').count(), 1);
       const box = await touchPage.locator(zone).boundingBox();
       const x = Math.round(box.x + box.width / 2), y = Math.round(box.y + box.height / 2);
       await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
