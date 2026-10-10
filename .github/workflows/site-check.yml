@@ -266,6 +266,9 @@ jobs:
       - name: Check page navigation in browser
         if: matrix.group == 'deck'
         run: node .dsh/page-deck-browser-check.cjs
+      - name: Check simulator OCR review and activity
+        if: matrix.group == 'deck'
+        run: node .dsh/simulator-ui-check.cjs
       - name: Check ASCII scenes frame by frame
         if: matrix.group == 'ascii-capture'
         run: node .dsh/ascii-capture.cjs
@@ -289,6 +292,7 @@ jobs:
             .dsh/hero-directory-preview/
             .dsh/governor-preview/
             .dsh/deck-preview/
+            .dsh/sim-preview/
 
   check:
     needs: [changes, logic, build, browser]

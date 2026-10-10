@@ -141,43 +141,20 @@
 .sim-ocr-status.busy { color: var(--amber-dim); }
 .sim-ocr-status.bad { color: var(--ink-dim); }
 
-/* ─── The shot we read — a small thumbnail back to the original ──
-   Painted from the bitmap the detector saw (transferred out of the worker), so
-   the page never decodes the 4.6MP original. Kept deliberately small — it is a
-   way back to the shot, not a reading pane: tapping opens the original full
-   size in a new tab, where its decode can't land on this page's thread. */
-.sim-ocr-shot {
-  margin: 0 0 var(--space-s);
-}
-.sim-ocr-shot a {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  max-width: 100%;
-  padding: 0.3rem 0.7rem 0.3rem 0.3rem;
-  border: 1px solid var(--signal-line);
-  border-radius: 2px;
-  background: var(--void-2);
-  text-decoration: none;
-}
-.sim-ocr-preview {
-  display: block;
-  flex: none;
-  width: auto;
-  height: auto;
-  max-width: 4.5rem;
-  max-height: 4.5rem;
-  border-radius: 1px;
-}
-.sim-ocr-shot-open {
-  font-size: var(--step--1);
-  color: var(--ink-muted);
-  font-style: italic;
-}
-.sim-ocr-shot a:hover .sim-ocr-shot-open,
-.sim-ocr-shot a:focus-visible .sim-ocr-shot-open {
+.sim-ocr-shot { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.8rem; }
+.sim-ocr-shot[hidden] { display: none; }
+.sim-ocr-shot button {
+  min-height: 44px;
+  padding: 0.25rem 0;
+  font: 700 var(--step--1) var(--body);
   color: var(--amber);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--signal-line);
+  cursor: pointer;
 }
+.sim-ocr-shot output { font-size: var(--step--1); color: var(--ink-muted); }
+.sim-ocr-shot button:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 
 /* ─── The mode rail — one fight at a time ──
    The .ev-switch recipe, page-scoped: uppercase body-serif chips, inactive
@@ -805,3 +782,38 @@
 .sim-ocr-status[hidden] { display: none; }
 /* The answer tab scrolls into view below the sticky contents bar. */
 .sim-views { scroll-margin-top: 7rem; }
+
+.sim-main .hero { padding: var(--space-m) 0 var(--space-s); }
+.sim-main .hero h1 { font-size: clamp(2rem, 5vw, 2.6rem); }
+.sim-main .hero .lede, .sim-main .hero .chips, .sim-heading { display: none; }
+.sim-console { padding-top: 0; }
+.sim-main .hero .draft-note { max-width: 46rem; margin-bottom: 0; }
+.sim-main .hero .ascii-motif-rail { margin-top: 0.35rem; }
+.sim-room-list { margin-bottom: 0.5rem; }
+.sim-run-metrics { display: block; font-size: var(--step--1); font-variant-numeric: tabular-nums; color: var(--ink-dim); }
+.sim-run-metrics[hidden], #sim-sweep-progress[hidden] { display: none; }
+#sim-sweep-progress { display: block; width: 100%; height: 0.5rem; margin: 0.6rem 0; accent-color: var(--amber); }
+#sim-sweep-progress::-webkit-progress-bar { background: var(--void-2); }
+#sim-sweep-progress::-webkit-progress-value { background: var(--amber); }
+#sim-sweep-progress::-moz-progress-bar { background: var(--amber); }
+.sim-review-dialog { width: min(42rem, calc(100% - 1rem)); padding: 1rem; }
+.sim-review-dialog .sim-dialog-head { position: sticky; top: -1rem; z-index: 2; background: var(--void-2); padding-block: 0.25rem; }
+.sim-review-row { padding-block: 0.4rem; border-bottom: 1px solid var(--signal-line); }
+.sim-review-row h3 { margin: 0 0 0.2rem; font: 700 var(--step--1) var(--body); color: var(--ink-dim); }
+.sim-review-crop { overflow-x: auto; }
+.sim-review-snippet { display: block; width: 100%; min-width: 28rem; height: auto; direction: ltr; }
+.sim-review-values { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.4rem 1rem; margin-top: 0.25rem; }
+.sim-review-values .sim-field { min-width: 0; gap: 0.1rem; }
+.sim-review-values .sim-field > span { font-size: 0.8rem; color: var(--ink-muted); }
+.sim-review-values input { width: 100%; min-height: 44px; padding: 0.3rem; background: transparent; color: var(--ink); border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; font: inherit; font-variant-numeric: tabular-nums; text-align: end; }
+.sim-review-values input[data-ocr="missing"] { border-bottom: 2px solid var(--amber); background: color-mix(in srgb, var(--amber) 8%, transparent); }
+.sim-review-values input:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.sim-review-row small { display: block; font-size: 0.75rem; color: var(--ink-muted); }
+.sim-review-values input[data-ocr="missing"] + small { color: var(--amber); }
+.sim-review-image { max-height: 50vh; overflow: auto; overscroll-behavior: contain; }
+.sim-review-image img { display: block; width: 100%; min-width: 28rem; height: auto; }
+@media (max-width: 860px) {
+  .sim-workspace .sim-why { margin-block: 0.25rem; }
+  .sim-workspace .fight { margin-top: 0.5rem; }
+  .sim-workspace .fight .sim-out + .calc-title { margin-top: 0.6rem; }
+}
