@@ -17,22 +17,22 @@ self: bear
   <section class="section hero" id="top">
     <h1><span data-i18n="bh.page.7">BEAR HUNT</span></h1>
     <p class="lede"><span data-i18n="bh.page.8">How Bear damage works and how to organise rallies around it.</span></p>
-    <p class="chips"><span><span data-i18n="bh.page.9">30 min</span></span> <span aria-hidden="true">·</span> <span><span data-i18n="bh.page.10">every 48 hours</span></span> <span aria-hidden="true">·</span> <span><span data-i18n="bh.page.11">5-minute rally cycle</span></span></p>
+    <p class="chips"><span><span data-i18n="bh.page.9">30 min</span></span> <span aria-hidden="true">·</span> <span><span data-i18n="bh.page.10">every 48 hours</span></span> <span aria-hidden="true">·</span> <span><span data-i18n="bh.page.11">5-minute rallies</span></span></p>
       {% include ascii/motif.html kind="bear" %}
   </section>
 
   <section class="section" id="model">
     <span class="anchor-alias" id="rules" aria-hidden="true"></span>
     <h2><span data-i18n="bh.page.12">The plan</span></h2>
-    <p class="lede"><span data-i18n="bh.page.13">The rally leader provides the combat stats and full hero kit. Each player's infantry, cavalry and archers are then scored separately. Up to four joiner first-hero skills can apply across the whole rally.</span></p>
+    <p class="lede"><span data-i18n="bh.page.13">The rally leader's stats and heroes set the strength of the rally. Each player's infantry, cavalry and archers are then scored separately, and up to four joiners' first heroes add their skills to the whole rally.</span></p>
 
     <figure class="hunt-diagram rally-anatomy" aria-labelledby="rally-anatomy-title">
       <figcaption id="rally-anatomy-title" data-i18n="bh.rally.title">The rally</figcaption>
       <div class="rally-lead">
         <img src="../img/heroes/amadeus.webp" width="64" height="64" alt="" loading="lazy">
-        <div><b data-i18n="bh.rally.lead">Rally leader</b><p data-i18n="bh.rally.stats">Combat stats + full hero kit</p></div>
+        <div><b data-i18n="bh.rally.lead">Rally leader</b><p data-i18n="bh.rally.stats">Their stats and heroes</p></div>
       </div>
-      <p class="diagram-label" data-i18n="bh.page.17">14 joiner slots</p>
+      <p class="diagram-label" data-i18n="bh.page.17">14 joiner spaces</p>
       <div class="rally-slots" aria-hidden="true">
         <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
         <span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span>
@@ -40,41 +40,41 @@ self: bear
       <p class="diagram-caption" data-i18n="bh.rally.scoring">Each player's troops score separately.</p>
       <div class="rally-shared">
         <div class="rally-skill-slots" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span></div>
-        <b data-i18n="bh.rally.skills">Up to 4 shared first-hero skills</b>
+        <b data-i18n="bh.rally.skills">Up to 4 joiner first-hero skills</b>
       </div>
     </figure>
 
     <ul class="facts strategy-list">
-      <li><b><span data-i18n="bh.page.14">Everyone available should launch one rally per five-minute cycle.</span></b> <span data-i18n="bh.page.15">Stagger the launches so the rallies can fill.</span></li>
-      <li><span data-i18n="bh.page.16">Protect all</span> <b><span data-i18n="bh.page.17">14 joiner slots</span></b> <span data-i18n="bh.page.18">whenever possible so returning join marches have as many scoring opportunities as possible.</span></li>
-      <li><span data-i18n="bh.page.19">Set a join-march cap that matches your alliance's rally capacity. Ours is about</span> <b><span data-i18n="bh.page.20">85k</span></b> <span data-i18n="bh.page.21">right now; that number should change as rally capacities grow.</span></li>
-      <li><b><span data-i18n="bh.page.22">Keep your active join marches equal.</span></b> <span data-i18n="bh.page.23">Divide archers evenly first, then cavalry, then use infantry to finish each march. For a full march,</span> <b>5 / 15 / 80</b> <span data-i18n="bh.page.24">is a practical preset.</span></li>
-      <li><span data-i18n="bh.page.25">Use a recommended first hero on join marches. If none is available, send no hero.</span></li>
+      <li><b><span data-i18n="bh.page.14">Everyone should launch a rally every five minutes.</span></b> <span data-i18n="bh.page.15">Spread the launches out so each rally has time to fill.</span></li>
+      <li><span data-i18n="bh.page.16">Fill all</span> <b><span data-i18n="bh.page.17">14 joiner spaces</span></b> <span data-i18n="bh.page.18">in every rally. The real limit in Bear is spaces in rallies.</span></li>
+      <li><span data-i18n="bh.page.19">Cap joins so more of them fit. Ours is</span> <b><span data-i18n="bh.page.20">85k</span></b> <span data-i18n="bh.page.21">for now, and it goes up as rally capacity grows.</span></li>
+      <li><b><span data-i18n="bh.page.22">Keep your joins the same size.</span></b> <span data-i18n="bh.page.23">Split archers evenly first, then cavalry, then fill the rest with infantry. For full joins,</span> <b>5 / 15 / 80</b> <span data-i18n="bh.page.24">is a good ratio.</span></li>
+      <li><span data-i18n="bh.page.25">Join with one of the recommended first heroes. If you don't have one, join with no hero.</span></li>
     </ul>
 
-    <p class="note"><span data-i18n="bh.page.26">Lead quality still matters: a stronger lead makes every hit in that rally stronger. The rest of the plan is about making sure the alliance creates enough useful rallies for its join queues to keep scoring.</span></p>
+    <p class="note"><span data-i18n="bh.page.26">A strong rally leader still matters, because it makes every hit in that rally stronger. Everything else here is about having enough rallies open that everyone's marches keep hitting the Bear.</span></p>
   </section>
 
   <section class="section" id="sqrt" data-collapse>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="sqrt-body"><span><span data-i18n="bh.page.27">Why splitting works</span></span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
     <div class="section-body" id="sqrt-body">
-      <p class="lede"><span data-i18n="bh.page.28">For each troop type in your own march, damage grows roughly with the square root of the number you send. Doubling one troop-type count gives about 41% more damage from that type, not 100%.</span></p>
+      <p class="lede"><span data-i18n="bh.page.28">Each troop type's damage grows with roughly the square root of how many you send. Send twice the archers and you get about 41% more archer damage, not double.</span></p>
 
       <div class="bars" role="img" aria-label="The same troop pool split into one, two, or six equal marches">
-        <p class="bars-cap"><span data-i18n="bh.page.29">The same troop pool split across more marches:</span></p>
+        <p class="bars-cap"><span data-i18n="bh.page.29">The same troops, split across more marches:</span></p>
         <div class="bar-row"><span class="bar-label"><span data-i18n="bh.page.30">1 march</span></span><div class="bar-track"><div class="bar-fill" style="--p:41"></div></div><span class="bar-value">1.00×</span></div>
         <div class="bar-row"><span class="bar-label"><span data-i18n="bh.page.31">2 marches</span></span><div class="bar-track"><div class="bar-fill" style="--p:58"></div></div><span class="bar-value">1.41×</span></div>
         <div class="bar-row"><span class="bar-label"><span data-i18n="bh.page.32">6 marches</span></span><div class="bar-track"><div class="bar-fill" style="--p:100"></div></div><span class="bar-value">2.45×</span></div>
       </div>
 
-      <p><span data-i18n="bh.page.33">Each player is calculated independently, and infantry, cavalry and archers are separate square-root terms inside that player's calculation. Splitting one player's available troops across several useful join queues creates more independent terms than concentrating them in one queue.</span></p>
+      <p><span data-i18n="bh.page.33">Each march in a rally is scored on its own, and its infantry, cavalry and archers each get their own square root. So the same troops do more damage spread across several joins than packed into one.</span></p>
 
       <details>
         <summary><span data-i18n="bh.page.34">Exact model</span></summary>
         <div class="d-body">
-          <p><span data-i18n="bh.page.35">For one participant, a useful proportional model is:</span></p>
+          <p><span data-i18n="bh.page.35">For one march in a rally:</span></p>
           <p class="d-formula"><span data-i18n="bh.page.36">D ∝ K</span><sub><span data-i18n="bh.page.37">I</span></sub><span data-i18n="bh.page.38">√I + K</span><sub><span data-i18n="bh.page.39">C</span></sub><span data-i18n="bh.page.40">√C + K</span><sub><span data-i18n="bh.page.41">A</span></sub><span data-i18n="bh.page.42">√A</span></p>
-          <p><span data-i18n="bh.page.43">The K values include the rally leader's attack and lethality, troop base attack, hero and widget effects, and the Bear matchup. Chance-based skills vary across the ten rounds, so the planning model uses their average effect.</span></p>
+          <p><span data-i18n="bh.page.43">Each K covers the rally leader's attack and lethality, the troop's base attack, hero and widget bonuses, and the Bear matchup. Some skills only trigger by chance during the ten rounds, so the model uses their average.</span></p>
         </div>
       </details>
     </div>
@@ -84,17 +84,17 @@ self: bear
     <span class="anchor-alias" id="cap" aria-hidden="true"></span>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="rally-body"><span><span data-i18n="bh.page.44">Fill rallies</span></span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
     <div class="section-body" id="rally-body">
-      <p class="lede"><span data-i18n="bh.page.45">Aim for</span> <strong><span data-i18n="bh.page.46">14 joiners</span></strong> <span data-i18n="bh.page.47">whenever possible. Full rallies give the alliance the most places to recycle its join queues.</span></p>
-      <p><span data-i18n="bh.page.48">With six join queues per player and one rally launch per player per five-minute cycle, fully filled rallies can support up to</span> <strong><span data-i18n="bh.page.49">2.33 Bear hits per join queue per cycle</span></strong><span data-i18n="bh.page.50">. Empty slots or players who do not launch reduce that ceiling.</span></p>
-      <p><span data-i18n="bh.page.51">Our alliance currently uses a cap of about</span> <strong><span data-i18n="bh.page.52">85k troops</span></strong><span data-i18n="bh.page.53">. That is an alliance-specific number, not a universal Bear rule, and it should rise as rally capacities grow. Its job is to stop oversized joins consuming enough rally capacity to keep another join march out.</span></p>
-      <p><span data-i18n="bh.page.54">The join cap does not apply to a strong lead's</span> <strong><span data-i18n="bh.page.55">own rally march</span></strong><span data-i18n="bh.page.56">. Fill that march and use the lead's tested or simulated ratio. Their marches joining other rallies still follow the normal alliance cap.</span></p>
+      <p class="lede"><span data-i18n="bh.page.45">Aim for</span> <strong><span data-i18n="bh.page.46">14 joiners</span></strong> <span data-i18n="bh.page.47">in every rally. Full rallies give returning marches the most places to join.</span></p>
+      <p><span data-i18n="bh.page.48">If everyone has six marches and launches a rally every five minutes, full rallies let each march hit the Bear up to</span> <strong><span data-i18n="bh.page.49">2.33 times every five minutes</span></strong><span data-i18n="bh.page.50">. Empty spaces, or players who don't launch, bring that down.</span></p>
+      <p><span data-i18n="bh.page.51">Our joiner cap is</span> <strong><span data-i18n="bh.page.52">85k troops</span></strong><span data-i18n="bh.page.53"> for now. That's our number, not a Bear rule, and it goes up as rally capacity grows. It stops a few big joins using up a rally's capacity and leaving spaces empty.</span></p>
+      <p><span data-i18n="bh.page.54">The cap doesn't apply to a strong leader's</span> <strong><span data-i18n="bh.page.55">own rally</span></strong><span data-i18n="bh.page.56">. Fill it with whatever ratio works for that leader. Their joins into other rallies still follow the cap.</span></p>
 
       <details>
-        <summary><span data-i18n="bh.page.57">Why 14 — and why everyone launches</span></summary>
+        <summary><span data-i18n="bh.page.57">Why 14, and why everyone launches</span></summary>
         <div class="d-body">
-          <p><span data-i18n="bh.page.58">Let P players each supply six join queues, let L of them launch in a five-minute cycle, and let S be the average number of joiners in each rally. The supported reuse is</span> <b><span data-i18n="bh.page.59">H = L × S ÷ (P × 6)</span></b> <span data-i18n="bh.page.60">hits per join queue.</span></p>
-          <p><span data-i18n="bh.page.61">The maximum needs both terms at their ceiling:</span> <b><span data-i18n="bh.page.62">L = P</span></b> <span data-i18n="bh.page.63">because everyone launches, and</span> <b><span data-i18n="bh.page.64">S = 14</span></b> <span data-i18n="bh.page.65">because every rally fills. That gives</span> <b><span data-i18n="bh.page.66">H = 14 ÷ 6 = 2.33</span></b><span data-i18n="bh.page.67">. Average 13 joiners and it falls to</span> <b>2.17</b><span data-i18n="bh.page.68">; only 80% of players launching with 14 joiners gives</span> <b>1.87</b>.</p>
-          <p><span data-i18n="bh.page.69">Filling the extra slot also improves that individual rally because another independently calculated march gets to hit. The wider benefit is that the slot can be reused by returning queues throughout the event.</span></p>
+          <p><span data-i18n="bh.page.58">Say P players have six marches each, L of them launch every five minutes, and each rally has S joiners on average. Each march then hits</span> <b><span data-i18n="bh.page.59">H = L × S ÷ (P × 6)</span></b> <span data-i18n="bh.page.60">times every five minutes.</span></p>
+          <p><span data-i18n="bh.page.61">That's highest when</span> <b><span data-i18n="bh.page.62">L = P</span></b> <span data-i18n="bh.page.63">because everyone launches, and</span> <b><span data-i18n="bh.page.64">S = 14</span></b> <span data-i18n="bh.page.65">because every rally fills. That gives</span> <b><span data-i18n="bh.page.66">H = 14 ÷ 6 = 2.33</span></b><span data-i18n="bh.page.67">. With 13 joiners on average it drops to</span> <b>2.17</b><span data-i18n="bh.page.68">; with 14 joiners but only 80% of players launching, it's</span> <b>1.87</b>.</p>
+          <p><span data-i18n="bh.page.69">The 14th joiner adds damage to that rally, but the bigger gain is that returning marches reuse that space all event.</span></p>
         </div>
       </details>
     </div>
@@ -104,7 +104,7 @@ self: bear
     <span class="anchor-alias" id="mix" aria-hidden="true"></span>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="marches-body"><span><span data-i18n="bh.page.70">Build your marches</span></span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
     <div class="section-body" id="marches-body">
-      <p class="lede"><strong><span data-i18n="bh.page.71">Keep all active join marches the same size.</span></strong> <span data-i18n="bh.page.72">Divide archers evenly first, then cavalry, then use infantry to fill the remaining space. When you have enough troops to fill every join march,</span> <strong>5 / 15 / 80</strong> <span data-i18n="bh.page.73">is the practical preset we use.</span></p>
+      <p class="lede"><strong><span data-i18n="bh.page.71">Keep all your joins the same size.</span></strong> <span data-i18n="bh.page.72">Split archers evenly first, then cavalry, then fill the rest with infantry. Once you have the troops to fill every join,</span> <strong>5 / 15 / 80</strong> <span data-i18n="bh.page.73">is the ratio we use.</span></p>
       {% include ascii/march.html kind="hunt" %}
 
       <figure class="hunt-diagram march-composition" aria-labelledby="march-composition-title">
@@ -117,27 +117,27 @@ self: bear
           <div class="calc-row"><label for="infantry-total" data-i18n="sim.calc.inf">Infantry</label><input id="infantry-total" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" value="29750" required></div>
           <div class="calc-row"><label for="cavalry-total" data-i18n="sim.calc.cav">Cavalry</label><input id="cavalry-total" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" value="89250" required></div>
           <div class="calc-row"><label for="archer-total" data-i18n="bh.marches.archers">Archers</label><input id="archer-total" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" value="476000" required></div>
-          <div class="calc-row"><label for="join-queues" data-i18n="bh.page.85">Join queues</label><input id="join-queues" type="number" inputmode="numeric" min="0" max="6" step="1" value="6" required></div>
-          <div class="calc-row"><label for="join-cap" data-i18n="bh.page.86">Alliance join-march cap</label><input id="join-cap" type="number" inputmode="numeric" min="1" max="1000000000000" step="1" value="85000" required></div>
-          <div class="calc-row"><label for="own-cap" data-i18n="bh.page.87">Own march capacity</label><input id="own-cap" type="number" inputmode="numeric" min="1" max="1000000000000" step="1" value="130000" required></div>
+          <div class="calc-row"><label for="join-queues" data-i18n="bh.page.85">Joins</label><input id="join-queues" type="number" inputmode="numeric" min="0" max="6" step="1" value="6" required></div>
+          <div class="calc-row"><label for="join-cap" data-i18n="bh.page.86">Alliance joiner cap</label><input id="join-cap" type="number" inputmode="numeric" min="1" max="1000000000000" step="1" value="85000" required></div>
+          <div class="calc-row"><label for="own-cap" data-i18n="bh.page.87">Your march size</label><input id="own-cap" type="number" inputmode="numeric" min="1" max="1000000000000" step="1" value="130000" required></div>
           <label class="allocator-priority"><input id="own-priority" type="checkbox"><span data-i18n="bh.alloc.priority">Fill my own rally first</span></label>
-          <p class="note" data-i18n="bh.alloc.priorityHelp">For designated stronger leads — your own rally may take a larger share. Your join marches still follow the alliance cap.</p>
+          <p class="note" data-i18n="bh.alloc.priorityHelp">For your alliance's stronger leaders. Your own rally can take a bigger share, while your joins still follow the alliance cap.</p>
           <fieldset id="own-ratio" class="allocator-ratio" hidden>
-            <legend data-i18n="bh.alloc.ratio">Own rally ratio (%)</legend>
-            <p class="note" data-i18n="bh.alloc.ratioHelp">Use your tested or simulated lead ratio. 5 / 15 / 80 is the starting example.</p>
+            <legend data-i18n="bh.alloc.ratio">Your rally ratio (%)</legend>
+            <p class="note" data-i18n="bh.alloc.ratioHelp">Use whatever ratio works for you as a leader. 5 / 15 / 80 is a starting point.</p>
             <div class="calc-row"><label for="own-infantry" data-i18n="sim.calc.inf">Infantry</label><input id="own-infantry" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="5" required></div>
             <div class="calc-row"><label for="own-cavalry" data-i18n="sim.calc.cav">Cavalry</label><input id="own-cavalry" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="15" required></div>
             <div class="calc-row"><label for="own-archers" data-i18n="bh.marches.archers">Archers</label><input id="own-archers" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="80" required></div>
           </fieldset>
           <button class="allocator-button" type="submit" data-i18n="bh.alloc.apply">Show my marches</button>
         </form>
-        <p class="diagram-caption" id="allocator-example" data-i18n="bh.alloc.example">Example troops — use the button to enter yours.</p>
+        <p class="diagram-caption" id="allocator-example" data-i18n="bh.alloc.example">Example troops. Tap the button to enter yours.</p>
         <div class="march-own" id="march-own">
-          <b data-i18n="bh.page.90">Own rally</b>
+          <b data-i18n="bh.page.90">Your rally</b>
           <div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div>
           <b class="march-total"><bdi>85,000</bdi></b>
         </div>
-        <p class="diagram-label" data-i18n="bh.page.85">Join queues</p>
+        <p class="diagram-label" data-i18n="bh.page.85">Joins</p>
         <div class="march-queues" id="march-queues" aria-hidden="true">
           <div><b>1</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
           <div><b>2</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
@@ -153,7 +153,7 @@ self: bear
         </ul>
         <table class="march-breakdown">
           <caption data-i18n="bh.alloc.breakdown">Troops per march</caption>
-          <thead><tr><th scope="col" data-i18n="bh.alloc.type">Troop type</th><th scope="col" data-i18n="bh.page.90">Own rally</th><th scope="col" data-i18n="bh.page.91">Each join queue</th></tr></thead>
+          <thead><tr><th scope="col" data-i18n="bh.alloc.type">Troop type</th><th scope="col" data-i18n="bh.page.90">Your rally</th><th scope="col" data-i18n="bh.page.91">Each join</th></tr></thead>
           <tbody>
             <tr><th scope="row" data-i18n="sim.calc.inf">Infantry</th><td id="own-inf">4,250</td><td id="join-inf">4,250</td></tr>
             <tr><th scope="row" data-i18n="sim.calc.cav">Cavalry</th><td id="own-cav">12,750</td><td id="join-cav">12,750</td></tr>
@@ -167,22 +167,22 @@ self: bear
           <div><dt data-i18n="sim.calc.cav">Cavalry</dt><dd id="home-cav">0</dd></div>
           <div><dt data-i18n="bh.marches.archers">Archers</dt><dd id="alloc-home">0</dd></div>
         </dl>
-        <p class="note" id="alloc-note" aria-live="polite" data-i18n="bh.alloc.equalNote">Share troops across your own rally and equal join marches.</p>
-        <p class="note" data-i18n="bh.alloc.method">Archers first, then cavalry, then infantry. Use 5 / 15 / 80 for full join marches when your troops allow it.</p>
+        <p class="note" id="alloc-note" aria-live="polite" data-i18n="bh.alloc.equalNote">Troops split between your rally and equal joins.</p>
+        <p class="note" data-i18n="bh.alloc.method">Archers first, then cavalry, then infantry. Use 5 / 15 / 80 once you have the troops to fill every join.</p>
       </figure>
 
       <div class="cards compact-cards">
         <article class="card">
           <h3><span data-i18n="bh.page.74">1. Equal marches first</span></h3>
-          <p><span data-i18n="bh.page.75">Do not build one excellent join march and several weaker ones. You cannot reliably route a particular march to a particular rally without slowing the event down. Keep the queues even, and favour cavalry over infantry when filling the space left after archers.</span></p>
+          <p><span data-i18n="bh.page.75">Don't make one great join and five weak ones. You can't choose which rally each march ends up in without slowing everyone down, so keep them even. After archers, use cavalry before infantry.</span></p>
         </article>
         <article class="card">
           <h3><span data-i18n="bh.page.76">2. Use 5 / 15 / 80 when full</span></h3>
-          <p><span data-i18n="bh.page.77">For the rally leaders we have tested,</span> <b><span data-i18n="bh.page.78">5% infantry / 15% cavalry / 80% archers</span></b> <span data-i18n="bh.page.79">has been very close to the exact mathematical optimum. The exact ratio still depends on the lead. At our current 85k cap, the preset is about 4.25k infantry, 12.75k cavalry and 68k archers per join march.</span></p>
+          <p><span data-i18n="bh.page.77">For the rally leaders we've tested,</span> <b><span data-i18n="bh.page.78">5% infantry / 15% cavalry / 80% archers</span></b> <span data-i18n="bh.page.79">comes very close to the best possible ratio. The exact ratio depends on the leader. At our 85k cap, that's about 4.25k infantry, 12.75k cavalry and 68k archers per join.</span></p>
         </article>
       </div>
 
-      <p><span data-i18n="bh.page.80">To field six 85k join marches at 5/15/80 at the same time, your account needs about</span> <strong><span data-i18n="bh.page.81">25.5k infantry, 76.5k cavalry and 408k archers</span></strong> <span data-i18n="bh.page.82">available for those six queues. Until you have that depth, equal marches matter more than forcing the preset.</span></p>
+      <p><span data-i18n="bh.page.80">Six full 85k joins at 5 / 15 / 80 need about</span> <strong><span data-i18n="bh.page.81">25.5k infantry, 76.5k cavalry and 408k archers</span></strong> <span data-i18n="bh.page.82">in total. Until you have that many, keeping your joins equal matters more than hitting the ratio.</span></p>
 
 
     </div>
@@ -191,7 +191,7 @@ self: bear
   <section class="section" id="timing" data-collapse>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="timing-body"><span><span data-i18n="bh.page.95">Run the hunt</span></span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
     <div class="section-body" id="timing-body">
-      <p class="lede"><strong><span data-i18n="bh.page.96">Everyone available should launch once per five-minute cycle — just not all at once.</span></strong> <span data-i18n="bh.page.97">Open with two groups of rallies, then relaunch as soon as your rally heroes return.</span></p>
+      <p class="lede"><strong><span data-i18n="bh.page.96">Everyone should launch a rally every five minutes, just not all at once.</span></strong> <span data-i18n="bh.page.97">Start with two groups of rallies, then relaunch as soon as your rally comes home.</span></p>
 
       <figure class="hunt-opening" aria-labelledby="hunt-opening-title">
         <figcaption>
@@ -204,71 +204,71 @@ self: bear
         <ol class="opening-scenes">
           <li>
             <div class="opening-head">
-              <h3><span data-i18n="bh.opening.first">Group 1 launches</span></h3>
+              <h3><span data-i18n="bh.opening.first">First group launches</span></h3>
               <bdi class="opening-time">30:00</bdi>
             </div>
             <div class="opening-scene">
               <div class="opening-entity">
-                <b class="opening-name" data-i18n="bh.opening.joiners">Join marches</b>
+                <b class="opening-name" data-i18n="bh.opening.joiners">Joins</b>
                 <div class="opening-marches" aria-hidden="true"><svg><use href="#opening-march-symbol"/></svg><svg><use href="#opening-march-symbol"/></svg><svg><use href="#opening-march-symbol"/></svg></div>
               </div>
               <div class="opening-transfer" aria-hidden="true"><span class="opening-arrow">→</span></div>
               <div class="opening-entity opening-rally opening-destination">
-                <b class="opening-name" data-i18n="bh.opening.group1">Group 1</b>
+                <b class="opening-name" data-i18n="bh.opening.group1">First group</b>
                 <span class="opening-state" data-i18n="bh.opening.rallying">Rallying</span>
               </div>
             </div>
           </li>
           <li>
             <div class="opening-head">
-              <h3><span data-i18n="bh.opening.second">Stagger Group 2</span></h3>
+              <h3><span data-i18n="bh.opening.second">Second group launches</span></h3>
               <bdi class="opening-time">29:00–28:30</bdi>
             </div>
-            <p class="opening-group" data-i18n="bh.opening.group2">Group 2</p>
+            <p class="opening-group" data-i18n="bh.opening.group2">Second group</p>
             <div class="opening-launches">
               <bdi>29:00</bdi><bdi>28:45</bdi><bdi>28:30</bdi>
             </div>
           </li>
           <li>
             <div class="opening-head">
-              <h3><span data-i18n="bh.opening.third">Join again on return</span></h3>
-              <span class="opening-time" data-i18n="bh.opening.onReturn">On return</span>
+              <h3><span data-i18n="bh.opening.third">Join again</span></h3>
+              <span class="opening-time" data-i18n="bh.opening.onReturn">Back home</span>
             </div>
             <div class="opening-scene">
               <div class="opening-entity opening-rally">
-                <b class="opening-name" data-i18n="bh.opening.group1">Group 1</b>
+                <b class="opening-name" data-i18n="bh.opening.group1">First group</b>
                 <span class="opening-state" data-i18n="bh.opening.after">After the first hits</span>
               </div>
               <div class="opening-transfer">
-                <span class="opening-route" data-i18n="bh.opening.rejoin">Return, then join</span>
+                <span class="opening-route" data-i18n="bh.opening.rejoin">Home, then join</span>
                 <span class="opening-arrow" aria-hidden="true">→</span>
               </div>
               <div class="opening-entity opening-rally opening-destination">
-                <b class="opening-name" data-i18n="bh.opening.group2">Group 2</b>
+                <b class="opening-name" data-i18n="bh.opening.group2">Second group</b>
                 <div class="opening-marches" aria-hidden="true"><svg><use href="#opening-march-symbol"/></svg><svg><use href="#opening-march-symbol"/></svg><svg><use href="#opening-march-symbol"/></svg></div>
                 <span class="opening-state" data-i18n="bh.opening.rallying">Rallying</span>
               </div>
             </div>
           </li>
         </ol>
-        <p class="note" data-i18n="bh.opening.note">Example times — set the gap from your alliance's travel times.</p>
+        <p class="note" data-i18n="bh.opening.note">Example times. Adjust the gap for your alliance's travel times.</p>
       </figure>
 
       <ol class="hunt-steps">
-        <li><strong><span data-i18n="bh.page.98">Poll before the event.</span></strong> <span data-i18n="bh.page.99">Ask who will be available and whether they prefer Group 1 or Group 2. Leave some room for people who do not reply and for late arrivals.</span></li>
-        <li><strong><span data-i18n="bh.page.100">Group 1 launches immediately.</span></strong> <span data-i18n="bh.page.101">Start enough rallies to give most opening join queues somewhere to go. A small surplus is fine if one or two leads are willing to cancel.</span></li>
-        <li><strong><span data-i18n="bh.page.102">Spread Group 2 launches across roughly 29:00–28:30 remaining.</span></strong> <span data-i18n="bh.page.103">Group 2 rallies should still be rallying when Group 1 join marches return. Leave enough time for the hit, the return home and the march to the next rally.</span></li>
-        <li><strong><span data-i18n="bh.page.104">If Group 1 does not fill, cancel a flex rally.</span></strong> <span data-i18n="bh.page.105">Relaunch it with Group 2 rather than letting it fire half-empty.</span></li>
-        <li><strong><span data-i18n="bh.page.106">After that, every launcher relaunches on return.</span></strong> <span data-i18n="bh.page.107">Joiners take the next suitable rally that is close to firing. Travel time and normal player timing will naturally spread the later launches.</span></li>
+        <li><strong><span data-i18n="bh.page.98">Poll before the event.</span></strong> <span data-i18n="bh.page.99">Ask who's coming and whether they want the first or second group. Leave room for people who don't answer and people who turn up late.</span></li>
+        <li><strong><span data-i18n="bh.page.100">The first group launches straight away.</span></strong> <span data-i18n="bh.page.101">Open enough rallies that most people have somewhere to join. One or two extra is fine if those leaders don't mind cancelling.</span></li>
+        <li><strong><span data-i18n="bh.page.102">The second group launches between 29:00 and 28:30.</span></strong> <span data-i18n="bh.page.103">Those rallies should still be waiting when the first group's joins get home. Leave enough time to hit the Bear, go home and join the next rally.</span></li>
+        <li><strong><span data-i18n="bh.page.104">If the first group doesn't fill, cancel a rally.</span></strong> <span data-i18n="bh.page.105">Relaunch it with the second group instead of letting it go half-empty.</span></li>
+        <li><strong><span data-i18n="bh.page.106">After that, everyone relaunches as soon as they're home.</span></strong> <span data-i18n="bh.page.107">Join whichever rally is closest to marching out. Travel times spread the later rallies out on their own.</span></li>
       </ol>
 
-      <p class="note"><strong><span data-i18n="bh.page.108">Fast relaunch:</span></strong> <span data-i18n="bh.page.109">while your lead march is returning, open the rally screen and tap your saved Bear formation. The formation cannot load while those troops are away; tap it again as soon as they return to load it immediately.</span></p>
+      <p class="note"><strong><span data-i18n="bh.page.108">Fast relaunch:</span></strong> <span data-i18n="bh.page.109">while your rally is marching home, open the rally screen and tap your saved Bear formation. It won't load until those troops are back, so tap it again the moment they arrive.</span></p>
 
       <details>
-        <summary><span data-i18n="bh.page.110">How many rallies in Group 1?</span></summary>
+        <summary><span data-i18n="bh.page.110">How many rallies in the first group?</span></summary>
         <div class="d-body">
-          <p><span data-i18n="bh.page.111">Estimate how many join queues are available at the start, then divide by your target number of joiners per rally. With 15 players and six join queues each, 90 opening join queues support about six fully filled 14-joiner rallies, with six queues left for the next launch. Starting a seventh can still work if a flex lead is ready to cancel when the opening supply is thinner than expected.</span></p>
-          <p><span data-i18n="bh.page.112">After the first hits land, those join queues return and can be used again, so the opening-wave count does not limit the rest of the event.</span></p>
+          <p><span data-i18n="bh.page.111">Count the marches free at the start and divide by 14. Fifteen players with six marches each is 90, enough for six full rallies with six marches spare. A seventh rally can work too, if its leader is happy to cancel when fewer people turn up.</span></p>
+          <p><span data-i18n="bh.page.112">Once the first hits land, those marches come home and join again, so the size of the first group doesn't limit the rest of the event.</span></p>
         </div>
       </details>
     </div>
@@ -277,20 +277,20 @@ self: bear
   <section class="section" id="heroes" data-collapse>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="heroes-body"><span><span data-i18n="bh.page.113">Heroes</span></span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
     <div class="section-body" id="heroes-body">
-      <p class="lede"><span data-i18n="bh.page.114">On a join march, only the first hero can contribute to the rally's four shared joiner-skill slots. Use one of the recommended first heroes below. If none is available, send the march without a hero.</span></p>
-      <p><span data-i18n="bh.page.115">A random first hero can take one of those four slots with a defensive or otherwise unhelpful skill. If that hero is selected, the skill affects the whole rally, not just your march.</span></p>
+      <p class="lede"><span data-i18n="bh.page.114">When you join, only your first hero counts. The first-hero skills of up to four joiners apply to the whole rally, so use one of the heroes below. If you don't have any of them, join with no hero.</span></p>
+      <p><span data-i18n="bh.page.115">Any other first hero can take one of those four spots with a defensive or useless skill. If it gets picked, it affects the whole rally, not just your march.</span></p>
 
       <div class="hero-permission">
-        <h3><span data-i18n="bh.page.116">Recommended first heroes for join marches</span></h3>
-        <p><b><span data-i18n="bh.page.117">Gen I:</span></b> <span data-i18n="bh.page.118">Chenko, Yeonwoo, Amane; Amadeus when he is not needed as your lead.</span></p>
-        <p><b><span data-i18n="bh.page.119">Gen II–III:</span></b> <span data-i18n="bh.page.120">no new default joiner hero.</span> <b><span data-i18n="bh.page.121">Hilde depends on alliance policy</span></b><span data-i18n="bh.page.122">; many alliances do not allow her, so follow your alliance's rule.</span></p>
+        <h3><span data-i18n="bh.page.116">First heroes for joining</span></h3>
+        <p><b><span data-i18n="bh.page.117">Gen I:</span></b> <span data-i18n="bh.page.118">Chenko, Yeonwoo, Amane, and Amadeus when you aren't leading with him.</span></p>
+        <p><b><span data-i18n="bh.page.119">Gen II–III:</span></b> <span data-i18n="bh.page.120">nothing new for joining.</span> <b><span data-i18n="bh.page.121">Hilde depends on your alliance</span></b><span data-i18n="bh.page.122">; many ban her, so check your alliance's rule.</span></p>
         <p><b><span data-i18n="bh.page.123">Gen IV:</span></b> <span data-i18n="bh.page.124">Margot, Rosa.</span></p>
         <p><b><span data-i18n="bh.page.125">Gen V:</span></b> <span data-i18n="bh.page.126">Vivian.</span></p>
         <p><b><span data-i18n="bh.page.127">Gen VI:</span></b> <span data-i18n="bh.page.128">Yang.</span></p>
-        <p><b><span data-i18n="bh.page.129">Later options:</span></b> <span data-i18n="bh.page.130">Petra (avoid duplicate Petras in one rally), Ava, Wee &amp; Woo.</span></p>
+        <p><b><span data-i18n="bh.page.129">Later options:</span></b> <span data-i18n="bh.page.130">Petra (only one per rally), Ava, Wee &amp; Woo.</span></p>
       </div>
 
-      <p class="note"><span data-i18n="bh.page.131">Rally leaders use their full hero kit and stats. The selector below recommends leader lineups separately from first heroes for join marches.</span></p>
+      <p class="note"><span data-i18n="bh.page.131">Rally leaders use all their heroes and stats, so the selector above picks a leader lineup separately.</span></p>
     </div>
   </section>
 
@@ -298,7 +298,7 @@ self: bear
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="rewards-body"><span><span data-i18n="bh.page.132">Rewards</span></span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
     <div class="section-body" id="rewards-body">
       <div class="ascii-rewards-intro">
-        <p class="lede"><span data-i18n="bh.page.133">Your reward bracket is based on your own total Bear damage. Each step adds one Forgehammer.</span></p>
+        <p class="lede"><span data-i18n="bh.page.133">Your rewards depend on your own total Bear damage. Each tier adds one Forgehammer.</span></p>
         {% include ascii/forge.html label="A hammer strikes a hot bar on an anvil and throws off sparks" %}
       </div>
       <ul class="brackets compact-brackets">

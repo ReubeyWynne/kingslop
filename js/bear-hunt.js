@@ -133,7 +133,7 @@
       explanation.setAttribute('data-i18n', noteKey);
       explanation.textContent = label(noteKey, result.priority ? 'Your own rally is filled first. The remaining troops form equal, capped join marches.' : 'Share troops across your own rally and equal join marches.');
       note.appendChild(explanation);
-      note.appendChild(document.createTextNode(' ' + label('bh.alloc.result', 'Own rally: {own}. Join queues: {n} × {join}.').replace('{own}', format(result.own.total)).replace('{n}', format(result.queues)).replace('{join}', format(result.join.total))));
+      note.appendChild(document.createTextNode(' ' + label('bh.alloc.result', 'Your rally: {own}. Joins: {n} × {join}.').replace('{own}', format(result.own.total)).replace('{n}', format(result.queues)).replace('{join}', format(result.join.total))));
     }
 
     button.hidden = false;
