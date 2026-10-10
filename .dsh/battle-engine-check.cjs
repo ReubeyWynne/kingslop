@@ -86,6 +86,16 @@ assert.equal(E.grid({ step: 0.05, minInf: 0.9, minCav: 0.2 }).cells.length, 0);
   assert.ok(s.cells.some(c => c.win === 0), 'and some mix loses it');
 }
 
+{
+  const you = side([0, 0, 0], 6, 220), foe = side([1000, 1000, 1000], 6, 200);
+  const progress = [];
+  const s = E.sweep(you, foe, { total: 3000, step: 0.1, battles: 50 }, (done, of, battles) => progress.push({ done, of, battles }));
+  assert.equal(s.battles, s.cells.length);
+  assert.deepEqual(progress.at(-1), { done: 66, of: 66, battles: 66 });
+  const random = E.sweep(side([0, 0, 0], 10, 220), side([1000, 1000, 1000], 10, 200), { total: 3000, step: 0.1, battles: 20 });
+  assert.equal(random.battles, random.cells.length * 20);
+}
+
 assert.equal(E.seedOf({ a: 1 }), E.seedOf({ a: 1 }));
 assert.notEqual(E.seedOf({ a: 1 }), E.seedOf({ a: 2 }));
 

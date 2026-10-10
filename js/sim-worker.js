@@ -7,12 +7,12 @@ importScripts('battle-engine.js');
 self.onmessage = function (e) {
   var m = e.data || {};
   try {
-    var last = 0;
-    var result = BattleEngine.sweep(m.you, m.foe, m.opts, function (done, of) {
-      // About twenty progress lines a sweep — enough to move, not to flood.
-      if (done === of || done - last >= Math.max(1, Math.floor(of / 20))) {
-        last = done;
-        self.postMessage({ id: m.id, type: 'progress', done: done, of: of });
+    var last = performance.now();
+    var result = BattleEngine.sweep(m.you, m.foe, m.opts, function (done, of, battles) {
+      var now = performance.now();
+      if (done === 1 || done === of || now - last >= 100) {
+        last = now;
+        self.postMessage({ id: m.id, type: 'progress', done: done, of: of, battles: battles });
       }
     });
     self.postMessage({ id: m.id, type: 'done', result: result });

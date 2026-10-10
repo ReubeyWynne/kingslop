@@ -477,7 +477,26 @@
       var id = ++sweepSeq;
       function local() {
         try {
-          resolve(E.sweep(you, foe, o));
+          var g = E.grid(o), cells = [], battles = 0, c = 0;
+          function batch() {
+            try {
+              var until = performance.now() + 25;
+              while (c < g.cells.length && performance.now() < until) {
+                var cell = g.cells[c], f = cell.map(function (v) { return v / g.k; });
+                var ni = Math.round(o.total * cell[0] / g.k), nc = Math.round(o.total * cell[1] / g.k);
+                var n = [ni, nc, Math.max(0, o.total - ni - nc)];
+                var side = Object.assign({}, you, { n: n });
+                var r = E.run(side, foe, o.battles, (o.seed || 1) + c * 7919);
+                cells.push({ cell: cell, f: f, n: n, win: r.win, left: total(r.a), foe: total(r.b), rounds: r.rounds });
+                battles += r.battles;
+                c++;
+              }
+              onProgress(c, g.cells.length, battles);
+              if (c < g.cells.length) setTimeout(batch, 0);
+              else resolve({ k: g.k, total: o.total, cells: cells, battles: battles });
+            } catch (err) { reject(err); }
+          }
+          batch();
         } catch (e) { reject(e); }
       }
       try {
@@ -493,7 +512,7 @@
       sweepWorker.onmessage = function (e) {
         var m = e.data || {};
         if (m.id !== id) return;
-        if (m.type === 'progress') onProgress(m.done, m.of);
+        if (m.type === 'progress') onProgress(m.done, m.of, m.battles);
         else if (m.type === 'done') resolve(m.result);
         else if (m.type === 'error') reject(new Error(m.error));
       };
@@ -517,13 +536,31 @@
     var key = sweepKey(you, foe, o);
     o.seed = E.seedOf([you.tier, you.tg, you.atk, you.let, you.def, you.hea, foe, o.total]);
     sweepBusy = true;
+    var started = performance.now();
+    var progress = el('sim-sweep-progress'), metrics = el('sim-sweep-metrics');
+    var answer = el('sim-answer');
+    if (answer) answer.setAttribute('aria-busy', 'true');
+    if (progress) { progress.hidden = false; progress.max = E.grid(o).cells.length; progress.value = 0; }
+    if (metrics) { metrics.hidden = false; metrics.textContent = ''; }
+    var oldResult = el('sim-sweep-result');
+    if (oldResult) oldResult.hidden = true;
+    function activity(done, of, battles) {
+      var seconds = Math.max(0.001, (performance.now() - started) / 1000);
+      if (progress) { progress.max = of; progress.value = done; }
+      if (metrics) metrics.textContent = BH.tpl('sim.review.metrics', '{battles} battles · {rate}/s · {seconds}s', {
+        battles: numFmt(battles, 0), rate: numFmt(Math.round(battles / seconds), 0), seconds: numFmt(seconds, 1)
+      });
+    }
     paintSweepSize(BH);
     sweepStatus(BH, 'sim.sweep.running', 'Fighting every mix…', 'busy');
-    runSweep(you, foe, o, function (done, of) {
+    runSweep(you, foe, o, function (done, of, battles) {
+      activity(done, of, battles);
       sweepStatus(BH, 'sim.sweep.progress', 'Fighting every mix… {done} of {of}', 'busy', { done: numFmt(done, 0), of: numFmt(of, 0) });
     }).then(function (result) {
       lastSweep = { key: key, result: result, you: you, foe: foe, opts: o };
-      sweepStatus(BH, null);
+      sweepBusy = false;
+      activity(result.cells.length, result.cells.length, result.battles);
+      sweepStatus(BH, 'sim.review.complete', 'Simulation complete.', 'ok');
       paintSweep(BH);
       var res = el('sim-sweep-result');
       if (res && res.scrollIntoView && !inView(res)) res.scrollIntoView({ block: 'nearest' });
@@ -532,6 +569,7 @@
       sweepStatus(BH, 'sim.sweep.fail', 'The sweep stopped before it finished. Try a coarser grid.', 'bad');
     }).then(function () {
       sweepBusy = false;
+      if (answer) answer.removeAttribute('aria-busy');
       paintSweepSize(BH);
     });
   }
@@ -599,7 +637,7 @@
   function paintSweep(BH) {
     var box = el('sim-sweep-result');
     if (!box) return;
-    if (!lastSweep) { box.hidden = true; return; }
+    if (!lastSweep || sweepBusy) { box.hidden = true; return; }
     var result = lastSweep.result;
     var top = E.best(result.cells);
     var stale = sweepKey(readSide('sim-'), readSide('sim-foe-'), sweepOpts()) !== lastSweep.key;
@@ -625,7 +663,7 @@
       if (f) {
         var you = lastSweep.you, o = lastSweep.opts;
         var sideA = JSON.parse(JSON.stringify(you));
-        var ni = Math.round(o.total * f[0]), nc = Math.round(o.total * f[1]);
+        var ni = Math.round(o.total * cell[0] / g.k), nc = Math.round(o.total * cell[1] / g.k);
         sideA.n = [ni, nc, Math.max(0, o.total - ni - nc)];
         var r = E.run(sideA, lastSweep.foe, o.battles, o.seed + 104729);
         room = { f: f, win: r.win, name: roomName(row) };
@@ -986,7 +1024,7 @@
       var ys = it.poly.map(function (p) { return p[1]; });
       var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
       var y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
-      boxes.push({ cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, h: y1 - y0, text: text });
+      boxes.push({ cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, x: x0, y: y0, w: x1 - x0, h: y1 - y0, text: text });
     });
 
     var tol = rowTolerance(boxes);
@@ -1002,7 +1040,7 @@
       }
     });
 
-    var out = {};
+    var out = {}, snippets = {};
     rows.forEach(function (r) {
       r.items.sort(function (a, b) { return a.cx - b.cx; });
       var joined = r.items.map(function (b) { return b.text; }).join(' ');
@@ -1011,12 +1049,15 @@
       var stat = wordIn(folded, STATS_EN);
       if (!block || !stat) return;
       var label = block + '|' + stat;
-      if (('L|' + label) in out) return; // first (topmost) row wins
+      if (snippets[label]) return; // first (topmost) row wins
       // The green (your) column sits left of the label and the red one right
       // of it: the last percentage before the label is yours, the first after
       // it is theirs. Joining the row first survives the OCR splitting
       // "+457.5" and "%" apart; searching from the label survives it fusing
       // two numbers into one box.
+      var y0 = Math.min.apply(null, r.items.map(function (b) { return b.y; }));
+      var y1 = Math.max.apply(null, r.items.map(function (b) { return b.y + b.h; }));
+      snippets[label] = { y: y0, h: y1 - y0 };
       var at = joined.search(new RegExp(block, 'i'));
       var hits = [], hit;
       PCT.lastIndex = 0;
@@ -1036,7 +1077,7 @@
       if (left && isFinite(pctValue(left[0]))) out['L|' + label] = pctValue(left[0]);
       if (right && isFinite(pctValue(right[0]))) out['R|' + label] = pctValue(right[0]);
     });
-    return out;
+    return { values: out, snippets: snippets };
   }
 
   // One entry per sheet cell, both columns, keyed by the report's own label.
@@ -1068,29 +1109,147 @@
     var file = el('sim-ocr-file');
     if (!btn || !file) return;
 
-    // The shot we just read, so the filled numbers can be checked against it.
     var shotEl = el('sim-ocr-shot');
-    var shotCanvas = el('sim-ocr-preview');
-    var shotLink = el('sim-ocr-shot-link');
-    var shotUrl = null;
+    var review = el('sim-review-dialog'), reviewFields = el('sim-review-fields');
+    var shotCanvas = document.createElement('canvas');
+    var shotUrl = null, snippets = {}, reviewTroop = 'inf';
 
-    function showShot(f, preview) {
-      if (!shotEl || !shotCanvas || !shotLink) return;
+    function relevantFields() {
+      return FIELDS.filter(function (f) {
+        return mode.indexOf('bear') !== 0 || (f.label[0] === 'L' && /\|(Attack|Lethality)$/.test(f.label));
+      });
+    }
+
+    function countMissing() {
+      var fields = relevantFields();
+      var missing = fields.filter(function (f) { return el(f.id).dataset.ocr === 'missing'; }).length;
+      el('sim-ocr-review-count').textContent = BH.tpl('sim.review.missing', '{n} values to check', { n: numFmt(missing, 0) });
+      return missing;
+    }
+
+    function renderReview() {
+      if (!reviewFields) return;
+      reviewFields.innerHTML = '';
+      reviewFields.setAttribute('aria-labelledby', 'sim-review-tab-' + reviewTroop);
+      var type = TYPES.filter(function (t) { return t.key === reviewTroop; })[0];
+      STATS.forEach(function (stat) {
+        var fields = relevantFields().filter(function (f) {
+          return f.label.slice(2) === type.block + '|' + stat.ocr;
+        });
+        if (!fields.length) return;
+        var row = document.createElement('div');
+        row.className = 'sim-review-row';
+        var title = document.createElement('h3');
+        title.textContent = BH.tr(stat.nameKey, stat.fallback);
+        row.appendChild(title);
+        var crop = snippets[type.block + '|' + stat.ocr];
+        if (crop && shotCanvas.width) {
+          var y = Math.max(0, Math.floor(crop.y - crop.h * 0.5));
+          var height = Math.min(shotCanvas.height - y, Math.ceil(crop.h * 2));
+          var canvas = document.createElement('canvas');
+          canvas.width = shotCanvas.width;
+          canvas.height = height;
+          canvas.className = 'sim-review-snippet';
+          canvas.setAttribute('aria-hidden', 'true');
+          canvas.getContext('2d').drawImage(shotCanvas, 0, y, canvas.width, height, 0, 0, canvas.width, height);
+          var viewport = document.createElement('div');
+          viewport.className = 'sim-review-crop';
+          viewport.appendChild(canvas);
+          row.appendChild(viewport);
+        } else {
+          var hint = document.createElement('small');
+          hint.textContent = BH.tr('sim.review.noRow', 'Row not found — check the full screenshot below.');
+          row.appendChild(hint);
+        }
+        var inputs = document.createElement('div');
+        inputs.className = 'sim-review-values';
+        fields.forEach(function (f) {
+          var source = el(f.id), label = document.createElement('label'), name = document.createElement('span');
+          label.className = 'sim-field';
+          name.textContent = f.label[0] === 'L'
+            ? BH.tr(mode.indexOf('bear') === 0 ? 'sim.army.lead' : 'sim.army.you', mode.indexOf('bear') === 0 ? 'The rally lead' : 'You')
+            : BH.tr('sim.foe.title', 'The opponent');
+          var input = source.cloneNode(false);
+          input.removeAttribute('id');
+          input.removeAttribute('data-player-stat');
+          input.removeAttribute('data-troop');
+          input.dataset.source = source.id;
+          input.value = source.value;
+          var flag = document.createElement('small');
+          flag.textContent = source.dataset.ocr === 'missing' ? BH.tr('sim.review.notRead', 'Not read · previous value') : '';
+          label.append(name, input, flag);
+          inputs.appendChild(label);
+        });
+        row.appendChild(inputs);
+        reviewFields.appendChild(row);
+      });
+    }
+
+    function openReview() {
+      renderReview();
+      if (!review.open) review.showModal();
+      var missing = reviewFields.querySelector('[data-ocr="missing"]');
+      if (missing) missing.focus({ preventScroll: true });
+    }
+
+    el('sim-ocr-review-btn').addEventListener('click', openReview);
+    review.addEventListener('tabs:select', function (event) {
+      if (event.detail.binding !== 'review') return;
+      reviewTroop = event.detail.value;
+      renderReview();
+    });
+    reviewFields.addEventListener('input', function (event) {
+      var input = event.target, source = el(input.dataset.source);
+      if (!source || !input.validity.valid || input.value === '') return;
+      source.value = input.value;
+      source.dataset.ocr = input.dataset.ocr = 'corrected';
+      input.nextElementSibling.textContent = '';
+      source.dispatchEvent(new Event('input', { bubbles: true }));
+      countMissing();
+    });
+    reviewFields.addEventListener('change', function (event) {
+      var input = event.target, source = el(input.dataset.source);
+      if (!source || (input.validity.valid && input.value !== '')) return;
+      input.value = source.value;
+    });
+    FIELDS.forEach(function (f) {
+      el(f.id).addEventListener('input', function () {
+        if (!shotUrl) return;
+        this.dataset.ocr = 'corrected';
+        countMissing();
+      });
+    });
+    el('console').addEventListener('sim:mode', function () { if (shotUrl) countMissing(); });
+
+    function showShot(f, preview, parsed) {
       if (shotUrl) URL.revokeObjectURL(shotUrl);
       shotUrl = URL.createObjectURL(f);
-      shotLink.href = shotUrl;
+      el('sim-review-image').src = shotUrl;
+      shotCanvas.width = shotCanvas.height = 0;
       if (preview) {
         shotCanvas.width = preview.width;
         shotCanvas.height = preview.height;
         shotCanvas.getContext('2d').drawImage(preview, 0, 0);
         preview.close();
       }
+      snippets = parsed ? parsed.snippets : {};
+      var values = parsed ? parsed.values : {};
+      FIELDS.forEach(function (field) {
+        el(field.id).dataset.ocr = values[field.label] !== undefined ? 'read' : 'missing';
+      });
       shotEl.hidden = false;
+      countMissing();
+      var first = relevantFields().filter(function (f) { return el(f.id).dataset.ocr === 'missing'; })[0];
+      reviewTroop = first ? first.id.split('-').pop() : 'inf';
+      var tab = review.querySelector('[data-value="' + reviewTroop + '"]');
+      if (tab) tab.click();
+      openReview();
     }
 
     function readOnce(f) {
       return askWorker('predict', f).then(function (res) {
-        return { filled: fill(parseItems(res.items)), preview: res.preview };
+        var parsed = parseItems(res.items);
+        return { filled: fill(parsed.values), preview: res.preview, parsed: parsed };
       });
     }
 
@@ -1102,7 +1261,11 @@
         if (first.filled > 0) return first;
         return askWorker('useWasm')
           .then(function () { return readOnce(f); })
-          .then(function (second) { return second.filled > 0 ? second : first; },
+          .then(function (second) {
+            if (second.filled > 0) { if (first.preview) first.preview.close(); return second; }
+            if (second.preview) second.preview.close();
+            return first;
+          },
             function () { return first; });
       });
     }
@@ -1110,17 +1273,16 @@
     function read(f) {
       if (!f || ocrBusy) return;
       ocrBusy = true;
+      btn.disabled = true;
       ocrStatus(BH, 'sim.ocr.loading', 'Reading the screenshot…', 'busy');
       readShot(f)
         .then(function (out) {
           if (out.filled) { paint(BH); save(); }
-          showShot(f, out.preview);
-          if (out.filled === FIELDS.length) {
-            ocrStatus(BH, 'sim.ocr.done', 'Filled from your report — double-check the numbers.', 'ok');
-          } else if (out.filled > 0) {
-            // A partial read is still useful: keep what we got and say so. A
-            // bear report usually carries only the left column.
-            ocrStatus(BH, 'sim.ocr.partial', 'Read {n} of {total} values — tap a troop to fill in the rest.', 'ok', { n: out.filled, total: FIELDS.length });
+          showShot(f, out.preview, out.parsed);
+          if (out.filled > 0) {
+            var relevant = relevantFields();
+            var readCount = relevant.filter(function (field) { return el(field.id).dataset.ocr === 'read'; }).length;
+            ocrStatus(BH, 'sim.review.summary', '{n} of {total} values read — review the highlighted fields.', 'ok', { n: numFmt(readCount, 0), total: numFmt(relevant.length, 0) });
           } else {
             ocrStatus(BH, 'sim.ocr.fail', 'Couldn’t read that screenshot. Try a clearer shot, or tap a troop to type the numbers.', 'bad');
           }
@@ -1130,7 +1292,7 @@
           showShot(f, err && err.preview);
           ocrStatus(BH, 'sim.ocr.fail', 'Couldn’t read that screenshot. Try a clearer shot, or tap a troop to type the numbers.', 'bad');
         })
-        .then(function () { ocrBusy = false; });
+        .then(function () { ocrBusy = false; btn.disabled = false; });
     }
 
     // The reader's first move towards the feature starts the engine (see

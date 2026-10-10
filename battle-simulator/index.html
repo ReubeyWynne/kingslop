@@ -21,9 +21,12 @@ self: sim
 <main class="sim-main">
   <section class="section hero" id="top">
     <h1 data-i18n-html="sim.hero.h1">BATTLE SIMULATOR,<br><span class="accent">DEMYSTIFIED</span></h1>
+    <details class="sim-why sim-model">
+      <summary data-i18n="sim.review.model">Community model · heroes not included</summary>
     <p class="draft-note" data-i18n-html="sim.hero.alpha">a <b>community model</b>, not the game's own code — the
       battle engine is the one the Frakinator reverse-engineered and tested against real reports. heroes aren't in
       it yet, so read a hero fight as a starting point.</p>
+    </details>
     <p class="lede" data-i18n-html="sim.hero.lede">The maths of your battles, in one place. Read a report once and
       the same numbers answer every fight: your lead's <b>bear ratio</b>, your own <b>bear march</b>, the
       <b>Mystic Trial</b> mix that clears, and any <b>battle</b> you can type both sides of.</p>
@@ -67,12 +70,10 @@ self: sim
           <output id="sim-ocr-status" class="sim-ocr-status" aria-live="polite" hidden></output>
           {% include ascii/hammer-loader.html %}
 
-          <figure class="sim-ocr-shot" id="sim-ocr-shot" hidden>
-            <a id="sim-ocr-shot-link" href="#" target="_blank" rel="noopener">
-              <canvas class="sim-ocr-preview" id="sim-ocr-preview" aria-hidden="true"></canvas>
-              <span class="sim-ocr-shot-open" data-i18n="sim.ocr.shot">your screenshot — open it full size</span>
-            </a>
-          </figure>
+          <div class="sim-ocr-shot" id="sim-ocr-shot" hidden>
+            <button type="button" id="sim-ocr-review-btn" data-i18n="sim.review.open">Review screenshot &amp; missing values</button>
+            <output id="sim-ocr-review-count"></output>
+          </div>
 
           {%- for side in sides %}{% assign sd = side | split: "|" %}
           <article class="army{% if sd[0] == 'foe' %} sim-for{% endif %}" data-side="{{ sd[0] }}"{% if sd[0] == 'foe' %} data-for="fight" id="sim-foe" hidden{% else %} id="sim-you"{% endif %}>
@@ -174,6 +175,8 @@ self: sim
         <div class="sim-panel" data-mode="mystic" hidden>
           <h3 class="calc-title" data-i18n="sim.mystic.titleTag">TRY IT — CLEAR THE STAGE</h3>
           <p class="calc-out" id="sim-mystic-today"></p>
+          <details class="sim-why sim-room-list">
+            <summary data-i18n="sim.review.rooms">Choose a room</summary>
           <div class="sim-out rooms" id="sim-rooms" role="table" data-i18n-key="sim.mystic.tableAria" data-i18n-attr="aria-label">
             <div class="sim-head" role="row">
               <span role="columnheader" data-i18n="sim.mystic.thRoom">Room</span>
@@ -224,6 +227,7 @@ self: sim
               <span class="room-alt" role="cell">55 / 10 / 35</span>
             </div>
           </div>
+          </details>
           <details class="sim-why">
             <summary data-i18n="sim.why">how this reads</summary>
             <p class="note" data-i18n-html="sim.mystic.ledeSweep">Type the stage from its report — your stats on the left,
@@ -249,7 +253,10 @@ self: sim
         <div class="fight sim-for" data-for="fight" id="sim-fight" hidden>
           <h3 class="calc-title" data-i18n="sim.fight.title">The fight, as typed</h3>
           <p class="calc-out" id="sim-fight-headline" data-peek></p>
+          <details class="sim-why">
+            <summary data-i18n="sim.review.survivors">Troops left standing</summary>
           <div class="sim-out fight-out" id="sim-fight-out" role="table" data-i18n-key="sim.fight.tableAria" data-i18n-attr="aria-label" hidden></div>
+          </details>
 
           <h3 class="calc-title" data-i18n="sim.sweep.title">Find the mix that wins</h3>
           <div class="sim-ocr sweep-go">
@@ -298,16 +305,21 @@ self: sim
               </span>
             </div>
           </details>
+          <progress id="sim-sweep-progress" max="1" value="0" aria-label="Simulation progress" data-i18n-key="sim.review.progress" data-i18n-attr="aria-label" hidden></progress>
+          <output id="sim-sweep-metrics" class="sim-run-metrics" hidden></output>
           <output id="sim-sweep-status" class="sim-ocr-status" aria-live="polite" hidden></output>
           {% include ascii/hammer-loader.html %}
 
           <div class="sweep-result" id="sim-sweep-result" hidden>
             <p class="calc-out" id="sim-sweep-headline"></p>
+            <details class="sim-why">
+              <summary data-i18n="sim.review.map">All mixes on the map</summary>
             <figure class="tri" id="sim-tri">
               <svg id="sim-tri-svg" viewBox="0 0 320 300" role="img" aria-labelledby="sim-tri-cap"></svg>
               <figcaption id="sim-tri-cap" data-i18n-html="sim.sweep.cap">Every mix you tried: the brighter the cell, the
                 likelier the win. Corners are all infantry, all cavalry, all archers; <b>❧</b> marks the best mix.</figcaption>
             </figure>
+            </details>
             <div class="sim-out sweep-out" id="sim-sweep-out" role="table" data-i18n-key="sim.sweep.tableAria" data-i18n-attr="aria-label"></div>
             <p class="calc-out" id="sim-sweep-room"></p>
           </div>
@@ -336,6 +348,24 @@ self: sim
         </div>
       </div>
     </div>
+
+    <dialog class="sim-dialog sim-review-dialog" id="sim-review-dialog" aria-labelledby="sim-review-title">
+      <div class="sim-dialog-head">
+        <h2 id="sim-review-title" data-i18n="sim.review.title">Review Bonus Details</h2>
+        <button type="button" data-action="sim-army.close" data-i18n="sim.army.done">done</button>
+      </div>
+      <p class="sim-gloss" data-i18n="sim.review.hint">Check each snippet against the values below. Highlighted values were not read; previous values are kept until you correct them.</p>
+      <div class="sim-tabs" data-module="tabs" data-tabs-bind="review" role="tablist" aria-label="Troop type" data-i18n-key="sim.army.troopAria" data-i18n-attr="aria-label">
+        {%- for t in types %}{% assign tp = t | split: "|" %}
+        <button type="button" id="sim-review-tab-{{ tp[0] }}" role="tab" aria-controls="sim-review-fields" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"{% unless forloop.first %} tabindex="-1"{% endunless %} data-value="{{ tp[0] }}" data-action="tabs.select" data-i18n="{{ tp[1] }}">{{ tp[2] }}</button>
+        {%- endfor %}
+      </div>
+      <div id="sim-review-fields" role="tabpanel" aria-labelledby="sim-review-tab-inf"></div>
+      <details class="sim-why sim-review-original">
+        <summary data-i18n="sim.review.original">Show full screenshot</summary>
+        <div class="sim-review-image"><img id="sim-review-image" alt="" decoding="async"></div>
+      </details>
+    </dialog>
 
     <!-- ── Edit dialogs: one per side, a tab per troop type ── -->
     {%- for side in sides %}{% assign sd = side | split: "|" %}

@@ -205,7 +205,7 @@
   function sweep(sideA, sideB, opts, onCell) {
     var g = grid(opts);
     var total = Math.floor(pos(opts.total));
-    var res = [];
+    var res = [], battles = 0;
     for (var c = 0; c < g.cells.length; c++) {
       var cell = g.cells[c];
       var a = {
@@ -214,9 +214,10 @@
       };
       var r = run(a, sideB, opts.battles, (opts.seed || 1) + c * 7919);
       res.push({ cell: cell, f: [cell[0] / g.k, cell[1] / g.k, cell[2] / g.k], n: a.n, win: r.win, left: r.a[0] + r.a[1] + r.a[2], foe: r.b[0] + r.b[1] + r.b[2], rounds: r.rounds });
-      if (onCell) onCell(c + 1, g.cells.length);
+      battles += r.battles;
+      if (onCell) onCell(c + 1, g.cells.length, battles);
     }
-    return { k: g.k, total: total, cells: res };
+    return { k: g.k, total: total, cells: res, battles: battles };
   }
 
   // The best mix: highest win chance, then the most troops left standing,
