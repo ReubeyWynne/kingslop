@@ -29,7 +29,7 @@ async function setRange(page, id, value) {
   await page.locator(id).evaluate((el, value) => { el.value = value; el.dispatchEvent(new Event('input', { bubbles: true })); }, value);
 }
 async function overflow(page, message) {
-  const bad = await page.evaluate(() => [...document.querySelectorAll('main, main section, main .calc, main .sim-report, main .vip-out, main .vip-ref')].filter(el => el.getClientRects().length && el.scrollWidth > el.clientWidth + 2).map(el => el.id || el.className));
+  const bad = await page.evaluate(() => [...document.querySelectorAll('main, main section, main .calc, main .army, main .sim-troop, main .vip-out, main .vip-ref')].filter(el => el.getClientRects().length && el.scrollWidth > el.clientWidth + 2).map(el => el.id || el.className));
   if (bad.length) {
     await page.screenshot({ path: path.join(output, 'failure-' + message.replace(/[^a-z0-9]+/gi, '-') + '.png'), fullPage: true });
     console.error(JSON.stringify(await page.locator('main section').evaluateAll(els => els.filter(el => el.scrollWidth > el.clientWidth + 2).map(el => ({ id: el.id, client: el.clientWidth, scroll: el.scrollWidth, nodes: [...el.querySelectorAll('*')].filter(node => node.getClientRects().length && (node.getBoundingClientRect().right > el.getBoundingClientRect().right + 1 || node.scrollWidth > node.clientWidth + 2)).map(node => ({ tag: node.tagName, id: node.id, className: node.className, client: node.clientWidth, scroll: node.scrollWidth, width: node.getBoundingClientRect().width, right: node.getBoundingClientRect().right })) })))));
@@ -88,7 +88,7 @@ async function overflow(page, message) {
         await page.evaluate(() => document.querySelectorAll('.section-toggle[aria-expanded="false"]').forEach(b => b.click()));
         await overflow(page, lang + ' ' + route + ' expanded ' + width);
         if (!route) {
-          assert.equal(await page.locator('main .event-card[href]').count(), 8);
+          assert.equal(await page.locator('main .event-card[href]').count(), 9);
           assert.equal(await page.locator('.event-ghost').count(), 0);
           assert.ok(!(await page.locator('main').innerText()).includes('undefined'));
         }
@@ -119,26 +119,46 @@ async function overflow(page, message) {
           }
         }
         if (route === 'battle-simulator/') {
-          await page.locator('#sim-atk-inf').fill('333');
+          // Phones show one side of the workspace at a time; wide screens both.
+          const narrow = width <= 860;
+          const view = async v => { if (narrow) await page.locator('#sim-view-' + v).click(); };
+          // The sheet's inputs live in a dialog per side, opened from a troop tile.
+          const edit = async (side, troop, fn) => {
+            await view('armies');
+            await page.locator('#sim-' + side + ' .army-tile[data-troop="' + troop + '"]').click();
+            const dialog = page.locator('#sim-edit-' + side);
+            assert.equal(await dialog.evaluate(d => d.open), true, lang + ': a tile opens its dialog');
+            assert.equal(await page.locator('#sim-edit-' + side + '-' + troop).isVisible(), true, lang + ': at that troop\'s tab');
+            await fn(dialog);
+            await dialog.locator('[data-action="sim-army.close"]').click();
+            assert.equal(await dialog.evaluate(d => d.open), false);
+          };
+          await edit('you', 'inf', () => page.locator('#sim-atk-inf').fill('333'));
+          assert.match(await page.locator('#sim-you .army-tile[data-troop="inf"]').innerText(), /333/, lang + ': the tile shows what the dialog holds');
           for (const mode of ['mystic', 'battle', 'bear-damage', 'bear-ratio']) {
             await page.locator('.mode-rail a[data-mode="' + mode + '"]').click();
+            await view('armies');
             assert.equal(await page.locator('#sim-load').isVisible(), true);
             assert.equal(await page.locator('#sim-foe').isVisible(), !mode.startsWith('bear'));
-            assert.equal(await page.locator('#sim-march-block').isVisible(), mode !== 'bear-ratio');
+            assert.equal(await page.locator('#sim-you .army-count').first().isVisible(), mode !== 'bear-ratio');
+            await overflow(page, lang + ' simulator armies ' + mode);
+            await view('answer');
             assert.equal(await page.locator('#sim-fight').isVisible(), !mode.startsWith('bear'));
             assert.equal(await page.locator('.sim-panel:visible').count(), 1);
             if (mode === 'battle') {
               assert.match(await page.locator('#sim-fight-headline').innerText(), /\S/, lang + ': the fight answers as typed');
               assert.equal(await page.locator('#sim-fight-out .sim-row').count(), 4);
+              await view('armies');
               assert.equal(await page.locator('#sim-ledger').isVisible(), true);
               await page.locator('[data-action="sim-player.save"]').click();
               const saved = await page.evaluate(() => window.PlayerLedger.shared().combat());
               assert.equal(saved.stats.inf.attack, 333, lang + ': your stats reach the shared player save');
               assert.ok(saved.troops.length > 0);
-              await page.locator('#sim-atk-inf').fill('1');
+              await edit('you', 'inf', () => page.locator('#sim-atk-inf').fill('1'));
               await page.locator('[data-action="sim-player.load"]').click();
               assert.equal(await page.locator('#sim-atk-inf').inputValue(), '333', lang + ': the player save fills your stats back');
-              await page.locator('#sim-roster > summary').click();
+              assert.match(await page.locator('#sim-you .army-tile[data-troop="inf"]').innerText(), /333/, lang + ': and the tile follows');
+              await page.locator('[data-dialog="sim-roster-dialog"]').click();
               const roster = page.locator('#sim-roster [data-troop-type="cav"]');
               const before = await roster.locator('.roster-row').count();
               await roster.locator('[data-action="troop-roster.add"]').click();
@@ -146,13 +166,17 @@ async function overflow(page, message) {
               assert.ok((await page.evaluate(() => window.PlayerLedger.shared().combat().troops)).some(t => t.type === 'cav' && t.amount === 4321), lang + ': the roster writes troops to the player save');
               await roster.locator('.roster-row').nth(before).locator('[data-action="troop-roster.remove"]').click();
               assert.equal(await roster.locator('.roster-row').count(), before);
-              await page.locator('#sim-roster > summary').click();
+              await page.locator('#sim-roster-dialog [data-action="sim-army.close"]').click();
               if (width === 390) {
+                assert.match(await page.locator('.sim-peek').innerText(), /\S/, lang + ': the answer peeks in under the armies');
+                await page.locator('.sim-peek').click();
+                assert.equal(await page.locator('#sim-answer').isVisible(), true);
                 await page.locator('#sim-sweep-btn').click();
                 await page.locator('#sim-sweep-result').waitFor({ state: 'visible', timeout: 30000 });
                 assert.ok(await page.locator('#sim-tri-svg .tri-cell').count() > 100, lang + ': the sweep draws every mix');
                 assert.equal(await page.locator('#sim-sweep-out .sim-row').count(), 5);
               }
+              await view('answer');
             }
             assert.ok(page.url().includes('lang=' + lang));
             await overflow(page, lang + ' simulator mode ' + mode);
@@ -171,6 +195,7 @@ async function overflow(page, message) {
           assert.equal(await page.locator('#sim-atk-inf').inputValue(), '333');
           await page.goBack();
           assert.equal(await page.locator('.mode-rail [aria-current]').getAttribute('data-mode'), 'bear-damage');
+          await view('armies');
         }
         if (['en', 'ar'].includes(lang) && [390, 1280].includes(width)) {
           await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));

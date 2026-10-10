@@ -1,17 +1,18 @@
 /* sim.css — the Battle Simulator page only (battle-simulator/). Loaded after
    styles.css + events.css (the page's theme block lives there).
-   The console: the mode rail that picks the fight, the shared report sheets
-   (both Bonus Details columns, editable), the OCR prefill, your march, and
-   one ruled output per mode — the bear ratio, your march against the bear,
+   The console: the mode rail that picks the fight, then hero gear's
+   workspace — army cards (a tile per troop type, edited in a dialog) beside
+   the answer — the OCR prefill, and one ruled output per mode — the bear ratio, your march against the bear,
    the Mystic Trial rooms, and the fight + mix sweep the last two share.
 
    DIRECTION CONTRACT (extension of the existing surface — one page, one
    world, one signal; no new palette, no new type, no new radii):
    THESIS      one ledger, four fights — the fight changes, the world doesn't.
    OWN-WORLD   the war-room night + antique gold already on this page; the
-               rail borrows the .ev-switch recipe, the outputs the ruled
+               rail borrows the .ev-switch recipe, the workspace, tiles and
+               dialogs the hero gear planner's, the outputs the ruled
                .sim-head/.sim-row grammar.
-   REFUSES     per-mode hue swaps, tabbed SaaS chrome, a hero portrait spine,
+   REFUSES     per-mode hue swaps, long input sheets, a hero portrait spine,
                invented brackets, spinners where an honest bench belongs.
    SIGNATURE   one report read once, then re-answered per fight; the mix
                triangle draws every march you could send on one ruled grid.
@@ -229,59 +230,6 @@
    takes the larger step — more air above the title than below it. */
 .sim-panel { margin-top: var(--space-l); }
 
-.sim-report, .march { margin: var(--space-s) 0; border-top: 1px solid rgba(157, 149, 127, 0.25); }
-.sim-report .sim-head, .sim-report .sim-row { grid-template-columns: 1fr 6rem 6rem 5.6rem 5.6rem; gap: 0.4rem; }
-.sim-report .sim-head span { font-size: 0.72em; letter-spacing: 0.06em; white-space: nowrap; }
-/* Wide, the header row names the four stats once, so each field's own label
-   stays out of the way. Narrow, the header gives way to those labels. */
-.sim-report .sim-field { display: block; min-width: 0; }
-.sim-report .sim-field label { display: none; }
-.sim-report input,
-.march input,
-.march select {
-  font-size: var(--step-0);
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-.march .sim-head, .march .sim-row { grid-template-columns: 1fr 6.4rem 4.4rem 4rem; gap: 0.5rem; }
-.march .sim-field { display: block; min-width: 0; }
-.march .sim-field label { display: none; }
-.march select {
-  width: 100%;
-  padding: 0.35rem 0;
-  font-family: var(--body);
-  color: var(--ink);
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--ink-muted);
-  border-radius: 0;
-}
-.march select:focus { border-bottom-color: var(--amber); outline: none; }
-.march option { background: var(--void-2); color: var(--ink); }
-/* The march counts carry a "0" placeholder. The browser's default grey lands
-   under 4.5:1 on this night, so the placeholder takes the sheet's muted ivory. */
-.march input::placeholder { color: var(--ink-muted); opacity: 1; }
-
-/* Narrow: both sheets keep every value editable. The header row gives way to a
-   label on each field — the twelve report stats wrap two-up under their type,
-   the march's count/tier/TG run three-up — because hiding a column would strand
-   a phone reader with numbers they cannot correct. */
-@media (max-width: 660px) {
-  .sim-report .sim-head, .march .sim-head { display: none; }
-  .sim-report .sim-row { grid-template-columns: 1fr 1fr; gap: 0.5rem 0.8rem; padding: 0.6rem 0; }
-  .march .sim-row { grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem 0.6rem; padding: 0.6rem 0; }
-  .sim-report .sim-type, .march .sim-type { grid-column: 1 / -1; }
-  .sim-report .sim-field, .march .sim-field { display: flex; flex-direction: column; gap: 0.15rem; }
-  .sim-report .sim-field label, .march .sim-field label {
-    display: block;
-    font-size: 0.72em;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-muted);
-  }
-}
-
 /* ─── The march verdict — your split against the lead's optimum ──
    Troop | troops | your share | ideal share. The count column drops on
    narrow screens (you typed it); the two shares never do. */
@@ -355,9 +303,8 @@
 .sim-ocr button, .sim-field input, .sim-field select { min-height: 44px; }
 .sim-field input:focus-visible, .sim-field select:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 .sim-row > span, .sim-head > span { min-width: 0; overflow-wrap: anywhere; }
-.sim-report .sim-head span { white-space: normal; }
 .sim-head span:first-child { text-align: start; }
-.sim-report input, .march input, .march select, .sim-a, .sim-w, .sim-share, .sim-n { text-align: end; }
+.sim-a, .sim-w, .sim-share, .sim-n { text-align: end; }
 
 /* Ratios keep infantry / cavalry / archer order in every reading direction.
    Font-sized tracks accommodate localized digits and align headers with rows. */
@@ -373,21 +320,9 @@
 
 .sim-out.rooms .sim-head span:nth-child(2) { text-align: start; }
 
-/* ─── The opponent, your march, the fight — the battle half of the console ──
-   Same ruled grammar as the report sheet: a small label-caps title per
-   sheet, then the rows. Nothing here takes a new colour; the opponent's
-   numbers stay ink, yours take the signal. */
-.sheet-title {
-  margin: var(--space-m) 0 0;
-  font-family: var(--body);
-  font-size: var(--step--1);
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-}
-.sheet-title::before { content: "❧ "; color: var(--amber-dim); }
-.sim-report + .sheet-title { margin-top: var(--space-m); }
+/* ─── The fight — the battle half of the console ──
+   Same ruled grammar as the other tables. Nothing here takes a new colour;
+   the opponent's numbers stay ink, yours take the signal. */
 .sim-total { margin-top: var(--space-s); }
 .mix { direction: ltr; unicode-bidi: isolate; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
@@ -397,7 +332,8 @@
 
 /* The fight: troop | you | left | them | left. Your survivors in the signal,
    theirs in ink; the total row closes the ledger with a heavier rule. */
-.sim-out.fight-out .sim-head, .sim-out.fight-out .sim-row { grid-template-columns: minmax(0, 1fr) repeat(4, 5.2em); }
+.sim-out.fight-out .sim-head, .sim-out.fight-out .sim-row { grid-template-columns: minmax(6.5rem, 1fr) repeat(4, minmax(3.4rem, 5.2em)); }
+.sim-out .sim-type { overflow-wrap: normal; }
 .sim-left-foe { text-align: end; color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .sim-out .sim-n { text-align: end; color: var(--ink-dim); }
 .sim-row.sim-sum { border-top: 1px solid rgba(157, 149, 127, 0.25); }
@@ -487,30 +423,12 @@
 .room-pick:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 .sim-out.rooms .sim-row.picked .room-name { color: var(--ink); }
 .sim-out.rooms .sim-row.picked .room-pick { text-decoration-color: var(--amber); text-decoration-thickness: 2px; }
-.load + .load { margin-top: var(--space-l); }
 
-/* The shared player save: load/save your stats and troops */
-.sim-ledger output { flex-basis: 100%; }
-.sim-ledger[hidden] { display: none; }
 
 /* ─── Your troops — the troop-roster module ───────────── */
-/* A disclosure under the save buttons: one fieldset per type, one row per
-   tier you own (tier, TG, count, remove). Rows are cloned from a <template>
-   and keyed by their ledger id. */
-.roster { margin: 0 0 var(--space-m); }
-.roster[hidden] { display: none; }
-.roster > summary {
-  cursor: pointer;
-  font-size: var(--step--1);
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--amber);
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-}
-.roster > summary::marker { color: var(--amber-dim); }
+/* A dialog off your card: one fieldset per type, one row per tier you own
+   (tier, TG, count, remove). Rows are cloned from a <template> and keyed by
+   their ledger id. */
 .roster-type { border: 0; padding: 0; margin: var(--space-s) 0 0; min-width: 0; }
 .roster-type > legend { font-family: var(--display-2); font-weight: 700; color: var(--ink); padding: 0; }
 .roster-rows { list-style: none; margin: 0; padding: 0; }
@@ -563,3 +481,247 @@
 .roster-add:hover, .roster-add:focus-visible,
 .roster-remove:hover, .roster-remove:focus-visible { color: var(--ink); border-color: var(--amber); }
 .roster-total { display: block; margin-top: var(--space-s); font-size: var(--step--1); color: var(--ink-muted); font-style: italic; }
+
+/* ─── The workspace — hero gear's shape: armies | answer ──
+   The console widens to the hero gear planner's 74rem; prose sections keep
+   the 46rem measure. Wide, the armies sit beside the answer, ruled apart by
+   one hairline. Narrow, a two-tab view rail shows one side at a time. */
+.sim-main { max-width: 74rem; }
+.sim-main > .section:not(.sim-console) { max-width: 46rem; }
+.sim-heading .lede { max-width: 46rem; }
+.sim-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: start;
+}
+.sim-answer { border-inline-start: 1px solid var(--signal-line); padding-inline-start: 1.5rem; }
+.sim-answer > .sim-panel:first-child,
+.sim-answer > .sim-panel:not([hidden]) { margin-top: 0; }
+.sim-answer > .fight { margin-top: var(--space-m); }
+.sim-views { display: none; }
+
+/* The rail and the dialog tabs: the hero gear tab recipe — muted labels,
+   the selected one underlined in the signal. */
+.sim-views,
+.sim-tabs { gap: 0.4rem; border-bottom: 1px solid var(--signal-line); margin: 0.35rem 0 var(--space-s); }
+.sim-tabs { display: flex; }
+.sim-views button,
+.sim-tabs button {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  font: 700 var(--step--1) var(--body);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+.sim-views button[aria-selected="true"],
+.sim-tabs button[aria-selected="true"] { color: var(--amber); border-bottom-color: var(--amber); }
+.sim-views button:focus-visible,
+.sim-tabs button:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+/* ─── An army card: a heading, then a tile per troop type ── */
+.army { margin-top: var(--space-m); }
+.army[hidden] { display: none; }
+.army-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 0.8rem; margin-bottom: 0.3rem; }
+.army-head h3 { margin: 0; font-family: var(--display-2); font-size: var(--step-1); color: var(--ink); }
+.army-head small { font-size: var(--step--1); font-style: italic; color: var(--ink-muted); }
+.army-vs {
+  margin: var(--space-m) 0 0;
+  font-family: var(--display-2);
+  font-size: var(--step--1);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--amber-dim);
+}
+.army-vs::before, .army-vs::after { content: " ❧ "; color: var(--signal-line); }
+.army-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 1rem; }
+.army-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0.6rem 0 0.7rem;
+  font: inherit;
+  text-align: start;
+  color: var(--ink-dim);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(157, 149, 127, 0.18);
+  cursor: pointer;
+}
+.army-tile:hover { border-bottom-color: var(--signal-line); }
+.army-tile:hover .army-name { color: var(--amber); }
+.army-tile:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.army-tile[data-empty] .army-art { opacity: 0.4; }
+.army-tile[data-empty] .army-count b { color: var(--ink-muted); font-weight: 400; font-style: italic; }
+.army-art { display: block; width: 3.6rem; height: auto; aspect-ratio: 1; object-fit: contain; border-radius: 2px; margin-bottom: 0.3rem; }
+.army-body { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; width: 100%; }
+.army-name { font-family: var(--display-2); font-weight: 700; color: var(--ink); overflow-wrap: anywhere; }
+.army-count { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.5rem; }
+.army-count[hidden] { display: none; }
+.army-count b { font-size: var(--step-1); line-height: 1.2; color: var(--amber); font-variant-numeric: tabular-nums; }
+.army-tier { font-size: var(--step--1); color: var(--ink-dim); direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+.army-stats { display: grid; grid-template-columns: repeat(2, max-content); gap: 0 0.7rem; font-size: var(--step--1); color: var(--ink-muted); }
+.army-stat { white-space: nowrap; }
+.army-stat[hidden] { display: none; }
+.army-stat b { font-weight: 400; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+
+/* Phones see one side at a time: the answer's headline peeks in under the
+   armies, and a tap on it opens the answer. */
+.sim-peek { display: none; }
+
+/* The player save sits under your card: three margin prompts and a line. */
+.sim-ledger { margin-top: var(--space-s); }
+.sim-ledger[hidden] { display: none; }
+.sim-ledger-actions { display: flex; flex-wrap: wrap; gap: 0 1rem; }
+.sim-ledger-actions button,
+.sim-dialog-head button {
+  min-height: 44px;
+  padding: 0.35rem 0.1rem;
+  font: 700 var(--step--1) var(--body);
+  letter-spacing: 0.04em;
+  color: var(--amber);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+}
+.sim-ledger-actions button:hover,
+.sim-dialog-head button:hover { color: var(--ink); border-bottom-color: var(--signal-line); }
+.sim-ledger-actions button:disabled { color: var(--ink-muted); cursor: default; border-bottom-color: transparent; }
+.sim-ledger-actions button:focus-visible,
+.sim-dialog-head button:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.sim-ledger output { display: block; }
+
+/* ─── The edit dialogs — the hero gear dialog recipe ──── */
+.sim-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(34rem, calc(100% - 2rem));
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 1.2rem;
+  color: var(--ink);
+  background: var(--void-2);
+  border: 1px solid var(--signal-line);
+  border-radius: 2px;
+  font: 1rem/1.45 var(--body);
+}
+.sim-dialog::backdrop { background: rgba(11, 14, 22, 0.82); }
+.sim-dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.sim-dialog-head h2 { margin: 0; font-family: var(--display-2); font-size: var(--step-1); }
+.sim-dialog-head h2::before { display: none; }
+.sim-gloss { margin: 0.4rem 0 0.6rem; font-size: var(--step--1); color: var(--ink-dim); }
+.sim-gloss b { color: var(--ink); }
+.sim-dialog .note { font-size: var(--step--1); }
+.sim-troop { display: grid; grid-template-columns: 5rem minmax(0, 1fr); gap: 0.4rem 1rem; align-items: start; }
+.sim-troop[hidden] { display: none; }
+.sim-troop > .army-art { grid-row: span 2; }
+.sim-troop fieldset {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem 1rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0 0 0.8rem;
+  border: 0;
+}
+.sim-troop fieldset[hidden] { display: none; }
+.sim-troop legend {
+  padding: 0 0 0.3rem;
+  font-size: 0.82em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amber-dim);
+}
+.sim-troop .sim-count { grid-column: 1 / -1; }
+.sim-troop .sim-field { min-width: 0; }
+.sim-troop .sim-field[hidden] { display: none; }
+.sim-troop .sim-field > span { font-size: 0.82em; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-muted); }
+.sim-troop input,
+.sim-troop select {
+  width: 100%;
+  padding: 0.35rem 0;
+  font-family: var(--body);
+  font-size: var(--step-0);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--ink-muted);
+  border-radius: 0;
+}
+.sim-troop input:focus, .sim-troop select:focus { border-bottom-color: var(--amber); outline: none; }
+.sim-troop input:focus-visible, .sim-troop select:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.sim-troop input::placeholder { color: var(--ink-muted); opacity: 1; }
+.sim-troop option { background: var(--void-2); color: var(--ink); }
+
+/* The answer's glosses fold away: the figure first, the why on request. */
+.sim-why { margin: var(--space-s) 0; }
+.sim-why > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  font-size: var(--step--1);
+  font-style: italic;
+  color: var(--amber);
+}
+.sim-why > summary::marker { color: var(--amber-dim); }
+.sim-why > summary:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.sim-why[hidden] { display: none; }
+
+/* Narrow: one side at a time, picked on the view rail. */
+@media (max-width: 860px) {
+  .sim-workspace { display: block; }
+  .sim-answer { border-inline-start: 0; padding-inline-start: 0; }
+  .sim-views { display: flex; border: 1px solid var(--signal-line); }
+  .sim-views button[aria-selected="true"] { background: color-mix(in srgb, var(--amber) 8%, transparent); }
+  #console[data-view="armies"] .sim-answer,
+  #console[data-view="answer"] .sim-armies { display: none; }
+  .sim-peek {
+    display: block;
+    width: 100%;
+    margin-top: var(--space-m);
+    padding: 0.7rem 0.8rem;
+    font: inherit;
+    font-size: var(--step--1);
+    text-align: start;
+    color: var(--ink-dim);
+    background: color-mix(in srgb, var(--amber) 6%, transparent);
+    border: 1px solid var(--signal-line);
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .sim-peek b { color: var(--amber); }
+  .sim-peek:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+  .sim-peek-go { display: block; margin-top: 0.3rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--amber); }
+}
+@media (max-width: 420px) {
+  .army-tiles { gap: 0 0.6rem; }
+  .army-art { width: 2.8rem; }
+  .army-count b { font-size: var(--step-0); }
+  .army-stats { grid-template-columns: max-content; }
+  .sim-troop { grid-template-columns: minmax(0, 1fr); }
+  .sim-troop > .army-art { display: none; }
+}
+.sim-peek[hidden] { display: none; }
+.sim-ocr-status[hidden] { display: none; }
+/* The answer tab scrolls into view below the sticky contents bar. */
+.sim-views { scroll-margin-top: 7rem; }

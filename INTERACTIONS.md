@@ -26,6 +26,8 @@ Static markup stays meaningful: native forms, labels, details, tabs and output e
 
 The battle simulator composes `troop-roster` with its own `sim-player` module (`js/sim-player.js`), which reads and writes your stats and march through `data-player-stat` and `data-player-march` attributes and fires the fields' own input events, so the simulator controller stays unaware of the ledger.
 
+Its `sim-army` module (`js/sim-army.js`) turns the sheet into army cards. A tile carries `data-action="sim-army.edit"`, `data-dialog` (the dialog's id) and `data-troop`; it opens that dialog at the troop's tab, and the dialog's `tabs` module picks which `[data-troop-panel]` shows. Inside a tile, `[data-show="id …"][data-format="count|pct|tier"]` mirrors the named inputs, repainted on input, on the simulator's `sim:paint` and `sim:mode` events, and on a language switch. `sim-army.close` closes its dialog, a `tabs:select` with binding `view` sets the root's `data-view` for the phone layout, and `sim-army.answer` opens the Answer view from the `[data-target="sim-army.peek"]` line, which mirrors the first visible `[data-peek]` headline.
+
 Hero gear composes these capabilities in its existing markup. Resource persistence, file export/import, tab keyboard handling and status output no longer live in its page controller. Optimisation, gear editing and the specialised screenshot review remain domain-specific consumers of the ledger and semantic events.
 
 ## Example
