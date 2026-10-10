@@ -657,6 +657,7 @@ def minis():
 
 MARCH_W, MARCH_H, MARCH_GAP = 48, 8, 16
 MARCH_FPS = 8
+MARCH_PENNANT_FRAMES = MARCH_GAP * 2
 STRIDE = [  # (dx from the hip, row below the hip, glyph): contact, push, passing, reach
     [(-1, 0, '/'), (1, 0, '\\'), (-2, 1, '/'), (2, 1, '\\')],
     [(0, 0, '|'), (1, 0, '\\'), (-1, 1, '/'), (1, 1, '|')],
@@ -673,7 +674,7 @@ BEARER = [(0, 4, '|'), (2, 0, 'o')] + [(2, r, '|') for r in range(1, 5)]
 
 def pennant(arr, x, i):
     """A two-edged pennant trailing behind the pole, rippling away from it."""
-    phase = TAU * i / (MARCH_GAP * 2)
+    phase = TAU * i / MARCH_PENNANT_FRAMES
     level = lambda c: math.sin(phase - c * .9) * min(1, (c + 1) / 2)
     glyph = lambda v: "'" if v > .5 else '-' if v > -.05 else '.' if v > -.6 else '_'
     put(arr, x, 1, ''.join(glyph(level(c)) for c in range(5)), '')
@@ -685,7 +686,8 @@ def march_frame(kind, i):
     for c in range(MARCH_W):  # the ground repeats with the tile, so the band has no seams
         if c % 16 in (5, 12):
             arr[MARCH_H - 1][c] = '.' if c % 16 == 5 else '_'
-    for origin in range(-MARCH_GAP, MARCH_W + 2 * MARCH_GAP, MARCH_GAP):
+    start = (i // MARCH_GAP - 1) * MARCH_GAP
+    for origin in range(start, i + MARCH_W + 2 * MARCH_GAP, MARCH_GAP):
         hip = origin - i
         if origin % MARCH_W == 0:
             for dx, r, text in MARCHERS[kind][:2] + [(-1, 3, '/|\\')] + BEARER:
@@ -708,10 +710,11 @@ def march():
         assert planted in feet and planted - pose == PLANTED[0], f'march pose {pose} slides'
     assert PLANTED[-1] + 1 in {dx for dx, row, _ in STRIDE[0] if row == 1}, 'march loop slides'
     css = ['/* march */']
-    loop = MARCH_W  # every figure has moved one tile on, so the band repeats exactly
+    loop = math.lcm(MARCH_W, MARCH_PENNANT_FRAMES, len(STRIDE))
     for kind, selector, name in (('raid', '.ascii-march::before', 'ascii-march'),
                                  ('hunt', '.ascii-march--hunt::before', 'ascii-hunt-march')):
         frames = [march_frame(kind, i) for i in range(loop)]
+        assert march_frame(kind, loop) == frames[0], f'{kind}: march loop does not close'
         css.append(animation(selector, name, frames, loop / MARCH_FPS))
     return '\n'.join(css) + '\n'
 
