@@ -58,12 +58,12 @@ const server = http.createServer((request, response) => {
         const page = await context.newPage();
         await page.goto(base + url + '?lang=en', { waitUntil: 'networkidle' });
         await page.evaluate(() => document.fonts.ready);
-        await page.addStyleTag({ content: '.topbar, .toc { visibility: hidden !important; }' });
         if (name === 'moon-card') {
           await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
           await page.locator('#ledger-btn').click();
           await page.waitForFunction(() => document.querySelector('.deck-card.is-selected')?.dataset.page === 'kvksg');
         }
+        await page.addStyleTag({ content: '.topbar, .toc { visibility: hidden !important; }' });
         // Open the collapsed section the scene sits in.
         await page.evaluate(selector => {
           document.querySelector(selector)?.closest('section')?.querySelector('.section-toggle[aria-expanded="false"]')?.click();
