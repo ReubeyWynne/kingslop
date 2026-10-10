@@ -173,6 +173,7 @@ html, body { overscroll-behavior-x: none; }
 .page-deck[data-selected="kvksg"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #5FC8A6; --deck-ground: #132326; }
 .page-deck[data-selected="gear"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #72CBDD; --deck-ground: #16242c; }
 .page-deck[data-selected="heroes"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E68AB4; --deck-ground: #241c27; }
+.page-deck[data-selected="governor"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #86D48A; --deck-ground: #19241b; }
 /* The selected page's colours land only on the parts that use them, not on
    the strip, so a change restyles a handful of elements rather than every
    cover in the ring. */
@@ -337,6 +338,7 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
 .deck-card[data-page="kvksg"] { --deck-accent: #5FC8A6; }
 .deck-card[data-page="gear"] { --deck-accent: #72CBDD; }
 .deck-card[data-page="heroes"] { --deck-accent: #E68AB4; }
+.deck-card[data-page="governor"] { --deck-accent: #86D48A; }
 .deck-card::before {
   content: '';
   position: absolute;
@@ -869,5 +871,22 @@ html[data-page="heroes"], html[data-page="home"]:has(.event-card[data-hover-page
   --signal-tint: rgba(230, 138, 180, .07);
   --signal-glow: rgba(230, 138, 180, .22);
   --signal-halo: rgba(230, 138, 180, .30);
+}
+
+
+/* ─── Governor gear — the laurel wardrobe ──────────────── */
+html[data-page="governor"], html[data-page="home"]:has(.event-card[data-hover-page="governor"]:is(:hover, :focus-within)), .deck-card[data-page="governor"] {
+  --void: #0A130C;        /* garden night — laurel-black       */
+  --void-2: #121D14;      /* one step up (fields)              */
+  --amber: #86D48A;       /* laurel green — the governor signal */
+  --amber-dim: #5FA466;   /* pressed laurel — secondary        */
+  --ember: rgba(134, 212, 138, 0.15); /* laurel motes           */
+  --ember-2: rgba(108, 180, 114, 0.10);
+  --ember-3: rgba(241, 227, 194, 0.07);
+  --chrome: rgba(10, 19, 12, .94);
+  --signal-line: rgba(134, 212, 138, .35);
+  --signal-tint: rgba(134, 212, 138, .07);
+  --signal-glow: rgba(134, 212, 138, .22);
+  --signal-halo: rgba(134, 212, 138, .28);
 }
 

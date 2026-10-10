@@ -1004,6 +1004,11 @@ window.__BH_I18N_DATA["fr"] = {
   "directory.heroSource": "voir la page officielle du héros",
   "gear.reset": "réinitialiser l’équipement",
   "gear.resetTitle": "Réinitialiser l’équipement des héros ?",
-  "gear.resetHint": "L’équipement, ses ressources et les préférences sont réinitialisés. Les autres objets d’événements restent sauvegardés. Vous pouvez annuler."
+  "gear.resetHint": "L’équipement, ses ressources et les préférences sont réinitialisés. Les autres objets d’événements restent sauvegardés. Vous pouvez annuler.",
+  "gov.nav": "Gouverneur",
+  "ev.deck.lede.governor": "équipement et charmes du gouverneur, planifiés depuis ton inventaire.",
+  "gov.title": "Équipement du gouverneur",
+  "gov.cardLede": "Planifie l’équipement et les charmes du gouverneur avec tes propres matériaux, et vois ce que le score rapporte en événement.",
+  "gov.kicker": "la garde-robe du gouverneur"
 }
 ;

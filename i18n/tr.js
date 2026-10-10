@@ -1002,6 +1002,11 @@ window.__BH_I18N_DATA["tr"] = {
   "directory.heroSource": "kahramanın resmî sayfasını aç",
   "gear.reset": "kahraman ekipmanını sıfırla",
   "gear.resetTitle": "Kahraman ekipmanı sıfırlansın mı?",
-  "gear.resetHint": "Ekipman, ekipman kaynakları ve tercihler varsayılana döner. Diğer etkinlik eşyaları korunur. Bu değişikliği geri alabilirsiniz."
+  "gear.resetHint": "Ekipman, ekipman kaynakları ve tercihler varsayılana döner. Diğer etkinlik eşyaları korunur. Bu değişikliği geri alabilirsiniz.",
+  "gov.nav": "Vali",
+  "ev.deck.lede.governor": "vali ekipmanı ve tılsımları, envanterine göre planlanır.",
+  "gov.title": "Vali ekipmanı",
+  "gov.cardLede": "Vali ekipmanını ve tılsımlarını kendi malzemelerinle planla, puanın etkinliklerde neye değdiğini gör.",
+  "gov.kicker": "valinin gardırobu"
 }
 ;

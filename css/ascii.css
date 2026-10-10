@@ -97,6 +97,7 @@
 .ascii-mini--bear { height: 13.75em; }
 .ascii-mini--crown { height: 12.5em; }
 .ascii-mini--charm { height: 12.5em; }
+.ascii-mini--seal { height: 12.5em; }
 @media (max-width: 400px) { .ascii-motif-rail { gap: .5rem; margin-top: 1rem; } .ascii-mini { font-size: 9px; } }
 
 /* ─── The march — a procession across a ruled band ────── */
