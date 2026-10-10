@@ -1475,6 +1475,7 @@ window.__BH_I18N_DATA["en"] = {
   "gov.charmScore": "charm score",
   "gov.quickSet": "set every piece at once",
   "gov.noCharm": "no charm",
+  "gov.charmLabel": "Charm",
   "gov.yourPlan": "Your plan",
   "gov.mode": "Planner mode",
   "gov.spendNow": "Spend now",

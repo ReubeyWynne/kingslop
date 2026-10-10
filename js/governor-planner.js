@@ -59,14 +59,11 @@
     function gearArt(id, index) { var d = index ? G.describe('gear', index) : { tier: 'green', grade: 0 }; return art + 'gear/' + id + '-' + d.tier + '-' + d.grade + '.webp'; }
     function charmArt(id, level) { return art + 'charms/' + id.split('-')[0] + '-' + Math.max(1, level || 1) + '.webp'; }
     function state(index) { return index === null || index === undefined ? 'unset' : index === 0 ? 'empty' : 'set'; }
-    // A card is the piece art for its tier and grade, with the stars laid over it as the game does.
+    // A card is the piece art for its tier and grade; the level line beside it carries the stars.
     function paintCard(card, id, index) {
       card.dataset.state = state(index);
       card.dataset.tier = index ? G.describe('gear', index).tier : '';
       setSrc(card.querySelector('img'), gearArt(id, index));
-      var stars = card.querySelector('.gov-stars'), count = index ? G.describe('gear', index).stars : 0;
-      if (stars && stars.childElementCount !== count) { stars.replaceChildren(); for (var i = 0; i < count; i += 1) stars.appendChild(el('span', '★')); }
-      var mark = card.querySelector('.gov-card-mark'); if (mark) mark.textContent = index === null || index === undefined ? '?' : '+';
     }
     function paintGem(gem, id, level) {
       gem.dataset.state = state(level);
@@ -75,7 +72,7 @@
     }
     function card(id, index, which) {
       var wrap;
-      if (which === 'gear') { wrap = el('span', null, 'gov-card'); var img = el('img'); img.alt = ''; img.width = 160; img.height = 160; wrap.appendChild(img); wrap.appendChild(el('span', null, 'gov-stars')); paintCard(wrap, id, index); }
+      if (which === 'gear') { wrap = el('span', null, 'gov-card'); var img = el('img'); img.alt = ''; img.width = 160; img.height = 160; wrap.appendChild(img); paintCard(wrap, id, index); }
       else { wrap = el('span', null, 'gov-gem'); var gem = el('img'); gem.alt = ''; gem.width = 72; gem.height = 72; wrap.appendChild(gem); paintGem(wrap, id, index); }
       return wrap;
     }
@@ -137,7 +134,6 @@
         var id = editing + '-' + row.dataset.charmRow, level = charms[id], select = row.querySelector('select');
         select.dataset.item = id; select.value = level === null ? '' : String(level);
         select.setAttribute('aria-label', itemName(id));
-        paintGem(row.querySelector('.gov-gem'), id, level);
         if (level) total += G.stat('charms', level);
       });
       put('editCharmStat', total ? fill('charmTotal', { n: pct(total) }) : '');
@@ -209,7 +205,7 @@
       var level = kind === 'gear' ? options.gearTarget : options.charmTarget, target = G.toTarget(kind, state, level, materials.amounts);
       context.nodes('.gov-target label[data-kind]').forEach(function (label) { label.hidden = label.dataset.kind !== kind; });
       context.targets('targetCard').forEach(function (node) {
-        if (kind === 'gear') { node.className = 'gov-card gov-target-card'; node.replaceChildren(el('img'), el('span', null, 'gov-stars')); node.firstChild.alt = ''; paintCard(node, 'inf-1', level); }
+        if (kind === 'gear') { node.className = 'gov-card gov-target-card'; node.replaceChildren(el('img')); node.firstChild.alt = ''; paintCard(node, 'inf-1', level); }
         else { node.className = 'gov-gem gov-target-card'; node.replaceChildren(el('img')); node.firstChild.alt = ''; paintGem(node, 'inf-1-1', level); }
       });
       context.targets('target').forEach(function (strip) {

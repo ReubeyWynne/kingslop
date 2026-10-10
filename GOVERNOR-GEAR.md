@@ -27,7 +27,7 @@ Set bonuses appear in only one table and are not modelled.
 
 ## Page
 
-The page mirrors the in-game Governor Profile. Six tiles sit in three rows, cavalry (hat, amulet), infantry (armour, trousers) and archer (ring, staff), each with its three charm gems underneath; the middle of each row shows that troop's totals. Tapping a tile opens a dialog with steppers for the piece and its charms. The plan sits beside the board on a wide screen and behind a tab on a phone, with "Spend now" (back-to-back steps on one piece shown as one upgrade) and "Cost to reach". Art is game artwork listed in [img/governor/SOURCES.md](img/governor/SOURCES.md); each gear card is the zero-star art for its tier and grade, and the page draws the stars.
+The page is a ruled ledger in the site's own style: one band per troop (cavalry: hat, amulet; infantry: armour, trousers; archer: ring, staff) with that troop's totals, two pieces to a band, each shown as its game art, its level and its three charm levels as square rule cells. Tapping a piece opens a dialog with steppers for the piece and its charms. The plan sits beside the board on a wide screen and behind a tab on a phone, with "Spend now" (back-to-back steps on one piece shown as one upgrade) and "Cost to reach". Art is game artwork listed in [img/governor/SOURCES.md](img/governor/SOURCES.md); each gear card is the zero-star art for its tier and grade, and the level text carries the stars. Nothing on the page copies the game's own frames, glows or layout.
 
 ## Ledger
 
