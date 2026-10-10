@@ -44,10 +44,11 @@
   // Old links: the PvE bench became the battle mode, which fights beasts too.
   var ALIASES = { pve: 'battle' };
 
-  // Which blocks each mode shows (.sim-for[data-for]).
+  // Which blocks each mode shows (.sim-for[data-for]). ratio and bear-march
+  // carry the one line that differs between the two bear modes.
   var GROUPS = {
-    'bear-ratio': ['bear'],
-    'bear-damage': ['bear', 'march'],
+    'bear-ratio': ['bear', 'ratio'],
+    'bear-damage': ['bear', 'march', 'bear-march'],
     'mystic': ['fight', 'march', 'mystic'],
     'battle': ['fight', 'march', 'battle']
   };
@@ -670,6 +671,10 @@
     paintFight(BH);
     paintSweepSize(BH);
     paintSweep(BH);
+    // The army tiles (js/sim-army.js) mirror the sheet after every repaint,
+    // including the ones a screenshot read or a restore set without events.
+    var root = el('console');
+    if (root) root.dispatchEvent(new CustomEvent('sim:paint', { bubbles: true }));
   }
 
   // ── Modes — the rail, the panels, the URL ─────────────
@@ -708,6 +713,8 @@
       if (k === m) link.setAttribute('aria-current', 'true');
       else link.removeAttribute('aria-current');
     });
+    var root = el('console');
+    if (root) root.dispatchEvent(new CustomEvent('sim:mode', { bubbles: true, detail: { mode: m } }));
     if (!push) return;
     try {
       history.pushState({ mode: m }, '', modeUrl(m));
@@ -1113,15 +1120,15 @@
           } else if (out.filled > 0) {
             // A partial read is still useful: keep what we got and say so. A
             // bear report usually carries only the left column.
-            ocrStatus(BH, 'sim.ocr.partial', 'Read {n} of {total} values — fill in the rest above.', 'ok', { n: out.filled, total: FIELDS.length });
+            ocrStatus(BH, 'sim.ocr.partial', 'Read {n} of {total} values — tap a troop to fill in the rest.', 'ok', { n: out.filled, total: FIELDS.length });
           } else {
-            ocrStatus(BH, 'sim.ocr.fail', 'Couldn’t read that screenshot. Try a clearer shot, or enter the numbers above.', 'bad');
+            ocrStatus(BH, 'sim.ocr.fail', 'Couldn’t read that screenshot. Try a clearer shot, or tap a troop to type the numbers.', 'bad');
           }
         })
         .catch(function (err) {
           if (window.console && console.error) console.error('[sim-ocr]', (err && err.message) || err);
           showShot(f, err && err.preview);
-          ocrStatus(BH, 'sim.ocr.fail', 'Couldn’t read that screenshot. Try a clearer shot, or enter the numbers above.', 'bad');
+          ocrStatus(BH, 'sim.ocr.fail', 'Couldn’t read that screenshot. Try a clearer shot, or tap a troop to type the numbers.', 'bad');
         })
         .then(function () { ocrBusy = false; });
     }
