@@ -395,6 +395,7 @@
       "../js/battle-engine.js",
       "../js/sim-player.js",
       "../js/sim-army.js",
+      "../js/sim-run.js",
       "../js/sim.js"
     ],
     "footMainKey": "sim.foot.main",

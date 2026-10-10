@@ -32,11 +32,13 @@ async function fixtures(page) {
         ctx.font = '16px sans-serif'; ctx.fillStyle = '#f1e3c2';
         ctx.fillText('+411.5%    Infantry Attack             +220%', 5, 45);
         ctx.fillText('                  Infantry Lethality         +230%', 5, 85);
+        ctx.fillText('12,345            Infantry                   23,456', 5, 125);
         const poly = (x, y, width = 80) => [[x, y], [x + width, y], [x + width, y + 16], [x, y + 16]];
         const items = [
           { text: '+411.5%', poly: poly(5, 30) }, { text: 'Infantry Attack', poly: poly(150, 30, 200) },
           { text: '+220%', poly: poly(400, 30) }, { text: 'Infantry Lethality', poly: poly(150, 70, 200) },
-          { text: '+230%', poly: poly(400, 70) }
+          { text: '+230%', poly: poly(400, 70) }, { text: '12,345', poly: poly(5, 110) },
+          { text: 'Infantry', poly: poly(150, 110, 200) }, { text: '23,456', poly: poly(400, 110) }
         ];
         const preview = message.type === 'predict' ? await createImageBitmap(canvas) : null;
         setTimeout(() => this.onmessage({ data: { id: message.id, ok: true, preview, items: window.unreadable ? [] : items } }), 5);
@@ -65,14 +67,16 @@ async function upload(page) {
       await upload(page);
       assert.equal(await page.locator('#sim-atk-inf').inputValue(), '411.5');
       assert.equal(await page.locator('#sim-let-inf').inputValue(), '163');
-      assert.equal(await page.locator('.sim-review-snippet').count(), 2);
-      assert.equal(await page.locator('#sim-review-fields input').count(), 8);
+      assert.equal(await page.locator('#sim-n-inf').inputValue(), '12345');
+      assert.equal(await page.locator('#sim-foe-n-inf').inputValue(), '23456');
+      assert.equal(await page.locator('.sim-review-snippet').count(), 3);
+      assert.equal(await page.locator('#sim-review-fields input').count(), 10);
       assert.equal(await page.locator('#sim-review-fields input[data-ocr="missing"]').count(), 5);
       await page.locator('[data-source="sim-let-inf"]').fill('333.3');
       assert.equal(await page.locator('#sim-let-inf').inputValue(), '333.3');
       assert.equal(await page.locator('#sim-review-fields input[data-ocr="missing"]').count(), 4);
       await page.locator('#sim-review-tab-cav').click();
-      assert.equal(await page.locator('[data-source$="-cav"]').count(), 8);
+      assert.equal(await page.locator('[data-source$="-cav"]').count(), 10);
       await page.locator('#sim-review-tab-inf').click();
       assert.ok(await page.evaluate(() => document.getElementById('sim-review-dialog').scrollWidth <= document.getElementById('sim-review-dialog').clientWidth + 1));
       await page.screenshot({ path: path.join(output, 'review-' + lang + '-' + width + '.png') });
@@ -91,6 +95,15 @@ async function upload(page) {
       assert.equal(await page.locator('#sim-answer').getAttribute('aria-busy'), null);
       assert.ok((await page.locator('#sim-sweep-metrics').textContent()).includes(lang === 'ar' ? '1,320' : '1,320'));
       assert.equal(await page.locator('#sim-sweep-btn').isDisabled(), false);
+      assert.equal(await page.locator('#sim-sweep-status').isHidden(), true);
+      // An edit after a sweep re-runs it; the old answer stays up, dimmed.
+      await page.evaluate(() => {
+        const input = document.getElementById('sim-foe-n-cav');
+        input.value = String(Number(input.value) + 500);
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      await page.waitForFunction(() => document.getElementById('sim-sweep-result').hasAttribute('data-stale'));
+      await page.waitForFunction(() => !document.getElementById('sim-sweep-result').hasAttribute('data-stale') && !document.getElementById('sim-answer').hasAttribute('aria-busy'));
       await page.locator('.sweep-settings summary').click();
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
       await page.screenshot({ path: path.join(output, 'answer-' + lang + '-' + width + '.png') });

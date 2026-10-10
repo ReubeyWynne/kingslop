@@ -37,7 +37,7 @@ self: sim
       {% include ascii/motif.html kind="dice" %}
   </section>
 
-  <section class="section sim-console" id="console" data-module="sim-player sim-army" data-sheet-key="bh:sim:v1" data-view="armies">
+  <section class="section sim-console" id="console" data-module="sim-player sim-army sim-run" data-sheet-key="bh:sim:v1" data-view="armies">
     <div class="sim-heading">
       <h2 data-i18n="sim.console.title">The console</h2>
       <p class="lede" data-i18n-html="sim.console.lede">One report, four fights. Import a battle screenshot or type the
@@ -135,7 +135,7 @@ self: sim
       <!-- ── The answer: the active fight's panel first ── -->
       <div class="sim-answer" id="sim-answer" role="tabpanel" aria-labelledby="sim-view-answer">
         <div class="sim-panel" data-mode="bear-ratio">
-          <h3 class="calc-title" data-i18n="sim.calc.titleTag">TRY IT — YOUR BEAR RATIO</h3>
+          <h3 class="calc-title sim-panel-title" data-i18n="sim.calc.titleTag">TRY IT — YOUR BEAR RATIO</h3>
           <p class="calc-out" id="sim-headline" data-peek>The ideal march lands here.</p>
           <div class="sim-out" id="sim-out" role="table" data-i18n-key="sim.calc.tableAria" data-i18n-attr="aria-label" hidden></div>
           <p class="calc-out" id="sim-k"></p>
@@ -151,7 +151,7 @@ self: sim
         </div>
 
         <div class="sim-panel" data-mode="bear-damage" hidden>
-          <h3 class="calc-title" data-i18n="sim.dmg.titleTag">TRY IT — YOUR BEAR MARCH</h3>
+          <h3 class="calc-title sim-panel-title" data-i18n="sim.dmg.titleTag">TRY IT — YOUR BEAR MARCH</h3>
           <p class="calc-out" id="sim-dmg-headline" data-peek></p>
           <div class="sim-out march-out" id="sim-dmg-out" role="table" data-i18n-key="sim.dmg.tableAria" data-i18n-attr="aria-label" hidden></div>
           <p class="calc-out" id="sim-dmg-ideal"></p>
@@ -173,11 +173,10 @@ self: sim
         </div>
 
         <div class="sim-panel" data-mode="mystic" hidden>
-          <h3 class="calc-title" data-i18n="sim.mystic.titleTag">TRY IT — CLEAR THE STAGE</h3>
+          <h3 class="calc-title sim-panel-title" data-i18n="sim.mystic.titleTag">TRY IT — CLEAR THE STAGE</h3>
           <p class="calc-out" id="sim-mystic-today"></p>
-          <details class="sim-why sim-room-list">
-            <summary data-i18n="sim.review.rooms">Choose a room</summary>
-          <div class="sim-out rooms" id="sim-rooms" role="table" data-i18n-key="sim.mystic.tableAria" data-i18n-attr="aria-label">
+          <p class="sim-label" id="sim-rooms-label" data-i18n="sim.review.rooms">Choose a room</p>
+          <div class="sim-out rooms" aria-describedby="sim-rooms-label" id="sim-rooms" role="table" data-i18n-key="sim.mystic.tableAria" data-i18n-attr="aria-label">
             <div class="sim-head" role="row">
               <span role="columnheader" data-i18n="sim.mystic.thRoom">Room</span>
               <span role="columnheader" data-i18n="sim.mystic.thChecks">checks</span>
@@ -227,7 +226,6 @@ self: sim
               <span class="room-alt" role="cell">55 / 10 / 35</span>
             </div>
           </div>
-          </details>
           <details class="sim-why">
             <summary data-i18n="sim.why">how this reads</summary>
             <p class="note" data-i18n-html="sim.mystic.ledeSweep">Type the stage from its report — your stats on the left,
@@ -240,7 +238,7 @@ self: sim
         </div>
 
         <div class="sim-panel" data-mode="battle" hidden>
-          <h3 class="calc-title" data-i18n="sim.battle.titleTag">TRY IT — ANY BATTLE</h3>
+          <h3 class="calc-title sim-panel-title" data-i18n="sim.battle.titleTag">TRY IT — ANY BATTLE</h3>
           <details class="sim-why">
             <summary data-i18n="sim.why">how this reads</summary>
             <p class="note" data-i18n-html="sim.battle.lede">Both sides of a fight — your stats and march, their stats and
@@ -253,15 +251,29 @@ self: sim
         <div class="fight sim-for" data-for="fight" id="sim-fight" hidden>
           <h3 class="calc-title" data-i18n="sim.fight.title">The fight, as typed</h3>
           <p class="calc-out" id="sim-fight-headline" data-peek></p>
-          <details class="sim-why">
-            <summary data-i18n="sim.review.survivors">Troops left standing</summary>
           <div class="sim-out fight-out" id="sim-fight-out" role="table" data-i18n-key="sim.fight.tableAria" data-i18n-attr="aria-label" hidden></div>
-          </details>
 
           <h3 class="calc-title" data-i18n="sim.sweep.title">Find the mix that wins</h3>
           <div class="sim-ocr sweep-go">
             <button type="button" id="sim-sweep-btn" data-i18n="sim.sweep.btn">Try every mix</button>
             <span class="sim-ocr-hint" id="sim-sweep-size"></span>
+          </div>
+          <div class="sim-run">
+            <progress id="sim-sweep-progress" data-target="sim-run.bar" max="1" value="0" aria-label="Simulation progress" data-i18n-key="sim.review.progress" data-i18n-attr="aria-label" hidden></progress>
+            <output id="sim-sweep-metrics" class="sim-run-metrics" data-target="sim-run.meter" hidden></output>
+            {% include ascii/hammer-loader.html %}
+          </div>
+          <output id="sim-sweep-status" class="sim-ocr-status" aria-live="polite" hidden></output>
+
+          <div class="sweep-result" id="sim-sweep-result" hidden>
+            <p class="calc-out" id="sim-sweep-headline"></p>
+            <figure class="tri" id="sim-tri">
+              <svg id="sim-tri-svg" viewBox="0 0 320 300" role="img" aria-labelledby="sim-tri-cap"></svg>
+              <figcaption id="sim-tri-cap" data-i18n-html="sim.sweep.cap">Every mix you tried: the brighter the cell, the
+                likelier the win. Corners are all infantry, all cavalry, all archers; <b>❧</b> marks the best mix.</figcaption>
+            </figure>
+            <div class="sim-out sweep-out" id="sim-sweep-out" role="table" data-i18n-key="sim.sweep.tableAria" data-i18n-attr="aria-label"></div>
+            <p class="calc-out" id="sim-sweep-room"></p>
           </div>
           <details class="sim-why sweep-settings">
             <summary data-i18n="sim.sweep.settings">grid &amp; limits</summary>
@@ -305,24 +317,6 @@ self: sim
               </span>
             </div>
           </details>
-          <progress id="sim-sweep-progress" max="1" value="0" aria-label="Simulation progress" data-i18n-key="sim.review.progress" data-i18n-attr="aria-label" hidden></progress>
-          <output id="sim-sweep-metrics" class="sim-run-metrics" hidden></output>
-          <output id="sim-sweep-status" class="sim-ocr-status" aria-live="polite" hidden></output>
-          {% include ascii/hammer-loader.html %}
-
-          <div class="sweep-result" id="sim-sweep-result" hidden>
-            <p class="calc-out" id="sim-sweep-headline"></p>
-            <details class="sim-why">
-              <summary data-i18n="sim.review.map">All mixes on the map</summary>
-            <figure class="tri" id="sim-tri">
-              <svg id="sim-tri-svg" viewBox="0 0 320 300" role="img" aria-labelledby="sim-tri-cap"></svg>
-              <figcaption id="sim-tri-cap" data-i18n-html="sim.sweep.cap">Every mix you tried: the brighter the cell, the
-                likelier the win. Corners are all infantry, all cavalry, all archers; <b>❧</b> marks the best mix.</figcaption>
-            </figure>
-            </details>
-            <div class="sim-out sweep-out" id="sim-sweep-out" role="table" data-i18n-key="sim.sweep.tableAria" data-i18n-attr="aria-label"></div>
-            <p class="calc-out" id="sim-sweep-room"></p>
-          </div>
 
           <details class="sim-why sim-for" data-for="mystic">
             <summary data-i18n="sim.mystic.notes">room rules &amp; tips</summary>

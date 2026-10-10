@@ -432,17 +432,30 @@
     return JSON.stringify([y, foe, o]);
   }
 
+  // Battles per mix the grid can afford: an option that would push the sweep
+  // past the cap is switched off, and a selection above it steps down to the
+  // largest one that fits, so the console never asks for a sweep it refuses.
+  function fitBattles(cells) {
+    var select = el('sim-sw-battles');
+    if (!select) return;
+    var fits = null;
+    Array.prototype.forEach.call(select.options, function (opt) {
+      var ok = !cells || cells * parseInt(opt.value, 10) <= SWEEP_CAP;
+      opt.disabled = !ok;
+      if (ok) fits = opt;
+    });
+    var picked = select.options[select.selectedIndex];
+    if (fits && picked && picked.disabled) { select.value = fits.value; save(); }
+  }
+
   function paintSweepSize(BH) {
     var line = el('sim-sweep-size'), btn = el('sim-sweep-btn');
     if (!line || !btn) return;
+    var cells = E.grid(sweepOpts()).cells.length;
+    fitBattles(cells);
     var o = sweepOpts();
-    var cells = E.grid(o).cells.length;
-    var runs = cells * o.battles;
     if (!cells) {
       line.textContent = BH.tr('sim.sweep.none', 'no mix fits those limits');
-      btn.disabled = true;
-    } else if (runs > SWEEP_CAP) {
-      line.textContent = BH.tpl('sim.sweep.tooMany', '{mixes} mixes × {battles} battles is too many — raise the step or narrow the limits', { mixes: numFmt(cells, 0), battles: numFmt(o.battles, 0) });
       btn.disabled = true;
     } else {
       line.textContent = BH.tpl('sim.sweep.size', '{mixes} mixes × {battles} battles', { mixes: numFmt(cells, 0), battles: numFmt(o.battles, 0) });
@@ -526,52 +539,73 @@
     });
   }
 
-  function startSweep(BH) {
-    if (sweepBusy) return;
+  // The run meter (js/sim-run.js) draws the bar and the live line from these.
+  function sweepEvent(phase, detail) {
+    var root = el('console');
+    detail.phase = phase;
+    if (root) root.dispatchEvent(new CustomEvent('sim:sweep', { bubbles: true, detail: detail }));
+  }
+
+  function sweepReady(o, foe) {
+    return o.total > 0 && total(foe.n) > 0 && E.grid(o).cells.length > 0;
+  }
+
+  // `fresh` is a reader's tap: it reports missing troops and brings the
+  // answer into view. A re-run after an edit does neither.
+  function startSweep(BH, fresh) {
+    if (sweepBusy) { sweepAgain = true; return; }
     var you = readSide('sim-'), foe = readSide('sim-foe-'), o = sweepOpts();
-    if (!o.total || !total(foe.n)) {
-      sweepStatus(BH, 'sim.fight.empty', 'Give both sides some troops — the fight needs two armies.', 'bad');
+    if (!sweepReady(o, foe)) {
+      if (fresh) sweepStatus(BH, 'sim.fight.empty', 'Give both sides some troops — the fight needs two armies.', 'bad');
       return;
     }
+    sweepStatus(BH);
     var key = sweepKey(you, foe, o);
     o.seed = E.seedOf([you.tier, you.tg, you.atk, you.let, you.def, you.hea, foe, o.total]);
     sweepBusy = true;
-    var started = performance.now();
-    var progress = el('sim-sweep-progress'), metrics = el('sim-sweep-metrics');
+    sweepAgain = false;
+    var started = performance.now(), mixes = E.grid(o).cells.length;
+    var planned = mixes * o.battles;
     var answer = el('sim-answer');
     if (answer) answer.setAttribute('aria-busy', 'true');
-    if (progress) { progress.hidden = false; progress.max = E.grid(o).cells.length; progress.value = 0; }
-    if (metrics) { metrics.hidden = false; metrics.textContent = ''; }
-    var oldResult = el('sim-sweep-result');
-    if (oldResult) oldResult.hidden = true;
-    function activity(done, of, battles) {
-      var seconds = Math.max(0.001, (performance.now() - started) / 1000);
-      if (progress) { progress.max = of; progress.value = done; }
-      if (metrics) metrics.textContent = BH.tpl('sim.review.metrics', '{battles} battles · {rate}/s · {seconds}s', {
-        battles: numFmt(battles, 0), rate: numFmt(Math.round(battles / seconds), 0), seconds: numFmt(seconds, 1)
-      });
+    function report(phase, done, battles) {
+      sweepEvent(phase, { done: done, of: mixes, battles: battles, planned: planned, ms: performance.now() - started });
     }
+    report('start', 0, 0);
     paintSweepSize(BH);
-    sweepStatus(BH, 'sim.sweep.running', 'Fighting every mix…', 'busy');
+    paintSweep(BH);
     runSweep(you, foe, o, function (done, of, battles) {
-      activity(done, of, battles);
-      sweepStatus(BH, 'sim.sweep.progress', 'Fighting every mix… {done} of {of}', 'busy', { done: numFmt(done, 0), of: numFmt(of, 0) });
+      report('progress', done, battles);
     }).then(function (result) {
       lastSweep = { key: key, result: result, you: you, foe: foe, opts: o };
       sweepBusy = false;
-      activity(result.cells.length, result.cells.length, result.battles);
-      sweepStatus(BH, 'sim.review.complete', 'Simulation complete.', 'ok');
+      report('done', result.cells.length, result.battles);
       paintSweep(BH);
       var res = el('sim-sweep-result');
-      if (res && res.scrollIntoView && !inView(res)) res.scrollIntoView({ block: 'nearest' });
+      if (fresh && res && res.scrollIntoView && !inView(res)) res.scrollIntoView({ block: 'nearest' });
     }, function (err) {
       if (window.console && console.error) console.error('[sim-sweep]', (err && err.message) || err);
+      report('fail', 0, 0);
       sweepStatus(BH, 'sim.sweep.fail', 'The sweep stopped before it finished. Try a coarser grid.', 'bad');
     }).then(function () {
       sweepBusy = false;
       if (answer) answer.removeAttribute('aria-busy');
       paintSweepSize(BH);
+      paintSweep(BH);
+      if (sweepAgain) queueSweep(BH);
     });
+  }
+
+  // Once a sweep has answered, an edit to either army re-runs it: the result
+  // follows the sheet instead of going stale. Bear modes never sweep.
+  var queueTimer = null, sweepAgain = false;
+  function queueSweep(BH) {
+    clearTimeout(queueTimer);
+    if (!lastSweep || GROUPS[mode].indexOf('fight') === -1) return;
+    var you = readSide('sim-'), foe = readSide('sim-foe-'), o = sweepOpts();
+    if (!sweepReady(o, foe) || sweepKey(you, foe, o) === lastSweep.key) return;
+    if (sweepBusy) { sweepAgain = true; return; }
+    queueTimer = setTimeout(function () { startSweep(BH, false); }, 700);
   }
 
   function inView(node) {
@@ -637,10 +671,13 @@
   function paintSweep(BH) {
     var box = el('sim-sweep-result');
     if (!box) return;
-    if (!lastSweep || sweepBusy) { box.hidden = true; return; }
+    if (!lastSweep) { box.hidden = true; return; }
+    // While a re-run is under way, or the sheet has moved on, the last answer
+    // stays up, dimmed, until the new one lands.
+    var stale = sweepBusy || sweepKey(readSide('sim-'), readSide('sim-foe-'), sweepOpts()) !== lastSweep.key;
+    box.toggleAttribute('data-stale', stale);
     var result = lastSweep.result;
     var top = E.best(result.cells);
-    var stale = sweepKey(readSide('sim-'), readSide('sim-foe-'), sweepOpts()) !== lastSweep.key;
 
     var headline = el('sim-sweep-headline');
     if (headline && top) {
@@ -652,7 +689,6 @@
       headline.innerHTML = top.win > 0
         ? BH.tpl('sim.sweep.best', 'Best mix <b>{mix}</b> — it wins <b>{win}</b> of the time: <b>{inf}</b> infantry, <b>{cav}</b> cavalry, <b>{arc}</b> archers, about {left} left standing.', vars)
         : BH.tpl('sim.sweep.noWin', 'No mix wins yet. The closest is <b>{mix}</b> — the system the room checks needs upgrading before the stage falls.', vars);
-      if (stale) headline.innerHTML += ' <span class="stale">' + BH.tr('sim.sweep.stale', '(the inputs changed since — try again)') + '</span>';
     }
 
     // The room the reader picked (or today's only room), fought at its own
@@ -663,7 +699,7 @@
       if (f) {
         var you = lastSweep.you, o = lastSweep.opts;
         var sideA = JSON.parse(JSON.stringify(you));
-        var ni = Math.round(o.total * cell[0] / g.k), nc = Math.round(o.total * cell[1] / g.k);
+        var ni = Math.round(o.total * f[0]), nc = Math.round(o.total * f[1]);
         sideA.n = [ni, nc, Math.max(0, o.total - ni - nc)];
         var r = E.run(sideA, lastSweep.foe, o.battles, o.seed + 104729);
         room = { f: f, win: r.win, name: roomName(row) };
@@ -709,6 +745,7 @@
     paintFight(BH);
     paintSweepSize(BH);
     paintSweep(BH);
+    queueSweep(BH);
     // The army tiles (js/sim-army.js) mirror the sheet after every repaint,
     // including the ones a screenshot read or a restore set without events.
     var root = el('console');
@@ -833,7 +870,7 @@
       });
     });
     var go = el('sim-sweep-btn');
-    if (go) go.addEventListener('click', function () { startSweep(BH); });
+    if (go) go.addEventListener('click', function () { startSweep(BH, true); });
   }
 
   function boot(BH) {
@@ -1012,6 +1049,41 @@
   var PCT = /[+\-]?\d+(?:[.,]\d+)?\s*%/g;
   function pctValue(s) { return parseFloat(String(s).replace(',', '.')); }
 
+  // A troop count: a whole number, grouped in thousands or not ("12,345",
+  // "12.345", "12 345" with a narrow space, "1234"). Never a percentage, a
+  // decimal, or the 10 of "T10" or "Lv.10" — group 1 eats the character before.
+  var COUNT = /(^|[^0-9A-Za-z.,])(\d{1,3}(?:[,.\u00a0\u202f]\d{3})+|\d+)(?![\d%.,]|\s*%)/g;
+  function countHits(text) {
+    var hits = [], hit;
+    COUNT.lastIndex = 0;
+    while ((hit = COUNT.exec(text)) !== null) {
+      hits.push({ index: hit.index + hit[1].length, value: parseInt(hit[2].replace(/[^0-9]/g, ''), 10) });
+    }
+    return hits;
+  }
+
+  // The value the green (your) column holds sits left of the label and the
+  // red one right of it: the last hit before the label is yours, the first
+  // after it is theirs. With no label position, the first and last hits.
+  function sides(hits, at) {
+    var left = null, right = null;
+    if (at === -1) {
+      left = hits[0] || null;
+      right = hits.length > 1 ? hits[hits.length - 1] : null;
+    } else {
+      hits.forEach(function (h) {
+        if (h.index < at) left = h;
+        else if (!right) right = h;
+      });
+      if (!left && !right) left = hits[0] || null;
+    }
+    return { left: left, right: right };
+  }
+
+  // The report's troop rows carry a block name and no stat ("12,345
+  // Infantry 23,456"); its totals row says "Troops".
+  var TROOPS = 'Troops';
+
   // Group recognised words into visual rows, then read both columns of every
   // troop-type stat row. Returns { 'L|Block|Stat': value, 'R|Block|Stat': value }.
   function parseItems(items) {
@@ -1041,48 +1113,82 @@
     });
 
     var out = {}, snippets = {};
+    function snip(label, r) {
+      var y0 = Math.min.apply(null, r.items.map(function (b) { return b.y; }));
+      var y1 = Math.max.apply(null, r.items.map(function (b) { return b.y + b.h; }));
+      snippets[label] = { y: y0, h: y1 - y0 };
+    }
+    function put(label, pair, value) {
+      if (pair.left && isFinite(value(pair.left))) out['L|' + label] = value(pair.left);
+      if (pair.right && isFinite(value(pair.right))) out['R|' + label] = value(pair.right);
+    }
     rows.forEach(function (r) {
       r.items.sort(function (a, b) { return a.cx - b.cx; });
       var joined = r.items.map(function (b) { return b.text; }).join(' ');
       var folded = fold(joined);
       var block = wordIn(folded, BLOCKS);
       var stat = wordIn(folded, STATS_EN);
-      if (!block || !stat) return;
-      var label = block + '|' + stat;
+      var label;
+      // A troop row: counts either side of the block name, or of "Troops"
+      // on the totals row. Power, kills and losses rows are not troops.
+      if (!stat) {
+        if (/power|kill|loss|lost|injur|wound|surviv/.test(joined.toLowerCase())) return;
+        label = block ? block + '|' + TROOPS : (wordIn(folded, [TROOPS]) ? TROOPS : null);
+        if (!label || snippets[label]) return;
+        var counts = countHits(joined);
+        if (!counts.length) return;
+        snip(label, r);
+        put(label, sides(counts, joined.search(new RegExp(block || 'troop', 'i'))), function (h) { return h.value; });
+        return;
+      }
+      if (!block) return;
+      label = block + '|' + stat;
       if (snippets[label]) return; // first (topmost) row wins
-      // The green (your) column sits left of the label and the red one right
-      // of it: the last percentage before the label is yours, the first after
-      // it is theirs. Joining the row first survives the OCR splitting
-      // "+457.5" and "%" apart; searching from the label survives it fusing
-      // two numbers into one box.
-      var y0 = Math.min.apply(null, r.items.map(function (b) { return b.y; }));
-      var y1 = Math.max.apply(null, r.items.map(function (b) { return b.y + b.h; }));
-      snippets[label] = { y: y0, h: y1 - y0 };
+      // Joining the row first survives the OCR splitting "+457.5" and "%"
+      // apart; searching from the label survives it fusing two numbers into
+      // one box.
+      snip(label, r);
       var at = joined.search(new RegExp(block, 'i'));
       var hits = [], hit;
       PCT.lastIndex = 0;
       while ((hit = PCT.exec(joined)) !== null) hits.push(hit);
       if (!hits.length) return;
-      var left = null, right = null;
-      if (at === -1) {
-        left = hits[0];
-        right = hits.length > 1 ? hits[hits.length - 1] : null;
-      } else {
-        hits.forEach(function (h) {
-          if (h.index < at) left = h;
-          else if (!right) right = h;
-        });
-        if (!left && !right) left = hits[0];
-      }
-      if (left && isFinite(pctValue(left[0]))) out['L|' + label] = pctValue(left[0]);
-      if (right && isFinite(pctValue(right[0]))) out['R|' + label] = pctValue(right[0]);
+      put(label, sides(hits, at), function (h) { return pctValue(h[0]); });
     });
+    spreadTotals(out);
     return { values: out, snippets: snippets };
   }
 
-  // One entry per sheet cell, both columns, keyed by the report's own label.
+  // A report that gives only each side's total keeps the mix on the sheet:
+  // the total is shared out in the proportions already typed. With nothing
+  // typed there is no mix to keep, and the counts stay unread.
+  function spreadTotals(out) {
+    ['L', 'R'].forEach(function (side) {
+      var whole = out[side + '|' + TROOPS];
+      delete out[side + '|' + TROOPS];
+      if (!(whole > 0)) return;
+      var labels = TYPES.map(function (t) { return side + '|' + t.block + '|' + TROOPS; });
+      if (labels.some(function (l) { return out[l] !== undefined; })) return;
+      var prefix = side === 'L' ? 'sim-n-' : 'sim-foe-n-';
+      var now = TYPES.map(function (t) { return Math.max(0, num(prefix + t.key)); });
+      var sum = total(now);
+      if (!sum) return;
+      var given = 0;
+      labels.forEach(function (l, i) {
+        var n = i < labels.length - 1 ? Math.round(whole * now[i] / sum) : whole - given;
+        out[l] = n;
+        given += n;
+      });
+    });
+  }
+
+  // One entry per sheet cell, both columns, keyed by the report's own label:
+  // the troop count first, then the four stats.
+  var COUNT_ROW = { key: 'n', ocr: TROOPS, nameKey: 'sim.review.count', fallback: 'Troops' };
   var FIELDS = [];
   TYPES.forEach(function (t) {
+    FIELDS.push({ label: 'L|' + t.block + '|' + TROOPS, id: 'sim-n-' + t.key, count: true });
+    FIELDS.push({ label: 'R|' + t.block + '|' + TROOPS, id: 'sim-foe-n-' + t.key, count: true });
     STATS.forEach(function (s) {
       FIELDS.push({ label: 'L|' + t.block + '|' + s.ocr, id: 'sim-' + s.key + '-' + t.key });
       FIELDS.push({ label: 'R|' + t.block + '|' + s.ocr, id: 'sim-foe-' + s.key + '-' + t.key });
@@ -1096,7 +1202,7 @@
       var e = el(f.id);
       var v = vals[f.label];
       if (e && v !== undefined && isFinite(v)) {
-        e.value = String(Math.round(v * 10) / 10);
+        e.value = String(f.count ? Math.round(v) : Math.round(v * 10) / 10);
         filled++;
       }
     });
@@ -1115,8 +1221,12 @@
     var shotUrl = null, snippets = {}, reviewTroop = 'inf';
 
     function relevantFields() {
+      // The bear ratio needs the lead's attack and lethality; the bear march
+      // adds your own counts; a fight reads every cell on both sides.
       return FIELDS.filter(function (f) {
-        return mode.indexOf('bear') !== 0 || (f.label[0] === 'L' && /\|(Attack|Lethality)$/.test(f.label));
+        if (mode.indexOf('bear') !== 0) return true;
+        if (f.label[0] !== 'L') return false;
+        return /\|(Attack|Lethality)$/.test(f.label) || (f.count && mode === 'bear-damage');
       });
     }
 
@@ -1132,7 +1242,7 @@
       reviewFields.innerHTML = '';
       reviewFields.setAttribute('aria-labelledby', 'sim-review-tab-' + reviewTroop);
       var type = TYPES.filter(function (t) { return t.key === reviewTroop; })[0];
-      STATS.forEach(function (stat) {
+      [COUNT_ROW].concat(STATS).forEach(function (stat) {
         var fields = relevantFields().filter(function (f) {
           return f.label.slice(2) === type.block + '|' + stat.ocr;
         });
@@ -1142,7 +1252,7 @@
         var title = document.createElement('h3');
         title.textContent = BH.tr(stat.nameKey, stat.fallback);
         row.appendChild(title);
-        var crop = snippets[type.block + '|' + stat.ocr];
+        var crop = snippets[type.block + '|' + stat.ocr] || (stat === COUNT_ROW ? snippets[TROOPS] : null);
         if (crop && shotCanvas.width) {
           var y = Math.max(0, Math.floor(crop.y - crop.h * 0.5));
           var height = Math.min(shotCanvas.height - y, Math.ceil(crop.h * 2));

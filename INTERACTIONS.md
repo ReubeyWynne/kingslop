@@ -28,6 +28,8 @@ The battle simulator composes `troop-roster` with its own `sim-player` module (`
 
 Its `sim-army` module (`js/sim-army.js`) turns the sheet into army cards. A tile carries `data-action="sim-army.edit"`, `data-dialog` (the dialog's id) and `data-troop`; it opens that dialog at the troop's tab, and the dialog's `tabs` module picks which `[data-troop-panel]` shows. Inside a tile, `[data-show="id …"][data-format="count|pct|tier"]` mirrors the named inputs, repainted on input, on the simulator's `sim:paint` and `sim:mode` events, and on a language switch. `sim-army.close` closes its dialog, a `tabs:select` with binding `view` sets the root's `data-view` for the phone layout, and `sim-army.answer` opens the Answer view from the `[data-target="sim-army.peek"]` line, which mirrors the first visible `[data-peek]` headline.
 
+Its `sim-run` module (`js/sim-run.js`) is the sweep's run meter. The sweep fires `sim:sweep` on the console with `{ phase, done, of, battles, planned, ms }` (phase `start`, `progress`, `done` or `fail`); the module fills `[data-target="sim-run.bar"]`, a `<progress>` with one step per mix, and `[data-target="sim-run.meter"]`, the live line of battles fought out of the plan, the rate and the time left, then the totals once it is done. The root's `data-run` (`running` or `done`) shows the loader while a sweep runs.
+
 Hero gear composes these capabilities in its existing markup. Resource persistence, file export/import, tab keyboard handling and status output no longer live in its page controller. Optimisation, gear editing and the specialised screenshot review remain domain-specific consumers of the ledger and semantic events.
 
 ## Example
