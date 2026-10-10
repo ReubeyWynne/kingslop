@@ -654,6 +654,7 @@ window.__BH_I18N_DATA["id"] = {
   "sim.why": "cara membacanya",
   "sim.sweep.settings": "grid & batas",
   "sim.mystic.notes": "aturan ruangan & tips",
+  "sim.ledger.title": "save pemainmu",
   "sim.foot.main": "HANYA MATEMATIKA",
   "sim.foot.note": "Rasio beruang ini untuk perburuan beruang di server kami. Servermu mungkin berbeda — <b>matematikanya tidak.</b>",
   "sim.foot.credit": "Engine pertempuran dan model beruang dari <a href=\"https://frakinator.streamlit.app/\">Frakinator</a> oleh [685] Frak — model komunitas yang teruji, bukan resmi · ruang Mystic Trial dari tabel komunitas Kingshot Mastery · dibuat untuk aliansi [2129]MadNess",

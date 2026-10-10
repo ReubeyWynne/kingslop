@@ -646,6 +646,7 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "sim.why": "怎么读",
   "sim.sweep.settings": "网格与范围",
   "sim.mystic.notes": "房间规则与提示",
+  "sim.ledger.title": "你的玩家存档",
   "sim.foot.main": "只有数学",
   "sim.foot.note": "熊配比是针对我们服的猎熊。你们服会不一样——<b>数学不会。</b>",
   "sim.foot.credit": "战斗引擎和熊模型来自 [685] Frak 的 <a href=\"https://frakinator.streamlit.app/\">Frakinator</a>——经过测试的社区模型，非官方 · Mystic Trial 房间来自 Kingshot Mastery 社区表格 · 为 [2129]MadNess 联盟打造",

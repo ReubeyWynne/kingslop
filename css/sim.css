@@ -333,7 +333,6 @@
 /* The fight: troop | you | left | them | left. Your survivors in the signal,
    theirs in ink; the total row closes the ledger with a heavier rule. */
 .sim-out.fight-out .sim-head, .sim-out.fight-out .sim-row { grid-template-columns: minmax(6.5rem, 1fr) repeat(4, minmax(3.4rem, 5.2em)); }
-.sim-out .sim-type { overflow-wrap: normal; }
 .sim-left-foe { text-align: end; color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .sim-out .sim-n { text-align: end; color: var(--ink-dim); }
 .sim-row.sim-sum { border-top: 1px solid rgba(157, 149, 127, 0.25); }
@@ -673,7 +672,8 @@
 
 /* The answer's glosses fold away: the figure first, the why on request. */
 .sim-why { margin: var(--space-s) 0; }
-.sim-why > summary {
+.sim-why > summary,
+.sim-ledger > summary {
   min-height: 44px;
   display: flex;
   align-items: center;
@@ -683,43 +683,123 @@
   font-style: italic;
   color: var(--amber);
 }
-.sim-why > summary::marker { color: var(--amber-dim); }
-.sim-why > summary:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.sim-why > summary::marker,
+.sim-ledger > summary::marker { color: var(--amber-dim); }
+.sim-why > summary:focus-visible,
+.sim-ledger > summary:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 .sim-why[hidden] { display: none; }
 
-/* Narrow: one side at a time, picked on the view rail. */
+/* Narrow: one side at a time, picked on the view rail, and the console
+   starts within the first screen. The hero keeps its title, the model
+   gloss and its die; the two ledes give way, since the tiles and the
+   screenshot button say the same thing by being there. */
 @media (max-width: 860px) {
+  .sim-main .hero { padding: var(--space-m) 0 var(--space-s); }
+  .sim-main .hero h1 { font-size: clamp(2rem, 9vw, 2.6rem); }
+  .sim-main .hero .lede,
+  .sim-main .hero .chips,
+  .sim-heading .lede { display: none; }
+  .sim-heading h2 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .sim-console { padding-top: 0; }
+
+  /* The four fights as one row of tabs, like the view rail below them. */
+  .mode-rail { flex-wrap: nowrap; gap: 0; margin: 0.4rem 0 0.5rem; border-bottom: 1px solid var(--signal-line); }
+  .mode-rail a {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    text-align: center;
+    padding: 0.3rem 0.15rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+  }
+  .mode-rail a[aria-current="true"] { border-bottom-color: var(--amber); }
+  .mode-rail a[aria-current="true"]::before { content: none; }
+
   .sim-workspace { display: block; }
   .sim-answer { border-inline-start: 0; padding-inline-start: 0; }
-  .sim-views { display: flex; border: 1px solid var(--signal-line); }
+  .sim-views { display: flex; margin-top: 0; border: 1px solid var(--signal-line); }
   .sim-views button[aria-selected="true"] { background: color-mix(in srgb, var(--amber) 8%, transparent); }
   #console[data-view="armies"] .sim-answer,
   #console[data-view="answer"] .sim-armies { display: none; }
+
+  .sim-ocr { margin-bottom: 0.2rem; }
+  #sim-load > .sim-ocr .sim-ocr-hint { display: none; }
+  .army { margin-top: var(--space-s); }
+  .army-vs { margin-top: var(--space-s); }
+
+  /* The answer's headline rides along the bottom of the screen while the
+     armies are edited; a tap opens the full answer. */
   .sim-peek {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
     display: block;
     width: 100%;
-    margin-top: var(--space-m);
-    padding: 0.7rem 0.8rem;
+    margin-top: var(--space-s);
+    padding: 0.55rem 0.8rem;
     font: inherit;
     font-size: var(--step--1);
+    line-height: 1.35;
     text-align: start;
     color: var(--ink-dim);
-    background: color-mix(in srgb, var(--amber) 6%, transparent);
+    background: color-mix(in srgb, var(--amber) 9%, var(--void-2));
     border: 1px solid var(--signal-line);
     border-radius: 2px;
     cursor: pointer;
   }
   .sim-peek b { color: var(--amber); }
   .sim-peek:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
-  .sim-peek-go { display: block; margin-top: 0.3rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--amber); }
+  .sim-peek-go { display: block; margin-top: 0.15rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--amber); }
 }
-@media (max-width: 420px) {
-  .army-tiles { gap: 0 0.6rem; }
-  .army-art { width: 2.8rem; }
+
+@media (max-width: 360px) {
+  .mode-rail a { font-size: 0.7rem; letter-spacing: 0; }
+}
+
+/* Phones: a tile is one row, the art beside two lines — name and count,
+   then the stats — so a whole army fits in a third of the screen. */
+@media (max-width: 560px) {
+  .army-tiles { grid-template-columns: minmax(0, 1fr); }
+  .army-tile {
+    display: grid;
+    grid-template-columns: 2.6rem minmax(0, 1fr);
+    column-gap: 0.7rem;
+    align-items: center;
+    padding: 0.4rem 0;
+  }
+  .army-art { width: 100%; margin: 0; }
+  .army-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 0.6rem; align-items: baseline; }
+  .army-name { grid-column: 1; grid-row: 1; }
+  .army-count { grid-column: 2; grid-row: 1; justify-content: flex-end; }
   .army-count b { font-size: var(--step-0); }
-  .army-stats { grid-template-columns: max-content; }
+  .army-stats { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 0 0.8rem; }
   .sim-troop { grid-template-columns: minmax(0, 1fr); }
   .sim-troop > .army-art { display: none; }
+
+  /* The six rooms as a two-up grid of cards: name, days, starting ratio,
+     what the room checks. The first fallback stays on wide screens. */
+  .sim-out.rooms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1rem; }
+  .sim-out.rooms .sim-head { display: none; }
+  .sim-out.rooms .sim-row { display: flex; flex-direction: column; align-items: flex-start; gap: 0.1rem; padding: 0.5rem 0; }
+  .sim-out.rooms .room-name { order: 1; }
+  .sim-out.rooms .room-ratio { order: 2; text-align: start; }
+  .sim-out.rooms .room-checks { order: 3; font-size: 0.9em; color: var(--ink-muted); }
+  .sim-out.rooms .room-alt,
+  .sim-out.rooms .room-today { display: none; }
 }
 .sim-peek[hidden] { display: none; }
 .sim-ocr-status[hidden] { display: none; }

@@ -646,6 +646,7 @@ window.__BH_I18N_DATA["it"] = {
   "sim.why": "come si legge",
   "sim.sweep.settings": "griglia e limiti",
   "sim.mystic.notes": "regole delle stanze e consigli",
+  "sim.ledger.title": "il tuo salvataggio giocatore",
   "sim.foot.main": "SOLO LA MATEMATICA",
   "sim.foot.note": "Il rapporto dell'orso riguarda le cacce all'orso del nostro server. Il tuo server sarà diverso — <b>la matematica no.</b>",
   "sim.foot.credit": "Motore di battaglia e modello dell'orso dal <a href=\"https://frakinator.streamlit.app/\">Frakinator</a> di [685] Frak — un modello della community testato, non ufficiale · stanze del Mystic Trial dalle tabelle della community di Kingshot Mastery · fatto per l'alleanza [2129]MadNess",

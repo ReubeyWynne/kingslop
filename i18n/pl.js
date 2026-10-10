@@ -646,6 +646,7 @@ window.__BH_I18N_DATA["pl"] = {
   "sim.why": "jak to czytać",
   "sim.sweep.settings": "siatka i limity",
   "sim.mystic.notes": "zasady sal i wskazówki",
+  "sim.ledger.title": "twój zapis gracza",
   "sim.foot.main": "TYLKO WYLICZENIA",
   "sim.foot.note": "Wskaźnik niedźwiedzia dotyczy polowań na niedźwiedzia na naszym serwerze. Twój serwer może się różnić — <b>wyliczenia się nie różnią.</b>",
   "sim.foot.credit": "Silnik bitwy i model niedźwiedzia z <a href=\"https://frakinator.streamlit.app/\">Frakinatora</a> autorstwa [685] Frak — sprawdzony model społeczności, nie oficjalny · komnaty Mystic Trial z tabel społeczności Kingshot Mastery · zrobione dla sojuszu [2129]MadNess",

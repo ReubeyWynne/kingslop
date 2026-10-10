@@ -646,6 +646,7 @@ window.__BH_I18N_DATA["ja"] = {
   "sim.why": "読み方",
   "sim.sweep.settings": "グリッドと範囲",
   "sim.mystic.notes": "部屋のルールとヒント",
+  "sim.ledger.title": "プレイヤーセーブ",
   "sim.foot.main": "計算だけ",
   "sim.foot.note": "ベアレシオは私たちのサーバーのベアハント用です。あなたのサーバーでは違うでしょう——<b>計算は変わりません。</b>",
   "sim.foot.credit": "バトルエンジンとベアのモデルは[685] Frakによる<a href=\"https://frakinator.streamlit.app/\">Frakinator</a>から——検証済みのコミュニティモデルであり、公式ではありません · Mystic Trialの部屋はKingshot Masteryのコミュニティ表から · [2129]MadNess同盟のために制作",

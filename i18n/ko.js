@@ -646,6 +646,7 @@ window.__BH_I18N_DATA["ko"] = {
   "sim.why": "읽는 법",
   "sim.sweep.settings": "격자와 범위",
   "sim.mystic.notes": "방 규칙과 팁",
+  "sim.ledger.title": "플레이어 저장",
   "sim.foot.main": "오직 수학",
   "sim.foot.note": "곰 비율은 우리 서버의 곰 사냥용이다. 네 서버는 다를 수 있다 — <b>수학은 다르지 않다.</b>",
   "sim.foot.credit": "전투 엔진과 곰 모델은 [685] Frak의 <a href=\"https://frakinator.streamlit.app/\">Frakinator</a>에서 — 검증된 커뮤니티 모델, 비공식 · Mystic Trial 방은 Kingshot Mastery 커뮤니티 표에서 · [2129]MadNess 연맹을 위해 만듦",

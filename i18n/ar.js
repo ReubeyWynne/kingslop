@@ -642,6 +642,7 @@ window.__BH_I18N_DATA["ar"] = {
   "sim.why": "كيف تُقرأ",
   "sim.sweep.settings": "الشبكة والحدود",
   "sim.mystic.notes": "قواعد الغرف ونصائح",
+  "sim.ledger.title": "حفظ اللاعب لديك",
   "sim.foot.main": "الرياضيات فقط",
   "sim.foot.note": "نسبة الدب تخص صيد الدب في سيرفرنا. سيرفرك سيختلف — <b>الرياضيات لا تختلف.</b>",
   "sim.foot.credit": "محرك المعارك ونموذج الدب من <a href=\"https://frakinator.streamlit.app/\">Frakinator</a> بواسطة [685] Frak — نموذج مجتمعي مختبَر، وليس رسميًا · غرف Mystic Trial من جداول Kingshot Mastery المجتمعية · صُنع لتحالف [2129]MadNess",

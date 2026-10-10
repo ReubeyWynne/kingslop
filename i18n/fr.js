@@ -645,6 +645,7 @@ window.__BH_I18N_DATA["fr"] = {
   "sim.why": "comment lire ceci",
   "sim.sweep.settings": "grille et limites",
   "sim.mystic.notes": "règles des salles et astuces",
+  "sim.ledger.title": "ta sauvegarde de joueur",
   "sim.foot.main": "JUSTE LES MATHS",
   "sim.foot.note": "Le ratio ours vaut pour les chasses à l'ours de notre serveur. Ton serveur sera différent — <b>les maths ne changent pas.</b>",
   "sim.foot.credit": "Moteur de bataille et modèle de l'ours du <a href=\"https://frakinator.streamlit.app/\">Frakinator</a> par [685] Frak — un modèle communautaire testé, pas officiel · salles du Mystic Trial d'après les tableaux communautaires de Kingshot Mastery · fait pour l'alliance [2129]MadNess",

@@ -109,7 +109,8 @@ self: sim
             {%- if sd[0] == 'you' %}
             <p class="calc-out sim-total sim-for" data-for="march" id="sim-total" hidden></p>
             <!-- Your stats and troops in the shared player save (js/sim-player.js, troop-roster) -->
-            <div class="sim-ledger sim-for" data-for="fight" id="sim-ledger" hidden>
+            <details class="sim-ledger sim-for" data-for="fight" id="sim-ledger" hidden>
+              <summary data-i18n="sim.ledger.title">your player save</summary>
               <div class="sim-ledger-actions">
                 <button type="button" data-action="sim-player.load" data-i18n="sim.ledger.load">Use my saved stats and troops</button>
                 <button type="button" data-action="sim-player.save" data-i18n="sim.ledger.save">Save these as mine</button>
@@ -119,7 +120,7 @@ self: sim
                 data-empty-key="sim.ledger.empty" data-has-key="sim.ledger.has"
                 data-has-stats-key="sim.ledger.hasStats" data-has-troops-key="sim.ledger.hasTroops" data-loaded-key="sim.ledger.loaded"
                 data-saved-key="sim.ledger.saved" data-failed-key="sim.ledger.failed"></output>
-            </div>
+            </details>
             {%- endif %}
           </article>
           {%- endfor %}
