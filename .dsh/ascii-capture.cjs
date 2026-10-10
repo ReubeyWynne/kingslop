@@ -30,7 +30,8 @@ const scenes = [
   ['banner', '/swordland-showdown/', '.ascii-mini--banner', 0.15, 24],
   ['crown', '/vip-calculator/', '.ascii-mini--crown', 0.25, 32],
   ['dice', '/battle-simulator/', '.ascii-mini--dice', 0.224, 25],
-  ['moon', '/events/', '.ascii-mini--moon', 0.7, 28],
+  ['moon', '/events/', '.ascii-mini--moon', 19.6 / 112, 112],
+  ['moon-card', '/events/', '.deck-card.is-selected .ascii-mini--moon', 19.6 / 112, 112],
   ['helm', '/heroes/', '.ascii-mini--helm', 0.25, 32],
   ['seal', '/governor-gear/', '.ascii-mini--seal', 0.25, 32],
 ];
@@ -53,11 +54,16 @@ const server = http.createServer((request, response) => {
     browser = await chromium.launch();
     for (const width of [320, 390]) {
       const context = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 2 });
-      for (const [name, url, selector, period, count] of scenes) {
+      for (const [name, url, selector, period, count] of scenes.filter(scene => !process.argv.includes('--moon') || scene[0].startsWith('moon'))) {
         const page = await context.newPage();
         await page.goto(base + url + '?lang=en', { waitUntil: 'networkidle' });
         await page.evaluate(() => document.fonts.ready);
         await page.addStyleTag({ content: '.topbar, .toc { visibility: hidden !important; }' });
+        if (name === 'moon-card') {
+          await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
+          await page.locator('#ledger-btn').click();
+          await page.waitForFunction(() => document.querySelector('.deck-card.is-selected')?.dataset.page === 'kvksg');
+        }
         // Open the collapsed section the scene sits in.
         await page.evaluate(selector => {
           document.querySelector(selector)?.closest('section')?.querySelector('.section-toggle[aria-expanded="false"]')?.click();
@@ -68,7 +74,7 @@ const server = http.createServer((request, response) => {
 
         const fit = await scene.evaluate(element => {
           const box = element.getBoundingClientRect();
-          const rail = element.closest('.ascii-motif-rail');
+          const rail = element.closest('.ascii-motif-rail, .deck-ascii');
           const railBox = rail && rail.getBoundingClientRect();
           return { left: box.left, right: box.right, width: innerWidth, skew: railBox ? (box.left - railBox.left) - (railBox.right - box.right) : 0 };
         });
@@ -88,6 +94,14 @@ const server = http.createServer((request, response) => {
           seen.add(image.toString('base64'));
         }
         if (seen.size < 2) failures.push(`${name} @${width}px: holds one frame for the whole loop`);
+        if (name.startsWith('moon')) {
+          await page.emulateMedia({ reducedMotion: 'reduce' });
+          const still = await scene.evaluate(element => ['::before', '::after'].map(pseudo => ({
+            animation: getComputedStyle(element, pseudo).animationName,
+            content: getComputedStyle(element, pseudo).content
+          })));
+          if (still.some(layer => layer.animation !== 'none' || layer.content === 'none')) failures.push(`${name} @${width}px: missing reduced-motion still`);
+        }
         await page.close();
       }
       await context.close();
