@@ -124,4 +124,41 @@ assert.equal(partStore.balance('forgehammer').amount, 71);
 const unchangedParts = partStore.exportJSON();
 assert.throws(() => partStore.setHeroGearPart('hundred', 10000000));
 assert.equal(partStore.exportJSON(), unchangedParts);
-console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, undo and revision checks passed.');
+
+const combatDisk = storage(), combatStore = Ledger.create(combatDisk);
+assert.deepEqual(combatStore.combat(), { stats: {}, provenance: {}, troops: [] });
+const legacyV1 = Ledger.empty(); delete legacyV1.combat;
+assert.doesNotThrow(() => Ledger.validate(legacyV1));
+combatStore.setBalance('forgehammer', 12);
+combatStore.setCombat({ stats: { inf: { attack: 250.5, lethality: 163, defense: 250, health: 163 } }, troops: [{ type: 'inf', tier: 10, tg: 2, amount: 120000 }, { type: 'arc', tier: 9, tg: 0, amount: 5000 }, { type: 'arc', tier: 10, tg: 0, amount: 80000 }] }, 'screenshot');
+const fight = Ledger.create(combatDisk).combat();
+assert.equal(fight.stats.inf.attack, 250.5);
+assert.equal(fight.provenance.inf.source, 'screenshot');
+assert.equal(fight.stats.cav, undefined);
+assert.deepEqual(fight.troops.map(t => [t.type, t.tier, t.tg, t.amount]), [['inf', 10, 2, 120000], ['arc', 10, 0, 80000], ['arc', 9, 0, 5000]]);
+assert.equal(combatStore.balance(Ledger.troopId('inf', 10, 2)).amount, 120000);
+assert.equal(combatStore.balance('forgehammer').amount, 12);
+combatStore.setCombat({ troops: [{ type: 'arc', tier: 9, tg: 0, amount: null }] });
+assert.equal(combatStore.combat().troops.length, 2);
+assert.equal(Object.hasOwn(combatStore.snapshot().inventory, Ledger.troopId('arc', 9, 0)), false);
+assert.equal(combatStore.combat().stats.inf.health, 163);
+const combatBefore = combatStore.exportJSON();
+assert.throws(() => combatStore.setCombat({ stats: { inf: { attack: -1, lethality: 0, defense: 0, health: 0 } } }));
+assert.throws(() => combatStore.setCombat({ stats: { foe: { attack: 1, lethality: 0, defense: 0, health: 0 } } }));
+assert.throws(() => combatStore.setCombat({ troops: [{ type: 'inf', tier: 12, tg: 0, amount: 1 }] }));
+assert.throws(() => combatStore.setCombat({ troops: [{ type: 'inf', tier: 10, tg: 0, amount: 1.5 }] }));
+assert.equal(combatStore.exportJSON(), combatBefore);
+for (const mutate of [
+  data => { data.combat.stats.inf.attack = 'x'; },
+  data => { delete data.combat.provenance.inf; },
+  data => { data.combat.stats.inf.speed = 1; },
+  data => { data.combat.provenance.cav = { source: 'manual', at: data.updatedAt }; }
+]) {
+  const data = JSON.parse(combatBefore); mutate(data);
+  assert.throws(() => Ledger.create(storage()).importJSON(data, E));
+}
+const combatCopy = Ledger.create(storage());
+combatCopy.importJSON(combatBefore, E);
+assert.deepEqual(combatCopy.combat().stats, combatStore.combat().stats);
+assert.equal(combatCopy.combat().troops.length, 2);
+console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, undo, revision, combat stat and troop checks passed.');

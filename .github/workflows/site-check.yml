@@ -38,6 +38,8 @@ jobs:
           node .dsh/ascii-style-check.cjs
       - name: Check troop allocation
         run: node .dsh/bear-allocator-check.cjs
+      - name: Check battle engine
+        run: node .dsh/battle-engine-check.cjs
       - name: Check player ledger and migration
         run: node .dsh/player-ledger-check.cjs
       - name: Check hero directory data and filters
