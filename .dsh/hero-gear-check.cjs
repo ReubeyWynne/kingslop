@@ -96,6 +96,7 @@ assert.equal(E.kvkPoints(E.cost({quality:'red',level:120,mastery:11},{quality:'r
 const forecast = E.redPlans(planning);
 assert.equal(JSON.stringify(planning), untouched);
 assert.equal(forecast.routes.length, 3);
+assert.ok(Math.abs(forecast.baseline - E.total(E.normaliseState(planning).pieces, E.normaliseState(planning))) < 1e-8 && forecast.baseline > 0);
 assert.equal(forecast.routes[0].id, 'arc-helm');
 assert.equal(forecast.routes[0].to.level, 120);
 assert.equal(forecast.routes[1].id, 'inf-gloves');

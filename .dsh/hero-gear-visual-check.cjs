@@ -66,7 +66,7 @@ async function fits(page, label) {
     await page.locator('#gear-mode-plan').click();
     assert.ok(await page.locator('.gear-route').count()<=3);
     assert.equal(await page.locator('#gear-target').count(),0);
-    assert.match(await page.locator('.gear-route-head').textContent(),/weighted gain/);
+    assert.match(await page.locator('.gear-route-head').textContent(),/vs current gear/);
     await page.locator('#gear-mode-optimise').click();
     await page.locator('#gear-apply-result').waitFor();
     await page.locator('#gear-apply-result').click();

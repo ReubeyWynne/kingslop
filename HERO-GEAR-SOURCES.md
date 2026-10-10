@@ -192,6 +192,10 @@ garrison weights are infantry `[1,1.8]`, cavalry `[0.6,0.5]`, archer `[1.1,0.8]`
 Those two presets implement the owner's requested role preferences; they are
 planning choices, not mined game constants or validated combat optima.
 
+The page shows weighted gain as a percentage of the current loadout's total
+weighted score across included troops, so a route, a plan and a milestone all
+share one denominator: `gain ÷ Σ score(current piece)`.
+
 Each resource uses a common reference `scale[r] = max(bag[r], baseline[r])`,
 where baseline is 52,650 XP, 550 hammers, 6 mythic pieces and 10 mithril. These
 are comparison scales, not exchange prices. A route's cost load is

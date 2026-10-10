@@ -142,6 +142,7 @@
   function costText(costs) {
     return E.RES.filter(function (r) { return costs[r]; }).map(function (r) { return fmt(costs[r]) + ' ' + tr(r); }).join(' · ') || tr('noCost');
   }
+  function gainPct(gain, baseline) { return '+' + (baseline > 0 ? gain / baseline * 100 : 0).toFixed(1) + '%'; }
   function roleText(type) { return tr(type === 'arc' ? 'archerRole' : type === 'inf' ? 'infantryRole' : 'cavalryRole'); }
   function costStrip(costs, remaining) {
     return '<div class="gear-cost-strip">' + E.RES.map(function (r) { return '<div data-cost-resource="' + r + '">' + image(resourceArt[r], 'gear-resource-art') + '<strong>' + fmt(costs[r]) + '</strong><small>' + esc(tr(r + 'Unit')) + '</small>' + (remaining ? '<span>' + (remaining[r] ? fmt(remaining[r]) + ' ' + esc(tr('missingShort')) : esc(tr('readyShort'))) + '</span>' : '') + '</div>'; }).join('') + '</div>';
@@ -161,7 +162,7 @@
     var active = routes[planIndex], slot = active.id.split('-')[1], w = state.weights[active.id.split('-')[0]];
     var cards = routes.map(function (route, i) {
       var mark = checkpoint(route.from, route.to);
-      return '<button type="button" class="gear-route" data-route="' + i + '" data-checkpoint="' + (mark ? mark.kind : '') + '" aria-pressed="' + (i === planIndex) + '">' + gearItem(route.id, route.to) + '<span class="gear-route-piece"><small>' + esc(tr(route.distance === 0 ? 'readyShort' : ['nearBudget','largerBudget','furtherBudget'][i])) + '</small><strong>' + esc(name(route.id)) + '</strong>' + checkpointLabel(mark) + '<span class="gear-route-levels">' + levelLabel(route.from) + ' → <b class="gear-rarity-red">' + esc(quality('red')) + ' ' + levelLabel(route.to) + '</b><small>' + esc(tr('mastery')) + ' ' + route.from.mastery + ' → ' + route.to.mastery + '</small></span></span><span class="gear-route-metrics"><span aria-label="' + esc(tr('weightedGain')) + '"><b>+' + route.gain.toFixed(1) + '</b></span><span aria-label="' + esc(tr('perCostUnit')) + '"><b>' + route.efficiency.toFixed(1) + '</b></span></span></button>';
+      return '<button type="button" class="gear-route" data-route="' + i + '" data-checkpoint="' + (mark ? mark.kind : '') + '" aria-pressed="' + (i === planIndex) + '">' + gearItem(route.id, route.to) + '<span class="gear-route-piece"><small>' + esc(tr(route.distance === 0 ? 'readyShort' : ['nearBudget','largerBudget','furtherBudget'][i])) + '</small><strong>' + esc(name(route.id)) + '</strong>' + checkpointLabel(mark) + '<span class="gear-route-levels">' + levelLabel(route.from) + ' → <b class="gear-rarity-red">' + esc(quality('red')) + ' ' + levelLabel(route.to) + '</b><small>' + esc(tr('mastery')) + ' ' + route.from.mastery + ' → ' + route.to.mastery + '</small></span></span><span class="gear-route-metrics"><span aria-label="' + esc(tr('weightedGain')) + '"><b>' + gainPct(route.gain, forecast.baseline) + '</b></span><span aria-label="' + esc(tr('perCostUnit')) + '"><b>' + route.efficiency.toFixed(1) + '</b></span></span></button>';
     }).join('');
     return '<p class="gear-gloss gear-route-caption">' + esc(tr('savingChoices')) + '</p><div class="gear-route-head"><span>' + esc(tr('upgradeChoice')) + '</span><div class="gear-route-metrics"><small>' + esc(tr('weightedGain')) + '</small><small>' + esc(tr('perCostUnit')) + '</small></div></div><div class="gear-routes">' + cards + '</div><div class="gear-route-detail"><p class="gear-route-impact">' + esc(statText(active.delta).replace(tr('core'), tr(slot === 'helm' || slot === 'boots' ? 'lethality' : 'health'))) + '</p><div class="gear-cost-title"><strong>' + esc(tr('totalCost')) + '</strong><small>' + esc(tr('shortfalls')) + '</small></div>' + costStrip(active.costs, active.gap) + '</div>' + kvkScore(active.costs, true) + kvkNote() + cavalryNote() + '<details class="gear-score-explainer"><summary>' + esc(tr('scoreCostExplained')) + '</summary><p class="gear-role">' + esc(roleText(active.id.split('-')[0])) + '</p><p class="gear-gloss">' + esc(tr('budgetMethod')) + '</p><p class="gear-gloss">' + esc(tr('scoreFormula')) + '</p><p class="gear-gloss">' + esc(tr('pieceWeights')) + ': ' + w[slot === 'helm' || slot === 'boots' ? 0 : 1] + ' × ' + esc(tr(slot === 'helm' || slot === 'boots' ? 'lethality' : 'health')) + ', ' + w[0] + ' × ' + esc(tr('attack')) + ', ' + w[1] + ' × ' + esc(tr('defense')) + '.</p><p class="gear-gloss">' + esc(tr('costUnitFormula')) + ': ' + costText(forecast.scale) + '.</p><p class="gear-gloss">' + esc(tr('budgetGrowthFormula')) + '</p></details>';
   }
@@ -219,7 +220,7 @@
   function paintOpportunities(comparison) {
     var host = el('opportunities');
     if (!host) return;
-    var alternatives = comparison && comparison.alternatives || [];
+    var alternatives = comparison && comparison.alternatives || [], baseline = comparison && comparison.now ? comparison.now.baseline : 0;
     var cards = alternatives.filter(function (r) {
       return E.RES.some(function (key) { return r.gap[key] > 0; }) || r.reforgeNow;
     }).map(function (r) {
@@ -233,11 +234,11 @@
       return '<article class="gear-opportunity">' +
         '<div class="gear-opportunity-head">' + gearImage(r.id, 'gear-opportunity-art') +
         '<div><strong>' + esc(name(r.id)) + ' · ' + r.from.level + ' → ' + r.to.level + '</strong>' +
-        '<small>' + esc(tr('mithrilCheckpoint')) + ' · +' + r.milestoneGain.toFixed(1) + ' ' + esc(tr('weightedGain')) + '</small></div></div>' +
+        '<small>' + esc(tr('mithrilCheckpoint')) + ' · ' + gainPct(r.milestoneGain, baseline) + ' ' + esc(tr('weightedGain')) + '</small></div></div>' +
         '<p>' + (missing ? esc(missing) + ' short. ' : 'Affordable now. ') + esc(note) + '</p>' +
         (delayed ? '<p>Spending now increases the milestone shortfall to ' + E.RES.filter(function (key) { return r.afterSpendGap[key]; }).map(function (key) { return fmt(r.afterSpendGap[key]) + ' ' + esc(tr(key)); }).join(' · ') + '.</p>' : '') +
-        (r.futurePlan ? '<p>At this resource threshold: +' + (r.futurePlan.score - r.futurePlan.baseline).toFixed(1) + ' weighted gain for the milestone-first plan; best found +' + (r.futureBestScore - r.futurePlan.baseline).toFixed(1) + '.</p>' : '') +
-        (r.reforgeNow ? '<p>Reforge plan: +' + (r.reforgeNow.score - r.reforgeNow.baseline).toFixed(1) + ' weighted gain, including changes to other gear.</p>' : '') +
+        (r.futurePlan ? '<p>At this resource threshold: ' + gainPct(r.futurePlan.score - baseline, baseline) + ' on current gear for the milestone-first plan; best found ' + gainPct(r.futureBestScore - baseline, baseline) + '.</p>' : '') +
+        (r.reforgeNow ? '<p>Reforge plan: ' + gainPct(r.reforgeNow.score - baseline, baseline) + ' on current gear, including changes to other gear.</p>' : '') +
         '<button type="button" data-mode="plan">' + esc(tr('seeSavingCosts')) + ' →</button></article>';
     }).join('');
     host.innerHTML = cards ? '<details class="gear-saving-options"><summary>' + esc(tr('budgetRoutes')) + '</summary>' + cards + '</details>' : '';
@@ -262,7 +263,7 @@
       return comparison(detail.id, detail.from, detail.to, detail);
     }).join('');
     var kept = E.SLOTS.filter(function (slot) { return !result.changes.includes(resultTroop + '-' + slot); });
-    el('results').innerHTML = '<div class="gear-result-summary"><strong>+' + result.gain.toFixed(1) + '</strong><span>' + esc(tr('weightedGain')) + '</span><small>' + result.changes.length + ' ' + esc(tr('piecesChanged')) + '</small></div>' + kvkScore(result.spent, true) + '<div class="gear-rail gear-result-troops">' + tabs + '</div><div class="gear-result-grid">' + tiles + '</div>' + (kept.length ? '<p class="gear-kept">' + esc(tr('unchangedSlots')) + ': ' + kept.map(function (slot) { return esc(tr(slot)); }).join(' · ') + '</p>' : '') + (result.refund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.refund) + ' XP ' + esc(tr('recoverXP')) + ' → ↑ ' + fmt(result.spent.xp) + ' XP ' + esc(tr('redistributeXP')) + '</p>' : '') + '<div class="gear-cost-title"><strong>' + esc(tr('spend')) + '</strong></div>' + costStrip(result.spent) + kvkNote() + cavalryNote(result.pieces) + '<details><summary>' + esc(tr('remaining')) + '</summary>' + costStrip(result.remaining) + '</details><div class="gear-record-action"><button type="button" id="gear-apply-result" class="gear-primary gear-action" aria-describedby="gear-record-hint">' + esc(tr('applyResult')) + '</button><p id="gear-record-hint" class="gear-gloss">' + esc(tr('applyHint')) + '</p></div>';
+    el('results').innerHTML = '<div class="gear-result-summary"><strong>' + gainPct(result.gain, result.baseline) + '</strong><span>' + esc(tr('weightedGain')) + '</span><small>' + result.changes.length + ' ' + esc(tr('piecesChanged')) + '</small></div>' + kvkScore(result.spent, true) + '<div class="gear-rail gear-result-troops">' + tabs + '</div><div class="gear-result-grid">' + tiles + '</div>' + (kept.length ? '<p class="gear-kept">' + esc(tr('unchangedSlots')) + ': ' + kept.map(function (slot) { return esc(tr(slot)); }).join(' · ') + '</p>' : '') + (result.refund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.refund) + ' XP ' + esc(tr('recoverXP')) + ' → ↑ ' + fmt(result.spent.xp) + ' XP ' + esc(tr('redistributeXP')) + '</p>' : '') + '<div class="gear-cost-title"><strong>' + esc(tr('spend')) + '</strong></div>' + costStrip(result.spent) + kvkNote() + cavalryNote(result.pieces) + '<details><summary>' + esc(tr('remaining')) + '</summary>' + costStrip(result.remaining) + '</details><div class="gear-record-action"><button type="button" id="gear-apply-result" class="gear-primary gear-action" aria-describedby="gear-record-hint">' + esc(tr('applyResult')) + '</button><p id="gear-record-hint" class="gear-gloss">' + esc(tr('applyHint')) + '</p></div>';
   }
   function searchVisible() { return state.mode === 'optimise' && el('answer-panel').getClientRects().length > 0; }
   function cancelSearch() {
