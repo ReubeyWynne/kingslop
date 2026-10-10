@@ -2,144 +2,179 @@
 layout: page
 self: governor
 ---
-{% assign gov = site.data.governor %}
-<nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
-  <a href="#governor-bag" data-i18n="gov.materials">Your materials</a>
-  <a href="#governor-levels" data-i18n="gov.levels">Your levels</a>
-  <a href="#governor-plan" data-i18n="gov.plan">Your next upgrades</a>
-  <a href="#governor-target" data-i18n="gov.target">Cost to reach</a>
-  <a href="#governor-sources" data-i18n="gov.maths">The maths &amp; sources</a>
-</nav>
-<main class="gov-main" data-module="governor-planner">
-  <section class="section hero" id="top">
+{% assign gov = site.data.governor %}{% assign rows = "cav,inf,arc" | split: "," %}
+<main class="gov-main" data-module="governor-planner" data-view="profile" data-art="../img/governor/">
+  <section class="section hero gov-hero" id="top">
     <h1 data-i18n="gov.title">Governor gear</h1>
-    <p class="lede" data-i18n="gov.intro">Enter your materials and the level of each piece and charm. The planner picks the upgrades your bag can pay for and shows what they add, in stats and in event points.</p>
+    <p class="lede" data-i18n="gov.lede">Tap a piece to set it as it is in game. The plan spends your materials where they add the most.</p>
     {% include ascii/motif.html kind="seal" %}
   </section>
 
-  <section class="section" id="governor-bag" data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed">
-    <h2 data-i18n="gov.materials">Your materials</h2>
-    <p class="note" data-i18n="gov.bagHint">Leave a count blank until you know it. Hero gear and the event calculator read the same bag.</p>
-    {% assign kinds = "gear,charms" | split: "," %}{% for kind in kinds %}
-    <fieldset class="gov-bag">
-      <legend data-i18n="gov.{{ kind }}Materials">{% if kind == "gear" %}Gear materials{% else %}Charm materials{% endif %}</legend>
-      <div class="gov-fields">
-      {% for id in gov[kind].materials %}{% assign item = gov.materials | where: "id", id | first %}
-      <label><span data-i18n="{{ item.key }}">{{ item.label | escape }}</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize" aria-label="{{ item.label | escape }}" data-i18n-key="{{ item.key }}" data-i18n-attr="aria-label"></label>
+  <section class="section gov-console" id="governor-planner" aria-label="Governor planner" data-i18n-key="gov.planner" data-i18n-attr="aria-label">
+    <div class="gov-bag" id="governor-bag" data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed">
+      {% for item in gov.materials %}{% if gov.gear.materials contains item.id %}{% assign group = "gear" %}{% else %}{% assign group = "charms" %}{% endif %}
+      <label data-kind="{{ group }}"><img src="../img/governor/{{ item.id }}.webp" width="40" height="40" alt=""><span data-i18n="{{ item.key }}">{{ item.label | escape }}</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize" aria-label="{{ item.label | escape }}" data-i18n-key="{{ item.key }}" data-i18n-attr="aria-label"></label>
       {% endfor %}
-      </div>
-    </fieldset>
-    {% endfor %}
-    <p class="gov-saved"><output data-target="ledger-form.save" role="status"></output></p>
-  </section>
-
-  <section class="section" id="governor-levels">
-    <h2 data-i18n="gov.levels">Your levels</h2>
-    <p class="note" data-i18n="gov.levelsHint">Pick the level you see in game. A piece left on “not set” is kept out of every plan.</p>
-    <fieldset class="gov-levels gov-gear-levels" disabled data-target="governor-planner.controls">
-      <legend><span data-i18n="gov.gear">Gear</span> <small data-i18n="gov.gearStats">attack &amp; defence · Town Center 22</small></legend>
-      {% for troop in gov.troops %}
-      <div class="gov-troop">
-        <p class="gov-troop-name" data-i18n="gear.{{ troop }}">{% case troop %}{% when "inf" %}Infantry{% when "cav" %}Cavalry{% else %}Archer{% endcase %}</p>
-        {% for piece in gov.gear.pieces %}{% if piece.troop == troop %}
-        <label><span><span data-i18n="gov.piece">Piece</span> {{ piece.id | split: "-" | last }}</span><select data-level="gear" data-item="{{ piece.id }}" data-action="governor-planner.level">
-          <option value="" data-i18n="gov.notSet">not set</option>
-          <option value="0" data-i18n="gov.notCrafted">not crafted</option>
-          {% for row in gov.gear.levels %}<option value="{{ forloop.index }}">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★</option>{% endfor %}
-        </select></label>
-        {% endif %}{% endfor %}
-      </div>
-      {% endfor %}
-    </fieldset>
-    <fieldset class="gov-levels gov-charm-levels" disabled data-target="governor-planner.controls">
-      <legend><span data-i18n="gov.charms">Charms</span> <small data-i18n="gov.charmStats">health &amp; lethality · Town Center 25</small></legend>
-      {% for troop in gov.troops %}
-      <div class="gov-troop">
-        <p class="gov-troop-name" data-i18n="gear.{{ troop }}">{% case troop %}{% when "inf" %}Infantry{% when "cav" %}Cavalry{% else %}Archer{% endcase %}</p>
-        {% for slot in gov.charms.slots %}{% if slot.troop == troop %}{% assign parts = slot.id | split: "-" %}
-        <label><span><span data-i18n="gov.piece">Piece</span> {{ parts[1] }} · {{ parts[2] }}</span><select data-level="charms" data-item="{{ slot.id }}" data-action="governor-planner.level">
-          <option value="" data-i18n="gov.notSet">not set</option>
-          <option value="0">0</option>
-          {% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}
-        </select></label>
-        {% endif %}{% endfor %}
-      </div>
-      {% endfor %}
-    </fieldset>
-    <div class="gov-fill">
-      <label><span data-i18n="gov.fillGear">Set every gear piece to</span><select data-target="governor-planner.fillGear"><option value="" data-i18n="gov.choose">choose</option><option value="0" data-i18n="gov.notCrafted">not crafted</option>{% for row in gov.gear.levels %}<option value="{{ forloop.index }}">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★</option>{% endfor %}</select></label>
-      <button type="button" data-action="governor-planner.fill" data-kind="gear" data-i18n="gov.apply">apply</button>
-      <label><span data-i18n="gov.fillCharms">Set every charm to</span><select data-target="governor-planner.fillCharms"><option value="" data-i18n="gov.choose">choose</option><option value="0">0</option>{% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}</select></label>
-      <button type="button" data-action="governor-planner.fill" data-kind="charms" data-i18n="gov.apply">apply</button>
+      <p class="gov-bag-caption"><span data-i18n="gov.bagShort">blank means not counted yet · shared with hero gear and events</span> <output data-target="ledger-form.save" role="status"></output></p>
     </div>
-  </section>
 
-  <section class="section" id="governor-plan">
-    <h2 data-i18n="gov.plan">Your next upgrades</h2>
-    <div class="gov-rail" data-module="tabs" data-tabs-bind="governor-kind" role="tablist" aria-label="Plan" data-i18n-key="gov.plan" data-i18n-attr="aria-label">
-      <button type="button" role="tab" aria-selected="true" aria-controls="gov-plan-panel" data-value="gear" data-action="tabs.select" data-i18n="gov.gear">Gear</button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="gov-plan-panel" data-value="charms" data-action="tabs.select" data-i18n="gov.charms">Charms</button>
+    <div class="gov-rail gov-views" data-module="tabs" data-tabs-bind="governor-view" role="tablist" aria-label="View" data-i18n-key="gov.view" data-i18n-attr="aria-label">
+      <button type="button" role="tab" aria-selected="true" aria-controls="gov-profile-panel" data-value="profile" data-action="tabs.select" data-i18n="gov.viewProfile">Governor</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="gov-plan-panel" data-value="plan" data-action="tabs.select" data-i18n="gov.viewPlan">Plan</button>
     </div>
-    <div id="gov-plan-panel" role="tabpanel">
-      <fieldset class="gov-options" disabled data-target="governor-planner.controls">
-        <label><span data-i18n="gov.goal">Aim for</span><select data-target="governor-planner.goal" data-action="governor-planner.option" data-option="goal">
-          <option value="stats" data-i18n="gov.goal.stats">the most stats</option>
-          <option value="score" data-i18n="gov.goal.score">the most governor score</option>
-        </select></label>
-        <label><span data-i18n="gov.focus">Troops</span><select data-target="governor-planner.focus" data-action="governor-planner.option" data-option="focus">
-          <option value="all" data-i18n="gov.focus.all">all troops</option>
-          <option value="inf" data-i18n="gear.inf">Infantry</option>
-          <option value="cav" data-i18n="gear.cav">Cavalry</option>
-          <option value="arc" data-i18n="gear.arc">Archer</option>
-        </select></label>
-      </fieldset>
-      <div class="gov-summary" aria-live="polite">
-        <p><span data-i18n="gov.steps">upgrades</span> <output data-target="governor-planner.count">—</output></p>
-        <p><span data-i18n="gov.scoreGain">governor score gained</span> <output data-target="governor-planner.score">—</output></p>
+
+    <div class="gov-workspace">
+      <div class="gov-profile" id="gov-profile-panel">
+        <div class="gov-heading"><h2 data-i18n="gov.yourGovernor">Your governor</h2><small data-i18n="gov.tapToEdit">tap a piece to edit it</small></div>
+        <fieldset class="gov-board" disabled data-target="governor-planner.controls">
+          <legend class="visually-hidden" data-i18n="gov.levels">Your levels</legend>
+          {% for troop in rows %}
+          <div class="gov-row" data-troop="{{ troop }}">
+            {% for piece in gov.gear.pieces %}{% if piece.troop == troop %}{% assign n = piece.id | split: "-" | last %}
+            {% if n == "2" %}
+            <div class="gov-core">
+              <img src="../img/governor/{{ troop }}-symbol.webp" width="40" height="40" alt="">
+              <strong data-i18n="gear.{{ troop }}">{% case troop %}{% when "inf" %}Infantry{% when "cav" %}Cavalry{% else %}Archer{% endcase %}</strong>
+              <span><output data-troop-stat="{{ troop }}" data-kind="gear">—</output> <small data-i18n="gov.atkDef">attack &amp; defence</small></span>
+              <span><output data-troop-stat="{{ troop }}" data-kind="charms">—</output> <small data-i18n="gov.hpLeth">health &amp; lethality</small></span>
+            </div>
+            {% endif %}
+            <button type="button" class="gov-tile" data-action="governor-planner.edit" data-item="{{ piece.id }}" data-state="unset">
+              <span class="gov-card" data-state="unset"><img src="../img/governor/gear/{{ piece.id }}-green-0.webp" width="160" height="160" alt=""><span class="gov-stars" aria-hidden="true"></span><span class="gov-card-mark" aria-hidden="true">?</span></span>
+              <span class="gov-tile-name" data-i18n="gov.slot.{{ piece.slot }}">{{ piece.slot | capitalize }}</span>
+              <span class="gov-tile-level" data-part="level" data-i18n="gov.notSet">not set</span>
+              <span class="gov-gems" aria-hidden="true">{% for c in (1..3) %}<span class="gov-gem" data-charm="{{ piece.id }}-{{ c }}" data-state="unset"><img src="../img/governor/charms/{{ troop }}-1.webp" width="72" height="72" alt=""><b>·</b></span>{% endfor %}</span>
+            </button>
+            {% endif %}{% endfor %}
+          </div>
+          {% endfor %}
+        </fieldset>
+        <p class="gov-totals"><span><span data-i18n="gov.gearScore">gear score</span> <output data-target="governor-planner.gearScore">—</output></span><span><span data-i18n="gov.charmScore">charm score</span> <output data-target="governor-planner.charmScore">—</output></span></p>
+        <details class="gov-quick">
+          <summary data-i18n="gov.quickSet">set every piece at once</summary>
+          <fieldset class="gov-fill" disabled data-target="governor-planner.controls">
+            <legend class="visually-hidden" data-i18n="gov.quickSet">set every piece at once</legend>
+            <label><span data-i18n="gov.fillGear">Set every gear piece to</span><select data-target="governor-planner.fillGear"><option value="" data-i18n="gov.choose">choose</option><option value="0" data-i18n="gov.notCrafted">not crafted</option>{% for row in gov.gear.levels %}<option value="{{ forloop.index }}">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★</option>{% endfor %}</select></label>
+            <button type="button" data-action="governor-planner.fill" data-kind="gear" data-i18n="gov.apply">apply</button>
+            <label><span data-i18n="gov.fillCharms">Set every charm to</span><select data-target="governor-planner.fillCharms"><option value="" data-i18n="gov.choose">choose</option><option value="0" data-i18n="gov.noCharm">no charm</option>{% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}</select></label>
+            <button type="button" data-action="governor-planner.fill" data-kind="charms" data-i18n="gov.apply">apply</button>
+          </fieldset>
+        </details>
       </div>
-      <p class="note" data-target="governor-planner.status" hidden></p>
-      <ol class="gov-steps" data-target="governor-planner.steps"></ol>
-      <div class="gov-spend">
-        <h3 data-i18n="gov.spend">Spends and leaves</h3>
-        <table class="gov-table"><thead><tr><th scope="col" data-i18n="gov.material">material</th><th scope="col" data-i18n="gov.spent">spends</th><th scope="col" data-i18n="gov.left">left over</th></tr></thead><tbody data-target="governor-planner.spent"></tbody></table>
-      </div>
-      <div class="gov-events">
-        <h3 data-i18n="gov.eventPoints">What that score is worth</h3>
-        <ul data-target="governor-planner.events"></ul>
-        <p class="note" data-i18n="gov.estimate">An estimate: published scores are rounded, and each event day lists its own tasks. Upgrades score only on the day you make them.</p>
+
+      <div class="gov-answer" id="gov-plan-panel">
+        <div class="gov-heading">
+          <h2 data-i18n="gov.yourPlan">Your plan</h2>
+          <div class="gov-kinds" data-module="tabs" data-tabs-bind="governor-kind" role="tablist" aria-label="Plan" data-i18n-key="gov.plan" data-i18n-attr="aria-label">
+            <button type="button" role="tab" aria-selected="true" data-value="gear" data-action="tabs.select"><img src="../img/governor/satin.webp" width="24" height="24" alt=""><span data-i18n="gov.gear">Gear</span></button>
+            <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="charms" data-action="tabs.select"><img src="../img/governor/charm-guide.webp" width="24" height="24" alt=""><span data-i18n="gov.charms">Charms</span></button>
+          </div>
+        </div>
+        <div class="gov-rail" data-module="tabs" data-tabs-bind="governor-mode" role="tablist" aria-label="Planner mode" data-i18n-key="gov.mode" data-i18n-attr="aria-label">
+          <button type="button" role="tab" aria-selected="true" data-value="spend" data-action="tabs.select" data-i18n="gov.spendNow">Spend now</button>
+          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="reach" data-action="tabs.select" data-i18n="gov.target">Cost to reach</button>
+        </div>
+
+        <div class="gov-mode" data-target="governor-planner.spendPanel">
+          <div class="gov-chips">
+            <div role="group" aria-label="Aim for" data-i18n-key="gov.goal" data-i18n-attr="aria-label">
+              <button type="button" aria-pressed="true" data-action="governor-planner.choose" data-option="goal" data-value="stats" data-i18n="gov.chip.stats">stats</button>
+              <button type="button" aria-pressed="false" data-action="governor-planner.choose" data-option="goal" data-value="score" data-i18n="gov.chip.score">score</button>
+            </div>
+            <div role="group" aria-label="Troops" data-i18n-key="gov.focus" data-i18n-attr="aria-label">
+              <button type="button" aria-pressed="true" data-action="governor-planner.choose" data-option="focus" data-value="all" data-i18n="gov.chip.all">all</button>
+              {% for troop in rows %}<button type="button" aria-pressed="false" data-action="governor-planner.choose" data-option="focus" data-value="{{ troop }}"><img src="../img/governor/{{ troop }}-symbol.webp" width="22" height="22" alt="{% case troop %}{% when "inf" %}Infantry{% when "cav" %}Cavalry{% else %}Archer{% endcase %}" data-i18n-key="gear.{{ troop }}" data-i18n-attr="alt"></button>{% endfor %}
+            </div>
+          </div>
+          <div class="gov-summary" aria-live="polite">
+            <p><output data-target="governor-planner.count">—</output> <span data-i18n="gov.steps">upgrades</span></p>
+            <p><output data-target="governor-planner.score">—</output> <span data-i18n="gov.scoreGain">governor score gained</span></p>
+          </div>
+          <p class="gov-note" data-target="governor-planner.status" hidden></p>
+          <ol class="gov-steps" data-target="governor-planner.steps"></ol>
+          <h3 data-i18n="gov.spend">Spends and leaves</h3>
+          <div class="gov-strip" data-target="governor-planner.spent"></div>
+          <h3 data-i18n="gov.eventPoints">What that score is worth</h3>
+          <ul class="gov-events" data-target="governor-planner.events"></ul>
+          <p class="gov-gloss" data-i18n="gov.estimate">An estimate: published scores are rounded, and each event day lists its own tasks. Upgrades score only on the day you make them.</p>
+        </div>
+
+        <div class="gov-mode" data-target="governor-planner.reachPanel" hidden>
+          <fieldset class="gov-target" disabled data-target="governor-planner.controls">
+            <legend class="visually-hidden" data-i18n="gov.target">Cost to reach</legend>
+            <label data-kind="gear"><span data-i18n="gov.targetGear">every gear piece at</span><select data-target="governor-planner.gearTarget" data-action="governor-planner.option" data-option="gearTarget">{% for row in gov.gear.levels %}<option value="{{ forloop.index }}">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★</option>{% endfor %}</select></label>
+            <label data-kind="charms" hidden><span data-i18n="gov.targetCharms">every charm at</span><select data-target="governor-planner.charmTarget" data-action="governor-planner.option" data-option="charmTarget">{% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}</select></label>
+            <span class="gov-card gov-target-card" data-target="governor-planner.targetCard" data-state="set"><img src="../img/governor/gear/inf-1-red-6.webp" width="160" height="160" alt=""><span class="gov-stars" aria-hidden="true"></span></span>
+          </fieldset>
+          <div class="gov-strip gov-strip-need" data-target="governor-planner.target"></div>
+          <p class="gov-note" data-target="governor-planner.targetNote" hidden></p>
+        </div>
       </div>
     </div>
+
+    <dialog class="gov-dialog" data-target="governor-planner.dialog" aria-labelledby="gov-edit-title">
+      <div class="gov-heading"><h2 id="gov-edit-title" data-target="governor-planner.editTitle"></h2><button type="button" data-action="governor-planner.close" data-i18n="gear.done">done</button></div>
+      <div class="gov-edit-gear">
+        <span class="gov-card" data-target="governor-planner.editCard" data-state="unset"><img src="../img/governor/gear/inf-1-green-0.webp" width="160" height="160" alt=""><span class="gov-stars" aria-hidden="true"></span><span class="gov-card-mark" aria-hidden="true">?</span></span>
+        <div class="gov-edit-info">
+          <p class="gov-edit-level" data-target="governor-planner.editLevel"></p>
+          <p class="gov-edit-stat" data-target="governor-planner.editStat"></p>
+          <div class="gov-stepper">
+            <button type="button" data-action="governor-planner.step" data-step="-1" aria-label="one step down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button>
+            <select data-level="gear" data-item="" data-action="governor-planner.level" aria-label="Gear level" data-i18n-key="gov.gearLevel" data-i18n-attr="aria-label">
+              <option value="" data-i18n="gov.notSet">not set</option>
+              <option value="0" data-i18n="gov.notCrafted">not crafted</option>
+              {% for row in gov.gear.levels %}<option value="{{ forloop.index }}">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★</option>{% endfor %}
+            </select>
+            <button type="button" data-action="governor-planner.step" data-step="1" aria-label="one step up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button>
+          </div>
+          <p class="gov-edit-next" data-target="governor-planner.editNext"></p>
+        </div>
+      </div>
+      <h3><span data-i18n="gov.charms">Charms</span> <small data-target="governor-planner.editCharmStat"></small></h3>
+      <div class="gov-edit-charms">
+        {% for c in (1..3) %}
+        <div class="gov-edit-charm" data-charm-row="{{ c }}">
+          <span class="gov-gem" data-state="unset"><img src="../img/governor/charms/inf-1.webp" width="72" height="72" alt=""></span>
+          <div class="gov-stepper">
+            <button type="button" data-action="governor-planner.step" data-step="-1" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button>
+            <select data-level="charms" data-item="" data-action="governor-planner.level" aria-label="Charm {{ c }}">
+              <option value="" data-i18n="gov.notSet">not set</option>
+              <option value="0" data-i18n="gov.noCharm">no charm</option>
+              {% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}
+            </select>
+            <button type="button" data-action="governor-planner.step" data-step="1" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <p class="gov-gloss" data-i18n="gov.editHint">Charms unlock at Town Center 25. “Not set” keeps a piece out of every plan.</p>
+    </dialog>
+
+    <output class="gov-status" hidden aria-live="polite" data-module="result-panel" data-status-scope="governor" data-target="result-panel.message"></output>
+    <noscript><p data-i18n="gov.noJS">Enable JavaScript to use the planner. The cost tables below remain available.</p></noscript>
   </section>
 
-  <section class="section" id="governor-target">
-    <h2 data-i18n="gov.target">Cost to reach</h2>
-    <fieldset class="gov-options" disabled data-target="governor-planner.controls">
-      <label><span data-i18n="gov.targetGear">every gear piece at</span><select data-target="governor-planner.gearTarget" data-action="governor-planner.option" data-option="gearTarget">{% for row in gov.gear.levels %}<option value="{{ forloop.index }}">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★</option>{% endfor %}</select></label>
-      <label><span data-i18n="gov.targetCharms">every charm at</span><select data-target="governor-planner.charmTarget" data-action="governor-planner.option" data-option="charmTarget">{% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}</select></label>
-    </fieldset>
-    <table class="gov-table"><thead><tr><th scope="col" data-i18n="gov.material">material</th><th scope="col" data-i18n="gov.need">needed</th><th scope="col" data-i18n="gov.missing">still to find</th></tr></thead><tbody data-target="governor-planner.target"></tbody></table>
-    <p class="note" data-target="governor-planner.targetNote" hidden></p>
-  </section>
-
-  <section class="section" id="governor-save">
+  <section class="section gov-notes" id="governor-save">
     <details data-module="save-transfer disclosure" data-status-scope="governor" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
       <summary data-i18n="gear.manageSave">your save &amp; backups</summary>
-      <p class="note" data-i18n="gov.saveHint">One save for your governor levels, hero gear and event inventory. Keep a backup before importing another.</p>
+      <p class="gov-gloss" data-i18n="gov.saveHint">One save for your governor levels, hero gear and event inventory. Keep a backup before importing another.</p>
       <button type="button" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
       <button type="button" data-action="save-transfer.choose" data-i18n="gear.load">import backup</button>
       <input type="file" accept="application/json,.json" hidden data-target="save-transfer.file" data-action="save-transfer.import">
     </details>
     <button type="button" class="gov-reset" data-action="governor-planner.reset" data-i18n="gov.reset">clear governor levels</button>
-    <output hidden aria-live="polite" data-module="result-panel" data-status-scope="governor" data-target="result-panel.message"></output>
-    <noscript><p data-i18n="gov.noJS">Enable JavaScript to use the planner. The cost tables below remain available.</p></noscript>
   </section>
 
-  <section class="section" id="governor-sources">
-    <h2 data-i18n="gov.maths">The maths &amp; sources</h2>
-    <p data-i18n="gov.mathsBody">Each row is what one more star or charm level costs. The planner takes one step at a time: the affordable upgrade with the most gain for the share of your bag it uses. It is a guide, not a guaranteed best order. Gear and charms use different materials, so they never compete.</p>
-    <p data-i18n="gov.setBonus">Gear set bonuses are left out until a second table confirms them.</p>
-    <p class="note" data-i18n="gov.sourceNote">Values checked on 9 October 2026. Every row agrees across at least two of the tables linked below; a row marked ◇ appears in only one.</p>
-    <p class="gov-sources">{% for pair in gov.sources %}{% assign source = pair[1] %}{% if source.gear %}<a href="{{ source.gear }}">{{ source.label | escape }} · <span data-i18n="gov.gear">Gear</span></a> {% endif %}{% if source.charms %}<a href="{{ source.charms }}">{{ source.label | escape }} · <span data-i18n="gov.charms">Charms</span></a> {% endif %}{% endfor %}</p>
+  <section class="section gov-notes" id="governor-sources">
+    <details>
+      <summary data-i18n="gov.maths">The maths &amp; sources</summary>
+      <p data-i18n="gov.mathsBody">Each row is what one more star or charm level costs. The planner takes one step at a time: the affordable upgrade with the most gain for the share of your bag it uses. It is a guide, not a guaranteed best order. Gear and charms use different materials, so they never compete.</p>
+      <p data-i18n="gov.setBonus">Gear set bonuses are left out until a second table confirms them.</p>
+      <p class="gov-gloss" data-i18n="gov.sourceNote">Values checked on 9 October 2026. Every row agrees across at least two of the tables linked below; a row marked ◇ appears in only one.</p>
+      <p class="gov-sources">{% for pair in gov.sources %}{% assign source = pair[1] %}{% if source.gear %}<a href="{{ source.gear }}">{{ source.label | escape }} · <span data-i18n="gov.gear">Gear</span></a> {% endif %}{% if source.charms %}<a href="{{ source.charms }}">{{ source.label | escape }} · <span data-i18n="gov.charms">Charms</span></a> {% endif %}{% endfor %}</p>
+      <p class="gov-gloss" data-i18n="gov.artNote">Piece, charm and material art is Kingshot game artwork by Century Games.</p>
+    </details>
     <details>
       <summary data-i18n="gov.tableGear">gear costs, step by step</summary>
       <div class="gov-scroll"><table class="gov-table gov-reference">

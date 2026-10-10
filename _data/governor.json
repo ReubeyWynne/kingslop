@@ -23,12 +23,12 @@
   "materials": ["satin", "gilded-threads", "artisans-vision"],
   "stats": ["attack", "defence"],
   "pieces": [
-   {"id": "inf-1", "troop": "inf"},
-   {"id": "inf-2", "troop": "inf"},
-   {"id": "cav-1", "troop": "cav"},
-   {"id": "cav-2", "troop": "cav"},
-   {"id": "arc-1", "troop": "arc"},
-   {"id": "arc-2", "troop": "arc"}
+   {"id": "inf-1", "troop": "inf", "slot": "armour"},
+   {"id": "inf-2", "troop": "inf", "slot": "trousers"},
+   {"id": "cav-1", "troop": "cav", "slot": "hat"},
+   {"id": "cav-2", "troop": "cav", "slot": "amulet"},
+   {"id": "arc-1", "troop": "arc", "slot": "ring"},
+   {"id": "arc-2", "troop": "arc", "slot": "staff"}
   ],
   "levels": [
    {"tier": "green", "grade": 0, "stars": 0, "cost": {"satin": 1500, "gilded-threads": 15, "artisans-vision": 0}, "stat": 9.35, "score": 1125, "sources": ["kingshotdata", "h5joy", "kingshotguide.org", "optimizer"]},
