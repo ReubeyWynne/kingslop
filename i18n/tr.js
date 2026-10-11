@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["tr"] = {
+  "castle.nav": "Kale",
+  "castle.deck.lede": "kahraman becerileri, güncel birlik düzenleri ve koordineli ralli dalgaları.",
   "meta.title": "Bear Hunt, gizemi çözüldü",
   "meta.description": "Bear Hunt, gizemi çözüldü. Rally hasarı nasıl çalışır, sade dille: liderin istatistikleri, birliklerin, karekök ve dört kural.",
   "meta.ogTitle": "Bear Hunt, gizemi çözüldü",

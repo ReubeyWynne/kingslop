@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["es"] = {
+  "castle.nav": "Castillo",
+  "castle.deck.lede": "habilidades de héroes, formaciones actuales y oleadas de ataques coordinados.",
   "meta.title": "Bear Hunt, sin misterios",
   "meta.description": "Bear Hunt, sin misterios. Cómo funciona el daño de rally en palabras simples: las estadísticas del líder, tus tropas, la raíz cuadrada y cuatro reglas.",
   "meta.ogTitle": "Bear Hunt, sin misterios",

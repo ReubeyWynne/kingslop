@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["de"] = {
+  "castle.nav": "Burg",
+  "castle.deck.lede": "Heldenfähigkeiten, aktuelle Truppenverteilung und koordinierte Sammelangriffe.",
   "meta.title": "Bear Hunt, entmystifiziert",
   "meta.description": "Bear Hunt, entmystifiziert. Wie Rally-Schaden in einfachen Worten funktioniert: die Werte des Anführers, deine Truppen, die Quadratwurzel und vier Regeln.",
   "meta.ogTitle": "Bear Hunt, entmystifiziert",

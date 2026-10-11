@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["fr"] = {
+  "castle.nav": "Château",
+  "castle.deck.lede": "compétences des héros, formations actuelles et vagues de ralliements coordonnés.",
   "meta.title": "Bear Hunt, Démystifié",
   "meta.description": "Bear Hunt, démystifié. Comment fonctionnent les dégâts de rally en clair : les stats du meneur, tes troupes, la racine carrée, et quatre règles.",
   "meta.ogTitle": "Bear Hunt, Démystifié",

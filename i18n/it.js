@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["it"] = {
+  "castle.nav": "Castello",
+  "castle.deck.lede": "abilità degli eroi, formazioni attuali e ondate di raduni coordinati.",
   "meta.title": "Bear Hunt, demistificato",
   "meta.description": "Bear Hunt, demistificato. Come funziona il danno dei rally in parole semplici: le statistiche del leader, le tue truppe, la radice quadrata e quattro regole.",
   "meta.ogTitle": "Bear Hunt, demistificato",
