@@ -33,7 +33,12 @@ const server = http.createServer((request, response) => {
       for (const role of ['defense', 'attack', 'join']) {
         await page.locator('#castle-' + role + '-tab').click();
         for (const stage of ['older', 'mixed', 'mature']) {
-          if (role !== 'join') await page.locator('[data-target="castle-battle.stage"]').selectOption(stage);
+          if (role !== 'join') {
+            await page.locator('#castle-heroes-tab').click();
+            const progression = page.locator('[data-target="castle-battle.stage"]');
+            assert.equal(await progression.isVisible(), true);
+            await progression.selectOption(stage);
+          }
           for (const view of ['heroes', 'formation', 'waves']) {
             await page.locator('#castle-' + view + '-tab').click();
             assert.equal(await page.locator('[data-view]:visible').count(), 1);
