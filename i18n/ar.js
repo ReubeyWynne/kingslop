@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["ar"] = {
+  "castle.nav": "القلعة",
+  "castle.deck.lede": "السيطرة على القلعة وآليات القتال ومهارات المنضمين واختيار القوات.",
   "meta.title": "Bear Hunt، بلا أسرار",
   "meta.description": "Bear Hunt بلا أسرار. كيف يعمل ضرر الرالي بكلمات بسيطة: إحصائيات القائد، قواتك، الجذر التربيعي، وأربع قواعد.",
   "meta.ogTitle": "Bear Hunt، بلا أسرار",

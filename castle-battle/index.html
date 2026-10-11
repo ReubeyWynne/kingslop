@@ -1,0 +1,122 @@
+---
+layout: page
+self: castle
+---
+<main id="castle-guide" class="castle-guide" lang="en" data-module="castle-battle">
+  <header class="castle-heading" id="top">
+    <p class="castle-kicker">Control the castle · understand the fight</p>
+    <h1>Castle Battle</h1>
+    <p class="lede">Taking the castle wins a fight. Holding it wins the event.</p>
+    <p>Learn the objective first, then the combat behind your rallies and garrison. Hero examples cover Generations 1–3; the event and combat lessons apply beyond them.</p>
+  </header>
+  <div class="castle-tabs castle-views" role="tablist" aria-label="Castle Battle lessons" data-module="tabs" data-tabs-bind="view">
+    <button type="button" id="castle-event-tab" role="tab" aria-controls="castle-event" aria-selected="true" tabindex="0" data-value="event" data-action="tabs.select">The event</button>
+    <button type="button" id="castle-combat-tab" role="tab" aria-controls="castle-combat" aria-selected="false" tabindex="-1" data-value="combat" data-action="tabs.select">Combat</button>
+    <button type="button" id="castle-joiners-tab" role="tab" aria-controls="castle-joiners" aria-selected="false" tabindex="-1" data-value="joiners" data-action="tabs.select">Joiners</button>
+    <button type="button" id="castle-formation-tab" role="tab" aria-controls="castle-formation" aria-selected="false" tabindex="-1" data-value="formation" data-action="tabs.select">Troops</button>
+  </div>
+  <section id="castle-event" class="castle-panel" role="tabpanel" aria-labelledby="castle-event-tab" data-view="event">
+    <h2>Fight for occupation time</h2>
+    <p>The battlefield has a central King's Castle and four surrounding turrets. The castle is the objective; turrets put pressure on its occupants.</p>
+    <p>Current support rules describe a <b>five-hour battle</b>, with an early win at <b>2½ hours of occupation</b>. The Kingdom of Power FAQ explicitly requires that early hold to be consecutive. Otherwise, the longest occupation wins when time expires. Read your event's Rules and live occupation timer before the battle: older guides still quote six hours / three hours. <a href="#castle-evidence-event">Event sources</a></p>
+    <p>Personal battle points are a separate reward objective. A high score does not replace the occupation requirement.</p>
+    <dl class="castle-steps">
+      <div><dt>Prepare</dt><dd>Agree who takes the castle, who holds each turret, who leads, and who stays available to reinforce. Save separate rally and garrison presets. Check your infirmary space and healing resources.</dd></div>
+      <div><dt>Take</dt><dd>Scout the current occupant. Fill the assigned rally with the requested troop types and joiner heroes. Choose an arrival time and a plan for the garrison immediately after capture.</dd></div>
+      <div><dt>Hold</dt><dd>Check the active garrison bonuses and hero skills. Watch incoming marches, turret control, remaining infantry and available capacity. Refill what is missing.</dd></div>
+      <div><dt>Retake</dt><dd>After losing control, read the new garrison rather than repeating the last attack blindly. The opponent may have different troops, a different bonus source and fresh reinforcements.</dd></div>
+    </dl>
+    <h2>Turrets change the cost of holding</h2>
+    <p>A turret attacks the castle occupants when they are held by different teams. It does not attack its own team's castle garrison. Its firing interval shortens as occupation continues. Taking hostile turrets relieves pressure; taking one while attacking adds pressure. That is why castle and turret assignments belong in the same plan. <a href="#castle-evidence-event">Castle rules</a></p>
+    <details class="castle-reason"><summary>Local Castle Battle and KvK</summary><p>Local Castle Battle is an alliance contest within your kingdom. KvK puts the castle contest inside Kingdom of Power, with a preparation phase and cross-kingdom battle rules. Follow the current KvK event screen for battlefield access, kingdom ownership and turret bonuses; don't import a local alliance plan unchanged.</p></details>
+    <h2>Coordinate arrivals, not a “wave” label</h2>
+    <p>Several rallies are separate fights. Bringing their arrivals close together can leave less time to refill between hits; it does not merge them into one army or guarantee capture. After capture, the next attack faces the new occupant.</p>
+    <p class="castle-equation">Arrival = rally start + assembly timer + march time</p>
+    <table class="castle-counts"><caption>Example: two five-minute rallies, one arrival</caption><thead><tr><th scope="col">Lead</th><th scope="col">March</th><th scope="col">Start</th><th scope="col">Arrival</th></tr></thead><tbody><tr><th scope="row">A</th><td>40s</td><td>12:00:00</td><td>12:05:40</td></tr><tr><th scope="row">B</th><td>20s</td><td>12:00:20</td><td>12:05:40</td></tr></tbody></table>
+    <p>Use actual travel times: the ruins slow marches. The alert zone also forces cities out during the pre-battle rebellion; wait for it to end before moving back. Leave time for joiners to reach their leaders. <a href="#castle-evidence-event">Map rules</a></p>
+    <p class="castle-callout">Before you send: target, leader, first hero, troop count, troop types, arrival. Before you refill: current garrison, missing types, capacity, infirmary.</p>
+  </section>
+  <section id="castle-combat" class="castle-panel" role="tabpanel" aria-labelledby="castle-combat-tab" data-view="combat" hidden>
+    <h2>Both sides deal damage</h2>
+    <p>Expedition combat resolves in simultaneous turns. Each side selects targets and attacks; losses are applied before the next turn. The fight ends when one side has no active troops left. Your rally needs both damage and enough survival time to deliver it. <a href="#castle-evidence-combat">Combat FAQ</a></p>
+    <div class="castle-rows" aria-label="Normal target order">
+      <div><b>1 · Infantry</b><span>The frontline. Takes normal attacks first.</span></div>
+      <div><b>2 · Cavalry</b><span>The next row when infantry are gone. Can bypass to archers through its troop skill.</span></div>
+      <div><b>3 · Archers</b><span>High damage, fragile when exposed. Normal attacks reach this row last.</span></div>
+    </div>
+    <p>All surviving rows attack; back rows do not wait for infantry to die. A counter bonus affects damage to the target actually hit. Sending cavalry does not make every cavalry attack hit archers. Hero skills can also change targeting.</p>
+    <h2>The four stats work in pairs</h2>
+    <p>In the Frakinator model already used by this site's simulator, offensive strength scales with <b>attack × lethality</b>, and resistance with <b>defense × health</b>. These apply on <em>both</em> sides. Lethality is not a special “permanent kills” stat; health and defense help an attacking rally too. <a href="../battle-simulator/#maths">Model and provenance</a></p>
+    <p class="castle-equation">Offense: base attack × (1 + ATK/100) × (1 + LET/100)<br>Resistance: base health × (1 + DEF/100) × (1 + HP/100)</p>
+    <details class="castle-reason"><summary>Why the lower paired stat can be a better upgrade</summary><p>With 500% ATK and 100% LET, the bonus factors multiply to 6 × 2 = 12. Adding 100 percentage points of ATK gives 7 × 2 = 14. Adding them to LET gives 6 × 3 = 18. Compare the relative gain and upgrade cost, rather than choosing by the stat name.</p></details>
+    <p>The model uses the square root of each troop type's active count in its damage calculation. Twice the archers does not mean twice their per-turn damage. Troops still matter: they also give you more losses to absorb. Hero effects and chance skills sit on top of the basic calculation.</p>
+    <h2>A hero label does not decide its job</h2>
+    <p>Squad-wide Expedition skills still work without matching troops. An archer hero can support an infantry-heavy army. The actual scope of the skill decides which troops benefit; the hero's troop icon does not prescribe your ratio. Widget <em>skills</em> can require rally or defender duty. Ordinary skills that improve survival can help in either role.</p>
+    <details class="castle-reason"><summary>Compare leader kits · Gen 2–3 examples</summary>
+      <p>These are kit examples at comparable development. Check your own stars, skill levels, gear and widgets before replacing a hero.</p>
+      <div class="castle-tabs castle-roles" role="tablist" aria-label="Leader duty" data-module="tabs" data-tabs-bind="role">
+        <button type="button" id="castle-defense-tab" role="tab" aria-controls="castle-leaders" aria-selected="true" tabindex="0" data-value="defense" data-action="tabs.select">Garrison lead</button>
+        <button type="button" id="castle-attack-tab" role="tab" aria-controls="castle-leaders" aria-selected="false" tabindex="-1" data-value="attack" data-action="tabs.select">Rally lead</button>
+      </div>
+      <div id="castle-leaders" role="tabpanel" aria-labelledby="castle-defense-tab">
+        <label class="castle-progress">Roster progress<select data-target="castle-battle.stage" data-action="castle-battle.stage" disabled>{% for stage in site.data.castle_battle.stages %}<option value="{{ stage.id }}"{% if stage.id == 'mature' %} selected{% endif %}>{{ stage.label }}</option>{% endfor %}</select></label>
+        {% for lineup in site.data.castle_battle.lineups %}
+        <div data-lineup-role="{{ lineup.role }}" data-lineup-stage="{{ lineup.stage }}"{% unless lineup.role == 'defense' and lineup.stage == 'mature' %} hidden{% endunless %}>
+          <h3>{{ lineup.title }}</h3>
+          <div class="castle-lineup">{% for key in lineup.heroes %}{% assign hero = site.data.heroes.heroes | where: 'key', key | first %}{% assign metadata = site.data.hero_roles.heroes[key] %}
+            <article class="castle-hero" data-hero="{{ key }}"><a class="castle-portrait" href="../heroes/#hero-{{ key }}"><img src="../img/heroes/{{ metadata.portrait }}" width="52" height="52" alt="{{ hero.name }}" loading="lazy" decoding="async"></a><div class="castle-hero-copy"><h3><a href="../heroes/#hero-{{ key }}">{{ hero.name }}</a></h3><p>{{ site.data.castle_battle.kitBriefs[key] | escape }}</p><p class="castle-mine" data-copy-for="{{ key }}" hidden></p><details class="castle-kit"><summary>Expedition kit and levels</summary><ol>{% for skill in hero.skills %}{% assign note = metadata.skillNotes[forloop.index0] %}<li><b>{{ skill.name | escape }}</b> — {{ note.summary | escape }}{% for scale in skill.scales %}<span class="castle-scale">{{ scale.label | escape }} · Lv 1–5: {{ scale.levels | join: ' / ' | escape }}</span>{% endfor %}</li>{% endfor %}</ol><p>Widget skill: {{ hero.widget.role }} · {{ hero.widget.effect }}. <a href="{{ metadata.wiki }}">Hero reference</a></p></details></div></article>
+          {% endfor %}</div><p>{{ lineup.lesson }}</p><p>{{ lineup.comparison }}</p>
+        </div>{% endfor %}
+      </div>
+    </details>
+    <h2>Read the report in the right order</h2>
+    <ol><li>Compare starting counts, tiers and Truegold levels.</li><li>Check whose bonuses were used, and the per-type ATK, LET, DEF and HP.</li><li>Check leader heroes, widgets and the four selected joiner skills. Hero effects are not fully explained by the displayed bonus percentages.</li><li>Look at which troop types were removed and what remains. Then check the live garrison for reinforcements before planning another hit.</li></ol>
+    <p>For King's Castle fights, support says casualties enter the infirmary until it fills, then further casualties die. Keep healing and watch capacity. Removing troops from a battle and permanently killing them are different outcomes. City attacks have different casualty rules. <a href="#castle-evidence-combat">Casualty rules</a></p>
+  </section>
+  <section id="castle-joiners" class="castle-panel" role="tabpanel" aria-labelledby="castle-joiners-tab" data-view="joiners" hidden>
+    <h2>Your troops matter. Your full kit does not transfer.</h2>
+    <p>The attacking leader supplies the rally's account bonuses and full leader kit. Joiners supply troops, including their type and tier, and up to four selected first-hero skills are shared across the rally. Your own gear, charms and combat research do not add another set of rally bonuses.</p>
+    <p>Put the assigned hero in <b>slot 1</b>, the captain slot. Its <b>first Expedition skill</b> is the eligible contribution. Your other heroes can help deployment capacity; their skills, and skill 2 or 3 of the first hero, do not transfer. Check the rally's selected skills before it marches. <a href="https://www.youtube.com/watch?v=5RrphiHLzxU&amp;t=70s">Sloth's leader / joiner explanation</a></p>
+    <h2>PvP needs survival on attack too</h2>
+    <p>Bear never attacks you. A castle garrison does. Gordon, Saul, Fahd and Eric have useful survival contributions in PvP; an offensive rally does not automatically need four Bear joiners. Chenko and Amane add damage support, but selecting only damage skills can shorten the time your army has to use it.</p>
+    <p>Coordinate the <em>four effects together</em>. Four Gordons are a simple early health-stacking option. Saul splits defense and health; Fahd and Eric provide different enemy debuffs. Mixing effect families can improve the combined result, depending on the leader kit. Don't rank a hero solely by the biggest percentage in its tooltip.</p>
+    {% for candidate in site.data.castle_battle.joiners %}{% assign hero = site.data.heroes.heroes | where: 'key', candidate.id | first %}
+    <details class="castle-joiner"><summary><span>{{ hero.name }}</span><span>{{ candidate.job }}</span></summary><p>{{ candidate.lesson }}</p>{% for scale in hero.skills[0].scales %}<p class="castle-scale">{{ scale.label | escape }} · Lv 1–5: {{ scale.levels | join: ' / ' | escape }}</p>{% endfor %}<p><a href="{{ candidate.source }}">Sloth's tested hero analysis</a> · <a href="../heroes/#hero-{{ candidate.id }}">Your hero copy</a></p></details>
+    {% endfor %}
+    <h2>Four skill slots, not four troop marches</h2>
+    <p>Members outside those four skill slots still supply troops. A fifth Gordon is not a fifth health contribution. Eligibility, which four skills are selected, and whether their effects stack are separate checks.</p>
+    <p>Max the assigned first skill and inspect the actual selection in the rally window. Don't assume the game picks the most useful four heroes. An unassigned hero can occupy a slot you needed for something else. If you cannot supply the requested hero, ask the lead whether to send troops without heroes.</p>
+    <details class="castle-reason"><summary>Why four copies are not always four effects</summary><p>Sloth's testing distinguishes reliable stat contributions from chance-based skills that do not stack across identical copies. Gordon can stack; multiple Petras or Marlins do not provide four independent copies of their first-skill benefit. A single Petra can still be useful when she is not already leading. Check the specific skill interaction rather than applying one blanket rule to every hero. <a href="https://kingshotoptimizer.com/heroes/petra/">Petra analysis</a> · <a href="https://kingshotoptimizer.com/heroes/marlin/">Marlin analysis</a></p></details>
+    <h2>Garrisons have an extra trap</h2>
+    <p>The first occupant is not necessarily the source of the garrison's bonuses. The game selects the member with the highest stat bonuses. Keep the intended strong defender present, inspect the active bonuses and hero skills, and check again when membership changes. Don't assume that the player shown as captain explains every part of the defense. <a href="https://www.youtube.com/watch?v=5RrphiHLzxU&amp;t=510s">Sloth: overlapping defensive roles</a></p>
+    <p class="castle-callout">Follow the lead's troop request. Your march does not need the same ratio as every other joiner: it contributes to the combined army. A refill request for infantry means infantry, even if your saved preset includes all three types.</p>
+  </section>
+  <section id="castle-formation" class="castle-panel" role="tabpanel" aria-labelledby="castle-formation-tab" data-view="formation" hidden>
+    <h2>A ratio is a tradeoff, not a combat rating</h2>
+    <p>More infantry buys frontline durability but occupies spaces you could give to damage troops. Too little infantry exposes fragile rows sooner. Too much can leave a durable army that cannot clear the opponent. Cavalry adds damage and bypass pressure; archers add strong damage against the infantry they normally face.</p>
+    <p>Start from a lead's tested setup for your generation and opponent. Change it using actual reports: troop tiers, bonuses, hero skills and the opposing composition all matter. Neither 50 / 20 / 30 nor 60 / 20 / 20 is a proven universal answer.</p>
+    <details class="castle-reason"><summary>What about infantry / cavalry with no archers?</summary><p>Later-generation skills can change the tradeoff. Sloth discusses the infantry / cavalry 60 / 40 garrison setup and Saul's renewed role in Generations 4–6. That is a different hero context from the Gen 2–3 examples here, not a reason to apply 60 / 40 everywhere. <a href="https://kingshotoptimizer.com/heroes/saul/">Saul and the later garrison setup</a></p></details>
+    <h2>Find the missing troops</h2>
+    <p>A garrison's ratio changes after losses. Repeating the opening mixed preset may fill capacity while leaving it short of infantry. Compare current counts with your lead's intended counts.</p>
+    <fieldset class="castle-inputs" data-target="castle-battle.refill-controls" disabled><legend>Example garrison · edit for your target</legend>
+      <label>Target capacity<input type="number" min="1" max="10000000" step="10000" value="1000000" data-target="castle-battle.capacity" data-action="castle-battle.refill"></label>
+      <div class="castle-input-row"><label>Infantry %<input type="number" min="0" max="100" step="0.01" value="60" data-ratio="0" data-action="castle-battle.refill"></label><label>Cavalry %<input type="number" min="0" max="100" step="0.01" value="20" data-ratio="1" data-action="castle-battle.refill"></label><label>Archers %<input type="number" min="0" max="100" step="0.01" value="20" data-ratio="2" data-action="castle-battle.refill"></label></div>
+      <div class="castle-input-row"><label>Current infantry<input type="number" min="0" max="10000000" step="10000" value="420000" data-current="0" data-action="castle-battle.refill"></label><label>Current cavalry<input type="number" min="0" max="10000000" step="10000" value="200000" data-current="1" data-action="castle-battle.refill"></label><label>Current archers<input type="number" min="0" max="10000000" step="10000" value="200000" data-current="2" data-action="castle-battle.refill"></label></div>
+    </fieldset>
+    <p class="castle-inference">60 / 20 / 20 is an accounting example, not a recommended optimum.</p>
+    <table class="castle-counts"><caption>Troops needed to restore the target</caption><thead><tr><th scope="col">Type</th><th scope="col">Target</th><th scope="col">Missing</th><th scope="col">Surplus</th></tr></thead><tbody>{% assign troop_types = 'Infantry,Cavalry,Archers' | split: ',' %}{% for troop in troop_types %}<tr><th scope="row">{{ troop }}</th><td data-target-count="{{ forloop.index0 }}">{% if forloop.first %}600,000{% else %}200,000{% endif %}</td><td data-missing="{{ forloop.index0 }}">{% if forloop.first %}180,000{% else %}0{% endif %}</td><td data-surplus="{{ forloop.index0 }}">0</td></tr>{% endfor %}</tbody></table>
+    <p class="castle-callout" role="status" data-target="castle-battle.refill-note">There are 180,000 free spaces. Sending 180,000 infantry restores this example. Sending 180,000 at 60 / 20 / 20 leaves 72,000 infantry missing and adds 36,000 surplus cavalry and archers each.</p>
+    <p>Surplus troops cannot be fixed by adding more troops into a full garrison. The lead must decide whether and when to recall or replace marches. Account for troops already on the way, and don't withdraw a key defender during an incoming attack.</p>
+    <h2>Test a change you can explain</h2>
+    <ol><li>Record both sides' current troop counts, tiers, bonuses and hero setup.</li><li>Change one thing: the combined troop split, a leader hero, or the selected joiner mix.</li><li>Compare repeated reports. Chance skills can change a single outcome.</li><li>Judge capture and troops remaining for the next defense, alongside healing cost and occupation time.</li></ol>
+    <p><a href="../battle-simulator/">Use the troop-only simulator</a> to explore frontline and damage tradeoffs. It omits hero skills, selected joiners, turret fire and reinforcement between fights. Its best split is a result for those entered troop-only conditions, not a Castle meta recommendation.</p>
+  </section>
+  <output class="castle-status" role="status" data-target="castle-battle.status"></output>
+  <nav class="castle-tools" aria-label="Related tools"><a href="../heroes/">Compare your heroes</a><a href="../battle-simulator/">Explore troop combat</a></nav>
+  <details class="castle-sources" id="castle-evidence"><summary>Sources and what they establish</summary>
+    <h3 id="castle-evidence-event">Event rules</h3><p><a href="https://centurygames.helpshift.com/hc/en/140-kingshot/faq/9047-castle-battle-1783425489/">Century Games: Castle Battle</a> — occupation, turrets, alert zone and ruins. <a href="https://centurygames.helpshift.com/hc/en/140-kingshot/faq/8352-how-long-do-i-have-to-attack-the-king-s-castle-to-be-the-winner-during-the-battle-phase-of-kingdom-of-power/">Kingdom of Power castle duration</a> — five hours / 2½ consecutive hours. Checked 11 October 2026; use your live event rules if they differ.</p>
+    <h3 id="castle-evidence-combat">Combat and rally mechanics</h3><p><a href="https://centurygames.helpshift.com/hc/en/140-kingshot/faq/9125-combat-faq-1783436100/">Official Combat FAQ</a> — turns, targeting, casualties, skill scope and four member skills. <a href="https://www.youtube.com/watch?v=5RrphiHLzxU">Strat Game Sloth: Rally Mechanics Demystified</a> — 01:10 contributions, 03:25 skill selection, 08:30 defensive roles, 14:46 offensive joiners, 16:42 defensive joiners. <a href="https://www.youtube.com/watch?v=6_oGKp3YfiE">Sloth's combat breakdown</a> and <a href="https://kingshotoptimizer.com/guides/kingshot-combat-guide/">his published combat guide</a>.</p>
+    <h3>Tested hero analysis and the model</h3><p>Hero-specific links above go to Kingshot Optimizer, whose authors describe direct testing by Sloth, Zebrave and Frak. Tooltip labels alone are insufficient to establish stacking. The <a href="https://frakinator.streamlit.app/">Frakinator</a> is the source of this site's combat model; <a href="../battle-simulator/#maths">the simulator's maths</a> describes its scope. Formation and timing examples here are arithmetic and tactical reasoning, not simulated hero rankings.</p>
+  </details>
+  <noscript><p>The event lesson is readable without JavaScript. Enable JavaScript to switch lessons and use the refill calculator.</p></noscript>
+</main>

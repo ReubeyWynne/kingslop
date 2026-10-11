@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["ru"] = {
+  "castle.nav": "Замок",
+  "castle.deck.lede": "контроль замка, механика боя, навыки участников сбора и выбор войск.",
   "meta.title": "Bear Hunt: без загадок",
   "meta.description": "Bear Hunt без загадок. Как работает урон ралли — простыми словами: статы лидера, твои войска, квадратный корень и четыре правила.",
   "meta.ogTitle": "Bear Hunt: без загадок",

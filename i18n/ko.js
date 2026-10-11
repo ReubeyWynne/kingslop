@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["ko"] = {
+  "castle.nav": "성",
+  "castle.deck.lede": "성 점령, 전투 원리, 집결 참가자 스킬과 병력 선택.",
   "meta.title": "Bear Hunt, 해부",
   "meta.description": "Bear Hunt, 해부. 랠리 피해가 어떻게 작동하는지 쉬운 말로 풀어낸다: 리더의 스탯, 네 병력, 제곱근, 그리고 네 가지 규칙.",
   "meta.ogTitle": "Bear Hunt, 해부",

@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["vi"] = {
+  "castle.nav": "Lâu đài",
+  "castle.deck.lede": "kiểm soát lâu đài, cơ chế chiến đấu, kỹ năng người tham gia tập kết và lựa chọn quân.",
   "meta.title": "Bear Hunt, Giải Mã",
   "meta.description": "Bear Hunt, giải mã. Cách sát thương rally hoạt động bằng ngôn ngữ đơn giản: chỉ số của lead, quân của bạn, căn bậc hai, và bốn quy tắc.",
   "meta.ogTitle": "Bear Hunt, Giải Mã",

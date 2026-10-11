@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["pl"] = {
+  "castle.nav": "Zamek",
+  "castle.deck.lede": "kontrola zamku, mechanika walki, umiejętności uczestników rajdu i dobór wojsk.",
   "meta.title": "Bear Hunt, bez tajemnic",
   "meta.description": "Bear Hunt bez tajemnic. Jak działają obrażenia rajdu w prostych słowach: statystyki lidera, twoje wojska, pierwiastek kwadratowy i cztery zasady.",
   "meta.ogTitle": "Bear Hunt, bez tajemnic",

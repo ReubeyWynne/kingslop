@@ -45,6 +45,15 @@
     "lede": "two scoreboards, one battlefield — plan your match."
   },
   {
+    "self": "castle",
+    "tail": "castle-battle/",
+    "labelKey": "castle.nav",
+    "label": "Castle",
+    "group": "events",
+    "ledeKey": "castle.deck.lede",
+    "lede": "castle control, combat mechanics, joiner skills and troop choices."
+  },
+  {
     "self": "vip",
     "tail": "vip-calculator/",
     "labelKey": "ev.switch.vip",

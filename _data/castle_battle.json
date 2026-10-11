@@ -1,0 +1,144 @@
+{
+  "kitBriefs": {
+    "eric": "Enemy attack down · incoming damage down · squad health up",
+    "hilde": "Attack and defense up · damage proc · damage-reduction proc",
+    "jaeger": "Damage proc · enemy lethality-reduction proc · health up",
+    "zoe": "Damage over time · attack up · damage-taken amplification",
+    "saul": "Defense and health up · lethality up",
+    "amadeus": "Lethality up · attack up · damage proc",
+    "petra": "Damage-taken amplification proc · attack proc · damage-reduction proc",
+    "marlin": "Damage procs · enemy lethality-reduction proc"
+  },
+  "stages": [
+    {
+      "id": "older",
+      "label": "Developed Gen 2"
+    },
+    {
+      "id": "mixed",
+      "label": "Developing Gen 3"
+    },
+    {
+      "id": "mature",
+      "label": "Developed Gen 3"
+    }
+  ],
+  "lineups": [
+    {
+      "role": "defense",
+      "stage": "older",
+      "title": "A garrison that hits back",
+      "heroes": [
+        "zoe",
+        "hilde",
+        "saul"
+      ],
+      "lesson": "Zoe adds attack and damage amplification; Saul adds lethality as well as defense and health. This is a developed older core with outgoing damage support, not simply a weaker version of Eric’s kit.",
+      "comparison": "Holding buys occupation time and reinforcement time. Compare outgoing damage too: a garrison that clears the rally can preserve more troops for the next defense."
+    },
+    {
+      "role": "defense",
+      "stage": "mixed",
+      "title": "Change the kit one slot at a time",
+      "heroes": [
+        "eric",
+        "hilde",
+        "jaeger"
+      ],
+      "lesson": "Eric changes Zoe’s damage-oriented slot to enemy attack reduction, incoming damage reduction and health. Jaeger adds health and a chance to reduce enemy lethality. Those are different effects, not just higher-generation stats.",
+      "comparison": "Compare Eric with your developed Zoe, and Jaeger with your developed Saul. Keep each replacement’s actual skill levels, stars, gear and widget visible; the generation label cannot settle the tradeoff."
+    },
+    {
+      "role": "defense",
+      "stage": "mature",
+      "title": "A garrison built to survive",
+      "heroes": [
+        "eric",
+        "hilde",
+        "jaeger"
+      ],
+      "lesson": "Eric’s reductions and health support, Hilde’s damage-reduction chance and Jaeger’s health support act across the squad. Their benefits are not confined to infantry, cavalry and archers respectively.",
+      "comparison": "Compare with Zoe or Saul when return damage is the priority. A defender widget supports the role, but it does not make the whole kit an automatic winner."
+    },
+    {
+      "role": "attack",
+      "stage": "older",
+      "title": "Use the rally kit already developed",
+      "heroes": [
+        "amadeus",
+        "hilde",
+        "marlin"
+      ],
+      "lesson": "Amadeus adds attack, lethality and a damage proc. Marlin adds damage procs and enemy lethality reduction. Hilde supplies attack, defense and damage support, although her widget skill is for defenders.",
+      "comparison": "A rally widget is one part of the comparison. Do not discard a developed Hilde solely because an underbuilt Petra has the matching widget role."
+    },
+    {
+      "role": "attack",
+      "stage": "mixed",
+      "title": "Compare Petra with the cavalry you built",
+      "heroes": [
+        "amadeus",
+        "petra",
+        "marlin"
+      ],
+      "lesson": "Petra brings attack and enemy damage-taken amplification procs, incoming damage reduction and a rally attack widget. Compare these with Hilde’s actual skill levels and investment, rather than comparing hero names.",
+      "comparison": "Survival support matters on attack too. Compare Petra with your developed Hilde using actual reports; the troop-only simulator cannot resolve the full hero tradeoff."
+    },
+    {
+      "role": "attack",
+      "stage": "mature",
+      "title": "Damage support across the rally",
+      "heroes": [
+        "amadeus",
+        "petra",
+        "marlin"
+      ],
+      "lesson": "These kits combine attack, lethality, damage and target damage-taken effects. Their rally widgets suit the role. This makes them candidates to compare, not proof that this trio wins every Gen 3 matchup.",
+      "comparison": "Start with the heroes your lead has developed. A survival skill is not wasted simply because this is an attack; compare losses and surviving troops as well as damage."
+    }
+  ],
+  "joiners": [
+    {
+      "id": "gordon",
+      "job": "Squad health",
+      "lesson": "At skill 5, Super Nutrients contributes 25% squad health. A reliable early PvP option on either side. It stacks across selected copies; his second attack skill does not transfer.",
+      "source": "https://kingshotoptimizer.com/heroes/gordon/"
+    },
+    {
+      "id": "saul",
+      "job": "Defense + health",
+      "lesson": "Taskforce Training contributes 10% defense and 15% health at skill 5. Its two effect families are useful when coordinating with other survival skills. His third-skill lethality is absent as a joiner.",
+      "source": "https://kingshotoptimizer.com/heroes/saul/"
+    },
+    {
+      "id": "fahd",
+      "job": "Enemy damage debuff",
+      "lesson": "Desert Eclipse contributes a guaranteed 20% enemy damage-dealt debuff at skill 5. Its different effect family makes it a PvP option to combine with health and defense support.",
+      "source": "https://kingshotoptimizer.com/heroes/fahd/"
+    },
+    {
+      "id": "eric",
+      "job": "Enemy attack debuff",
+      "lesson": "Holy Warrior contributes a guaranteed 20% enemy attack debuff at skill 5. His health and damage-taken skills belong to his leader kit and do not transfer as joiner skills.",
+      "source": "https://kingshotoptimizer.com/heroes/eric/"
+    },
+    {
+      "id": "howard",
+      "job": "Survival fallback",
+      "lesson": "His first skill provides 20% damage-taken reduction at skill 5. Sloth’s testing rates this below Gordon’s 25% health contribution; do not read four copies as 80% fewer casualties. His second enemy-attack debuff does not transfer.",
+      "source": "https://kingshotoptimizer.com/heroes/howard/"
+    },
+    {
+      "id": "chenko",
+      "job": "Squad lethality",
+      "lesson": "Stand of Arms contributes up to 25% lethality. It supports outgoing damage in PvP, but his second survival skill does not transfer. Yeonwoo and Amadeus supply the same first-skill stat family.",
+      "source": "https://kingshotoptimizer.com/heroes/chenko/"
+    },
+    {
+      "id": "amane",
+      "job": "Squad attack",
+      "lesson": "Tri-Phalanx contributes up to 25% attack. It adds a different offensive stat family from Chenko’s lethality; it is damage support rather than an automatic Castle joiner assignment.",
+      "source": "https://kingshotoptimizer.com/heroes/amane/"
+    }
+  ]
+}

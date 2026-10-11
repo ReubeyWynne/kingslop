@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["zh-Hant"] = {
+  "castle.nav": "城堡",
+  "castle.deck.lede": "城堡控制、戰鬥機制、集結參與者技能與兵種選擇。",
   "meta.title": "Bear Hunt, 解密",
   "meta.description": "Bear Hunt，不再神秘。用大白話講清集結傷害：隊長的屬性、你的兵力、平方根，外加四條規則。",
   "meta.ogTitle": "Bear Hunt, 解密",

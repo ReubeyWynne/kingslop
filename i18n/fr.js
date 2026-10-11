@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["fr"] = {
+  "castle.nav": "Château",
+  "castle.deck.lede": "contrôle du château, mécaniques de combat, compétences des participants et choix des troupes.",
   "meta.title": "Bear Hunt, Démystifié",
   "meta.description": "Bear Hunt, démystifié. Comment fonctionnent les dégâts de rally en clair : les stats du meneur, tes troupes, la racine carrée, et quatre règles.",
   "meta.ogTitle": "Bear Hunt, Démystifié",
