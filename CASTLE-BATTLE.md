@@ -50,6 +50,6 @@ No authored animation changed. The navigation integration reuses the existing ba
 
 ## Player screenshots and Gen 4 additions
 
-The supplied march screenshot marks Gordon with the green rally banner. The Amadeus Skills screenshot places Battle Ready beneath the right-hand Expedition flag. Use these as UI identification examples; the banner shows eligibility, not proof of selection among the four shared skills. Original screenshots are retained under `img/castle/`.
+The supplied march screenshot marks Marlin with the green rally banner. The Amadeus Skills screenshot places Battle Ready beneath the right-hand Expedition flag. Use these as UI identification examples; the banner shows eligibility, not proof of selection among the four shared skills. Original screenshots are retained under `img/castle/`.
 
 [Sloth's Margot analysis](https://kingshotoptimizer.com/heroes/margot/) verifies the third-skill cavalry extra attack, squad-wide dodge and defender-lethality widget. [Alcar analysis](https://kingshotoptimizer.com/heroes/alcar/) explains infantry damage and defensive support in the Gen 4 60/40 setup. Together these explain why the formation needs the relevant leader kit. The low-cavalry offensive response is included as a possible alliance call supplied by the user, not a fixed Gen 4 counter ratio or guaranteed result; [Sloth's later Luna analysis](https://kingshotoptimizer.com/heroes/luna/) also identifies a 50/0/50 response to Gen 8 Liz 60/40 garrisons. Do not conflate those generations or invent a universal counter.
