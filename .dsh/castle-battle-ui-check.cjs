@@ -50,7 +50,10 @@ const server = http.createServer((request, response) => {
       await page.locator('#castle-defense-tab').click();
       await page.locator('#castle-formation-tab').click();
       await page.locator('[data-mix="60,20,20"]').click();
-      await page.locator('[data-target="castle-battle.loss-input"]').fill('180000');
+      await page.locator('[data-target="castle-battle.loss-input"]').evaluate(node => {
+        node.value = '180000';
+        node.dispatchEvent(new Event('input', { bubbles: true }));
+      });
       assert.equal(await page.locator('[data-share="0"]').textContent(), '51.2%');
       await page.locator('#castle-attack-tab').click();
       assert.equal(await page.locator('[data-share="0"]').textContent(), '60.0%');
