@@ -1113,4 +1113,3 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "gov.kicker": "總督的衣櫥"
 }
 ;
-

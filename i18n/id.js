@@ -1124,4 +1124,3 @@ window.__BH_I18N_DATA["id"] = {
   "gov.kicker": "lemari gubernur"
 }
 ;
-

@@ -1113,4 +1113,3 @@ window.__BH_I18N_DATA["de"] = {
   "gov.kicker": "die Garderobe des Gouverneurs"
 }
 ;
-

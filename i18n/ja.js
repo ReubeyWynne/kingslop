@@ -1113,4 +1113,3 @@ window.__BH_I18N_DATA["ja"] = {
   "gov.kicker": "総督の衣装棚"
 }
 ;
-

@@ -675,8 +675,7 @@ window.__BH_I18N_DATA["es"] = {
   "ev.ledger.aria": "el registro — cada página",
   "ev.ledger.home": "el índice",
   "ev.ledger.guides": "los eventos",
-  "ev.ledger.tools": "las herramientas"
-,
+  "ev.ledger.tools": "las herramientas",
   "ev.deck.close": "cerrar",
   "ev.deck.groups": "grupos de páginas",
   "ev.deck.prev": "página anterior",
@@ -1116,4 +1115,3 @@ window.__BH_I18N_DATA["es"] = {
   "gov.kicker": "el vestuario del gobernador"
 }
 ;
-

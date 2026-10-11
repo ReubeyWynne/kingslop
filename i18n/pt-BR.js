@@ -1115,4 +1115,3 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "gov.kicker": "o guarda-roupa do governador"
 }
 ;
-

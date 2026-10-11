@@ -1113,4 +1113,3 @@ window.__BH_I18N_DATA["ko"] = {
   "gov.kicker": "총독의 옷장"
 }
 ;
-

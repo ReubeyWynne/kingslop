@@ -1124,4 +1124,3 @@ window.__BH_I18N_DATA["vi"] = {
   "gov.kicker": "tủ đồ của thống đốc"
 }
 ;
-
