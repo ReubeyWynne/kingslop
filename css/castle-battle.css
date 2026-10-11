@@ -80,3 +80,10 @@
   .castle-progress { align-items: flex-start; }
   .castle-pairs dd { font-size: var(--step-0); }
 }
+
+.castle-role-list { margin-bottom: 0; }
+.castle-banner-cue { display: flex; align-items: center; gap: 0.8rem; font-size: var(--step--1); color: var(--ink-dim); }
+.castle-banner-cue img { flex: 0 0 40px; width: 40px; height: auto; border-radius: 2px; }
+.castle-screens figure { margin: 1rem 0; }
+.castle-screens img { display: block; max-width: 100%; width: auto; height: auto; max-height: 32rem; }
+.castle-screens figcaption { margin-top: 0.6rem; }

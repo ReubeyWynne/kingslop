@@ -5,7 +5,7 @@ const http = require('node:http');
 const { chromium } = require('playwright');
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/castle-preview');
-const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.webp': 'image/webp' };
+const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.webp': 'image/webp', '.jpg': 'image/jpeg' };
 const server = http.createServer((request, response) => {
   let file = path.resolve(root, '.' + decodeURIComponent(new URL(request.url, 'http://localhost').pathname));
   if (file !== root && !file.startsWith(root + path.sep)) return response.writeHead(403).end();
@@ -43,6 +43,24 @@ const server = http.createServer((request, response) => {
         await page.setViewportSize({ width: 390, height: 844 });
         await page.locator('#castle-guide').screenshot({ path: path.join(output, lang + '-' + view + '.png') });
       }
+      await page.locator('#castle-joiners-tab').click();
+      await page.getByText('Find it in game', { exact: true }).click();
+      await page.locator('.castle-screens').evaluate(async node => {
+        await Promise.all([...node.querySelectorAll('img')].map(async img => {
+          img.loading = 'eager';
+          await img.decode();
+          if (!img.naturalWidth) throw new Error('Missing joiner screenshot');
+        }));
+      });
+      for (const width of [320, 390]) {
+        await page.setViewportSize({ width, height: 844 });
+        assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+      }
+      await page.locator('.castle-screens').screenshot({ path: path.join(output, lang + '-joiner-screens.png') });
+      await page.locator('#castle-formation-tab').click();
+      await page.getByText('Gen 4: the 60 / 40 garrison', { exact: true }).click();
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+      await page.locator('#castle-formation .castle-chapter').first().screenshot({ path: path.join(output, lang + '-gen4.png') });
       assert.equal(await page.locator('[data-missing="0"]').textContent(), '180,000');
       for (const [index, value] of [[0, '528000'], [1, '236000'], [2, '236000']]) await page.locator('[data-current="' + index + '"]').fill(value);
       assert.equal(await page.locator('[data-missing="0"]').textContent(), '72,000');

@@ -4,6 +4,7 @@
 
 ## Editorial decisions
 
+- Open with communication and assigned roles. Caller, rally lead, garrison lead and joiner duties are alliance assignments; join requirements can be strict. Reserve lead accounts for their jobs, prioritise available high-tier troops for the castle, and explain role-specific account building.
 - Teach occupation, turret pressure, preparation, capture, holding and retaking before hero selection.
 - Treat attacking and defending as two sides of combat: both deal damage and both benefit from survival. Bear-only joiner prescriptions are insufficient for Castle.
 - Include Gordon, Saul, Fahd and Eric as PvP survival contributions, with Chenko and Amane as damage support. Howard is a fallback, not an automatically superior garrison option. Explain scope and stacking with hero-specific sources.
@@ -46,3 +47,9 @@ Community SEO guide consensus is not evidence. Do not reintroduce a universal ra
 After the Jekyll build, `node .dsh/castle-battle-ui-check.cjs` checks all lessons, leader examples, saved roster updates, refill accounting, invalid input, source disclosures, RTL keyboard handling and widths from 320 to 1920 pixels. It captures each lesson on a phone viewport in English and Arabic chrome. The lesson body remains English and explicitly uses LTR direction within Arabic page chrome. Tab keys follow their nearest direction attribute so mixed-language sections preserve visual order.
 
 No authored animation changed. The navigation integration reuses the existing banner scene.
+
+## Player screenshots and Gen 4 additions
+
+The supplied march screenshot marks Gordon with the green rally banner. The Amadeus Skills screenshot places Battle Ready beneath the right-hand Expedition flag. Use these as UI identification examples; the banner shows eligibility, not proof of selection among the four shared skills. Original screenshots are retained under `img/castle/`.
+
+[Sloth's Margot analysis](https://kingshotoptimizer.com/heroes/margot/) verifies the third-skill cavalry extra attack, squad-wide dodge and defender-lethality widget. [Alcar analysis](https://kingshotoptimizer.com/heroes/alcar/) explains infantry damage and defensive support in the Gen 4 60/40 setup. Together these explain why the formation needs the relevant leader kit. The low-cavalry offensive response is included as a possible alliance call supplied by the user, not a fixed Gen 4 counter ratio or guaranteed result; [Sloth's later Luna analysis](https://kingshotoptimizer.com/heroes/luna/) also identifies a 50/0/50 response to Gen 8 Liz 60/40 garrisons. Do not conflate those generations or invent a universal counter.
