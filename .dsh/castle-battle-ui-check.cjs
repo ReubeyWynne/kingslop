@@ -47,7 +47,7 @@ const server = http.createServer((request, response) => {
       for (const [index, value] of [[0, '528000'], [1, '236000'], [2, '236000']]) await page.locator('[data-current="' + index + '"]').fill(value);
       assert.equal(await page.locator('[data-missing="0"]').textContent(), '72,000');
       assert.equal(await page.locator('[data-surplus="1"]').textContent(), '36,000');
-      assert.match(await page.locator('[data-target="castle-battle.refill-note"]').textContent(), /Adding troops alone cannot restore it/);
+      assert.match(await page.locator('[data-target="castle-battle.refill-note"]').textContent(), /Replace 72,000 surplus troops/);
       await page.locator('[data-ratio="0"]').fill('70');
       assert.equal(await page.locator('[data-missing="0"]').textContent(), '—');
       assert.match(await page.locator('[data-target="castle-battle.refill-note"]').textContent(), /add to 100/);
@@ -59,7 +59,7 @@ const server = http.createServer((request, response) => {
       await page.locator('[data-current="2"]').fill('200000');
       assert.match(await page.locator('[data-target="castle-battle.refill-note"]').textContent(), /No refill/);
       await page.locator('#castle-combat-tab').click();
-      await page.getByText('Compare leader kits · Gen 2–3 examples', { exact: true }).click();
+      await page.getByText('Leader kits · Gen 2–3', { exact: true }).click();
       for (const role of ['defense', 'attack']) {
         await page.locator('#castle-' + role + '-tab').click();
         for (const stage of ['older', 'mixed', 'mature']) {

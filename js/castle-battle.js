@@ -34,10 +34,10 @@
         });
         var names = ['infantry', 'cavalry', 'archers'];
         var request = state.missing.map(function (n, t) { return n ? context.api.fmt(n) + ' ' + names[t] : ''; }).filter(Boolean).join(', ');
-        if (state.overflow) note = 'Current troops exceed target capacity by ' + context.api.fmt(state.overflow) + '. Check capacity and current counts before requesting reinforcements.';
-        else if (state.excess) note = 'There are ' + context.api.fmt(state.free) + ' free spaces, but ' + context.api.fmt(state.needed) + ' troops are missing from the target: ' + request + '. Reaching that target also requires replacing ' + context.api.fmt(state.excess) + ' surplus troops. Adding troops alone cannot restore it.';
-        else if (state.needed) note = 'There are ' + context.api.fmt(state.free) + ' free spaces. To restore this target, send ' + request + '. Use the missing counts, rather than repeating the opening mixed preset.';
-        else note = 'The current counts match the target. No refill is needed for this composition.';
+        if (state.overflow) note = context.api.fmt(state.overflow) + ' troops over capacity. Check the entered counts.';
+        else if (state.excess) note = context.api.fmt(state.free) + ' spaces free. Missing: ' + request + '. Replace ' + context.api.fmt(state.excess) + ' surplus troops too; they occupy needed spaces.';
+        else if (state.needed) note = context.api.fmt(state.free) + ' spaces free. Send ' + request + ' to reach the target.';
+        else note = 'Target reached. No refill needed.';
       } catch (cause) {
         context.nodes('[data-target-count],[data-missing],[data-surplus]').forEach(function (node) { node.textContent = '—'; });
         note = cause.message;

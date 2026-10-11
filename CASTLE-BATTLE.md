@@ -12,6 +12,10 @@
 - Remove the preset ratio/depletion toy. The refill tool accepts target capacity, target percentages and current counts. It reports deficits, surplus and capacity conflicts. It does not simulate combat or prescribe a meta ratio.
 - Retain shared hero data and saved roster display without changing the ledger.
 
+## Copy and layout
+
+Follow the Bear and Swordland pages: short instructions, ruled examples, and secondary detail behind fleuron disclosures. Each tab has a few spaced chapters. Keep headings literal and brief; avoid slogans, repeated caveats and paragraph-length summaries. Sources remain at the foot of the page, with exact formulae and report checklists available on demand. The refill result should name the missing troops in one short instruction.
+
 ## Evidence audit · 11 October 2026
 
 | Source | Used for | Limit |
