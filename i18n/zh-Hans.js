@@ -1,7 +1,5 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["zh-Hans"] = {
-  "castle.nav": "城堡",
-  "castle.deck.lede": "英雄技能、实时兵力配比和协同集结攻击。",
   "meta.title": "Bear Hunt, 解密",
   "meta.description": "Bear Hunt，不再神秘。用大白话讲清集结伤害：队长的属性、你的兵力、平方根，外加四条规则。",
   "meta.ogTitle": "Bear Hunt, 解密",

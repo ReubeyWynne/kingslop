@@ -65,7 +65,7 @@ html, body { overscroll-behavior-x: none; }
 }
 .ev-foot a:hover { color: var(--amber); }
 
-@media (max-width: 1799px) {
+@media (max-width: 1599px) {
   .ev-switch { display: none; }
 }
 
@@ -96,7 +96,7 @@ html, body { overscroll-behavior-x: none; }
 }
 /* The drawer replaces the strip wherever the strip can't fit (see .ev-switch),
    not just on phones — a squeezed strip is worse than an honest drawer. */
-@media (min-width: 1800px) {
+@media (min-width: 1600px) {
   .ledger-btn { display: none; }
 }
 .ledger {
@@ -174,7 +174,6 @@ html, body { overscroll-behavior-x: none; }
 .page-deck[data-selected="gear"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #72CBDD; --deck-ground: #16242c; }
 .page-deck[data-selected="heroes"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E68AB4; --deck-ground: #241c27; }
 .page-deck[data-selected="governor"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #86D48A; --deck-ground: #19241b; }
-.page-deck[data-selected="castle"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #DFAA77; --deck-ground: #27201b; }
 /* The selected page's colours land only on the parts that use them, not on
    the strip, so a change restyles a handful of elements rather than every
    cover in the ring. */
@@ -340,7 +339,6 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
 .deck-card[data-page="gear"] { --deck-accent: #72CBDD; }
 .deck-card[data-page="heroes"] { --deck-accent: #E68AB4; }
 .deck-card[data-page="governor"] { --deck-accent: #86D48A; }
-.deck-card[data-page="castle"] { --deck-accent: #DFAA77; }
 .deck-card::before {
   content: '';
   position: absolute;
@@ -877,18 +875,6 @@ html[data-page="heroes"], html[data-page="home"]:has(.event-card[data-hover-page
 
 
 /* ─── Governor gear — the laurel wardrobe ──────────────── */
-html[data-page="castle"], html[data-page="home"]:has(.event-card[data-hover-page="castle"]:is(:hover, :focus-within)), .deck-card[data-page="castle"] {
-  --void: #0B0E16;
-  --void-2: #121726;
-  --amber: #DFAA77;
-  --amber-dim: #B9895D;
-  --chrome: rgba(11, 14, 22, .94);
-  --signal-line: rgba(223, 170, 119, .35);
-  --signal-tint: rgba(223, 170, 119, .07);
-  --signal-glow: rgba(223, 170, 119, .22);
-  --signal-halo: rgba(223, 170, 119, .28);
-}
-
 html[data-page="governor"], html[data-page="home"]:has(.event-card[data-hover-page="governor"]:is(:hover, :focus-within)), .deck-card[data-page="governor"] {
   --void: #0A130C;        /* garden night — laurel-black       */
   --void-2: #121D14;      /* one step up (fields)              */
@@ -903,5 +889,4 @@ html[data-page="governor"], html[data-page="home"]:has(.event-card[data-hover-pa
   --signal-glow: rgba(134, 212, 138, .22);
   --signal-halo: rgba(134, 212, 138, .28);
 }
-
 

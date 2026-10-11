@@ -45,15 +45,6 @@
     "lede": "two scoreboards, one battlefield — plan your match."
   },
   {
-    "self": "castle",
-    "tail": "castle-battle/",
-    "labelKey": "castle.nav",
-    "label": "Castle",
-    "group": "events",
-    "ledeKey": "castle.deck.lede",
-    "lede": "hero kits, live formations and coordinated rally waves."
-  },
-  {
     "self": "vip",
     "tail": "vip-calculator/",
     "labelKey": "ev.switch.vip",

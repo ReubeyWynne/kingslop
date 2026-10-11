@@ -1,7 +1,5 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["ja"] = {
-  "castle.nav": "城",
-  "castle.deck.lede": "英雄スキル、現在の部隊編成、連携した集結攻撃。",
   "meta.title": "Bear Hunt、解明",
   "meta.description": "Bear Huntを解明。ラリーのダメージの仕組みを平易な言葉で説明：リーダーのステータス、あなたの部隊、平方根、そして4つのルール。",
   "meta.ogTitle": "Bear Hunt、解明",

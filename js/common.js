@@ -708,7 +708,7 @@
     var ledger = document.getElementById('ledger');
     if (ledgerBtn && ledger) {
       if (deck && typeof deck.showModal === 'function') {
-        var compact = window.matchMedia('(max-width: 1799px)');
+        var compact = window.matchMedia('(max-width: 1599px)');
         function syncLedgerTrigger() {
           ledgerBtn.setAttribute('aria-controls', compact.matches ? 'page-deck' : 'ledger');
           ledgerBtn.setAttribute('aria-haspopup', compact.matches ? 'dialog' : 'true');
@@ -835,6 +835,5 @@
     setTimeout(boot, 0);
   }
 })();
-
 
 

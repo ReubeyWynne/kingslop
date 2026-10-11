@@ -82,15 +82,6 @@ jobs:
               - _data/hero_roles.json
               - css/heroes.css
               - img/heroes/**
-            castle:
-              - *shared
-              - .dsh/castle-battle-ui-check.cjs
-              - castle-battle/**
-              - js/castle-battle*.js
-              - css/castle-battle.css
-              - _data/castle_battle.json
-              - _data/heroes.json
-              - _data/hero_roles.json
             events:
               - *shared
               - .dsh/event-availability-check.cjs
@@ -141,7 +132,7 @@ jobs:
           FILTERED: ${{ github.event_name == 'pull_request' }}
           CHANGES: ${{ steps.filter.outputs.changes || '[]' }}
         run: |
-          all='["interactions","heroes","castle","events","governor","deck","ascii-capture","hero-gear"]'
+          all='["interactions","heroes","events","governor","deck","ascii-capture","hero-gear"]'
           if [ "$FILTERED" != true ]; then
             echo "logic=true" >> "$GITHUB_OUTPUT"
             echo "ascii=true" >> "$GITHUB_OUTPUT"
@@ -191,9 +182,6 @@ jobs:
       - name: Check battle engine
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/battle-engine-check.cjs
-      - name: Check Castle Battle formation accounting
-        if: needs.changes.outputs.logic == 'true'
-        run: node --test .dsh/castle-battle-check.cjs
       - name: Check player ledger and migration
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/player-ledger-check.cjs
@@ -270,9 +258,6 @@ jobs:
       - name: Check hero directory UI
         if: matrix.group == 'heroes'
         run: node .dsh/hero-directory-ui-check.cjs
-      - name: Check Castle Battle UI
-        if: matrix.group == 'castle'
-        run: node .dsh/castle-battle-ui-check.cjs
       - name: Check event availability UI
         if: matrix.group == 'events'
         run: node .dsh/event-availability-check.cjs
@@ -309,7 +294,6 @@ jobs:
             .dsh/gear-preview/
             .dsh/event-preview/
             .dsh/hero-directory-preview/
-            .dsh/castle-preview/
             .dsh/governor-preview/
             .dsh/deck-preview/
             .dsh/sim-preview/
@@ -329,4 +313,3 @@ jobs:
           for result in $RESULTS; do
             case "$result" in success|skipped) ;; *) exit 1 ;; esac
           done
-
