@@ -39,6 +39,6 @@ Community SEO guide consensus is not evidence. Do not reintroduce a universal ra
 
 `node .dsh/ascii-style-check.cjs`
 
-After the Jekyll build, `node .dsh/castle-battle-ui-check.cjs` checks all lessons, leader examples, saved roster updates, refill accounting, invalid input, source disclosures, RTL keyboard handling and widths from 320 to 1920 pixels. It captures each lesson on a phone viewport in English and Arabic chrome. The lesson body remains English.
+After the Jekyll build, `node .dsh/castle-battle-ui-check.cjs` checks all lessons, leader examples, saved roster updates, refill accounting, invalid input, source disclosures, RTL keyboard handling and widths from 320 to 1920 pixels. It captures each lesson on a phone viewport in English and Arabic chrome. The lesson body remains English and explicitly uses LTR direction within Arabic page chrome. Tab keys follow their nearest direction attribute so mixed-language sections preserve visual order.
 
 No authored animation changed. The navigation integration reuses the existing banner scene.

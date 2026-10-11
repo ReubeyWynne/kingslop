@@ -76,7 +76,8 @@ const server = http.createServer((request, response) => {
       await page.locator('#castle-event a[href="#castle-evidence-event"]').first().click();
       assert.equal(await page.locator('#castle-evidence').getAttribute('open'), '');
       await page.locator('#castle-event-tab').focus();
-      await page.keyboard.press(lang === 'ar' ? 'ArrowLeft' : 'ArrowRight');
+      assert.equal(await page.locator('#castle-guide').getAttribute('dir'), 'ltr');
+      await page.keyboard.press('ArrowRight');
       assert.equal(await page.locator('#castle-combat-tab').getAttribute('aria-selected'), 'true');
       assert.deepEqual(await page.evaluate(() => window.castleErrors), []);
       assert.deepEqual(errors, []);
