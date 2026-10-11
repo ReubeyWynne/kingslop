@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["th"] = {
+  "castle.nav": "ปราสาท",
+  "castle.deck.lede": "ทักษะฮีโร่ สัดส่วนทหารปัจจุบัน และการโจมตีแรลลี่แบบประสานงาน",
   "meta.title": "Bear Hunt, ไขความลับ",
   "meta.description": "Bear Hunt แบบไขความลับ. ความเสียหายของแรลลี่ทำงานยังไง พูดแบบบ้าน ๆ: สเตตของหัวหน้ากลุ่ม, กองกำลังของคุณ, รากที่สอง, และกฎสี่ข้อ.",
   "meta.ogTitle": "Bear Hunt, ไขความลับ",
@@ -1122,3 +1124,4 @@ window.__BH_I18N_DATA["th"] = {
   "gov.kicker": "ตู้เสื้อผ้าของผู้ว่าการ"
 }
 ;
+

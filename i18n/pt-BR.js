@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["pt-BR"] = {
+  "castle.nav": "Castelo",
+  "castle.deck.lede": "habilidades dos heróis, formações atuais e ondas de rallies coordenados.",
   "meta.title": "Bear Hunt, Sem Mistérios",
   "meta.description": "Bear Hunt, sem mistérios. Como o dano do rally funciona em palavras simples: as estatísticas do líder, suas tropas, a raiz quadrada e quatro regras.",
   "meta.ogTitle": "Bear Hunt, Sem Mistérios",
@@ -1113,3 +1115,4 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "gov.kicker": "o guarda-roupa do governador"
 }
 ;
+

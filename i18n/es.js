@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["es"] = {
+  "castle.nav": "Castillo",
+  "castle.deck.lede": "habilidades de héroes, formaciones actuales y oleadas de ataques coordinados.",
   "meta.title": "Bear Hunt, sin misterios",
   "meta.description": "Bear Hunt, sin misterios. Cómo funciona el daño de rally en palabras simples: las estadísticas del líder, tus tropas, la raíz cuadrada y cuatro reglas.",
   "meta.ogTitle": "Bear Hunt, sin misterios",
@@ -673,7 +675,8 @@ window.__BH_I18N_DATA["es"] = {
   "ev.ledger.aria": "el registro — cada página",
   "ev.ledger.home": "el índice",
   "ev.ledger.guides": "los eventos",
-  "ev.ledger.tools": "las herramientas",
+  "ev.ledger.tools": "las herramientas"
+,
   "ev.deck.close": "cerrar",
   "ev.deck.groups": "grupos de páginas",
   "ev.deck.prev": "página anterior",
@@ -1113,3 +1116,4 @@ window.__BH_I18N_DATA["es"] = {
   "gov.kicker": "el vestuario del gobernador"
 }
 ;
+

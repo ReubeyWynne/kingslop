@@ -1,5 +1,11 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["en"] = {
+  "castle.nav": "Castle",
+  "castle.deck.lede": "hero kits, live formations and coordinated rally waves.",
+  "castle.meta.title": "Castle Battle — dey.ci",
+  "castle.skip": "Skip to the combat guide",
+  "castle.brandNote": "combat fieldbook",
+  "castle.foot.note": "Mechanics first · hero effects from the shared catalogue · lineup comparisons are kit inferences.",
   "meta.title": "Bear Hunt, Demystified",
   "meta.description": "Bear Hunt, demystified. How rally damage works in plain words: the lead's stats, your troops, the square root, and four rules.",
   "meta.ogTitle": "Bear Hunt, Demystified",
@@ -1535,3 +1541,4 @@ window.__BH_I18N_DATA["en"] = {
   "gov.needUnknown": "count not entered"
 }
 ;
+

@@ -265,10 +265,10 @@
       "lede": "all queues, all deployable troops, and fixed kill-point pools."
     },
     "swipeNext": {
-      "url": "../vip-calculator/",
-      "page": "vip",
-      "title": "VIP Calculator",
-      "lede": "your VIP XP is a straight line at your rate — here's the date for every remaining level."
+      "url": "../castle-battle/",
+      "page": "castle",
+      "title": "Castle Battle",
+      "lede": "hero kits, live formations and coordinated rally waves."
     },
     "css": [
       "../css/styles.css",
@@ -316,10 +316,10 @@
     "brandNoteKey": "vip.brandNote",
     "brandNote": "just the dates",
     "swipePrev": {
-      "url": "../swordland-showdown/",
-      "page": "swordland",
-      "title": "Swordland Showdown",
-      "lede": "two scoreboards, one 180,000, and winning is only one lever."
+      "url": "../castle-battle/",
+      "page": "castle",
+      "title": "Castle Battle",
+      "lede": "hero kits, live formations and coordinated rally waves."
     },
     "swipeNext": {
       "url": "../battle-simulator/",
@@ -575,6 +575,60 @@
       {
         "key": "gov.foot",
         "html": "game values cross-checked across <a href=\"https://kingshotdata.com/database/governor-gear/\">Kingshot Data</a> and other public tables · independently built for the [2129]MadNess alliance"
+      }
+    ],
+    "headScripts": []
+  },
+  "castle": {
+    "token": "castle",
+    "depth": "../",
+    "canonicalPath": "/castle-battle/",
+    "themeColor": "#0B0E16",
+    "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23150A11'/%3E%3Ctext x='16' y='24' font-size='22' text-anchor='middle' fill='%23DFAA77'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E\">",
+    "titleKey": "castle.meta.title",
+    "titleText": "Castle Battle — dey.ci",
+    "metaDescKey": "castle.deck.lede",
+    "metaDesc": "Hero kits, live formations and coordinated rally waves.",
+    "ogTitleKey": "castle.meta.title",
+    "ogTitle": "Castle Battle — dey.ci",
+    "ogDescKey": "castle.deck.lede",
+    "ogDesc": "Hero kits, live formations and coordinated rally waves.",
+    "skipHref": "#castle-guide",
+    "skipKey": "castle.skip",
+    "skipText": "Skip to the combat guide",
+    "dust": "",
+    "brand": "CASTLE BATTLE",
+    "brandNoteKey": "castle.brandNote",
+    "brandNote": "combat fieldbook",
+    "swipePrev": {
+      "url": "../swordland-showdown/",
+      "page": "swordland",
+      "title": "Swordland",
+      "lede": "two scoreboards, one battlefield — plan your match."
+    },
+    "swipeNext": {
+      "url": "../vip-calculator/",
+      "page": "vip",
+      "title": "VIP",
+      "lede": "your progress today, your next VIP level."
+    },
+    "css": [
+      "../css/styles.css",
+      "../css/events.css",
+      "../css/castle-battle.css"
+    ],
+    "scripts": [
+      "../js/i18n.js",
+      "../js/common.js",
+      "../js/castle-battle-engine.js",
+      "../js/castle-battle.js"
+    ],
+    "footMainKey": "castle.nav",
+    "footMain": "CASTLE BATTLE",
+    "footSubs": [
+      {
+        "key": "castle.foot.note",
+        "html": "Mechanics first · hero effects from the shared catalogue · lineup comparisons are kit inferences."
       }
     ],
     "headScripts": []
