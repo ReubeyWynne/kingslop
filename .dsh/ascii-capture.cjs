@@ -28,8 +28,8 @@ const scenes = [
   ['charm', '/vikings-vengeance/', '.ascii-mini--charm', 0.2, 32],
   ['march', '/vikings-vengeance/', '.ascii-march-band', 1 / 8, 96],
   ['banner', '/swordland-showdown/', '.ascii-mini--banner', 0.15, 24],
-  ['castle', '/castle-battle/', '.castle-heading .ascii-mini--castle', 0.125, 48],
-  ['castle-card', '/castle-battle/', '.deck-card.is-selected .ascii-mini--castle', 0.125, 48],
+  ['castle', '/castle-battle/', '.castle-heading .ascii-mini--castle', 1 / 12, 72],
+  ['castle-card', '/castle-battle/', '.deck-card.is-selected .ascii-mini--castle', 1 / 12, 72],
   ['crown', '/vip-calculator/', '.ascii-mini--crown', 0.25, 32],
   ['dice', '/battle-simulator/', '.ascii-mini--dice', 0.224, 25],
   ['moon', '/events/', '.ascii-mini--moon', 19.6 / 112, 112],
@@ -103,7 +103,14 @@ const server = http.createServer((request, response) => {
           const still = await scene.evaluate((element, layers) => layers.map(pseudo => ({
             animation: getComputedStyle(element, pseudo).animationName,
             content: getComputedStyle(element, pseudo).content
-          })), name.startsWith('castle') ? ['::before'] : ['::before', '::after']);
+          })), ['::before', '::after']);
+          if (name.startsWith('castle')) {
+            const smoke = await scene.locator('.castle-smoke').evaluate(element => ({
+              animation: getComputedStyle(element, '::before').animationName,
+              content: getComputedStyle(element, '::before').content
+            }));
+            still.push(smoke);
+          }
           if (still.some(layer => layer.animation !== 'none' || layer.content === 'none')) failures.push(`${name} @${width}px: missing reduced-motion still`);
         }
         await page.close();

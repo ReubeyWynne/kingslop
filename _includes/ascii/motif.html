@@ -1,3 +1,7 @@
 <div class="ascii-motif-rail" aria-hidden="true">
+  {% if include.kind == 'castle' %}
+  {% include ascii/castle.html %}
+  {% else %}
   <span class="ascii-mini ascii-mini--{{ include.kind }}"></span>
+  {% endif %}
 </div>

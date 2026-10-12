@@ -232,7 +232,7 @@ All authored animations must use the site's distinct ASCII character-grid style.
 | Bear, charm, banner, crown, dice | the hero of their page and its deck cover | a bear that blinks and sniffs, a longship's sea rolling past and its shields catching the light, a glint along a crown's band, cloth ripple in four glyph heights, two dice tumbling over their corners and landing in a puff of dust |
 | Helm | Heroes hero and deck cover | wind running back through a Spartan helm's horsehair crest, the dome catching light |
 | Seal | Governor Gear hero and deck cover | a quartered heater shield, a shine sweeping across it on a slant, then its corners and point catching the light |
-| Castle | Castle Battle hero and deck cover | fixed masonry and a gate, three procedural pennants, flickering braziers and a cell-stepped turret volley |
+| Castle | Castle Battle hero and deck cover | two filled cloth banners with travelling folds; campfire-sampled braziers and embers; arcing fireballs, expanding impacts and advected smoke over fixed masonry |
 | March | Bear Hunt and Vikings bands, Vikings cover | a column walking in step, one cell per pose, with a pennant bearer |
 | Ambient twinkles | behind every page and the page deck | glyphs waking at fixed places |
 
