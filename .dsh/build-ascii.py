@@ -615,7 +615,7 @@ def castle_cloth(arr, x, width, t, phase):
 
 def castle_shot(beat, target):
     u = beat / 17
-    return round(target * u), round(7 - 8 * math.sin(math.pi * u))
+    return round((target + 1) * u) - 1, max(0, round(7 - 8 * math.sin(math.pi * u) ** .3))
 
 
 def castle_frame(i):
@@ -641,7 +641,7 @@ def castle_frame(i):
         for lag, glyph in ((3, '.'), (2, ':'), (1, '*'), (0, '@')):
             if beat >= lag:
                 c, r = castle_shot(beat - lag, target)
-                if 0 <= r < CASTLE_H and arr[r][c] == ' ':
+                if 0 <= c < CASTLE_W and 0 <= r < CASTLE_H and arr[r][c] == ' ':
                     put(arr, c, r, glyph)
         c, r = castle_shot(beat, target)
         for dx, dy, glyph in ((-1, 1, '*'), (-2, 1, ':'), (-3, 2, '.')):
@@ -669,6 +669,10 @@ def castle_frame(i):
 def castle_frames():
     frames = [castle_frame(i) for i in range(CASTLE_FRAMES)]
     assert castle_frame(CASTLE_FRAMES) == frames[0], 'castle loop does not close'
+    for i, frame in enumerate(frames):
+        if 0 < i % 36 < 18:
+            c, r = castle_shot(i % 36, 17 if i < 36 else 20)
+            assert frame[r][c] == '@', f'castle fireball vanishes in frame {i}'
     return frames
 
 
