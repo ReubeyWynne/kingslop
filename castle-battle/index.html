@@ -6,6 +6,7 @@ self: castle
   <header class="castle-heading" id="top">
     <h1>Castle Battle</h1>
     <p class="lede">Take the castle, keep it reinforced, and hold it long enough to win.</p>
+    {% include ascii/motif.html kind='castle' %}
   </header>
   <div class="castle-tabs castle-views" role="tablist" aria-label="Castle Battle lessons" data-module="tabs" data-tabs-bind="view">
     <button type="button" id="castle-event-tab" role="tab" aria-controls="castle-event" aria-selected="true" tabindex="0" data-value="event" data-action="tabs.select">Event</button>
@@ -157,3 +158,4 @@ self: castle
   </div></details>
   <noscript><p>Enable JavaScript for the other tabs.</p></noscript>
 </main>
+

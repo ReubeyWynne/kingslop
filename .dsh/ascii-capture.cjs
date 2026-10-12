@@ -28,6 +28,8 @@ const scenes = [
   ['charm', '/vikings-vengeance/', '.ascii-mini--charm', 0.2, 32],
   ['march', '/vikings-vengeance/', '.ascii-march-band', 1 / 8, 96],
   ['banner', '/swordland-showdown/', '.ascii-mini--banner', 0.15, 24],
+  ['castle', '/castle-battle/', '.castle-heading .ascii-mini--castle', 0.125, 48],
+  ['castle-card', '/castle-battle/', '.deck-card.is-selected .ascii-mini--castle', 0.125, 48],
   ['crown', '/vip-calculator/', '.ascii-mini--crown', 0.25, 32],
   ['dice', '/battle-simulator/', '.ascii-mini--dice', 0.224, 25],
   ['moon', '/events/', '.ascii-mini--moon', 19.6 / 112, 112],
@@ -54,14 +56,16 @@ const server = http.createServer((request, response) => {
     browser = await chromium.launch();
     for (const width of [320, 390]) {
       const context = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 2 });
-      for (const [name, url, selector, period, count] of scenes.filter(scene => !process.argv.includes('--moon') || scene[0].startsWith('moon'))) {
+      for (const [name, url, selector, period, count] of scenes.filter(scene =>
+        (!process.argv.includes('--moon') || scene[0].startsWith('moon')) &&
+        (!process.argv.includes('--castle') || scene[0].startsWith('castle')))) {
         const page = await context.newPage();
         await page.goto(base + url + '?lang=en', { waitUntil: 'networkidle' });
         await page.evaluate(() => document.fonts.ready);
-        if (name === 'moon-card') {
+        if (name.endsWith('-card')) {
           await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
           await page.locator('#ledger-btn').click();
-          await page.waitForFunction(() => document.querySelector('.deck-card.is-selected')?.dataset.page === 'kvksg');
+          await page.waitForFunction(token => document.querySelector('.deck-card.is-selected')?.dataset.page === token, name === 'castle-card' ? 'castle' : 'kvksg');
         }
         await page.addStyleTag({ content: '.topbar, .toc { visibility: hidden !important; }' });
         // Open the collapsed section the scene sits in.
@@ -94,12 +98,12 @@ const server = http.createServer((request, response) => {
           seen.add(image.toString('base64'));
         }
         if (seen.size < 2) failures.push(`${name} @${width}px: holds one frame for the whole loop`);
-        if (name.startsWith('moon')) {
+        if (name.startsWith('moon') || name.startsWith('castle')) {
           await page.emulateMedia({ reducedMotion: 'reduce' });
-          const still = await scene.evaluate(element => ['::before', '::after'].map(pseudo => ({
+          const still = await scene.evaluate((element, layers) => layers.map(pseudo => ({
             animation: getComputedStyle(element, pseudo).animationName,
             content: getComputedStyle(element, pseudo).content
-          })));
+          })), name.startsWith('castle') ? ['::before'] : ['::before', '::after']);
           if (still.some(layer => layer.animation !== 'none' || layer.content === 'none')) failures.push(`${name} @${width}px: missing reduced-motion still`);
         }
         await page.close();
@@ -116,3 +120,4 @@ const server = http.createServer((request, response) => {
   }
   console.log(`ASCII scenes: ${scenes.length} scenes stepped at 320px and 390px` + (writeFrames ? `; frames in ${path.relative(process.cwd(), output)}` : ''));
 })().catch(error => { console.error(error); process.exit(1); });
+
