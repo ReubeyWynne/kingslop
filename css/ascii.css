@@ -94,7 +94,13 @@
 }
 .ascii-mini::before { display: block; white-space: pre; }
 .ascii-mini--moon { width: 37ch; height: 16.25em; }
-.ascii-mini--castle { width: 37ch; height: 16.25em; }
+.ascii-mini--castle { --castle-cloth: #8296ad; width: 37ch; height: 21.25em; }
+.ascii-mini--castle::before { color: var(--ink-dim); }
+.ascii-mini--castle::after { color: var(--castle-cloth); }
+.ascii-mini--castle::after,
+.ascii-mini--castle > span { position: absolute; inset: 0; display: block; white-space: pre; }
+.ascii-mini--castle .castle-smoke { color: var(--ink-muted); }
+.ascii-mini--castle > span::before { display: block; white-space: pre; }
 .ascii-mini--moon::before { color: var(--amber-dim); opacity: .25; }
 .ascii-mini--moon::after { position: absolute; inset: 0; display: block; white-space: pre; }
 .ascii-mini--charm { color: var(--amber-dim, #d3a33e); }
@@ -215,6 +221,7 @@ html.deck-open .dust .ascii-ambient > span::before { animation-play-state: pause
 }
 .deck-ascii .ascii-mini { font-size: inherit; }
 .deck-ascii .ascii-mini--crown { font-size: clamp(8px, 2.1vw, 10.5px); }
+.deck-ascii .ascii-mini--castle { font-size: clamp(8px, 2.4vw, 10px); }
 .deck-ascii .ascii-march { font-size: clamp(8px, 2.1vw, 11px); }
 .deck-ascii .ascii-campfire { font-size: clamp(6px, 1.75vw, 9.5px); }
 .deck-ascii .ascii-forge { font-size: clamp(8px, 2.2vw, 11px); }
@@ -232,6 +239,7 @@ html.deck-open .dust .ascii-ambient > span::before { animation-play-state: pause
 @media (prefers-reduced-motion: reduce) {
   .ascii *, .ascii *::before, .ascii *::after,
   .ascii-mini::before, .ascii-mini::after, .ascii-march::before,
+  .ascii-mini--castle > span::before,
   .ascii-ambient > span::before { animation: none !important; }
   .ascii-campfire .spark { opacity: 0; }
 }

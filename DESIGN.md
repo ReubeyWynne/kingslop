@@ -232,7 +232,7 @@ All authored animations must use the site's distinct ASCII character-grid style.
 | Bear, charm, banner, crown, dice | the hero of their page and its deck cover | a bear that blinks and sniffs, a longship's sea rolling past and its shields catching the light, a glint along a crown's band, cloth ripple in four glyph heights, two dice tumbling over their corners and landing in a puff of dust |
 | Helm | Heroes hero and deck cover | wind running back through a Spartan helm's horsehair crest, the dome catching light |
 | Seal | Governor Gear hero and deck cover | a quartered heater shield, a shine sweeping across it on a slant, then its corners and point catching the light |
-| Castle | Castle Battle hero and deck cover | fixed masonry and a gate, three procedural pennants, flickering braziers and a cell-stepped turret volley |
+| Castle | Castle Battle hero and deck cover | blue cloth banners, small warm gate lamps, and seeded irregular fireballs with varied flight times, targets, tails, impact strength and smoke drift; independent cloth, lamp and siege periods prevent a shared scene reset |
 | March | Bear Hunt and Vikings bands, Vikings cover | a column walking in step, one cell per pose, with a pennant bearer |
 | Ambient twinkles | behind every page and the page deck | glyphs waking at fixed places |
 
@@ -261,7 +261,7 @@ Following the rules is not enough; a scene also has to look good frame by frame.
 - **Emblems read at a glance.** Each emblem is the thing it names in its most familiar silhouette: a crown is a band with points and jewels, the Vikings charm is a longship under a striped sail with shields on the rail, the helm is a crested Spartan helm in profile, a die shows its top and front faces, the governor's seal is a quartered heater shield. Draw anything that faces the viewer symmetrical about the centre column, and check it from across the room at 9px before animating it.
 - **Every frame fits its box.** No frame may be wider or taller than the `ch`/`em` box `css/ascii.css` gives the scene, so nothing is clipped. Art sits on the box's rows deliberately: a figure stands on a ground row, not floating with a gap below. *(checked)*
 - **Single strokes only.** Drawings are raw strings; a `\\` there draws two backslashes. *(checked)*
-- **One signal hue.** Scenes take colour from the page's tokens (`--amber`, `--amber-dim`, `--ink-dim`, `--ink-muted`), so a scene never brings another page's colour along. Only the fire scenes keep a literal fire palette. *(checked)*
+- **One signal hue.** Scenes take colour from the page's tokens (`--amber`, `--amber-dim`, `--ink-dim`, `--ink-muted`), so a scene never brings another page's colour along. Fire scenes keep a literal fire palette; Castle's cloth uses the separate muted heraldic blue `--castle-cloth` to distinguish it from the warm lamps and projectiles. *(checked)*
 - **Every mark belongs to the drawing.** A twitch, flick or glint changes glyphs on the part that moves, inside the silhouette. A glyph that blinks on outside the outline reads as a rendering fault. Embers glow where the fire is, not under the logs.
 - **Saturation needs texture.** A sampled field that saturates (a flame's base) becomes a flat row of `@`. Move the sampling window or cap the ramp until the densest row still varies.
 - **Repetition needs rhythm.** A tiled band repeats on a period that divides its tile (ground included, so seams vanish) and carries a landmark, such as a pennant bearer, so it reads as a procession rather than wallpaper.
