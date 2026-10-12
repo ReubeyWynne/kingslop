@@ -6,6 +6,15 @@
     chest: /\b(chest|shroud|leatherwear|breastplate|armor|armour)\b/i,
     boots: /\b(boots?|greaves|riders)\b/i
   };
+  function matchText(value) {
+    return String(value || '').replace(/[\u200e\u200f\u202a-\u202e\u2066-\u2069\u061c]/g, '')
+      .replace(/[٠-٩۰-۹０-９]/g, function (digit) {
+        var code = digit.charCodeAt(0);
+        return String(code >= 0x06f0 && code <= 0x06f9 ? code - 0x06f0 : code >= 0xff10 && code <= 0xff19 ? code - 0xff10 : code - 0x0660);
+      }).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\u00a0\u202f]/g, ' ');
+  }
+  var MASTERY_LABEL = '(?:mastery|maestria|forja\\s*(?:nivel|level|maestria)?|forge\\s*(?:level|mastery))';
+  var LEVEL_LABEL = '(?:enhancement\\s*(?:level)?|aprimoramento(?:\\s*(?:nivel|level))?|lv\\.?|level|nv\\.?|nivel)';
   function parse(items) {
     var boxes = (items || []).map(function (item) {
       var text = String(item.text || '').trim(), points = item.poly || item.box || item.points || [];
@@ -19,22 +28,24 @@
       else rows.push({ y: box.y, h: box.h, boxes: [box] });
     });
     var lines = rows.map(function (row) { return row.boxes.sort(function (a, b) { return a.x - b.x; }).map(function (b) { return b.text; }).join(' '); });
-    var full = lines.join('\n'), out = { level: null, mastery: null, quality: null, slot: null, troop: null, text: full };
-    Object.keys(ALIASES).forEach(function (slot) { if (ALIASES[slot].test(full)) out.slot = out.slot ? 'ambiguous' : slot; });
+    var full = lines.join('\n'), normalized = matchText(full), out = { level: null, mastery: null, quality: null, slot: null, troop: null, text: full };
+    Object.keys(ALIASES).forEach(function (slot) { if (ALIASES[slot].test(normalized)) out.slot = out.slot ? 'ambiguous' : slot; });
     if (out.slot === 'ambiguous') out.slot = null;
-    if (/\binfantry\b/i.test(full)) out.troop = 'inf';
-    else if (/\bcavalry\b/i.test(full)) out.troop = 'cav';
-    else if (/\b(archer|archery)\b/i.test(full)) out.troop = 'arc';
-    if (/\b(red|ascended)\b/i.test(full)) out.quality = 'red';
-    else if (/\bmythic\b/i.test(full)) out.quality = 'mythic';
-    else if (/\bepic\b/i.test(full)) out.quality = 'epic';
-    lines.forEach(function (line) {
-      var mastery = line.match(/(?:mastery|forge\s*(?:level|mastery))\s*(?:lv\.?|level)?\s*[:+\-]?\s*(\d{1,2})(?!\d)/i);
+    if (/\binfantry\b/i.test(normalized)) out.troop = 'inf';
+    else if (/\bcavalry\b/i.test(normalized)) out.troop = 'cav';
+    else if (/\b(archer|archery)\b/i.test(normalized)) out.troop = 'arc';
+    if (/\b(red|ascended)\b/i.test(normalized)) out.quality = 'red';
+    else if (/\bmythic\b/i.test(normalized)) out.quality = 'mythic';
+    else if (/\bepic\b/i.test(normalized)) out.quality = 'epic';
+    lines.forEach(function (rawLine) {
+      var line = matchText(rawLine);
+      var mastery = line.match(new RegExp('(?<![\\p{L}])' + MASTERY_LABEL + '(?![\\p{L}])\\s*(?:lv\\.?|level|nv\\.?|nivel)?\\s*[:+\\-]?\\s*(\\d{1,2})(?![\\d\\p{L}])', 'iu'));
       if (mastery && Number(mastery[1]) <= 20 && !/→|->/.test(line)) out.mastery = Number(mastery[1]);
-      if (/mastery|forge|\d\s*\/\s*\d|%|→|->/i.test(line)) return;
-      var red = line.match(/(?:lv\.?|level|enhancement)\s*[:.]?\s*\+\s*(\d{1,3})(?!\d)/i);
+      if (new RegExp('(?<![\\p{L}])' + MASTERY_LABEL + '(?![\\p{L}])|\\d\\s*\\/\\s*\\d|%|→|->', 'iu').test(line)) return;
+      var levelLabel = '(?<![\\p{L}])' + LEVEL_LABEL + '(?![\\p{L}])';
+      var red = line.match(new RegExp(levelLabel + '\\s*[:.]?\\s*\\+\\s*(\\d{1,3})(?![\\d\\p{L}])', 'iu'));
       if (red && Number(red[1]) <= 100) { out.level = 100 + Number(red[1]); out.quality = 'red'; return; }
-      var level = line.match(/(?:enhancement\s*(?:level)?|lv\.?|level)\s*[:.]?\s*(\d{1,3})(?!\d)/i);
+      var level = line.match(new RegExp(levelLabel + '\\s*[:.]?\\s*(\\d{1,3})(?![\\d\\p{L}])', 'iu'));
       if (level && Number(level[1]) <= 200) out.level = Number(level[1]);
     });
     if (out.level > 100) out.quality = 'red';
@@ -122,13 +133,14 @@ function signature(image,tile,dx,dy){
     });
     function number(band, mastery) {
       if (!band.length) return present && present[mastery ? 1 : 0] ? null : 0;
-      var text = band.join(' ').replace(/[Il|](?=\d)/g, '1').replace(/[Oo](?=\d|$)/g, '0').replace(/[Ww](?=\d)/g, 'v').replace(/(\d)G\b/g, function (_, n) { return n + '0'; });
-      var matches = text.match(mastery ? /(?:mastery|forge\s*(?:level|mastery)|l[vw]?\.?|level)\s*[:.]?\s*(\d{1,2})(?![\dA-Za-z])/i : /(?:\+|lv\.?|level|enhancement\s*(?:level)?)\s*[:.]?\s*(\d{1,3})(?![\dA-Za-z])/i);
+      var text = matchText(band.join(' ')).replace(/[Il|](?=\d)/g, '1').replace(/[Oo](?=\d|$)/g, '0').replace(/[Ww](?=\d)/g, 'v').replace(/(\d)G\b/g, function (_, n) { return n + '0'; });
+      var labels = '(?<![\\p{L}])(?:' + MASTERY_LABEL + '|' + LEVEL_LABEL + '|l[vw]?\\.?)(?![\\p{L}])';
+      var matches = text.match(mastery ? new RegExp('(?:' + labels + '\\s*[:.]?\\s*(\\d{1,2})(?![\\d\\p{L}])|(?<![\\d\\p{L}])(\\d{1,2})(?![\\d\\p{L}])\\s*' + labels + ')', 'iu') : new RegExp('(?:\\+|' + LEVEL_LABEL + ')\\s*[:.]?\\s*(\\d{1,3})(?![\\d\\p{L}])', 'iu'));
       if (!matches && !mastery) matches = text.match(/(?:^|[^\d])(\d{1,3})\s*$/);
       if (!matches && /^\s*\d{1,3}\s*$/.test(text)) matches = [text, text.trim()];
       if (!matches && /^[\s+.:_-]*\d{1,3}[\s+.:_-]*$/.test(text)) matches = text.match(/(\d{1,3})/);
       if (!matches) return null;
-      var value = Number(matches[1]), limit = mastery ? 20 : quality === 'epic' ? 80 : 100;
+      var value = Number(matches[1] || matches[2]), limit = mastery ? 20 : quality === 'epic' ? 80 : 100;
       return Number.isFinite(value) && value >= 0 && value <= limit ? value : null;
     }
     var level = number(bands[0], false);
