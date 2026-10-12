@@ -128,11 +128,39 @@ assert.equal(redRead.mastery, 10);
 assert.equal(OCR.parse(words(['Cavalry Gauntlet', 'Enhancement Level 80', 'Mastery 8'])).level, 80);
 assert.equal(OCR.parse(words(['Attack 250%', 'XP 100 / 200', '10 → 11'])).level, null);
 assert.equal(OCR.parse(words(['Helm', 'Boots'])).slot, null);
+const portuguese = OCR.parse(words(['Elmo', 'Nv. +4', 'Maestria Nv. 10']));
+assert.equal(portuguese.level, 104);
+assert.equal(portuguese.mastery, 10);
+assert.equal(OCR.parse(words(['Nv. 10'])).mastery, null, 'a plain Nv. label is not mastery outside its visual band');
+assert.equal(OCR.parse(words(['Maestria Nv. 21'])).mastery, null);
+assert.equal(OCR.parse(words(['Maestria Nv. 101'])).mastery, null, 'do not accept a mastery prefix of a longer number');
+assert.equal(OCR.parse(words(['Lv. 2'])).mastery, null, 'a level label alone is not a mastery label');
+assert.equal(OCR.parse(words(['Nv. +2C'])).level, null, 'reject enhancement numbers followed by OCR letters');
+assert.equal(OCR.parse(words(['invalidlevel +4'])).level, null, 'level labels must be whole words');
+assert.equal(OCR.parse(words(['invalidlevel 4'])).level, null, 'level labels must be whole words');
+assert.equal(OCR.parse(words(['Aprimoramento Nv. +4', 'Maestria Nv. 1'])).level, 104);
+assert.equal(OCR.parse(words(['Aprimoramento Nv. +4', 'Maestria Nv. 1'])).mastery, 1);
+const bidiDigits = OCR.parse(words(['Maestria Nv. \u200f١٠']));
+assert.equal(bidiDigits.mastery, 10);
+assert.match(bidiDigits.text, /١٠/, 'raw OCR text keeps localized digits');
 const tileWords = [
   { text: '+20', poly: [[20,12],[180,12],[180,70],[20,70]] },
   { text: 'Lv. 11', poly: [[20,130],[180,130],[180,200],[20,200]] }
 ];
 assert.deepEqual(OCR.overviewLabels(tileWords, 'red', 110), { level: 120, mastery: 11 });
+assert.deepEqual(OCR.overviewLabels(words(['+4','Nv. 10']), 'red', 15, [true,true]), { level: 104, mastery: 10 });
+assert.deepEqual(OCR.overviewLabels(words(['+54','Nv. 1']), 'mythic', 15, [true,true]), { level: 54, mastery: 1 });
+assert.deepEqual(OCR.overviewLabels(words(['+100','Nv. 4']), 'mythic', 15, [true,true]), { level: 100, mastery: 4 });
+assert.deepEqual(OCR.overviewLabels(words(['+54','1 Nv.']), 'mythic', 15, [true,true]), { level: 54, mastery: 1 });
+assert.deepEqual(OCR.overviewLabels(words(['+54','Lw. 2']), 'mythic', 15, [true,true]), { level: 54, mastery: 2 });
+assert.deepEqual(OCR.overviewLabels(words(['+4','Nv. 21']), 'red', 15, [true,true]), { level: 104, mastery: null });
+assert.deepEqual(OCR.overviewLabels(words(['+4','Nv. 101']), 'red', 15, [true,true]), { level: 104, mastery: null });
+assert.deepEqual(OCR.overviewLabels(words(['+4','101 Nv.']), 'red', 15, [true,true]), { level: 104, mastery: null });
+assert.deepEqual(OCR.overviewLabels(words(['+4','21 Nv.']), 'red', 15, [true,true]), { level: 104, mastery: null });
+assert.deepEqual(OCR.overviewLabels(words(['+4','a1 Nv.']), 'red', 15, [true,true]), { level: 104, mastery: null });
+assert.deepEqual(OCR.overviewLabels(words(['+4','Nv.10abc']), 'red', 15, [true,true]), { level: 104, mastery: null });
+assert.deepEqual(OCR.overviewLabels(words(['+4','invalidlevel 2']), 'red', 15, [true,true]), { level: 104, mastery: null });
+assert.deepEqual(OCR.overviewLabels(words(['+４','Nv. ۱۰']), 'red', 15, [true,true]), { level: 104, mastery: 10 });
 assert.deepEqual(OCR.overviewLabels([{ text: '+2C', poly: tileWords[0].poly }], 'red', 110, [true,false]), { level: null, mastery: 0 });
 assert.deepEqual(OCR.overviewLabels([], 'mythic', 110), { level: 0, mastery: 0 });
 assert.deepEqual(OCR.overviewLabels([], 'mythic', 110, [true,true]), { level: null, mastery: null });
@@ -144,6 +172,18 @@ const scope = { window: {} };
 vm.runInNewContext(fs.readFileSync('i18n/en.js', 'utf8'), scope);
 const dict = scope.window.__BH_I18N_DATA.en;
 for (const match of fs.readFileSync('hero-gear/index.html', 'utf8').matchAll(/data-i18n(?:-key)?="(gear\.[^"]+)"/g)) assert.ok(dict[match[1]], match[1]);
+const ptScope = { window: {} };
+vm.runInNewContext(fs.readFileSync('i18n/pt-BR.js', 'utf8'), ptScope);
+const ptDict = ptScope.window.__BH_I18N_DATA['pt-BR'];
+const tokens = value => (value.match(/\{\{?[\w.-]+\}?\}/g) || []).sort();
+const tags = value => (value.match(/<\/?[a-z][^>]*>/gi) || []).sort();
+const gearKeys = Object.keys(dict).filter(key => key.startsWith('gear.'));
+for (const key of gearKeys) {
+  assert.equal(typeof ptDict[key], 'string', `missing Portuguese copy: ${key}`);
+  assert.ok(ptDict[key].trim(), `empty Portuguese copy: ${key}`);
+  assert.deepEqual(tokens(ptDict[key]), tokens(dict[key]), `placeholder mismatch: ${key}`);
+  assert.deepEqual(tags(ptDict[key]), tags(dict[key]), `HTML tag mismatch: ${key}`);
+}
 
 const nearMilestone = E.defaults();
 Object.assign(nearMilestone.pieces, {
