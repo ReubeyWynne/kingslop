@@ -570,7 +570,8 @@ def mini_frames(kind):
     return frames, holds
 
 
-CASTLE_W, CASTLE_H, CASTLE_FRAMES = 37, 17, 72
+CASTLE_W, CASTLE_H = 37, 17
+CASTLE_CLOTH_FRAMES, CASTLE_LAMP_FRAMES, CASTLE_FRAMES = 97, 131, 733
 
 
 def castle_surface():
@@ -595,15 +596,17 @@ def castle_surface():
 
 
 def castle_cloth(arr, x, width, t, phase):
+    period = CASTLE_CLOTH_FRAMES / FPS
+    gust = .8 + .35 * noise(math.cos(TAU * t / period) * 2 + phase, math.sin(TAU * t / period) * 2)
     for c in range(1, width + 1):
         reach = min(1, (c - 1) / 3)
-        wave = reach * (math.sin(TAU * t / LOOP - c * .55 + phase) + .35 * math.sin(2 * TAU * t / LOOP - c * .8))
-        y = 2 + round(wave)
+        wave = reach * (gust * math.sin(TAU * t / period - c * .55 + phase) + .35 * math.sin(3 * TAU * t / period - c * .8 + phase))
+        y = 2 + max(-1, min(1, round(wave)))
         edge = '_' if wave < -.35 else "'" if wave > .35 else '-'
         put(arr, x + c, y, edge)
         put(arr, x + c, y + 3, edge)
         for r in range(1, 3):
-            fold = math.sin(TAU * t / LOOP - c * .55 + phase + r * .4)
+            fold = math.sin(TAU * t / period - c * .55 + phase + r * .4)
             put(arr, x + c, y + r, '=' if fold > .35 else '#' if fold < -.4 else ':')
         if c == width // 2:
             put(arr, x + c, y + 1, '#')
@@ -613,66 +616,94 @@ def castle_cloth(arr, x, width, t, phase):
             put(arr, x + c, y + 2, '|')
 
 
-def castle_shot(beat, target):
-    u = beat / 17
-    return round((target + 1) * u) - 1, max(0, round(7 - 8 * math.sin(math.pi * u) ** .3))
+def castle_schedule():
+    rng = random.Random(73)
+    shots = []
+    start = 17
+    while start < CASTLE_FRAMES - 48:
+        shots.append((start, rng.randrange(18, 22), rng.randrange(19, 29),
+                      rng.uniform(.72, 1), rng.randrange(2, 5), rng.uniform(-.15, .3)))
+        start += rng.choice((36, 47, 61, 83, 97))
+    return shots
+
+
+CASTLE_SHOTS = castle_schedule()
+
+
+def castle_shot(beat, target, flight):
+    u = beat / (flight - 1)
+    c = round((target + 1) * u) - 1
+    r = max(0, round(7 - 8 * math.sin(math.pi * u) ** .3))
+    return c, 0 if 7 <= c <= 14 else r
+
+
+def castle_cloth_frames():
+    frames = []
+    for i in range(CASTLE_CLOTH_FRAMES):
+        arr = grid(CASTLE_W, CASTLE_H)
+        for x, width, phase in ((6, 8, 0), (28, 7, 1.1)):
+            castle_cloth(arr, x, width, i / FPS, phase)
+        frames.append(arr)
+    return frames
+
+
+def castle_lamp_frames():
+    frames = []
+    for i in range(CASTLE_LAMP_FRAMES):
+        arr = grid(CASTLE_W, CASTLE_H)
+        t = i / CASTLE_LAMP_FRAMES * LOOP
+        for x, offset in ((12, 0), (24, 1.9)):
+            for r in range(11, 14):
+                for c in range(x - 1, x + 2):
+                    heat = flame_heat((c - x) * 5, (13.7 - r) * 5, (t + offset) % LOOP)
+                    arr[r][c] = heat_glyph(heat * .72)
+        frames.append(arr)
+    return frames
 
 
 def castle_frame(i):
-    t = i / FPS
     arr = grid(CASTLE_W, CASTLE_H)
     stone = castle_surface()
-    for x, width, phase in ((6, 8, 0), (28, 7, 1.1)):
-        castle_cloth(arr, x, width, t, phase)
-    for x, offset in ((12, 0), (24, 1.9)):
-        for r in range(8, 14):
-            for c in range(x - 2, x + 3):
-                heat = flame_heat((c - x) * 3.1, (13.8 - r) * 2.8, (t + offset) % LOOP)
-                arr[r][c] = heat_glyph(heat * .82)
-        for n in range(2):
-            age = (i + n * 13 + x) % 24
-            if age < 16:
-                r = 12 - age // 3
-                c = x + round(math.sin(age * .35 + n) * (age / 10))
-                if stone[r][c] == ' ' and arr[r][c] == ' ':
-                    put(arr, c, r, '+' if age < 4 else "'" if age < 10 else '.')
-    beat, target = i % 36, 17 if i < 36 else 20
-    if beat < 18:
-        for lag, glyph in ((3, '.'), (2, ':'), (1, '*'), (0, '@')):
-            if beat >= lag:
-                c, r = castle_shot(beat - lag, target)
-                if 0 <= c < CASTLE_W and 0 <= r < CASTLE_H and arr[r][c] == ' ':
-                    put(arr, c, r, glyph)
-        c, r = castle_shot(beat, target)
-        for dx, dy, glyph in ((-1, 1, '*'), (-2, 1, ':'), (-3, 2, '.')):
-            cc, rr = c + dx, r + dy
-            if 0 <= cc < CASTLE_W and 0 <= rr < CASTLE_H and arr[rr][cc] == ' ' and stone[rr][cc] == ' ':
-                put(arr, cc, rr, glyph)
-    else:
-        age = beat - 18
-        if age < 10:
-            for r in range(2, 9):
-                for c in range(target - 6, target + 7):
-                    if arr[r][c] != ' ' or (stone[r][c] != ' ' and r != 7):
-                        continue
-                    distance = ((c - target) / (1.4 + age * .55)) ** 2 + ((r - 7 + age * .15) / (1 + age * .28)) ** 2
-                    heat = (1 - distance) * (1 - age / 10) - .22 * noise(c * .8, r * .9 + age * .25)
-                    put(arr, c, r, heat_glyph(heat))
-        for dx, lift in ((-4, 6), (-2, 8), (1, 9), (3, 7), (5, 5)):
-            u = age / 12
-            c, r = target + round(dx * u), 7 - round(lift * u - 4 * u * u)
-            if age < 14 and 0 <= c < CASTLE_W and 0 <= r < CASTLE_H and arr[r][c] == ' ' and stone[r][c] == ' ':
-                put(arr, c, r, '*' if age < 3 else '+' if age < 6 else "'" if age < 10 else '.')
+    for start, target, flight, strength, tail, drift in CASTLE_SHOTS:
+        beat = i % CASTLE_FRAMES - start
+        if not 0 <= beat < flight + 16:
+            continue
+        if beat < flight:
+            for lag in range(tail, -1, -1):
+                if beat >= lag:
+                    c, r = castle_shot(beat - lag, target, flight)
+                    if 0 <= c < CASTLE_W:
+                        put(arr, c, r, '@' if lag == 0 else '*:.'[min(2, lag - 1)])
+            c, r = castle_shot(beat, target, flight)
+            for dx, dy, glyph in ((-1, 1, '*'), (-2, 1, ':'), (-3, 2, '.')):
+                cc, rr = c + dx, r + dy
+                if 0 <= cc < CASTLE_W and 0 <= rr < CASTLE_H and stone[rr][cc] == ' ' and not (7 <= cc <= 14 and 1 <= rr <= 6):
+                    put(arr, cc, rr, glyph)
+        else:
+            age = beat - flight
+            if age < 10:
+                for r in range(2, 9):
+                    for c in range(target - 6, target + 7):
+                        if stone[r][c] != ' ' and r != 7:
+                            continue
+                        distance = ((c - target) / (1.4 + age * .55 * strength)) ** 2 + ((r - 7 + age * .15) / (1 + age * .28)) ** 2
+                        heat = (1 - distance) * (1 - age / 10) * strength - .22 * noise(c * .8 + start, r * .9 + age * .25)
+                        put(arr, c, r, heat_glyph(heat))
+            for dx, lift in ((-4, 6), (-2, 8), (1, 9), (3, 7), (5, 5)):
+                u = age / 12
+                c, r = target + round(dx * u * strength), 7 - round(lift * u - 4 * u * u)
+                if age < 14 and 0 <= c < CASTLE_W and 0 <= r < CASTLE_H and stone[r][c] == ' ':
+                    put(arr, c, r, '*' if age < 3 else '+' if age < 6 else "'" if age < 10 else '.')
     return arr
 
 
 def castle_frames():
     frames = [castle_frame(i) for i in range(CASTLE_FRAMES)]
     assert castle_frame(CASTLE_FRAMES) == frames[0], 'castle loop does not close'
-    for i, frame in enumerate(frames):
-        if 0 < i % 36 < 18:
-            c, r = castle_shot(i % 36, 17 if i < 36 else 20)
-            assert frame[r][c] == '@', f'castle fireball vanishes in frame {i}'
+    for start, target, flight, _, _, _ in CASTLE_SHOTS:
+        for beat in range(1, flight):
+            c, r = castle_shot(beat, target, flight)
+            assert frames[start + beat][r][c] == '@', f'castle fireball vanishes in frame {start + beat}'
     return frames
 
 
@@ -682,15 +713,17 @@ def castle_smoke_frames():
     for i in range(CASTLE_FRAMES):
         arr = grid(CASTLE_W, CASTLE_H)
         effects = castle_frame(i)
-        age, target = i % 36 - 18, 17 if i < 36 else 20
-        if 0 <= age < 16:
+        for start, target, flight, strength, _, drift in CASTLE_SHOTS:
+            age = i - start - flight
+            if not 0 <= age < 16:
+                continue
             for r in range(1, 9):
                 for c in range(9, 28):
                     if stone[r][c] != ' ' or effects[r][c] != ' ':
                         continue
-                    centre = target + age * .14 + math.sin(age * .25) * .6
-                    distance = ((c - centre) / (2 + age * .22)) ** 2 + ((r - 6 + age * .28) / (1.5 + age * .12)) ** 2
-                    density = (1 - distance) * (1 - age / 16) - .3 * noise(c * .65, (r + age * .25) * .9)
+                    centre = target + age * drift + math.sin(age * .25 + start) * .6
+                    distance = ((c - centre) / (2 + age * .22 * strength)) ** 2 + ((r - 6 + age * .28) / (1.5 + age * .12)) ** 2
+                    density = (1 - distance) * (1 - age / 16) * strength - .3 * noise(c * .65 + start, (r + age * .25) * .9)
                     if density > .04:
                         put(arr, c, r, '.,:;o'[min(4, int(density * 7))])
         frames.append(arr)
@@ -800,7 +833,7 @@ def minis():
     for name, drawing in (('bear', BEAR), ('crown', CROWN), ('charm', CHARM)):
         assert symmetrical(drawing), f'{name}: the emblem is not symmetrical about column {MW // 2}'
     css = ['/* emblems */']
-    durations = {'charm': 6.4, 'bear': 7.2, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 19.6, 'helm': 8, 'seal': 8, 'castle': LOOP}
+    durations = {'charm': 6.4, 'bear': 7.2, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 19.6, 'helm': 8, 'seal': 8, 'castle': CASTLE_FRAMES / FPS}
     for kind, duration in durations.items():
         frames, holds = mini_frames(kind)
         if kind == 'moon':
@@ -809,7 +842,9 @@ def minis():
             css.append(animation('.ascii-mini--moon::after', 'ascii-mini-moon', frames, duration))
         elif kind == 'castle':
             css.append(f'.ascii-mini--castle::before{{content:{content(castle_surface())}}}\n')
-            css.append(animation('.ascii-mini--castle::after', 'ascii-mini-castle', frames, duration))
+            css.append(animation('.ascii-mini--castle::after', 'ascii-castle-cloth', castle_cloth_frames(), CASTLE_CLOTH_FRAMES / FPS))
+            css.append(animation('.ascii-mini--castle .castle-lamps::before', 'ascii-castle-lamps', castle_lamp_frames(), CASTLE_LAMP_FRAMES / FPS))
+            css.append(animation('.ascii-mini--castle .castle-siege::before', 'ascii-castle-siege', frames, duration))
             css.append(animation('.ascii-mini--castle .castle-smoke::before', 'ascii-castle-smoke', castle_smoke_frames(), duration))
         else:
             css.append(animation(f'.ascii-mini--{kind}::before', f'ascii-mini-{kind}', frames, duration, holds))
