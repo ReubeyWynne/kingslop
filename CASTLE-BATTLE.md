@@ -4,18 +4,18 @@
 
 ## Editorial decisions
 
-- Open with communication and assigned roles. Caller, rally lead, garrison lead and joiner duties are alliance assignments; join requirements can be strict. Reserve lead accounts for their jobs, prioritise available high-tier troops for the castle, and explain role-specific account building.
+- Open with communication and assigned roles. Rally lead, garrison lead and joiner duties are alliance assignments; join requirements can be strict. Reserve lead accounts for their jobs, prioritise available high-tier troops for the castle, and explain role-specific account building.
 - Teach occupation, turret pressure, preparation, capture, holding and retaking before hero selection.
 - Treat attacking and defending as two sides of combat: both deal damage and both benefit from survival. Bear-only joiner prescriptions are insufficient for Castle.
 - Include Gordon, Saul, Fahd and Eric as PvP survival contributions, with Chenko and Amane as damage support. Howard is a fallback, not an automatically superior garrison option. Explain scope and stacking with hero-specific sources.
 - Distinguish the garrison's displayed captain from its active bonus and skill sources. Do not replace that distinction with “highest power player leads everything.”
 - Remove the generic strength-gap selector and “Rally waves” lesson. Explain actual arrival arithmetic and how ownership and reinforcements change the next fight.
-- Remove the preset ratio/depletion toy. The refill tool accepts target capacity, target percentages and current counts. It reports deficits, surplus and capacity conflicts. It does not simulate combat or prescribe a meta ratio.
+- Each participant sends their own troop ratio. Specific reinforcement requests are occasional alliance instructions. Remove refill planning and its calculator; do not present Castle as a centrally controlled capacity-accounting exercise.
 - Retain shared hero data and saved roster display without changing the ledger.
 
 ## Copy and layout
 
-Follow the Bear and Swordland pages: short instructions, ruled examples, and secondary detail behind fleuron disclosures. Each tab has a few spaced chapters. Keep headings literal and brief; avoid slogans, repeated caveats and paragraph-length summaries. Sources remain at the foot of the page, with exact formulae and report checklists available on demand. The refill result should name the missing troops in one short instruction.
+Follow the Bear and Swordland pages: short instructions, ruled examples, and secondary detail behind fleuron disclosures. Each tab has a few spaced chapters. Keep headings literal and brief; avoid slogans, repeated caveats and paragraph-length summaries. Sources remain at the foot of the page, with exact formulae and report checklists available on demand. Avoid invented caller roles, scripted commands and an idealised event workflow. Early kingdoms may still be finding their rhythm.
 
 ## Evidence audit · 11 October 2026
 
@@ -44,7 +44,7 @@ Community SEO guide consensus is not evidence. Do not reintroduce a universal ra
 
 `node .dsh/ascii-style-check.cjs`
 
-After the Jekyll build, `node .dsh/castle-battle-ui-check.cjs` checks all lessons, leader examples, saved roster updates, refill accounting, invalid input, source disclosures, RTL keyboard handling and widths from 320 to 1920 pixels. It captures each lesson on a phone viewport in English and Arabic chrome. The lesson body remains English and explicitly uses LTR direction within Arabic page chrome. Tab keys follow their nearest direction attribute so mixed-language sections preserve visual order.
+After the Jekyll build, `node .dsh/castle-battle-ui-check.cjs` checks all lessons, leader examples, saved roster updates, source disclosures, RTL keyboard handling and widths from 320 to 1920 pixels. It captures each lesson on a phone viewport in English and Arabic chrome. The lesson body remains English and explicitly uses LTR direction within Arabic page chrome. Tab keys follow their nearest direction attribute so mixed-language sections preserve visual order.
 
 No authored animation changed. The navigation integration reuses the existing banner scene.
 

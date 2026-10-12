@@ -191,7 +191,7 @@ jobs:
       - name: Check battle engine
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/battle-engine-check.cjs
-      - name: Check Castle Battle formation accounting
+      - name: Check Castle Battle hero data
         if: needs.changes.outputs.logic == 'true'
         run: node --test .dsh/castle-battle-check.cjs
       - name: Check player ledger and migration

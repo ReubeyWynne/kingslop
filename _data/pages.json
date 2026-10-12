@@ -620,7 +620,6 @@
     "scripts": [
       "../js/i18n.js",
       "../js/common.js",
-      "../js/castle-battle-engine.js",
       "../js/castle-battle.js"
     ],
     "footMainKey": "castle.nav",

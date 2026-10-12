@@ -36,7 +36,7 @@ const server = http.createServer((request, response) => {
         assert.equal(await page.locator('[data-view]:visible').getAttribute('data-view'), view);
         for (const width of [320, 390, 768, 1920]) {
           await page.setViewportSize({ width, height: 900 });
-          const clipped = await page.evaluate(() => [...document.querySelectorAll('.castle-tabs,.castle-progress,.castle-hero,.castle-counts,.castle-input-row,.topbar,.ev-switch')].filter(node => node.getClientRects().length && node.scrollWidth > node.clientWidth + 2).map(node => node.className));
+          const clipped = await page.evaluate(() => [...document.querySelectorAll('.castle-tabs,.castle-progress,.castle-hero,.topbar,.ev-switch')].filter(node => node.getClientRects().length && node.scrollWidth > node.clientWidth + 2).map(node => node.className));
           assert.deepEqual(clipped, [], lang + ' ' + view + ' at ' + width);
           assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
         }
@@ -61,21 +61,6 @@ const server = http.createServer((request, response) => {
       await page.getByText('Gen 4: the 60 / 40 garrison', { exact: true }).click();
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
       await page.locator('#castle-formation .castle-chapter').first().screenshot({ path: path.join(output, lang + '-gen4.png') });
-      assert.equal(await page.locator('[data-missing="0"]').textContent(), '180,000');
-      for (const [index, value] of [[0, '528000'], [1, '236000'], [2, '236000']]) await page.locator('[data-current="' + index + '"]').fill(value);
-      assert.equal(await page.locator('[data-missing="0"]').textContent(), '72,000');
-      assert.equal(await page.locator('[data-surplus="1"]').textContent(), '36,000');
-      assert.match(await page.locator('[data-target="castle-battle.refill-note"]').textContent(), /Replace 72,000 surplus troops/);
-      await page.locator('[data-ratio="0"]').fill('70');
-      assert.equal(await page.locator('[data-missing="0"]').textContent(), '—');
-      assert.match(await page.locator('[data-target="castle-battle.refill-note"]').textContent(), /add to 100/);
-      await page.locator('[data-ratio="0"]').fill('60');
-      await page.locator('[data-current="0"]').fill('');
-      assert.equal(await page.locator('[data-missing="0"]').textContent(), '—');
-      await page.locator('[data-current="0"]').fill('600000');
-      await page.locator('[data-current="1"]').fill('200000');
-      await page.locator('[data-current="2"]').fill('200000');
-      assert.match(await page.locator('[data-target="castle-battle.refill-note"]').textContent(), /No refill/);
       await page.locator('#castle-combat-tab').click();
       await page.getByText('Leader kits · Gen 2–3', { exact: true }).click();
       for (const role of ['defense', 'attack']) {
@@ -101,6 +86,6 @@ const server = http.createServer((request, response) => {
       assert.deepEqual(errors, []);
       await page.close();
     }
-    console.log('Castle Battle: lessons, leader kits, shared roster, refill accounting, invalid input, sources, RTL keyboard and responsive layout passed.');
+    console.log('Castle Battle: lessons, leader kits, shared roster, sources, RTL keyboard and responsive layout passed.');
   } finally { await browser.close(); await new Promise(resolve => server.close(resolve)); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
