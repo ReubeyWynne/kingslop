@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["id"] = {
+  "castle.nav": "Kastel",
+  "castle.deck.lede": "kontrol kastel, mekanik pertempuran, keterampilan peserta reli, dan pilihan pasukan.",
   "meta.title": "Bear Hunt, Dibongkar",
   "meta.description": "Bear Hunt, dibongkar. Cara kerja damage rally dengan bahasa sederhana: statistik lead, pasukanmu, akar kuadrat, dan empat aturan.",
   "meta.ogTitle": "Bear Hunt, Dibongkar",

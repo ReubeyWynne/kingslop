@@ -212,11 +212,12 @@ test('ledger, groups, keyboard and Escape share a modal and restore focus and sc
   assert.equal(s.selected(), 2);
   assert.equal(s.ledgerButton.getAttribute('aria-controls'), 'page-deck');
   s.fire(s.groupButtons[2], 'click'); s.advance(1000);
-  assert.equal(s.selected(), 5);
+  const toolIndex = nav.findIndex(entry => entry.group === 'tools');
+  assert.equal(s.selected(), toolIndex);
   const url = s.location.href;
   s.fire(s.next, 'keydown', { key: 'ArrowRight' }); s.advance(1000);
-  assert.equal(s.selected(), 6);
-  assert.equal(s.document.activeElement, s.cards[6]);
+  assert.equal(s.selected(), toolIndex + 1);
+  assert.equal(s.document.activeElement, s.cards[toolIndex + 1]);
   assert.equal(s.location.href, url);
   s.fire(s.deck, 'cancel');
   assert.equal(s.deck.open, false);
@@ -362,4 +363,3 @@ test('every cover has an ASCII HTML scene with a static fallback and reduced-mot
   for (const kind of ['bear', 'crown', 'dice', 'moon', 'banner']) assert.ok(scene.includes(`ascii-mini--${kind}`));
   assert.ok(scene.includes('include ascii/campfire.html') && scene.includes('include ascii/forge.html'));
 });
-

@@ -1,0 +1,144 @@
+{
+  "kitBriefs": {
+    "eric": "Enemy attack down \u00b7 incoming damage down \u00b7 squad health up",
+    "hilde": "Attack and defense up \u00b7 damage proc \u00b7 damage-reduction proc",
+    "jaeger": "Damage proc \u00b7 enemy lethality-reduction proc \u00b7 health up",
+    "zoe": "Damage over time \u00b7 attack up \u00b7 damage-taken amplification",
+    "saul": "Defense and health up \u00b7 lethality up",
+    "amadeus": "Lethality up \u00b7 attack up \u00b7 damage proc",
+    "petra": "Damage-taken amplification proc \u00b7 attack proc \u00b7 damage-reduction proc",
+    "marlin": "Damage procs \u00b7 enemy lethality-reduction proc"
+  },
+  "stages": [
+    {
+      "id": "older",
+      "label": "Developed Gen 2"
+    },
+    {
+      "id": "mixed",
+      "label": "Developing Gen 3"
+    },
+    {
+      "id": "mature",
+      "label": "Developed Gen 3"
+    }
+  ],
+  "lineups": [
+    {
+      "role": "defense",
+      "stage": "older",
+      "title": "Zoe, Hilde, Saul",
+      "heroes": [
+        "zoe",
+        "hilde",
+        "saul"
+      ],
+      "lesson": "Zoe adds attack and damage amplification. Saul adds lethality, defense and health.",
+      "comparison": "Compare return damage as well as survival: clearing the rally leaves troops for the next hold."
+    },
+    {
+      "role": "defense",
+      "stage": "mixed",
+      "title": "Eric, Hilde, Jaeger",
+      "heroes": [
+        "eric",
+        "hilde",
+        "jaeger"
+      ],
+      "lesson": "Eric reduces enemy attack and incoming damage, and adds health. Jaeger adds health and a chance to reduce enemy lethality.",
+      "comparison": "Compare Eric with your Zoe and Jaeger with your Saul at their actual development."
+    },
+    {
+      "role": "defense",
+      "stage": "mature",
+      "title": "Eric, Hilde, Jaeger",
+      "heroes": [
+        "eric",
+        "hilde",
+        "jaeger"
+      ],
+      "lesson": "Eric and Jaeger add squad-wide survival. Hilde adds damage support and a damage-reduction chance.",
+      "comparison": "Try Zoe or Saul when you need more return damage. Check defender widgets too."
+    },
+    {
+      "role": "attack",
+      "stage": "older",
+      "title": "Amadeus, Hilde, Marlin",
+      "heroes": [
+        "amadeus",
+        "hilde",
+        "marlin"
+      ],
+      "lesson": "Amadeus adds attack, lethality and a damage proc. Marlin adds damage procs and enemy lethality reduction.",
+      "comparison": "Hilde still supplies attack, defense and damage. Her defender widget is only part of the kit."
+    },
+    {
+      "role": "attack",
+      "stage": "mixed",
+      "title": "Amadeus, Petra, Marlin",
+      "heroes": [
+        "amadeus",
+        "petra",
+        "marlin"
+      ],
+      "lesson": "Petra adds attack and damage-taken amplification procs, damage reduction and a rally attack widget.",
+      "comparison": "Compare with your developed Hilde using battle reports."
+    },
+    {
+      "role": "attack",
+      "stage": "mature",
+      "title": "Amadeus, Petra, Marlin",
+      "heroes": [
+        "amadeus",
+        "petra",
+        "marlin"
+      ],
+      "lesson": "Attack, lethality and damage effects combine here, with rally widgets supporting the role.",
+      "comparison": "Compare survivors and losses too. A survival skill can still improve an attacking rally."
+    }
+  ],
+  "joiners": [
+    {
+      "id": "gordon",
+      "job": "Squad health",
+      "lesson": "25% squad health at skill 5. Stacks across selected copies. His second skill does not transfer.",
+      "source": "https://kingshotoptimizer.com/heroes/gordon/"
+    },
+    {
+      "id": "saul",
+      "job": "Defense + health",
+      "lesson": "10% defense and 15% health at skill 5. Combines two stat families. His third-skill lethality does not transfer.",
+      "source": "https://kingshotoptimizer.com/heroes/saul/"
+    },
+    {
+      "id": "fahd",
+      "job": "Enemy damage debuff",
+      "lesson": "20% less enemy damage dealt at skill 5, guaranteed. Combines with health and defense support.",
+      "source": "https://kingshotoptimizer.com/heroes/fahd/"
+    },
+    {
+      "id": "eric",
+      "job": "Enemy attack debuff",
+      "lesson": "20% less enemy attack at skill 5, guaranteed. His health and damage-taken skills only apply when leading.",
+      "source": "https://kingshotoptimizer.com/heroes/eric/"
+    },
+    {
+      "id": "howard",
+      "job": "Survival fallback",
+      "lesson": "20% damage-taken reduction at skill 5. Sloth rates this below Gordon's health contribution; four copies do not mean 80% fewer casualties.",
+      "source": "https://kingshotoptimizer.com/heroes/howard/"
+    },
+    {
+      "id": "chenko",
+      "job": "Squad lethality",
+      "lesson": "Up to 25% lethality. Yeonwoo and Amadeus share this first-skill stat family. His second skill does not transfer.",
+      "source": "https://kingshotoptimizer.com/heroes/chenko/"
+    },
+    {
+      "id": "amane",
+      "job": "Squad attack",
+      "lesson": "Up to 25% attack. Complements Chenko's lethality. Choose with the rest of the rally's effects.",
+      "source": "https://kingshotoptimizer.com/heroes/amane/"
+    }
+  ]
+}

@@ -64,7 +64,8 @@
       var forward = vertical ? 'ArrowDown' : 'ArrowRight', back = vertical ? 'ArrowUp' : 'ArrowLeft';
       if (index < 0 || ![forward, back, 'Home', 'End'].includes(event.key)) return;
       event.preventDefault();
-      var rtl = !vertical && document.documentElement.dir === 'rtl', step = event.key === forward ? 1 : -1;
+      var direction = context.root.closest('[dir]');
+      var rtl = !vertical && (direction ? direction.dir : document.documentElement.dir) === 'rtl', step = event.key === forward ? 1 : -1;
       if (rtl) step *= -1;
       var next = event.key === 'Home' ? 0 : event.key === 'End' ? nodes.length - 1 : (index + step + nodes.length) % nodes.length;
       select(nodes[next]); nodes[next].focus();
