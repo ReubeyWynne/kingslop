@@ -598,7 +598,7 @@ def castle_frames():
         beat = i % 24
         if 4 <= beat < 12:
             x = 8 + (beat - 4)
-            y = (4, 3, 2, 2, 2, 2, 2, 3)[beat - 4]
+            y = (4, 3, 3, 3, 2, 2, 2, 3)[beat - 4]
             put(arr, x, y, '.' if beat < 11 else '*')
         elif beat in (12, 13):
             put(arr, 15, 3, '+' if beat == 12 else '.')
