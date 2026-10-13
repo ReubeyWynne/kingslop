@@ -34,7 +34,7 @@ self: gear
           <div id="gear-rows" class="gear-grid"></div>
         </div>
         <div id="gear-preview" class="gear-preview"></div>
-        <details class="gear-save-tools" data-module="save-transfer disclosure" data-status-scope="hero-gear" data-import-success="gear.loaded" data-import-failure="gear.invalidSave"><summary data-i18n="gear.manageSave">your save &amp; backups</summary><p class="gear-gloss" data-i18n="gear.sharedSaveHint">One save for your gear and event inventory. Keep a backup before importing another.</p><div class="gear-tools">
+        <details id="save-backups" class="gear-save-tools" data-module="save-transfer disclosure" data-status-scope="hero-gear" data-import-success="gear.loaded" data-import-failure="gear.invalidSave"><summary data-i18n="gear.manageSave">your save &amp; backups</summary><p class="gear-gloss" data-i18n="gear.sharedSaveHint">One save for your gear and event inventory. Keep a backup before importing another.</p><div class="gear-tools">
           <button type="button" id="gear-edit" data-i18n="gear.editPiece">edit selected piece</button>
           <button type="button" id="gear-export" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
           <button type="button" id="gear-load" data-action="save-transfer.choose" data-i18n="gear.load">import backup</button>
@@ -73,7 +73,7 @@ self: gear
             <button type="button" id="gear-run" class="gear-primary gear-action" data-i18n="gear.retryCalculation" hidden>retry calculation</button>
             <div id="gear-results" aria-live="polite" aria-busy="false"></div>
             <div id="gear-opportunities" aria-live="polite"></div>
-            <details><summary data-i18n="gear.searchMethod">how recommendations work</summary><p class="gear-gloss" data-i18n="gear.optimiseHint">compare upgrade paths using your budget and priorities. milestone costs are exact; recommendations are a local search, not a guaranteed global optimum.</p></details>
+            <details id="how-it-works"><summary data-i18n="gear.searchMethod">how recommendations work</summary><p class="gear-gloss" data-i18n="gear.optimiseHint">compare upgrade paths using your budget and priorities. milestone costs are exact; recommendations are a local search, not a guaranteed global optimum.</p></details>
           </div>
         </div>
       </div>
@@ -85,7 +85,7 @@ self: gear
   </section>
 
   <section class="section gear-notes" id="maths">
-    <details>
+    <details id="maths-sources">
       <summary data-i18n="gear.maths">the maths & sources</summary>
       <p data-i18n="gear.mathsBody">XP, Forgehammers, spare mythic pieces and mithril are counted separately. milestone costs include missing mastery, its mythic cost, ascension and every intervening imbuement. costs start from your saved level; XP already partway to the next level is not counted.</p>
       <p data-i18n="gear.method">recommendations compare XP, mastery and bundled milestone paths over several passes, then keep the highest weighted result. XP reforge also compares against keeping your gear. the score covers expedition health, lethality, attack and defence; conquest bonuses are outside this score.</p>

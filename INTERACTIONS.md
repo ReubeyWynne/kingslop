@@ -58,6 +58,27 @@ Hero gear composes these capabilities in its existing markup. Resource persisten
 
 A new tool can use these controls without a new page controller. It adds only its domain-specific calculation and listens for ledger or semantic events. Page labels use the existing i18n conventions; the module layer introduces no new product copy.
 
+## Deep links
+
+Every disclosure is addressable by its URL. A `#id` link opens the disclosure it names and scrolls to it, and opening one writes its id to the address bar, so a reader can copy the link from wherever they are. The address is the state: there is no router, no `pushState` history and no query-string scheme. `js/deep-link.js` is loaded on every page by the layout, after the page scripts, and reads only markup:
+
+| Markup | Link |
+| --- | --- |
+| `<details id="exact-model">` | `#exact-model` opens it |
+| `<details data-deep-link="hero-petra">` | `#hero-petra` opens it; use this when the id belongs to the card or section around the details |
+| `<button aria-expanded aria-controls="panel" data-deep-link="march-builder">` | `#march-builder` presses the button; the button stays the owner of its panel |
+| `<section data-collapse id="marches">` | `#marches` opens the section (common.js) |
+| `<div id="castle-combat" role="tabpanel">` with one `role="tab"` button controlling it | `#castle-combat` selects the tab |
+
+Opening a target also opens every linked disclosure and tab around it, so `#prep-day-2` opens its section and then the day. Opening a section keeps a hash that already points inside it, closing a disclosure clears a hash that points inside it, and writes use `history.replaceState`, so toggling never fills the back button. `hashchange` and a click on a link to the current hash both reveal again.
+
+Rules for new markup:
+
+- Give every static `details` a stable, readable English id: what the panel answers, in two or three words (`why-14`, `governor-day-3`, `charm-costs`). Ids are public URLs; once shipped, do not rename them.
+- A custom disclosure keeps `aria-expanded` and `aria-controls` on its button and adds `data-deep-link`; its page script owns the opening, the link module only presses the button.
+- Do not write page-specific `hashchange` or `location.hash` handlers for disclosures. If a pattern is not covered, extend `deep-link.js` instead.
+- Panels rendered by script after boot may carry ids; the module hears their `toggle` events, but a link to them only opens once they exist.
+
 ## Extension API
 
 `BH.modules` exposes the same registry as `window.Interactions`. Register capabilities before boot or later:

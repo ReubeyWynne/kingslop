@@ -21,7 +21,7 @@ self: sim
 <main class="sim-main">
   <section class="section hero" id="top">
     <h1 data-i18n-html="sim.hero.h1">BATTLE SIMULATOR,<br><span class="accent">DEMYSTIFIED</span></h1>
-    <details class="sim-why sim-model">
+    <details id="community-model" class="sim-why sim-model">
       <summary data-i18n="sim.review.model">Community model · heroes not included</summary>
     <p class="draft-note" data-i18n-html="sim.hero.alpha">a <b>community model</b>, not the game's own code — the
       battle engine is the one the Frakinator reverse-engineered and tested against real reports. heroes aren't in
@@ -139,7 +139,7 @@ self: sim
           <p class="calc-out" id="sim-headline" data-peek>The ideal march lands here.</p>
           <div class="sim-out" id="sim-out" role="table" data-i18n-key="sim.calc.tableAria" data-i18n-attr="aria-label" hidden></div>
           <p class="calc-out" id="sim-k"></p>
-          <details class="sim-why">
+          <details id="reading-kills" class="sim-why">
             <summary data-i18n="sim.why">how this reads</summary>
             <p class="note" data-i18n-html="sim.calc.lede">The lead's attack and lethality make their <b>A factor</b> per
               troop type. That alone fixes the mix the lead should run, and their strength <b>K</b>.</p>
@@ -159,7 +159,7 @@ self: sim
             heroes.</b> The bear's own skills and the lead's and joiners' hero kits ride on every hit, and those are not in
             this engine yet. The Frakinator's ladder doubles from <b>47M</b> to <b>38.4B</b>; until heroes land, this panel
             shows the split, not a damage figure.</p>
-          <details class="sim-why">
+          <details id="reading-damage" class="sim-why">
             <summary data-i18n="sim.why">how this reads</summary>
             <p class="note" data-i18n-html="sim.dmg.ledeOut">Your march, weighed against the lead's optimum for that same
               march size.</p>
@@ -226,7 +226,7 @@ self: sim
               <span class="room-alt" role="cell">55 / 10 / 35</span>
             </div>
           </div>
-          <details class="sim-why">
+          <details id="reading-rooms" class="sim-why">
             <summary data-i18n="sim.why">how this reads</summary>
             <p class="note" data-i18n-html="sim.mystic.ledeSweep">Type the stage from its report — your stats on the left,
               the trial's on the right, and the trial's troop numbers — then let the console try every mix of your march
@@ -239,7 +239,7 @@ self: sim
 
         <div class="sim-panel" data-mode="battle" hidden>
           <h3 class="calc-title sim-panel-title" data-i18n="sim.battle.titleTag">TRY IT — ANY BATTLE</h3>
-          <details class="sim-why">
+          <details id="reading-battle" class="sim-why">
             <summary data-i18n="sim.why">how this reads</summary>
             <p class="note" data-i18n-html="sim.battle.lede">Both sides of a fight — your stats and march, their stats and
               troops — and the console fights it out, round by round. A beast, a rival's city, a garrison you scouted: if
@@ -275,7 +275,7 @@ self: sim
             <div class="sim-out sweep-out" id="sim-sweep-out" role="table" data-i18n-key="sim.sweep.tableAria" data-i18n-attr="aria-label"></div>
             <p class="calc-out" id="sim-sweep-room"></p>
           </div>
-          <details class="sim-why sweep-settings">
+          <details id="sweep-limits" class="sim-why sweep-settings">
             <summary data-i18n="sim.sweep.settings">grid &amp; limits</summary>
             <p class="note" data-i18n-html="sim.sweep.lede">Your total march, shared out every way on the grid below and
               fought against the same opponent. Each mix is fought many times, because two troop skills are chance — the
@@ -318,7 +318,7 @@ self: sim
             </div>
           </details>
 
-          <details class="sim-why sim-for" data-for="mystic">
+          <details id="room-rules" class="sim-why sim-for" data-for="mystic">
             <summary data-i18n="sim.mystic.notes">room rules &amp; tips</summary>
             <p class="note" data-i18n-html="sim.mystic.fixed"><b>Five of the six rooms fix your troops at Level 10</b> —
               training more won't clear them; upgrading the system they check will. Only the <b>Coliseum</b> and the
@@ -355,7 +355,7 @@ self: sim
         {%- endfor %}
       </div>
       <div id="sim-review-fields" role="tabpanel" aria-labelledby="sim-review-tab-inf"></div>
-      <details class="sim-why sim-review-original">
+      <details id="full-screenshot" class="sim-why sim-review-original">
         <summary data-i18n="sim.review.original">Show full screenshot</summary>
         <div class="sim-review-image"><img id="sim-review-image" alt="" decoding="async"></div>
       </details>
@@ -463,7 +463,7 @@ self: sim
       counters (infantry → cavalry → archers → infantry). From <b>T7</b> infantry take <b>10%</b> less from cavalry,
       cavalry have a <b>20%</b> chance to ride past the infantry onto the archers, and archers a <b>10%</b> chance to
       strike twice — the two chances are why the console fights every mix many times.</p>
-    <details>
+    <details id="kill-formula">
       <summary data-i18n="sim.maths.details3">The kill formula, in one line</summary>
       <div class="d-body">
         <p class="d-formula" data-i18n-html="sim.maths.d3">dead = ⌈ √(N<sub>t</sub>·N<sub>0</sub>) · A<sub>t</sub> / D<sub>target</sub> / 100 · (1 − 0.0001·round) ⌉ · N<sub>0</sub> = min(N<sub>you</sub>, N<sub>them</sub>)</p>
@@ -473,7 +473,7 @@ self: sim
       troop table — <b>infantry ⅓, cavalry 1, archers 4.4/3</b> at T6, the archers' <b>×1.1</b> coming from the
       all-infantry bear. The ideal share is the weighted factor squared, normalised:
       <b>f<sub>t</sub> ∝ (weight<sub>t</sub>·A<sub>t</sub>)²</b>.</p>
-    <details>
+    <details id="damage-formula">
       <summary data-i18n="sim.maths.details">The formula, in one line</summary>
       <div class="d-body">
         <p class="d-formula" data-i18n-html="sim.maths.d">f<sub>t</sub> ∝ (A<sub>inf</sub>/3, A<sub>cav</sub>, 4.4·A<sub>arc</sub>/3)² · K = √(Σ w<sub>t</sub>²)</p>
@@ -482,7 +482,7 @@ self: sim
     <p data-i18n-html="sim.maths.p4">Your bear march is the same sum per type: <b>√(troops) × base attack × A</b>.
       The verdict is a pure ratio — your split converts the <b>cosine</b> of what the same troops could do for this
       lead. The nearer your shares sit to <b>f<sub>t</sub></b>, the nearer that number gets to 100%.</p>
-    <details>
+    <details id="march-formula">
       <summary data-i18n="sim.maths.details2">The march, in one line</summary>
       <div class="d-body">
         <p class="d-formula" data-i18n-html="sim.maths.d2">D ∝ Σ<sub>t</sub> √N<sub>t</sub>·base<sub>t</sub>·A<sub>t</sub> · split efficiency = Σ(b<sub>t</sub>A<sub>t</sub>√f<sub>t</sub>) / √(Σ(b<sub>t</sub>A<sub>t</sub>)²)</p>

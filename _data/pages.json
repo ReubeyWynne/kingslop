@@ -160,8 +160,7 @@
       "../js/common.js",
       "../js/bind.js",
       "../js/bear-allocator.js",
-      "../js/bear-hunt.js",
-      "../js/deep-link.js"
+      "../js/bear-hunt.js"
     ],
     "footMainKey": "",
     "footMain": "BEAR HUNT",

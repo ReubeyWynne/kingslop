@@ -90,7 +90,7 @@ self: vikings
     <p class="note" data-i18n="vv.stand.calcNote">Illustration: a 10,000-point reinforcement pool, split by equal kills. The town's reward is separate. Real shares follow kills, not player count or troop count alone.</p>
     <p class="note" data-i18n-html="vv.stand.stackNote">With N senders using q queues across M towns, incoming marches average N × q ÷ M. If everyone sends 5–6 to distinct participating towns, expect roughly 5–6 reinforcers per town on average, not a guaranteed minimum. Offline senders whose towns receive no cover raise that average at the remaining towns.</p>
 
-    <details>
+    <details id="scoring-maths">
       <summary data-i18n="vv.stand.details">The scoring maths</summary>
       <div class="d-body">
         <p data-i18n-html="vv.stand.d">Community working model: town score ≈ B × K ÷ V; reinforcer score ≈ (B ÷ 2) × k ÷ V. B is the town's wave budget, V the attacking Vikings, K all Vikings killed, and k that reinforcer's kills. Exact rounding and partial-clear rules need report checks; a full reinforcement-only clear gives about 1.5 × B combined points.</p>
@@ -145,7 +145,7 @@ self: vikings
     <p data-i18n-html="vv.hq.p1">Whitelisted players reserve <strong>one queue</strong>. Each sends exactly the largest player's effective HQ garrison cap ÷ the number of assigned HQ players, at <strong>75/25/0 infantry/cavalry/archers</strong>. Divide by 15 only when all 15 slots are assigned. Officers resolve integer rounding and confirm each march can carry its share.</p>
     <p data-i18n-html="vv.hq.p2">Keep the reserved queue earning city kills until wave 9 or 19 has fully resolved, then transfer its agreed share to HQ. Return to city reinforcement after the HQ hit resolves.</p>
     <p data-i18n-html="vv.hq.p3">Confirm the whitelist, cap and shares before wave 1. Everyone else keeps reinforcing towns; no first-come race for HQ slots.</p>
-    <details>
+    <details id="difficulty">
       <summary data-i18n="vv.hq.details">When the difficulty bites</summary>
       <div class="d-body">
         <p data-i18n-html="vv.hq.d1">When Vikings are strong relative to your players, prioritize full clears and continued wave eligibility. Adjust troop allocations and HQ plans using reports; 75/25/0 is a starting preset, not a guarantee at every difficulty.</p>
@@ -251,7 +251,7 @@ self: vikings
       <strong>first four unique joiner skills</strong>. Flat % buffs stack across joiners; chance-based procs don't —
       a second Jabel in the queue does nothing and blocks a slot a flat-buff hero could fill.</p>
 
-    <details>
+    <details id="why-not-howard-gordon">
       <summary data-i18n="vv.heroes.details">Why not Howard or Gordon</summary>
       <div class="d-body">
         <p data-i18n-html="vv.heroes.d">Howard and Gordon shine at outpost defence and PvP, where surviving matters. In

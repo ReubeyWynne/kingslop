@@ -1,11 +1,17 @@
 /* deep-link.js — #id links open the disclosure they name, and opening one
    puts its id in the address bar so the link can be copied.
 
-   A disclosure is a details[id], a collapsible section[data-collapse][id], or
-   a panel[id] whose button carries data-deep-link and aria-controls. common.js
-   already opens collapsed sections for a hash; this adds the other two and the
-   scroll that follows, and writes the hash back. It starts after the page's
-   own scripts so their buttons are wired when it presses them. */
+   Disclosures opt in through markup; there is no registry:
+   - details[id] is its own link.
+   - [data-deep-link="id"] on a details or an aria-expanded button links it
+     under that id, usually the section or card around it.
+   - section[data-collapse][id] sections are opened for a hash by common.js;
+     this writes their hash back.
+   - A tab panel with an id is selected through its role="tab" button. Selecting
+     a tab writes the panel's id when that tab is the panel's only one.
+   Opening a target also opens every linked disclosure around it, so a link
+   into a closed panel inside a collapsed section still lands. The page's own
+   scripts wire their buttons first; this starts after them and presses them. */
 (function () {
   'use strict';
 
@@ -13,36 +19,68 @@
     return id ? document.getElementById(id) : null;
   }
 
-  function controller(panel) {
-    return panel.id ? document.querySelector('[data-deep-link][aria-controls="' + panel.id + '"]') : null;
+  function escape(id) {
+    return window.CSS && CSS.escape ? CSS.escape(id) : id;
   }
 
-  // Open the target and any closed details around it; true if anything changed.
+  function controls(id) {
+    return document.querySelectorAll('[data-deep-link="' + escape(id) + '"]');
+  }
+
+  function tabs(id) {
+    return document.querySelectorAll('[role="tab"][aria-controls="' + escape(id) + '"]');
+  }
+
+  function expand(control) {
+    if (control.tagName === 'DETAILS') {
+      if (control.open) return false;
+      control.open = true;
+      return true;
+    }
+    if (control.getAttribute('aria-expanded') === 'true') return false;
+    control.click();
+    return true;
+  }
+
+  // Open the target and every linked disclosure around it; true if anything changed.
   function open(target) {
     var changed = false;
-    for (var node = target; node; node = node.parentElement) {
-      if (node.tagName === 'DETAILS' && !node.open) { node.open = true; changed = true; }
+    for (var node = target; node && node !== document.body; node = node.parentElement) {
+      if (node.tagName === 'DETAILS' && expand(node)) changed = true;
+      if (!node.id) continue;
+      Array.prototype.forEach.call(controls(node.id), function (control) {
+        if (expand(control)) changed = true;
+      });
+      var panelTabs = Array.prototype.slice.call(tabs(node.id));
+      if (panelTabs.length && !panelTabs.some(function (tab) { return tab.getAttribute('aria-selected') === 'true'; })) {
+        panelTabs[0].click();
+        changed = true;
+      }
     }
-    var button = controller(target);
-    if (button && button.getAttribute('aria-expanded') !== 'true') { button.click(); changed = true; }
     return changed;
   }
 
   function reveal(instant) {
     var target = find(decodeURIComponent(location.hash.slice(1)));
     if (!target || !open(target)) return;
-    var anchor = controller(target) || target;
+    // A panel scrolls to the button that opens it, so its heading shows too.
+    var anchor = document.querySelector('[aria-controls="' + escape(target.id) + '"]:not([role="tab"])') || target;
     function scroll() {
-      if (anchor.offsetParent !== null) anchor.scrollIntoView({ block: 'start', behavior: instant ? 'instant' : 'auto' });
+      if (anchor && anchor.offsetParent !== null) anchor.scrollIntoView({ block: 'start', behavior: instant ? 'instant' : 'auto' });
     }
     scroll();
     // Content above can still settle before load; land on the target again then.
     if (instant && document.readyState !== 'complete') window.addEventListener('load', scroll, { once: true });
   }
 
+  // Opening a disclosure writes its id, unless the hash already points inside
+  // it: a link to a details in a section stays when its section opens.
+  // Closing one clears the hash when the hash points inside it.
   function remember(id, isOpen) {
-    var here = location.hash === '#' + id;
-    if (isOpen === here) return;
+    if (!id) return;
+    var current = find(decodeURIComponent(location.hash.slice(1)));
+    var element = find(id);
+    if (isOpen === Boolean(current && element && element.contains(current))) return;
     history.replaceState(history.state, '', location.pathname + location.search + (isOpen ? '#' + id : ''));
   }
 
@@ -50,29 +88,37 @@
     reveal(true);
     window.addEventListener('hashchange', function () { reveal(false); });
 
-    // toggle does not bubble; capture hears every details on the page.
+    // toggle does not bubble; capture hears every details on the page,
+    // including ones a page script renders later.
     document.addEventListener('toggle', function (event) {
       var details = event.target;
-      if (details.tagName === 'DETAILS' && details.id) remember(details.id, details.open);
+      if (details.tagName === 'DETAILS') remember(details.getAttribute('data-deep-link') || details.id, details.open);
     }, true);
 
-    // A panel's button can close it without a click (the allocator closes on
-    // submit), so watch its aria-expanded rather than the click.
+    // A button can close its panel without a click (the march builder closes
+    // on submit), so watch aria-expanded and aria-selected rather than clicks.
+    // Scripts re-set these to the same value on a repaint; only changes count.
     var observer = new MutationObserver(function (records) {
       records.forEach(function (record) {
-        var button = record.target;
-        remember(button.getAttribute('aria-controls'), button.getAttribute('aria-expanded') === 'true');
+        var node = record.target, value = node.getAttribute(record.attributeName);
+        if (value === record.oldValue) return;
+        if (record.attributeName === 'aria-expanded') remember(node.getAttribute('data-deep-link'), value === 'true');
+        else if (value === 'true' && tabs(node.getAttribute('aria-controls')).length === 1) remember(node.getAttribute('aria-controls'), true);
       });
     });
-    document.querySelectorAll('[data-deep-link][aria-controls]').forEach(function (button) {
-      observer.observe(button, { attributes: true, attributeFilter: ['aria-expanded'] });
+    document.querySelectorAll('[data-deep-link][aria-expanded], [role="tab"][aria-controls]').forEach(function (node) {
+      observer.observe(node, { attributes: true, attributeOldValue: true, attributeFilter: ['aria-expanded', 'aria-selected'] });
     });
 
-    // Sections are watched by click: common.js also opens them for a hash,
-    // and that must not replace a details id with its section's.
     document.addEventListener('click', function (event) {
-      var button = event.target.closest && event.target.closest('section[data-collapse][id] > h2 .section-toggle');
-      if (button) remember(button.closest('section').id, button.getAttribute('aria-expanded') === 'true');
+      if (!event.target.closest) return;
+      // Sections are watched by click: common.js also opens them for a hash.
+      var toggle = event.target.closest('section[data-collapse][id] > h2 .section-toggle');
+      if (toggle) remember(toggle.closest('section').id, toggle.getAttribute('aria-expanded') === 'true');
+      // A link to the hash already in the bar fires no hashchange; reveal anyway,
+      // in case its disclosure was closed since.
+      var link = event.target.closest('a[href^="#"]');
+      if (link && link.getAttribute('href') === location.hash) reveal(false);
     });
   }
 

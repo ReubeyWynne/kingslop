@@ -761,22 +761,6 @@
         button.querySelector('.reference-mark').textContent = body.hidden ? '+' : '−';
       });
     });
-    function openHash() {
-      var section = document.getElementById(location.hash.slice(1));
-      if (!section) return;
-      var body = section.querySelector('.reference-body');
-      var button = section.querySelector('.reference-toggle');
-      if (body && button) { body.hidden = false; button.setAttribute('aria-expanded', 'true'); button.querySelector('.reference-mark').textContent = '−'; }
-    }
-    window.addEventListener('hashchange', openHash);
-    document.querySelectorAll('.toc a').forEach(function (link) {
-      link.addEventListener('click', function () {
-        var section = document.getElementById(link.hash.slice(1));
-        var button = section && section.querySelector('.reference-toggle');
-        if (button && button.getAttribute('aria-expanded') === 'false') button.click();
-      });
-    });
-    openHash();
     // The today display is live on the UTC date: if the cycle day rolls over
     // while the page is open (or the tab sat backgrounded overnight), catch
     // up on focus/visibility instead of showing a stale day. No-op whenever

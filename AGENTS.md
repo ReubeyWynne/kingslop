@@ -10,4 +10,6 @@ Every scene must also meet the quality bar in DESIGN.md's "Animation quality" se
 
 Never skew, rotate, stretch, squash, scale, bend, bob, bounce or smoothly drift ASCII art or its layers. Do not replace character animation with animated transforms, scroll-driven scaling, or JavaScript animation loops. Runtime animation uses HTML and CSS; offline frame generation is allowed.
 
+Every disclosure is a link. Give each static `details` a stable readable id, and mark custom disclosure buttons with `data-deep-link`; see "Deep links" in [INTERACTIONS.md](INTERACTIONS.md). Do not add page-specific hash handlers.
+
 Keep roulette scenes centred in their cards. Ambient twinkles change glyphs at fixed positions. Smooth background colour blending remains allowed. Preserve static frames for reduced motion.

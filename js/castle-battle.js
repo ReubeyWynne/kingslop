@@ -33,10 +33,6 @@
       paint();
       context.targets('status').forEach(function (node) { node.textContent = view === 'event' ? 'The event' : view === 'formation' ? 'Troops' : view === 'joiners' ? 'Joiners' : 'Combat'; });
     });
-    context.listen(context.root, 'click', function (event) {
-      var link = event.target.closest('a[href^="#castle-evidence"]');
-      if (link) context.root.querySelector('#castle-evidence').open = true;
-    });
     if (store) context.cleanup(store.subscribe(paintCopies));
     paint();
     return { refresh: paint, actions: { stage: { events: ['change'], run: paint } } };

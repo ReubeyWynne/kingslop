@@ -274,6 +274,8 @@ main { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; p
 
 /* ─── Sections — depth layers ─────────────────────────── */
 .section { position: relative; padding: var(--space-xl) 0; scroll-margin-top: calc(var(--topbar-h) + 3.5rem); }
+/* Deep-link targets (js/deep-link.js) land below the sticky bar, like sections. */
+details[id], [data-deep-link] { scroll-margin-top: calc(var(--topbar-h) + 3.5rem); }
 
 /* The front caret — the leaf lives inside an always-reserved
    inline slot, so the heading text never reflows when the
