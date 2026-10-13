@@ -108,6 +108,10 @@
 .ascii-mini--crown { height: 12.5em; }
 .ascii-mini--charm { height: 12.5em; }
 .ascii-mini--seal { height: 13.75em; }
+/* Ursa Major over Bear Hunt: the lines are ink, the stars the signal hue. */
+.ascii-mini--ursa { width: 43ch; height: 18.75em; }
+.ascii-mini--ursa::before { color: var(--ink-muted); }
+.ascii-mini--ursa::after { position: absolute; inset: 0; display: block; white-space: pre; color: var(--amber); }
 @media (max-width: 400px) { .ascii-motif-rail { gap: .5rem; margin-top: 1rem; } .ascii-mini { font-size: 9px; } }
 
 /* ─── The march — a procession across a ruled band ────── */
@@ -115,6 +119,10 @@
 .ascii-march-track { display: flex; width: max-content; }
 .ascii-march { display: block; flex: none; width: 48ch; height: 10em; overflow: hidden; color: var(--amber); font-size: clamp(9px, 2.6vw, 11px); line-height: 1.25; }
 .ascii-march::before { display: block; white-space: pre; }
+/* The night sky over the hunt: the same band, stars wheeling past. */
+.ascii-march--sky { position: relative; }
+.ascii-march--sky::before { color: var(--ink-muted); }
+.ascii-march--sky::after { position: absolute; inset: 0; display: block; white-space: pre; color: var(--amber); }
 @media (max-width: 700px) { .ascii-march-band { width: 100vw; margin-inline: calc(50% - 50vw); } }
 
 /* ─── Ambient twinkles — glyphs that wake at fixed places ─ */
@@ -238,7 +246,7 @@ html.deck-open .dust .ascii-ambient > span::before { animation-play-state: pause
 /* ─── Reduced motion: every scene rests on its first frame ─ */
 @media (prefers-reduced-motion: reduce) {
   .ascii *, .ascii *::before, .ascii *::after,
-  .ascii-mini::before, .ascii-mini::after, .ascii-march::before,
+  .ascii-mini::before, .ascii-mini::after, .ascii-march::before, .ascii-march::after,
   .ascii-mini--castle > span::before,
   .ascii-ambient > span::before { animation: none !important; }
   .ascii-campfire .spark { opacity: 0; }

@@ -235,6 +235,7 @@ All authored animations must use the site's distinct ASCII character-grid style.
 | Seal | Governor Gear hero and deck cover | a quartered heater shield, a shine sweeping across it on a slant, then its corners and point catching the light |
 | Castle | Castle Battle hero and deck cover | blue cloth banners, small warm gate lamps, and seeded irregular fireballs with varied flight times, targets, tails, impact strength and smoke drift; independent cloth, lamp and siege periods prevent a shared scene reset |
 | March | Bear Hunt and Vikings bands, Vikings cover | a column walking in step, one cell per pose, with a pennant bearer |
+| Ursa, sky (prototype) | Bear Hunt hero and march band | Ursa Major traced star to star, unwoven, its stars wandering a cell at a time and coming home; a band of stars wheeling left in three depths, linking to near neighbours, with a Dipper as its landmark |
 | Ambient twinkles | behind every page and the page deck | glyphs waking at fixed places |
 
 **The pipeline.** `.dsh/build-ascii.py` writes `css/ascii-frames.css` and `_includes/ascii/campfire.html`. Never hand-edit either file. `css/ascii.css` holds layout, colour and placement. `node .dsh/ascii-style-check.cjs` enforces the rules below, and CI also fails when the committed frames differ from the generator's output.
