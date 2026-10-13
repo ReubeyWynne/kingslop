@@ -16,6 +16,12 @@ html[data-page="bearhunt"] .anchor-alias {
   visibility: hidden;
 }
 
+/* Deep-link targets (js/deep-link.js) land below the sticky bar, like sections. */
+html[data-page="bearhunt"] details[id],
+html[data-page="bearhunt"] [data-deep-link] {
+  scroll-margin-top: calc(var(--topbar-h) + 3.5rem);
+}
+
 html[data-page="bearhunt"] .compact-cards {
   margin-bottom: var(--space-m);
 }

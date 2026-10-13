@@ -69,7 +69,7 @@ self: bear
 
       <p><span data-i18n="bh.page.33">Each march in a rally is scored on its own, and its infantry, cavalry and archers each get their own square root. So the same troops do more damage spread across several joins than packed into one.</span></p>
 
-      <details>
+      <details id="exact-model">
         <summary><span data-i18n="bh.page.34">Exact model</span></summary>
         <div class="d-body">
           <p><span data-i18n="bh.page.35">For one march in a rally:</span></p>
@@ -89,7 +89,7 @@ self: bear
       <p><span data-i18n="bh.page.51">Our joiner cap is</span> <strong><span data-i18n="bh.page.52">85k troops</span></strong><span data-i18n="bh.page.53"> for now. That's our number, not a Bear rule, and it goes up as rally capacity grows. It stops a few big joins using up a rally's capacity and leaving spaces empty.</span></p>
       <p><span data-i18n="bh.page.54">The cap doesn't apply to a strong leader's</span> <strong><span data-i18n="bh.page.55">own rally</span></strong><span data-i18n="bh.page.56">. Fill it with whatever ratio works for that leader. Their joins into other rallies still follow the cap.</span></p>
 
-      <details>
+      <details id="why-14">
         <summary><span data-i18n="bh.page.57">Why 14, and why everyone launches</span></summary>
         <div class="d-body">
           <p><span data-i18n="bh.page.58">Say P players have six marches each, L of them launch every five minutes, and each rally has S joiners on average. Each march then hits</span> <b><span data-i18n="bh.page.59">H = L × S ÷ (P × 6)</span></b> <span data-i18n="bh.page.60">times every five minutes.</span></p>
@@ -110,9 +110,9 @@ self: bear
       <figure class="hunt-diagram march-composition" aria-labelledby="march-composition-title">
         <figcaption class="allocator-heading">
           <span id="march-composition-title" data-i18n="bh.alloc.title">Your Bear marches</span>
-          <button id="allocator-toggle" class="allocator-button" type="button" aria-expanded="false" aria-controls="archer-allocator" hidden><span data-i18n="bh.alloc.open">Use my troops</span></button>
+          <button id="allocator-toggle" class="allocator-button" type="button" aria-expanded="false" aria-controls="march-builder" data-deep-link hidden><span data-i18n="bh.alloc.open">Use my troops</span></button>
         </figcaption>
-        <form class="calc allocator-inputs" id="archer-allocator" hidden>
+        <form class="calc allocator-inputs" id="march-builder" hidden>
           <h4 class="calc-title" data-i18n="bh.alloc.inputs">Your available troops</h4>
           <div class="calc-row"><label for="infantry-total" data-i18n="sim.calc.inf">Infantry</label><input id="infantry-total" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" value="29750" required></div>
           <div class="calc-row"><label for="cavalry-total" data-i18n="sim.calc.cav">Cavalry</label><input id="cavalry-total" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" value="89250" required></div>
@@ -264,7 +264,7 @@ self: bear
 
       <p class="note"><strong><span data-i18n="bh.page.108">Fast relaunch:</span></strong> <span data-i18n="bh.page.109">while your rally is marching home, open the rally screen and tap your saved Bear formation. It won't load until those troops are back, so tap it again the moment they arrive.</span></p>
 
-      <details>
+      <details id="first-group">
         <summary><span data-i18n="bh.page.110">How many rallies in the first group?</span></summary>
         <div class="d-body">
           <p><span data-i18n="bh.page.111">Count the marches free at the start and divide by 14. Fifteen players with six marches each is 90, enough for six full rallies with six marches spare. A seventh rally can work too, if its leader is happy to cancel when fewer people turn up.</span></p>

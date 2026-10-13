@@ -37,7 +37,7 @@
   }
 
   function wireAllocator() {
-    var root = document.getElementById('archer-allocator');
+    var root = document.getElementById('march-builder');
     var button = document.getElementById('allocator-toggle');
     if (!root || !button || !window.BH_BEAR_ALLOCATOR) return;
     var priority = document.getElementById('own-priority');

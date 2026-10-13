@@ -76,14 +76,14 @@ const server = http.createServer((request, response) => {
       const button = page.locator('#allocator-toggle');
       assert.equal(await page.locator('#march-queues > div').count(), 6);
       await button.click();
-      assert.equal(await page.locator('#archer-allocator').isVisible(), true);
+      assert.equal(await page.locator('#march-builder').isVisible(), true);
       await page.locator('#own-priority').check();
       assert.equal(await page.locator('#own-ratio').isVisible(), true);
-      await page.locator('#archer-allocator').screenshot({ path: path.join(output, lang + '-' + width + '-allocator-inputs.png'), style: screenshotStyle });
+      await page.locator('#march-builder').screenshot({ path: path.join(output, lang + '-' + width + '-allocator-inputs.png'), style: screenshotStyle });
       const inputOverflow = await figure.evaluate(el => el.scrollWidth > el.clientWidth + 1);
       if (inputOverflow) failures.push({ lang, width, problem: 'allocator input overflow' });
-      await page.locator('#archer-allocator button[type="submit"]').click();
-      assert.equal(await page.locator('#archer-allocator').isVisible(), false);
+      await page.locator('#march-builder button[type="submit"]').click();
+      assert.equal(await page.locator('#march-builder').isVisible(), false);
       const formatted = await page.evaluate(() => ({ own: window.BH.fmt(130000), join: window.BH.fmt(77500), archers: window.BH.fmt(104000) }));
       assert.equal(await page.locator('#alloc-own').textContent(), formatted.own);
       assert.equal(await page.locator('#alloc-join').textContent(), formatted.join);
@@ -97,12 +97,12 @@ const server = http.createServer((request, response) => {
       await page.locator('#own-infantry').fill('20');
       await page.locator('#own-cavalry').fill('30');
       await page.locator('#own-archers').fill('40');
-      await page.locator('#archer-allocator button[type="submit"]').click();
-      assert.equal(await page.locator('#archer-allocator').isVisible(), true);
+      await page.locator('#march-builder button[type="submit"]').click();
+      assert.equal(await page.locator('#march-builder').isVisible(), true);
       assert.equal(await page.locator('#own-archers').evaluate(el => el.validity.customError), true);
       await page.locator('#own-archers').fill('50');
-      await page.locator('#archer-allocator button[type="submit"]').click();
-      assert.equal(await page.locator('#archer-allocator').isVisible(), false);
+      await page.locator('#march-builder button[type="submit"]').click();
+      assert.equal(await page.locator('#march-builder').isVisible(), false);
       assert.equal(await page.locator('#march-queues > div').count(), 3);
       if (lang === 'en' || lang === 'ar') {
         const other = lang === 'en' ? 'ar' : 'en';
@@ -119,8 +119,8 @@ const server = http.createServer((request, response) => {
       assert.equal(await page.locator('#own-ratio').isVisible(), false);
       for (const id of ['infantry-total', 'cavalry-total', 'archer-total']) await page.locator('#' + id).fill('0');
       await page.locator('#join-queues').fill('0');
-      await page.locator('#archer-allocator button[type="submit"]').click();
-      assert.equal(await page.locator('#archer-allocator').isVisible(), false);
+      await page.locator('#march-builder button[type="submit"]').click();
+      assert.equal(await page.locator('#march-builder').isVisible(), false);
       assert.equal(await page.locator('#march-queues > div').count(), 0);
       assert.equal(await page.locator('#alloc-own').textContent(), await page.evaluate(() => window.BH.fmt(0)));
       const flow = await page.locator('.opening-scene').first().evaluate(el => [...el.children].filter(node => node.classList.contains('opening-entity')).map(node => node.getBoundingClientRect().left));
