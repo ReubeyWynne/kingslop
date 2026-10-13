@@ -85,7 +85,7 @@ self: events
     <h3 data-i18n="ks.available.potential">Other ways to score</h3>
     <p class="note" data-i18n="ks.available.potentialNote">There may be more points here. They need an in-game check, so they are not included in the total above.</p>
     <ul class="availability-potential" data-target="event-availability.unquantified"></ul>
-    <details data-module="save-transfer disclosure" data-status-scope="event-availability" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
+    <details id="save-backups" data-module="save-transfer disclosure" data-status-scope="event-availability" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
       <summary data-i18n="gear.manageSave">your save &amp; backups</summary>
       <p class="note" data-i18n="gear.sharedSaveHint">One save for your gear and event inventory. Keep a backup before importing another.</p>
       <button type="button" class="kb" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
@@ -121,7 +121,7 @@ self: events
 
   <!-- ═══════════ 2C · ALLIANCE BRAWL ═══════════ -->
   <section class="section" id="brawl" data-phase="brawl">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="brawl-body"><span data-i18n="ks.brawl.title">Alliance Brawl</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="brawl-body" data-deep-link="brawl"><span data-i18n="ks.brawl.title">Alliance Brawl</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
     <div id="brawl-body" class="reference-body">
     <p class="lede" data-i18n-html="ks.brawl.lede">The week-1 main event, right after KvK: your alliance against one
       from another kingdom for <b>6.5 days</b> — five 24-hour themed days, then a ~36-hour finale. In eligible
@@ -146,7 +146,7 @@ self: events
     <p class="note" data-i18n-html="ks.brawl.schedNote">Days 1–5 run 24 hours each; the finale ~36 hours, Saturday
       into Sunday. Below: each day's tasks, points per action.</p>
 
-    <details class="day">
+    <details id="brawl-day-1" class="day">
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 1 · Rise of the City</span>
       <span class="day-meta">24h · building and gathering day</span></summary>
       <table class="pt"><tbody>
@@ -157,7 +157,7 @@ self: events
       <p class="note">Trucks are the Merchant Empire overlap — one escort scores in both. Master emblems pay 3,600
         here; if you hold them for prep days 2–3, weigh it against today's rate.</p>
     </details>
-    <details class="day">
+    <details id="brawl-day-2" class="day">
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 2 · Hero Development</span>
       <span class="day-meta">24h · hero day</span></summary>
       <table class="pt"><tbody>
@@ -168,7 +168,7 @@ self: events
       <p class="note">Shards ascend at better than half the KvK rate, so the fixed rewards can make this the month's
         cheapest shard spend — but every shard is one Strongest Governor week wants.</p>
     </details>
-    <details class="day">
+    <details id="brawl-day-3" class="day">
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 3 · Pet Training</span>
       <span class="day-meta">24h · pet and charm day</span></summary>
       <table class="pt"><tbody>
@@ -180,7 +180,7 @@ self: events
         amounts climb steeply with level. Pets here pay less per taming mark than prep day 3 (9,370 vs 15,000): spend
         only what today's chest needs.</p>
     </details>
-    <details class="day">
+    <details id="brawl-day-4" class="day">
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 4 · Gear Enhancement</span>
       <span class="day-meta">24h · gear and troop day</span></summary>
       <table class="pt"><tbody>
@@ -190,7 +190,7 @@ self: events
       </tbody></table>
       <p class="note" data-i18n="ks.today.budget">Choose your reward target before spending. Keep materials reserved for another event unless you decide to use them here.</p>
     </details>
-    <details class="day">
+    <details id="brawl-day-5" class="day">
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 5 · Trade Baron</span>
       <span class="day-meta">24h · beast day</span></summary>
       <table class="pt"><tbody>
@@ -201,7 +201,7 @@ self: events
       <p class="note">The free day — beasts, the terror, your own marches; nothing here touches the KvK hoard. If the
         alliance pushes a day, this is the one that costs you no prep.</p>
     </details>
-    <details class="day">
+    <details id="brawl-day-6" class="day">
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 6 · Full-Scale Competition</span>
       <span class="day-meta">~36h finale · every day's tasks at once, into Sunday</span></summary>
       <table class="pt"><tbody>
@@ -227,12 +227,12 @@ self: events
 
   <!-- ═══════════ 3 · THE PREP CHART ═══════════ -->
   <section class="section" id="matrix" data-phase="prep">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="matrix-body"><span data-i18n="ks.matrix.title">The prep chart</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="matrix-body" data-deep-link="matrix"><span data-i18n="ks.matrix.title">The prep chart</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
     <div id="matrix-body" class="reference-body">
     <p class="lede" data-i18n-html="ks.matrix.lede">The whole KvK prep week as one chart: every material you've been
       saving, and which of the five prep days wants it. <strong>Today's column is what the clock above says to
       spend.</strong></p>
-    <details class="matrix-fold">
+    <details id="prep-chart" class="matrix-fold">
       <summary data-i18n="ks.matrix.summary">the prep chart — 16 materials × five prep days</summary>
       <p class="legend"><span class="lg best">✅</span> <span data-i18n="ks.matrix.best">best day</span>
       <span class="lg ok">🆗</span> <span data-i18n="ks.matrix.ok">scores, but saving it is better</span>
@@ -274,11 +274,11 @@ self: events
 
   <!-- ═══════════ 4 · THE FIVE PREP DAYS ═══════════ -->
   <section class="section" id="days" data-phase="prep">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="days-body"><span data-i18n="ks.days.title">The five prep days</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="days-body" data-deep-link="days"><span data-i18n="ks.days.title">The five prep days</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
     <div id="days-body" class="reference-body">
     <p class="lede" data-i18n="ks.days.lede">Each prep day has its own tasks. Use the lists below to plan your materials, and check your reward milestones in game.</p>
 
-    <details class="day">
+    <details id="prep-day-1" class="day">
       <summary><span class="day-title">Day 1: City Construction</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.prep[0].rows %}
@@ -287,7 +287,7 @@ self: events
       </tbody></table>
 
     </details>
-    <details class="day">
+    <details id="prep-day-2" class="day">
       <summary><span class="day-title">Day 2: Basic Skills Up</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.prep[1].rows %}
@@ -295,7 +295,7 @@ self: events
         {% endfor %}
       </tbody></table>
     </details>
-    <details class="day">
+    <details id="prep-day-3" class="day">
       <summary><span class="day-title">Day 3: Pet Training</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.prep[2].rows %}
@@ -304,7 +304,7 @@ self: events
       </tbody></table>
 
     </details>
-    <details class="day">
+    <details id="prep-day-4" class="day">
       <summary><span class="day-title">Day 4: Gear &amp; Troops</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.prep[3].rows %}
@@ -313,7 +313,7 @@ self: events
       </tbody></table>
       <p class="note" data-i18n="ks.days.troopsNote">Troop training and promotion score today, alongside eligible gear upgrades. Check the available tasks and troop tiers in your event.</p>
     </details>
-    <details class="day">
+    <details id="prep-day-5" class="day">
       <summary><span class="day-title">Day 5: Combined</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.prep[4].rows %}
@@ -327,7 +327,7 @@ self: events
 
   <!-- ═══════════ 5 · STRONGEST GOVERNOR ═══════════ -->
   <section class="section sg" id="governor" data-phase="sg">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="governor-body"><span data-i18n="ks.governor.title">Strongest Governor</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="governor-body" data-deep-link="governor"><span data-i18n="ks.governor.title">Strongest Governor</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
     <div id="governor-body" class="reference-body">
     <p class="lede" data-i18n="ks.governor.lede">Seven scoring days. Repeated day names can have different tasks, so check the current day’s table.</p>
 
@@ -336,7 +336,7 @@ self: events
       <span class="lg keep">📋 intel</span> <span data-i18n="ks.governor.intel">hold missions from 08:00 the day
       before a scoring day; they cash in during the event</span></p>
 
-    <details class="day">
+    <details id="governor-day-1" class="day">
       <summary><span class="day-title">Day 1: City Construction</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.sg[0].rows %}
@@ -344,7 +344,7 @@ self: events
         {% endfor %}
       </tbody></table>
     </details>
-    <details class="day">
+    <details id="governor-day-2" class="day">
       <summary><span class="day-title">Day 2: Hero Development</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.sg[1].rows %}
@@ -352,7 +352,7 @@ self: events
         {% endfor %}
       </tbody></table>
     </details>
-    <details class="day">
+    <details id="governor-day-3" class="day">
       <summary><span class="day-title">Day 3: Skill Up</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.sg[2].rows %}
@@ -360,7 +360,7 @@ self: events
         {% endfor %}
       </tbody></table>
     </details>
-    <details class="day">
+    <details id="governor-day-4" class="day">
       <summary><span class="day-title">Day 4: Combat Training</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.sg[3].rows %}
@@ -370,7 +370,7 @@ self: events
       <p class="note">The troop ladder here is <b>not</b> the KvK ladder: SG pays T10 at 39, KvK pays T10 at 60 and
         adds T11 at 75. Train hard either way; just know the rates differ.</p>
     </details>
-    <details class="day">
+    <details id="governor-day-5" class="day">
       <summary><span class="day-title">Day 5: Skill Up</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.sg[4].rows %}
@@ -380,7 +380,7 @@ self: events
       <p class="note">The second "Skill Up" is a different list from day 3: the truegold and speedup baseline returns,
         the pets don't.</p>
     </details>
-    <details class="day">
+    <details id="governor-day-6" class="day">
       <summary><span class="day-title">Day 6: Combat Training</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.sg[5].rows %}
@@ -390,7 +390,7 @@ self: events
       <p class="note">The bare troop day: no mithril, no gear. If you saved a troop push, this is the second chance
         for it.</p>
     </details>
-    <details class="day">
+    <details id="governor-day-7" class="day">
       <summary><span class="day-title">Day 7: Hero Development</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.sg[6].rows %}
@@ -409,7 +409,7 @@ self: events
   <!-- ═══════════ 6 · THE BATTLE WEEKEND ═══════════ -->
     <!-- ═══ 6A · ALLIANCE MOBILIZATION (week 3) ════════════ -->
   <section class="section" id="mobilize" data-phase="mob">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="mobilize-body"><span data-i18n="ks.mob.title">Alliance Mobilization</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="mobilize-body" data-deep-link="mobilize"><span data-i18n="ks.mob.title">Alliance Mobilization</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
     <div id="mobilize-body" class="reference-body">
     <p class="lede" data-i18n="ks.mob.lede">Alliance Mobilization runs on cycle days 15–20 with no daily themes. Accept a mission before completing its task.</p>
     <p class="note" data-i18n="ks.today.budget">Choose your reward target before spending. Keep materials reserved for another event unless you decide to use them here.</p>
@@ -418,7 +418,7 @@ self: events
   </section>
 
 <section class="section" id="battle" data-phase="battle">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="battle-body"><span data-i18n="ks.battle.title">The battle weekend</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="battle-body" data-deep-link="battle"><span data-i18n="ks.battle.title">The battle weekend</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
     <div id="battle-body" class="reference-body">
     <p class="lede" data-i18n-html="ks.battle.lede">Prep decides who attacks; the weekend decides who holds. The prep
       winner enters the loser's kingdom and tries to take the Castle — a <strong>five-hour contest</strong>: one clean
@@ -446,7 +446,7 @@ self: events
 
   <!-- ═══════════ 7 · THE ROUTINE ═══════════ -->
   <section class="section" id="checklist">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="checklist-body"><span data-i18n="ks.checklist.title">The routine</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="checklist-body" data-deep-link="checklist"><span data-i18n="ks.checklist.title">The routine</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
     <div id="checklist-body" class="reference-body">
     <p class="lede" data-i18n-html="ks.checklist.lede">The page, in the order you'll do it: save for KvK prep, the
       day-one ritual, then the weekend:</p>
@@ -466,14 +466,14 @@ self: events
 
   <!-- ═══ A · THE LIGHT-WEEK FILLERS (Armament + Officer — reference only) ═════════ -->
   <section class="section" id="fillers" data-phase="fillers">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="fillers-body"><span data-i18n="ks.fm.title">Armament &amp; Officer</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="fillers-body" data-deep-link="fillers"><span data-i18n="ks.fm.title">Armament &amp; Officer</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
     <div id="fillers-body" class="reference-body">
     <p class="lede" data-i18n="ks.fm.lede">Armament Competition and Officer Project each run twice in Brawl and Mobilization weeks. Tasks depend on the run type.</p>
     <p class="note" data-i18n="ks.today.budget">Choose your reward target before spending. Keep materials reserved for another event unless you decide to use them here.</p>
-    <details class="day">
+    <details id="point-tables" class="day">
       <summary><span class="sum-mark" aria-hidden="true">🛡️ 🎖️</span><span class="day-title" data-i18n="ks.fm.tables">the point tables (for reference only)</span><span class="day-meta">Armament &amp; Officer · for reference only</span></summary>
       <div class="day-body">
-      <details class="day">
+      <details id="armament-type-1" class="day">
       <summary><span class="sum-mark" aria-hidden="true">🛡️</span><span class="day-title">Type 1 · the Monday run</span>
       <span class="day-meta">cycle days 1–2 and 15–16 · points per action · top tier: Artisan Visions</span></summary>
       <table class="pt"><tbody>
@@ -489,7 +489,7 @@ self: events
       <p class="note" data-i18n-html="ks.arm.shardTip">Shard tasks count general shards too — the ascension scores, not the hero.</p>
       <p class="note">The Truegold Dust row unlocks with the War Academy, Tempered Truegold after TG8 — before those ages the rows don't appear.</p>
     </details>
-      <details class="day">
+      <details id="armament-type-2" class="day">
       <summary><span class="sum-mark" aria-hidden="true">🛡️</span><span class="day-title">Type 2 · the Friday run</span>
       <span class="day-meta">cycle days 5–6 and 19–20 · points per action · top tier: Truegold</span></summary>
       <table class="pt"><tbody>
@@ -503,7 +503,7 @@ self: events
         <tr><td>1m construction / research / training speedup</td><td class="pts">1</td></tr>
       </tbody></table>
     </details>
-      <details class="day">
+      <details id="officer-type-a" class="day">
       <summary><span class="sum-mark" aria-hidden="true">🎖️</span><span class="day-title">Type A · Troop Training &amp; Charms</span>
       <span class="day-meta">the Wednesday run · cycle days 3–4 and 17–18 · points per action</span></summary>
       <table class="pt"><tbody>
@@ -526,7 +526,7 @@ self: events
       <p class="note">The troop ladder pays a third of KvK prep's top tier — train what you need, don't promote a tier
         for this run. The charm row is the cheap, steady scorer.</p>
     </details>
-      <details class="day">
+      <details id="officer-type-b" class="day">
       <summary><span class="sum-mark" aria-hidden="true">🎖️</span><span class="day-title">Type B · Governor Gear &amp; Hero Shards</span>
       <span class="day-meta">the Sunday run · cycle days 7–8 and 21–22 · points per action</span></summary>
       <table class="pt"><tbody>

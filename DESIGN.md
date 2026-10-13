@@ -191,6 +191,7 @@ The system's "buttons" are **margin prompts, not button chrome** — controls re
 - **Style:** no button box. A disclosure is an uppercase letter-spaced prompt in amber, opened by a ❧ fleuron, with a hairline underline that appears on hover (`details summary`).
 - **Shape:** radius 0; underline-only, no fill, no border box.
 - **Hover / Focus:** color shifts amber → ink; the ❧ prompt is the affordance.
+- **Addressable:** every disclosure has a URL. Opening one puts its `#id` in the address bar and a link to it opens it (see "Deep links" in INTERACTIONS.md). The web already has the state model; use it rather than inventing one.
 
 ### Cards / Containers
 - **Corner Style:** cardless — the `.cards` grid has no box; cards are `h3` + prose with a `.tag` header.

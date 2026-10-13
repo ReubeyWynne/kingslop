@@ -49,7 +49,7 @@ self: governor
           {% endfor %}
         </fieldset>
         <p class="gov-totals"><span><span data-i18n="gov.gearScore">gear score</span> <output data-target="governor-planner.gearScore">—</output></span><span><span data-i18n="gov.charmScore">charm score</span> <output data-target="governor-planner.charmScore">—</output></span></p>
-        <details class="gov-quick">
+        <details id="set-every-piece" class="gov-quick">
           <summary data-i18n="gov.quickSet">set every piece at once</summary>
           <fieldset class="gov-fill" disabled data-target="governor-planner.controls">
             <legend class="visually-hidden" data-i18n="gov.quickSet">set every piece at once</legend>
@@ -155,7 +155,7 @@ self: governor
   </section>
 
   <section class="section gov-notes" id="governor-save">
-    <details data-module="save-transfer disclosure" data-status-scope="governor" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
+    <details id="save-backups" data-module="save-transfer disclosure" data-status-scope="governor" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
       <summary data-i18n="gear.manageSave">your save &amp; backups</summary>
       <p class="gov-gloss" data-i18n="gov.saveHint">One save for your governor levels, hero gear and event inventory. Keep a backup before importing another.</p>
       <button type="button" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
@@ -166,7 +166,7 @@ self: governor
   </section>
 
   <section class="section gov-notes" id="governor-sources">
-    <details>
+    <details id="maths-sources">
       <summary data-i18n="gov.maths">The maths &amp; sources</summary>
       <p data-i18n="gov.mathsBody">Each row is what one more star or charm level costs. The planner takes one step at a time: the affordable upgrade with the most gain for the share of your bag it uses. It is a guide, not a guaranteed best order. Gear and charms use different materials, so they never compete.</p>
       <p data-i18n="gov.setBonus">Gear set bonuses are left out until a second table confirms them.</p>
@@ -174,14 +174,14 @@ self: governor
       <p class="gov-sources">{% for pair in gov.sources %}{% assign source = pair[1] %}{% if source.gear %}<a href="{{ source.gear }}">{{ source.label | escape }} · <span data-i18n="gov.gear">Gear</span></a> {% endif %}{% if source.charms %}<a href="{{ source.charms }}">{{ source.label | escape }} · <span data-i18n="gov.charms">Charms</span></a> {% endif %}{% endfor %}</p>
       <p class="gov-gloss" data-i18n="gov.artNote">Piece, charm and material art is Kingshot game artwork by Century Games.</p>
     </details>
-    <details>
+    <details id="gear-costs">
       <summary data-i18n="gov.tableGear">gear costs, step by step</summary>
       <div class="gov-scroll"><table class="gov-table gov-reference">
         <thead><tr><th scope="col" data-i18n="gov.col.step">step</th>{% for id in gov.gear.materials %}{% assign item = gov.materials | where: "id", id | first %}<th scope="col" data-i18n="{{ item.key }}">{{ item.label | escape }}</th>{% endfor %}<th scope="col" data-i18n="gov.col.stat">total %</th><th scope="col" data-i18n="gov.col.score">score</th></tr></thead>
         <tbody>{% for row in gov.gear.levels %}<tr><th scope="row">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★{% if row.sources.size < 2 %} ◇{% endif %}</th>{% for id in gov.gear.materials %}<td>{{ row.cost[id] }}</td>{% endfor %}<td>{{ row.stat }}</td><td>{% if row.score %}{{ row.score }}{% else %}—{% endif %}</td></tr>{% endfor %}</tbody>
       </table></div>
     </details>
-    <details>
+    <details id="charm-costs">
       <summary data-i18n="gov.tableCharms">charm costs, level by level</summary>
       <div class="gov-scroll"><table class="gov-table gov-reference">
         <thead><tr><th scope="col" data-i18n="gov.col.level">level</th>{% for id in gov.charms.materials %}{% assign item = gov.materials | where: "id", id | first %}<th scope="col" data-i18n="{{ item.key }}">{{ item.label | escape }}</th>{% endfor %}<th scope="col" data-i18n="gov.col.stat">total %</th><th scope="col" data-i18n="gov.col.score">score</th></tr></thead>

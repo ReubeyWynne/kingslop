@@ -23,7 +23,7 @@ self: castle
         <div><dt>Garrison lead</dt><dd>Assigned defender. Builds toward 5★ heroes, strong defender widgets and the core stats to hold.</dd></div>
         <div><dt>Joiners</dt><dd>Meet the alliance's troop-tier, hero, skill-level and march-size requirements.</dd></div>
       </dl>
-      <details class="castle-reason"><summary>Build for your assignment</summary><div class="d-body"><p>Agree your role before spending. Offensive and defensive leads may be different players; later generations give accounts more room to specialise. Match heroes, widgets, gear, charms and research to that role.</p><p>Keep designated leads available for their jobs. Prioritise the best available troop tiers among other players for the castle garrison. Those players can also join attacking rallies too.</p></div></details>
+      <details id="assignment" class="castle-reason"><summary>Build for your assignment</summary><div class="d-body"><p>Agree your role before spending. Offensive and defensive leads may be different players; later generations give accounts more room to specialise. Match heroes, widgets, gear, charms and research to that role.</p><p>Keep designated leads available for their jobs. Prioritise the best available troop tiers among other players for the castle garrison. Those players can also join attacking rallies too.</p></div></details>
     </div>
     <div class="castle-chapter">
       <h2>Hold the castle</h2>
@@ -38,9 +38,9 @@ self: castle
     <div class="castle-chapter">
       <h2>Take the turrets too</h2>
       <p>A hostile turret fires on the castle garrison, faster as occupation continues. Your own team's turrets spare it. Taking turrets helps you break a hold and protect your own.</p>
-      <details class="castle-reason"><summary>Local Castle Battle and KvK</summary><div class="d-body"><p>Local Castle Battle is an alliance contest within your kingdom. KvK adds Kingdom of Power preparation and cross-kingdom rules. Check the KvK screen for access, ownership and turret bonuses.</p></div></details>
+      <details id="local-and-kvk" class="castle-reason"><summary>Local Castle Battle and KvK</summary><div class="d-body"><p>Local Castle Battle is an alliance contest within your kingdom. KvK adds Kingdom of Power preparation and cross-kingdom rules. Check the KvK screen for access, ownership and turret bonuses.</p></div></details>
     </div>
-    <details class="castle-reason"><summary>Rally timing and movement</summary><div class="d-body"><p>Close arrivals give defenders less time to reinforce, but each rally fights separately against the current occupant. Assembly and travel time both affect arrival.</p><p>Ruins slow marches. The alert-zone rebellion forces cities out before battle; wait for it to end before moving back.</p></div></details>
+    <details id="rally-timing" class="castle-reason"><summary>Rally timing and movement</summary><div class="d-body"><p>Close arrivals give defenders less time to reinforce, but each rally fights separately against the current occupant. Assembly and travel time both affect arrival.</p><p>Ruins slow marches. The alert-zone rebellion forces cities out before battle; wait for it to end before moving back.</p></div></details>
   </section>
   <section id="castle-combat" class="castle-panel" role="tabpanel" aria-labelledby="castle-combat-tab" data-view="combat" hidden>
     <div class="castle-chapter">
@@ -60,7 +60,7 @@ self: castle
         <div><dt>Survive it</dt><dd>Defense × health</dd></div>
       </dl>
       <p>Both pairs matter on attack and defense. Health keeps a rally fighting; lethality increases damage, rather than deciding permanent kills.</p>
-      <details class="castle-reason"><summary>The maths</summary><div class="d-body">
+      <details id="castle-maths" class="castle-reason"><summary>The maths</summary><div class="d-body">
         <p>The <a href="../battle-simulator/#maths">Frakinator model</a> uses these bonus factors:</p>
         <p class="castle-equation">Offense: base attack × (1 + ATK/100) × (1 + LET/100)<br>Resistance: base health × (1 + DEF/100) × (1 + HP/100)</p>
         <p>At 500% ATK and 100% LET, the factors give 6 × 2 = <b>12</b>. Another 100 points of ATK gives <b>14</b>; the same added to LET gives <b>18</b>. The lower paired stat can offer the bigger gain.</p>
@@ -70,7 +70,7 @@ self: castle
     <div class="castle-chapter">
       <h2>Check the skill</h2>
       <p>Squad-wide skills help the whole army, even without the hero's matching troop type. Read the skill's scope. Widget skills can require rally or defender duty.</p>
-    <details class="castle-reason"><summary>Leader kits · Gen 2–3</summary>
+    <details id="leader-kits" class="castle-reason"><summary>Leader kits · Gen 2–3</summary>
       <p>Compare with your saved roster: stars, skills, gear and widgets all matter.</p>
       <div class="castle-tabs castle-roles" role="tablist" aria-label="Leader duty" data-module="tabs" data-tabs-bind="role">
         <button type="button" id="castle-defense-tab" role="tab" aria-controls="castle-leaders" aria-selected="true" tabindex="0" data-value="defense" data-action="tabs.select">Garrison lead</button>
@@ -82,12 +82,12 @@ self: castle
         <div data-lineup-role="{{ lineup.role }}" data-lineup-stage="{{ lineup.stage }}"{% unless lineup.role == 'defense' and lineup.stage == 'mature' %} hidden{% endunless %}>
           <h3>{{ lineup.title }}</h3>
           <div class="castle-lineup">{% for key in lineup.heroes %}{% assign hero = site.data.heroes.heroes | where: 'key', key | first %}{% assign metadata = site.data.hero_roles.heroes[key] %}
-            <article class="castle-hero" data-hero="{{ key }}"><a class="castle-portrait" href="../heroes/#hero-{{ key }}"><img src="../img/heroes/{{ metadata.portrait }}" width="52" height="52" alt="{{ hero.name }}" loading="lazy" decoding="async"></a><div class="castle-hero-copy"><h3><a href="../heroes/#hero-{{ key }}">{{ hero.name }}</a></h3><p>{{ site.data.castle_battle.kitBriefs[key] | escape }}</p><p class="castle-mine" data-copy-for="{{ key }}" hidden></p><details class="castle-kit"><summary>Expedition kit and levels</summary><ol>{% for skill in hero.skills %}{% assign note = metadata.skillNotes[forloop.index0] %}<li><b>{{ skill.name | escape }}</b> — {{ note.summary | escape }}{% for scale in skill.scales %}<span class="castle-scale">{{ scale.label | escape }} · Lv 1–5: {{ scale.levels | join: ' / ' | escape }}</span>{% endfor %}</li>{% endfor %}</ol><p>Widget skill: {{ hero.widget.role }} · {{ hero.widget.effect }}. <a href="{{ metadata.wiki }}">Hero reference</a></p></details></div></article>
+            <article class="castle-hero" data-hero="{{ key }}"><a class="castle-portrait" href="../heroes/#hero-{{ key }}"><img src="../img/heroes/{{ metadata.portrait }}" width="52" height="52" alt="{{ hero.name }}" loading="lazy" decoding="async"></a><div class="castle-hero-copy"><h3><a href="../heroes/#hero-{{ key }}">{{ hero.name }}</a></h3><p>{{ site.data.castle_battle.kitBriefs[key] | escape }}</p><p class="castle-mine" data-copy-for="{{ key }}" hidden></p><details id="expedition-kit" class="castle-kit"><summary>Expedition kit and levels</summary><ol>{% for skill in hero.skills %}{% assign note = metadata.skillNotes[forloop.index0] %}<li><b>{{ skill.name | escape }}</b> — {{ note.summary | escape }}{% for scale in skill.scales %}<span class="castle-scale">{{ scale.label | escape }} · Lv 1–5: {{ scale.levels | join: ' / ' | escape }}</span>{% endfor %}</li>{% endfor %}</ol><p>Widget skill: {{ hero.widget.role }} · {{ hero.widget.effect }}. <a href="{{ metadata.wiki }}">Hero reference</a></p></details></div></article>
           {% endfor %}</div><p>{{ lineup.lesson }}</p><p>{{ lineup.comparison }}</p>
         </div>{% endfor %}
       </div>
     </details>
-      <details class="castle-reason"><summary>Read a battle report</summary><div class="d-body"><ol>
+      <details id="battle-report" class="castle-reason"><summary>Read a battle report</summary><div class="d-body"><ol>
         <li><b>Troops:</b> starting counts, tiers and Truegold levels.</li>
         <li><b>Bonuses:</b> whose stats were used, then each type's ATK, LET, DEF and HP.</li>
         <li><b>Skills:</b> leader heroes, widgets and selected joiners. Displayed stats don't show every effect.</li>
@@ -109,28 +109,28 @@ self: castle
         <li>Check the four selected skills before launch. More joiners still add troops.</li>
       </ol>
       <p class="castle-banner-cue"><img src="../img/castle/rally-banner.jpg" width="40" height="44" alt="Green rally banner" loading="lazy"><span>Green banner on the march hero; first skill beneath the flag on the Expedition side of the Skills screen.</span></p>
-      <details class="castle-reason"><summary>Find it in game</summary><div class="d-body castle-screens">
+      <details id="find-in-game" class="castle-reason"><summary>Find it in game</summary><div class="d-body castle-screens">
         <figure><a href="../img/castle/joiner-march.jpg"><img src="../img/castle/joiner-march.jpg" width="1536" height="1100" alt="March with Marlin in the first slot, marked by a green rally banner; the other two heroes have no banner." loading="lazy"></a><figcaption>Marlin has the banner. His first Expedition skill is eligible.</figcaption></figure>
         <figure><a href="../img/castle/first-expedition-skill.jpg"><img src="../img/castle/first-expedition-skill.jpg" width="688" height="1536" alt="Amadeus Skills screen: Battle Ready is the top-right skill beneath the Expedition flag, showing 20 percent squad lethality at level 4." loading="lazy"></a><figcaption>Amadeus's first Expedition skill: Battle Ready, beneath the flag. The left column is Conquest.</figcaption></figure>
         <p>The banner marks eligibility. Check the rally window to see which four contributions were selected.</p>
       </div></details>
-      <details class="castle-reason"><summary>What stays with your march?</summary><div class="d-body"><p>Your gear, charms and research don't add another set of rally bonuses. Other heroes can increase deployment capacity, but their skills don't transfer. Neither do skills 2 and 3 of your first hero.</p><p>If you lack the required hero, ask whether to send troops without heroes. <a href="https://www.youtube.com/watch?v=5RrphiHLzxU&amp;t=70s">Sloth's rally explanation</a></p></div></details>
+      <details id="march-carryover" class="castle-reason"><summary>What stays with your march?</summary><div class="d-body"><p>Your gear, charms and research don't add another set of rally bonuses. Other heroes can increase deployment capacity, but their skills don't transfer. Neither do skills 2 and 3 of your first hero.</p><p>If you lack the required hero, ask whether to send troops without heroes. <a href="https://www.youtube.com/watch?v=5RrphiHLzxU&amp;t=70s">Sloth's rally explanation</a></p></div></details>
     </div>
     <div class="castle-chapter">
       <h2>Castle joiners</h2>
       <p>The garrison hits back. <b>Survival skills help attacking rallies too.</b> Four Gordons can stack health; mixing health, defense and enemy debuffs gives your lead other options.</p>
       <div class="castle-joiner-list">
       {% for candidate in site.data.castle_battle.joiners %}{% assign hero = site.data.heroes.heroes | where: 'key', candidate.id | first %}
-      <details class="castle-joiner"><summary><span>{{ hero.name }}</span><span>{{ candidate.job }}</span></summary><div class="d-body"><p>{{ candidate.lesson }}</p>{% for scale in hero.skills[0].scales %}<p class="castle-scale">{{ scale.label | escape }} · Lv 1–5: {{ scale.levels | join: ' / ' | escape }}</p>{% endfor %}<p><a href="{{ candidate.source }}">Sloth's analysis</a> · <a href="../heroes/#hero-{{ candidate.id }}">Your hero</a></p></div></details>
+      <details id="joiner-{{ hero.key }}" class="castle-joiner"><summary><span>{{ hero.name }}</span><span>{{ candidate.job }}</span></summary><div class="d-body"><p>{{ candidate.lesson }}</p>{% for scale in hero.skills[0].scales %}<p class="castle-scale">{{ scale.label | escape }} · Lv 1–5: {{ scale.levels | join: ' / ' | escape }}</p>{% endfor %}<p><a href="{{ candidate.source }}">Sloth's analysis</a> · <a href="../heroes/#hero-{{ candidate.id }}">Your hero</a></p></div></details>
       {% endfor %}
       </div>
-      <details class="castle-reason"><summary>Skill selection and stacking</summary><div class="d-body"><p>Check which four skills the rally selected. An unwanted hero can take a slot; a fifth Gordon adds troops, but no fifth health contribution.</p><p>Duplicate Gordons stack. Duplicate <a href="https://kingshotoptimizer.com/heroes/petra/">Petras</a> or <a href="https://kingshotoptimizer.com/heroes/marlin/">Marlins</a> don't give independent copies of their first-skill effect. A single Petra can still help when she isn't leading. Check each hero's interaction.</p></div></details>
+      <details id="skill-stacking" class="castle-reason"><summary>Skill selection and stacking</summary><div class="d-body"><p>Check which four skills the rally selected. An unwanted hero can take a slot; a fifth Gordon adds troops, but no fifth health contribution.</p><p>Duplicate Gordons stack. Duplicate <a href="https://kingshotoptimizer.com/heroes/petra/">Petras</a> or <a href="https://kingshotoptimizer.com/heroes/marlin/">Marlins</a> don't give independent copies of their first-skill effect. A single Petra can still help when she isn't leading. Check each hero's interaction.</p></div></details>
     </div>
     <div class="castle-chapter">
       <h2>Joining the garrison</h2>
       <p>Leave lead accounts free for their assignments. Fill the castle with the <b>best available troop tiers</b> from the remaining joiners. Each sends their own march and troop mix.</p><p>Check active bonuses when membership changes. The highest-stat member supplies them; the displayed captain may be someone else.</p>
       <p class="note">A garrison lead may ask for a particular troop type. Otherwise, reinforce with your own mix. Keep the designated defender inside.</p>
-      <details class="castle-reason"><summary>Captain and bonus source</summary><div class="d-body"><p>The displayed captain doesn't explain every defensive role. Inspect the active stats and skills, especially when players arrive or leave. <a href="https://www.youtube.com/watch?v=5RrphiHLzxU&amp;t=510s">Sloth's defensive roles</a></p></div></details>
+      <details id="captain-bonus" class="castle-reason"><summary>Captain and bonus source</summary><div class="d-body"><p>The displayed captain doesn't explain every defensive role. Inspect the active stats and skills, especially when players arrive or leave. <a href="https://www.youtube.com/watch?v=5RrphiHLzxU&amp;t=510s">Sloth's defensive roles</a></p></div></details>
     </div>
   </section>
   <section id="castle-formation" class="castle-panel" role="tabpanel" aria-labelledby="castle-formation-tab" data-view="formation" hidden>
@@ -138,7 +138,7 @@ self: castle
       <h2>Build the army</h2>
       <p>Infantry buy time for cavalry and archers to deal damage. Too few expose those rows early; too many can leave you short of damage.</p>
       <p>Each participant sends <b>their own ratio</b>. The rally or garrison contains those different troop mixes. Your alliance may recommend a setup, or occasionally ask for a specific reinforcement type.</p>
-      <details class="castle-reason"><summary>Gen 4: the 60 / 40 garrison</summary><div class="d-body">
+      <details id="gen4-garrison" class="castle-reason"><summary>Gen 4: the 60 / 40 garrison</summary><div class="d-body">
         <p><b>60% infantry, 40% cavalry, no archers.</b> Margot and Alcar give those two troop types the damage and survival support to make this work.</p>
         <ul><li><b>Margot's third skill:</b> cavalry have a 25% chance of an extra attack at 200% damage at skill 5.</li><li><b>Her defensive kit:</b> squad-wide dodge chance and a defender-lethality widget support the hold.</li><li><b>Alcar:</b> adds infantry damage and defensive support. The heroes make the formation.</li></ul>
         <p>Attack leads may answer cavalry-heavy holds with very low-cavalry formations. The useful split depends on the heroes and opponent; your offensive and defensive presets may differ.</p>

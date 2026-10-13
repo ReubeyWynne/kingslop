@@ -95,12 +95,6 @@
         if (top < 0 || top > window.innerHeight * 0.6) record.node.scrollIntoView({ block: 'start' });
       });
     });
-    function openTarget() {
-      var id = decodeURIComponent(location.hash.slice(1)), match = records.filter(function (record) { return record.node.id === id; })[0];
-      if (match && !match.node.hidden) { var d = match.node.querySelector('.hero-dossier'); if (d) d.open = true; }
-    }
-    context.listen(window, 'hashchange', openTarget);
-    openTarget();
     context.listen(document, 'ks:server-age-change', function (event) { currentGeneration = event.detail ? event.detail.generation : null; serverValue(); render(); });
     // Each dossier is its own disclosure module, so its form changes are heard here rather than as actions.
     context.listen(context.root, 'change', function (event) {
