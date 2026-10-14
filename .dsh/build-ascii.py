@@ -1099,24 +1099,25 @@ def constellations():
 
 
 # ── aurora: the night sky over the hunt ─────────────────────────────────
-# Built the way the campfire is: a field sampled per cell and read through a
+# Built the way the campfire is: fields sampled per cell and read through a
 # density ramp, with layers on top whose loops never line up.
 #
-#   curtains    15.7 s   rays coloured by height as in a real display: a mint
-#                        hem, green, teal, then violet and magenta at the top;
-#                        white flares leap up the rays at their own moments
-#   stars        7.4 s   the Big Dipper and field stars twinkling in place
-#   meteors     11.3, 17.9 s
+#   sky          31.7 s  three depths composited cell by cell: a low glow on
+#                        the horizon, a far curtain high and faint, and a near
+#                        curtain in front whose rays run from a pale hem up
+#                        through green to violet; now and then a ray brightens
+#   stars         7.4 s  the Big Dipper and field stars twinkling in place
+#   meteors      11.3, 17.9 s
 #
-# Inside the loop the motion is travelling waves: rays slide along the
-# curtain, folds run through the hem and brightness surges sweep across it.
-# Each wave turns a whole number of times per loop and the noise travels a
-# circle in noise space, so the last frame runs straight into the first.
+# The motion is slow travelling waves: rays drift along the curtain and folds
+# roll through the hem a turn or two per loop. Each wave turns a whole number
+# of times per loop and the noise travels a circle in noise space, so the
+# last frame runs straight into the first.
 
-AURORA_W, AURORA_H, AURORA_FPS = 48, 17, 12
-AURORA_RAMP = ' .,:;=+*#%'
-CURTAIN_LOOP = 15.7
-HUES = ('hem', 'green', 'teal', 'violet', 'magenta')
+AURORA_W, AURORA_H, AURORA_FPS = 48, 17, 6
+AURORA_RAMP = ' .,:;=+*#'
+SKY_LOOP = 31.7
+SKY_LAYERS = ('glow', 'far', 'far-top', 'hem', 'green', 'violet', 'flare')
 
 
 def aurora_ground(c):
@@ -1146,85 +1147,96 @@ def loop_orbit(t, loop, speed, seed=0):
     return r * math.cos(a) + seed * 7.1, r * math.sin(a) - seed * 3.3
 
 
-def curtain(c, r, t):
-    """How bright the curtain is at a cell, and how far the cell sits above its hem."""
-    loop = CURTAIN_LOOP
+def curtain(c, r, t, hem_row, reach, seed):
+    """How bright a curtain is at a cell, and how far the cell sits above its hem."""
+    loop = SKY_LOOP
     x = c / AURORA_W
-    hem = (11.8 + 1.7 * math.sin(TAU * x + wave(t, loop, 2))
-           + .9 * math.sin(TAU * 2.3 * x - wave(t, loop, 5) + 1.3)
-           + .5 * math.sin(TAU * 4.1 * x + wave(t, loop, 9) + .4))
-    ox, oy = loop_orbit(t, loop, 1.3)
-    rays = (.5 + .5 * math.sin(TAU * 4 * x - wave(t, loop, 7))) * .35 \
-        + (.5 + .5 * math.sin(TAU * 9 * x + wave(t, loop, 11) + 2)) * .25 \
-        + noise(x * 16 + ox, oy) * .55
+    hem = (hem_row + 1.5 * math.sin(TAU * x + wave(t, loop, 1) + seed)
+           + .7 * math.sin(TAU * 2.3 * x - wave(t, loop, 2) + 1.3 + seed))
+    ox, oy = loop_orbit(t, loop, .45, seed)
+    rays = (.5 + .5 * math.sin(TAU * 4 * x - wave(t, loop, 2) + seed)) * .35 \
+        + (.5 + .5 * math.sin(TAU * 9 * x + wave(t, loop, 3) + 2 + seed)) * .2 \
+        + noise(x * 16 + ox, oy) * .6
     rays = max(0, min(1, (rays - .38) * 2))
-    surge = .5 + .7 * max(0, math.sin(TAU * x * 1.2 - wave(t, loop, 4))) ** 3 \
-        + .3 * noise(x * 3 + ox * .4, 9 + oy * .4)
+    surge = .55 + .45 * max(0, math.sin(TAU * x * 1.2 - wave(t, loop, 1) + seed * 3)) ** 2 \
+        + .25 * noise(x * 3 + ox * .4, 9 + oy * .4)
     d = hem - r
     if d < -1.5:
         return 0, d
-    v = surge * (.03 + 1.3 * rays ** 1.5) * (math.exp(-d / (2.2 + 7 * rays)) if d >= 0 else math.exp(d * 1.8))
-    if -1 <= d < 1:
-        v *= 1.25
-    sx, sy = loop_orbit(t, loop, 1.8, 1)
+    v = surge * (.05 + 1.1 * rays ** 1.5) * (math.exp(-d / (reach * (.3 + rays))) if d >= 0 else math.exp(d * 1.6))
+    sx, sy = loop_orbit(t, loop, .6, seed + 1)
     return v - .1 * noise(c * .45 + sx, r * .8 + sy), d
 
 
+def glow(c, r, t):
+    """The faint band of light the curtains leave along the horizon."""
+    ox, oy = loop_orbit(t, SKY_LOOP, .3, 5)
+    lift = aurora_ground(c) - r
+    return (.42 + .35 * noise(c * .12 + ox, oy)) * math.exp(-lift / 2.6) - .14 * noise(c * .5 + oy, r * .9 + ox)
+
+
 def ramp(v):
-    return AURORA_RAMP[max(1, min(len(AURORA_RAMP) - 1, int(v * .95 * (len(AURORA_RAMP) - 1)) + 1))]
-
-
-def hue(d):
-    return HUES[0] if d < 1 else HUES[1] if d < 3.5 else HUES[2] if d < 6 else HUES[3] if d < 8.5 else HUES[4]
+    return AURORA_RAMP[max(1, min(len(AURORA_RAMP) - 1, int(v * .9 * (len(AURORA_RAMP) - 1)) + 1))]
 
 
 def flares(frames):
-    """Rays that leap up the curtain and fade, each at its own place and time:
-    the head climbs a row a frame from the hem, flickers, and dies."""
+    """Now and then a ray brightens: it climbs from the hem a row every other
+    frame, holds, and fades, each at its own place and time."""
     rng = random.Random(211)
     out = {}
-    for k in range(9):
+    for k in range(4):
         start = rng.randrange(frames)
-        c = rng.randrange(3, AURORA_W - 3)
-        height, life = rng.randrange(4, 8), rng.randrange(9, 14)
+        c = rng.randrange(4, AURORA_W - 4)
+        height, life = rng.randrange(3, 5), rng.randrange(14, 20)
         for age in range(life):
-            t = ((start + age) % frames) / AURORA_FPS
-            fade = 1 - max(0, age - height) / (life - height)
-            for cc in (c, c + 1):
-                base = next((r for r in range(aurora_ground(cc) - 2, 4, -1) if curtain(cc, r, t)[1] >= 0), 11)
-                for r in range(max(4, base - min(height, age)), base + 1):
-                    heat = fade * (1 - (base - r) / (height + 1)) * (.75 + .5 * hash2(cc + age, r))
-                    if heat > .18:
-                        out[(start + age) % frames, r, cc] = '%#*+=:'[min(5, int((1 - heat) * 6))]
+            i = (start + age) % frames
+            fade = 1 - max(0, age - 2 * height) / (life - 2 * height)
+            base = next((r for r in range(aurora_ground(c) - 2, 4, -1) if curtain(c, r, i / AURORA_FPS, 12.2, 3.2, 0)[1] >= 0), 12)
+            for r in range(max(4, base - min(height, age // 2)), base + 1):
+                heat = fade * (1 - (base - r) / (height + 2))
+                if heat > .2:
+                    out[i, r, c] = '*+=:'[min(3, int((1 - heat) * 4))]
     return out
 
 
-def curtain_frames(keep_clear):
-    count = round(CURTAIN_LOOP * AURORA_FPS)
+def aurora_sky_frames(keep_clear):
+    """The three depths composited per cell, nearest first, each depth and
+    height keeping its own layer so it can take its own colour."""
+    count = round(SKY_LOOP * AURORA_FPS)
     flare = flares(count)
-    layers = {h: [] for h in HUES + ('flare',)}
+    layers = {k: [] for k in SKY_LAYERS}
     for i in range(count):
         t = i / AURORA_FPS
         out = {k: grid(AURORA_W, AURORA_H) for k in layers}
         for c in range(AURORA_W):
-            for r in range(1, aurora_ground(c) - 1):
+            for r in range(1, aurora_ground(c)):
                 if (r, c) in keep_clear:
                     continue
                 if (i, r, c) in flare:
                     out['flare'][r][c] = flare[i, r, c]
                     continue
-                v, d = curtain(c, r, t)
-                v *= min(1, (r - .5) / 3)  # thin at the top of the sky, where the meteors run
+                top = min(1, (r - .5) / 3)  # thin at the top of the sky, where the stars are
+                v, d = curtain(c, r, t, 12.2, 3.2, 0)
+                v *= top
+                if v > .12:
+                    out['hem' if d < 1 else 'green' if d < 4.5 else 'violet'][r][c] = ramp(v)
+                    continue
+                v, d = curtain(c, r, t, 7.6, 2.6, 4.1)
+                v *= .62 * top
                 if v > .1:
-                    out[hue(d)][r][c] = ramp(v)
+                    out['far' if d < 3 else 'far-top'][r][c] = ramp(v)
+                    continue
+                v = glow(c, r, t)
+                if v > .08:
+                    out['glow'][r][c] = '.' if v < .2 else ',' if v < .3 else ':'
         for k in layers:
             layers[k].append(out[k])
     return layers
 
 
 # The Big Dipper, the bear's own stars, high in the sky the curtains rise into.
+# Only the stars: the sky has no lines in it.
 DIPPER = [(0, 27), (1, 31), (1, 35), (2, 39), (4, 40), (4, 46), (1, 46)]
-DIPPER_LINKS = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 3)]
 
 
 def star_field():
@@ -1233,29 +1245,25 @@ def star_field():
 
 
 def aurora_stars():
-    """The Dipper's lines stay put; its stars and the field stars twinkle on
-    their own beats over a 7.4 s loop, out of step with the curtains."""
+    """The Dipper's stars and the field stars twinkle on their own beats over a
+    7.4 s loop, out of step with the curtains."""
     lines = grid(AURORA_W, AURORA_H)
-    for a, b in DIPPER_LINKS:
-        for (r, c), g in link_cells(DIPPER[a], DIPPER[b]):
-            lines[r][c] = '.' if g == '-' else g
     field = star_field()
     frames = []
-    count = round(7.4 * AURORA_FPS / 2)
+    count = round(7.4 * AURORA_FPS)
     for i in range(count):
         arr = [row[:] for row in lines]
         for n, (r, c) in enumerate(DIPPER):
-            arr[r][c] = '+' if (i + n * 11) % count in (3, 4) else '*'
+            arr[r][c] = '+' if (i + n * 11) % count == 3 else '*'
         for n, (c, r) in enumerate(field):
             beat = (i + int(hash2(c, r) * count)) % count
-            arr[r][c] = '+' if beat in (5, 6) else "'" if beat in (4, 7) else '.'
+            arr[r][c] = '+' if beat == 5 else "'" if beat in (4, 6) else '.'
         frames.append(arr)
     return frames, 7.4
 
 
 def dipper_cells():
-    lines = {cell for a, b in DIPPER_LINKS for cell, _ in link_cells(DIPPER[a], DIPPER[b])}
-    clear = {(r + dr, c + dc) for r, c in set(DIPPER) | lines for dr in (-1, 0, 1) for dc in (-1, 0, 1)}
+    clear = {(r + dr, c + dc) for r, c in DIPPER for dr in (-1, 0, 1) for dc in (-1, 0, 1)}
     return clear | {(r, c) for c, r in star_field()}
 
 
@@ -1281,11 +1289,11 @@ def aurora_meteors(seed, frames, starts):
 def aurora():
     css = ['/* aurora */',
            '.ascii-mini--aurora::before{content:' + content(aurora_land()) + '}']
-    for name, frames in curtain_frames(dipper_cells()).items():
-        css.append(animation(f'.ascii-mini--aurora .aurora-{name}::before', f'ascii-aurora-{name}', frames, CURTAIN_LOOP))
+    for name, frames in aurora_sky_frames(dipper_cells()).items():
+        css.append(animation(f'.ascii-mini--aurora .aurora-{name}::before', f'ascii-aurora-{name}', frames, SKY_LOOP))
     stars, star_loop = aurora_stars()
     css.append(animation('.ascii-mini--aurora .aurora-stars::before', 'ascii-aurora-stars', stars, star_loop))
-    for n, (seconds, starts) in enumerate(((11.3, (40,)), (17.9, (60, 160)))):
+    for n, (seconds, starts) in enumerate(((11.3, (20,)), (17.9, (30, 80)))):
         count = round(seconds * AURORA_FPS)
         css.append(animation(f'.ascii-mini--aurora .aurora-meteors-{n}::before', f'ascii-aurora-meteors-{n}',
                              aurora_meteors(83 + n, count, starts), seconds))
