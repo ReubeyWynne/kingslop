@@ -950,104 +950,71 @@ def link_cells(a, b):
     return [(cell, g) for cell, g in cells if not clear(cell, a) and not clear(cell, b)]
 
 
-# Ursa Major as it is usually drawn: the Dipper's handle is the tail, its bowl
-# the body, a head out to the nose, and a fore and hind leg ending in the
-# paired stars of the bear's paws. (row, column, magnitude: 2 bright, 1, 0 faint)
+# The bear in the stars: a walking bear, facing right, is a patch of sky where
+# the stars crowd together. Its brightest stars sit on the shape a person
+# would trace (nose, brow, ear, hump, back, rump, knees and paws, belly,
+# throat) and only those are joined, the way a star chart joins a figure's
+# brightest lights. Nothing moves: each star twinkles in place on its own slow
+# beat, so from one frame to the next only a glyph or two changes.
 URSA_W, URSA_H = 43, 15
-URSA = {
-    'alkaid': (2, 1, 2), 'mizar': (3, 7, 2), 'alioth': (4, 12, 2), 'megrez': (5, 17, 1),
-    'dubhe': (4, 28, 2), 'merak': (8, 28, 2), 'phecda': (8, 19, 2),
-    'h': (2, 33, 1), 'muscida': (3, 40, 1), 'upsilon': (6, 35, 1),
-    'chi': (10, 22, 1), 'nu': (13, 17, 1), 'xi': (14, 15, 0),
-    'theta': (10, 36, 1), 'iota': (13, 38, 1), 'kappa': (14, 40, 0),
+URSA = {  # the bright stars: (row, column)
+    'hind_paw': (13, 6), 'hind_knee': (9, 7), 'rump': (4, 4), 'back': (2, 12),
+    'hump': (0, 21), 'ear': (2, 30), 'brow': (4, 35), 'nose': (6, 41),
+    'throat': (8, 34), 'fore_knee': (10, 29), 'fore_paw': (13, 31), 'belly': (10, 18),
 }
-# Drawn in this order when the bear comes back together: tail to nose, then
-# the legs. Each paw's second star (xi, kappa) sits beside it unlinked.
-URSA_LINKS = [('alkaid', 'mizar'), ('mizar', 'alioth'), ('alioth', 'megrez'), ('megrez', 'dubhe'),
-              ('dubhe', 'merak'), ('merak', 'phecda'), ('phecda', 'megrez'), ('dubhe', 'h'),
-              ('h', 'muscida'), ('muscida', 'upsilon'), ('upsilon', 'merak'),
-              ('phecda', 'chi'), ('chi', 'nu'), ('upsilon', 'theta'), ('theta', 'iota')]
-URSA_FIELD = [(0, 16), (7, 3), (11, 7), (0, 24), (8, 42), (12, 27), (1, 42), (6, 10), (11, 32)]
-URSA_FRAMES, URSA_FPS = 120, 10
-STAR = {2: '*', 1: '+', 0: '.'}
+URSA_LINKS = [('hind_paw', 'hind_knee'), ('hind_knee', 'rump'), ('rump', 'back'), ('back', 'hump'),
+              ('hump', 'ear'), ('ear', 'brow'), ('brow', 'nose'), ('nose', 'throat'),
+              ('throat', 'fore_knee'), ('fore_knee', 'fore_paw'),
+              ('hind_knee', 'belly'), ('belly', 'fore_knee')]
+URSA_FRAMES, URSA_FPS = 60, 5
 
 
-def ursa_offsets(i):
-    """Where each star of the bear sits relative to home in frame i.
-
-    Frames 40-75 let the stars wander a small loop and come home, a cell at
-    a time; every other frame they hold their places."""
-    rng = random.Random(29)
-    out = {}
-    for name in URSA:
-        reach_c, reach_r = rng.uniform(2.5, 4.5), rng.uniform(1, 2)
-        turn, spin = rng.uniform(0, TAU), rng.choice((-1, 1))
-        u = (i - 40) / 36
-        if not 0 < u < 1:
-            out[name] = (0, 0)
-            continue
-        e = math.sin(math.pi * u) ** 2
-        a = turn + spin * TAU * u
-        r, c = URSA[name][:2]
-        out[name] = (max(-r, min(URSA_H - 1 - r, round(reach_r * e * math.sin(a)))),
-                     max(-c, min(URSA_W - 1 - c, round(reach_c * e * math.cos(a)))))
-    return out
+def ursa_body(r, c):
+    """True inside the bear: a body, a head, and a fore and hind leg."""
+    body = ((c - 19) / 15) ** 2 + ((r - 5.5) / 4.6) ** 2 <= 1
+    head = ((c - 35) / 6) ** 2 + ((r - 4.5) / 3) ** 2 <= 1
+    legs = 9 <= r <= 13 and (5 <= c <= 11 or 28 <= c <= 33)
+    return body or head or legs
 
 
-def ursa_links_shown(i):
-    """How much of each line is drawn in frame i, as (cells drawn, fading).
-
-    The figure is whole from frame 0, unweaves tail first over frames 28-39,
-    and is traced again star to star over frames 78-111."""
-    shown = []
-    lengths = [len(link_cells(URSA[a][:2], URSA[b][:2])) for a, b in URSA_LINKS]
-    total = sum(lengths)
-    for n, length in enumerate(lengths):
-        if i < 28 or i >= 112:
-            shown.append((length, 0))
-        elif i < 40:
-            fade = i - 28 - n * 10 // len(lengths)
-            shown.append((length, 0) if fade < 0 else (length, 1) if fade < 2 else (0, 0))
-        elif i < 78:
-            shown.append((0, 0))
-        else:
-            drawn = (i - 78) * total / 34 - sum(lengths[:n])
-            shown.append((max(0, min(length, math.floor(drawn))), 0))
-    return shown
+def ursa_sky():
+    """The stars as (row, column, rest glyph, twinkle glyph, beat)."""
+    lines = {cell for a, b in URSA_LINKS for cell, _ in link_cells(URSA[a], URSA[b])}
+    bright = set(URSA.values())
+    stars = [(r, c, '*', '+', 7 + n * 5) for n, (r, c) in enumerate(URSA.values())]
+    taken = set()
+    for r, c in bright | lines:
+        taken |= {(r, c - 1), (r, c), (r, c + 1)}
+    for r in range(URSA_H):
+        for c in range(URSA_W):
+            inside = ursa_body(r, c)
+            roll = hash2(c + 101, r + 37)
+            if (r, c) in taken or roll > (.16 if inside else .035):
+                continue
+            if any((r + dr, c + dc) in taken for dr in (-1, 0, 1) for dc in (-1, 0, 1)):
+                continue
+            mid = inside and roll < .05
+            stars.append((r, c, '+' if mid else '.', '*' if mid else '+', int(hash2(c, r + 9) * URSA_FRAMES)))
+            taken.add((r, c))
+    return stars
 
 
 def ursa_frames():
-    lines, stars = [], []
+    lines = grid(URSA_W, URSA_H)
+    for a, b in URSA_LINKS:
+        for (r, c), g in link_cells(URSA[a], URSA[b]):
+            put(lines, c, r, g)
+    stars = ursa_sky()
+    frames = []
     for i in range(URSA_FRAMES):
-        offsets = ursa_offsets(i)
-        place = {k: (r + offsets[k][0], c + offsets[k][1]) for k, (r, c, _) in URSA.items()}
-        arr = grid(URSA_W, URSA_H)
-        for ((a, b), (drawn, fading)) in zip(URSA_LINKS, ursa_links_shown(i)):
-            for (r, c), g in link_cells(place[a], place[b])[:drawn]:
-                put(arr, c, r, '.' if fading else g)
-        lines.append(arr)
         sky = grid(URSA_W, URSA_H)
-        for n, (r, c) in enumerate(URSA_FIELD):
-            beat = (i + n * 37) % 60
-            put(sky, c, r, '+' if 30 <= beat < 33 else '.' if beat < 44 else ' ')
-        for n, (name, (r, c, mag)) in enumerate(URSA.items()):
-            beat = (i + n * 23) % 40
-            glyph = STAR[mag]
-            if mag == 2 and beat in (5, 6):
-                glyph = '+'
-            elif mag == 1 and beat == 9:
-                glyph = '*'
-            elif mag == 0 and beat in (13, 14, 15):
-                glyph = '+'
-            put(sky, place[name][1], place[name][0], glyph)
-        stars.append(sky)
-    for i in range(URSA_FRAMES):  # a wandering star steps a single cell at a time
-        o0, o1 = ursa_offsets(i), ursa_offsets((i + 1) % URSA_FRAMES)
-        for k in URSA:
-            assert max(abs(o0[k][0] - o1[k][0]), abs(o0[k][1] - o1[k][1])) <= 1, f'ursa: {k} jumps in frame {i}'
-            r, c = URSA[k][0] + o0[k][0], URSA[k][1] + o0[k][1]
-            assert 0 <= r < URSA_H and 0 <= c < URSA_W, f'ursa: {k} leaves the sky in frame {i}'
-    return lines, stars
+        for r, c, rest, flash, beat in stars:
+            put(sky, c, r, flash if (i - beat) % URSA_FRAMES < 2 else rest)
+        frames.append(sky)
+    for i in range(URSA_FRAMES):  # a quiet sky: only a few glyphs change between frames
+        changed = sum(x != y for r0, r1 in zip(frames[i], frames[(i + 1) % URSA_FRAMES]) for x, y in zip(r0, r1))
+        assert changed <= 4, f'ursa: {changed} stars change at frame {i}'
+    return [lines] * URSA_FRAMES, frames
 
 
 # The sky band: stars in three depths wheel left across a repeating tile, the

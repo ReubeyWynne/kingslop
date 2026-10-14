@@ -22,7 +22,7 @@ const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript
 const scenes = [
   ['campfire', '/', '.ascii-home-hero .ascii-campfire', 1 / 12, 72],
   ['hearth', '/bear-hunt/', '.ascii-hearth', 1 / 6, 36],
-  ['ursa', '/bear-hunt/', '.ascii-mini--ursa', 0.1, 120],
+  ['ursa', '/bear-hunt/', '.ascii-mini--ursa', 0.2, 60],
   ['sky', '/bear-hunt/', '.ascii-march-band', 1 / 8, 288],
   ['forge', '/bear-hunt/', '.ascii-rewards-intro .ascii-forge', 0.1, 24],
   ['charm', '/vikings-vengeance/', '.ascii-mini--charm', 0.2, 32],
