@@ -113,21 +113,25 @@
 .ascii-mini--ursa::before { color: var(--ink-muted); }
 .ascii-mini--ursa::after { position: absolute; inset: 0; display: block; white-space: pre; color: var(--amber); }
 /* Aurora over Bear Hunt. Like the fire, the aurora keeps a literal palette:
-   the muted colours of a real display, a pale hem, green rays fading to
-   violet, a fainter far curtain behind and a low glow on the horizon. The
-   ridge and the Dipper's stars are ink. */
-.ascii-mini--aurora { width: 48ch; height: 21.25em; font-size: clamp(9px, 2.6vw, 14px); }
+   the muted colours of a real display, a pink fringe at the hem, a little
+   green, then rose and violet, a fainter far curtain behind and a low glow on
+   the horizon. The Great Bear's stars are bright ink and the light that
+   traces them is pale pink; the background stars and the ridge are dim. */
+.ascii-mini--aurora { width: 48ch; height: 26.25em; font-size: clamp(9px, 2.6vw, 14px); }
 .ascii-mini--aurora::before { color: var(--ink-muted); }
 .ascii-mini--aurora > span { position: absolute; inset: 0; display: block; white-space: pre; }
 .ascii-mini--aurora > span::before { display: block; white-space: pre; }
-.ascii-mini--aurora .aurora-glow { color: #4f8a66; opacity: .55; }
-.ascii-mini--aurora .aurora-far { color: #5f9a86; opacity: .6; }
-.ascii-mini--aurora .aurora-far-top { color: #7a6c9e; opacity: .55; }
-.ascii-mini--aurora .aurora-hem { color: #b9dcaa; opacity: .9; }
-.ascii-mini--aurora .aurora-green { color: #6aa77a; opacity: .85; }
-.ascii-mini--aurora .aurora-violet { color: #85729f; opacity: .75; }
-.ascii-mini--aurora .aurora-flare { color: #e2f2da; }
-.ascii-mini--aurora .aurora-stars { color: var(--ink-dim); }
+.ascii-mini--aurora .aurora-glow { color: #7a5f92; opacity: .5; }
+.ascii-mini--aurora .aurora-far { color: #b0729f; opacity: .55; }
+.ascii-mini--aurora .aurora-far-top { color: #7d68b0; opacity: .55; }
+.ascii-mini--aurora .aurora-hem { color: #e7a3c9; opacity: .9; }
+.ascii-mini--aurora .aurora-green { color: #6fae95; opacity: .75; }
+.ascii-mini--aurora .aurora-rose { color: #c4739f; opacity: .85; }
+.ascii-mini--aurora .aurora-violet { color: #8c70c2; opacity: .8; }
+.ascii-mini--aurora .aurora-flare { color: #f7e4f0; }
+.ascii-mini--aurora .aurora-stars { color: var(--ink-muted); opacity: .75; }
+.ascii-mini--aurora .aurora-bear { color: var(--ink); }
+.ascii-mini--aurora .aurora-trace { color: #f6d9ec; }
 .ascii-mini--aurora .aurora-meteors-0,
 .ascii-mini--aurora .aurora-meteors-1 { color: var(--ink); }
 @media (max-width: 400px) { .ascii-motif-rail { gap: .5rem; margin-top: 1rem; } .ascii-mini { font-size: 9px; } }

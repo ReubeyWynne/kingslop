@@ -1114,10 +1114,10 @@ def constellations():
 # of times per loop and the noise travels a circle in noise space, so the
 # last frame runs straight into the first.
 
-AURORA_W, AURORA_H, AURORA_FPS = 48, 17, 6
+AURORA_W, AURORA_H, AURORA_FPS = 48, 21, 6
 AURORA_RAMP = ' .,:;=+*#'
 SKY_LOOP = 31.7
-SKY_LAYERS = ('glow', 'far', 'far-top', 'hem', 'green', 'violet', 'flare')
+SKY_LAYERS = ('glow', 'far', 'far-top', 'hem', 'green', 'rose', 'violet', 'flare')
 
 
 def aurora_ground(c):
@@ -1191,8 +1191,8 @@ def flares(frames):
         for age in range(life):
             i = (start + age) % frames
             fade = 1 - max(0, age - 2 * height) / (life - 2 * height)
-            base = next((r for r in range(aurora_ground(c) - 2, 4, -1) if curtain(c, r, i / AURORA_FPS, 12.2, 3.2, 0)[1] >= 0), 12)
-            for r in range(max(4, base - min(height, age // 2)), base + 1):
+            base = next((r for r in range(aurora_ground(c) - 2, 4, -1) if curtain(c, r, i / AURORA_FPS, 16.2, 4.4, 0)[1] >= 0), 15)
+            for r in range(max(8, base - min(height, age // 2)), base + 1):
                 heat = fade * (1 - (base - r) / (height + 2))
                 if heat > .2:
                     out[i, r, c] = '*+=:'[min(3, int((1 - heat) * 4))]
@@ -1215,16 +1215,16 @@ def aurora_sky_frames(keep_clear):
                 if (i, r, c) in flare:
                     out['flare'][r][c] = flare[i, r, c]
                     continue
-                top = min(1, (r - .5) / 3)  # thin at the top of the sky, where the stars are
-                v, d = curtain(c, r, t, 12.2, 3.2, 0)
+                top = max(0, min(1, (r - 6) / 2.5))  # dark at the top of the sky, where the bear is
+                v, d = curtain(c, r, t, 16.2, 4.4, 0)
                 v *= top
                 if v > .12:
-                    out['hem' if d < 1 else 'green' if d < 4.5 else 'violet'][r][c] = ramp(v)
+                    out['hem' if d < .8 else 'green' if d < 2.2 else 'rose' if d < 4.6 else 'violet'][r][c] = ramp(v)
                     continue
-                v, d = curtain(c, r, t, 7.6, 2.6, 4.1)
+                v, d = curtain(c, r, t, 12.2, 3.4, 4.1)
                 v *= .62 * top
                 if v > .1:
-                    out['far' if d < 3 else 'far-top'][r][c] = ramp(v)
+                    out['far' if d < 1.5 else 'far-top'][r][c] = ramp(v)
                     continue
                 v = glow(c, r, t)
                 if v > .08:
@@ -1234,36 +1234,91 @@ def aurora_sky_frames(keep_clear):
     return layers
 
 
-# The Big Dipper, the bear's own stars, high in the sky the curtains rise into.
-# Only the stars: the sky has no lines in it.
-DIPPER = [(0, 27), (1, 31), (1, 35), (2, 39), (4, 40), (4, 46), (1, 46)]
+# The Great Bear, high above the curtains: the Dipper is its tail and back,
+# with a head and two legs below. The sky has no lines in it; instead, every
+# 16.3 s a light runs star to star along the figure, leaving a trail that
+# fades behind it, and the whole bear brightens for a moment before it rests.
+BEAR_STARS = {
+    'alkaid': (0, 4), 'mizar': (1, 9), 'alioth': (1, 14), 'megrez': (2, 19),
+    'dubhe': (1, 27), 'merak': (4, 27), 'phecda': (4, 20),
+    'h': (0, 32), 'muscida': (1, 38), 'upsilon': (3, 34),
+    'theta': (5, 37), 'kappa': (6, 41), 'chi': (6, 23), 'nu': (6, 16),
+}
+BEAR_PATH = [('alkaid', 'mizar'), ('mizar', 'alioth'), ('alioth', 'megrez'), ('megrez', 'dubhe'),
+             ('dubhe', 'merak'), ('merak', 'phecda'), ('phecda', 'megrez'), ('dubhe', 'h'),
+             ('h', 'muscida'), ('muscida', 'upsilon'), ('upsilon', 'merak'), ('upsilon', 'theta'),
+             ('theta', 'kappa'), ('phecda', 'chi'), ('chi', 'nu')]
+TRACE_LOOP, TRACE_FPS = 16.3, 10
+BEAR_SPEED = 1.1  # cells a frame along the figure
+
+
+def bear_trace():
+    """When each line cell is passed, and when each star is reached."""
+    cells, reached, at = [], {'alkaid': 0}, 0.0
+    for a, b in BEAR_PATH:
+        at = max(at, reached.get(a, at))
+        path = link_cells(BEAR_STARS[a], BEAR_STARS[b])
+        for k, (cell, g) in enumerate(path):
+            cells.append((at + (k + 1) / BEAR_SPEED, cell, g))
+        at += (len(path) + 1) / BEAR_SPEED
+        reached[b] = min(reached.get(b, at), at)
+    return cells, reached, at
 
 
 def star_field():
-    return [(c, r) for r in range(0, 5) for c in range(AURORA_W)
-            if hash2(c + 3, r * 7) < .04 and all(max(abs(r - dr), abs(c - dc)) > 1 for dr, dc in DIPPER)]
+    near = {(r + dr, c + dc) for r, c in BEAR_STARS.values() for dr in (-1, 0, 1) for dc in (-1, 0, 1)}
+    near |= {cell for a, b in BEAR_PATH for cell, _ in link_cells(BEAR_STARS[a], BEAR_STARS[b])}
+    return [(c, r) for r in range(0, 7) for c in range(AURORA_W)
+            if hash2(c + 3, r * 7) < .05 and (r, c) not in near]
 
 
 def aurora_stars():
-    """The Dipper's stars and the field stars twinkle on their own beats over a
-    7.4 s loop, out of step with the curtains."""
-    lines = grid(AURORA_W, AURORA_H)
+    """The background stars: small, dim, twinkling on a 7.4 s loop."""
     field = star_field()
     frames = []
     count = round(7.4 * AURORA_FPS)
     for i in range(count):
-        arr = [row[:] for row in lines]
-        for n, (r, c) in enumerate(DIPPER):
-            arr[r][c] = '+' if (i + n * 11) % count == 3 else '*'
-        for n, (c, r) in enumerate(field):
+        arr = grid(AURORA_W, AURORA_H)
+        for c, r in field:
             beat = (i + int(hash2(c, r) * count)) % count
             arr[r][c] = '+' if beat == 5 else "'" if beat in (4, 6) else '.'
         frames.append(arr)
     return frames, 7.4
 
 
+def bear_frames():
+    """The bear's stars at rest, and the trace: a light that runs the figure,
+    the trail it leaves, and the stars it lights."""
+    cells, reached, length = bear_trace()
+    count = round(TRACE_LOOP * TRACE_FPS)
+    start = 20
+    shine = start + length + 2  # the whole bear holds its light for a moment
+    rest, trace = [], []
+    for i in range(count):
+        stars, light = grid(AURORA_W, AURORA_H), grid(AURORA_W, AURORA_H)
+        for at, (r, c), g in cells:
+            age = i - start - at
+            if 0 <= age < 12:
+                light[r][c] = g
+            elif 12 <= age < 20:
+                light[r][c] = '.'
+        for n, (name, (r, c)) in enumerate(BEAR_STARS.items()):
+            age = i - start - reached[name]
+            lit = 0 <= age < 16 or shine <= i < shine + 18
+            if lit:
+                light[r][c] = '*'
+            else:
+                stars[r][c] = '+' if (i + n * 13) % 40 == 7 else '*'
+        rest.append(stars)
+        trace.append(light)
+    assert shine + 18 < count, 'bear trace runs past its loop'
+    return rest, trace
+
+
 def dipper_cells():
-    clear = {(r + dr, c + dc) for r, c in DIPPER for dr in (-1, 0, 1) for dc in (-1, 0, 1)}
+    """Cells the curtains leave dark so no glyph is drawn over a star."""
+    clear = {(r + dr, c + dc) for r, c in BEAR_STARS.values() for dr in (-1, 0, 1) for dc in (-1, 0, 1)}
+    clear |= {cell for a, b in BEAR_PATH for cell, _ in link_cells(BEAR_STARS[a], BEAR_STARS[b])}
     return clear | {(r, c) for c, r in star_field()}
 
 
@@ -1293,6 +1348,9 @@ def aurora():
         css.append(animation(f'.ascii-mini--aurora .aurora-{name}::before', f'ascii-aurora-{name}', frames, SKY_LOOP))
     stars, star_loop = aurora_stars()
     css.append(animation('.ascii-mini--aurora .aurora-stars::before', 'ascii-aurora-stars', stars, star_loop))
+    rest, trace = bear_frames()
+    css.append(animation('.ascii-mini--aurora .aurora-bear::before', 'ascii-aurora-bear', rest, TRACE_LOOP))
+    css.append(animation('.ascii-mini--aurora .aurora-trace::before', 'ascii-aurora-trace', trace, TRACE_LOOP))
     for n, (seconds, starts) in enumerate(((11.3, (20,)), (17.9, (30, 80)))):
         count = round(seconds * AURORA_FPS)
         css.append(animation(f'.ascii-mini--aurora .aurora-meteors-{n}::before', f'ascii-aurora-meteors-{n}',
