@@ -117,7 +117,7 @@
    green, then rose and violet, a fainter far curtain behind and a low glow on
    the horizon. The Great Bear's stars are bright ink and the light that
    traces them is pale pink; the background stars and the ridge are dim. */
-.ascii-mini--aurora { width: 48ch; height: 26.25em; font-size: clamp(9px, 2.6vw, 14px); }
+.ascii-mini--aurora { width: 48ch; height: 18.75em; font-size: clamp(9px, 2.6vw, 14px); }
 .ascii-mini--aurora::before { color: var(--ink-muted); }
 .ascii-mini--aurora > span { position: absolute; inset: 0; display: block; white-space: pre; }
 .ascii-mini--aurora > span::before { display: block; white-space: pre; }

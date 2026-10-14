@@ -1102,11 +1102,12 @@ def constellations():
 # Built the way the campfire is: fields sampled per cell and read through a
 # density ramp, with layers on top whose loops never line up.
 #
-#   sky          31.7 s  three depths composited cell by cell: a low glow on
+#   sky          32.0 s  three depths composited cell by cell: a low glow on
 #                        the horizon, a far curtain high and faint, and a near
 #                        curtain in front whose rays run from a pale hem up
 #                        through green to violet; now and then a ray brightens
-#   stars         7.4 s  the Big Dipper and field stars twinkling in place
+#   stars         7.4 s  field stars twinkling in place
+#   bear         16.0 s  the Great Bear, set in the curtains, traced star to star
 #   meteors      11.3, 17.9 s
 #
 # The motion is slow travelling waves: rays drift along the curtain and folds
@@ -1114,26 +1115,41 @@ def constellations():
 # of times per loop and the noise travels a circle in noise space, so the
 # last frame runs straight into the first.
 
-AURORA_W, AURORA_H, AURORA_FPS = 48, 21, 6
+AURORA_W, AURORA_H, AURORA_FPS = 48, 15, 6
 AURORA_RAMP = ' .,:;=+*#'
-SKY_LOOP = 31.7
+SKY_LOOP = 32.0  # twice the bear's trace, so the curtains can step aside for it
 SKY_LAYERS = ('glow', 'far', 'far-top', 'hem', 'green', 'rose', 'violet', 'flare')
 
 
 def aurora_ground(c):
-    return int(AURORA_H - 2.6 + 1.2 * math.sin(c * .13 + 1) + .8 * math.sin(c * .31 + .4))
+    return int(AURORA_H - 2.2 + .6 * math.sin(c * .13 + 1) + .5 * math.sin(c * .31 + .4))
+
+
+def tree_height(c):
+    """How many rows of spruce stand on the ridge at a column."""
+    if c < 1 or hash2(c, 41) > .26 or hash2(c - 1, 41) <= .26:
+        return 0  # lone spruces, never two side by side
+    return 2 if hash2(c, 17) < .45 else 1
 
 
 def aurora_land():
-    """The ridge line and a little snow under it; it never moves."""
+    """A spruce treeline on snow; it never moves."""
     arr = grid(AURORA_W, AURORA_H)
     for c in range(AURORA_W):
-        g, n = aurora_ground(c), aurora_ground(c + 1)
-        arr[g][c] = '_' if n == g else '/' if n < g else '\\'
+        g, h = aurora_ground(c), tree_height(c)
+        for k in range(h):
+            arr[g - k][c] = '^' if k == h - 1 else 'A'
+        if not h:
+            arr[g][c] = '.' if hash2(c, 9) < .5 else ' '
         for r in range(g + 1, AURORA_H):
             if hash2(c, r + 5) < .22:
                 arr[r][c] = '.' if hash2(r, c) < .7 else ','
     return arr
+
+
+def skyline(c):
+    """The first row of land at a column, tree tops included."""
+    return aurora_ground(c) - max(0, tree_height(c) - 1)
 
 
 def wave(t, loop, turns):
@@ -1191,17 +1207,19 @@ def flares(frames):
         for age in range(life):
             i = (start + age) % frames
             fade = 1 - max(0, age - 2 * height) / (life - 2 * height)
-            base = next((r for r in range(aurora_ground(c) - 2, 4, -1) if curtain(c, r, i / AURORA_FPS, 16.2, 4.4, 0)[1] >= 0), 15)
-            for r in range(max(8, base - min(height, age // 2)), base + 1):
+            base = next((r for r in range(skyline(c) - 1, 3, -1) if curtain(c, r, i / AURORA_FPS, 11.2, 5.6, 0)[1] >= 0), 15)
+            for r in range(max(4, base - min(height, age // 2)), base + 1):
                 heat = fade * (1 - (base - r) / (height + 2))
                 if heat > .2:
                     out[i, r, c] = '*+=:'[min(3, int((1 - heat) * 4))]
     return out
 
 
-def aurora_sky_frames(keep_clear):
+def aurora_sky_frames(keep_clear, passing):
     """The three depths composited per cell, nearest first, each depth and
-    height keeping its own layer so it can take its own colour."""
+    height keeping its own layer so it can take its own colour. The bear sits
+    in the curtains: its stars always show, and the cells its trace passes
+    through go dark for the frames the trace is there."""
     count = round(SKY_LOOP * AURORA_FPS)
     flare = flares(count)
     layers = {k: [] for k in SKY_LAYERS}
@@ -1209,19 +1227,19 @@ def aurora_sky_frames(keep_clear):
         t = i / AURORA_FPS
         out = {k: grid(AURORA_W, AURORA_H) for k in layers}
         for c in range(AURORA_W):
-            for r in range(1, aurora_ground(c)):
-                if (r, c) in keep_clear:
+            for r in range(1, skyline(c)):
+                if (r, c) in keep_clear or (r, c) in passing[i]:
                     continue
                 if (i, r, c) in flare:
                     out['flare'][r][c] = flare[i, r, c]
                     continue
-                top = max(0, min(1, (r - 6) / 2.5))  # dark at the top of the sky, where the bear is
-                v, d = curtain(c, r, t, 16.2, 4.4, 0)
+                top = max(0, min(1, (r - 1) / 3))  # the curtains thin out towards the top of the sky
+                v, d = curtain(c, r, t, 11.2, 5.6, 0)
                 v *= top
                 if v > .12:
                     out['hem' if d < .8 else 'green' if d < 2.2 else 'rose' if d < 4.6 else 'violet'][r][c] = ramp(v)
                     continue
-                v, d = curtain(c, r, t, 12.2, 3.4, 4.1)
+                v, d = curtain(c, r, t, 8.6, 4.2, 4.1)
                 v *= .62 * top
                 if v > .1:
                     out['far' if d < 1.5 else 'far-top'][r][c] = ramp(v)
@@ -1248,7 +1266,7 @@ BEAR_PATH = [('alkaid', 'mizar'), ('mizar', 'alioth'), ('alioth', 'megrez'), ('m
              ('dubhe', 'merak'), ('merak', 'phecda'), ('phecda', 'megrez'), ('dubhe', 'h'),
              ('h', 'muscida'), ('muscida', 'upsilon'), ('upsilon', 'merak'), ('upsilon', 'theta'),
              ('theta', 'kappa'), ('phecda', 'chi'), ('chi', 'nu')]
-TRACE_LOOP, TRACE_FPS = 16.3, 10
+TRACE_LOOP, TRACE_FPS = SKY_LOOP / 2, 10
 BEAR_SPEED = 1.1  # cells a frame along the figure
 
 
@@ -1316,10 +1334,21 @@ def bear_frames():
 
 
 def dipper_cells():
-    """Cells the curtains leave dark so no glyph is drawn over a star."""
-    clear = {(r + dr, c + dc) for r, c in BEAR_STARS.values() for dr in (-1, 0, 1) for dc in (-1, 0, 1)}
-    clear |= {cell for a, b in BEAR_PATH for cell, _ in link_cells(BEAR_STARS[a], BEAR_STARS[b])}
+    """Cells the curtains always leave dark: every star and the cell either side of the bear's."""
+    clear = {(r, c + dc) for r, c in BEAR_STARS.values() for dc in (-1, 0, 1)}
     return clear | {(r, c) for c, r in star_field()}
+
+
+def trace_passing(trace):
+    """For each sky frame, the cells the trace draws in at any moment of it."""
+    count = round(SKY_LOOP * AURORA_FPS)
+    out = []
+    for i in range(count):
+        a, b = i / AURORA_FPS, (i + 1) / AURORA_FPS
+        frames = range(int(a * TRACE_FPS), math.ceil(b * TRACE_FPS))
+        out.append({(r, c) for j in frames for r, row in enumerate(trace[j % len(trace)])
+                    for c, g in enumerate(row) if g != ' '})
+    return out
 
 
 def aurora_meteors(seed, frames, starts):
@@ -1344,11 +1373,11 @@ def aurora_meteors(seed, frames, starts):
 def aurora():
     css = ['/* aurora */',
            '.ascii-mini--aurora::before{content:' + content(aurora_land()) + '}']
-    for name, frames in aurora_sky_frames(dipper_cells()).items():
+    rest, trace = bear_frames()
+    for name, frames in aurora_sky_frames(dipper_cells(), trace_passing(trace)).items():
         css.append(animation(f'.ascii-mini--aurora .aurora-{name}::before', f'ascii-aurora-{name}', frames, SKY_LOOP))
     stars, star_loop = aurora_stars()
     css.append(animation('.ascii-mini--aurora .aurora-stars::before', 'ascii-aurora-stars', stars, star_loop))
-    rest, trace = bear_frames()
     css.append(animation('.ascii-mini--aurora .aurora-bear::before', 'ascii-aurora-bear', rest, TRACE_LOOP))
     css.append(animation('.ascii-mini--aurora .aurora-trace::before', 'ascii-aurora-trace', trace, TRACE_LOOP))
     for n, (seconds, starts) in enumerate(((11.3, (20,)), (17.9, (30, 80)))):
