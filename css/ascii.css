@@ -112,18 +112,20 @@
 .ascii-mini--ursa { width: 43ch; height: 18.75em; }
 .ascii-mini--ursa::before { color: var(--ink-muted); }
 .ascii-mini--ursa::after { position: absolute; inset: 0; display: block; white-space: pre; color: var(--amber); }
-/* Aurora over Bear Hunt: the curtains take the page's own signal, brightest
-   at the hem; the ridge and the Dipper's lines are ink. */
+/* Aurora over Bear Hunt. Like the fire, the aurora keeps a literal palette:
+   the colours of a real display, green low down, teal as the rays rise, a
+   violet and magenta curtain higher up, and white where a ray flares. The
+   ridge and the Dipper are ink. */
 .ascii-mini--aurora { width: 48ch; height: 21.25em; font-size: clamp(9px, 2.6vw, 14px); }
 .ascii-mini--aurora::before { color: var(--ink-muted); }
 .ascii-mini--aurora > span { position: absolute; inset: 0; display: block; white-space: pre; }
 .ascii-mini--aurora > span::before { display: block; white-space: pre; }
-.ascii-mini--aurora .aurora-lights::before {
-  color: transparent;
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--amber-dim) 55%, transparent) 15%, var(--amber-dim) 40%, var(--amber) 58%, color-mix(in srgb, var(--amber) 45%, var(--ink)) 70%);
-  -webkit-background-clip: text;
-  background-clip: text;
-}
+.ascii-mini--aurora .aurora-magenta { color: #d9629f; }
+.ascii-mini--aurora .aurora-violet { color: #9a72e0; }
+.ascii-mini--aurora .aurora-teal { color: #46c6c0; }
+.ascii-mini--aurora .aurora-green { color: #74da86; }
+.ascii-mini--aurora .aurora-hem { color: #d4ffc8; }
+.ascii-mini--aurora .aurora-flare { color: #f8fff4; }
 .ascii-mini--aurora .aurora-stars { color: var(--ink-dim); }
 .ascii-mini--aurora .aurora-meteors-0,
 .ascii-mini--aurora .aurora-meteors-1 { color: var(--ink); }
