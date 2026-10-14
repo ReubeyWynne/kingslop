@@ -112,6 +112,21 @@
 .ascii-mini--ursa { width: 43ch; height: 18.75em; }
 .ascii-mini--ursa::before { color: var(--ink-muted); }
 .ascii-mini--ursa::after { position: absolute; inset: 0; display: block; white-space: pre; color: var(--amber); }
+/* Aurora over Bear Hunt: the curtains take the page's own signal, brightest
+   at the hem; the ridge and the Dipper's lines are ink. */
+.ascii-mini--aurora { width: 48ch; height: 21.25em; font-size: clamp(9px, 2.6vw, 14px); }
+.ascii-mini--aurora::before { color: var(--ink-muted); }
+.ascii-mini--aurora > span { position: absolute; inset: 0; display: block; white-space: pre; }
+.ascii-mini--aurora > span::before { display: block; white-space: pre; }
+.ascii-mini--aurora .aurora-lights::before {
+  color: transparent;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--amber-dim) 55%, transparent) 15%, var(--amber-dim) 40%, var(--amber) 58%, color-mix(in srgb, var(--amber) 45%, var(--ink)) 70%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.ascii-mini--aurora .aurora-stars { color: var(--ink-dim); }
+.ascii-mini--aurora .aurora-meteors-0,
+.ascii-mini--aurora .aurora-meteors-1 { color: var(--ink); }
 @media (max-width: 400px) { .ascii-motif-rail { gap: .5rem; margin-top: 1rem; } .ascii-mini { font-size: 9px; } }
 
 /* ─── The march — a procession across a ruled band ────── */
@@ -248,6 +263,7 @@ html.deck-open .dust .ascii-ambient > span::before { animation-play-state: pause
   .ascii *, .ascii *::before, .ascii *::after,
   .ascii-mini::before, .ascii-mini::after, .ascii-march::before, .ascii-march::after,
   .ascii-mini--castle > span::before,
+  .ascii-mini--aurora > span::before,
   .ascii-ambient > span::before { animation: none !important; }
   .ascii-campfire .spark { opacity: 0; }
 }

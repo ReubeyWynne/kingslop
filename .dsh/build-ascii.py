@@ -1097,8 +1097,137 @@ def constellations():
     return '\n'.join(css) + '\n'
 
 
+
+# ── aurora: the night sky over the hunt ─────────────────────────────────
+# Built the way the campfire is: a field sampled per cell and read through a
+# density ramp. Curtains hang from a folded hem; rays rise from it and fade
+# with height. Every moving term travels a circle in noise space or turns a
+# whole number of times, so frame 96 is frame 0. Over it sit layers on their
+# own clashing periods: the Big Dipper and field stars twinkling in place,
+# and shooting stars that cross a cell per frame.
+
+AURORA_W, AURORA_H = 48, 17
+AURORA_LOOP, AURORA_FPS = 8.0, 12
+AURORA_RAMP = ' .,:;=+*#%'
+
+
+def aurora_orbit(t, speed):
+    r = speed * AURORA_LOOP / TAU
+    a = TAU * t / AURORA_LOOP
+    return r * math.cos(a), r * math.sin(a)
+
+
+def aurora_turn(t, rate):
+    return max(1, round(rate * AURORA_LOOP / TAU)) * TAU / AURORA_LOOP * t
+
+
+def aurora_ground(c):
+    return int(AURORA_H - 2.6 + 1.2 * math.sin(c * .13 + 1) + .8 * math.sin(c * .31 + .4))
+
+
+def aurora_light(c, r, t):
+    x = c / AURORA_W
+    hem = 11.4 + 1.7 * math.sin(x * 4.2 + aurora_turn(t, .8)) + 1.1 * math.sin(x * 9.7 - aurora_turn(t, 1.6))
+    ox, oy = aurora_orbit(t, .9)
+    bx, by = aurora_orbit(t, .35)
+    bright = .5 + .65 * noise(x * 2.5 + bx, 4.4 + by)
+    rays = max(0, min(1, (noise(x * 34 + ox, oy) * .7 + noise(x * 71 - ox * 1.7, 3 + oy) * .3 - .25) * 1.9))
+    d = hem - r
+    if d < -2:
+        return 0
+    v = bright * (.03 + 1.5 * rays ** 1.8) * (math.exp(-d / (1.8 + 4 * rays)) if d >= 0 else math.exp(d * 1.4))
+    if -1 <= d < 1:
+        v *= 1.2
+    v *= max(0, min(1, (r - 1) / 5))  # the curtains fade out before the Dipper
+    sx, sy = aurora_orbit(t, 1.4)
+    return v - .1 * noise(c * .4 + sx, r * .7 + sy)
+
+
+def aurora_frame(t):
+    arr = grid(AURORA_W, AURORA_H)
+    for c in range(AURORA_W):
+        for r in range(aurora_ground(c) - 1):
+            v = aurora_light(c, r, t)
+            if v > .1:
+                arr[r][c] = AURORA_RAMP[max(1, min(len(AURORA_RAMP) - 1, int(v * .95 * (len(AURORA_RAMP) - 1)) + 1))]
+    return arr
+
+
+def aurora_land():
+    """The ridge line and a little snow under it; it never moves."""
+    arr = grid(AURORA_W, AURORA_H)
+    for c in range(AURORA_W):
+        g, n = aurora_ground(c), aurora_ground(c + 1)
+        arr[g][c] = '_' if n == g else '/' if n < g else '\\'
+        for r in range(g + 1, AURORA_H):
+            if hash2(c, r + 5) < .22:
+                arr[r][c] = '.' if hash2(r, c) < .7 else ','
+    return arr
+
+
+# The Big Dipper, the bear's own stars, high in the sky the curtains rise into.
+DIPPER = [(0, 27), (1, 31), (1, 35), (2, 39), (4, 40), (4, 46), (1, 46)]
+DIPPER_LINKS = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 3)]
+
+
+def aurora_stars():
+    """The Dipper's lines stay put; its stars and the field stars twinkle on
+    their own beats over a 7.4 s loop, out of step with the curtains."""
+    lines = grid(AURORA_W, AURORA_H)
+    for a, b in DIPPER_LINKS:
+        for (r, c), g in link_cells(DIPPER[a], DIPPER[b]):
+            lines[r][c] = '.' if g == '-' else g
+    field = [(c, r) for r in range(0, 8) for c in range(AURORA_W)
+             if hash2(c + 3, r * 7) < .035 and all(max(abs(r - dr), abs(c - dc)) > 1 for dr, dc in DIPPER)]
+    frames = []
+    count = round(7.4 * AURORA_FPS / 2)
+    for i in range(count):
+        arr = [row[:] for row in lines]
+        for n, (r, c) in enumerate(DIPPER):
+            arr[r][c] = '+' if (i + n * 11) % count in (3, 4) else '*'
+        for n, (c, r) in enumerate(field):
+            beat = (i + int(hash2(c, r) * count)) % count
+            arr[r][c] = '+' if beat in (5, 6) else "'" if beat in (4, 7) else '.'
+        frames.append(arr)
+    return frames, 7.4
+
+
+def aurora_meteors(seed, frames, starts):
+    """Shooting stars: a head that crosses one cell a frame down a slope,
+    trailing a tail that thins, then nothing until the next one."""
+    rng = random.Random(seed)
+    out = [grid(AURORA_W, AURORA_H) for _ in range(frames)]
+    for start in starts:
+        c0, r0 = rng.randrange(14, 40), rng.randrange(0, 3)
+        run = rng.randrange(7, 12)
+        for k in range(run + 4):
+            arr = out[(start + k) % frames]
+            for lag, glyph in enumerate('*=-.'):
+                j = k - lag
+                if 0 <= j < run:
+                    c, r = c0 - j * 2, r0 + j // 2
+                    if 0 <= c < AURORA_W and r < 8 and arr[r][c] == ' ':
+                        arr[r][c] = glyph if lag else '*'
+    return out
+
+
+def aurora():
+    frames = [aurora_frame(i / AURORA_FPS) for i in range(int(AURORA_LOOP * AURORA_FPS))]
+    assert aurora_frame(AURORA_LOOP) == frames[0], 'aurora loop does not close'
+    stars, star_loop = aurora_stars()
+    css = ['/* aurora */',
+           '.ascii-mini--aurora::before{content:' + content(aurora_land()) + '}',
+           animation('.ascii-mini--aurora .aurora-lights::before', 'ascii-aurora', frames, AURORA_LOOP),
+           animation('.ascii-mini--aurora .aurora-stars::before', 'ascii-aurora-stars', stars, star_loop)]
+    for n, (seconds, starts) in enumerate(((11.3, (40,)), (17.9, (60, 160)))):
+        count = round(seconds * AURORA_FPS)
+        css.append(animation(f'.ascii-mini--aurora .aurora-meteors-{n}::before', f'ascii-aurora-meteors-{n}',
+                             aurora_meteors(83 + n, count, starts), seconds))
+    return '\n'.join(css) + '\n'
+
+
 if __name__ == '__main__':
     header = '/* Generated by .dsh/build-ascii.py — edit the generator, not this file.\n   Layout and colour for these scenes live in css/ascii.css. */\n'
-    write('css/ascii-frames.css', header + campfire() + hearth() + forge() + minis() + march() + constellations())
+    write('css/ascii-frames.css', header + campfire() + hearth() + forge() + minis() + march() + constellations() + aurora())
     print('wrote css/ascii-frames.css and _includes/ascii/campfire.html')
 
