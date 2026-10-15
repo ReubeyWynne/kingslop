@@ -115,23 +115,25 @@
 /* Aurora over Bear Hunt, seen looking straight up. Like the fire, the aurora
    keeps a literal palette: the muted colours of a real display, a pale green
    lower edge, green rays that turn pink and then violet at their tips, and a
-   fainter ribbon far off. The Great Bear's stars are bright ink and the
-   light that traces them is warm white; the background stars are dim. */
+   fainter ribbon far off over a violet haze. The aurora is translucent and
+   stacked in front of the stars, so the Great Bear (bright ink, traced in
+   warm white) shows through it; the background stars are dim. */
 .ascii-mini--aurora { width: 48ch; height: 18.75em; font-size: clamp(9px, 2.6vw, 14px); }
 .ascii-mini--aurora::before { color: var(--ink-muted); }
 .ascii-mini--aurora > span { position: absolute; inset: 0; display: block; white-space: pre; }
 .ascii-mini--aurora > span::before { display: block; white-space: pre; }
-.ascii-mini--aurora .aurora-far { color: #5f9e86; opacity: .4; }
-.ascii-mini--aurora .aurora-far-tip { color: #9a74b4; opacity: .4; }
-.ascii-mini--aurora .aurora-edge { color: #c8f2c4; opacity: .8; }
-.ascii-mini--aurora .aurora-green { color: #5fcf8e; opacity: .7; }
-.ascii-mini--aurora .aurora-pink { color: #e08cbd; opacity: .75; }
-.ascii-mini--aurora .aurora-violet { color: #a487de; opacity: .7; }
-.ascii-mini--aurora .aurora-flare { color: #e6fbdc; }
 .ascii-mini--aurora .aurora-stars { color: var(--ink-muted); opacity: .75; }
 .ascii-mini--aurora .aurora-bear { color: var(--ink); }
 .ascii-mini--aurora .aurora-trace { color: #fff4d6; }
-.ascii-mini--aurora .aurora-meteors { color: var(--ink); }
+.ascii-mini--aurora .aurora-veil { color: #8a6fb0; opacity: .3; }
+.ascii-mini--aurora .aurora-far { color: #5f9e86; opacity: .4; }
+.ascii-mini--aurora .aurora-far-tip { color: #9a74b4; opacity: .4; }
+.ascii-mini--aurora .aurora-violet { color: #a487de; opacity: .6; }
+.ascii-mini--aurora .aurora-pink { color: #e08cbd; opacity: .65; }
+.ascii-mini--aurora .aurora-green { color: #5fcf8e; opacity: .6; }
+.ascii-mini--aurora .aurora-edge { color: #c8f2c4; opacity: .7; }
+.ascii-mini--aurora .aurora-meteors-0,
+.ascii-mini--aurora .aurora-meteors-1 { color: var(--ink); }
 @media (max-width: 400px) { .ascii-motif-rail { gap: .5rem; margin-top: 1rem; } .ascii-mini { font-size: 9px; } }
 
 /* ─── The march — a procession across a ruled band ────── */

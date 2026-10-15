@@ -1100,31 +1100,32 @@ def constellations():
 
 # ── aurora: the night sky over the hunt ─────────────────────────────────
 # Looking straight up on a clear night: the Great Bear in the middle of the
-# sky and the aurora crossing it. Built the way the campfire is: fields
-# sampled per cell and read through a density ramp, with layers on top whose
-# loops never line up.
+# sky and the aurora drawn over it. Built the way the campfire is: fields
+# sampled per cell and read through a density ramp, in layers stacked back to
+# front, each on a loop of its own so the stack never lines up twice:
 #
-#   sky          32.0 s  two ribbons composited cell by cell, a faint one far
-#                        off and a near one in front. Each has a bright green
-#                        lower edge and rays that climb from it and turn pink
-#                        and then violet at their tips, each ray at its own
-#                        height. Now and then a ray brightens; now and then a
-#                        star falls across the sky.
 #   stars         7.4 s  field stars twinkling in place
-#   bear         16.0 s  the Great Bear, traced star to star
+#   bear         16.3 s  the Great Bear, traced star to star now and then
+#   veil         53.3 s  a faint violet haze drifting across the whole sky
+#   far ribbon   43.1 s  a faint ribbon high in the sky
+#   near ribbon  29.7 s  the main ribbon: a pale green lower edge and rays
+#                        that climb from it and turn pink and then violet at
+#                        their tips, each ray at its own height
+#   meteors      11.3, 17.9 s
 #
-# The motion is slow travelling waves: rays drift along the ribbon and folds
-# roll through its edge a turn or two per loop. Each wave turns a whole number
-# of times per loop and the noise travels a circle in noise space, so the
-# last frame runs straight into the first.
+# The aurora layers are translucent and sit in front of the stars, so the bear
+# shows through the curtains the way stars do through a real display. The
+# motion is slow travelling waves: rays drift along a ribbon and folds roll
+# through its edge a turn or two per loop. Each wave turns a whole number of
+# times per loop and the noise travels a circle in noise space, so each
+# layer's last frame runs straight into its first.
 
 AURORA_W, AURORA_H, AURORA_FPS = 48, 15, 6
 AURORA_RAMP = ' .,:;=+*'
-SKY_LOOP = 32.0  # twice the bear's trace, so the ribbons can step aside for it
-SKY_LAYERS = ('far', 'far-tip', 'edge', 'green', 'pink', 'violet', 'flare', 'meteors')
-# (edge row at the left, at the right, ray reach, brightness, seed)
-NEAR_RIBBON = (12.4, 6.8, 4.4, .95, 0)
-FAR_RIBBON = (4.6, 9.2, 3.0, .6, 4.1)
+# (edge row at the left, at the right, ray reach, brightness, seed, loop)
+NEAR_RIBBON = (12.4, 6.8, 4.4, .95, 0, 29.7)
+FAR_RIBBON = (4.6, 9.2, 3.0, .6, 4.1, 43.1)
+VEIL_LOOP = 53.3
 
 
 def wave(t, loop, turns):
@@ -1138,11 +1139,10 @@ def loop_orbit(t, loop, speed, seed=0):
     return r * math.cos(a) + seed * 7.1, r * math.sin(a) - seed * 3.3
 
 
-def ribbon(c, r, t, ribbon):
+def ribbon_at(c, r, t, ribbon):
     """How bright a ribbon is at a cell, how far the cell sits above its lower
     edge, and how far that ray reaches there."""
-    left, right, reach, gain, seed = ribbon
-    loop = SKY_LOOP
+    left, right, reach, gain, seed, loop = ribbon
     x = c / AURORA_W
     edge = (left + (right - left) * x + 1.3 * math.sin(TAU * x + wave(t, loop, 1) + seed)
             + .6 * math.sin(TAU * 2.3 * x - wave(t, loop, 2) + 1.3 + seed))
@@ -1166,88 +1166,71 @@ def ramp(v):
     return AURORA_RAMP[max(1, min(len(AURORA_RAMP) - 1, int(v * .9 * (len(AURORA_RAMP) - 1)) + 1))]
 
 
-def tint(c, r, t, d, span, seed):
+def tint(c, r, t, d, span, seed, loop):
     """Green low on a ray, pink and then violet towards its tip. Where the
     colour turns depends on the ray's own height and a slow wander, so the
     hues follow the rays instead of lying in bands."""
-    ox, oy = loop_orbit(t, SKY_LOOP, .35, seed + 7)
-    turn = span * (.75 + .5 * noise(c * .3 + ox, oy))
+    ox, oy = loop_orbit(t, loop, .35, seed + 7)
+    turn = span * (.45 + .45 * noise(c * .3 + ox, oy))
     if d < turn:
         return 'green'
-    return 'pink' if d < turn + .5 * span + .6 else 'violet'
+    return 'pink' if d < turn + .35 * span + .5 else 'violet'
 
 
-def flares(frames):
-    """Now and then a ray brightens: it climbs from the edge a row every other
-    frame, holds, and fades, each at its own place and time."""
-    rng = random.Random(211)
-    out = {}
-    for k in range(4):
-        start = rng.randrange(frames)
-        c = rng.randrange(4, AURORA_W - 4)
-        height, life = rng.randrange(3, 5), rng.randrange(14, 20)
-        for age in range(life):
-            i = (start + age) % frames
-            fade = 1 - max(0, age - 2 * height) / (life - 2 * height)
-            base = next((r for r in range(AURORA_H - 1, 0, -1)
-                         if ribbon(c, r, i / AURORA_FPS, NEAR_RIBBON)[1] >= 0), AURORA_H - 1)
-            for r in range(max(1, base - min(height, age // 2)), base + 1):
-                heat = fade * (1 - (base - r) / (height + 2))
-                if heat > .2:
-                    out[i, r, c] = '*+=:'[min(3, int((1 - heat) * 4))]
-    return out
+def ribbon_frames(ribbon, hues):
+    """One ribbon on its own loop, each hue in its own layer so it can take
+    its own colour. The hues partition the ribbon's cells, so within a ribbon
+    no two glyphs ever share a cell."""
+    loop = ribbon[5]
+    layers = {k: [] for k in hues}
+    for i in range(round(loop * AURORA_FPS)):
+        t = i / AURORA_FPS
+        out = {k: grid(AURORA_W, AURORA_H) for k in hues}
+        for c in range(AURORA_W):
+            for r in range(AURORA_H):
+                v, d, span = ribbon_at(c, r, t, ribbon)
+                if v > .12:
+                    hue = 'edge' if d < .7 else tint(c, r, t, d, span, ribbon[4], loop)
+                    hue = hue if hue in hues else hues[0] if hue in ('edge', 'green') else hues[-1]
+                    out[hue][r][c] = ramp(v)
+        for k in hues:
+            layers[k].append(out[k])
+    return layers
 
 
-def meteors(frames):
+def veil_frames():
+    """A faint haze that wanders across the sky behind the ribbons' glow."""
+    frames = []
+    for i in range(round(VEIL_LOOP * AURORA_FPS)):
+        t = i / AURORA_FPS
+        ox, oy = loop_orbit(t, VEIL_LOOP, .5, 11)
+        arr = grid(AURORA_W, AURORA_H)
+        for c in range(AURORA_W):
+            for r in range(AURORA_H):
+                v = noise(c * .09 + ox, r * .19 + oy) * 1.2 - .95 + .25 * noise(c * .5 - oy, r * .7 + ox)
+                if v > .08:
+                    arr[r][c] = '.' if v < .18 else ','
+        frames.append(arr)
+    return frames
+
+
+def aurora_meteors(seed, frames, starts):
     """Shooting stars: a head that crosses one cell a frame down a slope,
     trailing a tail that thins, then nothing until the next one."""
-    rng = random.Random(83)
-    out = {}
-    for start in (24, 101, 158):
+    rng = random.Random(seed)
+    out = [grid(AURORA_W, AURORA_H) for _ in range(frames)]
+    for start in starts:
         c0, r0 = rng.randrange(16, 44), rng.randrange(0, 6)
         run = rng.randrange(6, 9)
         for k in range(run + 4):
-            i = (start + k) % frames
+            arr = out[(start + k) % frames]
             for lag, glyph in enumerate('*=-.'):
                 j = k - lag
                 if 0 <= j < run:
                     c, r = c0 - j * 2, r0 + j // 2
-                    if 0 <= c < AURORA_W and r < AURORA_H and (i, r, c) not in out:
-                        out[i, r, c] = glyph
+                    if 0 <= c < AURORA_W and r < AURORA_H and arr[r][c] == ' ':
+                        arr[r][c] = glyph
     return out
-
-
-def aurora_sky_frames(keep_clear, passing):
-    """The two ribbons composited per cell, nearest first, each hue keeping its
-    own layer so it can take its own colour. The bear sits in the ribbons: its
-    stars always show, and the cells its trace or a shooting star passes
-    through go dark for the frames they are there."""
-    count = round(SKY_LOOP * AURORA_FPS)
-    flare, falling = flares(count), meteors(count)
-    layers = {k: [] for k in SKY_LAYERS}
-    for i in range(count):
-        t = i / AURORA_FPS
-        out = {k: grid(AURORA_W, AURORA_H) for k in layers}
-        for c in range(AURORA_W):
-            for r in range(AURORA_H):
-                if (i, r, c) in falling:
-                    out['meteors'][r][c] = falling[i, r, c]
-                    continue
-                if (r, c) in keep_clear or (r, c) in passing[i]:
-                    continue
-                if (i, r, c) in flare:
-                    out['flare'][r][c] = flare[i, r, c]
-                    continue
-                v, d, span = ribbon(c, r, t, NEAR_RIBBON)
-                if v > .13:
-                    out['edge' if d < .7 else tint(c, r, t, d, span, 0)][r][c] = ramp(v)
-                    continue
-                v, d, span = ribbon(c, r, t, FAR_RIBBON)
-                if v > .11:
-                    out['far' if tint(c, r, t, d, span, 4) == 'green' else 'far-tip'][r][c] = ramp(v)
-        for k in layers:
-            layers[k].append(out[k])
-    return layers
 
 
 # The Great Bear in the middle of the sky, placed from its stars' real right
@@ -1268,7 +1251,7 @@ BEAR_PATH = [('alkaid', 'mizar'), ('mizar', 'alioth'), ('alioth', 'megrez'), ('m
              ('h', 'muscida'), ('h', 'upsilon'), ('upsilon', 'merak'), ('upsilon', 'theta'),
              ('theta', 'kappa'), ('kappa', 'iota'), ('merak', 'psi'), ('psi', 'mu'), ('mu', 'lambda'),
              ('phecda', 'chi'), ('chi', 'nu'), ('nu', 'xi')]
-TRACE_LOOP, TRACE_FPS = SKY_LOOP / 2, 10
+TRACE_LOOP, TRACE_FPS = 16.3, 10
 BEAR_SPEED = 1.1  # cells a frame along the figure
 
 
@@ -1335,34 +1318,24 @@ def bear_frames():
     return rest, trace
 
 
-def dipper_cells():
-    """Cells the curtains always leave dark: every star and the cell either side of the bear's."""
-    clear = {(r, c + dc) for r, c in BEAR_STARS.values() for dc in (-1, 0, 1)}
-    return clear | {(r, c) for c, r in star_field()}
-
-
-def trace_passing(trace):
-    """For each sky frame, the cells the trace draws in at any moment of it."""
-    count = round(SKY_LOOP * AURORA_FPS)
-    out = []
-    for i in range(count):
-        a, b = i / AURORA_FPS, (i + 1) / AURORA_FPS
-        frames = range(int(a * TRACE_FPS), math.ceil(b * TRACE_FPS))
-        out.append({(r, c) for j in frames for r, row in enumerate(trace[j % len(trace)])
-                    for c, g in enumerate(row) if g != ' '})
-    return out
-
-
 def aurora():
     css = ['/* aurora */']
-    rest, trace = bear_frames()
-    for name, frames in aurora_sky_frames(dipper_cells(), trace_passing(trace)).items():
-        css.append(animation(f'.ascii-mini--aurora .aurora-{name}::before', f'ascii-aurora-{name}', frames, SKY_LOOP))
+    sel = '.ascii-mini--aurora .aurora-{}::before'
     stars, star_loop = aurora_stars()
-    css.append(animation('.ascii-mini--aurora .aurora-stars::before', 'ascii-aurora-stars', stars, star_loop))
-    css.append(animation('.ascii-mini--aurora .aurora-bear::before', 'ascii-aurora-bear', rest, TRACE_LOOP))
-    css.append(animation('.ascii-mini--aurora .aurora-trace::before', 'ascii-aurora-trace', trace, TRACE_LOOP))
+    css.append(animation(sel.format('stars'), 'ascii-aurora-stars', stars, star_loop))
+    rest, trace = bear_frames()
+    css.append(animation(sel.format('bear'), 'ascii-aurora-bear', rest, TRACE_LOOP))
+    css.append(animation(sel.format('trace'), 'ascii-aurora-trace', trace, TRACE_LOOP))
+    css.append(animation(sel.format('veil'), 'ascii-aurora-veil', veil_frames(), VEIL_LOOP))
+    for ribbon, hues in ((FAR_RIBBON, ('far', 'far-tip')), (NEAR_RIBBON, ('edge', 'green', 'pink', 'violet'))):
+        for name, frames in ribbon_frames(ribbon, hues).items():
+            css.append(animation(sel.format(name), f'ascii-aurora-{name}', frames, ribbon[5]))
+    for n, (seconds, starts) in enumerate(((11.3, (20,)), (17.9, (30, 80)))):
+        count = round(seconds * AURORA_FPS)
+        css.append(animation(sel.format(f'meteors-{n}'), f'ascii-aurora-meteors-{n}',
+                             aurora_meteors(83 + n, count, starts), seconds))
     return '\n'.join(css) + '\n'
+
 
 if __name__ == '__main__':
     header = '/* Generated by .dsh/build-ascii.py — edit the generator, not this file.\n   Layout and colour for these scenes live in css/ascii.css. */\n'
