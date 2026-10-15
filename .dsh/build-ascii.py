@@ -922,8 +922,424 @@ def march():
     return '\n'.join(css) + '\n'
 
 
+
+# ── constellations: Bear Hunt's night sky ───────────────────────────────
+# Stars sit on whole cells and twinkle by changing glyph in place; the lines
+# between them are drawn and unwoven a cell at a time; a star that leaves its
+# place steps one cell per frame. A row is about two columns tall, so slopes
+# and distances are measured with ASPECT.
+
+ASPECT = 2.08
+
+
+def link_cells(a, b):
+    """The cells of a line from star a to star b, in order, with its glyphs.
+
+    A shallow line is a run of '-', a steep or diagonal one takes one glyph a
+    row, so a slope reads as a dotted stroke rather than a stair of '///'.
+    The cells beside each star in its own row are left clear."""
+    (r0, c0), (r1, c1) = a, b
+    dr, dc = r1 - r0, c1 - c0
+    angle = math.degrees(math.atan2(abs(dr) * ASPECT, abs(dc)))
+    glyph = '-' if angle < 28 else '|' if angle > 72 else '\\' if (dr > 0) == (dc > 0) else '/'
+    steps = abs(dc) if glyph == '-' else abs(dr)
+    if not steps:
+        return []
+    cells = [((round(r0 + dr * k / steps), round(c0 + dc * k / steps)), glyph) for k in range(1, steps)]
+    clear = lambda cell, star: cell[0] == star[0] and abs(cell[1] - star[1]) <= 1
+    return [(cell, g) for cell, g in cells if not clear(cell, a) and not clear(cell, b)]
+
+
+# The bear in the stars: a walking bear, facing right, is a patch of sky where
+# the stars crowd together. Its brightest stars sit on the shape a person
+# would trace (nose, brow, ear, hump, back, rump, knees and paws, belly,
+# throat) and only those are joined, the way a star chart joins a figure's
+# brightest lights. Nothing moves: each star twinkles in place on its own slow
+# beat, so from one frame to the next only a glyph or two changes.
+URSA_W, URSA_H = 43, 15
+URSA = {  # the bright stars: (row, column)
+    'hind_paw': (13, 6), 'hind_knee': (9, 7), 'rump': (4, 4), 'back': (2, 12),
+    'hump': (0, 21), 'ear': (2, 30), 'brow': (4, 35), 'nose': (6, 41),
+    'throat': (8, 34), 'fore_knee': (10, 29), 'fore_paw': (13, 31), 'belly': (10, 18),
+}
+URSA_LINKS = [('hind_paw', 'hind_knee'), ('hind_knee', 'rump'), ('rump', 'back'), ('back', 'hump'),
+              ('hump', 'ear'), ('ear', 'brow'), ('brow', 'nose'), ('nose', 'throat'),
+              ('throat', 'fore_knee'), ('fore_knee', 'fore_paw'),
+              ('hind_knee', 'belly'), ('belly', 'fore_knee')]
+URSA_FRAMES, URSA_FPS = 60, 5
+
+
+def ursa_body(r, c):
+    """True inside the bear: a body, a head, and a fore and hind leg."""
+    body = ((c - 19) / 15) ** 2 + ((r - 5.5) / 4.6) ** 2 <= 1
+    head = ((c - 35) / 6) ** 2 + ((r - 4.5) / 3) ** 2 <= 1
+    legs = 9 <= r <= 13 and (5 <= c <= 11 or 28 <= c <= 33)
+    return body or head or legs
+
+
+def ursa_sky():
+    """The stars as (row, column, rest glyph, twinkle glyph, beat)."""
+    lines = {cell for a, b in URSA_LINKS for cell, _ in link_cells(URSA[a], URSA[b])}
+    bright = set(URSA.values())
+    stars = [(r, c, '*', '+', 7 + n * 5) for n, (r, c) in enumerate(URSA.values())]
+    taken = set()
+    for r, c in bright | lines:
+        taken |= {(r, c - 1), (r, c), (r, c + 1)}
+    for r in range(URSA_H):
+        for c in range(URSA_W):
+            inside = ursa_body(r, c)
+            roll = hash2(c + 101, r + 37)
+            if (r, c) in taken or roll > (.16 if inside else .035):
+                continue
+            if any((r + dr, c + dc) in taken for dr in (-1, 0, 1) for dc in (-1, 0, 1)):
+                continue
+            mid = inside and roll < .05
+            stars.append((r, c, '+' if mid else '.', '*' if mid else '+', int(hash2(c, r + 9) * URSA_FRAMES)))
+            taken.add((r, c))
+    return stars
+
+
+def ursa_frames():
+    lines = grid(URSA_W, URSA_H)
+    for a, b in URSA_LINKS:
+        for (r, c), g in link_cells(URSA[a], URSA[b]):
+            put(lines, c, r, g)
+    stars = ursa_sky()
+    frames = []
+    for i in range(URSA_FRAMES):
+        sky = grid(URSA_W, URSA_H)
+        for r, c, rest, flash, beat in stars:
+            put(sky, c, r, flash if (i - beat) % URSA_FRAMES < 2 else rest)
+        frames.append(sky)
+    for i in range(URSA_FRAMES):  # a quiet sky: only a few glyphs change between frames
+        changed = sum(x != y for r0, r1 in zip(frames[i], frames[(i + 1) % URSA_FRAMES]) for x, y in zip(r0, r1))
+        assert changed <= 4, f'ursa: {changed} stars change at frame {i}'
+    return [lines] * URSA_FRAMES, frames
+
+
+# The sky band: stars in three depths wheel left across a repeating tile, the
+# nearer faster, and each links to its nearest neighbours while they are close.
+# A Dipper rides the middle depth as the band's landmark. Every depth crosses
+# a whole number of tiles in one loop, so the band closes without a seam.
+SKY_W, SKY_H, SKY_FRAMES, SKY_FPS = 48, 8, 288, 8
+
+
+def sky_stars():
+    rng = random.Random(41)
+    stars = []
+    for depth, count in ((1, 5), (2, 3), (3, 3)):
+        for _ in range(count):
+            stars.append((rng.uniform(0, SKY_W), rng.randrange(0, SKY_H), depth, rng.random() < .3))
+    dipper = [(0, 0), (1, 5), (1, 9), (2, 13), (4, 13), (4, 18), (1, 18)]
+    edges = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 3)]
+    first = len(stars)
+    for r, c in dipper:
+        stars.append((c + 14, r + 1, 2, True))
+    return stars, [(first + a, first + b) for a, b in edges]
+
+
+def sky_frames():
+    stars, dipper = sky_stars()
+    lines, points = [], []
+    for i in range(SKY_FRAMES):
+        at = [((round(x - depth * SKY_W * i / SKY_FRAMES)) % SKY_W, r, depth, bright) for x, r, depth, bright in stars]
+        arr = grid(SKY_W, SKY_H)
+        links = set(dipper)
+        for n, (c, r, depth, _) in enumerate(at):
+            if n >= len(stars) - 7:
+                continue
+            near = []
+            for m, (c2, r2, depth2, _) in enumerate(at):
+                if m == n or m >= len(stars) - 7:
+                    continue
+                dc = (c2 - c + SKY_W // 2) % SKY_W - SKY_W // 2
+                d = math.hypot(dc, (r2 - r) * ASPECT)
+                if 5 <= d <= 13:
+                    near.append((d, m))
+            for _, m in sorted(near)[:1]:
+                links.add((min(n, m), max(n, m)))
+        taken = {(r, c) for c, r, _, _ in at}
+        for link in sorted(links, key=lambda link: (link not in dipper, link)):
+            n, m = link  # the Dipper first; the field never crosses it
+            c, r = at[n][0], at[n][1]
+            dc = (at[m][0] - c + SKY_W // 2) % SKY_W - SKY_W // 2
+            cells = [((rr, cc % SKY_W), g) for (rr, cc), g in link_cells((r, c), (at[m][1], c + dc))]
+            if link not in dipper and any(cell in taken for cell, _ in cells):
+                continue
+            for (rr, cc), g in cells:
+                arr[rr][cc] = '.' if (n, m) not in dipper and g == '-' else g
+                taken.add((rr, cc))
+        for row in arr:  # two links side by side would read as a doubled stroke
+            for c in range(1, SKY_W):
+                if row[c] == row[c - 1] == '\\':
+                    row[c] = ' '
+        lines.append(arr)
+        sky = grid(SKY_W, SKY_H)
+        for n, (c, r, depth, bright) in enumerate(at):
+            beat = (i + n * 29) % 48
+            glyph = ('*' if bright else '+') if depth > 1 else '.'
+            if beat in (7, 8):
+                glyph = {'*': '+', '+': '*', '.': '+'}[glyph]
+            sky[r][c] = glyph
+        points.append(sky)
+    assert [(round(x - d * SKY_W)) % SKY_W for x, _, d, _ in stars] == [round(x) % SKY_W for x, *_ in stars]
+    return lines, points
+
+
+def constellations():
+    css = ['/* constellations */']
+    lines, stars = ursa_frames()
+    css.append(animation('.ascii-mini--ursa::before', 'ascii-ursa-lines', lines, URSA_FRAMES / URSA_FPS))
+    css.append(animation('.ascii-mini--ursa::after', 'ascii-ursa-stars', stars, URSA_FRAMES / URSA_FPS))
+    lines, stars = sky_frames()
+    css.append(animation('.ascii-march--sky::before', 'ascii-sky-lines', lines, SKY_FRAMES / SKY_FPS))
+    css.append(animation('.ascii-march--sky::after', 'ascii-sky-stars', stars, SKY_FRAMES / SKY_FPS))
+    return '\n'.join(css) + '\n'
+
+
+
+# ── aurora: the night sky over the hunt ─────────────────────────────────
+# Looking straight up on a clear night: the Great Bear in the middle of the
+# sky and the aurora drawn over it. Built the way the campfire is: fields
+# sampled per cell and read through a density ramp, in layers stacked back to
+# front, each on a loop of its own so the stack never lines up twice:
+#
+#   stars         7.4 s  field stars twinkling in place
+#   bear         16.3 s  the Great Bear, traced star to star now and then
+#   (a still, translucent pane of night lies over the stars and the bear)
+#   veil         53.3 s  a faint violet haze drifting across the whole sky
+#   far ribbon   43.1 s  a faint ribbon high in the sky
+#   near ribbon  29.7 s  the main ribbon: a pale green lower edge and rays
+#                        that climb from it and turn pink and then violet at
+#                        their tips, each ray at its own height
+#   meteors      11.3, 17.9 s
+#
+# The aurora layers are translucent and sit in front of the stars, so the bear
+# shows through the curtains the way stars do through a real display. The
+# motion is slow travelling waves: rays drift along a ribbon and folds roll
+# through its edge a turn or two per loop. Each wave turns a whole number of
+# times per loop and the noise travels a circle in noise space, so each
+# layer's last frame runs straight into its first.
+
+AURORA_W, AURORA_H, AURORA_FPS = 48, 15, 6
+AURORA_RAMP = ' .,:;=+*'
+# (edge row at the left, at the right, ray reach, brightness, seed, loop)
+NEAR_RIBBON = (11.2, 9.4, 5.6, 1.0, 0, 29.7)
+FAR_RIBBON = (3.6, 5.2, 2.6, .6, 4.1, 43.1)
+VEIL_LOOP = 53.3
+
+
+def wave(t, loop, turns):
+    """A phase that turns `turns` whole times per loop."""
+    return TAU * turns * t / loop
+
+
+def loop_orbit(t, loop, speed, seed=0):
+    r = speed * loop / TAU
+    a = TAU * t / loop
+    return r * math.cos(a) + seed * 7.1, r * math.sin(a) - seed * 3.3
+
+
+def ribbon_at(c, r, t, ribbon):
+    """How bright a ribbon is at a cell, how far the cell sits above its lower
+    edge, and how far that ray reaches there."""
+    left, right, reach, gain, seed, loop = ribbon
+    x = c / AURORA_W
+    edge = (left + (right - left) * x + 1.3 * math.sin(TAU * x + wave(t, loop, 1) + seed)
+            + .6 * math.sin(TAU * 2.3 * x - wave(t, loop, 2) + 1.3 + seed))
+    ox, oy = loop_orbit(t, loop, .45, seed)
+    rays = (.5 + .5 * math.sin(TAU * 4 * x - wave(t, loop, 2) + seed)) * .35 \
+        + (.5 + .5 * math.sin(TAU * 9 * x + wave(t, loop, 3) + 2 + seed)) * .2 \
+        + noise(x * 16 + ox, oy) * .6
+    rays = max(0, min(1, (rays - .38) * 2))
+    surge = .55 + .45 * max(0, math.sin(TAU * x * 1.2 - wave(t, loop, 1) + seed * 3)) ** 2 \
+        + .25 * noise(x * 3 + ox * .4, 9 + oy * .4)
+    d = edge - r
+    span = reach * (.3 + rays)
+    if d < -1.5:
+        return 0, d, span
+    v = surge * (.2 + .95 * rays ** 1.5) * (math.exp(-d / span) if d >= 0 else math.exp(d * 1.6))
+    sx, sy = loop_orbit(t, loop, .6, seed + 1)
+    return gain * (v - .1 * noise(c * .45 + sx, r * .8 + sy)), d, span
+
+
+def ramp(v):
+    return AURORA_RAMP[max(1, min(len(AURORA_RAMP) - 1, int(v * .9 * (len(AURORA_RAMP) - 1)) + 1))]
+
+
+def tint(c, r, t, d, span, seed, loop):
+    """Green low on a ray, pink and then violet towards its tip. Where the
+    colour turns depends on the ray's own height and a slow wander, so the
+    hues follow the rays instead of lying in bands."""
+    ox, oy = loop_orbit(t, loop, .35, seed + 7)
+    turn = span * (.45 + .45 * noise(c * .3 + ox, oy))
+    if d < turn:
+        return 'green'
+    return 'pink' if d < turn + .35 * span + .5 else 'violet'
+
+
+def ribbon_frames(ribbon, hues):
+    """One ribbon on its own loop, each hue in its own layer so it can take
+    its own colour. The hues partition the ribbon's cells, so within a ribbon
+    no two glyphs ever share a cell."""
+    loop = ribbon[5]
+    layers = {k: [] for k in hues}
+    for i in range(round(loop * AURORA_FPS)):
+        t = i / AURORA_FPS
+        out = {k: grid(AURORA_W, AURORA_H) for k in hues}
+        for c in range(AURORA_W):
+            for r in range(AURORA_H):
+                v, d, span = ribbon_at(c, r, t, ribbon)
+                if v > .12:
+                    hue = 'edge' if d < .7 else tint(c, r, t, d, span, ribbon[4], loop)
+                    hue = hue if hue in hues else hues[0] if hue in ('edge', 'green') else hues[-1]
+                    out[hue][r][c] = ramp(v)
+        for k in hues:
+            layers[k].append(out[k])
+    return layers
+
+
+def veil_frames():
+    """A faint haze that wanders across the sky behind the ribbons' glow."""
+    frames = []
+    for i in range(round(VEIL_LOOP * AURORA_FPS)):
+        t = i / AURORA_FPS
+        ox, oy = loop_orbit(t, VEIL_LOOP, .5, 11)
+        arr = grid(AURORA_W, AURORA_H)
+        for c in range(AURORA_W):
+            for r in range(AURORA_H):
+                v = noise(c * .09 + ox, r * .19 + oy) * 1.2 - .95 + .25 * noise(c * .5 - oy, r * .7 + ox)
+                if v > .08:
+                    arr[r][c] = '.' if v < .18 else ','
+        frames.append(arr)
+    return frames
+
+
+def aurora_meteors(seed, frames, starts):
+    """Shooting stars: a head that crosses one cell a frame down a slope,
+    trailing a tail that thins, then nothing until the next one."""
+    rng = random.Random(seed)
+    out = [grid(AURORA_W, AURORA_H) for _ in range(frames)]
+    for start in starts:
+        c0, r0 = rng.randrange(16, 44), rng.randrange(0, 6)
+        run = rng.randrange(6, 9)
+        for k in range(run + 4):
+            arr = out[(start + k) % frames]
+            for lag, glyph in enumerate('*=-.'):
+                j = k - lag
+                if 0 <= j < run:
+                    c, r = c0 - j * 2, r0 + j // 2
+                    if 0 <= c < AURORA_W and r < AURORA_H and arr[r][c] == ' ':
+                        arr[r][c] = glyph
+    return out
+
+
+# The Great Bear in the middle of the sky, placed from its stars' real right
+# ascension and declination: the Dipper is its tail and back, the head and
+# snout run west of Dubhe, and its three pairs of paws hang below. The sky
+# has no lines in it; instead, every 16 s a light runs star to star along
+# the figure, leaving a trail that fades behind it, and the whole bear
+# brightens for a moment before it rests.
+BEAR_STARS = {
+    'alkaid': (6, 4), 'mizar': (4, 10), 'alioth': (4, 13), 'megrez': (3, 18),
+    'phecda': (5, 20), 'merak': (4, 26), 'dubhe': (1, 26),
+    'h': (1, 34), 'muscida': (2, 41), 'upsilon': (2, 33), 'theta': (5, 37),
+    'kappa': (7, 42), 'iota': (7, 43), 'psi': (8, 25), 'lambda': (9, 33), 'mu': (9, 32),
+    'chi': (7, 20), 'nu': (12, 24), 'xi': (13, 24),
+}
+BEAR_PATH = [('alkaid', 'mizar'), ('mizar', 'alioth'), ('alioth', 'megrez'), ('megrez', 'dubhe'),
+             ('dubhe', 'merak'), ('merak', 'phecda'), ('phecda', 'megrez'), ('dubhe', 'h'),
+             ('h', 'muscida'), ('h', 'upsilon'), ('upsilon', 'merak'), ('upsilon', 'theta'),
+             ('theta', 'kappa'), ('kappa', 'iota'), ('merak', 'psi'), ('psi', 'mu'), ('mu', 'lambda'),
+             ('phecda', 'chi'), ('chi', 'nu'), ('nu', 'xi')]
+TRACE_LOOP, TRACE_FPS = 16.3, 10
+BEAR_SPEED = 1.1  # cells a frame along the figure
+
+
+def bear_trace():
+    """When each line cell is passed, and when each star is reached."""
+    cells, reached, at = [], {'alkaid': 0}, 0.0
+    for a, b in BEAR_PATH:
+        at = max(at, reached.get(a, at))
+        path = link_cells(BEAR_STARS[a], BEAR_STARS[b])
+        for k, (cell, g) in enumerate(path):
+            cells.append((at + (k + 1) / BEAR_SPEED, cell, g))
+        at += (len(path) + 1) / BEAR_SPEED
+        reached[b] = min(reached.get(b, at), at)
+    return cells, reached, at
+
+
+def star_field():
+    near = {(r + dr, c + dc) for r, c in BEAR_STARS.values() for dr in (-1, 0, 1) for dc in (-1, 0, 1)}
+    near |= {cell for a, b in BEAR_PATH for cell, _ in link_cells(BEAR_STARS[a], BEAR_STARS[b])}
+    return [(c, r) for r in range(AURORA_H) for c in range(AURORA_W)
+            if hash2(c + 3, r * 7) < .04 and (r, c) not in near]
+
+
+def aurora_stars():
+    """The background stars: small, dim, twinkling on a 7.4 s loop."""
+    field = star_field()
+    frames = []
+    count = round(7.4 * AURORA_FPS)
+    for i in range(count):
+        arr = grid(AURORA_W, AURORA_H)
+        for c, r in field:
+            beat = (i + int(hash2(c, r) * count)) % count
+            arr[r][c] = '+' if beat == 5 else "'" if beat in (4, 6) else '.'
+        frames.append(arr)
+    return frames, 7.4
+
+
+def bear_frames():
+    """The bear's stars at rest, and the trace: a light that runs the figure,
+    the trail it leaves, and the stars it lights."""
+    cells, reached, length = bear_trace()
+    count = round(TRACE_LOOP * TRACE_FPS)
+    start = 20
+    shine = start + length + 2  # the whole bear holds its light for a moment
+    rest, trace = [], []
+    for i in range(count):
+        stars, light = grid(AURORA_W, AURORA_H), grid(AURORA_W, AURORA_H)
+        for at, (r, c), g in cells:
+            age = i - start - at
+            if 0 <= age < 12:
+                light[r][c] = g
+            elif 12 <= age < 20:
+                light[r][c] = '.'
+        for n, (name, (r, c)) in enumerate(BEAR_STARS.items()):
+            age = i - start - reached[name]
+            lit = 0 <= age < 16 or shine <= i < shine + 18
+            if lit:
+                light[r][c] = '*'
+            else:
+                stars[r][c] = '+' if (i + n * 13) % 40 == 7 else '*'
+        rest.append(stars)
+        trace.append(light)
+    assert shine + 18 < count, 'bear trace runs past its loop'
+    return rest, trace
+
+
+def aurora():
+    css = ['/* aurora */']
+    sel = '.ascii-mini--aurora .aurora-{}::before'
+    stars, star_loop = aurora_stars()
+    css.append(animation(sel.format('stars'), 'ascii-aurora-stars', stars, star_loop))
+    rest, trace = bear_frames()
+    css.append(animation(sel.format('bear'), 'ascii-aurora-bear', rest, TRACE_LOOP))
+    css.append(animation(sel.format('trace'), 'ascii-aurora-trace', trace, TRACE_LOOP))
+    css.append(animation(sel.format('veil'), 'ascii-aurora-veil', veil_frames(), VEIL_LOOP))
+    for ribbon, hues in ((FAR_RIBBON, ('far', 'far-tip')), (NEAR_RIBBON, ('edge', 'green', 'pink', 'violet'))):
+        for name, frames in ribbon_frames(ribbon, hues).items():
+            css.append(animation(sel.format(name), f'ascii-aurora-{name}', frames, ribbon[5]))
+    for n, (seconds, starts) in enumerate(((11.3, (20,)), (17.9, (30, 80)))):
+        count = round(seconds * AURORA_FPS)
+        css.append(animation(sel.format(f'meteors-{n}'), f'ascii-aurora-meteors-{n}',
+                             aurora_meteors(83 + n, count, starts), seconds))
+    return '\n'.join(css) + '\n'
+
+
 if __name__ == '__main__':
     header = '/* Generated by .dsh/build-ascii.py — edit the generator, not this file.\n   Layout and colour for these scenes live in css/ascii.css. */\n'
-    write('css/ascii-frames.css', header + campfire() + hearth() + forge() + minis() + march())
+    write('css/ascii-frames.css', header + campfire() + hearth() + forge() + minis() + march() + constellations() + aurora())
     print('wrote css/ascii-frames.css and _includes/ascii/campfire.html')
 

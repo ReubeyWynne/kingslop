@@ -123,10 +123,10 @@ for (const [, selector, still, name, seconds] of frames.matchAll(/([^\n{}]+)\{co
   }
 }
 
-// Colour comes from the page's tokens. Only the fire scenes keep a literal
-// fire palette; everything else follows the one-signal rule.
+// Colour comes from the page's tokens. Only the fire scenes and the aurora
+// keep a literal palette; everything else follows the one-signal rule.
 for (const [, selector, body] of layout.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-  if (/campfire|hearth/.test(selector)) continue;
+  if (/campfire|hearth|aurora/.test(selector)) continue;
   for (const [, value] of body.matchAll(/(?:^|[;\s])color\s*:\s*([^;]+)/g)) {
     check(/^(var\(|transparent|inherit|currentColor)/.test(value.trim()), `css/ascii.css: "${selector.trim()}" hard-codes color ${value.trim()}; use the page's tokens`);
   }
