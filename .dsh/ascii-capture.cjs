@@ -2,6 +2,7 @@
 //
 //   node .dsh/ascii-capture.cjs            check every scene in the built _site
 //   node .dsh/ascii-capture.cjs --frames   also write each frame to .dsh/ascii-preview/
+//   node .dsh/ascii-capture.cjs --frames --only=moon,march   just those scenes
 //
 // Every CSS animation is paused and moved to the same timestamp, one authored
 // frame at a time, so the PNGs are the exact frames a visitor sees, not a
@@ -16,6 +17,8 @@ const { chromium } = require('playwright');
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/ascii-preview');
 const writeFrames = process.argv.includes('--frames');
+// --only=march,hearth steps just the scenes whose names start with those words.
+const only = (process.argv.find(arg => arg.startsWith('--only=')) || '').slice(7).split(',').filter(Boolean);
 const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
 
 // [name, page, selector, seconds per authored frame, frames in one loop]
@@ -58,7 +61,8 @@ const server = http.createServer((request, response) => {
       const context = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 2 });
       for (const [name, url, selector, period, count] of scenes.filter(scene =>
         (!process.argv.includes('--moon') || scene[0].startsWith('moon')) &&
-        (!process.argv.includes('--castle') || scene[0].startsWith('castle')))) {
+        (!process.argv.includes('--castle') || scene[0].startsWith('castle')) &&
+        (!only.length || only.some(prefix => scene[0].startsWith(prefix))))) {
         const page = await context.newPage();
         await page.goto(base + url + '?lang=en', { waitUntil: 'networkidle' });
         await page.evaluate(() => document.fonts.ready);
