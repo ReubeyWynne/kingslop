@@ -549,7 +549,9 @@
         var rtl = document.documentElement.dir === 'rtl';
         var delta = rtl ? (a.right - r.right) : (a.left - r.left);
         var target = toc.scrollLeft + (rtl ? -delta : delta) - (toc.clientWidth - active.offsetWidth) / 2;
-        toc.scrollTo({ left: target, behavior: 'smooth' });
+        // Script-set smooth scrolling ignores the reduced-motion CSS, so ask.
+        var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        toc.scrollTo({ left: target, behavior: still ? 'auto' : 'smooth' });
       }
     }
 
