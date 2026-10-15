@@ -693,7 +693,7 @@ window.__BH_I18N_DATA["tr"] = {
   "bh.glance.nav": "Bir bakışta",
   "bh.glance.lede": "Kısa hali. Bazı maddeler Ayı için alışılmış tavsiyelere ters düşer.",
   "bh.glance.1h": "Ne kadar zayıf olursa olsun herkes ralli açar.",
-  "bh.glance.1p": "Zayıf oyuncular da başka rallilerde yer kaplar, bu yüzden o yerleri geri vermek için kendi rallilerini açmaları gerekir. Zayıf bir ralli daha az vurur ama boş bir yer hiç vurmaz.",
+  "bh.glance.1p": "Zayıf oyuncular da başka rallilerde yer kaplar, bu yüzden o yerleri geri vermek için kendi rallilerini açmaları gerekir.",
   "bh.glance.2h": "Her ralliyi 15'e kadar doldurun.",
   "bh.glance.2p": "Bu, 14 katılımcı artı lider demek; oyunun gösterdiği sayı. Yola çıkmaya en yakın ralliye katılın, kendi rallinizi de döner dönmez yeniden açın.",
   "bh.glance.3h": "Katılım sınırı: en büyük ralli ÷ 16.",

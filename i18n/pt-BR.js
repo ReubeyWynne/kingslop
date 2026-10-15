@@ -694,7 +694,7 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "bh.glance.nav": "Resumo rápido",
   "bh.glance.lede": "A versão curta. Alguns pontos vão contra o conselho comum sobre o Urso.",
   "bh.glance.1h": "Todo mundo lança rally, por mais fraco que seja.",
-  "bh.glance.1p": "Jogadores fracos também ocupam vagas em outros rallies, então precisam lançar o próprio para devolver essas vagas. Um rally fraco bate menos, mas uma vaga vazia não bate nada.",
+  "bh.glance.1p": "Jogadores fracos também ocupam vagas em outros rallies, então precisam lançar o próprio para devolver essas vagas.",
   "bh.glance.2h": "Encham cada rally até 15.",
   "bh.glance.2p": "São 14 participantes mais o líder, o número que o jogo mostra. Entre no rally mais perto de partir e relance o seu assim que ele voltar.",
   "bh.glance.3h": "Limitem o apoio ao maior rally ÷ 16.",

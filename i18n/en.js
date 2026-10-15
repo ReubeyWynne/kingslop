@@ -890,7 +890,7 @@ window.__BH_I18N_DATA["en"] = {
   "bh.glance.nav": "At a glance",
   "bh.glance.lede": "The short version. A few of these go against the usual Bear advice.",
   "bh.glance.1h": "Everyone rallies, however weak.",
-  "bh.glance.1p": "Weak players still take up spaces in other rallies, so they need to launch their own to give those spaces back. A weak rally hits for less, but an empty space hits for nothing.",
+  "bh.glance.1p": "Weak players still take up spaces in other rallies, so they need to launch their own to give those spaces back.",
   "bh.glance.2h": "Fill every rally to 15.",
   "bh.glance.2p": "That's 14 joiners plus the leader, the number the game shows. Join whichever rally is closest to marching out, and relaunch yours as soon as it's home.",
   "bh.glance.3h": "Cap joins at your biggest rally ÷ 16.",

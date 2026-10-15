@@ -694,7 +694,7 @@ window.__BH_I18N_DATA["pl"] = {
   "bh.glance.nav": "W skrócie",
   "bh.glance.lede": "Wersja skrócona. Kilka punktów idzie wbrew typowym radom o Niedźwiedziu.",
   "bh.glance.1h": "Każdy odpala rajd, nawet słaby.",
-  "bh.glance.1p": "Słabi gracze też zajmują miejsca w cudzych rajdach, więc muszą odpalać własne, żeby je oddać. Słaby rajd bije słabiej, ale puste miejsce nie bije wcale.",
+  "bh.glance.1p": "Słabi gracze też zajmują miejsca w cudzych rajdach, więc muszą odpalać własne, żeby je oddać.",
   "bh.glance.2h": "Zapełniajcie każdy rajd do 15.",
   "bh.glance.2p": "To 14 uczestników plus prowadzący rajd, czyli liczba, którą pokazuje gra. Dołączaj do rajdu, który najszybciej wyrusza, i odpalaj swój od nowa, gdy tylko wróci.",
   "bh.glance.3h": "Limit dołączania: największy rajd ÷ 16.",

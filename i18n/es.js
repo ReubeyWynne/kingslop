@@ -694,7 +694,7 @@ window.__BH_I18N_DATA["es"] = {
   "bh.glance.nav": "De un vistazo",
   "bh.glance.lede": "La versión corta. Algunos puntos van en contra del consejo habitual sobre el Oso.",
   "bh.glance.1h": "Todos lanzan rally, por débiles que sean.",
-  "bh.glance.1p": "Los jugadores débiles también ocupan huecos en otros rallies, así que tienen que lanzar el suyo para devolverlos. Un rally débil pega menos, pero un hueco vacío no pega nada.",
+  "bh.glance.1p": "Los jugadores débiles también ocupan huecos en otros rallies, así que tienen que lanzar el suyo para devolverlos.",
   "bh.glance.2h": "Llenad cada rally hasta 15.",
   "bh.glance.2p": "Son 14 participantes más el líder, el número que muestra el juego. Únete al rally que esté más cerca de salir y relanza el tuyo en cuanto vuelva a casa.",
   "bh.glance.3h": "Limitad el apoyo a vuestro rally más grande ÷ 16.",

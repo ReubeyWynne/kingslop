@@ -694,7 +694,7 @@ window.__BH_I18N_DATA["it"] = {
   "bh.glance.nav": "In breve",
   "bh.glance.lede": "La versione corta. Alcuni punti vanno contro i consigli soliti sull’Orso.",
   "bh.glance.1h": "Tutti avviano un rally, per quanto deboli.",
-  "bh.glance.1p": "Anche i giocatori deboli occupano posti negli altri rally, quindi devono avviare il proprio per restituirli. Un rally debole colpisce meno, ma un posto vuoto non colpisce affatto.",
+  "bh.glance.1p": "Anche i giocatori deboli occupano posti negli altri rally, quindi devono avviare il proprio per restituirli.",
   "bh.glance.2h": "Riempite ogni rally fino a 15.",
   "bh.glance.2p": "Sono 14 partecipanti più chi guida, il numero che mostra il gioco. Unisciti al rally più vicino alla partenza e riavvia il tuo appena torna a casa.",
   "bh.glance.3h": "Limitate il supporto al vostro rally più grande ÷ 16.",

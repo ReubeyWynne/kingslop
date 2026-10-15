@@ -703,7 +703,7 @@ window.__BH_I18N_DATA["id"] = {
   "bh.glance.nav": "Sekilas",
   "bh.glance.lede": "Versi singkatnya. Beberapa poin berlawanan dengan saran Bear yang biasa.",
   "bh.glance.1h": "Semua orang membuka rally, selemah apa pun.",
-  "bh.glance.1p": "Pemain lemah tetap memakai slot di rally orang lain, jadi mereka perlu membuka rally sendiri untuk mengembalikan slot itu. Rally lemah memukul lebih kecil, tapi slot kosong tidak memukul sama sekali.",
+  "bh.glance.1p": "Pemain lemah tetap memakai slot di rally orang lain, jadi mereka perlu membuka rally sendiri untuk mengembalikan slot itu.",
   "bh.glance.2h": "Penuhi setiap rally sampai 15.",
   "bh.glance.2p": "Itu 14 peserta ditambah pemimpin rally, angka yang ditampilkan game. Gabung ke rally yang paling dekat berangkat, dan buka lagi rallymu begitu sampai rumah.",
   "bh.glance.3h": "Batas gabung: rally terbesar ÷ 16.",

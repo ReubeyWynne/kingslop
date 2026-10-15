@@ -693,7 +693,7 @@ window.__BH_I18N_DATA["fr"] = {
   "bh.glance.nav": "En bref",
   "bh.glance.lede": "La version courte. Certains points vont à l’encontre des conseils habituels sur l’Ours.",
   "bh.glance.1h": "Tout le monde lance un rally, même faible.",
-  "bh.glance.1p": "Les joueurs faibles prennent aussi des places dans les autres rallies, donc ils doivent lancer le leur pour rendre ces places. Un rally faible frappe moins fort, mais une place vide ne frappe pas du tout.",
+  "bh.glance.1p": "Les joueurs faibles prennent aussi des places dans les autres rallies, donc ils doivent lancer le leur pour rendre ces places.",
   "bh.glance.2h": "Remplissez chaque rally à 15.",
   "bh.glance.2p": "C’est 14 participants plus la personne qui mène, le nombre affiché par le jeu. Rejoignez le rally le plus près de partir, et relancez le vôtre dès qu’il est rentré.",
   "bh.glance.3h": "Plafonnez les renforts à votre plus gros rally ÷ 16.",

@@ -694,7 +694,7 @@ window.__BH_I18N_DATA["de"] = {
   "bh.glance.nav": "Auf einen Blick",
   "bh.glance.lede": "Die Kurzfassung. Einiges davon widerspricht dem üblichen Rat zum Bären.",
   "bh.glance.1h": "Alle starten Rallyes, egal wie schwach.",
-  "bh.glance.1p": "Auch schwache Spieler belegen Plätze in anderen Rallyes, also müssen sie eine eigene starten, um diese Plätze zurückzugeben. Eine schwache Rallye trifft schwächer, aber ein leerer Platz trifft gar nicht.",
+  "bh.glance.1p": "Auch schwache Spieler belegen Plätze in anderen Rallyes, also müssen sie eine eigene starten, um diese Plätze zurückzugeben.",
   "bh.glance.2h": "Füllt jede Rallye auf 15.",
   "bh.glance.2p": "Das sind 14 Beitretende plus die Rallyeleitung, die Zahl, die das Spiel anzeigt. Tritt der Rallye bei, die als Nächstes losmarschiert, und starte deine eigene neu, sobald sie zurück ist.",
   "bh.glance.3h": "Begrenzt Beitritte auf eure größte Rallye ÷ 16.",

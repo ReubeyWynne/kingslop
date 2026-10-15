@@ -703,7 +703,7 @@ window.__BH_I18N_DATA["vi"] = {
   "bh.glance.nav": "Tóm tắt",
   "bh.glance.lede": "Bản ngắn gọn. Vài điểm ngược với lời khuyên thường thấy về Gấu.",
   "bh.glance.1h": "Ai cũng mở rally, dù yếu đến đâu.",
-  "bh.glance.1p": "Người chơi yếu vẫn chiếm chỗ trong rally của người khác, nên họ cần mở rally của mình để trả lại những chỗ đó. Rally yếu đánh ít hơn, nhưng chỗ trống thì không đánh gì cả.",
+  "bh.glance.1p": "Người chơi yếu vẫn chiếm chỗ trong rally của người khác, nên họ cần mở rally của mình để trả lại những chỗ đó.",
   "bh.glance.2h": "Lấp mỗi rally đủ 15.",
   "bh.glance.2p": "Tức là 14 người tham gia cộng người dẫn rally, đúng con số trò chơi hiển thị. Tham gia rally sắp xuất phát nhất, và mở lại rally của bạn ngay khi nó về nhà.",
   "bh.glance.3h": "Giới hạn tham gia: rally lớn nhất ÷ 16.",
