@@ -1107,6 +1107,8 @@ def constellations():
 #   stars         7.4 s  field stars twinkling in place
 #   bear         16.3 s  the Great Bear, traced star to star now and then
 #   veil         53.3 s  a faint violet haze drifting across the whole sky
+#   (each ribbon carries a dark fill under its lit cells, on its own loop,
+#    so the stars it crosses dim behind it)
 #   far ribbon   43.1 s  a faint ribbon high in the sky
 #   near ribbon  29.7 s  the main ribbon: a pale green lower edge and rays
 #                        that climb from it and turn pink and then violet at
@@ -1177,15 +1179,17 @@ def tint(c, r, t, d, span, seed, loop):
     return 'pink' if d < turn + .35 * span + .5 else 'violet'
 
 
-def ribbon_frames(ribbon, hues):
+def ribbon_frames(ribbon, hues, fill):
     """One ribbon on its own loop, each hue in its own layer so it can take
     its own colour. The hues partition the ribbon's cells, so within a ribbon
-    no two glyphs ever share a cell."""
+    no two glyphs ever share a cell. The fill layer is the ribbon's shadow:
+    a solid block under every lit cell, drawn in the night's colour behind
+    the ribbon and in front of the stars, so a star the aurora crosses dims."""
     loop = ribbon[5]
-    layers = {k: [] for k in hues}
+    layers = {k: [] for k in hues + (fill,)}
     for i in range(round(loop * AURORA_FPS)):
         t = i / AURORA_FPS
-        out = {k: grid(AURORA_W, AURORA_H) for k in hues}
+        out = {k: grid(AURORA_W, AURORA_H) for k in layers}
         for c in range(AURORA_W):
             for r in range(AURORA_H):
                 v, d, span = ribbon_at(c, r, t, ribbon)
@@ -1193,7 +1197,8 @@ def ribbon_frames(ribbon, hues):
                     hue = 'edge' if d < .7 else tint(c, r, t, d, span, ribbon[4], loop)
                     hue = hue if hue in hues else hues[0] if hue in ('edge', 'green') else hues[-1]
                     out[hue][r][c] = ramp(v)
-        for k in hues:
+                    out[fill][r][c] = '\u2588'
+        for k in layers:
             layers[k].append(out[k])
     return layers
 
@@ -1327,8 +1332,9 @@ def aurora():
     css.append(animation(sel.format('bear'), 'ascii-aurora-bear', rest, TRACE_LOOP))
     css.append(animation(sel.format('trace'), 'ascii-aurora-trace', trace, TRACE_LOOP))
     css.append(animation(sel.format('veil'), 'ascii-aurora-veil', veil_frames(), VEIL_LOOP))
-    for ribbon, hues in ((FAR_RIBBON, ('far', 'far-tip')), (NEAR_RIBBON, ('edge', 'green', 'pink', 'violet'))):
-        for name, frames in ribbon_frames(ribbon, hues).items():
+    for ribbon, hues, fill in ((FAR_RIBBON, ('far', 'far-tip'), 'far-fill'),
+                               (NEAR_RIBBON, ('edge', 'green', 'pink', 'violet'), 'fill')):
+        for name, frames in ribbon_frames(ribbon, hues, fill).items():
             css.append(animation(sel.format(name), f'ascii-aurora-{name}', frames, ribbon[5]))
     for n, (seconds, starts) in enumerate(((11.3, (20,)), (17.9, (30, 80)))):
         count = round(seconds * AURORA_FPS)

@@ -123,9 +123,11 @@
 .ascii-mini--aurora > span { position: absolute; inset: 0; display: block; white-space: pre; }
 .ascii-mini--aurora > span::before { display: block; white-space: pre; }
 .ascii-mini--aurora .aurora-stars { color: var(--ink-muted); opacity: .75; }
-.ascii-mini--aurora .aurora-bear { color: var(--ink-dim); }
-.ascii-mini--aurora .aurora-trace { color: #fff4d6; }
+.ascii-mini--aurora .aurora-bear { color: var(--ink-dim); opacity: .8; }
+.ascii-mini--aurora .aurora-trace { color: #f3e6c4; opacity: .85; }
 .ascii-mini--aurora .aurora-veil { color: #8a6fb0; opacity: .3; }
+.ascii-mini--aurora .aurora-far-fill { color: var(--void); opacity: .45; text-shadow: 0 0 .4em var(--void); }
+.ascii-mini--aurora .aurora-fill { color: var(--void); opacity: .65; text-shadow: 0 0 .4em var(--void); }
 .ascii-mini--aurora .aurora-far { color: #5f9e86; opacity: .4; }
 .ascii-mini--aurora .aurora-far-tip { color: #9a74b4; opacity: .4; }
 .ascii-mini--aurora .aurora-violet { color: #a487de; opacity: .6; text-shadow: 0 0 .5em #a487de; }
