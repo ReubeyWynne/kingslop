@@ -1123,8 +1123,8 @@ def constellations():
 AURORA_W, AURORA_H, AURORA_FPS = 48, 15, 6
 AURORA_RAMP = ' .,:;=+*'
 # (edge row at the left, at the right, ray reach, brightness, seed, loop)
-NEAR_RIBBON = (12.4, 6.8, 4.4, .95, 0, 29.7)
-FAR_RIBBON = (4.6, 9.2, 3.0, .6, 4.1, 43.1)
+NEAR_RIBBON = (11.2, 9.4, 5.6, 1.0, 0, 29.7)
+FAR_RIBBON = (3.6, 5.2, 2.6, .6, 4.1, 43.1)
 VEIL_LOOP = 53.3
 
 

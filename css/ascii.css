@@ -123,15 +123,15 @@
 .ascii-mini--aurora > span { position: absolute; inset: 0; display: block; white-space: pre; }
 .ascii-mini--aurora > span::before { display: block; white-space: pre; }
 .ascii-mini--aurora .aurora-stars { color: var(--ink-muted); opacity: .75; }
-.ascii-mini--aurora .aurora-bear { color: var(--ink); }
+.ascii-mini--aurora .aurora-bear { color: var(--ink-dim); }
 .ascii-mini--aurora .aurora-trace { color: #fff4d6; }
 .ascii-mini--aurora .aurora-veil { color: #8a6fb0; opacity: .3; }
 .ascii-mini--aurora .aurora-far { color: #5f9e86; opacity: .4; }
 .ascii-mini--aurora .aurora-far-tip { color: #9a74b4; opacity: .4; }
-.ascii-mini--aurora .aurora-violet { color: #a487de; opacity: .6; }
-.ascii-mini--aurora .aurora-pink { color: #e08cbd; opacity: .65; }
-.ascii-mini--aurora .aurora-green { color: #5fcf8e; opacity: .6; }
-.ascii-mini--aurora .aurora-edge { color: #c8f2c4; opacity: .7; }
+.ascii-mini--aurora .aurora-violet { color: #a487de; opacity: .6; text-shadow: 0 0 .5em #a487de; }
+.ascii-mini--aurora .aurora-pink { color: #e08cbd; opacity: .7; text-shadow: 0 0 .5em #e08cbd; }
+.ascii-mini--aurora .aurora-green { color: #5fcf8e; opacity: .7; text-shadow: 0 0 .5em #5fcf8e; }
+.ascii-mini--aurora .aurora-edge { color: #c8f2c4; opacity: .85; text-shadow: 0 0 .6em #5fcf8e; }
 .ascii-mini--aurora .aurora-meteors-0,
 .ascii-mini--aurora .aurora-meteors-1 { color: var(--ink); }
 @media (max-width: 400px) { .ascii-motif-rail { gap: .5rem; margin-top: 1rem; } .ascii-mini { font-size: 9px; } }
