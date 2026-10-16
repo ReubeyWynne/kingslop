@@ -213,4 +213,20 @@ assert.ok(archer.futurePlan.score >= comparison.now.score);
 assert.equal(E.defaults().mode, 'optimise');
 assert.equal(E.defaults().reforge, true);
 
-console.log('Gear costs, milestones, 40 optimiser conservation cases, OCR parsing and copy checks passed.');
+const shared = E.defaults();
+shared.pieces['arc-helm'] = {quality:'red',level:120,mastery:11};
+shared.pieces['cav-chest'] = {quality:'epic',level:80,mastery:0};
+shared.resources.hammers = 900;
+const sharedLink = E.encodeLink(shared);
+assert.equal(sharedLink.gear, 'm0.0-m0.0-m0.0-m0.0-m0.0-m0.0-e80.0-m0.0-r120.11-m0.0-m0.0-m0.0');
+assert.equal(sharedLink.w, 'growth');
+assert.deepEqual(E.readLink('?gear=' + sharedLink.gear + '&w=' + sharedLink.w).pieces, shared.pieces, 'links carry pieces, never the bag');
+assert.equal(E.readLink('?lang=en'), null);
+for (const bad of ['m0.0', 'x1.0' + '-m0.0'.repeat(11), 'e90.0' + '-m0.0'.repeat(11), 'm50.3' + '-m0.0'.repeat(10) + '-r110.2']) assert.deepEqual(E.readLink('?gear=' + bad), {invalid:true}, bad);
+shared.profile = 'custom'; shared.weights.inf = [0.5, 2];
+const customLink = E.encodeLink(shared);
+assert.equal(customLink.w, '0.5,2,0.4,0.2,1.4,0.7');
+assert.deepEqual(E.readLink('?gear=' + customLink.gear + '&w=' + customLink.w).weights, shared.weights);
+assert.equal(E.readLink('?gear=' + customLink.gear + '&w=nope').weights, undefined);
+
+console.log('Gear costs, milestones, 40 optimiser conservation cases, OCR parsing, share links and copy checks passed.');

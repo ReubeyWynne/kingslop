@@ -271,7 +271,40 @@
     });
     return { now: now, alternatives: alternatives };
   }
-  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, total: total, redPlans: redPlans, nearbyMilestones: nearbyMilestones, optimise: optimise, strategyComparison: strategyComparison };
+  // A share link carries the twelve pieces and the priorities, nothing from the bag:
+  // gear=m100.10-r120.11-… in troop then slot order, and w=<profile> or six custom weights.
+  var LINK_QUALITY = { e: 'epic', m: 'mythic', r: 'red' };
+  function encodeLink(input) {
+    var state = normaliseState(input), ids = Object.keys(defaults().pieces);
+    var gear = ids.map(function (id) { var p = state.pieces[id]; return p.quality.charAt(0) + p.level + '.' + p.mastery; }).join('-');
+    var w = PROFILES[state.profile] ? state.profile : TYPES.map(function (type) { return state.weights[type].join(','); }).join(',');
+    return { gear: gear, w: w };
+  }
+  function readLink(search) {
+    var params = new URLSearchParams(search || ''), gear = params.get('gear');
+    if (gear === null) return null;
+    var ids = Object.keys(defaults().pieces), tokens = gear.split('-'), pieces = {};
+    if (tokens.length !== ids.length) return { invalid: true };
+    for (var i = 0; i < ids.length; i++) {
+      var m = /^([emr])(\d{1,3})\.(\d{1,2})$/.exec(tokens[i]);
+      if (!m) return { invalid: true };
+      var raw = { quality: LINK_QUALITY[m[1]], level: Number(m[2]), mastery: Number(m[3]) }, p = normalisePiece(raw);
+      if (JSON.stringify(p) !== JSON.stringify(raw)) return { invalid: true };
+      pieces[ids[i]] = p;
+    }
+    var out = { pieces: pieces }, w = params.get('w');
+    if (w && PROFILES[w]) { out.profile = w; out.weights = copy(PROFILES[w]); }
+    else if (w && /^[\d.]+(,[\d.]+){5}$/.test(w)) {
+      var values = w.split(',').map(Number);
+      if (values.every(function (v) { return Number.isFinite(v) && v <= 100; })) {
+        out.profile = 'custom';
+        out.weights = {};
+        TYPES.forEach(function (type, t) { out.weights[type] = values.slice(t * 2, t * 2 + 2); });
+      }
+    }
+    return out;
+  }
+  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, total: total, redPlans: redPlans, nearbyMilestones: nearbyMilestones, optimise: optimise, strategyComparison: strategyComparison, encodeLink: encodeLink, readLink: readLink };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.HeroGear = api;
 })(typeof window !== 'undefined' ? window : globalThis);

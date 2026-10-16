@@ -8,6 +8,22 @@
   var art = new URL('../img/hero-gear/', base), troopArt = { inf: 'infantry', cav: 'cavalry', arc: 'archer' };
   var resourceArt = { xp: 'xp-part-100', hammers: 'forgehammer', mythic: 'mythic-gear', mithril: 'mithril' };
   var parts = { ten: 0, hundred: 0, remainder: 0 };
+  // Guest mode: ?guest or a shared ?gear= link runs the page on a ledger held in memory, so
+  // nothing typed here reaches the saved gear or the inventory other tools read. It is swapped
+  // in before the shared modules mount, so the bag fields and backups use it too.
+  var params = new URLSearchParams(location.search), link = E.readLink(location.search);
+  var guest = params.has('guest') || !!link, linkFailed = !!(link && link.invalid);
+  if (guest) {
+    var Ledger = window.PlayerLedger, memory = {}, guestLedger;
+    if (!link) try { memory[Ledger.KEY] = JSON.stringify(Ledger.shared().snapshot()); } catch (ignored) {}
+    guestLedger = Ledger.create({ getItem: function (key) { return key in memory ? memory[key] : null; }, setItem: function (key, value) { memory[key] = String(value); } }, null);
+    if (link && !link.invalid) guestLedger.writeHeroGear(Object.assign(E.defaults(), link), E, { source: 'manual' });
+    Ledger.shared = function () { return guestLedger; };
+    var forge = document.getElementById('gear-forge');
+    forge.dataset.guest = 'true';
+    forge.dataset.savedKey = 'gear.guestSaved';
+    document.getElementById('gear-save').setAttribute('data-i18n', 'gear.guestSaved');
+  }
   function workerURL(filename) { var url = new URL(filename, base); url.search = scriptURL.search; return url; }
   function partsTotal() { return Math.min(1e9, parts.ten * 10 + parts.hundred * 100 + (parts.remainder || 0)); }
   function partsFromXP(xp) { xp = Math.max(0, Math.floor(Number(xp) || 0)); return { ten: Math.floor((xp % 100) / 10), hundred: Math.floor(xp / 100), remainder: xp % 10 }; }
@@ -22,6 +38,28 @@
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function fmt(n) { return BH.fmt(n); }
   function copy(s) { return JSON.parse(JSON.stringify(s)); }
+  function keptParams() { var kept = new URLSearchParams(location.search); ['guest', 'gear', 'w'].forEach(function (key) { kept.delete(key); }); return kept.toString(); }
+  function linkQuery() { var l = E.encodeLink(state); return 'gear=' + l.gear + '&w=' + l.w; }
+  function shareURL() { return new URL(location.pathname + '?' + linkQuery(), location.href).href; }
+  function syncAddress() {
+    if (!guest) return;
+    var kept = keptParams();
+    try { history.replaceState(history.state, '', location.pathname + '?' + (kept ? kept + '&' : '') + linkQuery() + location.hash); } catch (ignored) {}
+  }
+  function paintGuest() {
+    var kept = keptParams();
+    el('guest-banner').hidden = !guest;
+    el('guest-enter').hidden = guest;
+    el('guest-enter').href = location.pathname + '?' + (kept ? kept + '&' : '') + 'guest';
+    el('guest-leave').href = location.pathname + (kept ? '?' + kept : '');
+  }
+  function shareLink() {
+    var url = shareURL(), field = el('link');
+    function fallback() { field.hidden = false; field.value = url; field.focus(); field.select(); note('linkSelect'); }
+    field.hidden = true;
+    if (!navigator.clipboard || !navigator.clipboard.writeText) { fallback(); return; }
+    navigator.clipboard.writeText(url).then(function () { note('linkCopied'); }, fallback);
+  }
   function name(id) { var p = id.split('-'); return tr(p[0]) + ' · ' + tr(p[1]); }
   function quality(q) { return tr(q === 'mythic' ? 'mythicQuality' : q); }
   function image(filename, cls) { return '<img class="' + cls + '" src="' + new URL(filename + '.webp', art).href + '" alt="" width="256" height="256">'; }
@@ -59,7 +97,8 @@
       saving = true;
       var saved = ledger.writeHeroGear(Object.assign({}, state, { parts: parts }), E, Object.assign({ expectedRevision: ledgerRevision }, options));
       ledgerRevision = saved.revision;
-      el('save').textContent = tr('saved');
+      el('save').textContent = tr(guest ? 'guestSaved' : 'saved');
+      syncAddress();
       return true;
     } catch (error) {
       el('save').textContent = tr('saveFailed');
@@ -420,6 +459,9 @@
     } catch (error) { note('loadFailed'); el('save').textContent = tr('saveFailed'); }
     syncXP();
     paint();
+    paintGuest();
+    syncAddress();
+    if (linkFailed) note('linkInvalid');
     if (ledger) ledger.subscribe(function (saved) {
       if (saving) return;
       ledgerRevision = saved.revision;
@@ -488,6 +530,7 @@
       else if (detail.binding === 'view') { state.view = detail.value; persist(); paintView(); }
       else if (detail.binding === 'mode') { state.mode = detail.value; persist(); paintAnswer(); scheduleSearch(0); }
     });
+    el('share').addEventListener('click', shareLink);
     el('edit').addEventListener('click', function () { editPiece(); });
     el('close-edit').addEventListener('click', function () { el('edit-dialog').close(); });
     el('edit-dialog').addEventListener('close', function () {

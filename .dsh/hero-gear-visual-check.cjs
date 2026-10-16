@@ -330,8 +330,43 @@ async function fits(page, label) {
       assert.equal(await overviewPage.locator('#gear-images').isEnabled(),true);
       await overviewPage.locator('#gear-cancel-import').click();
     } catch(error) { await overviewPage.screenshot({path:path.join(output,'overview-failure.png')});throw error; } finally { await mobileContext.close(); }
+    const guestContext=await browser.newContext({viewport:{width:1280,height:900}});
+    try {
+      await guestContext.grantPermissions(['clipboard-read','clipboard-write'],{origin});
+      const owner=await guestContext.newPage();owner.on('pageerror',e=>errors.push(e.message));
+      await owner.goto(origin+'/hero-gear/?lang=en');await owner.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+      assert.equal(await owner.locator('#gear-guest-banner').isHidden(),true);
+      await owner.locator('#gear-hammers').fill('500');
+      await owner.locator('.gear-row[data-select="inf-helm"]').click();
+      await owner.locator('[data-piece="inf-helm"][data-field="level"]').fill('90');await owner.locator('[data-piece="inf-helm"][data-field="level"]').press('Tab');
+      await owner.locator('#gear-close-edit').click();
+      await owner.locator('#gear-share').click();
+      await owner.locator('#gear-status:not([hidden])').waitFor();
+      const shared=await owner.evaluate(()=>navigator.clipboard.readText());
+      assert.match(shared,/\/hero-gear\/\?gear=m90\.0(-m0\.0){11}&w=growth$/);
+      const visitor=await guestContext.newPage();visitor.on('pageerror',e=>errors.push(e.message));
+      await visitor.goto(shared);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+      assert.equal(await visitor.locator('#gear-guest-banner').isVisible(),true);
+      assert.equal(await visitor.locator('#gear-hammers').inputValue(),'','a link carries gear, not the sender\'s bag');
+      assert.match(await visitor.locator('.gear-row[data-select="inf-helm"]').textContent(),/\+90/);
+      await visitor.locator('#gear-hammers').fill('999');
+      await visitor.locator('.gear-row[data-select="inf-boots"]').click();
+      await visitor.locator('[data-piece="inf-boots"][data-field="level"]').fill('50');await visitor.locator('[data-piece="inf-boots"][data-field="level"]').press('Tab');
+      await visitor.locator('#gear-close-edit').click();
+      assert.match(visitor.url(),/gear=m90\.0-m0\.0-m0\.0-m50\.0/,'the address bar follows guest edits');
+      assert.equal(await visitor.locator('#gear-save').textContent(),'guest mode, not saved');
+      const saved=await owner.evaluate(()=>JSON.parse(localStorage.getItem('bh:player-ledger:v1')));
+      assert.equal(saved.inventory.forgehammer.amount,500,'guest edits never reach the saved inventory');
+      assert.equal(saved.heroGear.pieces['inf-boots'],undefined,'guest edits never reach the saved gear');
+      await visitor.goto(origin+'/hero-gear/?lang=en&guest');await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+      assert.equal(await visitor.locator('#gear-hammers').inputValue(),'500','plain guest mode starts from a copy of your save');
+      assert.match(visitor.url(),/\?lang=en&gear=/);
+      assert.match(await visitor.locator('#gear-guest-leave').getAttribute('href'),/\/hero-gear\/\?lang=en$/);
+      await visitor.goto(origin+'/hero-gear/?gear=broken');await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+      assert.match(await visitor.locator('#gear-status').textContent(),/could not be read/);
+    } finally { await guestContext.close(); }
     assert.deepEqual(errors,[]);
-    console.log('Visual gear, original assets, edit dialogs, resource bars, persistence, exclusions, keyboard tabs, worker search, milestone/search apply and undo, screenshot review, JSON import, mobile Gear/Plan, 5 widths and 17 language layouts passed. OCR delivery was stubbed; parser fixtures use real worker item shapes.');
+    console.log('Visual gear, original assets, edit dialogs, resource bars, persistence, exclusions, keyboard tabs, worker search, milestone/search apply and undo, screenshot review, JSON import, guest mode and share links, mobile Gear/Plan, 5 widths and 17 language layouts passed. OCR delivery was stubbed; parser fixtures use real worker item shapes.');
   }catch(error){
     if(page){await page.screenshot({path:path.join(output,'failure.png'),fullPage:true});fs.writeFileSync(path.join(output,'failure.txt'),page.url()+'\n'+error.stack);}
     throw error;

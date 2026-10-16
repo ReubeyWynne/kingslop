@@ -230,3 +230,18 @@ negative XP differences as recoverable XP, and all mastery costs independently;
 This avoids charging for a full reset/rebuild when the final level is the same.
 Item saves retain sub-10 XP remainders, and the resource ledger is authoritative
 when migrating older saves whose item counts disagree with the XP total.
+
+## Guest mode and gear links — 16 October 2026
+
+`?guest` opens the planner on a ledger held in memory, seeded from a copy of the
+saved player ledger. `hero-gear.js` swaps it in for `PlayerLedger.shared()` before
+the shared modules mount, so the bag fields, backups, screenshot import, reset and
+undo all act on the copy. Nothing typed in guest mode reaches `localStorage`.
+
+**copy gear link** copies `?gear=…&w=…`. `gear` lists the twelve pieces in troop
+then slot order as quality letter, total level and mastery (`m100.10`, `r120.11`,
+`e80.0`); `w` is a profile name or six custom weights. A link carries no resources,
+so a shared link never shows the sender's bag. A gear link always opens in guest
+mode, starting from blank resources. In guest mode the address bar follows every
+edit, so it is always the shareable link. Malformed or impossible pieces reject the
+whole link and guest mode starts from blank gear with a notice.

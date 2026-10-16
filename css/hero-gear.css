@@ -33,7 +33,13 @@ html[data-page="gear"] .topbar h1.brand { margin: 0; line-height: 1.2; }
 .gear-heading h2 { font-size: 1.3rem; margin: 0; }
 .gear-editor > .gear-heading { margin-bottom: .75rem; }
 .gear-heading h2::before { display: none; }
-.gear-heading > button { font-size: .9rem; }
+.gear-heading > button, .gear-heading-tools button { font-size: .9rem; }
+.gear-heading-tools { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0 .9rem; }
+.gear-main .gear-link { width: 100%; margin: 0 0 .75rem; padding: .2rem 0; border: 0; border-bottom: 1px solid var(--amber); border-radius: 0; background: transparent; color: var(--ink); font: .85rem var(--body); }
+.gear-guest-banner { margin: 0 0 .9rem; padding: .55rem 0; border-block: 1px solid var(--signal-line); color: var(--ink-dim); font-size: .9rem; line-height: 1.35; }
+.gear-guest-banner b { color: var(--amber); }
+.gear-guest-banner a, .gear-save-line a { color: var(--amber); white-space: nowrap; }
+.gear-save-line { display: inline-flex; flex-wrap: wrap; justify-content: flex-end; gap: 0 .6rem; }
 .gear-rail { display: flex; gap: .6rem; border-bottom: 1px solid var(--signal-line); margin-block: .35rem; }
 .gear-rail button { flex: 1; min-width: 0; color: var(--ink-muted); border-bottom: 2px solid transparent; font-weight: 700; line-height: 1.15; }
 .gear-rail button[aria-selected="true"] { color: var(--amber); border-bottom-color: var(--amber); }
