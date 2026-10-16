@@ -51,7 +51,7 @@
     });
     if (input.profile === 'custom' || PROFILES[input.profile]) s.profile = input.profile;
     if (TYPES.indexOf(input.troop) >= 0) s.troop = input.troop;
-    if (['milestones', 'plan', 'optimise'].indexOf(input.mode) >= 0) s.mode = input.mode;
+    if (['milestones', 'plan', 'optimise', 'split'].indexOf(input.mode) >= 0) s.mode = input.mode;
     if (input.view === 'plan') s.view = 'plan';
     if (s.pieces[input.selected]) s.selected = input.selected;
     if (['red', 'mithril', 'level'].indexOf(input.goal) >= 0) s.goal = input.goal;
@@ -271,7 +271,120 @@
     });
     return { now: now, alternatives: alternatives };
   }
-  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, total: total, redPlans: redPlans, nearbyMilestones: nearbyMilestones, optimise: optimise, strategyComparison: strategyComparison };
+  // Best split: what a troop set's invested resources would buy if spent from scratch.
+  // A piece's quality, red milestone tier and mastery fix its hammer, mythic and mithril
+  // cost; inside that class the stat rises linearly with level while XP per level rises,
+  // so levels are filled greedily by stat per XP. Every class combination that fits is
+  // searched (with a value bound), so mastery, ascension and milestone choices are exact;
+  // XP levels can sit a level or two from the true optimum.
+  var IMBUE_MYTHIC = [0, 3, 8, 13, 23, 33], IMBUE_MITHRIL = [0, 10, 30, 60, 100, 150];
+  function zeroPiece(p) { return { quality: p.quality === 'epic' ? 'epic' : 'mythic', level: 0, mastery: 0 }; }
+  function invested(p) { return cost(zeroPiece(p), p); }
+  function splitClasses(epic) {
+    var out = [];
+    if (epic) out.push({ quality: 'epic', mastery: 0, tier: 0, lo: 0, hi: 80 });
+    else {
+      for (var m = 0; m <= 20; m++) out.push({ quality: 'mythic', mastery: m, tier: 0, lo: 0, hi: 100 });
+      for (var k = 0; k <= 5; k++) for (var n = 10 + k; n <= 20; n++) out.push({ quality: 'red', mastery: n, tier: k, lo: 100 + 20 * k, hi: k < 5 ? 119 + 20 * k : 200 });
+    }
+    out.forEach(function (c) {
+      c.hammers = 5 * c.mastery * (c.mastery + 1);
+      c.mythic = (c.mastery > 10 ? (c.mastery - 10) * (c.mastery - 9) / 2 : 0) + (c.quality === 'red' ? 2 + IMBUE_MYTHIC[c.tier] : 0);
+      c.mithril = c.quality === 'red' ? IMBUE_MITHRIL[c.tier] : 0;
+    });
+    return out;
+  }
+  function fillLevels(picks, xp) {
+    var levels = picks.map(function (c) { return c.lo; }), left = xp;
+    picks.forEach(function (c) { left -= CUM[c.lo]; });
+    if (left < 0) return null;
+    for (;;) {
+      var best = -1, ratio = -1;
+      picks.forEach(function (c, i) {
+        if (levels[i] >= c.hi || XP[levels[i] + 1] > left) return;
+        var r = XP[levels[i] + 1] ? c.slope / XP[levels[i] + 1] : Infinity;
+        if (r > ratio) { ratio = r; best = i; }
+      });
+      if (best < 0) return levels;
+      left -= XP[levels[best] + 1]; levels[best]++;
+    }
+  }
+  function bestSet(ids, pieces, weights) {
+    var budget = emptyCost();
+    ids.forEach(function (id) { var c = invested(pieces[id]); RES.forEach(function (r) { budget[r] += c[r]; }); });
+    var options = ids.map(function (id) {
+      return splitClasses(pieces[id].quality === 'epic').filter(function (c) { return c.hammers <= budget.hammers && c.mythic <= budget.mythic && c.mithril <= budget.mithril && CUM[c.lo] <= budget.xp; }).map(function (c) {
+        c.low = score(id, { quality: c.quality, level: c.lo, mastery: c.mastery }, weights);
+        c.high = score(id, { quality: c.quality, level: c.hi, mastery: c.mastery }, weights);
+        c.slope = (c.high - c.low) / (c.hi - c.lo);
+        return c;
+      });
+    });
+    var rest = [0];
+    for (var i = ids.length - 1; i >= 0; i--) rest.unshift(rest[0] + Math.max.apply(null, options[i].map(function (c) { return c.high; })));
+    var current = ids.reduce(function (sum, id) { return sum + score(id, pieces[id], weights); }, 0);
+    var best = { score: current, pieces: ids.map(function (id) { return normalisePiece(pieces[id]); }) }, chosen = [];
+    (function search(i, hammers, mythic, mithril, xp, bound) {
+      if (i === ids.length) {
+        var levels = fillLevels(chosen, budget.xp);
+        if (!levels) return;
+        var value = chosen.reduce(function (sum, c, j) { return sum + c.low + c.slope * (levels[j] - c.lo); }, 0);
+        if (value > best.score + 1e-9) best = { score: value, pieces: chosen.map(function (c, j) { return { quality: c.quality, level: levels[j], mastery: c.mastery }; }) };
+        return;
+      }
+      options[i].forEach(function (c) {
+        if (hammers + c.hammers > budget.hammers || mythic + c.mythic > budget.mythic || mithril + c.mithril > budget.mithril || xp + CUM[c.lo] > budget.xp) return;
+        if (bound + c.high + rest[i + 1] <= best.score + 1e-9) return;
+        chosen[i] = c;
+        search(i + 1, hammers + c.hammers, mythic + c.mythic, mithril + c.mithril, xp + CUM[c.lo], bound + c.high);
+      });
+    })(0, 0, 0, 0, 0, 0);
+    return { budget: budget, current: current, score: best.score, pieces: ids.map(function (id, j) {
+      return { id: id, from: normalisePiece(pieces[id]), to: best.pieces[j], fromCost: invested(pieces[id]), toCost: invested(best.pieces[j]) };
+    }) };
+  }
+  function bestSplit(input) {
+    var state = normaliseState(input);
+    return TYPES.filter(function (type) { return state.included[type]; }).map(function (type) {
+      var result = bestSet(SLOTS.map(function (slot) { return type + '-' + slot; }), state.pieces, state.weights);
+      result.type = type;
+      return result;
+    });
+  }
+  // A share link carries the twelve pieces and the priorities, nothing from the bag:
+  // gear=m100.10-r120.11-… in troop then slot order, and w=<profile> or six custom weights.
+  var LINK_QUALITY = { e: 'epic', m: 'mythic', r: 'red' };
+  function encodeLink(input) {
+    var state = normaliseState(input), ids = Object.keys(defaults().pieces);
+    var gear = ids.map(function (id) { var p = state.pieces[id]; return p.quality.charAt(0) + p.level + '.' + p.mastery; }).join('-');
+    var w = PROFILES[state.profile] ? state.profile : TYPES.map(function (type) { return state.weights[type].join(','); }).join(',');
+    return { gear: gear, w: w };
+  }
+  function readLink(search) {
+    var params = new URLSearchParams(search || ''), gear = params.get('gear');
+    if (gear === null) return null;
+    var ids = Object.keys(defaults().pieces), tokens = gear.split('-'), pieces = {};
+    if (tokens.length !== ids.length) return { invalid: true };
+    for (var i = 0; i < ids.length; i++) {
+      var m = /^([emr])(\d{1,3})\.(\d{1,2})$/.exec(tokens[i]);
+      if (!m) return { invalid: true };
+      var raw = { quality: LINK_QUALITY[m[1]], level: Number(m[2]), mastery: Number(m[3]) }, p = normalisePiece(raw);
+      if (JSON.stringify(p) !== JSON.stringify(raw)) return { invalid: true };
+      pieces[ids[i]] = p;
+    }
+    var out = { pieces: pieces }, w = params.get('w');
+    if (w && PROFILES[w]) { out.profile = w; out.weights = copy(PROFILES[w]); }
+    else if (w && /^[\d.]+(,[\d.]+){5}$/.test(w)) {
+      var values = w.split(',').map(Number);
+      if (values.every(function (v) { return Number.isFinite(v) && v <= 100; })) {
+        out.profile = 'custom';
+        out.weights = {};
+        TYPES.forEach(function (type, t) { out.weights[type] = values.slice(t * 2, t * 2 + 2); });
+      }
+    }
+    return out;
+  }
+  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, total: total, redPlans: redPlans, nearbyMilestones: nearbyMilestones, optimise: optimise, strategyComparison: strategyComparison, encodeLink: encodeLink, readLink: readLink, invested: invested, bestSet: bestSet, bestSplit: bestSplit };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.HeroGear = api;
 })(typeof window !== 'undefined' ? window : globalThis);

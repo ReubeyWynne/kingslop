@@ -81,7 +81,6 @@ async function fits(page, label) {
     await page.locator('#gear-apply-import').click();
     assert.equal(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),119);
     await page.locator('#gear-mode-milestones').click();
-    await page.locator('#gear-piece-select summary').click();
     await page.locator('#gear-selected').selectOption('inf-helm');
     await page.locator('#gear-apply-milestone').click();
     assert.equal(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),120);
@@ -101,11 +100,11 @@ async function fits(page, label) {
     fixture.pieces['cav-chest']={quality:'mythic',level:40,mastery:1};
     fixture.pieces['cav-boots']={quality:'mythic',level:63,mastery:1};
     fixture.selected='inf-gloves';fixture.resources={xp:52650,hammers:110,mythic:6,mithril:10};
-    await page.locator('.gear-save-tools summary').click();
+    await page.locator('#gear-page-settings').click();
     await page.locator('#gear-load').click();
     await page.locator('#gear-save-file').setInputFiles({name:'gear.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(fixture))});
     await page.waitForFunction(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-gloves'].level===120);
-    await page.locator('.gear-save-tools summary').click();
+    await page.locator('#gear-page-planner').click();
     await page.locator('#gear-mode-milestones').click();
     assert.match(await page.locator('[data-cost-resource="xp"]').textContent(),/74,100/);
     assert.match(await page.locator('[data-cost-resource="mithril"]').textContent(),/10 missing/);
@@ -121,8 +120,7 @@ async function fits(page, label) {
     await page.locator('.gear-route[data-route="0"]').click();
     assert.equal(await page.locator('#gear-milestone-out > .gear-kvk-summary').getAttribute('data-kvk-points'),'2200000','saving points cover the full cost, including resources already owned');
     await page.locator('.gear-route[data-route="1"]').click();
-    assert.match(await page.locator('.gear-score-explainer').textContent(),/garrison lead/);
-    assert.equal(await page.locator('.gear-score-explainer').getAttribute('open'),null);
+    assert.match(await page.locator('#gear-milestone-out .gear-role').textContent(),/garrison lead/);
     await page.locator('#gear-profile').selectOption('rally');
     assert.match(await page.locator('.gear-route').first().textContent(),/Archer/);
     await page.locator('#gear-profile').selectOption('growth');
@@ -164,9 +162,9 @@ async function fits(page, label) {
     }
     await page.setViewportSize({width:390,height:844});
     await page.locator('#gear-view-plan').click();
-    await page.locator('#gear-settings summary').click();
+    await page.locator('#gear-page-settings').click();
     await page.locator('#gear-reforge').check();
-    await page.locator('#gear-settings summary').click();
+    await page.locator('#gear-view-plan').click();
     for(const [id,value]of [['parts10','2299'],['parts100','1'],['hammers','501'],['mythic','10'],['mithril','10']])await page.locator('#gear-'+id).fill(value);
     await page.locator('#gear-mode-optimise').click();
     await page.locator('#gear-apply-result').waitFor();
@@ -330,8 +328,67 @@ async function fits(page, label) {
       assert.equal(await overviewPage.locator('#gear-images').isEnabled(),true);
       await overviewPage.locator('#gear-cancel-import').click();
     } catch(error) { await overviewPage.screenshot({path:path.join(output,'overview-failure.png')});throw error; } finally { await mobileContext.close(); }
+    const guestContext=await browser.newContext({viewport:{width:1280,height:900}});
+    try {
+      await guestContext.grantPermissions(['clipboard-read','clipboard-write'],{origin});
+      const owner=await guestContext.newPage();owner.on('pageerror',e=>errors.push(e.message));
+      await owner.goto(origin+'/hero-gear/?lang=en');await owner.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+      assert.equal(await owner.locator('#gear-guest-banner').isHidden(),true);
+      await owner.locator('#gear-hammers').fill('500');
+      await owner.locator('.gear-row[data-select="inf-helm"]').click();
+      await owner.locator('[data-piece="inf-helm"][data-field="level"]').fill('90');await owner.locator('[data-piece="inf-helm"][data-field="level"]').press('Tab');
+      await owner.locator('#gear-close-edit').click();
+      await owner.locator('#gear-share').click();
+      await owner.locator('#gear-status:not([hidden])').waitFor();
+      const shared=await owner.evaluate(()=>navigator.clipboard.readText());
+      assert.match(shared,/\/hero-gear\/\?gear=m90\.0(-m0\.0){11}&w=growth$/);
+      const visitor=await guestContext.newPage();visitor.on('pageerror',e=>errors.push(e.message));
+      await visitor.goto(shared);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+      assert.equal(await visitor.locator('#gear-guest-banner').isVisible(),true);
+      assert.equal(await visitor.locator('#gear-hammers').inputValue(),'','a link carries gear, not the sender\'s bag');
+      assert.match(await visitor.locator('.gear-row[data-select="inf-helm"]').textContent(),/\+90/);
+      await visitor.locator('#gear-hammers').fill('999');
+      await visitor.locator('.gear-row[data-select="inf-boots"]').click();
+      await visitor.locator('[data-piece="inf-boots"][data-field="level"]').fill('50');await visitor.locator('[data-piece="inf-boots"][data-field="level"]').press('Tab');
+      await visitor.locator('#gear-close-edit').click();
+      assert.match(visitor.url(),/gear=m90\.0-m0\.0-m0\.0-m50\.0/,'the address bar follows guest edits');
+      assert.equal(await visitor.locator('#gear-save').textContent(),'guest mode, not saved');
+      const saved=await owner.evaluate(()=>JSON.parse(localStorage.getItem('bh:player-ledger:v1')));
+      assert.equal(saved.inventory.forgehammer.amount,500,'guest edits never reach the saved inventory');
+      assert.equal(saved.heroGear.pieces['inf-boots'],undefined,'guest edits never reach the saved gear');
+      await visitor.goto(origin+'/hero-gear/?lang=en&guest');await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+      assert.equal(await visitor.locator('#gear-hammers').inputValue(),'500','plain guest mode starts from a copy of your save');
+      assert.match(visitor.url(),/\?lang=en&gear=/);
+      assert.match(await visitor.locator('#gear-guest-leave').getAttribute('href'),/\/hero-gear\/\?lang=en$/);
+      await visitor.goto(origin+'/hero-gear/?gear=broken');await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+      assert.match(await visitor.locator('#gear-status').textContent(),/could not be read/);
+      await visitor.goto(origin+'/hero-gear/?lang=en&gear=m69.2-r120.11-m100.6-m72.3-m20.20-m100.0-r160.13-e80.0-r200.20-r200.20-r200.20-r200.20&w=growth');
+      await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+      await visitor.locator('#gear-mode-split').click();
+      await visitor.locator('.gear-split[data-split-troop="arc"]').waitFor();
+      assert.equal(await visitor.locator('.gear-split').count(),3);
+      assert.match(await visitor.locator('.gear-split[data-split-troop="arc"]').textContent(),/spent the best way already/);
+      assert.match(await visitor.locator('.gear-split[data-split-troop="cav"]').textContent(),/360 hammers more than the best split, in Chest\./);
+      assert.equal(await visitor.locator('.gear-split[data-split-troop="cav"] [data-piece-id="cav-chest"] [data-split-resource="mithril"][data-over="true"]').count(),1);
+      await visitor.locator('#gear-include').uncheck();
+      await visitor.locator('.gear-split[data-split-troop="inf"]').waitFor({state:'detached'});
+      await visitor.locator('.gear-split[data-split-troop="cav"]').waitFor();
+      assert.equal(await visitor.locator('.gear-split').count(),2,'excluded troops leave the best split');
+      for(const [hash,tab,visible] of [['#kvk-points','#gear-page-theory','#kvk-points'],['#maths-sources','#gear-page-theory','#maths'],['#how-it-works','#gear-page-theory','#how-it-works'],['#save-backups','#gear-page-settings','#gear-export']]){
+        await visitor.goto(origin+'/hero-gear/?lang=en'+hash);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+        await visitor.locator(visible).waitFor();
+        assert.equal(await visitor.locator(tab).getAttribute('aria-selected'),'true',hash+' opens its tab');
+        assert.equal(await visitor.locator('#gear-planner').isHidden(),true);
+      }
+      await visitor.locator('#gear-page-planner').click();
+      await visitor.locator('#gear-mode-plan').click();
+      await visitor.locator('#gear-milestone-out .gear-theory-link[href="#kvk-points"]').click();
+      await visitor.locator('#kvk-points').waitFor();
+      assert.match(await visitor.locator('#gear-kvk-formula').textContent(),/4,000 points per Forgehammer/);
+      assert.equal(await visitor.locator('.gear-main details').count(),0,'the page uses tabs and headings, not folds');
+    } finally { await guestContext.close(); }
     assert.deepEqual(errors,[]);
-    console.log('Visual gear, original assets, edit dialogs, resource bars, persistence, exclusions, keyboard tabs, worker search, milestone/search apply and undo, screenshot review, JSON import, mobile Gear/Plan, 5 widths and 17 language layouts passed. OCR delivery was stubbed; parser fixtures use real worker item shapes.');
+    console.log('Visual gear, original assets, edit dialogs, resource bars, persistence, exclusions, keyboard tabs, worker search, milestone/search apply and undo, screenshot review, JSON import, guest mode, share links, best split, Settings and Theory tabs and their old links, mobile Gear/Plan, 5 widths and 17 language layouts passed. OCR delivery was stubbed; parser fixtures use real worker item shapes.');
   }catch(error){
     if(page){await page.screenshot({path:path.join(output,'failure.png'),fullPage:true});fs.writeFileSync(path.join(output,'failure.txt'),page.url()+'\n'+error.stack);}
     throw error;

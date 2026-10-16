@@ -106,7 +106,7 @@ function fixture() {
     await page.waitForTimeout(350);
     assert.equal(await page.evaluate(() => window.__searches.length), 2, 'returning to mobile Plan uses current results');
     await page.locator('#gear-profile').selectOption('custom');
-    assert.equal(await page.locator('#gear-settings').evaluate(el => el.open), true);
+    assert.equal(await page.locator('#gear-settings').isVisible(), true);
     assert.equal(await page.locator('#gear-weights input').first().evaluate(el => el === document.activeElement), true);
     await page.context().close();
 
@@ -141,7 +141,7 @@ function fixture() {
         assert.equal(await page.locator('.gear-editor').isVisible(), true);
       } else {
         await page.locator('.gear-empty [data-show-weights]').click();
-        assert.equal(await page.locator('#gear-settings').evaluate(el => el.open), true);
+        assert.equal(await page.locator('#gear-settings').isVisible(), true);
       }
       await page.context().close();
     }
@@ -187,7 +187,7 @@ function fixture() {
     await sibling.locator('#gear-rows .gear-row').first().waitFor({ state: 'attached' });
     await sibling.evaluate(() => window.PlayerLedger.shared().setBalance('mithril', 17));
     await page.waitForFunction(() => document.getElementById('gear-mithril').value === '17');
-    await page.locator('.gear-save-tools summary').click();
+    await page.locator('#gear-page-settings').click();
     const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#gear-export').click()]);
     assert.equal(download.suggestedFilename(), 'kingshot-player.json');
     const backup = JSON.parse(fs.readFileSync(await download.path(), 'utf8'));
