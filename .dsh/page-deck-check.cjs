@@ -360,7 +360,7 @@ test('every cover has an ASCII HTML scene with a static fallback and reduced-mot
   assert.equal([...campfire.matchAll(/class="patch patch-/g)].length, 6);
   assert.equal([...campfire.matchAll(/class="spark"/g)].length, 18);
   assert.ok(campfire.includes('class="logs-back"') && campfire.includes('class="logs-front"'));
-  for (const kind of ['bear', 'crown', 'dice', 'banner']) assert.ok(scene.includes(`ascii-mini--${kind}`));
-  assert.ok(scene.includes('include ascii/moon.html'));
+  for (const kind of ['crown', 'dice', 'banner']) assert.ok(scene.includes(`ascii-mini--${kind}`));
+  assert.ok(scene.includes('include ascii/moon.html') && scene.includes('include ascii/aurora.html'));
   assert.ok(scene.includes('include ascii/campfire.html') && scene.includes('include ascii/forge.html'));
 });
