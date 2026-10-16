@@ -1125,6 +1125,11 @@ window.__BH_I18N_DATA["fr"] = {
   "ev.deck.lede.governor": "équipement et charmes du gouverneur, planifiés depuis ton inventaire.",
   "gov.title": "Équipement du gouverneur",
   "gov.cardLede": "Planifie l’équipement et les charmes du gouverneur avec tes propres matériaux, et vois ce que le score rapporte en événement.",
-  "gov.kicker": "la garde-robe du gouverneur"
+  "gov.kicker": "la garde-robe du gouverneur",
+  "town.nav": "Centre-ville",
+  "ev.deck.lede.town": "tout ce que tu possèdes, et les points d’événement qu’il peut rapporter.",
+  "town.title": "Centre-ville",
+  "town.cardLede": "Tout ce que tu possèdes sur une page, et les points KvK, Gouverneur le plus fort et Brawl qu’il peut rapporter.",
+  "town.kicker": "tout ce que tu possèdes, compté"
 }
 ;

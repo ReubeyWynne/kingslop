@@ -1,0 +1,127 @@
+/* ─── Town Centre — the storehouse ledger: points first, then every shelf ─── */
+/* The orchid signal comes from events.css. Counts are ruled ledger rows, never cards. */
+
+.town-main { max-width: 60rem; padding-bottom: 1rem; }
+.town-main .section { padding: .75rem 0; }
+.town-hero .lede { max-width: 36rem; }
+.town-main h2 { font-size: 1.3rem; margin: 0 0 .4rem; }
+.town-main h2::before { display: none; }
+.town-main h3 { font-size: 1.05rem; margin: .8rem 0 .3rem; }
+.town-main .town-day h4 { font: 700 var(--step--1) var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); margin: .9rem 0 .2rem; }
+.town-main .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.town-main fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.town-main label { display: grid; gap: .15rem; min-width: 0; color: var(--ink-muted); font-size: .8rem; }
+.town-main input[type="number"] { min-height: 2.25rem; width: 100%; min-width: 0; padding: .2rem 0; font: max(1rem, 16px) var(--display-2); font-variant-numeric: tabular-nums; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--signal-line); border-radius: 0; }
+.town-main input[type="number"]:focus { border-bottom-color: var(--amber); }
+.town-main input[type="number"]::placeholder { color: var(--ink-muted); }
+.town-main input:disabled { opacity: .4; }
+.town-main select { width: 100%; min-width: 0; min-height: 2.75rem; font: max(1rem, 16px) var(--body); color: var(--ink); background: var(--void-2); border: 1px solid var(--signal-line); border-radius: 0; padding: .3rem; }
+.town-main option { background: var(--void); color: var(--ink); }
+.town-main button { min-height: 2.75rem; padding: .35rem .2rem; border: 0; border-bottom: 1px solid transparent; background: transparent; color: var(--amber); font: inherit; cursor: pointer; }
+.town-main button:hover { color: var(--ink); border-bottom-color: var(--signal-line); }
+.town-main :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.town-main details { margin: .5rem 0; }
+.town-main summary { font-size: .85rem; padding: .25rem 0; cursor: pointer; }
+.town-gloss { font-size: .85rem; color: var(--ink-muted); line-height: 1.35; margin: .4rem 0; }
+.town-note { margin: .4rem 0; padding-inline-start: .6rem; border-inline-start: 2px solid var(--signal-line); color: var(--ink-dim); font-size: .85rem; }
+.town-note:empty { display: none; }
+.town-heading { display: flex; justify-content: space-between; align-items: baseline; gap: .75rem; flex-wrap: wrap; }
+.town-heading small { color: var(--ink-muted); font-size: .75rem; }
+.town-heading h3 { margin: 0; }
+.town-heading a { font-size: .85rem; color: var(--amber); }
+
+/* Points — three events as tabs, each carrying its best total. */
+.town-events { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid var(--signal-line); }
+.town-main .town-events button { display: grid; gap: .1rem; align-content: start; padding: .55rem .5rem; text-align: start; color: var(--ink-muted); border-bottom: 2px solid transparent; }
+.town-events button + button { border-inline-start: 1px solid var(--signal-tint); }
+.town-events button > span { font: 700 .72rem var(--body); letter-spacing: .12em; text-transform: uppercase; }
+.town-events output { font: clamp(1.15rem, .9rem + 1.6vw, 1.9rem)/1.1 var(--display-2); color: var(--ink-dim); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.town-events output[data-partial="true"]::after { content: "*"; color: var(--ink-muted); }
+.town-main .town-events [aria-selected="true"] { color: var(--amber); border-bottom-color: var(--amber); background: var(--signal-tint); }
+.town-events [aria-selected="true"] output { color: var(--amber); }
+
+/* Days — a ruled bar per day; tap one to read its lines. */
+.town-days { list-style: none; margin: .5rem 0; padding: 0; border-bottom: 1px solid var(--signal-line); }
+.town-days li + li { border-top: 1px solid var(--signal-tint); }
+.town-main .town-daybar { display: grid; grid-template-columns: 4.2rem minmax(0, 1fr) auto; gap: .7rem; align-items: center; width: 100%; min-height: 2.5rem; padding: .2rem 0; color: var(--ink-dim); text-align: start; }
+.town-daybar-label { font-size: .85rem; }
+.town-daybar-rule { position: relative; height: .45rem; background: var(--void-2); }
+.town-daybar-rule::after { content: ""; position: absolute; inset-block: 0; inset-inline-start: 0; width: calc(var(--share, 0) * 100%); background: var(--amber-dim); }
+.town-daybar output { font: .95rem var(--display-2); font-variant-numeric: tabular-nums; color: var(--ink); min-width: 5.5rem; text-align: end; }
+.town-main .town-daybar[aria-pressed="true"] { color: var(--amber); border-bottom-color: var(--amber); }
+.town-daybar[aria-pressed="true"] .town-daybar-rule::after { background: var(--amber); }
+.town-daybar[aria-pressed="true"] .town-daybar-label::before { content: "❧ "; }
+
+.town-day h3 { color: var(--amber); }
+.town-scroll { overflow-x: auto; }
+.town-lines { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .9rem; }
+.town-lines th, .town-lines td { padding: .35rem .4rem; border-bottom: 1px solid var(--signal-tint); text-align: end; white-space: nowrap; }
+.town-lines th:first-child { text-align: start; padding-inline-start: 0; white-space: normal; }
+.town-lines thead th { font-size: .72rem; font-weight: 700; color: var(--ink-muted); letter-spacing: .08em; text-transform: uppercase; border-bottom-color: var(--signal-line); }
+.town-lines tbody th { font-weight: 400; color: var(--ink); }
+.town-lines td:last-child { color: var(--amber); }
+.town-also, .town-plan { margin: .2rem 0; padding-inline-start: 1.1rem; color: var(--ink-dim); font-size: .85rem; }
+
+/* Shelves — tabs, then ruled rows: icon, name, count, what it is worth. */
+.town-rail { display: flex; gap: .2rem; border-bottom: 1px solid var(--signal-line); margin-block: .4rem .6rem; overflow-x: auto; scrollbar-width: none; }
+.town-main .town-rail button { flex: 1 0 auto; color: var(--ink-muted); border-bottom: 2px solid transparent; font-weight: 700; white-space: nowrap; padding-inline: .5rem; }
+.town-main .town-rail button[aria-selected="true"] { color: var(--amber); border-bottom-color: var(--amber); }
+.town-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0 1.5rem; }
+.town-main .town-item { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) minmax(5rem, 7.5rem); grid-template-areas: "icon name count" "icon rate rate"; column-gap: .6rem; row-gap: 0; align-items: center; padding: .45rem 0; border-bottom: 1px solid var(--signal-tint); }
+.town-icon { grid-area: icon; display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border: 1px solid var(--signal-line); font: 1rem var(--display-2); color: var(--amber); }
+.town-icon:has(img) { border: 0; }
+.town-icon img { width: 2.5rem; height: 2.5rem; object-fit: contain; }
+.town-item .town-name { grid-area: name; font-size: .95rem; color: var(--ink); padding: 0; float: none; }
+.town-item > input, .town-item .town-duration { grid-area: count; }
+.town-item .town-rate { grid-area: rate; font-size: .72rem; color: var(--ink-muted); line-height: 1.25; }
+.town-item .town-rate:empty { display: none; }
+.town-speedup { grid-template-columns: 2.5rem minmax(0, 1fr) minmax(8.5rem, 10rem) !important; }
+.town-duration { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .3rem; }
+.town-main .town-duration label { display: flex; align-items: baseline; gap: .1rem; }
+.town-main .town-duration input { flex: 1 1 0; width: auto; text-align: end; }
+.town-caption { grid-column: 1 / -1; display: flex; justify-content: space-between; flex-wrap: wrap; gap: .3rem .8rem; margin: .4rem 0 0; color: var(--ink-muted); font-size: .75rem; }
+.town-materials { margin-bottom: .6rem; }
+
+/* Equipment boards — one band per troop, as in game. */
+.town-count { margin: .2rem 0; color: var(--ink-muted); font-size: .8rem; }
+.town-totals { display: flex; gap: .3rem 1.5rem; flex-wrap: wrap; margin: .2rem 0; color: var(--ink-muted); font-size: .8rem; }
+.town-totals output { color: var(--ink); font: 1rem var(--display-2); font-variant-numeric: tabular-nums; margin-inline-start: .25rem; }
+.town-troop { border-top: 1px solid var(--signal-line); padding-block: .4rem .2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 0 1.5rem; }
+.town-troop-head { grid-column: 1 / -1; margin: 0; font: 700 var(--step--1) var(--body); color: var(--amber); letter-spacing: .14em; text-transform: uppercase; }
+.town-troop-head::before { content: "❧ "; }
+.town-piece { display: grid; grid-template-columns: 3rem minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: .2rem .5rem; align-items: end; padding: .4rem 0; border-bottom: 1px solid var(--signal-tint); }
+.town-piece > img { width: 3rem; height: 3rem; object-fit: contain; grid-row: 1 / 3; align-self: center; }
+.town-piece[data-state="unset"] > img { filter: grayscale(1); opacity: .4; }
+.town-piece .town-name { grid-column: 2 / -1; font-size: .95rem; color: var(--ink); }
+.town-piece > label:nth-of-type(1) { grid-column: 2; }
+.town-gov-piece { grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)); }
+.town-gov-piece .town-name { grid-column: 1 / -1; float: none; padding: 0; }
+.town-main .town-gov-piece > label:nth-of-type(1) { grid-column: auto; }
+.town-gov-piece select { padding-inline: .15rem; }
+
+.town-status { display: block; color: var(--amber); font-size: .9rem; margin-top: .5rem; }
+.town-notes { max-width: 46rem; }
+[hidden] { display: none !important; }
+
+@media (max-width: 780px) {
+  .town-main { padding-inline: 1rem; }
+  .town-hero { padding-top: var(--space-m); }
+  .town-hero h1 { font-size: 2.25rem; }
+  .town-hero .lede { font-size: 1rem; }
+  .town-main .town-events button { padding: .45rem .35rem; }
+  .town-events button > span { font-size: .62rem; letter-spacing: .08em; }
+  .town-main .town-daybar { grid-template-columns: 3.6rem minmax(0, 1fr) auto; gap: .5rem; }
+  .town-daybar output { min-width: 4.5rem; }
+  .town-lines { font-size: .82rem; }
+  .town-main .town-rail button { font-size: .88rem; padding-inline: .3rem; }
+  .town-rail { gap: 0; }
+  .town-lines th, .town-lines td { padding-inline: .25rem; }
+}
+@media (max-width: 400px) {
+  .town-piece { grid-template-columns: 2.6rem repeat(3, minmax(0, 1fr)); }
+  .town-piece > img { width: 2.6rem; height: 2.6rem; }
+  .town-piece > label:nth-of-type(1) { grid-column: 2; }
+  .town-gov-piece { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .town-main .town-gov-piece > label:nth-of-type(1) { grid-column: 1 / -1; }
+  .town-speedup { grid-template-columns: 2.5rem minmax(0, 1fr) 8.5rem !important; }
+}

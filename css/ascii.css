@@ -274,6 +274,7 @@ html.deck-open .dust .ascii-ambient > span::before { animation-play-state: pause
 .deck-ascii .ascii-march { font-size: clamp(8px, 2.1vw, 11px); }
 .deck-ascii .ascii-campfire { font-size: clamp(6px, 1.75vw, 9.5px); }
 .deck-ascii .ascii-forge { font-size: clamp(8px, 2.2vw, 11px); }
+.deck-ascii .ascii-hearth { font-size: clamp(12px, 3.6vw, 16px); }
 .deck-atmosphere { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
 
 /* Only the cover in front animates; the rest hold their frame. The ring's

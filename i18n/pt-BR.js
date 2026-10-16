@@ -1353,6 +1353,11 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "ev.deck.lede.governor": "equipamento e amuletos do governador, planejados com o seu inventário.",
   "gov.title": "Equipamento de governador",
   "gov.cardLede": "Planeje o equipamento e os amuletos do governador com seus próprios materiais e veja quanto a pontuação vale nos eventos.",
-  "gov.kicker": "o guarda-roupa do governador"
+  "gov.kicker": "o guarda-roupa do governador",
+  "town.nav": "Centro da cidade",
+  "ev.deck.lede.town": "tudo o que você tem e os pontos de evento que isso pode render.",
+  "town.title": "Centro da cidade",
+  "town.cardLede": "Tudo o que você tem em uma página, e os pontos de KvK, Governador mais forte e Brawl que isso pode render.",
+  "town.kicker": "tudo o que você tem, contado"
 }
 ;

@@ -110,6 +110,17 @@ jobs:
               - _data/event_rules.json
               - css/governor.css
               - img/governor/**
+            town:
+              - *shared
+              - .dsh/town-centre-ui-check.cjs
+              - town-centre/**
+              - js/town-centre*.js
+              - js/event-*
+              - js/governor-*
+              - js/hero-gear-engine.js
+              - _data/event_rules.json
+              - _data/governor.json
+              - css/town.css
             # The deck walks every page and fails on any script error.
             deck:
               - *shared
@@ -141,7 +152,7 @@ jobs:
           FILTERED: ${{ github.event_name == 'pull_request' }}
           CHANGES: ${{ steps.filter.outputs.changes || '[]' }}
         run: |
-          all='["interactions","heroes","castle","events","governor","deck","ascii-capture","hero-gear"]'
+          all='["interactions","heroes","castle","events","governor","town","deck","ascii-capture","hero-gear"]'
           if [ "$FILTERED" != true ]; then
             echo "logic=true" >> "$GITHUB_OUTPUT"
             echo "ascii=true" >> "$GITHUB_OUTPUT"
@@ -209,6 +220,9 @@ jobs:
       - name: Check governor gear data, planner and ledger
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/governor-check.cjs
+      - name: Check Town Centre points and wiring
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/town-centre-check.cjs
       - name: Check OCR backend recovery
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/ocr-backend-check.cjs
@@ -279,6 +293,9 @@ jobs:
       - name: Check governor gear UI
         if: matrix.group == 'governor'
         run: node .dsh/governor-ui-check.cjs
+      - name: Check Town Centre UI
+        if: matrix.group == 'town'
+        run: node .dsh/town-centre-ui-check.cjs
       - name: Check page navigation in browser
         if: matrix.group == 'deck'
         run: node .dsh/page-deck-browser-check.cjs
@@ -311,6 +328,7 @@ jobs:
             .dsh/hero-directory-preview/
             .dsh/castle-preview/
             .dsh/governor-preview/
+            .dsh/town-preview/
             .dsh/deck-preview/
             .dsh/sim-preview/
             .dsh/ascii-preview/

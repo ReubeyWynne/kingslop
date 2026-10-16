@@ -675,7 +675,8 @@ window.__BH_I18N_DATA["es"] = {
   "ev.ledger.aria": "el registro — cada página",
   "ev.ledger.home": "el índice",
   "ev.ledger.guides": "los eventos",
-  "ev.ledger.tools": "las herramientas",
+  "ev.ledger.tools": "las herramientas"
+,
   "ev.deck.close": "cerrar",
   "ev.deck.groups": "grupos de páginas",
   "ev.deck.prev": "página anterior",
@@ -1126,6 +1127,11 @@ window.__BH_I18N_DATA["es"] = {
   "ev.deck.lede.governor": "equipo y amuletos del gobernador, planificados con tu inventario.",
   "gov.title": "Equipo de gobernador",
   "gov.cardLede": "Planifica el equipo y los amuletos del gobernador con tus propios materiales y mira cuánto vale la puntuación en los eventos.",
-  "gov.kicker": "el vestuario del gobernador"
+  "gov.kicker": "el vestuario del gobernador",
+  "town.nav": "Centro urbano",
+  "ev.deck.lede.town": "todo lo que tienes y los puntos de evento que puede darte.",
+  "town.title": "Centro urbano",
+  "town.cardLede": "Todo lo que tienes en una página, y los puntos de KvK, Gobernador más fuerte y Brawl que puede darte.",
+  "town.kicker": "todo lo que tienes, contado"
 }
 ;

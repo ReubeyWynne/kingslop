@@ -1124,6 +1124,11 @@ window.__BH_I18N_DATA["de"] = {
   "ev.deck.lede.governor": "Gouverneursausrüstung und Talismane, geplant aus deinem Inventar.",
   "gov.title": "Gouverneursausrüstung",
   "gov.cardLede": "Plane Gouverneursausrüstung und Talismane mit deinen eigenen Materialien und sieh, was die Wertung in Events bringt.",
-  "gov.kicker": "die Garderobe des Gouverneurs"
+  "gov.kicker": "die Garderobe des Gouverneurs",
+  "town.nav": "Stadtzentrum",
+  "ev.deck.lede.town": "alles, was du besitzt, und die Eventpunkte, die es bringen kann.",
+  "town.title": "Stadtzentrum",
+  "town.cardLede": "Alles, was du besitzt, auf einer Seite – und die KvK-, Stärkster-Gouverneur- und Brawl-Punkte, die es bringen kann.",
+  "town.kicker": "alles, was du besitzt, gezählt"
 }
 ;
