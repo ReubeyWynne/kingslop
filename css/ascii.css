@@ -56,9 +56,14 @@
 .ascii-hearth-rail::before,
 .ascii-hearth-rail::after { content: ""; flex: 1 1 0; height: 1px; margin-bottom: .45em; background: linear-gradient(to right, transparent, var(--signal-line, rgba(245, 200, 81, .35))); }
 .ascii-hearth-rail::after { background: linear-gradient(to left, transparent, var(--signal-line, rgba(245, 200, 81, .35))); }
-.ascii-hearth { width: 13ch; height: 6em; flex: none; font-size: 11px; }
-.ascii-hearth .flame { left: 0; top: 0; }
-.ascii-hearth .log { left: 0; top: 5em; color: #ae8155; }
+/* Four layers, like the campfire: flame, a coal bed glowing in the log, the
+   log's wooden ends, and sparks climbing into the two clear rows on top. */
+.ascii-hearth { width: 13ch; height: 8em; flex: none; font-size: 11px; }
+.ascii-hearth .flame { left: 0; top: 2em; }
+.ascii-hearth .coals,
+.ascii-hearth .log { left: 0; top: 7em; color: #ae8155; }
+.ascii-hearth .coals { color: #ec7138; }
+.ascii-hearth .spark { color: #ffd180; opacity: 0; }
 
 /* ─── Forge — anvil, hammer, hot bar and sparks ───────── */
 .ascii-forge { width: 34ch; height: 13em; font-size: 10px; color: var(--amber, #e08a3c); }
@@ -98,15 +103,22 @@
 .ascii-mini--castle::before { color: var(--ink-dim); }
 .ascii-mini--castle::after { color: var(--castle-cloth); }
 .ascii-mini--castle::after,
-.ascii-mini--castle > span { position: absolute; inset: 0; display: block; white-space: pre; }
+.ascii-mini > span { position: absolute; inset: 0; display: block; white-space: pre; }
 .ascii-mini--castle .castle-smoke { color: var(--ink-muted); }
-.ascii-mini--castle > span::before { display: block; white-space: pre; }
+.ascii-mini > span::before { display: block; white-space: pre; }
+/* The moon is four layers: stars, earthshine, the lit phase, and a wisp of
+   cloud that veils whatever it crosses (the mask is generated with it). */
 .ascii-mini--moon::before { color: var(--amber-dim); opacity: .25; }
 .ascii-mini--moon::after { position: absolute; inset: 0; display: block; white-space: pre; }
+.ascii-mini--moon .moon-stars { color: var(--amber-dim); }
+.ascii-mini--moon .moon-cloud { color: var(--ink-muted); opacity: .75; }
 .ascii-mini--charm { color: var(--amber-dim, #d3a33e); }
+/* The longship rides on two seas: a far swell (::after) and a near chop. */
+.ascii-mini--charm::after { position: absolute; inset: 0; display: block; white-space: pre; color: var(--ink-muted); }
+.ascii-mini--charm .charm-pennant { color: var(--amber); }
 .ascii-mini--bear { height: 13.75em; }
 .ascii-mini--crown { height: 12.5em; }
-.ascii-mini--charm { height: 12.5em; }
+.ascii-mini--charm { height: 13.75em; }
 .ascii-mini--seal { height: 13.75em; }
 /* Ursa Major over Bear Hunt: the lines are ink, the stars the signal hue. */
 .ascii-mini--ursa { width: 43ch; height: 18.75em; }
@@ -148,6 +160,10 @@
 .ascii-march--sky { position: relative; }
 .ascii-march--sky::before { color: var(--ink-muted); }
 .ascii-march--sky::after { position: absolute; inset: 0; display: block; white-space: pre; color: var(--amber); }
+/* The raid walks in front of a far skyline on its own dim layer, cut away
+   around each figure so it passes behind the column, never through it. */
+.ascii-march--raid { position: relative; isolation: isolate; }
+.ascii-march--raid::after { position: absolute; inset: 0; z-index: -1; display: block; white-space: pre; color: var(--ink-muted); opacity: .5; }
 @media (max-width: 700px) { .ascii-march-band { width: 100vw; margin-inline: calc(50% - 50vw); } }
 
 /* ─── Ambient twinkles — glyphs that wake at fixed places ─ */
@@ -272,8 +288,7 @@ html.deck-open .dust .ascii-ambient > span::before { animation-play-state: pause
 @media (prefers-reduced-motion: reduce) {
   .ascii *, .ascii *::before, .ascii *::after,
   .ascii-mini::before, .ascii-mini::after, .ascii-march::before, .ascii-march::after,
-  .ascii-mini--castle > span::before,
-  .ascii-mini--aurora > span::before,
+  .ascii-mini > span::before,
   .ascii-ambient > span::before { animation: none !important; }
   .ascii-campfire .spark { opacity: 0; }
 }

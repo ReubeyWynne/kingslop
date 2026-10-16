@@ -276,8 +276,27 @@ def hearth():
                               for dc in range(2) for dr in range(3))
                 arr[r][c] = heat_glyph(heat[4])
         frames.append(arr)
-    return ('/* hearth */\n' + animation('.ascii-hearth .flame::before', 'ascii-hearth', frames, LOOP)
-            + '.ascii-hearth .log::before{content:' + content([list(" '=#=---=#='")]) + '}\n')
+    css = ['/* hearth */', animation('.ascii-hearth .flame::before', 'ascii-hearth', frames, LOOP),
+           # The log's ends stay wood; its middle, under the flame, is a bed of
+           # coals on a loop of its own that glows by changing glyphs in place.
+           '.ascii-hearth .log::before{content:' + content([list(" '=#     #='")]) + '}']
+    coals = []
+    for j in range(16):
+        row = [' '] * w
+        for c in range(4, 9):
+            wobble = math.sin(TAU * j / 16 * (1 + int(hash2(c, 5) * 2)) + hash2(c * 3, 7) * TAU)
+            row[c] = '-=+*#'[max(0, min(4, 2 + round(wobble * 1.4 + hash2(c, j) - .5)))]
+        coals.append([row])
+    css.append(animation('.ascii-hearth .coals::before', 'ascii-hearth-coals', coals, 3.2))
+    # A few sparks leave the tip and climb a cell at a time through the two
+    # clear rows above the flame, each on its own period, then go out.
+    for i, (c, dur, delay) in enumerate(((5, 2.9, 0), (7, 3.7, 1.3), (6, 4.3, 2.6), (8, 3.3, .7))):
+        drift = 1 if i % 2 else -1
+        keys = (f'0%{{left:{c}ch;top:1em;opacity:1}}12%{{left:{c + drift}ch;top:0em;opacity:.6}}'
+                f'24%,100%{{left:{c + drift}ch;top:0em;opacity:0}}')
+        css.append(f'@keyframes ascii-hearth-spark-{i}{{{keys}}}')
+        css.append(f'.ascii-hearth .spark-{i}{{animation:ascii-hearth-spark-{i} {dur}s steps(1,end) -{delay}s infinite}}')
+    return '\n'.join(css) + '\n'
 
 
 # ── forge: hammer, anvil and a hot bar ───────────────────────────────────
@@ -454,15 +473,12 @@ PIPS = {1: [(2, 1)], 2: [(0, 0), (4, 2)], 3: [(0, 0), (2, 1), (4, 2)],
 def mini_frames(kind):
     frames, holds = [], None
     if kind == 'charm':
-        # A longship under a chequered sail, shields along the rail. The sea
-        # rolls past a cell at a time, the pennant snaps, and a glint runs
-        # down the shields.
-        base = [list(r.ljust(MW)) for r in art(CHARM)] + [[' '] * MW]
-        swell = '~~^~~   '
+        # A longship under a chequered sail, shields along the rail, with a
+        # glint running down the shields. The sea and the pennant are layers
+        # of their own (charm_layers), so nothing here waits on the swell.
+        base = [list(r.ljust(MW)) for r in art(CHARM)]
         for i in range(32):
             arr = [r[:] for r in base]
-            put(arr, 1, 9, ''.join(swell[(c + i // 4) % len(swell)] for c in range(1, MW - 1)))
-            put(arr, 15, 0, '>' if (i // 2) % 2 == 0 else '~')
             if 12 <= i < 26:
                 put(arr, 5 + 3 * ((i - 12) // 2), 7, '*')
             frames.append(arr)
@@ -568,6 +584,36 @@ def mini_frames(kind):
     elif kind == 'castle':
         frames = castle_frames()
     return frames, holds
+
+
+# The longship's sea is two layers: a far swell along the waterline, rolling
+# past slowly, and a near chop below it, quicker, so the two slide over each
+# other the way near water outruns far water. The pennant snaps on a third
+# loop. None of the three periods divides another, so the ship never repeats.
+CHARM_FAR, CHARM_NEAR = '~~^~~   ', "_.-~'~-._   "
+
+
+def charm_layers():
+    far = []
+    for i in range(len(CHARM_FAR)):
+        arr = grid(MW, 11)
+        put(arr, 1, 9, ''.join(CHARM_FAR[(c + i) % len(CHARM_FAR)] for c in range(1, MW - 1)))
+        for c in (0, 1, MW - 2, MW - 1):  # water laps the hull's ends
+            put(arr, c, 8, '~' if (c + i) % 4 == 0 else '-' if (c + i) % 4 == 2 else ' ')
+        far.append(arr)
+    near = []
+    for i in range(len(CHARM_NEAR)):
+        arr = grid(MW, 11)
+        put(arr, 0, 10, ''.join(CHARM_NEAR[(c + i) % len(CHARM_NEAR)] for c in range(MW)))
+        near.append(arr)
+    pennant = []
+    for glyph in '>>~>-~':
+        arr = grid(MW, 11)
+        put(arr, 15, 0, glyph)
+        pennant.append(arr)
+    return [animation('.ascii-mini--charm::after', 'ascii-charm-swell', far, len(far) * .7),
+            animation('.ascii-mini--charm .charm-sea::before', 'ascii-charm-chop', near, len(near) * .25),
+            animation('.ascii-mini--charm .charm-pennant::before', 'ascii-charm-pennant', pennant, len(pennant) * .2)]
 
 
 CASTLE_W, CASTLE_H = 37, 17
@@ -810,11 +856,87 @@ def moon_frames():
             brightness = albedo * (.20 + .80 * light ** .55) + relief
             index = max(0, min(len(ramp) - 1, int(brightness * (len(ramp) - 1))))
             arr[r][c] = ramp[index]
-        for n, (c, r) in enumerate(((2, 1), (33, 3), (4, 10), (31, 11), (35, 7))):
-            beat = (frame + n * 23) % MOON_FRAMES
-            put(arr, c, r, '+' if 8 <= beat < 12 else '.' if beat < 20 else ' ')
         frames.append(arr)
     return frames
+
+
+# The moon's sky is its own pair of layers, on loops that never line up with
+# the 112-frame lunar cycle. Stars twinkle at fixed places. A wisp of cloud
+# steps across a cell at a time; it draws glyphs only on open sky, and over
+# the disc it is a veil instead: a soft mask that dims the moon (and any star)
+# behind it, so the moon reads as lit through the cloud, not overprinted.
+MOON_STARS = ((2, 1), (8, 0), (33, 3), (29, 0), (4, 10), (0, 6), (31, 11), (35, 7), (24, 12))
+MOON_SKY_FRAMES, MOON_SKY_STEP = 128, .3
+MOON_STAR_FRAMES = 64
+MOON_CLOUDS = ((0, 9, 9), (64, 2, 7))  # start step, centre row, half width
+MOON_VEIL_W, MOON_VEIL_H = 120, 3 * 13
+
+
+def moon_star_frames():
+    frames = []
+    for i in range(MOON_STAR_FRAMES):
+        arr = grid(MOON_COLS, MOON_ROWS)
+        for n, (c, r) in enumerate(MOON_STARS):
+            beat = (i + n * 29) % MOON_STAR_FRAMES
+            put(arr, c, r, '*' if 9 <= beat < 11 else '+' if 7 <= beat < 13 else '.' if 3 <= beat < 22 else ' ')
+        frames.append(arr)
+    return frames
+
+
+def moon_cloud_centre(step, start, half):
+    """The wisp's centre column, or None while it is out of the box."""
+    c = (step - start) % MOON_SKY_FRAMES - half - 2
+    return c if c - half <= MOON_COLS + 1 else None
+
+
+def moon_cloud_frames():
+    _, samples = moon_surface()
+    blocked = {(c, r) for c, r, *_ in samples} | set(MOON_STARS)
+    frames, veil = [], []
+    for i in range(MOON_SKY_FRAMES):
+        arr = grid(MOON_COLS, MOON_ROWS)
+        over = None
+        for start, row, half in MOON_CLOUDS:
+            centre = moon_cloud_centre(i, start, half)
+            if centre is None:
+                continue
+            seed = start * 7
+            for r in range(row - 1, row + 2):
+                for dx in range(-half - 1, half + 2):
+                    c = centre + dx
+                    if not 0 <= c < MOON_COLS or (c, r) in blocked:
+                        continue
+                    # The shape is sampled in the wisp's own frame, so it travels
+                    # whole; a slow term lets the edges fray as it goes.
+                    density = (1 - (dx / (half + .5)) ** 2 - ((r - row) / 1.3) ** 2
+                               - .55 * noise(dx * .55 + seed, r * 1.7 + i * .04) + .2)
+                    if density > .05:
+                        arr[r][c] = '.-~'[min(2, int(density * 4))]
+            if centre - half <= MOON_COLS and centre + half >= 0:
+                over = (centre, row)
+        frames.append(arr)
+        veil.append(over)
+    return frames, veil
+
+
+def moon_veil(veil):
+    """A stepped mask that dims the disc wherever the wisp crosses it."""
+    def at(spot):
+        c, r = spot or (-14, 6)  # parked off the disc, still covering the box
+        return f'{c + .5 - MOON_VEIL_W / 2:g}ch {(r + .5 - MOON_VEIL_H / 2) * 1.25:g}em'
+    duration = MOON_SKY_FRAMES * MOON_SKY_STEP
+    mask = (f'radial-gradient(ellipse 10ch 2.2em at 50% 50%,rgba(0,0,0,.18) 30%,rgba(0,0,0,.5) 62%,#000 100%) '
+            f'{at(veil[0])}/{MOON_VEIL_W}ch {MOON_VEIL_H * 1.25:g}em no-repeat')
+    out = [f'.ascii-mini--moon::before,.ascii-mini--moon::after,.ascii-mini--moon .moon-stars::before'
+           f'{{-webkit-mask:{mask};mask:{mask}}}',
+           '@keyframes ascii-moon-veil{']
+    previous = None
+    for i, spot in enumerate(veil):
+        if spot != previous:
+            out.append(f'{100 * i / len(veil):.4f}%{{-webkit-mask-position:{at(spot)};mask-position:{at(spot)}}}')
+        previous = spot
+    out.append('}')
+    return '\n'.join(out) + '\n', duration
 
 
 MIRROR = str.maketrans('/\\()<>[]{}', '\\/)(><][}{')
@@ -838,8 +960,15 @@ def minis():
         frames, holds = mini_frames(kind)
         if kind == 'moon':
             shadow, _ = moon_surface()
-            css.append(f'.ascii-mini--moon::before{{content:{content(shadow)}}}\n')
-            css.append(animation('.ascii-mini--moon::after', 'ascii-mini-moon', frames, duration))
+            clouds, veil = moon_cloud_frames()
+            veil_css, sky = moon_veil(veil)
+            sweep = f',ascii-moon-veil {sky:g}s steps(1,end) infinite'
+            css.append(f'.ascii-mini--moon::before{{content:{content(shadow)};animation:ascii-moon-veil {sky:g}s steps(1,end) infinite}}\n')
+            css.append(animation('.ascii-mini--moon::after', 'ascii-mini-moon', frames, duration).replace(' infinite}', ' infinite' + sweep + '}', 1))
+            css.append(animation('.ascii-mini--moon .moon-stars::before', 'ascii-moon-stars', moon_star_frames(), MOON_STAR_FRAMES * MOON_SKY_STEP)
+                       .replace(' infinite}', ' infinite' + sweep + '}', 1))
+            css.append(animation('.ascii-mini--moon .moon-cloud::before', 'ascii-moon-cloud', clouds, sky))
+            css.append(veil_css)
         elif kind == 'castle':
             css.append(f'.ascii-mini--castle::before{{content:{content(castle_surface())}}}\n')
             css.append(animation('.ascii-mini--castle::after', 'ascii-castle-cloth', castle_cloth_frames(), CASTLE_CLOTH_FRAMES / FPS))
@@ -848,6 +977,8 @@ def minis():
             css.append(animation('.ascii-mini--castle .castle-smoke::before', 'ascii-castle-smoke', castle_smoke_frames(), duration))
         else:
             css.append(animation(f'.ascii-mini--{kind}::before', f'ascii-mini-{kind}', frames, duration, holds))
+        if kind == 'charm':
+            css.extend(charm_layers())
     return '\n'.join(css) + '\n'
 
 
@@ -904,6 +1035,32 @@ def march_frame(kind, i):
     return arr
 
 
+# The raid walks in front of a far skyline on its own dim layer: one soft
+# contour of hills drawn in four glyph heights (_ . - '), so it reads as
+# distance, never as more limbs. It shares the column's loop so it can be cut
+# away wherever a figure stands, and it repeats with the tile, like the ground.
+MARCH_HORIZON = MARCH_H - 3
+MARCH_HILLS = ((.7, 1, .4), (.45, 3, 2.1), (.2, 5, .9))  # (height in rows, waves per tile, phase)
+
+
+def march_skyline():
+    arr = grid(MARCH_W, MARCH_H)
+    for c in range(MARCH_W):
+        lift = .9 + sum(h * math.sin(TAU * n * c / MARCH_W + ph) for h, n, ph in MARCH_HILLS)
+        lift = max(0, min(1.99, lift))
+        put(arr, c, MARCH_HORIZON - int(lift), "_.-'"[int(lift % 1 * 4)])
+    return arr
+
+
+def march_far_frame(i):
+    arr, column = march_skyline(), march_frame('raid', i)
+    for r in range(MARCH_H):
+        for c in range(MARCH_W):
+            if column[r][c] != ' ':
+                arr[r][c] = ' '
+    return arr
+
+
 def march():
     # The planted foot stays on its ground cell for a whole step: as the hip
     # advances one cell per pose, the foot recedes one cell, and the step
@@ -919,6 +1076,7 @@ def march():
         frames = [march_frame(kind, i) for i in range(loop)]
         assert march_frame(kind, loop) == frames[0], f'{kind}: march loop does not close'
         css.append(animation(selector, name, frames, loop / MARCH_FPS))
+    css.append(animation('.ascii-march--raid::after', 'ascii-raid-skyline', [march_far_frame(i) for i in range(loop)], loop / MARCH_FPS))
     return '\n'.join(css) + '\n'
 
 
