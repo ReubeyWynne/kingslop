@@ -572,7 +572,6 @@
       else if (detail.binding === 'mode') { state.mode = detail.value; persist(); paintAnswer(); scheduleSearch(0); }
     });
     el('share').addEventListener('click', shareLink);
-    el('edit').addEventListener('click', function () { editPiece(); });
     el('close-edit').addEventListener('click', function () { el('edit-dialog').close(); });
     el('edit-dialog').addEventListener('close', function () {
       paintEditor(); paintAnswer();
