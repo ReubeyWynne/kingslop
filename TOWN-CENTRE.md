@@ -4,15 +4,17 @@
 
 ## Inventory
 
-| Shelf | Ledger | Written by |
-| --- | --- | --- |
-| Bag | `inventory[id]` for every `_data/event_rules.json` item | `ledger-form` |
-| Speedups | `inventory['speedup-{kind}']` in minutes; kinds `general`, `construction`, `research`, `training`, `learning`, `healing` | `town-speedups` (days, hours, minutes) |
-| Resources | `inventory.bread`, `wood`, `stone`, `iron` | `ledger-form` |
-| Hero gear | `inventory['hero-gear-xp']`, `['spare-mythic-gear']`, `heroGear.pieces` | `ledger-form`, `town-hero-gear` via `writeHeroGear` |
-| Governor | governor materials, `governorGear`, `governorCharms` | `ledger-form`, `town-governor` via `setGovernor` |
+Every shelf is a grid of tiles painted from the ledger; tapping one opens a single edit dialog (`town-inventory`), so the page has no blocks of bare fields.
 
-Blank is unknown and zero is a confirmed zero, as everywhere else. A hero gear piece cannot be returned to unknown here, because the hero gear adapter has no delete.
+| Shelf | Ledger | Edited as |
+| --- | --- | --- |
+| Bag | `inventory[id]` for every `_data/event_rules.json` item | count |
+| Speedups | `inventory['speedup-{kind}']` in minutes; kinds `general`, `construction`, `research`, `training`, `learning`, `healing` | days, hours, minutes |
+| Resources | `inventory.bread`, `wood`, `stone`, `iron` | count |
+| Hero gear | `heroGear.pieces`: one set of four (helm, gloves, chest, boots) per troop type, behind troop tabs; plus gear XP, spare mythic gear, Forgehammers and Mithril | quality chips and level/mastery steppers, written through `writeHeroGear` |
+| Governor | `governorGear` (one set of six for the account) and `governorCharms` (three per piece), laid out as the in-game governor profile; plus the five materials | gear and charm steppers, written through `setGovernor` |
+
+Hero gear and governor gear are separate sections and never share a model: hero gear belongs to a troop type, governor gear to the account. Blank is unknown and zero is a confirmed zero, as everywhere else. A hero gear piece cannot be returned to unknown here, because the hero gear adapter has no delete.
 
 ## Points
 

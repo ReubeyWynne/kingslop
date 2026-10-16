@@ -25,23 +25,36 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.equal(await page.locator('.town-days li').count(), 5);
       assert.match(await page.locator('[data-target="town-centre.coverage"]').textContent(), /^Partial/);
 
-      // Bag counts write the shared ledger and score on their best day.
-      await page.locator('#town-bag input[data-bind="inventory.mithril"]').fill('10');
+      // Bag tiles open one dialog; counts write the shared ledger and score on their best day.
+      const dialog = page.locator('.town-dialog');
+      const edit = async selector => { await page.locator(selector).click(); await dialog.waitFor({ state: 'visible' }); };
+      const done = async () => { await dialog.locator('[data-action="town-inventory.close"]').click(); await dialog.waitFor({ state: 'hidden' }); };
+      assert.equal(await page.locator('#town-bag input').count(), 0, 'the shelf is tiles, not fields');
+      await edit('#town-bag [data-count="mithril"]');
+      await dialog.locator('[data-field="count"]').fill('10');
       assert.equal((await ledger()).inventory.mithril.amount, 10);
+      assert.match(await dialog.locator('[data-target="town-inventory.rate"]').textContent(), /40,000/);
+      await done();
+      assert.equal(await page.locator('#town-bag [data-count="mithril"] [data-amount]').textContent(), '10');
       assert.equal(await prep(), 400000);
-      assert.match(await page.locator('[data-rate="mithril"]').textContent(), /40,000/);
 
       // Speedups: days, hours and minutes are stored as minutes and score per minute.
       await page.locator('[aria-controls="town-speedups"]').click();
       assert.equal(await page.locator('#town-speedups').isVisible(), true);
       assert.equal(await page.locator('#town-bag').isVisible(), false);
-      const general = page.locator('[data-speedup="speedup-general"]');
-      await general.locator('[data-unit="d"]').fill('1'); await general.locator('[data-unit="h"]').fill('2'); await general.locator('[data-unit="m"]').fill('90');
-      await general.locator('[data-unit="m"]').blur();
+      await edit('[data-duration="speedup-general"]');
+      await dialog.locator('[data-unit="d"]').fill('1'); await dialog.locator('[data-unit="h"]').fill('2'); await dialog.locator('[data-unit="m"]').fill('90');
+      await dialog.locator('[data-unit="m"]').blur();
       assert.equal((await ledger()).inventory['speedup-general'].amount, 1440 + 120 + 90);
-      assert.equal(await general.locator('[data-unit="h"]').inputValue(), '3');
-      assert.equal(await general.locator('[data-unit="m"]').inputValue(), '30');
+      assert.equal(await dialog.locator('[data-unit="h"]').inputValue(), '3');
+      assert.equal(await dialog.locator('[data-unit="m"]').inputValue(), '30');
+      await done();
+      assert.equal(await page.locator('[data-duration="speedup-general"] [data-amount]').textContent(), '1d 3h 30m');
       assert.equal(await prep(), 400000 + 1650 * 30);
+      await edit('[data-duration="speedup-healing"]');
+      await dialog.locator('[data-action="town-inventory.clear"]').click();
+      assert.equal((await ledger()).inventory['speedup-healing'].status, 'unknown');
+      await done();
 
       // Days are choices: the selected day lists its lines.
       await page.locator('.town-daybar[data-day="1"]').click();
@@ -50,32 +63,49 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       await page.locator('.town-events [data-value="sg"]').click();
       assert.equal(await page.locator('.town-days li').count(), 7);
 
-      // Hero gear pieces go through the hero gear adapter.
+      // Hero gear: one set of four per troop type, behind troop tabs; writes go through the hero gear adapter.
       await page.locator('[aria-controls="town-hero-gear"]').click();
-      const helm = page.locator('[data-piece="inf-helm"]');
-      await helm.locator('[data-field="quality"]').selectOption('red');
-      await helm.locator('[data-field="level"]').fill('120'); await helm.locator('[data-field="level"]').blur();
-      const piece = (await ledger()).heroGear.pieces['inf-helm'];
-      assert.equal(piece.quality, 'red'); assert.equal(piece.level, 120); assert.ok(piece.mastery >= 11);
-      assert.equal(await helm.getAttribute('data-state'), 'set');
+      assert.equal(await page.locator('[data-troop-board="inf"]').isVisible(), true);
+      assert.equal(await page.locator('[data-troop-board="cav"]').isVisible(), false);
+      await page.locator('.town-troops [data-value="cav"]').click();
+      assert.equal(await page.locator('[data-troop-board="cav"]').isVisible(), true);
+      assert.equal(await page.locator('[data-troop-board="inf"]').isVisible(), false);
+      await page.locator('.town-troops [data-value="inf"]').click();
+      await edit('[data-piece="inf-helm"]');
+      await dialog.locator('[data-action="town-inventory.quality"][data-quality="red"]').click();
+      await dialog.locator('input[data-field="level"]').fill('120'); await dialog.locator('input[data-field="level"]').blur();
+      await dialog.locator('[data-action="town-inventory.step"][data-field="level"][data-step="1"]').click();
+      let piece = (await ledger()).heroGear.pieces['inf-helm'];
+      assert.equal(piece.quality, 'red'); assert.equal(piece.level, 121); assert.ok(piece.mastery >= 11);
+      assert.equal(await dialog.locator('[data-action="town-inventory.clear"]').isVisible(), false);
+      await done();
+      assert.equal(await page.locator('[data-piece="inf-helm"]').getAttribute('data-state'), 'set');
+      assert.equal(await page.locator('[data-piece="inf-helm"] [data-part="level"]').textContent(), '+21');
       assert.equal((await ledger()).heroGear.pieces['cav-helm'], undefined, 'other pieces stay unknown');
 
-      // Governor levels and materials score through the governor planner.
+      // Governor: one set of six laid out as the profile; levels and materials score through the governor planner.
       await page.locator('[aria-controls="town-governor"]').click();
-      await page.locator('select[data-item="inf-1-1"]').selectOption('0');
-      await page.locator('#town-governor input[data-bind="inventory.charm-guide"]').fill('5');
-      await page.locator('#town-governor input[data-bind="inventory.charm-design"]').fill('5');
+      assert.equal(await page.locator('.town-gov-piece').count(), 6);
+      await edit('[data-count="charm-guide"]'); await dialog.locator('[data-field="count"]').fill('5'); await done();
+      await edit('[data-count="charm-design"]'); await dialog.locator('[data-field="count"]').fill('5'); await done();
+      await edit('[data-gov="inf-1"]');
+      await dialog.locator('[data-action="town-inventory.govStep"][data-charm-slot="1"][data-step="-1"]').click();
       assert.equal((await ledger()).governorCharms.slots['inf-1-1'].level, 0);
-      const before = num(await page.locator('[data-event-total="sg"]').textContent());
-      assert.ok(before >= 400000 + 625 * 70, 'charm score counts in Strongest Governor');
-      assert.match(await page.locator('[data-target="town-governor.gain"]').textContent(), /625 charm score/);
+      await dialog.locator('select[data-level="gear"]').selectOption('3');
+      assert.equal((await ledger()).governorGear.pieces['inf-1'].level, 3);
+      await done();
+      assert.equal(await page.locator('[data-gov="inf-1"]').getAttribute('data-state'), 'set');
+      assert.match(await page.locator('[data-target="town-inventory.gain"]').textContent(), /625 charm score/);
+      const sg = num(await page.locator('[data-event-total="sg"]').textContent());
+      assert.ok(sg >= 400000 + 625 * 70, 'charm score counts in Strongest Governor');
 
       // Persisted, and the governor page reads the same save.
       await page.reload(); await page.waitForFunction(() => document.querySelector('.town-daybar'));
-      assert.equal(await page.locator('#town-bag input[data-bind="inventory.mithril"]').inputValue(), '10');
+      assert.equal(await page.locator('#town-bag [data-count="mithril"] [data-amount]').textContent(), '10');
       const other = await context.newPage(); await other.goto(origin + '/governor-gear/?lang=en');
       await other.waitForFunction(() => !document.querySelector('.gov-board').disabled);
       assert.equal(await other.locator('#governor-bag input[data-bind="inventory.charm-guide"]').inputValue(), '5');
+      assert.equal(await other.locator('.gov-tile[data-item="inf-1"]').getAttribute('data-state'), 'set');
       await other.close();
 
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0, 'no sideways scroll at ' + width);
@@ -91,6 +121,6 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
     assert.equal(await page.locator('#town-governor').isVisible(), true, 'a shelf link selects its tab');
     assert.deepEqual(errors, []);
     await context.close();
-    console.log('Town Centre UI: bag, speedups, hero gear, governor, event totals, persistence, shared save, deep links, RTL and widths pass.');
+    console.log('Town Centre UI: bag tiles, speedups, hero gear per troop, the governor profile, event totals, persistence, shared save, deep links, RTL and widths pass.');
   } finally { await browser.close(); server.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

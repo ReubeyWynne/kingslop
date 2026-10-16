@@ -62,42 +62,100 @@
 .town-lines td:last-child { color: var(--amber); }
 .town-also, .town-plan { margin: .2rem 0; padding-inline-start: 1.1rem; color: var(--ink-dim); font-size: .85rem; }
 
-/* Shelves — tabs, then ruled rows: icon, name, count, what it is worth. */
+/* Shelves — a bag of tiles, as in game: art, a count badge, the name under it.
+   Tapping a tile opens one small dialog; nothing on the shelf is a raw field. */
 .town-rail { display: flex; gap: .2rem; border-bottom: 1px solid var(--signal-line); margin-block: .4rem .6rem; overflow-x: auto; scrollbar-width: none; }
 .town-main .town-rail button { flex: 1 0 auto; color: var(--ink-muted); border-bottom: 2px solid transparent; font-weight: 700; white-space: nowrap; padding-inline: .5rem; }
 .town-main .town-rail button[aria-selected="true"] { color: var(--amber); border-bottom-color: var(--amber); }
-.town-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0 1.5rem; }
-.town-main .town-item { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) minmax(5rem, 7.5rem); grid-template-areas: "icon name count" "icon rate rate"; column-gap: .6rem; row-gap: 0; align-items: center; padding: .45rem 0; border-bottom: 1px solid var(--signal-tint); }
-.town-icon { grid-area: icon; display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border: 1px solid var(--signal-line); font: 1rem var(--display-2); color: var(--amber); }
-.town-icon:has(img) { border: 0; }
-.town-icon img { width: 2.5rem; height: 2.5rem; object-fit: contain; }
-.town-item .town-name { grid-area: name; font-size: .95rem; color: var(--ink); padding: 0; float: none; }
-.town-item > input, .town-item .town-duration { grid-area: count; }
-.town-item .town-rate { grid-area: rate; font-size: .72rem; color: var(--ink-muted); line-height: 1.25; }
-.town-item .town-rate:empty { display: none; }
-.town-speedup { grid-template-columns: 2.5rem minmax(0, 1fr) minmax(8.5rem, 10rem) !important; }
-.town-duration { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .3rem; }
-.town-main .town-duration label { display: flex; align-items: baseline; gap: .1rem; }
-.town-main .town-duration input { flex: 1 1 0; width: auto; text-align: end; }
-.town-caption { grid-column: 1 / -1; display: flex; justify-content: space-between; flex-wrap: wrap; gap: .3rem .8rem; margin: .4rem 0 0; color: var(--ink-muted); font-size: .75rem; }
-.town-materials { margin-bottom: .6rem; }
+.town-bag { display: grid; grid-template-columns: repeat(auto-fill, minmax(6.2rem, 1fr)); gap: .9rem .6rem; padding-block: .4rem; }
+.town-main .town-tile { display: grid; justify-items: center; align-content: start; gap: .25rem; min-width: 0; padding: .3rem .1rem; color: var(--ink-dim); text-align: center; border-bottom: 1px solid transparent; }
+.town-tile-art { position: relative; display: grid; place-items: center; width: 4.4rem; aspect-ratio: 1; border: 1px solid var(--signal-line); background: radial-gradient(circle at 50% 35%, var(--signal-tint), transparent 70%), var(--void-2); }
+.town-tile-art img { width: 82%; height: 82%; object-fit: contain; }
+.town-monogram { font: 1.6rem var(--display); color: var(--amber-dim); }
+.town-tile-count { position: absolute; inset-inline-end: -.3rem; inset-block-end: -.45rem; min-width: 1.6rem; padding: .05rem .3rem; background: var(--void); border: 1px solid var(--amber-dim); color: var(--ink); font: .85rem/1.2 var(--display-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.town-tile[data-state="unknown"] .town-tile-count { color: var(--ink-muted); border-color: var(--signal-line); }
+.town-tile[data-state="unknown"] .town-tile-art img { filter: grayscale(.7); opacity: .55; }
+.town-tile-name { margin-top: .2rem; font-size: .85rem; line-height: 1.15; color: var(--ink); }
+.town-tile .town-rate { font-size: .68rem; line-height: 1.2; color: var(--ink-muted); }
+.town-main .town-tile:hover .town-tile-art, .town-main .town-tile:focus-visible .town-tile-art { border-color: var(--amber); }
+.town-strip { display: flex; flex-wrap: wrap; gap: .4rem .9rem; padding: .4rem 0 .7rem; border-bottom: 1px solid var(--signal-line); margin-bottom: .4rem; }
+.town-tile-small .town-tile-art { width: 3rem; }
+.town-tile-small .town-tile-name { font-size: .72rem; max-width: 5rem; }
+.town-tile-small .town-tile-count { font-size: .75rem; }
 
-/* Equipment boards — one band per troop, as in game. */
+/* Hero gear — four item cards per troop, framed by quality like the hero gear page. */
+.town-troops { margin-top: .2rem; }
+.town-hero-board { max-width: 36rem; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; padding-block: .5rem; }
+.town-main .town-hero-piece { display: grid; justify-items: center; gap: .3rem; min-width: 0; padding: .2rem 0; color: var(--ink); }
+.town-gear-item { --item-frame: var(--amber-dim); --item-band: #634416; position: relative; display: block; width: 100%; max-width: 6.5rem; aspect-ratio: 1; border: 2px solid var(--item-frame); border-radius: .4rem; background: var(--item-band); overflow: hidden; }
+.town-gear-item[data-quality="red"] { --item-frame: #ce8177; --item-band: #793c3e; }
+.town-gear-item[data-quality="epic"] { --item-frame: #a495cb; --item-band: #56476f; }
+.town-gear-item[data-quality=""] { --item-frame: var(--signal-line); --item-band: var(--void-2); }
+.town-gear-item[data-quality=""] > img { filter: grayscale(1); opacity: .35; }
+.town-gear-item > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.town-gear-level { position: absolute; inset-block-start: .12rem; inset-inline-end: .12rem; padding: .02rem .15rem; background: var(--void-2); color: var(--ink); font: 700 .95rem/1.05 var(--display-2); border-radius: 2px; }
+.town-gear-level:empty { display: none; }
+.town-gear-mastery { position: absolute; inset-block-end: 1rem; inset-inline-end: .12rem; display: flex; align-items: center; gap: .05rem; padding: .02rem .12rem; background: var(--void-2); color: var(--ink); font: 700 .72rem/1.1 var(--body); border-radius: 2px; }
+.town-gear-mastery img { width: .8rem; height: .8rem; object-fit: contain; }
+.town-gear-band { position: absolute; inset-inline: 0; inset-block-end: 0; padding: .1rem .05rem; color: #fff0d4; background: var(--item-band); font: 700 .62rem/1.1 var(--body); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.town-gear-item[data-quality=""] .town-gear-band { color: var(--ink-muted); }
+.town-main .town-hero-piece:hover .town-gear-item, .town-main .town-hero-piece:focus-visible .town-gear-item { border-color: var(--amber); }
 .town-count { margin: .2rem 0; color: var(--ink-muted); font-size: .8rem; }
-.town-totals { display: flex; gap: .3rem 1.5rem; flex-wrap: wrap; margin: .2rem 0; color: var(--ink-muted); font-size: .8rem; }
-.town-totals output { color: var(--ink); font: 1rem var(--display-2); font-variant-numeric: tabular-nums; margin-inline-start: .25rem; }
-.town-troop { border-top: 1px solid var(--signal-line); padding-block: .4rem .2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 0 1.5rem; }
-.town-troop-head { grid-column: 1 / -1; margin: 0; font: 700 var(--step--1) var(--body); color: var(--amber); letter-spacing: .14em; text-transform: uppercase; }
-.town-troop-head::before { content: "❧ "; }
-.town-piece { display: grid; grid-template-columns: 3rem minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: .2rem .5rem; align-items: end; padding: .4rem 0; border-bottom: 1px solid var(--signal-tint); }
-.town-piece > img { width: 3rem; height: 3rem; object-fit: contain; grid-row: 1 / 3; align-self: center; }
-.town-piece[data-state="unset"] > img { filter: grayscale(1); opacity: .4; }
-.town-piece .town-name { grid-column: 2 / -1; font-size: .95rem; color: var(--ink); }
-.town-piece > label:nth-of-type(1) { grid-column: 2; }
-.town-gov-piece { grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)); }
-.town-gov-piece .town-name { grid-column: 1 / -1; float: none; padding: 0; }
-.town-main .town-gov-piece > label:nth-of-type(1) { grid-column: auto; }
-.town-gov-piece select { padding-inline: .15rem; }
+
+/* Governor — the in-game profile: three pieces down each side, charms as gems beneath,
+   and the governor's scores where the figure stands. */
+.town-gov-profile { max-width: 32rem; margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1fr); grid-template-areas: "cav1 crest cav2" "inf1 crest inf2" "arc1 crest arc2"; gap: .9rem .6rem; align-items: start; padding-block: .6rem; background: radial-gradient(ellipse at 50% 50%, var(--signal-tint), transparent 65%); }
+.town-gov-piece[data-gov="cav-1"] { grid-area: cav1; } .town-gov-piece[data-gov="cav-2"] { grid-area: cav2; }
+.town-gov-piece[data-gov="inf-1"] { grid-area: inf1; } .town-gov-piece[data-gov="inf-2"] { grid-area: inf2; }
+.town-gov-piece[data-gov="arc-1"] { grid-area: arc1; } .town-gov-piece[data-gov="arc-2"] { grid-area: arc2; }
+.town-main .town-gov-piece { display: grid; justify-items: center; gap: .25rem; min-width: 0; padding: 0; color: var(--ink); }
+.town-gov-card { position: relative; display: block; width: 100%; max-width: 5.5rem; aspect-ratio: 1; }
+.town-gov-card > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.town-gov-card[data-state="unset"] > img, .town-gov-card[data-state="empty"] > img { filter: grayscale(1); opacity: .35; }
+.town-gov-stars { position: absolute; inset-inline-start: .3rem; inset-block-end: .25rem; display: flex; flex-direction: column-reverse; color: #ffd75e; font-size: .8rem; line-height: .85; text-shadow: 0 0 2px #000, 0 0 2px #000; writing-mode: vertical-lr; letter-spacing: -.05em; }
+.town-gov-gems { display: flex; gap: .15rem; }
+.town-gov-gem { position: relative; display: block; width: 1.55rem; height: 1.55rem; }
+.town-gov-gem img { width: 100%; height: 100%; object-fit: contain; }
+.town-gov-gem[data-state="unset"] img, .town-gov-gem[data-state="empty"] img { filter: grayscale(1); opacity: .3; }
+.town-gov-gem b { position: absolute; inset-inline-end: -.2rem; inset-block-end: -.25rem; font: 700 .6rem/1 var(--display-2); color: var(--ink); text-shadow: 0 0 2px #000, 0 0 2px #000; }
+.town-gov-piece .town-tile-name { font-size: .8rem; margin: 0; }
+.town-main .town-gov-piece:hover .town-gov-card, .town-main .town-gov-piece:focus-visible .town-gov-card { outline: 1px solid var(--amber); outline-offset: 2px; }
+.town-gov-crest { grid-area: crest; align-self: center; display: grid; justify-items: center; gap: .6rem; padding: 1rem .3rem; border-block: 1px solid var(--signal-line); text-align: center; }
+.town-gov-crest-mark { font-size: 2.4rem; line-height: 1; color: var(--amber); }
+.town-gov-crest p { display: grid; margin: 0; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
+.town-gov-crest output { font: 1.25rem/1.2 var(--display-2); letter-spacing: 0; text-transform: none; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* The edit dialog — one at a time, with steppers rather than bare fields. */
+.town-dialog { position: fixed; inset: 0; margin: auto; width: min(24rem, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); overflow: auto; overscroll-behavior: contain; padding: 1.1rem; border: 1px solid var(--signal-line); border-radius: 2px; color: var(--ink); background: var(--void-2); font: 1rem/1.4 var(--body); }
+.town-dialog::backdrop { background: rgba(19, 12, 20, .82); }
+.town-dialog h2 { font-size: 1.2rem; margin: 0; }
+.town-dialog h2::before { display: none; }
+.town-dialog button { min-height: 2.75rem; padding: .35rem .3rem; border: 0; border-bottom: 1px solid transparent; background: transparent; color: var(--amber); font: inherit; cursor: pointer; }
+.town-dialog button:hover { color: var(--ink); border-bottom-color: var(--signal-line); }
+.town-dialog :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.town-dialog label { display: grid; gap: .2rem; color: var(--ink-muted); font-size: .8rem; }
+.town-dialog input[type="number"] { width: 100%; min-width: 0; padding: .2rem 0; font: 1.5rem var(--display-2); font-variant-numeric: tabular-nums; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--signal-line); border-radius: 0; text-align: center; }
+.town-dialog input[type="number"]:focus { border-bottom-color: var(--amber); outline: none; }
+.town-dialog input::placeholder { color: var(--ink-muted); }
+.town-dialog select { width: 100%; min-width: 0; min-height: 2.75rem; font: max(1rem, 16px) var(--body); color: var(--ink); background: var(--void); border: 1px solid var(--signal-line); border-radius: 0; padding: .3rem; }
+.town-dialog option { background: var(--void); color: var(--ink); }
+.town-panel { margin-top: .8rem; }
+.town-big input[type="number"] { font-size: 2rem; }
+.town-dialog .town-duration { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; }
+.town-edit-art { display: flex; align-items: center; gap: 1rem; margin-bottom: .6rem; }
+.town-edit-art .town-gear-item, .town-edit-art .town-gov-card { flex: 0 0 6rem; width: 6rem; }
+.town-edit-art p { font: 1.2rem var(--display-2); margin: 0; }
+.town-chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--signal-line); margin-bottom: .6rem; }
+.town-dialog .town-chips button { color: var(--ink-muted); font-weight: 700; }
+.town-chips button + button { border-inline-start: 1px solid var(--signal-line); }
+.town-dialog .town-chips [aria-pressed="true"] { color: var(--amber); background: var(--signal-tint); border-bottom-color: var(--amber); }
+.town-stepper-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 13rem); gap: .6rem; align-items: center; padding-block: .25rem; border-bottom: 1px solid var(--signal-tint); color: var(--ink-dim); font-size: .9rem; }
+.town-stepper { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem; align-items: center; }
+.town-dialog .town-stepper button { font: 1.4rem/1 var(--display-2); }
+.town-dialog .town-stepper input[type="number"] { font-size: 1.25rem; }
+.town-charm-label { display: flex; align-items: center; gap: .4rem; }
+.town-charm-label .town-gov-gem { width: 1.8rem; height: 1.8rem; }
+.town-dialog .town-clear { display: block; margin-top: .8rem; color: var(--ink-muted); font-size: .85rem; }
 
 .town-status { display: block; color: var(--amber); font-size: .9rem; margin-top: .5rem; }
 .town-notes { max-width: 46rem; }
@@ -118,10 +176,11 @@
   .town-lines th, .town-lines td { padding-inline: .25rem; }
 }
 @media (max-width: 400px) {
-  .town-piece { grid-template-columns: 2.6rem repeat(3, minmax(0, 1fr)); }
-  .town-piece > img { width: 2.6rem; height: 2.6rem; }
-  .town-piece > label:nth-of-type(1) { grid-column: 2; }
-  .town-gov-piece { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .town-main .town-gov-piece > label:nth-of-type(1) { grid-column: 1 / -1; }
-  .town-speedup { grid-template-columns: 2.5rem minmax(0, 1fr) 8.5rem !important; }
+  .town-hero-board { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem 1.2rem; }
+  .town-hero-board .town-gear-item { max-width: 6rem; }
+  .town-bag { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .town-tile-art { width: 4rem; }
+  .town-gov-card { max-width: 4.6rem; }
+  .town-gov-gem { width: 1.3rem; height: 1.3rem; }
+  .town-gov-crest output { font-size: 1.05rem; }
 }
