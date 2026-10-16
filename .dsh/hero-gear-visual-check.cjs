@@ -81,7 +81,6 @@ async function fits(page, label) {
     await page.locator('#gear-apply-import').click();
     assert.equal(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),119);
     await page.locator('#gear-mode-milestones').click();
-    await page.locator('#gear-piece-select summary').click();
     await page.locator('#gear-selected').selectOption('inf-helm');
     await page.locator('#gear-apply-milestone').click();
     assert.equal(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),120);
@@ -101,11 +100,11 @@ async function fits(page, label) {
     fixture.pieces['cav-chest']={quality:'mythic',level:40,mastery:1};
     fixture.pieces['cav-boots']={quality:'mythic',level:63,mastery:1};
     fixture.selected='inf-gloves';fixture.resources={xp:52650,hammers:110,mythic:6,mithril:10};
-    await page.locator('.gear-save-tools summary').click();
+    await page.locator('#gear-page-settings').click();
     await page.locator('#gear-load').click();
     await page.locator('#gear-save-file').setInputFiles({name:'gear.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(fixture))});
     await page.waitForFunction(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-gloves'].level===120);
-    await page.locator('.gear-save-tools summary').click();
+    await page.locator('#gear-page-planner').click();
     await page.locator('#gear-mode-milestones').click();
     assert.match(await page.locator('[data-cost-resource="xp"]').textContent(),/74,100/);
     assert.match(await page.locator('[data-cost-resource="mithril"]').textContent(),/10 missing/);
@@ -121,8 +120,7 @@ async function fits(page, label) {
     await page.locator('.gear-route[data-route="0"]').click();
     assert.equal(await page.locator('#gear-milestone-out > .gear-kvk-summary').getAttribute('data-kvk-points'),'2200000','saving points cover the full cost, including resources already owned');
     await page.locator('.gear-route[data-route="1"]').click();
-    assert.match(await page.locator('.gear-score-explainer').textContent(),/garrison lead/);
-    assert.equal(await page.locator('.gear-score-explainer').getAttribute('open'),null);
+    assert.match(await page.locator('#gear-milestone-out .gear-role').textContent(),/garrison lead/);
     await page.locator('#gear-profile').selectOption('rally');
     assert.match(await page.locator('.gear-route').first().textContent(),/Archer/);
     await page.locator('#gear-profile').selectOption('growth');
@@ -164,9 +162,9 @@ async function fits(page, label) {
     }
     await page.setViewportSize({width:390,height:844});
     await page.locator('#gear-view-plan').click();
-    await page.locator('#gear-settings summary').click();
+    await page.locator('#gear-page-settings').click();
     await page.locator('#gear-reforge').check();
-    await page.locator('#gear-settings summary').click();
+    await page.locator('#gear-view-plan').click();
     for(const [id,value]of [['parts10','2299'],['parts100','1'],['hammers','501'],['mythic','10'],['mithril','10']])await page.locator('#gear-'+id).fill(value);
     await page.locator('#gear-mode-optimise').click();
     await page.locator('#gear-apply-result').waitFor();
@@ -376,9 +374,21 @@ async function fits(page, label) {
       await visitor.locator('.gear-split[data-split-troop="inf"]').waitFor({state:'detached'});
       await visitor.locator('.gear-split[data-split-troop="cav"]').waitFor();
       assert.equal(await visitor.locator('.gear-split').count(),2,'excluded troops leave the best split');
+      for(const [hash,tab,visible] of [['#kvk-points','#gear-page-theory','#kvk-points'],['#maths-sources','#gear-page-theory','#maths'],['#how-it-works','#gear-page-theory','#how-it-works'],['#save-backups','#gear-page-settings','#gear-export']]){
+        await visitor.goto(origin+'/hero-gear/?lang=en'+hash);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+        await visitor.locator(visible).waitFor();
+        assert.equal(await visitor.locator(tab).getAttribute('aria-selected'),'true',hash+' opens its tab');
+        assert.equal(await visitor.locator('#gear-planner').isHidden(),true);
+      }
+      await visitor.locator('#gear-page-planner').click();
+      await visitor.locator('#gear-mode-plan').click();
+      await visitor.locator('#gear-milestone-out .gear-theory-link[href="#kvk-points"]').click();
+      await visitor.locator('#kvk-points').waitFor();
+      assert.match(await visitor.locator('#gear-kvk-formula').textContent(),/4,000 points per Forgehammer/);
+      assert.equal(await visitor.locator('.gear-main details').count(),0,'the page uses tabs and headings, not folds');
     } finally { await guestContext.close(); }
     assert.deepEqual(errors,[]);
-    console.log('Visual gear, original assets, edit dialogs, resource bars, persistence, exclusions, keyboard tabs, worker search, milestone/search apply and undo, screenshot review, JSON import, guest mode, share links, best split, mobile Gear/Plan, 5 widths and 17 language layouts passed. OCR delivery was stubbed; parser fixtures use real worker item shapes.');
+    console.log('Visual gear, original assets, edit dialogs, resource bars, persistence, exclusions, keyboard tabs, worker search, milestone/search apply and undo, screenshot review, JSON import, guest mode, share links, best split, Settings and Theory tabs and their old links, mobile Gear/Plan, 5 widths and 17 language layouts passed. OCR delivery was stubbed; parser fixtures use real worker item shapes.');
   }catch(error){
     if(page){await page.screenshot({path:path.join(output,'failure.png'),fullPage:true});fs.writeFileSync(path.join(output,'failure.txt'),page.url()+'\n'+error.stack);}
     throw error;

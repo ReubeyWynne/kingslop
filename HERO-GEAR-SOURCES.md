@@ -266,3 +266,14 @@ split never scores lower. Over-investment is the per-piece excess of current
 hammers or mithril over the best split. Those resources cannot be refunded in game;
 the view guides future spending. The score uses the profile weights and excludes
 conquest bonuses, so a deliberate conquest build will read as over-invested.
+
+## Planner, Settings and Theory tabs — 16 October 2026
+
+The page has one top rail: Planner, Settings and Theory (Gear, Plan, Settings and
+Theory on phones, where Planner splits into its two views). Weights, reforge and
+the save tools live on Settings; every explanation lives on Theory under its own
+heading, and results link to the section that explains them. The page has no
+folds. The shipped ids still work: `#how-it-works`, `#maths`, `#maths-sources`,
+`#save-backups` and `#gear-settings` open their tab, and the Theory sections add
+`#ranking`, `#kvk-points`, `#cost-includes` and `#best-split-method`. Without
+JavaScript every panel stays visible.
