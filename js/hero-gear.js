@@ -2,6 +2,7 @@
   'use strict';
   var E = window.HeroGear, BH, state, previous, result, running = false, revision = 0, planIndex = 0, resultTroop = 'inf', strategyResult = null;
   var searchWorker, searchTimer, searchDelay, searchFailed = false;
+  var splitResult = null, splitRevision = -1, splitWorker = null;
   var ledger, ledgerRevision = 0, saving = false, imports = [], reader, readerSequence = 0, readerPending = {}, importSequence = 0;
   var scriptURL = new URL(document.currentScript.src);
   var base = new URL('./', scriptURL);
@@ -205,20 +206,60 @@
     }).join('');
     return '<p class="gear-gloss gear-route-caption">' + esc(tr('savingChoices')) + '</p><div class="gear-route-head"><span>' + esc(tr('upgradeChoice')) + '</span><div class="gear-route-metrics"><small>' + esc(tr('weightedGain')) + '</small><small>' + esc(tr('perCostUnit')) + '</small></div></div><div class="gear-routes">' + cards + '</div><div class="gear-route-detail"><p class="gear-route-impact">' + esc(statText(active.delta).replace(tr('core'), tr(slot === 'helm' || slot === 'boots' ? 'lethality' : 'health'))) + '</p><div class="gear-cost-title"><strong>' + esc(tr('totalCost')) + '</strong><small>' + esc(tr('shortfalls')) + '</small></div>' + costStrip(active.costs, active.gap) + '</div>' + kvkScore(active.costs, true) + kvkNote() + cavalryNote() + '<details class="gear-score-explainer"><summary>' + esc(tr('scoreCostExplained')) + '</summary><p class="gear-role">' + esc(roleText(active.id.split('-')[0])) + '</p><p class="gear-gloss">' + esc(tr('budgetMethod')) + '</p><p class="gear-gloss">' + esc(tr('scoreFormula')) + '</p><p class="gear-gloss">' + esc(tr('pieceWeights')) + ': ' + w[slot === 'helm' || slot === 'boots' ? 0 : 1] + ' × ' + esc(tr(slot === 'helm' || slot === 'boots' ? 'lethality' : 'health')) + ', ' + w[0] + ' × ' + esc(tr('attack')) + ', ' + w[1] + ' × ' + esc(tr('defense')) + '.</p><p class="gear-gloss">' + esc(tr('costUnitFormula')) + ': ' + costText(forecast.scale) + '.</p><p class="gear-gloss">' + esc(tr('budgetGrowthFormula')) + '</p></details>';
   }
+  function splitChip(r, from, to) {
+    if (!from && !to) return '';
+    var over = from - to;
+    return '<span class="gear-split-chip" data-split-resource="' + r + '"' + (over > 0 ? ' data-over="true"' : '') + ' role="img" aria-label="' + esc(tr(r) + ' ' + fmt(from) + ' → ' + fmt(to)) + '" title="' + esc(tr(r)) + '">' + image(resourceArt[r], 'gear-resource-art') + '<span aria-hidden="true">' + fmt(from) + ' → ' + fmt(to) + '</span></span>';
+  }
+  function splitSet(set) {
+    var gain = set.score - set.current, moved = set.pieces.filter(function (p) { return JSON.stringify(p.from) !== JSON.stringify(p.to); });
+    var over = ['hammers', 'mithril'].map(function (r) {
+      var heavy = set.pieces.filter(function (p) { return p.fromCost[r] > p.toCost[r]; });
+      return heavy.length ? BH.fill(tr('splitOver'), { amount: fmt(heavy.reduce(function (sum, p) { return sum + p.fromCost[r] - p.toCost[r]; }, 0)), resource: tr(r + 'Unit'), pieces: heavy.map(function (p) { return tr(p.id.split('-')[1]); }).join(', ') }) : '';
+    }).filter(Boolean);
+    var matched = gain <= set.current * 5e-4;
+    var rows = matched ? '' : moved.map(function (p) {
+      return '<article class="gear-row gear-change gear-split-row" data-piece-id="' + p.id + '"><div class="gear-before-after"><span class="gear-state"><small>' + esc(tr('splitNow')) + '</small>' + gearItem(p.id, p.from) + '</span><span class="gear-change-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" focusable="false"><path d="M2 10h15m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="gear-state"><small>' + esc(tr('splitBest')) + '</small>' + gearItem(p.id, p.to) + '</span></div><div class="gear-change-info"><strong class="gear-change-name">' + esc(tr(p.id.split('-')[1])) + '</strong><div class="gear-row-costs">' + ['hammers', 'mithril', 'mythic'].map(function (r) { return splitChip(r, p.fromCost[r], p.toCost[r]); }).join('') + '</div></div></article>';
+    }).join('');
+    return '<section class="gear-split" data-split-troop="' + set.type + '"><div class="gear-result-summary"><strong>' + (matched ? '✓' : gainPct(gain, set.current)) + '</strong><span>' + esc(tr(set.type)) + '</span><small>' + esc(tr(matched ? 'splitMatches' : 'splitGain')) + '</small></div>' + (matched ? '' : over.map(function (line) { return '<p class="gear-split-over">' + esc(line) + '</p>'; }).join('') + '<div class="gear-result-grid">' + rows + '</div>') + '</section>';
+  }
+  function splitOutput(sets) {
+    if (!sets.length) return '<p class="gear-gloss">' + esc(tr('noTroopsSelected')) + '</p>';
+    return '<p class="gear-gloss">' + esc(tr('splitIntro')) + '</p>' + sets.map(splitSet).join('') + '<details id="best-split-method"><summary>' + esc(tr('splitMethodTitle')) + '</summary><p class="gear-gloss">' + esc(tr('splitMethod')) + '</p><p class="gear-gloss">' + esc(tr('splitRefund')) + '</p></details>';
+  }
+  function paintSplit() {
+    var out = el('milestone-out');
+    if (splitResult && splitRevision === revision) { out.innerHTML = splitOutput(splitResult); return; }
+    out.innerHTML = '<p class="gear-search-status" role="status">' + esc(tr('calculatingSplit')) + '</p>';
+    if (splitWorker) return;
+    var at = revision;
+    function done(sets) {
+      splitWorker = null;
+      if (at === revision) { splitResult = sets; splitRevision = at; }
+      if (state.mode === 'split') paintSplit();
+    }
+    try {
+      var worker = splitWorker = new Worker(workerURL('hero-gear-worker.js'));
+      worker.onmessage = function (event) { worker.terminate(); done(event.data && event.data.ok ? event.data.result : E.bestSplit(copy(state))); };
+      worker.onerror = function () { worker.terminate(); done(E.bestSplit(copy(state))); };
+      worker.postMessage({ kind: 'split', state: copy(state) });
+    } catch (error) { done(E.bestSplit(copy(state))); }
+  }
   function paintAnswer() {
-    var isOptimise = state.mode === 'optimise', isPlan = state.mode === 'plan';
+    var isOptimise = state.mode === 'optimise', isPlan = state.mode === 'plan', isSplit = state.mode === 'split';
     el('modes').querySelectorAll('[data-mode]').forEach(function (button) {
       var active = button.dataset.mode === state.mode;
       button.setAttribute('aria-selected', String(active)); button.tabIndex = active ? 0 : -1;
     });
     el('answer-panel').setAttribute('aria-labelledby', 'gear-mode-' + state.mode);
-    el('piece-select').hidden = isOptimise || isPlan;
-    el('goals').hidden = isOptimise || isPlan;
+    el('piece-select').hidden = isOptimise || isPlan || isSplit;
+    el('goals').hidden = isOptimise || isPlan || isSplit;
     el('optimise-panel').hidden = !isOptimise;
     el('milestone-out').hidden = isOptimise;
     el('goals').querySelectorAll('[data-goal]').forEach(function (button) { button.setAttribute('aria-pressed', String(button.dataset.goal === state.goal)); });
     if (isOptimise) { paintPreview(state.pieces[state.selected], null); scheduleSearch(250); return; }
     cancelSearch();
+    if (isSplit) { paintPreview(state.pieces[state.selected], null); paintSplit(); return; }
     if (isPlan) { paintPreview(state.pieces[state.selected], nextTarget()); el('milestone-out').innerHTML = planOutput(); return; }
     var from = state.pieces[state.selected], to = nextTarget(), out = el('milestone-out');
     paintPreview(from, to);

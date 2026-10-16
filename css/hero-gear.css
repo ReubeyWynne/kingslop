@@ -256,6 +256,8 @@ html.gear-import-open, .gear-import-open body { overflow: hidden; }
   .gear-resource-total span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   .gear-resource-total output { font-size: 1rem; text-align: center; }
   .gear-workspace { display: block; margin-top: .5rem; }
+  #gear-modes { gap: .3rem; }
+  #gear-modes button { font-size: .85rem; padding-inline: 0; }
   .gear-answer > .gear-section-title { display: none; }
   .gear-console > .gear-section-title { font-size: 1rem; margin-bottom: .35rem; }
   .gear-route-detail { margin-top: .5rem; padding-block: .4rem; }
@@ -315,3 +317,9 @@ html.gear-import-open, .gear-import-open body { overflow: hidden; }
 .gear-opportunity-art { width: 2.8rem; height: 2.8rem; object-fit: contain; }
 .gear-opportunity p { margin: .35rem 0; color: var(--ink-dim); font-size: .85rem; }
 .gear-opportunity button { color: var(--amber); font-size: .85rem; }
+
+.gear-split { margin-block: 1rem 1.4rem; }
+.gear-split .gear-result-summary { margin-bottom: .3rem; }
+.gear-split-over { margin: .25rem 0; color: var(--ink-dim); font-size: .9rem; }
+.gear-split-chip { display: inline-flex; align-items: center; gap: .25rem; color: var(--ink-muted); font-size: .85rem; font-variant-numeric: tabular-nums; }
+.gear-split-chip[data-over="true"] { color: var(--amber); }

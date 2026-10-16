@@ -229,4 +229,47 @@ assert.equal(customLink.w, '0.5,2,0.4,0.2,1.4,0.7');
 assert.deepEqual(E.readLink('?gear=' + customLink.gear + '&w=' + customLink.w).weights, shared.weights);
 assert.equal(E.readLink('?gear=' + customLink.gear + '&w=nope').weights, undefined);
 
-console.log('Gear costs, milestones, 40 optimiser conservation cases, OCR parsing, share links and copy checks passed.');
+const audit = E.defaults();
+Object.assign(audit.pieces, {
+  'inf-helm': {quality:'mythic',level:69,mastery:2}, 'inf-gloves': {quality:'red',level:120,mastery:11}, 'inf-chest': {quality:'mythic',level:100,mastery:6}, 'inf-boots': {quality:'mythic',level:72,mastery:3},
+  'cav-helm': {quality:'mythic',level:20,mastery:20}, 'cav-gloves': {quality:'mythic',level:100,mastery:0}, 'cav-chest': {quality:'red',level:160,mastery:13}, 'cav-boots': {quality:'epic',level:80,mastery:0},
+  'arc-helm': {quality:'red',level:200,mastery:20}, 'arc-gloves': {quality:'red',level:200,mastery:20}, 'arc-chest': {quality:'red',level:200,mastery:20}, 'arc-boots': {quality:'red',level:200,mastery:20}
+});
+const split = E.bestSplit(audit);
+assert.deepEqual(split.map(set => set.type), ['inf','cav','arc']);
+for (const set of split) {
+  assert.ok(set.score >= set.current - 1e-9, set.type + ' best split never scores below the current gear');
+  const spent = {xp:0,hammers:0,mythic:0,mithril:0};
+  set.pieces.forEach(p => { assert.deepEqual(p.toCost, E.invested(p.to)); E.RES.forEach(r => spent[r] += p.toCost[r]); });
+  E.RES.forEach(r => assert.ok(spent[r] <= set.budget[r], set.type + ' best split stays within invested ' + r));
+  assert.equal(Math.abs(set.score - set.pieces.reduce((sum, p) => sum + E.score(p.id, p.to, audit.weights), 0)) < 1e-9, true);
+}
+assert.deepEqual(split[0].budget, {xp:245820,hammers:960,mythic:6,mithril:10});
+assert.equal(split[2].score, split[2].current, 'a maxed set is already its best split');
+assert.ok(split[1].score > split[1].current * 1.5, 'mastery 20 on a level 20 piece is badly placed');
+assert.equal(split[1].pieces.find(p => p.id === 'cav-boots').to.quality, 'epic', 'epic pieces stay epic');
+// Exhaustive check on two pieces: the best split matches brute force to within XP level rounding.
+function every(epic) {
+  const out = [];
+  if (epic) { for (let l = 0; l <= 80; l += 4) out.push({quality:'epic',level:l,mastery:0}); return out; }
+  for (let l = 0; l <= 100; l += 5) for (let m = 0; m <= 20; m += 2) out.push({quality:'mythic',level:l,mastery:m});
+  for (let l = 100; l <= 200; l += 10) for (let m = Math.max(10, l < 120 ? 10 : 10 + Math.floor((l - 100) / 20)); m <= 20; m += 2) out.push({quality:'red',level:l,mastery:m});
+  return out;
+}
+const pool = every(false), pairState = E.defaults();
+for (let t = 0; t < 6; t++) {
+  pairState.pieces['cav-helm'] = pool[(t * 97) % pool.length];
+  pairState.pieces['cav-gloves'] = pool[(t * 131 + 7) % pool.length];
+  const set = E.bestSet(['cav-helm','cav-gloves'], pairState.pieces, pairState.weights);
+  const budget = set.budget, full = [];
+  const all = q => { const o = []; for (let l = 0; l <= 100; l++) for (let m = 0; m <= 20; m++) o.push({quality:'mythic',level:l,mastery:m}); for (let l = 100; l <= 200; l++) for (let m = l < 120 ? 10 : 10 + Math.floor((l - 100) / 20); m <= 20; m++) o.push({quality:'red',level:l,mastery:m}); return o; };
+  const states = all().map(p => ({p, c: E.invested(p)}));
+  const A = states.map(o => Object.assign({v: E.score('cav-helm', o.p, pairState.weights)}, o)).filter(o => E.RES.every(r => o.c[r] <= budget[r]));
+  const B = states.map(o => Object.assign({v: E.score('cav-gloves', o.p, pairState.weights)}, o)).filter(o => E.RES.every(r => o.c[r] <= budget[r]));
+  B.sort((x, y) => y.v - x.v);
+  let brute = 0;
+  for (const a of A) for (const b of B) { if (a.v + b.v <= brute) break; if (E.RES.every(r => a.c[r] + b.c[r] <= budget[r])) { brute = a.v + b.v; break; } }
+  assert.ok(set.score <= brute + 1e-9 && set.score >= brute * 0.997, 'best split within 0.3% of brute force: ' + set.score + ' vs ' + brute);
+}
+
+console.log('Gear costs, milestones, 40 optimiser conservation cases, OCR parsing, share links, best split and copy checks passed.');

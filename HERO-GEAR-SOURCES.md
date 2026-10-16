@@ -245,3 +245,24 @@ so a shared link never shows the sender's bag. A gear link always opens in guest
 mode, starting from blank resources. In guest mode the address bar follows every
 edit, so it is always the shareable link. Malformed or impossible pieces reject the
 whole link and guest mode starts from blank gear with a notice.
+
+## Best split — 16 October 2026
+
+**Best split** compares each included troop set with the best gear the same
+resources could have bought. The budget is what the set has absorbed: the cost of
+every piece from mythic (or epic) level 0, mastery 0 to its current state, counting
+XP, Forgehammers, spare mythic gear and mithril separately. Epic pieces stay epic.
+
+A piece's quality, red milestone tier and mastery fix its hammer, mythic and
+mithril cost (`5m(m+1)` hammers; `(m-10)(m-9)/2` mythic above mastery 10; 2 mythic
+to ascend; 0/3/8/13/23/33 imbuement mythic and 0/10/30/60/100/150 mithril by tier).
+Inside a class the weighted score rises linearly with level and XP per level never
+falls, so levels are filled greedily by score per XP. A depth-first search tries
+every class combination the budget can pay for, pruned by an upper bound, so
+mastery, ascension and milestone choices are exact. Integer XP rounding can leave
+levels a step or two from the true optimum; the check compares two-piece cases with
+brute force and allows 0.3%. The current gear is always a candidate, so the best
+split never scores lower. Over-investment is the per-piece excess of current
+hammers or mithril over the best split. Those resources cannot be refunded in game;
+the view guides future spending. The score uses the profile weights and excludes
+conquest bonuses, so a deliberate conquest build will read as over-invested.

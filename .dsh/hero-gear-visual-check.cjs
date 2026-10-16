@@ -364,9 +364,21 @@ async function fits(page, label) {
       assert.match(await visitor.locator('#gear-guest-leave').getAttribute('href'),/\/hero-gear\/\?lang=en$/);
       await visitor.goto(origin+'/hero-gear/?gear=broken');await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
       assert.match(await visitor.locator('#gear-status').textContent(),/could not be read/);
+      await visitor.goto(origin+'/hero-gear/?lang=en&gear=m69.2-r120.11-m100.6-m72.3-m20.20-m100.0-r160.13-e80.0-r200.20-r200.20-r200.20-r200.20&w=growth');
+      await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+      await visitor.locator('#gear-mode-split').click();
+      await visitor.locator('.gear-split[data-split-troop="arc"]').waitFor();
+      assert.equal(await visitor.locator('.gear-split').count(),3);
+      assert.match(await visitor.locator('.gear-split[data-split-troop="arc"]').textContent(),/spent the best way already/);
+      assert.match(await visitor.locator('.gear-split[data-split-troop="cav"]').textContent(),/360 hammers more than the best split, in Chest\./);
+      assert.equal(await visitor.locator('.gear-split[data-split-troop="cav"] [data-piece-id="cav-chest"] [data-split-resource="mithril"][data-over="true"]').count(),1);
+      await visitor.locator('#gear-include').uncheck();
+      await visitor.locator('.gear-split[data-split-troop="inf"]').waitFor({state:'detached'});
+      await visitor.locator('.gear-split[data-split-troop="cav"]').waitFor();
+      assert.equal(await visitor.locator('.gear-split').count(),2,'excluded troops leave the best split');
     } finally { await guestContext.close(); }
     assert.deepEqual(errors,[]);
-    console.log('Visual gear, original assets, edit dialogs, resource bars, persistence, exclusions, keyboard tabs, worker search, milestone/search apply and undo, screenshot review, JSON import, guest mode and share links, mobile Gear/Plan, 5 widths and 17 language layouts passed. OCR delivery was stubbed; parser fixtures use real worker item shapes.');
+    console.log('Visual gear, original assets, edit dialogs, resource bars, persistence, exclusions, keyboard tabs, worker search, milestone/search apply and undo, screenshot review, JSON import, guest mode, share links, best split, mobile Gear/Plan, 5 widths and 17 language layouts passed. OCR delivery was stubbed; parser fixtures use real worker item shapes.');
   }catch(error){
     if(page){await page.screenshot({path:path.join(output,'failure.png'),fullPage:true});fs.writeFileSync(path.join(output,'failure.txt'),page.url()+'\n'+error.stack);}
     throw error;
