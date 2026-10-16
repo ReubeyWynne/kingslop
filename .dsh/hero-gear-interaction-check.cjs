@@ -113,7 +113,7 @@ function fixture() {
     for (const options of [{ failFirst:true }, { failConstructor:true }]) {
       await open(fixture(), options);
       await page.locator('#gear-run').waitFor();
-      assert.match(await page.locator('#gear-search-status').textContent(), /could not calculate/);
+      assert.match(await page.locator('#gear-search-status').textContent(), /couldn’t be worked out/);
       assert.equal(await page.locator('#gear-results').getAttribute('aria-busy'), 'false');
       const before = await saved(); const count = await page.evaluate(() => window.__searches.length);
       await page.locator('#gear-mode-plan').click(); await page.locator('#gear-mode-optimise').click();
@@ -132,7 +132,7 @@ function fixture() {
       if (empty === 'weights') state.weights.arc = [0,0];
       await open(state); await page.locator('.gear-empty').waitFor();
       if (empty === 'budget') {
-        assert.match(await page.locator('.gear-empty').textContent(), /add resources/);
+        assert.match(await page.locator('.gear-empty').textContent(), /Enter your resources/);
         await page.screenshot({ path:path.join(output, 'mobile-empty-budget.png') });
         await page.locator('.gear-empty [data-mode="plan"]').click();
         assert.equal(await page.locator('#gear-mode-plan').getAttribute('aria-selected'), 'true');

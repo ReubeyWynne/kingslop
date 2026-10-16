@@ -70,6 +70,8 @@ Every disclosure is addressable by its URL. A `#id` link opens the disclosure it
 | `<section data-collapse id="marches">` | `#marches` opens the section (common.js) |
 | `<div id="castle-combat" role="tabpanel">` with one `role="tab"` button controlling it | `#castle-combat` selects the tab |
 
+A panel controlled by several tabs has no link of its own; selecting one of its tabs clears a hash that still points into another panel of the same tablist, so a reload does not reopen the panel the reader left.
+
 Opening a target also opens every linked disclosure and tab around it, so `#prep-day-2` opens its section and then the day. Opening a section keeps a hash that already points inside it, closing a disclosure clears a hash that points inside it, and writes use `history.replaceState`, so toggling never fills the back button. `hashchange` and a click on a link to the current hash both reveal again.
 
 Rules for new markup:

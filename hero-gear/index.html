@@ -27,7 +27,7 @@ self: gear
       <div class="gear-editor">
         <div class="gear-heading">
           <div><h2 data-i18n="gear.yourGear">Your gear</h2><small class="gear-edit-hint" data-i18n="gear.tapToEdit">tap a slot to edit</small></div>
-          <div class="gear-heading-tools"><button type="button" id="gear-share" data-i18n="gear.share">copy gear link</button><button type="button" id="gear-import" data-i18n="gear.import">read screenshots</button></div>
+          <div class="gear-heading-tools"><button type="button" id="gear-share" data-i18n="gear.share">copy gear link</button><span id="gear-share-status" class="gear-sr" role="status"></span><button type="button" id="gear-import" data-i18n="gear.import">read screenshots</button></div>
         </div>
         <input type="url" id="gear-link" class="gear-link" readonly hidden aria-label="Gear link" data-i18n-key="gear.linkLabel" data-i18n-attr="aria-label">
         <div class="gear-rail" id="gear-troops" data-module="tabs" data-tabs-bind="troop" role="tablist" aria-label="Troop type" data-i18n-key="gear.troopType" data-i18n-attr="aria-label">
@@ -80,13 +80,14 @@ self: gear
     </div>
     <div id="gear-settings" class="gear-page" role="tabpanel" aria-labelledby="gear-page-settings">
       <section class="gear-page-section" id="weights">
-        <h3 data-i18n="gear.weightSettings">weights &amp; reforge</h3>
-        <div id="gear-weights"></div>
+        <h3 data-i18n="gear.weightSettings">Weights and reforge</h3>
+        <p class="gear-gloss" data-i18n="gear.weightsHint">Weights set how much each stat matters to you. They are priorities, not a forecast of battle damage.</p>
+        <div id="gear-weights" class="gear-weights"></div>
         <label class="gear-include gear-reforge-option"><input id="gear-reforge" type="checkbox" checked><span data-i18n="gear.reforge">allow XP reforge on epic &amp; mythic gear</span></label>
-        <p class="gear-gloss" data-i18n="gear.reforgeHint">mastery and red gear stay invested. weights describe your priorities, not predicted battle damage.</p>
+        <p class="gear-gloss" data-i18n="gear.reforgeHint">Reforging moves XP between your epic and mythic pieces. Mastery and red gear are never undone.</p>
       </section>
       <section class="gear-page-section" id="save-backups" data-module="save-transfer" data-status-scope="hero-gear" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
-        <h3 data-i18n="gear.manageSave">your save &amp; backups</h3>
+        <h3 data-i18n="gear.manageSave">Your save and backups</h3>
         <p class="gear-gloss" data-i18n="gear.sharedSaveHint">One save for your gear and event inventory. Keep a backup before importing another.</p>
         <div class="gear-tools">
           <button type="button" id="gear-export" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
@@ -98,36 +99,36 @@ self: gear
     </div>
     <div id="theory" class="gear-page" role="tabpanel" aria-labelledby="gear-page-theory">
       <section class="gear-page-section" id="how-it-works">
-        <h3 data-i18n="gear.searchMethod">how recommendations work</h3>
-        <p class="gear-gloss" data-i18n="gear.optimiseHint">compare upgrade paths using your budget and priorities. milestone costs are exact; recommendations are a local search, not a guaranteed global optimum.</p><p class="gear-gloss" data-i18n="gear.reforgeHint">mastery and red gear stay invested. weights describe your priorities, not predicted battle damage.</p>
+        <h3 data-i18n="gear.searchMethod">How the planner works</h3>
+        <p class="gear-gloss" data-i18n="gear.optimiseHint">The planner compares upgrades using the resources you enter and the weights in Settings. Costs are exact game values. Spend now searches for a strong set of upgrades but can miss the very best one; Best split checks every combination.</p>
       </section>
       <section class="gear-page-section" id="ranking">
-        <h3 data-i18n="gear.scoreCostExplained">ranking &amp; assumptions</h3>
-        <p class="gear-gloss" data-i18n="gear.budgetMethod">at each larger budget, choose the red milestone with the highest weighted gain; ties favour gain per cost. these are independent choices, not three purchases in a queue. only expedition bonus milestones (+20, +60, +100) are compared; intervening upgrades are included in the cost.</p><p class="gear-gloss" data-i18n="gear.scoreFormula">weighted gain = added health or lethality × its profile weight + added attack × lethality weight + added defence × health weight. this is a priority score, not a battle-damage percentage. the % shown is weighted gain ÷ the weighted score of your current gear for the selected troops.</p><p class="gear-gloss"><span data-i18n="gear.costUnitFormula">gain / cost = weighted gain ÷ Σ(resource cost ÷ reference amount). the same amounts apply to every choice: your budget or 52,650 XP / 550 hammers / 6 mythic / 10 mithril, whichever is larger per resource. these are comparison scales, not exchange prices. current reference amounts</span>: <span id="gear-cost-units"></span>.</p><p class="gear-gloss" data-i18n="gear.budgetGrowthFormula">future budgets increase every resource by the same fraction of those reference amounts. this makes comparable saving steps, not a prediction of how fast you collect resources. change your bag to rerank. role profiles are editable planning preferences; cavalry’s 65% catch-up reminder does not secretly change the score.</p><ul class="gear-roles" id="gear-roles"></ul>
+        <h3 data-i18n="gear.scoreCostExplained">How choices are ranked</h3>
+        <p class="gear-gloss" data-i18n="gear.budgetMethod">For each bigger budget, Save for red picks the red milestone that adds the most weighted score, and a tie goes to the better gain per cost. The three picks are alternatives, not a queue. Only the expedition bonus milestones (+20, +60 and +100) are compared, and the upgrades in between are counted in the cost.</p><p class="gear-gloss" data-i18n="gear.scoreFormula">Weighted gain is the added health or lethality times its profile weight, plus added attack times the lethality weight, plus added defence times the health weight. It is a priority score, not a damage percentage. The percentage shown is that gain divided by the weighted score of your current gear for the included troops.</p><p class="gear-gloss"><span data-i18n="gear.costUnitFormula">Gain per cost divides the weighted gain by the total cost, with each resource measured against a reference amount: your budget, or 52,650 XP, 550 hammers, 6 spare mythic gear and 10 mithril, whichever is larger. These are scales for comparison, not exchange rates. Current reference amounts</span>: <span id="gear-cost-units"></span>.</p><p class="gear-gloss" data-i18n="gear.budgetGrowthFormula">Each bigger budget adds the same share of every reference amount. That gives evenly spaced saving steps; it isn’t a forecast of how fast you’ll collect resources. Change your bag to rerank. Build profiles are preferences you can edit, and the cavalry reminder at 65% doesn’t change the score.</p><ul class="gear-roles" id="gear-roles"></ul>
       </section>
       <section class="gear-page-section" id="kvk-points">
-        <h3 data-i18n="gear.kvkScoring">how these KvK points score</h3>
-        <p class="gear-gloss" id="gear-kvk-formula"></p><p class="gear-gloss" data-i18n="gear.kvkOnlySpend">XP, XP reforge and sacrificed mythic gear add no KvK points. each saving choice shows the points for its full upgrade cost; the spend total covers all changed pieces, across every troop tab. these points score once, on the day you use the materials.</p><a href="../events/#days" data-i18n="gear.kvkGuide">KvK scoring &amp; timing</a>
+        <h3 data-i18n="gear.kvkScoring">How KvK points score</h3>
+        <p class="gear-gloss" id="gear-kvk-formula"></p><p class="gear-gloss" data-i18n="gear.kvkOnlySpend">XP, XP reforge and sacrificed mythic gear score nothing. Each saving choice shows the points for its full cost, and the spend total covers every changed piece across all three troops. Points count once, on the day you use the materials.</p><a href="../events/#days" data-i18n="gear.kvkGuide">KvK scoring and timing</a>
       </section>
       <section class="gear-page-section" id="cost-includes">
-        <h3 data-i18n="gear.costIncludes">what these costs include</h3>
-        <p class="gear-gloss" data-i18n="gear.includesMastery">includes all missing mastery, ascension and intervening imbuements. each piece is compared against the same bag.</p><p class="gear-gloss" data-i18n="gear.applyHint">after upgrading in game, mark upgrades done to save the levels and subtract the cost.</p>
+        <h3 data-i18n="gear.costIncludes">What the costs include</h3>
+        <p class="gear-gloss" data-i18n="gear.includesMastery">Each cost includes any missing mastery, the ascension and every imbuement on the way. Every piece is priced against the same bag.</p><p class="gear-gloss" data-i18n="gear.applyHint">After you upgrade in the game, mark the upgrades done. That saves the new levels and takes the cost out of your bag.</p>
       </section>
       <section class="gear-page-section" id="best-split-method">
-        <h3 data-i18n="gear.splitMethodTitle">how the best split works</h3>
-        <p class="gear-gloss" data-i18n="gear.splitMethod">every piece's quality, red milestone and mastery fixes its hammer, spare mythic and mithril cost; every combination the set's total can pay for is checked, and leftover XP goes where it adds the most stat per XP. mastery, ascension and milestone choices are exact; levels can sit a level or two from the true best. the score uses your build profile weights, and conquest bonuses are outside it.</p><p class="gear-gloss" data-i18n="gear.splitRefund">hammers, mithril and spare mythic gear cannot be refunded in the game, so read this as a guide to where the next ones should go. XP can be reforged: Spend now covers that.</p>
+        <h3 data-i18n="gear.splitMethodTitle">How the best split works</h3>
+        <p class="gear-gloss" data-i18n="gear.splitMethod">A piece’s quality, red milestone and mastery set its cost in hammers, spare mythic gear and mithril. Every combination the set’s total can pay for is checked, then leftover XP goes where it adds the most stat per XP. Mastery, ascension and milestone choices are exact; levels can land a level or two off the true best. The score uses your build profile weights and leaves out conquest bonuses.</p><p class="gear-gloss" data-i18n="gear.splitRefund">The game can’t refund hammers, mithril or spare mythic gear, so treat this as a guide to where the next ones should go. XP can be reforged, and Spend now covers that.</p>
       </section>
       <section class="gear-page-section" id="maths">
-        <h3 id="maths-sources" data-i18n="gear.maths">the maths &amp; sources</h3>
-        <p data-i18n="gear.mathsBody">XP, Forgehammers, spare mythic pieces and mithril are counted separately. milestone costs include missing mastery, its mythic cost, ascension and every intervening imbuement. costs start from your saved level; XP already partway to the next level is not counted.</p>
-        <p data-i18n="gear.method">recommendations compare XP, mastery and bundled milestone paths over several passes, then keep the highest weighted result. XP reforge also compares against keeping your gear. the score covers expedition health, lethality, attack and defence; conquest bonuses are outside this score.</p>
+        <h3 id="maths-sources" data-i18n="gear.maths">The maths and sources</h3>
+        <p data-i18n="gear.mathsBody">XP, Forgehammers, spare mythic gear and mithril are counted separately. A milestone’s cost includes any missing mastery and the spare mythic gear it uses, the ascension, and every imbuement on the way. Costs start from the level you saved, so XP already partway into the next level isn’t counted.</p>
+        <p data-i18n="gear.method">Spend now tries XP, mastery and whole milestones over several passes and keeps the highest score it finds. With reforge on, it also compares against keeping your gear as it is. The score covers expedition health, lethality, attack and defence; conquest bonuses aren’t included.</p>
         <p><a href="https://kingshotoptimizer.com/hero-gear/references/xp-costs/" data-i18n="gear.sourceXP">XP costs</a> · <a href="https://kingshotoptimizer.com/hero-gear/references/forgehammer-costs/" data-i18n="gear.sourceMastery">mastery costs</a> · <a href="https://kingshotoptimizer.com/hero-gear/references/imbuement-costs/" data-i18n="gear.sourceMithril">imbuement costs</a></p>
-        <p class="gear-gloss" data-i18n="gear.sourceNote">game values checked against Kingshot Optimizer’s public tables and browser modules on 6 October 2026. our planner and interface are independently implemented.</p>
+        <p class="gear-gloss" data-i18n="gear.sourceNote">Game values were checked against Kingshot Optimizer’s public tables and browser modules on 6 October 2026. This planner and its interface were built independently.</p>
       </section>
     </div>
     <output id="gear-status" data-module="result-panel" data-target="result-panel.message" data-status-scope="hero-gear" role="status" hidden></output>
     <button id="gear-undo" type="button" hidden data-i18n="gear.undo">undo last update</button>
-    <noscript><p data-i18n="gear.noJS">enable JavaScript to use the planner. the cost references below remain available.</p></noscript>
+    <noscript><p data-i18n="gear.noJS">Turn on JavaScript to use the planner. The notes on costs and scoring still work without it.</p></noscript>
   </section>
 
 </main>
@@ -135,7 +136,7 @@ self: gear
 <dialog id="gear-edit-dialog" class="gear-dialog gear-edit-dialog" aria-labelledby="gear-edit-title">
   <div class="gear-heading"><h2 id="gear-edit-title" data-i18n="gear.editPiece">edit selected piece</h2><button type="button" id="gear-close-edit" data-i18n="gear.done">done</button></div>
   <div id="gear-edit-fields"></div>
-  <p class="gear-gloss" data-i18n="gear.levelHint">use total levels: red +20 is level 120.</p>
+  <p class="gear-gloss" data-i18n="gear.levelHint">Use the total level: red +20 is level 120.</p>
 </dialog>
 <dialog id="gear-import-dialog" class="gear-dialog gear-import-dialog" aria-labelledby="gear-import-title">
   <header class="gear-import-header">
@@ -145,11 +146,11 @@ self: gear
   </header>
   <div id="gear-import-scroll" class="gear-import-scroll">
     <div id="gear-import-pick">
-      <p class="gear-import-intro" data-i18n="gear.importIntro">choose hero gear overviews or piece detail screens, then check the crops and numbers.</p>
+      <p class="gear-import-intro" data-i18n="gear.importIntro">Choose hero gear overviews or piece detail screens, then check the crops and numbers.</p>
       <label class="gear-import-picker"><span data-i18n="gear.chooseScreenshots">choose screenshots</span><input type="file" id="gear-images" accept="image/*" multiple></label>
     </div>
     <button type="button" id="gear-replace-images" hidden data-i18n="gear.replaceScreenshots">choose other screenshots</button>
-    <p class="gear-gloss gear-import-hint" data-i18n="gear.importNumbers">use the numbers on the crop: red +20 stays 20 here. blank fields keep your saved values.</p>
+    <p class="gear-gloss gear-import-hint" data-i18n="gear.importNumbers">Use the numbers shown on the crop: red +20 stays 20 here. Blank fields keep your saved values.</p>
     <div id="gear-import-review"></div>
   </div>
   <footer class="gear-tools gear-import-actions"><button type="button" id="gear-apply-import" class="gear-primary" disabled data-i18n="gear.applyImport">apply reviewed gear</button><button type="button" id="gear-cancel-import" data-i18n="gear.cancel">cancel</button></footer>
