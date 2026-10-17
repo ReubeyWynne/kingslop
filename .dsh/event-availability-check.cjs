@@ -37,9 +37,10 @@ const server=http.createServer((req,res)=>{let file=path.resolve(root,'.'+decode
   const troopNotes=async iso=>{const p=await context.newPage();await p.clock.setFixedTime(new Date(iso));await p.goto(origin+'/events/?lang=en');await p.waitForFunction(()=>document.querySelector('#ks-card .today-title, #ks-card .today-kicker'));const out=await p.locator('#ks-card [data-troop-note]').allTextContents();return [p,out];};
   await page.evaluate(()=>{const s=PlayerLedger.shared();s.setTraining('speed',100);s.setTraining('capacity',1000);s.setTraining('inf',10);for(const r of ['bread','wood','stone','iron'])s.setBalance(r,1e9);});
   let [troopPage,notes]=await troopNotes('2026-10-19T00:30:00Z');
-  assert.deepEqual(notes,['Buy the capacity buff (3,000 gems) and start 3,000 troops in each camp by Mon, 19 Oct, 08:40 UTC, ready for Strongest Governor day 4. That batch scores 117,000 points, 78,000 more than a normal one.'],'3,000 T10 at 76 s each take 63h 20m before 22 Oct');
+  // The weekday's punctuation depends on the runner's ICU data, so only the date and time are pinned.
+  assert.equal(notes.length,1); assert.match(notes[0],/^Buy the capacity buff \(3,000 gems\) and start 3,000 troops in each camp by Mon,? 19 Oct, 08:40 UTC, ready for Strongest Governor day 4\. That batch scores 117,000 points, 78,000 more than a normal one\.$/,'3,000 T10 at 76 s each take 63h 20m before 22 Oct');
   await troopPage.close();[troopPage,notes]=await troopNotes('2026-10-20T06:00:00Z');
-  assert.deepEqual(notes,['Too late for a tripled batch before Strongest Governor day 4. Start a normal batch of 1,000 per camp by Wed, 21 Oct, 02:53 UTC.']);
+  assert.equal(notes.length,1); assert.match(notes[0],/^Too late for a tripled batch before Strongest Governor day 4\. Start a normal batch of 1,000 per camp by Wed,? 21 Oct, 02:53 UTC\.$/);
   await troopPage.locator('#ks-cycle [data-cycle-day="11"]').click();assert.deepEqual(await troopPage.locator('#ks-card [data-troop-note]').allTextContents(),['Troop day: collect the batch you started before today, then train with speedups.']);
   await troopPage.locator('#ks-cycle [data-cycle-day="13"]').click();assert.equal(await troopPage.locator('#ks-card [data-troop-note]').count(),0,'one batch per event, on its first best troop day');
   await troopPage.close();await page.evaluate(()=>{const s=PlayerLedger.shared();for(const k of ['speed','capacity','inf'])s.setTraining(k,null);});
