@@ -81,6 +81,15 @@
     "lede": "heroes by generation, troop and role."
   },
   {
+    "self": "masters",
+    "tail": "masters/",
+    "labelKey": "masters.nav",
+    "label": "Masters",
+    "group": "tools",
+    "ledeKey": "ev.deck.lede.masters",
+    "lede": "affinity, talents and skills, planned from your bag."
+  },
+  {
     "self": "gear",
     "tail": "hero-gear/",
     "labelKey": "ev.switch.gear",

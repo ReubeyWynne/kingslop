@@ -1174,6 +1174,12 @@ window.__BH_I18N_DATA["id"] = {
   "kingdom.heroTitle": "Hero generasi {n}",
   "kingdom.heroNote": "Bandingkan generasi ini dengan hero yang telah dikembangkan sebelum memakai pecahan atau widget.",
   "kingdom.goldNote": "Batas bangunan kerajaan meningkat. Bangunanmu tetap memerlukan prasyarat dan material.",
-  "kingdom.academyNote": "Riset Akademi Perang terbuka untuk kerajaan. Akunmu tetap harus memenuhi prasyarat bangunan dan riset."
+  "kingdom.academyNote": "Riset Akademi Perang terbuka untuk kerajaan. Akunmu tetap harus memenuhi prasyarat bangunan dan riset.",
+  "masters.nav": "Master",
+  "ev.deck.lede.masters": "afinitas, bakat, dan keahlian, direncanakan dari tasmu.",
+  "masters.title": "Master",
+  "masters.cardLede": "Catat afinitas dan keahlian mastermu, lihat kelas berikutnya beserta lambangnya, dan poin dari lambang serta manuskripmu.",
+  "masters.kicker": "Akademi Master",
+  "masters.metaTitle": "Master — dey.ci"
 }
 ;

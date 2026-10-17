@@ -94,6 +94,20 @@ jobs:
               - _data/hero_roles.json
               - css/heroes.css
               - img/heroes/**
+            masters:
+              - *shared
+              - .dsh/masters-ui-check.cjs
+              - masters/**
+              - js/master-*
+              - _data/masters.json
+              - css/masters.css
+              - _includes/masters/**
+              - img/masters/**
+              - js/hero-spend.js
+              - js/event-rules.js
+              - _data/event_rules.json
+              - town-centre/**
+              - js/town-centre*.js
             castle:
               - *shared
               - .dsh/castle-battle-ui-check.cjs
@@ -149,6 +163,11 @@ jobs:
               - js/hero-data.liquid
               - _data/heroes.json
               - css/heroes.css
+              - js/master-*
+              - _data/masters.json
+              - css/masters.css
+              - _includes/masters/**
+              - img/masters/**
             # The deck walks every page and fails on any script error.
             deck:
               - *shared
@@ -180,7 +199,7 @@ jobs:
           FILTERED: ${{ github.event_name == 'pull_request' }}
           CHANGES: ${{ steps.filter.outputs.changes || '[]' }}
         run: |
-          all='["interactions","heroes","castle","events","governor","town","deck","ascii-capture","hero-gear"]'
+          all='["interactions","heroes","masters","castle","events","governor","town","deck","ascii-capture","hero-gear"]'
           if [ "$FILTERED" != true ]; then
             echo "logic=true" >> "$GITHUB_OUTPUT"
             echo "ascii=true" >> "$GITHUB_OUTPUT"
@@ -257,6 +276,9 @@ jobs:
       - name: Check hero spending plan and Heroes page points
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/hero-spend-check.cjs
+      - name: Check masters data, spending plan and wiring
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/master-spend-check.cjs
       - name: Check OCR backend recovery
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/ocr-backend-check.cjs
@@ -321,6 +343,9 @@ jobs:
       - name: Check hero directory UI
         if: matrix.group == 'heroes'
         run: node .dsh/hero-directory-ui-check.cjs
+      - name: Check masters UI
+        if: matrix.group == 'masters'
+        run: node .dsh/masters-ui-check.cjs
       - name: Check Castle Battle UI
         if: matrix.group == 'castle'
         run: node .dsh/castle-battle-ui-check.cjs
@@ -363,6 +388,7 @@ jobs:
             .dsh/gear-preview/
             .dsh/event-preview/
             .dsh/hero-directory-preview/
+            .dsh/masters-preview/
             .dsh/kingdom-preview/
             .dsh/castle-preview/
             .dsh/governor-preview/

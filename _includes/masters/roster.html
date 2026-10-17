@@ -1,0 +1,71 @@
+{% comment %} The master roster with each master's "Your master" form. Shared by the Masters page and the Town Centre; expects a master-directory module around it. bag="off" leaves out the emblem and manuscript bag. Paths are relative to a page one folder deep. {% endcomment %}
+{% assign masters = site.data.masters.masters %}{% assign days = masters | map: 'unlockDay' | uniq %}
+    {% unless include.bag == "off" %}
+    <div class="master-bag" data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed">
+      <p class="master-bag-title" data-i18n="masters.bag">Your bag</p>
+      <label><img src="../img/masters/emblem-general.webp" width="32" height="32" alt="" loading="lazy"><span data-i18n="masters.generalEmblem">General Master Emblems</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-bind="inventory.general-master-emblem" data-action="ledger-form.set ledger-form.normalize"></label>
+      <label><img src="../img/items/masters-manuscript.webp" width="32" height="32" alt="" loading="lazy"><span data-i18n="ks.available.item.masters-manuscript">Master's Manuscript</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-bind="inventory.masters-manuscript" data-action="ledger-form.set ledger-form.normalize"></label>
+      <p class="master-bag-caption"><span data-i18n="masters.bagNote">blank means not counted yet · each master's own emblems are in its card</span> <output data-target="ledger-form.save" role="status"></output></p>
+    </div>
+    {% endunless %}
+    <p class="master-count"><output aria-live="polite" dir="auto" data-target="master-directory.count">{{ masters.size }} masters</output></p>
+    <div class="master-roster">
+    {% for day in days %}{% assign wave = masters | where: 'unlockDay', day %}
+      <div class="master-band" data-day="{{ day }}">
+        <p class="band-label"><span class="band-gen"><span class="band-gen-word" data-i18n="masters.dayShort">Day</span> <b>{{ day }}</b></span></p>
+        <div class="master-catalogue">
+        {% for master in wave %}
+          <article class="master-card" id="master-{{ master.id }}" data-master="{{ master.id }}" data-day="{{ master.unlockDay }}"{% for need in master.kingdom %} data-kingdom-{{ need[0] }}="{{ need[1] }}"{% endfor %} data-verified="{{ master.verified }}">
+            <span class="hero-upcoming" data-kingdom-upcoming hidden data-i18n="kingdom.upcoming">Upcoming</span>
+            <details class="master-dossier" name="master-dossier" data-module="disclosure" data-deep-link="master-{{ master.id }}">
+              <summary class="master-heading">
+                <span class="master-portrait"><img src="../img/masters/{{ master.id }}.webp" width="80" height="80" alt="" loading="lazy" decoding="async"><img class="master-emblem-mark" src="../img/masters/emblem-{{ master.id }}.webp" width="22" height="22" alt="" loading="lazy"><span class="master-portrait-level" data-portrait="affinity" aria-hidden="true" hidden></span><img class="master-portrait-soul" src="../img/masters/kindred-soul.webp" width="20" height="20" alt="" loading="lazy" data-portrait="soul" hidden></span>
+                <span class="master-name"><h3>{{ master.name | escape }}</h3><span class="master-title" lang="en">{{ master.title | escape }}</span><span class="master-mine-line" data-target="master-directory.badge"></span></span>
+              </summary>
+              <div class="master-dossier-body">
+                <fieldset class="master-mine" disabled data-target="master-directory.form">
+                  <legend data-i18n="masters.yours">Your master</legend>
+                  <label class="master-own"><input type="checkbox" data-field="owned"><span data-i18n="masters.have">I have unlocked this master</span></label>
+                  <label><span data-i18n="masters.affinity">Affinity level</span><input type="number" min="0" max="100" step="1" inputmode="numeric" placeholder="?" data-field="affinity"></label>
+                  <label><span><span lang="en">{{ master.name | escape }}</span> <span data-i18n="masters.emblemsShort">emblems</span></span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="emblems"></label>
+                  {% for skill in master.skills %}<label><span lang="en">{{ skill.name | escape }}</span><select data-field="skill" data-skill="{{ forloop.index0 }}"><option value="">?</option>{% for level in (0..skill.max) %}<option value="{{ level }}">{% if level == 0 %}—{% else %}{{ level }}{% endif %}</option>{% endfor %}</select></label>{% endfor %}
+                  <label class="master-own master-ready" data-target="master-directory.ready" hidden><input type="checkbox" data-field="ready"><span data-i18n="masters.ready">The affinity bar is full: the next class is waiting on emblems</span></label>
+                  <p class="master-mine-note"><span data-i18n="masters.mineNote">Saved on this device with your inventory. A skill you have not learned yet is —.</span> <output data-target="master-directory.saved" role="status"></output></p>
+                </fieldset>
+                <div class="master-brief">
+                  <p class="master-soul"><img src="../img/masters/kindred-soul.webp" width="40" height="40" alt="" loading="lazy"><span><b data-i18n="masters.kindredSoul">Kindred Soul</b> <span lang="en">{% for buff in master.kindredSoul %}{% unless forloop.first %}, {% endunless %}{{ buff.text | escape }}{% endfor %}</span></span></p>
+                  <p class="master-talent"><img src="../img/masters/talent-{{ master.id }}.webp" width="40" height="40" alt="" loading="lazy"><span><b lang="en">{{ master.talent.name | escape }}</b> <small data-i18n="masters.talentNote">talent, rises with each class</small><span class="master-talent-now" data-target="master-directory.talent"></span><span class="master-talent-max" lang="en">{% for effect in master.talent.levels.last %}{% unless forloop.first %}, {% endunless %}{{ effect.text | escape }}{% endfor %}</span></span></p>
+                  <dl class="master-facts">
+                    <div><dt data-i18n="masters.unlocks">Unlocks</dt><dd><span data-i18n="masters.serverDay" data-i18n-n="{{ master.unlockDay }}">server day {{ master.unlockDay }}</span></dd></div>
+                    <div><dt data-i18n="masters.toKindred">Emblems to Kindred Soul</dt><dd data-number="{{ master.emblemsToMax }}">{{ master.emblemsToMax }}</dd></div>
+                    <div><dt data-i18n="masters.focus">Special Research troop</dt><dd data-i18n="masters.focus.{{ master.focus }}">{{ master.focus }}</dd></div>
+                  </dl>
+                  <p class="master-next" data-target="master-directory.next"></p>
+                  <ol class="master-classes" aria-label="Affinity classes" data-i18n-key="masters.classes" data-i18n-attr="aria-label">
+                    {% for class in master.affinity.classes %}<li data-level="{{ class.level }}"><span class="master-class-level">{{ class.level }}</span><span class="master-class-name" lang="en">{{ class.name | escape }}</span><span class="master-class-cost">{% if class.emblems > 0 %}<img src="../img/masters/emblem-{{ master.id }}.webp" width="14" height="14" alt="">{{ class.emblems }}{% else %}—{% endif %}</span></li>{% endfor %}
+                  </ol>
+                  {% unless master.verified %}<p class="note" data-i18n="masters.oneSource">Only Kingshot Optimizer lists this master so far, so these numbers rest on one source.</p>{% endunless %}
+                </div>
+                <div class="master-skills-wrap">
+                  <p class="hero-skills-title" data-i18n="masters.skills">skills</p>
+                  <ol class="master-skills">
+                    {% for skill in master.skills %}{% assign first = skill.levels.first %}<li data-skill="{{ forloop.index0 }}">
+                      <img src="../img/masters/skills/{{ master.id }}-{{ forloop.index }}.webp" width="44" height="44" alt="" loading="lazy">
+                      <div>
+                        <h4><span lang="en">{{ skill.name | escape }}</span> <small class="master-skill-level" data-target="master-directory.skillLevel" data-skill="{{ forloop.index0 }}"></small><small class="master-skill-max"><span data-i18n="masters.maxLevel">max</span> {{ skill.max }}</small></h4>
+                        <p class="master-skill-effect" lang="en">{% for effect in skill.levels.last.effects %}{% unless forloop.first %}, {% endunless %}{{ effect.text | escape }}{% endfor %}</p>
+                        <p class="master-skill-cost"><span data-i18n="masters.unlocksAt" data-i18n-n="{{ first.requires.affinity }}">unlocks at affinity {{ first.requires.affinity }}</span> · <img src="../img/items/masters-manuscript.webp" width="14" height="14" alt=""> <span data-number="{{ skill.manuscripts }}">{{ skill.manuscripts }}</span> <span data-i18n="masters.toMax">to max</span></p>
+                        <p class="master-skill-gates" lang="en">{% for level in skill.levels %}{% if level.requires and forloop.index > 1 %}<span>Lv {{ forloop.index }}: {% if level.requires.affinity %}affinity {{ level.requires.affinity }}{% else %}skill total {{ level.requires.total }}{% endif %}</span>{% endif %}{% endfor %}</p>
+                      </div>
+                    </li>{% endfor %}
+                  </ol>
+                  <p class="note" data-i18n="masters.skillNote">A skill level costs Master's Manuscripts when its learning timer ends. Learning speedups shorten the timer. Names and effects are shown in English.</p>
+                </div>
+              </div>
+            </details>
+          </article>
+        {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+    </div>

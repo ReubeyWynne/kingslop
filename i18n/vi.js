@@ -1174,6 +1174,12 @@ window.__BH_I18N_DATA["vi"] = {
   "kingdom.heroTitle": "Anh hùng thế hệ {n}",
   "kingdom.heroNote": "So sánh thế hệ này với anh hùng đã phát triển trước khi dùng mảnh hoặc widget.",
   "kingdom.goldNote": "Giới hạn công trình vương quốc tăng. Công trình của bạn vẫn cần đủ điều kiện và vật liệu.",
-  "kingdom.academyNote": "Nghiên cứu Học viện Chiến tranh mở cho vương quốc. Tài khoản vẫn phải đáp ứng điều kiện công trình và nghiên cứu."
+  "kingdom.academyNote": "Nghiên cứu Học viện Chiến tranh mở cho vương quốc. Tài khoản vẫn phải đáp ứng điều kiện công trình và nghiên cứu.",
+  "masters.nav": "Bậc thầy",
+  "ev.deck.lede.masters": "thân thiết, thiên phú và kỹ năng, lên kế hoạch từ túi đồ của bạn.",
+  "masters.title": "Bậc thầy",
+  "masters.cardLede": "Ghi lại độ thân thiết và kỹ năng của các bậc thầy, xem bậc kế tiếp và huy hiệu cần, cùng số điểm huy hiệu và bản thảo của bạn mang lại.",
+  "masters.kicker": "Học viện Bậc thầy",
+  "masters.metaTitle": "Bậc thầy — dey.ci"
 }
 ;

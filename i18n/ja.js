@@ -1163,6 +1163,12 @@ window.__BH_I18N_DATA["ja"] = {
   "kingdom.heroTitle": "第{n}世代の英雄",
   "kingdom.heroNote": "欠片やウィジェットを使う前に、この世代と育成済みの英雄を比較しましょう。",
   "kingdom.goldNote": "王国の建物上限が上がります。自分の建物には引き続き前提条件と素材が必要です。",
-  "kingdom.academyNote": "王国で戦争学院の研究が解放されます。アカウントは建物と研究の前提条件を満たす必要があります。"
+  "kingdom.academyNote": "王国で戦争学院の研究が解放されます。アカウントは建物と研究の前提条件を満たす必要があります。",
+  "masters.nav": "マスター",
+  "ev.deck.lede.masters": "好感度・才能・スキルを手持ちから計画。",
+  "masters.title": "マスター",
+  "masters.cardLede": "マスターの好感度とスキルを記録し、次の段階と必要な紋章、紋章と写本で得られるポイントを確認。",
+  "masters.kicker": "マスターアカデミー",
+  "masters.metaTitle": "マスター — dey.ci"
 }
 ;

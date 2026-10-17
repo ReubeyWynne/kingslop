@@ -1404,6 +1404,12 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "kingdom.heroTitle": "Heróis de geração {n}",
   "kingdom.heroNote": "Compare esta geração com seus heróis desenvolvidos antes de gastar fragmentos ou widgets.",
   "kingdom.goldNote": "O limite dos edifícios do reino aumenta. Seus edifícios ainda precisam dos pré-requisitos e materiais.",
-  "kingdom.academyNote": "A pesquisa da Academia de Guerra é liberada no reino. Sua conta ainda precisa cumprir os pré-requisitos de construção e pesquisa."
+  "kingdom.academyNote": "A pesquisa da Academia de Guerra é liberada no reino. Sua conta ainda precisa cumprir os pré-requisitos de construção e pesquisa.",
+  "masters.nav": "Mestres",
+  "ev.deck.lede.masters": "afinidade, talentos e habilidades, planejados a partir do seu inventário.",
+  "masters.title": "Mestres",
+  "masters.cardLede": "Registre a afinidade e as habilidades dos seus mestres, veja cada próxima classe e seus emblemas, e quanto seus emblemas e manuscritos podem pontuar.",
+  "masters.kicker": "a Academia dos Mestres",
+  "masters.metaTitle": "Mestres — dey.ci"
 }
 ;

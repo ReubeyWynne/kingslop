@@ -453,6 +453,22 @@ SEAL = r'''
       '.      |######.'
         '-.   |###.-'
            '-.|.-' '''
+# The masters' tome: an open book of manuscript lines, its ribbon hanging from the
+# spine. The outline mirrors about the spine; the writing on each page is its own.
+TOME = r'''
+   _.-~~~~~-._ _.-~~~~~-._
+ .-'         '.'         '-.
+ |            |            |
+ |            |            |
+ |            |            |
+ |            |            |
+ |            |            |
+ |_.--~~~~--._|_.--~~~~--._|
+ '------------'------------'
+              |
+             / \ '''
+TOME_TEXT = [("~~~ ~~ ~~~", "~~ ~~~ ~~~"), ("~~ ~~~~ ~~", "~~~~ ~ ~~~"), ("~ ~~~ ~~~~", "~~ ~~ ~~~~"),
+             ("~~~~ ~ ~~~", "~ ~~~~ ~~~"), ("~~ ~~ ~~~ ", " ~~~ ~ ~~~")]
 PIPS = {1: [(2, 1)], 2: [(0, 0), (4, 2)], 3: [(0, 0), (2, 1), (4, 2)],
         4: [(0, 0), (4, 0), (0, 2), (4, 2)], 5: [(0, 0), (4, 0), (2, 1), (0, 2), (4, 2)],
         6: [(0, 0), (4, 0), (0, 1), (4, 1), (0, 2), (4, 2)]}
@@ -523,6 +539,28 @@ def mini_frames(kind):
             for start, (c, r) in zip((24, 26, 28), ((3, 0), (25, 0), (14, 10))):
                 if start <= i < start + 2:
                     put(arr, c, r, '*' if i == start else '+')
+            frames.append(arr)
+    elif kind == 'tome':
+        # A glint reads along a line of writing, left page then right, one cell
+        # pair at a time; later a second line; then the spine catches the light.
+        # Stars come and go at fixed places around the book.
+        base = [list(r.ljust(MW)) for r in art(TOME)]
+        for n, (left, right) in enumerate(TOME_TEXT):
+            put(base, 3, 2 + n, left)
+            put(base, 16, 2 + n, right)
+        for i in range(48):
+            arr = [r[:] for r in base]
+            for start, row in ((4, 3), (26, 5)):
+                if start <= i < start + 13:
+                    lead = 3 + (i - start) * 2
+                    for cc in (lead, lead + 1):
+                        if cc < MW and arr[row][cc] == '~':
+                            arr[row][cc] = '*' if cc == lead else '+'
+            if i in (41, 42):
+                put(arr, 14, 1, '*' if i == 41 else '+')
+            for n, (r, c) in enumerate([(0, 1), (3, 28), (8, 0), (10, 22)]):
+                cycle = (i + n * 12) % 48
+                put(arr, c, r, '.+*+.'[cycle - 2] if 2 <= cycle < 7 else ' ')
             frames.append(arr)
     elif kind == 'dice':
         # Two dice tumble side over side, each through a pose balanced on a
@@ -926,10 +964,10 @@ def minis():
     # Emblems that face the viewer are drawn symmetrical (DESIGN.md, "Animation quality").
     # The helm is drawn in profile, the way a Spartan helm is best known, and
     # the seal's quartered field is counterchanged rather than mirrored.
-    for name, drawing in (('crown', CROWN), ('charm', CHARM)):
+    for name, drawing in (('crown', CROWN), ('charm', CHARM), ('tome', TOME)):
         assert symmetrical(drawing), f'{name}: the emblem is not symmetrical about column {MW // 2}'
     css = ['/* emblems */']
-    durations = {'charm': 6.4, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 19.6, 'helm': 8, 'seal': 8, 'castle': CASTLE_FRAMES / FPS}
+    durations = {'charm': 6.4, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 19.6, 'helm': 8, 'seal': 8, 'tome': 8, 'castle': CASTLE_FRAMES / FPS}
     for kind, duration in durations.items():
         frames, holds = mini_frames(kind)
         if kind == 'moon':

@@ -69,6 +69,9 @@
     if (train) return train.tier === null ? t(api, train.kind) : fill(api, train.kind === 'rate' ? 'troopRate' : 'troopCost', { tier: train.tier });
     var need = window.HeroSpend.missing(id);
     if (need) return window.HeroPoints.missing(api, need);
+    if (id === window.MasterSpend.GENERAL) return api.tr('masters.generalEmblem', 'General Master Emblems');
+    var master = window.MasterSpend.missing(id);
+    if (master) return window.MasterPoints.missing(api, master);
     return id;
   }
   // Training time from seconds, rounded up to the minute so a batch is never started too late.

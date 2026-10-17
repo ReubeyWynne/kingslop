@@ -173,6 +173,7 @@ html, body { overscroll-behavior-x: none; }
 .page-deck[data-selected="kvksg"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #5FC8A6; --deck-ground: #132326; }
 .page-deck[data-selected="gear"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #72CBDD; --deck-ground: #16242c; }
 .page-deck[data-selected="heroes"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E68AB4; --deck-ground: #241c27; }
+.page-deck[data-selected="masters"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #A29BF4; --deck-ground: #1d1c30; }
 .page-deck[data-selected="governor"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #86D48A; --deck-ground: #19241b; }
 .page-deck[data-selected="castle"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #DFAA77; --deck-ground: #27201b; }
 /* The selected page's colours land only on the parts that use them, not on
@@ -338,6 +339,7 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
 .deck-card[data-page="kvksg"] { --deck-accent: #5FC8A6; }
 .deck-card[data-page="gear"] { --deck-accent: #72CBDD; }
 .deck-card[data-page="heroes"] { --deck-accent: #E68AB4; }
+.deck-card[data-page="masters"] { --deck-accent: #A29BF4; }
 .deck-card[data-page="governor"] { --deck-accent: #86D48A; }
 .deck-card[data-page="castle"] { --deck-accent: #DFAA77; }
 .deck-card::before {
@@ -874,6 +876,22 @@ html[data-page="heroes"], html[data-page="home"]:has(.event-card[data-hover-page
   --signal-halo: rgba(230, 138, 180, .30);
 }
 
+
+/* ─── Masters — the lapis academy ──────────────────────── */
+html[data-page="masters"], html[data-page="home"]:has(.event-card[data-hover-page="masters"]:is(:hover, :focus-within)), .deck-card[data-page="masters"] {
+  --void: #0E0D1A;        /* academy night — ink-black indigo  */
+  --void-2: #171627;      /* one step up (fields)              */
+  --amber: #A29BF4;       /* lapis — the scholar's signal      */
+  --amber-dim: #7670C4;   /* pressed lapis — secondary         */
+  --ember: rgba(162, 155, 244, 0.15); /* lamp-lit motes        */
+  --ember-2: rgba(130, 124, 210, 0.10);
+  --ember-3: rgba(241, 227, 194, 0.07);
+  --chrome: rgba(14, 13, 26, .94);
+  --signal-line: rgba(162, 155, 244, .35);
+  --signal-tint: rgba(162, 155, 244, .07);
+  --signal-glow: rgba(162, 155, 244, .22);
+  --signal-halo: rgba(162, 155, 244, .28);
+}
 
 /* ─── Governor gear — the laurel wardrobe ──────────────── */
 html[data-page="castle"], html[data-page="home"]:has(.event-card[data-hover-page="castle"]:is(:hover, :focus-within)), .deck-card[data-page="castle"] {

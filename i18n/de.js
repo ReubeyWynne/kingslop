@@ -1163,6 +1163,12 @@ window.__BH_I18N_DATA["de"] = {
   "kingdom.heroTitle": "Helden der Generation {n}",
   "kingdom.heroNote": "Vergleiche diese Generation mit deinen ausgebauten Helden, bevor du Splitter oder Widgets ausgibst.",
   "kingdom.goldNote": "Die Gebäudegrenze des Königreichs steigt. Deine Gebäude benötigen weiterhin Voraussetzungen und Materialien.",
-  "kingdom.academyNote": "Die Kriegsakademie-Forschung wird im Königreich verfügbar. Dein Konto muss weiterhin die Gebäude- und Forschungsvoraussetzungen erfüllen."
+  "kingdom.academyNote": "Die Kriegsakademie-Forschung wird im Königreich verfügbar. Dein Konto muss weiterhin die Gebäude- und Forschungsvoraussetzungen erfüllen.",
+  "masters.nav": "Meister",
+  "ev.deck.lede.masters": "Zuneigung, Talente und Fähigkeiten, geplant aus deinem Inventar.",
+  "masters.title": "Meister",
+  "masters.cardLede": "Erfasse Zuneigung und Fähigkeiten deiner Meister, sieh jede nächste Stufe und ihre Embleme und was deine Embleme und Manuskripte an Punkten bringen.",
+  "masters.kicker": "die Meisterakademie",
+  "masters.metaTitle": "Meister — dey.ci"
 }
 ;

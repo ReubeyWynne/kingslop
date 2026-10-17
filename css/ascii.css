@@ -119,6 +119,7 @@
 .ascii-mini--crown { height: 12.5em; }
 .ascii-mini--charm { height: 13.75em; }
 .ascii-mini--seal { height: 13.75em; }
+.ascii-mini--tome { height: 13.75em; }
 /* Ursa Major over Bear Hunt: the lines are ink, the stars the signal hue. */
 .ascii-mini--ursa { width: 43ch; height: 18.75em; }
 .ascii-mini--ursa::before { color: var(--ink-muted); }

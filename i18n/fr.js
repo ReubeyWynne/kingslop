@@ -1164,6 +1164,12 @@ window.__BH_I18N_DATA["fr"] = {
   "kingdom.heroTitle": "Héros de génération {n}",
   "kingdom.heroNote": "Comparez cette génération à vos héros développés avant de dépenser des fragments ou widgets.",
   "kingdom.goldNote": "Le plafond des bâtiments du royaume augmente. Vos bâtiments exigent toujours leurs prérequis et matériaux.",
-  "kingdom.academyNote": "La recherche de l’Académie de guerre s’ouvre au royaume. Votre compte doit toujours remplir les prérequis de bâtiment et de recherche."
+  "kingdom.academyNote": "La recherche de l’Académie de guerre s’ouvre au royaume. Votre compte doit toujours remplir les prérequis de bâtiment et de recherche.",
+  "masters.nav": "Maîtres",
+  "ev.deck.lede.masters": "affinité, talents et compétences, planifiés depuis ton inventaire.",
+  "masters.title": "Maîtres",
+  "masters.cardLede": "Note l’affinité et les compétences de tes maîtres, vois chaque classe suivante et ses emblèmes, et ce que tes emblèmes et manuscrits peuvent rapporter.",
+  "masters.kicker": "l’Académie des maîtres",
+  "masters.metaTitle": "Maîtres — dey.ci"
 }
 ;

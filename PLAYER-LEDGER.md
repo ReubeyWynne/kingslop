@@ -36,6 +36,13 @@ store.setHero('amadeus', { level: 80, stars: 27, widget: 6, skills: [5, 4, 5] })
 store.setBalance(PlayerLedger.heroShardId('amadeus'), 34);
 ```
 
+Master facts serve the Masters page and the Town Centre's Masters shelf. `masters.roster` holds the masters you have unlocked, keyed by ID (`_data/masters.json`), each with `affinity` (0–100 or null), `ready` (true only at affinity 9, 19 … 99, when the affinity bar is full and the next class waits on emblems; any other level clears it) and `skills` (four levels, each 0–20 or null until read), with its own entry in `masters.provenance`. Per-master emblems are inventory entries keyed `master-emblems-{master}` (`PlayerLedger.masterEmblemId`); General Master Emblems are `general-master-emblem` and manuscripts `masters-manuscript`. Saves without a `masters` key stay valid.
+
+```js
+store.setMaster('valora', { affinity: 29, ready: true, skills: [3, 2, 0, null] });
+store.masters(); // { roster: { valora: { affinity, ready, skills } }, provenance, emblems: { valora: 10 } }
+```
+
 Building levels serve the Town Centre. `buildings.levels` maps a building ID (`town-center`, `embassy`, `barracks`, `range`, `stable`, `command-center`, `infirmary`, `war-academy`, `academy`, as in `_data/buildings.json`) to the game's own level ID: `0` (not built), `1`…`30`, `30-1`…`30-4`, `TG 1`, `TG1-1`…`TG1-4`, … `TG 10` (`PlayerLedger.buildingLevel` checks one). Each level has its own entry in `buildings.provenance`. A building missing from the map has not been counted yet. Truegold, Tempered Truegold and the four resources stay ordinary inventory balances. Upgrade priorities live in `preferences.buildings`: `tiers` maps a building to 1 (Lead), 2 (Keep up), 3 (Spare) or 0 (Skip), and `order` is the tie-break order. Missing entries take the defaults in `BuildingSpend.DEFAULT_TIERS`. Saves without a `buildings` key stay valid.
 
 ```js

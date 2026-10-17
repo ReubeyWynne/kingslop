@@ -439,10 +439,10 @@
     "brandNoteKey": "gear.kicker",
     "brandNote": "the forge ledger",
     "swipePrev": {
-      "url": "../heroes/",
-      "page": "heroes",
-      "title": "Heroes",
-      "lede": "heroes by generation, troop and role."
+      "url": "../masters/",
+      "page": "masters",
+      "title": "Masters",
+      "lede": "affinity, talents and skills, planned from your bag."
     },
     "swipeNext": {
       "url": "../governor-gear/",
@@ -500,10 +500,10 @@
       "lede": "your battles, your marches, and the maths."
     },
     "swipeNext": {
-      "url": "../hero-gear/",
-      "page": "gear",
-      "title": "Hero gear",
-      "lede": "your next upgrade and the resources it needs."
+      "url": "../masters/",
+      "page": "masters",
+      "title": "Masters",
+      "lede": "affinity, talents and skills, planned from your bag."
     },
     "css": [
       "../css/styles.css",
@@ -527,6 +527,67 @@
       {
         "key": "directory.candidateNote",
         "html": "Role labels identify candidates, not a ranking. Stars, skill levels, widgets, account stats and alliance policy decide the lineup."
+      }
+    ],
+    "headScripts": []
+  },
+  "masters": {
+    "token": "masters",
+    "depth": "../",
+    "canonicalPath": "/masters/",
+    "themeColor": "#0E0D1A",
+    "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230E0D1A'/%3E%3Ctext x='16' y='24' font-size='22' text-anchor='middle' fill='%23A29BF4'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E\">",
+    "titleKey": "masters.metaTitle",
+    "titleText": "Masters — dey.ci",
+    "metaDescKey": "masters.metaDescription",
+    "metaDesc": "All eight masters: affinity classes and their emblem costs, talents and skills, and what your emblems and manuscripts can score in KvK.",
+    "ogTitleKey": "masters.title",
+    "ogTitle": "Masters",
+    "ogDescKey": "masters.metaDescription",
+    "ogDesc": "All eight masters: affinity classes and their emblem costs, talents and skills, and what your emblems and manuscripts can score in KvK.",
+    "skipHref": "#roster",
+    "skipKey": "masters.browse",
+    "skipText": "Browse masters",
+    "dust": "<i></i><i></i><i></i>",
+    "brand": "Masters",
+    "brandNoteKey": "masters.kicker",
+    "brandNote": "the Master Academy",
+    "swipePrev": {
+      "url": "../heroes/",
+      "page": "heroes",
+      "title": "Heroes",
+      "lede": "heroes by generation, troop and role."
+    },
+    "swipeNext": {
+      "url": "../hero-gear/",
+      "page": "gear",
+      "title": "Hero gear",
+      "lede": "your next upgrade and the resources it needs."
+    },
+    "css": [
+      "../css/styles.css",
+      "../css/events.css",
+      "../css/heroes.css",
+      "../css/masters.css"
+    ],
+    "scripts": [
+      "../js/i18n.js",
+      "../js/common.js",
+      "../js/event-data.js",
+      "../js/event-rules.js",
+      "../js/hero-data.js",
+      "../js/hero-spend.js",
+      "../js/master-data.js",
+      "../js/master-spend.js",
+      "../js/master-directory.js",
+      "../js/master-points.js"
+    ],
+    "footMainKey": "masters.title",
+    "footMain": "Masters",
+    "footSubs": [
+      {
+        "key": "masters.foot",
+        "html": "affinity, talent and skill tables where Kingshot Optimizer and Kingshot Data agree · independently built for the [2129]MadNess alliance"
       }
     ],
     "headScripts": []
@@ -557,6 +618,7 @@
       "../css/styles.css",
       "../css/events.css",
       "../css/heroes.css",
+      "../css/masters.css",
       "../css/town.css"
     ],
     "scripts": [
@@ -573,10 +635,14 @@
       "../js/building-spend.js",
       "../js/troop-data.js",
       "../js/troop-spend.js",
+      "../js/master-data.js",
+      "../js/master-spend.js",
       "../js/town-centre-engine.js",
       "../js/hero-directory-engine.js",
       "../js/hero-directory.js",
       "../js/hero-points.js",
+      "../js/master-directory.js",
+      "../js/master-points.js",
       "../js/town-centre.js"
     ],
     "footMainKey": "town.kicker",
