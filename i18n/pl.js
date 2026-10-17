@@ -1053,6 +1053,7 @@ window.__BH_I18N_DATA["pl"] = {
   "directory.level": "Poziom",
   "directory.stars": "Gwiazdki",
   "directory.widgetLevel": "Poziom widżetu",
+  "heroWidgets.count": "Widżety",
   "directory.skillLevel": "Umiejętność {n}",
   "directory.shards": "Odłamki",
   "directory.mineNote": "Zapisane na tym urządzeniu z twoim ekwipunkiem. Odłamki liczą się przed odblokowaniem bohatera.",

@@ -1053,6 +1053,7 @@ window.__BH_I18N_DATA["ja"] = {
   "directory.level": "レベル",
   "directory.stars": "星",
   "directory.widgetLevel": "ウィジェットレベル",
+  "heroWidgets.count": "ウィジェット",
   "directory.skillLevel": "スキル{n}",
   "directory.shards": "欠片",
   "directory.mineNote": "インベントリと一緒にこの端末に保存されます。欠片は英雄の解放前でも数えます。",

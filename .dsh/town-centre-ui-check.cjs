@@ -37,6 +37,15 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       await done();
       assert.equal(await page.locator('#town-bag [data-count="mithril"] [data-amount]').textContent(), '10');
       assert.equal(await prep(), 400000);
+      // Widgets are hero-specific, so the bag holds only the generation choice chests, which score nothing until opened.
+      assert.equal(await page.locator('#town-bag [data-count="hero-widget"]').count(), 0, 'no single widget item');
+      assert.equal(await page.locator('#town-bag [data-count^="widget-chest-gen"]').count(), 7);
+      await edit('#town-bag [data-count="widget-chest-gen3"]');
+      await dialog.locator('[data-field="count"]').fill('2');
+      assert.equal((await ledger()).inventory['widget-chest-gen3'].amount, 2);
+      assert.match(await dialog.locator('[data-target="town-inventory.rate"]').textContent(), /no event scores/);
+      await done();
+      assert.equal(await prep(), 400000, 'chests stay unscored');
 
       // Speedups: days, hours and minutes are stored as minutes and score per minute.
       await page.locator('[aria-controls="town-speedups"]').click();
@@ -108,6 +117,11 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.equal((await ledger()).heroes.roster.chenko.level, 40);
       assert.match(await page.locator('#hero-chenko [data-target~="hero-directory.badge"]').textContent(), /40/);
       assert.equal(await page.locator('#town-heroes .hero-bag').count(), 0, 'shards stay on the bag shelf');
+      await page.locator('#town-heroes #hero-chenko summary').click(); await page.locator('#town-heroes #hero-amadeus summary').click();
+      await page.locator('#hero-amadeus [data-field="widgets"]').fill('3'); await page.locator('#hero-amadeus [data-field="widgets"]').press('Tab');
+      assert.equal((await ledger()).inventory['hero-widgets-amadeus'].amount, 3, 'each hero keeps its own widget count');
+      assert.equal(await page.locator('#hero-chenko [data-field="widgets"]').count(), 0, 'no widget count for heroes without a widget');
+      await page.locator('#town-heroes #hero-amadeus summary').click(); await page.locator('#town-heroes #hero-chenko summary').click();
       await page.locator('#hero-chenko [data-field="stars"]').selectOption('15'); await page.locator('#hero-chenko [data-field="shards"]').fill('7'); await page.locator('#hero-chenko [data-field="shards"]').press('Tab');
       assert.equal(await page.locator('#hero-chenko .hero-star-row [data-on]').count(), 2, 'two stars on the portrait');
       assert.equal(await page.locator('#hero-chenko .hero-star-tier [data-on]').count(), 3, 'three tier notches');

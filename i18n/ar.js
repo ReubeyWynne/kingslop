@@ -1050,6 +1050,7 @@ window.__BH_I18N_DATA["ar"] = {
   "directory.level": "المستوى",
   "directory.stars": "النجوم",
   "directory.widgetLevel": "مستوى الأداة",
+  "heroWidgets.count": "الأدوات",
   "directory.skillLevel": "المهارة {n}",
   "directory.shards": "الشظايا",
   "directory.mineNote": "محفوظ على هذا الجهاز مع مخزونك. تُحسب الشظايا قبل فتح البطل.",

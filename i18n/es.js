@@ -1056,6 +1056,7 @@ window.__BH_I18N_DATA["es"] = {
   "directory.level": "Nivel",
   "directory.stars": "Estrellas",
   "directory.widgetLevel": "Nivel del widget",
+  "heroWidgets.count": "Widgets",
   "directory.skillLevel": "Habilidad {n}",
   "directory.shards": "Fragmentos",
   "directory.mineNote": "Guardado en este dispositivo con tu inventario. Los fragmentos cuentan antes de desbloquear al héroe.",
