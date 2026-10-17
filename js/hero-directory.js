@@ -19,6 +19,22 @@
       fields.server.value = generation || '';
     }
     function starText(index) { var at = window.HeroDirectory.stars(index); return at.stars + '★' + (at.tier ? ' ' + at.tier + '/6' : ''); }
+    // An owned hero's portrait carries its stars (five, with the tier as six notches), widget level and own shards.
+    function portrait(record, copy, shards) {
+      var parts = {}; record.node.querySelectorAll('[data-portrait]').forEach(function (node) { parts[node.dataset.portrait] = node; });
+      if (parts.stars) {
+        parts.stars.hidden = !copy || copy.stars === null;
+        if (!parts.stars.hidden) {
+          var at = window.HeroDirectory.stars(copy.stars), row = document.createElement('span'), notches = document.createElement('span');
+          row.className = 'hero-star-row'; notches.className = 'hero-star-tier';
+          for (var star = 0; star < 5; star++) { var mark = document.createElement('i'); mark.textContent = '★'; if (star < at.stars) mark.dataset.on = ''; row.appendChild(mark); }
+          for (var notch = 0; notch < 6; notch++) { var step = document.createElement('i'); if (notch < at.tier) step.dataset.on = ''; notches.appendChild(step); }
+          parts.stars.replaceChildren(row, notches);
+        }
+      }
+      if (parts.widget) { parts.widget.hidden = !copy || !copy.widget; parts.widget.querySelector('b').textContent = copy && copy.widget ? context.api.fmt(copy.widget) : ''; }
+      if (parts.shards) { parts.shards.hidden = !copy || shards === null; parts.shards.querySelector('b').textContent = copy && shards !== null ? context.api.fmt(shards) : ''; }
+    }
     // The saved roster and shards, read back into every hero's form and tile.
     function load() {
       try { mine = store ? store.heroes() : mine; } catch (cause) { mine = { roster: {}, shards: {} }; }
@@ -29,10 +45,14 @@
         record.hero.owned = Boolean(copy);
         record.node.dataset.owned = String(Boolean(copy));
         var parts = [];
-        if (copy && copy.level !== null) parts.push(context.api.fill(context.api.tr('directory.lvl', 'Lv {n}'), { n: context.api.fmt(copy.level) }));
-        if (copy && copy.stars !== null) parts.push(starText(copy.stars));
-        if (!copy && shards) parts.push(context.api.fill(context.api.tr('directory.shardCount', '{n} shards'), { n: context.api.fmt(shards) }));
-        if (record.badge) record.badge.textContent = parts.join(' · ');
+        if (copy && copy.level !== null) parts.push({ kind: 'level', text: context.api.fill(context.api.tr('directory.lvl', 'Lv {n}'), { n: context.api.fmt(copy.level) }) });
+        if (copy && copy.stars !== null) parts.push({ kind: 'stars', text: starText(copy.stars) });
+        if (!copy && shards) parts.push({ kind: 'shards', text: context.api.fill(context.api.tr('directory.shardCount', '{n} shards'), { n: context.api.fmt(shards) }) });
+        if (record.badge) {
+          record.badge.replaceChildren();
+          parts.forEach(function (part, at) { var span = document.createElement('span'); span.dataset.part = part.kind; span.textContent = (at ? ' · ' : '') + part.text; record.badge.appendChild(span); });
+        }
+        portrait(record, copy, shards);
         if (!record.form) return;
         record.form.querySelectorAll('[data-field]').forEach(function (input) {
           var field = input.dataset.field;

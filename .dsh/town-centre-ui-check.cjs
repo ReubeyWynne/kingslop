@@ -108,6 +108,11 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.equal((await ledger()).heroes.roster.chenko.level, 40);
       assert.match(await page.locator('#hero-chenko [data-target~="hero-directory.badge"]').textContent(), /40/);
       assert.equal(await page.locator('#town-heroes .hero-bag').count(), 0, 'shards stay on the bag shelf');
+      await page.locator('#hero-chenko [data-field="stars"]').selectOption('15'); await page.locator('#hero-chenko [data-field="shards"]').fill('7'); await page.locator('#hero-chenko [data-field="shards"]').press('Tab');
+      assert.equal(await page.locator('#hero-chenko .hero-star-row [data-on]').count(), 2, 'two stars on the portrait');
+      assert.equal(await page.locator('#hero-chenko .hero-star-tier [data-on]').count(), 3, 'three tier notches');
+      assert.equal(await page.locator('#hero-chenko [data-portrait="shards"] b').textContent(), '7');
+      assert.equal(await page.evaluate(() => new Set([...document.querySelectorAll('#town-heroes .hero-filter-row > label')].map(l => Math.round(l.getBoundingClientRect().top))).size), 1, 'filters on one line at ' + width);
 
       // Persisted, and the governor page reads the same save.
       await page.reload(); await page.waitForFunction(() => document.querySelector('.town-daybar'));
