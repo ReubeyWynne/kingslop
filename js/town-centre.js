@@ -20,7 +20,10 @@
     heroAmount: '{n} usable', heroGearPieces: 'your hero gear',
     buildings: 'your buildings', buildingNamed: '{building} level', pastTG8: 'building costs past TG 8 (not verified yet)', notBuilt: 'not built',
     buildingTo: 'can reach {level}', buildingStuck: 'nothing it can take yet',
-    buildingSpend: 'Your buildings can take {gold} of {goldHave} Truegold and {tempered} of {temperedHave} Tempered Truegold.',
+    buildingSpend: 'Following your priorities, your buildings take {gold} of {goldHave} Truegold and {tempered} of {temperedHave} Tempered Truegold, worth {points} KvK prep points.',
+    buildingSpendMax: 'Spending for points only, they could take {gold} Truegold and {tempered} Tempered Truegold, worth {points} points.',
+    buildingMax: 'Truegold follows your building priorities. Spending it for points only would score up to {points} ({extra} more).',
+    setAllPick: 'choose a level', 'tier.1': 'Lead', 'tier.2': 'Keep up', 'tier.3': 'Spare', 'tier.0': 'Skip', moveUp: 'move {building} up', moveDown: 'move {building} down', tierFor: '{building} priority',
     buildingSpendUnknown: 'Set your building levels to see how much Truegold they can take.',
     buildingPlan: 'With what you have counted, this can reach {level}: {steps} steps, {gold} Truegold and {tempered} Tempered Truegold.',
     buildingPlanNone: 'Nothing more goes here in this plan. Your Truegold and resources pay for cheaper steps first, and each step waits for its Town Centre level, its prerequisites and every resource it costs.'
@@ -67,6 +70,8 @@
         root.querySelectorAll('[data-event-total="' + key + '"]').forEach(function (node) { node.textContent = api.fmt(results[key].total); node.dataset.partial = String(!results[key].complete); });
       });
       var result = results[event];
+      var mine = T.buildingPoints(result.buildings, event), most = T.buildingPoints(result.buildingsMax, event);
+      context.targets('buildingMax').forEach(function (node) { node.hidden = most <= mine; node.textContent = most > mine ? fill(api, 'buildingMax', { points: api.fmt(most), extra: api.fmt(most - mine) }) : ''; });
       put('coverage', t(api, result.complete ? 'complete' : 'partial'));
       context.targets('missingDisclosure').forEach(function (node) { node.hidden = result.complete; });
       var missing = context.targets('missing')[0]; missing.replaceChildren();
@@ -166,11 +171,36 @@
         tile.querySelector('[data-level]').textContent = level === null ? '?' : level === '0' ? '—' : level;
         tile.querySelector('[data-building-plan]').textContent = !step ? '' : step.steps ? fill(api, 'buildingTo', { level: step.to }) : t(api, 'buildingStuck');
       });
-      var gold = plan.items.truegold, tempered = plan.items['tempered-truegold'];
-      put('buildingSpend', !plan.recorded ? t(api, 'buildingSpendUnknown') : fill(api, 'buildingSpend', {
-        gold: gold.amount === null ? '—' : api.fmt(gold.amount), goldHave: gold.pool === null ? '?' : api.fmt(gold.pool),
-        tempered: tempered.amount === null ? '—' : api.fmt(tempered.amount), temperedHave: tempered.pool === null ? '?' : api.fmt(tempered.pool)
-      }));
+      var gold = plan.items.truegold, tempered = plan.items['tempered-truegold'], most = B.plan(snapshot, { goal: 'points' });
+      function amount(item) { return item.amount === null ? '—' : api.fmt(item.amount); }
+      var text = !plan.recorded ? t(api, 'buildingSpendUnknown') : fill(api, 'buildingSpend', {
+        gold: amount(gold), goldHave: gold.pool === null ? '?' : api.fmt(gold.pool),
+        tempered: amount(tempered), temperedHave: tempered.pool === null ? '?' : api.fmt(tempered.pool), points: api.fmt(T.buildingPoints(plan, 'prep'))
+      });
+      if (plan.recorded && T.buildingPoints(most, 'prep') > T.buildingPoints(plan, 'prep')) text += ' ' + fill(api, 'buildingSpendMax', { gold: amount(most.items.truegold), tempered: amount(most.items['tempered-truegold']), points: api.fmt(T.buildingPoints(most, 'prep')) });
+      put('buildingSpend', text);
+      renderPriorities(plan.priorities);
+    }
+    function buildingName(id) { var b = B.BUILDINGS.find(function (entry) { return entry.id === id; }); return api.tr('town.building.' + id, b ? b.name : id); }
+    // One row per building in tie-break order: art, name, priority and move buttons.
+    function renderPriorities(prefs) {
+      var list = target('priorities'); if (!list) return;
+      list.replaceChildren();
+      prefs.order.forEach(function (id, at) {
+        var row = element('li', 'town-priority'), art = element('img'), name = element('span', 'town-priority-name', buildingName(id));
+        art.src = '../img/buildings/' + id + '.webp'; art.width = 32; art.height = 32; art.alt = '';
+        var select = element('select'); select.dataset.tierFor = id; select.dataset.action = 'town-inventory.tier';
+        select.setAttribute('aria-label', fill(api, 'tierFor', { building: buildingName(id) }));
+        B.TIERS.forEach(function (tier) { var option = element('option', '', t(api, 'tier.' + tier)); option.value = String(tier); select.appendChild(option); });
+        select.value = String(prefs.tiers[id]);
+        var up = element('button', '', '↑'), down = element('button', '', '↓');
+        [[up, -1, 'moveUp'], [down, 1, 'moveDown']].forEach(function (spec) {
+          spec[0].type = 'button'; spec[0].dataset.action = 'town-inventory.move'; spec[0].dataset.moveFor = id; spec[0].dataset.step = spec[1];
+          spec[0].setAttribute('aria-label', fill(api, spec[2], { building: buildingName(id) }));
+          spec[0].disabled = spec[1] < 0 ? at === 0 : at === prefs.order.length - 1;
+        });
+        row.append(art, name, select, up, down); list.appendChild(row);
+      });
     }
     function render() {
       var snapshot = store.snapshot(), pieces = snapshot.heroGear.pieces, set = 0, plan = B.plan(snapshot);
@@ -256,6 +286,13 @@
       }
     }
     function labelOptions() {
+      var all = target('setAllLevel');
+      if (all) {
+        var keep = all.value, blank = element('option', '', t(api, 'setAllPick')); blank.value = '';
+        all.replaceChildren(blank);
+        B.options('town-center').forEach(function (id) { var option = element('option', '', id); option.value = id; all.appendChild(option); });
+        if (keep) all.value = keep;
+      }
       if (!dialog) return;
       Array.from(dialog.querySelector('select[data-level="gear"]').options).forEach(function (option) { if (Number(option.value) > 0) option.textContent = govLevelName(Number(option.value)); });
     }
@@ -324,6 +361,24 @@
         var next = Math.min(options.length - 1, Math.max(0, now + Number(button.dataset.step)));
         if (now !== -1 && next === now) return;
         write(function () { store.setBuilding(editing.id, options[now === -1 ? 0 : next]); });
+      } },
+      setAll: { run: function () {
+        var level = target('setAllLevel').value, levels = {};
+        if (!level) return;
+        B.BUILDINGS.forEach(function (b) { levels[b.id] = B.clamp(b.id, level); });
+        write(function () { store.setBuildings(levels); });
+      } },
+      tier: { events: ['change'], run: function (select) {
+        var change = {}; change[select.dataset.tierFor] = Number(select.value);
+        write(function () { store.setBuildingPriorities({ tiers: change }); });
+      } },
+      move: { run: function (button) {
+        var order = B.priorities(store.snapshot()).order, at = order.indexOf(button.dataset.moveFor), to = at + Number(button.dataset.step);
+        if (at < 0 || to < 0 || to >= order.length) return;
+        order.splice(to, 0, order.splice(at, 1)[0]);
+        write(function () { store.setBuildingPriorities({ order: order }); });
+        var again = root.querySelector('[data-move-for="' + button.dataset.moveFor + '"][data-step="' + button.dataset.step + '"]');
+        if (again && !again.disabled) again.focus();
       } },
       govLevel: { events: ['change'], run: function (select) {
         if (!editing) return;

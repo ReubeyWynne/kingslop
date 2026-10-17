@@ -104,6 +104,26 @@ assert.deepEqual([tgLine.kind, tgLine.amount, tgLine.points], ['usable', tcSteps
 assert.equal(tgDay.lines.find(l => l.id === 'tempered-truegold'), undefined, 'nothing before TG 5 takes Tempered Truegold');
 assert.ok(!tgDay.unknown.some(id => /^building|^buildings/.test(id)));
 assert.equal(T.best(store.snapshot(), 'prep').buildings.items.truegold.left, 1000 - tcSteps);
+// Priorities: the default plan follows them; the points-only plan is the ceiling.
+const pri = Ledger.create({ getItem(k) { return this[k] ?? null; }, setItem(k, v) { this[k] = v; } });
+pri.setBuildings({ 'town-center': 'TG 3', embassy: 'TG 3', barracks: 'TG 3', range: 'TG 3', stable: 'TG 3', 'command-center': 'TG 1', infirmary: 'TG 1', 'war-academy': 'TG 1', academy: '30' });
+pri.setBalance('truegold', 3000); pri.setBalance('tempered-truegold', 50); for (const id of B.RESOURCES) pri.setBalance(id, 1e9);
+let mine = B.plan(pri.snapshot()), most = B.plan(pri.snapshot(), { goal: 'points' });
+assert.equal(mine.goal, 'priority');
+assert.ok(most.items.truegold.amount >= mine.items.truegold.amount, 'points-only is the ceiling');
+assert.equal(mine.sequence[0].building, 'command-center', 'Keep up jumps the queue a whole TG tier behind the Town Centre');
+assert.ok(mine.sequence.findIndex(s => s.building === 'infirmary') > mine.sequence.findIndex(s => s.building === 'town-center'), 'Spare waits for everything else');
+pri.setBuildingPriorities({ tiers: { infirmary: 0, 'command-center': 0, 'war-academy': 0 }, order: ['range', 'barracks', 'stable'] });
+mine = B.plan(pri.snapshot());
+assert.ok(!mine.sequence.some(s => ['infirmary', 'command-center', 'war-academy'].includes(s.building)), 'Skip never upgrades for its own sake');
+assert.equal(mine.sequence[0].building, 'town-center', 'the troop buildings pull the Town Centre up first');
+assert.equal(mine.priorities.order[0], 'range');
+const pBest = T.best(pri.snapshot(), 'prep');
+assert.equal(pBest.lines.find(l => l.id === 'truegold').amount, mine.items.truegold.amount, 'event totals follow the priorities');
+assert.equal(T.buildingPoints(pBest.buildingsMax, 'prep'), most.items.truegold.amount * 2000 + most.items['tempered-truegold'].amount * 30000);
+// Setting every building to one level clamps to what each building has.
+assert.deepEqual(['war-academy', 'academy', 'range'].map(id => B.clamp(id, 'TG 2')), ['TG 2', '30', 'TG 2']);
+assert.deepEqual(['war-academy', 'town-center'].map(id => B.clamp(id, '20')), ['0', '20']);
 for (const id of [...B.RESOURCES, 'truegold', 'tempered-truegold']) store.setBalance(id, null);
 store.setBuilding('academy', null);
 const chestStore = Ledger.create({ getItem(k) { return this[k] ?? null; }, setItem(k, v) { this[k] = v; } });

@@ -184,3 +184,12 @@
   .town-gov-gem { width: 1.3rem; height: 1.3rem; }
   .town-gov-crest output { font-size: 1.05rem; }
 }
+
+/* Buildings — one level for every building, and the upgrade priorities the points follow. */
+.town-setall { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .6rem; align-items: end; padding-block: .4rem; }
+.town-priorities { list-style: none; margin: .3rem 0; padding: 0; border-top: 1px solid var(--signal-tint); }
+.town-priority { display: grid; grid-template-columns: 2rem minmax(0, 1fr) minmax(6rem, 8rem) 2.75rem 2.75rem; gap: .4rem; align-items: center; padding-block: .2rem; border-bottom: 1px solid var(--signal-tint); font-size: .9rem; color: var(--ink); }
+.town-priority img { width: 2rem; height: 2rem; object-fit: contain; }
+.town-priority-name { min-width: 0; overflow-wrap: anywhere; }
+.town-main .town-priority button { font: 1.2rem/1 var(--display-2); text-align: center; }
+.town-main .town-priority button:disabled { opacity: .3; cursor: default; }

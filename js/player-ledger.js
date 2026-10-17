@@ -99,11 +99,17 @@
       Object.keys(value.buildings.levels).forEach(function (key) { valid(id(key) && buildingLevel(value.buildings.levels[key]) && provenance(value.buildings.provenance[key])); });
     }
     valid(object(value.preferences) && object(value.preferences.heroGear));
-    valid(Object.keys(value.preferences).every(function (key) { return key === 'heroGear' || key === 'governor'; }) && Object.keys(value.preferences.heroGear).every(function (key) { return PREFS.includes(key); }));
+    valid(Object.keys(value.preferences).every(function (key) { return key === 'heroGear' || key === 'governor' || key === 'buildings'; }) && Object.keys(value.preferences.heroGear).every(function (key) { return PREFS.includes(key); }));
     if (value.preferences.governor !== undefined) {
       var gov = value.preferences.governor;
       valid(object(gov) && Object.keys(gov).every(function (key) { return Object.hasOwn(GOVERNOR_PREFS, key); }));
       Object.keys(gov).forEach(function (key) { var rule = GOVERNOR_PREFS[key]; valid(Array.isArray(rule) ? rule.includes(gov[key]) : count(gov[key]) && gov[key] <= rule); });
+    }
+    if (value.preferences.buildings !== undefined) {
+      var order = value.preferences.buildings;
+      valid(object(order) && Object.keys(order).every(function (key) { return key === 'tiers' || key === 'order'; }));
+      if (order.tiers !== undefined) valid(object(order.tiers) && Object.keys(order.tiers).every(function (key) { return id(key) && [0, 1, 2, 3].includes(order.tiers[key]); }));
+      if (order.order !== undefined) valid(Array.isArray(order.order) && order.order.length <= 50 && order.order.every(id) && new Set(order.order).size === order.order.length);
     }
     var prefs = value.preferences.heroGear;
     if (prefs.included !== undefined) valid(object(prefs.included) && ['inf', 'cav', 'arc'].every(function (key) { return typeof prefs.included[key] === 'boolean'; }));
@@ -249,6 +255,28 @@
         value.buildings.levels[key] = level; value.buildings.provenance[key] = { source: source || 'manual', at: new Date().toISOString() };
       }, expected);
     }
+    // Several levels in one write, as when every building is set to the same level.
+    function setBuildings(levels, source, expected) {
+      valid(object(levels) && Object.keys(levels).every(function (key) { return id(key) && (levels[key] === null || buildingLevel(levels[key])); }));
+      return transaction(function (value) {
+        if (!value.buildings) value.buildings = { levels: {}, provenance: {} };
+        var facts = { source: source || 'manual', at: new Date().toISOString() };
+        Object.keys(levels).forEach(function (key) {
+          if (levels[key] === null) { delete value.buildings.levels[key]; delete value.buildings.provenance[key]; }
+          else if (value.buildings.levels[key] !== levels[key]) { value.buildings.levels[key] = levels[key]; value.buildings.provenance[key] = copy(facts); }
+        });
+      }, expected);
+    }
+    // Upgrade priorities: tiers {building: 1 lead, 2 keep up, 3 spare, 0 skip} and a tie-break order.
+    function setBuildingPriorities(change) {
+      valid(object(change) && Object.keys(change).every(function (key) { return key === 'tiers' || key === 'order'; }));
+      return transaction(function (next) {
+        var current = Object.assign({}, next.preferences.buildings);
+        if (change.tiers) current.tiers = Object.assign({}, current.tiers, change.tiers);
+        if (change.order) current.order = change.order.slice();
+        next.preferences.buildings = current;
+      });
+    }
     function governorSpec(kind) { valid(Object.hasOwn(GOVERNOR, kind)); return GOVERNOR[kind]; }
     function governor(kind) {
       var spec = governorSpec(kind), section = snapshot()[spec.section], levels = {};
@@ -331,7 +359,7 @@
     if (events && events.addEventListener) events.addEventListener('storage', function (event) {
       if ((event.key === KEY || event.key === null) && (!event.storageArea || event.storageArea === storage)) { try { current = read(); notify(); } catch (error) { if (events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:error', { detail: error.message })); } }
     });
-    return { snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, buildings: buildings, setBuilding: setBuilding, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
+    return { snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
   }
   return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), troopId: troopId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, empty: empty, validate: validate, create: create };
 });

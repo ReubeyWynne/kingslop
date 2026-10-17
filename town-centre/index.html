@@ -65,6 +65,10 @@ self: town
 
     <div class="town-shelf" id="town-buildings" role="tabpanel" data-shelf="buildings" hidden>
       <div class="town-heading"><p class="town-gloss" data-i18n="town.buildingsNote">Set each building's level. Truegold only scores when a building can take it.</p></div>
+      <div class="town-setall">
+        <label><span data-i18n="town.setAllLabel">Set every building to</span><select data-target="town-inventory.setAllLevel" aria-label="Level for every building" data-i18n-key="town.setAllLabel" data-i18n-attr="aria-label"></select></label>
+        <button type="button" data-action="town-inventory.setAll" data-i18n="town.setAll">set all</button>
+      </div>
       <div class="town-strip">
         {% assign gold = "truegold:../img/kingshot/truegold.png,tempered-truegold:../img/items/tempered-truegold.webp" | split: "," %}
         {% for entry in gold %}{% assign m = entry | split: ":" %}{% assign item = rules.items | where: "id", m[0] | first %}
@@ -77,13 +81,18 @@ self: town
       <div class="town-bag">
       {% for building in buildings %}
         <button type="button" class="town-tile" data-building="{{ building.id }}" data-state="unknown" data-action="town-inventory.edit">
-          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">{{ building.name | slice: 0 }}</span><output class="town-tile-count" data-level>?</output></span>
+          <span class="town-tile-art"><img src="../img/buildings/{{ building.id }}.webp" width="64" height="64" alt="" loading="lazy"><output class="town-tile-count" data-level>?</output></span>
           <span class="town-tile-name" data-i18n="town.building.{{ building.id }}">{{ building.name | escape }}</span>
           <small class="town-rate" data-building-plan="{{ building.id }}"></small>
         </button>
       {% endfor %}
       </div>
       <p class="town-note" data-target="town-inventory.buildingSpend"></p>
+      <details id="building-priorities">
+        <summary data-i18n="town.prioritiesTitle">Upgrade priorities</summary>
+        <p class="town-gloss" data-i18n="town.prioritiesNote">Points follow these priorities. Lead buildings climb together, lowest first. Keep up waits for Lead until it falls a whole TG tier behind the Town Centre. Spare gets only what is left. Skip never upgrades for its own sake. A building's prerequisites, like the Town Centre and Embassy, are upgraded first whatever their priority. Ties go to the building higher in the list.</p>
+        <ol class="town-priorities" data-target="town-inventory.priorities"></ol>
+      </details>
       <p class="town-gloss" data-i18n="town.buildingsSource">Costs to TG 8, where two of Kingshot Data, Kingshot Optimizer and KS h5joy agree. Each step is paid whole with the resources it needs, once its Town Centre and Embassy or troop building are high enough.</p>
     </div>
 
@@ -203,6 +212,7 @@ self: town
     </div>
     <p class="town-gloss" data-i18n="town.bestTotal">Each item counts once, on its best day. Tap a day to see its breakdown.</p>
     <p class="town-note" data-target="town-centre.coverage" aria-live="polite"></p>
+    <p class="town-gloss" data-target="town-centre.buildingMax" hidden></p>
     <details id="missing-details" data-target="town-centre.missingDisclosure" hidden>
       <summary data-i18n="town.missingDetails">Missing details</summary>
       <ul class="town-also" data-target="town-centre.missing"></ul>
@@ -243,7 +253,7 @@ self: town
       <p data-i18n="town.mathsItems">Item rates come from the Event Cycle guide. Speedups score per minute: general speedups count on any speedup day; healing counts only when all kinds are accepted.</p>
       <p class="town-gloss"><span data-i18n="town.heroSpend">Upgrade items count only when they can fund a complete step. Heroes use their own shards and widgets, general shards and matching generation chests. Hero gear upgrades also need enough XP and spare gear. Truegold counts only what your buildings can take.</span> <a href="../heroes/#kvk-points" data-i18n="town.heroSpendLink">Hero points breakdown</a></p>
       <p data-i18n="town.mathsGov">Governor gear and charms use the score gain from upgrades your materials can fund, multiplied by the event rate.</p>
-      <p data-i18n="town.mathsBuildings">Truegold and Tempered Truegold count only the building upgrades they can fund, one whole step at a time, cheapest Truegold first. Each step also needs its resources, its Town Centre level and its prerequisites. Unset buildings and uncounted resources add nothing. Costs stop at TG 8 until a second source confirms higher levels.</p>
+      <p data-i18n="town.mathsBuildings">Truegold and Tempered Truegold count only the building upgrades they can fund, one whole step at a time, in the order your upgrade priorities set. Each step also needs its resources, its Town Centre level and its prerequisites. Unset buildings and uncounted resources add nothing. The points-only figure spends the cheapest Truegold step anywhere instead, which is the most your buildings can take. Costs stop at TG 8 until a second source confirms higher levels.</p>
       <p data-i18n="town.mathsLimits">Totals exclude training, gathering, intel, roulette and pet advancement. Missing counts are left out and mark the total as partial.</p>
     </details>
   </section>
