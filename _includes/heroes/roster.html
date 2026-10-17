@@ -46,6 +46,7 @@
                   {% if hero.widget %}<label><span data-i18n="directory.widgetLevel">Widget level</span><select data-field="widget"><option value="">?</option>{% for level in (0..10) %}<option value="{{ level }}">{% if level == 0 %}—{% else %}{{ level }}{% endif %}</option>{% endfor %}</select></label>{% endif %}
                   {% for skill in hero.skills %}<label><span data-i18n="directory.skillLevel" data-i18n-n="{{ forloop.index }}">Skill {{ forloop.index }}</span><select data-field="skill" data-skill="{{ forloop.index0 }}"><option value="">?</option>{% for level in (1..5) %}<option value="{{ level }}">{{ level }}</option>{% endfor %}</select></label>{% endfor %}
                   <label class="hero-shards"><span data-i18n="directory.shards">Shards</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="shards"></label>
+                  {% if hero.widget %}<label class="hero-shards"><span data-i18n="spend.widgets">Widgets</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="widgets"></label>{% endif %}
                   <p class="hero-mine-note"><span data-i18n="directory.mineNote">Saved on this device with your inventory. Shards count before you unlock the hero.</span> <output data-target="hero-directory.saved" role="status"></output></p>
                 </fieldset>
                 <div class="hero-dossier-brief">

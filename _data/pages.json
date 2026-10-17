@@ -509,8 +509,13 @@
     "scripts": [
       "../js/i18n.js",
       "../js/common.js",
+      "../js/event-data.js",
+      "../js/event-rules.js",
+      "../js/hero-data.js",
+      "../js/hero-spend.js",
       "../js/hero-directory-engine.js",
-      "../js/hero-directory.js"
+      "../js/hero-directory.js",
+      "../js/hero-points.js"
     ],
     "footMainKey": "directory.title",
     "footMain": "Hero directory",
@@ -558,9 +563,12 @@
       "../js/event-rules.js",
       "../js/governor-engine.js",
       "../js/hero-gear-engine.js",
+      "../js/hero-data.js",
+      "../js/hero-spend.js",
       "../js/town-centre-engine.js",
       "../js/hero-directory-engine.js",
       "../js/hero-directory.js",
+      "../js/hero-points.js",
       "../js/town-centre.js"
     ],
     "footMainKey": "town.kicker",

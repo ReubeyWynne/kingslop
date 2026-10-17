@@ -162,7 +162,7 @@ combatCopy.importJSON(combatBefore, E);
 assert.deepEqual(combatCopy.combat().stats, combatStore.combat().stats);
 assert.equal(combatCopy.combat().troops.length, 2);
 const heroStore = Ledger.create(storage());
-assert.deepEqual(heroStore.heroes(), { roster: {}, provenance: {}, shards: {} });
+assert.deepEqual(heroStore.heroes(), { roster: {}, provenance: {}, shards: {}, widgets: {} });
 assert.equal(heroStore.snapshot().heroes, undefined);
 heroStore.setBalance('forgehammer', 7);
 heroStore.setHero('amadeus', { level: 80, stars: 27, widget: 6, skills: [5, 4, 5] });
@@ -183,6 +183,11 @@ assert.deepEqual(heroStore.heroes().provenance.amadeus, owned.provenance.amadeus
 heroStore.setHero('seth', null);
 assert.equal(Object.hasOwn(heroStore.heroes().roster, 'seth'), false);
 assert.equal(heroStore.heroes().shards.amadeus, 34);
+// Widgets are per hero, like shards; choose-a-hero chests are per generation.
+heroStore.setBalance(Ledger.heroWidgetId('amadeus'), 12);
+assert.equal(heroStore.heroes().widgets.amadeus, 12);
+assert.equal(Object.hasOwn(heroStore.heroes().shards, 'amadeus') && !Object.hasOwn(heroStore.heroes().widgets, 'jabel'), true);
+assert.equal(Ledger.widgetChestId(3), 'hero-widget-chest-gen3');
 const heroBefore = heroStore.exportJSON();
 for (const bad of [{ level: 0 }, { level: 201 }, { stars: 31 }, { stars: 2.5 }, { widget: 11 }, { skills: [] }, { skills: [6] }, { skills: [1, 1, 1, 1] }, { power: 1 }]) assert.throws(() => heroStore.setHero('helga', bad));
 assert.throws(() => heroStore.setHero('Helga', {}));

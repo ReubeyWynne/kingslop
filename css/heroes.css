@@ -173,3 +173,15 @@
   .hero-bag { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .hero-bag-title { grid-column: 1 / -1; }
 }
+
+/* KvK points from your heroes — the spending plan as one ruled table. */
+.hero-points-total { margin: var(--space-s) 0 0; font-family: var(--display-2); font-size: var(--step-1); color: var(--amber); font-variant-numeric: tabular-nums; }
+.hero-points-scroll { overflow-x: auto; }
+.hero-points-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .9rem; }
+.hero-points-table th, .hero-points-table td { padding: .35rem .4rem; border-bottom: 1px solid var(--signal-tint); text-align: end; vertical-align: top; white-space: nowrap; }
+.hero-points-table th:first-child { text-align: start; padding-inline-start: 0; white-space: normal; }
+.hero-points-table thead th { font-size: .72rem; font-weight: 700; color: var(--ink-muted); letter-spacing: .08em; text-transform: uppercase; border-bottom-color: var(--signal-line); }
+.hero-points-table tbody th { font-weight: 400; color: var(--ink); }
+.hero-points-table td small { display: block; font-size: .72rem; color: var(--ink-muted); }
+.hero-points-table td:last-child { color: var(--amber); }
+@media (max-width: 30rem) { .hero-points-table { font-size: .82rem; } .hero-points-table th, .hero-points-table td { padding-inline: .25rem; } }
