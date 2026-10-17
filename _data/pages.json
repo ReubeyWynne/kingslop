@@ -565,6 +565,8 @@
       "../js/hero-gear-engine.js",
       "../js/hero-data.js",
       "../js/hero-spend.js",
+      "../js/building-data.js",
+      "../js/building-spend.js",
       "../js/town-centre-engine.js",
       "../js/hero-directory-engine.js",
       "../js/hero-directory.js",

@@ -3,12 +3,13 @@
    from the same rule rows, so no rate is copied here. Hero shards and widgets count
    only the pieces an owned hero can consume (HeroSpend), the same plan the Heroes page
    shows; forgehammers and mithril only what your hero gear can take (HeroGear.spendable);
+   Truegold and Tempered Truegold only what your buildings can take (BuildingSpend);
    governor score only what the governor planner can buy with your materials. Inventory is spent once, so an event's best total puts each holding on the
    day it scores most. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/event_rules.json'), require('./event-rules.js'), require('./governor-engine.js'), require('./hero-spend.js'), require('./hero-gear-engine.js'));
-  else root.TownCentre = factory(root.EventRuleData, root.EventRules, root.Governor, root.HeroSpend, root.HeroGear);
-})(typeof window === 'object' ? window : globalThis, function (data, rules, governor, heroes, gearEngine) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/event_rules.json'), require('./event-rules.js'), require('./governor-engine.js'), require('./hero-spend.js'), require('./hero-gear-engine.js'), require('./building-spend.js'));
+  else root.TownCentre = factory(root.EventRuleData, root.EventRules, root.Governor, root.HeroSpend, root.HeroGear, root.BuildingSpend);
+})(typeof window === 'object' ? window : globalThis, function (data, rules, governor, heroes, gearEngine, buildingSpend) {
   'use strict';
   // Speedup balances are minutes. General speedups can pay for any timer, so they score wherever a speedup row does.
   var SPEEDUPS = ['general', 'construction', 'research', 'training', 'learning', 'healing'].map(function (kind) { return { id: 'speedup-' + kind, kind: kind }; });
@@ -54,14 +55,16 @@
     Object.keys(GEAR).forEach(function (r) { items[GEAR[r]] = { amount: bag[r] === null ? null : plan.spent[r], unknown: bag[r] === null ? [] : missing.slice() }; });
     return { items: items, plan: plan };
   }
-  function context(snapshot) { return { score: { gear: governorGain(snapshot, 'gear'), charms: governorGain(snapshot, 'charms') }, heroes: heroes.plan(snapshot), gear: heroGearSpend(snapshot) }; }
-  // The snapshot events score: hero pieces and gear materials replaced by what can be spent.
+  function context(snapshot) { return { score: { gear: governorGain(snapshot, 'gear'), charms: governorGain(snapshot, 'charms') }, heroes: heroes.plan(snapshot), gear: heroGearSpend(snapshot), buildings: buildingSpend.plan(snapshot) }; }
+  // The snapshot events score: hero pieces, gear materials and Truegold replaced by what can be spent.
   function budget(snapshot, shared) {
     var out = heroes.budget(snapshot, shared.heroes);
-    Object.keys(shared.gear.items).forEach(function (id) { var amount = shared.gear.items[id].amount; if (amount !== null) out.inventory[id] = { amount: amount, status: 'confirmed', provenance: null }; });
+    [shared.gear.items, shared.buildings.items].forEach(function (items) {
+      Object.keys(items).forEach(function (id) { var amount = items[id].amount; if (amount !== null) out.inventory[id] = { amount: amount, status: 'confirmed', provenance: null }; });
+    });
     return out;
   }
-  function usable(shared, id) { return Object.hasOwn(shared.heroes.items, id) ? shared.heroes.items[id] : Object.hasOwn(shared.gear.items, id) ? shared.gear.items[id] : null; }
+  function usable(shared, id) { return [shared.heroes.items, shared.gear.items, shared.buildings.items].reduce(function (found, items) { return found || (Object.hasOwn(items, id) ? items[id] : null); }, null); }
   function day(snapshot, event, number, known) {
     var shared = known || context(snapshot), score = shared.score;
     var base = rules.calculate(budget(snapshot, shared), event, number, null, null), selected = rules.rules(event, number);
@@ -96,7 +99,7 @@
       result.lines.forEach(function (line) { if (!top[line.id] || line.rate > top[line.id].rate) top[line.id] = Object.assign({ day: result.day }, line); });
     });
     var lines = Object.keys(top).map(function (id) { return top[id]; }).sort(function (a, b) { return b.points - a.points; });
-    return { event: event, days: days, lines: lines, total: lines.reduce(function (sum, line) { return sum + line.points; }, 0), unknown: Object.keys(unknown), complete: !Object.keys(unknown).length, governor: shared.score, heroes: shared.heroes, gear: shared.gear };
+    return { event: event, days: days, lines: lines, total: lines.reduce(function (sum, line) { return sum + line.points; }, 0), unknown: Object.keys(unknown), complete: !Object.keys(unknown).length, governor: shared.score, heroes: shared.heroes, gear: shared.gear, buildings: shared.buildings };
   }
   // The highest rate any event day pays for one unit, for labelling inventory rows.
   function topRate(id) {
