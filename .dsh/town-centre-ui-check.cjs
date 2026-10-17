@@ -39,10 +39,10 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.equal(await prep(), 400000);
       // Widgets are hero-specific, so the bag holds only the generation choice chests, which score nothing until opened.
       assert.equal(await page.locator('#town-bag [data-count="hero-widget"]').count(), 0, 'no single widget item');
-      assert.equal(await page.locator('#town-bag [data-count^="widget-chest-gen"]').count(), 7);
-      await edit('#town-bag [data-count="widget-chest-gen3"]');
+      assert.equal(await page.locator('#town-bag [data-count^="hero-widget-chest-gen"]').count(), 7);
+      await edit('#town-bag [data-count="hero-widget-chest-gen3"]');
       await dialog.locator('[data-field="count"]').fill('2');
-      assert.equal((await ledger()).inventory['widget-chest-gen3'].amount, 2);
+      assert.equal((await ledger()).inventory['hero-widget-chest-gen3'].amount, 2);
       assert.match(await dialog.locator('[data-target="town-inventory.rate"]').textContent(), /no event scores/);
       await done();
       assert.equal(await prep(), 400000, 'chests stay unscored');

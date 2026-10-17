@@ -30,10 +30,10 @@ self: town
         </button>
       {% endfor %}
       {% for gen in (1..7) %}
-        <button type="button" class="town-tile" data-count="widget-chest-gen{{ gen }}" data-action="town-inventory.edit">
+        <button type="button" class="town-tile" data-count="hero-widget-chest-gen{{ gen }}" data-action="town-inventory.edit">
           <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">G{{ gen }}</span><output class="town-tile-count" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="town.widgetChest" data-i18n-n="{{ gen }}">Gen {{ gen }} widget chest</span>
-          <small class="town-rate" data-rate="widget-chest-gen{{ gen }}"></small>
+          <small class="town-rate" data-rate="hero-widget-chest-gen{{ gen }}"></small>
         </button>
       {% endfor %}
       </div>
