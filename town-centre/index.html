@@ -2,11 +2,11 @@
 layout: page
 self: town
 ---
-{% assign rules = site.data.event_rules %}{% assign gov = site.data.governor %}{% assign troops = "inf,cav,arc" | split: "," %}{% assign slots = "helm,gloves,chest,boots" | split: "," %}{% assign speedups = "general,construction,research,training,learning,healing" | split: "," %}{% assign resources = "bread,wood,stone,iron" | split: "," %}{% assign buildings = site.data.buildings.buildings %}
+{% assign rules = site.data.event_rules %}{% assign gov = site.data.governor %}{% assign troops = "inf,cav,arc" | split: "," %}{% assign slots = "helm,gloves,chest,boots" | split: "," %}{% assign speedups = "general,construction,research,training,learning,healing" | split: "," %}{% assign resources = "bread,wood,stone,iron" | split: "," %}{% assign buildings = site.data.buildings.buildings %}{% assign camps = site.data.troops.types %}
 <main class="town-main" data-module="town-centre">
   <section class="section hero town-hero" id="top">
     <h1 data-i18n="town.title">Town Centre</h1>
-    <p class="lede" data-i18n="town.lede">Track your items, speedups, heroes, hero gear, governor gear and charms. See what you can use and the event points it can score.</p>
+    <p class="lede" data-i18n="town.lede">Track your items, speedups, troop training, heroes, hero gear, governor gear and charms. See what you can use and the event points it can score.</p>
   </section>
 
   <section class="section town-shelves" id="town-inventory" aria-labelledby="town-inventory-title" data-module="town-inventory">
@@ -16,6 +16,7 @@ self: town
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-speedups" data-value="speedups" data-action="tabs.select" data-i18n="town.shelf.speedups">Speedups</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-resources" data-value="resources" data-action="tabs.select" data-i18n="town.shelf.resources">Resources</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-buildings" data-value="buildings" data-action="tabs.select" data-i18n="town.shelf.buildings">Buildings</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-troops" data-value="troops" data-action="tabs.select" data-i18n="town.shelf.troops">Troops</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-heroes" data-value="heroes" data-action="tabs.select" data-i18n="town.shelf.heroes">Heroes</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-hero-gear" data-value="hero-gear" data-action="tabs.select" data-i18n="town.shelf.heroGear">Hero gear</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-governor" data-value="governor" data-action="tabs.select" data-i18n="town.shelf.governor">Governor</button>
@@ -85,6 +86,35 @@ self: town
       </div>
       <p class="town-note" data-target="town-inventory.buildingSpend"></p>
       <p class="town-gloss" data-i18n="town.buildingsSource">Costs to TG 8, where two of Kingshot Data, Kingshot Optimizer and KS h5joy agree. Each step is paid whole with the resources it needs, once its Town Centre and Embassy or troop building are high enough.</p>
+    </div>
+
+    <div class="town-shelf" id="town-troops" role="tabpanel" data-shelf="troops" hidden>
+      <div class="town-heading"><p class="town-gloss" data-i18n="town.troopsNote">Set your training speed, your training capacity and the tier each camp trains. Troops score on troop days.</p></div>
+      <div class="town-strip">
+        <button type="button" class="town-tile town-tile-small" data-training="speed" data-state="unknown" data-action="town-inventory.edit">
+          <span class="town-tile-art"><img src="../img/kingshot/training-speedup.png" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-name" data-i18n="town.training.speed">Training speed</span>
+        </button>
+        <button type="button" class="town-tile town-tile-small" data-training="capacity" data-state="unknown" data-action="town-inventory.edit">
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">#</span><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-name" data-i18n="town.training.capacity">Training capacity</span>
+        </button>
+        <button type="button" class="town-tile town-tile-small" data-state="off" aria-pressed="false" data-action="town-inventory.buff">
+          <span class="town-tile-art"><img src="../img/kingshot/gem.png" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count" data-buff>×1</output></span>
+          <span class="town-tile-name" data-i18n="town.training.buff">Capacity buff</span>
+        </button>
+      </div>
+      <div class="town-bag">
+      {% for camp in camps %}
+        <button type="button" class="town-tile" data-training="{{ camp.id }}" data-state="unknown" data-action="town-inventory.edit">
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">{{ camp.name | slice: 0 }}</span><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-name" data-i18n="gear.{{ camp.id }}">{{ camp.name }}</span>
+          <small class="town-rate" data-camp-plan="{{ camp.id }}"></small>
+        </button>
+      {% endfor %}
+      </div>
+      <p class="town-note" data-target="town-inventory.troopPlan"></p>
+      <p class="town-gloss" data-i18n="town.troopsSource">Training times and costs where Kingshot Optimizer and Kingshot Guide agree. The capacity buff costs 3,000 gems and triples the batch you start before a troop day. It does not speed up training and adds nothing on the day itself.</p>
     </div>
 
     <div class="town-shelf town-heroes" id="town-heroes" role="tabpanel" data-shelf="heroes" hidden>
@@ -184,6 +214,14 @@ self: town
         <div class="town-stepper-row"><span class="town-charm-label"><span class="town-gov-gem" data-charm-slot="{{ c }}" data-state="unset"><img src="../img/governor/charms/inf-1.webp" width="72" height="72" alt=""></span><span><span data-i18n="gov.charmLabel">Charm</span> {{ c }}</span></span><div class="town-stepper"><button type="button" data-action="town-inventory.govStep" data-step="-1" data-charm-slot="{{ c }}" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><select data-level="charms" data-charm-slot="{{ c }}" data-action="town-inventory.govLevel" aria-label="Charm {{ c }}"><option value="" data-i18n="gov.notSet">not set</option><option value="0" data-i18n="gov.noCharm">no charm</option>{% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}</select><button type="button" data-action="town-inventory.govStep" data-step="1" data-charm-slot="{{ c }}" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
         {% endfor %}
       </div>
+      <div class="town-panel" data-panel="training" hidden>
+        <label class="town-big"><span data-target="town-inventory.trainingUnit"></span><input type="number" min="0" max="100000" step="any" inputmode="decimal" placeholder="?" data-field="training" data-action="town-inventory.training"></label>
+        <p class="town-gloss" data-target="town-inventory.trainingHint"></p>
+      </div>
+      <div class="town-panel" data-panel="tier" hidden>
+        <label><span data-i18n="town.training.tier">Highest tier this camp trains</span><select data-field="tier" data-action="town-inventory.tier"><option value="" data-i18n="gov.notSet">not set</option>{% for row in site.data.troops.tiers %}<option value="{{ row.tier }}">T{{ row.tier }}</option>{% endfor %}</select></label>
+        <p class="town-gloss" data-target="town-inventory.tierHint"></p>
+      </div>
       <div class="town-panel" data-panel="building" hidden>
         <div class="town-stepper-row"><span data-i18n="town.buildingLevel">Level</span><div class="town-stepper"><button type="button" data-action="town-inventory.buildingStep" data-step="-1" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><select data-field="building" data-action="town-inventory.buildingLevel" aria-label="Level" data-i18n-key="town.buildingLevel" data-i18n-attr="aria-label"></select><button type="button" data-action="town-inventory.buildingStep" data-step="1" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
         <p class="town-gloss" data-target="town-inventory.buildingPlan"></p>
@@ -244,7 +282,8 @@ self: town
       <p class="town-gloss"><span data-i18n="town.heroSpend">Upgrade items count only when they can fund a complete step. Heroes use their own shards and widgets, general shards and matching generation chests. Hero gear upgrades also need enough XP and spare gear. Truegold counts only what your buildings can take.</span> <a href="../heroes/#kvk-points" data-i18n="town.heroSpendLink">Hero points breakdown</a></p>
       <p data-i18n="town.mathsGov">Governor gear and charms use the score gain from upgrades your materials can fund, multiplied by the event rate.</p>
       <p data-i18n="town.mathsBuildings">Truegold and Tempered Truegold count only the building upgrades they can fund, one whole step at a time, cheapest Truegold first. Each step also needs its resources, its Town Centre level and its prerequisites. Unset buildings and uncounted resources add nothing. Costs stop at TG 8 until a second source confirms higher levels.</p>
-      <p data-i18n="town.mathsLimits">Totals exclude training, gathering, intel, roulette and pet advancement. Missing counts are left out and mark the total as partial.</p>
+      <p data-i18n="town.mathsTroops">Troops count on troop days. Each camp adds one batch at your capacity, started before the day and collected on it, and then the troops your training and general speedups can train on the day. Speedups used for troops are not also counted on another day. Troops are paid with the resources your buildings leave. T11 costs are not checked until a second source confirms them.</p>
+      <p data-i18n="town.mathsLimits">Totals exclude gathering, intel, roulette and pet advancement. Missing counts are left out and mark the total as partial.</p>
     </details>
   </section>
 </main>

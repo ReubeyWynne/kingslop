@@ -184,3 +184,7 @@
   .town-gov-gem { width: 1.3rem; height: 1.3rem; }
   .town-gov-crest output { font-size: 1.05rem; }
 }
+
+/* Troops — the capacity buff is a switch: its gem greys out while off. */
+.town-tile[data-state="off"] .town-tile-art img { filter: grayscale(.7); opacity: .55; }
+.town-tile[data-state="off"] .town-tile-count { color: var(--ink-muted); border-color: var(--signal-line); }

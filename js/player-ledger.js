@@ -26,6 +26,9 @@
   // Unread fields stay null. Per-hero shards are ordinary inventory balances keyed hero-shards-{hero}.
   var HERO = { fields: ['level', 'stars', 'widget', 'skills'], level: 200, stars: 30, widget: 10, skill: 5, skills: 3 };
   var GOVERNOR_PREFS = { goal: ['stats', 'score'], focus: ['all', 'inf', 'cav', 'arc'], gearTarget: 58, charmTarget: 22 };
+  // Training facts: the Bonus Overview training speed (%), troops per batch in one camp, and the highest tier each camp trains.
+  var TRAINING = ['speed', 'capacity', 'inf', 'cav', 'arc'];
+  function trainingFact(key, value) { return key === 'speed' ? percent(value) : key === 'capacity' ? count(value) && value >= 1 : Number.isSafeInteger(value) && value >= 1 && value <= 11; }
   function copy(value) { return JSON.parse(JSON.stringify(value)); }
   function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
   function valid(ok) { if (!ok) throw new Error('Invalid player ledger'); }
@@ -98,8 +101,13 @@
       valid(object(value.buildings) && object(value.buildings.levels) && object(value.buildings.provenance) && same(Object.keys(value.buildings.levels).sort(), Object.keys(value.buildings.provenance).sort()));
       Object.keys(value.buildings.levels).forEach(function (key) { valid(id(key) && buildingLevel(value.buildings.levels[key]) && provenance(value.buildings.provenance[key])); });
     }
+    if (value.training !== undefined) {
+      valid(object(value.training) && object(value.training.facts) && object(value.training.provenance) && same(Object.keys(value.training.facts).sort(), Object.keys(value.training.provenance).sort()));
+      Object.keys(value.training.facts).forEach(function (key) { valid(TRAINING.includes(key) && trainingFact(key, value.training.facts[key]) && provenance(value.training.provenance[key])); });
+    }
     valid(object(value.preferences) && object(value.preferences.heroGear));
-    valid(Object.keys(value.preferences).every(function (key) { return key === 'heroGear' || key === 'governor'; }) && Object.keys(value.preferences.heroGear).every(function (key) { return PREFS.includes(key); }));
+    if (value.preferences.training !== undefined) valid(object(value.preferences.training) && Object.keys(value.preferences.training).every(function (key) { return key === 'buff' && typeof value.preferences.training.buff === 'boolean'; }));
+    valid(Object.keys(value.preferences).every(function (key) { return key === 'heroGear' || key === 'governor' || key === 'training'; }) && Object.keys(value.preferences.heroGear).every(function (key) { return PREFS.includes(key); }));
     if (value.preferences.governor !== undefined) {
       var gov = value.preferences.governor;
       valid(object(gov) && Object.keys(gov).every(function (key) { return Object.hasOwn(GOVERNOR_PREFS, key); }));
@@ -249,6 +257,25 @@
         value.buildings.levels[key] = level; value.buildings.provenance[key] = { source: source || 'manual', at: new Date().toISOString() };
       }, expected);
     }
+    function training() {
+      var value = snapshot(), section = value.training || { facts: {}, provenance: {} };
+      return { facts: copy(section.facts), provenance: copy(section.provenance), buff: Boolean(value.preferences.training && value.preferences.training.buff) };
+    }
+    // A value records the fact; null forgets it, which is the same as not counted yet.
+    function setTraining(key, fact, source, expected) {
+      valid(TRAINING.includes(key) && (fact === null || trainingFact(key, fact)));
+      return transaction(function (value) {
+        if (!value.training) value.training = { facts: {}, provenance: {} };
+        if (fact === null) { delete value.training.facts[key]; delete value.training.provenance[key]; return; }
+        if (value.training.facts[key] === fact) return;
+        value.training.facts[key] = fact; value.training.provenance[key] = { source: source || 'manual', at: new Date().toISOString() };
+      }, expected);
+    }
+    // The 3,000-gem capacity buff is a plan, not a fact: whether to pre-train a triple batch.
+    function setTrainingBuff(on) {
+      valid(typeof on === 'boolean');
+      return transaction(function (value) { if (on) value.preferences.training = { buff: true }; else delete value.preferences.training; });
+    }
     function governorSpec(kind) { valid(Object.hasOwn(GOVERNOR, kind)); return GOVERNOR[kind]; }
     function governor(kind) {
       var spec = governorSpec(kind), section = snapshot()[spec.section], levels = {};
@@ -331,7 +358,7 @@
     if (events && events.addEventListener) events.addEventListener('storage', function (event) {
       if ((event.key === KEY || event.key === null) && (!event.storageArea || event.storageArea === storage)) { try { current = read(); notify(); } catch (error) { if (events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:error', { detail: error.message })); } }
     });
-    return { snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, buildings: buildings, setBuilding: setBuilding, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
+    return { snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, buildings: buildings, setBuilding: setBuilding, training: training, setTraining: setTraining, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
   }
-  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), troopId: troopId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, empty: empty, validate: validate, create: create };
+  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), TRAINING: TRAINING.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), troopId: troopId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, empty: empty, validate: validate, create: create };
 });

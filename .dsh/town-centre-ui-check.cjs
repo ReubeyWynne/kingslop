@@ -172,6 +172,29 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       await done();
       assert.equal(await page.locator('[data-building="war-academy"]').getAttribute('data-state'), 'unknown');
 
+      // Troops: training facts on tiles, the capacity buff as a switch, and the troop day they score on.
+      await page.locator('[aria-controls="town-troops"]').click();
+      assert.equal(await page.locator('#town-troops [data-training]').count(), 5);
+      assert.match(await page.locator('[data-target="town-inventory.troopPlan"]').textContent(), /Set your training speed/);
+      await edit('#town-troops [data-training="speed"]'); await dialog.locator('[data-field="training"]').fill('150'); await done();
+      await edit('#town-troops [data-training="capacity"]'); await dialog.locator('[data-field="training"]').fill('1000'); await done();
+      await edit('#town-troops [data-training="inf"]'); await dialog.locator('select[data-field="tier"]').selectOption('10'); await done();
+      assert.deepEqual((await ledger()).training.facts, { speed: 150, capacity: 1000, inf: 10 });
+      assert.equal(await page.locator('[data-training="speed"] [data-amount]').textContent(), '150%');
+      assert.equal(await page.locator('[data-training="inf"] [data-amount]').textContent(), 'T10');
+      assert.match(await page.locator('[data-target="town-inventory.troopPlan"]').textContent(), /1,000 troops pre-trained/);
+      await page.locator('#town-troops [data-action="town-inventory.buff"]').click();
+      assert.equal((await ledger()).preferences.training.buff, true);
+      assert.equal(await page.locator('#town-troops [data-action="town-inventory.buff"]').getAttribute('aria-pressed'), 'true');
+      const troopPlan = await page.locator('[data-target="town-inventory.troopPlan"]').textContent();
+      assert.match(troopPlan, /, day 4: 3,000 troops pre-trained/);
+      assert.match(troopPlan, /at least 2d 2h 40m before the day/, '3,000 T10 at 152 s each, 150% faster');
+      assert.equal(await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'prep').lines.find(l => l.id === 'troops-batch-t10').points), 3000 * 60);
+      await page.locator('#town-troops [data-action="town-inventory.buff"]').click();
+      assert.equal((await ledger()).preferences.training, undefined);
+      await edit('#town-troops [data-training="capacity"]'); await dialog.locator('[data-action="town-inventory.clear"]').click(); await done();
+      assert.equal(await page.locator('[data-training="capacity"]').getAttribute('data-state'), 'unknown');
+
       // Persisted, and the governor page reads the same save.
       await page.reload(); await page.waitForFunction(() => document.querySelector('.town-daybar'));
       assert.equal(await page.locator('#town-bag [data-count="mithril"] [data-amount]').textContent(), '10');
@@ -204,6 +227,6 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
     assert.equal(await page.locator('#hero-chenko .hero-dossier').evaluate(node => node.open && !!node.offsetParent), true, 'a hero link opens the Heroes shelf');
     assert.deepEqual(errors, []);
     await context.close();
-    console.log('Town Centre UI: bag tiles, speedups, building levels and Truegold, heroes, hero gear per troop, the governor profile, event totals, persistence, shared save, deep links, RTL and widths pass.');
+    console.log('Town Centre UI: bag tiles, speedups, building levels and Truegold, troop training, heroes, hero gear per troop, the governor profile, event totals, persistence, shared save, deep links, RTL and widths pass.');
   } finally { await browser.close(); server.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
