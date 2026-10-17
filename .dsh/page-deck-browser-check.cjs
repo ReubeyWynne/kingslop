@@ -147,7 +147,7 @@ async function fits(page, zoomed = false) {
     await page.locator('[data-deck-group="tools"]').click();
     await selected(page, 'vip');
     assert.equal(await page.locator('.deck-card.is-selected .ascii-mini--crown').evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'running');
-    assert.equal(await page.locator('.deck-card:not(.is-selected) .ascii-mini--bear').first().evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'paused');
+    assert.equal(await page.locator('.deck-card:not(.is-selected) .ascii-mini--aurora .aurora-edge').first().evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'paused');
     // Covers keep their own colours whichever is selected, and the ring's
     // copies of the selected cover run with it.
     const covers = () => page.locator('.deck-card').evaluateAll(cards => cards.map(card => getComputedStyle(card.querySelector('.deck-card-title')).color + getComputedStyle(card).borderTopColor));
