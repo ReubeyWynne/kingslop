@@ -26,7 +26,5 @@ html[data-page="kingdom"] {
 .kingdom-state { display: block; color: var(--amber); min-height: 1.5em; }
 .kingdom-milestone p { margin-block: 0.6rem; }
 .kingdom-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.5rem; }
-.kingdom-scope { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; margin-block: 1rem; }
-.kingdom-scope input { accent-color: var(--amber); }
 .hero-upcoming { display: block; color: var(--ink-muted); font-size: 0.85rem; }
 .hero-upcoming[hidden] { display: none; }

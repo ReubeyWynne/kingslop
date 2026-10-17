@@ -38,10 +38,14 @@ const server = http.createServer((req, res) => {
     const visible = () => other.locator('[data-hero]:visible').count();
     const heroes = require('../_data/heroes.json').heroes;
     assert.equal(await visible(), heroes.filter(h => h.generation <= 3).length);
-    await other.locator('[data-target="hero-directory.showAll"]').check();
-    assert.equal(await visible(), heroes.length);
-    assert.equal(await other.locator('.hero-upcoming:visible').count(), heroes.filter(h => h.generation > 3).length);
+    assert.equal(await other.locator('[data-target="hero-directory.showAll"]').count(), 0);
+    assert.equal(await other.locator('.kingdom-scope').count(), 0);
+    await other.locator('[data-target="hero-directory.generation"]').selectOption('7');
+    assert.equal(await visible(), heroes.filter(h => h.generation === 7).length);
+    assert.equal(await other.locator('.hero-upcoming:visible').count(), heroes.filter(h => h.generation === 7).length);
     assert.equal(await other.evaluate(() => KS_SERVER_AGE.getGeneration()), 3);
+    await other.locator('[data-target="hero-directory.generation"]').selectOption('');
+    assert.equal(await visible(), heroes.filter(h => h.generation <= 3).length);
     await other.locator('[data-target="hero-directory.server"]').selectOption('2');
     await page.waitForFunction(() => document.querySelector('[data-target="kingdom-timeline.generation"]').value === '2');
     assert.equal(await field('truegold').inputValue(), '5');
