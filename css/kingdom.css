@@ -1,12 +1,5 @@
-.kingdom-context {
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 0.8rem var(--space-s);
-  border-bottom: 1px solid var(--ink-muted);
-  font-size: 0.95rem;
-  text-align: end;
-}
-.kingdom-context a { color: var(--ink-dim); text-decoration: none; }
+.kingdom-context { min-width: 0; max-width: 6rem; font-size: 0.85rem; }
+.kingdom-context a { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-dim); text-decoration: none; padding-block: 0.6rem; }
 .kingdom-context a:hover, .kingdom-context a:focus-visible { color: var(--amber); }
 html[data-page="kingdom"] {
   --void: #101820;
