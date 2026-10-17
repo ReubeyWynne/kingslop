@@ -15,7 +15,7 @@
     {% unless include.bag == "off" %}
     <div class="hero-bag" data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed">
       <p class="hero-bag-title" data-i18n="directory.bag">Your bag</p>
-      {% assign bag_ids = 'mythic-hero-shard,epic-hero-shard,rare-hero-shard,hero-widget' | split: ',' %}{% for bag_id in bag_ids %}{% assign item = site.data.event_rules.items | where: 'id', bag_id | first %}
+      {% assign bag_ids = 'mythic-hero-shard,epic-hero-shard,rare-hero-shard' | split: ',' %}{% for bag_id in bag_ids %}{% assign item = site.data.event_rules.items | where: 'id', bag_id | first %}
       <label><span data-i18n="{{ item.key }}">{{ item.label | escape }}</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize"></label>{% endfor %}
       <p class="hero-bag-caption"><span data-i18n="directory.bagNote">blank means not counted yet · shared with events</span> <output data-target="ledger-form.save" role="status"></output></p>
     </div>
@@ -43,10 +43,9 @@
                   <label class="hero-own"><input type="checkbox" data-field="owned"><span data-i18n="directory.have">I have this hero</span></label>
                   <label><span data-i18n="directory.level">Level</span><input type="number" min="1" max="200" step="1" inputmode="numeric" placeholder="?" data-field="level"></label>
                   <label><span data-i18n="directory.stars">Stars</span><select data-field="stars"><option value="">?</option>{% for index in (0..30) %}{% assign full = index | divided_by: 6 %}{% assign step = index | modulo: 6 %}<option value="{{ index }}">{{ full }}★{% if step > 0 %} {{ step }}/6{% endif %}</option>{% endfor %}</select></label>
-                  {% if hero.widget %}<label><span data-i18n="directory.widgetLevel">Widget level</span><select data-field="widget"><option value="">?</option>{% for level in (0..10) %}<option value="{{ level }}">{% if level == 0 %}—{% else %}{{ level }}{% endif %}</option>{% endfor %}</select></label>{% endif %}
+                  {% if hero.widget %}<label><span data-i18n="directory.widgetLevel">Widget level</span><select data-field="widget"><option value="">?</option>{% for level in (0..10) %}<option value="{{ level }}">{% if level == 0 %}—{% else %}{{ level }}{% endif %}</option>{% endfor %}</select></label><label class="hero-widgets"><span data-i18n="heroWidgets.count">Widgets</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="widgets"></label>{% endif %}
                   {% for skill in hero.skills %}<label><span data-i18n="directory.skillLevel" data-i18n-n="{{ forloop.index }}">Skill {{ forloop.index }}</span><select data-field="skill" data-skill="{{ forloop.index0 }}"><option value="">?</option>{% for level in (1..5) %}<option value="{{ level }}">{{ level }}</option>{% endfor %}</select></label>{% endfor %}
                   <label class="hero-shards"><span data-i18n="directory.shards">Shards</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="shards"></label>
-                  {% if hero.widget %}<label class="hero-shards"><span data-i18n="spend.widgets">Widgets</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="widgets"></label>{% endif %}
                   <p class="hero-mine-note"><span data-i18n="directory.mineNote">Saved on this device with your inventory. Shards count before you unlock the hero.</span> <output data-target="hero-directory.saved" role="status"></output></p>
                 </fieldset>
                 <div class="hero-dossier-brief">

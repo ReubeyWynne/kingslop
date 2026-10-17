@@ -1053,6 +1053,7 @@ window.__BH_I18N_DATA["de"] = {
   "directory.level": "Stufe",
   "directory.stars": "Sterne",
   "directory.widgetLevel": "Widget-Stufe",
+  "heroWidgets.count": "Widgets",
   "directory.skillLevel": "Fähigkeit {n}",
   "directory.shards": "Splitter",
   "directory.mineNote": "Auf diesem Gerät mit deinem Inventar gespeichert. Splitter zählen auch vor dem Freischalten.",

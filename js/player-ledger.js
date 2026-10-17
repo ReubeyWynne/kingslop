@@ -23,7 +23,7 @@
     charms: { section: 'governorCharms', field: 'slots', max: 22, ids: ['inf', 'cav', 'arc'].flatMap(function (troop) { return ['1-1', '1-2', '1-3', '2-1', '2-2', '2-3'].map(function (slot) { return troop + '-' + slot; }); }) }
   };
   // Heroes you own: level, star index (6 × stars + tier, as in _data/heroes.json), widget level and Expedition skill levels.
-  // Unread fields stay null. Per-hero shards and widgets are ordinary inventory balances keyed hero-shards-{hero} and hero-widgets-{hero}.
+  // Unread fields stay null. Per-hero shards are ordinary inventory balances keyed hero-shards-{hero}.
   var HERO = { fields: ['level', 'stars', 'widget', 'skills'], level: 200, stars: 30, widget: 10, skill: 5, skills: 3 };
   var GOVERNOR_PREFS = { goal: ['stats', 'score'], focus: ['all', 'inf', 'cav', 'arc'], gearTarget: 58, charmTarget: 22 };
   function copy(value) { return JSON.parse(JSON.stringify(value)); }
@@ -37,6 +37,7 @@
   function troopId(type, tier, tg) { return 'troop-' + type + '-t' + tier + '-tg' + tg; }
   function heroKey(value) { return typeof value === 'string' && /^[a-z][a-z0-9]{0,39}$/.test(value); }
   function heroShardId(hero) { return 'hero-shards-' + hero; }
+  // Widgets are hero-specific items, so each hero with a widget keeps its own unspent count.
   function heroWidgetId(hero) { return 'hero-widgets-' + hero; }
   // Choose-a-hero widget chests open into any widget hero of their generation.
   function widgetChestId(generation) { return 'hero-widget-chest-gen' + generation; }
@@ -204,12 +205,12 @@
       }, expected);
     }
     function heroes() {
-      var value = snapshot(), section = value.heroes || { roster: {}, provenance: {} }, owned = { shards: {}, widgets: {} };
+      var value = snapshot(), section = value.heroes || { roster: {}, provenance: {} }, shards = {}, widgets = {};
       Object.keys(value.inventory).forEach(function (key) {
         var m = /^hero-(shards|widgets)-([a-z][a-z0-9]{0,39})$/.exec(key), entry = value.inventory[key];
-        if (m && entry.status === 'confirmed') owned[m[1]][m[2]] = entry.amount;
+        if (m && entry.status === 'confirmed') (m[1] === 'shards' ? shards : widgets)[m[2]] = entry.amount;
       });
-      return { roster: copy(section.roster), provenance: copy(section.provenance), shards: owned.shards, widgets: owned.widgets };
+      return { roster: copy(section.roster), provenance: copy(section.provenance), shards: shards, widgets: widgets };
     }
     // A record marks the hero as owned (missing fields stay unread); null forgets it, which is the same as not owned.
     function setHero(key, record, source, expected) {

@@ -35,14 +35,13 @@
       if (parts.widget) { parts.widget.hidden = !copy || !copy.widget; parts.widget.querySelector('b').textContent = copy && copy.widget ? context.api.fmt(copy.widget) : ''; }
       if (parts.shards) { parts.shards.hidden = !copy || shards === null; parts.shards.querySelector('b').textContent = copy && shards !== null ? context.api.fmt(shards) : ''; }
     }
-    // The saved roster and shards, read back into every hero's form and tile.
+    // The saved roster, shards and unspent widgets, read back into every hero's form and tile.
     function load() {
       try { mine = store ? store.heroes() : mine; } catch (cause) { mine = { roster: {}, shards: {}, widgets: {} }; }
       var any = Object.keys(mine.roster).length > 0;
       context.root.toggleAttribute('data-collection', any);
       records.forEach(function (record) {
         var copy = mine.roster[record.hero.key], shards = Object.hasOwn(mine.shards, record.hero.key) ? mine.shards[record.hero.key] : null;
-        var widgets = Object.hasOwn(mine.widgets, record.hero.key) ? mine.widgets[record.hero.key] : null;
         record.hero.owned = Boolean(copy);
         record.node.dataset.owned = String(Boolean(copy));
         var parts = [];
@@ -60,7 +59,7 @@
           if (input === document.activeElement && field !== 'owned') return;
           if (field === 'owned') input.checked = Boolean(copy);
           else if (field === 'shards') input.value = shards === null ? '' : shards;
-          else if (field === 'widgets') input.value = widgets === null ? '' : widgets;
+          else if (field === 'widgets') input.value = Object.hasOwn(mine.widgets, record.hero.key) ? mine.widgets[record.hero.key] : '';
           else {
             var value = !copy ? null : field === 'skill' ? (copy.skills ? copy.skills[Number(input.dataset.skill)] : null) : copy[field];
             input.value = value === null || value === undefined ? '' : value;

@@ -97,7 +97,7 @@ const pages = require('../_data/pages.json'), html = fs.readFileSync('heroes/ind
 const order = ['event-data.js', 'event-rules.js', 'hero-data.js', 'hero-spend.js', 'hero-directory-engine.js', 'hero-points.js'].map(f => pages.heroes.scripts.indexOf('../js/' + f));
 assert.ok(order.every((at, i) => at >= 0 && (i === 0 || at > order[i - 1])), order.join());
 assert.ok(html.includes('id="kvk-points" data-module="hero-points"') && html.includes('href="#kvk-points"'));
-assert.ok(fs.readFileSync('_includes/heroes/roster.html', 'utf8').includes('data-field="widgets"'));
+assert.equal(fs.readFileSync('_includes/heroes/roster.html', 'utf8').match(/data-field="widgets"/g).length, 1);
 const ctx = { window: {} }; vm.runInNewContext(fs.readFileSync('i18n/en.js', 'utf8'), ctx);
 const en = ctx.window.__BH_I18N_DATA.en, source = fs.readFileSync('js/hero-points.js', 'utf8');
 for (const match of (html + fs.readFileSync('_includes/heroes/roster.html', 'utf8')).matchAll(/data-i18n="(spend\.[a-zA-Z.]+)"/g)) assert.ok(en[match[1]], match[1]);

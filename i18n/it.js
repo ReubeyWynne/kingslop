@@ -1055,6 +1055,7 @@ window.__BH_I18N_DATA["it"] = {
   "directory.level": "Livello",
   "directory.stars": "Stelle",
   "directory.widgetLevel": "Livello widget",
+  "heroWidgets.count": "Widget",
   "directory.skillLevel": "Abilità {n}",
   "directory.shards": "Frammenti",
   "directory.mineNote": "Salvato su questo dispositivo con il tuo inventario. I frammenti contano anche prima di sbloccare l’eroe.",

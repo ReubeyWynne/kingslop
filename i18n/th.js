@@ -1064,6 +1064,7 @@ window.__BH_I18N_DATA["th"] = {
   "directory.level": "เลเวล",
   "directory.stars": "ดาว",
   "directory.widgetLevel": "เลเวลวิดเจ็ต",
+  "heroWidgets.count": "วิดเจ็ต",
   "directory.skillLevel": "สกิล {n}",
   "directory.shards": "ชิ้นส่วน",
   "directory.mineNote": "บันทึกในอุปกรณ์นี้พร้อมคลังของคุณ ชิ้นส่วนนับได้ก่อนปลดล็อกฮีโร่",

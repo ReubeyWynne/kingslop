@@ -1053,6 +1053,7 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "directory.level": "等級",
   "directory.stars": "星級",
   "directory.widgetLevel": "專屬裝備等級",
+  "heroWidgets.count": "專屬裝備",
   "directory.skillLevel": "技能{n}",
   "directory.shards": "碎片",
   "directory.mineNote": "與庫存一起儲存在本裝置上。解鎖英雄前的碎片也會計入。",
