@@ -39,7 +39,7 @@ try{
  const langs=fs.readdirSync('i18n').filter(f=>f.endsWith('.js')).map(f=>f.slice(0,-3));
  for(const lang of langs){await page.goto(origin+'/heroes/?lang='+lang);await page.waitForFunction(lang=>document.documentElement.lang===lang&&!document.querySelector('.hero-filters').disabled,lang);
   for(const width of [320,390,768,1280,1600,1920]){await page.setViewportSize({width,height:900});const failures=await page.evaluate(()=>[...document.querySelectorAll('.hero-filters,.directory-hero,.hero-role-list,.topbar,.ev-switch')].filter(el=>el.getClientRects().length&&el.scrollWidth>el.clientWidth+2).map(el=>el.className));assert.deepEqual(failures,[],lang+' at '+width);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
-  assert.equal(await page.locator('h1').textContent(),await page.evaluate(()=>I18N.tr('directory.title')));assert.equal(await page.locator('.brand-note').textContent(),await page.evaluate(()=>I18N.tr('directory.roles')));
+  assert.equal(await page.locator('h1').textContent(),await page.evaluate(()=>I18N.tr('directory.title')));assert.equal(await page.locator('[data-target="kingdom-context.summary"]').textContent(),await page.evaluate(()=>I18N.tr('kingdom.unset')));
   if(lang==='en'||lang==='ar'){await page.setViewportSize({width:390,height:844});await field('query').fill('chenko');await page.locator('#directory').screenshot({path:path.join(output,lang+'.png')});}
  }
  await page.goto(origin+'/?lang=en');await page.waitForFunction(()=>window.BH);assert.equal(await page.locator('#tools a[href="heroes/"]').count(),1);assert.equal(await page.locator('#tools a[href="hero-gear/"]').count(),1);
