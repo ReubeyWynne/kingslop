@@ -12,6 +12,8 @@ The Masters page (`masters/`) lists the eight masters of the Master Academy, rec
 - `talent`: eleven levels, one per class;
 - `skills`: four skills, each level with its effects, manuscripts, learning XP and requirement (an affinity level, or a total of the master's four skill levels).
 
+`scope`, `summary` and `who` say in plain words what each master is for and who wants it, and each talent and skill carries `say` (one sentence at its top level, paraphrasing the in-game description with the data's values filled in), `ramp` (how each value grows from level 1) and, for skills, `where` (the event or system it applies to). They come from `.dsh/masters-guide.json`, which cites where each description was read; the build fails if a sentence names a value the top level lacks.
+
 `sources` and `verified` record which databases list a master. Kingshot Optimizer and Kingshot Data agree row by row for Valora, Pan, Roman, Cassia, Guinevere and Wilson. Aena and Isnor are on Kingshot Optimizer only, so their cards say they rest on one source. Power is not carried.
 
 Art in `img/masters/` is Kingshot game art; `img/masters/SOURCES.md` lists where each file came from.

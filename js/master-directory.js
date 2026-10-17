@@ -5,7 +5,7 @@
   'use strict';
   var EN = {
     count: '{n} masters', owned: '{n} yours', level: 'Lv {n}', next: 'Next class: {name} at affinity {level}, {cost} emblems.', waiting: 'Next class: {name} at affinity {level}, {cost} emblems. Waiting on emblems now.',
-    soul: 'Kindred Soul reached. Special Research takes emblems from here.', locked: 'Not unlocked yet.', talentNow: 'Now level {n}: {effects}', talentNone: 'Starts at affinity 1.'
+    soul: 'Kindred Soul reached. Special Research takes emblems from here.', locked: 'Not unlocked yet.', talentNow: 'Yours now, level {n} of 11: {effects}', talentNone: 'Starts at affinity 1.'
   };
   function t(api, key) { return api.tr('masters.' + key, EN[key]); }
   window.Interactions.register('master-directory', function (context) {
@@ -18,7 +18,8 @@
     records.forEach(function (record) { if (record.form) record.form.disabled = !store; });
     function part(record, name) { return record.node.querySelector('[data-portrait="' + name + '"]'); }
     function target(record, name) { return Array.from(record.node.querySelectorAll('[data-target~="master-directory.' + name + '"]')); }
-    function effects(list) { return list.map(function (effect) { return effect.text; }).join(', '); }
+    // Values only, in the order of the talent sentence above them: "6% · 6%".
+    function effects(list) { return list.map(function (effect) { return api.fmt(effect.value) + (effect.percent ? '%' : ''); }).join(' · '); }
     function paint(record) {
       var copy = mine.roster[record.id] || null, affinity = copy ? copy.affinity : null, data = record.data;
       record.node.dataset.owned = String(Boolean(copy));

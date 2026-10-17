@@ -408,8 +408,13 @@
        "text": "Point Boost +30%"
       }
      ]
-    ]
+    ],
+    "say": "Your own Bear Hunt damage points +30% (not your alliance's).",
+    "ramp": "2% → 30%"
    },
+   "scope": "Bear Hunt",
+   "summary": "A Bear Hunt master. Her skills make your bear rallies and bear marches bigger, add hero gear materials to every Bear Hunt, and her talent raises your own Bear Hunt points.",
+   "who": "Anyone who leads or joins bear rallies, and anyone short of Forgehammers or Enhancement XP.",
    "skills": [
     {
      "name": "Dance of the Hunt",
@@ -555,7 +560,10 @@
         "affinity": 70
        }
       }
-     ]
+     ],
+     "where": "Bear Hunt",
+     "say": "Bear rallies you lead hold 300,000 more troops.",
+     "ramp": "30,000 → 300,000"
     },
     {
      "name": "Leader By Example",
@@ -634,7 +642,10 @@
         "affinity": 80
        }
       }
-     ]
+     ],
+     "where": "Bear Hunt",
+     "say": "5 extra rewards of 100 Enhancement XP Parts every Bear Hunt, for hero gear.",
+     "ramp": "1 → 5"
     },
     {
      "name": "Weapon Obsession",
@@ -713,7 +724,10 @@
         "affinity": 70
        }
       }
-     ]
+     ],
+     "where": "Bear Hunt",
+     "say": "5 extra Forgehammers every Bear Hunt, for hero gear mastery.",
+     "ramp": "1 → 5"
     },
     {
      "name": "Savage Advantage",
@@ -859,7 +873,10 @@
         "total": 29
        }
       }
-     ]
+     ],
+     "where": "Bear Hunt",
+     "say": "Each squad you send at the bear holds 30,000 more troops.",
+     "ramp": "3,000 → 30,000"
     }
    ]
   },
@@ -1312,8 +1329,13 @@
        "text": "Daily Cap +30"
       }
      ]
-    ]
+    ],
+    "say": "5 Reserve Chests for every 120 minutes of gathering, up to 30 a day.",
+    "ramp": "1 → 5 · 10 → 30"
    },
+   "scope": "Economy",
+   "summary": "A town economy master. He shortens every building upgrade, adds intel missions and stamina, and brings more Mystery Shop badges and gathering chests.",
+   "who": "Everyone: Master Architect saves hours on every upgrade, which matters most while you are still building.",
    "skills": [
     {
      "name": "Falconer",
@@ -1392,7 +1414,10 @@
         "affinity": 60
        }
       }
-     ]
+     ],
+     "where": "Intel",
+     "say": "8 more Watchtower intel missions a day.",
+     "ramp": "2 → 8"
     },
     {
      "name": "Good Steward",
@@ -1471,7 +1496,10 @@
         "affinity": 70
        }
       }
-     ]
+     ],
+     "where": "Stamina",
+     "say": "The Storehouse refills 40 more governor stamina.",
+     "ramp": "10 → 40"
     },
     {
      "name": "Master Architect",
@@ -1550,7 +1578,10 @@
         "affinity": 80
        }
       }
-     ]
+     ],
+     "where": "Construction",
+     "say": "Every new building upgrade finishes 8 hours sooner, after speed bonuses.",
+     "ramp": "2 → 8"
     },
     {
      "name": "Ways and Means",
@@ -1756,7 +1787,10 @@
         "total": 24
        }
       }
-     ]
+     ],
+     "where": "Mystery Shop",
+     "say": "120 more Mystery Badges for finishing daily missions, and 4 more free Mystery Shop refreshes.",
+     "ramp": "20 → 120 · 1 → 4"
     }
    ]
   },
@@ -2215,8 +2249,13 @@
        "text": "Chests +3"
       }
      ]
-    ]
+    ],
+    "say": "A 100% chance of 3 extra Arena Star Chests.",
+    "ramp": "50% → 100% · 1 → 3"
    },
+   "scope": "Arena",
+   "summary": "An Arena master. He makes your heroes and escorts stronger in Arena battles, raises Arena Token rewards and improves the Arena Shop.",
+   "who": "Players who push the Arena ranking or spend Arena Tokens.",
    "skills": [
     {
      "name": "Teacher of Champions",
@@ -2362,7 +2401,10 @@
         "affinity": 70
        }
       }
-     ]
+     ],
+     "where": "Arena",
+     "say": "Your Arena escorts get +20% attack and health.",
+     "ramp": "2% → 20%"
     },
     {
      "name": "Winner Take All",
@@ -2508,7 +2550,10 @@
         "affinity": 80
        }
       }
-     ]
+     ],
+     "where": "Arena",
+     "say": "Daily and weekly Arena Token rewards +50%.",
+     "ramp": "5% → 50%"
     },
     {
      "name": "Crowd Favorite",
@@ -2714,7 +2759,10 @@
         "affinity": 80
        }
       }
-     ]
+     ],
+     "where": "Arena",
+     "say": "3 extra items in the Arena Shop, each 50% off.",
+     "ramp": "1 → 3 · 5% → 50%"
     },
     {
      "name": "One Desire",
@@ -2860,7 +2908,10 @@
         "total": 39
        }
       }
-     ]
+     ],
+     "where": "Arena",
+     "say": "Your heroes get +20% attack and health in Arena battles.",
+     "ramp": "2% → 20%"
     }
    ]
   },
@@ -3253,8 +3304,13 @@
        "text": "Deployment Capacity +10,000"
       }
      ]
-    ]
+    ],
+    "say": "Every squad you send holds 10,000 more troops.",
+    "ramp": "300 → 10,000"
    },
+   "scope": "All combat",
+   "summary": "A combat master whose bonuses apply in every fight. Her skills add attack, defense, lethality and health to all your squads, and make every squad and rally you send bigger.",
+   "who": "Everyone who fights: these are the broadest troop bonuses any master gives, at the highest manuscript cost.",
    "skills": [
     {
      "name": "Recruiter In Chief",
@@ -3460,7 +3516,10 @@
         "affinity": 70
        }
       }
-     ]
+     ],
+     "where": "Troops",
+     "say": "Recruit 600 more high-tier soldiers free from any camp, and get 10 more Soldier's Medallions from the Enlistment Office.",
+     "ramp": "150 → 600 · 1 → 10"
     },
     {
      "name": "Firepower to Win",
@@ -3858,7 +3917,10 @@
         "affinity": 80
        }
       }
-     ]
+     ],
+     "where": "Combat",
+     "say": "+10% attack and +10% defense for all your squads.",
+     "ramp": "0.5% → 10% · 0.5% → 10%"
     },
     {
      "name": "Commando",
@@ -4256,7 +4318,10 @@
         "affinity": 90
        }
       }
-     ]
+     ],
+     "where": "Combat",
+     "say": "+10% lethality and +10% health for all your squads.",
+     "ramp": "0.5% → 10% · 0.5% → 10%"
     },
     {
      "name": "Inspiring Mobilization",
@@ -4534,7 +4599,10 @@
         "total": 69
        }
       }
-     ]
+     ],
+     "where": "Rallies",
+     "say": "Every rally you lead holds 100,000 more troops.",
+     "ramp": "5,000 → 100,000"
     }
    ]
   },
@@ -4993,8 +5061,13 @@
        "text": "Troop Defense +30%"
       }
      ]
-    ]
+    ],
+    "say": "+30% attack and +30% defense for your squads in Swordland Showdown and Swordland Summit League.",
+    "ramp": "2% → 30% · 2% → 30%"
    },
+   "scope": "Swordland",
+   "summary": "A Swordland master. Every bonus she gives, from troop stats to rally size and free healing, applies in Swordland Showdown and Swordland Summit League.",
+   "who": "Alliances that fight Swordland seriously.",
    "skills": [
     {
      "name": "Max Efficiency",
@@ -5140,7 +5213,10 @@
         "affinity": 70
        }
       }
-     ]
+     ],
+     "where": "Swordland",
+     "say": "Relic Coin gains +100%.",
+     "ramp": "10% → 100%"
     },
     {
      "name": "Merciful Heart",
@@ -5286,7 +5362,10 @@
         "affinity": 80
        }
       }
-     ]
+     ],
+     "where": "Swordland",
+     "say": "1,000,000 soldiers healed free in every Swordland Showdown and Summit League.",
+     "ramp": "100,000 → 1,000,000"
     },
     {
      "name": "Royal Guidance",
@@ -5684,7 +5763,10 @@
         "affinity": 90
        }
       }
-     ]
+     ],
+     "where": "Swordland",
+     "say": "+30% lethality and +30% health for your squads in Swordland Showdown and Summit League.",
+     "ramp": "1.5% → 30% · 1.5% → 30%"
     },
     {
      "name": "Call of Round Table",
@@ -5962,7 +6044,10 @@
         "total": 59
        }
       }
-     ]
+     ],
+     "where": "Swordland",
+     "say": "Rallies you lead in Swordland hold 150,000 more troops.",
+     "ramp": "7,500 → 150,000"
     }
    ]
   },
@@ -6421,8 +6506,13 @@
        "text": "Reward Boost +100%"
       }
      ]
-    ]
+    ],
+    "say": "Alliance Shop prices -15%, and Personal Activity Triumph Chest rewards +100%.",
+    "ramp": "5% → 15% · 20% → 100%"
    },
+   "scope": "Alliance events",
+   "summary": "An alliance events master. He raises your points in Alliance Mobilization, Vikings Vengeance and Alliance Brawl, and improves their reward tiers and shops.",
+   "who": "Players who chase event rankings and milestone rewards.",
    "skills": [
     {
      "name": "Mobilization Master",
@@ -6628,7 +6718,10 @@
         "affinity": 70
        }
       }
-     ]
+     ],
+     "where": "Alliance Mobilization",
+     "say": "Alliance Mobilization points +20%, and milestones gain 3 extra tiers.",
+     "ramp": "2% → 20% · 1 → 3"
     },
     {
      "name": "Championship Publicity",
@@ -6834,7 +6927,10 @@
         "affinity": 80
        }
       }
-     ]
+     ],
+     "where": "Alliance Championship",
+     "say": "Championship Badges +50%, and the Championship Shop gains 3 extra items.",
+     "ramp": "5% → 50% · 1 → 3"
     },
     {
      "name": "Viking Bounty",
@@ -7040,7 +7136,10 @@
         "affinity": 90
        }
       }
-     ]
+     ],
+     "where": "Vikings Vengeance",
+     "say": "Vikings Vengeance points +50%, plus a chest for every 200,000 points, up to 10 per event.",
+     "ramp": "5% → 50% · 1 → 10"
     },
     {
      "name": "Duel Sponsorship",
@@ -7246,7 +7345,10 @@
         "total": 39
        }
       }
-     ]
+     ],
+     "where": "Alliance Brawl",
+     "say": "Your Alliance Brawl points +50% (not on the Merchant Empire day), and daily progress rewards gain 3 extra tiers.",
+     "ramp": "5% → 50% · 1 → 3"
     }
    ]
   },
@@ -7704,8 +7806,13 @@
        "text": "Troop Defense +30%"
       }
      ]
-    ]
+    ],
+    "say": "+30% attack and +30% defense for your squads when raiding or being raided.",
+    "ramp": "2% → 30% · 2% → 30%"
    },
+   "scope": "Merchant Empire",
+   "summary": "A Merchant Empire master. Her skills speed up caravans, add escorts and cargo, protect cargo from raids, and her talent makes your squads stronger when raiding or being raided.",
+   "who": "Players who run caravans in Merchant Empire.",
    "skills": [
     {
      "name": "Shortcuts",
@@ -7911,7 +8018,10 @@
         "affinity": 70
        }
       }
-     ]
+     ],
+     "where": "Merchant Empire",
+     "say": "Caravan journeys 20% shorter, and 3 more free refreshes per caravan.",
+     "ramp": "2% → 20% · 1 → 3"
     },
     {
      "name": "Finder's Keepers",
@@ -8057,7 +8167,10 @@
         "affinity": 80
        }
       }
-     ]
+     ],
+     "where": "Merchant Empire",
+     "say": "A 100% chance of one extra cargo item from every successful raid.",
+     "ramp": "10% → 100%"
     },
     {
      "name": "Delivery Drive",
@@ -8233,7 +8346,10 @@
         "affinity": 80
        }
       }
-     ]
+     ],
+     "where": "Merchant Empire",
+     "say": "A 50% chance to win back one cargo item when you are raided, and 2 extra Elite Strongboxes that cannot be raided.",
+     "ramp": "5% → 50% · 0 → 2"
     },
     {
      "name": "Trading Ace",
@@ -8387,7 +8503,10 @@
         "total": 39
        }
       }
-     ]
+     ],
+     "where": "Merchant Empire",
+     "say": "A Legendary escort mission after every 4 completed missions, kept through refreshes, and 1 extra caravan a day.",
+     "ramp": "12 → 4 · 0 → 1"
     }
    ]
   },
@@ -8845,8 +8964,13 @@
        "text": "Troop Health +30%"
       }
      ]
-    ]
+    ],
+    "say": "+30% lethality and +30% health for your squads in Eternity's Reach battles.",
+    "ramp": "2% → 30% · 2% → 30%"
    },
+   "scope": "Eternity's Reach",
+   "summary": "An Eternity's Reach master. He makes your squads stronger and larger in its battles, speeds hero recovery and Frontier Skill XP, and brings Copper Ore and charm materials.",
+   "who": "Players who take part in Eternity's Reach, and anyone short of Charm Designs and Charm Guides.",
    "skills": [
     {
      "name": "Frontier Master",
@@ -8992,7 +9116,10 @@
         "affinity": 70
        }
       }
-     ]
+     ],
+     "where": "Eternity's Reach",
+     "say": "50% extra Frontier Skill XP from defeating Cesares Guards.",
+     "ramp": "5% → 50%"
     },
     {
      "name": "Survival Skills",
@@ -9198,7 +9325,10 @@
         "affinity": 80
        }
       }
-     ]
+     ],
+     "where": "Eternity's Reach",
+     "say": "Squads hold 50,000 more troops in Eternity's Reach, and heroes recover 60% faster after defeat.",
+     "ramp": "5,000 → 50,000 · 6% → 60%"
     },
     {
      "name": "Unexpected Benefits",
@@ -9344,7 +9474,10 @@
         "affinity": 80
        }
       }
-     ]
+     ],
+     "where": "Eternity's Reach",
+     "say": "60 Charm Designs on reaching 200,000 Copper Ore.",
+     "ramp": "6 → 60"
     },
     {
      "name": "Backchannels",
@@ -9552,7 +9685,10 @@
         "total": 39
        }
       }
-     ]
+     ],
+     "where": "Eternity's Reach",
+     "say": "5,000 Copper Ore a minute, and 100 Charm Guides on reaching 200,000 Copper Ore.",
+     "ramp": "500 → 5,000 · 10 → 100"
     }
    ]
   }

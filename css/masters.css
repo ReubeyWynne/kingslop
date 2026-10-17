@@ -47,6 +47,8 @@
 .master-heading h3 { margin: 0; font: 600 min(.74rem, 13.5cqi)/1.2 var(--display-2); letter-spacing: .03em; text-transform: uppercase; color: var(--ink); }
 .master-dossier > summary:hover h3 { color: var(--amber); }
 .master-title { font-size: .72rem; line-height: 1.25; color: var(--ink-muted); hyphens: auto; }
+.master-scope { justify-self: center; margin-top: .15rem; padding: .05rem .4rem; font-size: .66rem; line-height: 1.35; letter-spacing: .02em; color: var(--amber); border: 1px solid var(--signal-line); border-radius: 2px; }
+.master-dossier[open] > summary .master-scope { justify-self: start; font-size: .75rem; }
 .master-mine-line { white-space: pre-line; font-size: .68rem; line-height: 1.25; color: var(--amber); font-variant-numeric: tabular-nums; }
 .master-mine-line:empty { display: none; }
 
@@ -62,6 +64,12 @@
 .master-dossier-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 0 2rem; margin-top: 1rem; padding-top: .25rem; border-top: 1px solid var(--signal-line); color: var(--ink-dim); }
 
 /* Your master — what you have of this one, saved with the rest of your inventory. */
+/* What the master is for comes first. Until you have the master, its form is only the "unlocked" box. */
+.master-intro { grid-column: 1 / -1; padding-block: .6rem .2rem; }
+.master-summary { margin: 0; font-size: var(--step-0); line-height: 1.5; color: var(--ink); }
+.master-who { margin: .45rem 0 0; font-size: var(--step--1); line-height: 1.45; }
+.master-who b { margin-inline-end: .3rem; font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--amber); }
+.master-card:not([data-owned="true"]) .master-mine > :is(label:not(:has([data-field="owned"])), .master-mine-note) { display: none; }
 .master-mine { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr)); gap: .3rem 1rem; margin: .5rem 0 0; padding: 0 0 .6rem; border: 0; border-bottom: 1px solid var(--signal-line); }
 .master-mine legend { padding: 0; margin-bottom: .2rem; font-size: var(--step--1); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); }
 .master-mine label { display: grid; align-content: end; min-width: 0; }
@@ -79,7 +87,9 @@
 .master-talent-now { display: block; color: var(--amber); }
 .master-talent-now:empty { display: none; }
 .master-talent-max { display: block; }
-.master-talent-max::before { content: "★ "; color: var(--amber-dim); }
+.master-talent-max { color: var(--ink); }
+.master-brief > p small, .master-ramp { display: block; color: var(--ink-muted); font-size: .78rem; font-variant-numeric: tabular-nums; }
+.master-skills :is(.master-ramp, .master-skill-cost) { margin-top: .15rem; font-size: .8rem; }
 .master-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem 1rem; margin: .5rem 0; font-size: var(--step--1); }
 .master-facts div { min-width: 0; }
 .master-facts dt { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
@@ -104,9 +114,9 @@
 .master-skills h4 { display: flex; flex-wrap: wrap; gap: .1rem .6rem; align-items: baseline; margin: 0; font-family: var(--body); font-size: var(--step-0); color: var(--ink); }
 .master-skill-level { color: var(--amber); font-size: .8rem; font-variant-numeric: tabular-nums; }
 .master-skill-level:empty { display: none; }
-.master-skill-max { color: var(--ink-muted); font-size: .78rem; }
+.master-skill-where { padding: 0 .35rem; font-size: .7rem; letter-spacing: .02em; color: var(--amber); border: 1px solid var(--signal-line); border-radius: 2px; }
 .master-skills p { overflow-wrap: anywhere; margin-block: .25rem 0; font-size: var(--step--1); }
-.master-skill-effect { color: var(--amber-dim); }
+.master-skill-effect { color: var(--ink); line-height: 1.45; }
 .master-skill-cost { display: flex; flex-wrap: wrap; align-items: center; gap: .1rem .3rem; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
 .master-skill-cost img { width: .95rem; height: .95rem; }
 .master-skill-gates { display: flex; flex-wrap: wrap; gap: .1rem .9rem; color: var(--ink-muted); font-size: .78rem !important; }

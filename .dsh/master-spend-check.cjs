@@ -28,6 +28,11 @@ for (const m of data.masters) {
   for (const file of [m.id + '.webp', 'emblem-' + m.id + '.webp', 'talent-' + m.id + '.webp', ...[1, 2, 3, 4].map(n => 'skills/' + m.id + '-' + n + '.webp')]) assert(fs.existsSync(path.join(__dirname, '..', 'img/masters', file)), file);
 }
 assert.deepEqual(data.masters.filter(m => !m.verified).map(m => m.id), ['aena', 'isnor']);
+// Every master says what it is for, and every talent and skill has a plain sentence with its values filled in.
+for (const m of data.masters) {
+  for (const text of [m.scope, m.summary, m.who, m.talent.say, m.talent.ramp, ...m.skills.flatMap(s => [s.where, s.say, s.ramp])]) assert(typeof text === 'string' && text.length > 1 && !/[{}]/.test(text), m.id + ': ' + text);
+  m.skills.forEach(s => s.levels.at(-1).effects.forEach(e => assert(s.say.includes(e.value.toLocaleString('en-US') + (e.percent ? '%' : '')), m.id + ' ' + s.name + ' names ' + e.stat)));
+}
 assert(!JSON.stringify(data).includes('specialResearch'), 'Special Research stays out until its emblem cost is confirmed');
 
 // Ledger: a typed masters section; ready only at a class gate.

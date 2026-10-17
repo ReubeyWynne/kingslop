@@ -40,10 +40,10 @@ self: masters
     {% assign links = "valora:0:bear-hunt/:ev.switch.bear:Bear Hunt,valora:3:bear-hunt/:ev.switch.bear:Bear Hunt,valora:1:hero-gear/:ev.switch.gear:Gear,valora:2:hero-gear/:ev.switch.gear:Gear,pan:2:town-centre/#town-buildings:town.nav:Town Centre,cassia:1:battle-simulator/:ev.switch.sim:Simulator,cassia:2:battle-simulator/:ev.switch.sim:Simulator,cassia:3:bear-hunt/:ev.switch.bear:Bear Hunt,guinevere:2:battle-simulator/:ev.switch.sim:Simulator,guinevere:3:bear-hunt/:ev.switch.bear:Bear Hunt,wilson:2:vikings-vengeance/:ev.switch.vikings:Vikings,isnor:1:bear-hunt/:ev.switch.bear:Bear Hunt" | split: "," %}
     <ul class="master-where">
       {% for entry in links %}{% assign m = entry | split: ":" %}{% assign master = site.data.masters.masters | where: "id", m[0] | first %}{% assign at = m[1] | plus: 0 %}{% assign skill = master.skills[at] %}{% assign n = at | plus: 1 %}
-      <li><img src="../img/masters/skills/{{ master.id }}-{{ n }}.webp" width="36" height="36" alt="" loading="lazy"><span><b lang="en">{{ skill.name | escape }}</b> <small lang="en">{{ master.name | escape }} · {% for effect in skill.levels.last.effects %}{% unless forloop.first %}, {% endunless %}{{ effect.text | escape }}{% endfor %}</small></span><a href="../{{ m[2] }}" data-i18n="{{ m[3] }}">{{ m[4] }}</a></li>
+      <li><img src="../img/masters/skills/{{ master.id }}-{{ n }}.webp" width="36" height="36" alt="" loading="lazy"><span><b lang="en">{{ skill.name | escape }}</b> <small lang="en">{{ master.name | escape }} · {{ skill.say | escape }}</small></span><a href="../{{ m[2] }}" data-i18n="{{ m[3] }}">{{ m[4] }}</a></li>
       {% endfor %}
     </ul>
-    <p class="note" data-i18n="masters.whereNote">Effects are the skill at its top level. Check in game what each one applies to: a rally, a march, or only the bear.</p>
+    <p class="note" data-i18n="masters.whereNote">Effects are each skill at its top level.</p>
   </section>
   <section class="section" id="master-sources">
     <h2 data-i18n="directory.sources">Sources &amp; confidence</h2>
