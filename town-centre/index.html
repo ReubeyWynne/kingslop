@@ -45,6 +45,7 @@ self: town
       <button type="button" role="tab" aria-selected="true" aria-controls="town-bag" data-value="bag" data-action="tabs.select" data-i18n="town.shelf.bag">Bag</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-speedups" data-value="speedups" data-action="tabs.select" data-i18n="town.shelf.speedups">Speedups</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-resources" data-value="resources" data-action="tabs.select" data-i18n="town.shelf.resources">Resources</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-heroes" data-value="heroes" data-action="tabs.select" data-i18n="town.shelf.heroes">Heroes</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-hero-gear" data-value="hero-gear" data-action="tabs.select" data-i18n="town.shelf.heroGear">Hero gear</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-governor" data-value="governor" data-action="tabs.select" data-i18n="town.shelf.governor">Governor</button>
     </div>
@@ -84,6 +85,14 @@ self: town
       {% endfor %}
       </div>
       <p class="town-gloss" data-i18n="town.resNote">Count what is in your bag and warehouse. Resources score only when you gather them.</p>
+    </div>
+
+    <div class="town-shelf town-heroes" id="town-heroes" role="tabpanel" data-shelf="heroes" hidden>
+      <div class="town-heading"><p class="town-gloss" data-i18n="town.heroesNote">Open a hero to record your copy. The Heroes page shows the same roster.</p><a href="../heroes/" data-i18n="town.planHeroes">compare heroes →</a></div>
+      <div data-module="hero-directory">
+      {% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}
+      {% include heroes/roster.html bag="off" %}
+      </div>
     </div>
 
     <div class="town-shelf" id="town-hero-gear" role="tabpanel" data-shelf="hero-gear" hidden>

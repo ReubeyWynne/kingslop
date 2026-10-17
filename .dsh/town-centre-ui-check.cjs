@@ -99,6 +99,16 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       const sg = num(await page.locator('[data-event-total="sg"]').textContent());
       assert.ok(sg >= 400000 + 625 * 70, 'charm score counts in Strongest Governor');
 
+      // Heroes: the Heroes page roster, writing the same save.
+      await page.locator('.town-rail [data-value="heroes"]').click();
+      assert.equal(await page.locator('#town-heroes .directory-hero').count(), 34);
+      await page.locator('#town-heroes #hero-chenko summary').click();
+      await page.locator('#hero-chenko [data-field="owned"]').check();
+      await page.locator('#hero-chenko [data-field="level"]').fill('40'); await page.locator('#hero-chenko [data-field="level"]').press('Tab');
+      assert.equal((await ledger()).heroes.roster.chenko.level, 40);
+      assert.match(await page.locator('#hero-chenko [data-target~="hero-directory.badge"]').textContent(), /40/);
+      assert.equal(await page.locator('#town-heroes .hero-bag').count(), 0, 'shards stay on the bag shelf');
+
       // Persisted, and the governor page reads the same save.
       await page.reload(); await page.waitForFunction(() => document.querySelector('.town-daybar'));
       assert.equal(await page.locator('#town-bag [data-count="mithril"] [data-amount]').textContent(), '10');
@@ -107,6 +117,9 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.equal(await other.locator('#governor-bag input[data-bind="inventory.charm-guide"]').inputValue(), '5');
       assert.equal(await other.locator('.gov-tile[data-item="inf-1"]').getAttribute('data-state'), 'set');
       await other.close();
+      const roster = await context.newPage(); await roster.goto(origin + '/heroes/?lang=en');
+      await roster.waitForFunction(() => document.querySelector('#hero-chenko').dataset.owned === 'true');
+      await roster.close();
 
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0, 'no sideways scroll at ' + width);
       await page.screenshot({ path: path.join(output, `town-${width}.png`), fullPage: true });
@@ -119,8 +132,10 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0);
     await page.goto(origin + '/town-centre/#town-governor'); await page.waitForTimeout(300);
     assert.equal(await page.locator('#town-governor').isVisible(), true, 'a shelf link selects its tab');
+    await page.goto(origin + '/town-centre/#hero-chenko'); await page.waitForTimeout(300);
+    assert.equal(await page.locator('#hero-chenko .hero-dossier').evaluate(node => node.open && !!node.offsetParent), true, 'a hero link opens the Heroes shelf');
     assert.deepEqual(errors, []);
     await context.close();
-    console.log('Town Centre UI: bag tiles, speedups, hero gear per troop, the governor profile, event totals, persistence, shared save, deep links, RTL and widths pass.');
+    console.log('Town Centre UI: bag tiles, speedups, heroes, hero gear per troop, the governor profile, event totals, persistence, shared save, deep links, RTL and widths pass.');
   } finally { await browser.close(); server.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

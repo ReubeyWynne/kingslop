@@ -559,6 +559,7 @@
     "css": [
       "../css/styles.css",
       "../css/events.css",
+      "../css/heroes.css",
       "../css/town.css"
     ],
     "scripts": [
@@ -570,6 +571,8 @@
       "../js/governor-engine.js",
       "../js/hero-gear-engine.js",
       "../js/town-centre-engine.js",
+      "../js/hero-directory-engine.js",
+      "../js/hero-directory.js",
       "../js/town-centre.js"
     ],
     "footMainKey": "town.kicker",

@@ -11,6 +11,7 @@ Every shelf is a grid of tiles painted from the ledger; tapping one opens a sing
 | Bag | `inventory[id]` for every `_data/event_rules.json` item | count |
 | Speedups | `inventory['speedup-{kind}']` in minutes; kinds `general`, `construction`, `research`, `training`, `learning`, `healing` | days, hours, minutes |
 | Resources | `inventory.bread`, `wood`, `stone`, `iron` | count |
+| Heroes | `heroes.roster` and hero shards: the Heroes page roster itself (`_includes/heroes/roster.html` and the `hero-directory` module), without its shard bag, which is on the Bag shelf | the hero's "Your copy" form, written through `setHero` |
 | Hero gear | `heroGear.pieces`: one set of four (helm, gloves, chest, boots) per troop type, behind troop tabs; plus gear XP, spare mythic gear, Forgehammers and Mithril | quality chips and level/mastery steppers, written through `writeHeroGear` |
 | Governor | `governorGear` (one set of six for the account) and `governorCharms` (three per piece), laid out as the in-game governor profile; plus the five materials | gear and charm steppers, written through `setGovernor` |
 

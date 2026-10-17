@@ -77,6 +77,7 @@ jobs:
               - *shared
               - .dsh/hero-directory-ui-check.cjs
               - heroes/**
+              - _includes/heroes/**
               - js/hero-directory*.js
               - _data/heroes.json
               - _data/hero_roles.json
@@ -121,6 +122,9 @@ jobs:
               - _data/event_rules.json
               - _data/governor.json
               - css/town.css
+              - _includes/heroes/**
+              - js/hero-directory*.js
+              - css/heroes.css
             # The deck walks every page and fails on any script error.
             deck:
               - *shared
