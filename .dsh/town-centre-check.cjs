@@ -1,6 +1,6 @@
 // Town Centre: points from the whole ledger, page wiring and dictionaries.
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
-const T = require('../js/town-centre-engine.js'), Spend = require('../js/hero-spend.js'), Ledger = require('../js/player-ledger.js'), rules = require('../js/event-rules.js');
+const T = require('../js/town-centre-engine.js'), H = require('../js/hero-gear-engine.js'), Spend = require('../js/hero-spend.js'), Ledger = require('../js/player-ledger.js'), rules = require('../js/event-rules.js');
 const storage = { getItem(k) { return this[k] ?? null; }, setItem(k, v) { this[k] = v; } };
 const store = Ledger.create(storage);
 
@@ -22,9 +22,29 @@ assert.ok(best.unknown.includes('mithril') && best.unknown.includes('speedup-gen
 // Items match the shared event rules exactly. Hero shards and widgets are scored from the
 // hero spending plan instead of the raw balance, so a bag widget with no heroes scores nothing.
 store.setBalance('mithril', 10); store.setBalance('forgehammer', 25); store.setBalance('hero-widget', 3);
-assert.equal(T.day(store.snapshot(), 'prep', 4).lines.filter(l => l.kind === 'item').reduce((s, l) => s + l.points, 0), rules.calculate(Spend.budget(store.snapshot()), 'prep', 4, {}, null).total);
+const usableIds = ['mithril', 'forgehammer', ...Spend.ITEMS];
+store.setBalance('truegold', 7);
+assert.equal(T.day(store.snapshot(), 'prep', 2).lines.filter(l => l.kind === 'item').reduce((s, l) => s + l.points, 0), rules.calculate(store.snapshot(), 'prep', 2, {}, null).items.filter(i => !usableIds.includes(i.id) && i.points).reduce((s, i) => s + i.points, 0));
 assert.equal(T.day(store.snapshot(), 'prep', 4).lines.find(l => l.id === 'hero-widget'), undefined);
 assert.ok(T.day(store.snapshot(), 'prep', 4).unknown.includes('heroes'));
+
+// Forgehammers and mithril: only what the saved hero gear can take, in whole mastery steps and
+// red milestones paid with the XP and spare mythic gear they need. No gear, nothing spendable.
+assert.equal(T.day(store.snapshot(), 'prep', 4).lines.find(l => l.id === 'mithril'), undefined);
+assert.ok(T.day(store.snapshot(), 'prep', 4).unknown.includes('hero-gear-pieces'));
+const gear = store.heroGear(H); gear.pieces['inf-helm'] = H.normalisePiece({ quality: 'mythic', level: 100, mastery: 10 });
+store.writeHeroGear(gear, H, { piece: 'inf-helm' });
+assert.deepEqual(Object.keys(store.snapshot().heroGear.pieces), ['inf-helm']);
+store.setBalance('hero-gear-xp', 0); store.setBalance('spare-mythic-gear', 0);
+let gearDay = T.day(store.snapshot(), 'prep', 4);
+assert.equal(gearDay.lines.find(l => l.id === 'mithril'), undefined, 'no XP to reach level 120, so no imbuement');
+assert.equal(gearDay.lines.find(l => l.id === 'forgehammer'), undefined, 'mastery 11 needs a spare mythic piece and 110 hammers; 25 pay for nothing');
+store.setBalance('hero-gear-xp', 1e6); store.setBalance('spare-mythic-gear', 10); store.setBalance('forgehammer', 200);
+gearDay = T.day(store.snapshot(), 'prep', 4);
+assert.deepEqual([gearDay.lines.find(l => l.id === 'mithril').amount, gearDay.lines.find(l => l.id === 'forgehammer').amount], [10, 110], 'red 120 at mastery 11; the 90 hammers left cannot pay mastery 12');
+assert.equal(gearDay.lines.find(l => l.id === 'mithril').kind, 'usable');
+assert.deepEqual(T.heroGearSpend(store.snapshot()).plan.spent, H.spendable(store.snapshot().heroGear.pieces, { xp: 1e6, hammers: 200, mythic: 10, mithril: 10 }).spent, 'the Town Centre and hero gear engine share one plan');
+assert.ok(!gearDay.unknown.includes('hero-gear-pieces'));
 
 // Speedups: minutes × the row's rate, each kind once per day.
 store.setBalance('speedup-general', 100); store.setBalance('speedup-healing', 50); store.setBalance('speedup-construction', 10);
@@ -62,7 +82,7 @@ store.setBalance('mythic-hero-shard', 500);
 store.setHero('jabel', { stars: 24 }); store.setBalance(Ledger.heroShardId('jabel'), 60);
 store.setHero('amadeus', { stars: 12, widget: 3 }); store.setBalance(Ledger.heroShardId('amadeus'), 200); store.setBalance(Ledger.heroWidgetId('amadeus'), 30); store.setBalance(Ledger.widgetChestId(1), 0);
 const heroDay = T.day(store.snapshot(), 'prep', 2), shardLine = heroDay.lines.find(l => l.id === 'mythic-hero-shard');
-assert.equal(shardLine.kind, 'hero');
+assert.equal(shardLine.kind, 'usable');
 assert.equal(shardLine.amount, 695, 'Amadeus 195 of his own (2★ to 3★ 2/6), Jabel 60 own + 440 general (4★ to 4★ 5/6)');
 assert.equal(shardLine.points, 695 * 3040);
 assert.equal(T.best(store.snapshot(), 'prep').lines.find(l => l.id === 'hero-widget').points, 20 * 8000, 'widget 3 to 4 costs 20 of Amadeus’s 30');

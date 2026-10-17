@@ -1187,6 +1187,7 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "gear.kvkWindow": "Dias 4 e 5 de KvK",
   "gear.kvkScoring": "Como os pontos de KvK contam",
   "gear.kvkFormula": "No 4º ou 5º dia de preparação do KvK, cada Forgehammer gasto vale {hammers} pontos e cada Mithril vale {mithril}.",
+  "gear.kvkBag": "Seu inventário pode investir {hammers} Forgehammers e {mithril} mithril neste equipamento: {points} pontos de KvK. Os martelos contam em passos inteiros de maestria, e o mithril só nos marcos vermelhos que você tem XP, martelos e peças míticas extras para alcançar.",
   "gear.kvkOnlySpend": "XP, reforja de XP e equipamento mítico sacrificado não dão pontos. Cada opção para juntar recursos mostra os pontos pelo custo total, e o total investido cobre todas as peças alteradas nas três tropas. Os pontos contam uma vez, no dia em que você usa os materiais.",
   "gear.kvkGuide": "Pontuação e calendário do KvK",
   "gear.perCostUnit": "ganho / custo",

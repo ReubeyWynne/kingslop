@@ -13,7 +13,7 @@
     pieces: '{n} of 12 pieces set', partialScore: '{n}*',
     'speedup.general': 'General', 'speedup.construction': 'Construction', 'speedup.research': 'Research', 'speedup.training': 'Training', 'speedup.learning': 'Learning', 'speedup.healing': 'Healing',
     'unit.d': 'd', 'unit.h': 'h', 'unit.m': 'm',
-    heroAmount: '{n} usable'
+    heroAmount: '{n} usable', heroGearPieces: 'your hero gear'
   };
   var EVENTS = { prep: ['ks.today.kickerPrep', 'KvK prep'], sg: ['ks.governor.title', 'Strongest Governor'], brawl: ['ks.brawl.title', 'Alliance Brawl'] };
   function t(api, key) { return api.tr('town.' + key, EN[key]); }
@@ -32,11 +32,14 @@
     if (/^speedup-/.test(id)) return t(api, 'speedup.' + id.slice(8));
     if (id === 'governor-gear') return t(api, 'govGear');
     if (id === 'governor-charms') return t(api, 'govCharms');
+    if (id === 'hero-gear-xp') return api.tr('gear.xpTotal', 'XP total');
+    if (id === 'spare-mythic-gear') return api.tr('gear.mythic', 'Spare mythic gear');
+    if (id === 'hero-gear-pieces') return t(api, 'heroGearPieces');
     var need = window.HeroSpend.missing(id);
     if (need) return window.HeroPoints.missing(api, need);
     return id;
   }
-  function amount(api, line) { return line.kind === 'speedup' ? duration(api, line.amount) : line.kind === 'governor' ? fill(api, 'scoreGain', { n: api.fmt(line.amount) }) : line.kind === 'hero' ? fill(api, 'heroAmount', { n: api.fmt(line.amount) }) : api.fmt(line.amount); }
+  function amount(api, line) { return line.kind === 'speedup' ? duration(api, line.amount) : line.kind === 'governor' ? fill(api, 'scoreGain', { n: api.fmt(line.amount) }) : line.kind === 'usable' ? fill(api, 'heroAmount', { n: api.fmt(line.amount) }) : api.fmt(line.amount); }
   function confirmed(snapshot, id) { var entry = snapshot.inventory[id]; return entry && entry.status === 'confirmed' ? entry.amount : null; }
   function element(tag, className, text) { var node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; }
 

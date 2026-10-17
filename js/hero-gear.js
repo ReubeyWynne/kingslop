@@ -95,6 +95,9 @@
   function paintTheory() {
     el('cost-units').textContent = costText(E.redPlans(state).scale);
     el('kvk-formula').textContent = BH.fill(tr('kvkFormula'), { hammers: fmt(E.KVK_RATES.hammers), mithril: fmt(E.KVK_RATES.mithril) });
+    // The same spending plan the Town Centre scores: what this bag can actually put into this gear.
+    var spend = E.spendable(state.pieces, state.resources);
+    el('kvk-bag').textContent = BH.fill(tr('kvkBag'), { hammers: fmt(spend.spent.hammers), mithril: fmt(spend.spent.mithril), points: fmt(spend.points) });
     el('roles').innerHTML = E.TYPES.map(function (type) { return '<li><strong>' + esc(tr(type)) + '</strong> ' + esc(roleText(type)) + '</li>'; }).join('');
   }
   function paintPage() {

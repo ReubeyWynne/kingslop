@@ -185,6 +185,17 @@ for (const key of gearKeys) {
   assert.deepEqual(tags(ptDict[key]), tags(dict[key]), `HTML tag mismatch: ${key}`);
 }
 
+// Spendable for event points: whole mastery steps (not on epic, up to 20) and red milestones
+// paid with their XP, hammers and spare mythic gear; mithril routes go first.
+let spend = E.spendable({ 'inf-helm': { quality: 'mythic', level: 100, mastery: 10 }, 'inf-boots': { quality: 'mythic', level: 0, mastery: 0 } }, { xp: 1e6, hammers: 200, mythic: 10, mithril: 10 });
+assert.deepEqual(spend.spent, { xp: 52650, hammers: 170, mythic: 6, mithril: 10 });
+assert.deepEqual(spend.pieces['inf-helm'], { quality: 'red', level: 120, mastery: 11 });
+assert.equal(spend.points, 170 * E.KVK_RATES.hammers + 10 * E.KVK_RATES.mithril);
+assert.equal(E.spendable({ 'inf-helm': { quality: 'epic', level: 10, mastery: 0 } }, { xp: 1e6, hammers: 5000, mythic: 5, mithril: 100 }).points, 0, 'epic gear takes no hammers or mithril');
+assert.deepEqual(E.spendable({ 'inf-helm': { quality: 'mythic', level: 0, mastery: 0 } }, { xp: 0, hammers: 5000, mythic: 0, mithril: 100 }).spent, { xp: 0, hammers: 550, mythic: 0, mithril: 0 }, 'mastery past 10 needs spare mythic gear');
+assert.equal(E.spendable({ 'inf-helm': { quality: 'red', level: 200, mastery: 20 } }, { xp: 1e6, hammers: 5000, mythic: 50, mithril: 500 }).points, 0, 'maxed gear spends nothing');
+assert.ok(fs.readFileSync('hero-gear/index.html', 'utf8').includes('id="gear-kvk-bag"'));
+
 const nearMilestone = E.defaults();
 Object.assign(nearMilestone.pieces, {
   'inf-helm': {quality:'mythic',level:69,mastery:2},

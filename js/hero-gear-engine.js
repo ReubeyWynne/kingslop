@@ -384,7 +384,35 @@
     }
     return out;
   }
-  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, total: total, redPlans: redPlans, nearbyMilestones: nearbyMilestones, optimise: optimise, strategyComparison: strategyComparison, encodeLink: encodeLink, readLink: readLink, invested: invested, bestSet: bestSet, bestSplit: bestSplit };
+  /* What the bag can actually spend on the gear you have, for event points. Forgehammers
+     only score as whole mastery steps (to 20, not on epic gear) and mithril only as red
+     milestone imbuements, each paid with the XP, hammers and spare mythic gear it needs.
+     Steps are taken greedily by the points they spend, so mithril routes come first;
+     hammers score the same wherever they go, so the rest only loses part of a step. */
+  function spendable(pieces, bag) {
+    var now = {}, left = emptyCost(), spent = emptyCost(), steps = 0;
+    Object.keys(pieces || {}).forEach(function (id) { now[id] = normalisePiece(pieces[id]); });
+    RES.forEach(function (r) { left[r] = number(bag && bag[r], 1e9); });
+    for (;;) {
+      var best = null;
+      Object.keys(now).forEach(function (id) {
+        var p = now[id], options = [];
+        if (p.quality !== 'epic' && p.mastery < 20) options.push(normalisePiece({ quality: p.quality, level: p.level, mastery: p.mastery + 1 }));
+        var next = milestone(p, 'mithril'); if (next) options.push(next);
+        options.forEach(function (to) {
+          var c = cost(p, to), gain = kvkPoints(c);
+          if (!gain || !affordable(c, left)) return;
+          var load = RES.reduce(function (sum, r) { return sum + c[r] / Math.max(1, left[r]); }, 0);
+          if (!best || gain > best.gain || gain === best.gain && load < best.load) best = { id: id, to: to, cost: c, gain: gain, load: load };
+        });
+      });
+      if (!best) break;
+      now[best.id] = best.to; steps++;
+      RES.forEach(function (r) { left[r] -= best.cost[r]; spent[r] += best.cost[r]; });
+    }
+    return { spent: spent, left: left, pieces: now, steps: steps, points: kvkPoints(spent) };
+  }
+  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, spendable: spendable, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, total: total, redPlans: redPlans, nearbyMilestones: nearbyMilestones, optimise: optimise, strategyComparison: strategyComparison, encodeLink: encodeLink, readLink: readLink, invested: invested, bestSet: bestSet, bestSplit: bestSplit };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.HeroGear = api;
 })(typeof window !== 'undefined' ? window : globalThis);
