@@ -3,7 +3,7 @@
 Original Kingshot game artwork, published by Century Games and served by the
 Kingshot Optimizer community tool. Retrieved 17 October 2026 from the resource
 icons its pages reference: https://kingshotoptimizer.com/.
-No generated artwork is included.
+No generated raster artwork is included.
 
 | Local files | Source URLs |
 | --- | --- |
@@ -14,5 +14,7 @@ No generated artwork is included.
 | `bread.webp`, `wood.webp`, `stone.webp`, `iron.webp` | `https://kingshotoptimizer.com/images/icons/resources/{name}.webp` |
 
 The 64-pixel WebP files are unchanged. Assets are served from this
-repository, without runtime hotlinks. No source had art for the healing
-speedup, so that tile keeps its letter.
+repository, without runtime hotlinks. `healing-speedup.svg` and `hero-widget-chest.svg` are original static vector
+symbols authored for the Town Centre: a medical timer and a widget chest.
+They are not game artwork.
+

@@ -4,12 +4,16 @@
 (function () {
   'use strict';
   var EN = {
-    dayTitle: '{event}, day {day}', dayLabel: 'Day {n}', dayEmpty: 'Nothing you have counted scores on this day yet.',
-    complete: 'Every count this event uses is entered.', partial: 'Partial: {names} not entered yet, so the total leaves them out.',
-    more: '{n} more', alsoNone: 'Nothing else listed for this day.', planEmpty: 'Count some items to see where each one scores most.',
-    planRow: '{item}: day {day}, {points} points', topRate: 'best {rate} each · {event} day {day}', topRateMinute: 'best {rate} a minute · {event} day {day}', noRate: 'no event scores this by the piece',
+    dayTitle: '{event}, day {day}', dayLabel: 'Day {n}', dayEmpty: 'No recorded inventory scores on this day.',
+    complete: 'All required counts entered.', partial: 'Partial estimate. Missing counts or levels are excluded.',
+    alsoNone: 'No other activities listed.', planEmpty: 'Record your inventory to see the best days.',
+    planRow: '{item}: day {day}, {points} points', topRate: 'best {rate} each · {event} day {day}', topRateMinute: 'best {rate} a minute · {event} day {day}', noRate: 'No rate per item.',
     scoreGain: '+{n} score', govGear: 'Governor gear score', govCharms: 'Governor charm score',
-    gainBoth: 'Your materials could add {gear} gear score and {charms} charm score.', gainUnknown: 'Set your levels and count your materials to see the score they could add.',
+    gainBoth: 'Available upgrades: +{gear} gear score · +{charms} charm score.', gainUnknown: 'Enter levels and materials to estimate upgrades.',
+    missingDetails: 'Missing details',
+    missingSpeedup: '{kind} speedups',
+    missingGovGear: 'Governor gear levels and materials',
+    missingGovCharms: 'Governor charm levels and materials',
     pieces: '{n} of 12 pieces set', partialScore: '{n}*',
     'speedup.general': 'General', 'speedup.construction': 'Construction', 'speedup.research': 'Research', 'speedup.training': 'Training', 'speedup.learning': 'Learning', 'speedup.healing': 'Healing',
     'unit.d': 'd', 'unit.h': 'h', 'unit.m': 'm',
@@ -56,12 +60,6 @@
     var T = window.TownCentre, store = window.PlayerLedger.shared(), api = context.api, root = context.root;
     var event = 'prep', chosen = { prep: null, sg: null, brawl: null };
     function put(key, value) { context.targets(key).forEach(function (node) { node.textContent = value; }); }
-    function rates() {
-      root.querySelectorAll('[data-rate]').forEach(function (node) {
-        var top = T.topRate(node.dataset.rate);
-        node.textContent = top ? fill(api, /^speedup-/.test(node.dataset.rate) ? 'topRateMinute' : 'topRate', { rate: api.fmt(top.rate), event: eventName(api, top.event), day: api.fmt(top.day) }) : t(api, 'noRate');
-      });
-    }
     function render() {
       var snapshot = store.snapshot(), results = {};
       Object.keys(EVENTS).forEach(function (key) {
@@ -69,9 +67,13 @@
         root.querySelectorAll('[data-event-total="' + key + '"]').forEach(function (node) { node.textContent = api.fmt(results[key].total); node.dataset.partial = String(!results[key].complete); });
       });
       var result = results[event];
-      var names = result.unknown.slice(0, 3).map(function (id) { return name(api, id); });
-      if (result.unknown.length > 3) names.push(fill(api, 'more', { n: api.fmt(result.unknown.length - 3) }));
-      put('coverage', result.complete ? t(api, 'complete') : fill(api, 'partial', { names: names.join(', ') }));
+      put('coverage', t(api, result.complete ? 'complete' : 'partial'));
+      context.targets('missingDisclosure').forEach(function (node) { node.hidden = result.complete; });
+      var missing = context.targets('missing')[0]; missing.replaceChildren();
+      result.unknown.forEach(function (id) {
+        var label = /^speedup-/.test(id) ? fill(api, 'missingSpeedup', { kind: name(api, id) }) : id === 'governor-gear' ? t(api, 'missingGovGear') : id === 'governor-charms' ? t(api, 'missingGovCharms') : name(api, id);
+        missing.appendChild(element('li', '', label));
+      });
 
       var top = Math.max.apply(null, result.days.map(function (day) { return day.total; }).concat([1]));
       if (!chosen[event]) chosen[event] = result.days.reduce(function (best, day) { return day.total > best.total ? day : best; }, result.days[0]).day;
@@ -107,7 +109,7 @@
       if (e.detail.binding === 'town-event' && Object.hasOwn(EVENTS, e.detail.value)) { event = e.detail.value; render(); }
     });
     context.cleanup(store.subscribe(render));
-    return { refresh: function () { rates(); render(); }, actions: {
+    return { refresh: render, actions: {
       day: { run: function (button) { chosen[event] = Number(button.dataset.day); render(); } }
     } };
   });
