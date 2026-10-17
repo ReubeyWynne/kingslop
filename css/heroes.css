@@ -72,6 +72,7 @@
 /* Your copy on the portrait: widget level top right, shards above the stars, five stars with the tier as notches. */
 .hero-portrait-widget, .hero-portrait-shards { position: absolute; inset-inline-end: 3px; display: flex; align-items: center; gap: 1px; padding: 0 3px; font: 700 .62rem/1.35 var(--body); font-variant-numeric: tabular-nums; color: var(--ink); background: rgba(0, 0, 0, .66); border-radius: 2px; }
 .hero-portrait-widget { inset-block-start: 3px; color: var(--amber); }
+:is(.hero-portrait-widget, .hero-portrait-shards, .hero-portrait-stars)[hidden] { display: none; }
 .hero-portrait-widget svg { width: .62rem; height: .62rem; fill: currentColor; fill-rule: evenodd; }
 .hero-portrait-shards { inset-block-end: 1.05rem; }
 .hero-portrait-shards i { width: .7rem; height: .7rem; background: url(../img/kingshot/hero-shard.png) center / contain no-repeat; }
