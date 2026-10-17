@@ -175,7 +175,6 @@ html, body { overscroll-behavior-x: none; }
 .page-deck[data-selected="heroes"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E68AB4; --deck-ground: #241c27; }
 .page-deck[data-selected="governor"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #86D48A; --deck-ground: #19241b; }
 .page-deck[data-selected="castle"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #DFAA77; --deck-ground: #27201b; }
-.page-deck[data-selected="town"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #DC8FDB; --deck-ground: #221a25; }
 /* The selected page's colours land only on the parts that use them, not on
    the strip, so a change restyles a handful of elements rather than every
    cover in the ring. */
@@ -242,6 +241,11 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
   color: var(--ink);
 }
 .deck-header h2::before { content: none; }
+/* The Town Centre is not a page in the ring: it holds your inventory, so it is one fixed button beside close. */
+.deck-header h2 { flex: 1; }
+.deck-town { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; padding: 0 .7rem; border: 1px solid var(--amber-dim); border-radius: 2px; background: var(--void-2); color: var(--amber); font-size: var(--step--1); font-weight: 700; letter-spacing: .05em; text-decoration: none; white-space: nowrap; }
+.deck-town svg { width: 1rem; height: 1rem; fill: currentColor; }
+.deck-town:hover, .deck-town:focus-visible, .deck-town[aria-current="page"] { color: var(--ink); border-color: var(--amber); }
 .page-deck button {
   min-width: 44px;
   min-height: 44px;
@@ -342,7 +346,6 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
 .deck-card[data-page="heroes"] { --deck-accent: #E68AB4; }
 .deck-card[data-page="governor"] { --deck-accent: #86D48A; }
 .deck-card[data-page="castle"] { --deck-accent: #DFAA77; }
-.deck-card[data-page="town"] { --deck-accent: #DC8FDB; }
 .deck-card::before {
   content: '';
   position: absolute;
@@ -907,7 +910,7 @@ html[data-page="governor"], html[data-page="home"]:has(.event-card[data-hover-pa
 }
 
 /* ─── Town Centre — the orchid storehouse ──────────────── */
-html[data-page="town"], html[data-page="home"]:has(.event-card[data-hover-page="town"]:is(:hover, :focus-within)), .deck-card[data-page="town"] {
+html[data-page="town"], html[data-page="home"]:has(.event-card[data-hover-page="town"]:is(:hover, :focus-within)), .deck-town {
   --void: #130C14;        /* storehouse night — orchid-black   */
   --void-2: #1C141E;      /* one step up (fields)              */
   --amber: #DC8FDB;       /* town-crier orchid — the signal    */

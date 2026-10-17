@@ -1126,7 +1126,6 @@ window.__BH_I18N_DATA["ko"] = {
   "gov.cardLede": "내 재료로 총독 장비와 부적 강화를 계획하고, 점수가 이벤트에서 얼마나 되는지 확인하세요.",
   "gov.kicker": "총독의 옷장",
   "town.nav": "타운 센터",
-  "ev.deck.lede.town": "내가 가진 모든 것과, 그것으로 얻을 수 있는 이벤트 점수.",
   "town.title": "타운 센터",
   "town.cardLede": "내가 가진 모든 것을 한 페이지에서, 그리고 KvK·최강 총독·브롤에서 얻을 수 있는 점수까지.",
   "town.kicker": "가진 모든 것을 세어 보기"

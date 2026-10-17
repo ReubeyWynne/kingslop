@@ -1128,7 +1128,6 @@ window.__BH_I18N_DATA["it"] = {
   "gov.cardLede": "Pianifica equipaggiamento e amuleti del governatore con i tuoi materiali e scopri quanto vale il punteggio negli eventi.",
   "gov.kicker": "il guardaroba del governatore",
   "town.nav": "Centro città",
-  "ev.deck.lede.town": "tutto ciò che possiedi e i punti evento che può farti ottenere.",
   "town.title": "Centro città",
   "town.cardLede": "Tutto ciò che possiedi in una pagina, e i punti KvK, Governatore più forte e Brawl che può farti ottenere.",
   "town.kicker": "tutto ciò che possiedi, contato"

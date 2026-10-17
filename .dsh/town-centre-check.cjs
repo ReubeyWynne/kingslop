@@ -56,12 +56,16 @@ assert.equal(T.topRate('bread'), null);
 
 // Page wiring: navigation, scripts, deck scene, dictionaries and copy keys.
 const nav = require('../_data/nav.json'), pages = require('../_data/pages.json');
-assert.equal(nav.filter(n => n.self === 'town').length, 1);
+// The Town Centre sits outside the page ring: a fixed button in the deck and a ledger link, never a card.
+assert.equal(nav.filter(n => n.self === 'town').length, 0);
+assert.ok(!pages.town.swipePrev && !pages.town.swipeNext);
+assert.ok(fs.readFileSync('_includes/page-deck.html', 'utf8').includes('class="deck-town" href="{{ p.depth }}town-centre/"'));
+assert.ok(!fs.readFileSync('_includes/ascii/deck-scene.html', 'utf8').includes("'town'"));
 for (const script of ['event-data.js', 'governor-data.js', 'event-rules.js', 'governor-engine.js', 'hero-gear-engine.js', 'town-centre-engine.js', 'town-centre.js']) assert.ok(pages.town.scripts.includes('../js/' + script), script);
 assert.ok(pages.town.scripts.indexOf('../js/town-centre-engine.js') < pages.town.scripts.indexOf('../js/town-centre.js'));
 const dictionaries = fs.readdirSync('i18n').filter(f => f.endsWith('.js')).map(file => { const ctx = { window: {} }; vm.runInNewContext(fs.readFileSync('i18n/' + file, 'utf8'), ctx); return [file, Object.values(ctx.window.__BH_I18N_DATA)[0]]; });
 assert.equal(dictionaries.length, 17);
-for (const [file, d] of dictionaries) for (const key of ['town.nav', 'ev.deck.lede.town', 'town.title', 'town.cardLede', 'town.kicker']) assert.equal(typeof d[key], 'string', file + ' ' + key);
+for (const [file, d] of dictionaries) for (const key of ['town.nav', 'town.title', 'town.cardLede', 'town.kicker']) assert.equal(typeof d[key], 'string', file + ' ' + key);
 const en = dictionaries.find(([file]) => file === 'en.js')[1];
 const html = fs.readFileSync('town-centre/index.html', 'utf8');
 for (const match of html.matchAll(/data-i18n(?:-key)?="(town\.[a-zA-Z.]+)"/g)) assert.ok(en[match[1]], match[1]);

@@ -435,10 +435,10 @@
     "brandNoteKey": "gear.kicker",
     "brandNote": "the forge ledger",
     "swipePrev": {
-      "url": "../town-centre/",
-      "page": "town",
-      "title": "Town Centre",
-      "lede": "everything you own, and the event points it can score."
+      "url": "../heroes/",
+      "page": "heroes",
+      "title": "Heroes",
+      "lede": "heroes by generation, troop and role."
     },
     "swipeNext": {
       "url": "../governor-gear/",
@@ -496,10 +496,10 @@
       "lede": "your battles, your marches, and the maths."
     },
     "swipeNext": {
-      "url": "../town-centre/",
-      "page": "town",
-      "title": "Town Centre",
-      "lede": "everything you own, and the event points it can score."
+      "url": "../hero-gear/",
+      "page": "gear",
+      "title": "Hero gear",
+      "lede": "your next upgrade and the resources it needs."
     },
     "css": [
       "../css/styles.css",
@@ -536,26 +536,14 @@
     "ogTitle": "Town Centre, Demystified — dey.ci",
     "ogDescKey": "town.metaDescription",
     "ogDesc": "Everything in your bag on one page: hero gear, governor gear and charms, speedups, resources and event items, and the KvK, Strongest Governor and Brawl points they can score.",
-    "skipHref": "#town-points",
+    "skipHref": "#town-inventory",
     "skipKey": "town.skip",
-    "skipText": "Skip to your points",
+    "skipText": "Skip to your inventory",
     "dust": "<i></i><i></i><i></i>",
     "brand": "Town Centre",
     "brandHeadingKey": "town.title",
     "brandNoteKey": "town.kicker",
     "brandNote": "everything you own, counted",
-    "swipePrev": {
-      "url": "../heroes/",
-      "page": "heroes",
-      "title": "Heroes",
-      "lede": "heroes by generation, troop and role."
-    },
-    "swipeNext": {
-      "url": "../hero-gear/",
-      "page": "gear",
-      "title": "Hero gear",
-      "lede": "your next upgrade and the resources it needs."
-    },
     "css": [
       "../css/styles.css",
       "../css/events.css",

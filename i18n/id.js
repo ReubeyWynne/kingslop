@@ -1137,7 +1137,6 @@ window.__BH_I18N_DATA["id"] = {
   "gov.cardLede": "Rencanakan perlengkapan dan jimat gubernur dari bahanmu sendiri, dan lihat nilai skornya di event.",
   "gov.kicker": "lemari gubernur",
   "town.nav": "Pusat Kota",
-  "ev.deck.lede.town": "semua yang kamu miliki, dan poin event yang bisa dihasilkannya.",
   "town.title": "Pusat Kota",
   "town.cardLede": "Semua yang kamu miliki dalam satu halaman, dan poin KvK, Gubernur Terkuat, dan Brawl yang bisa dihasilkannya.",
   "town.kicker": "semua milikmu, terhitung"

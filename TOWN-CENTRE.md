@@ -2,6 +2,8 @@
 
 `town-centre/` is one view over the whole shared player ledger: event items, speedups, resources, hero gear and governor gear and charms, plus the KvK prep, Strongest Governor and Alliance Brawl points that inventory can score. It adds no ledger schema; every value is an ordinary inventory balance or an existing typed section, so hero gear, governor gear and events see each edit.
 
+It is not an event page, so it is not in the page ring: no deck card, no cover animation and no swipe neighbours. The deck has one fixed Town Centre button beside close, and the ledger lists it under the tools. The inventory comes first and the points it can score follow.
+
 ## Inventory
 
 Every shelf is a grid of tiles painted from the ledger; tapping one opens a single edit dialog (`town-inventory`), so the page has no blocks of bare fields.
