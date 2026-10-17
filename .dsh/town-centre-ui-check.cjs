@@ -188,7 +188,7 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.equal(await page.locator('#town-troops [data-action="town-inventory.buff"]').getAttribute('aria-pressed'), 'true');
       const troopPlan = await page.locator('[data-target="town-inventory.troopPlan"]').textContent();
       assert.match(troopPlan, /, day 4: 3,000 troops pre-trained/);
-      assert.match(troopPlan, /at least 2d 2h 40m before the day/, '3,000 T10 at 152 s each, 150% faster');
+      assert.match(troopPlan, /takes 2d 2h 40m, so start it by .+ \d\d:\d\d UTC\./, '3,000 T10 at 152 s each, 150% faster');
       assert.equal(await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'prep').lines.find(l => l.id === 'troops-batch-t10').points), 3000 * 60);
       await page.locator('#town-troops [data-action="town-inventory.buff"]').click();
       assert.equal((await ledger()).preferences.training, undefined);

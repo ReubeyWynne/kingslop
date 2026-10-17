@@ -35,4 +35,9 @@ assert.equal(rules.labelToItemId('Hero Gear Forgehammer'),'Forgehammer');assert.
 const dictionaries=fs.readdirSync('i18n').filter(x=>x.endsWith('.js')).map(name=>{const context={window:{}};vm.runInNewContext(fs.readFileSync('i18n/'+name,'utf8'),context);return Object.values(context.window.__BH_I18N_DATA)[0];});
 const keys=Object.keys(dictionaries.find(d=>d['ks.available.title']==='Your available points')).filter(k=>k.startsWith('ks.available.'));
 for(const dictionary of dictionaries)for(const key of keys)assert.equal(typeof dictionary[key],'string',key);
-console.log('Event rules: totals, unknowns, withholding, units, event days and translations pass.');
+// The 28-day wheel on UTC: cycle day 1 is Monday 2026-08-17, the same anchor the Event Cycle page uses.
+assert.ok(fs.readFileSync('js/kvk.js','utf8').includes('new Date(2026, 7, 17)'));assert.equal(rules.EPOCH,Date.UTC(2026,7,17));
+assert.deepEqual([rules.cycleDay('brawl',4),rules.cycleDay('sg',4),rules.cycleDay('sg',6),rules.cycleDay('prep',4)],[4,11,13,25]);
+const saturday=Date.UTC(2026,9,17,13);assert.equal(rules.opens('sg',4,saturday),Date.UTC(2026,9,22));assert.equal(rules.opens('brawl',4,saturday),Date.UTC(2026,10,12));assert.equal(rules.opens('prep',4,saturday),Date.UTC(2026,10,5));
+assert.equal(rules.opens('sg',4,Date.UTC(2026,9,22,23)),Date.UTC(2026,9,22),'an open day is its own opening');
+console.log('Event rules: cycle dates, totals, unknowns, withholding, units, event days and translations pass.');

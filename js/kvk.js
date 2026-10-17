@@ -445,8 +445,49 @@
     wireCopy(BH, info.copy);
   }
 
+  /* Troop days: when to buy the 3,000-gem capacity buff and start the tripled batch so it is
+     ready to collect when the day opens, from the training saved in the Town Centre
+     (TroopSpend.batch). Shown on the two days before the latest start, while the troop day
+     is still ahead, and as a collect reminder on the day itself. */
+  var TROOP_EVENTS = [['brawl', 'ks.brawl.title', 'Alliance Brawl'], ['sg', 'ks.today.kickerSg', 'Strongest Governor'], ['prep', 'ks.today.kickerPrep', 'KvK prep']];
+  function troopActions(BH) {
+    var R = window.TroopSpend, E = window.EventRules, ledger = window.PlayerLedger;
+    if (!R || !ledger || !E.opens) return '';
+    var snapshot = ledger.shared().snapshot(), used = window.BuildingSpend ? window.BuildingSpend.plan(snapshot).resources : {};
+    var now = Date.now(), dayMs = E.DAY_MS, selected = Math.floor(now / dayMs) * dayMs + (day - todayDay()) * dayMs, ref = followingToday ? now : selected;
+    var locale = (window.I18N && window.I18N.locale) || 'en-GB', notes = '';
+    function when(ms) { return new Date(ms).toLocaleString(locale, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'UTC' }) + ' UTC'; }
+    function note(text) { notes += '<p class="today-action" data-troop-note>' + ITEM_GLYPH.Troop + text + '</p>'; }
+    TROOP_EVENTS.forEach(function (entry) {
+      // A camp holds one batch at a time, so each event gets one: on its troop day that scores most (the first on a tie).
+      var pick = null;
+      E.days(entry[0]).forEach(function (rules) {
+        var found = R.rates(rules.rows, entry[0]);
+        if (!found) return;
+        var opens = E.opens(entry[0], rules.day, selected), batch = R.batch(snapshot, found.rates, used, opens);
+        if (!pick || batch.buffed.points > pick.batch.buffed.points) pick = { day: rules.day, opens: opens, batch: batch };
+      });
+      if (!pick) return;
+      var name = BH.tr(entry[1], entry[2]), d = pick.day, opens = pick.opens, batch = pick.batch, b = batch.buffed, values = { event: name, day: BH.fmt(d) };
+      (function () {
+        if (E.cycleDay(entry[0], d) === day) { note(BH.tpl('ks.today.troopCollect', 'Troop day: collect the batch you started before today, then train with speedups.', values)); return; }
+        if (b.start === null || !b.troops) {
+          if (opens - selected === dayMs) note(BH.tpl('ks.today.troopSetup', '{event} day {day} tomorrow is a troop day. <a href="../town-centre/#town-troops">Set your training</a> to get a start time for a tripled batch.', values));
+          return;
+        }
+        if (b.start >= selected + 2 * dayMs) return;
+        values.size = BH.fmt(b.size); values.points = BH.fmt(b.points); values.extra = BH.fmt(batch.extra); values.time = when(b.start);
+        values.plainSize = BH.fmt(batch.plain.size); values.plainTime = when(batch.plain.start);
+        if (b.start >= ref) note(BH.tpl('ks.today.troopStart', 'Buy the capacity buff (3,000 gems) and start {size} troops in each camp by {time}, ready for {event} day {day}. That batch scores {points} points, {extra} more than a normal one.', values));
+        else if (batch.plain.start >= ref) note(BH.tpl('ks.today.troopLatePlain', 'Too late for a tripled batch before {event} day {day}. Start a normal batch of {plainSize} per camp by {plainTime}.', values));
+        else note(BH.tpl('ks.today.troopLate', 'The latest start for {event} day {day} was {time}. Start what you can now and finish it with speedups on the day.', values));
+      })();
+    });
+    return notes;
+  }
+
   function weekActions(BH) {
-    var notes = '';
+    var notes = troopActions(BH);
     if (day === 21) notes += '<p class="today-action">' + ITEM_GLYPH['Intel missions'] + BH.tr('ks.today.holdIntel', 'Hold intel from 08:00 UTC for tomorrow’s prep.') + '</p>';
     if (day === 7 || day === 21) notes += '<p class="today-action"><span aria-hidden="true">⚔️</span> ' + BH.tr('ks.today.swordSunday', 'Swordland: check your alliance’s one-hour battle time.') + '</p>';
     if (day === 20) {
@@ -773,6 +814,8 @@
       if (!document.hidden) refreshToday();
     });
     window.addEventListener('focus', refreshToday);
+    // Training saved in the Town Centre changes the troop-day start times.
+    if (window.PlayerLedger) window.PlayerLedger.shared().subscribe(function () { render(BH); });
     render(BH);
   }
 

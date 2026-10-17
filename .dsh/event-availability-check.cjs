@@ -33,6 +33,17 @@ const server=http.createServer((req,res)=>{let file=path.resolve(root,'.'+decode
    const actual=await page.locator('#'+id+' details.day').evaluateAll(nodes=>nodes.map(node=>[...node.querySelectorAll('table.pt tbody tr')].map(tr=>[...tr.querySelectorAll('td')].map(td=>td.textContent.trim()))));assert.deepEqual(actual,rules.days(event).map(day=>day.rows.map(row=>[row.label,row.points])));
   }
   for(let day=1;day<=28;day++){await page.locator('#ks-cycle [data-cycle-day="'+day+'"]').click();assert((await page.locator('#ks-card').textContent()).trim().length>0);}
+  // Troop days: the card says when to buy the capacity buff and start the tripled batch, from the saved training.
+  const troopNotes=async iso=>{const p=await context.newPage();await p.clock.setFixedTime(new Date(iso));await p.goto(origin+'/events/?lang=en');await p.waitForFunction(()=>document.querySelector('#ks-card .today-title, #ks-card .today-kicker'));const out=await p.locator('#ks-card [data-troop-note]').allTextContents();return [p,out];};
+  await page.evaluate(()=>{const s=PlayerLedger.shared();s.setTraining('speed',100);s.setTraining('capacity',1000);s.setTraining('inf',10);for(const r of ['bread','wood','stone','iron'])s.setBalance(r,1e9);});
+  let [troopPage,notes]=await troopNotes('2026-10-19T00:30:00Z');
+  assert.deepEqual(notes,['Buy the capacity buff (3,000 gems) and start 3,000 troops in each camp by Mon, 19 Oct, 08:40 UTC, ready for Strongest Governor day 4. That batch scores 117,000 points, 78,000 more than a normal one.'],'3,000 T10 at 76 s each take 63h 20m before 22 Oct');
+  await troopPage.close();[troopPage,notes]=await troopNotes('2026-10-20T06:00:00Z');
+  assert.deepEqual(notes,['Too late for a tripled batch before Strongest Governor day 4. Start a normal batch of 1,000 per camp by Wed, 21 Oct, 02:53 UTC.']);
+  await troopPage.locator('#ks-cycle [data-cycle-day="11"]').click();assert.deepEqual(await troopPage.locator('#ks-card [data-troop-note]').allTextContents(),['Troop day: collect the batch you started before today, then train with speedups.']);
+  await troopPage.locator('#ks-cycle [data-cycle-day="13"]').click();assert.equal(await troopPage.locator('#ks-card [data-troop-note]').count(),0,'one batch per event, on its first best troop day');
+  await troopPage.close();await page.evaluate(()=>{const s=PlayerLedger.shared();for(const k of ['speed','capacity','inf'])s.setTraining(k,null);});
+  [troopPage,notes]=await troopNotes('2026-10-21T09:00:00Z');assert.match(notes.join(' '),/Strongest Governor day 4 tomorrow is a troop day/);assert.equal(await troopPage.locator('#ks-card [data-troop-note] a').getAttribute('href'),'../town-centre/#town-troops');await troopPage.close();
   const langs=fs.readdirSync('i18n').filter(name=>name.endsWith('.js')).map(name=>name.slice(0,-3));
   for(const lang of langs){await page.goto(origin+'/events/?lang='+lang);await page.waitForFunction(lang=>document.documentElement.lang===lang&&window.I18N&&document.querySelector('[data-target="event-availability.coverage"]').textContent.length>0,lang);
    for(const width of [320,768]){await page.setViewportSize({width,height:900});const overflow=await page.locator('#availability').evaluate(el=>[el,...el.querySelectorAll('.availability-item,.availability-controls,.availability-result')].filter(el=>el.scrollWidth>el.clientWidth+2).map(el=>el.className));assert.deepEqual(overflow,[],lang+' at '+width);}

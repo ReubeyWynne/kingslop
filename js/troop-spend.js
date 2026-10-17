@@ -102,11 +102,24 @@
     });
     return { rows: troopRows, rates: out };
   }
+  /* The batch for one troop day, with and without the capacity buff, and the latest time to
+     start each so it is ready when the day opens (opensAt, ms). The buff is worth buying only
+     for this batch: start it before the day, collect it on the day. */
+  function batch(snapshot, rates, used, opensAt) {
+    function run(buff) {
+      var copy = JSON.parse(JSON.stringify(snapshot));
+      copy.preferences = Object.assign({}, copy.preferences); if (buff) copy.preferences.training = { buff: true }; else delete copy.preferences.training;
+      var out = plan(copy, rates, used), b = out.batch;
+      return { size: b.size, troops: b.troops, points: b.points, seconds: b.seconds, start: b.seconds === null ? null : opensAt - b.seconds * 1000 };
+    }
+    var buffed = run(true), plain = run(false), probe = plan(snapshot, rates, used);
+    return { opens: opensAt, buffed: buffed, plain: plain, gems: BUFF_GEMS, extra: buffed.points - plain.points, unknown: probe.unknown.filter(function (id) { return !/^speedup-/.test(id); }) };
+  }
   // What an unknown or unverified id from the plan asks for, so pages can name it: { kind, tier }.
   function missing(id) {
     if (id === 'training-tiers' || id === 'training-capacity' || id === 'training-speed') return { kind: id, tier: null };
     var m = /^troops-t(\d+)-(rate|cost)$/.exec(id);
     return m ? { kind: m[2], tier: Number(m[1]) } : null;
   }
-  return { RESOURCES: RESOURCES.slice(), SPEEDUPS: SPEEDUPS.slice(), BUFF: BUFF, BUFF_GEMS: BUFF_GEMS, TYPES: TYPES, TIERS: TIERS, data: data, seconds: seconds, plan: plan, rates: rates, missing: missing };
+  return { RESOURCES: RESOURCES.slice(), SPEEDUPS: SPEEDUPS.slice(), BUFF: BUFF, BUFF_GEMS: BUFF_GEMS, TYPES: TYPES, TIERS: TIERS, data: data, seconds: seconds, plan: plan, batch: batch, rates: rates, missing: missing };
 });

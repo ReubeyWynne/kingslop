@@ -31,7 +31,7 @@
     capacityUnit: 'troops per batch', capacityHint: 'How many troops one camp trains at once, without the capacity buff.',
     tierHint: 'T10 and T11 Truegold troops train in the same time for the same cost as plain T10 and T11.',
     troopPlan: '{event}, day {day}: {batch} troops pre-trained and {trained} trained with speedups, {points} points.',
-    troopStart: 'Start the batch at least {time} before the day.', troopBuff: 'With the 3,000-gem buff, each camp trains {n} troops in that batch.',
+    troopStart: 'The batch takes {time}, so start it by {at}.', troopBuff: 'With the 3,000-gem buff, each camp trains {n} troops in that batch.',
     troopUnchecked: 'T{tier} costs are not checked against your resources yet.',
     troopPlanNone: 'Set your training speed, capacity and camp tiers to see what you can train for a troop day.'
   };
@@ -210,7 +210,10 @@
       var found = troopResult, plan = found && found.plan, text = [];
       if (plan && plan.troops) {
         text.push(fill(api, 'troopPlan', { event: eventName(api, troopEvent), day: api.fmt(found.day), batch: api.fmt(plan.batch.troops), trained: api.fmt(plan.troops - plan.batch.troops), points: api.fmt(plan.points) }));
-        if (plan.batch.seconds) text.push(fill(api, 'troopStart', { time: seconds(api, plan.batch.seconds) }));
+        if (plan.batch.seconds) {
+          var opens = window.EventRules.opens(troopEvent, found.day, Date.now()), at = new Date(opens - plan.batch.seconds * 1000);
+          text.push(fill(api, 'troopStart', { time: seconds(api, plan.batch.seconds), at: at.toLocaleString(document.documentElement.lang || undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'UTC' }) + ' UTC' }));
+        }
         if (buff && plan.batch.size !== null) text.push(fill(api, 'troopBuff', { n: api.fmt(plan.batch.size) }));
         plan.unverified.forEach(function (id) { text.push(fill(api, 'troopUnchecked', { tier: R.missing(id).tier })); });
       } else text.push(t(api, 'troopPlanNone'));

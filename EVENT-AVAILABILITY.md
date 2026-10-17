@@ -47,3 +47,7 @@ Each event/day reuses the same holdings. Daily totals are alternative budgets an
 `event-availability` owns event/day/target/withholding controls and bounded result regions. Nested `ledger-form` fields own confirmed inventory writes. `save-transfer`, `disclosure` and `result-panel` provide the existing shared save controls and status messages. Store subscriptions update same-page and cross-tab calculations; locale refresh preserves the open scenario. `event-availability:calculated` emits the pure result. No private inventory copy or new ledger schema is introduced.
 
 `.dsh/event-rules-check.cjs` checks event-specific totals, unknown versus zero, reserves, target shortfall, unsupported days, invalid counts, extracted-rule preservation, canonical reference bindings and translation keys. `.dsh/event-availability-check.cjs` runs against Jekyll output and checks actual ledger edits, cross-tab hero-gear synchronization, save transfer, reload semantics, all reference task/rate pairs, all 28 clock days and 17 languages at 320/768px. CI also runs the existing ledger, hero-gear, OCR and module checks.
+
+## Troop batch reminders
+
+The day card above the calculator reads the training saved on the Town Centre's Troops shelf and tells you when to buy the 3,000-gem capacity buff and start a tripled troop batch so it is ready when a troop day opens. See "When to start the batch" in [TOWN-CENTRE.md](TOWN-CENTRE.md). `.dsh/event-availability-check.cjs` checks the start, late, collect and setup notes on a fixed clock.
