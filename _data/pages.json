@@ -698,5 +698,41 @@
       }
     ],
     "headScripts": []
+  },
+  "kingdom": {
+    "token": "kingdom",
+    "depth": "../",
+    "canonicalPath": "/kingdom-timeline/",
+    "themeColor": "#101820",
+    "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23081315'/%3E%3Ctext x='16' y='24' font-size='22' text-anchor='middle' fill='%235FC8A6'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E\">",
+    "titleKey": "kingdom.title",
+    "titleText": "Kingdom timeline — dey.ci",
+    "metaDescKey": "kingdom.intro",
+    "metaDesc": "Place your kingdom on a generic progression timeline and share its unlocks across Kingslop.",
+    "ogTitleKey": "kingdom.title",
+    "ogTitle": "Kingdom timeline",
+    "ogDescKey": "kingdom.intro",
+    "ogDesc": "Place your kingdom on a generic progression timeline and share its unlocks across Kingslop.",
+    "skipHref": "#your-kingdom",
+    "skipKey": "kingdom.mine",
+    "skipText": "My kingdom",
+    "dust": "<i></i><i></i><i></i>",
+    "brand": "Kingdom timeline",
+    "brandHeadingKey": "kingdom.title",
+    "brandNoteKey": "kingdom.kicker",
+    "brandNote": "your kingdom, your chapter",
+    "css": [
+      "../css/styles.css",
+      "../css/events.css"
+    ],
+    "scripts": [
+      "../js/kingdom-data.js",
+      "../js/i18n.js",
+      "../js/common.js"
+    ],
+    "footMainKey": "kingdom.kicker",
+    "footMain": "your kingdom, your chapter",
+    "footSubs": [],
+    "headScripts": []
   }
 }

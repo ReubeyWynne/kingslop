@@ -8,7 +8,7 @@
 {% endif %}{% endfor %}
   </nav>
   <div class="topbar-right">
-    <span class="brand-note"{% if p.brandNoteKey %} data-i18n="{{ p.brandNoteKey }}"{% endif %}>{{ p.brandNote }}</span>
+    {% include kingdom-context.html %}
     <button type="button" id="ledger-btn" class="ledger-btn" aria-haspopup="true" aria-expanded="false" aria-controls="ledger" aria-label="the ledger — every page" data-i18n-key="ev.ledger.aria" data-i18n-attr="aria-label">❧</button>
 <div class="lang-picker">
       <button type="button" id="lang-btn" class="lang-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Language" data-i18n-key="ui.lang" data-i18n-attr="aria-label">
@@ -48,6 +48,7 @@
     {% for n in site.data.nav %}{% if n.group == 'tools' %}{% if n.self == page.self %}<a href="{{ p.depth }}{{ n.tail }}" class="active" aria-current="page" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% else %}<a href="{{ p.depth }}{{ n.tail }}" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% endif %}{% endif %}{% endfor %}
+    <a href="{{ p.depth }}kingdom-timeline/"{% if page.self == 'kingdom' %} class="active" aria-current="page"{% endif %} data-i18n="kingdom.title">Kingdom timeline</a>
     {% if page.self == 'town' %}<a href="{{ p.depth }}town-centre/" class="active" aria-current="page" data-i18n="town.nav">Town Centre</a>{% else %}<a href="{{ p.depth }}town-centre/" data-i18n="town.nav">Town Centre</a>{% endif %}
   </nav>
   <div class="progress" aria-hidden="true"><div class="progress-fill" id="progress"></div></div>

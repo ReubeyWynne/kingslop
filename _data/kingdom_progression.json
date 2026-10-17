@@ -1,0 +1,164 @@
+{
+  "sources": [
+    {
+      "label": "Kingshot Optimizer — milestone types and kingdom variation",
+      "url": "https://kingshotoptimizer.com/kingdom-timeline/"
+    }
+  ],
+  "stages": [
+    {
+      "id": "opening",
+      "title": "Kingdom opens",
+      "note": "Compare this generation with the heroes you have developed before spending shards or widgets.",
+      "profile": {
+        "position": "opening",
+        "generation": 1,
+        "truegold": 0,
+        "warAcademy": false
+      },
+      "url": "heroes/",
+      "titleKey": "kingdom.heroTitle",
+      "noteKey": "kingdom.heroNote"
+    },
+    {
+      "id": "generation-2",
+      "title": "Generation 2 heroes",
+      "note": "Compare this generation with the heroes you have developed before spending shards or widgets.",
+      "profile": {
+        "position": "generation-2",
+        "generation": 2,
+        "truegold": 0,
+        "warAcademy": false
+      },
+      "url": "heroes/",
+      "titleKey": "kingdom.heroTitle",
+      "noteKey": "kingdom.heroNote"
+    },
+    {
+      "id": "truegold-3",
+      "title": "Age of Truegold",
+      "note": "The kingdom’s building cap increases. Your own buildings still need their prerequisites and upgrade materials.",
+      "profile": {
+        "position": "truegold-3",
+        "generation": 2,
+        "truegold": 3,
+        "warAcademy": false
+      },
+      "url": "town-centre/",
+      "titleKey": "",
+      "noteKey": "kingdom.goldNote"
+    },
+    {
+      "id": "generation-3",
+      "title": "Generation 3 heroes",
+      "note": "Compare this generation with the heroes you have developed before spending shards or widgets.",
+      "profile": {
+        "position": "generation-3",
+        "generation": 3,
+        "truegold": 3,
+        "warAcademy": false
+      },
+      "url": "heroes/",
+      "titleKey": "kingdom.heroTitle",
+      "noteKey": "kingdom.heroNote"
+    },
+    {
+      "id": "truegold-5",
+      "title": "Truegold 5",
+      "note": "The kingdom’s building cap increases. Your own buildings still need their prerequisites and upgrade materials.",
+      "profile": {
+        "position": "truegold-5",
+        "generation": 3,
+        "truegold": 5,
+        "warAcademy": false
+      },
+      "url": "town-centre/",
+      "titleKey": "",
+      "noteKey": "kingdom.goldNote"
+    },
+    {
+      "id": "generation-4",
+      "title": "Generation 4 heroes",
+      "note": "Compare this generation with the heroes you have developed before spending shards or widgets.",
+      "profile": {
+        "position": "generation-4",
+        "generation": 4,
+        "truegold": 5,
+        "warAcademy": false
+      },
+      "url": "heroes/",
+      "titleKey": "kingdom.heroTitle",
+      "noteKey": "kingdom.heroNote"
+    },
+    {
+      "id": "war-academy",
+      "title": "War Academy",
+      "note": "War Academy research opens for the kingdom. Your account still needs the building and research prerequisites.",
+      "profile": {
+        "position": "war-academy",
+        "generation": 4,
+        "truegold": 5,
+        "warAcademy": true
+      },
+      "url": "town-centre/",
+      "titleKey": "kingdom.warAcademy",
+      "noteKey": "kingdom.academyNote"
+    },
+    {
+      "id": "generation-5",
+      "title": "Generation 5 heroes",
+      "note": "Compare this generation with the heroes you have developed before spending shards or widgets.",
+      "profile": {
+        "position": "generation-5",
+        "generation": 5,
+        "truegold": 5,
+        "warAcademy": true
+      },
+      "url": "heroes/",
+      "titleKey": "kingdom.heroTitle",
+      "noteKey": "kingdom.heroNote"
+    },
+    {
+      "id": "truegold-8",
+      "title": "Truegold 8",
+      "note": "The kingdom’s building cap increases. Your own buildings still need their prerequisites and upgrade materials.",
+      "profile": {
+        "position": "truegold-8",
+        "generation": 5,
+        "truegold": 8,
+        "warAcademy": true
+      },
+      "url": "town-centre/",
+      "titleKey": "",
+      "noteKey": "kingdom.goldNote"
+    },
+    {
+      "id": "generation-6",
+      "title": "Generation 6 heroes",
+      "note": "Compare this generation with the heroes you have developed before spending shards or widgets.",
+      "profile": {
+        "position": "generation-6",
+        "generation": 6,
+        "truegold": 8,
+        "warAcademy": true
+      },
+      "url": "heroes/",
+      "titleKey": "kingdom.heroTitle",
+      "noteKey": "kingdom.heroNote"
+    },
+    {
+      "id": "generation-7",
+      "title": "Generation 7 heroes",
+      "note": "Compare this generation with the heroes you have developed before spending shards or widgets.",
+      "profile": {
+        "position": "generation-7",
+        "generation": 7,
+        "truegold": 8,
+        "warAcademy": true
+      },
+      "url": "heroes/",
+      "titleKey": "kingdom.heroTitle",
+      "noteKey": "kingdom.heroNote"
+    }
+  ]
+}

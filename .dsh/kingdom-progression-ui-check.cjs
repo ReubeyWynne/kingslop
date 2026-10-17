@@ -1,0 +1,91 @@
+const assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path'), http = require('node:http');
+const { chromium } = require('playwright');
+const root = path.resolve('_site'), output = path.resolve('.dsh/kingdom-preview');
+const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.svg': 'image/svg+xml' };
+const server = http.createServer((req, res) => {
+  let file = path.resolve(root, '.' + new URL(req.url, 'http://localhost').pathname);
+  if (!file.startsWith(root + path.sep)) return res.writeHead(403).end();
+  if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
+  if (!fs.existsSync(file)) return res.writeHead(404).end();
+  res.writeHead(200, { 'Content-Type': mime[path.extname(file)] || 'application/octet-stream' }); fs.createReadStream(file).pipe(res);
+});
+(async () => {
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const context = await browser.newContext(), page = await context.newPage(), errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await context.addInitScript(() => { window.moduleErrors = []; document.addEventListener('module:error', e => moduleErrors.push(e.detail)); });
+    const origin = 'http://127.0.0.1:' + server.address().port;
+    await page.goto(origin + '/kingdom-timeline/?lang=en');
+    const field = key => page.locator('[data-target="kingdom-timeline.' + key + '"]');
+    await field('generation').waitFor();
+    await page.waitForFunction(() => !document.querySelector('[data-target="kingdom-timeline.generation"]').disabled);
+    assert.equal(await field('generation').inputValue(), '');
+    assert.equal(await page.locator('.kingdom-milestone').count(), 11);
+    await page.locator('#generation-3 [data-action="kingdom-timeline.choose"]').click();
+    assert.equal(await field('generation').inputValue(), '3');
+    assert.equal(await field('truegold').inputValue(), '3');
+    assert.equal(await page.locator('#generation-3').getAttribute('data-progress'), 'current');
+    assert.match(await page.locator('.kingdom-context').textContent(), /Gen 3/);
+    await field('truegold').selectOption('5');
+    assert.equal(await page.locator('#generation-3 [aria-pressed]').getAttribute('aria-pressed'), 'false');
+    assert.equal(await field('generation').inputValue(), '3');
+    await field('warAcademy').selectOption('true');
+    const other = await context.newPage();
+    await other.goto(origin + '/heroes/?lang=en');
+    await other.waitForFunction(() => document.querySelector('[data-target="hero-directory.server"]').value === '3');
+    const visible = () => other.locator('[data-hero]:visible').count();
+    const heroes = require('../_data/heroes.json').heroes;
+    assert.equal(await visible(), heroes.filter(h => h.generation <= 3).length);
+    await other.locator('[data-target="hero-directory.showAll"]').check();
+    assert.equal(await visible(), heroes.length);
+    assert.equal(await other.locator('.hero-upcoming:visible').count(), heroes.filter(h => h.generation > 3).length);
+    assert.equal(await other.evaluate(() => KS_SERVER_AGE.getGeneration()), 3);
+    await other.locator('[data-target="hero-directory.server"]').selectOption('2');
+    await page.waitForFunction(() => document.querySelector('[data-target="kingdom-timeline.generation"]').value === '2');
+    assert.equal(await field('truegold').inputValue(), '5');
+    assert.equal(await field('warAcademy').inputValue(), 'true');
+    await page.reload();
+    await page.waitForFunction(() => document.querySelector('[data-target="kingdom-timeline.generation"]').value === '2');
+    const saved = await page.evaluate(() => PlayerLedger.shared().exportJSON());
+    await page.locator('[data-action="kingdom-timeline.reset"]').click();
+    await other.waitForFunction(() => document.querySelector('[data-target="hero-directory.server"]').value === '');
+    await page.evaluate(saved => PlayerLedger.shared().importJSON(saved), saved);
+    assert.equal(await field('truegold').inputValue(), '5');
+    await other.waitForFunction(() => document.querySelector('[data-target="hero-directory.server"]').value === '2');
+    await other.close();
+    fs.mkdirSync(output, { recursive: true });
+    for (const lang of fs.readdirSync('i18n').filter(f => f.endsWith('.js')).map(f => f.slice(0, -3))) {
+      await page.goto(origin + '/kingdom-timeline/?lang=' + lang);
+      await page.waitForFunction(lang => document.documentElement.lang === lang && !document.querySelector('[data-target="kingdom-timeline.generation"]').disabled, lang);
+      for (const width of [320, 768]) {
+        await page.setViewportSize({ width, height: 900 });
+        assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), lang + ' overflow at ' + width);
+        assert(await field('generation').isVisible());
+        assert.equal(await field('generation').inputValue(), '2');
+      }
+      assert.deepEqual(await page.evaluate(() => moduleErrors), []);
+      if (['en', 'ar'].includes(lang)) await page.screenshot({ path: path.join(output, lang + '-768.png'), fullPage: true });
+    }
+    await page.goto(origin + '/kingdom-timeline/?lang=en');
+    await page.setViewportSize({ width: 320, height: 900 });
+    await page.screenshot({ path: path.join(output, 'en-320.png'), fullPage: true });
+    const blocked = await browser.newContext();
+    await blocked.addInitScript(() => { Storage.prototype.setItem = () => { throw new Error('blocked'); }; });
+    const blockedPage = await blocked.newPage();
+    await blockedPage.goto(origin + '/kingdom-timeline/?lang=en');
+    await blockedPage.locator('#generation-2 [data-action="kingdom-timeline.choose"]').click();
+    assert.match(await blockedPage.locator('[data-target="kingdom-timeline.status"]').textContent(), /Could not save/);
+    assert.equal(await blockedPage.locator('[data-target="kingdom-timeline.generation"]').inputValue(), '');
+    await blocked.close();
+    const noJS = await browser.newContext({ javaScriptEnabled: false });
+    const staticPage = await noJS.newPage(); await staticPage.goto(origin + '/kingdom-timeline/');
+    assert.equal(await staticPage.locator('.kingdom-milestone').count(), 11);
+    assert.equal(await staticPage.locator('[data-target="kingdom-timeline.generation"]').isDisabled(), true);
+    await noJS.close();
+    assert.deepEqual(errors, []);
+    await context.close();
+    console.log('Kingdom UI: placement, independent corrections, hero scope, tabs, saves, storage failure, no-JS and 17 languages at 320/768px pass.');
+  } finally { await browser.close(); server.close(); }
+})().catch(error => { console.error(error); server.close(); process.exitCode = 1; });
