@@ -51,6 +51,12 @@ jobs:
               - js/player-ledger.js
               - js/player-modules.js
               - js/server-age.js
+              - js/kingdom-progression.js
+              - js/kingdom-data.liquid
+              - _data/kingdom_progression.json
+              - kingdom-timeline/**
+              - .dsh/kingdom-progression*.cjs
+              - css/kingdom.css
               - i18n/*.js
               - img/kingshot/**
             # Node checks: syntax, data, engines, page wiring.
@@ -225,6 +231,9 @@ jobs:
       - name: Check player ledger and migration
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/player-ledger-check.cjs
+      - name: Check kingdom progression and migration
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/kingdom-progression-check.cjs
       - name: Check hero directory data and filters
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/hero-directory-check.cjs
@@ -301,6 +310,9 @@ jobs:
       - name: Check shared interaction modules
         if: matrix.group == 'interactions'
         run: node .dsh/interaction-modules-check.cjs
+      - name: Check kingdom timeline UI
+        if: matrix.group == 'heroes'
+        run: node .dsh/kingdom-progression-ui-check.cjs
       - name: Check hero directory UI
         if: matrix.group == 'heroes'
         run: node .dsh/hero-directory-ui-check.cjs
@@ -346,6 +358,7 @@ jobs:
             .dsh/gear-preview/
             .dsh/event-preview/
             .dsh/hero-directory-preview/
+            .dsh/kingdom-preview/
             .dsh/castle-preview/
             .dsh/governor-preview/
             .dsh/town-preview/

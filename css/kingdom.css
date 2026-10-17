@@ -1,0 +1,39 @@
+.kingdom-context {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0.8rem var(--space-s);
+  border-bottom: 1px solid var(--ink-muted);
+  font-size: 0.95rem;
+  text-align: end;
+}
+.kingdom-context a { color: var(--ink-dim); text-decoration: none; }
+.kingdom-context a:hover, .kingdom-context a:focus-visible { color: var(--amber); }
+html[data-page="kingdom"] {
+  --void: #101820;
+  --void-2: #17232b;
+  --amber: #a3c9da;
+  --amber-dim: #7294a5;
+  --signal-line: rgba(163, 201, 218, 0.35);
+  --signal-tint: rgba(163, 201, 218, 0.07);
+}
+.kingdom-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--space-s); border: 0; padding: 0; margin-block: var(--space-m); }
+.kingdom-fields legend { margin-block-end: var(--space-s); font-weight: bold; }
+.kingdom-fields label { display: grid; gap: 0.4rem; min-width: 0; }
+.kingdom-fields select { width: 100%; min-height: 44px; color: var(--ink); background: var(--void-2); border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; font: inherit; }
+.kingdom-reset, .kingdom-choose { min-height: 44px; padding: 0.4rem 0; border: 0; border-bottom: 1px solid var(--amber-dim); color: var(--amber); background: none; font: inherit; text-align: start; cursor: pointer; }
+.kingdom-reset:disabled, .kingdom-choose:disabled { opacity: 0.5; cursor: default; }
+.kingdom-status { display: block; min-height: 1.5em; margin-block-start: 1rem; }
+.kingdom-rail { list-style: none; padding: 0; margin-block: var(--space-l); }
+.kingdom-milestone { position: relative; border-inline-start: 1px solid var(--ink-muted); padding: 0 0 var(--space-l) var(--space-m); }
+.kingdom-milestone::before { content: ''; position: absolute; inset-inline-start: -5px; top: 0.6rem; width: 9px; height: 9px; background: var(--void); border: 1px solid var(--ink-muted); }
+.kingdom-milestone[data-progress="current"]::before, .kingdom-milestone[data-progress="available"]::before { background: var(--amber); border-color: var(--amber); }
+.kingdom-milestone[data-progress="current"] { border-inline-start: 3px solid var(--amber); }
+.kingdom-chapter, .kingdom-state { color: var(--ink-muted); font-size: var(--step--1); }
+.kingdom-milestone h3 { margin-block: 0.4rem; }
+.kingdom-state { display: block; color: var(--amber); min-height: 1.5em; }
+.kingdom-milestone p { margin-block: 0.6rem; }
+.kingdom-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.5rem; }
+.kingdom-scope { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; margin-block: 1rem; }
+.kingdom-scope input { accent-color: var(--amber); }
+.hero-upcoming { display: block; color: var(--ink-muted); font-size: 0.85rem; }
+.hero-upcoming[hidden] { display: none; }

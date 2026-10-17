@@ -71,6 +71,10 @@
     function render() {
       var filters = {}, count = 0, owned = 0;
       Object.keys(fields).forEach(function (key) { filters[key] = fields[key].value; });
+      if (context.targets('showAll')[0].checked) filters.server = '';
+      records.forEach(function (record) {
+        record.node.querySelector('[data-kingdom-upcoming]').hidden = window.KingdomProgression.availability({ generation: record.hero.generation }) !== 'upcoming';
+      });
       records.forEach(function (record) { var visible = window.HeroDirectory.matches(record.hero, filters); record.node.hidden = !visible; if (visible) count++; if (record.hero.owned) owned++; });
       var text = context.api.fill(context.api.tr('directory.count', '{n} of {total} heroes'), { n: context.api.fmt(count), total: context.api.fmt(records.length) });
       if (owned) text += ' · ' + context.api.fill(context.api.tr('directory.ownedCount', '{n} yours'), { n: context.api.fmt(owned) });

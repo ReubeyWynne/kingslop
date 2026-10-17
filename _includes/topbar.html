@@ -48,6 +48,7 @@
     {% for n in site.data.nav %}{% if n.group == 'tools' %}{% if n.self == page.self %}<a href="{{ p.depth }}{{ n.tail }}" class="active" aria-current="page" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% else %}<a href="{{ p.depth }}{{ n.tail }}" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% endif %}{% endif %}{% endfor %}
+    <a href="{{ p.depth }}kingdom-timeline/"{% if page.self == 'kingdom' %} class="active" aria-current="page"{% endif %} data-i18n="kingdom.title">Kingdom timeline</a>
     {% if page.self == 'town' %}<a href="{{ p.depth }}town-centre/" class="active" aria-current="page" data-i18n="town.nav">Town Centre</a>{% else %}<a href="{{ p.depth }}town-centre/" data-i18n="town.nav">Town Centre</a>{% endif %}
   </nav>
   <div class="progress" aria-hidden="true"><div class="progress-fill" id="progress"></div></div>
