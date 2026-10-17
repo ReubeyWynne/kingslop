@@ -2,7 +2,7 @@
   'use strict';
   window.Interactions.register('hero-directory', function (context) {
     var nodes = context.nodes('[data-hero]'), fields = {}, currentGeneration = window.KS_SERVER_AGE.getGeneration();
-    var Ledger = window.PlayerLedger, store = null, mine = { roster: {}, shards: {} };
+    var Ledger = window.PlayerLedger, store = null, mine = { roster: {}, shards: {}, widgets: {} };
     // Browsing still works when storage is blocked; only the collection forms stay disabled.
     try { store = Ledger.shared(); store.snapshot(); } catch (cause) { store = null; }
     ['query', 'troop', 'generation', 'server', 'role', 'mine'].forEach(function (key) { fields[key] = context.targets(key)[0]; });
@@ -35,9 +35,9 @@
       if (parts.widget) { parts.widget.hidden = !copy || !copy.widget; parts.widget.querySelector('b').textContent = copy && copy.widget ? context.api.fmt(copy.widget) : ''; }
       if (parts.shards) { parts.shards.hidden = !copy || shards === null; parts.shards.querySelector('b').textContent = copy && shards !== null ? context.api.fmt(shards) : ''; }
     }
-    // The saved roster and shards, read back into every hero's form and tile.
+    // The saved roster, shards and unspent widgets, read back into every hero's form and tile.
     function load() {
-      try { mine = store ? store.heroes() : mine; } catch (cause) { mine = { roster: {}, shards: {} }; }
+      try { mine = store ? store.heroes() : mine; } catch (cause) { mine = { roster: {}, shards: {}, widgets: {} }; }
       var any = Object.keys(mine.roster).length > 0;
       context.root.toggleAttribute('data-collection', any);
       records.forEach(function (record) {
@@ -59,6 +59,7 @@
           if (input === document.activeElement && field !== 'owned') return;
           if (field === 'owned') input.checked = Boolean(copy);
           else if (field === 'shards') input.value = shards === null ? '' : shards;
+          else if (field === 'widgets') input.value = Object.hasOwn(mine.widgets, record.hero.key) ? mine.widgets[record.hero.key] : '';
           else {
             var value = !copy ? null : field === 'skill' ? (copy.skills ? copy.skills[Number(input.dataset.skill)] : null) : copy[field];
             input.value = value === null || value === undefined ? '' : value;
@@ -84,6 +85,7 @@
       var key = record.hero.key, field = input.dataset.field, saved = record.form.querySelector('[data-target~="hero-directory.saved"]');
       try {
         if (field === 'shards') store.setBalance(Ledger.heroShardId(key), number(input));
+        else if (field === 'widgets') store.setBalance(Ledger.heroWidgetId(key), number(input));
         else if (field === 'owned') { delete record.pending; store.setHero(key, input.checked ? (mine.roster[key] || {}) : null); }
         else {
           var copy = Object.assign({ level: null, stars: null, widget: null, skills: null }, mine.roster[key]);

@@ -1064,6 +1064,7 @@ window.__BH_I18N_DATA["id"] = {
   "directory.level": "Level",
   "directory.stars": "Bintang",
   "directory.widgetLevel": "Level widget",
+  "heroWidgets.count": "Widget",
   "directory.skillLevel": "Skill {n}",
   "directory.shards": "Shard",
   "directory.mineNote": "Disimpan di perangkat ini bersama inventarismu. Shard dihitung sebelum pahlawan terbuka.",

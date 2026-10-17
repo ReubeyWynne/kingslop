@@ -22,19 +22,27 @@ self: town
 
     <div class="town-shelf" id="town-bag" role="tabpanel" data-shelf="bag">
       <div class="town-bag">
-      {% for item in rules.items %}{% case item.id %}{% when "truegold", "tempered-truegold" %}{% assign icon = "../img/kingshot/truegold.png" %}{% when "mithril" %}{% assign icon = "../img/hero-gear/mithril.webp" %}{% when "forgehammer" %}{% assign icon = "../img/hero-gear/forgehammer.webp" %}{% when "mythic-hero-shard", "epic-hero-shard", "rare-hero-shard" %}{% assign icon = "../img/kingshot/hero-shard.png" %}{% else %}{% assign icon = "" %}{% endcase %}
+      {% for item in rules.items %}{% if item.id == "hero-widget" %}{% continue %}{% endif %}{% case item.id %}{% when "truegold" %}{% assign icon = "../img/kingshot/truegold.png" %}{% when "tempered-truegold", "truegold-dust", "master-emblem", "masters-manuscript" %}{% capture icon %}../img/items/{{ item.id }}.webp{% endcapture %}{% when "advanced-taming-mark" %}{% assign icon = "../img/items/taming-mark-advanced.webp" %}{% when "common-taming-mark" %}{% assign icon = "../img/items/taming-mark-common.webp" %}{% when "mithril" %}{% assign icon = "../img/hero-gear/mithril.webp" %}{% when "forgehammer" %}{% assign icon = "../img/hero-gear/forgehammer.webp" %}{% when "mythic-hero-shard", "epic-hero-shard", "rare-hero-shard" %}{% assign rarity = item.id | split: "-" | first %}{% capture icon %}../img/items/shard-{{ rarity }}.webp{% endcapture %}{% else %}{% assign icon = "" %}{% endcase %}
         <button type="button" class="town-tile" data-count="{{ item.id }}" data-action="town-inventory.edit">
           <span class="town-tile-art">{% if icon != "" %}<img src="{{ icon }}" width="56" height="56" alt="" loading="lazy">{% else %}<span class="town-monogram" aria-hidden="true">{{ item.label | slice: 0 }}</span>{% endif %}<output class="town-tile-count" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="{{ item.key }}">{{ item.label | escape }}</span>
           <small class="town-rate" data-rate="{{ item.id }}"></small>
         </button>
       {% endfor %}
+      {% for gen in (1..7) %}
+        <button type="button" class="town-tile" data-count="hero-widget-chest-gen{{ gen }}" data-action="town-inventory.edit">
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">G{{ gen }}</span><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-name" data-i18n="town.widgetChest" data-i18n-n="{{ gen }}">Gen {{ gen }} widget chest</span>
+          <small class="town-rate" data-rate="hero-widget-chest-gen{{ gen }}"></small>
+        </button>
+      {% endfor %}
       </div>
+      <p class="town-gloss" data-i18n="town.widgetChestNote">Widget choice chests don't score until you open one and pick a hero. Each hero's own widgets are counted on the Heroes tab.</p>
     </div>
 
     <div class="town-shelf" id="town-speedups" role="tabpanel" data-shelf="speedups" hidden>
       <div class="town-bag">
-      {% for kind in speedups %}{% case kind %}{% when "construction", "research", "training" %}{% capture icon %}../img/kingshot/{{ kind }}-speedup.png{% endcapture %}{% else %}{% assign icon = "" %}{% endcase %}
+      {% for kind in speedups %}{% case kind %}{% when "construction", "research", "training" %}{% capture icon %}../img/kingshot/{{ kind }}-speedup.png{% endcapture %}{% when "general", "learning" %}{% capture icon %}../img/items/{{ kind }}-speedup.webp{% endcapture %}{% else %}{% assign icon = "" %}{% endcase %}
         <button type="button" class="town-tile" data-duration="speedup-{{ kind }}" data-action="town-inventory.edit">
           <span class="town-tile-art">{% if icon != "" %}<img src="{{ icon }}" width="56" height="56" alt="" loading="lazy">{% else %}<span class="town-monogram" aria-hidden="true">{{ kind | slice: 0 | upcase }}</span>{% endif %}<output class="town-tile-count" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="town.speedup.{{ kind }}">{{ kind | capitalize }}</span>
@@ -49,7 +57,7 @@ self: town
       <div class="town-bag">
       {% for id in resources %}
         <button type="button" class="town-tile" data-count="{{ id }}" data-action="town-inventory.edit">
-          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">{{ id | slice: 0 | upcase }}</span><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art"><img src="../img/items/{{ id }}.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="town.res.{{ id }}">{{ id | capitalize }}</span>
         </button>
       {% endfor %}

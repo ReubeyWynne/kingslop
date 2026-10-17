@@ -1053,6 +1053,7 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "directory.level": "等级",
   "directory.stars": "星级",
   "directory.widgetLevel": "专属装备等级",
+  "heroWidgets.count": "专属装备",
   "directory.skillLevel": "技能{n}",
   "directory.shards": "碎片",
   "directory.mineNote": "与库存一起保存在本设备上。解锁英雄前的碎片也会计入。",

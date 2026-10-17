@@ -1053,6 +1053,7 @@ window.__BH_I18N_DATA["ko"] = {
   "directory.level": "레벨",
   "directory.stars": "별",
   "directory.widgetLevel": "위젯 레벨",
+  "heroWidgets.count": "위젯",
   "directory.skillLevel": "스킬 {n}",
   "directory.shards": "조각",
   "directory.mineNote": "인벤토리와 함께 이 기기에 저장됩니다. 조각은 영웅을 해금하기 전에도 집계됩니다.",

@@ -1053,6 +1053,7 @@ window.__BH_I18N_DATA["ru"] = {
   "directory.level": "Уровень",
   "directory.stars": "Звёзды",
   "directory.widgetLevel": "Уровень виджета",
+  "heroWidgets.count": "Виджеты",
   "directory.skillLevel": "Навык {n}",
   "directory.shards": "Осколки",
   "directory.mineNote": "Сохранено на этом устройстве вместе с инвентарём. Осколки учитываются и до открытия героя.",

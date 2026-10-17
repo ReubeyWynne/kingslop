@@ -1064,6 +1064,7 @@ window.__BH_I18N_DATA["vi"] = {
   "directory.level": "Cấp",
   "directory.stars": "Sao",
   "directory.widgetLevel": "Cấp widget",
+  "heroWidgets.count": "Widget",
   "directory.skillLevel": "Kỹ năng {n}",
   "directory.shards": "Mảnh",
   "directory.mineNote": "Lưu trên thiết bị này cùng kho đồ. Mảnh được tính cả trước khi mở khóa tướng.",

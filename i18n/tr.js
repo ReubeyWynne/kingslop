@@ -1052,6 +1052,7 @@ window.__BH_I18N_DATA["tr"] = {
   "directory.level": "Seviye",
   "directory.stars": "Yıldız",
   "directory.widgetLevel": "Widget seviyesi",
+  "heroWidgets.count": "Widget",
   "directory.skillLevel": "Yetenek {n}",
   "directory.shards": "Parça",
   "directory.mineNote": "Envanterinle birlikte bu cihazda kaydedilir. Parçalar kahramanı açmadan önce de sayılır.",
