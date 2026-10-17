@@ -1126,7 +1126,6 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "gov.cardLede": "用你自己的材料规划总督装备与饰品升级，并查看评分在活动中值多少分。",
   "gov.kicker": "总督的衣橱",
   "town.nav": "城镇中心",
-  "ev.deck.lede.town": "你拥有的一切，以及它们能拿到的活动积分。",
   "town.title": "城镇中心",
   "town.cardLede": "你拥有的一切都在一页上，并显示它们在 KvK、最强总督和联盟乱斗中能拿到的积分。",
   "town.kicker": "你拥有的一切，一一清点"

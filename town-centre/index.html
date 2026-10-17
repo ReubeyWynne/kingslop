@@ -9,36 +9,6 @@ self: town
     <p class="lede" data-i18n="town.lede">Everything you own, counted once. Hero gear, governor gear and events all read the same numbers, so an edit here shows up there.</p>
   </section>
 
-  <section class="section town-points" id="town-points" aria-labelledby="town-points-title">
-    <h2 id="town-points-title" data-i18n="town.pointsTitle">What your bag can score</h2>
-    <div class="town-events" data-module="tabs" data-tabs-bind="town-event" role="tablist" aria-label="Event" data-i18n-key="town.event" data-i18n-attr="aria-label">
-      <button type="button" role="tab" aria-selected="true" data-value="prep" data-action="tabs.select"><span data-i18n="ks.today.kickerPrep">KvK prep</span><output data-event-total="prep">—</output></button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="sg" data-action="tabs.select"><span data-i18n="ks.governor.title">Strongest Governor</span><output data-event-total="sg">—</output></button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="brawl" data-action="tabs.select"><span data-i18n="ks.brawl.title">Alliance Brawl</span><output data-event-total="brawl">—</output></button>
-    </div>
-    <p class="town-gloss" data-i18n="town.bestTotal">Each total puts every item on the day it scores most. Your bag only empties once, so the days below are choices, not a sum.</p>
-    <p class="town-note" data-target="town-centre.coverage" aria-live="polite"></p>
-
-    <ol class="town-days" data-target="town-centre.days" aria-label="Days" data-i18n-key="town.days" data-i18n-attr="aria-label"></ol>
-
-    <div class="town-day" aria-live="polite">
-      <h3 data-target="town-centre.dayTitle"></h3>
-      <div class="town-scroll"><table class="town-lines">
-        <thead><tr><th scope="col" data-i18n="town.col.item">item</th><th scope="col" data-i18n="town.col.have">you have</th><th scope="col" data-i18n="town.col.each">each</th><th scope="col" data-i18n="town.col.points">points</th></tr></thead>
-        <tbody data-target="town-centre.lines"></tbody>
-      </table></div>
-      <p class="town-gloss" data-target="town-centre.dayEmpty" hidden></p>
-      <h4 data-i18n="town.alsoScores">Also scores that day, from what you do rather than what you hold</h4>
-      <ul class="town-also" data-target="town-centre.also"></ul>
-    </div>
-
-    <details id="best-day-plan">
-      <summary data-i18n="town.bestPlan">where each item scores most</summary>
-      <ul class="town-plan" data-target="town-centre.plan"></ul>
-    </details>
-    <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
-  </section>
-
   <section class="section town-shelves" id="town-inventory" aria-labelledby="town-inventory-title" data-module="town-inventory">
     <div class="town-heading"><h2 id="town-inventory-title" data-i18n="town.inventory">Your inventory</h2><small data-i18n="town.tapToCount">tap anything to count it · ? means not counted yet</small></div>
     <div class="town-rail" data-module="tabs" data-tabs-bind="town-shelf" role="tablist" aria-label="Inventory" data-i18n-key="town.inventory" data-i18n-attr="aria-label">
@@ -188,6 +158,36 @@ self: town
     </dialog>
 
     <output class="town-status" hidden aria-live="polite" data-module="result-panel" data-status-scope="town" data-target="result-panel.message"></output>
+  </section>
+
+  <section class="section town-points" id="town-points" aria-labelledby="town-points-title">
+    <h2 id="town-points-title" data-i18n="town.pointsTitle">What your bag can score</h2>
+    <div class="town-events" data-module="tabs" data-tabs-bind="town-event" role="tablist" aria-label="Event" data-i18n-key="town.event" data-i18n-attr="aria-label">
+      <button type="button" role="tab" aria-selected="true" data-value="prep" data-action="tabs.select"><span data-i18n="ks.today.kickerPrep">KvK prep</span><output data-event-total="prep">—</output></button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="sg" data-action="tabs.select"><span data-i18n="ks.governor.title">Strongest Governor</span><output data-event-total="sg">—</output></button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="brawl" data-action="tabs.select"><span data-i18n="ks.brawl.title">Alliance Brawl</span><output data-event-total="brawl">—</output></button>
+    </div>
+    <p class="town-gloss" data-i18n="town.bestTotal">Each total puts every item on the day it scores most. Your bag only empties once, so the days below are choices, not a sum.</p>
+    <p class="town-note" data-target="town-centre.coverage" aria-live="polite"></p>
+
+    <ol class="town-days" data-target="town-centre.days" aria-label="Days" data-i18n-key="town.days" data-i18n-attr="aria-label"></ol>
+
+    <div class="town-day" aria-live="polite">
+      <h3 data-target="town-centre.dayTitle"></h3>
+      <div class="town-scroll"><table class="town-lines">
+        <thead><tr><th scope="col" data-i18n="town.col.item">item</th><th scope="col" data-i18n="town.col.have">you have</th><th scope="col" data-i18n="town.col.each">each</th><th scope="col" data-i18n="town.col.points">points</th></tr></thead>
+        <tbody data-target="town-centre.lines"></tbody>
+      </table></div>
+      <p class="town-gloss" data-target="town-centre.dayEmpty" hidden></p>
+      <h4 data-i18n="town.alsoScores">Also scores that day, from what you do rather than what you hold</h4>
+      <ul class="town-also" data-target="town-centre.also"></ul>
+    </div>
+
+    <details id="best-day-plan">
+      <summary data-i18n="town.bestPlan">where each item scores most</summary>
+      <ul class="town-plan" data-target="town-centre.plan"></ul>
+    </details>
+    <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
   </section>
 
   <section class="section town-notes" id="town-save">

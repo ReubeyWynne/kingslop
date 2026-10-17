@@ -1129,7 +1129,6 @@ window.__BH_I18N_DATA["es"] = {
   "gov.cardLede": "Planifica el equipo y los amuletos del gobernador con tus propios materiales y mira cuánto vale la puntuación en los eventos.",
   "gov.kicker": "el vestuario del gobernador",
   "town.nav": "Centro urbano",
-  "ev.deck.lede.town": "todo lo que tienes y los puntos de evento que puede darte.",
   "town.title": "Centro urbano",
   "town.cardLede": "Todo lo que tienes en una página, y los puntos de KvK, Gobernador más fuerte y Brawl que puede darte.",
   "town.kicker": "todo lo que tienes, contado"

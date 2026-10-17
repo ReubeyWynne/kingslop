@@ -137,6 +137,10 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0);
     await page.goto(origin + '/town-centre/#town-governor'); await page.waitForTimeout(300);
     assert.equal(await page.locator('#town-governor').isVisible(), true, 'a shelf link selects its tab');
+    // Not a card in the ring: one fixed button in the deck, and the inventory leads.
+    assert.equal(await page.locator('.deck-card[data-page="town"]').count(), 0);
+    assert.equal(await page.locator('.deck-town').getAttribute('aria-current'), 'page');
+    assert.ok(await page.evaluate(() => document.querySelector('#town-inventory').compareDocumentPosition(document.querySelector('#town-points')) & Node.DOCUMENT_POSITION_FOLLOWING), 'points follow the inventory');
     await page.goto(origin + '/town-centre/#hero-chenko'); await page.waitForTimeout(300);
     assert.equal(await page.locator('#hero-chenko .hero-dossier').evaluate(node => node.open && !!node.offsetParent), true, 'a hero link opens the Heroes shelf');
     assert.deepEqual(errors, []);

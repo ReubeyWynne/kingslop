@@ -1125,7 +1125,6 @@ window.__BH_I18N_DATA["tr"] = {
   "gov.cardLede": "Vali ekipmanını ve tılsımlarını kendi malzemelerinle planla, puanın etkinliklerde neye değdiğini gör.",
   "gov.kicker": "valinin gardırobu",
   "town.nav": "Şehir Merkezi",
-  "ev.deck.lede.town": "sahip olduğun her şey ve kazandırabileceği etkinlik puanları.",
   "town.title": "Şehir Merkezi",
   "town.cardLede": "Sahip olduğun her şey tek sayfada; KvK, En Güçlü Vali ve Brawl’da kazandırabileceği puanlarla.",
   "town.kicker": "sahip olduğun her şey, sayıldı"

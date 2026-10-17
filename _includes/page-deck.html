@@ -4,6 +4,7 @@
   <div class="deck-sheet">
     <header class="deck-header">
       <h2 id="deck-title" data-i18n="ev.ledger.aria">the ledger — every page</h2>
+      <a class="deck-town" href="{{ p.depth }}town-centre/"{% if page.self == 'town' %} aria-current="page"{% endif %}><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M6 26V14l10-7 10 7v12h-7v-7h-6v7z"/></svg><span data-i18n="town.nav">Town Centre</span></a>
       <button type="button" class="deck-close" data-i18n="ev.deck.close" autofocus>close</button>
     </header>
     <nav class="deck-groups" aria-label="Page groups" data-i18n-key="ev.deck.groups" data-i18n-attr="aria-label">
