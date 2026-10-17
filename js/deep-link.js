@@ -8,7 +8,8 @@
    - section[data-collapse][id] sections are opened for a hash by common.js;
      this writes their hash back.
    - A tab panel with an id is selected through its role="tab" button. Selecting
-     a tab writes the panel's id when that tab is the panel's only one.
+     a tab writes the panel's id when that tab is the panel's only one, and
+     otherwise clears a hash left pointing into another panel of its tablist.
    Opening a target also opens every linked disclosure around it, so a link
    into a closed panel inside a collapsed section still lands. The page's own
    scripts wire their buttons first; this starts after them and presses them. */
@@ -84,6 +85,21 @@
     history.replaceState(history.state, '', location.pathname + location.search + (isOpen ? '#' + id : ''));
   }
 
+  // A selected tab writes its panel's id when it is that panel's only tab. A panel
+  // with several tabs has no single link, so selecting it clears a hash that still
+  // names a sibling panel; otherwise a reload would reopen the panel just left.
+  function selected(tab) {
+    var id = tab.getAttribute('aria-controls');
+    if (tabs(id).length === 1) { remember(id, true); return; }
+    var current = find(decodeURIComponent(location.hash.slice(1))), panel = find(id), list = tab.closest('[role="tablist"]');
+    if (!current || !panel || panel.contains(current) || !list) return;
+    var sibling = Array.prototype.some.call(list.querySelectorAll('[role="tab"][aria-controls]'), function (other) {
+      var otherPanel = find(other.getAttribute('aria-controls'));
+      return otherPanel && otherPanel !== panel && otherPanel.contains(current);
+    });
+    if (sibling) history.replaceState(history.state, '', location.pathname + location.search);
+  }
+
   function start() {
     reveal(true);
     window.addEventListener('hashchange', function () { reveal(false); });
@@ -103,7 +119,7 @@
         var node = record.target, value = node.getAttribute(record.attributeName);
         if (value === record.oldValue) return;
         if (record.attributeName === 'aria-expanded') remember(node.getAttribute('data-deep-link'), value === 'true');
-        else if (value === 'true' && tabs(node.getAttribute('aria-controls')).length === 1) remember(node.getAttribute('aria-controls'), true);
+        else if (value === 'true') selected(node);
       });
     });
     document.querySelectorAll('[data-deep-link][aria-expanded], [role="tab"][aria-controls]').forEach(function (node) {

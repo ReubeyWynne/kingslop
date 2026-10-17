@@ -116,7 +116,6 @@
 /* The longship rides on two seas: a far swell (::after) and a near chop. */
 .ascii-mini--charm::after { position: absolute; inset: 0; display: block; white-space: pre; color: var(--ink-muted); }
 .ascii-mini--charm .charm-pennant { color: var(--amber); }
-.ascii-mini--bear { height: 13.75em; }
 .ascii-mini--crown { height: 12.5em; }
 .ascii-mini--charm { height: 13.75em; }
 .ascii-mini--seal { height: 13.75em; }
@@ -275,6 +274,11 @@ html.deck-open .dust .ascii-ambient > span::before { animation-play-state: pause
 .deck-ascii .ascii-campfire { font-size: clamp(6px, 1.75vw, 9.5px); }
 .deck-ascii .ascii-forge { font-size: clamp(8px, 2.2vw, 11px); }
 .deck-ascii .ascii-hearth { font-size: clamp(12px, 3.6vw, 16px); }
+.deck-ascii .ascii-mini--aurora { font-size: clamp(7.5px, 2.2vw, 10px); }
+/* The cover's ground is a gradient, so a flat pane would show as a box;
+   the stars and the bear dim on their own instead. */
+.deck-ascii .ascii-mini--aurora .aurora-dim { display: none; }
+.deck-ascii .ascii-mini--aurora :is(.aurora-stars, .aurora-bear, .aurora-trace) { opacity: .45; }
 .deck-atmosphere { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
 
 /* Only the cover in front animates; the rest hold their frame. The ring's

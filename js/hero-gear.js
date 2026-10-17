@@ -55,12 +55,20 @@
     el('guest-enter').href = location.pathname + '?' + (kept ? kept + '&' : '') + 'guest';
     el('guest-leave').href = location.pathname + (kept ? '?' + kept : '');
   }
+  // A copied link is confirmed on the button itself for a moment, so no note lingers below the gear.
+  var shareReset;
   function shareLink() {
-    var url = shareURL(), field = el('link');
+    var url = shareURL(), field = el('link'), button = el('share');
     function fallback() { field.hidden = false; field.value = url; field.focus(); field.select(); note('linkSelect'); }
     field.hidden = true;
     if (!navigator.clipboard || !navigator.clipboard.writeText) { fallback(); return; }
-    navigator.clipboard.writeText(url).then(function () { note('linkCopied'); }, fallback);
+    navigator.clipboard.writeText(url).then(function () {
+      note(null);
+      clearTimeout(shareReset);
+      button.textContent = tr('linkCopiedShort'); button.dataset.copied = 'true';
+      el('share-status').textContent = tr('linkCopied');
+      shareReset = setTimeout(function () { button.textContent = tr('share'); delete button.dataset.copied; el('share-status').textContent = ''; }, 2500);
+    }, fallback);
   }
   function name(id) { var p = id.split('-'); return tr(p[0]) + ' · ' + tr(p[1]); }
   function quality(q) { return tr(q === 'mythic' ? 'mythicQuality' : q); }
@@ -97,7 +105,7 @@
     ['planner', 'settings'].forEach(function (page) { el(page).hidden = page !== activePage; });
     document.getElementById('theory').hidden = activePage !== 'theory';
   }
-  function showPage(page) { activePage = page; paintPage(); if (page === 'planner') scheduleSearch(0); else cancelSearch(); }
+  function showPage(page) { activePage = page; note(null); paintPage(); if (page === 'planner') scheduleSearch(0); else cancelSearch(); }
   function pieceInfo(slot, p) { return '<span class="gear-piece-info"><span class="gear-slot">' + esc(tr(slot)) + '</span><span class="gear-rarity gear-rarity-' + p.quality + '">' + esc(quality(p.quality)) + '</span></span>'; }
   function comparison(id, from, to, detail) {
     var direction = detail.refund ? 'down' : detail.costs.xp ? 'up' : 'same', mark = checkpoint(from, to);
@@ -107,6 +115,7 @@
     var xp = direction === 'same' ? '' : '<span class="gear-xp-flow">' + (direction === 'down' ? '↓ ' + fmt(detail.refund) + ' XP · ' + esc(tr('recoverXP')) : '↑ ' + fmt(detail.costs.xp) + ' XP · ' + esc(tr('redistributeXP'))) + '</span>';
     return '<article class="gear-row gear-change" data-direction="' + direction + '" data-changed="true" data-checkpoint="' + (mark ? mark.kind : '') + '" data-piece-id="' + id + '"><div class="gear-before-after"><span class="gear-state"><small>' + esc(tr('before')) + '</small>' + gearItem(id, from) + '</span><span class="gear-change-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" focusable="false"><path d="M2 10h15m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="gear-state"><small>' + esc(tr('after')) + '</small>' + gearItem(id, to) + '</span></div><div class="gear-change-info"><strong class="gear-change-name">' + esc(tr(id.split('-')[1])) + '</strong>' + checkpointLabel(mark) + '<div class="gear-row-costs">' + xp + resources + kvkScore(detail.costs) + '</div><small class="gear-tile-impact">' + esc(statText(detail.delta).replace(tr('core'), tr(id.split('-')[1] === 'helm' || id.split('-')[1] === 'boots' ? 'lethality' : 'health'))) + '</small></div></article>';
   }
+  function fullLevel(p) { return (p.quality === 'red' ? quality('red') + ' ' : '') + levelLabel(p); }
   function levelLabel(p) { return '+' + (p.quality === 'red' ? p.level - 100 : p.level); }
   function pieceLabel(p) { return quality(p.quality) + ' ' + (p.quality === 'red' ? '+' + (p.level - 100) : p.level) + ' · ' + tr('mastery') + ' ' + p.mastery; }
   function note(key) { document.dispatchEvent(new CustomEvent('player-status', { detail: { scope: 'hero-gear', key: key ? 'gear.' + key : null } })); }
@@ -167,10 +176,10 @@
     el('selected').innerHTML = Object.keys(state.pieces).map(function (id) { return '<option value="' + id + '"' + (id === state.selected ? ' selected' : '') + '>' + esc(name(id)) + '</option>'; }).join('');
     el('profile').value = state.profile;
     el('reforge').checked = state.reforge;
-    el('weights').innerHTML = E.TYPES.map(function (type) {
+    el('weights').innerHTML = '<div class="gear-weight-row gear-weight-head" aria-hidden="true"><span></span><span>' + esc(tr('lethality')) + '</span><span>' + esc(tr('health')) + '</span></div>' + E.TYPES.map(function (type) {
       return '<div class="gear-weight-row"><span>' + esc(tr(type)) + '</span>' + [0, 1].map(function (i) {
         var label = tr(i ? 'health' : 'lethality');
-        return '<label><span>' + esc(label) + '</span><input type="number" min="0" max="100" step="0.1" inputmode="decimal" data-weight="' + type + '" data-stat="' + i + '" value="' + state.weights[type][i] + '" aria-label="' + esc(tr(type) + ' · ' + label) + '"></label>';
+        return '<label><input type="number" min="0" max="100" step="0.1" inputmode="decimal" data-weight="' + type + '" data-stat="' + i + '" value="' + state.weights[type][i] + '" aria-label="' + esc(tr(type) + ' · ' + label) + '"></label>';
       }).join('') + '</div>';
     }).join('');
   }
@@ -319,20 +328,18 @@
       return E.RES.some(function (key) { return r.gap[key] > 0; }) || r.reforgeNow;
     }).map(function (r) {
       var missing = E.RES.filter(function (key) { return r.gap[key] > 0; })
-        .map(function (key) { return fmt(r.gap[key]) + ' ' + esc(tr(key)); }).join(' · ');
+        .map(function (key) { return fmt(r.gap[key]) + ' ' + tr(key + 'Unit'); }).join(' · ');
       var delayed = r.afterSpendGap && E.RES.some(function (key) { return r.afterSpendGap[key] > r.gap[key]; });
-      var note = r.reforgeNow ? 'Reforging can reach this milestone now. Compare the full plan before applying it.' :
-        r.optimalAtThreshold ? 'This milestone is part of a highest-scoring plan at that budget.' :
-        r.beatsCurrentPlan ? 'A milestone-first plan beats today’s spend-now score once these resources are available, but other plans may do better.' :
-        'Reaching this milestone does not currently outperform the spend-now result.';
+      var note = tr(r.reforgeNow ? 'oppReforge' : r.optimalAtThreshold ? 'oppOptimal' : r.beatsCurrentPlan ? 'oppBeats' : 'oppBehind');
+      function shortBy(gap) { return E.RES.filter(function (key) { return gap[key] > 0; }).map(function (key) { return fmt(gap[key]) + ' ' + tr(key + 'Unit'); }).join(' · '); }
       return '<article class="gear-opportunity">' +
         '<div class="gear-opportunity-head">' + gearImage(r.id, 'gear-opportunity-art') +
-        '<div><strong>' + esc(name(r.id)) + ' · ' + r.from.level + ' → ' + r.to.level + '</strong>' +
+        '<div><strong>' + esc(name(r.id)) + ' · ' + esc(fullLevel(r.from)) + ' → ' + esc(fullLevel(r.to)) + '</strong>' +
         '<small>' + esc(tr('mithrilCheckpoint')) + ' · ' + gainPct(r.milestoneGain, baseline) + ' ' + esc(tr('weightedGain')) + '</small></div></div>' +
-        '<p>' + (missing ? esc(missing) + ' short. ' : 'Affordable now. ') + esc(note) + '</p>' +
-        (delayed ? '<p>Spending now increases the milestone shortfall to ' + E.RES.filter(function (key) { return r.afterSpendGap[key]; }).map(function (key) { return fmt(r.afterSpendGap[key]) + ' ' + esc(tr(key)); }).join(' · ') + '.</p>' : '') +
-        (r.futurePlan ? '<p>At this resource threshold: ' + gainPct(r.futurePlan.score - baseline, baseline) + ' on current gear for the milestone-first plan; best found ' + gainPct(r.futureBestScore - baseline, baseline) + '.</p>' : '') +
-        (r.reforgeNow ? '<p>Reforge plan: ' + gainPct(r.reforgeNow.score - baseline, baseline) + ' on current gear, including changes to other gear.</p>' : '') +
+        '<p>' + esc(missing ? BH.fill(tr('oppShort'), { missing: missing }) : tr('oppAffordable')) + ' ' + esc(note) + '</p>' +
+        (delayed ? '<p>' + esc(BH.fill(tr('oppDelayed'), { missing: shortBy(r.afterSpendGap) })) + '</p>' : '') +
+        (r.futurePlan ? '<p>' + esc(BH.fill(tr('oppFuture'), { plan: gainPct(r.futurePlan.score - baseline, baseline), best: gainPct(r.futureBestScore - baseline, baseline) })) + '</p>' : '') +
+        (r.reforgeNow ? '<p>' + esc(BH.fill(tr('oppReforgePlan'), { gain: gainPct(r.reforgeNow.score - baseline, baseline) })) + '</p>' : '') +
         '<button type="button" data-mode="plan">' + esc(tr('seeSavingCosts')) + ' →</button></article>';
     }).join('');
     host.innerHTML = cards ? '<section class="gear-saving-options"><h3 class="gear-subhead">' + esc(tr('budgetRoutes')) + '</h3>' + cards + '</section>' : '';

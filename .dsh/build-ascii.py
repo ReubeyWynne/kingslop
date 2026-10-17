@@ -381,7 +381,7 @@ def forge():
 
 
 # ── the small emblems ────────────────────────────────────────────────────
-# Each is 29 cells wide, 9 rows tall (crown and charm 10, bear and seal 11), set at line-height 1.25.
+# Each is 29 cells wide, 9 rows tall (crown and charm 10, seal 11), set at line-height 1.25.
 # The helm stands over the hero directory; the seal over governor gear.
 
 MW = 29
@@ -396,18 +396,6 @@ CHARM = r'''
 (o \__________|__________/ o)
   \ (@)(@)(@)(@)(@)(@)(@) /
    \_____________________/ '''
-BEAR = r'''
-   .--.               .--.
-  / .. \.-"""""""""-./ .. \
-  \  .-'             '-.  /
-   '/                   \'
-   |                     |
-   |      (o)   (o)      |
-   |        .---.        |
-    \      / (_) \      /
-     '.    '._Y_.'    .'
-       '-.         .-'
-          '-.___.-' '''
 CROWN = r'''
               o
              /^\
@@ -481,20 +469,6 @@ def mini_frames(kind):
             arr = [r[:] for r in base]
             if 12 <= i < 26:
                 put(arr, 5 + 3 * ((i - 12) // 2), 7, '*')
-            frames.append(arr)
-    elif kind == 'bear':
-        base = [list(r.ljust(MW)) for r in art(BEAR)]
-        for i in range(36):
-            arr = [r[:] for r in base]
-            if i in (22, 23, 30):
-                put(arr, 10, 5, '(-)'); put(arr, 16, 5, '(-)')
-            if i in (7, 8, 10, 11):  # a sniff: the nostrils flare
-                put(arr, 13, 7, '{_}')
-            if i in (26, 27, 29):  # an ear flick, drawn on the ear itself
-                put(arr, 3, 0, ".-'.")
-            for n, (r, c) in enumerate([(4, 0), (0, 28), (8, 27), (10, 2)]):
-                cycle = (i + n * 9) % 36
-                put(arr, c, r, '.+*+.'[cycle - 2] if 2 <= cycle < 7 else ' ')
             frames.append(arr)
     elif kind == 'crown':
         # A glint runs along the band, then the three tips catch the light
@@ -952,10 +926,10 @@ def minis():
     # Emblems that face the viewer are drawn symmetrical (DESIGN.md, "Animation quality").
     # The helm is drawn in profile, the way a Spartan helm is best known, and
     # the seal's quartered field is counterchanged rather than mirrored.
-    for name, drawing in (('bear', BEAR), ('crown', CROWN), ('charm', CHARM)):
+    for name, drawing in (('crown', CROWN), ('charm', CHARM)):
         assert symmetrical(drawing), f'{name}: the emblem is not symmetrical about column {MW // 2}'
     css = ['/* emblems */']
-    durations = {'charm': 6.4, 'bear': 7.2, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 19.6, 'helm': 8, 'seal': 8, 'castle': CASTLE_FRAMES / FPS}
+    durations = {'charm': 6.4, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 19.6, 'helm': 8, 'seal': 8, 'castle': CASTLE_FRAMES / FPS}
     for kind, duration in durations.items():
         frames, holds = mini_frames(kind)
         if kind == 'moon':

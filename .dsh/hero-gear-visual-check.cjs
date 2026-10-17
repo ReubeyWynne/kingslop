@@ -54,7 +54,7 @@ async function fits(page, label) {
     assert.equal(await page.locator('#gear-milestone-out .gear-kvk-summary').getAttribute('data-kvk-points'),'840000');
     assert.match(await page.locator('#gear-milestone-out .gear-kvk-summary').textContent(),/840,000.*KvK points.*4 \/ 5/);
     for(const [id,value]of [['parts10','5'],['parts100','526'],['hammers','110'],['mythic','6'],['mithril','10']])await page.locator('#gear-'+id).fill(value);
-    assert.match(await page.locator('#gear-milestone-out').textContent(),/you have every resource/);
+    assert.match(await page.locator('#gear-milestone-out').textContent(),/You have everything this upgrade needs/);
     await page.reload();await page.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
     assert.equal(await page.locator('#gear-xp-total').textContent(),'52,650');
     assert.equal(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),100);
@@ -120,7 +120,7 @@ async function fits(page, label) {
     await page.locator('.gear-route[data-route="0"]').click();
     assert.equal(await page.locator('#gear-milestone-out > .gear-kvk-summary').getAttribute('data-kvk-points'),'2200000','saving points cover the full cost, including resources already owned');
     await page.locator('.gear-route[data-route="1"]').click();
-    assert.match(await page.locator('#gear-milestone-out .gear-role').textContent(),/garrison lead/);
+    assert.match(await page.locator('#gear-milestone-out .gear-role').textContent(),/Garrison lead/);
     await page.locator('#gear-profile').selectOption('rally');
     assert.match(await page.locator('.gear-route').first().textContent(),/Archer/);
     await page.locator('#gear-profile').selectOption('growth');
@@ -339,7 +339,11 @@ async function fits(page, label) {
       await owner.locator('[data-piece="inf-helm"][data-field="level"]').fill('90');await owner.locator('[data-piece="inf-helm"][data-field="level"]').press('Tab');
       await owner.locator('#gear-close-edit').click();
       await owner.locator('#gear-share').click();
-      await owner.locator('#gear-status:not([hidden])').waitFor();
+      await owner.locator('#gear-share[data-copied]').waitFor();
+      assert.equal(await owner.locator('#gear-share').textContent(),'link copied','the button confirms the copy');
+      assert.equal(await owner.locator('#gear-status').isHidden(),true,'no note lingers below the gear');
+      await owner.locator('#gear-share:not([data-copied])').waitFor();
+      assert.equal(await owner.locator('#gear-share').textContent(),'copy gear link');
       const shared=await owner.evaluate(()=>navigator.clipboard.readText());
       assert.match(shared,/\/hero-gear\/\?gear=m90\.0(-m0\.0){11}&w=growth$/);
       const visitor=await guestContext.newPage();visitor.on('pageerror',e=>errors.push(e.message));
@@ -361,7 +365,7 @@ async function fits(page, label) {
       assert.match(visitor.url(),/\?lang=en&gear=/);
       assert.match(await visitor.locator('#gear-guest-leave').getAttribute('href'),/\/hero-gear\/\?lang=en$/);
       await visitor.goto(origin+'/hero-gear/?gear=broken');await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
-      assert.match(await visitor.locator('#gear-status').textContent(),/could not be read/);
+      assert.match(await visitor.locator('#gear-status').textContent(),/couldn’t be read/);
       await visitor.goto(origin+'/hero-gear/?lang=en&gear=m69.2-r120.11-m100.6-m72.3-m20.20-m100.0-r160.13-e80.0-r200.20-r200.20-r200.20-r200.20&w=growth');
       await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
       await visitor.locator('#gear-mode-split').click();
@@ -381,10 +385,11 @@ async function fits(page, label) {
         assert.equal(await visitor.locator('#gear-planner').isHidden(),true);
       }
       await visitor.locator('#gear-page-planner').click();
+      assert.equal(new URL(visitor.url()).hash,'','leaving Settings clears its hash, so a reload stays on the planner');
       await visitor.locator('#gear-mode-plan').click();
       await visitor.locator('#gear-milestone-out .gear-theory-link[href="#kvk-points"]').click();
       await visitor.locator('#kvk-points').waitFor();
-      assert.match(await visitor.locator('#gear-kvk-formula').textContent(),/4,000 points per Forgehammer/);
+      assert.match(await visitor.locator('#gear-kvk-formula').textContent(),/each Forgehammer you spend scores 4,000 points/);
       assert.equal(await visitor.locator('.gear-main details').count(),0,'the page uses tabs and headings, not folds');
     } finally { await guestContext.close(); }
     assert.deepEqual(errors,[]);
