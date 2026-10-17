@@ -1,6 +1,6 @@
 // Town Centre: points from the whole ledger, page wiring and dictionaries.
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
-const T = require('../js/town-centre-engine.js'), Ledger = require('../js/player-ledger.js'), rules = require('../js/event-rules.js');
+const T = require('../js/town-centre-engine.js'), Spend = require('../js/hero-spend.js'), Ledger = require('../js/player-ledger.js'), rules = require('../js/event-rules.js');
 const storage = { getItem(k) { return this[k] ?? null; }, setItem(k, v) { this[k] = v; } };
 const store = Ledger.create(storage);
 
@@ -19,9 +19,12 @@ let best = T.best(store.snapshot(), 'prep');
 assert.equal(best.total, 0); assert.equal(best.complete, false);
 assert.ok(best.unknown.includes('mithril') && best.unknown.includes('speedup-general') && best.unknown.includes('governor-charms'));
 
-// Items match the shared event rules exactly.
+// Items match the shared event rules exactly. Hero shards and widgets are scored from the
+// hero spending plan instead of the raw balance, so a bag widget with no heroes scores nothing.
 store.setBalance('mithril', 10); store.setBalance('forgehammer', 25); store.setBalance('hero-widget', 3);
-assert.equal(T.day(store.snapshot(), 'prep', 4).lines.filter(l => l.kind === 'item').reduce((s, l) => s + l.points, 0), rules.calculate(store.snapshot(), 'prep', 4, {}, null).total);
+assert.equal(T.day(store.snapshot(), 'prep', 4).lines.filter(l => l.kind === 'item').reduce((s, l) => s + l.points, 0), rules.calculate(Spend.budget(store.snapshot()), 'prep', 4, {}, null).total);
+assert.equal(T.day(store.snapshot(), 'prep', 4).lines.find(l => l.id === 'hero-widget'), undefined);
+assert.ok(T.day(store.snapshot(), 'prep', 4).unknown.includes('heroes'));
 
 // Speedups: minutes × the row's rate, each kind once per day.
 store.setBalance('speedup-general', 100); store.setBalance('speedup-healing', 50); store.setBalance('speedup-construction', 10);
@@ -54,6 +57,19 @@ for (const event of Object.keys(rules.data.events)) for (const d of T.best(store
 assert.deepEqual(T.topRate('mithril'), { event: 'prep', day: 4, rate: 40000 });
 assert.equal(T.topRate('bread'), null);
 
+// Hero shards and widgets: only what owned heroes can consume, from the same plan as the Heroes page.
+store.setBalance('mythic-hero-shard', 500);
+store.setHero('jabel', { stars: 24 }); store.setBalance(Ledger.heroShardId('jabel'), 60);
+store.setHero('amadeus', { stars: 12, widget: 3 }); store.setBalance(Ledger.heroShardId('amadeus'), 200); store.setBalance(Ledger.heroWidgetId('amadeus'), 30); store.setBalance(Ledger.widgetChestId(1), 0);
+const heroDay = T.day(store.snapshot(), 'prep', 2), shardLine = heroDay.lines.find(l => l.id === 'mythic-hero-shard');
+assert.equal(shardLine.kind, 'hero');
+assert.equal(shardLine.amount, 695, 'Amadeus 195 of his own (2★ to 3★ 2/6), Jabel 60 own + 440 general (4★ to 4★ 5/6)');
+assert.equal(shardLine.points, 695 * 3040);
+assert.equal(T.best(store.snapshot(), 'prep').lines.find(l => l.id === 'hero-widget').points, 20 * 8000, 'widget 3 to 4 costs 20 of Amadeus’s 30');
+const plan = T.best(store.snapshot(), 'prep').heroes;
+assert.equal(plan.items['mythic-hero-shard'].left, 60);
+assert.equal(Spend.points(rules, 'prep', plan.heroes.jabel).total, 500 * 3040, 'the Heroes page scores each hero from the same plan');
+
 // Page wiring: navigation, scripts, deck scene, dictionaries and copy keys.
 const nav = require('../_data/nav.json'), pages = require('../_data/pages.json');
 // The Town Centre sits outside the page ring: a fixed button in the deck and a ledger link, never a card.
@@ -61,8 +77,9 @@ assert.equal(nav.filter(n => n.self === 'town').length, 0);
 assert.ok(!pages.town.swipePrev && !pages.town.swipeNext);
 assert.ok(fs.readFileSync('_includes/page-deck.html', 'utf8').includes('class="deck-town" href="{{ p.depth }}town-centre/"'));
 assert.ok(!fs.readFileSync('_includes/ascii/deck-scene.html', 'utf8').includes("'town'"));
-for (const script of ['event-data.js', 'governor-data.js', 'event-rules.js', 'governor-engine.js', 'hero-gear-engine.js', 'town-centre-engine.js', 'town-centre.js']) assert.ok(pages.town.scripts.includes('../js/' + script), script);
+for (const script of ['event-data.js', 'governor-data.js', 'event-rules.js', 'governor-engine.js', 'hero-gear-engine.js', 'hero-data.js', 'hero-spend.js', 'town-centre-engine.js', 'hero-points.js', 'town-centre.js']) assert.ok(pages.town.scripts.includes('../js/' + script), script);
 assert.ok(pages.town.scripts.indexOf('../js/town-centre-engine.js') < pages.town.scripts.indexOf('../js/town-centre.js'));
+assert.ok(pages.town.scripts.indexOf('../js/hero-spend.js') < pages.town.scripts.indexOf('../js/town-centre-engine.js'));
 const dictionaries = fs.readdirSync('i18n').filter(f => f.endsWith('.js')).map(file => { const ctx = { window: {} }; vm.runInNewContext(fs.readFileSync('i18n/' + file, 'utf8'), ctx); return [file, Object.values(ctx.window.__BH_I18N_DATA)[0]]; });
 assert.equal(dictionaries.length, 17);
 for (const [file, d] of dictionaries) for (const key of ['town.nav', 'town.title', 'town.cardLede', 'town.kicker']) assert.equal(typeof d[key], 'string', file + ' ' + key);

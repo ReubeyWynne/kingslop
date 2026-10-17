@@ -1,0 +1,5 @@
+---
+layout: null
+permalink: /js/hero-data.js
+---
+window.HeroCatalogue = [{% for hero in site.data.heroes.heroes %}{ "key": {{ hero.key | jsonify }}, "name": {{ hero.name | jsonify }}, "rarity": {{ hero.rarity | jsonify }}, "generation": {{ hero.generation }}, "widget": {% if hero.widget %}true{% else %}false{% endif %} }{% unless forloop.last %},{% endunless %}{% endfor %}];

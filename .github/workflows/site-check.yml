@@ -79,6 +79,11 @@ jobs:
               - heroes/**
               - _includes/heroes/**
               - js/hero-directory*.js
+              - js/hero-spend.js
+              - js/hero-points.js
+              - js/hero-data.liquid
+              - js/event-rules.js
+              - _data/event_rules.json
               - _data/heroes.json
               - _data/hero_roles.json
               - css/heroes.css
@@ -124,6 +129,10 @@ jobs:
               - css/town.css
               - _includes/heroes/**
               - js/hero-directory*.js
+              - js/hero-spend.js
+              - js/hero-points.js
+              - js/hero-data.liquid
+              - _data/heroes.json
               - css/heroes.css
             # The deck walks every page and fails on any script error.
             deck:
@@ -227,6 +236,9 @@ jobs:
       - name: Check Town Centre points and wiring
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/town-centre-check.cjs
+      - name: Check hero spending plan and Heroes page points
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/hero-spend-check.cjs
       - name: Check OCR backend recovery
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/ocr-backend-check.cjs

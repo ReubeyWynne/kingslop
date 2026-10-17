@@ -4,6 +4,7 @@ self: heroes
 ---
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
   <a href="#directory" data-i18n="directory.browse">Browse heroes</a>
+  <a href="#kvk-points" data-i18n="spend.nav">KvK points</a>
   <a href="#roles" data-i18n="directory.roles">Choose a role</a>
   <a href="#hero-sources" data-i18n="directory.sources">Sources &amp; confidence</a>
 </nav>
@@ -18,6 +19,20 @@ self: heroes
     {% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}
     {% assign troops = 'inf,cav,arc' | split: ',' %}
     {% include heroes/roster.html %}
+  </section>
+  <section class="section hero-points" id="kvk-points" data-module="hero-points" aria-labelledby="kvk-points-title">
+    <h2 id="kvk-points-title" data-i18n="spend.title">KvK points from your heroes</h2>
+    <p data-i18n="spend.intro">A shard or widget only scores when it is spent. This counts what the heroes you own can actually use: whole star steps up to 5★ and widget levels up to 10, paid with each hero’s own shards first, then general shards of the same rarity where they finish the most steps. Amadeus and Helga take only their own shards.</p>
+    <p class="hero-points-total"><output data-target="hero-points.total">—</output></p>
+    <p class="note" data-target="hero-points.coverage" aria-live="polite"></p>
+    <div class="hero-points-scroll" data-target="hero-points.table" hidden><table class="hero-points-table">
+      <thead><tr><th scope="col" data-i18n="spend.col.hero">hero</th><th scope="col" data-i18n="spend.col.points">KvK prep points</th><th scope="col" data-i18n="spend.col.stars">stars</th><th scope="col" data-i18n="spend.col.shards">shards used</th><th scope="col" data-i18n="spend.col.widgets">widgets used</th></tr></thead>
+      <tbody data-target="hero-points.rows"></tbody>
+    </table></div>
+    <p class="note" data-target="hero-points.empty" hidden></p>
+    <p class="note" data-target="hero-points.left"></p>
+    <p class="note" data-i18n="spend.rates">Each kind counts on the KvK prep day that pays most for it. The Town Centre adds these to the rest of your bag.</p>
+    <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
   </section>
   <section class="section" id="roles">
     <h2 data-i18n="directory.roles">Choose a role</h2>
