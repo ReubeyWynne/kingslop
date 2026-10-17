@@ -61,6 +61,11 @@
   function piece(value) {
     return object(value) && (value.quality === null || ['epic', 'mythic', 'red'].includes(value.quality)) && (value.level === null || count(value.level) && value.level <= (value.quality === 'epic' ? 80 : value.quality === 'mythic' ? 100 : 200)) && (value.mastery === null || count(value.mastery) && value.mastery <= 20) && (value.quality !== 'epic' || value.mastery === null || value.mastery === 0) && (value.quality !== 'red' || (value.level === null || value.level >= 100) && (value.mastery === null || value.mastery >= (value.level === null || value.level < 120 ? 10 : 10 + Math.floor((value.level - 100) / 20))));
   }
+  function kingdomProfile(value) {
+    return object(value) && same(Object.keys(value).sort(), ['generation', 'position', 'truegold', 'warAcademy']) &&
+      (value.position === null || id(value.position)) && (value.generation === null || Number.isInteger(value.generation) && value.generation >= 1 && value.generation <= 99) &&
+      (value.truegold === null || [0, 3, 5, 8, 10].includes(value.truegold)) && (value.warAcademy === null || typeof value.warAcademy === 'boolean');
+  }
   function empty() {
     return { format: 'kingshot-player', schemaVersion: 1, revision: 0, updatedAt: new Date().toISOString(), inventory: {}, heroGear: { pieces: {}, provenance: {}, parts: null }, governorGear: { status: 'unsupported', pieces: {} }, governorCharms: { status: 'unsupported', slots: {} }, combat: { stats: {}, provenance: {} }, imports: [], preferences: { heroGear: {} }, migration: null };
   }
@@ -106,8 +111,9 @@
       Object.keys(value.training.facts).forEach(function (key) { valid(TRAINING.includes(key) && trainingFact(key, value.training.facts[key]) && provenance(value.training.provenance[key])); });
     }
     valid(object(value.preferences) && object(value.preferences.heroGear));
+    if (value.preferences.kingdom !== undefined) valid(kingdomProfile(value.preferences.kingdom));
     if (value.preferences.training !== undefined) valid(object(value.preferences.training) && Object.keys(value.preferences.training).every(function (key) { return key === 'buff' && typeof value.preferences.training.buff === 'boolean'; }));
-    valid(Object.keys(value.preferences).every(function (key) { return key === 'heroGear' || key === 'governor' || key === 'training'; }) && Object.keys(value.preferences.heroGear).every(function (key) { return PREFS.includes(key); }));
+    valid(Object.keys(value.preferences).every(function (key) { return key === 'heroGear' || key === 'governor' || key === 'training' || key === 'kingdom'; }) && Object.keys(value.preferences.heroGear).every(function (key) { return PREFS.includes(key); }));
     if (value.preferences.governor !== undefined) {
       var gov = value.preferences.governor;
       valid(object(gov) && Object.keys(gov).every(function (key) { return Object.hasOwn(GOVERNOR_PREFS, key); }));
@@ -257,6 +263,13 @@
         value.buildings.levels[key] = level; value.buildings.provenance[key] = { source: source || 'manual', at: new Date().toISOString() };
       }, expected);
     }
+    function kingdom() {
+      return copy(snapshot().preferences.kingdom || { position: null, generation: null, truegold: null, warAcademy: null });
+    }
+    function setKingdom(profile, expected) {
+      valid(kingdomProfile(profile));
+      return transaction(function (value) { value.preferences.kingdom = copy(profile); }, expected);
+    }
     function training() {
       var value = snapshot(), section = value.training || { facts: {}, provenance: {} };
       return { facts: copy(section.facts), provenance: copy(section.provenance), buff: Boolean(value.preferences.training && value.preferences.training.buff) };
@@ -358,7 +371,7 @@
     if (events && events.addEventListener) events.addEventListener('storage', function (event) {
       if ((event.key === KEY || event.key === null) && (!event.storageArea || event.storageArea === storage)) { try { current = read(); notify(); } catch (error) { if (events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:error', { detail: error.message })); } }
     });
-    return { snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, buildings: buildings, setBuilding: setBuilding, training: training, setTraining: setTraining, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
+    return { kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, buildings: buildings, setBuilding: setBuilding, training: training, setTraining: setTraining, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
   }
   return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), TRAINING: TRAINING.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), troopId: troopId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, empty: empty, validate: validate, create: create };
 });

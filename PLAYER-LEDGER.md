@@ -53,6 +53,10 @@ store.setTrainingBuff(true);
 
 `preferences.heroGear` holds only optimisation/UI choices. Resource bags and piece lists are derived from the ledger, not duplicated in preferences. A write touches changed facts and explicitly edited fields, preserving unrelated inventory and provenance. `source` distinguishes manual, legacy, screenshot, plan, reset and file edits.
 
+## Kingdom context
+
+`preferences.kingdom` stores manually selected kingdom unlocks independently of owned account facts. `kingdom()` / `setKingdom(profile, expectedRevision)` read and write it. See [KINGDOM-PROGRESSION.md](KINGDOM-PROGRESSION.md) for its nullable fields, legacy generation migration, shared availability resolver and first consumers.
+
 ## Store API
 
 ```js
