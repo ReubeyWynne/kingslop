@@ -36,6 +36,13 @@ store.setHero('amadeus', { level: 80, stars: 27, widget: 6, skills: [5, 4, 5] })
 store.setBalance(PlayerLedger.heroShardId('amadeus'), 34);
 ```
 
+Building levels serve the Town Centre. `buildings.levels` maps a building ID (`town-center`, `embassy`, `barracks`, `range`, `stable`, `command-center`, `infirmary`, `war-academy`, `academy`, as in `_data/buildings.json`) to the game's own level ID: `0` (not built), `1`…`30`, `30-1`…`30-4`, `TG 1`, `TG1-1`…`TG1-4`, … `TG 10` (`PlayerLedger.buildingLevel` checks one). Each level has its own entry in `buildings.provenance`. A building missing from the map has not been counted yet. Truegold, Tempered Truegold and the four resources stay ordinary inventory balances. Saves without a `buildings` key stay valid.
+
+```js
+store.buildings(); // { levels: { 'town-center': 'TG 3' }, provenance }
+store.setBuilding('town-center', 'TG3-1'); // null forgets the level
+```
+
 `preferences.heroGear` holds only optimisation/UI choices. Resource bags and piece lists are derived from the ledger, not duplicated in preferences. A write touches changed facts and explicitly edited fields, preserving unrelated inventory and provenance. `source` distinguishes manual, legacy, screenshot, plan, reset and file edits.
 
 ## Store API

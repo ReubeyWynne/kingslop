@@ -1,6 +1,6 @@
 // Town Centre: points from the whole ledger, page wiring and dictionaries.
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
-const T = require('../js/town-centre-engine.js'), H = require('../js/hero-gear-engine.js'), Spend = require('../js/hero-spend.js'), Ledger = require('../js/player-ledger.js'), rules = require('../js/event-rules.js');
+const T = require('../js/town-centre-engine.js'), H = require('../js/hero-gear-engine.js'), Spend = require('../js/hero-spend.js'), Ledger = require('../js/player-ledger.js'), rules = require('../js/event-rules.js'), B = require('../js/building-spend.js');
 const storage = { getItem(k) { return this[k] ?? null; }, setItem(k, v) { this[k] = v; } };
 const store = Ledger.create(storage);
 
@@ -22,7 +22,7 @@ assert.ok(best.unknown.includes('mithril') && best.unknown.includes('speedup-gen
 // Items match the shared event rules exactly. Hero shards and widgets are scored from the
 // hero spending plan instead of the raw balance, so a bag widget with no heroes scores nothing.
 store.setBalance('mithril', 10); store.setBalance('forgehammer', 25); store.setBalance('hero-widget', 3);
-const usableIds = ['mithril', 'forgehammer', ...Spend.ITEMS];
+const usableIds = ['mithril', 'forgehammer', ...Spend.ITEMS, ...B.ITEMS];
 store.setBalance('truegold', 7);
 assert.equal(T.day(store.snapshot(), 'prep', 2).lines.filter(l => l.kind === 'item').reduce((s, l) => s + l.points, 0), rules.calculate(store.snapshot(), 'prep', 2, {}, null).items.filter(i => !usableIds.includes(i.id) && i.points).reduce((s, i) => s + i.points, 0));
 assert.equal(T.day(store.snapshot(), 'prep', 4).lines.find(l => l.id === 'hero-widget'), undefined);
@@ -90,6 +90,22 @@ const plan = T.best(store.snapshot(), 'prep').heroes;
 assert.equal(plan.items['mythic-hero-shard'].left, 60);
 assert.equal(Spend.points(rules, 'prep', plan.heroes.jabel).total, 500 * 3040, 'the Heroes page scores each hero from the same plan');
 
+// Truegold and Tempered Truegold: only what the recorded buildings can take, in whole steps
+// paid with every resource they list, once their prerequisites are met. No buildings, nothing.
+assert.equal(T.day(store.snapshot(), 'prep', 2).lines.find(l => l.id === 'truegold'), undefined);
+assert.ok(T.day(store.snapshot(), 'prep', 2).unknown.includes('buildings'));
+for (const [id, level] of Object.entries({ 'town-center': 'TG 3', embassy: 'TG 3', barracks: 'TG 3', range: 'TG 3', stable: 'TG 3', 'command-center': 'TG 3', infirmary: 'TG 3', 'war-academy': 'TG 3', academy: '30' })) store.setBuilding(id, level);
+store.setBalance('truegold', 1000); store.setBalance('tempered-truegold', 50);
+assert.equal(T.day(store.snapshot(), 'prep', 2).lines.find(l => l.id === 'truegold'), undefined, 'resources not counted, so no step can be paid');
+for (const id of B.RESOURCES) store.setBalance(id, 1e9);
+const tgDay = T.day(store.snapshot(), 'prep', 2), tgLine = tgDay.lines.find(l => l.id === 'truegold');
+const tcSteps = B.data.buildings[0].levels.filter(l => ['TG3-1', 'TG3-2', 'TG3-3'].includes(l.id)).reduce((s, l) => s + l.cost.truegold, 0);
+assert.deepEqual([tgLine.kind, tgLine.amount, tgLine.points], ['usable', tcSteps, tcSteps * 2000], 'every other building waits on the Town Centre, which takes three TG3 steps');
+assert.equal(tgDay.lines.find(l => l.id === 'tempered-truegold'), undefined, 'nothing before TG 5 takes Tempered Truegold');
+assert.ok(!tgDay.unknown.some(id => /^building|^buildings/.test(id)));
+assert.equal(T.best(store.snapshot(), 'prep').buildings.items.truegold.left, 1000 - tcSteps);
+for (const id of [...B.RESOURCES, 'truegold', 'tempered-truegold']) store.setBalance(id, null);
+store.setBuilding('academy', null);
 const chestStore = Ledger.create({ getItem(k) { return this[k] ?? null; }, setItem(k, v) { this[k] = v; } });
 chestStore.setHero('amadeus', { stars: 30, widget: 0 });
 chestStore.setBalance(Ledger.heroShardId('amadeus'), 0);
@@ -111,13 +127,15 @@ assert.equal(nav.filter(n => n.self === 'town').length, 0);
 assert.ok(!pages.town.swipePrev && !pages.town.swipeNext);
 assert.ok(fs.readFileSync('_includes/page-deck.html', 'utf8').includes('class="deck-town" href="{{ p.depth }}town-centre/"'));
 assert.ok(!fs.readFileSync('_includes/ascii/deck-scene.html', 'utf8').includes("'town'"));
-for (const script of ['event-data.js', 'governor-data.js', 'event-rules.js', 'governor-engine.js', 'hero-gear-engine.js', 'hero-data.js', 'hero-spend.js', 'town-centre-engine.js', 'hero-points.js', 'town-centre.js']) assert.ok(pages.town.scripts.includes('../js/' + script), script);
+for (const script of ['event-data.js', 'governor-data.js', 'event-rules.js', 'governor-engine.js', 'hero-gear-engine.js', 'hero-data.js', 'hero-spend.js', 'building-data.js', 'building-spend.js', 'town-centre-engine.js', 'hero-points.js', 'town-centre.js']) assert.ok(pages.town.scripts.includes('../js/' + script), script);
 assert.ok(pages.town.scripts.indexOf('../js/town-centre-engine.js') < pages.town.scripts.indexOf('../js/town-centre.js'));
 assert.ok(pages.town.scripts.indexOf('../js/hero-spend.js') < pages.town.scripts.indexOf('../js/town-centre-engine.js'));
+assert.ok(pages.town.scripts.indexOf('../js/building-data.js') < pages.town.scripts.indexOf('../js/building-spend.js') && pages.town.scripts.indexOf('../js/building-spend.js') < pages.town.scripts.indexOf('../js/town-centre-engine.js'));
 const dictionaries = fs.readdirSync('i18n').filter(f => f.endsWith('.js')).map(file => { const ctx = { window: {} }; vm.runInNewContext(fs.readFileSync('i18n/' + file, 'utf8'), ctx); return [file, Object.values(ctx.window.__BH_I18N_DATA)[0]]; });
 assert.equal(dictionaries.length, 17);
 for (const [file, d] of dictionaries) for (const key of ['town.nav', 'town.title', 'town.cardLede', 'town.kicker']) assert.equal(typeof d[key], 'string', file + ' ' + key);
 const en = dictionaries.find(([file]) => file === 'en.js')[1];
+for (const b of B.BUILDINGS) assert.ok(en['town.building.' + b.id], b.id);
 const html = fs.readFileSync('town-centre/index.html', 'utf8');
 assert.ok(html.includes('../img/items/healing-speedup.svg'));
 assert.ok(html.includes('../img/items/hero-widget-chest.svg'));
@@ -129,6 +147,6 @@ const enBlock = page.slice(page.indexOf('var EN = {'), page.indexOf('};', page.i
 for (const match of enBlock.matchAll(/(?:^|[{,]\s*)'?([a-zA-Z.]+)'?: '/gm)) assert.ok(en['town.' + match[1]] !== undefined, 'town.' + match[1]);
 assert.doesNotMatch(page, /innerHTML/);
 for (const match of html.matchAll(/<details id="([^"]+)"/g)) assert.match(match[1], /^[a-z0-9-]+$/);
-for (const panel of ['town-bag', 'town-speedups', 'town-resources', 'town-hero-gear', 'town-governor']) assert.ok(html.includes(`id="${panel}" role="tabpanel"`) && html.includes(`aria-controls="${panel}"`), panel);
+for (const panel of ['town-bag', 'town-speedups', 'town-resources', 'town-buildings', 'town-hero-gear', 'town-governor']) assert.ok(html.includes(`id="${panel}" role="tabpanel"`) && html.includes(`aria-controls="${panel}"`), panel);
 console.log('Town Centre: item, speedup and governor points, best-day totals, navigation and dictionaries pass.');
 

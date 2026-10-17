@@ -2,7 +2,7 @@
 layout: page
 self: town
 ---
-{% assign rules = site.data.event_rules %}{% assign gov = site.data.governor %}{% assign troops = "inf,cav,arc" | split: "," %}{% assign slots = "helm,gloves,chest,boots" | split: "," %}{% assign speedups = "general,construction,research,training,learning,healing" | split: "," %}{% assign resources = "bread,wood,stone,iron" | split: "," %}
+{% assign rules = site.data.event_rules %}{% assign gov = site.data.governor %}{% assign troops = "inf,cav,arc" | split: "," %}{% assign slots = "helm,gloves,chest,boots" | split: "," %}{% assign speedups = "general,construction,research,training,learning,healing" | split: "," %}{% assign resources = "bread,wood,stone,iron" | split: "," %}{% assign buildings = site.data.buildings.buildings %}
 <main class="town-main" data-module="town-centre">
   <section class="section hero town-hero" id="top">
     <h1 data-i18n="town.title">Town Centre</h1>
@@ -15,6 +15,7 @@ self: town
       <button type="button" role="tab" aria-selected="true" aria-controls="town-bag" data-value="bag" data-action="tabs.select" data-i18n="town.shelf.bag">Bag</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-speedups" data-value="speedups" data-action="tabs.select" data-i18n="town.shelf.speedups">Speedups</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-resources" data-value="resources" data-action="tabs.select" data-i18n="town.shelf.resources">Resources</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-buildings" data-value="buildings" data-action="tabs.select" data-i18n="town.shelf.buildings">Buildings</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-heroes" data-value="heroes" data-action="tabs.select" data-i18n="town.shelf.heroes">Heroes</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-hero-gear" data-value="hero-gear" data-action="tabs.select" data-i18n="town.shelf.heroGear">Hero gear</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-governor" data-value="governor" data-action="tabs.select" data-i18n="town.shelf.governor">Governor</button>
@@ -60,6 +61,30 @@ self: town
       {% endfor %}
       </div>
       <p class="town-gloss" data-i18n="town.resNote">Record your bag and warehouse totals. These balances do not earn event points; gathering does.</p>
+    </div>
+
+    <div class="town-shelf" id="town-buildings" role="tabpanel" data-shelf="buildings" hidden>
+      <div class="town-heading"><p class="town-gloss" data-i18n="town.buildingsNote">Set each building's level. Truegold only scores when a building can take it.</p></div>
+      <div class="town-strip">
+        {% assign gold = "truegold:../img/kingshot/truegold.png,tempered-truegold:../img/items/tempered-truegold.webp" | split: "," %}
+        {% for entry in gold %}{% assign m = entry | split: ":" %}{% assign item = rules.items | where: "id", m[0] | first %}
+        <button type="button" class="town-tile town-tile-small" data-count="{{ m[0] }}" data-action="town-inventory.edit">
+          <span class="town-tile-art"><img src="{{ m[1] }}" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-name" data-i18n="{{ item.key }}">{{ item.label | escape }}</span>
+        </button>
+        {% endfor %}
+      </div>
+      <div class="town-bag">
+      {% for building in buildings %}
+        <button type="button" class="town-tile" data-building="{{ building.id }}" data-state="unknown" data-action="town-inventory.edit">
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">{{ building.name | slice: 0 }}</span><output class="town-tile-count" data-level>?</output></span>
+          <span class="town-tile-name" data-i18n="town.building.{{ building.id }}">{{ building.name | escape }}</span>
+          <small class="town-rate" data-building-plan="{{ building.id }}"></small>
+        </button>
+      {% endfor %}
+      </div>
+      <p class="town-note" data-target="town-inventory.buildingSpend"></p>
+      <p class="town-gloss" data-i18n="town.buildingsSource">Costs to TG 8, where two of Kingshot Data, Kingshot Optimizer and KS h5joy agree. Each step is paid whole with the resources it needs, once its Town Centre and Embassy or troop building are high enough.</p>
     </div>
 
     <div class="town-shelf town-heroes" id="town-heroes" role="tabpanel" data-shelf="heroes" hidden>
@@ -159,6 +184,10 @@ self: town
         <div class="town-stepper-row"><span class="town-charm-label"><span class="town-gov-gem" data-charm-slot="{{ c }}" data-state="unset"><img src="../img/governor/charms/inf-1.webp" width="72" height="72" alt=""></span><span><span data-i18n="gov.charmLabel">Charm</span> {{ c }}</span></span><div class="town-stepper"><button type="button" data-action="town-inventory.govStep" data-step="-1" data-charm-slot="{{ c }}" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><select data-level="charms" data-charm-slot="{{ c }}" data-action="town-inventory.govLevel" aria-label="Charm {{ c }}"><option value="" data-i18n="gov.notSet">not set</option><option value="0" data-i18n="gov.noCharm">no charm</option>{% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}</select><button type="button" data-action="town-inventory.govStep" data-step="1" data-charm-slot="{{ c }}" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
         {% endfor %}
       </div>
+      <div class="town-panel" data-panel="building" hidden>
+        <div class="town-stepper-row"><span data-i18n="town.buildingLevel">Level</span><div class="town-stepper"><button type="button" data-action="town-inventory.buildingStep" data-step="-1" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><select data-field="building" data-action="town-inventory.buildingLevel" aria-label="Level" data-i18n-key="town.buildingLevel" data-i18n-attr="aria-label"></select><button type="button" data-action="town-inventory.buildingStep" data-step="1" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
+        <p class="town-gloss" data-target="town-inventory.buildingPlan"></p>
+      </div>
       <button type="button" class="town-clear" data-action="town-inventory.clear" data-target="town-inventory.clear" data-i18n="town.clear">mark as unknown</button>
     </dialog>
 
@@ -212,8 +241,9 @@ self: town
     <details id="town-maths">
       <summary data-i18n="town.maths">How points are counted</summary>
       <p data-i18n="town.mathsItems">Item rates come from the Event Cycle guide. Speedups score per minute: general speedups count on any speedup day; healing counts only when all kinds are accepted.</p>
-      <p class="town-gloss"><span data-i18n="town.heroSpend">Upgrade items count only when they can fund a complete step. Heroes use their own shards and widgets, general shards and matching generation chests. Hero gear upgrades also need enough XP and spare gear.</span> <a href="../heroes/#kvk-points" data-i18n="town.heroSpendLink">Hero points breakdown</a></p>
+      <p class="town-gloss"><span data-i18n="town.heroSpend">Upgrade items count only when they can fund a complete step. Heroes use their own shards and widgets, general shards and matching generation chests. Hero gear upgrades also need enough XP and spare gear. Truegold counts only what your buildings can take.</span> <a href="../heroes/#kvk-points" data-i18n="town.heroSpendLink">Hero points breakdown</a></p>
       <p data-i18n="town.mathsGov">Governor gear and charms use the score gain from upgrades your materials can fund, multiplied by the event rate.</p>
+      <p data-i18n="town.mathsBuildings">Truegold and Tempered Truegold count only the building upgrades they can fund, one whole step at a time, cheapest Truegold first. Each step also needs its resources, its Town Centre level and its prerequisites. Unset buildings and uncounted resources add nothing. Costs stop at TG 8 until a second source confirms higher levels.</p>
       <p data-i18n="town.mathsLimits">Totals exclude training, gathering, intel, roulette and pet advancement. Missing counts are left out and mark the total as partial.</p>
     </details>
   </section>

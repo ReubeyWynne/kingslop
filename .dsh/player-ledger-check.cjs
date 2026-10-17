@@ -206,4 +206,27 @@ for (const mutate of [
 const heroCopy = Ledger.create(storage());
 heroCopy.importJSON(heroBefore, E);
 assert.deepEqual(heroCopy.heroes(), heroStore.heroes());
-console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, undo, revision, combat stat, troop and hero roster checks passed.');
+// Building levels: the game's level ids, one provenance entry each; null forgets a level.
+const buildingStore = Ledger.create(storage());
+assert.deepEqual(buildingStore.buildings(), { levels: {}, provenance: {} });
+assert.equal(buildingStore.snapshot().buildings, undefined);
+for (const level of ['0', '1', '30', '30-4', 'TG 1', 'TG3-2', 'TG 10']) assert.ok(Ledger.buildingLevel(level), level);
+for (const level of ['31', 'TG 11', 'TG3-5', 'TG10-1', 'TG1', 3, null]) assert.equal(Ledger.buildingLevel(level), false, String(level));
+buildingStore.setBuilding('town-center', 'TG 3'); buildingStore.setBuilding('war-academy', '0');
+assert.deepEqual(buildingStore.buildings().levels, { 'town-center': 'TG 3', 'war-academy': '0' });
+const buildingRevision = buildingStore.snapshot().revision;
+buildingStore.setBuilding('town-center', 'TG 3');
+assert.equal(buildingStore.buildings().provenance['town-center'].source, 'manual');
+assert.throws(() => buildingStore.setBuilding('town-center', 'TG 11'));
+assert.throws(() => buildingStore.setBuilding('Town Center', '1'));
+buildingStore.setBuilding('war-academy', null);
+assert.equal(Object.hasOwn(buildingStore.buildings().levels, 'war-academy'), false);
+assert.ok(buildingStore.snapshot().revision > buildingRevision);
+const buildingBefore = buildingStore.exportJSON();
+for (const mutate of [data => { data.buildings.levels['town-center'] = 'TG 12'; }, data => { delete data.buildings.provenance['town-center']; }]) {
+  const data = JSON.parse(buildingBefore); mutate(data); assert.throws(() => Ledger.validate(data));
+}
+const buildingCopy = Ledger.create(storage());
+buildingCopy.importJSON(buildingBefore, E);
+assert.deepEqual(buildingCopy.buildings(), buildingStore.buildings());
+console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, undo, revision, combat stat, troop, hero roster and building level checks passed.');

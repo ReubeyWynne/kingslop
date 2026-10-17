@@ -148,9 +148,34 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.equal(await page.locator('#hero-chenko [data-portrait="shards"] b').textContent(), '7');
       assert.equal(await page.evaluate(() => new Set([...document.querySelectorAll('#town-heroes .hero-filter-row > label')].map(l => Math.round(l.getBoundingClientRect().top))).size), 1, 'filters on one line at ' + width);
 
+      // Buildings: a level per building, and Truegold scores only what those levels can take.
+      await page.locator('[aria-controls="town-buildings"]').click();
+      assert.equal(await page.locator('#town-buildings').isVisible(), true);
+      assert.equal(await page.locator('#town-buildings [data-building]').count(), 9);
+      assert.match(await page.locator('[data-target="town-inventory.buildingSpend"]').textContent(), /Set your building levels/);
+      await edit('#town-buildings [data-count="truegold"]'); await dialog.locator('[data-field="count"]').fill('1000'); await done();
+      await page.evaluate(() => { const store = PlayerLedger.shared(); for (const id of ['embassy', 'barracks', 'range', 'stable', 'command-center', 'infirmary', 'war-academy']) store.setBuilding(id, 'TG 3'); store.setBuilding('academy', '30'); for (const id of ['bread', 'wood', 'stone', 'iron']) store.setBalance(id, 1e9); });
+      await edit('#town-buildings [data-building="town-center"]');
+      assert.equal(await dialog.locator('select[data-field="building"] option').count(), 81, 'not set, then 1 to TG 10');
+      await dialog.locator('select[data-field="building"]').selectOption('TG 2');
+      await dialog.locator('[data-action="town-inventory.buildingStep"][data-step="1"]').click();
+      assert.equal((await ledger()).buildings.levels['town-center'], 'TG2-1');
+      await dialog.locator('select[data-field="building"]').selectOption('TG 3');
+      assert.match(await dialog.locator('[data-target="town-inventory.buildingPlan"]').textContent(), /reach TG3-3: 3 steps, 840 Truegold/);
+      await done();
+      assert.equal(await page.locator('[data-building="town-center"] [data-level]').textContent(), 'TG 3');
+      assert.match(await page.locator('[data-target="town-inventory.buildingSpend"]').textContent(), /840 of 1,000 Truegold/);
+      assert.equal(await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'prep').lines.find(l => l.id === 'truegold').points), 840 * 2000);
+      await edit('#town-buildings [data-building="war-academy"]');
+      await dialog.locator('[data-action="town-inventory.clear"]').click();
+      assert.equal((await ledger()).buildings.levels['war-academy'], undefined);
+      await done();
+      assert.equal(await page.locator('[data-building="war-academy"]').getAttribute('data-state'), 'unknown');
+
       // Persisted, and the governor page reads the same save.
       await page.reload(); await page.waitForFunction(() => document.querySelector('.town-daybar'));
       assert.equal(await page.locator('#town-bag [data-count="mithril"] [data-amount]').textContent(), '10');
+      assert.equal(await page.locator('[data-building="town-center"] [data-level]').textContent(), 'TG 3');
       const other = await context.newPage(); await other.goto(origin + '/governor-gear/?lang=en');
       await other.waitForFunction(() => !document.querySelector('.gov-board').disabled);
       assert.equal(await other.locator('#governor-bag input[data-bind="inventory.charm-guide"]').inputValue(), '5');
@@ -179,6 +204,6 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
     assert.equal(await page.locator('#hero-chenko .hero-dossier').evaluate(node => node.open && !!node.offsetParent), true, 'a hero link opens the Heroes shelf');
     assert.deepEqual(errors, []);
     await context.close();
-    console.log('Town Centre UI: bag tiles, speedups, heroes, hero gear per troop, the governor profile, event totals, persistence, shared save, deep links, RTL and widths pass.');
+    console.log('Town Centre UI: bag tiles, speedups, building levels and Truegold, heroes, hero gear per troop, the governor profile, event totals, persistence, shared save, deep links, RTL and widths pass.');
   } finally { await browser.close(); server.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

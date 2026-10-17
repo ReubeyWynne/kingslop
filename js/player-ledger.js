@@ -41,6 +41,8 @@
   function heroWidgetId(hero) { return 'hero-widgets-' + hero; }
   // Choose-a-hero widget chests open into any widget hero of their generation.
   function widgetChestId(generation) { return 'hero-widget-chest-gen' + generation; }
+  // Building levels use the game's ids: 0 (not built), 1…30, 30-1…30-4, TG 1, TG1-1…TG1-4, … TG 10.
+  function buildingLevel(value) { return typeof value === 'string' && /^(?:0|[1-9]|[12][0-9]|30|30-[1-4]|TG [1-9]|TG 10|TG[1-9]-[1-4])$/.test(value); }
   function upTo(value, max, min) { return value === null || count(value) && value >= (min || 0) && value <= max; }
   function hero(value) {
     return object(value) && same(Object.keys(value).sort(), HERO.fields.slice().sort()) && upTo(value.level, HERO.level, 1) && upTo(value.stars, HERO.stars) && upTo(value.widget, HERO.widget) &&
@@ -91,6 +93,10 @@
     if (value.heroes !== undefined) {
       valid(object(value.heroes) && object(value.heroes.roster) && object(value.heroes.provenance) && same(Object.keys(value.heroes.roster).sort(), Object.keys(value.heroes.provenance).sort()));
       Object.keys(value.heroes.roster).forEach(function (key) { valid(heroKey(key) && hero(value.heroes.roster[key]) && provenance(value.heroes.provenance[key])); });
+    }
+    if (value.buildings !== undefined) {
+      valid(object(value.buildings) && object(value.buildings.levels) && object(value.buildings.provenance) && same(Object.keys(value.buildings.levels).sort(), Object.keys(value.buildings.provenance).sort()));
+      Object.keys(value.buildings.levels).forEach(function (key) { valid(id(key) && buildingLevel(value.buildings.levels[key]) && provenance(value.buildings.provenance[key])); });
     }
     valid(object(value.preferences) && object(value.preferences.heroGear));
     valid(Object.keys(value.preferences).every(function (key) { return key === 'heroGear' || key === 'governor'; }) && Object.keys(value.preferences.heroGear).every(function (key) { return PREFS.includes(key); }));
@@ -229,6 +235,20 @@
         value.heroes.roster[key] = next; value.heroes.provenance[key] = { source: source || 'manual', at: new Date().toISOString() };
       }, expected);
     }
+    function buildings() {
+      var section = snapshot().buildings || { levels: {}, provenance: {} };
+      return { levels: copy(section.levels), provenance: copy(section.provenance) };
+    }
+    // A level records the building; null forgets it, which is the same as not counted yet.
+    function setBuilding(key, level, source, expected) {
+      valid(id(key) && (level === null || buildingLevel(level)));
+      return transaction(function (value) {
+        if (!value.buildings) value.buildings = { levels: {}, provenance: {} };
+        if (level === null) { delete value.buildings.levels[key]; delete value.buildings.provenance[key]; return; }
+        if (value.buildings.levels[key] === level) return;
+        value.buildings.levels[key] = level; value.buildings.provenance[key] = { source: source || 'manual', at: new Date().toISOString() };
+      }, expected);
+    }
     function governorSpec(kind) { valid(Object.hasOwn(GOVERNOR, kind)); return GOVERNOR[kind]; }
     function governor(kind) {
       var spec = governorSpec(kind), section = snapshot()[spec.section], levels = {};
@@ -311,7 +331,7 @@
     if (events && events.addEventListener) events.addEventListener('storage', function (event) {
       if ((event.key === KEY || event.key === null) && (!event.storageArea || event.storageArea === storage)) { try { current = read(); notify(); } catch (error) { if (events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:error', { detail: error.message })); } }
     });
-    return { snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
+    return { snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, buildings: buildings, setBuilding: setBuilding, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
   }
-  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), troopId: troopId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, empty: empty, validate: validate, create: create };
+  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), troopId: troopId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, empty: empty, validate: validate, create: create };
 });

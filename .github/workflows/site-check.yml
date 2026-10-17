@@ -131,6 +131,8 @@ jobs:
               - js/hero-directory*.js
               - js/hero-spend.js
               - js/hero-points.js
+              - js/building-*
+              - _data/buildings.json
               - js/hero-data.liquid
               - _data/heroes.json
               - css/heroes.css
