@@ -1616,7 +1616,7 @@ window.__BH_I18N_DATA["en"] = {
   "town.shelf.resources": "Resources",
   "town.shelf.heroes": "Heroes",
   "town.widgetChest": "Gen {n} widget chest",
-  "town.widgetChestNote": "Widget choice chests don't score until you open one and pick a hero. Each hero's own widgets are counted on the Heroes tab.",
+  "town.widgetChestNote": "Widget chests are included in hero points when owned heroes of that generation can use them for complete upgrades. Set their widget levels on the Heroes tab.",
   "town.shelf.heroGear": "Hero gear",
   "town.shelf.governor": "Governor",
   "town.speedup.general": "General",

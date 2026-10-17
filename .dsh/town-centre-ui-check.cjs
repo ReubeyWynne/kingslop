@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path'), http = require('node:http');
 const { chromium } = require('playwright');
 const root = path.resolve('_site'), output = path.resolve('.dsh/town-preview');
-const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.png': 'image/png', '.webp': 'image/webp' };
+const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml' };
 const server = http.createServer((req, res) => {
   let file = path.resolve(root, '.' + decodeURIComponent(new URL(req.url, 'http://localhost').pathname));
   if (!file.startsWith(root + path.sep) && file !== root) return res.writeHead(403).end();
@@ -39,15 +39,21 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       // Mithril only scores when hero gear can take it, so with no gear saved it adds nothing yet.
       assert.equal(await prep(), 0);
       assert.ok(await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'prep').unknown.includes('hero-gear-pieces')), 'missing gear is listed, not zero');
-      // Widgets are hero-specific, so the bag holds only the generation choice chests, which score nothing until opened.
       assert.equal(await page.locator('#town-bag [data-count="hero-widget"]').count(), 0, 'no single widget item');
       assert.equal(await page.locator('#town-bag [data-count^="hero-widget-chest-gen"]').count(), 7);
+      assert.equal(await page.locator('#town-bag [data-count^="hero-widget-chest-gen"] .town-rate').count(), 0);
+      const chestIcons = page.locator('#town-bag [data-count^="hero-widget-chest-gen"] img');
+      assert.equal(await chestIcons.count(), 7);
+      for (const icon of await chestIcons.all()) {
+        await icon.scrollIntoViewIfNeeded();
+        assert.equal(await icon.evaluate(async img => { await img.decode(); return img.naturalWidth > 0; }), true);
+      }
       await edit('#town-bag [data-count="hero-widget-chest-gen3"]');
       await dialog.locator('[data-field="count"]').fill('2');
       assert.equal((await ledger()).inventory['hero-widget-chest-gen3'].amount, 2);
-      assert.match(await dialog.locator('[data-target="town-inventory.rate"]').textContent(), /no event scores/);
+      assert.match(await dialog.locator('[data-target="town-inventory.rate"]').textContent(), /best 8,000 each · KvK prep day 4/);
       await done();
-      assert.equal(await prep(), 0, 'chests stay unscored');
+      assert.equal(await prep(), 0, 'chests cannot score without an eligible owned hero');
 
       // Speedups: days, hours and minutes are stored as minutes and score per minute.
       await page.locator('[aria-controls="town-speedups"]').click();
@@ -62,6 +68,9 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       await done();
       assert.equal(await page.locator('[data-duration="speedup-general"] [data-amount]').textContent(), '1d 3h 30m');
       assert.equal(await prep(), 1650 * 30);
+      const healingIcon = page.locator('[data-duration="speedup-healing"] img');
+      await healingIcon.scrollIntoViewIfNeeded();
+      assert.equal(await healingIcon.evaluate(async img => { await img.decode(); return img.naturalWidth > 0; }), true);
       await edit('[data-duration="speedup-healing"]');
       await dialog.locator('[data-action="town-inventory.clear"]').click();
       assert.equal((await ledger()).inventory['speedup-healing'].status, 'unknown');
