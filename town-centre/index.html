@@ -31,18 +31,17 @@ self: town
       {% endfor %}
       {% for gen in (1..7) %}
         <button type="button" class="town-tile" data-count="hero-widget-chest-gen{{ gen }}" data-action="town-inventory.edit">
-          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">G{{ gen }}</span><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art"><img src="../img/items/hero-widget-chest.svg" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="town.widgetChest" data-i18n-n="{{ gen }}">Gen {{ gen }} widget chest</span>
-          <small class="town-rate" data-rate="hero-widget-chest-gen{{ gen }}"></small>
         </button>
       {% endfor %}
       </div>
-      <p class="town-gloss" data-i18n="town.widgetChestNote">Widget choice chests don't score until you open one and pick a hero. Each hero's own widgets are counted on the Heroes tab.</p>
+      <p class="town-gloss" data-i18n="town.widgetChestNote">Widget chests are included in hero points when owned heroes of that generation can use them for complete upgrades. Set their widget levels on the Heroes tab.</p>
     </div>
 
     <div class="town-shelf" id="town-speedups" role="tabpanel" data-shelf="speedups" hidden>
       <div class="town-bag">
-      {% for kind in speedups %}{% case kind %}{% when "construction", "research", "training" %}{% capture icon %}../img/kingshot/{{ kind }}-speedup.png{% endcapture %}{% when "general", "learning" %}{% capture icon %}../img/items/{{ kind }}-speedup.webp{% endcapture %}{% else %}{% assign icon = "" %}{% endcase %}
+      {% for kind in speedups %}{% case kind %}{% when "construction", "research", "training" %}{% capture icon %}../img/kingshot/{{ kind }}-speedup.png{% endcapture %}{% when "healing" %}{% assign icon = "../img/items/healing-speedup.svg" %}{% when "general", "learning" %}{% capture icon %}../img/items/{{ kind }}-speedup.webp{% endcapture %}{% else %}{% assign icon = "" %}{% endcase %}
         <button type="button" class="town-tile" data-duration="speedup-{{ kind }}" data-action="town-inventory.edit">
           <span class="town-tile-art">{% if icon != "" %}<img src="{{ icon }}" width="56" height="56" alt="" loading="lazy">{% else %}<span class="town-monogram" aria-hidden="true">{{ kind | slice: 0 | upcase }}</span>{% endif %}<output class="town-tile-count" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="town.speedup.{{ kind }}">{{ kind | capitalize }}</span>
@@ -215,3 +214,4 @@ self: town
     </details>
   </section>
 </main>
+

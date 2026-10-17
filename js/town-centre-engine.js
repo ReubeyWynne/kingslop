@@ -100,6 +100,7 @@
   }
   // The highest rate any event day pays for one unit, for labelling inventory rows.
   function topRate(id) {
+    if (/^hero-widget-chest-gen[1-7]$/.test(id)) id = heroes.WIDGET_ITEM;
     var out = null;
     Object.keys(data.events).forEach(function (event) {
       data.events[event].forEach(function (entry) {
@@ -115,3 +116,4 @@
   }
   return { SPEEDUPS: SPEEDUPS, RESOURCES: RESOURCES, speedupKinds: speedupKinds, governorKind: governorKind, governorGain: governorGain, heroGearSpend: heroGearSpend, context: context, day: day, best: best, topRate: topRate };
 });
+

@@ -90,6 +90,20 @@ const plan = T.best(store.snapshot(), 'prep').heroes;
 assert.equal(plan.items['mythic-hero-shard'].left, 60);
 assert.equal(Spend.points(rules, 'prep', plan.heroes.jabel).total, 500 * 3040, 'the Heroes page scores each hero from the same plan');
 
+const chestStore = Ledger.create({ getItem(k) { return this[k] ?? null; }, setItem(k, v) { this[k] = v; } });
+chestStore.setHero('amadeus', { stars: 30, widget: 0 });
+chestStore.setBalance(Ledger.heroShardId('amadeus'), 0);
+chestStore.setBalance(Ledger.heroWidgetId('amadeus'), 0);
+chestStore.setBalance(Ledger.widgetChestId(1), 16);
+chestStore.setBalance(Ledger.widgetChestId(2), 100);
+const chestPlan = Spend.plan(chestStore.snapshot());
+assert.equal(chestPlan.heroes.amadeus.widget.general, 15);
+assert.equal(chestPlan.items['hero-widget'].left, 1);
+const chestPoints = Spend.points(rules, 'prep', chestPlan.heroes.amadeus).total;
+assert.equal(chestPoints, 15 * 8000);
+assert.equal(T.best(chestStore.snapshot(), 'prep').lines.find(l => l.id === 'hero-widget').points, chestPoints);
+for (let gen = 1; gen <= 7; gen++) assert.deepEqual(T.topRate(Ledger.widgetChestId(gen)), T.topRate('hero-widget'));
+
 // Page wiring: navigation, scripts, deck scene, dictionaries and copy keys.
 const nav = require('../_data/nav.json'), pages = require('../_data/pages.json');
 // The Town Centre sits outside the page ring: a fixed button in the deck and a ledger link, never a card.
@@ -105,6 +119,9 @@ assert.equal(dictionaries.length, 17);
 for (const [file, d] of dictionaries) for (const key of ['town.nav', 'town.title', 'town.cardLede', 'town.kicker']) assert.equal(typeof d[key], 'string', file + ' ' + key);
 const en = dictionaries.find(([file]) => file === 'en.js')[1];
 const html = fs.readFileSync('town-centre/index.html', 'utf8');
+assert.ok(html.includes('../img/items/healing-speedup.svg'));
+assert.ok(html.includes('../img/items/hero-widget-chest.svg'));
+assert.ok(!html.includes('data-rate="hero-widget-chest-gen'));
 for (const match of html.matchAll(/data-i18n(?:-key)?="(town\.[a-zA-Z.]+)"/g)) assert.ok(en[match[1]], match[1]);
 for (const kind of T.SPEEDUPS) assert.ok(en['town.speedup.' + kind.kind], kind.id);
 const page = fs.readFileSync('js/town-centre.js', 'utf8');
@@ -114,3 +131,4 @@ assert.doesNotMatch(page, /innerHTML/);
 for (const match of html.matchAll(/<details id="([^"]+)"/g)) assert.match(match[1], /^[a-z0-9-]+$/);
 for (const panel of ['town-bag', 'town-speedups', 'town-resources', 'town-hero-gear', 'town-governor']) assert.ok(html.includes(`id="${panel}" role="tabpanel"`) && html.includes(`aria-controls="${panel}"`), panel);
 console.log('Town Centre: item, speedup and governor points, best-day totals, navigation and dictionaries pass.');
+
