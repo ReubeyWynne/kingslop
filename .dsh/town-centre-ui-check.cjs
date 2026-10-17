@@ -36,7 +36,9 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.match(await dialog.locator('[data-target="town-inventory.rate"]').textContent(), /40,000/);
       await done();
       assert.equal(await page.locator('#town-bag [data-count="mithril"] [data-amount]').textContent(), '10');
-      assert.equal(await prep(), 400000);
+      // Mithril only scores when hero gear can take it, so with no gear saved it adds nothing yet.
+      assert.equal(await prep(), 0);
+      assert.ok(await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'prep').unknown.includes('hero-gear-pieces')), 'missing gear is listed, not zero');
       // Widgets are hero-specific, so the bag holds only the generation choice chests, which score nothing until opened.
       assert.equal(await page.locator('#town-bag [data-count="hero-widget"]').count(), 0, 'no single widget item');
       assert.equal(await page.locator('#town-bag [data-count^="hero-widget-chest-gen"]').count(), 7);
@@ -45,7 +47,7 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.equal((await ledger()).inventory['hero-widget-chest-gen3'].amount, 2);
       assert.match(await dialog.locator('[data-target="town-inventory.rate"]').textContent(), /no event scores/);
       await done();
-      assert.equal(await prep(), 400000, 'chests stay unscored');
+      assert.equal(await prep(), 0, 'chests stay unscored');
 
       // Speedups: days, hours and minutes are stored as minutes and score per minute.
       await page.locator('[aria-controls="town-speedups"]').click();
@@ -59,7 +61,7 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.equal(await dialog.locator('[data-unit="m"]').inputValue(), '30');
       await done();
       assert.equal(await page.locator('[data-duration="speedup-general"] [data-amount]').textContent(), '1d 3h 30m');
-      assert.equal(await prep(), 400000 + 1650 * 30);
+      assert.equal(await prep(), 1650 * 30);
       await edit('[data-duration="speedup-healing"]');
       await dialog.locator('[data-action="town-inventory.clear"]').click();
       assert.equal((await ledger()).inventory['speedup-healing'].status, 'unknown');
@@ -106,7 +108,7 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.equal(await page.locator('[data-gov="inf-1"]').getAttribute('data-state'), 'set');
       assert.match(await page.locator('[data-target="town-inventory.gain"]').textContent(), /625 charm score/);
       const sg = num(await page.locator('[data-event-total="sg"]').textContent());
-      assert.ok(sg >= 400000 + 625 * 70, 'charm score counts in Strongest Governor');
+      assert.ok(sg >= 625 * 70, 'charm score counts in Strongest Governor');
 
       // Heroes: the Heroes page roster, writing the same save.
       await page.locator('.town-rail [data-value="heroes"]').click();
