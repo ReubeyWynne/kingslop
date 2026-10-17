@@ -171,6 +171,21 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.equal((await ledger()).buildings.levels['war-academy'], undefined);
       await done();
       assert.equal(await page.locator('[data-building="war-academy"]').getAttribute('data-state'), 'unknown');
+      // Set every building at once: each takes the level, or its nearest one.
+      await page.locator('[data-target="town-inventory.setAllLevel"]').selectOption('TG 2');
+      await page.locator('[data-action="town-inventory.setAll"]').click();
+      assert.deepEqual(Object.values((await ledger()).buildings.levels).sort(), ['30', ...Array(8).fill('TG 2')].sort());
+      assert.equal(await page.locator('[data-building="academy"] img').getAttribute('src'), '../img/buildings/academy.webp');
+      // Priorities: a tier per building and a tie-break order, saved with the ledger.
+      await page.locator('#building-priorities summary').click();
+      assert.equal(await page.locator('.town-priority').count(), 9);
+      await page.locator('[data-tier-for="infirmary"]').selectOption('0');
+      assert.equal((await ledger()).preferences.buildings.tiers.infirmary, 0);
+      await page.locator('[data-move-for="range"][data-step="-1"]').click();
+      assert.equal((await ledger()).preferences.buildings.order.indexOf('range'), 2);
+      assert.equal(await page.locator('.town-priority').nth(2).locator('[data-tier-for]').getAttribute('data-tier-for'), 'range');
+      assert.match(await page.locator('[data-target="town-inventory.buildingSpend"]').textContent(), /Following your priorities/);
+      await page.locator('[data-tier-for="infirmary"]').selectOption('3');
 
       // Troops: training facts on tiles, the capacity buff as a switch, and the troop day they score on.
       await page.locator('[aria-controls="town-troops"]').click();
@@ -222,7 +237,7 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       // Persisted, and the governor page reads the same save.
       await page.reload(); await page.waitForFunction(() => document.querySelector('.town-daybar'));
       assert.equal(await page.locator('#town-bag [data-count="mithril"] [data-amount]').textContent(), '10');
-      assert.equal(await page.locator('[data-building="town-center"] [data-level]').textContent(), 'TG 3');
+      assert.equal(await page.locator('[data-building="town-center"] [data-level]').textContent(), 'TG 2');
       const other = await context.newPage(); await other.goto(origin + '/governor-gear/?lang=en');
       await other.waitForFunction(() => !document.querySelector('.gov-board').disabled);
       assert.equal(await other.locator('#governor-bag input[data-bind="inventory.charm-guide"]').inputValue(), '5');

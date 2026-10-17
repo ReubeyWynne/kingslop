@@ -36,11 +36,13 @@ store.setHero('amadeus', { level: 80, stars: 27, widget: 6, skills: [5, 4, 5] })
 store.setBalance(PlayerLedger.heroShardId('amadeus'), 34);
 ```
 
-Building levels serve the Town Centre. `buildings.levels` maps a building ID (`town-center`, `embassy`, `barracks`, `range`, `stable`, `command-center`, `infirmary`, `war-academy`, `academy`, as in `_data/buildings.json`) to the game's own level ID: `0` (not built), `1`…`30`, `30-1`…`30-4`, `TG 1`, `TG1-1`…`TG1-4`, … `TG 10` (`PlayerLedger.buildingLevel` checks one). Each level has its own entry in `buildings.provenance`. A building missing from the map has not been counted yet. Truegold, Tempered Truegold and the four resources stay ordinary inventory balances. Saves without a `buildings` key stay valid.
+Building levels serve the Town Centre. `buildings.levels` maps a building ID (`town-center`, `embassy`, `barracks`, `range`, `stable`, `command-center`, `infirmary`, `war-academy`, `academy`, as in `_data/buildings.json`) to the game's own level ID: `0` (not built), `1`…`30`, `30-1`…`30-4`, `TG 1`, `TG1-1`…`TG1-4`, … `TG 10` (`PlayerLedger.buildingLevel` checks one). Each level has its own entry in `buildings.provenance`. A building missing from the map has not been counted yet. Truegold, Tempered Truegold and the four resources stay ordinary inventory balances. Upgrade priorities live in `preferences.buildings`: `tiers` maps a building to 1 (Lead), 2 (Keep up), 3 (Spare) or 0 (Skip), and `order` is the tie-break order. Missing entries take the defaults in `BuildingSpend.DEFAULT_TIERS`. Saves without a `buildings` key stay valid.
 
 ```js
 store.buildings(); // { levels: { 'town-center': 'TG 3' }, provenance }
 store.setBuilding('town-center', 'TG3-1'); // null forgets the level
+store.setBuildings({ embassy: 'TG 3', barracks: 'TG 3' }); // several at once, one revision
+store.setBuildingPriorities({ tiers: { infirmary: 0, 'command-center': 2 }, order: ['range', 'barracks', 'stable'] });
 ```
 
 Training facts serve the Town Centre's troop days. `training.facts` holds `speed` (the Bonus Overview Training Speed without temporary buffs, a percentage), `capacity` (troops one camp trains per batch, at least 1) and a tier from 1 to 11 for each camp, keyed by troop type (`inf`, `cav`, `arc`), each with its own entry in `training.provenance`. A missing fact has not been counted yet. `preferences.training` holds the plans: `buff: true` to use the 3,000-gem capacity buff, `position` (`advisor` for Noble Advisor or `minister` for Chief Minister), `highKing: true` when your kingdom holds the High King, and `mobilize: true` when your king uses Mobilize on event days. Each is absent when off. Saves without a `training` key stay valid.

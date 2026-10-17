@@ -226,8 +226,19 @@ const buildingBefore = buildingStore.exportJSON();
 for (const mutate of [data => { data.buildings.levels['town-center'] = 'TG 12'; }, data => { delete data.buildings.provenance['town-center']; }]) {
   const data = JSON.parse(buildingBefore); mutate(data); assert.throws(() => Ledger.validate(data));
 }
+// Set every building at once, and keep upgrade priorities with the save.
+buildingStore.setBuildings({ embassy: 'TG 2', barracks: 'TG 2', 'war-academy': null });
+assert.deepEqual(buildingStore.buildings().levels, { 'town-center': 'TG 3', embassy: 'TG 2', barracks: 'TG 2' });
+assert.throws(() => buildingStore.setBuildings({ embassy: 'TG 11' }));
+buildingStore.setBuildingPriorities({ tiers: { infirmary: 0, 'command-center': 2 }, order: ['range', 'barracks', 'stable'] });
+buildingStore.setBuildingPriorities({ tiers: { range: 1 } });
+assert.deepEqual(buildingStore.snapshot().preferences.buildings, { tiers: { infirmary: 0, 'command-center': 2, range: 1 }, order: ['range', 'barracks', 'stable'] });
+assert.throws(() => buildingStore.setBuildingPriorities({ tiers: { range: 4 } }));
+assert.throws(() => buildingStore.setBuildingPriorities({ order: ['range', 'range'] }));
+const buildingBefore2 = buildingStore.exportJSON();
 const buildingCopy = Ledger.create(storage());
-buildingCopy.importJSON(buildingBefore, E);
+buildingCopy.importJSON(buildingBefore2, E);
+assert.deepEqual(buildingCopy.snapshot().preferences.buildings, buildingStore.snapshot().preferences.buildings);
 assert.deepEqual(buildingCopy.buildings(), buildingStore.buildings());
 // Training facts: speed %, capacity per batch and a tier per camp, each with provenance; the capacity buff is a preference.
 const trainingStore = Ledger.create(storage());

@@ -142,6 +142,7 @@ jobs:
               - js/hero-spend.js
               - js/hero-points.js
               - js/building-*
+              - img/buildings/**
               - _data/buildings.json
               - js/troop-*
               - _data/troops.json

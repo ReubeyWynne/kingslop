@@ -56,7 +56,18 @@
     Object.keys(GEAR).forEach(function (r) { items[GEAR[r]] = { amount: bag[r] === null ? null : plan.spent[r], unknown: bag[r] === null ? [] : missing.slice() }; });
     return { items: items, plan: plan };
   }
-  function context(snapshot) { return { score: { gear: governorGain(snapshot, 'gear'), charms: governorGain(snapshot, 'charms') }, heroes: heroes.plan(snapshot), gear: heroGearSpend(snapshot), buildings: buildingSpend.plan(snapshot) }; }
+  function context(snapshot) { return { score: { gear: governorGain(snapshot, 'gear'), charms: governorGain(snapshot, 'charms') }, heroes: heroes.plan(snapshot), gear: heroGearSpend(snapshot), buildings: buildingSpend.plan(snapshot), buildingsMax: buildingSpend.plan(snapshot, { goal: 'points' }) }; }
+  /* Points a building plan's Truegold and Tempered Truegold score in an event, each on its
+     best day. Totals follow the player's priorities; the points-only plan is the ceiling. */
+  function buildingPoints(plan, event) {
+    var total = 0;
+    buildingSpend.ITEMS.forEach(function (id) {
+      var amount = plan.items[id].amount, best = 0;
+      rules.days(event).forEach(function (entry) { entry.rows.forEach(function (row) { (row.items || []).forEach(function (item) { if (item.id === id && item.rate > best) best = item.rate; }); }); });
+      total += (amount || 0) * best;
+    });
+    return total;
+  }
   // The snapshot events score: hero pieces, gear materials and Truegold replaced by what can be spent.
   function budget(snapshot, shared) {
     var out = heroes.budget(snapshot, shared.heroes);
@@ -122,7 +133,7 @@
       });
     });
     var lines = [].concat.apply([], Object.keys(top).map(function (key) { return top[key].lines; })).sort(function (a, b) { return b.points - a.points; });
-    return { event: event, days: days, lines: lines, total: lines.reduce(function (sum, line) { return sum + line.points; }, 0), unknown: Object.keys(unknown), complete: !Object.keys(unknown).length, governor: shared.score, heroes: shared.heroes, gear: shared.gear, buildings: shared.buildings, troops: troopDay(days) };
+    return { event: event, days: days, lines: lines, total: lines.reduce(function (sum, line) { return sum + line.points; }, 0), unknown: Object.keys(unknown), complete: !Object.keys(unknown).length, governor: shared.score, heroes: shared.heroes, gear: shared.gear, buildings: shared.buildings, buildingsMax: shared.buildingsMax, troops: troopDay(days) };
   }
   // The troop plan of the day whose troops score most, for the Troops shelf.
   function troopDay(days) { return days.reduce(function (found, result) { return result.troops && (!found || result.troops.points > found.plan.points) ? { day: result.day, plan: result.troops } : found; }, null); }
@@ -142,6 +153,6 @@
     });
     return out;
   }
-  return { SPEEDUPS: SPEEDUPS, RESOURCES: RESOURCES, speedupKinds: speedupKinds, governorKind: governorKind, governorGain: governorGain, heroGearSpend: heroGearSpend, context: context, day: day, best: best, topRate: topRate };
+  return { SPEEDUPS: SPEEDUPS, RESOURCES: RESOURCES, speedupKinds: speedupKinds, governorKind: governorKind, governorGain: governorGain, heroGearSpend: heroGearSpend, context: context, buildingPoints: buildingPoints, day: day, best: best, topRate: topRate };
 });
 
