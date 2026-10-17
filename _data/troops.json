@@ -350,5 +350,25 @@
     "points.sg"
    ]
   }
- ]
+ ],
+ "buffs": {
+  "checkedAt": "2026-10-17",
+  "source": "In-game values reported by the alliance",
+  "mobilize": 30,
+  "kvk": 25,
+  "positions": [
+   {
+    "id": "advisor",
+    "name": "Noble Advisor",
+    "speed": 50,
+    "highKing": 75
+   },
+   {
+    "id": "minister",
+    "name": "Chief Minister",
+    "speed": 10,
+    "highKing": 15
+   }
+  ]
+ }
 }

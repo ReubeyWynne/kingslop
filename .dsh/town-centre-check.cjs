@@ -140,13 +140,32 @@ troopStore.setBalance('speedup-training', 600);
 troopDay = T.day(troopStore.snapshot(), 'prep', 4);
 const troopLine = id => troopDay.lines.find(l => l.id === id);
 assert.deepEqual([troopLine('troops-batch-t10').amount, troopLine('troops-batch-t10').points], [500, 500 * 60]);
-assert.equal(troopLine('troops-training-t10').amount, 473, '600 minutes at 76 s a troop (152 s, 100% faster)');
+assert.equal(troopLine('troops-training-t10').amount, 532, '600 minutes at 67.6 s a troop (152 s, 125% faster: KvK prep adds 25%)');
 assert.ok(troopDay.unknown.includes('speedup-general') && !troopDay.unknown.includes('training-tiers'));
-assert.equal(troopDay.troops.batch.seconds, 500 * 76);
+assert.equal(troopDay.troops.batch.seconds, Math.ceil(500 * 152 / 2.25));
+assert.equal(T.day(troopStore.snapshot(), 'sg', 4).troops.batch.seconds, 500 * 76, 'no KvK buff outside KvK prep');
 troopStore.setTrainingBuff(true);
 troopDay = T.day(troopStore.snapshot(), 'prep', 4);
-assert.deepEqual([troopLine('troops-batch-t10').amount, troopLine('troops-training-t10').amount], [1500, 473], 'the buff triples the batch and adds nothing on the day');
+assert.deepEqual([troopLine('troops-batch-t10').amount, troopLine('troops-training-t10').amount], [1500, 532], 'the buff triples the batch and adds nothing on the day');
 assert.equal(troopDay.troops.gems, 3000);
+// Speed buffs: a castle position counts for the batch and the day, at its High King speed outside
+// KvK prep when the kingdom holds the High King; KvK prep gives everyone +25% instead; Mobilize
+// counts only on the day.
+troopStore.setTrainingPlan('position', 'advisor'); troopStore.setTrainingPlan('highKing', true); troopStore.setTrainingPlan('mobilize', true);
+const troopPlans = () => troopStore.snapshot().preferences.training;
+assert.deepEqual(troopPlans(), { buff: true, position: 'advisor', highKing: true, mobilize: true });
+assert.deepEqual(R.speeds(troopStore.snapshot().training.facts, troopPlans(), 'prep'), { base: 100, batch: 175, day: 205, kvk: 25, position: 50, highKing: false, mobilize: 30 });
+assert.deepEqual(R.speeds(troopStore.snapshot().training.facts, troopPlans(), 'sg'), { base: 100, batch: 175, day: 205, kvk: 0, position: 75, highKing: true, mobilize: 30 });
+troopStore.setTrainingPlan('position', 'minister');
+assert.deepEqual([R.speeds({ speed: 100 }, troopPlans(), 'sg').batch, R.speeds({ speed: 100 }, troopPlans(), 'prep').batch], [115, 135]);
+troopStore.setTrainingPlan('position', 'advisor'); troopStore.setTrainingPlan('highKing', false);
+assert.equal(R.speeds({ speed: 100 }, troopPlans(), 'sg').position, 50, 'without the High King an Advisor gives +50%');
+troopDay = T.day(troopStore.snapshot(), 'prep', 4);
+assert.equal(troopDay.troops.batch.seconds, Math.ceil(1500 * 152 * 100 / 275), '1,500 T10 at 175% faster');
+assert.equal(troopLine('troops-training-t10').amount, Math.floor(36000 * 305 / 15200), '600 minutes at 205% faster');
+assert.equal(troopDay.troops.batch.troops, 1500, 'the buff plan survives the other plans');
+for (const key of ['position', 'mobilize']) troopStore.setTrainingPlan(key, null);
+assert.throws(() => troopStore.setTrainingPlan('position', 'king')); assert.throws(() => troopStore.setTrainingPlan('march', true));
 // Resources: the batch is paid first, and nothing is trained that the bag cannot pay for.
 troopStore.setBalance('bread', 2788 * 300 + 100);
 troopDay = T.day(troopStore.snapshot(), 'prep', 4);
@@ -156,7 +175,7 @@ assert.ok(T.day(troopStore.snapshot(), 'prep', 4).unknown.includes('bread'));
 troopStore.setBalance('bread', 1e9);
 // Speedups are spent once: training speedups score on the troop day or as minutes, never both.
 const troopBest = T.best(troopStore.snapshot(), 'prep');
-assert.equal(troopBest.lines.find(l => l.id === 'speedup-training'), undefined, '473 T10 for 28,380 beat 600 minutes at 30');
+assert.equal(troopBest.lines.find(l => l.id === 'speedup-training'), undefined, '532 T10 for 31,920 beat 600 minutes at 30');
 assert.equal(troopBest.lines.find(l => l.id === 'troops-training-t10').day, 4);
 troopStore.setBalance('speedup-training', 100000); troopStore.setTraining('speed', 0);
 assert.equal(T.best(troopStore.snapshot(), 'prep').lines.find(l => l.id === 'speedup-training' || l.id === 'troops-training-t10').id, 'speedup-training', 'at base speed the minutes score more as speedups');

@@ -102,6 +102,10 @@
       "../js/event-rules.js",
       "../js/hero-gear-engine.js",
       "../js/event-availability.js",
+      "../js/building-data.js",
+      "../js/building-spend.js",
+      "../js/troop-data.js",
+      "../js/troop-spend.js",
       "../js/kvk.js"
     ],
     "footMainKey": "ks.foot.main",

@@ -60,6 +60,18 @@ out = {
     },
     'types': [{'id': t[0], 'name': t[1], 'camp': t[2]} for t in TYPES],
     'tiers': tiers,
+    # Temporary training speed buffs, as the alliance read them in game (2026-10-17). Mobilize is a
+    # king skill used on event days; the High King's term ends before KvK, when every governor gets
+    # the KvK buff instead; a castle position is Noble Advisor or Chief Minister, never both, and
+    # gives more while the kingdom holds the High King.
+    'buffs': {
+        'checkedAt': '2026-10-17',
+        'source': 'In-game values reported by the alliance',
+        'mobilize': 30,
+        'kvk': 25,
+        'positions': [{'id': 'advisor', 'name': 'Noble Advisor', 'speed': 50, 'highKing': 75},
+                      {'id': 'minister', 'name': 'Chief Minister', 'speed': 10, 'highKing': 15}],
+    },
 }
 OUT.write_text(json.dumps(out, indent=1, ensure_ascii=False) + '\n')
 print('wrote', OUT, '·', sum(len(t['unverified']) for t in tiers), 'unverified cells:', {t['tier']: t['unverified'] for t in tiers if t['unverified']})
