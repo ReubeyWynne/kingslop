@@ -43,12 +43,13 @@ store.buildings(); // { levels: { 'town-center': 'TG 3' }, provenance }
 store.setBuilding('town-center', 'TG3-1'); // null forgets the level
 ```
 
-Training facts serve the Town Centre's troop days. `training.facts` holds `speed` (the Bonus Overview Training Speed without temporary buffs, a percentage), the training speed each temporary buff adds (`kvk` for the KvK troop buff, `king` for High King, `position` for a castle position, `mobilize` for Mobilize; percentages, absent when you won't have it), `capacity` (troops one camp trains per batch, at least 1) and a tier from 1 to 11 for each camp, keyed by troop type (`inf`, `cav`, `arc`), each with its own entry in `training.provenance`. A missing fact has not been counted yet. `preferences.training.buff` is `true` when the plan should use the 3,000-gem capacity buff; it is absent otherwise. Saves without a `training` key stay valid.
+Training facts serve the Town Centre's troop days. `training.facts` holds `speed` (the Bonus Overview Training Speed without temporary buffs, a percentage), `capacity` (troops one camp trains per batch, at least 1) and a tier from 1 to 11 for each camp, keyed by troop type (`inf`, `cav`, `arc`), each with its own entry in `training.provenance`. A missing fact has not been counted yet. `preferences.training` holds the plans: `buff: true` to use the 3,000-gem capacity buff, `position` (`advisor` for Noble Advisor or `minister` for Chief Minister), `highKing: true` when your kingdom holds the High King, and `mobilize: true` when your king uses Mobilize on event days. Each is absent when off. Saves without a `training` key stay valid.
 
 ```js
-store.training(); // { facts: { speed: 182.5, capacity: 1150, inf: 10 }, provenance, buff: false }
+store.training(); // { facts: { speed: 182.5, capacity: 1150, inf: 10 }, provenance, buff: false, position: null, highKing: false, mobilize: false }
 store.setTraining('arc', 11); // null forgets the fact
 store.setTrainingBuff(true);
+store.setTrainingPlan('position', 'advisor'); // null or false turns a plan off
 ```
 
 `preferences.heroGear` holds only optimisation/UI choices. Resource bags and piece lists are derived from the ledger, not duplicated in preferences. A write touches changed facts and explicitly edited fields, preserving unrelated inventory and provenance. `source` distinguishes manual, legacy, screenshot, plan, reset and file edits.

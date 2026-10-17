@@ -28,12 +28,8 @@
     'training-tiers': 'the tier each camp trains', 'training-capacity': 'training capacity', 'training-speed': 'training speed', troopRate: 'T{tier} troop points for this event', troopCost: 'T{tier} training costs (not verified yet)',
     speedPercent: '{n}%', tierLabel: 'T{n}', batchOf: 'batch of {n}',
     speedUnit: 'training speed, %', speedHint: 'Bonus Overview, Training Speed, without the temporary buffs below.',
-    buffUnit: 'training speed it adds, %',
-    'buffHint.kvk': 'You get the KvK troop buff or the High King’s, not both, so only the larger one counts. It counts for the batch and on the day.',
-    'buffHint.king': 'You get the High King’s buff or the KvK troop buff, not both, so only the larger one counts. It counts for the batch and on the day.',
-    'buffHint.position': 'The training speed your castle position gives while you hold it. It counts for the batch and on the day.',
-    'buffHint.mobilize': 'Mobilize runs on KvK prep day 4, so it counts only for troops you train with speedups that day.',
-    buffOff: '—', buffPercent: '+{n}%',
+    positionHint: 'Noble Advisor or Chief Minister, never both. Each gives more while your kingdom holds the High King, which ends before KvK.',
+    buffOff: '—', buffPercent: '+{n}%', planOn: 'on',
     capacityUnit: 'troops per batch', capacityHint: 'How many troops one camp trains at once, without the capacity buff.',
     tierHint: 'T10 and T11 Truegold troops train in the same time for the same cost as plain T10 and T11.',
     troopTitle: 'Best troop day: {event}, day {day}', 'troopLine.batchBuff': 'T{tier} troops, tripled batch',
@@ -198,16 +194,27 @@
        found best for the selected event. */
     var troopResult = null, troopEvent = 'prep';
     function percentText(n) { return new Intl.NumberFormat(document.documentElement.lang || undefined, { maximumFractionDigits: 2 }).format(n); }
-    function trainingText(key, fact) { return R.BUFFS.includes(key) ? fact === undefined ? t(api, 'buffOff') : fill(api, 'buffPercent', { n: percentText(fact) }) : fact === undefined ? '?' : key === 'speed' ? fill(api, 'speedPercent', { n: new Intl.NumberFormat(document.documentElement.lang || undefined, { maximumFractionDigits: 2 }).format(fact) }) : key === 'capacity' ? api.fmt(fact) : fill(api, 'tierLabel', { n: fact }); }
+    function trainingText(key, fact) { return fact === undefined ? '?' : key === 'speed' ? fill(api, 'speedPercent', { n: new Intl.NumberFormat(document.documentElement.lang || undefined, { maximumFractionDigits: 2 }).format(fact) }) : key === 'capacity' ? api.fmt(fact) : fill(api, 'tierLabel', { n: fact }); }
     function renderTroops(snapshot) {
       var training = snapshot.training || { facts: {} }, facts = training.facts || {}, buff = Boolean(snapshot.preferences.training && snapshot.preferences.training.buff);
       var size = Object.hasOwn(facts, 'capacity') ? facts.capacity * (buff ? R.BUFF : 1) : null;
+      var plans = snapshot.preferences.training || {}, buffs = R.speeds(facts, plans, troopEvent);
       context.nodes('[data-training]').forEach(function (tile) {
         var key = tile.dataset.training, fact = Object.hasOwn(facts, key) ? facts[key] : undefined;
-        tile.dataset.state = fact !== undefined ? 'confirmed' : R.BUFFS.includes(key) ? 'off' : 'unknown';
+        if (key === 'position') {
+          tile.dataset.state = plans.position ? 'confirmed' : 'off';
+          tile.querySelector('[data-amount]').textContent = plans.position ? fill(api, 'buffPercent', { n: percentText(buffs.position) }) : t(api, 'buffOff');
+          return;
+        }
+        tile.dataset.state = fact === undefined ? 'unknown' : 'confirmed';
         tile.querySelector('[data-amount]').textContent = trainingText(key, fact);
         var note = tile.querySelector('[data-camp-plan]');
         if (note) note.textContent = fact !== undefined && size !== null ? fill(api, 'batchOf', { n: api.fmt(size) }) : '';
+      });
+      context.nodes('[data-plan]').forEach(function (tile) {
+        var on = Boolean(plans[tile.dataset.plan]);
+        tile.setAttribute('aria-pressed', String(on)); tile.dataset.state = on ? 'on' : 'off';
+        tile.querySelector('[data-amount]').textContent = !on ? t(api, 'buffOff') : tile.dataset.plan === 'mobilize' ? fill(api, 'buffPercent', { n: percentText(R.BUFFS.mobilize) }) : t(api, 'planOn');
       });
       context.nodes('[data-action="town-inventory.buff"]').forEach(function (tile) {
         tile.setAttribute('aria-pressed', String(buff)); tile.dataset.state = buff ? 'on' : 'off';
@@ -309,10 +316,13 @@
         level.max = piece && piece.quality === 'epic' ? 80 : piece && piece.quality === 'mythic' ? 100 : 200;
         target('masteryRow').hidden = !!piece && piece.quality === 'epic';
       } else if (editing.type === 'training') {
-        var facts = (snapshot.training && snapshot.training.facts) || {}, input = dialog.querySelector('[data-field="training"]'), speed = editing.id !== 'capacity', isBuff = R.BUFFS.includes(editing.id);
+        var facts = (snapshot.training && snapshot.training.facts) || {}, input = dialog.querySelector('[data-field="training"]'), speed = editing.id === 'speed';
         input.step = speed ? 'any' : '1'; input.min = speed ? '0' : '1'; input.inputMode = speed ? 'decimal' : 'numeric';
         value(input, Object.hasOwn(facts, editing.id) ? facts[editing.id] : null);
-        put('trainingUnit', t(api, isBuff ? 'buffUnit' : speed ? 'speedUnit' : 'capacityUnit')); put('trainingHint', t(api, isBuff ? 'buffHint.' + editing.id : speed ? 'speedHint' : 'capacityHint'));
+        put('trainingUnit', t(api, speed ? 'speedUnit' : 'capacityUnit')); put('trainingHint', t(api, speed ? 'speedHint' : 'capacityHint'));
+      } else if (editing.type === 'position') {
+        dialog.querySelector('select[data-field="position"]').value = (snapshot.preferences.training && snapshot.preferences.training.position) || '';
+        put('positionHint', t(api, 'positionHint'));
       } else if (editing.type === 'tier') {
         var tiers = (snapshot.training && snapshot.training.facts) || {};
         dialog.querySelector('select[data-field="tier"]').value = Object.hasOwn(tiers, editing.id) ? String(tiers[editing.id]) : '';
@@ -362,7 +372,7 @@
     return { refresh: function () { labelOptions(); render(); }, actions: {
       edit: { run: function (tile) {
         if (!dialog) return;
-        editing = tile.dataset.count ? { type: 'count', id: tile.dataset.count } : tile.dataset.duration ? { type: 'duration', id: tile.dataset.duration } : tile.dataset.piece ? { type: 'hero', id: tile.dataset.piece } : tile.dataset.building ? { type: 'building', id: tile.dataset.building } : tile.dataset.training ? { type: tile.dataset.training === 'speed' || tile.dataset.training === 'capacity' || R.BUFFS.includes(tile.dataset.training) ? 'training' : 'tier', id: tile.dataset.training } : { type: 'gov', id: tile.dataset.gov };
+        editing = tile.dataset.count ? { type: 'count', id: tile.dataset.count } : tile.dataset.duration ? { type: 'duration', id: tile.dataset.duration } : tile.dataset.piece ? { type: 'hero', id: tile.dataset.piece } : tile.dataset.building ? { type: 'building', id: tile.dataset.building } : tile.dataset.training ? { type: tile.dataset.training === 'position' ? 'position' : /^(speed|capacity)$/.test(tile.dataset.training) ? 'training' : 'tier', id: tile.dataset.training } : { type: 'gov', id: tile.dataset.gov };
         var name = tileName(tile);
         if (editing.type === 'hero') name = api.tr('gear.' + editing.id.split('-')[0], TROOPS[editing.id.split('-')[0]]) + ' · ' + name;
         put('title', name);
@@ -408,6 +418,8 @@
         write(function () { store.setTraining(editing.id, select.value === '' ? null : Number(select.value)); });
       } },
       buff: { run: function () { write(function () { store.setTrainingBuff(!store.training().buff); }); } },
+      plan: { run: function (tile) { write(function () { store.setTrainingPlan(tile.dataset.plan, !store.training()[tile.dataset.plan]); }); } },
+      position: { events: ['change'], run: function (select) { write(function () { store.setTrainingPlan('position', select.value || null); }); } },
       buildingLevel: { events: ['change'], run: function (select) {
         if (!editing) return;
         write(function () { store.setBuilding(editing.id, select.value === '' ? null : select.value); });
@@ -434,6 +446,7 @@
         if (!editing) return;
         if (editing.type === 'gov') { var change = {}; change[editing.id] = null; var charms = {}; [1, 2, 3].forEach(function (c) { charms[editing.id + '-' + c] = null; }); write(function () { store.setGovernor('gear', change); store.setGovernor('charms', charms); }); }
         else if (editing.type === 'building') write(function () { store.setBuilding(editing.id, null); });
+        else if (editing.type === 'position') write(function () { store.setTrainingPlan('position', null); });
         else if (editing.type === 'training' || editing.type === 'tier') write(function () { store.setTraining(editing.id, null); });
         else if (editing.type !== 'hero') write(function () { store.setBalance(editing.id, null); });
       } }

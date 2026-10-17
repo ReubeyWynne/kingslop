@@ -174,7 +174,7 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
 
       // Troops: training facts on tiles, the capacity buff as a switch, and the troop day they score on.
       await page.locator('[aria-controls="town-troops"]').click();
-      assert.equal(await page.locator('#town-troops [data-training]').count(), 9);
+      assert.equal(await page.locator('#town-troops [data-training]').count(), 6);
       assert.equal(await page.locator('#town-troops [data-target="town-inventory.troopResult"]').isHidden(), true);
       assert.match(await page.locator('[data-target="town-inventory.troopPlan"]').textContent(), /Set your training speed/);
       await edit('#town-troops [data-training="speed"]'); await dialog.locator('[data-field="training"]').fill('150'); await done();
@@ -195,18 +195,24 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.equal(await troopText('troopTakes'), '2d 2h 40m', '3,000 T10 at 152 s each, 150% faster');
       assert.match(await troopText('troopStartAt'), /\d\d:\d\d UTC$/);
       assert.equal(await troopText('troopSpeed'), '150%');
-      // Buffs: a castle position speeds up the batch; Mobilize only the KvK prep day's speedup training.
+      // Buffs: a castle position speeds up the batch and the day, more under the High King; Mobilize only the day.
       assert.equal(await page.locator('[data-training="position"]').getAttribute('data-state'), 'off');
-      await edit('#town-troops [data-training="position"]'); await dialog.locator('[data-field="training"]').fill('50'); await done();
-      await edit('#town-troops [data-training="mobilize"]'); await dialog.locator('[data-field="training"]').fill('25'); await done();
+      await edit('#town-troops [data-training="position"]'); await dialog.locator('select[data-field="position"]').selectOption('advisor'); await done();
       assert.equal(await page.locator('[data-training="position"] [data-amount]').textContent(), '+50%');
       assert.equal(await troopText('troopTakes'), '1d 18h 14m', '3,000 T10 at 152 s each, 200% faster');
-      assert.equal(await troopText('troopSpeed'), '200%', 'Mobilize adds nothing outside KvK prep');
+      await page.locator('#town-troops [data-plan="highKing"]').click();
+      await page.locator('#town-troops [data-plan="mobilize"]').click();
+      assert.deepEqual((await ledger()).preferences.training, { buff: true, position: 'advisor', highKing: true, mobilize: true });
+      assert.equal(await page.locator('[data-plan="mobilize"]').getAttribute('aria-pressed'), 'true');
+      assert.equal(await page.locator('[data-training="position"] [data-amount]').textContent(), '+75%');
+      assert.equal(await troopText('troopSpeed'), '225%, 255% on the day');
       await page.locator('[data-value="prep"][data-action="tabs.select"]').click();
       assert.match(await troopText('troopTitle'), /KvK prep, day 4$/);
-      assert.equal(await troopText('troopSpeed'), '200%, 225% on the day');
-      for (const id of ['position', 'mobilize']) { await edit('#town-troops [data-training="' + id + '"]'); await dialog.locator('[data-action="town-inventory.clear"]').click(); await done(); }
-      assert.equal(await troopText('troopSpeed'), '150%');
+      assert.equal(await troopText('troopSpeed'), '225%, 255% on the day', 'KvK prep: +25% for everyone and +50% for the Advisor, as the High King has ended');
+      await page.locator('#town-troops [data-plan="highKing"]').click(); await page.locator('#town-troops [data-plan="mobilize"]').click();
+      await edit('#town-troops [data-training="position"]'); await dialog.locator('[data-action="town-inventory.clear"]').click(); await done();
+      assert.deepEqual((await ledger()).preferences.training, { buff: true });
+      assert.equal(await troopText('troopSpeed'), '175%');
       assert.equal(await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'prep').lines.find(l => l.id === 'troops-batch-t10').points), 3000 * 60);
       await page.locator('#town-troops [data-action="town-inventory.buff"]').click();
       assert.equal((await ledger()).preferences.training, undefined);

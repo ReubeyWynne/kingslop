@@ -10,10 +10,14 @@
      batch. It does not change training speed, and it adds nothing to training on the day.
    - Troops trained on the day with training speedups, then general speedups. Capacity
      does not limit these, because a batch can be finished and restarted.
-   Training speed is the Bonus Overview figure without temporary buffs, plus the buffs you
-   record: the KvK troop buff or the High King's (only one applies, so the larger counts) and
-   a castle position, which you hold both when the batch starts and on the day, and Mobilize,
-   which runs on KvK prep day 4 only and so speeds up only that day's speedup training.
+   Training speed is the Bonus Overview figure without temporary buffs, plus the buffs in
+   _data/troops.json `buffs` that apply to the event:
+   - KvK prep: every governor gets the KvK buff. The High King's term has ended by then, so a
+     castle position gives its normal speed.
+   - Other events: a castle position gives its High King speed if your kingdom holds the High
+     King, and its normal speed otherwise.
+   These count for the batch and on the day. Mobilize, a king skill used on event days, counts
+   only for training on the day, since the batch is started before it.
    Every troop is paid for with the resources left after the building plan, the batch
    first, then the camps that score most per second of speedup. A cost cell only one source
    has (all of T11) is listed as unverified and does not limit the plan. Unknown facts or
@@ -23,7 +27,8 @@
   else root.TroopSpend = factory(root.TroopData);
 })(typeof window === 'object' ? window : globalThis, function (data) {
   'use strict';
-  var RESOURCES = ['bread', 'wood', 'stone', 'iron'], SPEEDUPS = ['training', 'general'], BUFF = 3, BUFF_GEMS = 3000, BUFFS = ['kvk', 'king', 'position', 'mobilize'];
+  var RESOURCES = ['bread', 'wood', 'stone', 'iron'], SPEEDUPS = ['training', 'general'], BUFF = 3, BUFF_GEMS = 3000;
+  var BUFFS = (data && data.buffs) || { mobilize: 0, kvk: 0, positions: [] };
   var TYPES = ((data && data.types) || []).map(function (type) { return { id: type.id, name: type.name, camp: type.camp }; });
   var TIERS = {};
   ((data && data.tiers) || []).forEach(function (row) { TIERS[row.tier] = row; });
@@ -34,20 +39,23 @@
   function within(secs, tier, speed) { return Math.floor(secs * (100 + speed) / (100 * TIERS[tier].seconds) + 1e-9); }
   function affordable(cost, left) { return RESOURCES.reduce(function (most, id) { return cost[id] ? Math.min(most, Math.floor(left[id] / cost[id])) : most; }, Infinity); }
   function pay(cost, left, spent, troops) { RESOURCES.forEach(function (id) { if (cost[id]) { left[id] -= cost[id] * troops; spent[id] += cost[id] * troops; } }); }
-  /* Training speed (%) for the batch and for the day's speedup training, or null while the
-     base speed is unknown. A buff you have not recorded adds nothing. */
-  function speeds(facts, event) {
-    function buff(id) { return Object.hasOwn(facts, id) ? facts[id] : 0; }
-    if (!Object.hasOwn(facts, 'speed')) return { base: null, batch: null, day: null };
-    var batch = facts.speed + Math.max(buff('kvk'), buff('king')) + buff('position');
-    return { base: facts.speed, batch: batch, day: batch + (event === 'prep' ? buff('mobilize') : 0) };
+  /* Training speed (%) for the batch and for the day's training, with what each buff adds, or
+     null speeds while the base speed is unknown. plans: snapshot.preferences.training. */
+  function speeds(facts, plans, event) {
+    plans = plans || {};
+    var prep = event === 'prep', post = BUFFS.positions.find(function (p) { return p.id === plans.position; });
+    var kvk = prep ? BUFFS.kvk : 0, highKing = !prep && Boolean(plans.highKing), position = post ? highKing ? post.highKing : post.speed : 0, mobilize = plans.mobilize ? BUFFS.mobilize : 0;
+    var out = { base: null, batch: null, day: null, kvk: kvk, position: position, highKing: highKing, mobilize: mobilize };
+    if (!Object.hasOwn(facts, 'speed')) return out;
+    out.base = facts.speed; out.batch = facts.speed + kvk + position; out.day = out.batch + mobilize;
+    return out;
   }
   /* rates: points per troop by tier for the day ({ 10: 60 }); a tier without a rate scores
      nothing and is listed. used: resources another plan already spends ({ bread: … }).
      event: the troop day's event, which decides whether Mobilize applies. */
   function plan(snapshot, rates, used, event) {
     var section = snapshot.training || { facts: {} }, facts = section.facts || {}, buff = Boolean(snapshot.preferences && snapshot.preferences.training && snapshot.preferences.training.buff);
-    var speed = speeds(facts, event), capacity = Object.hasOwn(facts, 'capacity') ? facts.capacity : null;
+    var speed = speeds(facts, snapshot.preferences && snapshot.preferences.training, event), capacity = Object.hasOwn(facts, 'capacity') ? facts.capacity : null;
     var unknown = [], unverified = [], left = {}, spent = {}, lines = [], camps = [];
     function note(list, id) { if (!list.includes(id)) list.push(id); }
     rates = rates || {}; used = used || {};
@@ -121,7 +129,7 @@
   function batch(snapshot, rates, used, opensAt, event) {
     function run(buff) {
       var copy = JSON.parse(JSON.stringify(snapshot));
-      copy.preferences = Object.assign({}, copy.preferences); if (buff) copy.preferences.training = { buff: true }; else delete copy.preferences.training;
+      copy.preferences = Object.assign({}, copy.preferences); copy.preferences.training = Object.assign({}, copy.preferences.training, { buff: buff });
       var out = plan(copy, rates, used, event), b = out.batch;
       return { size: b.size, troops: b.troops, points: b.points, seconds: b.seconds, start: b.seconds === null ? null : opensAt - b.seconds * 1000 };
     }
@@ -134,5 +142,5 @@
     var m = /^troops-t(\d+)-(rate|cost)$/.exec(id);
     return m ? { kind: m[2], tier: Number(m[1]) } : null;
   }
-  return { RESOURCES: RESOURCES.slice(), SPEEDUPS: SPEEDUPS.slice(), BUFF: BUFF, BUFF_GEMS: BUFF_GEMS, BUFFS: BUFFS.slice(), TYPES: TYPES, TIERS: TIERS, data: data, seconds: seconds, speeds: speeds, plan: plan, batch: batch, rates: rates, missing: missing };
+  return { RESOURCES: RESOURCES.slice(), SPEEDUPS: SPEEDUPS.slice(), BUFF: BUFF, BUFF_GEMS: BUFF_GEMS, BUFFS: BUFFS, TYPES: TYPES, TIERS: TIERS, data: data, seconds: seconds, speeds: speeds, plan: plan, batch: batch, rates: rates, missing: missing };
 });

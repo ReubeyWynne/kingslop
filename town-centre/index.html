@@ -105,12 +105,18 @@ self: town
         </button>
       </div>
       <div class="town-strip" role="group" aria-label="Training speed buffs" data-i18n-key="town.training.buffs" data-i18n-attr="aria-label">
-      {% for buff in site.data.troops.buffs %}
-        <button type="button" class="town-tile town-tile-small" data-training="{{ buff.id }}" data-state="off" data-action="town-inventory.edit">
-          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">{{ buff.glyph }}</span><output class="town-tile-count" data-amount>—</output></span>
-          <span class="town-tile-name" data-i18n="town.training.{{ buff.id }}">{{ buff.name }}</span>
+        <button type="button" class="town-tile town-tile-small" data-training="position" data-state="off" data-action="town-inventory.edit">
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">C</span><output class="town-tile-count" data-amount>—</output></span>
+          <span class="town-tile-name" data-i18n="town.training.position">Castle position</span>
         </button>
-      {% endfor %}
+        <button type="button" class="town-tile town-tile-small" data-plan="highKing" data-state="off" aria-pressed="false" data-action="town-inventory.plan">
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">H</span><output class="town-tile-count" data-amount>—</output></span>
+          <span class="town-tile-name" data-i18n="town.training.highKing">High King</span>
+        </button>
+        <button type="button" class="town-tile town-tile-small" data-plan="mobilize" data-state="off" aria-pressed="false" data-action="town-inventory.plan">
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">M</span><output class="town-tile-count" data-amount>—</output></span>
+          <span class="town-tile-name" data-i18n="town.training.mobilize">Mobilize</span>
+        </button>
       </div>
       <div class="town-bag">
       {% for camp in camps %}
@@ -136,6 +142,7 @@ self: town
       </div>
       <p class="town-note" data-target="town-inventory.troopPlan"></p>
       <p class="town-gloss" data-i18n="town.troopsSource">Training times and costs where Kingshot Optimizer and Kingshot Guide agree. The capacity buff costs 3,000 gems and triples the batch you start before a troop day. It does not speed up training and adds nothing on the day itself.</p>
+      <p class="town-gloss" data-i18n="town.buffsSource">Buffs as read in game: Mobilize +30% on event days. Noble Advisor +50% and Chief Minister +10%, or +75% and +15% while your kingdom holds the High King. The High King's term ends before KvK, when everyone gets +25% instead.</p>
     </div>
 
     <div class="town-shelf town-heroes" id="town-heroes" role="tabpanel" data-shelf="heroes" hidden>
@@ -238,6 +245,10 @@ self: town
       <div class="town-panel" data-panel="training" hidden>
         <label class="town-big"><span data-target="town-inventory.trainingUnit"></span><input type="number" min="0" max="100000" step="any" inputmode="decimal" placeholder="?" data-field="training" data-action="town-inventory.training"></label>
         <p class="town-gloss" data-target="town-inventory.trainingHint"></p>
+      </div>
+      <div class="town-panel" data-panel="position" hidden>
+        <label><span data-i18n="town.training.positionPick">Position you hold</span><select data-field="position" data-action="town-inventory.position"><option value="" data-i18n="town.training.positionNone">none</option>{% for post in site.data.troops.buffs.positions %}<option value="{{ post.id }}" data-i18n="town.training.{{ post.id }}">{{ post.name }}</option>{% endfor %}</select></label>
+        <p class="town-gloss" data-target="town-inventory.positionHint"></p>
       </div>
       <div class="town-panel" data-panel="tier" hidden>
         <label><span data-i18n="town.training.tier">Highest tier this camp trains</span><select data-field="tier" data-action="town-inventory.tier"><option value="" data-i18n="gov.notSet">not set</option>{% for row in site.data.troops.tiers %}<option value="{{ row.tier }}">T{{ row.tier }}</option>{% endfor %}</select></label>
