@@ -240,4 +240,25 @@ const buildingCopy = Ledger.create(storage());
 buildingCopy.importJSON(buildingBefore2, E);
 assert.deepEqual(buildingCopy.snapshot().preferences.buildings, buildingStore.snapshot().preferences.buildings);
 assert.deepEqual(buildingCopy.buildings(), buildingStore.buildings());
-console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, undo, revision, combat stat, troop, hero roster and building level checks passed.');
+// Training facts: speed %, capacity per batch and a tier per camp, each with provenance; the capacity buff is a preference.
+const trainingStore = Ledger.create(storage());
+assert.deepEqual(trainingStore.training(), { facts: {}, provenance: {}, buff: false, position: null, highKing: false, mobilize: false });
+trainingStore.setTraining('speed', 182.5); trainingStore.setTraining('capacity', 1150); trainingStore.setTraining('arc', 11); trainingStore.setTrainingBuff(true);
+assert.deepEqual(trainingStore.training().facts, { speed: 182.5, capacity: 1150, arc: 11 });
+assert.equal(trainingStore.training().buff, true);
+trainingStore.setTrainingPlan('position', 'minister'); trainingStore.setTrainingPlan('mobilize', true);
+assert.deepEqual(trainingStore.snapshot().preferences.training, { buff: true, position: 'minister', mobilize: true });
+trainingStore.setTrainingPlan('position', null); trainingStore.setTrainingPlan('mobilize', false);
+assert.deepEqual(trainingStore.snapshot().preferences.training, { buff: true });
+for (const [key, value] of [['inf', 0], ['inf', 12], ['inf', 10.5], ['capacity', 0], ['capacity', 1.5], ['speed', -1], ['march', 1]]) assert.throws(() => trainingStore.setTraining(key, value), key + ' ' + value);
+const trainingBefore = trainingStore.exportJSON();
+for (const mutate of [data => { data.training.facts.inf = 12; }, data => { delete data.training.provenance.arc; }, data => { data.preferences.training.buff = 'yes'; }, data => { data.preferences.training.gems = 3000; }, data => { data.preferences.training.position = 'king'; }, data => { data.preferences.training.mobilize = false; }]) {
+  const data = JSON.parse(trainingBefore); mutate(data); assert.throws(() => Ledger.validate(data));
+}
+const trainingCopy = Ledger.create(storage());
+trainingCopy.importJSON(trainingBefore, E);
+assert.deepEqual(trainingCopy.training(), trainingStore.training());
+trainingStore.setTraining('arc', null); trainingStore.setTrainingBuff(false);
+assert.deepEqual(Object.keys(trainingStore.training().facts), ['speed', 'capacity']);
+assert.equal(trainingStore.snapshot().preferences.training, undefined);
+console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, undo, revision, combat stat, troop, hero roster, building level and training checks passed.');

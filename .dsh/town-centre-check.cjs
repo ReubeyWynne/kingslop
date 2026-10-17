@@ -140,6 +140,73 @@ assert.equal(chestPoints, 15 * 8000);
 assert.equal(T.best(chestStore.snapshot(), 'prep').lines.find(l => l.id === 'hero-widget').points, chestPoints);
 for (let gen = 1; gen <= 7; gen++) assert.deepEqual(T.topRate(Ledger.widgetChestId(gen)), T.topRate('hero-widget'));
 
+// Troops: a pre-trained batch per camp, then what training and general speedups can train with
+// the resources left. Rates come from the day's "T{n} troop" rows, then the cross-checked table.
+const R = require('../js/troop-spend.js');
+assert.deepEqual(Object.keys(R.TIERS).map(Number), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+for (const tier of Object.values(R.TIERS)) assert.ok(tier.seconds > 0 && R.TYPES.every(type => tier.cost[type.id]), 'T' + tier.tier);
+assert.deepEqual(R.rates(rules.rules('prep', 4).rows, 'prep').rates, { 1: 3, 2: 4, 3: 5, 4: 8, 5: 12, 6: 18, 7: 25, 8: 35, 9: 45, 10: 60, 11: 75 });
+assert.deepEqual(R.rates(rules.rules('sg', 4).rows, 'sg').rates, { 1: 1, 2: 2, 3: 3, 6: 11, 7: 16, 8: 23, 9: 30, 10: 39 }, 'the two sources disagree on T4, T5 and T11');
+assert.equal(R.rates(rules.rules('brawl', 4).rows, 'brawl').rates[1], 1);
+assert.equal(R.rates(rules.rules('prep', 1).rows, 'prep'), null);
+const troopStore = Ledger.create({ getItem(k) { return this[k] ?? null; }, setItem(k, v) { this[k] = v; } });
+let troopDay = T.day(troopStore.snapshot(), 'prep', 4);
+assert.ok(troopDay.unknown.includes('training-tiers') && !troopDay.lines.some(l => l.kind === 'troops'));
+assert.ok(troopDay.unquantified.every(row => !/troop/i.test(row.label)), 'troop rows are counted, not listed');
+assert.throws(() => troopStore.setTraining('inf', 12)); assert.throws(() => troopStore.setTraining('capacity', 0)); assert.throws(() => troopStore.setTraining('march', 1));
+troopStore.setTraining('speed', 100); troopStore.setTraining('capacity', 500); troopStore.setTraining('inf', 10);
+for (const id of B.RESOURCES) troopStore.setBalance(id, 1e9);
+troopStore.setBalance('speedup-training', 600);
+troopDay = T.day(troopStore.snapshot(), 'prep', 4);
+const troopLine = id => troopDay.lines.find(l => l.id === id);
+assert.deepEqual([troopLine('troops-batch-t10').amount, troopLine('troops-batch-t10').points], [500, 500 * 60]);
+assert.equal(troopLine('troops-training-t10').amount, 532, '600 minutes at 67.6 s a troop (152 s, 125% faster: KvK prep adds 25%)');
+assert.ok(troopDay.unknown.includes('speedup-general') && !troopDay.unknown.includes('training-tiers'));
+assert.equal(troopDay.troops.batch.seconds, Math.ceil(500 * 152 / 2.25));
+assert.equal(T.day(troopStore.snapshot(), 'sg', 4).troops.batch.seconds, 500 * 76, 'no KvK buff outside KvK prep');
+troopStore.setTrainingBuff(true);
+troopDay = T.day(troopStore.snapshot(), 'prep', 4);
+assert.deepEqual([troopLine('troops-batch-t10').amount, troopLine('troops-training-t10').amount], [1500, 532], 'the buff triples the batch and adds nothing on the day');
+assert.equal(troopDay.troops.gems, 3000);
+// Speed buffs: a castle position counts for the batch and the day, at its High King speed outside
+// KvK prep when the kingdom holds the High King; KvK prep gives everyone +25% instead; Mobilize
+// counts only on the day.
+troopStore.setTrainingPlan('position', 'advisor'); troopStore.setTrainingPlan('highKing', true); troopStore.setTrainingPlan('mobilize', true);
+const troopPlans = () => troopStore.snapshot().preferences.training;
+assert.deepEqual(troopPlans(), { buff: true, position: 'advisor', highKing: true, mobilize: true });
+assert.deepEqual(R.speeds(troopStore.snapshot().training.facts, troopPlans(), 'prep'), { base: 100, batch: 175, day: 205, kvk: 25, position: 50, highKing: false, mobilize: 30 });
+assert.deepEqual(R.speeds(troopStore.snapshot().training.facts, troopPlans(), 'sg'), { base: 100, batch: 175, day: 205, kvk: 0, position: 75, highKing: true, mobilize: 30 });
+troopStore.setTrainingPlan('position', 'minister');
+assert.deepEqual([R.speeds({ speed: 100 }, troopPlans(), 'sg').batch, R.speeds({ speed: 100 }, troopPlans(), 'prep').batch], [115, 135]);
+troopStore.setTrainingPlan('position', 'advisor'); troopStore.setTrainingPlan('highKing', false);
+assert.equal(R.speeds({ speed: 100 }, troopPlans(), 'sg').position, 50, 'without the High King an Advisor gives +50%');
+troopDay = T.day(troopStore.snapshot(), 'prep', 4);
+assert.equal(troopDay.troops.batch.seconds, Math.ceil(1500 * 152 * 100 / 275), '1,500 T10 at 175% faster');
+assert.equal(troopLine('troops-training-t10').amount, Math.floor(36000 * 305 / 15200), '600 minutes at 205% faster');
+assert.equal(troopDay.troops.batch.troops, 1500, 'the buff plan survives the other plans');
+for (const key of ['position', 'mobilize']) troopStore.setTrainingPlan(key, null);
+assert.throws(() => troopStore.setTrainingPlan('position', 'king')); assert.throws(() => troopStore.setTrainingPlan('march', true));
+// Resources: the batch is paid first, and nothing is trained that the bag cannot pay for.
+troopStore.setBalance('bread', 2788 * 300 + 100);
+troopDay = T.day(troopStore.snapshot(), 'prep', 4);
+assert.deepEqual([troopLine('troops-batch-t10').amount, troopLine('troops-training-t10')], [300, undefined]);
+troopStore.setBalance('bread', null);
+assert.ok(T.day(troopStore.snapshot(), 'prep', 4).unknown.includes('bread'));
+troopStore.setBalance('bread', 1e9);
+// Speedups are spent once: training speedups score on the troop day or as minutes, never both.
+const troopBest = T.best(troopStore.snapshot(), 'prep');
+assert.equal(troopBest.lines.find(l => l.id === 'speedup-training'), undefined, '532 T10 for 31,920 beat 600 minutes at 30');
+assert.equal(troopBest.lines.find(l => l.id === 'troops-training-t10').day, 4);
+troopStore.setBalance('speedup-training', 100000); troopStore.setTraining('speed', 0);
+assert.equal(T.best(troopStore.snapshot(), 'prep').lines.find(l => l.id === 'speedup-training' || l.id === 'troops-training-t10').id, 'speedup-training', 'at base speed the minutes score more as speedups');
+// T11: the timer is cross-checked but its costs are not, so they are flagged and do not limit the plan.
+troopStore.setTraining('arc', 11); troopStore.setTraining('speed', 100);
+troopDay = T.day(troopStore.snapshot(), 'prep', 4);
+assert.deepEqual(troopDay.troops.unverified, ['troops-t11-cost']);
+assert.equal(troopLine('troops-batch-t11').amount, 1500);
+assert.ok(T.day(troopStore.snapshot(), 'sg', 4).unknown.includes('troops-t11-rate'));
+assert.deepEqual(R.missing('troops-t11-rate'), { kind: 'rate', tier: 11 });
+
 // Page wiring: navigation, scripts, deck scene, dictionaries and copy keys.
 const nav = require('../_data/nav.json'), pages = require('../_data/pages.json');
 // The Town Centre sits outside the page ring: a fixed button in the deck and a ledger link, never a card.
@@ -147,7 +214,7 @@ assert.equal(nav.filter(n => n.self === 'town').length, 0);
 assert.ok(!pages.town.swipePrev && !pages.town.swipeNext);
 assert.ok(fs.readFileSync('_includes/page-deck.html', 'utf8').includes('class="deck-town" href="{{ p.depth }}town-centre/"'));
 assert.ok(!fs.readFileSync('_includes/ascii/deck-scene.html', 'utf8').includes("'town'"));
-for (const script of ['event-data.js', 'governor-data.js', 'event-rules.js', 'governor-engine.js', 'hero-gear-engine.js', 'hero-data.js', 'hero-spend.js', 'building-data.js', 'building-spend.js', 'town-centre-engine.js', 'hero-points.js', 'town-centre.js']) assert.ok(pages.town.scripts.includes('../js/' + script), script);
+for (const script of ['event-data.js', 'governor-data.js', 'event-rules.js', 'governor-engine.js', 'hero-gear-engine.js', 'hero-data.js', 'hero-spend.js', 'building-data.js', 'building-spend.js', 'troop-data.js', 'troop-spend.js', 'town-centre-engine.js', 'hero-points.js', 'town-centre.js']) assert.ok(pages.town.scripts.includes('../js/' + script), script);
 assert.ok(pages.town.scripts.indexOf('../js/town-centre-engine.js') < pages.town.scripts.indexOf('../js/town-centre.js'));
 assert.ok(pages.town.scripts.indexOf('../js/hero-spend.js') < pages.town.scripts.indexOf('../js/town-centre-engine.js'));
 assert.ok(pages.town.scripts.indexOf('../js/building-data.js') < pages.town.scripts.indexOf('../js/building-spend.js') && pages.town.scripts.indexOf('../js/building-spend.js') < pages.town.scripts.indexOf('../js/town-centre-engine.js'));
@@ -167,6 +234,6 @@ const enBlock = page.slice(page.indexOf('var EN = {'), page.indexOf('};', page.i
 for (const match of enBlock.matchAll(/(?:^|[{,]\s*)'?([a-zA-Z.]+)'?: '/gm)) assert.ok(en['town.' + match[1]] !== undefined, 'town.' + match[1]);
 assert.doesNotMatch(page, /innerHTML/);
 for (const match of html.matchAll(/<details id="([^"]+)"/g)) assert.match(match[1], /^[a-z0-9-]+$/);
-for (const panel of ['town-bag', 'town-speedups', 'town-resources', 'town-buildings', 'town-hero-gear', 'town-governor']) assert.ok(html.includes(`id="${panel}" role="tabpanel"`) && html.includes(`aria-controls="${panel}"`), panel);
-console.log('Town Centre: item, speedup and governor points, best-day totals, navigation and dictionaries pass.');
+for (const panel of ['town-bag', 'town-speedups', 'town-resources', 'town-buildings', 'town-troops', 'town-hero-gear', 'town-governor']) assert.ok(html.includes(`id="${panel}" role="tabpanel"`) && html.includes(`aria-controls="${panel}"`), panel);
+console.log('Town Centre: item, speedup, governor and troop points, best-day totals, navigation and dictionaries pass.');
 

@@ -53,6 +53,23 @@
 .town-daybar[aria-pressed="true"] .town-daybar-label::before { content: "❧ "; }
 
 .town-day h3 { color: var(--amber); }
+/* Troops result: the best troop day as a ledger, with when to start the batch set like the event totals. */
+.town-troop-result { margin: .6rem 0 .4rem; }
+.town-troop-result h3 { color: var(--amber); margin: .2rem 0 .4rem; }
+.town-troop-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0 0 .5rem; border-block: 1px solid var(--signal-line); }
+.town-troop-facts > div { display: grid; gap: .15rem; align-content: start; padding: .5rem; min-width: 0; }
+.town-troop-facts > div + div { border-inline-start: 1px solid var(--signal-tint); }
+.town-troop-facts dt { font: 700 .68rem var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); }
+.town-troop-facts dd { margin: 0; font: 1rem/1.2 var(--display-2); color: var(--ink-dim); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.town-troop-facts .town-troop-start { background: var(--signal-tint); border-bottom: 2px solid var(--amber); }
+.town-troop-facts .town-troop-start dd { color: var(--amber); }
+.town-troop-result tfoot th, .town-troop-result tfoot td { border-bottom: 0; border-top: 1px solid var(--signal-line); font-weight: 700; }
+.town-troop-result tfoot th { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+@media (max-width: 30rem) {
+  .town-troop-facts { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .town-troop-facts .town-troop-start { grid-column: 1 / -1; }
+  .town-troop-facts > .town-troop-start + div { border-inline-start: 0; }
+}
 .town-scroll { overflow-x: auto; }
 .town-lines { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .9rem; }
 .town-lines th, .town-lines td { padding: .35rem .4rem; border-bottom: 1px solid var(--signal-tint); text-align: end; white-space: nowrap; }
@@ -185,6 +202,7 @@
   .town-gov-crest output { font-size: 1.05rem; }
 }
 
+<<<<<<< HEAD
 /* Buildings — one level for every building, and the upgrade priorities the points follow. */
 .town-setall { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .6rem; align-items: end; padding-block: .4rem; }
 .town-priorities { list-style: none; margin: .3rem 0; padding: 0; border-top: 1px solid var(--signal-tint); }
@@ -193,3 +211,8 @@
 .town-priority-name { min-width: 0; overflow-wrap: anywhere; }
 .town-main .town-priority button { font: 1.2rem/1 var(--display-2); text-align: center; }
 .town-main .town-priority button:disabled { opacity: .3; cursor: default; }
+=======
+/* Troops — the capacity buff is a switch: its gem greys out while off. */
+.town-tile[data-state="off"] .town-tile-art img, .town-tile[data-state="off"] .town-monogram { filter: grayscale(.7); opacity: .55; }
+.town-tile[data-state="off"] .town-tile-count { color: var(--ink-muted); border-color: var(--signal-line); }
+>>>>>>> origin/main

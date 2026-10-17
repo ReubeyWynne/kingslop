@@ -10,6 +10,16 @@
     if (!Number.isInteger(day) || day < 1 || day > list.length) throw new Error('Unsupported event day');
     return list[day - 1];
   }
+  /* The 28-day wheel runs on UTC and every kingdom turns it together: cycle day 1 is Monday
+     2026-08-17 (the anchor js/kvk.js counts from). Brawl days are cycle days 1–6, Strongest
+     Governor 8–14 and KvK prep 22–26. */
+  var CYCLE = 28, EPOCH = Date.UTC(2026, 7, 17), DAY_MS = 86400000, OFFSET = { brawl: 0, sg: 7, prep: 21 };
+  function cycleDay(event, day) { rules(event, day); return OFFSET[event] + day; }
+  // When this event day next opens (00:00 UTC), counting from the start of the UTC day holding `now`.
+  function opens(event, day, now) {
+    var since = Math.floor((now - EPOCH) / DAY_MS), today = (since % CYCLE + CYCLE) % CYCLE + 1;
+    return EPOCH + (since + ((cycleDay(event, day) - today) % CYCLE + CYCLE) % CYCLE) * DAY_MS;
+  }
   function count(value) { if (!Number.isSafeInteger(value) || value < 0 || value > 1e9) throw new Error('Invalid inventory count'); return value; }
   function calculate(snapshot, event, day, held, target) {
     var selected = rules(event, day), rates = Object.create(null), total = 0, reservedPoints = 0, unknown = [];
@@ -54,5 +64,5 @@
     if (/truegold/.test(l)) return 'Truegold';
     if (/master\u2019s manuscript|manuscript/.test(l)) return null;
     return null;
-  }  return { data: data, days: days, rules: rules, calculate: calculate, labelToItemId: labelToItemId };
+  }  return { data: data, days: days, rules: rules, calculate: calculate, labelToItemId: labelToItemId, CYCLE: CYCLE, EPOCH: EPOCH, DAY_MS: DAY_MS, cycleDay: cycleDay, opens: opens };
 });

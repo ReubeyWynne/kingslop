@@ -26,7 +26,19 @@
     setAllPick: 'choose a level', 'tier.1': 'Lead', 'tier.2': 'Keep up', 'tier.3': 'Spare', 'tier.0': 'Skip', moveUp: 'move {building} up', moveDown: 'move {building} down', tierFor: '{building} priority',
     buildingSpendUnknown: 'Set your building levels to see how much Truegold they can take.',
     buildingPlan: 'With what you have counted, this can reach {level}: {steps} steps, {gold} Truegold and {tempered} Tempered Truegold.',
-    buildingPlanNone: 'Nothing more goes here in this plan. Your Truegold and resources pay for cheaper steps first, and each step waits for its Town Centre level, its prerequisites and every resource it costs.'
+    buildingPlanNone: 'Nothing more goes here in this plan. Your Truegold and resources pay for cheaper steps first, and each step waits for its Town Centre level, its prerequisites and every resource it costs.',
+    'troopLine.batch': 'T{tier} troops, pre-trained', 'troopLine.training': 'T{tier} troops, training speedups', 'troopLine.general': 'T{tier} troops, general speedups',
+    'training-tiers': 'the tier each camp trains', 'training-capacity': 'training capacity', 'training-speed': 'training speed', troopRate: 'T{tier} troop points for this event', troopCost: 'T{tier} training costs (not verified yet)',
+    speedPercent: '{n}%', tierLabel: 'T{n}', batchOf: 'batch of {n}',
+    speedUnit: 'training speed, %', speedHint: 'Bonus Overview, Training Speed, without the temporary buffs below.',
+    positionHint: 'Noble Advisor or Chief Minister, never both. Each gives more while your kingdom holds the High King, which ends before KvK.',
+    buffOff: '—', buffPercent: '+{n}%', planOn: 'on',
+    capacityUnit: 'troops per batch', capacityHint: 'How many troops one camp trains at once, without the capacity buff.',
+    tierHint: 'T10 and T11 Truegold troops train in the same time for the same cost as plain T10 and T11.',
+    troopTitle: 'Best troop day: {event}, day {day}', 'troopLine.batchBuff': 'T{tier} troops, tripled batch',
+    speedSame: '{n}%', speedSplit: '{batch}%, {day}% on the day', troopNoStart: 'set your training speed and capacity',
+    troopUnchecked: 'T{tier} costs are not checked against your resources yet.',
+    troopPlanNone: 'Set your training speed, capacity and camp tiers to see what you can train for a troop day.'
   };
   var EVENTS = { prep: ['ks.today.kickerPrep', 'KvK prep'], sg: ['ks.governor.title', 'Strongest Governor'], brawl: ['ks.brawl.title', 'Alliance Brawl'] };
   function t(api, key) { return api.tr('town.' + key, EN[key]); }
@@ -51,10 +63,16 @@
     if (id === 'hero-gear-pieces') return t(api, 'heroGearPieces');
     var site = window.BuildingSpend.missing(id);
     if (site) return site.kind === 'building' ? fill(api, 'buildingNamed', { building: buildingName(api, site.building) }) : t(api, site.kind);
+    var troop = /^troops-(batch|training|general)-t(\d+)$/.exec(id);
+    if (troop) return fill(api, 'troopLine.' + troop[1], { tier: troop[2] });
+    var train = window.TroopSpend.missing(id);
+    if (train) return train.tier === null ? t(api, train.kind) : fill(api, train.kind === 'rate' ? 'troopRate' : 'troopCost', { tier: train.tier });
     var need = window.HeroSpend.missing(id);
     if (need) return window.HeroPoints.missing(api, need);
     return id;
   }
+  // Training time from seconds, rounded up to the minute so a batch is never started too late.
+  function seconds(api, secs) { return duration(api, Math.ceil(secs / 60)); }
   function amount(api, line) { return line.kind === 'speedup' ? duration(api, line.amount) : line.kind === 'governor' ? fill(api, 'scoreGain', { n: api.fmt(line.amount) }) : line.kind === 'usable' ? fill(api, 'heroAmount', { n: api.fmt(line.amount) }) : api.fmt(line.amount); }
   function confirmed(snapshot, id) { var entry = snapshot.inventory[id]; return entry && entry.status === 'confirmed' ? entry.amount : null; }
   function element(tag, className, text) { var node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; }
@@ -123,7 +141,7 @@
      Hero gear is a set of four per troop type; governor gear is one set of six
      with three charms each, laid out as the in-game governor profile. */
   window.Interactions.register('town-inventory', function (context) {
-    var H = window.HeroGear, G = window.Governor, T = window.TownCentre, B = window.BuildingSpend, store = window.PlayerLedger.shared(), api = context.api, root = context.root;
+    var H = window.HeroGear, G = window.Governor, T = window.TownCentre, B = window.BuildingSpend, R = window.TroopSpend, store = window.PlayerLedger.shared(), api = context.api, root = context.root;
     var dialog = context.targets('dialog')[0], editing = null, art = '../img/governor/';
     var UNIT = { d: 1440, h: 60, m: 1 }, TROOPS = { inf: 'Infantry', cav: 'Cavalry', arc: 'Archer' };
     function target(key) { return context.targets(key)[0]; }
@@ -189,7 +207,7 @@
       prefs.order.forEach(function (id, at) {
         var row = element('li', 'town-priority'), art = element('img'), name = element('span', 'town-priority-name', buildingName(id));
         art.src = '../img/buildings/' + id + '.webp'; art.width = 32; art.height = 32; art.alt = '';
-        var select = element('select'); select.dataset.tierFor = id; select.dataset.action = 'town-inventory.tier';
+        var select = element('select'); select.dataset.tierFor = id; select.dataset.action = 'town-inventory.priority';
         select.setAttribute('aria-label', fill(api, 'tierFor', { building: buildingName(id) }));
         B.TIERS.forEach(function (tier) { var option = element('option', '', t(api, 'tier.' + tier)); option.value = String(tier); select.appendChild(option); });
         select.value = String(prefs.tiers[id]);
@@ -202,9 +220,72 @@
         row.append(art, name, select, up, down); list.appendChild(row);
       });
     }
+    /* Troops: the training facts on their tiles, and the troop day the event points below
+       found best for the selected event. */
+    var troopResult = null, troopEvent = 'prep';
+    function percentText(n) { return new Intl.NumberFormat(document.documentElement.lang || undefined, { maximumFractionDigits: 2 }).format(n); }
+    function trainingText(key, fact) { return fact === undefined ? '?' : key === 'speed' ? fill(api, 'speedPercent', { n: new Intl.NumberFormat(document.documentElement.lang || undefined, { maximumFractionDigits: 2 }).format(fact) }) : key === 'capacity' ? api.fmt(fact) : fill(api, 'tierLabel', { n: fact }); }
+    function renderTroops(snapshot) {
+      var training = snapshot.training || { facts: {} }, facts = training.facts || {}, buff = Boolean(snapshot.preferences.training && snapshot.preferences.training.buff);
+      var size = Object.hasOwn(facts, 'capacity') ? facts.capacity * (buff ? R.BUFF : 1) : null;
+      var plans = snapshot.preferences.training || {}, buffs = R.speeds(facts, plans, troopEvent);
+      context.nodes('[data-training]').forEach(function (tile) {
+        var key = tile.dataset.training, fact = Object.hasOwn(facts, key) ? facts[key] : undefined;
+        if (key === 'position') {
+          tile.dataset.state = plans.position ? 'confirmed' : 'off';
+          tile.querySelector('[data-amount]').textContent = plans.position ? fill(api, 'buffPercent', { n: percentText(buffs.position) }) : t(api, 'buffOff');
+          return;
+        }
+        tile.dataset.state = fact === undefined ? 'unknown' : 'confirmed';
+        tile.querySelector('[data-amount]').textContent = trainingText(key, fact);
+        var note = tile.querySelector('[data-camp-plan]');
+        if (note) note.textContent = fact !== undefined && size !== null ? fill(api, 'batchOf', { n: api.fmt(size) }) : '';
+      });
+      context.nodes('[data-plan]').forEach(function (tile) {
+        var on = Boolean(plans[tile.dataset.plan]);
+        tile.setAttribute('aria-pressed', String(on)); tile.dataset.state = on ? 'on' : 'off';
+        tile.querySelector('[data-amount]').textContent = !on ? t(api, 'buffOff') : tile.dataset.plan === 'mobilize' ? fill(api, 'buffPercent', { n: percentText(R.BUFFS.mobilize) }) : t(api, 'planOn');
+      });
+      context.nodes('[data-action="town-inventory.buff"]').forEach(function (tile) {
+        tile.setAttribute('aria-pressed', String(buff)); tile.dataset.state = buff ? 'on' : 'off';
+        tile.querySelector('[data-buff]').textContent = '×' + api.fmt(buff ? R.BUFF : 1);
+      });
+      if (!troopResult) troopResult = T.best(snapshot, troopEvent).troops;
+      // The result: the best troop day as a ledger, with when to start the batch above its lines.
+      var found = troopResult, plan = found && found.plan, text = [], shown = Boolean(plan && plan.troops);
+      target('troopResult').hidden = !shown;
+      if (shown) {
+        put('troopTitle', fill(api, 'troopTitle', { event: eventName(api, troopEvent), day: api.fmt(found.day) }));
+        var start = '—';
+        if (plan.batch.seconds) {
+          var opens = window.EventRules.opens(troopEvent, found.day, Date.now()), at = new Date(opens - plan.batch.seconds * 1000);
+          start = at.toLocaleString(document.documentElement.lang || undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'UTC' }) + ' UTC';
+        }
+        put('troopStartAt', start);
+        put('troopTakes', plan.batch.seconds ? seconds(api, plan.batch.seconds) : t(api, 'troopNoStart'));
+        var speed = plan.speed;
+        put('troopSpeed', speed.batch === null ? '?' : speed.batch === speed.day ? fill(api, 'speedSame', { n: percentText(speed.batch) }) : fill(api, 'speedSplit', { batch: percentText(speed.batch), day: percentText(speed.day) }));
+        var body = target('troopLines');
+        body.replaceChildren.apply(body, plan.lines.filter(function (line) { return line.troops; }).map(function (line) {
+          var row = document.createElement('tr'), head = document.createElement('th');
+          head.scope = 'row'; head.textContent = fill(api, 'troopLine.' + (line.group === 'batch' && plan.buff ? 'batchBuff' : line.group), { tier: line.tier });
+          row.append(head);
+          [line.troops, line.rate, line.points].forEach(function (n) { var cell = document.createElement('td'); cell.textContent = api.fmt(n); row.append(cell); });
+          return row;
+        }));
+        put('troopCount', api.fmt(plan.troops)); put('troopPoints', api.fmt(plan.points));
+        plan.unverified.forEach(function (id) { text.push(fill(api, 'troopUnchecked', { tier: R.missing(id).tier })); });
+      } else text.push(t(api, 'troopPlanNone'));
+      put('troopPlan', text.join(' '));
+    }
+    context.listen(document, 'town-centre:calculated', function (e) {
+      troopEvent = e.detail.event; troopResult = e.detail.results[troopEvent].troops;
+      renderTroops(store.snapshot());
+    });
     function render() {
       var snapshot = store.snapshot(), pieces = snapshot.heroGear.pieces, set = 0, plan = B.plan(snapshot);
       renderBuildings(snapshot, plan);
+      renderTroops(snapshot);
       var gear = store.governor('gear'), charms = store.governor('charms');
       context.nodes('[data-count]').forEach(function (tile) {
         var amount = confirmed(snapshot, tile.dataset.count);
@@ -264,6 +345,18 @@
         value(level, piece ? piece.level : null); value(mastery, piece ? piece.mastery : null);
         level.max = piece && piece.quality === 'epic' ? 80 : piece && piece.quality === 'mythic' ? 100 : 200;
         target('masteryRow').hidden = !!piece && piece.quality === 'epic';
+      } else if (editing.type === 'training') {
+        var facts = (snapshot.training && snapshot.training.facts) || {}, input = dialog.querySelector('[data-field="training"]'), speed = editing.id === 'speed';
+        input.step = speed ? 'any' : '1'; input.min = speed ? '0' : '1'; input.inputMode = speed ? 'decimal' : 'numeric';
+        value(input, Object.hasOwn(facts, editing.id) ? facts[editing.id] : null);
+        put('trainingUnit', t(api, speed ? 'speedUnit' : 'capacityUnit')); put('trainingHint', t(api, speed ? 'speedHint' : 'capacityHint'));
+      } else if (editing.type === 'position') {
+        dialog.querySelector('select[data-field="position"]').value = (snapshot.preferences.training && snapshot.preferences.training.position) || '';
+        put('positionHint', t(api, 'positionHint'));
+      } else if (editing.type === 'tier') {
+        var tiers = (snapshot.training && snapshot.training.facts) || {};
+        dialog.querySelector('select[data-field="tier"]').value = Object.hasOwn(tiers, editing.id) ? String(tiers[editing.id]) : '';
+        put('tierHint', t(api, 'tierHint'));
       } else if (editing.type === 'building') {
         var select = dialog.querySelector('select[data-field="building"]'), options = B.options(editing.id);
         var level = snapshot.buildings && Object.hasOwn(snapshot.buildings.levels, editing.id) ? snapshot.buildings.levels[editing.id] : '';
@@ -316,13 +409,13 @@
     return { refresh: function () { labelOptions(); render(); }, actions: {
       edit: { run: function (tile) {
         if (!dialog) return;
-        editing = tile.dataset.count ? { type: 'count', id: tile.dataset.count } : tile.dataset.duration ? { type: 'duration', id: tile.dataset.duration } : tile.dataset.piece ? { type: 'hero', id: tile.dataset.piece } : tile.dataset.building ? { type: 'building', id: tile.dataset.building } : { type: 'gov', id: tile.dataset.gov };
+        editing = tile.dataset.count ? { type: 'count', id: tile.dataset.count } : tile.dataset.duration ? { type: 'duration', id: tile.dataset.duration } : tile.dataset.piece ? { type: 'hero', id: tile.dataset.piece } : tile.dataset.building ? { type: 'building', id: tile.dataset.building } : tile.dataset.training ? { type: tile.dataset.training === 'position' ? 'position' : /^(speed|capacity)$/.test(tile.dataset.training) ? 'training' : 'tier', id: tile.dataset.training } : { type: 'gov', id: tile.dataset.gov };
         var name = tileName(tile);
         if (editing.type === 'hero') name = api.tr('gear.' + editing.id.split('-')[0], TROOPS[editing.id.split('-')[0]]) + ' · ' + name;
         put('title', name);
         render();
         if (!dialog.open) dialog.showModal();
-        var first = dialog.querySelector('[data-panel="' + editing.type + '"] input');
+        var first = dialog.querySelector('[data-panel="' + editing.type + '"] input, [data-panel="' + editing.type + '"] select');
         if (first && editing.type !== 'hero') first.focus();
       } },
       close: { run: function () { dialog.close(); } },
@@ -351,6 +444,19 @@
         change[button.dataset.field] = Math.max(0, (Number(input.value) || 0) + Number(button.dataset.step));
         writePiece(change);
       } },
+      training: { events: ['input'], run: function (input) {
+        if (!editing || !input.validity.valid) return;
+        var fact = input.value === '' ? null : Number(input.value);
+        if (fact !== null && (editing.id === 'capacity' ? !Number.isSafeInteger(fact) || fact < 1 || fact > 1e9 : !(fact >= 0 && fact <= 100000))) return;
+        write(function () { store.setTraining(editing.id, fact); });
+      } },
+      tier: { events: ['change'], run: function (select) {
+        if (!editing) return;
+        write(function () { store.setTraining(editing.id, select.value === '' ? null : Number(select.value)); });
+      } },
+      buff: { run: function () { write(function () { store.setTrainingBuff(!store.training().buff); }); } },
+      plan: { run: function (tile) { write(function () { store.setTrainingPlan(tile.dataset.plan, !store.training()[tile.dataset.plan]); }); } },
+      position: { events: ['change'], run: function (select) { write(function () { store.setTrainingPlan('position', select.value || null); }); } },
       buildingLevel: { events: ['change'], run: function (select) {
         if (!editing) return;
         write(function () { store.setBuilding(editing.id, select.value === '' ? null : select.value); });
@@ -368,7 +474,7 @@
         B.BUILDINGS.forEach(function (b) { levels[b.id] = B.clamp(b.id, level); });
         write(function () { store.setBuildings(levels); });
       } },
-      tier: { events: ['change'], run: function (select) {
+      priority: { events: ['change'], run: function (select) {
         var change = {}; change[select.dataset.tierFor] = Number(select.value);
         write(function () { store.setBuildingPriorities({ tiers: change }); });
       } },
@@ -395,6 +501,8 @@
         if (!editing) return;
         if (editing.type === 'gov') { var change = {}; change[editing.id] = null; var charms = {}; [1, 2, 3].forEach(function (c) { charms[editing.id + '-' + c] = null; }); write(function () { store.setGovernor('gear', change); store.setGovernor('charms', charms); }); }
         else if (editing.type === 'building') write(function () { store.setBuilding(editing.id, null); });
+        else if (editing.type === 'position') write(function () { store.setTrainingPlan('position', null); });
+        else if (editing.type === 'training' || editing.type === 'tier') write(function () { store.setTraining(editing.id, null); });
         else if (editing.type !== 'hero') write(function () { store.setBalance(editing.id, null); });
       } }
     } };

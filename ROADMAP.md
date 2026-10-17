@@ -118,7 +118,7 @@ Do not present unverified governor costs, charm tables or combat weights as exac
 
 ## Town Centre
 
-**Implementation:** `town-centre/` shows and edits the whole ledger in one place (event items, speedups, resources, hero gear, governor gear and charms) and totals the KvK prep, Strongest Governor and Brawl points it can score, including speedups and governor score gains. It adds no schema. See [TOWN-CENTRE.md](TOWN-CENTRE.md).
+**Implementation:** `town-centre/` shows and edits the whole ledger in one place (event items, speedups, resources, buildings, troop training, hero gear, governor gear and charms) and totals the KvK prep, Strongest Governor and Brawl points it can score, including speedups, governor score gains, building upgrades and troops trained on troop days. Building levels and training facts are typed ledger sections. See [TOWN-CENTRE.md](TOWN-CENTRE.md).
 
 ## Milestone 6 — screenshot import
 

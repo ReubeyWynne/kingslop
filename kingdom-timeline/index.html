@@ -1,0 +1,44 @@
+---
+layout: page
+self: kingdom
+---
+<main data-module="kingdom-timeline">
+  <section class="section hero" id="top">
+    <h1 data-i18n="kingdom.title">Kingdom timeline</h1>
+    <p class="lede" data-i18n="kingdom.intro">Find your kingdom’s chapter. Carry its unlocks with you as you browse.</p>
+    <p class="note" data-i18n="kingdom.approximate">A broad progression guide. Order varies by kingdom; no exact dates are predicted.</p>
+  </section>
+  <section class="section" id="your-kingdom">
+    <h2 data-i18n="kingdom.mine">My kingdom</h2>
+    <p data-i18n="kingdom.instructions">Choose a chapter below, then correct any unlocks that differ. Kingdom unlocks are separate from what your account owns.</p>
+    <fieldset class="kingdom-fields">
+      <legend data-i18n="kingdom.unlocks">What has unlocked?</legend>
+      <label><span data-i18n="directory.server">Server generation</span><select data-field="generation" data-target="kingdom-timeline.generation" data-action="kingdom-timeline.edit" disabled><option value="" data-i18n="kingdom.unknown">Not sure</option>{% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}{% for gen in generations %}<option value="{{ gen }}">{{ gen }}</option>{% endfor %}</select></label>
+      <label><span data-i18n="kingdom.truegold">Kingdom Truegold cap</span><select data-field="truegold" data-target="kingdom-timeline.truegold" data-action="kingdom-timeline.edit" disabled><option value="" data-i18n="kingdom.unknown">Not sure</option><option value="0" data-i18n="kingdom.noTruegold">Not unlocked</option><option value="3">TG 3</option><option value="5">TG 5</option><option value="8">TG 8</option><option value="10">TG 10</option></select></label>
+      <label><span data-i18n="kingdom.warAcademy">War Academy</span><select data-field="warAcademy" data-target="kingdom-timeline.warAcademy" data-action="kingdom-timeline.edit" disabled><option value="" data-i18n="kingdom.unknown">Not sure</option><option value="false" data-i18n="kingdom.noTruegold">Not unlocked</option><option value="true" data-i18n="kingdom.unlocked">Unlocked</option></select></label>
+    </fieldset>
+    <button type="button" class="kingdom-reset" data-target="kingdom-timeline.reset" data-action="kingdom-timeline.reset" data-i18n="kingdom.reset" disabled>Clear kingdom progression</button>
+    <output class="kingdom-status" role="status" data-target="kingdom-timeline.status"></output>
+    <p class="note" data-i18n="kingdom.manual">Update your position manually. It is saved in this browser and included in your player save.</p>
+    <noscript><p data-i18n="kingdom.noJS">Enable JavaScript to save your position. You can still read the timeline.</p></noscript>
+  </section>
+  <section class="section" id="milestones">
+    <h2 data-i18n="kingdom.chapters">The kingdom’s chapters</h2>
+    <p data-i18n="kingdom.sequence">Each chapter supplies editable defaults. Choosing an earlier chapter also moves your saved unlocks back.</p>
+    <ol class="kingdom-rail">
+      {% for stage in site.data.kingdom_progression.stages %}
+      <li class="kingdom-milestone" id="{{ stage.id }}" data-stage="{{ stage.id }}" data-target="kingdom-timeline.card">
+        <h3 {% if stage.titleKey != '' %}data-i18n="{{ stage.titleKey }}" data-i18n-n="{{ stage.profile.generation }}"{% endif %}>{{ stage.title }}</h3>
+        <span class="kingdom-state" data-milestone-status></span>
+        <p data-i18n="{{ stage.noteKey }}">{{ stage.note }}</p>
+        <div class="kingdom-links"><button type="button" class="kingdom-choose" data-stage="{{ stage.id }}" data-target="kingdom-timeline.choose" data-action="kingdom-timeline.choose" aria-pressed="false" data-i18n="kingdom.choose" disabled>My kingdom is here</button><a href="../{{ stage.url }}" data-i18n="kingdom.explore">Explore the guide</a></div>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+  <section class="section" id="timeline-sources">
+    <h2 data-i18n="kingdom.sources">Sources & scope</h2>
+    <p data-i18n="kingdom.scope">Covers hero generations 1–7, early Truegold caps and War Academy. Enter later unlocks above. Only hero browsing uses this setting so far; other calculators keep their rules.</p>
+    <ul>{% for source in site.data.kingdom_progression.sources %}<li><a href="{{ source.url }}">{{ source.label | escape }}</a></li>{% endfor %}</ul>
+  </section>
+</main>

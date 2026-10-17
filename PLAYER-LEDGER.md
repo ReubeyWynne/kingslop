@@ -45,7 +45,20 @@ store.setBuildings({ embassy: 'TG 3', barracks: 'TG 3' }); // several at once, o
 store.setBuildingPriorities({ tiers: { infirmary: 0, 'command-center': 2 }, order: ['range', 'barracks', 'stable'] });
 ```
 
+Training facts serve the Town Centre's troop days. `training.facts` holds `speed` (the Bonus Overview Training Speed without temporary buffs, a percentage), `capacity` (troops one camp trains per batch, at least 1) and a tier from 1 to 11 for each camp, keyed by troop type (`inf`, `cav`, `arc`), each with its own entry in `training.provenance`. A missing fact has not been counted yet. `preferences.training` holds the plans: `buff: true` to use the 3,000-gem capacity buff, `position` (`advisor` for Noble Advisor or `minister` for Chief Minister), `highKing: true` when your kingdom holds the High King, and `mobilize: true` when your king uses Mobilize on event days. Each is absent when off. Saves without a `training` key stay valid.
+
+```js
+store.training(); // { facts: { speed: 182.5, capacity: 1150, inf: 10 }, provenance, buff: false, position: null, highKing: false, mobilize: false }
+store.setTraining('arc', 11); // null forgets the fact
+store.setTrainingBuff(true);
+store.setTrainingPlan('position', 'advisor'); // null or false turns a plan off
+```
+
 `preferences.heroGear` holds only optimisation/UI choices. Resource bags and piece lists are derived from the ledger, not duplicated in preferences. A write touches changed facts and explicitly edited fields, preserving unrelated inventory and provenance. `source` distinguishes manual, legacy, screenshot, plan, reset and file edits.
+
+## Kingdom context
+
+`preferences.kingdom` stores manually selected kingdom unlocks independently of owned account facts. `kingdom()` / `setKingdom(profile, expectedRevision)` read and write it. See [KINGDOM-PROGRESSION.md](KINGDOM-PROGRESSION.md) for its nullable fields, legacy generation migration, shared availability resolver and first consumers.
 
 ## Store API
 
