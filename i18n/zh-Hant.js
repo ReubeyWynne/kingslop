@@ -1124,6 +1124,11 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "ev.deck.lede.governor": "總督裝備與飾品，依你的背包規劃。",
   "gov.title": "總督裝備",
   "gov.cardLede": "用你自己的材料規劃總督裝備與飾品升級，並查看評分在活動中值多少分。",
-  "gov.kicker": "總督的衣櫥"
+  "gov.kicker": "總督的衣櫥",
+  "town.nav": "城鎮中心",
+  "ev.deck.lede.town": "你擁有的一切，以及它們能拿到的活動積分。",
+  "town.title": "城鎮中心",
+  "town.cardLede": "你擁有的一切都在一頁上，並顯示它們在 KvK、最強總督和聯盟亂鬥中能拿到的積分。",
+  "town.kicker": "你擁有的一切，一一清點"
 }
 ;

@@ -435,10 +435,10 @@
     "brandNoteKey": "gear.kicker",
     "brandNote": "the forge ledger",
     "swipePrev": {
-      "url": "../heroes/",
-      "page": "heroes",
-      "title": "Heroes",
-      "lede": "heroes by generation, troop and role."
+      "url": "../town-centre/",
+      "page": "town",
+      "title": "Town Centre",
+      "lede": "everything you own, and the event points it can score."
     },
     "swipeNext": {
       "url": "../governor-gear/",
@@ -496,10 +496,10 @@
       "lede": "your battles, your marches, and the maths."
     },
     "swipeNext": {
-      "url": "../hero-gear/",
-      "page": "gear",
-      "title": "Hero gear",
-      "lede": "your next upgrade and the resources it needs."
+      "url": "../town-centre/",
+      "page": "town",
+      "title": "Town Centre",
+      "lede": "everything you own, and the event points it can score."
     },
     "css": [
       "../css/styles.css",
@@ -518,6 +518,69 @@
       {
         "key": "directory.candidateNote",
         "html": "Role labels identify candidates, not a ranking. Stars, skill levels, widgets, account stats and alliance policy decide the lineup."
+      }
+    ],
+    "headScripts": []
+  },
+  "town": {
+    "token": "town",
+    "depth": "../",
+    "canonicalPath": "/town-centre/",
+    "themeColor": "#130C14",
+    "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23130C14'/%3E%3Cpath d='M6 26V14l10-7 10 7v12h-7v-7h-6v7z' fill='%23DC8FDB'/%3E%3C/svg%3E\">",
+    "titleKey": "town.metaTitle",
+    "titleText": "Town Centre, Demystified — dey.ci",
+    "metaDescKey": "town.metaDescription",
+    "metaDesc": "Everything in your bag on one page: hero gear, governor gear and charms, speedups, resources and event items, and the KvK, Strongest Governor and Brawl points they can score.",
+    "ogTitleKey": "town.metaTitle",
+    "ogTitle": "Town Centre, Demystified — dey.ci",
+    "ogDescKey": "town.metaDescription",
+    "ogDesc": "Everything in your bag on one page: hero gear, governor gear and charms, speedups, resources and event items, and the KvK, Strongest Governor and Brawl points they can score.",
+    "skipHref": "#town-points",
+    "skipKey": "town.skip",
+    "skipText": "Skip to your points",
+    "dust": "<i></i><i></i><i></i>",
+    "brand": "Town Centre",
+    "brandHeadingKey": "town.title",
+    "brandNoteKey": "town.kicker",
+    "brandNote": "everything you own, counted",
+    "swipePrev": {
+      "url": "../heroes/",
+      "page": "heroes",
+      "title": "Heroes",
+      "lede": "heroes by generation, troop and role."
+    },
+    "swipeNext": {
+      "url": "../hero-gear/",
+      "page": "gear",
+      "title": "Hero gear",
+      "lede": "your next upgrade and the resources it needs."
+    },
+    "css": [
+      "../css/styles.css",
+      "../css/events.css",
+      "../css/heroes.css",
+      "../css/town.css"
+    ],
+    "scripts": [
+      "../js/i18n.js",
+      "../js/common.js",
+      "../js/event-data.js",
+      "../js/governor-data.js",
+      "../js/event-rules.js",
+      "../js/governor-engine.js",
+      "../js/hero-gear-engine.js",
+      "../js/town-centre-engine.js",
+      "../js/hero-directory-engine.js",
+      "../js/hero-directory.js",
+      "../js/town-centre.js"
+    ],
+    "footMainKey": "town.kicker",
+    "footMain": "everything you own, counted",
+    "footSubs": [
+      {
+        "key": "town.foot",
+        "html": "event rates from the <a href=\"../events/\">Event Cycle</a> guide · governor scores cross-checked on the <a href=\"../governor-gear/\">Governor gear</a> page · independently built for the [2129]MadNess alliance"
       }
     ],
     "headScripts": []

@@ -175,6 +175,7 @@ html, body { overscroll-behavior-x: none; }
 .page-deck[data-selected="heroes"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E68AB4; --deck-ground: #241c27; }
 .page-deck[data-selected="governor"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #86D48A; --deck-ground: #19241b; }
 .page-deck[data-selected="castle"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #DFAA77; --deck-ground: #27201b; }
+.page-deck[data-selected="town"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #DC8FDB; --deck-ground: #221a25; }
 /* The selected page's colours land only on the parts that use them, not on
    the strip, so a change restyles a handful of elements rather than every
    cover in the ring. */
@@ -341,6 +342,7 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
 .deck-card[data-page="heroes"] { --deck-accent: #E68AB4; }
 .deck-card[data-page="governor"] { --deck-accent: #86D48A; }
 .deck-card[data-page="castle"] { --deck-accent: #DFAA77; }
+.deck-card[data-page="town"] { --deck-accent: #DC8FDB; }
 .deck-card::before {
   content: '';
   position: absolute;
@@ -902,4 +904,20 @@ html[data-page="governor"], html[data-page="home"]:has(.event-card[data-hover-pa
   --signal-tint: rgba(134, 212, 138, .07);
   --signal-glow: rgba(134, 212, 138, .22);
   --signal-halo: rgba(134, 212, 138, .28);
+}
+
+/* ─── Town Centre — the orchid storehouse ──────────────── */
+html[data-page="town"], html[data-page="home"]:has(.event-card[data-hover-page="town"]:is(:hover, :focus-within)), .deck-card[data-page="town"] {
+  --void: #130C14;        /* storehouse night — orchid-black   */
+  --void-2: #1C141E;      /* one step up (fields)              */
+  --amber: #DC8FDB;       /* town-crier orchid — the signal    */
+  --amber-dim: #AC66AB;   /* pressed orchid — secondary        */
+  --ember: rgba(220, 143, 219, 0.15); /* orchid motes          */
+  --ember-2: rgba(180, 112, 180, 0.10);
+  --ember-3: rgba(241, 227, 194, 0.07);
+  --chrome: rgba(19, 12, 20, .94);
+  --signal-line: rgba(220, 143, 219, .35);
+  --signal-tint: rgba(220, 143, 219, .07);
+  --signal-glow: rgba(220, 143, 219, .22);
+  --signal-halo: rgba(220, 143, 219, .28);
 }

@@ -1,0 +1,208 @@
+---
+layout: page
+self: town
+---
+{% assign rules = site.data.event_rules %}{% assign gov = site.data.governor %}{% assign troops = "inf,cav,arc" | split: "," %}{% assign slots = "helm,gloves,chest,boots" | split: "," %}{% assign speedups = "general,construction,research,training,learning,healing" | split: "," %}{% assign resources = "bread,wood,stone,iron" | split: "," %}
+<main class="town-main" data-module="town-centre">
+  <section class="section hero town-hero" id="top">
+    <h1 data-i18n="town.title">Town Centre</h1>
+    <p class="lede" data-i18n="town.lede">Everything you own, counted once. Hero gear, governor gear and events all read the same numbers, so an edit here shows up there.</p>
+  </section>
+
+  <section class="section town-points" id="town-points" aria-labelledby="town-points-title">
+    <h2 id="town-points-title" data-i18n="town.pointsTitle">What your bag can score</h2>
+    <div class="town-events" data-module="tabs" data-tabs-bind="town-event" role="tablist" aria-label="Event" data-i18n-key="town.event" data-i18n-attr="aria-label">
+      <button type="button" role="tab" aria-selected="true" data-value="prep" data-action="tabs.select"><span data-i18n="ks.today.kickerPrep">KvK prep</span><output data-event-total="prep">—</output></button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="sg" data-action="tabs.select"><span data-i18n="ks.governor.title">Strongest Governor</span><output data-event-total="sg">—</output></button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="brawl" data-action="tabs.select"><span data-i18n="ks.brawl.title">Alliance Brawl</span><output data-event-total="brawl">—</output></button>
+    </div>
+    <p class="town-gloss" data-i18n="town.bestTotal">Each total puts every item on the day it scores most. Your bag only empties once, so the days below are choices, not a sum.</p>
+    <p class="town-note" data-target="town-centre.coverage" aria-live="polite"></p>
+
+    <ol class="town-days" data-target="town-centre.days" aria-label="Days" data-i18n-key="town.days" data-i18n-attr="aria-label"></ol>
+
+    <div class="town-day" aria-live="polite">
+      <h3 data-target="town-centre.dayTitle"></h3>
+      <div class="town-scroll"><table class="town-lines">
+        <thead><tr><th scope="col" data-i18n="town.col.item">item</th><th scope="col" data-i18n="town.col.have">you have</th><th scope="col" data-i18n="town.col.each">each</th><th scope="col" data-i18n="town.col.points">points</th></tr></thead>
+        <tbody data-target="town-centre.lines"></tbody>
+      </table></div>
+      <p class="town-gloss" data-target="town-centre.dayEmpty" hidden></p>
+      <h4 data-i18n="town.alsoScores">Also scores that day, from what you do rather than what you hold</h4>
+      <ul class="town-also" data-target="town-centre.also"></ul>
+    </div>
+
+    <details id="best-day-plan">
+      <summary data-i18n="town.bestPlan">where each item scores most</summary>
+      <ul class="town-plan" data-target="town-centre.plan"></ul>
+    </details>
+    <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
+  </section>
+
+  <section class="section town-shelves" id="town-inventory" aria-labelledby="town-inventory-title" data-module="town-inventory">
+    <div class="town-heading"><h2 id="town-inventory-title" data-i18n="town.inventory">Your inventory</h2><small data-i18n="town.tapToCount">tap anything to count it · ? means not counted yet</small></div>
+    <div class="town-rail" data-module="tabs" data-tabs-bind="town-shelf" role="tablist" aria-label="Inventory" data-i18n-key="town.inventory" data-i18n-attr="aria-label">
+      <button type="button" role="tab" aria-selected="true" aria-controls="town-bag" data-value="bag" data-action="tabs.select" data-i18n="town.shelf.bag">Bag</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-speedups" data-value="speedups" data-action="tabs.select" data-i18n="town.shelf.speedups">Speedups</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-resources" data-value="resources" data-action="tabs.select" data-i18n="town.shelf.resources">Resources</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-heroes" data-value="heroes" data-action="tabs.select" data-i18n="town.shelf.heroes">Heroes</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-hero-gear" data-value="hero-gear" data-action="tabs.select" data-i18n="town.shelf.heroGear">Hero gear</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-governor" data-value="governor" data-action="tabs.select" data-i18n="town.shelf.governor">Governor</button>
+    </div>
+
+    <div class="town-shelf" id="town-bag" role="tabpanel" data-shelf="bag">
+      <div class="town-bag">
+      {% for item in rules.items %}{% case item.id %}{% when "truegold", "tempered-truegold" %}{% assign icon = "../img/kingshot/truegold.png" %}{% when "mithril" %}{% assign icon = "../img/hero-gear/mithril.webp" %}{% when "forgehammer" %}{% assign icon = "../img/hero-gear/forgehammer.webp" %}{% when "mythic-hero-shard", "epic-hero-shard", "rare-hero-shard" %}{% assign icon = "../img/kingshot/hero-shard.png" %}{% else %}{% assign icon = "" %}{% endcase %}
+        <button type="button" class="town-tile" data-count="{{ item.id }}" data-action="town-inventory.edit">
+          <span class="town-tile-art">{% if icon != "" %}<img src="{{ icon }}" width="56" height="56" alt="" loading="lazy">{% else %}<span class="town-monogram" aria-hidden="true">{{ item.label | slice: 0 }}</span>{% endif %}<output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-name" data-i18n="{{ item.key }}">{{ item.label | escape }}</span>
+          <small class="town-rate" data-rate="{{ item.id }}"></small>
+        </button>
+      {% endfor %}
+      </div>
+    </div>
+
+    <div class="town-shelf" id="town-speedups" role="tabpanel" data-shelf="speedups" hidden>
+      <div class="town-bag">
+      {% for kind in speedups %}{% case kind %}{% when "construction", "research", "training" %}{% capture icon %}../img/kingshot/{{ kind }}-speedup.png{% endcapture %}{% else %}{% assign icon = "" %}{% endcase %}
+        <button type="button" class="town-tile" data-duration="speedup-{{ kind }}" data-action="town-inventory.edit">
+          <span class="town-tile-art">{% if icon != "" %}<img src="{{ icon }}" width="56" height="56" alt="" loading="lazy">{% else %}<span class="town-monogram" aria-hidden="true">{{ kind | slice: 0 | upcase }}</span>{% endif %}<output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-name" data-i18n="town.speedup.{{ kind }}">{{ kind | capitalize }}</span>
+          <small class="town-rate" data-rate="speedup-{{ kind }}"></small>
+        </button>
+      {% endfor %}
+      </div>
+      <p class="town-gloss" data-i18n="town.speedupNote">Add up each kind as days, hours and minutes. General speedups score wherever any speedup does.</p>
+    </div>
+
+    <div class="town-shelf" id="town-resources" role="tabpanel" data-shelf="resources" hidden>
+      <div class="town-bag">
+      {% for id in resources %}
+        <button type="button" class="town-tile" data-count="{{ id }}" data-action="town-inventory.edit">
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">{{ id | slice: 0 | upcase }}</span><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-name" data-i18n="town.res.{{ id }}">{{ id | capitalize }}</span>
+        </button>
+      {% endfor %}
+      </div>
+      <p class="town-gloss" data-i18n="town.resNote">Count what is in your bag and warehouse. Resources score only when you gather them.</p>
+    </div>
+
+    <div class="town-shelf town-heroes" id="town-heroes" role="tabpanel" data-shelf="heroes" hidden>
+      <div class="town-heading"><p class="town-gloss" data-i18n="town.heroesNote">Open a hero to record your copy. The Heroes page shows the same roster.</p><a href="../heroes/" data-i18n="town.planHeroes">compare heroes →</a></div>
+      <div data-module="hero-directory">
+      {% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}
+      {% include heroes/roster.html bag="off" %}
+      </div>
+    </div>
+
+    <div class="town-shelf" id="town-hero-gear" role="tabpanel" data-shelf="hero-gear" hidden>
+      <div class="town-heading"><p class="town-gloss" data-i18n="town.heroGearNote">Each troop type has its own set of four.</p><a href="../hero-gear/" data-i18n="town.planGear">plan upgrades →</a></div>
+      <div class="town-strip">
+        {% assign heroMats = "hero-gear-xp:xp-part-100:gear.xpTotal:XP total,spare-mythic-gear:mythic-gear:gear.mythic:Spare mythic gear,forgehammer:forgehammer:gear.hammers:Forgehammers,mithril:mithril:gear.mithril:Mithril" | split: "," %}
+        {% for entry in heroMats %}{% assign m = entry | split: ":" %}
+        <button type="button" class="town-tile town-tile-small" data-count="{{ m[0] }}" data-action="town-inventory.edit">
+          <span class="town-tile-art"><img src="../img/hero-gear/{{ m[1] }}.webp" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-name" data-i18n="{{ m[2] }}">{{ m[3] }}</span>
+        </button>
+        {% endfor %}
+      </div>
+      <div class="town-rail town-troops" data-module="tabs" data-tabs-bind="town-troop" role="tablist" aria-label="Troop type" data-i18n-key="gear.troopType" data-i18n-attr="aria-label">
+        <button type="button" role="tab" aria-selected="true" data-value="inf" data-action="tabs.select" data-i18n="gear.inf">Infantry</button>
+        <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="cav" data-action="tabs.select" data-i18n="gear.cav">Cavalry</button>
+        <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="arc" data-action="tabs.select" data-i18n="gear.arc">Archer</button>
+      </div>
+      {% for troop in troops %}{% case troop %}{% when "inf" %}{% assign art = "infantry" %}{% when "cav" %}{% assign art = "cavalry" %}{% else %}{% assign art = "archer" %}{% endcase %}
+      <div class="town-hero-board" data-troop-board="{{ troop }}"{% unless forloop.first %} hidden{% endunless %}>
+        {% for slot in slots %}
+        <button type="button" class="town-hero-piece" data-piece="{{ troop }}-{{ slot }}" data-state="unset" data-action="town-inventory.edit">
+          <span class="town-gear-item" data-quality=""><img src="../img/hero-gear/{{ art }}-{{ slot }}.webp" width="96" height="96" alt=""><strong class="town-gear-level" data-part="level"></strong><span class="town-gear-mastery" data-part="mastery-wrap"><img src="../img/hero-gear/forgehammer.webp" width="14" height="14" alt=""><span data-part="mastery"></span></span><span class="town-gear-band" data-part="band" data-i18n="gov.notSet">not set</span></span>
+          <span class="town-tile-name" data-i18n="gear.{{ slot }}">{{ slot | capitalize }}</span>
+        </button>
+        {% endfor %}
+      </div>
+      {% endfor %}
+      <p class="town-count"><output data-target="town-inventory.pieces">—</output></p>
+    </div>
+
+    <div class="town-shelf" id="town-governor" role="tabpanel" data-shelf="governor" hidden>
+      <div class="town-heading"><p class="town-gloss" data-i18n="town.govNote">One set for your governor: six pieces, three charms each.</p><a href="../governor-gear/" data-i18n="town.planGov">plan upgrades →</a></div>
+      <div class="town-strip">
+        {% for item in gov.materials %}
+        <button type="button" class="town-tile town-tile-small" data-count="{{ item.id }}" data-action="town-inventory.edit">
+          <span class="town-tile-art"><img src="../img/governor/{{ item.id }}.webp" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-name" data-i18n="{{ item.key }}">{{ item.label | escape }}</span>
+        </button>
+        {% endfor %}
+      </div>
+      <div class="town-gov-profile">
+        {% assign rows = "cav,inf,arc" | split: "," %}
+        {% for troop in rows %}{% for piece in gov.gear.pieces %}{% if piece.troop == troop %}
+        <button type="button" class="town-gov-piece" data-gov="{{ piece.id }}" data-state="unset" data-action="town-inventory.edit" data-side="{% if piece.id contains '-1' %}left{% else %}right{% endif %}">
+          <span class="town-gov-card" data-state="unset"><img src="../img/governor/gear/{{ piece.id }}-green-0.webp" width="160" height="160" alt=""><span class="town-gov-stars" data-part="stars" aria-hidden="true"></span></span>
+          <span class="town-gov-gems" aria-hidden="true">{% for c in (1..3) %}<span class="town-gov-gem" data-charm="{{ piece.id }}-{{ c }}" data-state="unset"><img src="../img/governor/charms/{{ troop }}-1.webp" width="72" height="72" alt=""><b></b></span>{% endfor %}</span>
+          <span class="town-tile-name" data-i18n="gov.slot.{{ piece.slot }}">{{ piece.slot | capitalize }}</span>
+        </button>
+        {% endif %}{% endfor %}{% endfor %}
+        <div class="town-gov-crest">
+          <span class="town-gov-crest-mark" aria-hidden="true">❧</span>
+          <p><span data-i18n="gov.gearScore">gear score</span><output data-target="town-inventory.gearScore">—</output></p>
+          <p><span data-i18n="gov.charmScore">charm score</span><output data-target="town-inventory.charmScore">—</output></p>
+        </div>
+      </div>
+      <p class="town-note" data-target="town-inventory.gain"></p>
+    </div>
+
+    <dialog class="town-dialog" data-target="town-inventory.dialog" aria-labelledby="town-edit-title">
+      <div class="town-heading"><h2 id="town-edit-title" data-target="town-inventory.title"></h2><button type="button" data-action="town-inventory.close" data-i18n="gear.done">done</button></div>
+      <div class="town-panel" data-panel="count" hidden>
+        <label class="town-big"><span data-i18n="town.howMany">how many you have</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="count" data-action="town-inventory.count"></label>
+        <p class="town-gloss" data-target="town-inventory.rate"></p>
+      </div>
+      <div class="town-panel" data-panel="duration" hidden>
+        <div class="town-duration">
+          <label><span data-i18n="town.daysUnit">days</span><input type="number" min="0" max="694444" step="1" inputmode="numeric" placeholder="?" data-unit="d" data-action="town-inventory.duration town-inventory.settle"></label>
+          <label><span data-i18n="town.hours">hours</span><input type="number" min="0" max="16666666" step="1" inputmode="numeric" placeholder="?" data-unit="h" data-action="town-inventory.duration town-inventory.settle"></label>
+          <label><span data-i18n="town.minutes">minutes</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-unit="m" data-action="town-inventory.duration town-inventory.settle"></label>
+        </div>
+        <p class="town-gloss" data-target="town-inventory.durationRate"></p>
+      </div>
+      <div class="town-panel" data-panel="hero" hidden>
+        <div class="town-edit-art"><span class="town-gear-item" data-target="town-inventory.heroArt" data-quality=""><img src="../img/hero-gear/infantry-helm.webp" width="96" height="96" alt=""><strong class="town-gear-level" data-part="level"></strong><span class="town-gear-mastery" data-part="mastery-wrap"><img src="../img/hero-gear/forgehammer.webp" width="14" height="14" alt=""><span data-part="mastery"></span></span><span class="town-gear-band" data-part="band"></span></span></div>
+        <div class="town-chips" role="group" aria-label="Quality" data-i18n-key="gear.quality" data-i18n-attr="aria-label">
+          <button type="button" aria-pressed="false" data-quality="epic" data-action="town-inventory.quality" data-i18n="gear.epic">Epic</button>
+          <button type="button" aria-pressed="false" data-quality="mythic" data-action="town-inventory.quality" data-i18n="gear.mythicQuality">Mythic</button>
+          <button type="button" aria-pressed="false" data-quality="red" data-action="town-inventory.quality" data-i18n="gear.red">Red</button>
+        </div>
+        <div class="town-stepper-row"><span data-i18n="gear.level">Level</span><div class="town-stepper"><button type="button" data-action="town-inventory.step" data-field="level" data-step="-1" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><input type="number" min="0" max="200" step="1" inputmode="numeric" placeholder="?" data-field="level" data-action="town-inventory.piece"><button type="button" data-action="town-inventory.step" data-field="level" data-step="1" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
+        <div class="town-stepper-row" data-target="town-inventory.masteryRow"><span data-i18n="gear.mastery">Mastery</span><div class="town-stepper"><button type="button" data-action="town-inventory.step" data-field="mastery" data-step="-1" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><input type="number" min="0" max="20" step="1" inputmode="numeric" placeholder="?" data-field="mastery" data-action="town-inventory.piece"><button type="button" data-action="town-inventory.step" data-field="mastery" data-step="1" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
+        <p class="town-gloss" data-i18n="gear.levelHint">use total levels: red +20 is level 120.</p>
+      </div>
+      <div class="town-panel" data-panel="gov" hidden>
+        <div class="town-edit-art"><span class="town-gov-card" data-target="town-inventory.govArt" data-state="unset"><img src="../img/governor/gear/inf-1-green-0.webp" width="160" height="160" alt=""><span class="town-gov-stars" data-part="stars" aria-hidden="true"></span></span><p data-target="town-inventory.govLevel"></p></div>
+        <div class="town-stepper-row"><span data-i18n="gov.gear">Gear</span><div class="town-stepper"><button type="button" data-action="town-inventory.govStep" data-step="-1" aria-label="one step down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><select data-level="gear" data-action="town-inventory.govLevel" aria-label="Gear level" data-i18n-key="gov.gearLevel" data-i18n-attr="aria-label"><option value="" data-i18n="gov.notSet">not set</option><option value="0" data-i18n="gov.notCrafted">not crafted</option>{% for row in gov.gear.levels %}<option value="{{ forloop.index }}">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★</option>{% endfor %}</select><button type="button" data-action="town-inventory.govStep" data-step="1" aria-label="one step up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
+        {% for c in (1..3) %}
+        <div class="town-stepper-row"><span class="town-charm-label"><span class="town-gov-gem" data-charm-slot="{{ c }}" data-state="unset"><img src="../img/governor/charms/inf-1.webp" width="72" height="72" alt=""></span><span><span data-i18n="gov.charmLabel">Charm</span> {{ c }}</span></span><div class="town-stepper"><button type="button" data-action="town-inventory.govStep" data-step="-1" data-charm-slot="{{ c }}" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><select data-level="charms" data-charm-slot="{{ c }}" data-action="town-inventory.govLevel" aria-label="Charm {{ c }}"><option value="" data-i18n="gov.notSet">not set</option><option value="0" data-i18n="gov.noCharm">no charm</option>{% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}</select><button type="button" data-action="town-inventory.govStep" data-step="1" data-charm-slot="{{ c }}" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
+        {% endfor %}
+      </div>
+      <button type="button" class="town-clear" data-action="town-inventory.clear" data-target="town-inventory.clear" data-i18n="town.clear">mark as not counted</button>
+    </dialog>
+
+    <output class="town-status" hidden aria-live="polite" data-module="result-panel" data-status-scope="town" data-target="result-panel.message"></output>
+  </section>
+
+  <section class="section town-notes" id="town-save">
+    <details id="save-backups" data-module="save-transfer disclosure" data-status-scope="town" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
+      <summary data-i18n="gear.manageSave">your save &amp; backups</summary>
+      <p class="town-gloss" data-i18n="town.saveHint">One save holds everything on this page, and the hero gear, governor and event tools read it too. Keep a backup before importing another.</p>
+      <button type="button" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
+      <button type="button" data-action="save-transfer.choose" data-i18n="gear.load">import backup</button>
+      <input type="file" accept="application/json,.json" hidden data-target="save-transfer.file" data-action="save-transfer.import">
+    </details>
+    <details id="town-maths">
+      <summary data-i18n="town.maths">How the points are counted</summary>
+      <p data-i18n="town.mathsItems">Items use the rates in the Event Cycle guide: each one is worth its points on the days it is listed. Speedups count one point rate per minute; general speedups count on any speedup day, and healing speedups only on days that take every kind.</p>
+      <p data-i18n="town.mathsGov">Governor gear and charms score by the governor score they add. The page spends your materials for the most score, using the same planner as the Governor gear page, then multiplies by the day's rate.</p>
+      <p data-i18n="town.mathsLimits">Training, gathering, intel missions, roulette spins and pet advancement depend on what you do on the day, so they are listed but not counted. A count you have not entered is left out and marks the total as partial. Check unlocked tiers and requirements in game before you spend.</p>
+    </details>
+  </section>
+</main>

@@ -1124,6 +1124,11 @@ window.__BH_I18N_DATA["pl"] = {
   "ev.deck.lede.governor": "ekwipunek i amulety gubernatora, zaplanowane z twojego plecaka.",
   "gov.title": "Ekwipunek gubernatora",
   "gov.cardLede": "Zaplanuj ekwipunek i amulety gubernatora z własnych materiałów i zobacz, ile punktów da wynik w wydarzeniach.",
-  "gov.kicker": "garderoba gubernatora"
+  "gov.kicker": "garderoba gubernatora",
+  "town.nav": "Centrum miasta",
+  "ev.deck.lede.town": "wszystko, co masz, i punkty wydarzeń, które może dać.",
+  "town.title": "Centrum miasta",
+  "town.cardLede": "Wszystko, co masz, na jednej stronie – i punkty KvK, Najsilniejszego Gubernatora i Brawl, które może dać.",
+  "town.kicker": "wszystko, co masz, policzone"
 }
 ;

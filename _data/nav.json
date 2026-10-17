@@ -81,6 +81,15 @@
     "lede": "heroes by generation, troop and role."
   },
   {
+    "self": "town",
+    "tail": "town-centre/",
+    "labelKey": "town.nav",
+    "label": "Town Centre",
+    "group": "tools",
+    "ledeKey": "ev.deck.lede.town",
+    "lede": "everything you own, and the event points it can score."
+  },
+  {
     "self": "gear",
     "tail": "hero-gear/",
     "labelKey": "ev.switch.gear",

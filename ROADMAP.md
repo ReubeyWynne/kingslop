@@ -116,6 +116,10 @@ Objectives include event points, garrison/defence, offensive/rally use and gener
 
 Do not present unverified governor costs, charm tables or combat weights as exact. Add them only with a cited source and data version.
 
+## Town Centre
+
+**Implementation:** `town-centre/` shows and edits the whole ledger in one place (event items, speedups, resources, hero gear, governor gear and charms) and totals the KvK prep, Strongest Governor and Brawl points it can score, including speedups and governor score gains. It adds no schema. See [TOWN-CENTRE.md](TOWN-CENTRE.md).
+
 ## Milestone 6 — screenshot import
 
 The hero-gear screenshot importer proves that client-side import is viable, but its gear-tile detection is specialised. Preserve it as an adapter while building a generic import shell.

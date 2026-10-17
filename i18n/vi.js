@@ -1135,6 +1135,11 @@ window.__BH_I18N_DATA["vi"] = {
   "ev.deck.lede.governor": "trang bị và bùa thống đốc, lên kế hoạch từ túi đồ của bạn.",
   "gov.title": "Trang bị thống đốc",
   "gov.cardLede": "Lên kế hoạch nâng cấp trang bị và bùa thống đốc từ nguyên liệu của bạn, và xem điểm số đáng bao nhiêu trong sự kiện.",
-  "gov.kicker": "tủ đồ của thống đốc"
+  "gov.kicker": "tủ đồ của thống đốc",
+  "town.nav": "Trung tâm thành",
+  "ev.deck.lede.town": "mọi thứ bạn sở hữu, và điểm sự kiện chúng có thể mang lại.",
+  "town.title": "Trung tâm thành",
+  "town.cardLede": "Mọi thứ bạn sở hữu trên một trang, cùng điểm KvK, Thống đốc mạnh nhất và Brawl chúng có thể mang lại.",
+  "town.kicker": "mọi thứ bạn có, đã đếm"
 }
 ;

@@ -1124,6 +1124,11 @@ window.__BH_I18N_DATA["ja"] = {
   "ev.deck.lede.governor": "総督装備とチャームを、手持ちの素材から計画。",
   "gov.title": "総督装備",
   "gov.cardLede": "手持ちの素材で総督装備とチャームの強化を計画し、スコアがイベントで何ポイントになるか確認できます。",
-  "gov.kicker": "総督の衣装棚"
+  "gov.kicker": "総督の衣装棚",
+  "town.nav": "タウンセンター",
+  "ev.deck.lede.town": "持ち物のすべてと、それで稼げるイベントポイント。",
+  "town.title": "タウンセンター",
+  "town.cardLede": "持ち物のすべてを1ページに。KvK・最強総督・ブロウルで稼げるポイントも表示します。",
+  "town.kicker": "持ち物のすべてを数える"
 }
 ;
