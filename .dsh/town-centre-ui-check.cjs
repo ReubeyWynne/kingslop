@@ -23,7 +23,15 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       await page.goto(origin + '/town-centre/?lang=en'); await page.waitForFunction(() => document.querySelector('.town-daybar'));
       assert.equal(await prep(), 0);
       assert.equal(await page.locator('.town-days li').count(), 5);
-      assert.match(await page.locator('[data-target="town-centre.coverage"]').textContent(), /^Partial/);
+      assert.equal(await page.locator('[data-target="town-centre.coverage"]').textContent(), 'Partial estimate. Missing counts or levels are excluded.');
+      const missing = page.locator('#missing-details');
+      assert.equal(await missing.evaluate(node => node.open), false);
+      assert.equal(await missing.locator('li').count(), await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'prep').unknown.length));
+      await missing.locator('summary').click();
+      assert.match(await missing.textContent(), /General speedups/);
+      assert.match(await missing.textContent(), /Governor charm levels and materials/);
+      assert.doesNotMatch(await missing.textContent(), /\d+ more/);
+      await missing.locator('summary').click();
 
       // Bag tiles open one dialog; counts write the shared ledger and score on their best day.
       const dialog = page.locator('.town-dialog');
@@ -82,6 +90,7 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.match(await page.locator('[data-target="town-centre.lines"]').textContent(), /General/);
       await page.locator('.town-events [data-value="sg"]').click();
       assert.equal(await page.locator('.town-days li').count(), 7);
+      assert.equal(await missing.locator('li').count(), await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'sg').unknown.length));
 
       // Hero gear: one set of four per troop type, behind troop tabs; writes go through the hero gear adapter.
       await page.locator('[aria-controls="town-hero-gear"]').click();
