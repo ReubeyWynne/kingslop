@@ -104,7 +104,11 @@ jobs:
               - js/event-*
               - js/kvk.js
               - js/hero-gear-engine.js
+              - js/troop-*
+              - js/building-*
               - _data/event_rules.json
+              - _data/troops.json
+              - _data/buildings.json
               - css/events.css
             governor:
               - *shared
