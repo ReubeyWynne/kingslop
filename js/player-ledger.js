@@ -26,9 +26,11 @@
   // Unread fields stay null. Per-hero shards are ordinary inventory balances keyed hero-shards-{hero}.
   var HERO = { fields: ['level', 'stars', 'widget', 'skills'], level: 200, stars: 30, widget: 10, skill: 5, skills: 3 };
   var GOVERNOR_PREFS = { goal: ['stats', 'score'], focus: ['all', 'inf', 'cav', 'arc'], gearTarget: 58, charmTarget: 22 };
-  // Training facts: the Bonus Overview training speed (%), troops per batch in one camp, and the highest tier each camp trains.
-  var TRAINING = ['speed', 'capacity', 'inf', 'cav', 'arc'];
-  function trainingFact(key, value) { return key === 'speed' ? percent(value) : key === 'capacity' ? count(value) && value >= 1 : Number.isSafeInteger(value) && value >= 1 && value <= 11; }
+  /* Training facts: the Bonus Overview training speed (%) without temporary buffs, troops per batch
+     in one camp, the highest tier each camp trains, and the training speed (%) each temporary buff
+     adds: the KvK troop buff or the High King's (only one applies), a castle position, Mobilize. */
+  var TRAINING = ['speed', 'capacity', 'inf', 'cav', 'arc', 'kvk', 'king', 'position', 'mobilize'], TRAINING_BUFFS = ['kvk', 'king', 'position', 'mobilize'];
+  function trainingFact(key, value) { return key === 'speed' || TRAINING_BUFFS.includes(key) ? percent(value) : key === 'capacity' ? count(value) && value >= 1 : Number.isSafeInteger(value) && value >= 1 && value <= 11; }
   function copy(value) { return JSON.parse(JSON.stringify(value)); }
   function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
   function valid(ok) { if (!ok) throw new Error('Invalid player ledger'); }

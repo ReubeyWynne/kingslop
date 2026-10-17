@@ -350,5 +350,27 @@
     "points.sg"
    ]
   }
+ ],
+ "buffs": [
+  {
+   "id": "kvk",
+   "name": "KvK troop buff",
+   "glyph": "K"
+  },
+  {
+   "id": "king",
+   "name": "High King",
+   "glyph": "H"
+  },
+  {
+   "id": "position",
+   "name": "Castle position",
+   "glyph": "C"
+  },
+  {
+   "id": "mobilize",
+   "name": "Mobilize",
+   "glyph": "M"
+  }
  ]
 }

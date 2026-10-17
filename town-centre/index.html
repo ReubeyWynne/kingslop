@@ -89,7 +89,7 @@ self: town
     </div>
 
     <div class="town-shelf" id="town-troops" role="tabpanel" data-shelf="troops" hidden>
-      <div class="town-heading"><p class="town-gloss" data-i18n="town.troopsNote">Set your training speed, your training capacity and the tier each camp trains. Troops score on troop days.</p></div>
+      <div class="town-heading"><p class="town-gloss" data-i18n="town.troopsNote">Set your training speed, your training capacity, the tier each camp trains and the buffs you will have. Troops score on troop days.</p></div>
       <div class="town-strip">
         <button type="button" class="town-tile town-tile-small" data-training="speed" data-state="unknown" data-action="town-inventory.edit">
           <span class="town-tile-art"><img src="../img/kingshot/training-speedup.png" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
@@ -104,6 +104,14 @@ self: town
           <span class="town-tile-name" data-i18n="town.training.buff">Capacity buff</span>
         </button>
       </div>
+      <div class="town-strip" role="group" aria-label="Training speed buffs" data-i18n-key="town.training.buffs" data-i18n-attr="aria-label">
+      {% for buff in site.data.troops.buffs %}
+        <button type="button" class="town-tile town-tile-small" data-training="{{ buff.id }}" data-state="off" data-action="town-inventory.edit">
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">{{ buff.glyph }}</span><output class="town-tile-count" data-amount>—</output></span>
+          <span class="town-tile-name" data-i18n="town.training.{{ buff.id }}">{{ buff.name }}</span>
+        </button>
+      {% endfor %}
+      </div>
       <div class="town-bag">
       {% for camp in camps %}
         <button type="button" class="town-tile" data-training="{{ camp.id }}" data-state="unknown" data-action="town-inventory.edit">
@@ -112,6 +120,19 @@ self: town
           <small class="town-rate" data-camp-plan="{{ camp.id }}"></small>
         </button>
       {% endfor %}
+      </div>
+      <div class="town-troop-result" data-target="town-inventory.troopResult" hidden>
+        <h3 data-target="town-inventory.troopTitle"></h3>
+        <dl class="town-troop-facts">
+          <div class="town-troop-start"><dt data-i18n="town.troopStartBy">Start the batch by</dt><dd data-target="town-inventory.troopStartAt"></dd></div>
+          <div><dt data-i18n="town.troopTakes">Batch takes</dt><dd data-target="town-inventory.troopTakes"></dd></div>
+          <div><dt data-i18n="town.troopSpeed">Training speed</dt><dd data-target="town-inventory.troopSpeed"></dd></div>
+        </dl>
+        <div class="town-scroll"><table class="town-lines">
+          <thead><tr><th scope="col" data-i18n="town.col.troops">troops</th><th scope="col" data-i18n="town.col.count">count</th><th scope="col" data-i18n="town.col.each">each</th><th scope="col" data-i18n="town.col.points">points</th></tr></thead>
+          <tbody data-target="town-inventory.troopLines"></tbody>
+          <tfoot><tr><th scope="row" data-i18n="town.col.total">total</th><td data-target="town-inventory.troopCount"></td><td></td><td data-target="town-inventory.troopPoints"></td></tr></tfoot>
+        </table></div>
       </div>
       <p class="town-note" data-target="town-inventory.troopPlan"></p>
       <p class="town-gloss" data-i18n="town.troopsSource">Training times and costs where Kingshot Optimizer and Kingshot Guide agree. The capacity buff costs 3,000 gems and triples the batch you start before a troop day. It does not speed up training and adds nothing on the day itself.</p>

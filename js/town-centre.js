@@ -27,11 +27,17 @@
     'troopLine.batch': 'T{tier} troops, pre-trained', 'troopLine.training': 'T{tier} troops, training speedups', 'troopLine.general': 'T{tier} troops, general speedups',
     'training-tiers': 'the tier each camp trains', 'training-capacity': 'training capacity', 'training-speed': 'training speed', troopRate: 'T{tier} troop points for this event', troopCost: 'T{tier} training costs (not verified yet)',
     speedPercent: '{n}%', tierLabel: 'T{n}', batchOf: 'batch of {n}',
-    speedUnit: 'training speed, %', speedHint: 'Bonus Overview, Training Speed. Leave out event and title buffs you won’t have on the day.',
+    speedUnit: 'training speed, %', speedHint: 'Bonus Overview, Training Speed, without the temporary buffs below.',
+    buffUnit: 'training speed it adds, %',
+    'buffHint.kvk': 'You get the KvK troop buff or the High King’s, not both, so only the larger one counts. It counts for the batch and on the day.',
+    'buffHint.king': 'You get the High King’s buff or the KvK troop buff, not both, so only the larger one counts. It counts for the batch and on the day.',
+    'buffHint.position': 'The training speed your castle position gives while you hold it. It counts for the batch and on the day.',
+    'buffHint.mobilize': 'Mobilize runs on KvK prep day 4, so it counts only for troops you train with speedups that day.',
+    buffOff: '—', buffPercent: '+{n}%',
     capacityUnit: 'troops per batch', capacityHint: 'How many troops one camp trains at once, without the capacity buff.',
     tierHint: 'T10 and T11 Truegold troops train in the same time for the same cost as plain T10 and T11.',
-    troopPlan: '{event}, day {day}: {batch} troops pre-trained and {trained} trained with speedups, {points} points.',
-    troopStart: 'The batch takes {time}, so start it by {at}.', troopBuff: 'With the 3,000-gem buff, each camp trains {n} troops in that batch.',
+    troopTitle: 'Best troop day: {event}, day {day}', 'troopLine.batchBuff': 'T{tier} troops, tripled batch',
+    speedSame: '{n}%', speedSplit: '{batch}%, {day}% on the day', troopNoStart: 'set your training speed and capacity',
     troopUnchecked: 'T{tier} costs are not checked against your resources yet.',
     troopPlanNone: 'Set your training speed, capacity and camp tiers to see what you can train for a troop day.'
   };
@@ -191,13 +197,14 @@
     /* Troops: the training facts on their tiles, and the troop day the event points below
        found best for the selected event. */
     var troopResult = null, troopEvent = 'prep';
-    function trainingText(key, fact) { return fact === undefined ? '?' : key === 'speed' ? fill(api, 'speedPercent', { n: new Intl.NumberFormat(document.documentElement.lang || undefined, { maximumFractionDigits: 2 }).format(fact) }) : key === 'capacity' ? api.fmt(fact) : fill(api, 'tierLabel', { n: fact }); }
+    function percentText(n) { return new Intl.NumberFormat(document.documentElement.lang || undefined, { maximumFractionDigits: 2 }).format(n); }
+    function trainingText(key, fact) { return R.BUFFS.includes(key) ? fact === undefined ? t(api, 'buffOff') : fill(api, 'buffPercent', { n: percentText(fact) }) : fact === undefined ? '?' : key === 'speed' ? fill(api, 'speedPercent', { n: new Intl.NumberFormat(document.documentElement.lang || undefined, { maximumFractionDigits: 2 }).format(fact) }) : key === 'capacity' ? api.fmt(fact) : fill(api, 'tierLabel', { n: fact }); }
     function renderTroops(snapshot) {
       var training = snapshot.training || { facts: {} }, facts = training.facts || {}, buff = Boolean(snapshot.preferences.training && snapshot.preferences.training.buff);
       var size = Object.hasOwn(facts, 'capacity') ? facts.capacity * (buff ? R.BUFF : 1) : null;
       context.nodes('[data-training]').forEach(function (tile) {
         var key = tile.dataset.training, fact = Object.hasOwn(facts, key) ? facts[key] : undefined;
-        tile.dataset.state = fact === undefined ? 'unknown' : 'confirmed';
+        tile.dataset.state = fact !== undefined ? 'confirmed' : R.BUFFS.includes(key) ? 'off' : 'unknown';
         tile.querySelector('[data-amount]').textContent = trainingText(key, fact);
         var note = tile.querySelector('[data-camp-plan]');
         if (note) note.textContent = fact !== undefined && size !== null ? fill(api, 'batchOf', { n: api.fmt(size) }) : '';
@@ -207,14 +214,29 @@
         tile.querySelector('[data-buff]').textContent = '×' + api.fmt(buff ? R.BUFF : 1);
       });
       if (!troopResult) troopResult = T.best(snapshot, troopEvent).troops;
-      var found = troopResult, plan = found && found.plan, text = [];
-      if (plan && plan.troops) {
-        text.push(fill(api, 'troopPlan', { event: eventName(api, troopEvent), day: api.fmt(found.day), batch: api.fmt(plan.batch.troops), trained: api.fmt(plan.troops - plan.batch.troops), points: api.fmt(plan.points) }));
+      // The result: the best troop day as a ledger, with when to start the batch above its lines.
+      var found = troopResult, plan = found && found.plan, text = [], shown = Boolean(plan && plan.troops);
+      target('troopResult').hidden = !shown;
+      if (shown) {
+        put('troopTitle', fill(api, 'troopTitle', { event: eventName(api, troopEvent), day: api.fmt(found.day) }));
+        var start = '—';
         if (plan.batch.seconds) {
           var opens = window.EventRules.opens(troopEvent, found.day, Date.now()), at = new Date(opens - plan.batch.seconds * 1000);
-          text.push(fill(api, 'troopStart', { time: seconds(api, plan.batch.seconds), at: at.toLocaleString(document.documentElement.lang || undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'UTC' }) + ' UTC' }));
+          start = at.toLocaleString(document.documentElement.lang || undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'UTC' }) + ' UTC';
         }
-        if (buff && plan.batch.size !== null) text.push(fill(api, 'troopBuff', { n: api.fmt(plan.batch.size) }));
+        put('troopStartAt', start);
+        put('troopTakes', plan.batch.seconds ? seconds(api, plan.batch.seconds) : t(api, 'troopNoStart'));
+        var speed = plan.speed;
+        put('troopSpeed', speed.batch === null ? '?' : speed.batch === speed.day ? fill(api, 'speedSame', { n: percentText(speed.batch) }) : fill(api, 'speedSplit', { batch: percentText(speed.batch), day: percentText(speed.day) }));
+        var body = target('troopLines');
+        body.replaceChildren.apply(body, plan.lines.filter(function (line) { return line.troops; }).map(function (line) {
+          var row = document.createElement('tr'), head = document.createElement('th');
+          head.scope = 'row'; head.textContent = fill(api, 'troopLine.' + (line.group === 'batch' && plan.buff ? 'batchBuff' : line.group), { tier: line.tier });
+          row.append(head);
+          [line.troops, line.rate, line.points].forEach(function (n) { var cell = document.createElement('td'); cell.textContent = api.fmt(n); row.append(cell); });
+          return row;
+        }));
+        put('troopCount', api.fmt(plan.troops)); put('troopPoints', api.fmt(plan.points));
         plan.unverified.forEach(function (id) { text.push(fill(api, 'troopUnchecked', { tier: R.missing(id).tier })); });
       } else text.push(t(api, 'troopPlanNone'));
       put('troopPlan', text.join(' '));
@@ -287,10 +309,10 @@
         level.max = piece && piece.quality === 'epic' ? 80 : piece && piece.quality === 'mythic' ? 100 : 200;
         target('masteryRow').hidden = !!piece && piece.quality === 'epic';
       } else if (editing.type === 'training') {
-        var facts = (snapshot.training && snapshot.training.facts) || {}, input = dialog.querySelector('[data-field="training"]'), speed = editing.id === 'speed';
+        var facts = (snapshot.training && snapshot.training.facts) || {}, input = dialog.querySelector('[data-field="training"]'), speed = editing.id !== 'capacity', isBuff = R.BUFFS.includes(editing.id);
         input.step = speed ? 'any' : '1'; input.min = speed ? '0' : '1'; input.inputMode = speed ? 'decimal' : 'numeric';
         value(input, Object.hasOwn(facts, editing.id) ? facts[editing.id] : null);
-        put('trainingUnit', t(api, speed ? 'speedUnit' : 'capacityUnit')); put('trainingHint', t(api, speed ? 'speedHint' : 'capacityHint'));
+        put('trainingUnit', t(api, isBuff ? 'buffUnit' : speed ? 'speedUnit' : 'capacityUnit')); put('trainingHint', t(api, isBuff ? 'buffHint.' + editing.id : speed ? 'speedHint' : 'capacityHint'));
       } else if (editing.type === 'tier') {
         var tiers = (snapshot.training && snapshot.training.facts) || {};
         dialog.querySelector('select[data-field="tier"]').value = Object.hasOwn(tiers, editing.id) ? String(tiers[editing.id]) : '';
@@ -340,7 +362,7 @@
     return { refresh: function () { labelOptions(); render(); }, actions: {
       edit: { run: function (tile) {
         if (!dialog) return;
-        editing = tile.dataset.count ? { type: 'count', id: tile.dataset.count } : tile.dataset.duration ? { type: 'duration', id: tile.dataset.duration } : tile.dataset.piece ? { type: 'hero', id: tile.dataset.piece } : tile.dataset.building ? { type: 'building', id: tile.dataset.building } : tile.dataset.training ? { type: /^(speed|capacity)$/.test(tile.dataset.training) ? 'training' : 'tier', id: tile.dataset.training } : { type: 'gov', id: tile.dataset.gov };
+        editing = tile.dataset.count ? { type: 'count', id: tile.dataset.count } : tile.dataset.duration ? { type: 'duration', id: tile.dataset.duration } : tile.dataset.piece ? { type: 'hero', id: tile.dataset.piece } : tile.dataset.building ? { type: 'building', id: tile.dataset.building } : tile.dataset.training ? { type: tile.dataset.training === 'speed' || tile.dataset.training === 'capacity' || R.BUFFS.includes(tile.dataset.training) ? 'training' : 'tier', id: tile.dataset.training } : { type: 'gov', id: tile.dataset.gov };
         var name = tileName(tile);
         if (editing.type === 'hero') name = api.tr('gear.' + editing.id.split('-')[0], TROOPS[editing.id.split('-')[0]]) + ' · ' + name;
         put('title', name);

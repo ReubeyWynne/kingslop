@@ -174,7 +174,8 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
 
       // Troops: training facts on tiles, the capacity buff as a switch, and the troop day they score on.
       await page.locator('[aria-controls="town-troops"]').click();
-      assert.equal(await page.locator('#town-troops [data-training]').count(), 5);
+      assert.equal(await page.locator('#town-troops [data-training]').count(), 9);
+      assert.equal(await page.locator('#town-troops [data-target="town-inventory.troopResult"]').isHidden(), true);
       assert.match(await page.locator('[data-target="town-inventory.troopPlan"]').textContent(), /Set your training speed/);
       await edit('#town-troops [data-training="speed"]'); await dialog.locator('[data-field="training"]').fill('150'); await done();
       await edit('#town-troops [data-training="capacity"]'); await dialog.locator('[data-field="training"]').fill('1000'); await done();
@@ -182,13 +183,30 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.deepEqual((await ledger()).training.facts, { speed: 150, capacity: 1000, inf: 10 });
       assert.equal(await page.locator('[data-training="speed"] [data-amount]').textContent(), '150%');
       assert.equal(await page.locator('[data-training="inf"] [data-amount]').textContent(), 'T10');
-      assert.match(await page.locator('[data-target="town-inventory.troopPlan"]').textContent(), /1,000 troops pre-trained/);
+      const troopText = key => page.locator('[data-target="town-inventory.' + key + '"]').textContent();
+      const troopRows = () => page.locator('[data-target="town-inventory.troopLines"] tr').evaluateAll(rows => rows.map(row => Array.from(row.children, cell => cell.textContent)));
+      assert.match(await troopText('troopTitle'), /, day 4$/);
+      assert.deepEqual((await troopRows())[0], ['T10 troops, pre-trained', '1,000', '39', '39,000']);
+      assert.equal(await troopText('troopPlan'), '');
       await page.locator('#town-troops [data-action="town-inventory.buff"]').click();
       assert.equal((await ledger()).preferences.training.buff, true);
       assert.equal(await page.locator('#town-troops [data-action="town-inventory.buff"]').getAttribute('aria-pressed'), 'true');
-      const troopPlan = await page.locator('[data-target="town-inventory.troopPlan"]').textContent();
-      assert.match(troopPlan, /, day 4: 3,000 troops pre-trained/);
-      assert.match(troopPlan, /takes 2d 2h 40m, so start it by .+ \d\d:\d\d UTC\./, '3,000 T10 at 152 s each, 150% faster');
+      assert.deepEqual((await troopRows())[0], ['T10 troops, tripled batch', '3,000', '39', '117,000']);
+      assert.equal(await troopText('troopTakes'), '2d 2h 40m', '3,000 T10 at 152 s each, 150% faster');
+      assert.match(await troopText('troopStartAt'), /\d\d:\d\d UTC$/);
+      assert.equal(await troopText('troopSpeed'), '150%');
+      // Buffs: a castle position speeds up the batch; Mobilize only the KvK prep day's speedup training.
+      assert.equal(await page.locator('[data-training="position"]').getAttribute('data-state'), 'off');
+      await edit('#town-troops [data-training="position"]'); await dialog.locator('[data-field="training"]').fill('50'); await done();
+      await edit('#town-troops [data-training="mobilize"]'); await dialog.locator('[data-field="training"]').fill('25'); await done();
+      assert.equal(await page.locator('[data-training="position"] [data-amount]').textContent(), '+50%');
+      assert.equal(await troopText('troopTakes'), '1d 18h 14m', '3,000 T10 at 152 s each, 200% faster');
+      assert.equal(await troopText('troopSpeed'), '200%', 'Mobilize adds nothing outside KvK prep');
+      await page.locator('[data-value="prep"][data-action="tabs.select"]').click();
+      assert.match(await troopText('troopTitle'), /KvK prep, day 4$/);
+      assert.equal(await troopText('troopSpeed'), '200%, 225% on the day');
+      for (const id of ['position', 'mobilize']) { await edit('#town-troops [data-training="' + id + '"]'); await dialog.locator('[data-action="town-inventory.clear"]').click(); await done(); }
+      assert.equal(await troopText('troopSpeed'), '150%');
       assert.equal(await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'prep').lines.find(l => l.id === 'troops-batch-t10').points), 3000 * 60);
       await page.locator('#town-troops [data-action="town-inventory.buff"]').click();
       assert.equal((await ledger()).preferences.training, undefined);

@@ -147,6 +147,17 @@ troopStore.setTrainingBuff(true);
 troopDay = T.day(troopStore.snapshot(), 'prep', 4);
 assert.deepEqual([troopLine('troops-batch-t10').amount, troopLine('troops-training-t10').amount], [1500, 473], 'the buff triples the batch and adds nothing on the day');
 assert.equal(troopDay.troops.gems, 3000);
+// Speed buffs: only the larger of the KvK troop buff and High King counts; a castle position
+// speeds up the batch and the day; Mobilize only KvK prep's speedup training.
+troopStore.setTraining('kvk', 20); troopStore.setTraining('king', 50); troopStore.setTraining('position', 50); troopStore.setTraining('mobilize', 100);
+assert.deepEqual(R.speeds(troopStore.snapshot().training.facts, 'prep'), { base: 100, batch: 200, day: 300 });
+assert.deepEqual(R.speeds(troopStore.snapshot().training.facts, 'sg'), { base: 100, batch: 200, day: 200 });
+troopDay = T.day(troopStore.snapshot(), 'prep', 4);
+assert.equal(troopDay.troops.batch.seconds, Math.ceil(1500 * 152 / 3), '1,500 T10 at 200% faster');
+assert.equal(troopLine('troops-training-t10').amount, 947, '600 minutes at 38 s a troop (300% faster)');
+assert.equal(T.day(troopStore.snapshot(), 'sg', 4).lines.find(l => l.id === 'troops-training-t10').amount, Math.floor(36000 * 3 / 152), 'no Mobilize outside KvK prep');
+for (const id of ['kvk', 'king', 'position', 'mobilize']) troopStore.setTraining(id, null);
+assert.throws(() => troopStore.setTraining('mobilize', -1));
 // Resources: the batch is paid first, and nothing is trained that the bag cannot pay for.
 troopStore.setBalance('bread', 2788 * 300 + 100);
 troopDay = T.day(troopStore.snapshot(), 'prep', 4);

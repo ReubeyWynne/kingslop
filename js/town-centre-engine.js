@@ -93,7 +93,7 @@
        the resources the buildings leave. Troops trained with speedups share a group with those
        speedups, so the best total spends each speedup on one day. */
     if (troops) {
-      trained = troopSpend.plan(snapshot, troops.rates, shared.buildings.resources);
+      trained = troopSpend.plan(snapshot, troops.rates, shared.buildings.resources, event);
       trained.unknown.forEach(note);
       trained.lines.forEach(function (line) {
         var group = line.group === 'batch' ? 'troops-batch' : 'speedup-' + line.group;

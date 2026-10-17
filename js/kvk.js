@@ -464,7 +464,7 @@
       E.days(entry[0]).forEach(function (rules) {
         var found = R.rates(rules.rows, entry[0]);
         if (!found) return;
-        var opens = E.opens(entry[0], rules.day, selected), batch = R.batch(snapshot, found.rates, used, opens);
+        var opens = E.opens(entry[0], rules.day, selected), batch = R.batch(snapshot, found.rates, used, opens, entry[0]);
         if (!pick || batch.buffed.points > pick.batch.buffed.points) pick = { day: rules.day, opens: opens, batch: batch };
       });
       if (!pick) return;

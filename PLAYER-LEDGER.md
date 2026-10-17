@@ -43,7 +43,7 @@ store.buildings(); // { levels: { 'town-center': 'TG 3' }, provenance }
 store.setBuilding('town-center', 'TG3-1'); // null forgets the level
 ```
 
-Training facts serve the Town Centre's troop days. `training.facts` holds `speed` (the Bonus Overview Training Speed, a percentage), `capacity` (troops one camp trains per batch, at least 1) and a tier from 1 to 11 for each camp, keyed by troop type (`inf`, `cav`, `arc`), each with its own entry in `training.provenance`. A missing fact has not been counted yet. `preferences.training.buff` is `true` when the plan should use the 3,000-gem capacity buff; it is absent otherwise. Saves without a `training` key stay valid.
+Training facts serve the Town Centre's troop days. `training.facts` holds `speed` (the Bonus Overview Training Speed without temporary buffs, a percentage), the training speed each temporary buff adds (`kvk` for the KvK troop buff, `king` for High King, `position` for a castle position, `mobilize` for Mobilize; percentages, absent when you won't have it), `capacity` (troops one camp trains per batch, at least 1) and a tier from 1 to 11 for each camp, keyed by troop type (`inf`, `cav`, `arc`), each with its own entry in `training.provenance`. A missing fact has not been counted yet. `preferences.training.buff` is `true` when the plan should use the 3,000-gem capacity buff; it is absent otherwise. Saves without a `training` key stay valid.
 
 ```js
 store.training(); // { facts: { speed: 182.5, capacity: 1150, inf: 10 }, provenance, buff: false }

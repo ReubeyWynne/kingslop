@@ -60,6 +60,12 @@ out = {
     },
     'types': [{'id': t[0], 'name': t[1], 'camp': t[2]} for t in TYPES],
     'tiers': tiers,
+    # Training speed buffs the Troops shelf asks for. Their percents are the player's own, so
+    # none is published here; js/troop-spend.js says when each applies.
+    'buffs': [{'id': 'kvk', 'name': 'KvK troop buff', 'glyph': 'K'},
+              {'id': 'king', 'name': 'High King', 'glyph': 'H'},
+              {'id': 'position', 'name': 'Castle position', 'glyph': 'C'},
+              {'id': 'mobilize', 'name': 'Mobilize', 'glyph': 'M'}],
 }
 OUT.write_text(json.dumps(out, indent=1, ensure_ascii=False) + '\n')
 print('wrote', OUT, '·', sum(len(t['unverified']) for t in tiers), 'unverified cells:', {t['tier']: t['unverified'] for t in tiers if t['unverified']})
