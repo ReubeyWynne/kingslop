@@ -39,6 +39,7 @@ const scenes = [
   ['moon-card', '/events/', '.deck-card.is-selected .ascii-mini--moon', 19.6 / 112, 112],
   ['helm', '/heroes/', '.ascii-mini--helm', 0.25, 32],
   ['seal', '/governor-gear/', '.ascii-mini--seal', 0.25, 32],
+  ['tome', '/masters/', '.ascii-mini--tome', 1 / 6, 48],
 ];
 
 const server = http.createServer((request, response) => {

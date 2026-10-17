@@ -25,6 +25,11 @@
   // Heroes you own: level, star index (6 × stars + tier, as in _data/heroes.json), widget level and Expedition skill levels.
   // Unread fields stay null. Per-hero shards are ordinary inventory balances keyed hero-shards-{hero}.
   var HERO = { fields: ['level', 'stars', 'widget', 'skills'], level: 200, stars: 30, widget: 10, skill: 5, skills: 3 };
+  /* Masters you have unlocked: affinity level (0–100), whether the affinity bar is full and the
+     next class waits on emblems (only at levels 9, 19 … 99), and the four skill levels (0 for not
+     learned yet; null for unread). Per-master emblems are inventory balances keyed
+     master-emblems-{master}; general-master-emblem is the wildcard any master can use. */
+  var MASTER = { fields: ['affinity', 'ready', 'skills'], affinity: 100, skill: 20, skills: 4 };
   var GOVERNOR_PREFS = { goal: ['stats', 'score'], focus: ['all', 'inf', 'cav', 'arc'], gearTarget: 58, charmTarget: 22 };
   // Training facts: the Bonus Overview training speed (%) without temporary buffs, troops per batch in one camp, and the highest tier each camp trains.
   var TRAINING = ['speed', 'capacity', 'inf', 'cav', 'arc'];
@@ -55,6 +60,12 @@
     return object(value) && same(Object.keys(value).sort(), HERO.fields.slice().sort()) && upTo(value.level, HERO.level, 1) && upTo(value.stars, HERO.stars) && upTo(value.widget, HERO.widget) &&
       (value.skills === null || Array.isArray(value.skills) && value.skills.length >= 1 && value.skills.length <= HERO.skills && value.skills.every(function (level) { return upTo(level, HERO.skill, 1); }));
   }
+  function masterRecord(value) {
+    return object(value) && same(Object.keys(value).sort(), MASTER.fields.slice().sort()) && upTo(value.affinity, MASTER.affinity) && typeof value.ready === 'boolean' &&
+      (!value.ready || value.affinity !== null && value.affinity % 10 === 9) &&
+      Array.isArray(value.skills) && value.skills.length === MASTER.skills && value.skills.every(function (level) { return upTo(level, MASTER.skill); });
+  }
+  function masterEmblemId(master) { return 'master-emblems-' + master; }
   function troopKey(key) {
     var m = /^troop-(inf|cav|arc)-t([1-9]|1[01])-tg([0-5])$/.exec(key);
     return m ? { type: m[1], tier: +m[2], tg: +m[3] } : null;
@@ -109,6 +120,10 @@
     if (value.buildings !== undefined) {
       valid(object(value.buildings) && object(value.buildings.levels) && object(value.buildings.provenance) && same(Object.keys(value.buildings.levels).sort(), Object.keys(value.buildings.provenance).sort()));
       Object.keys(value.buildings.levels).forEach(function (key) { valid(id(key) && buildingLevel(value.buildings.levels[key]) && provenance(value.buildings.provenance[key])); });
+    }
+    if (value.masters !== undefined) {
+      valid(object(value.masters) && object(value.masters.roster) && object(value.masters.provenance) && same(Object.keys(value.masters.roster).sort(), Object.keys(value.masters.provenance).sort()));
+      Object.keys(value.masters.roster).forEach(function (key) { valid(heroKey(key) && masterRecord(value.masters.roster[key]) && provenance(value.masters.provenance[key])); });
     }
     if (value.training !== undefined) {
       valid(object(value.training) && object(value.training.facts) && object(value.training.provenance) && same(Object.keys(value.training.facts).sort(), Object.keys(value.training.provenance).sort()));
@@ -257,6 +272,34 @@
         if (next === null) { delete value.heroes.roster[key]; delete value.heroes.provenance[key]; return; }
         if (same(value.heroes.roster[key], next)) return;
         value.heroes.roster[key] = next; value.heroes.provenance[key] = { source: source || 'manual', at: new Date().toISOString() };
+      }, expected);
+    }
+    function masters() {
+      var value = snapshot(), section = value.masters || { roster: {}, provenance: {} }, emblems = {};
+      Object.keys(value.inventory).forEach(function (key) {
+        var m = /^master-emblems-([a-z][a-z0-9]{0,39})$/.exec(key), entry = value.inventory[key];
+        if (m && entry.status === 'confirmed') emblems[m[1]] = entry.amount;
+      });
+      return { roster: copy(section.roster), provenance: copy(section.provenance), emblems: emblems };
+    }
+    // A record marks the master as unlocked (missing fields stay unread); null forgets it, which is the same as locked.
+    function setMaster(key, record, source, expected) {
+      valid(heroKey(key));
+      var next = null;
+      if (record !== null) {
+        valid(object(record) && Object.keys(record).every(function (field) { return MASTER.fields.includes(field); }));
+        next = { affinity: null, ready: false, skills: [null, null, null, null] };
+        MASTER.fields.forEach(function (field) { if (record[field] !== undefined) next[field] = copy(record[field]); });
+        // The bar can only be full and waiting at a class gate, so any other level clears it.
+        valid(typeof next.ready === 'boolean');
+        if (next.ready && (next.affinity === null || next.affinity % 10 !== 9)) next.ready = false;
+        valid(masterRecord(next));
+      }
+      return transaction(function (value) {
+        if (!value.masters) value.masters = { roster: {}, provenance: {} };
+        if (next === null) { delete value.masters.roster[key]; delete value.masters.provenance[key]; return; }
+        if (same(value.masters.roster[key], next)) return;
+        value.masters.roster[key] = next; value.masters.provenance[key] = { source: source || 'manual', at: new Date().toISOString() };
       }, expected);
     }
     function buildings() {
@@ -409,7 +452,7 @@
     if (events && events.addEventListener) events.addEventListener('storage', function (event) {
       if ((event.key === KEY || event.key === null) && (!event.storageArea || event.storageArea === storage)) { try { current = read(); notify(); } catch (error) { if (events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:error', { detail: error.message })); } }
     });
-    return { kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, training: training, setTraining: setTraining, setTrainingPlan: setTrainingPlan, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
+    return { kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, masters: masters, setMaster: setMaster, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, training: training, setTraining: setTraining, setTrainingPlan: setTrainingPlan, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
   }
-  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), TRAINING: TRAINING.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), troopId: troopId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, empty: empty, validate: validate, create: create };
+  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), TRAINING: TRAINING.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), MASTER: copy(MASTER), troopId: troopId, masterEmblemId: masterEmblemId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, empty: empty, validate: validate, create: create };
 });

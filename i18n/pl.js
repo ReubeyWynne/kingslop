@@ -1163,6 +1163,12 @@ window.__BH_I18N_DATA["pl"] = {
   "kingdom.heroTitle": "Bohaterowie generacji {n}",
   "kingdom.heroNote": "Porównaj tę generację z rozwiniętymi bohaterami, zanim wydasz odłamki lub widgety.",
   "kingdom.goldNote": "Limit budynków królestwa rośnie. Twoje budynki nadal wymagają spełnienia warunków i materiałów.",
-  "kingdom.academyNote": "Badania Akademii Wojennej stają się dostępne w królestwie. Twoje konto nadal musi spełniać wymagania budynku i badań."
+  "kingdom.academyNote": "Badania Akademii Wojennej stają się dostępne w królestwie. Twoje konto nadal musi spełniać wymagania budynku i badań.",
+  "masters.nav": "Mistrzowie",
+  "ev.deck.lede.masters": "sympatia, talenty i umiejętności, zaplanowane z twojego ekwipunku.",
+  "masters.title": "Mistrzowie",
+  "masters.cardLede": "Zapisz sympatię i umiejętności swoich mistrzów, zobacz każdą następną klasę i jej emblematy oraz ile punktów dadzą twoje emblematy i manuskrypty.",
+  "masters.kicker": "Akademia Mistrzów",
+  "masters.metaTitle": "Mistrzowie — dey.ci"
 }
 ;

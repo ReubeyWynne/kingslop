@@ -1165,6 +1165,12 @@ window.__BH_I18N_DATA["it"] = {
   "kingdom.heroTitle": "Eroi di generazione {n}",
   "kingdom.heroNote": "Confronta questa generazione con i tuoi eroi sviluppati prima di spendere frammenti o widget.",
   "kingdom.goldNote": "Il limite degli edifici del regno aumenta. I tuoi edifici richiedono ancora prerequisiti e materiali.",
-  "kingdom.academyNote": "La ricerca dell’Accademia di guerra si apre al regno. Il tuo account deve ancora soddisfare i prerequisiti di edificio e ricerca."
+  "kingdom.academyNote": "La ricerca dell’Accademia di guerra si apre al regno. Il tuo account deve ancora soddisfare i prerequisiti di edificio e ricerca.",
+  "masters.nav": "Maestri",
+  "ev.deck.lede.masters": "affinità, talenti e abilità, pianificati dal tuo inventario.",
+  "masters.title": "Maestri",
+  "masters.cardLede": "Registra affinità e abilità dei tuoi maestri, guarda ogni classe successiva e i suoi emblemi, e quanto possono valere i tuoi emblemi e manoscritti.",
+  "masters.kicker": "l’Accademia dei Maestri",
+  "masters.metaTitle": "Maestri — dey.ci"
 }
 ;

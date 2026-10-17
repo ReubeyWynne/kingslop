@@ -1162,6 +1162,12 @@ window.__BH_I18N_DATA["tr"] = {
   "kingdom.heroTitle": "{n}. nesil kahramanlar",
   "kingdom.heroNote": "Parça veya widget harcamadan önce bu nesli geliştirdiğin kahramanlarla karşılaştır.",
   "kingdom.goldNote": "Krallığın bina sınırı yükselir. Binaların hâlâ ön koşullara ve malzemelere ihtiyaç duyar.",
-  "kingdom.academyNote": "Krallıkta Savaş Akademisi araştırması açılır. Hesabın hâlâ bina ve araştırma ön koşullarını sağlamalıdır."
+  "kingdom.academyNote": "Krallıkta Savaş Akademisi araştırması açılır. Hesabın hâlâ bina ve araştırma ön koşullarını sağlamalıdır.",
+  "masters.nav": "Ustalar",
+  "ev.deck.lede.masters": "yakınlık, yetenekler ve beceriler, envanterinden planlanır.",
+  "masters.title": "Ustalar",
+  "masters.cardLede": "Ustalarının yakınlığını ve becerilerini kaydet, sıradaki her sınıfı ve amblemlerini, amblem ve el yazmalarının kaç puan getireceğini gör.",
+  "masters.kicker": "Ustalar Akademisi",
+  "masters.metaTitle": "Ustalar — dey.ci"
 }
 ;

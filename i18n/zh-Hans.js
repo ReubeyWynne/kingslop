@@ -1163,6 +1163,12 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "kingdom.heroTitle": "第{n}代英雄",
   "kingdom.heroNote": "花费碎片或专属装备材料前，请将这一代与已培养的英雄进行比较。",
   "kingdom.goldNote": "王国建筑上限提高。你的建筑仍需满足前置条件并准备材料。",
-  "kingdom.academyNote": "王国开放战争学院研究。账号仍需满足建筑与研究的前置条件。"
+  "kingdom.academyNote": "王国开放战争学院研究。账号仍需满足建筑与研究的前置条件。",
+  "masters.nav": "导师",
+  "ev.deck.lede.masters": "好感、天赋与技能，按你的背包规划。",
+  "masters.title": "导师",
+  "masters.cardLede": "记录导师的好感与技能，查看下一阶段所需徽章，以及你的徽章和手稿能得多少分。",
+  "masters.kicker": "导师学院",
+  "masters.metaTitle": "导师 — dey.ci"
 }
 ;

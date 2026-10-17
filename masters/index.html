@@ -1,0 +1,54 @@
+---
+layout: page
+self: masters
+---
+<nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
+  <a href="#roster" data-i18n="masters.browse">Browse masters</a>
+  <a href="#kvk-points" data-i18n="masterPoints.nav">KvK points</a>
+  <a href="#where" data-i18n="masters.where">Where they matter</a>
+  <a href="#master-sources" data-i18n="directory.sources">Sources &amp; confidence</a>
+</nav>
+<main>
+  <section class="section hero" id="top">
+    <h1 data-i18n="masters.title">Masters</h1>
+    <p class="lede" data-i18n="masters.intro">Eight masters, each with an affinity ladder, a talent and four skills. Record yours to see what comes next and what your emblems and manuscripts can score.</p>
+    {% include ascii/motif.html kind="tome" %}
+  </section>
+  <section class="section" id="roster" data-module="master-directory">
+    <h2 data-i18n="masters.browse">Browse masters</h2>
+    <p class="note" data-i18n="masters.howNote">Masters join the Master Academy in four waves, from server day 113. Affinity comes from Journey and gifts; every ten levels a new class costs that master's emblems and raises the talent. Skills unlock with affinity and are learned with Master's Manuscripts.</p>
+    {% include masters/roster.html %}
+  </section>
+  <section class="section master-points" id="kvk-points" data-module="master-points" aria-labelledby="kvk-points-title">
+    <h2 id="kvk-points-title" data-i18n="masterPoints.title">KvK points from your masters</h2>
+    <p data-i18n="masterPoints.intro">An emblem or manuscript only scores when it is spent. This counts what your masters can actually take: the next class for each master whose affinity bar is full, paid with its own emblems first and then general ones, and whole skill levels, cheapest first, once each level's requirement is met.</p>
+    <p class="hero-points-total"><output data-target="master-points.total">—</output></p>
+    <p class="note" data-target="master-points.coverage" aria-live="polite"></p>
+    <div class="hero-points-scroll" data-target="master-points.table" hidden><table class="hero-points-table">
+      <thead><tr><th scope="col" data-i18n="masterPoints.col.master">master</th><th scope="col" data-i18n="spend.col.points">KvK prep points</th><th scope="col" data-i18n="masterPoints.col.emblems">emblems used</th><th scope="col" data-i18n="masterPoints.col.manuscripts">manuscripts used</th></tr></thead>
+      <tbody data-target="master-points.rows"></tbody>
+    </table></div>
+    <p class="note" data-target="master-points.empty" hidden></p>
+    <p class="note" data-target="master-points.left"></p>
+    <p class="note" data-i18n="masterPoints.research">Special Research is not counted yet. It takes emblems from affinity 100, but the two sources disagree on its cost per research (25,000 or 14,000 emblems a master), so emblems kept for it are left out until one is confirmed in game.</p>
+    <p class="note" data-i18n="masterPoints.rates">Each kind counts on the KvK prep day that pays most for it. The Town Centre adds these to the rest of your bag.</p>
+    <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
+  </section>
+  <section class="section" id="where">
+    <h2 data-i18n="masters.where">Where they matter</h2>
+    <p data-i18n="masters.whereIntro">A few skills change numbers the other guides use. Raise these first if that event is where your alliance needs you.</p>
+    {% assign links = "valora:0:bear-hunt/:ev.switch.bear:Bear Hunt,valora:3:bear-hunt/:ev.switch.bear:Bear Hunt,valora:1:hero-gear/:ev.switch.gear:Gear,valora:2:hero-gear/:ev.switch.gear:Gear,pan:2:town-centre/#town-buildings:town.nav:Town Centre,cassia:1:battle-simulator/:ev.switch.sim:Simulator,cassia:2:battle-simulator/:ev.switch.sim:Simulator,cassia:3:bear-hunt/:ev.switch.bear:Bear Hunt,guinevere:2:battle-simulator/:ev.switch.sim:Simulator,guinevere:3:bear-hunt/:ev.switch.bear:Bear Hunt,wilson:2:vikings-vengeance/:ev.switch.vikings:Vikings,isnor:1:bear-hunt/:ev.switch.bear:Bear Hunt" | split: "," %}
+    <ul class="master-where">
+      {% for entry in links %}{% assign m = entry | split: ":" %}{% assign master = site.data.masters.masters | where: "id", m[0] | first %}{% assign at = m[1] | plus: 0 %}{% assign skill = master.skills[at] %}{% assign n = at | plus: 1 %}
+      <li><img src="../img/masters/skills/{{ master.id }}-{{ n }}.webp" width="36" height="36" alt="" loading="lazy"><span><b lang="en">{{ skill.name | escape }}</b> <small lang="en">{{ master.name | escape }} · {% for effect in skill.levels.last.effects %}{% unless forloop.first %}, {% endunless %}{{ effect.text | escape }}{% endfor %}</small></span><a href="../{{ m[2] }}" data-i18n="{{ m[3] }}">{{ m[4] }}</a></li>
+      {% endfor %}
+    </ul>
+    <p class="note" data-i18n="masters.whereNote">Effects are the skill at its top level. Check in game what each one applies to: a rally, a march, or only the bear.</p>
+  </section>
+  <section class="section" id="master-sources">
+    <h2 data-i18n="directory.sources">Sources &amp; confidence</h2>
+    <p data-i18n="masters.sourceNote">Affinity ladders, talents and skills were compared row by row between two community databases on 17 October 2026. They agree exactly for the six masters both list. Aena and Isnor are on Kingshot Optimizer only.</p>
+    <ul>{% for entry in site.data.masters.sources %}<li><a href="{{ entry[1].url }}">{{ entry[1].label | escape }}</a></li>{% endfor %}</ul>
+    <p class="note" data-i18n="masters.artNote">Portraits, emblems and skill icons are Kingshot game art, published by Century Games.</p>
+  </section>
+</main>

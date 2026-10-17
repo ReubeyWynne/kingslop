@@ -1163,6 +1163,12 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "kingdom.heroTitle": "第{n}代英雄",
   "kingdom.heroNote": "花費碎片或專屬裝備材料前，請將這一代與已培養的英雄進行比較。",
   "kingdom.goldNote": "王國建築上限提高。你的建築仍需滿足前置條件並準備材料。",
-  "kingdom.academyNote": "王國開放戰爭學院研究。帳號仍需滿足建築與研究的前置條件。"
+  "kingdom.academyNote": "王國開放戰爭學院研究。帳號仍需滿足建築與研究的前置條件。",
+  "masters.nav": "導師",
+  "ev.deck.lede.masters": "好感、天賦與技能，依你的背包規劃。",
+  "masters.title": "導師",
+  "masters.cardLede": "記錄導師的好感與技能，查看下一階段所需徽章，以及你的徽章和手稿能得多少分。",
+  "masters.kicker": "導師學院",
+  "masters.metaTitle": "導師 — dey.ci"
 }
 ;

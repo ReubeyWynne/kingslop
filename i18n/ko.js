@@ -1163,6 +1163,12 @@ window.__BH_I18N_DATA["ko"] = {
   "kingdom.heroTitle": "{n}세대 영웅",
   "kingdom.heroNote": "조각이나 위젯을 사용하기 전에 이 세대와 육성한 영웅을 비교하세요.",
   "kingdom.goldNote": "왕국의 건물 상한이 높아집니다. 자신의 건물은 여전히 선행 조건과 재료가 필요합니다.",
-  "kingdom.academyNote": "왕국에서 전쟁 아카데미 연구가 해금됩니다. 계정은 건물 및 연구 선행 조건을 충족해야 합니다."
+  "kingdom.academyNote": "왕국에서 전쟁 아카데미 연구가 해금됩니다. 계정은 건물 및 연구 선행 조건을 충족해야 합니다.",
+  "masters.nav": "마스터",
+  "ev.deck.lede.masters": "호감도, 재능, 스킬을 가방 기준으로 계획합니다.",
+  "masters.title": "마스터",
+  "masters.cardLede": "마스터의 호감도와 스킬을 기록하고, 다음 등급과 필요한 엠블럼, 엠블럼과 원고로 얻을 점수를 확인하세요.",
+  "masters.kicker": "마스터 아카데미",
+  "masters.metaTitle": "마스터 — dey.ci"
 }
 ;

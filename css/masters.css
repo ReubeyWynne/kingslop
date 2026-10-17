@@ -1,0 +1,148 @@
+/* ─── Masters — eight tiles, one dossier open at a time ── */
+/* Shares the band gutter and points table with the hero directory (heroes.css);
+   the portrait glow follows the page's lapis signal (events.css). */
+
+/* Your bag — general emblems and manuscripts, shared with the event inventory. */
+.master-bag { display: grid; grid-template-columns: auto repeat(2, minmax(0, 1fr)); align-items: end; gap: .2rem .9rem; margin-top: var(--space-s); padding: .3rem 0 .4rem; border-block: 1px solid var(--signal-line); }
+.master-bag-title { margin: 0; align-self: center; font-size: .78rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); }
+.master-bag label { display: grid; grid-template-columns: 2rem minmax(0, 1fr); align-items: end; column-gap: .5rem; min-width: 0; }
+.master-bag img { grid-row: 1 / 3; width: 2rem; height: 2rem; object-fit: contain; align-self: center; }
+.master-bag label > span { font-size: .72rem; line-height: 1.2; color: var(--ink-muted); overflow-wrap: anywhere; }
+.master-bag-caption { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: .7rem; margin: 0; color: var(--ink-muted); font-size: .72rem; font-style: italic; }
+:is(.master-bag, .master-mine) :is(input, select) { width: 100%; min-width: 0; min-height: 40px; padding: .2rem 0; font: inherit; font-size: max(1rem, 16px); color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; }
+:is(.master-bag, .master-mine) :is(input, select):focus { border-bottom-color: var(--amber); }
+:is(.master-bag, .master-mine) option { background: var(--void); color: var(--ink); }
+:is(.master-bag, .master-mine) :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.master-mine :is(input, select):disabled { opacity: .45; }
+
+.master-count { margin: 0; padding-block: .35rem; color: var(--amber); font-family: var(--display-2); font-size: var(--step--1); font-variant-numeric: tabular-nums; }
+
+/* The roster — one band per unlock wave, the server day in the gutter. */
+.master-roster { --band-label: 2.9rem; --band-gap: .6rem; display: grid; gap: .9rem; margin-top: .5rem; }
+.master-band { display: grid; grid-template-columns: var(--band-label) minmax(0, 1fr); gap: var(--band-gap); align-items: start; }
+.master-band .band-gen b { font-size: var(--step-1); }
+/* Three across: the largest wave is three masters, so every wave is one row on a phone. */
+.master-catalogue { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem .5rem; }
+.master-card { position: relative; min-width: 0; container-type: inline-size; scroll-margin-top: calc(var(--topbar-h) + 4rem); }
+.master-card > .hero-upcoming { position: absolute; inset-block-start: -.15rem; inset-inline: 0; z-index: 1; text-align: center; font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; pointer-events: none; }
+.master-dossier { margin: 0; }
+.master-dossier > summary.master-heading { display: flex; flex-direction: column; align-items: center; gap: .3rem; width: 100%; padding: 0; color: var(--ink); font: inherit; letter-spacing: 0; text-transform: none; text-align: center; }
+.master-dossier > summary::before { content: none; }
+.master-dossier > summary:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; }
+.master-portrait { position: relative; display: block; width: 100%; max-width: 5.5rem; }
+.master-portrait > img:first-child { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border: 1px solid var(--amber-dim); border-radius: 2px; background: radial-gradient(circle at 50% 38%, var(--signal-glow), var(--void-2) 70%); box-shadow: inset 0 0 0 1px var(--signal-glow), 0 6px 18px rgba(0, 0, 0, .45); transition: box-shadow .3s cubic-bezier(.16, 1, .3, 1); }
+.master-emblem-mark { position: absolute; inset-block-start: 2px; inset-inline-start: 2px; width: 1.35rem; height: 1.35rem; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .6)); }
+.master-portrait-level { position: absolute; inset-block-end: 3px; inset-inline-end: 3px; min-width: 1.2rem; padding: 0 3px; font: 700 .7rem/1.4 var(--body); font-variant-numeric: tabular-nums; text-align: center; color: var(--amber); background: rgba(0, 0, 0, .7); border-radius: 2px; }
+.master-portrait-soul { position: absolute; inset-block-start: 2px; inset-inline-end: 2px; width: 1.25rem; height: 1.25rem; }
+:is(.master-portrait-level, .master-portrait-soul)[hidden] { display: none; }
+.master-dossier > summary:hover .master-portrait > img:first-child,
+.master-dossier > summary:focus-visible .master-portrait > img:first-child,
+.master-card:target .master-portrait > img:first-child { box-shadow: inset 0 0 0 1px var(--signal-glow), 0 0 0 1px var(--amber-dim), 0 0 22px var(--signal-halo); }
+/* One source only: the tile's frame is dimmer, the way rare heroes read. */
+.master-card[data-verified="false"] .master-portrait > img:first-child { border-color: var(--ink-muted); }
+/* Once you record a master, the ones you have not unlocked step back. */
+[data-collection] .master-card[data-owned="false"] .master-dossier:not([open]) .master-portrait > img:first-child { filter: grayscale(.85) brightness(.6); }
+[data-collection] .master-card[data-owned="false"] .master-dossier:not([open]) h3 { color: var(--ink-muted); }
+.master-name { display: grid; gap: .05rem; min-width: 0; width: 100%; }
+.master-heading h3 { margin: 0; font: 600 min(.74rem, 13.5cqi)/1.2 var(--display-2); letter-spacing: .03em; text-transform: uppercase; color: var(--ink); }
+.master-dossier > summary:hover h3 { color: var(--amber); }
+.master-title { font-size: .72rem; line-height: 1.25; color: var(--ink-muted); hyphens: auto; }
+.master-mine-line { white-space: pre-line; font-size: .68rem; line-height: 1.25; color: var(--amber); font-variant-numeric: tabular-nums; }
+.master-mine-line:empty { display: none; }
+
+/* An open master takes the whole roster width, its band's day gutter included. */
+.master-card:has(> .master-dossier[open]) { grid-column: 1 / -1; padding: 1rem var(--space-s) var(--space-s); margin-inline-start: calc(-1 * (var(--band-label) + var(--band-gap))); background: var(--void-2); border-block: 1px solid var(--signal-line); }
+.master-dossier[open] > summary.master-heading { flex-direction: row; align-items: center; gap: .9rem; text-align: start; }
+.master-dossier[open] .master-portrait { width: 5rem; flex: none; }
+.master-dossier[open] > summary h3 { font-size: var(--step-1); letter-spacing: .06em; }
+.master-dossier[open] > summary :is(.master-title, .master-mine-line) { font-size: var(--step--1); }
+.master-dossier[open] > summary::after { content: "×"; align-self: start; margin-inline-start: auto; font: 400 1.6rem/1 var(--body); color: var(--amber); }
+.master-dossier[open] > summary:hover::after { color: var(--ink); }
+.master-dossier:not([open]) > .master-dossier-body { display: none; }
+.master-dossier-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 0 2rem; margin-top: 1rem; padding-top: .25rem; border-top: 1px solid var(--signal-line); color: var(--ink-dim); }
+
+/* Your master — what you have of this one, saved with the rest of your inventory. */
+.master-mine { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr)); gap: .3rem 1rem; margin: .5rem 0 0; padding: 0 0 .6rem; border: 0; border-bottom: 1px solid var(--signal-line); }
+.master-mine legend { padding: 0; margin-bottom: .2rem; font-size: var(--step--1); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); }
+.master-mine label { display: grid; align-content: end; min-width: 0; }
+.master-mine label > span { font-size: .75rem; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.master-mine .master-own { grid-column: 1 / -1; display: flex; align-items: center; gap: .6rem; min-height: 40px; }
+.master-mine .master-own[hidden] { display: none; }
+.master-mine .master-own input { width: 1.25rem; height: 1.25rem; min-height: 0; margin: 0; accent-color: var(--amber); flex: none; }
+.master-mine .master-own span { font-size: var(--step--1); color: var(--ink); white-space: normal; }
+.master-mine-note { grid-column: 1 / -1; margin: .2rem 0 0; font-size: .75rem; font-style: italic; color: var(--ink-muted); }
+
+.master-brief > p { display: flex; gap: .7rem; align-items: center; margin-block: .75rem; font-size: var(--step--1); line-height: 1.45; }
+.master-brief > p > img { flex: none; width: 2.5rem; height: 2.5rem; object-fit: contain; }
+.master-brief b { color: var(--ink); }
+.master-talent small { display: block; color: var(--ink-muted); font-size: .78rem; font-style: italic; }
+.master-talent-now { display: block; color: var(--amber); }
+.master-talent-now:empty { display: none; }
+.master-talent-max { display: block; }
+.master-talent-max::before { content: "★ "; color: var(--amber-dim); }
+.master-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem 1rem; margin: .5rem 0; font-size: var(--step--1); }
+.master-facts div { min-width: 0; }
+.master-facts dt { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.master-facts dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
+.master-next { margin-block: .6rem .3rem; font-size: var(--step--1); color: var(--amber); }
+.master-next:empty { display: none; }
+
+/* The class ladder: eleven ruled cells, lit up to the class you hold. */
+.master-classes { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(5.6rem, 1fr)); gap: 0; margin: .3rem 0 .6rem; padding: 0; border-top: 1px solid var(--signal-line); font-size: .74rem; font-variant-numeric: tabular-nums; }
+.master-classes li { display: grid; gap: 0; padding: .3rem .35rem .35rem; border-bottom: 1px solid var(--signal-tint); border-inline-start: 1px solid var(--signal-tint); color: var(--ink-muted); }
+.master-class-level { font: 600 .9rem/1.1 var(--display-2); color: var(--amber-dim); }
+.master-class-name { line-height: 1.2; }
+.master-class-cost { display: flex; align-items: center; gap: 2px; color: var(--ink-dim); }
+.master-class-cost img { width: .9rem; height: .9rem; }
+.master-classes li[data-reached] { background: var(--signal-tint); color: var(--ink); }
+.master-classes li[data-reached] .master-class-level { color: var(--amber); }
+
+.master-skills { list-style: none; padding: 0; margin: .4rem 0 0; }
+.master-skills li { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); gap: .7rem; padding-block: .7rem; border-top: 1px solid var(--signal-line); }
+.master-skills li:first-child { border-top: 0; padding-top: .3rem; }
+.master-skills img { width: 2.75rem; height: 2.75rem; border-radius: 2px; }
+.master-skills h4 { display: flex; flex-wrap: wrap; gap: .1rem .6rem; align-items: baseline; margin: 0; font-family: var(--body); font-size: var(--step-0); color: var(--ink); }
+.master-skill-level { color: var(--amber); font-size: .8rem; font-variant-numeric: tabular-nums; }
+.master-skill-level:empty { display: none; }
+.master-skill-max { color: var(--ink-muted); font-size: .78rem; }
+.master-skills p { overflow-wrap: anywhere; margin-block: .25rem 0; font-size: var(--step--1); }
+.master-skill-effect { color: var(--amber-dim); }
+.master-skill-cost { display: flex; flex-wrap: wrap; align-items: center; gap: .1rem .3rem; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.master-skill-cost img { width: .95rem; height: .95rem; }
+.master-skill-gates { display: flex; flex-wrap: wrap; gap: .1rem .9rem; color: var(--ink-muted); font-size: .78rem !important; }
+.master-skill-gates:empty { display: none; }
+.master-skills-wrap > .note { font-size: .85rem; margin-top: .75rem; }
+
+/* Where they matter — a ruled list of skills that change other guides' numbers. */
+.master-where { list-style: none; padding: 0; margin: var(--space-s) 0; border-top: 1px solid var(--signal-line); }
+.master-where li { display: grid; grid-template-columns: 2.25rem minmax(0, 1fr) auto; gap: .7rem; align-items: center; padding-block: .45rem; border-bottom: 1px solid var(--signal-tint); }
+.master-where img { width: 2.25rem; height: 2.25rem; border-radius: 2px; }
+.master-where b { color: var(--ink); font-size: var(--step--1); }
+.master-where small { display: block; color: var(--ink-muted); font-size: .78rem; overflow-wrap: anywhere; }
+.master-where a { font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--amber); text-decoration: none; white-space: nowrap; }
+.master-where a::before { content: "❧ "; color: var(--amber-dim); }
+.master-where a:hover { color: var(--ink); }
+#master-sources ul { padding-inline-start: 1.1rem; font-size: var(--step--1); }
+
+/* Wider screens: the four waves stand side by side, each as wide as its masters, with the
+   day over the tiles. A wave with a master open takes the full width, so the dossier has
+   the measure. */
+@media (min-width: 651px) {
+  /* Tracks sized so every tile matches across waves: eight tiles, three band gaps, four tile gaps. */
+  .master-roster { --tile: calc((100% - 5rem) / 8); grid-template-columns: calc(3 * var(--tile) + 1rem) var(--tile) calc(2 * var(--tile) + .5rem) calc(2 * var(--tile) + .5rem); column-gap: 1rem; }
+  .master-band { grid-template-columns: minmax(0, 1fr); --band-label: 0px; --band-gap: .4rem; }
+  .master-band .band-label { display: flex; justify-content: flex-start; padding-top: .3rem; }
+  .master-band .band-gen { display: flex; gap: .4rem; align-items: baseline; }
+  .master-band[data-day="113"] .master-catalogue { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .master-band[data-day="155"] .master-catalogue { grid-template-columns: minmax(0, 1fr); }
+  .master-band:is([data-day="197"], [data-day="281"]) .master-catalogue { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .master-roster:has(.master-dossier[open]) { grid-template-columns: minmax(0, 1fr); }
+  .master-roster:has(.master-dossier[open]) .master-catalogue { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; }
+  .master-bag-caption { grid-column: 2 / -1; }
+}
+@media (max-width: 650px) {
+  .master-dossier-body { grid-template-columns: minmax(0, 1fr); }
+  .master-bag { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .master-bag-title { grid-column: 1 / -1; }
+  .master-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

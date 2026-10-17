@@ -5,12 +5,13 @@
    shows; forgehammers and mithril only what your hero gear can take (HeroGear.spendable);
    Truegold and Tempered Truegold only what your buildings can take (BuildingSpend);
    governor score only what the governor planner can buy with your materials; troops only
-   what your camps can train with the speedups and resources left (TroopSpend). Inventory
+   what your camps can train with the speedups and resources left (TroopSpend); master
+   emblems and manuscripts only what your masters can take (MasterSpend). Inventory
    is spent once, so an event's best total puts each holding on the day it scores most. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/event_rules.json'), require('./event-rules.js'), require('./governor-engine.js'), require('./hero-spend.js'), require('./hero-gear-engine.js'), require('./building-spend.js'), require('./troop-spend.js'));
-  else root.TownCentre = factory(root.EventRuleData, root.EventRules, root.Governor, root.HeroSpend, root.HeroGear, root.BuildingSpend, root.TroopSpend);
-})(typeof window === 'object' ? window : globalThis, function (data, rules, governor, heroes, gearEngine, buildingSpend, troopSpend) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/event_rules.json'), require('./event-rules.js'), require('./governor-engine.js'), require('./hero-spend.js'), require('./hero-gear-engine.js'), require('./building-spend.js'), require('./troop-spend.js'), require('./master-spend.js'));
+  else root.TownCentre = factory(root.EventRuleData, root.EventRules, root.Governor, root.HeroSpend, root.HeroGear, root.BuildingSpend, root.TroopSpend, root.MasterSpend);
+})(typeof window === 'object' ? window : globalThis, function (data, rules, governor, heroes, gearEngine, buildingSpend, troopSpend, masterSpend) {
   'use strict';
   // Speedup balances are minutes. General speedups can pay for any timer, so they score wherever a speedup row does.
   var SPEEDUPS = ['general', 'construction', 'research', 'training', 'learning', 'healing'].map(function (kind) { return { id: 'speedup-' + kind, kind: kind }; });
@@ -56,7 +57,7 @@
     Object.keys(GEAR).forEach(function (r) { items[GEAR[r]] = { amount: bag[r] === null ? null : plan.spent[r], unknown: bag[r] === null ? [] : missing.slice() }; });
     return { items: items, plan: plan };
   }
-  function context(snapshot) { return { score: { gear: governorGain(snapshot, 'gear'), charms: governorGain(snapshot, 'charms') }, heroes: heroes.plan(snapshot), gear: heroGearSpend(snapshot), buildings: buildingSpend.plan(snapshot), buildingsMax: buildingSpend.plan(snapshot, { goal: 'points' }) }; }
+  function context(snapshot) { return { score: { gear: governorGain(snapshot, 'gear'), charms: governorGain(snapshot, 'charms') }, heroes: heroes.plan(snapshot), gear: heroGearSpend(snapshot), buildings: buildingSpend.plan(snapshot), buildingsMax: buildingSpend.plan(snapshot, { goal: 'points' }), masters: masterSpend.plan(snapshot) }; }
   /* Points a building plan's Truegold and Tempered Truegold score in an event, each on its
      best day. Totals follow the player's priorities; the points-only plan is the ceiling. */
   function buildingPoints(plan, event) {
@@ -68,15 +69,15 @@
     });
     return total;
   }
-  // The snapshot events score: hero pieces, gear materials and Truegold replaced by what can be spent.
+  // The snapshot events score: hero pieces, gear materials, Truegold and master items replaced by what can be spent.
   function budget(snapshot, shared) {
     var out = heroes.budget(snapshot, shared.heroes);
-    [shared.gear.items, shared.buildings.items].forEach(function (items) {
+    [shared.gear.items, shared.buildings.items, shared.masters.items].forEach(function (items) {
       Object.keys(items).forEach(function (id) { var amount = items[id].amount; if (amount !== null) out.inventory[id] = { amount: amount, status: 'confirmed', provenance: null }; });
     });
     return out;
   }
-  function usable(shared, id) { return [shared.heroes.items, shared.gear.items, shared.buildings.items].reduce(function (found, items) { return found || (Object.hasOwn(items, id) ? items[id] : null); }, null); }
+  function usable(shared, id) { return [shared.heroes.items, shared.gear.items, shared.buildings.items, shared.masters.items].reduce(function (found, items) { return found || (Object.hasOwn(items, id) ? items[id] : null); }, null); }
   function day(snapshot, event, number, known) {
     var shared = known || context(snapshot), score = shared.score;
     var base = rules.calculate(budget(snapshot, shared), event, number, null, null), selected = rules.rules(event, number);
@@ -133,13 +134,14 @@
       });
     });
     var lines = [].concat.apply([], Object.keys(top).map(function (key) { return top[key].lines; })).sort(function (a, b) { return b.points - a.points; });
-    return { event: event, days: days, lines: lines, total: lines.reduce(function (sum, line) { return sum + line.points; }, 0), unknown: Object.keys(unknown), complete: !Object.keys(unknown).length, governor: shared.score, heroes: shared.heroes, gear: shared.gear, buildings: shared.buildings, buildingsMax: shared.buildingsMax, troops: troopDay(days) };
+    return { event: event, days: days, lines: lines, total: lines.reduce(function (sum, line) { return sum + line.points; }, 0), unknown: Object.keys(unknown), complete: !Object.keys(unknown).length, governor: shared.score, heroes: shared.heroes, gear: shared.gear, buildings: shared.buildings, buildingsMax: shared.buildingsMax, masters: shared.masters, troops: troopDay(days) };
   }
   // The troop plan of the day whose troops score most, for the Troops shelf.
   function troopDay(days) { return days.reduce(function (found, result) { return result.troops && (!found || result.troops.points > found.plan.points) ? { day: result.day, plan: result.troops } : found; }, null); }
   // The highest rate any event day pays for one unit, for labelling inventory rows.
   function topRate(id) {
     if (/^hero-widget-chest-gen[1-7]$/.test(id)) id = heroes.WIDGET_ITEM;
+    if (id === masterSpend.GENERAL) id = masterSpend.EMBLEM;
     var out = null;
     Object.keys(data.events).forEach(function (event) {
       data.events[event].forEach(function (entry) {
