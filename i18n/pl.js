@@ -1169,6 +1169,12 @@ window.__BH_I18N_DATA["pl"] = {
   "masters.title": "Mistrzowie",
   "masters.cardLede": "Zapisz sympatię i umiejętności swoich mistrzów, zobacz każdą następną klasę i jej emblematy oraz ile punktów dadzą twoje emblematy i manuskrypty.",
   "masters.kicker": "Akademia Mistrzów",
-  "masters.metaTitle": "Mistrzowie — dey.ci"
+  "masters.metaTitle": "Mistrzowie — dey.ci",
+  "pets.nav": "Zwierzaki",
+  "ev.deck.lede.pets": "oswojone, nakarmione i pogłaskane; każdy awans zaplanowany.",
+  "pets.title": "Zwierzaki",
+  "pets.cardLede": "Dbaj o zwierzaki, które w czasie rzeczywistym głodnieją i tęsknią, i sprawdź koszt oraz punkty każdego kolejnego awansu.",
+  "pets.kicker": "Klatka bestii",
+  "pets.metaTitle": "Zwierzaki — dey.ci"
 }
 ;

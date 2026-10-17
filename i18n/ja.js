@@ -1169,6 +1169,12 @@ window.__BH_I18N_DATA["ja"] = {
   "masters.title": "マスター",
   "masters.cardLede": "マスターの好感度とスキルを記録し、次の段階と必要な紋章、紋章と写本で得られるポイントを確認。",
   "masters.kicker": "マスターアカデミー",
-  "masters.metaTitle": "マスター — dey.ci"
+  "masters.metaTitle": "マスター — dey.ci",
+  "pets.nav": "ペット",
+  "ev.deck.lede.pets": "飼いならし、餌をやり、なでる。進化もすべて計画。",
+  "pets.title": "ペット",
+  "pets.cardLede": "リアルタイムでお腹を空かせ寂しがるペットの世話をし、次の進化のコストとポイントを確認しよう。",
+  "pets.kicker": "獣の檻",
+  "pets.metaTitle": "ペット — dey.ci"
 }
 ;

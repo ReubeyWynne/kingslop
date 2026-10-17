@@ -1704,6 +1704,380 @@
 94.6794%{content:""}
 }
 
+/* the beast cage */
+.ascii-mini--pet[data-pet="gray-wolf"]{--marks:15}
+
+.ascii-mini--pet[data-pet="gray-wolf"]::before{content:"\A \A \A        \\         /\\\A         \\_______/ o\\_\A         /          __>\A        /  _______  /\A        | |       | |\A        |_|       |_|";animation:ascii-pet-gray-wolf 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-gray-wolf{
+0.0000%{content:"\A \A \A        \\         /\\\A         \\_______/ o\\_\A         /          __>\A        /  _______  /\A        | |       | |\A        |_|       |_|"}
+12.5000%{content:"\A \A \A        |         /\\\A         \\_______/ o\\_\A         /          __>\A        /  _______  /\A        | |       | |\A        |_|       |_|"}
+25.0000%{content:"\A \A \A        /         /\\\A         \\_______/ o\\_\A         /          __>\A        /  _______  /\A        | |       | |\A        |_|       |_|"}
+37.5000%{content:"\A \A \A        |         /\\\A         \\_______/ o\\_\A         /          __>\A        /  _______  /\A        | |       | |\A        |_|       |_|"}
+50.0000%{content:"\A \A \A        \\         /\\\A         \\_______/ o\\_\A         /          __>\A        /  _______  /\A        | |       | |\A        |_|       |_|"}
+62.5000%{content:"\A \A \A        |         /\\\A         \\_______/ o\\_\A         /          __>\A        /  _______  /\A        | |       | |\A        |_|       |_|"}
+75.0000%{content:"\A \A \A        /         /\\\A         \\_______/ -\\_\A         /          __>\A        /  _______  /\A        | |       | |\A        |_|       |_|"}
+87.5000%{content:"\A \A \A        |         /\\\A         \\_______/ o\\_\A         /          __>\A        /  _______  /\A        | |       | |\A        |_|       |_|"}
+}
+
+.ascii-mini--pet[data-pet="gray-wolf"]:is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before{content:"\A \A \A                  /\\\A          _______/ o\\_\A         /          __>\A        /  _______  /\A        | |       | |\A        |_|       |_|";animation:ascii-pet-gray-wolf-low 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-gray-wolf-low{
+0.0000%{content:"\A \A \A                  /\\\A          _______/ o\\_\A         /          __>\A        /  _______  /\A        | |       | |\A        |_|       |_|"}
+75.0000%{content:"\A \A \A                  /\\\A          _______/ -\\_\A         /          __>\A        /  _______  /\A        | |       | |\A        |_|       |_|"}
+87.5000%{content:"\A \A \A                  /\\\A          _______/ o\\_\A         /          __>\A        /  _______  /\A        | |       | |\A        |_|       |_|"}
+}
+
+.ascii-mini--pet[data-pet="gray-wolf"][data-mood="asleep"]::before{content:"\A \A \A \A \A                  /\\\A          _______/ -\\_\A         /          __>\A        /  _______  /";animation:none}
+
+.ascii-mini--pet[data-pet="lynx"]{--marks:14}
+
+.ascii-mini--pet[data-pet="lynx"]::before{content:"\A \A \A                /|  /|\A         \\______| o  |\A         /       . =<\A        |  ______  /\A        | |      | |\A        |_|      |_|";animation:ascii-pet-lynx 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-lynx{
+0.0000%{content:"\A \A \A                /|  /|\A         \\______| o  |\A         /       . =<\A        |  ______  /\A        | |      | |\A        |_|      |_|"}
+12.5000%{content:"\A \A \A                /|  /|\A         |______| o  |\A         /       . =<\A        |  ______  /\A        | |      | |\A        |_|      |_|"}
+25.0000%{content:"\A \A \A                /|  /|\A         \\______| o  |\A         /       . =<\A        |  ______  /\A        | |      | |\A        |_|      |_|"}
+37.5000%{content:"\A \A \A                /|  /|\A         |______| o  |\A         /       . =<\A        |  ______  /\A        | |      | |\A        |_|      |_|"}
+50.0000%{content:"\A \A \A                /|  /|\A         \\______| o  |\A         /       . =<\A        |  ______  /\A        | |      | |\A        |_|      |_|"}
+62.5000%{content:"\A \A \A                /|  /|\A         |______| o  |\A         /       . =<\A        |  ______  /\A        | |      | |\A        |_|      |_|"}
+75.0000%{content:"\A \A \A                /|  /|\A         \\______| -  |\A         /       . =<\A        |  ______  /\A        | |      | |\A        |_|      |_|"}
+87.5000%{content:"\A \A \A                /|  /|\A         |______| o  |\A         /       . =<\A        |  ______  /\A        | |      | |\A        |_|      |_|"}
+}
+
+.ascii-mini--pet[data-pet="lynx"]:is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before{content:"\A \A \A                /|  /|\A          ______| o  |\A         /       . =<\A        |  ______  /\A        | |      | |\A        |_|      |_|";animation:ascii-pet-lynx-low 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-lynx-low{
+0.0000%{content:"\A \A \A                /|  /|\A          ______| o  |\A         /       . =<\A        |  ______  /\A        | |      | |\A        |_|      |_|"}
+75.0000%{content:"\A \A \A                /|  /|\A          ______| -  |\A         /       . =<\A        |  ______  /\A        | |      | |\A        |_|      |_|"}
+87.5000%{content:"\A \A \A                /|  /|\A          ______| o  |\A         /       . =<\A        |  ______  /\A        | |      | |\A        |_|      |_|"}
+}
+
+.ascii-mini--pet[data-pet="lynx"][data-mood="asleep"]::before{content:"\A \A \A \A \A                /|  /|\A          ______| -  |\A         /       . =<\A        |  ______  /";animation:none}
+
+.ascii-mini--pet[data-pet="bison"]{--marks:15}
+
+.ascii-mini--pet[data-pet="bison"]::before{content:"\A \A           _.-~~-._\A      _.-~'  ,,,,  '-./)\A    ~/             o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''";animation:ascii-pet-bison 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-bison{
+0.0000%{content:"\A \A           _.-~~-._\A      _.-~'  ,,,,  '-./)\A    ~/             o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+12.5000%{content:"\A \A           _.-~~-._\A      _.-~'  ,,,,  '-./)\A    -/             o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+25.0000%{content:"\A \A           _.-~~-._\A      _.-~'  ,,,,  '-./)\A    ~/             o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+37.5000%{content:"\A \A           _.-~~-._\A      _.-~'  ,,,,  '-./)\A    -/             o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+50.0000%{content:"\A \A           _.-~~-._\A      _.-~'  ,,,,  '-./)\A    ~/             o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+62.5000%{content:"\A \A           _.-~~-._\A      _.-~'  ,,,,  '-./)\A    -/             o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+75.0000%{content:"\A \A           _.-~~-._\A      _.-~'  ,,,,  '-./)\A    ~/             -  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+87.5000%{content:"\A \A           _.-~~-._\A      _.-~'  ,,,,  '-./)\A    -/             o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+}
+
+.ascii-mini--pet[data-pet="bison"]:is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before{content:"\A \A           _.-~~-._\A      _.-~'  ,,,,  '-./)\A     /             o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''";animation:ascii-pet-bison-low 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-bison-low{
+0.0000%{content:"\A \A           _.-~~-._\A      _.-~'  ,,,,  '-./)\A     /             o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+75.0000%{content:"\A \A           _.-~~-._\A      _.-~'  ,,,,  '-./)\A     /             -  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+87.5000%{content:"\A \A           _.-~~-._\A      _.-~'  ,,,,  '-./)\A     /             o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+}
+
+.ascii-mini--pet[data-pet="bison"][data-mood="asleep"]::before{content:"\A \A \A \A           _.-~~-._\A      _.-~'  ,,,,  '-./)\A     /             -  \\\A     |              ___)\A     \\_  ______  __/ '";animation:none}
+
+.ascii-mini--pet[data-pet="moose"]{--marks:9}
+
+.ascii-mini--pet[data-pet="moose"]::before{content:"\A               \\_|_  _|_/\A                  \\__/\A            ______/ o\\\A      _____/         \\_\A     \\                _)\A     \\_  ________  __/\A       ||        ||\A       ''";animation:ascii-pet-moose 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-moose{
+0.0000%{content:"\A               \\_|_  _|_/\A                  \\__/\A            ______/ o\\\A      _____/         \\_\A     \\                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+12.5000%{content:"\A               \\_|_  _|_/\A                  \\__/\A            ______/ o\\\A      _____/         \\_\A     |                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+25.0000%{content:"\A               \\_|_  _|_/\A                  \\__/\A            ______/ o\\\A      _____/         \\_\A     \\                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+37.5000%{content:"\A               \\_|_  _|_/\A                  \\__/\A            ______/ o\\\A      _____/         \\_\A     |                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+50.0000%{content:"\A               \\_|_  _|_/\A                  \\__/\A            ______/ o\\\A      _____/         \\_\A     \\                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+62.5000%{content:"\A               \\_|_  _|_/\A                  \\__/\A            ______/ o\\\A      _____/         \\_\A     |                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+75.0000%{content:"\A               \\_|_  _|_/\A                  \\__/\A            ______/ -\\\A      _____/         \\_\A     \\                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+87.5000%{content:"\A               \\_|_  _|_/\A                  \\__/\A            ______/ o\\\A      _____/         \\_\A     |                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+}
+
+.ascii-mini--pet[data-pet="moose"]:is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before{content:"\A               \\_|_  _|_/\A                  \\__/\A            ______/ o\\\A      _____/         \\_\A     /                _)\A     \\_  ________  __/\A       ||        ||\A       ''";animation:ascii-pet-moose-low 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-moose-low{
+0.0000%{content:"\A               \\_|_  _|_/\A                  \\__/\A            ______/ o\\\A      _____/         \\_\A     /                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+75.0000%{content:"\A               \\_|_  _|_/\A                  \\__/\A            ______/ -\\\A      _____/         \\_\A     /                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+87.5000%{content:"\A               \\_|_  _|_/\A                  \\__/\A            ______/ o\\\A      _____/         \\_\A     /                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+}
+
+.ascii-mini--pet[data-pet="moose"][data-mood="asleep"]::before{content:"\A \A \A               \\_|_  _|_/\A                  \\__/\A            ______/ -\\\A      _____/         \\_\A     /                _)\A     \\_  ________  __/";animation:none}
+
+.ascii-mini--pet[data-pet="cheetah"]{--marks:16}
+
+.ascii-mini--pet[data-pet="cheetah"]::before{content:"\A \A \A       (           _,\A        \\________ / o\\\A        / . . . .    -<\A       / .  ___  . _/\A       | | |   | | |\A       |_| |_  |_|_|";animation:ascii-pet-cheetah 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-cheetah{
+0.0000%{content:"\A \A \A       (           _,\A        \\________ / o\\\A        / . . . .    -<\A       / .  ___  . _/\A       | | |   | | |\A       |_| |_  |_|_|"}
+12.5000%{content:"\A \A \A       |           _,\A        \\________ / o\\\A        / . . . .    -<\A       / .  ___  . _/\A       | | |   | | |\A       |_| |_  |_|_|"}
+25.0000%{content:"\A \A \A       )           _,\A        \\________ / o\\\A        / . . . .    -<\A       / .  ___  . _/\A       | | |   | | |\A       |_| |_  |_|_|"}
+37.5000%{content:"\A \A \A       |           _,\A        \\________ / o\\\A        / . . . .    -<\A       / .  ___  . _/\A       | | |   | | |\A       |_| |_  |_|_|"}
+50.0000%{content:"\A \A \A       (           _,\A        \\________ / o\\\A        / . . . .    -<\A       / .  ___  . _/\A       | | |   | | |\A       |_| |_  |_|_|"}
+62.5000%{content:"\A \A \A       |           _,\A        \\________ / o\\\A        / . . . .    -<\A       / .  ___  . _/\A       | | |   | | |\A       |_| |_  |_|_|"}
+75.0000%{content:"\A \A \A       )           _,\A        \\________ / -\\\A        / . . . .    -<\A       / .  ___  . _/\A       | | |   | | |\A       |_| |_  |_|_|"}
+87.5000%{content:"\A \A \A       |           _,\A        \\________ / o\\\A        / . . . .    -<\A       / .  ___  . _/\A       | | |   | | |\A       |_| |_  |_|_|"}
+}
+
+.ascii-mini--pet[data-pet="cheetah"]:is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before{content:"\A \A \A                   _,\A         ________ / o\\\A        / . . . .    -<\A       / .  ___  . _/\A       | | |   | | |\A       |_| |_  |_|_|";animation:ascii-pet-cheetah-low 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-cheetah-low{
+0.0000%{content:"\A \A \A                   _,\A         ________ / o\\\A        / . . . .    -<\A       / .  ___  . _/\A       | | |   | | |\A       |_| |_  |_|_|"}
+75.0000%{content:"\A \A \A                   _,\A         ________ / -\\\A        / . . . .    -<\A       / .  ___  . _/\A       | | |   | | |\A       |_| |_  |_|_|"}
+87.5000%{content:"\A \A \A                   _,\A         ________ / o\\\A        / . . . .    -<\A       / .  ___  . _/\A       | | |   | | |\A       |_| |_  |_|_|"}
+}
+
+.ascii-mini--pet[data-pet="cheetah"][data-mood="asleep"]::before{content:"\A \A \A \A \A                   _,\A         ________ / -\\\A        / . . . .    -<\A       / .  ___  . _/";animation:none}
+
+.ascii-mini--pet[data-pet="lion"]{--marks:15}
+
+.ascii-mini--pet[data-pet="lion"]::before{content:"\A \A \A       (        ,;;;;,\A        \\______;;; o ;\A        /      ;;;  =<\A       /  ______';;;'\A       | |      | |\A       |_|      |_|";animation:ascii-pet-lion 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-lion{
+0.0000%{content:"\A \A \A       (        ,;;;;,\A        \\______;;; o ;\A        /      ;;;  =<\A       /  ______';;;'\A       | |      | |\A       |_|      |_|"}
+12.5000%{content:"\A \A \A       |        ,;;;;,\A        \\______;;; o ;\A        /      ;;;  =<\A       /  ______';;;'\A       | |      | |\A       |_|      |_|"}
+25.0000%{content:"\A \A \A       )        ,;;;;,\A        \\______;;; o ;\A        /      ;;;  =<\A       /  ______';;;'\A       | |      | |\A       |_|      |_|"}
+37.5000%{content:"\A \A \A       |        ,;;;;,\A        \\______;;; o ;\A        /      ;;;  =<\A       /  ______';;;'\A       | |      | |\A       |_|      |_|"}
+50.0000%{content:"\A \A \A       (        ,;;;;,\A        \\______;;; o ;\A        /      ;;;  =<\A       /  ______';;;'\A       | |      | |\A       |_|      |_|"}
+62.5000%{content:"\A \A \A       |        ,;;;;,\A        \\______;;; o ;\A        /      ;;;  =<\A       /  ______';;;'\A       | |      | |\A       |_|      |_|"}
+75.0000%{content:"\A \A \A       )        ,;;;;,\A        \\______;;; - ;\A        /      ;;;  =<\A       /  ______';;;'\A       | |      | |\A       |_|      |_|"}
+87.5000%{content:"\A \A \A       |        ,;;;;,\A        \\______;;; o ;\A        /      ;;;  =<\A       /  ______';;;'\A       | |      | |\A       |_|      |_|"}
+}
+
+.ascii-mini--pet[data-pet="lion"]:is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before{content:"\A \A \A                ,;;;;,\A         ______;;; o ;\A        /      ;;;  =<\A       /  ______';;;'\A       | |      | |\A       |_|      |_|";animation:ascii-pet-lion-low 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-lion-low{
+0.0000%{content:"\A \A \A                ,;;;;,\A         ______;;; o ;\A        /      ;;;  =<\A       /  ______';;;'\A       | |      | |\A       |_|      |_|"}
+75.0000%{content:"\A \A \A                ,;;;;,\A         ______;;; - ;\A        /      ;;;  =<\A       /  ______';;;'\A       | |      | |\A       |_|      |_|"}
+87.5000%{content:"\A \A \A                ,;;;;,\A         ______;;; o ;\A        /      ;;;  =<\A       /  ______';;;'\A       | |      | |\A       |_|      |_|"}
+}
+
+.ascii-mini--pet[data-pet="lion"][data-mood="asleep"]::before{content:"\A \A \A \A \A                ,;;;;,\A         ______;;; - ;\A        /      ;;;  =<\A       /  ______';;;'";animation:none}
+
+.ascii-mini--pet[data-pet="grizzly-bear"]{--marks:14}
+
+.ascii-mini--pet[data-pet="grizzly-bear"]::before{content:"\A \A                 __n\A       _________/   \\\A      /           o  \\_\A     (               __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|";animation:ascii-pet-grizzly-bear 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-grizzly-bear{
+0.0000%{content:"\A \A                 __n\A       _________/   \\\A      /           o  \\_\A     (               __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|"}
+75.0000%{content:"\A \A                 __n\A       _________/   \\\A      /           -  \\_\A     (               __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|"}
+87.5000%{content:"\A \A                 __n\A       _________/   \\\A      /           o  \\_\A     (               __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|"}
+}
+
+.ascii-mini--pet[data-pet="grizzly-bear"]:is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before{content:"\A \A                 __n\A       _________/   \\\A      /           o  \\_\A     (               __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|";animation:ascii-pet-grizzly-bear-low 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-grizzly-bear-low{
+0.0000%{content:"\A \A                 __n\A       _________/   \\\A      /           o  \\_\A     (               __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|"}
+75.0000%{content:"\A \A                 __n\A       _________/   \\\A      /           -  \\_\A     (               __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|"}
+87.5000%{content:"\A \A                 __n\A       _________/   \\\A      /           o  \\_\A     (               __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|"}
+}
+
+.ascii-mini--pet[data-pet="grizzly-bear"][data-mood="asleep"]::before{content:"\A \A \A \A                 __n\A       _________/   \\\A      /           -  \\_\A     (               __)\A      \\_   _____   _/";animation:none}
+
+.ascii-mini--pet[data-pet="mighty-bison"]{--marks:15}
+
+.ascii-mini--pet[data-pet="mighty-bison"]::before{content:"\A \A           _.-~~-._\A      _.-~' [][][] '-./)\A    ~/  [][][][]   o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''";animation:ascii-pet-mighty-bison 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-mighty-bison{
+0.0000%{content:"\A \A           _.-~~-._\A      _.-~' [][][] '-./)\A    ~/  [][][][]   o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+12.5000%{content:"\A \A           _.-~~-._\A      _.-~' [][][] '-./)\A    -/  [][][][]   o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+25.0000%{content:"\A \A           _.-~~-._\A      _.-~' [][][] '-./)\A    ~/  [][][][]   o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+37.5000%{content:"\A \A           _.-~~-._\A      _.-~' [][][] '-./)\A    -/  [][][][]   o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+50.0000%{content:"\A \A           _.-~~-._\A      _.-~' [][][] '-./)\A    ~/  [][][][]   o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+62.5000%{content:"\A \A           _.-~~-._\A      _.-~' [][][] '-./)\A    -/  [][][][]   o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+75.0000%{content:"\A \A           _.-~~-._\A      _.-~' [][][] '-./)\A    ~/  [][][][]   -  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+87.5000%{content:"\A \A           _.-~~-._\A      _.-~' [][][] '-./)\A    -/  [][][][]   o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+}
+
+.ascii-mini--pet[data-pet="mighty-bison"]:is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before{content:"\A \A           _.-~~-._\A      _.-~' [][][] '-./)\A     /  [][][][]   o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''";animation:ascii-pet-mighty-bison-low 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-mighty-bison-low{
+0.0000%{content:"\A \A           _.-~~-._\A      _.-~' [][][] '-./)\A     /  [][][][]   o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+75.0000%{content:"\A \A           _.-~~-._\A      _.-~' [][][] '-./)\A     /  [][][][]   -  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+87.5000%{content:"\A \A           _.-~~-._\A      _.-~' [][][] '-./)\A     /  [][][][]   o  \\\A     |              ___)\A     \\_  ______  __/ '\A       ||      ||\A       ''"}
+}
+
+.ascii-mini--pet[data-pet="mighty-bison"][data-mood="asleep"]::before{content:"\A \A \A \A           _.-~~-._\A      _.-~' [][][] '-./)\A     /  [][][][]   -  \\\A     |              ___)\A     \\_  ______  __/ '";animation:none}
+
+.ascii-mini--pet[data-pet="giant-rhino"]{--marks:15}
+
+.ascii-mini--pet[data-pet="giant-rhino"]::before{content:"\A \A       ___________   ,\A     _/           \\_/|\A   ~/              o  \\_\A    |               ___/\A    \\_  _______  __/\A      ||       ||\A      ''";animation:ascii-pet-giant-rhino 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-giant-rhino{
+0.0000%{content:"\A \A       ___________   ,\A     _/           \\_/|\A   ~/              o  \\_\A    |               ___/\A    \\_  _______  __/\A      ||       ||\A      ''"}
+12.5000%{content:"\A \A       ___________   ,\A     _/           \\_/|\A   -/              o  \\_\A    |               ___/\A    \\_  _______  __/\A      ||       ||\A      ''"}
+25.0000%{content:"\A \A       ___________   ,\A     _/           \\_/|\A   ~/              o  \\_\A    |               ___/\A    \\_  _______  __/\A      ||       ||\A      ''"}
+37.5000%{content:"\A \A       ___________   ,\A     _/           \\_/|\A   -/              o  \\_\A    |               ___/\A    \\_  _______  __/\A      ||       ||\A      ''"}
+50.0000%{content:"\A \A       ___________   ,\A     _/           \\_/|\A   ~/              o  \\_\A    |               ___/\A    \\_  _______  __/\A      ||       ||\A      ''"}
+62.5000%{content:"\A \A       ___________   ,\A     _/           \\_/|\A   -/              o  \\_\A    |               ___/\A    \\_  _______  __/\A      ||       ||\A      ''"}
+75.0000%{content:"\A \A       ___________   ,\A     _/           \\_/|\A   ~/              -  \\_\A    |               ___/\A    \\_  _______  __/\A      ||       ||\A      ''"}
+87.5000%{content:"\A \A       ___________   ,\A     _/           \\_/|\A   -/              o  \\_\A    |               ___/\A    \\_  _______  __/\A      ||       ||\A      ''"}
+}
+
+.ascii-mini--pet[data-pet="giant-rhino"]:is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before{content:"\A \A       ___________   ,\A     _/           \\_/|\A    /              o  \\_\A    |               ___/\A    \\_  _______  __/\A      ||       ||\A      ''";animation:ascii-pet-giant-rhino-low 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-giant-rhino-low{
+0.0000%{content:"\A \A       ___________   ,\A     _/           \\_/|\A    /              o  \\_\A    |               ___/\A    \\_  _______  __/\A      ||       ||\A      ''"}
+75.0000%{content:"\A \A       ___________   ,\A     _/           \\_/|\A    /              -  \\_\A    |               ___/\A    \\_  _______  __/\A      ||       ||\A      ''"}
+87.5000%{content:"\A \A       ___________   ,\A     _/           \\_/|\A    /              o  \\_\A    |               ___/\A    \\_  _______  __/\A      ||       ||\A      ''"}
+}
+
+.ascii-mini--pet[data-pet="giant-rhino"][data-mood="asleep"]::before{content:"\A \A \A \A       ___________   ,\A     _/           \\_/|\A    /              -  \\_\A    |               ___/\A    \\_  _______  __/";animation:none}
+
+.ascii-mini--pet[data-pet="alpha-black-panther"]{--marks:16}
+
+.ascii-mini--pet[data-pet="alpha-black-panther"]::before{content:"\A \A \A       (           _,\A        \\________ /%o\\\A        /%%%%%%%%%%%%-<\A       /%%%_____%%%_/\A       |%|      |%|\A       |_|      |_|";animation:ascii-pet-alpha-black-panther 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-alpha-black-panther{
+0.0000%{content:"\A \A \A       (           _,\A        \\________ /%o\\\A        /%%%%%%%%%%%%-<\A       /%%%_____%%%_/\A       |%|      |%|\A       |_|      |_|"}
+12.5000%{content:"\A \A \A       |           _,\A        \\________ /%o\\\A        /%%%%%%%%%%%%-<\A       /%%%_____%%%_/\A       |%|      |%|\A       |_|      |_|"}
+25.0000%{content:"\A \A \A       )           _,\A        \\________ /%o\\\A        /%%%%%%%%%%%%-<\A       /%%%_____%%%_/\A       |%|      |%|\A       |_|      |_|"}
+37.5000%{content:"\A \A \A       |           _,\A        \\________ /%o\\\A        /%%%%%%%%%%%%-<\A       /%%%_____%%%_/\A       |%|      |%|\A       |_|      |_|"}
+50.0000%{content:"\A \A \A       (           _,\A        \\________ /%o\\\A        /%%%%%%%%%%%%-<\A       /%%%_____%%%_/\A       |%|      |%|\A       |_|      |_|"}
+62.5000%{content:"\A \A \A       |           _,\A        \\________ /%o\\\A        /%%%%%%%%%%%%-<\A       /%%%_____%%%_/\A       |%|      |%|\A       |_|      |_|"}
+75.0000%{content:"\A \A \A       )           _,\A        \\________ /%-\\\A        /%%%%%%%%%%%%-<\A       /%%%_____%%%_/\A       |%|      |%|\A       |_|      |_|"}
+87.5000%{content:"\A \A \A       |           _,\A        \\________ /%o\\\A        /%%%%%%%%%%%%-<\A       /%%%_____%%%_/\A       |%|      |%|\A       |_|      |_|"}
+}
+
+.ascii-mini--pet[data-pet="alpha-black-panther"]:is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before{content:"\A \A \A                   _,\A         ________ /%o\\\A        /%%%%%%%%%%%%-<\A       /%%%_____%%%_/\A       |%|      |%|\A       |_|      |_|";animation:ascii-pet-alpha-black-panther-low 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-alpha-black-panther-low{
+0.0000%{content:"\A \A \A                   _,\A         ________ /%o\\\A        /%%%%%%%%%%%%-<\A       /%%%_____%%%_/\A       |%|      |%|\A       |_|      |_|"}
+75.0000%{content:"\A \A \A                   _,\A         ________ /%-\\\A        /%%%%%%%%%%%%-<\A       /%%%_____%%%_/\A       |%|      |%|\A       |_|      |_|"}
+87.5000%{content:"\A \A \A                   _,\A         ________ /%o\\\A        /%%%%%%%%%%%%-<\A       /%%%_____%%%_/\A       |%|      |%|\A       |_|      |_|"}
+}
+
+.ascii-mini--pet[data-pet="alpha-black-panther"][data-mood="asleep"]::before{content:"\A \A \A \A \A                   _,\A         ________ /%-\\\A        /%%%%%%%%%%%%-<\A       /%%%_____%%%_/";animation:none}
+
+.ascii-mini--pet[data-pet="great-moose"]{--marks:5}
+
+.ascii-mini--pet[data-pet="great-moose"]::before{content:"\A           \\_\\_|_  _|_/_/\A                 \\__/\A            ______/ o\\\A      _____/         \\_\A     \\                _)\A     \\_  ________  __/\A       ||        ||\A       ''";animation:ascii-pet-great-moose 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-great-moose{
+0.0000%{content:"\A           \\_\\_|_  _|_/_/\A                 \\__/\A            ______/ o\\\A      _____/         \\_\A     \\                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+12.5000%{content:"\A           \\_\\_|_  _|_/_/\A                 \\__/\A            ______/ o\\\A      _____/         \\_\A     |                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+25.0000%{content:"\A           \\_\\_|_  _|_/_/\A                 \\__/\A            ______/ o\\\A      _____/         \\_\A     \\                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+37.5000%{content:"\A           \\_\\_|_  _|_/_/\A                 \\__/\A            ______/ o\\\A      _____/         \\_\A     |                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+50.0000%{content:"\A           \\_\\_|_  _|_/_/\A                 \\__/\A            ______/ o\\\A      _____/         \\_\A     \\                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+62.5000%{content:"\A           \\_\\_|_  _|_/_/\A                 \\__/\A            ______/ o\\\A      _____/         \\_\A     |                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+75.0000%{content:"\A           \\_\\_|_  _|_/_/\A                 \\__/\A            ______/ -\\\A      _____/         \\_\A     \\                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+87.5000%{content:"\A           \\_\\_|_  _|_/_/\A                 \\__/\A            ______/ o\\\A      _____/         \\_\A     |                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+}
+
+.ascii-mini--pet[data-pet="great-moose"]:is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before{content:"\A           \\_\\_|_  _|_/_/\A                 \\__/\A            ______/ o\\\A      _____/         \\_\A     /                _)\A     \\_  ________  __/\A       ||        ||\A       ''";animation:ascii-pet-great-moose-low 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-great-moose-low{
+0.0000%{content:"\A           \\_\\_|_  _|_/_/\A                 \\__/\A            ______/ o\\\A      _____/         \\_\A     /                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+75.0000%{content:"\A           \\_\\_|_  _|_/_/\A                 \\__/\A            ______/ -\\\A      _____/         \\_\A     /                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+87.5000%{content:"\A           \\_\\_|_  _|_/_/\A                 \\__/\A            ______/ o\\\A      _____/         \\_\A     /                _)\A     \\_  ________  __/\A       ||        ||\A       ''"}
+}
+
+.ascii-mini--pet[data-pet="great-moose"][data-mood="asleep"]::before{content:"\A \A \A           \\_\\_|_  _|_/_/\A                 \\__/\A            ______/ -\\\A      _____/         \\_\A     /                _)\A     \\_  ________  __/";animation:none}
+
+.ascii-mini--pet[data-pet="regal-white-lion"]{--marks:15}
+
+.ascii-mini--pet[data-pet="regal-white-lion"]::before{content:"\A \A \A       (        ,***,\A        \\______*** o *\A        /      ***  =<\A       /  ______'***'\A       | |      | |\A       |_|      |_|";animation:ascii-pet-regal-white-lion 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-regal-white-lion{
+0.0000%{content:"\A \A \A       (        ,***,\A        \\______*** o *\A        /      ***  =<\A       /  ______'***'\A       | |      | |\A       |_|      |_|"}
+12.5000%{content:"\A \A \A       |        ,***,\A        \\______*** o *\A        /      ***  =<\A       /  ______'***'\A       | |      | |\A       |_|      |_|"}
+25.0000%{content:"\A \A \A       )        ,***,\A        \\______*** o *\A        /      ***  =<\A       /  ______'***'\A       | |      | |\A       |_|      |_|"}
+37.5000%{content:"\A \A \A       |        ,***,\A        \\______*** o *\A        /      ***  =<\A       /  ______'***'\A       | |      | |\A       |_|      |_|"}
+50.0000%{content:"\A \A \A       (        ,***,\A        \\______*** o *\A        /      ***  =<\A       /  ______'***'\A       | |      | |\A       |_|      |_|"}
+62.5000%{content:"\A \A \A       |        ,***,\A        \\______*** o *\A        /      ***  =<\A       /  ______'***'\A       | |      | |\A       |_|      |_|"}
+75.0000%{content:"\A \A \A       )        ,***,\A        \\______*** - *\A        /      ***  =<\A       /  ______'***'\A       | |      | |\A       |_|      |_|"}
+87.5000%{content:"\A \A \A       |        ,***,\A        \\______*** o *\A        /      ***  =<\A       /  ______'***'\A       | |      | |\A       |_|      |_|"}
+}
+
+.ascii-mini--pet[data-pet="regal-white-lion"]:is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before{content:"\A \A \A                ,***,\A         ______*** o *\A        /      ***  =<\A       /  ______'***'\A       | |      | |\A       |_|      |_|";animation:ascii-pet-regal-white-lion-low 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-regal-white-lion-low{
+0.0000%{content:"\A \A \A                ,***,\A         ______*** o *\A        /      ***  =<\A       /  ______'***'\A       | |      | |\A       |_|      |_|"}
+75.0000%{content:"\A \A \A                ,***,\A         ______*** - *\A        /      ***  =<\A       /  ______'***'\A       | |      | |\A       |_|      |_|"}
+87.5000%{content:"\A \A \A                ,***,\A         ______*** o *\A        /      ***  =<\A       /  ______'***'\A       | |      | |\A       |_|      |_|"}
+}
+
+.ascii-mini--pet[data-pet="regal-white-lion"][data-mood="asleep"]::before{content:"\A \A \A \A \A                ,***,\A         ______*** - *\A        /      ***  =<\A       /  ______'***'";animation:none}
+
+.ascii-mini--pet[data-pet="ironclad-war-elephant"]{--marks:16}
+
+.ascii-mini--pet[data-pet="ironclad-war-elephant"]::before{content:"\A \A        ___________\A      _/[][][][][] '.__\A    ~/[][][][][]    o  \\\A     |             (    |\A     \\_  _______  _\\   /|\A       ||       ||  | |\A       ''       ''  '-'";animation:ascii-pet-ironclad-war-elephant 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-ironclad-war-elephant{
+0.0000%{content:"\A \A        ___________\A      _/[][][][][] '.__\A    ~/[][][][][]    o  \\\A     |             (    |\A     \\_  _______  _\\   /|\A       ||       ||  | |\A       ''       ''  '-'"}
+12.5000%{content:"\A \A        ___________\A      _/[][][][][] '.__\A    -/[][][][][]    o  \\\A     |             (    |\A     \\_  _______  _\\   /|\A       ||       ||  | |\A       ''       ''  '-'"}
+25.0000%{content:"\A \A        ___________\A      _/[][][][][] '.__\A    ~/[][][][][]    o  \\\A     |             (    |\A     \\_  _______  _\\   /|\A       ||       ||  | |\A       ''       ''  '-'"}
+37.5000%{content:"\A \A        ___________\A      _/[][][][][] '.__\A    -/[][][][][]    o  \\\A     |             (    |\A     \\_  _______  _\\   /|\A       ||       ||  | |\A       ''       ''  '-'"}
+50.0000%{content:"\A \A        ___________\A      _/[][][][][] '.__\A    ~/[][][][][]    o  \\\A     |             (    |\A     \\_  _______  _\\   /|\A       ||       ||  | |\A       ''       ''  '-'"}
+62.5000%{content:"\A \A        ___________\A      _/[][][][][] '.__\A    -/[][][][][]    o  \\\A     |             (    |\A     \\_  _______  _\\   /|\A       ||       ||  | |\A       ''       ''  '-'"}
+75.0000%{content:"\A \A        ___________\A      _/[][][][][] '.__\A    ~/[][][][][]    -  \\\A     |             (    |\A     \\_  _______  _\\   /|\A       ||       ||  | |\A       ''       ''  '-'"}
+87.5000%{content:"\A \A        ___________\A      _/[][][][][] '.__\A    -/[][][][][]    o  \\\A     |             (    |\A     \\_  _______  _\\   /|\A       ||       ||  | |\A       ''       ''  '-'"}
+}
+
+.ascii-mini--pet[data-pet="ironclad-war-elephant"]:is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before{content:"\A \A        ___________\A      _/[][][][][] '.__\A     /[][][][][]    o  \\\A     |             (    |\A     \\_  _______  _\\   /|\A       ||       ||  | |\A       ''       ''  '-'";animation:ascii-pet-ironclad-war-elephant-low 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-ironclad-war-elephant-low{
+0.0000%{content:"\A \A        ___________\A      _/[][][][][] '.__\A     /[][][][][]    o  \\\A     |             (    |\A     \\_  _______  _\\   /|\A       ||       ||  | |\A       ''       ''  '-'"}
+75.0000%{content:"\A \A        ___________\A      _/[][][][][] '.__\A     /[][][][][]    -  \\\A     |             (    |\A     \\_  _______  _\\   /|\A       ||       ||  | |\A       ''       ''  '-'"}
+87.5000%{content:"\A \A        ___________\A      _/[][][][][] '.__\A     /[][][][][]    o  \\\A     |             (    |\A     \\_  _______  _\\   /|\A       ||       ||  | |\A       ''       ''  '-'"}
+}
+
+.ascii-mini--pet[data-pet="ironclad-war-elephant"][data-mood="asleep"]::before{content:"\A \A \A \A        ___________\A      _/[][][][][] '.__\A     /[][][][][]    -  \\\A     |             (    |\A     \\_  _______  _\\   /|";animation:none}
+
+.ascii-mini--pet[data-pet="ironclad-war-bear"]{--marks:14}
+
+.ascii-mini--pet[data-pet="ironclad-war-bear"]::before{content:"\A \A                 _^n\A       _________/[] \\\A      /[][][][]   o  \\_\A     ([][][][]       __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|";animation:ascii-pet-ironclad-war-bear 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-ironclad-war-bear{
+0.0000%{content:"\A \A                 _^n\A       _________/[] \\\A      /[][][][]   o  \\_\A     ([][][][]       __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|"}
+75.0000%{content:"\A \A                 _^n\A       _________/[] \\\A      /[][][][]   -  \\_\A     ([][][][]       __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|"}
+87.5000%{content:"\A \A                 _^n\A       _________/[] \\\A      /[][][][]   o  \\_\A     ([][][][]       __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|"}
+}
+
+.ascii-mini--pet[data-pet="ironclad-war-bear"]:is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before{content:"\A \A                 _^n\A       _________/[] \\\A      /[][][][]   o  \\_\A     ([][][][]       __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|";animation:ascii-pet-ironclad-war-bear-low 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-ironclad-war-bear-low{
+0.0000%{content:"\A \A                 _^n\A       _________/[] \\\A      /[][][][]   o  \\_\A     ([][][][]       __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|"}
+75.0000%{content:"\A \A                 _^n\A       _________/[] \\\A      /[][][][]   -  \\_\A     ([][][][]       __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|"}
+87.5000%{content:"\A \A                 _^n\A       _________/[] \\\A      /[][][][]   o  \\_\A     ([][][][]       __)\A      \\_   _____   _/\A        | |     | |\A        |_|     |_|"}
+}
+
+.ascii-mini--pet[data-pet="ironclad-war-bear"][data-mood="asleep"]::before{content:"\A \A \A \A                 _^n\A       _________/[] \\\A      /[][][][]   -  \\_\A     ([][][][]       __)\A      \\_   _____   _/";animation:none}
+
+.ascii-mini--pet[data-mood="asleep"]::after{content:"\A z";animation:ascii-pet-marks-asleep 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-marks-asleep{
+0.0000%{content:"\A z"}
+33.3333%{content:"  Z\A z"}
+66.6667%{content:"  Z"}
+83.3333%{content:""}
+}
+
+.ascii-mini--pet[data-mood="hungry"]::after{content:" ?";animation:ascii-pet-marks-hungry 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-marks-hungry{
+0.0000%{content:" ?"}
+75.0000%{content:""}
+}
+
+.ascii-mini--pet[data-mood="lonely"]::after{content:"\A . . .";animation:ascii-pet-marks-lonely 3.333s steps(1,end) infinite}
+@keyframes ascii-pet-marks-lonely{
+0.0000%{content:"\A . . ."}
+40.0000%{content:""}
+60.0000%{content:"\A ."}
+80.0000%{content:"\A . ."}
+}
+
+.ascii-mini--pet[data-mood="delighted"]::after{content:"\A  ♥";animation:ascii-pet-marks-delighted 4.0s steps(1,end) infinite}
+@keyframes ascii-pet-marks-delighted{
+0.0000%{content:"\A  ♥"}
+6.2500%{content:" ♥"}
+12.5000%{content:""}
+50.0000%{content:"\A     ♥"}
+56.2500%{content:"    ♥"}
+62.5000%{content:""}
+}
+
+.ascii-mini--pet[data-react="pet"]::after{content:"\A  ♥";animation:ascii-pet-marks-pet 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-marks-pet{
+0.0000%{content:"\A  ♥"}
+12.5000%{content:" ♥\A    ♥"}
+25.0000%{content:"   ♥\A ♥"}
+37.5000%{content:"♥\A     ♥"}
+50.0000%{content:"    ♥"}
+62.5000%{content:""}
+}
+
+.ascii-mini--pet[data-react="feed"]::after{content:"\A n";animation:ascii-pet-marks-feed 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-marks-feed{
+0.0000%{content:"\A n"}
+12.5000%{content:"\A no"}
+25.0000%{content:"\A nom"}
+50.0000%{content:" nom"}
+75.0000%{content:""}
+}
+
+.ascii-mini--pet[data-react="full"]::after{content:"";animation:ascii-pet-marks-full 2.0s steps(1,end) infinite}
+@keyframes ascii-pet-marks-full{
+0.0000%{content:""}
+12.5000%{content:"\A h"}
+25.0000%{content:"\A hm"}
+37.5000%{content:"\A hmp"}
+50.0000%{content:"\A hmph"}
+87.5000%{content:""}
+}
+
 /* march */
 .ascii-march::before{content:"  o\A ^\\|-__.-       /^\\             /^\\             /\A o)|-__.        (o)             (o)             (\A |\\|          [#]|\\           [#]|\\             /\A | |             |               |\A  \\             / \\             / \\             /\A   \\           /   \\           /   \\           /\A      .      _        .      _        .      _";animation:ascii-march 12.0s steps(1,end) infinite}
 @keyframes ascii-march{

@@ -40,6 +40,7 @@ const scenes = [
   ['helm', '/heroes/', '.ascii-mini--helm', 0.25, 32],
   ['seal', '/governor-gear/', '.ascii-mini--seal', 0.25, 32],
   ['tome', '/masters/', '.ascii-mini--tome', 1 / 6, 48],
+  ['pet', '/pets/', '.ascii-motif-rail .ascii-mini--pet', 1.2 / 16, 16],
 ];
 
 const server = http.createServer((request, response) => {

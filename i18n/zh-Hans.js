@@ -1169,6 +1169,12 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "masters.title": "导师",
   "masters.cardLede": "记录导师的好感与技能，查看下一阶段所需徽章，以及你的徽章和手稿能得多少分。",
   "masters.kicker": "导师学院",
-  "masters.metaTitle": "导师 — dey.ci"
+  "masters.metaTitle": "导师 — dey.ci",
+  "pets.nav": "宠物",
+  "ev.deck.lede.pets": "驯服、喂食、抚摸；每次进阶都有规划。",
+  "pets.title": "宠物",
+  "pets.cardLede": "照顾会实时饿肚子、感到孤单的宠物，并查看下一次进阶的花费和积分。",
+  "pets.kicker": "兽笼",
+  "pets.metaTitle": "宠物 — dey.ci"
 }
 ;

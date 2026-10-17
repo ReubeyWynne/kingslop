@@ -43,6 +43,13 @@ store.setMaster('valora', { affinity: 29, ready: true, skills: [3, 2, 0, null] }
 store.masters(); // { roster: { valora: { affinity, ready, skills } }, provenance, emblems: { valora: 10 } }
 ```
 
+Pet facts serve the Pets page. `pets.roster` holds the pets you have tamed, keyed by ID (`_data/pets.json`), each with `level` (1–100 or null until read) and `advanced` (true only at levels 10, 20 … 100, once the Advance that breaks that level cap is done; any other level clears it), with its own entry in `pets.provenance`. How hungry and fond each pet is lives apart from the ledger (`PetCare`, key `ks.pet-care.v1`), because it is play rather than a game fact. Saves without a `pets` key stay valid.
+
+```js
+store.setPet('gray-wolf', { level: 20, advanced: true });
+store.pets(); // { roster: { 'gray-wolf': { level, advanced } }, provenance }
+```
+
 Building levels serve the Town Centre. `buildings.levels` maps a building ID (`town-center`, `embassy`, `barracks`, `range`, `stable`, `command-center`, `infirmary`, `war-academy`, `academy`, as in `_data/buildings.json`) to the game's own level ID: `0` (not built), `1`…`30`, `30-1`…`30-4`, `TG 1`, `TG1-1`…`TG1-4`, … `TG 10` (`PlayerLedger.buildingLevel` checks one). Each level has its own entry in `buildings.provenance`. A building missing from the map has not been counted yet. Truegold, Tempered Truegold and the four resources stay ordinary inventory balances. Upgrade priorities live in `preferences.buildings`: `tiers` maps a building to 1 (Lead), 2 (Keep up), 3 (Spare) or 0 (Skip), and `order` is the tie-break order. Missing entries take the defaults in `BuildingSpend.DEFAULT_TIERS`. Saves without a `buildings` key stay valid.
 
 ```js

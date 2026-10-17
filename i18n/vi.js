@@ -1180,6 +1180,12 @@ window.__BH_I18N_DATA["vi"] = {
   "masters.title": "Bậc thầy",
   "masters.cardLede": "Ghi lại độ thân thiết và kỹ năng của các bậc thầy, xem bậc kế tiếp và huy hiệu cần, cùng số điểm huy hiệu và bản thảo của bạn mang lại.",
   "masters.kicker": "Học viện Bậc thầy",
-  "masters.metaTitle": "Bậc thầy — dey.ci"
+  "masters.metaTitle": "Bậc thầy — dey.ci",
+  "pets.nav": "Thú cưng",
+  "ev.deck.lede.pets": "thuần hóa, cho ăn và vuốt ve; mọi lần thăng cấp đều có kế hoạch.",
+  "pets.title": "Thú cưng",
+  "pets.cardLede": "Chăm sóc thú cưng khi chúng đói và cô đơn theo thời gian thực, và xem chi phí cùng điểm của lần thăng cấp tiếp theo.",
+  "pets.kicker": "Chuồng Thú",
+  "pets.metaTitle": "Thú cưng — dey.ci"
 }
 ;

@@ -1170,6 +1170,12 @@ window.__BH_I18N_DATA["fr"] = {
   "masters.title": "Maîtres",
   "masters.cardLede": "Note l’affinité et les compétences de tes maîtres, vois chaque classe suivante et ses emblèmes, et ce que tes emblèmes et manuscrits peuvent rapporter.",
   "masters.kicker": "l’Académie des maîtres",
-  "masters.metaTitle": "Maîtres — dey.ci"
+  "masters.metaTitle": "Maîtres — dey.ci",
+  "pets.nav": "Familiers",
+  "ev.deck.lede.pets": "apprivoisés, nourris et caressés ; chaque avancement planifié.",
+  "pets.title": "Familiers",
+  "pets.cardLede": "Prends soin de tes familiers qui ont faim et se sentent seuls en temps réel, et vois ce que coûte et rapporte chaque prochain avancement.",
+  "pets.kicker": "la Cage aux bêtes",
+  "pets.metaTitle": "Familiers — dey.ci"
 }
 ;

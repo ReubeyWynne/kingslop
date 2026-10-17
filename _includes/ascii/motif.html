@@ -5,6 +5,8 @@
   {% include ascii/aurora.html %}
   {% elsif include.kind == 'charm' %}
   <span class="ascii-mini ascii-mini--charm"><span class="charm-sea"></span><span class="charm-pennant"></span></span>
+  {% elsif include.kind == 'pet' %}
+  <span class="ascii-mini ascii-mini--pet" data-pet="gray-wolf" data-mood="delighted"></span>
   {% elsif include.kind == 'moon' %}
   {% include ascii/moon.html %}
   {% else %}

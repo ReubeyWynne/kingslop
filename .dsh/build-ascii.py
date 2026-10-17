@@ -994,6 +994,210 @@ def minis():
     return '\n'.join(css) + '\n'
 
 
+# ── the beast cage: one pet per pen ──────────────────────────────────────
+# Every pet stands in profile facing right on the ground row of a 24 x 9 pen,
+# with 'o' for its eye. Three bodies per pet: up (tail wagging through three
+# poses, a blink), low (tail tucked away, a slower blink) and asleep (lying
+# down: the leg rows are dropped so the belly rests on the ground, eyes shut).
+# The page picks one by mood. Over the head sits a shared two-row layer of
+# marks (zzz, a question, hearts) that steps in place; the generator moves it
+# sideways until no mark lands on the pet in any frame.
+
+PET_W, PET_H, PET_LEGS = 24, 9, 2
+PETS = {  # id: (drawing, tail root (column, row in the drawing), tail kind)
+    'gray-wolf': (r'''
+                 /\
+         _______/ o\_
+        /          __>
+       /  _______  /
+       | |       | |
+       |_|       |_|''', (8, 1), 'brush'),
+    'lynx': (r'''
+               /|  /|
+         ______| o  |
+        /       . =<
+       |  ______  /
+       | |      | |
+       |_|      |_|''', (8, 1), 'stub'),
+    'bison': (r'''
+          _.-~~-._
+     _.-~'  ,,,,  '-./)
+    /             o  \
+    |              ___)
+    \_  ______  __/ '
+      ||      ||
+      ''      ''''', (4, 2), 'tuft'),
+    'moose': (r'''
+              \_|_  _|_/
+                 \__/
+           ______/ o\
+     _____/         \_
+    /                _)
+    \_  ________  __/
+      ||        ||
+      ''        ''''', (4, 4), 'stub'),
+    'cheetah': (r'''
+                  _,
+        ________ / o\
+       / . . . .    -<
+      / .  ___  . _/
+      | | |   | | |
+      |_| |_  |_|_|''', (7, 1), 'thin'),
+    'lion': (r'''
+               ,;;;;,
+        ______;;; o ;
+       /      ;;;  =<
+      /  ______';;;'
+      | |      | |
+      |_|      |_|''', (7, 1), 'thin'),
+    'grizzly-bear': (r'''
+                __n
+      _________/   \
+     /           o  \_
+    (               __)
+     \_   _____   _/
+       | |     | |
+       |_|     |_|''', (4, 3), 'none'),
+    'mighty-bison': (r'''
+          _.-~~-._
+     _.-~' [][][] '-./)
+    /  [][][][]   o  \
+    |              ___)
+    \_  ______  __/ '
+      ||      ||
+      ''      ''''', (4, 2), 'tuft'),
+    'giant-rhino': (r'''
+      ___________   ,
+    _/           \_/|
+   /              o  \_
+   |               ___/
+   \_  _______  __/
+     ||       ||
+     ''       ''''', (3, 2), 'tuft'),
+    'alpha-black-panther': (r'''
+                  _,
+        ________ /%o\
+       /%%%%%%%%%%%%-<
+      /%%%_____%%%_/
+      |%|      |%|
+      |_|      |_|''', (7, 1), 'thin'),
+    'great-moose': (r'''
+          \_\_|_  _|_/_/
+                \__/
+           ______/ o\
+     _____/         \_
+    /                _)
+    \_  ________  __/
+      ||        ||
+      ''        ''''', (4, 4), 'stub'),
+    'regal-white-lion': (r'''
+               ,***,
+        ______*** o *
+       /      ***  =<
+      /  ______'***'
+      | |      | |
+      |_|      |_|''', (7, 1), 'thin'),
+    'ironclad-war-elephant': (r'''
+       ___________
+     _/[][][][][] '.__
+    /[][][][][]    o  \
+    |             (    |
+    \_  _______  _\   /|
+      ||       ||  | |
+      ''       ''  '-' ''', (4, 2), 'tuft'),
+    'ironclad-war-bear': (r'''
+                _^n
+      _________/[] \
+     /[][][][]   o  \_
+    ([][][][]       __)
+     \_   _____   _/
+       | |     | |
+       |_|     |_|''', (4, 3), 'none'),
+}
+# Tail poses as (dx, dy, glyph) from the root: the root stays put and the tip
+# swings, so a wag goes A, B, C, B and the tail never reads as a pole.
+PET_TAILS = {
+    'brush': [[(0, 0, '\\'), (-1, -1, '\\')], [(0, 0, '\\'), (-1, -1, '|')], [(0, 0, '\\'), (-1, -1, '/')]],
+    'thin': [[(0, 0, '\\'), (-1, -1, '(')], [(0, 0, '\\'), (-1, -1, '|')], [(0, 0, '\\'), (-1, -1, ')')]],
+    'stub': [[(0, 0, '\\')], [(0, 0, '|')], [(0, 0, '\\')]],
+    'tuft': [[(-1, 0, '~')], [(-1, 0, '-')], [(-1, 0, '~')]],
+    'none': [[], [], []],
+}
+PET_FPS = 8
+PET_UP, PET_LOW = 16, 24
+# The marks over the head: a 6 x 2 layer, (column, row, glyph) per frame.
+PET_MARK_W = 6
+PET_MARKS = {  # name: (seconds a frame, frames)
+    'asleep': (1 / 3, [[(0, 1, 'z')]] * 4 + [[(0, 1, 'z'), (2, 0, 'Z')]] * 4 + [[(2, 0, 'Z')]] * 2 + [[]] * 2),
+    'hungry': (0.5, [[(1, 0, '?')]] * 3 + [[]]),
+    'lonely': (1 / 3, [[(0, 1, '.'), (2, 1, '.'), (4, 1, '.')]] * 4 + [[]] * 2 + [[(0, 1, '.')]] * 2 + [[(0, 1, '.'), (2, 1, '.')]] * 2),
+    'delighted': (0.25, [[(1, 1, '♥')], [(1, 0, '♥')]] + [[]] * 6 + [[(4, 1, '♥')], [(4, 0, '♥')]] + [[]] * 6),
+    'pet': (0.25, [[(1, 1, '♥')], [(1, 0, '♥'), (3, 1, '♥')], [(3, 0, '♥'), (0, 1, '♥')], [(0, 0, '♥'), (4, 1, '♥')], [(4, 0, '♥')], [], [], []]),
+    'feed': (0.25, [[(0, 1, 'n')], [(0, 1, 'no')], [(0, 1, 'nom')], [(0, 1, 'nom')], [(1, 0, 'nom')], [(1, 0, 'nom')], [], []]),
+    'full': (0.25, [[], [(0, 1, 'h')], [(0, 1, 'hm')], [(0, 1, 'hmp')], [(0, 1, 'hmph')], [(0, 1, 'hmph')], [(0, 1, 'hmph')], []]),
+}
+
+
+def pet_body(pet, pose, i):
+    drawing, (tx, ty), kind = PETS[pet]
+    rows = [r.rstrip() for r in art(drawing)]
+    if pose == 'asleep':
+        rows = rows[:-PET_LEGS]
+    arr = grid(PET_W, PET_H)
+    top = PET_H - len(rows)
+    for r, row in enumerate(rows):
+        put(arr, 0, top + r, row, ' ')
+    eye = next((c, top + r) for r, row in enumerate(rows) for c, ch in enumerate(row) if ch == 'o')
+    if pose == 'up':
+        for dx, dy, ch in PET_TAILS[kind][(0, 1, 2, 1)[(i // 2) % 4]]:
+            put(arr, tx + dx, top + ty + dy, ch)
+        shut = i in (12, 13)
+    else:
+        shut = pose == 'asleep' or i in (18, 19, 20)
+    if shut:
+        put(arr, *eye, '-')
+    return arr, eye
+
+
+def pet_marks(pet):
+    """The column the marks layer sits at: over the head, clear of the pet."""
+    body = {(c, r) for i in range(PET_UP) for r, row in enumerate(pet_body(pet, 'up', i)[0])
+            for c, ch in enumerate(row) if ch != ' '}
+    eye = pet_body(pet, 'up', 0)[1]
+    cells = {(c + dc, r) for _, frames in PET_MARKS.values() for frame in frames
+             for c, r, text in frame for dc in range(len(text))}
+    for x in sorted(range(PET_W - PET_MARK_W + 1), key=lambda x: (abs(x - (eye[0] - 3)), x)):
+        if not any((x + c, r) in body for c, r in cells):
+            return x
+    raise AssertionError(f'{pet}: no room over the head for the marks')
+
+
+def pets():
+    css = ['/* the beast cage */']
+    sel = '.ascii-mini--pet[data-pet="{}"]'
+    for pet, (drawing, _, _) in PETS.items():
+        rows = [r.rstrip() for r in art(drawing)]
+        assert max(map(len, rows)) <= PET_W and len(rows) <= PET_H - 1, f'{pet}: the drawing outgrows its pen'
+        assert sum(r.count('o') for r in rows) == 1, f'{pet}: one eye'
+        css.append(f'{sel.format(pet)}{{--marks:{pet_marks(pet)}}}\n')
+        up = [pet_body(pet, 'up', i)[0] for i in range(PET_UP)]
+        css.append(animation(sel.format(pet) + '::before', f'ascii-pet-{pet}', up, PET_UP / PET_FPS))
+        low = [pet_body(pet, 'low', i)[0] for i in range(PET_LOW)]
+        css.append(animation(sel.format(pet) + ':is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before',
+                             f'ascii-pet-{pet}-low', low, PET_LOW / 6))
+        css.append(f'{sel.format(pet)}[data-mood="asleep"]::before{{content:{content(pet_body(pet, "asleep", 0)[0])};animation:none}}\n')
+    for name, (step, frames) in PET_MARKS.items():
+        layers = []
+        for frame in frames:
+            arr = grid(PET_MARK_W, 2)
+            for c, r, text in frame:
+                put(arr, c, r, text)
+            layers.append(arr)
+        attr = 'data-react' if name in ('pet', 'feed', 'full') else 'data-mood'
+        css.append(animation(f'.ascii-mini--pet[{attr}="{name}"]::after', f'ascii-pet-marks-{name}', layers, round(step * len(frames), 3)))
+    return '\n'.join(css) + '\n'
+
+
 # ── the march ────────────────────────────────────────────────────────────
 # A column walking left in step. Each figure stands on a hip column; its legs
 # are a four-pose walk drawn so that the planted foot never slides: the body
@@ -1510,6 +1714,6 @@ def aurora():
 
 if __name__ == '__main__':
     header = '/* Generated by .dsh/build-ascii.py — edit the generator, not this file.\n   Layout and colour for these scenes live in css/ascii.css. */\n'
-    write('css/ascii-frames.css', header + campfire() + hearth() + forge() + minis() + march() + constellations() + aurora())
+    write('css/ascii-frames.css', header + campfire() + hearth() + forge() + minis() + pets() + march() + constellations() + aurora())
     print('wrote css/ascii-frames.css and _includes/ascii/campfire.html')
 
