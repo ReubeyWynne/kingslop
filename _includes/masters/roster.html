@@ -20,9 +20,13 @@
             <details class="master-dossier" name="master-dossier" data-module="disclosure" data-deep-link="master-{{ master.id }}">
               <summary class="master-heading">
                 <span class="master-portrait"><img src="../img/masters/{{ master.id }}.webp" width="80" height="80" alt="" loading="lazy" decoding="async"><img class="master-emblem-mark" src="../img/masters/emblem-{{ master.id }}.webp" width="22" height="22" alt="" loading="lazy"><span class="master-portrait-level" data-portrait="affinity" aria-hidden="true" hidden></span><img class="master-portrait-soul" src="../img/masters/kindred-soul.webp" width="20" height="20" alt="" loading="lazy" data-portrait="soul" hidden></span>
-                <span class="master-name"><h3>{{ master.name | escape }}</h3><span class="master-title" lang="en">{{ master.title | escape }}</span><span class="master-mine-line" data-target="master-directory.badge"></span></span>
+                <span class="master-name"><h3>{{ master.name | escape }}</h3><span class="master-title" lang="en">{{ master.title | escape }}</span><span class="master-scope" lang="en">{{ master.scope | escape }}</span><span class="master-mine-line" data-target="master-directory.badge"></span></span>
               </summary>
               <div class="master-dossier-body">
+                <div class="master-intro">
+                  <p class="master-summary" lang="en">{{ master.summary | escape }}</p>
+                  <p class="master-who"><b data-i18n="masters.who">Worth it for</b> <span lang="en">{{ master.who | escape }}</span></p>
+                </div>
                 <fieldset class="master-mine" disabled data-target="master-directory.form">
                   <legend data-i18n="masters.yours">Your master</legend>
                   <label class="master-own"><input type="checkbox" data-field="owned"><span data-i18n="masters.have">I have unlocked this master</span></label>
@@ -33,8 +37,8 @@
                   <p class="master-mine-note"><span data-i18n="masters.mineNote">Saved on this device with your inventory. A skill you have not learned yet is —.</span> <output data-target="master-directory.saved" role="status"></output></p>
                 </fieldset>
                 <div class="master-brief">
-                  <p class="master-soul"><img src="../img/masters/kindred-soul.webp" width="40" height="40" alt="" loading="lazy"><span><b data-i18n="masters.kindredSoul">Kindred Soul</b> <span lang="en">{% for buff in master.kindredSoul %}{% unless forloop.first %}, {% endunless %}{{ buff.text | escape }}{% endfor %}</span></span></p>
-                  <p class="master-talent"><img src="../img/masters/talent-{{ master.id }}.webp" width="40" height="40" alt="" loading="lazy"><span><b lang="en">{{ master.talent.name | escape }}</b> <small data-i18n="masters.talentNote">talent, rises with each class</small><span class="master-talent-now" data-target="master-directory.talent"></span><span class="master-talent-max" lang="en">{% for effect in master.talent.levels.last %}{% unless forloop.first %}, {% endunless %}{{ effect.text | escape }}{% endfor %}</span></span></p>
+                  <p class="master-soul"><img src="../img/masters/kindred-soul.webp" width="40" height="40" alt="" loading="lazy"><span><b data-i18n="masters.kindredSoul">Kindred Soul</b> <span lang="en">{% for buff in master.kindredSoul %}{% unless forloop.first %}, {% endunless %}{{ buff.text | escape }}{% endfor %}</span><small data-i18n="masters.soulNote">at affinity 100, for all your squads in every battle</small></span></p>
+                  <p class="master-talent"><img src="../img/masters/talent-{{ master.id }}.webp" width="40" height="40" alt="" loading="lazy"><span><b lang="en">{{ master.talent.name | escape }}</b> <small data-i18n="masters.talentNote">talent, always on, rises with each class</small><span class="master-talent-max" lang="en">{{ master.talent.say | escape }}</span><span class="master-ramp"><span data-i18n="masters.ramp">from the first class to Kindred Soul:</span> <span lang="en">{{ master.talent.ramp | escape }}</span></span><span class="master-talent-now" data-target="master-directory.talent"></span></span></p>
                   <dl class="master-facts">
                     <div><dt data-i18n="masters.unlocks">Unlocks</dt><dd><span data-i18n="masters.serverDay" data-i18n-n="{{ master.unlockDay }}">server day {{ master.unlockDay }}</span></dd></div>
                     <div><dt data-i18n="masters.toKindred">Emblems to Kindred Soul</dt><dd data-number="{{ master.emblemsToMax }}">{{ master.emblemsToMax }}</dd></div>
@@ -52,14 +56,15 @@
                     {% for skill in master.skills %}{% assign first = skill.levels.first %}<li data-skill="{{ forloop.index0 }}">
                       <img src="../img/masters/skills/{{ master.id }}-{{ forloop.index }}.webp" width="44" height="44" alt="" loading="lazy">
                       <div>
-                        <h4><span lang="en">{{ skill.name | escape }}</span> <small class="master-skill-level" data-target="master-directory.skillLevel" data-skill="{{ forloop.index0 }}"></small><small class="master-skill-max"><span data-i18n="masters.maxLevel">max</span> {{ skill.max }}</small></h4>
-                        <p class="master-skill-effect" lang="en">{% for effect in skill.levels.last.effects %}{% unless forloop.first %}, {% endunless %}{{ effect.text | escape }}{% endfor %}</p>
+                        <h4><span lang="en">{{ skill.name | escape }}</span> <small class="master-skill-where" lang="en">{{ skill.where | escape }}</small> <small class="master-skill-level" data-target="master-directory.skillLevel" data-skill="{{ forloop.index0 }}"></small></h4>
+                        <p class="master-skill-effect" lang="en">{{ skill.say | escape }}</p>
+                        <p class="master-ramp"><span data-i18n="masters.skillRamp" data-i18n-n="{{ skill.max }}">level 1 to {{ skill.max }}:</span> <span lang="en">{{ skill.ramp | escape }}</span></p>
                         <p class="master-skill-cost"><span data-i18n="masters.unlocksAt" data-i18n-n="{{ first.requires.affinity }}">unlocks at affinity {{ first.requires.affinity }}</span> · <img src="../img/items/masters-manuscript.webp" width="14" height="14" alt=""> <span data-number="{{ skill.manuscripts }}">{{ skill.manuscripts }}</span> <span data-i18n="masters.toMax">to max</span></p>
-                        <p class="master-skill-gates" lang="en">{% for level in skill.levels %}{% if level.requires and forloop.index > 1 %}<span>Lv {{ forloop.index }}: {% if level.requires.affinity %}affinity {{ level.requires.affinity }}{% else %}skill total {{ level.requires.total }}{% endif %}</span>{% endif %}{% endfor %}</p>
+                        <p class="master-skill-gates" lang="en">{% for level in skill.levels %}{% if level.requires and forloop.index > 1 %}<span>Lv {{ forloop.index }} needs {% if level.requires.affinity %}affinity {{ level.requires.affinity }}{% else %}{{ level.requires.total }} skill levels in total{% endif %}</span>{% endif %}{% endfor %}</p>
                       </div>
                     </li>{% endfor %}
                   </ol>
-                  <p class="note" data-i18n="masters.skillNote">A skill level costs Master's Manuscripts when its learning timer ends. Learning speedups shorten the timer. Names and effects are shown in English.</p>
+                  <p class="note" data-i18n="masters.skillNote">Skills are always on once learned. Each level costs Master's Manuscripts when its learning timer ends, and learning speedups shorten the timer. The effect shown is the top level. Names and effects are shown in English.</p>
                 </div>
               </div>
             </details>

@@ -9,7 +9,10 @@ ladders, talents and skills agree exactly for the six masters both list; Aena an
 are on Kingshot Optimizer only, so they keep `verified: false` and the pages say so.
 Special Research is left out: its emblem cost per research disagrees between the two
 sites (25,000 or 14,000 a master), so nothing here rests on it. Power values are dropped;
-the pages and the spending plan only need the steps, their prices and their effects."""
+the pages and the spending plan only need the steps, their prices and their effects.
+
+.dsh/masters-guide.json adds what each master is for, in plain words, and a sentence per
+talent and skill paraphrasing the in-game description, filled with the data's values."""
 import json, sys
 from pathlib import Path
 
@@ -39,6 +42,31 @@ def effect_text(stat, value, percent):
 
 def effects(rows):
     return [{'stat': e['stat'], 'value': number(e['value']), 'percent': bool(e['percent']), 'text': effect_text(e['stat'], e['value'], e['percent'])} for e in rows]
+
+
+GUIDE = json.loads((Path(__file__).resolve().parent / 'masters-guide.json').read_text())['masters']
+
+
+def amount(effect):
+    value = number(effect['value'])
+    text = f'{value:,}' if isinstance(value, int) else f'{value}'
+    return text + ('%' if effect['percent'] else '')
+
+
+def say(template, rows, strict=True):
+    """A guide sentence with this level's effect values filled in. None when the level lacks a value it names."""
+    import re
+    wanted = [int(n) for n in re.findall(r'\{(\d)\}', template)]
+    if any(n >= len(rows) for n in wanted):
+        assert not strict, (template, rows)
+        return None
+    return re.sub(r'\{(\d)\}', lambda m: amount(rows[int(m.group(1))]), template)
+
+
+def ramp(first, top):
+    """How each top-level value grows from level 1: '30,000 → 300,000 · 1 → 3'. A value level 1 lacks starts at 0."""
+    start = {e['stat']: e for e in first}
+    return ' · '.join(f"{amount(start[e['stat']]) if e['stat'] in start else amount(dict(e, value=0))} → {amount(e)}" for e in top)
 
 
 def requirement(req):
@@ -75,6 +103,14 @@ def master(m):
             {'effects': effects(l['effects']), 'manuscripts': l['manuscripts'], 'learningXp': l['learningXp'], 'requires': requirement(l['requirement'])}
             for l in levels]})
         assert skills[-1]['levels'][0]['requires'] and 'affinity' in skills[-1]['levels'][0]['requires']
+    guide = GUIDE[m['id']]
+    assert len(guide['skills']) == len(skills), m['id']
+    for skill, words in zip(skills, guide['skills']):
+        first, top = skill['levels'][0]['effects'], skill['levels'][-1]['effects']
+        skill['where'] = words['where']
+        skill['say'] = say(words['say'], top)
+        skill['ramp'] = ramp(first, top)
+    talent_first, talent_top = effects(talent[0]['effects']), effects(talent[-1]['effects'])
     return {
         'id': m['id'], 'name': m['name'], 'title': m['title'], 'unlockDay': unlock[0], 'emblem': m['emblem'],
         'focus': m['researchTroopFocus'] or 'all', 'kingdom': KINGDOM[m['id']], 'sources': [s for s in m['sources'] if s in KEEP_SOURCES],
@@ -89,7 +125,10 @@ def master(m):
             'percent': [number(a['stats'][0]['percent']) if a['stats'] else 0 for a in ladder],
             'classes': classes,
         },
-        'talent': {'name': m['talent']['name'], 'levels': [effects(t['effects']) for t in talent]},
+        'talent': {'name': m['talent']['name'], 'levels': [effects(t['effects']) for t in talent],
+                   'say': say(guide['talent'], talent_top), 'ramp': ramp(talent_first, talent_top)},
+        # Plain-language guide (.dsh/masters-guide.json): what the master is for and who wants it.
+        'scope': guide['scope'], 'summary': guide['summary'], 'who': guide['who'],
         'skills': skills,
     }
 

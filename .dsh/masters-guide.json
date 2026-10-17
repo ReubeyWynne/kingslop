@@ -1,0 +1,101 @@
+{
+ "_note": "Plain-language guide for each master, merged into _data/masters.json by .dsh/build-masters.py. Talent and skill sentences paraphrase the in-game descriptions (Kingshot Data master pages, kingshotdata.com/masters/{id}/; Kingshot Optimizer for Aena and Isnor), checked 17 October 2026. {0}, {1} … are the effect values at the top level, in the order the data lists them; the build fills them in and fails if a sentence names an effect the level does not have.",
+ "masters": {
+  "valora": {
+   "scope": "Bear Hunt",
+   "summary": "A Bear Hunt master. Her skills make your bear rallies and bear marches bigger, add hero gear materials to every Bear Hunt, and her talent raises your own Bear Hunt points.",
+   "who": "Anyone who leads or joins bear rallies, and anyone short of Forgehammers or Enhancement XP.",
+   "talent": "Your own Bear Hunt damage points +{0} (not your alliance's).",
+   "skills": [
+    { "where": "Bear Hunt", "say": "Bear rallies you lead hold {0} more troops." },
+    { "where": "Bear Hunt", "say": "{0} extra rewards of 100 Enhancement XP Parts every Bear Hunt, for hero gear." },
+    { "where": "Bear Hunt", "say": "{0} extra Forgehammers every Bear Hunt, for hero gear mastery." },
+    { "where": "Bear Hunt", "say": "Each squad you send at the bear holds {0} more troops." }
+   ]
+  },
+  "pan": {
+   "scope": "Economy",
+   "summary": "A town economy master. He shortens every building upgrade, adds intel missions and stamina, and brings more Mystery Shop badges and gathering chests.",
+   "who": "Everyone: Master Architect saves hours on every upgrade, which matters most while you are still building.",
+   "talent": "{0} Reserve Chests for every 120 minutes of gathering, up to {1} a day.",
+   "skills": [
+    { "where": "Intel", "say": "{0} more Watchtower intel missions a day." },
+    { "where": "Stamina", "say": "The Storehouse refills {0} more governor stamina." },
+    { "where": "Construction", "say": "Every new building upgrade finishes {0} hours sooner, after speed bonuses." },
+    { "where": "Mystery Shop", "say": "{0} more Mystery Badges for finishing daily missions, and {1} more free Mystery Shop refreshes." }
+   ]
+  },
+  "roman": {
+   "scope": "Arena",
+   "summary": "An Arena master. He makes your heroes and escorts stronger in Arena battles, raises Arena Token rewards and improves the Arena Shop.",
+   "who": "Players who push the Arena ranking or spend Arena Tokens.",
+   "talent": "A {0} chance of {1} extra Arena Star Chests.",
+   "skills": [
+    { "where": "Arena", "say": "Your Arena escorts get +{0} attack and health." },
+    { "where": "Arena", "say": "Daily and weekly Arena Token rewards +{0}." },
+    { "where": "Arena", "say": "{0} extra items in the Arena Shop, each {1} off." },
+    { "where": "Arena", "say": "Your heroes get +{0} attack and health in Arena battles." }
+   ]
+  },
+  "cassia": {
+   "scope": "All combat",
+   "summary": "A combat master whose bonuses apply in every fight. Her skills add attack, defense, lethality and health to all your squads, and make every squad and rally you send bigger.",
+   "who": "Everyone who fights: these are the broadest troop bonuses any master gives, at the highest manuscript cost.",
+   "talent": "Every squad you send holds {0} more troops.",
+   "skills": [
+    { "where": "Troops", "say": "Recruit {0} more high-tier soldiers free from any camp, and get {1} more Soldier's Medallions from the Enlistment Office." },
+    { "where": "Combat", "say": "+{0} attack and +{1} defense for all your squads." },
+    { "where": "Combat", "say": "+{0} lethality and +{1} health for all your squads." },
+    { "where": "Rallies", "say": "Every rally you lead holds {0} more troops." }
+   ]
+  },
+  "guinevere": {
+   "scope": "Swordland",
+   "summary": "A Swordland master. Every bonus she gives, from troop stats to rally size and free healing, applies in Swordland Showdown and Swordland Summit League.",
+   "who": "Alliances that fight Swordland seriously.",
+   "talent": "+{0} attack and +{1} defense for your squads in Swordland Showdown and Swordland Summit League.",
+   "skills": [
+    { "where": "Swordland", "say": "Relic Coin gains +{0}." },
+    { "where": "Swordland", "say": "{0} soldiers healed free in every Swordland Showdown and Summit League." },
+    { "where": "Swordland", "say": "+{0} lethality and +{1} health for your squads in Swordland Showdown and Summit League." },
+    { "where": "Swordland", "say": "Rallies you lead in Swordland hold {0} more troops." }
+   ]
+  },
+  "wilson": {
+   "scope": "Alliance events",
+   "summary": "An alliance events master. He raises your points in Alliance Mobilization, Vikings Vengeance and Alliance Brawl, and improves their reward tiers and shops.",
+   "who": "Players who chase event rankings and milestone rewards.",
+   "talent": "Alliance Shop prices -{0}, and Personal Activity Triumph Chest rewards +{1}.",
+   "skills": [
+    { "where": "Alliance Mobilization", "say": "Alliance Mobilization points +{0}, and milestones gain {1} extra tiers." },
+    { "where": "Alliance Championship", "say": "Championship Badges +{0}, and the Championship Shop gains {1} extra items." },
+    { "where": "Vikings Vengeance", "say": "Vikings Vengeance points +{0}, plus a chest for every 200,000 points, up to {1} per event." },
+    { "where": "Alliance Brawl", "say": "Your Alliance Brawl points +{0} (not on the Merchant Empire day), and daily progress rewards gain {1} extra tiers." }
+   ]
+  },
+  "aena": {
+   "scope": "Merchant Empire",
+   "summary": "A Merchant Empire master. Her skills speed up caravans, add escorts and cargo, protect cargo from raids, and her talent makes your squads stronger when raiding or being raided.",
+   "who": "Players who run caravans in Merchant Empire.",
+   "talent": "+{0} attack and +{1} defense for your squads when raiding or being raided.",
+   "skills": [
+    { "where": "Merchant Empire", "say": "Caravan journeys {0} shorter, and {1} more free refreshes per caravan." },
+    { "where": "Merchant Empire", "say": "A {0} chance of one extra cargo item from every successful raid." },
+    { "where": "Merchant Empire", "say": "A {0} chance to win back one cargo item when you are raided, and {1} extra Elite Strongboxes that cannot be raided." },
+    { "where": "Merchant Empire", "say": "A Legendary escort mission after every {0} completed missions, kept through refreshes, and {1} extra caravan a day." }
+   ]
+  },
+  "isnor": {
+   "scope": "Eternity's Reach",
+   "summary": "An Eternity's Reach master. He makes your squads stronger and larger in its battles, speeds hero recovery and Frontier Skill XP, and brings Copper Ore and charm materials.",
+   "who": "Players who take part in Eternity's Reach, and anyone short of Charm Designs and Charm Guides.",
+   "talent": "+{0} lethality and +{1} health for your squads in Eternity's Reach battles.",
+   "skills": [
+    { "where": "Eternity's Reach", "say": "{0} extra Frontier Skill XP from defeating Cesares Guards." },
+    { "where": "Eternity's Reach", "say": "Squads hold {0} more troops in Eternity's Reach, and heroes recover {1} faster after defeat." },
+    { "where": "Eternity's Reach", "say": "{0} Charm Designs on reaching 200,000 Copper Ore." },
+    { "where": "Eternity's Reach", "say": "{0} Copper Ore a minute, and {1} Charm Guides on reaching 200,000 Copper Ore." }
+   ]
+  }
+ }
+}

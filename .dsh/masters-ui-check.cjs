@@ -18,6 +18,10 @@ try{
  await page.goto(origin+'/masters/?lang=en#master-cassia');await ready(page);assert.equal(await page.locator('#master-cassia .master-dossier').getAttribute('open'),'');
  await page.locator('#master-valora summary').click();assert.equal(await page.locator('.master-dossier[open]').count(),1);await page.waitForURL(/#master-valora$/);
  // Recording a master writes the shared save.
+ // A master you do not have says what it is for, in plain words, before any form.
+ assert.equal(await page.locator('#master-valora .master-scope').textContent(),masters[0].scope);
+ assert.equal(await page.locator('#master-valora .master-summary').isVisible(),true);assert.equal(await page.locator('#master-valora .master-skill-effect').first().textContent(),masters[0].skills[0].say);
+ assert.equal(await page.locator('#master-valora [data-field="affinity"]').isVisible(),false);assert.equal(await page.locator('#master-valora [data-field="owned"]').isVisible(),true);
  const form=page.locator('#master-valora .master-mine');assert.equal(await form.locator('[data-field="affinity"]').isDisabled(),true);
  await form.locator('[data-field="owned"]').check();await page.waitForFunction(()=>PlayerLedger.shared().masters().roster.valora);
  await form.locator('[data-field="affinity"]').fill('29');await form.locator('[data-field="affinity"]').press('Tab');
