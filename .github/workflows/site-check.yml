@@ -133,6 +133,8 @@ jobs:
               - js/hero-points.js
               - js/building-*
               - _data/buildings.json
+              - js/troop-*
+              - _data/troops.json
               - js/hero-data.liquid
               - _data/heroes.json
               - css/heroes.css

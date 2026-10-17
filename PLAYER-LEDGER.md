@@ -43,6 +43,14 @@ store.buildings(); // { levels: { 'town-center': 'TG 3' }, provenance }
 store.setBuilding('town-center', 'TG3-1'); // null forgets the level
 ```
 
+Training facts serve the Town Centre's troop days. `training.facts` holds `speed` (the Bonus Overview Training Speed, a percentage), `capacity` (troops one camp trains per batch, at least 1) and a tier from 1 to 11 for each camp, keyed by troop type (`inf`, `cav`, `arc`), each with its own entry in `training.provenance`. A missing fact has not been counted yet. `preferences.training.buff` is `true` when the plan should use the 3,000-gem capacity buff; it is absent otherwise. Saves without a `training` key stay valid.
+
+```js
+store.training(); // { facts: { speed: 182.5, capacity: 1150, inf: 10 }, provenance, buff: false }
+store.setTraining('arc', 11); // null forgets the fact
+store.setTrainingBuff(true);
+```
+
 `preferences.heroGear` holds only optimisation/UI choices. Resource bags and piece lists are derived from the ledger, not duplicated in preferences. A write touches changed facts and explicitly edited fields, preserving unrelated inventory and provenance. `source` distinguishes manual, legacy, screenshot, plan, reset and file edits.
 
 ## Store API

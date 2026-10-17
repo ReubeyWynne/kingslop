@@ -4,12 +4,13 @@
    only the pieces an owned hero can consume (HeroSpend), the same plan the Heroes page
    shows; forgehammers and mithril only what your hero gear can take (HeroGear.spendable);
    Truegold and Tempered Truegold only what your buildings can take (BuildingSpend);
-   governor score only what the governor planner can buy with your materials. Inventory is spent once, so an event's best total puts each holding on the
-   day it scores most. */
+   governor score only what the governor planner can buy with your materials; troops only
+   what your camps can train with the speedups and resources left (TroopSpend). Inventory
+   is spent once, so an event's best total puts each holding on the day it scores most. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/event_rules.json'), require('./event-rules.js'), require('./governor-engine.js'), require('./hero-spend.js'), require('./hero-gear-engine.js'), require('./building-spend.js'));
-  else root.TownCentre = factory(root.EventRuleData, root.EventRules, root.Governor, root.HeroSpend, root.HeroGear, root.BuildingSpend);
-})(typeof window === 'object' ? window : globalThis, function (data, rules, governor, heroes, gearEngine, buildingSpend) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/event_rules.json'), require('./event-rules.js'), require('./governor-engine.js'), require('./hero-spend.js'), require('./hero-gear-engine.js'), require('./building-spend.js'), require('./troop-spend.js'));
+  else root.TownCentre = factory(root.EventRuleData, root.EventRules, root.Governor, root.HeroSpend, root.HeroGear, root.BuildingSpend, root.TroopSpend);
+})(typeof window === 'object' ? window : globalThis, function (data, rules, governor, heroes, gearEngine, buildingSpend, troopSpend) {
   'use strict';
   // Speedup balances are minutes. General speedups can pay for any timer, so they score wherever a speedup row does.
   var SPEEDUPS = ['general', 'construction', 'research', 'training', 'learning', 'healing'].map(function (kind) { return { id: 'speedup-' + kind, kind: kind }; });
@@ -68,14 +69,15 @@
   function day(snapshot, event, number, known) {
     var shared = known || context(snapshot), score = shared.score;
     var base = rules.calculate(budget(snapshot, shared), event, number, null, null), selected = rules.rules(event, number);
-    var lines = [], unknown = base.unknown.slice(), unquantified = [], counted = Object.create(null);
+    var lines = [], unknown = base.unknown.slice(), unquantified = [], counted = Object.create(null), troops = troopSpend.rates(selected.rows, event), trained = null;
+    function note(id) { if (!unknown.includes(id)) unknown.push(id); }
     base.items.forEach(function (item) {
       var spend = usable(shared, item.id);
       if (item.eligible && spend) spend.unknown.forEach(function (id) { if (!unknown.includes(id)) unknown.push(id); });
       if (item.eligible && item.points !== null && (!spend || item.amount > 0)) lines.push({ kind: spend ? 'usable' : 'item', id: item.id, amount: item.amount, rate: item.rate, points: item.points });
     });
     selected.rows.forEach(function (row) {
-      if (row.items) return;
+      if (row.items || troops && troops.rows.includes(row)) return;
       var kinds = speedupKinds(row.label), gov = governorKind(row.label), each = rate(row);
       if (kinds && each) kinds.forEach(function (kind) {
         var id = 'speedup-' + kind; if (counted[id]) return; counted[id] = true;
@@ -87,20 +89,43 @@
         if (gain === null) unknown.push('governor-' + gov); else lines.push({ kind: 'governor', id: 'governor-' + gov, amount: gain, rate: each, points: gain * each });
       } else unquantified.push(row);
     });
+    /* Troops: a pre-trained batch, then what the training and general speedups can train with
+       the resources the buildings leave. Troops trained with speedups share a group with those
+       speedups, so the best total spends each speedup on one day. */
+    if (troops) {
+      trained = troopSpend.plan(snapshot, troops.rates, shared.buildings.resources);
+      trained.unknown.forEach(note);
+      trained.lines.forEach(function (line) {
+        var group = line.group === 'batch' ? 'troops-batch' : 'speedup-' + line.group;
+        lines.push({ kind: 'troops', id: 'troops-' + line.group + '-t' + line.tier, group: group, amount: line.troops, rate: line.rate, points: line.points });
+      });
+    }
     lines.sort(function (a, b) { return b.points - a.points; });
-    return { event: event, day: number, lines: lines, total: lines.reduce(function (sum, line) { return sum + line.points; }, 0), unknown: unknown, complete: !unknown.length, unquantified: unquantified };
+    return { event: event, day: number, lines: lines, total: lines.reduce(function (sum, line) { return sum + line.points; }, 0), unknown: unknown, complete: !unknown.length, unquantified: unquantified, troops: trained };
   }
-  // Each holding on the day it scores most. Days are alternatives, so this is not the sum of the days.
+  /* Each holding on the day it scores most. Days are alternatives, so this is not the sum of
+     the days. Lines that spend the same holding share a group (a speedup kind and the troops
+     it trains), and a group is taken whole from the one day it scores most. */
   function best(snapshot, event) {
     var shared = context(snapshot), days = rules.days(event).map(function (entry) { return day(snapshot, event, entry.day, shared); });
     var top = Object.create(null), unknown = Object.create(null);
     days.forEach(function (result) {
       result.unknown.forEach(function (id) { unknown[id] = true; });
-      result.lines.forEach(function (line) { if (!top[line.id] || line.rate > top[line.id].rate) top[line.id] = Object.assign({ day: result.day }, line); });
+      var groups = Object.create(null);
+      result.lines.forEach(function (line) {
+        var key = line.group || line.id, group = groups[key] || (groups[key] = { points: 0, rate: 0, lines: [] });
+        group.points += line.points; group.rate = Math.max(group.rate, line.rate); group.lines.push(Object.assign({ day: result.day }, line));
+      });
+      Object.keys(groups).forEach(function (key) {
+        var group = groups[key], old = top[key];
+        if (!old || group.points > old.points || group.points === old.points && group.rate > old.rate) top[key] = group;
+      });
     });
-    var lines = Object.keys(top).map(function (id) { return top[id]; }).sort(function (a, b) { return b.points - a.points; });
-    return { event: event, days: days, lines: lines, total: lines.reduce(function (sum, line) { return sum + line.points; }, 0), unknown: Object.keys(unknown), complete: !Object.keys(unknown).length, governor: shared.score, heroes: shared.heroes, gear: shared.gear, buildings: shared.buildings };
+    var lines = [].concat.apply([], Object.keys(top).map(function (key) { return top[key].lines; })).sort(function (a, b) { return b.points - a.points; });
+    return { event: event, days: days, lines: lines, total: lines.reduce(function (sum, line) { return sum + line.points; }, 0), unknown: Object.keys(unknown), complete: !Object.keys(unknown).length, governor: shared.score, heroes: shared.heroes, gear: shared.gear, buildings: shared.buildings, troops: troopDay(days) };
   }
+  // The troop plan of the day whose troops score most, for the Troops shelf.
+  function troopDay(days) { return days.reduce(function (found, result) { return result.troops && (!found || result.troops.points > found.plan.points) ? { day: result.day, plan: result.troops } : found; }, null); }
   // The highest rate any event day pays for one unit, for labelling inventory rows.
   function topRate(id) {
     if (/^hero-widget-chest-gen[1-7]$/.test(id)) id = heroes.WIDGET_ITEM;
