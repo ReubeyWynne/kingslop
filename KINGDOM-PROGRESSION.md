@@ -24,7 +24,7 @@ Ledger subscriptions keep the context indicator, timeline and existing hero cont
 
 The shared layout includes a compact link to the progression editor on every page. The timeline is also linked from the ledger drawer. It is deliberately outside the page-deck ring, like the Town Centre, to avoid adding another item to the desktop strip.
 
-Both the Heroes page and Town Centre use the existing shared hero directory. They default to the saved generation and offer a local “Show upcoming heroes” checkbox. Upcoming heroes are labelled; this browsing override does not change saved progression. Resetting the ordinary directory filters retains the kingdom setting. Existing calculators, spending totals, saved heroes and building levels are unchanged in this slice. Future consumers should use `availability()` rather than derive every feature from hero generation.
+Both the Heroes page and Town Centre use the existing shared hero directory. They default to the saved generation. Selecting a specific generation in the existing Generation filter temporarily browses that generation, including upcoming heroes, without changing saved progression. Clearing or resetting the filter restores the saved kingdom cutoff. Upcoming heroes are labelled. Resetting the ordinary directory filters retains the kingdom setting. Existing calculators, spending totals, saved heroes and building levels are unchanged in this slice. Future consumers should use `availability()` rather than derive every feature from hero generation.
 
 All new UI keys are provided in the 17 dictionaries. Static chapters remain readable without JavaScript; persistence controls are disabled. The page uses the manuscript layout and an independent pale-blue signal without introducing new animation.
 

@@ -71,7 +71,7 @@
     function render() {
       var filters = {}, count = 0, owned = 0;
       Object.keys(fields).forEach(function (key) { filters[key] = fields[key].value; });
-      if (context.targets('showAll')[0].checked) filters.server = '';
+      if (filters.generation) filters.server = '';
       records.forEach(function (record) {
         record.node.querySelector('[data-kingdom-upcoming]').hidden = window.KingdomProgression.availability({ generation: record.hero.generation }) !== 'upcoming';
       });

@@ -11,7 +11,6 @@
       <label title="Set your server’s generation to hide heroes you cannot use yet. Other tools share this setting; resetting filters keeps it." data-i18n-key="directory.serverNote" data-i18n-attr="title"><span data-i18n="directory.server">Server generation</span><select data-target="hero-directory.server" data-action="hero-directory.server"><option value="" data-i18n="directory.unspecified">Any generation</option>{% for generation in generations %}<option value="{{ generation }}">{{ generation }}</option>{% endfor %}</select></label>
       </div>
     </fieldset>
-    <p class="kingdom-scope"><label><input type="checkbox" data-target="hero-directory.showAll" data-action="hero-directory.filter"> <span data-i18n="kingdom.showAll">Show upcoming heroes</span></label><a href="../kingdom-timeline/#your-kingdom" data-i18n="kingdom.edit">Edit kingdom progression</a></p>
     <div class="directory-results"><output class="hero-count" aria-live="polite" data-target="hero-directory.count">{{ site.data.heroes.heroes.size }}</output><button type="button" class="directory-reset" data-action="hero-directory.reset" data-i18n="directory.reset">Reset filters</button></div>
     {% unless include.bag == "off" %}
     <div class="hero-bag" data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed">
