@@ -41,7 +41,7 @@
         else shards.textContent = t(api, 'unknownCount');
         if (hero.widget) widget.append(element('b', '', api.fmt(hero.widget.spend)), element('small', '', fill(api, 'widgetLevel', { from: api.fmt(hero.widget.from), to: api.fmt(hero.widget.to) })), element('small', '', fill(api, 'widgetPieces', { own: api.fmt(hero.widget.ownUsed), general: api.fmt(hero.widget.general) })));
         else widget.textContent = t(api, 'none');
-        tr.append(name, change, shards, widget, points); body.appendChild(tr);
+        tr.append(name, points, change, shards, widget); body.appendChild(tr);
         total += row.points.total;
       });
       context.targets('table').forEach(function (node) { node.hidden = !rows.length; });

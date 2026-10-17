@@ -183,5 +183,5 @@
 .hero-points-table thead th { font-size: .72rem; font-weight: 700; color: var(--ink-muted); letter-spacing: .08em; text-transform: uppercase; border-bottom-color: var(--signal-line); }
 .hero-points-table tbody th { font-weight: 400; color: var(--ink); }
 .hero-points-table td small { display: block; font-size: .72rem; color: var(--ink-muted); }
-.hero-points-table td:last-child { color: var(--amber); }
+.hero-points-table td:nth-child(2) { color: var(--amber); }
 @media (max-width: 30rem) { .hero-points-table { font-size: .82rem; } .hero-points-table th, .hero-points-table td { padding-inline: .25rem; } }

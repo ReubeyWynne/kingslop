@@ -26,6 +26,7 @@ Hero gear and governor gear are separate sections and never share a model: hero 
 - **Items:** `EventRules.calculate` for the day.
 - **Speedups:** rows whose label names speedups. Minutes × the row's rate. General speedups count on every speedup row; healing only on rows that take every kind (“all kinds” or a bare “1 min speedups”). Each kind counts once per day.
 - **Governor score:** “Governor Gear/Charm max score +1” rows. The score gain is `Governor.plan(kind, levels, materials, { goal: 'score' })`, the same greedy planner as the governor page, × the row's rate. Unknown levels or materials make it unknown.
+- **Hero shards and widgets:** `js/hero-spend.js` (`HeroSpend.plan`) counts only the pieces owned heroes can consume, and `HeroSpend.budget` hands that count to `EventRules.calculate` in place of the raw balance. See the Heroes page section of `HERO-DIRECTORY.md`; both pages use the same plan.
 - Everything else (training, gathering, intel missions, roulette, pet advancement, prep day 5's unrated governor gear row) is listed for the day but not counted.
 
 An event's headline total puts each holding on the day it scores most, because inventory is spent once; it is never the sum of the days. A missing count marks the total partial.

@@ -57,3 +57,15 @@ The roster is ordered by generation and drawn as portrait tiles (portrait, name,
 The directory reads and writes the shared player ledger. Each dossier opens with a "Your copy" form: owned, level, stars (0★ to 5★ in sixths), widget level for heroes with a widget, every Expedition skill level and the hero's own shards. A strip under the filters edits the general mythic, epic and rare shards and widget parts that the event planner already counts. Tiles show your level and stars; once anything is recorded, heroes you do not own are dimmed, and a Collection filter shows owned or missing heroes. The count line adds how many you own.
 
 The roster is now one band per generation with the rank in a narrow gutter, so each short generation is a single row of tiles. Generation 1 is split into Legendary, Epic and Rare bands; every band orders infantry, cavalry, archers (`HeroDirectory.compare`). Tiles carry a troop mark on the portrait instead of a text line. From 651px generation 1's tiers sit side by side and the later generations pair up; filters sit on one row. The role shortlist note moved to the roles section and the server note became the server field's tooltip. At 390px the directory is about 30% shorter.
+
+## KvK points from your heroes
+
+`heroes/#kvk-points` shows what each owned hero's shards and widgets score in KvK prep when spent. The arithmetic is `js/hero-spend.js`, pure and requireable in Node, and the Town Centre totals use the same plan, so the two pages always agree.
+
+- A hero piece scores only when consumed. Star steps follow the shared curve (catalogue index i → i + 1 costs `STAR_STEPS[i]`; 0★ to 5★ is 1,065 shards) and widget level n costs 5n (0 to 10 is 275). Sources: kingshotguide.com hero shard database, the kingshotmastery.com ascension calculator and the kingshotguide.com widget calculator.
+- Steps are paid whole, so a part-filled step consumes nothing. Each hero pays with its own pieces first.
+- General shards (`mythic-hero-shard`, `epic-hero-shard`, `rare-hero-shard`) go to owned heroes of the same rarity (catalogue `legendary` is mythic), except Amadeus and Helga, who take only their own shards. A generation's choose-a-hero widget chest (`hero-widget-chest-gen{n}`) goes to that generation's owned widget heroes. Both are shared by a small grouped knapsack that consumes the most pieces and, on a tie, uses the fewest general ones.
+- Per-hero widgets are `hero-widgets-{hero}`; `hero-widget` is only the event item that carries the widget rate.
+- Only owned heroes count. Unknown stars, widget levels and counts are listed as missing and count as nothing, so a total is never inflated. Each kind scores on the prep day that pays most for it.
+
+`node .dsh/hero-spend-check.cjs` checks the curves, whole steps, sharing against an exhaustive search, exclusives, rarity and generation limits, unknowns and the page wiring.
