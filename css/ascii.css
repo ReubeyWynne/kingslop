@@ -123,8 +123,9 @@
 /* A pet in its pen: the body is the signal hue, the marks over its head are ink.
    The marks layer sits on the pen's top two rows at the column the generator
    found clear of the head (--marks). Mood sets the body: a delighted pet wags
-   faster, a content one at ease; hungry, lonely and restless pets tuck the tail. */
-.ascii-mini--pet { width: 24ch; height: 11.25em; }
+   faster, a content one at ease; hungry, lonely and restless pets keep the tail
+   still. Petted, fed or offered food, it squeezes its eyes shut and wags. */
+.ascii-mini--pet { width: 44ch; height: 18.75em; }
 .ascii-mini--pet::after { position: absolute; top: 0; left: calc(var(--marks, 0) * 1ch); display: block; white-space: pre; color: var(--ink); }
 .ascii-mini.ascii-mini--pet[data-mood="delighted"]::before { animation-duration: 1.2s; }
 .ascii-mini.ascii-mini--pet[data-mood="content"]::before { animation-duration: 2.8s; }

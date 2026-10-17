@@ -23,10 +23,11 @@ The three sources agree on every row but three cells, where the two that agree w
 ## Page
 
 - `js/pet-den.js` registers `pet-den` (pens, care, the "Your pet" form and costs) and `pet-advances` (the KvK points table). It sets `data-mood` and, for a moment after an action, `data-react` on each pen; CSS does all of the drawing. Moods are recomputed on load, after each action, once a minute and when the tab returns.
+- The page explains none of the care; players find it by hand. A tamed pet is covered by a clear button (`.pet-stroke`): three turns of rubbing back and forth over it, or half its width of stroking with a finger or a held button, is a pat, and keeping on counts again. It takes `touch-action: pan-y`, so a vertical swipe still scrolls. Feeding is dragging the `@` out of the bowl under the pen and letting it go over the pet; it steps a whole character cell at a time (`--cx`, `--cy`), and the pet squints at it (`data-sniff`) while it is held over the pen. A plain click does neither; from the keyboard, Enter on the pen pets and Enter on the food feeds. The pen's accessible name carries the mood.
 - Every dossier is a `details` with `data-deep-link="pet-{id}"`, so `#pet-lion` opens the Lion's.
-- The pens are the Pets scene (`pets()` in `.dsh/build-ascii.py`): up, low and asleep bodies per pet and a shared layer of marks. A delighted pet wags at 1.2s a loop, a content one at 2.8s (`css/ascii.css`). The Gray Wolf, delighted, is the page hero and deck cover.
+- The pens are the Pets scene (`pets()` in `.dsh/build-ascii.py`): up, low, happy and asleep bodies per pet in a 44 x 15 pen and a shared layer of marks. The happy body (eyes squeezed shut, a quick wag) shows while a pet is petted, fed or offered food. A delighted pet wags at 1.2s a loop, a content one at 2.8s (`css/ascii.css`). The Gray Wolf, delighted, is the page hero and deck cover.
 
 ## Checks
 
 - `.dsh/pet-care-check.cjs`: data against the research totals, Advance costs and points, care meters and moods, the ledger section, the generated pens, navigation and dictionaries.
-- `.dsh/pets-ui-check.cjs`: the page in a browser with a controlled clock (taming, care, decay, sleep, reactions, the Advances table), every language at five widths, and the no-JavaScript fallback.
+- `.dsh/pets-ui-check.cjs`: the page in a browser with a controlled clock (taming, rubbing and dragging food, keyboard care, decay, sleep, reactions, the Advances table), every language at five widths, and the no-JavaScript fallback.

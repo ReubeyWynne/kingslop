@@ -2,18 +2,17 @@
    "Your pet" form saved in the shared ledger (pets.roster). The pen's scene is chosen by
    mood through data attributes; CSS does all of the drawing. Moods are worked out from
    the clock (PetCare) when the page opens, after each action, once a minute and whenever
-   the tab comes back into view. A reaction (a pat, a meal, a refusal) shows for a moment.
+   the tab comes back into view. A tamed pet is cared for by hand: rub it back and forth,
+   or stroke it with a finger or a held button, to pet it; drag the food from its bowl
+   onto it to feed it. The food follows the pointer a whole character cell at a time.
+   From the keyboard, the pen and the bowl are buttons. A reaction shows for a moment.
 
    pet-advances paints the KvK points table from the same ledger section. */
 (function () {
   'use strict';
   var EN = {
     count: '{n} pets', owned: '{n} tamed', needs: '{n} need you', lv: 'Lv {n}',
-    'mood.asleep': 'Asleep.', 'mood.hungry': 'Hungry.', 'mood.lonely': 'Lonely.', 'mood.delighted': 'Delighted.', 'mood.content': 'Content.', 'mood.restless': 'Restless.',
-    'why.asleep': 'Night has fallen. A pat wakes it.', 'why.hungry': 'Its belly is rumbling.', 'why.lonely': 'It has not had a pat in a while.',
-    'why.delighted': 'Well fed and well loved.', 'why.content': 'All is well in the pen.', 'why.restless': 'A snack and a pat would help.',
-    'react.full': 'Too full to eat.', fed: 'Fed {ago}.', patted: 'Patted {ago}.',
-    ago: { now: 'just now', min: '{n} min ago', hour: '{n} h ago' },
+    'mood.asleep': 'Asleep', 'mood.hungry': 'Hungry', 'mood.lonely': 'Lonely', 'mood.delighted': 'Delighted', 'mood.content': 'Content', 'mood.restless': 'Restless', pat: 'Pet',
     next: 'Next Advance at level {level}: {cost}. Worth {points} KvK prep points.', nextOnly: 'Next Advance at level {level}: {cost}.', top: 'Every Advance is done.',
     tomax: 'To level {max} with every Advance: {cost}, {n} Advances, {points} KvK prep points.', unread: 'Enter its level to see what comes next.',
     'm.petFood': '{n} Pet Food', 'm.growthManual': '{n} Growth Manuals', 'm.nutrientPotion': '{n} Nutrient Potions', 'm.promotionMedallion': '{n} Promotion Medallions', free: 'nothing more',
@@ -32,24 +31,20 @@
     try { storage = window.localStorage; den = Care.load(storage); } catch (cause) { storage = null; }
     var records = context.nodes('[data-pet].pet-card').map(function (node) {
       return { node: node, id: node.dataset.pet, pet: Plan.find(node.dataset.pet), pen: node.querySelector('[data-pen]'), owned: node.querySelector('[data-field="owned"]'),
-        care: node.querySelector('[data-target~="pet-den.care"]'), form: node.querySelector('[data-target~="pet-den.form"]') };
+        care: node.querySelector('[data-target~="pet-den.care"]'), form: node.querySelector('[data-target~="pet-den.form"]'),
+        stroke: node.querySelector('[data-target~="pet-den.stroke"]'), food: node.querySelector('[data-target~="pet-den.food"]') };
     });
     records.forEach(function (record) { record.owned.disabled = !store; if (record.form) record.form.disabled = !store; });
     function find(node, name) { return Array.from(node.querySelectorAll('[data-target~="pet-den.' + name + '"]')); }
-    function ago(ms) {
-      var minutes = Math.floor(ms / 60000);
-      if (minutes < 1) return t(api, 'ago.now');
-      return minutes < 60 ? api.fill(t(api, 'ago.min'), { n: api.fmt(minutes) }) : api.fill(t(api, 'ago.hour'), { n: api.fmt(Math.floor(minutes / 60)) });
-    }
     function paintCare(record, now) {
       var tamed = Object.hasOwn(mine.roster, record.id);
       record.care.hidden = !tamed;
+      record.stroke.hidden = !tamed;
       if (!tamed) { record.pen.dataset.mood = 'content'; return null; }
       if (!den[record.id]) den[record.id] = Care.fresh(now);
       var care = den[record.id], mood = Care.mood(care, now, new Date(now).getHours()), level = Care.level(care, now);
       record.pen.dataset.mood = mood;
-      find(record.node, 'mood').forEach(function (node) { node.textContent = t(api, 'mood.' + mood); });
-      find(record.node, 'why').forEach(function (node) { if (!record.reacting) node.textContent = t(api, 'why.' + mood); });
+      record.stroke.setAttribute('aria-label', t(api, 'pat') + ' · ' + t(api, 'mood.' + mood));
       record.node.querySelectorAll('[data-meter]').forEach(function (bar) {
         var value = Math.round(level[bar.dataset.meter]);
         bar.setAttribute('aria-valuenow', value);
@@ -99,20 +94,73 @@
     }
     function persist() { if (storage) try { Care.save(storage, den); } catch (cause) { /* storage full or blocked: the care lasts for this visit */ } }
     // A reaction shows on the pen for a moment, then the mood's own marks come back.
-    function react(record, kind, message) {
+    function react(record, kind) {
       clearTimeout(timers[record.id]);
       record.pen.dataset.react = kind;
-      record.reacting = Boolean(message);
-      if (message) find(record.node, 'why').forEach(function (node) { node.textContent = message; });
-      timers[record.id] = setTimeout(function () { delete record.pen.dataset.react; record.reacting = false; render(); }, 2400);
+      timers[record.id] = setTimeout(function () { delete record.pen.dataset.react; render(); }, 2400);
     }
-    function act(node, kind) {
-      var record = records.filter(function (item) { return item.node.contains(node); })[0];
+    function recordOf(node) { return records.filter(function (item) { return item.node.contains(node); })[0]; }
+    function act(record, kind) {
       if (!record || !Object.hasOwn(mine.roster, record.id)) return;
       var now = Date.now(), result = (kind === 'feed' ? Care.feed : Care.pat)(den[record.id] || Care.fresh(now), now);
       den[record.id] = result.record;
       render();
-      react(record, result.react, result.react === 'full' ? t(api, 'react.full') : null);
+      react(record, result.react);
+    }
+    // Petting is a rub: three turns back and forth over the pet, each at least a tenth of
+    // its width, or, with a finger or a held button, half its width of stroking. Keep
+    // going and it counts again.
+    var strokes = {};
+    function stroke(event) {
+      var surface = event.target.closest && event.target.closest('[data-target~="pet-den.stroke"]'), touch = strokes[event.pointerId];
+      if (!surface || surface.hidden) { delete strokes[event.pointerId]; return; }
+      if (!touch || touch.surface !== surface) touch = strokes[event.pointerId] = { surface: surface, x: event.clientX, dir: 0, run: 0, travel: 0, turns: 0 };
+      var dx = event.clientX - touch.x, width = surface.getBoundingClientRect().width;
+      touch.x = event.clientX;
+      if (!dx || !width) return;
+      var dir = dx > 0 ? 1 : -1;
+      if (dir !== touch.dir) { if (touch.run >= width / 10) touch.turns++; touch.dir = dir; touch.run = 0; }
+      touch.run += Math.abs(dx); touch.travel += Math.abs(dx);
+      var held = event.pointerType !== 'mouse' || event.buttons > 0;
+      if (touch.turns >= 3 || (held && touch.travel >= width / 2)) {
+        touch.turns = 0; touch.travel = 0;
+        act(recordOf(surface), 'pat');
+      }
+    }
+    function unstroke(event) { delete strokes[event.pointerId]; }
+    // Feeding: the food leaves its bowl under the pointer, steps cell by cell, and is
+    // eaten if it is let go over the pet; otherwise it drops back into the bowl.
+    var carry = null;
+    function cell(food) { var glyph = food.firstElementChild.getBoundingClientRect(); return { w: glyph.width || 8, h: glyph.height || 16 }; }
+    function lift(event) {
+      var food = event.target.closest && event.target.closest('[data-target~="pet-den.food"]');
+      if (!food || carry || event.button > 0) return;
+      event.preventDefault();
+      carry = { food: food, record: recordOf(food), id: event.pointerId, x: event.clientX, y: event.clientY, size: cell(food), moved: false };
+      try { food.setPointerCapture(event.pointerId); } catch (cause) { /* already released */ }
+      food.toggleAttribute('data-carried', true);
+    }
+    function over(record, event) {
+      var box = record.pen.getBoundingClientRect();
+      return event.clientX >= box.left && event.clientX <= box.right && event.clientY >= box.top && event.clientY <= box.bottom;
+    }
+    function move(event) {
+      if (!carry || event.pointerId !== carry.id) return;
+      var dx = Math.round((event.clientX - carry.x) / carry.size.w), dy = Math.round((event.clientY - carry.y) / carry.size.h);
+      if (dx || dy) carry.moved = true;
+      carry.food.style.setProperty('--cx', dx);
+      carry.food.style.setProperty('--cy', dy);
+      carry.record.pen.toggleAttribute('data-sniff', over(carry.record, event));
+    }
+    function drop(event) {
+      if (!carry || event.pointerId !== carry.id) return;
+      var done = carry;
+      carry = null;
+      done.food.removeAttribute('data-carried');
+      done.food.style.removeProperty('--cx');
+      done.food.style.removeProperty('--cy');
+      done.record.pen.removeAttribute('data-sniff');
+      if (event.type === 'pointerup' && done.moved && over(done.record, event)) act(done.record, 'feed');
     }
     function number(input) { return input.value === '' ? null : Number(input.value); }
     function edit(input) {
@@ -146,6 +194,12 @@
       var input = event.target.closest && event.target.closest('.pet-card [data-field]');
       if (input) try { edit(input); } catch (cause) { context.emit('module:error', { module: 'pet-den', message: cause.message }); }
     });
+    ['pointermove', 'pointerdown'].forEach(function (type) { context.listen(context.root, type, stroke); });
+    ['pointerup', 'pointercancel', 'pointerout'].forEach(function (type) { context.listen(context.root, type, unstroke); });
+    context.listen(context.root, 'pointerdown', lift);
+    context.listen(context.root, 'pointermove', move);
+    context.listen(context.root, 'pointerup', drop);
+    context.listen(context.root, 'pointercancel', drop);
     context.listen(document, 'visibilitychange', function () { if (!document.hidden) render(); });
     var tick = setInterval(render, 60000);
     context.cleanup(function () { clearInterval(tick); Object.keys(timers).forEach(function (id) { clearTimeout(timers[id]); }); });
@@ -154,8 +208,9 @@
     return {
       refresh: render,
       actions: {
-        pat: { events: ['click'], run: function (node) { act(node, 'pat'); } },
-        feed: { events: ['click'], run: function (node) { act(node, 'feed'); } }
+        // Only a keyboard press (a click with no pointer behind it) pets or feeds outright.
+        pat: { events: ['click'], run: function (node, event) { if (!event.detail) act(recordOf(node), 'pat'); } },
+        feed: { events: ['click'], run: function (node, event) { if (!event.detail) act(recordOf(node), 'feed'); } }
       }
     };
   });

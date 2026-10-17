@@ -96,11 +96,12 @@ const old = JSON.parse(JSON.stringify(saved)); delete old.pets; assert.doesNotTh
 ledger.setPet('lion', null);
 assert.deepEqual(Object.keys(ledger.pets().roster), ['gray-wolf']);
 
-// The scene: every pet has a pen, three bodies and a place for its marks.
+// The scene: every pet has a pen, four bodies and a place for its marks.
 const frames = read('css/ascii-frames.css');
 for (const pet of data.pets) {
   assert.ok(frames.includes(`@keyframes ascii-pet-${pet.id}{`), pet.id);
   assert.ok(frames.includes(`@keyframes ascii-pet-${pet.id}-low{`), pet.id + ' low');
+  assert.ok(frames.includes(`.ascii-mini--pet[data-pet="${pet.id}"]:is([data-react="pet"], [data-react="feed"], [data-sniff])[data-mood]::before{`), pet.id + ' happy');
   assert.ok(frames.includes(`.ascii-mini--pet[data-pet="${pet.id}"][data-mood="asleep"]::before{`), pet.id + ' asleep');
   assert.match(frames, new RegExp(`\\.ascii-mini--pet\\[data-pet="${pet.id}"\\]\\{--marks:\\d+\\}`));
 }
@@ -124,6 +125,6 @@ for (const [file, d] of dictionaries) for (const key of ['pets.nav', 'ev.deck.le
 const en = dictionaries.find(([file]) => file === 'en.js')[1];
 for (const [, key] of (page + read('index.html')).matchAll(/data-i18n(?:-key)?="(pets\.[^"{]+)"/g)) assert.ok(Object.hasOwn(en, key), 'en.js lacks ' + key);
 const den = read('js/pet-den.js');
-const keys = [...den.match(/var EN = \{([\s\S]*?)\n  \};/)[1].matchAll(/'?([\w.]+)'?: '/g)].map(m => m[1]).filter(k => !['now', 'min', 'hour'].includes(k));
-for (const key of keys) if (key !== 'nextOnly' && key !== 'fed' && key !== 'patted') assert.ok(Object.hasOwn(en, 'pets.' + key), 'en.js lacks pets.' + key);
+const keys = [...den.match(/var EN = \{([\s\S]*?)\n  \};/)[1].matchAll(/'?([\w.]+)'?: '/g)].map(m => m[1]);
+for (const key of keys) if (key !== 'nextOnly') assert.ok(Object.hasOwn(en, 'pets.' + key), 'en.js lacks pets.' + key);
 console.log('Pets: research totals, Advance costs and points, care meters and moods, the ledger section, the pens, navigation and dictionaries pass.');

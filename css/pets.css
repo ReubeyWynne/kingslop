@@ -9,12 +9,16 @@
 .pet-roster { --band-label: 2.6rem; --band-gap: .6rem; display: grid; gap: 1.1rem; margin-top: .5rem; }
 .pet-band { display: grid; grid-template-columns: var(--band-label) minmax(0, 1fr); gap: var(--band-gap); align-items: start; }
 .pet-band .band-gen b { font-size: var(--step-1); }
-.pet-catalogue { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem .6rem; }
+.pet-catalogue { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.2rem .8rem; }
 .pet-card { position: relative; display: grid; align-content: start; gap: .3rem; min-width: 0; padding-top: .3rem; border-top: 1px solid var(--signal-tint); scroll-margin-top: calc(var(--topbar-h) + 4rem); }
 
-/* The pen: a strip of ground under the pet, the scene centred on it. */
-.pet-pen { display: grid; place-items: center; padding-bottom: .15rem; border-bottom: 1px solid var(--signal-line); overflow: hidden; }
-.pet-pen .ascii-mini { font-size: clamp(6.5px, 2.15vw, 10px); }
+/* The pen: a strip of ground under the pet, the scene centred on it and sized to the pen.
+   A tamed pet is covered by a clear button you rub to pet it; it scrolls on a vertical swipe. */
+.pet-pen { position: relative; display: grid; place-items: center; padding-bottom: .15rem; border-bottom: 1px solid var(--signal-line); overflow: hidden; container-type: inline-size; }
+.pet-pen .ascii-mini { font-size: min(13px, 3.5cqi); }
+.pet-stroke { position: absolute; inset: 0; padding: 0; background: transparent; border: 0; cursor: pointer; touch-action: pan-y; -webkit-tap-highlight-color: transparent; }
+.pet-stroke[hidden] { display: none; }
+.pet-stroke:focus-visible { outline: 2px solid var(--amber); outline-offset: -2px; }
 /* Until you tame a pet it is a sketch of the wild one; once you keep pets, the rest step back. */
 .pet-card[data-owned="false"] .pet-pen .ascii-mini { color: var(--amber-dim); }
 [data-collection] .pet-card[data-owned="false"] .pet-pen .ascii-mini { color: var(--ink-muted); opacity: .6; }
@@ -26,26 +30,24 @@
 .pet-name small { font-size: .72rem; color: var(--ink-muted); }
 .pet-card[data-owned="true"] .pet-name b { color: var(--amber); }
 
-/* Care — mood in words, two ruled meters, and the two things you can do. */
+/* Care — the food bowl and two ruled meters. The food is carried a whole cell at a time. */
+.pet-care { display: flex; align-items: center; gap: .8rem; }
 .pet-care[hidden] { display: none; }
 .pet-care p { margin: 0; }
-.pet-mood { font-size: .78rem; line-height: 1.3; color: var(--ink-dim); min-height: 2.1em; }
-.pet-mood b { color: var(--ink); }
-.pet-meter { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); align-items: center; gap: .4rem; margin-top: .2rem !important; font-size: .66rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
-.pet-meter > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pet-bowl { flex: none; font-family: var(--ascii-font); font-size: 1rem; line-height: 1.25; color: var(--amber-dim); white-space: pre; }
+.pet-food { position: relative; left: calc(var(--cx, 0) * 1ch); top: calc(var(--cy, 0) * 1.25em); min-width: 40px; min-height: 40px; margin: 0 -.9rem; padding: 0; font: inherit; color: var(--amber); background: transparent; border: 0; cursor: grab; touch-action: none; -webkit-tap-highlight-color: transparent; }
+.pet-food > span { display: inline-block; width: 1ch; height: 1.25em; }
+.pet-food[data-carried] { z-index: 5; cursor: grabbing; color: var(--ink); }
+.pet-food:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.pet-meters { display: grid; flex: 1 1 auto; gap: .35rem; min-width: 0; }
 .pet-meter-bar { display: block; height: 5px; border-bottom: 1px solid var(--signal-line); }
 .pet-meter-bar > span { display: block; height: 100%; width: 0; background: var(--amber); }
 .pet-meter-bar[data-low] > span { background: var(--oxblood); }
-.pet-actions { display: flex; gap: .4rem; margin-top: .4rem !important; }
-.pet-actions button { flex: 1 1 0; min-width: 0; min-height: 40px; padding: .2rem .3rem; font: 700 .72rem/1.1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--amber); background: transparent; border: 1px solid var(--signal-line); border-radius: 2px; cursor: pointer; }
-.pet-actions button:hover { color: var(--ink); border-color: var(--amber); }
-.pet-actions button:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 
 /* The dossier — skill ladder, the form and the costs. An open one takes the whole row. */
 .pet-dossier { margin: .1rem 0 0; }
 .pet-dossier > summary { font-size: .7rem; }
 .pet-card:has(> .pet-dossier[open]) { grid-column: 1 / -1; padding: .6rem var(--space-s) var(--space-s); margin-inline-start: calc(-1 * (var(--band-label) + var(--band-gap))); background: var(--void-2); border-block: 1px solid var(--signal-line); }
-.pet-card:has(> .pet-dossier[open]) .pet-pen .ascii-mini { font-size: clamp(8px, 2.6vw, 11px); }
 .pet-dossier:not([open]) > .pet-dossier-body { display: none; }
 .pet-dossier-body { display: grid; gap: .5rem; margin-top: .5rem; color: var(--ink-dim); font-size: var(--step--1); }
 .pet-dossier-body p { margin: 0; }
@@ -82,8 +84,5 @@
 .pet-score-table td:nth-child(2) { color: var(--ink-dim); }
 #pet-sources ul { padding-inline-start: 1.1rem; font-size: var(--step--1); }
 
-@media (min-width: 651px) {
-  .pet-roster { --band-label: 3.2rem; }
-  .pet-catalogue { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .pet-pen .ascii-mini { font-size: clamp(7px, 1.25vw, 10px); }
-}
+@media (min-width: 560px) { .pet-catalogue { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 651px) { .pet-roster { --band-label: 3.2rem; } }

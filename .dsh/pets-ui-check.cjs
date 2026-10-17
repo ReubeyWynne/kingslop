@@ -1,5 +1,6 @@
 // Pets page in a browser: pens, deep-linked dossiers, taming into the shared save, care that
-// decays with the clock and wakes with a pat, the Advances table, and layout in every language.
+// decays with the clock, petting by rubbing and feeding by dragging food onto the pet, the
+// Advances table, and layout in every language.
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http');const {chromium}=require('playwright');
 const pets=require('../_data/pets.json').pets;
 const root=path.resolve('_site'),output=path.resolve('.dsh/pets-preview');
@@ -13,6 +14,16 @@ try{
  await page.clock.install({time:new Date('2026-10-17T06:00:00Z')});
  const ready=()=>page.waitForFunction(()=>![...document.querySelectorAll('.pet-card [data-field="owned"]')].some(f=>f.disabled));
  const pen=id=>page.locator('#pet-'+id+' [data-pen]');
+ // Rub a pet back and forth with the mouse: three turns make a pat.
+ const rub=async id=>{const card=page.locator('#pet-'+id);await card.scrollIntoViewIfNeeded();const box=await card.locator('.pet-stroke').boundingBox(),y=box.y+box.height*.45;
+  await page.mouse.move(box.x+box.width*.3,y);for(const x of [.7,.3,.7,.3])await page.mouse.move(box.x+box.width*x,y,{steps:4});await page.mouse.move(1,1);};
+ // Carry the food from the bowl and let it go over the pet (or anywhere else).
+ const drag=async(id,onto=true)=>{const card=page.locator('#pet-'+id);await card.scrollIntoViewIfNeeded();const food=await card.locator('.pet-food').boundingBox(),box=await card.locator('[data-pen]').boundingBox();
+  await page.mouse.move(food.x+food.width/2,food.y+food.height/2);await page.mouse.down();
+  await page.mouse.move(onto?box.x+box.width*.8:food.x+food.width*3,onto?box.y+box.height*.4:food.y+food.height/2,{steps:8});
+  if(onto)assert.equal(await pen(id).getAttribute('data-sniff'),'');assert.equal(await card.locator('.pet-food').getAttribute('data-carried'),'');
+  assert.match(await card.locator('.pet-food').getAttribute('style'),/--cx: -?\d+; --cy: -?\d+;/);
+  await page.mouse.up();assert.equal(await card.locator('.pet-food').getAttribute('style'),'');assert.equal(await pen(id).getAttribute('data-sniff'),null);};
  await page.goto(origin+'/pets/?lang=en');await ready();
  assert.equal(await page.locator('h1').count(),1);assert.equal(await page.locator('.pet-card').count(),pets.length);
  assert.deepEqual(await page.locator('.pet-band').evaluateAll(n=>n.map(x=>x.dataset.generation)),['1','2','3','4','5','6','7']);
@@ -36,14 +47,22 @@ try{
  assert.deepEqual((await page.evaluate(()=>PlayerLedger.shared().pets().roster))['gray-wolf'],{level:20,advanced:true});
  assert.equal(await page.locator('#pet-gray-wolf .pet-ladder td[data-reached]').count(),2);
  assert.match(await page.locator('#pet-gray-wolf [data-target="pet-den.next"]').textContent(),/level 30:/);
- // A pat and a meal lift the meters and show a reaction, which clears on its own.
- await page.locator('#pet-gray-wolf [data-action="pet-den.pat"]').click();
+ // There are no buttons to read: a click on the pet or its food does nothing.
+ assert.equal(await page.locator('#pet-gray-wolf .pet-care button:visible').evaluateAll(n=>n.map(b=>b.textContent.trim())).then(t=>t.join('')),'@');
+ await page.locator('#pet-gray-wolf .pet-stroke').click();await page.locator('#pet-gray-wolf .pet-food').click();
+ assert.equal(await pen('gray-wolf').getAttribute('data-react'),null);assert.equal(await page.locator('#pet-gray-wolf [data-meter="affection"]').getAttribute('aria-valuenow'),'50');
+ // Rubbing the pet pets it and dragging food onto it feeds it; each shows a reaction, which clears on its own.
+ await rub('gray-wolf');
  assert.equal(await pen('gray-wolf').getAttribute('data-react'),'pet');assert.equal(await page.locator('#pet-gray-wolf [data-meter="affection"]').getAttribute('aria-valuenow'),'70');
  assert.equal(await pen('gray-wolf').evaluate(n=>getComputedStyle(n,'::after').animationName),'ascii-pet-marks-pet');
- await page.locator('#pet-gray-wolf [data-action="pet-den.feed"]').click();assert.equal(await pen('gray-wolf').getAttribute('data-react'),'feed');
+ assert.equal(await pen('gray-wolf').evaluate(n=>getComputedStyle(n,'::before').animationName),'ascii-pet-gray-wolf-happy');
+ await drag('gray-wolf',false);assert.equal(await page.locator('#pet-gray-wolf [data-meter="fullness"]').getAttribute('aria-valuenow'),'60');
+ await drag('gray-wolf');assert.equal(await pen('gray-wolf').getAttribute('data-react'),'feed');
  assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'delighted');
- await page.locator('#pet-gray-wolf [data-action="pet-den.feed"]').click();await page.locator('#pet-gray-wolf [data-action="pet-den.feed"]').click();
- assert.equal(await pen('gray-wolf').getAttribute('data-react'),'full');assert.match(await page.locator('#pet-gray-wolf [data-target="pet-den.why"]').textContent(),/Too full/);
+ // From the keyboard the pen and the bowl are buttons; a full pet turns food down.
+ await page.locator('#pet-gray-wolf .pet-food').press('Enter');await page.locator('#pet-gray-wolf .pet-food').press('Enter');
+ assert.equal(await pen('gray-wolf').getAttribute('data-react'),'full');
+ assert.match(await page.locator('#pet-gray-wolf .pet-stroke').getAttribute('aria-label'),/^Pet · Delighted$/);
  await page.clock.runFor(3000);assert.equal(await pen('gray-wolf').getAttribute('data-react'),null);
  await page.locator('#cage').screenshot({path:path.join(output,'cage-390.png')});
  // Real time: a few hours alone and the wolf is lonely, then hungry; it remembers across a reload.
@@ -54,7 +73,7 @@ try{
  // Night: left alone it sleeps; a pat wakes it.
  await page.clock.runFor(4.5*3600000);await page.reload();await ready();assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'asleep');
  assert.equal(await pen('gray-wolf').evaluate(n=>getComputedStyle(n,'::after').animationName),'ascii-pet-marks-asleep');
- await page.locator('#pet-gray-wolf [data-action="pet-den.pat"]').click();await page.clock.runFor(3000);assert.notEqual(await pen('gray-wolf').getAttribute('data-mood'),'asleep');
+ await rub('gray-wolf');await page.clock.runFor(3000);assert.notEqual(await pen('gray-wolf').getAttribute('data-mood'),'asleep');
  // The Advances table counts the next Advance of each tamed pet with a level.
  await page.locator('#pet-lion [data-field="owned"]').check();
  assert.match(await page.locator('[data-target="pet-advances.coverage"]').textContent(),/Unread levels: Lion/);
@@ -76,6 +95,6 @@ try{
  // Without JavaScript the roster and dossiers still read.
  const nojs=await browser.newContext({javaScriptEnabled:false});const plain=await nojs.newPage();await plain.goto(origin+'/pets/');assert.equal(await plain.locator('.pet-card').count(),pets.length);assert.equal(await plain.locator('[data-field="owned"]').first().isDisabled(),true);await plain.locator('#pet-bison summary').click();assert.equal(await plain.locator('#pet-bison .pet-ladder').isVisible(),true);await nojs.close();
  const home=await browser.newPage();await home.goto(origin+'/?lang=en');assert.equal(await home.locator('#tools a[href="pets/"]').count(),1);await home.close();
- assert.deepEqual(errors,[]);console.log('Pets UI: pens, deep-linked dossiers, taming, care with real-time decay, sleep and reactions, the Advances table, static fallback and 17 languages at 5 widths pass.');
+ assert.deepEqual(errors,[]);console.log('Pets UI: pens, deep-linked dossiers, taming, petting by rubbing and feeding by dragging, care with real-time decay, sleep and reactions, the Advances table, static fallback and 17 languages at 5 widths pass.');
 }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});
