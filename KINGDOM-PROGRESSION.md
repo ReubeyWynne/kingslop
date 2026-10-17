@@ -2,7 +2,7 @@
 
 `/kingdom-timeline/` is a generic, manually selected progression guide. It has no kingdom-number lookup, creation-date inference, automatic advancement or date prediction. The chapter order is illustrative; each chapter supplies editable defaults, not verified observations for a particular kingdom.
 
-`_data/kingdom_progression.json` supplies the static chapter list, starting profiles, guide links and sources. Jekyll emits the same catalogue as `/js/kingdom-data.js`. The first catalogue covers generations 1–7, Truegold 3/5/8 and War Academy. Players can enter later generations and TG10 directly.
+`_data/kingdom_progression.json` supplies the static chapter list, starting profiles, guide links and sources. Jekyll emits the same catalogue as `/js/kingdom-data.js`. The first catalogue covers generations 1–7, Truegold 3/5/8 and War Academy. The generation dropdown offers only generations present in the hero catalogue (currently 1–7). TG10 can be entered independently.
 
 ## Shared context
 
