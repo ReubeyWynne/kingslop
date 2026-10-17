@@ -16,7 +16,7 @@ try{
  assert.equal(await page.locator('.master-dossier[open]').count(),0);
  // Every dossier is a link, and one is open at a time.
  await page.goto(origin+'/masters/?lang=en#master-cassia');await ready(page);assert.equal(await page.locator('#master-cassia .master-dossier').getAttribute('open'),'');
- await page.locator('#master-valora summary').click();assert.equal(await page.locator('.master-dossier[open]').count(),1);assert.match(page.url(),/#master-valora$/);
+ await page.locator('#master-valora summary').click();assert.equal(await page.locator('.master-dossier[open]').count(),1);await page.waitForURL(/#master-valora$/);
  // Recording a master writes the shared save.
  const form=page.locator('#master-valora .master-mine');assert.equal(await form.locator('[data-field="affinity"]').isDisabled(),true);
  await form.locator('[data-field="owned"]').check();await page.waitForFunction(()=>PlayerLedger.shared().masters().roster.valora);
