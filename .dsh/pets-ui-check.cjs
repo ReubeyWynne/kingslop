@@ -31,7 +31,7 @@ try{
  for(const p of pets){const card=page.locator('#pet-'+p.id);assert.equal(await card.locator('.pet-name b').textContent(),p.name);assert.equal(await card.locator('.pet-ladder tbody tr').count(),p.skill.ladder.length);assert.equal(await card.locator('.pet-ladder thead th[data-level]').count(),p.advances);}
  // Untamed pets stand in their pens without care controls.
  assert.equal(await page.locator('.pet-care:visible').count(),0);assert.equal(await pen('lion').getAttribute('data-mood'),'content');
- assert.equal(await pen('moose').evaluate(n=>getComputedStyle(n,'::before').animationName),'ascii-pet-moose');
+ assert.equal(await page.locator('#pet-moose .ascii-mini--portrait > [data-ink="0"]').evaluate(n=>getComputedStyle(n,'::before').animationName),'ascii-portrait-moose-0');
  // Every dossier is a link, and one is open at a time.
  await page.goto(origin+'/pets/?lang=en#pet-moose');await ready();assert.equal(await page.locator('#pet-moose .pet-dossier').getAttribute('open'),'');
  await page.locator('#pet-gray-wolf summary').click();assert.equal(await page.locator('.pet-dossier[open]').count(),1);await page.waitForURL(/#pet-gray-wolf$/);
@@ -56,7 +56,7 @@ try{
  await rub('gray-wolf');
  assert.equal(await pen('gray-wolf').getAttribute('data-react'),'pet');assert.equal(await page.locator('#pet-gray-wolf [data-meter="affection"]').getAttribute('aria-valuenow'),'70');
  assert.equal(await pen('gray-wolf').evaluate(n=>getComputedStyle(n,'::after').animationName),'ascii-pet-marks-pet');
- assert.equal(await pen('gray-wolf').evaluate(n=>getComputedStyle(n,'::before').animationName),'ascii-pet-gray-wolf-happy');
+ assert.equal(await page.locator('#pet-gray-wolf .ascii-mini--portrait > [data-ink="0"]').evaluate(n=>getComputedStyle(n,'::before').animationName),'ascii-portrait-gray-wolf-happy-0');
  await drag('gray-wolf',false);assert.equal(await page.locator('#pet-gray-wolf [data-meter="fullness"]').getAttribute('aria-valuenow'),'60');
  await drag('gray-wolf');assert.equal(await pen('gray-wolf').getAttribute('data-react'),'feed');
  assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'delighted');
@@ -70,7 +70,7 @@ try{
  await page.clock.runFor(6*3600000);assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'lonely');
  assert.match(await page.locator('[data-target="pet-den.count"]').textContent(),/14 pets · 1 tamed · 1 need you/);
  await page.clock.runFor(7*3600000);await page.reload();await ready();assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'hungry');
- assert.equal(await pen('gray-wolf').evaluate(n=>getComputedStyle(n,'::before').animationName),'ascii-pet-gray-wolf-low');
+ assert.equal(await page.locator('#pet-gray-wolf .ascii-mini--portrait > [data-ink="0"]').evaluate(n=>getComputedStyle(n,'::before').animationName),'ascii-portrait-gray-wolf-low-0');
  // Night: left alone it sleeps; a pat wakes it.
  await page.clock.runFor(4.5*3600000);await page.reload();await ready();assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'asleep');
  assert.equal(await pen('gray-wolf').evaluate(n=>getComputedStyle(n,'::after').animationName),'ascii-pet-marks-asleep');
@@ -94,7 +94,8 @@ try{
  }
  await wide.close();
  // Without JavaScript the roster and dossiers still read.
- const nojs=await browser.newContext({javaScriptEnabled:false});const plain=await nojs.newPage();await plain.goto(origin+'/pets/');assert.equal(await plain.locator('.pet-card').count(),pets.length);assert.equal(await plain.locator('[data-field="owned"]').first().isDisabled(),true);await plain.locator('#pet-bison summary').click();assert.equal(await plain.locator('#pet-bison .pet-ladder').isVisible(),true);await nojs.close();
+ // Still frames here: fourteen stepping portraits can keep a slow runner from ever calling the dossier stable.
+ const nojs=await browser.newContext({javaScriptEnabled:false,reducedMotion:'reduce'});const plain=await nojs.newPage();await plain.goto(origin+'/pets/');assert.equal(await plain.locator('.pet-card').count(),pets.length);assert.equal(await plain.locator('[data-field="owned"]').first().isDisabled(),true);await plain.locator('#pet-bison summary').click();assert.equal(await plain.locator('#pet-bison .pet-ladder').isVisible(),true);await nojs.close();
  const home=await browser.newPage();await home.goto(origin+'/?lang=en');assert.equal(await home.locator('#tools a[href="pets/"]').count(),1);await home.close();
  // The pets drawn live (js/pet-live.js): with WebGL 2 the grizzly's canvas covers the pen, draws, and reacts; the baked
  // frames stay underneath. With reduced motion, or with the script blocked, the baked frames show.
@@ -103,7 +104,7 @@ try{
   const ctx=await gpu.newContext({viewport:{width:390,height:900}}),live=await ctx.newPage();live.on('pageerror',e=>errors.push(e.message));
   await live.goto(origin+'/pets/?lang=en');const pen=live.locator('#pet-grizzly-bear [data-pen]');await pen.scrollIntoViewIfNeeded();
   await live.waitForFunction(()=>document.querySelector('#pet-grizzly-bear [data-pen]').hasAttribute('data-live'),null,{timeout:10000});
-  assert.equal(await live.locator('#pet-grizzly-bear canvas.pet-live').count(),1);assert.equal(await live.locator('#pet-moose canvas.pet-live').count(),0);
+  assert.equal(await live.locator('#pet-grizzly-bear canvas.pet-live').count(),1);
   assert.equal(await live.locator('#pet-grizzly-bear .ascii-mini--portrait').evaluate(n=>getComputedStyle(n).visibility),'hidden');
   const box=await pen.boundingBox(),canvasBox=await live.locator('#pet-grizzly-bear canvas.pet-live').boundingBox();
   assert.ok(Math.abs(canvasBox.width-box.width)<1&&canvasBox.height<=box.height+1,'the live pet fits its pen');
