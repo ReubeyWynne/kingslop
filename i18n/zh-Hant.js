@@ -1176,6 +1176,17 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "pets.title": "寵物",
   "pets.cardLede": "照顧會即時餓肚子、感到孤單的寵物，並查看下一次進階的花費和積分。",
   "pets.kicker": "獸籠",
+  "pets.bond.new": "初次相識",
+  "pets.bond.familiar": "漸漸熟悉",
+  "pets.bond.close": "親密夥伴",
+  "pets.bond.trusted": "信賴的朋友",
+  "pets.bondDays": "照顧天數：{n}",
+  "pets.bondHint": "在不同的日子照顧牠，感情會逐漸加深。離開也不會減少。",
+  "pets.spot.head": "頭部",
+  "pets.spot.cheeks": "臉頰",
+  "pets.spot.chin": "下巴",
+  "pets.favourite": "最喜歡的部位：{spot}",
+  "pets.explore": "使用上下方向鍵選擇頭部、臉頰和下巴，按 Enter 撫摸。",
   "pets.metaTitle": "寵物 — dey.ci"
 }
 ;

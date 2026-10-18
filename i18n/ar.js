@@ -1173,5 +1173,16 @@ window.__BH_I18N_DATA["ar"] = {
   "pets.title": "الحيوانات الأليفة",
   "pets.cardLede": "اعتنِ بحيواناتك وهي تجوع وتشعر بالوحدة في الوقت الحقيقي، واعرف كلفة كل ترقية تالية ونقاطها.",
   "pets.kicker": "قفص الوحوش",
+  "pets.bond.new": "نتعرّف على بعضنا",
+  "pets.bond.familiar": "أليف",
+  "pets.bond.close": "رفيق مقرّب",
+  "pets.bond.trusted": "صديق موثوق",
+  "pets.bondDays": "أيام الرعاية: {n}",
+  "pets.bondHint": "تنمو مع الرعاية في أيام مختلفة، ولا تنقص أثناء غيابك.",
+  "pets.spot.head": "الرأس",
+  "pets.spot.cheeks": "الخدّان",
+  "pets.spot.chin": "الذقن",
+  "pets.favourite": "المكان المفضّل: {spot}",
+  "pets.explore": "استخدم السهمين للأعلى والأسفل لاستكشاف الرأس والخدّين والذقن، وEnter للمداعبة.",
   "pets.metaTitle": "الحيوانات الأليفة — dey.ci"
 };

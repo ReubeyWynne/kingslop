@@ -1179,6 +1179,17 @@ window.__BH_I18N_DATA["es"] = {
   "pets.title": "Mascotas",
   "pets.cardLede": "Cuida de tus mascotas mientras les entra hambre y soledad en tiempo real, y mira lo que cuesta y puntúa cada próximo ascenso.",
   "pets.kicker": "la Jaula de Bestias",
+  "pets.bond.new": "Conociéndoos",
+  "pets.bond.familiar": "En confianza",
+  "pets.bond.close": "Compañero cercano",
+  "pets.bond.trusted": "Amigo fiel",
+  "pets.bondDays": "Días de cuidados: {n}",
+  "pets.bondHint": "Crece con los cuidados en días distintos. No se pierde durante tu ausencia.",
+  "pets.spot.head": "Cabeza",
+  "pets.spot.cheeks": "Mejillas",
+  "pets.spot.chin": "Barbilla",
+  "pets.favourite": "Zona favorita: {spot}",
+  "pets.explore": "Usa las flechas arriba y abajo para explorar cabeza, mejillas y barbilla; Intro para acariciar.",
   "pets.metaTitle": "Mascotas — dey.ci"
 }
 ;

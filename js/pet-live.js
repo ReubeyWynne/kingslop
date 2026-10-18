@@ -245,6 +245,7 @@ void main(){
       const dt = Math.min(0.2, (now - last) / 1000); last = now;
       const react = pen.dataset.react || '', sniffing = pen.hasAttribute('data-sniff'), base = pen.dataset.mood || 'content';
       if (base !== st.mood || react !== st.react) { st.mood = base; st.react = react; st.moodAt = now; st.nextSpark = 0; }
+      const welcoming = pen.hasAttribute('data-welcome'), favourite = pen.hasAttribute('data-favourite');
       const happy = react === 'pet' || react === 'feed' || sniffing, full = react === 'full';
       const mood = happy ? 'happy' : base, asleep = mood === 'asleep', hungry = mood === 'hungry', lonely = mood === 'lonely', low = hungry || lonely;
       const isOwned = card ? card.dataset.owned !== 'false' : true;
@@ -258,7 +259,7 @@ void main(){
       st.lift += (cfg.rest.lift + lift + st.look[1] * 0.18 * gain[1] + breath + sigh - st.lift) * k;
       st.turn += (cfg.rest.turn + st.look[0] * 0.35 * gain[0] + (full ? 0.5 : 0) - st.turn) * k;   // turns its nose up at food when full
       if (mood === 'content' && now > st.nextTilt) { st.tiltUntil = now + 1800; st.nextTilt = now + 6000 + Math.random() * 6000; }
-      st.tilt += ((asleep ? 0.14 : happy ? 0.12 : low ? -0.06 : full ? -0.1 : now < st.tiltUntil ? 0.18 : 0) - st.tilt) * k;   // a curious head tilt
+      st.tilt += ((asleep ? 0.14 : happy ? (favourite ? 0.22 : welcoming ? -0.12 : 0.12) : low ? -0.06 : full ? -0.1 : now < st.tiltUntil ? 0.18 : 0) - st.tilt) * k;   // a curious head tilt
       if (now > st.nextBlink) { st.blinkUntil = now + 140; st.nextBlink = now + 2500 + Math.random() * 3500; }
       if (now > st.nextEar && !asleep) { st.earUntil = now + 260; st.nextEar = now + (mood === 'restless' ? 1500 : 4000) + Math.random() * 5000; }
       st.ear = now < st.earUntil ? 0.28 : 0;
@@ -289,12 +290,16 @@ void main(){
       const eyes = cfg.eyes.map(p => cellOf(apply(bones[2], p))).sort((a, b) => a[0] - b[0]);
       const mouth = cellOf(apply(bones[5], cfg.mouth)); mouth[1] -= 1;
       const top = cellOf(apply(bones[2], cfg.top)), t = now - st.moodAt;
+      const centre = [(eyes[0][0] + eyes[1][0]) / 2, (eyes[0][1] + eyes[1][1]) / 2];
+      const spot = (name, p) => ({ name, x: p[0] / COLS, y: 1 - p[1] / ROWS });
+      pen.petCareSpots = [spot('head', [centre[0], centre[1] + 2]), spot('chin', [mouth[0], mouth[1] - 2]),
+        ...cfg.cheeks.map(p => spot('cheeks', cellOf(apply(bones[2], p))))];
       const glyph = asleep || full || now < st.blinkUntil ? '-' : happy ? '^' : '●';
       eyes.forEach(([c, r]) => put(c, r, glyph, EYE));
       if (low) { put(eyes[0][0], eyes[0][1] + 1, '/', 7); put(eyes[1][0], eyes[1][1] + 1, '\\', 7); }   // worried brows
       if (happy) cfg.cheeks.forEach(p => { const [c, r] = cellOf(apply(bones[2], p)); put(c, r, '~', BLUSH); });
       const chew = react === 'feed' && Math.floor(t / 150) % 2 === 0;
-      put(mouth[0], mouth[1], asleep ? '.' : full ? '~' : chew ? 'o' : happy ? 'ω' : 'w', EYE);
+      put(mouth[0], mouth[1], asleep ? '.' : full ? '~' : chew ? 'o' : happy ? (cfg.mouthHappy || 'ω') : (cfg.mouthGlyph || 'w'), cfg.mouthInk ?? EYE);
       if (hungry) {                                                   // licks its lips, dreams of fish, tummy rumbles
         if (now > st.nextLick) { st.lickUntil = now + 700; st.nextLick = now + 3500 + Math.random() * 2500; }
         if (now < st.lickUntil) put(mouth[0] + (Math.floor((st.lickUntil - now) / 230) % 2), mouth[1] - 1, 'u', TONGUE, true);
@@ -305,9 +310,9 @@ void main(){
         if (now > st.nextGrr) { st.grrUntil = now + 1300; st.nextGrr = now + 7000 + Math.random() * 4000; }
         if (now < st.grrUntil) text(6 + (Math.floor(now / 160) % 2), 2, 'grr', CORAL);
       }
-      if (now > st.nextSpark && (asleep || react === 'pet')) {
+      if (now > st.nextSpark && (asleep || (react === 'pet' && !welcoming))) {
         st.sparks.push({ kind: asleep ? 'z' : 'heart', t: now, dc: Math.round(Math.random() * 6 - 3) });
-        st.nextSpark = now + (asleep ? 900 : 500);
+        st.nextSpark = now + (asleep ? 900 : favourite ? 260 : 500);
       }
       st.sparks = st.sparks.filter(p => {                             // z's and hearts rise a whole cell at a time
         const age = Math.floor((now - p.t) / (p.kind === 'z' ? 420 : 260)), life = p.kind === 'z' ? 6 : 4;
@@ -341,7 +346,7 @@ void main(){
     document.addEventListener('pointermove', point, { passive: true });
     ctx.lost.push(() => {                            // back to the baked frames
       visible = false; seen.disconnect(); resize.disconnect(); document.removeEventListener('pointermove', point);
-      delete pen.dataset.live; canvas.remove();
+      delete pen.dataset.live; delete pen.petCareSpots; canvas.remove();
     });
     return canvas;
   }

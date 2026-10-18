@@ -1176,6 +1176,17 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "pets.title": "宠物",
   "pets.cardLede": "照顾会实时饿肚子、感到孤单的宠物，并查看下一次进阶的花费和积分。",
   "pets.kicker": "兽笼",
+  "pets.bond.new": "初次相识",
+  "pets.bond.familiar": "渐渐熟悉",
+  "pets.bond.close": "亲密伙伴",
+  "pets.bond.trusted": "信赖的朋友",
+  "pets.bondDays": "照顾天数：{n}",
+  "pets.bondHint": "在不同的日子照顾它，感情会逐渐加深。离开也不会减少。",
+  "pets.spot.head": "头部",
+  "pets.spot.cheeks": "脸颊",
+  "pets.spot.chin": "下巴",
+  "pets.favourite": "最喜欢的部位：{spot}",
+  "pets.explore": "使用上下方向键选择头部、脸颊和下巴，按 Enter 抚摸。",
   "pets.metaTitle": "宠物 — dey.ci"
 }
 ;

@@ -20,6 +20,14 @@ The three sources agree on every row but three cells, where the two that agree w
 
 `js/pet-care.js` (`PetCare`) keeps two meters per tamed pet, fullness and affection, as a value and the time it was set; the current value is worked out from the clock, so pets get hungry (empty over 16 hours) and lonely (over 10) whether or not the page is open. Pet Food adds 30, a pat 20, and a pet over 90 full turns food down. The mood follows the whole-point meters: asleep at night (23:00–06:00 local) after ten minutes alone, then hungry (below 25), lonely (below 25), delighted (both 70 or more), content (average 45 or more), else restless. The care lives under `ks.pet-care.v1` in local storage, not in the ledger, so it never reaches saves or the event maths; an unreadable record starts again.
 
+### Familiarity
+
+Care now also builds a permanent bond in the same local care record. An accepted meal or pat earns one care day on a new local date, at least twenty hours after the previous credit. Extra care still fills the meters and plays its reaction; missed days never remove bond progress. The stages are getting acquainted, familiar (3 days), close companion (7) and trusted friend (14). Existing care records start with no bond without losing their meters. This remains device-local play, separate from in-game pet levels, materials and ledger exports.
+
+A familiar pet greets a returning player after four hours away. Only visible tamed pens count as visited; sleeping pets stay asleep. The welcome uses the existing perked ears and a short head tilt, with the baked happy frames as fallback. Visits and discoveries do not earn care days.
+
+Each species likes its head, cheeks or chin stroked. In live pens these hit areas follow the projected face as it turns; baked pens use three vertical regions. Most of a completed stroke must cross one area to discover it. Its stronger reaction adds a head lean and more hearts, and the favourite stays noted below the pen. Keyboard users choose an area with Up/Down and stroke with Enter or Space. Both bears use a small dark mouth rather than a pale tooth-like grin; the recipe lives in `shade.py` alongside their generated model settings.
+
 ## Page
 
 - `js/pet-den.js` registers `pet-den` (pens, care, the "Your pet" form and costs) and `pet-advances` (the KvK points table). It sets `data-mood` and, for a moment after an action, `data-react` on each pen; CSS does all of the drawing. Moods are recomputed on load, after each action, once a minute and when the tab returns.

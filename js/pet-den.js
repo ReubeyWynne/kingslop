@@ -17,9 +17,13 @@
     tomax: 'To level {max} with every Advance: {cost}, {n} Advances, {points} KvK prep points.', unread: 'Enter its level to see what comes next.',
     'm.petFood': '{n} Pet Food', 'm.growthManual': '{n} Growth Manuals', 'm.nutrientPotion': '{n} Nutrient Potions', 'm.promotionMedallion': '{n} Promotion Medallions', free: 'nothing more',
     skillNow: 'skill level {n}', total: '{points} KvK prep points from your next Advances', none: 'Tame a pet and enter its level to count its Advances.',
-    unknownPets: 'Unread levels: {names}.', allRead: 'Every tamed pet counted.'
+    unknownPets: 'Unread levels: {names}.', allRead: 'Every tamed pet counted.',
+    'bond.new': 'Getting acquainted', 'bond.familiar': 'Familiar', 'bond.close': 'Close companion', 'bond.trusted': 'Trusted friend',
+    bondDays: 'Care days: {n}', bondHint: 'Grows with care on different days. Never lost when you are away.',
+    'spot.head': 'Head', 'spot.cheeks': 'Cheeks', 'spot.chin': 'Chin', favourite: 'Favourite spot: {spot}',
+    explore: 'Use Up and Down to explore head, cheeks and chin; Enter to stroke.'
   };
-  function t(api, key) { var path = key.split('.'), fallback = EN; path.forEach(function (part) { fallback = fallback && fallback[part]; }); return api.tr('pets.' + key, typeof fallback === 'string' ? fallback : key); }
+  function t(api, key) { return api.tr('pets.' + key, EN[key] || key); }
   function costText(api, cost) {
     var parts = window.PetPlan.KEYS.filter(function (key) { return cost[key] > 0; }).map(function (key) { return api.fill(t(api, 'm.' + key), { n: api.fmt(cost[key]) }); });
     return parts.length ? parts.join(', ') : t(api, 'free');
@@ -40,11 +44,23 @@
       var tamed = Object.hasOwn(mine.roster, record.id);
       record.care.hidden = !tamed;
       record.stroke.hidden = !tamed;
-      if (!tamed) { record.pen.dataset.mood = 'content'; return null; }
+      if (!tamed) { record.pen.dataset.mood = 'content'; record.visited = false; clearTimeout(timers[record.id]); delete record.pen.dataset.react; record.pen.removeAttribute('data-favourite'); record.pen.removeAttribute('data-welcome'); return null; }
       if (!den[record.id]) den[record.id] = Care.fresh(now);
       var care = den[record.id], mood = Care.mood(care, now, new Date(now).getHours()), level = Care.level(care, now);
       record.pen.dataset.mood = mood;
-      record.stroke.setAttribute('aria-label', t(api, 'pat') + ' · ' + t(api, 'mood.' + mood));
+      record.stroke.setAttribute('aria-label', t(api, 'pat') + ' · ' + t(api, 'mood.' + mood) + (record.spot ? ' · ' + t(api, 'spot.' + record.spot) : ''));
+      record.stroke.setAttribute('aria-description', t(api, 'explore'));
+      var bond = Care.bond(care), label = t(api, 'bond.' + Care.stage(care));
+      find(record.node, 'bond').forEach(function (node) {
+        node.textContent = label + (bond.days ? ' · ' + api.fill(t(api, 'bondDays'), { n: api.fmt(bond.days) }) : '');
+        node.title = t(api, 'bondHint');
+      });
+      find(record.node, 'favourite').forEach(function (node) {
+        var spot = Care.SPOTS.filter(function (spot) { return Care.favourite(record.id, spot); })[0];
+        node.hidden = !bond.favourite;
+        var text = api.fill(t(api, 'favourite'), { spot: t(api, 'spot.' + spot) });
+        if (node.textContent !== text) node.textContent = text;
+      });
       record.node.querySelectorAll('[data-meter]').forEach(function (bar) {
         var value = Math.round(level[bar.dataset.meter]);
         bar.setAttribute('aria-valuenow', value);
@@ -94,18 +110,21 @@
     }
     function persist() { if (storage) try { Care.save(storage, den); } catch (cause) { /* storage full or blocked: the care lasts for this visit */ } }
     // A reaction shows on the pen for a moment, then the mood's own marks come back.
-    function react(record, kind) {
+    function react(record, kind, favourite, welcome) {
       clearTimeout(timers[record.id]);
       record.pen.dataset.react = kind;
-      timers[record.id] = setTimeout(function () { delete record.pen.dataset.react; render(); }, 2400);
+      record.pen.toggleAttribute('data-favourite', Boolean(favourite));
+      record.pen.toggleAttribute('data-welcome', Boolean(welcome));
+      timers[record.id] = setTimeout(function () { delete record.pen.dataset.react; record.pen.removeAttribute('data-favourite'); record.pen.removeAttribute('data-welcome'); render(); }, 2400);
     }
     function recordOf(node) { return records.filter(function (item) { return item.node.contains(node); })[0]; }
-    function act(record, kind) {
+    function act(record, kind, spot) {
       if (!record || !Object.hasOwn(mine.roster, record.id)) return;
       var now = Date.now(), result = (kind === 'feed' ? Care.feed : Care.pat)(den[record.id] || Care.fresh(now), now);
-      den[record.id] = result.record;
+      var favourite = kind === 'pat' && Care.favourite(record.id, spot);
+      den[record.id] = result.react === 'full' ? result.record : Care.befriend(result.record, now, favourite);
       render();
-      react(record, result.react);
+      react(record, result.react, favourite);
     }
     // Petting is a rub: three turns back and forth over the pet, each at least a tenth of
     // its width, or, with a finger or a held button, half its width of stroking. Keep
@@ -114,17 +133,25 @@
     function stroke(event) {
       var surface = event.target.closest && event.target.closest('[data-target~="pet-den.stroke"]'), touch = strokes[event.pointerId];
       if (!surface || surface.hidden) { delete strokes[event.pointerId]; return; }
-      if (!touch || touch.surface !== surface) touch = strokes[event.pointerId] = { surface: surface, x: event.clientX, dir: 0, run: 0, travel: 0, turns: 0 };
+      if (!touch || touch.surface !== surface) touch = strokes[event.pointerId] = { surface: surface, x: event.clientX, dir: 0, run: 0, travel: 0, turns: 0, zones: { head: 0, cheeks: 0, chin: 0 } };
       var dx = event.clientX - touch.x, width = surface.getBoundingClientRect().width;
       touch.x = event.clientX;
       if (!dx || !width) return;
       var dir = dx > 0 ? 1 : -1;
       if (dir !== touch.dir) { if (touch.run >= width / 10) touch.turns++; touch.dir = dir; touch.run = 0; }
       touch.run += Math.abs(dx); touch.travel += Math.abs(dx);
+      var box = surface.getBoundingClientRect(), record = recordOf(surface), x = (event.clientX - box.left) / box.width, y = (event.clientY - box.top) / box.height;
+      var zone = Care.spot(y);
+      if (record.pen.petCareSpots) {
+        var near = record.pen.petCareSpots.map(function (p) { return { name: p.name, distance: Math.hypot((x - p.x) / 0.18, (y - p.y) / 0.14) }; }).sort(function (a, b) { return a.distance - b.distance; })[0];
+        zone = near && near.distance <= 1 ? near.name : null;
+      }
+      if (zone) touch.zones[zone] += Math.abs(dx);
       var held = event.pointerType !== 'mouse' || event.buttons > 0;
       if (touch.turns >= 3 || (held && touch.travel >= width / 2)) {
-        touch.turns = 0; touch.travel = 0;
-        act(recordOf(surface), 'pat');
+        var spot = Care.SPOTS.filter(function (name) { return touch.zones[name] >= touch.travel * 0.6; })[0];
+        touch.turns = 0; touch.travel = 0; touch.zones = { head: 0, cheeks: 0, chin: 0 };
+        act(recordOf(surface), 'pat', spot);
       }
     }
     function unstroke(event) { delete strokes[event.pointerId]; }
@@ -200,16 +227,41 @@
     context.listen(context.root, 'pointermove', move);
     context.listen(context.root, 'pointerup', drop);
     context.listen(context.root, 'pointercancel', drop);
-    context.listen(document, 'visibilitychange', function () { if (!document.hidden) render(); });
-    var tick = setInterval(render, 60000);
+    function greet(record) {
+      if (document.hidden || !Object.hasOwn(mine.roster, record.id)) return;
+      var box = record.pen.getBoundingClientRect();
+      if (box.bottom <= 0 || box.top >= window.innerHeight) return;
+      var visited = record.visited;
+      record.visited = true;
+      var now = Date.now(), result = Care.visit(den[record.id] || Care.fresh(now), now);
+      den[record.id] = result.record; persist();
+      if (!visited && result.welcome && Care.mood(result.record, now, new Date(now).getHours()) !== 'asleep' && !record.pen.dataset.react) react(record, 'pet', false, true);
+    }
+    var observer = new IntersectionObserver(function (entries) { entries.forEach(function (entry) { if (entry.isIntersecting) greet(recordOf(entry.target)); }); });
+    records.forEach(function (record) { observer.observe(record.pen); });
+    context.listen(context.root, 'keydown', function (event) {
+      var surface = event.target.closest && event.target.closest('[data-target~="pet-den.stroke"]');
+      if (!surface || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return;
+      event.preventDefault();
+      var record = recordOf(surface), at = Care.SPOTS.indexOf(record.spot);
+      record.spot = Care.SPOTS[(at + (event.key === 'ArrowDown' ? 1 : at < 0 ? 0 : 2)) % 3];
+      paintCare(record, Date.now());
+    });
+    context.listen(document, 'visibilitychange', function () {
+      if (document.hidden) records.forEach(function (record) { record.visited = false; });
+      else { render(); records.forEach(greet); }
+    });
+    context.cleanup(function () { observer.disconnect(); });
+    var tick = setInterval(function () { render(); records.forEach(greet); }, 60000);
     context.cleanup(function () { clearInterval(tick); Object.keys(timers).forEach(function (id) { clearTimeout(timers[id]); }); });
-    if (store) context.cleanup(store.subscribe(render));
+    if (store) context.cleanup(store.subscribe(function () { render(); records.forEach(greet); }));
     render();
+    records.forEach(greet);
     return {
       refresh: render,
       actions: {
         // Only a keyboard press (a click with no pointer behind it) pets or feeds outright.
-        pat: { events: ['click'], run: function (node, event) { if (!event.detail) act(recordOf(node), 'pat'); } },
+        pat: { events: ['click'], run: function (node, event) { if (!event.detail) { var record = recordOf(node); if (record) act(record, 'pat', record.spot || 'head'); } } },
         feed: { events: ['click'], run: function (node, event) { if (!event.detail) act(recordOf(node), 'feed'); } }
       }
     };

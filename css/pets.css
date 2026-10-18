@@ -65,7 +65,7 @@
 .pet-ladder td { color: var(--ink-dim); }
 .pet-ladder [data-reached] { background: var(--signal-tint); color: var(--amber); }
 .pet-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem 1rem; margin: 0; }
-.pet-facts dt { font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.pet-facts dt { overflow-wrap: anywhere; font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
 .pet-facts dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
 .pet-mine { display: grid; grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr)); gap: .3rem 1rem; margin: 0; padding: .2rem 0 .5rem; border: 0; border-block: 1px solid var(--signal-line); }
 .pet-card:not([data-owned="true"]) .pet-mine { display: none; }
@@ -91,3 +91,7 @@
 
 @media (min-width: 560px) { .pet-catalogue { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 651px) { .pet-roster { --band-label: 3.2rem; } }
+
+.pet-bond, .pet-favourite { font-size: .7rem; line-height: 1.5; color: var(--ink-muted); }
+.pet-favourite { color: var(--amber); }
+.pet-favourite[hidden] { display: none; }

@@ -1176,6 +1176,17 @@ window.__BH_I18N_DATA["ja"] = {
   "pets.title": "ペット",
   "pets.cardLede": "リアルタイムでお腹を空かせ寂しがるペットの世話をし、次の進化のコストとポイントを確認しよう。",
   "pets.kicker": "獣の檻",
+  "pets.bond.new": "知り合ったばかり",
+  "pets.bond.familiar": "顔なじみ",
+  "pets.bond.close": "仲良し",
+  "pets.bond.trusted": "信頼する友達",
+  "pets.bondDays": "お世話した日数：{n}",
+  "pets.bondHint": "別の日にもお世話すると深まります。離れていても失われません。",
+  "pets.spot.head": "頭",
+  "pets.spot.cheeks": "頬",
+  "pets.spot.chin": "顎",
+  "pets.favourite": "お気に入りの場所：{spot}",
+  "pets.explore": "上下キーで頭・頬・顎を選び、Enterキーでなでます。",
   "pets.metaTitle": "ペット — dey.ci"
 }
 ;

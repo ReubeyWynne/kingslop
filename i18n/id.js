@@ -1187,6 +1187,17 @@ window.__BH_I18N_DATA["id"] = {
   "pets.title": "Peliharaan",
   "pets.cardLede": "Rawat peliharaanmu yang lapar dan kesepian secara nyata, dan lihat biaya serta poin setiap kenaikan berikutnya.",
   "pets.kicker": "Kandang Hewan",
+  "pets.bond.new": "Mulai berkenalan",
+  "pets.bond.familiar": "Akrab",
+  "pets.bond.close": "Teman dekat",
+  "pets.bond.trusted": "Sahabat setia",
+  "pets.bondDays": "Hari perawatan: {n}",
+  "pets.bondHint": "Bertambah dengan perawatan pada hari berbeda. Tidak berkurang saat kamu pergi.",
+  "pets.spot.head": "Kepala",
+  "pets.spot.cheeks": "Pipi",
+  "pets.spot.chin": "Dagu",
+  "pets.favourite": "Tempat favorit: {spot}",
+  "pets.explore": "Gunakan panah atas dan bawah untuk menjelajahi kepala, pipi, dan dagu; Enter untuk mengelus.",
   "pets.metaTitle": "Peliharaan — dey.ci"
 }
 ;

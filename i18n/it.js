@@ -1178,6 +1178,17 @@ window.__BH_I18N_DATA["it"] = {
   "pets.title": "Animali",
   "pets.cardLede": "Prenditi cura dei tuoi animali che hanno fame e si sentono soli in tempo reale, e scopri quanto costa e rende ogni prossimo avanzamento.",
   "pets.kicker": "la Gabbia delle bestie",
+  "pets.bond.new": "Facciamo conoscenza",
+  "pets.bond.familiar": "In confidenza",
+  "pets.bond.close": "Compagno affezionato",
+  "pets.bond.trusted": "Amico fidato",
+  "pets.bondDays": "Giorni di cure: {n}",
+  "pets.bondHint": "Cresce con le cure in giorni diversi. Non si perde quando sei via.",
+  "pets.spot.head": "Testa",
+  "pets.spot.cheeks": "Guance",
+  "pets.spot.chin": "Mento",
+  "pets.favourite": "Punto preferito: {spot}",
+  "pets.explore": "Usa Su e Giù per esplorare testa, guance e mento; Invio per accarezzare.",
   "pets.metaTitle": "Animali — dey.ci"
 }
 ;

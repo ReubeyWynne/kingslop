@@ -1176,6 +1176,17 @@ window.__BH_I18N_DATA["de"] = {
   "pets.title": "Haustiere",
   "pets.cardLede": "Kümmere dich um deine Haustiere, die in Echtzeit hungrig und einsam werden, und sieh, was jeder nächste Aufstieg kostet und bringt.",
   "pets.kicker": "der Tierkäfig",
+  "pets.bond.new": "Erstes Kennenlernen",
+  "pets.bond.familiar": "Vertraut",
+  "pets.bond.close": "Enger Gefährte",
+  "pets.bond.trusted": "Treuer Freund",
+  "pets.bondDays": "Pflegetage: {n}",
+  "pets.bondHint": "Wächst durch Pflege an verschiedenen Tagen. Geht bei Abwesenheit nicht verloren.",
+  "pets.spot.head": "Kopf",
+  "pets.spot.cheeks": "Wangen",
+  "pets.spot.chin": "Kinn",
+  "pets.favourite": "Lieblingsstelle: {spot}",
+  "pets.explore": "Mit Auf und Ab Kopf, Wangen und Kinn erkunden; mit Enter streicheln.",
   "pets.metaTitle": "Haustiere — dey.ci"
 }
 ;

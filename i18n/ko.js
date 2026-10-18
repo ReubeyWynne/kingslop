@@ -1176,6 +1176,17 @@ window.__BH_I18N_DATA["ko"] = {
   "pets.title": "펫",
   "pets.cardLede": "실시간으로 배고프고 외로워지는 펫을 돌보고, 다음 진급의 비용과 점수를 확인하세요.",
   "pets.kicker": "야수 우리",
+  "pets.bond.new": "알아가는 사이",
+  "pets.bond.familiar": "익숙한 사이",
+  "pets.bond.close": "가까운 동료",
+  "pets.bond.trusted": "믿음직한 친구",
+  "pets.bondDays": "돌본 날: {n}",
+  "pets.bondHint": "서로 다른 날에 돌보면 친밀해집니다. 자리를 비워도 줄어들지 않습니다.",
+  "pets.spot.head": "머리",
+  "pets.spot.cheeks": "볼",
+  "pets.spot.chin": "턱",
+  "pets.favourite": "좋아하는 부위: {spot}",
+  "pets.explore": "위아래 방향키로 머리, 볼, 턱을 선택하고 Enter로 쓰다듬으세요.",
   "pets.metaTitle": "펫 — dey.ci"
 }
 ;

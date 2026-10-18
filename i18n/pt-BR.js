@@ -1417,6 +1417,17 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "pets.title": "Mascotes",
   "pets.cardLede": "Cuide dos seus mascotes enquanto sentem fome e solidão em tempo real, e veja quanto custa e pontua cada próximo avanço.",
   "pets.kicker": "a Jaula das Feras",
+  "pets.bond.new": "Se conhecendo",
+  "pets.bond.familiar": "Familiarizado",
+  "pets.bond.close": "Companheiro próximo",
+  "pets.bond.trusted": "Amigo de confiança",
+  "pets.bondDays": "Dias de cuidado: {n}",
+  "pets.bondHint": "Cresce com cuidados em dias diferentes. Não diminui enquanto você está fora.",
+  "pets.spot.head": "Cabeça",
+  "pets.spot.cheeks": "Bochechas",
+  "pets.spot.chin": "Queixo",
+  "pets.favourite": "Lugar favorito: {spot}",
+  "pets.explore": "Use as setas para cima e para baixo para explorar cabeça, bochechas e queixo; Enter para fazer carinho.",
   "pets.metaTitle": "Mascotes — dey.ci"
 }
 ;
