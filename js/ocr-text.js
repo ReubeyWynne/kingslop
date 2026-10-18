@@ -108,10 +108,11 @@
   }
 
   // A whole count as the game prints it: "8,830", "87.542", "1 100", "35".
-  // Returns null for anything that isn't one.
+  // OCR sometimes reads the thousands comma as ";", ":" or "'". Returns null
+  // for anything that isn't a count.
   function parseCount(text) {
     var t = normalise(text).replace(/[Oo]/g, '0').replace(/[Il|]/g, '1').trim();
-    if (!/^\d{1,3}(?:[,. ]\d{3})*$|^\d+$/.test(t)) return null;
+    if (!/^\d{1,3}(?:[,.;:' ]\d{3})*$|^\d+$/.test(t)) return null;
     return parseInt(t.replace(/\D/g, ''), 10);
   }
 

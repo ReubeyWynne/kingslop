@@ -11,8 +11,15 @@
   var M = window.Interactions;
   if (!M) return;
 
-  var LAZY = ['ocr-text.js', 'ocr-client.js', 'screen-import-core.js', 'import-adapters/overview.js'];
-  var GLOBALS = ['OcrText', 'OcrClient', 'ScreenImport', null];
+  // Files load in order; each is skipped when what it provides is already on
+  // the page (the simulator and hero gear load the OCR side themselves).
+  var LAZY = [
+    ['ocr-text.js', function () { return window.OcrText; }],
+    ['ocr-client.js', function () { return window.OcrClient; }],
+    ['screen-import-core.js', function () { return window.ScreenImport; }],
+    ['import-adapters/overview.js', function () { return window.ScreenImport.get('overview-resources'); }],
+    ['import-adapters/backpack.js', function () { return window.ScreenImport.get('backpack-items'); }]
+  ];
   var here = document.currentScript && document.currentScript.src;
 
   // The reading side loads only when a screenshot arrives, so pages that never
@@ -20,14 +27,13 @@
   var loading = null;
   function engine() {
     if (loading) return loading;
-    loading = LAZY.reduce(function (chain, file, i) {
+    loading = LAZY.reduce(function (chain, entry) {
       return chain.then(function () {
-        if (GLOBALS[i] && window[GLOBALS[i]]) return null;
-        if (!GLOBALS[i] && window.ScreenImport && window.ScreenImport.get('overview-resources')) return null;
+        if (entry[1]()) return null;
         return new Promise(function (resolve, reject) {
-          var s = document.createElement('script'), url = new URL(file, here || location.href);
+          var s = document.createElement('script'), url = new URL(entry[0], here || location.href);
           if (here) url.search = new URL(here).search;
-          s.src = url.href; s.onload = resolve; s.onerror = function () { reject(new Error('Could not load ' + file)); };
+          s.src = url.href; s.onload = resolve; s.onerror = function () { reject(new Error('Could not load ' + entry[0])); };
           document.head.appendChild(s);
         });
       });
@@ -42,14 +48,90 @@
   }
 
   // A cut-out of the read's preview at twice its size, as a PNG blob, so it
-  // survives the page and is sharp enough to check digits against.
+  // survives the page and is sharp enough to check digits against. Adapters
+  // give crops in preview pixels, or as fractions of the image.
   function cut(bitmap, crop) {
     if (!bitmap || !crop) return Promise.resolve(null);
+    if (crop.unit === 'fraction') crop = { x: crop.x * bitmap.width, y: crop.y * bitmap.height, w: crop.w * bitmap.width, h: crop.h * bitmap.height };
     var scale = 2, w = Math.max(1, Math.round(crop.w * scale)), h = Math.max(1, Math.round(crop.h * scale));
     var canvas = document.createElement('canvas');
     canvas.width = w; canvas.height = h;
     canvas.getContext('2d').drawImage(bitmap, crop.x, crop.y, crop.w, crop.h, 0, 0, w, h);
     return new Promise(function (resolve) { canvas.toBlob(resolve, 'image/png'); });
+  }
+
+  function blobOf(canvas) {
+    return new Promise(function (resolve, reject) { canvas.toBlob(function (b) { if (b) resolve(b); else reject(new Error('Image unavailable')); }, 'image/png'); });
+  }
+
+  // What pixel-reading adapters get besides the words: the shot at 360px wide,
+  // and a way to read small regions of the original enlarged. Regions are
+  // stacked into strips, a band each, so a whole screen costs one or two reads.
+  var BAND = 96, GAP = 32, PER_STRIP = 6;
+
+  // Game counts are white glyphs with a dark rim over a coloured tile. Keeping
+  // only the near-white, unsaturated pixels leaves clean digits on black.
+  function keepWhite(ctx, x, y, w, h) {
+    var img = ctx.getImageData(x, y, w, h), d = img.data;
+    for (var i = 0; i < d.length; i += 4) {
+      var lo = Math.min(d[i], d[i + 1], d[i + 2]), hi = Math.max(d[i], d[i + 1], d[i + 2]);
+      var v = lo > 185 && hi - lo < 60 ? 255 : 0;
+      d[i] = d[i + 1] = d[i + 2] = v;
+    }
+    ctx.putImageData(img, x, y);
+  }
+  function tools(blob, reader) {
+    var full = null;
+    function bitmap() { return full || (full = createImageBitmap(blob)); }
+    return {
+      pixels: null,
+      load: function () {
+        var self = this;
+        return bitmap().then(function (bm) {
+          var w = 360, h = Math.round(bm.height * w / bm.width), c = document.createElement('canvas');
+          c.width = w; c.height = h;
+          var ctx = c.getContext('2d', { willReadFrequently: true });
+          ctx.drawImage(bm, 0, 0, w, h);
+          self.pixels = ctx.getImageData(0, 0, w, h);
+          return self;
+        });
+      },
+      readRegions: function (boxes) {
+        return bitmap().then(function (bm) {
+          var strips = [];
+          for (var i = 0; i < boxes.length; i += PER_STRIP) strips.push(boxes.slice(i, i + PER_STRIP));
+          return strips.reduce(function (chain, strip) {
+            return chain.then(function (all) {
+              var sizes = strip.map(function (b) { var sh = b.h * bm.height; return { sx: b.x * bm.width, sy: b.y * bm.height, sw: b.w * bm.width, sh: sh, w: Math.round(b.w * bm.width * BAND / sh) }; });
+              var c = document.createElement('canvas');
+              c.width = Math.max.apply(null, sizes.map(function (s) { return s.w; })) + GAP * 2;
+              c.height = strip.length * (BAND + GAP) + GAP;
+              var ctx = c.getContext('2d');
+              ctx.fillStyle = '#000'; ctx.fillRect(0, 0, c.width, c.height);
+              sizes.forEach(function (s, k) {
+                var top = GAP + k * (BAND + GAP);
+                ctx.drawImage(bm, s.sx, s.sy, s.sw, s.sh, GAP, top, s.w, BAND);
+                if (strip[k].ink === 'white') keepWhite(ctx, GAP, top, s.w, BAND);
+              });
+              return blobOf(c).then(function (png) { return reader.read(png); }).then(function (res) {
+                var scale = res.preview && res.preview.height ? c.height / res.preview.height : 1, bands = strip.map(function () { return []; });
+                if (res.preview) res.preview.close();
+                // Words come back in the detector's (possibly smaller) frame.
+                (res.items || []).forEach(function (it) {
+                  var ys = (it.poly || []).map(function (p) { return p[1] * scale; });
+                  if (!ys.length) return;
+                  var cy = (Math.min.apply(null, ys) + Math.max.apply(null, ys)) / 2, k = Math.floor((cy - GAP / 2) / (BAND + GAP));
+                  if (k >= 0 && k < bands.length) bands[k].push(it);
+                });
+                bands.forEach(function (b) { b.sort(function (x, y) { return x.poly[0][0] - y.poly[0][0]; }); });
+                return all.concat(bands);
+              });
+            });
+          }, Promise.resolve([]));
+        });
+      },
+      close: function () { if (full) full.then(function (bm) { bm.close(); }, function () {}); }
+    };
   }
 
   function duration(minutes) {
@@ -76,6 +158,24 @@
     function doubtful(entry) {
       var S = window.ScreenImport, doubt = S ? S.DOUBT : 0.75;
       return entry.proposals.filter(function (p) { var edit = entry.edits[p.id]; return !(edit && edit.touched) && (p.value === null || p.confidence < doubt); });
+    }
+
+    // Shots taken at different moments disagree (keys 200, then 140 after
+    // opening some). The newest file wins: an item a newer shot waiting in the
+    // dock also shows starts unticked here, and says what the newer one read.
+    function newer(entry, p) {
+      var stamp = function (e) { return [e.lastModified || 0, e.added || 0]; }, mine = stamp(entry);
+      return reviewable().filter(function (e) {
+        if (e === entry) return false;
+        var theirs = stamp(e);
+        return (theirs[0] > mine[0] || (theirs[0] === mine[0] && theirs[1] > mine[1])) && e.proposals.some(function (q) { return q.id === p.id && valueOf(e, q) !== null; });
+      })[0] || null;
+    }
+    function valueOf(entry, p) { var e = entry.edits[p.id] || {}; return e.value !== undefined ? e.value : p.value; }
+    function included(entry, p) {
+      var e = entry.edits[p.id] || {};
+      if (e.include !== undefined) return e.include;
+      return valueOf(entry, p) !== null && !newer(entry, p);
     }
 
     function save(entry) { return queue ? queue.put(entry).catch(function () {}) : Promise.resolve(); }
@@ -115,8 +215,17 @@
           var page = S.page({ items: res.items, width: bitmap ? bitmap.width : 0, height: bitmap ? bitmap.height : 0 });
           var claim = S.route(page);
           if (!claim) { next.status = 'unknown'; if (bitmap) bitmap.close(); return; }
-          var proposals = claim.adapter.read(page);
-          return Promise.all(proposals.map(function (p) { return cut(bitmap, p.crop); })).then(function (crops) {
+          var kit = tools(next.blob, ocr);
+          return (claim.adapter.layout === 'grid' ? kit.load() : Promise.resolve(kit)).then(function () {
+            return claim.adapter.read(page, kit);
+          }).then(function (proposals) {
+            kit.close();
+            proposals = proposals || [];
+            if (!proposals.length) { next.status = 'empty'; if (bitmap) bitmap.close(); return null; }
+            return Promise.all(proposals.map(function (p) { return cut(bitmap, p.crop); })).then(function (crops) { return { proposals: proposals, crops: crops }; });
+          }).then(function (done) {
+            if (!done) return;
+            var proposals = done.proposals, crops = done.crops;
             if (bitmap) bitmap.close();
             next.adapter = claim.adapter.id;
             next.sourceType = claim.adapter.sourceType;
@@ -124,6 +233,7 @@
             next.proposals = proposals.map(function (p, i) {
               return { id: p.id, label: p.label, value: p.value, confidence: p.confidence, note: p.note || '', unit: /^speedup-/.test(p.id) ? 'minutes' : 'count', crop: crops[i], y: p.crop ? p.crop.y : Infinity };
             }).sort(function (a, b) { return a.y - b.y; });
+            next.layout = claim.adapter.layout || 'list';
             next.status = 'review';
           });
         });
@@ -139,7 +249,7 @@
     }
 
     // ── review ─────────────────────────────────────────
-    var SCREENS = { 'overview-resources': ['import.screen.resources', 'Overview · Resources'], 'overview-speedups': ['import.screen.speedups', 'Overview · Speedups'] };
+    var SCREENS = { 'overview-resources': ['import.screen.resources', 'Overview · Resources'], 'overview-speedups': ['import.screen.speedups', 'Overview · Speedups'], 'backpack-items': ['import.screen.backpack', 'Backpack items'] };
 
     function translate(node) {
       node.querySelectorAll('[data-i18n]').forEach(function (n) { n.textContent = tr(n.dataset.i18n, n.textContent); });
@@ -150,6 +260,7 @@
       var list = target('tiles'), template = target('tile');
       urls.forEach(function (u) { URL.revokeObjectURL(u); }); urls = [];
       Array.from(list.children).forEach(function (li) { if (!entry || !entry.proposals.some(function (p) { return p.id === li.dataset.key; })) li.remove(); });
+      list.dataset.layout = entry ? entry.layout || 'list' : 'list';
       if (!entry) return;
       var doubts = doubtful(entry);
       entry.proposals.forEach(function (p, i) {
@@ -163,7 +274,9 @@
         if (document.activeElement !== input) input.value = value === null || value === undefined ? '' : String(value);
         input.placeholder = tr('import.unread', 'not read');
         field(li, 'note').textContent = p.unit === 'minutes' ? tr('import.minutesNote', 'minutes{d}', { d: value === null || value === undefined ? '' : ' · ' + duration(value) }) : p.note;
-        field(li, 'include').checked = edit.include !== undefined ? edit.include : value !== null;
+        field(li, 'include').checked = included(entry, p);
+        var later = newer(entry, p);
+        if (later) field(li, 'note').textContent = tr('import.newer', 'a newer shot reads {v}', { v: api.fmt(valueOf(later, later.proposals.filter(function (q) { return q.id === p.id; })[0])) });
         li.dataset.state = doubts.indexOf(p) !== -1 ? 'doubt' : 'sure';
         if (list.children[i] !== li) list.insertBefore(li, list.children[i] || null);
       });
@@ -189,10 +302,11 @@
       tiles(entry);
       if (waiting.length) status(tr('import.readingStatus', 'Reading {n} screenshot(s)… the first read downloads about 14 MB of models, once per device.', { n: api.fmt(waiting.length) }));
       else if (entries.some(function (e) { return e.status === 'unknown'; })) status(tr('import.unknown', 'One screenshot isn’t a screen I can read yet. It was skipped.'));
+      else if (entries.some(function (e) { return e.status === 'empty'; })) status(tr('import.empty', 'No items I track were found on one screenshot. It was skipped.'));
       else if (entries.some(function (e) { return e.status === 'failed'; })) status(tr('import.failed', 'A screenshot couldn’t be read. Try it again, or a clearer shot.'));
       else if (entry) status(checks ? tr('import.check', '{n} values need a look. Everything else is ticked.', { n: api.fmt(checks) }) : tr('import.allSure', 'Everything was read. Check the numbers, then apply.'));
       // Unknown and failed shots are reported once, then dropped from the queue.
-      entries.filter(function (e) { return e.status === 'unknown' || e.status === 'failed'; }).forEach(forget);
+      entries.filter(function (e) { return e.status === 'unknown' || e.status === 'failed' || e.status === 'empty'; }).forEach(forget);
     }
 
     function edit(node) {
@@ -214,7 +328,7 @@
       if (!entry || !ledger) return;
       var before = ledger.snapshot(), delta = {};
       entry.proposals.forEach(function (p) {
-        var e = entry.edits[p.id] || {}, value = e.value !== undefined ? e.value : p.value, include = e.include !== undefined ? e.include : value !== null;
+        var value = valueOf(entry, p), include = included(entry, p);
         if (!include || value === null || !Number.isSafeInteger(value) || value < 0) return;
         var held = before.inventory[p.id];
         delta[p.id] = { before: held && held.status === 'confirmed' ? held.amount : null, after: value };
@@ -229,7 +343,18 @@
         return;
       }
       lastApply = { before: before, name: entry.name };
-      forget(entry).then(function () {
+      // Older shots in the dock lose the items this one just saved; their
+      // values are stale now. A shot left with nothing goes too.
+      var stamp = function (e) { return [e.lastModified || 0, e.added || 0]; }, mine = stamp(entry);
+      var stale = reviewable().filter(function (e) {
+        var theirs = stamp(e);
+        return e !== entry && (theirs[0] < mine[0] || (theirs[0] === mine[0] && theirs[1] < mine[1]));
+      });
+      var cleared = Promise.all(stale.map(function (e) {
+        e.proposals = e.proposals.filter(function (p) { return !delta[p.id]; });
+        return e.proposals.length ? save(e) : forget(e);
+      }));
+      cleared.then(function () { return forget(entry); }).then(function () {
         render();
         status(tr('import.applied', 'Saved {n} values from {name}.', { n: api.fmt(Object.keys(delta).length), name: entry.name }));
         context.emit('screen-import:applied', { record: record });

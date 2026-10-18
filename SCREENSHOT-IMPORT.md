@@ -210,8 +210,14 @@ Each step lands as its own commit with its checks passing.
   previews in `.dsh/import-preview/`, CI group `import`.
 - [x] 7. IndexedDB queue (`js/import-queue.js`); reviews and unread files
   resume on the next page.
-- [ ] 8. `backpack-other` adapter: tile finder, icon signatures, count crops,
-  stitching and newest-wins.
+- [x] 8. `backpack-items` adapter (`js/import-adapters/backpack.js`): tile
+  finder, icon signatures, white-glyph count crops, 3-column review grid and
+  newest-wins; applying a shot drops the same items from older shots waiting
+  in the dock. References exist for masters-manuscript, both taming marks,
+  mithril, forgehammer, the three hero shards and truegold. Still missing:
+  Gen widget chests, tempered-truegold, truegold-dust (no clean fixture
+  tiles yet); add them with `.dsh/backpack-signatures.cjs` once a shot shows
+  them.
 - [ ] 9. Hero gear onto the shared dock; remove its private dialog.
 - [ ] 10. Battle simulator onto the shared dock with review-before-apply.
 - [ ] 11. Update ROADMAP.md milestone 6, PLAYER-LEDGER.md, INTERACTIONS.md
@@ -229,6 +235,7 @@ English, re-encoded at JPEG quality 80):
 | other-a1..a3.jpg | Other tab, three scrolls, first session | a1 ends with keys 200 and ? chests 3,735 |
 | other-b1.jpg | Other tab, top, later | keys 140, ? chests 3,605 |
 | other-c1..c4.jpg | Other tab, four scrolls, later session | top to bottom, each overlapping the next |
+| resources-a.jpg | Resources tab, top | truegold reference tile |
 
 The full set (heroes roster, gear tab, resources and speedups tiles, a
 tooltip) is in the project's shared files under `ocr-import/screenshots/`.

@@ -74,6 +74,30 @@ const server = http.createServer((request, response) => {
     await page.locator('#screen-import [data-target~="screen-import.files"]').setInputFiles(fixture('overview-resources'));
     await page.locator('[data-target~="screen-import.status"]', { hasText: 'already applied' }).waitFor();
 
+    // Backpack tiles: icons matched to event items, counts read enlarged. The
+    // two shots come from different moments; the later file wins.
+    await page.locator('#screen-import [data-target~="screen-import.files"]').setInputFiles([fixture('other-a2'), fixture('other-c2')]);
+    await page.locator('#screen-import .import-chip', { hasText: '2 to review' }).waitFor({ timeout: 240000 });
+    const backpack = async () => Object.fromEntries((await tiles()).map(t => [t.key, t.value]));
+    const screens = {};
+    for (let i = 0; i < 2; i++) {
+      const read = await backpack();
+      screens[read['masters-manuscript']] = { read, include: await page.locator('.import-tile[data-key="masters-manuscript"] [data-field="include"]').isChecked(), note: await page.locator('.import-tile[data-key="masters-manuscript"] [data-field="note"]').textContent() };
+      if (i === 0) { await page.screenshot({ path: path.join(output, 'review-backpack-390.png') }); await page.locator('[data-action~="screen-import.next"]').click(); }
+    }
+    assert.deepEqual(screens['3102'].read, { 'masters-manuscript': '3102', 'advanced-taming-mark': '4', 'common-taming-mark': '63', mithril: '4', forgehammer: '209' });
+    assert.deepEqual(screens['2632'].read, { 'masters-manuscript': '2632', 'advanced-taming-mark': '4', 'common-taming-mark': '60', mithril: '4', forgehammer: '201', 'mythic-hero-shard': '316', 'epic-hero-shard': '74', 'rare-hero-shard': '5' });
+    assert.equal(screens['3102'].include, false, 'an item a newer shot also shows starts unticked');
+    assert.match(screens['3102'].note, /newer shot reads 2,632/);
+    assert.equal(screens['2632'].include, true);
+    // Applying the newer shot settles the older one: every item it showed was
+    // superseded, so it leaves the dock rather than writing stale counts.
+    if ((await backpack())['masters-manuscript'] !== '2632') await page.locator('[data-action~="screen-import.next"]').click();
+    await page.locator('[data-action~="screen-import.apply"]').click();
+    await page.locator('[data-target~="screen-import.status"]', { hasText: 'Saved 8 values' }).waitFor();
+    assert.equal(await page.locator('.import-tile').count(), 0, 'the superseded shot left the dock');
+    assert.deepEqual(await page.evaluate(() => ['masters-manuscript', 'common-taming-mark', 'forgehammer', 'mythic-hero-shard'].map(id => PlayerLedger.shared().balance(id).amount)), [2632, 60, 201, 316]);
+
     const desktop = await browser.newContext({ viewport: { width: 1280, height: 900 } });
     const wide = await desktop.newPage();
     await wide.goto(base + '/town-centre/?lang=en');
@@ -82,7 +106,7 @@ const server = http.createServer((request, response) => {
     await wide.screenshot({ path: path.join(output, 'review-1280.png') });
     await desktop.close();
     assert.deepEqual(errors, []);
-    console.log('Screenshot import dock: real reads of both Overview tabs, cut-outs, correction, untick, apply, undo, duplicate refusal and a review carried to another page passed.');
+    console.log('Screenshot import dock: real reads of both Overview tabs and two Backpack Other shots (icons, counts, newest wins), cut-outs, correction, untick, apply, undo, duplicate refusal and a review carried to another page passed.');
   } catch (error) {
     await page.screenshot({ path: path.join(output, 'failure.png') }).catch(() => {});
     throw error;

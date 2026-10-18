@@ -16,6 +16,7 @@ assert.equal(T.parseCount('8,830'), 8830);
 assert.equal(T.parseCount('87.542'), 87542);
 assert.equal(T.parseCount('1 100'), 1100);
 assert.equal(T.parseCount('35'), 35);
+assert.equal(T.parseCount('2;632'), 2632, 'a misread thousands comma');
 assert.equal(T.parseCount('1O0'), 100, 'a letter O inside a count reads as zero');
 assert.equal(T.parseCount('12.5'), null);
 assert.equal(T.parseCount('Lv. 2'), null);
