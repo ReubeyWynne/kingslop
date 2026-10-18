@@ -232,6 +232,17 @@ Each step lands as its own commit with its checks passing.
   `parseDuration`. One shared helper with a `data-unit-input` hook, no
   per-page copies; i18n keys in en.js.
 
+- [ ] 13. `pet-list` adapter: the Pet List popover (Pets screen, "Pet List"
+  button) shows each tamed pet's portrait with "Lv. N" in its corner. Find
+  the white popover, then the portrait tiles; identify each pet by portrait
+  signature (references from `pet-list.jpg` via a script like
+  `.dsh/backpack-signatures.cjs`); read "Lv. N" from an enlarged crop of the
+  tile's top strip. Writes pet levels through the ledger's `pets` section
+  (`setPet`, existing fields kept), so add `'pets'` to `IMPORT_SOURCES` and
+  let `applyImport` carry a `petDelta`. Fixture truth: Lion 70, Grizzly
+  Bear 26, Moose 50, Cheetah 50, Bison 60, Lynx 40, Gray Wolf 50. Layout
+  `grid` in the dock.
+
 Resources are saved as both Items and In Stock (owner, 18 Oct).
 
 ## Fixtures
@@ -247,6 +258,8 @@ English, re-encoded at JPEG quality 80):
 | other-b1.jpg | Other tab, top, later | keys 140, ? chests 3,605 |
 | other-c1..c4.jpg | Other tab, four scrolls, later session | top to bottom, each overlapping the next |
 | resources-a.jpg | Resources tab, top | truegold reference tile |
+| pet-list.jpg | Pets screen, Pet List popover | Lion 70, Grizzly Bear 26, Moose 50, Cheetah 50, Bison 60, Lynx 40, Gray Wolf 50 |
+| community/ | Sourced English and Japanese shots (PR #109) | see `community/manifest.json`; no OCR ground truth yet |
 
 The full set (heroes roster, gear tab, resources and speedups tiles, a
 tooltip) is in the project's shared files under `ocr-import/screenshots/`.
