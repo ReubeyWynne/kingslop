@@ -94,7 +94,8 @@ try{
  }
  await wide.close();
  // Without JavaScript the roster and dossiers still read.
- const nojs=await browser.newContext({javaScriptEnabled:false});const plain=await nojs.newPage();await plain.goto(origin+'/pets/');assert.equal(await plain.locator('.pet-card').count(),pets.length);assert.equal(await plain.locator('[data-field="owned"]').first().isDisabled(),true);await plain.locator('#pet-bison summary').click();assert.equal(await plain.locator('#pet-bison .pet-ladder').isVisible(),true);await nojs.close();
+ // Still frames here: fourteen stepping portraits can keep a slow runner from ever calling the dossier stable.
+ const nojs=await browser.newContext({javaScriptEnabled:false,reducedMotion:'reduce'});const plain=await nojs.newPage();await plain.goto(origin+'/pets/');assert.equal(await plain.locator('.pet-card').count(),pets.length);assert.equal(await plain.locator('[data-field="owned"]').first().isDisabled(),true);await plain.locator('#pet-bison summary').click();assert.equal(await plain.locator('#pet-bison .pet-ladder').isVisible(),true);await nojs.close();
  const home=await browser.newPage();await home.goto(origin+'/?lang=en');assert.equal(await home.locator('#tools a[href="pets/"]').count(),1);await home.close();
  // The pets drawn live (js/pet-live.js): with WebGL 2 the grizzly's canvas covers the pen, draws, and reacts; the baked
  // frames stay underneath. With reduced motion, or with the script blocked, the baked frames show.
