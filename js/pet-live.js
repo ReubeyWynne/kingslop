@@ -1,6 +1,6 @@
 /* Pets drawn live from their model: a small WebGL 2 text shader in the pen.
 
-   A pen marked data-model gets a canvas that draws its pet's model as character cells,
+   A pen marked data-model gets a canvas that draws its pet's model as character cells (every pen through one shared WebGL context),
    twelve times a second. The model (pets/models/<id>.bin and .json, from .dsh/pet-portrait/shade.py) is
    skinned to a six-bone skeleton (body, neck, head, both ears, nose), so the head can follow
    the pointer, tilt, droop and perk, the ears flick and fold, and the nose twitch. Each frame:
@@ -88,6 +88,8 @@ void main(){
   float lum=0.25 + 2.2*max(dot(n,uKey),0.) + 0.66*max(dot(n,uFill),0.) + 0.35*max(dot(n,uRim),0.);
   float L=clamp((lum-0.35)/2.0, 0., 1.);
   vec3 p=vRest; vec3 alb=${vec(cfg.fur)}; float reg=0.;
+  ${cfg.spots ? `{ float a=${(+cfg.spots.scale).toFixed(3)}, b=a*0.37, s=sin(a*p.x+2.*sin(b*p.y))*sin(a*p.y+2.*sin(b*p.z))*sin(a*p.z+2.*sin(b*p.x));
+    if (abs(s)>${(+cfg.spots.cut).toFixed(3)} && ${region(cfg.spots)}) alb=${vec(cfg.spots.rgb)}; }` : ''}   // a spotted coat, as shade.py paints it
   ${cfg.regions.map(r => `if (${region(r)}) { alb=${vec(r.rgb)}; reg=${r.id}.; }`).join('\n  ')}
   vec3 col=alb*(0.3+0.95*L); float head=(${region(cfg.head)}) ? 1. : 0.; if (head<.5) col*=0.8;
   float d=clamp((-vView.z-uNear)/(uFar-uNear), 0., 1.); float hi=floor(d*255.)/255.;
@@ -136,11 +138,24 @@ void main(){
   o=vec4(col*a, a);
 }`;
 
+  // Phones keep only a few WebGL contexts alive (Android Chrome, eight) and drop the oldest past that, so
+  // every pen draws through one shared context and copies each finished frame into its own 2D canvas.
+  let shared = null;
+  function context() {
+    if (shared) return shared;
+    const canvas = document.createElement('canvas'), gl = canvas.getContext('webgl2', { premultipliedAlpha: true, alpha: true, antialias: false });
+    if (!gl) return null;
+    shared = { canvas: canvas, gl: gl, lost: [] };
+    canvas.addEventListener('webglcontextlost', () => shared.lost.forEach(f => f()));
+    return shared;
+  }
+
   function Pen(pen, cfg, mesh) {
     const card = pen.closest('[data-owned]'), canvas = document.createElement('canvas');
     canvas.className = 'pet-live'; canvas.setAttribute('aria-hidden', 'true');
-    const gl = canvas.getContext('webgl2', { premultipliedAlpha: true, alpha: true, antialias: false });
-    if (!gl) return null;
+    const ctx = context(), out = canvas.getContext('2d');
+    if (!ctx || !out) return null;
+    const gl = ctx.gl;
     const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
     const prog = (vs, fs) => { const p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(p); if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p)); return p; };
     const scene = prog(sceneVS, sceneFS(cfg)), cells = prog(quadVS, cellsFS(cfg)), screen = prog(quadVS, screenFS);
@@ -303,6 +318,7 @@ void main(){
       });
       gl.bindTexture(gl.TEXTURE_2D, tOver); gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, COLS, ROWS, gl.RGBA, gl.UNSIGNED_BYTE, over);
 
+      if (ctx.canvas.width !== canvas.width || ctx.canvas.height !== canvas.height) { ctx.canvas.width = canvas.width; ctx.canvas.height = canvas.height; }
       gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, canvas.width, canvas.height);
       gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.useProgram(screen);
       gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tCells); gl.uniform1i(u(screen, 'uCells'), 0);
@@ -312,6 +328,7 @@ void main(){
       gl.uniform2f(u(screen, 'uCell'), cellPx[0], cellPx[1]); gl.uniform3fv(u(screen, 'uAll'), allRGB); gl.uniform1f(u(screen, 'uGlyphs'), GLYPHS.length);
       gl.uniform4f(u(screen, 'uMono'), ...(mono || [0, 0, 0]), mono ? 1 : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
+      out.clearRect(0, 0, canvas.width, canvas.height); out.drawImage(ctx.canvas, 0, 0);
     }
     function wake() { if (visible && !raf) raf = requestAnimationFrame(frame); }
 
@@ -322,7 +339,7 @@ void main(){
     const seen = new IntersectionObserver(entries => { visible = entries[entries.length - 1].isIntersecting; wake(); });
     seen.observe(pen);
     document.addEventListener('pointermove', point, { passive: true });
-    canvas.addEventListener('webglcontextlost', () => {   // back to the baked frames
+    ctx.lost.push(() => {                            // back to the baked frames
       visible = false; seen.disconnect(); resize.disconnect(); document.removeEventListener('pointermove', point);
       delete pen.dataset.live; canvas.remove();
     });
