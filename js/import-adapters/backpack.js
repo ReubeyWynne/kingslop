@@ -2,12 +2,13 @@
    only an icon and a count, so items are told apart by their icons: each full
    tile's icon is sampled into a small colour signature and compared with
    references taken from the owner's screenshots (.dsh/import-fixtures/,
-   extracted by .dsh/backpack-signatures.cjs). Only the event items the Town
+   extracted by .dsh/import-signatures.cjs). Only the event items the Town
    Centre bag tracks have references; every other tile is passed over quietly.
    Counts are too small to read at the detector's 800px, so the matched tiles'
    count corners are cut from the original image and read once more, enlarged,
    keeping only the counts' white glyphs.
 
+   Signatures and matching are the core's (js/screen-import-core.js).
    Needs the dock's tools: tools.pixels (the shot at 360px wide, ImageData-like)
    and tools.readRegions(boxes) → Promise<items per box>, boxes as fractions of
    the image. */
@@ -23,11 +24,10 @@
   // The panel the tiles sit on, and how far a pixel must be from it to count
   // as tile. Sampled from 1440px phone captures; tolerant of JPEG noise.
   var PANEL = [221, 203, 183], OFF_PANEL = 45;
-  var GRID_W = 10, GRID_H = 8;
 
-  // Icon signatures: GRID_W × GRID_H cells of mean RGB, one hex digit per
+  // Icon signatures (ScreenImport.signature): 10 × 8 cells of mean RGB, one hex digit per
   // channel, row by row. Extracted from the fixtures by
-  // `.dsh/backpack-signatures.cjs`; the comment names the tile they came from.
+  // `node .dsh/import-signatures.cjs backpack-items …`; the comment names the tile they came from.
   var REFS = [
     // other-a2, tile 14
     { id: 'masters-manuscript', label: "Master's Manuscript", sig: 'd82d82d82862a84a71b71d82d82d82d82d82d8245757a986da2b92a72c72e83e83a7346b47c57d68caa6db3cb5e93e9356746b997a9679b69fbb6ca3e9497546b789986cb3dd469e6ae983b7355646b78aba4cb579c59d7bda73752a8377657c57d68c58f58d58bc84651764971a82986779a969aa555ea5' },
@@ -52,27 +52,14 @@
 
   function off(d, i) { return Math.abs(d[i] - PANEL[0]) + Math.abs(d[i + 1] - PANEL[1]) + Math.abs(d[i + 2] - PANEL[2]) > OFF_PANEL; }
 
-  // Runs along one axis where at least `share` of the cross-section is tile.
-  function runs(count, length, share, hit, min, max) {
-    var out = [], start = -1;
-    for (var i = 0; i <= count; i++) {
-      var n = 0;
-      if (i < count) for (var j = 0; j < length; j++) if (hit(i, j)) n++;
-      var on = i < count && n / length > share;
-      if (on && start < 0) start = i;
-      if (!on && start >= 0) { if (i - start >= min && i - start <= max) out.push([start, i]); start = -1; }
-    }
-    return out;
-  }
-
   // Whole tiles only: a row cut by the scroll edge is shorter than a tile and
   // is left for the overlapping screenshot to supply.
   function findTiles(px) {
     var w = px.width, h = px.height, d = px.data, x0 = Math.round(w * 0.06), x1 = Math.round(w * 0.94);
-    var rows = runs(h, x1 - x0, 0.12, function (y, j) { return off(d, (y * w + x0 + j) * 4); }, w * 0.17, w * 0.23);
+    var rows = S.runs(h, x1 - x0, 0.12, function (y, j) { return off(d, (y * w + x0 + j) * 4); }, w * 0.17, w * 0.23);
     var tiles = [];
     rows.forEach(function (r) {
-      var cols = runs(w, r[1] - r[0], 0.3, function (x, j) { return off(d, ((r[0] + j) * w + x) * 4); }, w * 0.15, w * 0.25);
+      var cols = S.runs(w, r[1] - r[0], 0.3, function (x, j) { return off(d, ((r[0] + j) * w + x) * 4); }, w * 0.15, w * 0.25);
       cols.forEach(function (c) { tiles.push({ x: c[0], y: r[0], w: c[1] - c[0], h: r[1] - r[0] }); });
     });
     return tiles;
@@ -81,38 +68,10 @@
   // The icon's middle, clear of the count (bottom right) and of the
   // denomination or timer labels some tiles print across the top.
   function signature(px, tile) {
-    var w = px.width, d = px.data, out = [];
-    var ax = tile.x + tile.w * 0.14, ay = tile.y + tile.h * 0.16, aw = tile.w * 0.72, ah = tile.h * 0.5;
-    for (var gy = 0; gy < GRID_H; gy++) for (var gx = 0; gx < GRID_W; gx++) {
-      var sx = Math.floor(ax + aw * gx / GRID_W), ex = Math.max(sx + 1, Math.floor(ax + aw * (gx + 1) / GRID_W));
-      var sy = Math.floor(ay + ah * gy / GRID_H), ey = Math.max(sy + 1, Math.floor(ay + ah * (gy + 1) / GRID_H));
-      var sum = [0, 0, 0], n = 0;
-      for (var y = sy; y < ey; y++) for (var x = sx; x < ex; x++) { var i = (y * w + x) * 4; sum[0] += d[i]; sum[1] += d[i + 1]; sum[2] += d[i + 2]; n++; }
-      out.push(Math.round(sum[0] / n / 17), Math.round(sum[1] / n / 17), Math.round(sum[2] / n / 17));
-    }
-    return out.map(function (v) { return v.toString(16); }).join('');
+    return S.signature(px, { x: tile.x + tile.w * 0.14, y: tile.y + tile.h * 0.16, w: tile.w * 0.72, h: tile.h * 0.5 });
   }
-
-  function distance(a, b) {
-    var total = 0;
-    for (var i = 0; i < a.length; i++) total += Math.abs(parseInt(a[i], 16) - parseInt(b[i], 16));
-    return total / a.length / 15;
-  }
-
-  // The closest item, if it is close and clearly closer than the next item.
-  function identify(sig) {
-    var best = {};
-    REFS.forEach(function (ref) {
-      var dist = distance(sig, ref.sig);
-      if (!best[ref.id] || dist < best[ref.id].dist) best[ref.id] = { id: ref.id, label: ref.label, dist: dist };
-    });
-    var ranked = Object.keys(best).map(function (id) { return best[id]; }).sort(function (a, b) { return a.dist - b.dist; });
-    if (!ranked.length || ranked[0].dist > MATCH) return null;
-    if (ranked[1] && ranked[1].dist - ranked[0].dist < MARGIN) return null;
-    return ranked[0];
-  }
-
-  function fraction(box, px) { return { x: box.x / px.width, y: box.y / px.height, w: box.w / px.width, h: box.h / px.height, unit: 'fraction' }; }
+  function identify(sig) { return S.identify(sig, REFS, MATCH, MARGIN); }
+  var fraction = S.fraction;
 
   var adapter = {
     id: 'backpack-items',

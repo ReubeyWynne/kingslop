@@ -216,7 +216,7 @@ Each step lands as its own commit with its checks passing.
   in the dock. References exist for masters-manuscript, both taming marks,
   mithril, forgehammer, the three hero shards and truegold. Still missing:
   Gen widget chests, tempered-truegold, truegold-dust (no clean fixture
-  tiles yet); add them with `.dsh/backpack-signatures.cjs` once a shot shows
+  tiles yet); add them with `.dsh/import-signatures.cjs` once a shot shows
   them.
 - [ ] 9. Hero gear onto the shared dock; remove its private dialog.
 - [ ] 10. Battle simulator onto the shared dock with review-before-apply.
@@ -232,16 +232,16 @@ Each step lands as its own commit with its checks passing.
   `parseDuration`. One shared helper with a `data-unit-input` hook, no
   per-page copies; i18n keys in en.js.
 
-- [ ] 13. `pet-list` adapter: the Pet List popover (Pets screen, "Pet List"
-  button) shows each tamed pet's portrait with "Lv. N" in its corner. Find
-  the white popover, then the portrait tiles; identify each pet by portrait
-  signature (references from `pet-list.jpg` via a script like
-  `.dsh/backpack-signatures.cjs`); read "Lv. N" from an enlarged crop of the
-  tile's top strip. Writes pet levels through the ledger's `pets` section
-  (`setPet`, existing fields kept), so add `'pets'` to `IMPORT_SOURCES` and
-  let `applyImport` carry a `petDelta`. Fixture truth: Lion 70, Grizzly
-  Bear 26, Moose 50, Cheetah 50, Bison 60, Lynx 40, Gray Wolf 50. Layout
-  `grid` in the dock.
+- [x] 13. `pet-list` adapter (`js/import-adapters/pets.js`): finds the white
+  Pet List popover and its portraits, identifies the seven pets in
+  `pet-list.jpg` by portrait signature, reads "Lv. N" from an enlarged crop of
+  each portrait's top. Records use `sourceType: 'pets'` with a `petDelta`;
+  `applyImport` marks the pet tamed at that level and keeps its Advance only
+  when the level is unchanged. Signatures, matching and run-finding now live
+  in `screen-import-core.js` for every icon adapter;
+  `.dsh/import-signatures.cjs <adapter> <fixtures…>` prints references.
+  Pets not in the fixture (Ironclad War Bear and the rest) need a screenshot
+  showing them before they can be recognised.
 
 Resources are saved as both Items and In Stock (owner, 18 Oct).
 

@@ -93,11 +93,13 @@
   }
   // A confirmed screenshot import. Hero gear records carry equipment deltas;
   // every source may carry inventory deltas ({ id: { before, after } }).
-  var IMPORT_SOURCES = ['hero-gear', 'backpack'];
+  var IMPORT_SOURCES = ['hero-gear', 'backpack', 'pets'];
   function importRecord(record) {
     if (!(object(record) && id(record.id) && IMPORT_SOURCES.includes(record.sourceType) && timestamp(record.at) && /^[a-f0-9]{64}$/.test(record.contentHash) && record.confirmation === 'confirmed')) return false;
-    var gear = record.itemDelta === undefined ? {} : record.itemDelta, stock = record.inventoryDelta === undefined ? {} : record.inventoryDelta;
-    if (!object(gear) || !object(stock) || (record.sourceType === 'hero-gear' && !object(record.itemDelta))) return false;
+    var gear = record.itemDelta === undefined ? {} : record.itemDelta, stock = record.inventoryDelta === undefined ? {} : record.inventoryDelta, pets = record.petDelta === undefined ? {} : record.petDelta;
+    if (!object(gear) || !object(stock) || !object(pets) || (record.sourceType === 'hero-gear' && !object(record.itemDelta))) return false;
+    var petLevel = function (level) { return count(level) && level >= 1 && level <= PET.level; };
+    if (!Object.keys(pets).every(function (key) { var delta = pets[key]; return id(key) && object(delta) && (delta.before === null || petLevel(delta.before)) && petLevel(delta.after); })) return false;
     return Object.keys(gear).every(function (key) { var delta = gear[key]; return PIECES.includes(key) && object(delta) && (delta.before === null || piece(delta.before)) && piece(delta.after); }) &&
       Object.keys(stock).every(function (key) { var delta = stock[key]; return id(key) && object(delta) && (delta.before === null || count(delta.before)) && count(delta.after); });
   }
@@ -483,8 +485,8 @@
       });
       return commit(next, next.revision);
     }
-    // Apply one reviewed screenshot: its inventory balances become confirmed
-    // facts with screenshot provenance, and the record joins the history. The
+    // Apply one reviewed screenshot: its inventory balances and pet levels
+    // become confirmed facts with screenshot provenance, and the record joins the history. The
     // same file (by content hash) can never be applied twice.
     function applyImport(record, expected) {
       valid(importRecord(record));
@@ -495,6 +497,13 @@
         Object.keys(record.inventoryDelta || {}).forEach(function (key) {
           next.inventory[key] = { amount: record.inventoryDelta[key].after, status: 'confirmed', provenance: { source: 'screenshot', at: at, importId: record.id } };
           if (key === ITEMS.xp) next.heroGear.parts = null;
+        });
+        // A pet's level marks it tamed; its Advance survives only at the same level.
+        Object.keys(record.petDelta || {}).forEach(function (key) {
+          if (!next.pets) next.pets = { roster: {}, provenance: {} };
+          var old = next.pets.roster[key], level = record.petDelta[key].after;
+          next.pets.roster[key] = { level: level, advanced: !!(old && old.advanced && old.level === level) };
+          next.pets.provenance[key] = { source: 'screenshot', at: at, importId: record.id };
         });
         Object.keys(record.itemDelta || {}).forEach(function (key) { next.heroGear.pieces[key] = copy(record.itemDelta[key].after); next.heroGear.provenance[key] = { source: 'screenshot', at: at, importId: record.id }; });
       }, expected);

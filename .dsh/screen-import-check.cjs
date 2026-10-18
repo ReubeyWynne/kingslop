@@ -5,6 +5,8 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const S = require('../js/screen-import-core.js');
 require('../js/import-adapters/overview.js');
+require('../js/import-adapters/backpack.js');
+const pets = require('../js/import-adapters/pets.js');
 const load = name => S.page(JSON.parse(fs.readFileSync('.dsh/import-fixtures/' + name + '.items.json', 'utf8')));
 const values = proposals => Object.fromEntries(proposals.map(p => [p.id, p.value]));
 
@@ -27,4 +29,7 @@ assert.deepEqual(values(S.route(spd).adapter.read(spd)), {
 });
 
 assert.equal(S.route(S.page({ items: [{ text: 'Infantry Attack +12%', poly: [[0, 0], [99, 0], [99, 20], [0, 20]] }] })), null, 'an unknown screen is not claimed');
-console.log('Screen import: routing, Overview resource totals and speedup minutes from recorded production reads passed.');
+// The Pet List's labels fold "l" to "i" like every row; routing must still find it.
+assert.equal(S.route(S.page(JSON.parse(fs.readFileSync('.dsh/import-fixtures/pet-list.items.json', 'utf8')))).adapter.id, 'pet-list');
+assert.deepEqual(['Lv. 70', 'Lv.26↑', 'LV 5O', 'Lv.', 'Lv. 700'].map(t => pets.level([t])), [70, 26, 50, null, null]);
+console.log('Screen import: routing (Overview, Pet List), Overview resource totals, speedup minutes and pet levels from recorded production reads passed.');

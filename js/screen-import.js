@@ -18,7 +18,8 @@
     ['ocr-client.js', function () { return window.OcrClient; }],
     ['screen-import-core.js', function () { return window.ScreenImport; }],
     ['import-adapters/overview.js', function () { return window.ScreenImport.get('overview-resources'); }],
-    ['import-adapters/backpack.js', function () { return window.ScreenImport.get('backpack-items'); }]
+    ['import-adapters/backpack.js', function () { return window.ScreenImport.get('backpack-items'); }],
+    ['import-adapters/pets.js', function () { return window.ScreenImport.get('pet-list'); }]
   ];
   var here = document.currentScript && document.currentScript.src;
 
@@ -231,7 +232,7 @@
             next.sourceType = claim.adapter.sourceType;
             // Review follows the screen top to bottom; values never found go last.
             next.proposals = proposals.map(function (p, i) {
-              return { id: p.id, label: p.label, value: p.value, confidence: p.confidence, note: p.note || '', unit: /^speedup-/.test(p.id) ? 'minutes' : 'count', crop: crops[i], y: p.crop ? p.crop.y : Infinity };
+              return { target: p.target || 'inventory', id: p.id, label: p.label, value: p.value, confidence: p.confidence, note: p.note || '', unit: p.unit || (/^speedup-/.test(p.id) ? 'minutes' : 'count'), crop: crops[i], y: p.crop ? p.crop.y : Infinity };
             }).sort(function (a, b) { return a.y - b.y; });
             next.layout = claim.adapter.layout || 'list';
             next.status = 'review';
@@ -249,7 +250,7 @@
     }
 
     // ── review ─────────────────────────────────────────
-    var SCREENS = { 'overview-resources': ['import.screen.resources', 'Overview · Resources'], 'overview-speedups': ['import.screen.speedups', 'Overview · Speedups'], 'backpack-items': ['import.screen.backpack', 'Backpack items'] };
+    var SCREENS = { 'overview-resources': ['import.screen.resources', 'Overview · Resources'], 'overview-speedups': ['import.screen.speedups', 'Overview · Speedups'], 'backpack-items': ['import.screen.backpack', 'Backpack items'], 'pet-list': ['import.screen.pets', 'Pet List'] };
 
     function translate(node) {
       node.querySelectorAll('[data-i18n]').forEach(function (n) { n.textContent = tr(n.dataset.i18n, n.textContent); });
@@ -273,7 +274,7 @@
         var input = field(li, 'value');
         if (document.activeElement !== input) input.value = value === null || value === undefined ? '' : String(value);
         input.placeholder = tr('import.unread', 'not read');
-        field(li, 'note').textContent = p.unit === 'minutes' ? tr('import.minutesNote', 'minutes{d}', { d: value === null || value === undefined ? '' : ' · ' + duration(value) }) : p.note;
+        field(li, 'note').textContent = p.unit === 'minutes' ? tr('import.minutesNote', 'minutes{d}', { d: value === null || value === undefined ? '' : ' · ' + duration(value) }) : p.unit === 'level' ? tr('import.levelNote', 'level') : p.note;
         field(li, 'include').checked = included(entry, p);
         var later = newer(entry, p);
         if (later) field(li, 'note').textContent = tr('import.newer', 'a newer shot reads {v}', { v: api.fmt(valueOf(later, later.proposals.filter(function (q) { return q.id === p.id; })[0])) });
@@ -326,15 +327,24 @@
     function apply() {
       var entry = reviewable()[current];
       if (!entry || !ledger) return;
-      var before = ledger.snapshot(), delta = {};
+      // Inventory counts and pet levels go to their own parts of the record.
+      var before = ledger.snapshot(), delta = {}, stock = {}, pets = {};
       entry.proposals.forEach(function (p) {
         var value = valueOf(entry, p), include = included(entry, p);
         if (!include || value === null || !Number.isSafeInteger(value) || value < 0) return;
+        if (p.target === 'pet') {
+          if (value < 1) return;
+          var pet = (before.pets && before.pets.roster || {})[p.id];
+          pets[p.id] = delta[p.id] = { before: pet ? pet.level : null, after: value };
+          return;
+        }
         var held = before.inventory[p.id];
-        delta[p.id] = { before: held && held.status === 'confirmed' ? held.amount : null, after: value };
+        stock[p.id] = delta[p.id] = { before: held && held.status === 'confirmed' ? held.amount : null, after: value };
       });
       if (!Object.keys(delta).length) { status(tr('import.nothing', 'Nothing is ticked to apply.')); return; }
-      var record = { id: 'shot-' + entry.hash, sourceType: entry.sourceType, at: new Date().toISOString(), contentHash: entry.hash, confirmation: 'confirmed', inventoryDelta: delta };
+      var record = { id: 'shot-' + entry.hash, sourceType: entry.sourceType, at: new Date().toISOString(), contentHash: entry.hash, confirmation: 'confirmed' };
+      if (Object.keys(stock).length) record.inventoryDelta = stock;
+      if (Object.keys(pets).length) record.petDelta = pets;
       try {
         ledger.applyImport(record, before.revision);
       } catch (err) {

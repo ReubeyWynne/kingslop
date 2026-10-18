@@ -274,4 +274,13 @@ assert.throws(() => bag.applyImport(Object.assign({}, bagRecord, { contentHash: 
 assert.throws(() => bag.applyImport(Object.assign({}, bagRecord, { sourceType: 'mystery', contentHash: 'e'.repeat(64), id: 'bag-e' })));
 assert.throws(() => bag.applyImport(Object.assign({}, bagRecord, { contentHash: 'f'.repeat(64), id: 'bag-f', inventoryDelta: { bread: { before: 1, after: -2 } } })));
 assert.equal(Ledger.validate(JSON.parse(bagDisk.getItem(Ledger.KEY))).imports.length, 1, 'a backpack record survives validation on reload');
-console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, backpack imports, undo, revision, combat stat, troop, hero roster, building level and training checks passed.');
+// Pet List screenshots: levels mark pets tamed; an Advance survives only at the same level.
+bag.setPet('lion', { level: 70, advanced: true });
+bag.setPet('lynx', { level: 30, advanced: true });
+const petRecord = { id: 'pets-' + 'a'.repeat(64), sourceType: 'pets', at: new Date().toISOString(), contentHash: 'a'.repeat(64), confirmation: 'confirmed', petDelta: { lion: { before: 70, after: 70 }, lynx: { before: 30, after: 40 }, bison: { before: null, after: 60 } } };
+bag.applyImport(petRecord, bag.snapshot().revision);
+assert.deepEqual(bag.pets().roster, { lion: { level: 70, advanced: true }, lynx: { level: 40, advanced: false }, bison: { level: 60, advanced: false } });
+assert.deepEqual({ source: bag.pets().provenance.bison.source, importId: bag.pets().provenance.bison.importId }, { source: 'screenshot', importId: petRecord.id });
+assert.throws(() => bag.applyImport(Object.assign({}, petRecord, { contentHash: 'b'.repeat(64), id: 'pets-b', petDelta: { lion: { before: 70, after: 101 } } })));
+assert.equal(Ledger.validate(JSON.parse(bagDisk.getItem(Ledger.KEY))).imports.length, 2, 'a pet record survives validation on reload');
+console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, backpack and pet imports, undo, revision, combat stat, troop, hero roster, building level and training checks passed.');

@@ -103,6 +103,15 @@ const server = http.createServer((request, response) => {
     assert.equal(await page.locator('.import-tile').count(), 0, 'the superseded shot left the dock');
     assert.deepEqual(await page.evaluate(() => ['masters-manuscript', 'common-taming-mark', 'forgehammer', 'mythic-hero-shard'].map(id => PlayerLedger.shared().balance(id).amount)), [2632, 60, 201, 316]);
 
+    // Pet List: portraits told apart by colour, levels read from their corners.
+    await page.locator('#screen-import [data-target~="screen-import.files"]').setInputFiles(fixture('pet-list'));
+    await page.locator('.import-tile[data-key="lion"]').waitFor({ timeout: 240000 });
+    await page.screenshot({ path: path.join(output, 'review-pets-390.png') });
+    assert.deepEqual(await backpack(), { lion: '70', 'grizzly-bear': '26', moose: '50', cheetah: '50', bison: '60', lynx: '40', 'gray-wolf': '50' });
+    await page.locator('[data-action~="screen-import.apply"]').click();
+    await page.locator('[data-target~="screen-import.status"]', { hasText: 'Saved 7 values' }).waitFor();
+    assert.deepEqual(await page.evaluate(() => PlayerLedger.shared().pets().roster.bison), { level: 60, advanced: false });
+
     const desktop = await browser.newContext({ viewport: { width: 1280, height: 900 } });
     const wide = await desktop.newPage();
     await wide.goto(base + '/town-centre/?lang=en');
@@ -111,7 +120,7 @@ const server = http.createServer((request, response) => {
     await wide.screenshot({ path: path.join(output, 'review-1280.png') });
     await desktop.close();
     assert.deepEqual(errors, []);
-    console.log('Screenshot import dock: real reads of both Overview tabs and two Backpack Other shots (icons, counts, newest wins), cut-outs, correction, untick, apply, undo, duplicate refusal and a review carried to another page passed.');
+    console.log('Screenshot import dock: real reads of both Overview tabs and two Backpack Other shots (icons, counts, newest wins), a Pet List (portraits, levels), cut-outs, correction, untick, apply, undo, duplicate refusal and a review carried to another page passed.');
   } catch (error) {
     await page.screenshot({ path: path.join(output, 'failure.png') }).catch(() => {});
     throw error;
