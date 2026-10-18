@@ -1175,6 +1175,17 @@ window.__BH_I18N_DATA["tr"] = {
   "pets.title": "Evcil hayvanlar",
   "pets.cardLede": "Gerçek zamanda acıkan ve yalnız kalan evcil hayvanlarına bak, sıradaki her ilerlemenin maliyetini ve puanını gör.",
   "pets.kicker": "Canavar Kafesi",
+  "pets.bond.new": "Tanışıyoruz",
+  "pets.bond.familiar": "Alıştı",
+  "pets.bond.close": "Yakın yoldaş",
+  "pets.bond.trusted": "Güvenilir dost",
+  "pets.bondDays": "Bakım günü: {n}",
+  "pets.bondHint": "Farklı günlerde ilgilendikçe gelişir. Uzakta olduğunda azalmaz.",
+  "pets.spot.head": "Baş",
+  "pets.spot.cheeks": "Yanaklar",
+  "pets.spot.chin": "Çene",
+  "pets.favourite": "Sevdiği bölge: {spot}",
+  "pets.explore": "Baş, yanaklar ve çeneyi seçmek için yukarı ve aşağı oklarını; okşamak için Enter tuşunu kullan.",
   "pets.metaTitle": "Evcil hayvanlar — dey.ci"
 }
 ;

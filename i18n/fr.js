@@ -1177,6 +1177,17 @@ window.__BH_I18N_DATA["fr"] = {
   "pets.title": "Familiers",
   "pets.cardLede": "Prends soin de tes familiers qui ont faim et se sentent seuls en temps réel, et vois ce que coûte et rapporte chaque prochain avancement.",
   "pets.kicker": "la Cage aux bêtes",
+  "pets.bond.new": "On fait connaissance",
+  "pets.bond.familiar": "En confiance",
+  "pets.bond.close": "Compagnon proche",
+  "pets.bond.trusted": "Ami fidèle",
+  "pets.bondDays": "Jours de soins : {n}",
+  "pets.bondHint": "Progresse avec les soins sur plusieurs jours. Ne diminue jamais en votre absence.",
+  "pets.spot.head": "Tête",
+  "pets.spot.cheeks": "Joues",
+  "pets.spot.chin": "Menton",
+  "pets.favourite": "Endroit préféré : {spot}",
+  "pets.explore": "Utilisez Haut et Bas pour explorer la tête, les joues et le menton ; Entrée pour caresser.",
   "pets.metaTitle": "Familiers — dey.ci"
 }
 ;

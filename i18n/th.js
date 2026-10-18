@@ -1187,6 +1187,17 @@ window.__BH_I18N_DATA["th"] = {
   "pets.title": "สัตว์เลี้ยง",
   "pets.cardLede": "ดูแลสัตว์เลี้ยงที่หิวและเหงาตามเวลาจริง และดูค่าใช้จ่ายกับคะแนนของการเลื่อนขั้นครั้งถัดไป",
   "pets.kicker": "กรงสัตว์",
+  "pets.bond.new": "เริ่มทำความรู้จัก",
+  "pets.bond.familiar": "คุ้นเคย",
+  "pets.bond.close": "เพื่อนสนิท",
+  "pets.bond.trusted": "เพื่อนที่ไว้ใจ",
+  "pets.bondDays": "วันที่ดูแล: {n}",
+  "pets.bondHint": "เพิ่มขึ้นเมื่อดูแลในวันต่าง ๆ และไม่ลดลงเมื่อคุณไม่อยู่",
+  "pets.spot.head": "หัว",
+  "pets.spot.cheeks": "แก้ม",
+  "pets.spot.chin": "คาง",
+  "pets.favourite": "จุดโปรด: {spot}",
+  "pets.explore": "ใช้ปุ่มขึ้นและลงเพื่อเลือกหัว แก้ม และคาง แล้วกด Enter เพื่อลูบ",
   "pets.metaTitle": "สัตว์เลี้ยง — dey.ci"
 }
 ;

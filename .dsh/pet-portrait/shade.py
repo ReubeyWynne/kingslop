@@ -75,7 +75,7 @@ PETS = {
         neck=dict(pivot=[0, 0.2, 0.2], soft=[0.08, 0.36]),
         ear_flick=dict(sel=dict(ymin=0.36, xmin=0.08, zmin=0.25), pivot=[0.2, 0.4, 0.45], axis=[0, 0, 1], angle=0.28),
         sniff=dict(sel=dict(zmin=0.9), pivot=[0, 0.0, 0.95], scale=1.12, move=[0, 0.015, 0]),
-        live=dict(mouth=[0, -0.07, 0.99], top=[0, 0.6, 0.5], cheeks=[[-0.26, 0.0, 0.72], [0.26, 0.0, 0.72]],
+        live=dict(mouth=[0, -0.07, 0.99], mouthInk=7, mouthGlyph='-', mouthHappy='v', top=[0, 0.6, 0.5], cheeks=[[-0.26, 0.0, 0.72], [0.26, 0.0, 0.72]],
                   pivots=dict(neck=[0, 0.12, 0.0], head=[0, 0.22, 0.32], ear=[0.22, 0.47, 0.52], nose=[0, 0.0, 0.92]),
                   weights=dict(neck=dict(z=[-0.15, 0.2]), head=dict(z=[0.15, 0.42]), ear=dict(y=[0.45, 0.52], x=[0.12, 0.17], c=[0.24, 0.53], r=[0.12, 0.2]), nose=dict(z=[0.9, 0.97], y=[-0.06, 0.0])),
                   scale=1.12)),

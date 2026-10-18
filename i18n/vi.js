@@ -1187,6 +1187,17 @@ window.__BH_I18N_DATA["vi"] = {
   "pets.title": "Thú cưng",
   "pets.cardLede": "Chăm sóc thú cưng khi chúng đói và cô đơn theo thời gian thực, và xem chi phí cùng điểm của lần thăng cấp tiếp theo.",
   "pets.kicker": "Chuồng Thú",
+  "pets.bond.new": "Đang làm quen",
+  "pets.bond.familiar": "Quen thuộc",
+  "pets.bond.close": "Bạn đồng hành thân thiết",
+  "pets.bond.trusted": "Người bạn tin cậy",
+  "pets.bondDays": "Ngày chăm sóc: {n}",
+  "pets.bondHint": "Tăng khi được chăm sóc vào những ngày khác nhau. Không giảm khi bạn vắng mặt.",
+  "pets.spot.head": "Đầu",
+  "pets.spot.cheeks": "Má",
+  "pets.spot.chin": "Cằm",
+  "pets.favourite": "Vị trí yêu thích: {spot}",
+  "pets.explore": "Dùng phím lên và xuống để chọn đầu, má và cằm; Enter để vuốt ve.",
   "pets.metaTitle": "Thú cưng — dey.ci"
 }
 ;

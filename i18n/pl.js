@@ -1176,6 +1176,17 @@ window.__BH_I18N_DATA["pl"] = {
   "pets.title": "Zwierzaki",
   "pets.cardLede": "Dbaj o zwierzaki, które w czasie rzeczywistym głodnieją i tęsknią, i sprawdź koszt oraz punkty każdego kolejnego awansu.",
   "pets.kicker": "Klatka bestii",
+  "pets.bond.new": "Poznajecie się",
+  "pets.bond.familiar": "Oswojony",
+  "pets.bond.close": "Bliski towarzysz",
+  "pets.bond.trusted": "Zaufany przyjaciel",
+  "pets.bondDays": "Dni opieki: {n}",
+  "pets.bondHint": "Rośnie dzięki opiece w różne dni. Nie maleje podczas nieobecności.",
+  "pets.spot.head": "Głowa",
+  "pets.spot.cheeks": "Policzki",
+  "pets.spot.chin": "Podbródek",
+  "pets.favourite": "Ulubione miejsce: {spot}",
+  "pets.explore": "Strzałkami w górę i w dół wybierz głowę, policzki lub podbródek; Enter, aby pogłaskać.",
   "pets.metaTitle": "Zwierzaki — dey.ci"
 }
 ;

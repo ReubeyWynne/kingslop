@@ -83,11 +83,37 @@ try{
  await page.locator('#advances').screenshot({path:path.join(output,'advances-390.png')});
  // Corrupt care in storage starts the pen again rather than breaking the page.
  await page.evaluate(()=>localStorage.setItem('ks.pet-care.v1','{oops'));await page.reload();await ready();assert.equal(await page.locator('#pet-gray-wolf [data-meter="fullness"]').getAttribute('aria-valuenow'),'60');
+
+ await page.clock.setSystemTime(new Date('2026-10-20T12:00:00Z'));
+ const stroke=page.locator('#pet-gray-wolf .pet-stroke');
+ await stroke.press('ArrowDown');await stroke.press('ArrowDown');await stroke.press('Enter');
+ assert.equal(await pen('gray-wolf').getAttribute('data-favourite'),'');
+ assert.equal(await page.locator('#pet-gray-wolf .pet-favourite').textContent(),'Favourite spot: Cheeks');
+ assert.match(await page.locator('#pet-gray-wolf .pet-bond').textContent(),/Care days: 1/);
+ await stroke.press('Enter');
+ assert.match(await page.locator('#pet-gray-wolf .pet-bond').textContent(),/Care days: 1/);
+ await page.reload();await ready();
+ assert.equal(await page.locator('#pet-gray-wolf .pet-favourite').isVisible(),true);
+ await page.locator('#pet-gray-wolf .pet-stroke').press('Enter');
+ assert.match(await page.locator('#pet-gray-wolf .pet-bond').textContent(),/Care days: 1/);
+ await page.evaluate(()=>{const now=Date.now(),den=PetCare.load(localStorage);den['gray-wolf'].bond={days:3,day:20261019,earned:now-86400000,seen:now-5*3600000,favourite:true};PetCare.save(localStorage,den);});
+ await page.reload();await ready();await pen('gray-wolf').scrollIntoViewIfNeeded();
+ await page.waitForFunction(()=>document.querySelector('#pet-gray-wolf [data-pen]').hasAttribute('data-welcome'));
+ await page.locator('#pet-gray-wolf').screenshot({path:path.join(output,'familiar-wolf-390.png')});
+ await page.clock.runFor(2500);
+ assert.equal(await pen('gray-wolf').getAttribute('data-welcome'),null);
+ await page.reload();await ready();await pen('gray-wolf').scrollIntoViewIfNeeded();
+ assert.equal(await pen('gray-wolf').getAttribute('data-welcome'),null);
+ await page.clock.setSystemTime(new Date('2026-11-20T12:00:00Z'));
+ await page.reload();await ready();
+ assert.match(await page.locator('#pet-gray-wolf .pet-bond').textContent(),/Familiar/);
+ assert.match(await page.locator('#pet-gray-wolf .pet-bond').textContent(),/Care days: 3/);
  await context.close();
  // Every language at every width: nothing overflows.
  const wide=await browser.newContext({viewport:{width:390,height:900}}),view=await wide.newPage();view.on('pageerror',e=>errors.push(e.message));
  const langs=fs.readdirSync('i18n').filter(f=>f.endsWith('.js')).map(f=>f.slice(0,-3));
  for(const lang of langs){await view.goto(origin+'/pets/?lang='+lang+'#pet-lion');await view.waitForFunction(lang=>document.documentElement.lang===lang,lang);
+  await view.locator('#pet-lion [data-field="owned"]').check();await view.locator('#pet-lion .pet-stroke').press('Enter');
   assert.equal(await view.locator('h1').textContent(),await view.evaluate(()=>I18N.tr('pets.title')));
   for(const width of [320,390,768,1280,1920]){await view.setViewportSize({width,height:900});const failures=await view.evaluate(()=>[...document.querySelectorAll('.pet-roster,.pet-card,.pet-dossier-body,.topbar,.ev-switch')].filter(el=>el.getClientRects().length&&el.scrollWidth>el.clientWidth+2).map(el=>el.className+' '+el.scrollWidth+'>'+el.clientWidth+' '+(el.closest('.pet-card')||{}).id));assert.deepEqual(failures,[],lang+' at '+width);assert(await view.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),lang+' page at '+width);}
   if(lang==='en'){await view.setViewportSize({width:1280,height:900});await view.locator('#cage').screenshot({path:path.join(output,'cage-1280.png')});}
@@ -109,6 +135,8 @@ try{
   const box=await pen.boundingBox(),canvasBox=await live.locator('#pet-grizzly-bear canvas.pet-live').boundingBox();
   assert.ok(Math.abs(canvasBox.width-box.width)<1&&canvasBox.height<=box.height+1,'the live pet fits its pen');
   await live.waitForTimeout(600);const drawn=await live.locator('#pet-grizzly-bear canvas.pet-live').screenshot();assert.ok(drawn.length>3000,'the live pet draws');
+  assert.equal(await pen.evaluate(n=>n.petCareSpots.length),4);
+  assert.equal(await pen.evaluate(n=>n.petCareSpots.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y))),true);
   await pen.evaluate(n=>{n.dataset.mood='asleep';});await live.waitForTimeout(2500);
   await live.locator('#pet-grizzly-bear .pet-pen').screenshot({path:path.join(output,'live-asleep.png')});
   await pen.evaluate(n=>{n.dataset.mood='content';n.dataset.react='pet';});await live.waitForTimeout(1500);

@@ -43,6 +43,32 @@
   function pat(record, now) {
     return { record: Object.assign({}, record, { affection: { value: clamp(meter(record, 'affection', now) + PAT), at: now }, touched: now }), react: 'pet' };
   }
+  var SPOTS = ['head', 'cheeks', 'chin'];
+  var FAVOURITES = { 'gray-wolf': 'cheeks', 'grizzly-bear': 'chin', 'ironclad-war-bear': 'chin', lynx: 'head', bison: 'head', 'mighty-bison': 'head', lion: 'chin', 'regal-white-lion': 'chin', cheetah: 'cheeks', moose: 'cheeks', 'great-moose': 'cheeks', 'alpha-black-panther': 'chin', 'giant-rhino': 'head', 'ironclad-war-elephant': 'head' };
+  function bond(record) {
+    var b = record.bond || {};
+    return { days: Number.isInteger(b.days) && b.days >= 0 ? Math.min(999, b.days) : 0,
+      day: Number.isInteger(b.day) && b.day >= 0 ? b.day : 0,
+      earned: Number.isFinite(b.earned) && b.earned >= 0 ? b.earned : 0,
+      seen: Number.isFinite(b.seen) && b.seen >= 0 ? b.seen : 0, favourite: b.favourite === true };
+  }
+  function day(now) { var d = new Date(now); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); }
+  function befriend(record, now, favourite) {
+    var b = bond(record), today = day(now);
+    if (today > b.day && (!b.days || now - b.earned >= 20 * HOUR)) {
+      b.days = Math.min(999, b.days + 1); b.day = today; b.earned = now;
+    }
+    if (favourite) b.favourite = true;
+    return Object.assign({}, record, { bond: b });
+  }
+  function visit(record, now) {
+    var b = bond(record), welcome = b.days >= 3 && b.seen > 0 && now - b.seen >= 4 * HOUR;
+    b.seen = Math.max(b.seen, now);
+    return { record: Object.assign({}, record, { bond: b }), welcome: welcome };
+  }
+  function stage(record) { var days = bond(record).days; return days >= 14 ? 'trusted' : days >= 7 ? 'close' : days >= 3 ? 'familiar' : 'new'; }
+  function favourite(id, spot) { return FAVOURITES[id] === spot; }
+  function spot(y) { return y < 0.45 ? 'head' : y < 0.65 ? 'cheeks' : 'chin'; }
   function valid(record) {
     function entry(e) { return e && typeof e === 'object' && Number.isFinite(e.value) && e.value >= 0 && e.value <= 100 && Number.isFinite(e.at); }
     return record && typeof record === 'object' && entry(record.fullness) && entry(record.affection) && Number.isFinite(record.touched);
@@ -57,5 +83,5 @@
     } catch (cause) { return {}; }
   }
   function save(storage, den) { storage.setItem(KEY, JSON.stringify(den)); }
-  return { KEY: KEY, EMPTY: EMPTY, FEED: FEED, PAT: PAT, STUFFED: STUFFED, MOODS: MOODS, fresh: fresh, level: level, mood: mood, feed: feed, pat: pat, valid: valid, load: load, save: save };
+  return { KEY: KEY, EMPTY: EMPTY, FEED: FEED, PAT: PAT, STUFFED: STUFFED, MOODS: MOODS, fresh: fresh, level: level, mood: mood, feed: feed, pat: pat, valid: valid, load: load, save: save, bond: bond, befriend: befriend, visit: visit, stage: stage, favourite: favourite, spot: spot, SPOTS: SPOTS };
 });
