@@ -200,6 +200,7 @@ jobs:
               - js/hero-gear*.js
               - js/ocr-worker.js
               - js/ocr-client.js
+              - js/ocr-text.js
               - css/hero-gear.css
               - img/hero-gear/**
       - id: plan
@@ -294,6 +295,9 @@ jobs:
       - name: Check OCR backend recovery
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/ocr-backend-check.cjs
+      - name: Check OCR text helpers
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/ocr-text-check.cjs
 
   build:
     needs: changes

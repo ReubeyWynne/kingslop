@@ -944,52 +944,9 @@
   var BLOCKS = TYPES.map(function (t) { return t.block; });
   var STATS_EN = STATS.map(function (s) { return s.ocr; });
 
-  // OCR misreads a letter here and there ("lnfantry", "Letha1ity"), and often
-  // returns a whole row label as one box ("Infantry Attack"). Fold the usual
-  // digit/letter lookalikes and keep the spaces: both the row and the wanted
-  // words go through the same fold, so exact matches stay exact.
-  function fold(s) {
-    return String(s).toLowerCase().replace(/[^a-z0-9 ]/g, ' ')
-      .replace(/[1li]/g, 'i').replace(/0/g, 'o').replace(/5/g, 's')
-      .replace(/\s+/g, ' ').trim();
-  }
-
-  function withinOneEdit(a, b) {
-    if (a === b) return true;
-    if (Math.abs(a.length - b.length) > 1) return false;
-    var i = 0, j = 0, edits = 0;
-    while (i < a.length && j < b.length) {
-      if (a[i] === b[j]) { i++; j++; continue; }
-      if (++edits > 1) return false;
-      if (a.length > b.length) i++;
-      else if (a.length < b.length) j++;
-      else { i++; j++; }
-    }
-    return edits + (a.length - i) + (b.length - j) <= 1;
-  }
-
-  // Which of `list`'s words this (already folded) row carries: as a run of text
-  // anywhere in the row, or as a single misspelt token.
-  function wordIn(folded, list) {
-    var i, j;
-    for (i = 0; i < list.length; i++) if (folded.indexOf(fold(list[i])) !== -1) return list[i];
-    var tokens = folded.split(' ');
-    for (i = 0; i < tokens.length; i++) {
-      if (tokens[i].length < 5) continue;
-      for (j = 0; j < list.length; j++) {
-        if (withinOneEdit(tokens[i], fold(list[j]))) return list[j];
-      }
-    }
-    return null;
-  }
-
-  // The panel row's own height sets the row tolerance: a fixed pixel figure is
-  // wrong the moment the screenshot isn't the size it was tuned on.
-  function rowTolerance(boxes) {
-    if (!boxes.length) return 8;
-    var hs = boxes.map(function (b) { return b.h; }).sort(function (a, b) { return a - b; });
-    return Math.max(8, hs[Math.floor(hs.length / 2)] * 0.55);
-  }
+  // Word boxes, rows, lookalike folding and fuzzy label matching are shared
+  // with every other screenshot reader (js/ocr-text.js).
+  var T = window.OcrText, fold = T.fold, wordIn = T.wordIn;
 
   var PCT = /[+\-]?\d+(?:[.,]\d+)?\s*%/g;
   function pctValue(s) { return parseFloat(String(s).replace(',', '.')); }
@@ -1032,30 +989,7 @@
   // Group recognised words into visual rows, then read both columns of every
   // troop-type stat row. Returns { 'L|Block|Stat': value, 'R|Block|Stat': value }.
   function parseItems(items) {
-    var boxes = [];
-    items.forEach(function (it) {
-      if (!it || !it.text || !it.poly) return;
-      var text = String(it.text).trim();
-      if (!text) return;
-      var xs = it.poly.map(function (p) { return p[0]; });
-      var ys = it.poly.map(function (p) { return p[1]; });
-      var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
-      var y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
-      boxes.push({ cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, x: x0, y: y0, w: x1 - x0, h: y1 - y0, text: text });
-    });
-
-    var tol = rowTolerance(boxes);
-    boxes.sort(function (a, b) { return a.cy - b.cy; });
-    var rows = [];
-    boxes.forEach(function (b) {
-      var row = rows.length ? rows[rows.length - 1] : null;
-      if (row && Math.abs(b.cy - row.cy) <= tol) {
-        row.items.push(b);
-        row.cy = (row.cy * (row.items.length - 1) + b.cy) / row.items.length;
-      } else {
-        rows.push({ cy: b.cy, items: [b] });
-      }
-    });
+    var rows = T.rows(T.boxes(items));
 
     var out = {}, snippets = {};
     function snip(label, r) {
@@ -1068,8 +1002,7 @@
       if (pair.right && isFinite(value(pair.right))) out['R|' + label] = value(pair.right);
     }
     rows.forEach(function (r) {
-      r.items.sort(function (a, b) { return a.cx - b.cx; });
-      var joined = r.items.map(function (b) { return b.text; }).join(' ');
+      var joined = r.text;
       var folded = fold(joined);
       var block = wordIn(folded, BLOCKS);
       var stat = wordIn(folded, STATS_EN);
