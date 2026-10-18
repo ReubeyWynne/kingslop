@@ -29,6 +29,8 @@
 .town-heading small { color: var(--ink-muted); font-size: .75rem; }
 .town-heading h3 { margin: 0; }
 .town-heading a { font-size: .85rem; color: var(--amber); }
+.town-read-shots { margin-inline-start: auto; padding: 0; background: none; border: 0; border-bottom: 1px solid transparent; border-radius: 0; color: var(--amber); font: 700 .8rem/1.2 var(--body); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+.town-read-shots:hover, .town-read-shots:focus-visible { color: var(--ink); border-bottom-color: var(--amber); outline: none; }
 
 /* Points — three events as tabs, each carrying its best total. */
 .town-events { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid var(--signal-line); }

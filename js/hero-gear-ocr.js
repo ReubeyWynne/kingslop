@@ -6,28 +6,19 @@
     chest: /\b(chest|shroud|leatherwear|breastplate|armor|armour)\b/i,
     boots: /\b(boots?|greaves|riders)\b/i
   };
-  function matchText(value) {
-    return String(value || '').replace(/[\u200e\u200f\u202a-\u202e\u2066-\u2069\u061c]/g, '')
-      .replace(/[٠-٩۰-۹０-９]/g, function (digit) {
-        var code = digit.charCodeAt(0);
-        return String(code >= 0x06f0 && code <= 0x06f9 ? code - 0x06f0 : code >= 0xff10 && code <= 0xff19 ? code - 0xff10 : code - 0x0660);
-      }).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\u00a0\u202f]/g, ' ');
-  }
+  // Word boxes, rows and digit normalising are shared with every screenshot
+  // reader (js/ocr-text.js).
+  var T = root.OcrText || (typeof require === 'function' ? require('./ocr-text.js') : null);
+  var matchText = T.normalise;
   var MASTERY_LABEL = '(?:mastery|maestria|forja\\s*(?:nivel|level|maestria)?|forge\\s*(?:level|mastery))';
   var LEVEL_LABEL = '(?:enhancement\\s*(?:level)?|aprimoramento(?:\\s*(?:nivel|level))?|lv\\.?|level|nv\\.?|nivel)';
   function parse(items) {
-    var boxes = (items || []).map(function (item) {
-      var text = String(item.text || '').trim(), points = item.poly || item.box || item.points || [];
-      var xs = points.map(function (p) { return p[0]; }), ys = points.map(function (p) { return p[1]; });
-      return { text: text, x: xs.length ? Math.min.apply(null, xs) : 0, y: ys.length ? (Math.min.apply(null, ys) + Math.max.apply(null, ys)) / 2 : 0, h: ys.length ? Math.max.apply(null, ys) - Math.min.apply(null, ys) : 20 };
-    }).filter(function (b) { return b.text; }).sort(function (a, b) { return a.y - b.y || a.x - b.x; });
-    var rows = [];
-    boxes.forEach(function (box) {
-      var row = rows[rows.length - 1];
-      if (row && Math.abs(row.y - box.y) < Math.max(5, Math.min(row.h, box.h) * 0.65)) row.boxes.push(box);
-      else rows.push({ y: box.y, h: box.h, boxes: [box] });
-    });
-    var lines = rows.map(function (row) { return row.boxes.sort(function (a, b) { return a.x - b.x; }).map(function (b) { return b.text; }).join(' '); });
+    // A word joins a row while its centre sits within 65% of the smaller
+    // height of the row's first word.
+    var lines = T.rows(T.boxes(items), function (row, box) {
+      var first = row.items[0];
+      return Math.abs(first.cy - box.cy) < Math.max(5, Math.min(first.h, box.h) * 0.65);
+    }).map(function (row) { return row.text; });
     var full = lines.join('\n'), normalized = matchText(full), out = { level: null, mastery: null, quality: null, slot: null, troop: null, text: full };
     Object.keys(ALIASES).forEach(function (slot) { if (ALIASES[slot].test(normalized)) out.slot = out.slot ? 'ambiguous' : slot; });
     if (out.slot === 'ambiguous') out.slot = null;

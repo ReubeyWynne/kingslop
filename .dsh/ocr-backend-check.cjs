@@ -40,9 +40,48 @@ async function check(query, throwGpu) {
     assert.deepEqual(disposed, ['auto']);
   }
 }
+// The page-side client every reader shares: one worker, matched replies, the
+// useful-or-retry-on-wasm rule, hang-breaking and the backend in the worker URL.
+async function client() {
+  const OcrClient = require('../js/ocr-client.js');
+  const made = [];
+  class FakeWorker {
+    constructor(url) { this.url = url; this.wasm = false; this.closed = false; made.push(this); }
+    postMessage(m) {
+      if (this.silent) return;
+      setImmediate(() => {
+        if (m.type === 'useWasm') this.wasm = true;
+        const preview = { closed: false, close() { this.closed = true; } };
+        const items = m.type === 'predict' && (this.wasm || this.url.includes('backend=wasm')) ? [{ text: '12' }] : [];
+        this.onmessage({ data: m.type === 'predict' ? { id: m.id, ok: true, items, preview } : { id: m.id, ok: true } });
+      });
+    }
+    terminate() { this.closed = true; }
+  }
+  const base = 'https://dey.ci/js/ocr-client.js?v=9';
+  const auto = OcrClient.create({ Worker: FakeWorker, base });
+  const useful = res => res.items.length > 0;
+  const res = await auto.read({}, { useful });
+  assert.equal(res.items[0].text, '12', 'an empty GPU read retries on wasm');
+  assert.equal(auto.backend, 'wasm');
+  assert.equal(made.length, 1, 'one worker serves every read');
+  assert.equal(new URL(made[0].url).searchParams.get('v'), '9', 'the worker keeps the cache-busting query');
+  const wasm = OcrClient.create({ Worker: FakeWorker, base, backend: 'wasm' });
+  assert.equal((await wasm.read({})).items[0].text, '12');
+  assert.equal(new URL(made[1].url).searchParams.get('backend'), 'wasm');
+  const stalled = OcrClient.create({ Worker: class extends FakeWorker { constructor(u) { super(u); this.silent = true; } }, base, timeout: 20 });
+  await assert.rejects(stalled.read({}), /timed out/);
+  assert.equal(made[2].closed, true, 'a stalled worker is terminated');
+  const closing = OcrClient.create({ Worker: class extends FakeWorker { constructor(u) { super(u); this.silent = true; } }, base });
+  const pending = closing.read({});
+  closing.close();
+  await assert.rejects(pending, /closed/);
+}
+
 (async () => {
+  await client();
   await check('?build=123&backend=wasm', false);
   await check('', false);
   await check('', true);
-  console.log('Gear selects WASM before its first read; simulator automatic backend and silent/throwing GPU recovery remain intact.');
+  console.log('OCR client: one worker, wasm retry, hang-breaker and close pass. Gear selects WASM before its first read; simulator automatic backend and silent/throwing GPU recovery remain intact.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

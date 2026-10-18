@@ -920,70 +920,15 @@
   // values are mapped by their row label (block + stat) and column: left of
   // the label is your green value, right of it the opponent's. The sheets stay
   // the source of truth — this is a prefill, and every value is editable.
-  var worker = null, seq = 0, pending = {};
-
-  // Drop the worker and fail everything in flight. A worker that a phone kills
-  // for memory never replies and never fires an error, so this is the only way
-  // the page learns it is gone.
-  function killWorker(err) {
-    var p = pending;
-    pending = {};
-    Object.keys(p).forEach(function (id) { p[id].reject(err); });
-    if (worker) {
-      try { worker.terminate(); } catch (e) { /* already gone */ }
-      worker = null;
-    }
-  }
-
-  function ocrWorker() {
-    if (worker) return worker;
-    worker = new Worker(scriptBase() + 'js/ocr-worker.js' + (window.__BH_BUILD ? '?v=' + encodeURIComponent(window.__BH_BUILD) : ''), { type: 'module' });
-    worker.onmessage = function (e) {
-      var m = e.data || {}, p = pending[m.id];
-      if (!p) return;
-      delete pending[m.id];
-      if (m.ok) {
-        p.resolve(m);
-      } else {
-        var err = new Error(m.error || 'ocr failed');
-        err.preview = m.preview;
-        p.reject(err);
-      }
-    };
-    worker.onerror = function (e) { killWorker(new Error((e && e.message) || 'ocr worker error')); };
-    worker.onmessageerror = function () { killWorker(new Error('ocr worker message error')); };
-    return worker;
-  }
-
-  // Long enough that a slow phone on a cold model download is never cut off —
-  // this is a hang-breaker, not a deadline.
-  var ASK_TIMEOUT_MS = 120000;
-
-  function askWorker(type, blob) {
-    return new Promise(function (resolve, reject) {
-      var id = ++seq;
-      var timer = setTimeout(function () {
-        delete pending[id];
-        killWorker(new Error('ocr worker timed out'));
-        reject(new Error('ocr worker timed out'));
-      }, ASK_TIMEOUT_MS);
-      pending[id] = {
-        resolve: function (v) { clearTimeout(timer); resolve(v); },
-        reject: function (e) { clearTimeout(timer); reject(e); }
-      };
-      try {
-        ocrWorker().postMessage({ id: id, type: type, blob: blob });
-      } catch (e) {
-        clearTimeout(timer);
-        delete pending[id];
-        killWorker(e);
-        reject(e);
-      }
-    });
+  // js/ocr-client.js owns the worker, its hang-breaker and the GPU → wasm retry.
+  var ocr = null;
+  function reader() {
+    if (!ocr) ocr = window.OcrClient.create();
+    return ocr;
   }
 
   function loadPaddle() {
-    return askWorker('warm').then(function () { return true; });
+    return reader().warm();
   }
 
   function ocrStatus(BH, key, fb, cls, vars) {
@@ -999,52 +944,9 @@
   var BLOCKS = TYPES.map(function (t) { return t.block; });
   var STATS_EN = STATS.map(function (s) { return s.ocr; });
 
-  // OCR misreads a letter here and there ("lnfantry", "Letha1ity"), and often
-  // returns a whole row label as one box ("Infantry Attack"). Fold the usual
-  // digit/letter lookalikes and keep the spaces: both the row and the wanted
-  // words go through the same fold, so exact matches stay exact.
-  function fold(s) {
-    return String(s).toLowerCase().replace(/[^a-z0-9 ]/g, ' ')
-      .replace(/[1li]/g, 'i').replace(/0/g, 'o').replace(/5/g, 's')
-      .replace(/\s+/g, ' ').trim();
-  }
-
-  function withinOneEdit(a, b) {
-    if (a === b) return true;
-    if (Math.abs(a.length - b.length) > 1) return false;
-    var i = 0, j = 0, edits = 0;
-    while (i < a.length && j < b.length) {
-      if (a[i] === b[j]) { i++; j++; continue; }
-      if (++edits > 1) return false;
-      if (a.length > b.length) i++;
-      else if (a.length < b.length) j++;
-      else { i++; j++; }
-    }
-    return edits + (a.length - i) + (b.length - j) <= 1;
-  }
-
-  // Which of `list`'s words this (already folded) row carries: as a run of text
-  // anywhere in the row, or as a single misspelt token.
-  function wordIn(folded, list) {
-    var i, j;
-    for (i = 0; i < list.length; i++) if (folded.indexOf(fold(list[i])) !== -1) return list[i];
-    var tokens = folded.split(' ');
-    for (i = 0; i < tokens.length; i++) {
-      if (tokens[i].length < 5) continue;
-      for (j = 0; j < list.length; j++) {
-        if (withinOneEdit(tokens[i], fold(list[j]))) return list[j];
-      }
-    }
-    return null;
-  }
-
-  // The panel row's own height sets the row tolerance: a fixed pixel figure is
-  // wrong the moment the screenshot isn't the size it was tuned on.
-  function rowTolerance(boxes) {
-    if (!boxes.length) return 8;
-    var hs = boxes.map(function (b) { return b.h; }).sort(function (a, b) { return a - b; });
-    return Math.max(8, hs[Math.floor(hs.length / 2)] * 0.55);
-  }
+  // Word boxes, rows, lookalike folding and fuzzy label matching are shared
+  // with every other screenshot reader (js/ocr-text.js).
+  var T = window.OcrText, fold = T.fold, wordIn = T.wordIn;
 
   var PCT = /[+\-]?\d+(?:[.,]\d+)?\s*%/g;
   function pctValue(s) { return parseFloat(String(s).replace(',', '.')); }
@@ -1087,30 +989,7 @@
   // Group recognised words into visual rows, then read both columns of every
   // troop-type stat row. Returns { 'L|Block|Stat': value, 'R|Block|Stat': value }.
   function parseItems(items) {
-    var boxes = [];
-    items.forEach(function (it) {
-      if (!it || !it.text || !it.poly) return;
-      var text = String(it.text).trim();
-      if (!text) return;
-      var xs = it.poly.map(function (p) { return p[0]; });
-      var ys = it.poly.map(function (p) { return p[1]; });
-      var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
-      var y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
-      boxes.push({ cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, x: x0, y: y0, w: x1 - x0, h: y1 - y0, text: text });
-    });
-
-    var tol = rowTolerance(boxes);
-    boxes.sort(function (a, b) { return a.cy - b.cy; });
-    var rows = [];
-    boxes.forEach(function (b) {
-      var row = rows.length ? rows[rows.length - 1] : null;
-      if (row && Math.abs(b.cy - row.cy) <= tol) {
-        row.items.push(b);
-        row.cy = (row.cy * (row.items.length - 1) + b.cy) / row.items.length;
-      } else {
-        rows.push({ cy: b.cy, items: [b] });
-      }
-    });
+    var rows = T.rows(T.boxes(items));
 
     var out = {}, snippets = {};
     function snip(label, r) {
@@ -1123,8 +1002,7 @@
       if (pair.right && isFinite(value(pair.right))) out['R|' + label] = value(pair.right);
     }
     rows.forEach(function (r) {
-      r.items.sort(function (a, b) { return a.cx - b.cx; });
-      var joined = r.items.map(function (b) { return b.text; }).join(' ');
+      var joined = r.text;
       var folded = fold(joined);
       var block = wordIn(folded, BLOCKS);
       var stat = wordIn(folded, STATS_EN);
@@ -1356,27 +1234,14 @@
       openReview();
     }
 
-    function readOnce(f) {
-      return askWorker('predict', f).then(function (res) {
+    // A read that yields no values at all may be a phone GPU that ran without
+    // throwing and returned nothing; the client then reads once more on wasm.
+    function readShot(f) {
+      return reader().read(f, {
+        useful: function (res) { return Object.keys(parseItems(res.items).values).length > 0; }
+      }).then(function (res) {
         var parsed = parseItems(res.items);
         return { filled: fill(parsed.values), preview: res.preview, parsed: parsed };
-      });
-    }
-
-    // A phone's GPU can run the engine without throwing and still hand back
-    // nothing usable. If a read yields no values at all, drop the GPU for the
-    // session and read the shot once more on wasm before reporting failure.
-    function readShot(f) {
-      return readOnce(f).then(function (first) {
-        if (first.filled > 0) return first;
-        return askWorker('useWasm')
-          .then(function () { return readOnce(f); })
-          .then(function (second) {
-            if (second.filled > 0) { if (first.preview) first.preview.close(); return second; }
-            if (second.preview) second.preview.close();
-            return first;
-          },
-            function () { return first; });
       });
     }
 

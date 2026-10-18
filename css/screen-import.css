@@ -1,0 +1,155 @@
+/* The screenshot import dock (_includes/screen-import.html, js/screen-import.js).
+   A float, so it pairs a hairline with a soft lift (DESIGN.md "Thin-Line + Lift").
+   It wears the page's own signal hue: every page's --amber pair. */
+.import-dock {
+  position: fixed;
+  inset-inline-end: max(0.75rem, env(safe-area-inset-right));
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  max-width: calc(100vw - 1.5rem);
+  font-family: var(--body);
+  color: var(--ink);
+}
+.import-dock[hidden] { display: none; }
+
+.import-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45em;
+  padding: 0.45rem 0.8rem;
+  background: var(--void-2);
+  color: var(--amber);
+  border: 1px solid var(--amber-dim);
+  border-radius: 2px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+  font: 700 var(--step--1) / 1.2 var(--body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.import-chip output { color: var(--ink-dim); letter-spacing: 0.04em; text-transform: none; font-weight: 400; }
+.import-chip:hover, .import-chip:focus-visible { color: var(--ink); outline: none; border-color: var(--amber); }
+
+.import-sheet {
+  order: -1;
+  width: min(26rem, calc(100vw - 1.5rem));
+  max-height: min(78vh, 46rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.9rem 1rem 1rem;
+  background: var(--void-2);
+  border: 1px solid var(--amber-dim);
+  border-radius: 3px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+}
+.import-sheet[hidden] { display: none; }
+
+.import-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.import-head h2 {
+  margin: 0;
+  font: 600 var(--step-0) / 1.2 var(--display-2);
+  color: var(--amber);
+}
+.import-head h2::before { content: none; }
+
+.import-prompt {
+  padding: 0.2rem 0;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  color: var(--amber);
+  font: 700 var(--step--1) / 1.2 var(--body);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.import-prompt:hover, .import-prompt:focus-visible { color: var(--ink); border-bottom-color: var(--amber); outline: none; }
+.import-prompt[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--amber); }
+.import-prompt[hidden] { display: none; }
+
+.import-apply {
+  padding: 0.35rem 1.1rem;
+  background: var(--amber);
+  color: var(--void);
+  border: 1px solid var(--amber);
+  border-radius: 2px;
+  font: 700 var(--step--1) / 1.2 var(--body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.import-apply:hover, .import-apply:focus-visible { background: var(--ink); border-color: var(--ink); outline: none; }
+
+.import-status { margin: 0.6rem 0 0; color: var(--ink-dim); font-size: var(--step--1); }
+.import-status:empty { display: none; }
+.import-shot-name { margin: 0.7rem 0 0.4rem; font-size: var(--step--1); }
+.import-shot-name strong { color: var(--ink); }
+.import-shot-name small { color: var(--ink-muted); overflow-wrap: anywhere; }
+
+.import-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; margin-top: 0.7rem; }
+.import-steps { display: inline-flex; align-items: baseline; gap: 0.6rem; color: var(--ink-dim); font-size: var(--step--1); }
+
+/* One tile per value: its cut-out over one line of label, input and tick,
+   ruled like the ledger. */
+.import-grid { list-style: none; margin: 0; padding: 0; display: grid; }
+.import-tile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.3rem 0.6rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid rgba(157, 149, 127, 0.25);
+}
+.import-tile img { grid-column: 1 / -1; display: block; width: 100%; height: auto; border-radius: 1px; }
+.import-tile img[hidden] { display: none; }
+.import-field { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; min-width: 0; }
+.import-name { display: flex; flex-direction: column; min-width: 0; color: var(--ink-dim); font-size: var(--step--1); line-height: 1.15; }
+.import-field input {
+  width: 8.5rem;
+  min-width: 0;
+  flex: 0 1 8.5rem;
+  padding: 0.1rem 0;
+  background: transparent;
+  color: var(--ink);
+  border: 0;
+  border-bottom: 1px solid var(--ink-muted);
+  border-radius: 0;
+  font: inherit;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+.import-field input:focus { outline: none; border-bottom-color: var(--amber); }
+.import-field input::placeholder { color: var(--ink-muted); font-style: italic; }
+.import-include { display: inline-flex; align-items: center; padding: 0.3rem; cursor: pointer; }
+.import-include input { width: 1.1rem; height: 1.1rem; margin: 0; accent-color: var(--amber); }
+.import-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.import-note { color: var(--ink-muted); font-style: italic; font-size: 0.85em; }
+.import-note:empty { display: none; }
+
+/* A value to check carries the signal on its rule and its label. */
+.import-tile[data-state="doubt"] { border-top-color: var(--amber); }
+.import-tile[data-state="doubt"] .import-name { color: var(--amber); }
+.import-dock[data-filter="doubt"] .import-tile[data-state="sure"] { display: none; }
+
+.import-gloss { margin: 0.8rem 0 0; color: var(--ink-muted); font-style: italic; font-size: var(--step--1); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .import-sheet { transition: opacity 0.15s ease; }
+}
+
+/* Backpack tiles review as the game shows them: a grid of icons, each with its
+   count beneath. */
+.import-grid[data-layout="grid"] { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.4rem 0.7rem; }
+.import-grid[data-layout="grid"] .import-tile { grid-template-columns: minmax(0, 1fr) auto; align-content: start; padding: 0.4rem 0 0.3rem; }
+.import-grid[data-layout="grid"] .import-tile img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+.import-grid[data-layout="grid"] .import-field { flex-direction: column; align-items: stretch; gap: 0.2rem; }
+.import-grid[data-layout="grid"] .import-name { font-size: 0.8rem; }
+.import-grid[data-layout="grid"] .import-field input { width: 100%; flex: none; }
+.import-grid[data-layout="grid"] .import-include { align-self: end; padding: 0.2rem 0 0.2rem 0.2rem; }
+.import-gloss a { color: var(--amber); font-style: normal; text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+.import-gloss a:hover, .import-gloss a:focus-visible { color: var(--ink); }
