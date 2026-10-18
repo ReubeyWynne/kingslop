@@ -3,7 +3,7 @@
   var E = window.HeroGear, BH, state, previous, result, running = false, revision = 0, planIndex = 0, resultTroop = 'inf', strategyResult = null;
   var searchWorker, searchTimer, searchDelay, searchFailed = false;
   var activePage = 'planner', splitResult = null, splitRevision = -1, splitWorker = null;
-  var ledger, ledgerRevision = 0, saving = false, imports = [], reader, readerSequence = 0, readerPending = {}, importSequence = 0;
+  var ledger, ledgerRevision = 0, saving = false, imports = [], reader = null, importSequence = 0;
   var scriptURL = new URL(document.currentScript.src);
   var base = new URL('./', scriptURL);
   var art = new URL('../img/hero-gear/', base), troopArt = { inf: 'infantry', cav: 'cavalry', arc: 'archer' };
@@ -428,34 +428,12 @@
     el('weights').scrollIntoView({ block: 'nearest' });
     el('weights').querySelector('input').focus({ preventScroll: true });
   }
-  function killReader() {
-    if (reader) reader.terminate(); reader = null;
-    Object.keys(readerPending).forEach(function (id) { readerPending[id].reject(new Error('Reader unavailable')); });
-    readerPending = {};
-  }
+  // Gear labels are tiny crops, where the GPU path gains nothing and fails most:
+  // read them on wasm from the first call. js/ocr-client.js owns the worker.
+  function killReader() { if (reader) reader.close(); reader = null; }
   function read(file) {
-    return new Promise(function (resolve, reject) {
-      var id = ++readerSequence, timer = setTimeout(function () { killReader(); }, 120000);
-      readerPending[id] = {
-        resolve: function (res) { clearTimeout(timer); resolve(res); },
-        reject: function (error) { clearTimeout(timer); reject(error); }
-      };
-      try {
-        if (!reader) {
-          var url = workerURL('ocr-worker.js'); url.searchParams.set('backend', 'wasm');
-          reader = new Worker(url, { type: 'module' });
-          reader.onmessage = function (event) {
-            var response = event.data, waiting = readerPending[response.id];
-            if (response.preview) response.preview.close();
-            if (!waiting) return;
-            delete readerPending[response.id];
-            if (response.ok) waiting.resolve(response); else waiting.reject(new Error(response.error));
-          };
-          reader.onerror = killReader; reader.onmessageerror = killReader;
-        }
-        reader.postMessage({ id: id, type: 'predict', blob: file });
-      } catch (error) { killReader(); }
-    });
+    if (!reader) reader = window.OcrClient.create({ backend: 'wasm' });
+    return reader.read(file).then(function (res) { if (res.preview) res.preview.close(); return res; }, function (error) { if (error.preview) error.preview.close(); throw error; });
   }
   function clearImports() {
     importSequence++;

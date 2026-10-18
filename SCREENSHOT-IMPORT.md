@@ -190,7 +190,7 @@ the current schema valid. Update PLAYER-LEDGER.md and
 Each step lands as its own commit with its checks passing.
 
 - [x] 1. Write this plan; add fixtures in `.dsh/import-fixtures/`.
-- [ ] 2. `js/ocr-client.js`; move `js/sim.js` and `js/hero-gear.js` onto it.
+- [x] 2. `js/ocr-client.js`; move `js/sim.js` and `js/hero-gear.js` onto it.
   Extend `.dsh/ocr-backend-check.cjs` to cover the client (stub worker).
 - [ ] 3. `js/ocr-text.js` with node tests (`.dsh/ocr-text-check.cjs`);
   move the sim and hero-gear parsers onto it.

@@ -199,6 +199,7 @@ jobs:
               - hero-gear/**
               - js/hero-gear*.js
               - js/ocr-worker.js
+              - js/ocr-client.js
               - css/hero-gear.css
               - img/hero-gear/**
       - id: plan

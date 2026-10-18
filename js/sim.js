@@ -920,70 +920,15 @@
   // values are mapped by their row label (block + stat) and column: left of
   // the label is your green value, right of it the opponent's. The sheets stay
   // the source of truth — this is a prefill, and every value is editable.
-  var worker = null, seq = 0, pending = {};
-
-  // Drop the worker and fail everything in flight. A worker that a phone kills
-  // for memory never replies and never fires an error, so this is the only way
-  // the page learns it is gone.
-  function killWorker(err) {
-    var p = pending;
-    pending = {};
-    Object.keys(p).forEach(function (id) { p[id].reject(err); });
-    if (worker) {
-      try { worker.terminate(); } catch (e) { /* already gone */ }
-      worker = null;
-    }
-  }
-
-  function ocrWorker() {
-    if (worker) return worker;
-    worker = new Worker(scriptBase() + 'js/ocr-worker.js' + (window.__BH_BUILD ? '?v=' + encodeURIComponent(window.__BH_BUILD) : ''), { type: 'module' });
-    worker.onmessage = function (e) {
-      var m = e.data || {}, p = pending[m.id];
-      if (!p) return;
-      delete pending[m.id];
-      if (m.ok) {
-        p.resolve(m);
-      } else {
-        var err = new Error(m.error || 'ocr failed');
-        err.preview = m.preview;
-        p.reject(err);
-      }
-    };
-    worker.onerror = function (e) { killWorker(new Error((e && e.message) || 'ocr worker error')); };
-    worker.onmessageerror = function () { killWorker(new Error('ocr worker message error')); };
-    return worker;
-  }
-
-  // Long enough that a slow phone on a cold model download is never cut off —
-  // this is a hang-breaker, not a deadline.
-  var ASK_TIMEOUT_MS = 120000;
-
-  function askWorker(type, blob) {
-    return new Promise(function (resolve, reject) {
-      var id = ++seq;
-      var timer = setTimeout(function () {
-        delete pending[id];
-        killWorker(new Error('ocr worker timed out'));
-        reject(new Error('ocr worker timed out'));
-      }, ASK_TIMEOUT_MS);
-      pending[id] = {
-        resolve: function (v) { clearTimeout(timer); resolve(v); },
-        reject: function (e) { clearTimeout(timer); reject(e); }
-      };
-      try {
-        ocrWorker().postMessage({ id: id, type: type, blob: blob });
-      } catch (e) {
-        clearTimeout(timer);
-        delete pending[id];
-        killWorker(e);
-        reject(e);
-      }
-    });
+  // js/ocr-client.js owns the worker, its hang-breaker and the GPU → wasm retry.
+  var ocr = null;
+  function reader() {
+    if (!ocr) ocr = window.OcrClient.create();
+    return ocr;
   }
 
   function loadPaddle() {
-    return askWorker('warm').then(function () { return true; });
+    return reader().warm();
   }
 
   function ocrStatus(BH, key, fb, cls, vars) {
@@ -1356,27 +1301,14 @@
       openReview();
     }
 
-    function readOnce(f) {
-      return askWorker('predict', f).then(function (res) {
+    // A read that yields no values at all may be a phone GPU that ran without
+    // throwing and returned nothing; the client then reads once more on wasm.
+    function readShot(f) {
+      return reader().read(f, {
+        useful: function (res) { return Object.keys(parseItems(res.items).values).length > 0; }
+      }).then(function (res) {
         var parsed = parseItems(res.items);
         return { filled: fill(parsed.values), preview: res.preview, parsed: parsed };
-      });
-    }
-
-    // A phone's GPU can run the engine without throwing and still hand back
-    // nothing usable. If a read yields no values at all, drop the GPU for the
-    // session and read the shot once more on wasm before reporting failure.
-    function readShot(f) {
-      return readOnce(f).then(function (first) {
-        if (first.filled > 0) return first;
-        return askWorker('useWasm')
-          .then(function () { return readOnce(f); })
-          .then(function (second) {
-            if (second.filled > 0) { if (first.preview) first.preview.close(); return second; }
-            if (second.preview) second.preview.close();
-            return first;
-          },
-            function () { return first; });
       });
     }
 
