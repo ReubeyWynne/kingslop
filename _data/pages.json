@@ -21,10 +21,10 @@
     "brandNoteKey": "home.brandNote",
     "brandNote": "just the guides",
     "swipePrev": {
-      "url": "governor-gear/",
-      "page": "governor",
-      "title": "Governor gear",
-      "lede": "governor gear and charms, planned from your bag."
+      "url": "pets/",
+      "page": "pets",
+      "title": "Pets",
+      "lede": "tamed, fed and patted; every Advance planned."
     },
     "swipeNext": {
       "url": "events/",
@@ -684,10 +684,10 @@
       "lede": "your next upgrade and the resources it needs."
     },
     "swipeNext": {
-      "url": "../",
-      "page": "home",
-      "title": "The events",
-      "lede": "the alliance events in plain words — how each one scores, what to do about it."
+      "url": "../pets/",
+      "page": "pets",
+      "title": "Pets",
+      "lede": "tamed, fed and patted; every Advance planned."
     },
     "css": [
       "../css/styles.css",
@@ -708,6 +708,64 @@
       {
         "key": "gov.foot",
         "html": "game values cross-checked across <a href=\"https://kingshotdata.com/database/governor-gear/\">Kingshot Data</a> and other public tables · independently built for the [2129]MadNess alliance"
+      }
+    ],
+    "headScripts": []
+  },
+  "pets": {
+    "token": "pets",
+    "depth": "../",
+    "canonicalPath": "/pets/",
+    "themeColor": "#140F10",
+    "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23140F10'/%3E%3Ccircle cx='16' cy='20' r='6' fill='%23F0907A'/%3E%3Ccircle cx='8' cy='12' r='3' fill='%23F0907A'/%3E%3Ccircle cx='13' cy='7' r='3' fill='%23F0907A'/%3E%3Ccircle cx='19' cy='7' r='3' fill='%23F0907A'/%3E%3Ccircle cx='24' cy='12' r='3' fill='%23F0907A'/%3E%3C/svg%3E\">",
+    "titleKey": "pets.metaTitle",
+    "titleText": "Pets — dey.ci",
+    "metaDescKey": "pets.metaDescription",
+    "metaDesc": "All fourteen pets: skills by Advance, the Pet Food and materials to your next Advance, its KvK points, and a pen where yours get hungry and lonely in real time.",
+    "ogTitleKey": "pets.title",
+    "ogTitle": "Pets",
+    "ogDescKey": "pets.metaDescription",
+    "ogDesc": "All fourteen pets: skills by Advance, the Pet Food and materials to your next Advance, its KvK points, and a pen where yours get hungry and lonely in real time.",
+    "skipHref": "#cage",
+    "skipKey": "pets.cage",
+    "skipText": "The Beast Cage",
+    "dust": "<i></i><i></i><i></i>",
+    "brand": "Pets",
+    "brandNoteKey": "pets.kicker",
+    "brandNote": "the Beast Cage",
+    "swipePrev": {
+      "url": "../governor-gear/",
+      "page": "governor",
+      "title": "Governor gear",
+      "lede": "governor gear and charms, planned from your bag."
+    },
+    "swipeNext": {
+      "url": "../",
+      "page": "home",
+      "title": "The events",
+      "lede": "the alliance events in plain words — how each one scores, what to do about it."
+    },
+    "css": [
+      "../css/styles.css",
+      "../css/events.css",
+      "../css/heroes.css",
+      "../css/pets.css"
+    ],
+    "scripts": [
+      "../js/i18n.js",
+      "../js/common.js",
+      "../js/pet-data.js",
+      "../js/pet-plan.js",
+      "../js/pet-care.js",
+      "../js/pet-den.js",
+      "../js/pet-live.js"
+    ],
+    "footMainKey": "pets.title",
+    "footMain": "Pets",
+    "footSubs": [
+      {
+        "key": "pets.foot",
+        "html": "levels, Advances and skills where Kingshot Optimizer, Kingshot Data and KS h5joy agree · independently built for the [2129]MadNess alliance"
       }
     ],
     "headScripts": []

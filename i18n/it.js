@@ -1171,6 +1171,12 @@ window.__BH_I18N_DATA["it"] = {
   "masters.title": "Maestri",
   "masters.cardLede": "Registra affinità e abilità dei tuoi maestri, guarda ogni classe successiva e i suoi emblemi, e quanto possono valere i tuoi emblemi e manoscritti.",
   "masters.kicker": "l’Accademia dei Maestri",
-  "masters.metaTitle": "Maestri — dey.ci"
+  "masters.metaTitle": "Maestri — dey.ci",
+  "pets.nav": "Animali",
+  "ev.deck.lede.pets": "addomesticati, nutriti e coccolati; ogni avanzamento pianificato.",
+  "pets.title": "Animali",
+  "pets.cardLede": "Prenditi cura dei tuoi animali che hanno fame e si sentono soli in tempo reale, e scopri quanto costa e rende ogni prossimo avanzamento.",
+  "pets.kicker": "la Gabbia delle bestie",
+  "pets.metaTitle": "Animali — dey.ci"
 }
 ;

@@ -1169,6 +1169,12 @@ window.__BH_I18N_DATA["de"] = {
   "masters.title": "Meister",
   "masters.cardLede": "Erfasse Zuneigung und Fähigkeiten deiner Meister, sieh jede nächste Stufe und ihre Embleme und was deine Embleme und Manuskripte an Punkten bringen.",
   "masters.kicker": "die Meisterakademie",
-  "masters.metaTitle": "Meister — dey.ci"
+  "masters.metaTitle": "Meister — dey.ci",
+  "pets.nav": "Haustiere",
+  "ev.deck.lede.pets": "gezähmt, gefüttert und gestreichelt; jeder Aufstieg geplant.",
+  "pets.title": "Haustiere",
+  "pets.cardLede": "Kümmere dich um deine Haustiere, die in Echtzeit hungrig und einsam werden, und sieh, was jeder nächste Aufstieg kostet und bringt.",
+  "pets.kicker": "der Tierkäfig",
+  "pets.metaTitle": "Haustiere — dey.ci"
 }
 ;

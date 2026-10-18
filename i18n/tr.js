@@ -1168,6 +1168,12 @@ window.__BH_I18N_DATA["tr"] = {
   "masters.title": "Ustalar",
   "masters.cardLede": "Ustalarının yakınlığını ve becerilerini kaydet, sıradaki her sınıfı ve amblemlerini, amblem ve el yazmalarının kaç puan getireceğini gör.",
   "masters.kicker": "Ustalar Akademisi",
-  "masters.metaTitle": "Ustalar — dey.ci"
+  "masters.metaTitle": "Ustalar — dey.ci",
+  "pets.nav": "Evcil hayvanlar",
+  "ev.deck.lede.pets": "evcilleştirildi, beslendi, sevildi; her ilerleme planlandı.",
+  "pets.title": "Evcil hayvanlar",
+  "pets.cardLede": "Gerçek zamanda acıkan ve yalnız kalan evcil hayvanlarına bak, sıradaki her ilerlemenin maliyetini ve puanını gör.",
+  "pets.kicker": "Canavar Kafesi",
+  "pets.metaTitle": "Evcil hayvanlar — dey.ci"
 }
 ;

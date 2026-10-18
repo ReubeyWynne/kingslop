@@ -30,6 +30,9 @@
      learned yet; null for unread). Per-master emblems are inventory balances keyed
      master-emblems-{master}; general-master-emblem is the wildcard any master can use. */
   var MASTER = { fields: ['affinity', 'ready', 'skills'], affinity: 100, skill: 20, skills: 4 };
+  /* Pets you have tamed: level (1–100, null for unread) and whether the Advance at that level is done
+     (only at levels 10, 20 … 100, where the level cap breaks). The skill level is the number of Advances. */
+  var PET = { fields: ['level', 'advanced'], level: 100 };
   var GOVERNOR_PREFS = { goal: ['stats', 'score'], focus: ['all', 'inf', 'cav', 'arc'], gearTarget: 58, charmTarget: 22 };
   // Training facts: the Bonus Overview training speed (%) without temporary buffs, troops per batch in one camp, and the highest tier each camp trains.
   var TRAINING = ['speed', 'capacity', 'inf', 'cav', 'arc'];
@@ -64,6 +67,10 @@
     return object(value) && same(Object.keys(value).sort(), MASTER.fields.slice().sort()) && upTo(value.affinity, MASTER.affinity) && typeof value.ready === 'boolean' &&
       (!value.ready || value.affinity !== null && value.affinity % 10 === 9) &&
       Array.isArray(value.skills) && value.skills.length === MASTER.skills && value.skills.every(function (level) { return upTo(level, MASTER.skill); });
+  }
+  function petRecord(value) {
+    return object(value) && same(Object.keys(value).sort(), PET.fields.slice().sort()) && upTo(value.level, PET.level, 1) && typeof value.advanced === 'boolean' &&
+      (!value.advanced || value.level !== null && value.level % 10 === 0);
   }
   function masterEmblemId(master) { return 'master-emblems-' + master; }
   function troopKey(key) {
@@ -124,6 +131,10 @@
     if (value.masters !== undefined) {
       valid(object(value.masters) && object(value.masters.roster) && object(value.masters.provenance) && same(Object.keys(value.masters.roster).sort(), Object.keys(value.masters.provenance).sort()));
       Object.keys(value.masters.roster).forEach(function (key) { valid(heroKey(key) && masterRecord(value.masters.roster[key]) && provenance(value.masters.provenance[key])); });
+    }
+    if (value.pets !== undefined) {
+      valid(object(value.pets) && object(value.pets.roster) && object(value.pets.provenance) && same(Object.keys(value.pets.roster).sort(), Object.keys(value.pets.provenance).sort()));
+      Object.keys(value.pets.roster).forEach(function (key) { valid(id(key) && petRecord(value.pets.roster[key]) && provenance(value.pets.provenance[key])); });
     }
     if (value.training !== undefined) {
       valid(object(value.training) && object(value.training.facts) && object(value.training.provenance) && same(Object.keys(value.training.facts).sort(), Object.keys(value.training.provenance).sort()));
@@ -302,6 +313,30 @@
         value.masters.roster[key] = next; value.masters.provenance[key] = { source: source || 'manual', at: new Date().toISOString() };
       }, expected);
     }
+    function pets() {
+      var section = snapshot().pets || { roster: {}, provenance: {} };
+      return { roster: copy(section.roster), provenance: copy(section.provenance) };
+    }
+    // A record marks the pet as tamed (missing fields stay unread); null forgets it.
+    function setPet(key, record, source, expected) {
+      valid(id(key));
+      var next = null;
+      if (record !== null) {
+        valid(object(record) && Object.keys(record).every(function (field) { return PET.fields.includes(field); }));
+        next = { level: null, advanced: false };
+        PET.fields.forEach(function (field) { if (record[field] !== undefined) next[field] = copy(record[field]); });
+        // The Advance only exists at a level cap, so any other level clears it.
+        valid(typeof next.advanced === 'boolean');
+        if (next.advanced && (next.level === null || next.level % 10 !== 0)) next.advanced = false;
+        valid(petRecord(next));
+      }
+      return transaction(function (value) {
+        if (!value.pets) value.pets = { roster: {}, provenance: {} };
+        if (next === null) { delete value.pets.roster[key]; delete value.pets.provenance[key]; return; }
+        if (same(value.pets.roster[key], next)) return;
+        value.pets.roster[key] = next; value.pets.provenance[key] = { source: source || 'manual', at: new Date().toISOString() };
+      }, expected);
+    }
     function buildings() {
       var section = snapshot().buildings || { levels: {}, provenance: {} };
       return { levels: copy(section.levels), provenance: copy(section.provenance) };
@@ -452,7 +487,7 @@
     if (events && events.addEventListener) events.addEventListener('storage', function (event) {
       if ((event.key === KEY || event.key === null) && (!event.storageArea || event.storageArea === storage)) { try { current = read(); notify(); } catch (error) { if (events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:error', { detail: error.message })); } }
     });
-    return { kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, masters: masters, setMaster: setMaster, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, training: training, setTraining: setTraining, setTrainingPlan: setTrainingPlan, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
+    return { kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, masters: masters, setMaster: setMaster, pets: pets, setPet: setPet, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, training: training, setTraining: setTraining, setTrainingPlan: setTrainingPlan, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
   }
-  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), TRAINING: TRAINING.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), MASTER: copy(MASTER), troopId: troopId, masterEmblemId: masterEmblemId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, empty: empty, validate: validate, create: create };
+  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), TRAINING: TRAINING.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), MASTER: copy(MASTER), PET: copy(PET), troopId: troopId, masterEmblemId: masterEmblemId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, empty: empty, validate: validate, create: create };
 });

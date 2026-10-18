@@ -1169,6 +1169,12 @@ window.__BH_I18N_DATA["ko"] = {
   "masters.title": "마스터",
   "masters.cardLede": "마스터의 호감도와 스킬을 기록하고, 다음 등급과 필요한 엠블럼, 엠블럼과 원고로 얻을 점수를 확인하세요.",
   "masters.kicker": "마스터 아카데미",
-  "masters.metaTitle": "마스터 — dey.ci"
+  "masters.metaTitle": "마스터 — dey.ci",
+  "pets.nav": "펫",
+  "ev.deck.lede.pets": "길들이고, 먹이고, 쓰다듬고; 모든 진급을 계획.",
+  "pets.title": "펫",
+  "pets.cardLede": "실시간으로 배고프고 외로워지는 펫을 돌보고, 다음 진급의 비용과 점수를 확인하세요.",
+  "pets.kicker": "야수 우리",
+  "pets.metaTitle": "펫 — dey.ci"
 }
 ;

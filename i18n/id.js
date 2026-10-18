@@ -1180,6 +1180,12 @@ window.__BH_I18N_DATA["id"] = {
   "masters.title": "Master",
   "masters.cardLede": "Catat afinitas dan keahlian mastermu, lihat kelas berikutnya beserta lambangnya, dan poin dari lambang serta manuskripmu.",
   "masters.kicker": "Akademi Master",
-  "masters.metaTitle": "Master — dey.ci"
+  "masters.metaTitle": "Master — dey.ci",
+  "pets.nav": "Peliharaan",
+  "ev.deck.lede.pets": "dijinakkan, diberi makan dan dielus; setiap kenaikan direncanakan.",
+  "pets.title": "Peliharaan",
+  "pets.cardLede": "Rawat peliharaanmu yang lapar dan kesepian secara nyata, dan lihat biaya serta poin setiap kenaikan berikutnya.",
+  "pets.kicker": "Kandang Hewan",
+  "pets.metaTitle": "Peliharaan — dey.ci"
 }
 ;

@@ -120,6 +120,32 @@
 .ascii-mini--charm { height: 13.75em; }
 .ascii-mini--seal { height: 13.75em; }
 .ascii-mini--tome { height: 13.75em; }
+/* A pet in its pen: the body is the signal hue, the marks over its head are ink.
+   The marks layer sits on the pen's top two rows at the column the generator
+   found clear of the head (--marks). Mood sets the body: a delighted pet wags
+   faster, a content one at ease; hungry, lonely and restless pets keep the tail
+   still. Petted, fed or offered food, it squeezes its eyes shut and wags. */
+.ascii-mini--pet { width: 44ch; height: 18.75em; }
+.ascii-mini--pet::after { position: absolute; top: 0; left: calc(var(--marks, 0) * 1ch); display: block; white-space: pre; color: var(--ink); }
+.ascii-mini.ascii-mini--pet[data-mood="delighted"]::before { animation-duration: 1.2s; }
+.ascii-mini.ascii-mini--pet[data-mood="content"]::before { animation-duration: 2.8s; }
+.ascii-mini--pet[data-mood="asleep"]::before { color: var(--amber-dim); }
+/* A pet with a portrait: the pen holds one span per ink, darkest first, each
+   stepping through the same frames (.dsh/pet-portrait/shade.py bakes them from
+   the pet's model). The portrait's grid is finer than the pen's, so it fills
+   the same 44ch box: 72 columns at 44/72 of the pen's type size. The tones are
+   the pet's own fur, kept bright on the dark page. */
+.ascii-mini--portrait { position: absolute; inset: 0 auto auto 0; display: block; width: 72ch; height: 30em; font-size: calc(1em * 44 / 72); line-height: 1.25; white-space: pre; pointer-events: none; }
+.ascii-mini--portrait > span { position: absolute; inset: 0 auto auto 0; display: block; white-space: pre; }
+.ascii-mini--portrait > span::before { display: block; white-space: pre; }
+.ascii-mini--portrait[data-pet="grizzly-bear"] { --tone-0: #6E4636; --tone-1: #93604A; --tone-2: #B67F5A; --tone-3: #D49C6C; --tone-4: #EDBC86; --tone-5: #F8DDB0; --tone-6: #FFF5E2; }
+.ascii-mini--portrait > [data-ink="0"] { color: var(--tone-0); }
+.ascii-mini--portrait > [data-ink="1"] { color: var(--tone-1); }
+.ascii-mini--portrait > [data-ink="2"] { color: var(--tone-2); }
+.ascii-mini--portrait > [data-ink="3"] { color: var(--tone-3); }
+.ascii-mini--portrait > [data-ink="4"] { color: var(--tone-4); }
+.ascii-mini--portrait > [data-ink="5"] { color: var(--tone-5); }
+.ascii-mini--portrait > [data-ink="6"] { color: var(--tone-6); }
 /* Ursa Major over Bear Hunt: the lines are ink, the stars the signal hue. */
 .ascii-mini--ursa { width: 43ch; height: 18.75em; }
 .ascii-mini--ursa::before { color: var(--ink-muted); }
@@ -275,6 +301,7 @@ html.deck-open .dust .ascii-ambient > span::before { animation-play-state: pause
 .deck-ascii .ascii-campfire { font-size: clamp(6px, 1.75vw, 9.5px); }
 .deck-ascii .ascii-forge { font-size: clamp(8px, 2.2vw, 11px); }
 .deck-ascii .ascii-mini--aurora { font-size: clamp(7.5px, 2.2vw, 10px); }
+.deck-ascii .ascii-mini--pet { font-size: clamp(10px, 3.2vw, 14px); }
 /* The cover's ground is a gradient, so a flat pane would show as a box;
    the stars and the bear dim on their own instead. */
 .deck-ascii .ascii-mini--aurora .aurora-dim { display: none; }
@@ -294,6 +321,7 @@ html.deck-open .dust .ascii-ambient > span::before { animation-play-state: pause
   .ascii *, .ascii *::before, .ascii *::after,
   .ascii-mini::before, .ascii-mini::after, .ascii-march::before, .ascii-march::after,
   .ascii-mini > span::before,
+  .ascii-mini--portrait > span::before,
   .ascii-ambient > span::before { animation: none !important; }
   .ascii-campfire .spark { opacity: 0; }
 }

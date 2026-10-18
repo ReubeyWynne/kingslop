@@ -108,6 +108,14 @@ jobs:
               - _data/event_rules.json
               - town-centre/**
               - js/town-centre*.js
+            pets:
+              - *shared
+              - .dsh/pets-ui-check.cjs
+              - pets/**
+              - js/pet-*
+              - _data/pets.json
+              - css/pets.css
+              - css/heroes.css
             castle:
               - *shared
               - .dsh/castle-battle-ui-check.cjs
@@ -199,7 +207,7 @@ jobs:
           FILTERED: ${{ github.event_name == 'pull_request' }}
           CHANGES: ${{ steps.filter.outputs.changes || '[]' }}
         run: |
-          all='["interactions","heroes","masters","castle","events","governor","town","deck","ascii-capture","hero-gear"]'
+          all='["interactions","heroes","masters","pets","castle","events","governor","town","deck","ascii-capture","hero-gear"]'
           if [ "$FILTERED" != true ]; then
             echo "logic=true" >> "$GITHUB_OUTPUT"
             echo "ascii=true" >> "$GITHUB_OUTPUT"
@@ -279,6 +287,9 @@ jobs:
       - name: Check masters data, spending plan and wiring
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/master-spend-check.cjs
+      - name: Check pet data, Advances, care and wiring
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/pet-care-check.cjs
       - name: Check OCR backend recovery
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/ocr-backend-check.cjs
@@ -346,6 +357,9 @@ jobs:
       - name: Check masters UI
         if: matrix.group == 'masters'
         run: node .dsh/masters-ui-check.cjs
+      - name: Check pets UI
+        if: matrix.group == 'pets'
+        run: node .dsh/pets-ui-check.cjs
       - name: Check Castle Battle UI
         if: matrix.group == 'castle'
         run: node .dsh/castle-battle-ui-check.cjs
@@ -389,6 +403,7 @@ jobs:
             .dsh/event-preview/
             .dsh/hero-directory-preview/
             .dsh/masters-preview/
+            .dsh/pets-preview/
             .dsh/kingdom-preview/
             .dsh/castle-preview/
             .dsh/governor-preview/

@@ -1172,6 +1172,12 @@ window.__BH_I18N_DATA["es"] = {
   "masters.title": "Maestros",
   "masters.cardLede": "Registra la afinidad y las habilidades de tus maestros, mira cada clase siguiente y sus emblemas, y lo que tus emblemas y manuscritos pueden puntuar.",
   "masters.kicker": "la Academia de Maestros",
-  "masters.metaTitle": "Maestros — dey.ci"
+  "masters.metaTitle": "Maestros — dey.ci",
+  "pets.nav": "Mascotas",
+  "ev.deck.lede.pets": "domadas, alimentadas y mimadas; cada ascenso planificado.",
+  "pets.title": "Mascotas",
+  "pets.cardLede": "Cuida de tus mascotas mientras les entra hambre y soledad en tiempo real, y mira lo que cuesta y puntúa cada próximo ascenso.",
+  "pets.kicker": "la Jaula de Bestias",
+  "pets.metaTitle": "Mascotas — dey.ci"
 }
 ;

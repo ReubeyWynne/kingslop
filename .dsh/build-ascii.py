@@ -15,6 +15,7 @@ The house style (DESIGN.md, "Animation style"):
 Hand-written layout, colours and placement live in css/ascii.css.
 """
 import html
+import json
 import math
 import random
 from pathlib import Path
@@ -994,6 +995,341 @@ def minis():
     return '\n'.join(css) + '\n'
 
 
+# ── the beast cage: one pet per pen ──────────────────────────────────────
+# Every pet stands in profile facing right on the ground row of a 44 x 15 pen,
+# with 'o' for its eye. Four bodies per pet: up (tail or an ear flicking
+# through three poses, a blink), low (tail still, a slower blink), happy (while
+# it is stroked, fed or offered food: eyes squeezed shut, a quick wag) and
+# asleep (lying down: the leg rows are dropped so the belly rests on the
+# ground, eyes shut). The page picks one by mood and reaction. Over the head
+# sits a shared two-row layer of marks (zzz, a question, hearts) that steps in
+# place; the generator moves it sideways until no mark lands on the pet in any
+# frame.
+
+PET_W, PET_H = 44, 15
+PETS = {  # id: (drawing, leg rows dropped when asleep, the two wag poses as (column, row, text) over the drawing)
+    'gray-wolf': (r"""
+                                  /\
+                                 /  )_
+                   __..,,,,,..__/ o   '._
+          _..--''''        ,          ___>
+       .-'    ,      ,          \  ,-'
+   _.-/   ,       ,       ,      '.|
+  (  ;          ________      ,   |
+   \ |  ,   _.-'        '-.     , /
+    \ \    /               \  ,  |
+     ' |  |                 |  | |
+       |  |                 |  | |
+       |  |                 |  | |
+      (__)|_               (__)|_)""", 4, [[(4, 8, '|'), (5, 9, ' '), (4, 9, "'")], [(4, 8, '/'), (5, 9, ' '), (3, 9, "'")]]),
+    'lynx': (r"""
+                                 /|   /|
+                                / |__/ |
+                   _____..----./ o    , \
+          _..--'''  .  .   .  ' .   ,_   >
+      .-'  .  .   .   .   .   . (,,,  '-'
+  .-.;  .   .  .    .    .   .  .\ ''')
+  '-'|   .    ________   .   .   |''
+     |  .   ,'        '.    .   /
+     | .   /            \  .   |
+      \   |              |    /|
+       |  |              |   | |
+       |  |              |   | |
+     (,,,,|            (,,,,|,,)""", 4, [[(2, 5, '_..'), (2, 6, "'-'")], [(2, 5, '.-,'), (2, 6, "`-'")]]),
+    'bison': (r"""
+                _..--''''--.._
+            _.-'   ,;;;;;;;;;;''-.
+         .-'     ,;;;;;;;;;;;;;;;;'.
+       .'       ;;;;;;;;;;;;;;;;;;;;\   _
+   ,-./        ;;;;;;;;;;;;;;;;;;;;;;\_/ )
+  ( ;'|        ;;;;;;;;;;;;;;;;;;;;;;; o/
+   ' ;|         ';;;;;;;;;;;;;;;;;;;;    '.
+     |            ';;;;;;;;;;;;;;;;; ,__,_)
+     \    ______   ;;;;;;;;;;;;;;;;;;;;;'
+      |  |      |  ;;;;;;;;;;;;';;;;;;'
+      |  |      |  |;;;|      |;;;'
+      |  |      |  |   |      |  |
+      '''''     '''''''       ''''""", 4, [[(2, 5, '|'), (3, 6, '.')], [(2, 5, ' '), (3, 5, '('), (3, 6, ' '), (4, 6, "'")]]),
+    'moose': (r"""
+                          ,_,_,_,_
+                          \      _/   _
+                           '-.__/\  ( )
+                 ______.......-'  '-.
+         _..--'''    ,     ,     o   '.
+     _.-'   ,     ,      ,     ,       \
+    / ,         ,     ,      \   '.     )
+   ( ,    ,  ___________  ,   |    '._.'
+  ' '. ,   ,'           '. ,  |   (_)
+      | |  |              | | |
+      | |  |              | | |
+      | |  |              | | |
+      |_|__|              |_|_|""", 4, [[(2, 8, '.'), (37, 2, "'")], [(2, 8, ',')]]),
+    'cheetah': (r"""
+                                     ,_
+                                    / ')_
+                     __...----...__/ o   '.
+            _.--'''''  .   .   .    \ ;    >
+        _.-' .   .   .   .   .   .  \ '. .'
+      ,'  .    .   .   .   .   .   .'-.''
+  _  /  .   .   _..---''''--._  .   /
+ / \/ .   .  ,-'              '.   |
+ | /  /  |  |                  |  |\
+ | |  |  |  |                  |  | \
+ \ \  |  |  |                  |  |  |
+  '.' (__)(_)                 (__)(_)""", 4, [[(2, 6, ' '), (1, 6, '.'), (1, 7, '|')], [(2, 6, ' '), (0, 6, '_'), (1, 7, '\\')]]),
+    'lion': (r"""
+                             ,;;;;;,
+                           ,;;;;;;;;;;.
+                ________ ,;;;;;'  '.;;;;
+         _..--''        ;;;;;'   o  \;;;
+      .-'    ,      ,  ;;;;;|        '-.
+    ,'   ,       ,    ;;;;;;;\     ,_.-'
+   /  ,      ,        ';;;;;;;'.__/;
+  |       _..--''''--.. ';;;;;;;;;;'
+  | ,   ,'              ', ';;;;;;'
+  |    /                  \  |  |
+   \  |                    | |  |
+ ,-.| |                    | |  |
+ ';'(__)                  (__)(__)""", 4, [[(1, 11, '.-,')], [(1, 11, ',-,'), (1, 12, "';,")]]),
+    'mighty-bison': (r"""
+                _..--''''--.._
+            _.-' [==][==][==]''-.
+         .-'   [==][==][==][==][='.
+       .'      [==][==][==][==][==\   _
+   ,-./        ;;;;;;;;;;;;;;;;;;;;;\_/ )
+  ( ;'|        ;;;;;;;;;;;;;;;;;;;;;;;[o]
+   ' ;|         ';;;;;;;;;;;;;;;;;;;;    '.
+     |            ';;;;;;;;;;;;;;;;; ,__,_)
+     \    ______   ;;;;;;;;;;;;;;;;;;;;;'
+      |  |      |  ;;;;;;;;;;;;';;;;;;'
+      |  |      |  |;;;|      |;;;'
+      |[]|      |[]|[];|      |[]|
+      '''''     '''''''       ''''""", 4, [[(2, 5, '|'), (3, 6, '.')], [(2, 5, ' '), (3, 5, '('), (3, 6, ' '), (4, 6, "'")]]),
+    'giant-rhino': (r"""
+                                        /|
+                            ,_    /|   / |
+             _..--------.._( )___/ |__/  |
+         _.-' :  :  ) :  :  '-.      o   |
+       ,'  :    :  (    :  :  : \        _)
+      /  :   :    : )  :   :     \  ,_.-'
+     ;   ,  :   :  (  :  :   :   |  /
+    \|        :    ) :    :   :  | /
+   ' ;       ______________     ,'
+      \    ,'              '.  |
+       |  |                  | |
+       |  |                  | |
+      (,,,|                 (,,,|""", 3, [[(4, 7, '|'), (3, 8, ' '), (4, 8, "'")], [(4, 7, '/'), (3, 8, ' '), (3, 7, "'")]]),
+    'alpha-black-panther': (r"""
+                                     ,_
+                                    /:')_
+                     __...----...__/:o:::'.
+            _.--''''':::::::::::::::\:;::::>
+        _.-'::::::::::::::::::::::::\:'.:.'
+      ,':::::::::::::::::::::::::::::'-.''
+  _  /::::::::::_..---''''--._:::::::/
+ / \/:::::::::,-'              '.::::|
+ | /::/::|::|                  |::|\
+ | |  |::|::|                  |::| \
+ \ \  |::|::|                  |::|  |
+  '.' (__)(_)                 (__)(_)""", 4, [[(2, 6, ' '), (1, 6, '.'), (1, 7, '|')], [(2, 6, ' '), (0, 6, '_'), (1, 7, '\\')]]),
+    'great-moose': (r"""
+                 _,_,_,_     ,_,_,_,_
+                 \      '-._ \      _/   _
+                  '-._      '-'-.__/\  ( )
+                 ______.......-'  '-.
+         _..--'''    ,     ,     o   '.
+     _.-'   ,     ,      ,     ,       \
+    / ,         ,     ,      \   '.     )
+   ( ,    ,  ___________  ,   |    '._.'
+  ' '. ,   ,'           '. ,  |   (_)
+      | |  |              | | |
+      | |  |              | | |
+      | |  |              | | |
+      |_|__|              |_|_|""", 4, [[(2, 8, '.'), (40, 2, "'")], [(2, 8, ',')]]),
+    'regal-white-lion': (r"""
+                            .^.^.^.
+                           ,~~~~~~~~~.
+                ________ ,~~~~~'  '.~~~~
+         _..--''        ~~~~~'   o  \~~~
+      .-'    ,      ,  ~~~~~|        '-.
+    ,'   ,       ,    ~~~~~~~\     ,_.-'
+   /  ,      ,        '~~~~~~~'.__/~
+  |       _..--''''--.. '~~~~~~~~~~'
+  | ,   ,'              ', '~~~~~~'
+  |    /                  \  |  |
+   \  |                    | |  |
+ ,-.| |                    | |  |
+ '~'(__)                  (__)(__)""", 4, [[(1, 11, '.-,')], [(1, 11, ',-,'), (1, 12, "';,")]]),
+    'ironclad-war-elephant': (r"""
+                        ______
+            _..-------./      '.
+        _.-' [==][==][/         \
+      .'  [==][==][==|  .--.  o  '.
+     / [==][==][==][=|  |  |      \
+    ;                |  |  |   ,   |
+   \|                |  '--'  /|   |
+  " ;  _____________ |'-.__.-' |   \
+     \/             \|    ,_)  |   |
+     ||             ||   ,'    |   |
+     ||             ||   |     |   |
+     ||             ||   |     \   /
+    (__)           (__) (__)    '-'""", 4, [[(3, 6, ')'), (2, 7, ' '), (3, 7, '"')], [(3, 6, '/'), (2, 7, ' '), (2, 6, '"')]]),
+    'ironclad-war-bear': (r"""
+             __..--..__
+        _.-''[==][==][=''-._
+    _.-'  [==][==][==][==]  '.  _^_
+  .'    [==][==][==][==][==] \ [#=#]
+ /              ,              '-'  '-._
+;    ,                              o   '-.
+|          ,          ,                    @
+;               ,              \     ._.-'
+ \   ,     _..--''''--..        '-.-'
+  \  \,,  ,'            '.     |,,
+   |[]  |                 |[]  |
+   |    |                 |    |
+  (,,,,_|                (,,,,_|""", 3, [[(34, 2, '-')], []]),
+}
+PET_FPS = 8
+PET_UP, PET_LOW, PET_HAPPY = 16, 24, 8
+# The marks over the head: a 6 x 2 layer, (column, row, glyph) per frame.
+PET_MARK_W = 6
+PET_MARKS = {  # name: (seconds a frame, frames)
+    'asleep': (1 / 3, [[(0, 1, 'z')]] * 4 + [[(0, 1, 'z'), (2, 0, 'Z')]] * 4 + [[(2, 0, 'Z')]] * 2 + [[]] * 2),
+    'hungry': (0.5, [[(1, 0, '?')]] * 3 + [[]]),
+    'lonely': (1 / 3, [[(0, 1, '.'), (2, 1, '.'), (4, 1, '.')]] * 4 + [[]] * 2 + [[(0, 1, '.')]] * 2 + [[(0, 1, '.'), (2, 1, '.')]] * 2),
+    'delighted': (0.25, [[(1, 1, '♥')], [(1, 0, '♥')]] + [[]] * 6 + [[(4, 1, '♥')], [(4, 0, '♥')]] + [[]] * 6),
+    'pet': (0.25, [[(1, 1, '♥')], [(1, 0, '♥'), (3, 1, '♥')], [(3, 0, '♥'), (0, 1, '♥')], [(0, 0, '♥'), (4, 1, '♥')], [(4, 0, '♥')], [], [], []]),
+    'feed': (0.25, [[(0, 1, 'n')], [(0, 1, 'no')], [(0, 1, 'nom')], [(0, 1, 'nom')], [(1, 0, 'nom')], [(1, 0, 'nom')], [], []]),
+    'full': (0.25, [[], [(0, 1, 'h')], [(0, 1, 'hm')], [(0, 1, 'hmp')], [(0, 1, 'hmph')], [(0, 1, 'hmph')], [(0, 1, 'hmph')], []]),
+}
+
+
+def pet_body(pet, pose, i):
+    drawing, legs, wags = PETS[pet]
+    rows = [r.rstrip() for r in art(drawing)]
+    if pose == 'asleep':
+        rows = rows[:-legs]
+    arr = grid(PET_W, PET_H)
+    top = PET_H - len(rows)
+    for r, row in enumerate(rows):
+        put(arr, 0, top + r, row, ' ')
+    eye = next((c, top + r) for r, row in enumerate(rows) for c, ch in enumerate(row) if ch == 'o')
+    if pose in ('up', 'happy'):
+        wag = (0, 1, 2, 1)[(i if pose == 'happy' else i // 2) % 4]
+        for c, r, text in ([], *wags)[wag]:
+            put(arr, c, top + r, text)
+    if pose == 'happy':
+        put(arr, *eye, '^')
+    elif pose == 'asleep' or (pose == 'up' and i in (12, 13)) or (pose == 'low' and i in (18, 19, 20)):
+        put(arr, *eye, '-')
+    return arr, eye
+
+
+def pet_marks(pet):
+    """The column the marks layer sits at: over the head, clear of the pet."""
+    body = {(c, r) for pose, n in (('up', PET_UP), ('happy', PET_HAPPY)) for i in range(n)
+            for r, row in enumerate(pet_body(pet, pose, i)[0]) for c, ch in enumerate(row) if ch != ' '}
+    eye = pet_body(pet, 'up', 0)[1]
+    cells = {(c + dc, r) for _, frames in PET_MARKS.values() for frame in frames
+             for c, r, text in frame for dc in range(len(text))}
+    for x in sorted(range(PET_W - PET_MARK_W + 1), key=lambda x: (abs(x - (eye[0] - 3)), x)):
+        if not any((x + c, r) in body for c, r in cells):
+            return x
+    raise AssertionError(f'{pet}: no room over the head for the marks')
+
+
+def pets():
+    css = ['/* the beast cage */']
+    sel = '.ascii-mini--pet[data-pet="{}"]'
+    for pet, (drawing, legs, wags) in PETS.items():
+        rows = [r.rstrip() for r in art(drawing)]
+        assert max(map(len, rows)) <= PET_W and len(rows) <= PET_H - 2, f'{pet}: the drawing outgrows its pen'
+        assert sum(r.count('o') for r in rows) == 1, f'{pet}: one eye'
+        assert len(wags) == 2 and legs < len(rows), f'{pet}: two wag poses and a body to lie on'
+        css.append(f'{sel.format(pet)}{{--marks:{pet_marks(pet)}}}\n')
+        up = [pet_body(pet, 'up', i)[0] for i in range(PET_UP)]
+        css.append(animation(sel.format(pet) + '::before', f'ascii-pet-{pet}', up, PET_UP / PET_FPS))
+        low = [pet_body(pet, 'low', i)[0] for i in range(PET_LOW)]
+        css.append(animation(sel.format(pet) + ':is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before',
+                             f'ascii-pet-{pet}-low', low, PET_LOW / 6))
+        css.append(f'{sel.format(pet)}[data-mood="asleep"]::before{{content:{content(pet_body(pet, "asleep", 0)[0])};animation:none}}\n')
+        happy = [pet_body(pet, 'happy', i)[0] for i in range(PET_HAPPY)]
+        css.append(animation(sel.format(pet) + ':is([data-react="pet"], [data-react="feed"], [data-sniff])[data-mood]::before',
+                             f'ascii-pet-{pet}-happy', happy, PET_HAPPY / PET_FPS))
+    for name, (step, frames) in PET_MARKS.items():
+        layers = []
+        for frame in frames:
+            arr = grid(PET_MARK_W, 2)
+            for c, r, text in frame:
+                put(arr, c, r, text)
+            layers.append(arr)
+        attr = 'data-react' if name in ('pet', 'feed', 'full') else 'data-mood'
+        css.append(animation(f'.ascii-mini--pet[{attr}="{name}"]::after', f'ascii-pet-marks-{name}', layers, round(step * len(frames), 3)))
+    return '\n'.join(css) + '\n'
+
+
+# ── pet portraits ────────────────────────────────────────────────────────
+# A pet with a portrait is drawn from its low-poly model instead of by hand:
+# .dsh/pet-portrait/shade.py renders the model offline through a text shader
+# and bakes each pose into .dsh/pet-portraits/<pet>.json as one layer of rows
+# per ink, darkest first. Here every ink becomes a span in the pen whose
+# frames step together, so the portrait keeps its colours. The poses are the
+# same model bent a little (an ear tipped, the nose flared, the head lowered)
+# through the same camera; nothing moves at runtime but the glyphs.
+
+PORTRAIT_FPS = 8
+PORTRAIT_UP = [('still', 20), ('blink', 1), ('still', 14), ('ear', 2), ('still', 1), ('ear', 2), ('still', 16),
+               ('sniff', 1), ('still', 1), ('sniff', 1), ('still', 12)]
+PORTRAIT_LOW = [('low', 36), ('low-blink', 2), ('low', 20), ('low-blink', 2)]
+PORTRAIT_HAPPY = [('happy', 3), ('happy-ear', 2), ('happy', 3)]
+
+
+def portraits_baked():
+    found = {}
+    for path in sorted((ROOT / '.dsh' / 'pet-portraits').glob('*.json')):
+        found[path.stem] = json.loads(path.read_text(encoding='utf-8'))
+    return found
+
+
+def portrait_marks(pet, data):
+    """The pen column for the marks layer, clear of every pose's top rows."""
+    scale = data['cols'] / PET_W            # portrait columns per pen column
+    reach = math.ceil(2 * scale)            # the marks' two pen rows, in portrait rows (both line-height 1.25)
+    busy = {c for pose in data['poses'].values() for rows in pose.values()
+            for row in rows[:reach] for c, ch in enumerate(row) if ch != ' '}
+    eye = min(c for rows in data['poses']['still'].values() for row in rows for c, ch in enumerate(row) if ch == 'o')
+    for x in sorted(range(PET_W - PET_MARK_W + 1), key=lambda x: (abs(x - (eye / scale - 3)), x)):
+        if not any(c in busy for c in range(math.floor(x * scale), math.ceil((x + PET_MARK_W) * scale))):
+            return x
+    raise AssertionError(f'{pet}: no room over the head for the marks')
+
+
+def portraits():
+    css = ['/* pet portraits */']
+    for pet, data in portraits_baked().items():
+        poses = data['poses']
+        for name in {n for n, _ in PORTRAIT_UP + PORTRAIT_LOW + PORTRAIT_HAPPY} | {'asleep'}:
+            assert name in poses, f'{pet}: no {name} pose'
+            for rows in poses[name].values():
+                assert len(rows) <= data['rows'] and max(map(len, rows), default=0) <= data['cols'], f'{pet}: {name} outgrows its frame'
+        css.append(f'.ascii-mini--pet[data-pet="{pet}"]{{--marks:{portrait_marks(pet, data)}}}\n')
+        portrait = f' > .ascii-mini--portrait[data-pet="{pet}"]'
+        pen = '.ascii-mini--pet'
+        when = {'up': portrait[3:], 'low': pen + ':is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])' + portrait,
+                'asleep': pen + '[data-mood="asleep"]' + portrait,
+                'happy': pen + ':is([data-react="pet"], [data-react="feed"], [data-sniff])[data-mood]' + portrait}
+        for i, ink in enumerate(data['inks']):
+            layer = f' > [data-ink="{i}"]::before'
+            for mood, timeline in (('up', PORTRAIT_UP), ('low', PORTRAIT_LOW), ('happy', PORTRAIT_HAPPY)):
+                frames = [poses[n][ink] for n, _ in timeline]
+                holds = [h for _, h in timeline]
+                name = f'ascii-portrait-{pet}' + ('' if mood == 'up' else f'-{mood}') + f'-{i}'
+                css.append(animation(when[mood] + layer, name, frames, round(sum(holds) / PORTRAIT_FPS, 3), holds))
+                if mood == 'low':   # asleep comes after low and before happy, so a reaction still wakes it
+                    css.append(f'{when["asleep"]}{layer}{{content:{content(poses["asleep"][ink])};animation:none}}\n')
+    return '\n'.join(css) + '\n'
+
+
 # ── the march ────────────────────────────────────────────────────────────
 # A column walking left in step. Each figure stands on a hip column; its legs
 # are a four-pose walk drawn so that the planted foot never slides: the body
@@ -1510,6 +1846,6 @@ def aurora():
 
 if __name__ == '__main__':
     header = '/* Generated by .dsh/build-ascii.py — edit the generator, not this file.\n   Layout and colour for these scenes live in css/ascii.css. */\n'
-    write('css/ascii-frames.css', header + campfire() + hearth() + forge() + minis() + march() + constellations() + aurora())
+    write('css/ascii-frames.css', header + campfire() + hearth() + forge() + minis() + pets() + portraits() + march() + constellations() + aurora())
     print('wrote css/ascii-frames.css and _includes/ascii/campfire.html')
 

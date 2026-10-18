@@ -1169,6 +1169,12 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "masters.title": "導師",
   "masters.cardLede": "記錄導師的好感與技能，查看下一階段所需徽章，以及你的徽章和手稿能得多少分。",
   "masters.kicker": "導師學院",
-  "masters.metaTitle": "導師 — dey.ci"
+  "masters.metaTitle": "導師 — dey.ci",
+  "pets.nav": "寵物",
+  "ev.deck.lede.pets": "馴服、餵食、撫摸；每次進階都有規劃。",
+  "pets.title": "寵物",
+  "pets.cardLede": "照顧會即時餓肚子、感到孤單的寵物，並查看下一次進階的花費和積分。",
+  "pets.kicker": "獸籠",
+  "pets.metaTitle": "寵物 — dey.ci"
 }
 ;

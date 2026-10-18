@@ -1,0 +1,2950 @@
+{
+ "checkedAt": "2026-10-17",
+ "sources": {
+  "optimizer": {
+   "label": "Kingshot Optimizer",
+   "url": "https://kingshotoptimizer.com/",
+   "note": "Page data bundles, app v1.15.0 (2026-09-14); research rows carry verifiedAt 2026-08-02."
+  },
+  "kingshotdata": {
+   "label": "Kingshot Data",
+   "url": "https://kingshotdata.com/"
+  },
+  "h5joy": {
+   "label": "KS h5joy",
+   "url": "https://ks.h5joy-games.com/",
+   "note": "Buildings pages last updated 2026-03-26; rounds values over 10,000 to 0.1K."
+  }
+ },
+ "materials": [
+  {
+   "id": "pet-food",
+   "label": "Pet Food"
+  },
+  {
+   "id": "growth-manual",
+   "label": "Growth Manual"
+  },
+  {
+   "id": "nutrient-potion",
+   "label": "Nutrient Potion"
+  },
+  {
+   "id": "promotion-medallion",
+   "label": "Promotion Medallion"
+  }
+ ],
+ "points": {
+  "10": {
+   "kvk": 25000,
+   "sg": 25000,
+   "brawl": 15000
+  },
+  "20": {
+   "kvk": 50000,
+   "sg": 50000,
+   "brawl": 30000
+  },
+  "30": {
+   "kvk": 100000,
+   "sg": 100000,
+   "brawl": 60000
+  },
+  "40": {
+   "kvk": 150000,
+   "sg": 150000,
+   "brawl": 90000
+  },
+  "50": {
+   "kvk": 225000,
+   "sg": 225000,
+   "brawl": 135000
+  },
+  "60": {
+   "kvk": 337500,
+   "sg": 337500,
+   "brawl": 202500
+  },
+  "70": {
+   "kvk": 500000,
+   "sg": 500000,
+   "brawl": 300000
+  },
+  "80": {
+   "kvk": 600000,
+   "sg": 600000,
+   "brawl": 360000
+  },
+  "90": {
+   "kvk": 725000,
+   "sg": 725000,
+   "brawl": 435000
+  },
+  "100": {
+   "kvk": 875000,
+   "sg": 875000,
+   "brawl": 525000
+  }
+ },
+ "profiles": {
+  "gen1_50": {
+   "maxLevel": 50,
+   "initialGrowthManual": 0,
+   "totals": {
+    "petFood": 28865,
+    "growthManual": 240,
+    "nutrientPotion": 60,
+    "promotionMedallion": 10
+   },
+   "levels": [
+    {
+     "level": 1,
+     "petFood": 0,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 2,
+     "petFood": 150,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 3,
+     "petFood": 160,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 4,
+     "petFood": 170,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 5,
+     "petFood": 180,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 6,
+     "petFood": 190,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 7,
+     "petFood": 200,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 8,
+     "petFood": 210,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 9,
+     "petFood": 220,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 10,
+     "petFood": 235,
+     "advance": {
+      "growthManual": 15,
+      "nutrientPotion": 0,
+      "promotionMedallion": 0
+     },
+     "score": 500
+    },
+    {
+     "level": 11,
+     "petFood": 250,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 12,
+     "petFood": 265,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 13,
+     "petFood": 280,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 14,
+     "petFood": 295,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 15,
+     "petFood": 310,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 16,
+     "petFood": 325,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 17,
+     "petFood": 340,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 18,
+     "petFood": 355,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 19,
+     "petFood": 370,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 20,
+     "petFood": 390,
+     "advance": {
+      "growthManual": 30,
+      "nutrientPotion": 0,
+      "promotionMedallion": 0
+     },
+     "score": 1000
+    },
+    {
+     "level": 21,
+     "petFood": 410,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 22,
+     "petFood": 430,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 23,
+     "petFood": 450,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 24,
+     "petFood": 470,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 25,
+     "petFood": 490,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 26,
+     "petFood": 510,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 27,
+     "petFood": 530,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 28,
+     "petFood": 550,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 29,
+     "petFood": 570,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 30,
+     "petFood": 600,
+     "advance": {
+      "growthManual": 45,
+      "nutrientPotion": 10,
+      "promotionMedallion": 0
+     },
+     "score": 2000
+    },
+    {
+     "level": 31,
+     "petFood": 630,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 32,
+     "petFood": 660,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 33,
+     "petFood": 690,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 34,
+     "petFood": 720,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 35,
+     "petFood": 750,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 36,
+     "petFood": 780,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 37,
+     "petFood": 810,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 38,
+     "petFood": 840,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 39,
+     "petFood": 870,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 40,
+     "petFood": 910,
+     "advance": {
+      "growthManual": 60,
+      "nutrientPotion": 20,
+      "promotionMedallion": 0
+     },
+     "score": 3000
+    },
+    {
+     "level": 41,
+     "petFood": 950,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 42,
+     "petFood": 990,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 43,
+     "petFood": 1030,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 44,
+     "petFood": 1070,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 45,
+     "petFood": 1100,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 46,
+     "petFood": 1150,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 47,
+     "petFood": 1190,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 48,
+     "petFood": 1230,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 49,
+     "petFood": 1270,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 50,
+     "petFood": 1320,
+     "advance": {
+      "growthManual": 90,
+      "nutrientPotion": 30,
+      "promotionMedallion": 10
+     },
+     "score": 4500
+    }
+   ]
+  },
+  "gen1_60": {
+   "maxLevel": 60,
+   "initialGrowthManual": 3,
+   "totals": {
+    "petFood": 83770,
+    "growthManual": 515,
+    "nutrientPotion": 100,
+    "promotionMedallion": 30
+   },
+   "levels": [
+    {
+     "level": 1,
+     "petFood": 0,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 2,
+     "petFood": 200,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 3,
+     "petFood": 220,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 4,
+     "petFood": 240,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 5,
+     "petFood": 260,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 6,
+     "petFood": 280,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 7,
+     "petFood": 300,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 8,
+     "petFood": 320,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 9,
+     "petFood": 340,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 10,
+     "petFood": 370,
+     "advance": {
+      "growthManual": 20,
+      "nutrientPotion": 0,
+      "promotionMedallion": 0
+     },
+     "score": 500
+    },
+    {
+     "level": 11,
+     "petFood": 400,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 12,
+     "petFood": 430,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 13,
+     "petFood": 460,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 14,
+     "petFood": 490,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 15,
+     "petFood": 520,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 16,
+     "petFood": 550,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 17,
+     "petFood": 580,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 18,
+     "petFood": 610,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 19,
+     "petFood": 640,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 20,
+     "petFood": 680,
+     "advance": {
+      "growthManual": 40,
+      "nutrientPotion": 0,
+      "promotionMedallion": 0
+     },
+     "score": 1000
+    },
+    {
+     "level": 21,
+     "petFood": 720,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 22,
+     "petFood": 760,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 23,
+     "petFood": 800,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 24,
+     "petFood": 840,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 25,
+     "petFood": 880,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 26,
+     "petFood": 920,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 27,
+     "petFood": 960,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 28,
+     "petFood": 1000,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 29,
+     "petFood": 1040,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 30,
+     "petFood": 1100,
+     "advance": {
+      "growthManual": 60,
+      "nutrientPotion": 10,
+      "promotionMedallion": 0
+     },
+     "score": 2000
+    },
+    {
+     "level": 31,
+     "petFood": 1160,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 32,
+     "petFood": 1220,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 33,
+     "petFood": 1280,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 34,
+     "petFood": 1340,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 35,
+     "petFood": 1400,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 36,
+     "petFood": 1460,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 37,
+     "petFood": 1520,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 38,
+     "petFood": 1580,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 39,
+     "petFood": 1640,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 40,
+     "petFood": 1720,
+     "advance": {
+      "growthManual": 90,
+      "nutrientPotion": 20,
+      "promotionMedallion": 0
+     },
+     "score": 3000
+    },
+    {
+     "level": 41,
+     "petFood": 1800,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 42,
+     "petFood": 1880,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 43,
+     "petFood": 1960,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 44,
+     "petFood": 2040,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 45,
+     "petFood": 2120,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 46,
+     "petFood": 2200,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 47,
+     "petFood": 2280,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 48,
+     "petFood": 2360,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 49,
+     "petFood": 2440,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 50,
+     "petFood": 2540,
+     "advance": {
+      "growthManual": 130,
+      "nutrientPotion": 20,
+      "promotionMedallion": 10
+     },
+     "score": 4500
+    },
+    {
+     "level": 51,
+     "petFood": 2640,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 52,
+     "petFood": 2740,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 53,
+     "petFood": 2840,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 54,
+     "petFood": 2940,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 55,
+     "petFood": 3040,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 56,
+     "petFood": 3140,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 57,
+     "petFood": 3240,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 58,
+     "petFood": 3340,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 59,
+     "petFood": 3440,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 60,
+     "petFood": 3560,
+     "advance": {
+      "growthManual": 175,
+      "nutrientPotion": 50,
+      "promotionMedallion": 20
+     },
+     "score": 6750
+    }
+   ]
+  },
+  "gen2_70": {
+   "maxLevel": 70,
+   "initialGrowthManual": 0,
+   "totals": {
+    "petFood": 188955,
+    "growthManual": 860,
+    "nutrientPotion": 190,
+    "promotionMedallion": 70
+   },
+   "levels": [
+    {
+     "level": 1,
+     "petFood": 0,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 2,
+     "petFood": 300,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 3,
+     "petFood": 330,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 4,
+     "petFood": 360,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 5,
+     "petFood": 390,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 6,
+     "petFood": 420,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 7,
+     "petFood": 450,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 8,
+     "petFood": 480,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 9,
+     "petFood": 510,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 10,
+     "petFood": 555,
+     "advance": {
+      "growthManual": 25,
+      "nutrientPotion": 0,
+      "promotionMedallion": 0
+     },
+     "score": 500
+    },
+    {
+     "level": 11,
+     "petFood": 600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 12,
+     "petFood": 645,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 13,
+     "petFood": 690,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 14,
+     "petFood": 735,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 15,
+     "petFood": 780,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 16,
+     "petFood": 825,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 17,
+     "petFood": 870,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 18,
+     "petFood": 915,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 19,
+     "petFood": 960,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 20,
+     "petFood": 1020,
+     "advance": {
+      "growthManual": 50,
+      "nutrientPotion": 0,
+      "promotionMedallion": 0
+     },
+     "score": 1000
+    },
+    {
+     "level": 21,
+     "petFood": 1080,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 22,
+     "petFood": 1140,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 23,
+     "petFood": 1200,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 24,
+     "petFood": 1260,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 25,
+     "petFood": 1320,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 26,
+     "petFood": 1380,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 27,
+     "petFood": 1440,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 28,
+     "petFood": 1500,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 29,
+     "petFood": 1560,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 30,
+     "petFood": 1650,
+     "advance": {
+      "growthManual": 75,
+      "nutrientPotion": 10,
+      "promotionMedallion": 0
+     },
+     "score": 2000
+    },
+    {
+     "level": 31,
+     "petFood": 1740,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 32,
+     "petFood": 1830,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 33,
+     "petFood": 1920,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 34,
+     "petFood": 2010,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 35,
+     "petFood": 2100,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 36,
+     "petFood": 2190,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 37,
+     "petFood": 2280,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 38,
+     "petFood": 2370,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 39,
+     "petFood": 2460,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 40,
+     "petFood": 2580,
+     "advance": {
+      "growthManual": 100,
+      "nutrientPotion": 20,
+      "promotionMedallion": 0
+     },
+     "score": 3000
+    },
+    {
+     "level": 41,
+     "petFood": 2700,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 42,
+     "petFood": 2820,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 43,
+     "petFood": 2940,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 44,
+     "petFood": 3060,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 45,
+     "petFood": 3180,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 46,
+     "petFood": 3300,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 47,
+     "petFood": 3420,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 48,
+     "petFood": 3540,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 49,
+     "petFood": 3660,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 50,
+     "petFood": 3810,
+     "advance": {
+      "growthManual": 155,
+      "nutrientPotion": 30,
+      "promotionMedallion": 10
+     },
+     "score": 4500
+    },
+    {
+     "level": 51,
+     "petFood": 3960,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 52,
+     "petFood": 4110,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 53,
+     "petFood": 4260,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 54,
+     "petFood": 4410,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 55,
+     "petFood": 4560,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 56,
+     "petFood": 4710,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 57,
+     "petFood": 4860,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 58,
+     "petFood": 5010,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 59,
+     "petFood": 5160,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 60,
+     "petFood": 5340,
+     "advance": {
+      "growthManual": 200,
+      "nutrientPotion": 50,
+      "promotionMedallion": 20
+     },
+     "score": 6750
+    },
+    {
+     "level": 61,
+     "petFood": 5520,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 62,
+     "petFood": 5700,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 63,
+     "petFood": 5880,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 64,
+     "petFood": 6060,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 65,
+     "petFood": 6240,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 66,
+     "petFood": 6420,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 67,
+     "petFood": 6600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 68,
+     "petFood": 6780,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 69,
+     "petFood": 6960,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 70,
+     "petFood": 7140,
+     "advance": {
+      "growthManual": 255,
+      "nutrientPotion": 80,
+      "promotionMedallion": 40
+     },
+     "score": 10000
+    }
+   ]
+  },
+  "gen3_80": {
+   "maxLevel": 80,
+   "initialGrowthManual": 3,
+   "totals": {
+    "petFood": 360420,
+    "growthManual": 1440,
+    "nutrientPotion": 290,
+    "promotionMedallion": 130
+   },
+   "levels": [
+    {
+     "level": 1,
+     "petFood": 0,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 2,
+     "petFood": 400,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 3,
+     "petFood": 440,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 4,
+     "petFood": 480,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 5,
+     "petFood": 520,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 6,
+     "petFood": 560,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 7,
+     "petFood": 600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 8,
+     "petFood": 640,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 9,
+     "petFood": 680,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 10,
+     "petFood": 740,
+     "advance": {
+      "growthManual": 30,
+      "nutrientPotion": 0,
+      "promotionMedallion": 0
+     },
+     "score": 500
+    },
+    {
+     "level": 11,
+     "petFood": 800,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 12,
+     "petFood": 860,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 13,
+     "petFood": 920,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 14,
+     "petFood": 980,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 15,
+     "petFood": 1040,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 16,
+     "petFood": 1100,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 17,
+     "petFood": 1160,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 18,
+     "petFood": 1220,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 19,
+     "petFood": 1280,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 20,
+     "petFood": 1360,
+     "advance": {
+      "growthManual": 60,
+      "nutrientPotion": 0,
+      "promotionMedallion": 0
+     },
+     "score": 1000
+    },
+    {
+     "level": 21,
+     "petFood": 1440,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 22,
+     "petFood": 1520,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 23,
+     "petFood": 1600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 24,
+     "petFood": 1680,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 25,
+     "petFood": 1760,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 26,
+     "petFood": 1840,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 27,
+     "petFood": 1920,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 28,
+     "petFood": 2000,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 29,
+     "petFood": 2080,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 30,
+     "petFood": 2200,
+     "advance": {
+      "growthManual": 95,
+      "nutrientPotion": 10,
+      "promotionMedallion": 0
+     },
+     "score": 2000
+    },
+    {
+     "level": 31,
+     "petFood": 2320,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 32,
+     "petFood": 2440,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 33,
+     "petFood": 2560,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 34,
+     "petFood": 2680,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 35,
+     "petFood": 2800,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 36,
+     "petFood": 2920,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 37,
+     "petFood": 3040,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 38,
+     "petFood": 3160,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 39,
+     "petFood": 3280,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 40,
+     "petFood": 3440,
+     "advance": {
+      "growthManual": 125,
+      "nutrientPotion": 20,
+      "promotionMedallion": 0
+     },
+     "score": 3000
+    },
+    {
+     "level": 41,
+     "petFood": 3600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 42,
+     "petFood": 3760,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 43,
+     "petFood": 3920,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 44,
+     "petFood": 4080,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 45,
+     "petFood": 4240,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 46,
+     "petFood": 4400,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 47,
+     "petFood": 4560,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 48,
+     "petFood": 4720,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 49,
+     "petFood": 4880,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 50,
+     "petFood": 5080,
+     "advance": {
+      "growthManual": 190,
+      "nutrientPotion": 30,
+      "promotionMedallion": 10
+     },
+     "score": 4500
+    },
+    {
+     "level": 51,
+     "petFood": 5280,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 52,
+     "petFood": 5480,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 53,
+     "petFood": 5680,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 54,
+     "petFood": 5880,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 55,
+     "petFood": 6080,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 56,
+     "petFood": 6280,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 57,
+     "petFood": 6480,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 58,
+     "petFood": 6680,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 59,
+     "petFood": 6880,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 60,
+     "petFood": 7120,
+     "advance": {
+      "growthManual": 250,
+      "nutrientPotion": 50,
+      "promotionMedallion": 20
+     },
+     "score": 6750
+    },
+    {
+     "level": 61,
+     "petFood": 7360,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 62,
+     "petFood": 7600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 63,
+     "petFood": 7840,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 64,
+     "petFood": 8080,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 65,
+     "petFood": 8320,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 66,
+     "petFood": 8560,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 67,
+     "petFood": 8800,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 68,
+     "petFood": 9040,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 69,
+     "petFood": 9280,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 70,
+     "petFood": 9520,
+     "advance": {
+      "growthManual": 310,
+      "nutrientPotion": 80,
+      "promotionMedallion": 40
+     },
+     "score": 10000
+    },
+    {
+     "level": 71,
+     "petFood": 9760,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 72,
+     "petFood": 10000,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 73,
+     "petFood": 10240,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 74,
+     "petFood": 10480,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 75,
+     "petFood": 10720,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 76,
+     "petFood": 10960,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 77,
+     "petFood": 11200,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 78,
+     "petFood": 11440,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 79,
+     "petFood": 11680,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 80,
+     "petFood": 12000,
+     "advance": {
+      "growthManual": 380,
+      "nutrientPotion": 100,
+      "promotionMedallion": 60
+     },
+     "score": 12000
+    }
+   ]
+  },
+  "gen4_100": {
+   "maxLevel": 100,
+   "initialGrowthManual": 0,
+   "totals": {
+    "petFood": 834625,
+    "growthManual": 2990,
+    "nutrientPotion": 600,
+    "promotionMedallion": 310
+   },
+   "levels": [
+    {
+     "level": 1,
+     "petFood": 0,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 2,
+     "petFood": 500,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 3,
+     "petFood": 550,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 4,
+     "petFood": 600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 5,
+     "petFood": 650,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 6,
+     "petFood": 700,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 7,
+     "petFood": 750,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 8,
+     "petFood": 800,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 9,
+     "petFood": 850,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 10,
+     "petFood": 925,
+     "advance": {
+      "growthManual": 35,
+      "nutrientPotion": 0,
+      "promotionMedallion": 0
+     },
+     "score": 500
+    },
+    {
+     "level": 11,
+     "petFood": 1000,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 12,
+     "petFood": 1075,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 13,
+     "petFood": 1150,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 14,
+     "petFood": 1225,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 15,
+     "petFood": 1300,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 16,
+     "petFood": 1375,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 17,
+     "petFood": 1450,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 18,
+     "petFood": 1525,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 19,
+     "petFood": 1600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 20,
+     "petFood": 1700,
+     "advance": {
+      "growthManual": 70,
+      "nutrientPotion": 0,
+      "promotionMedallion": 0
+     },
+     "score": 1000
+    },
+    {
+     "level": 21,
+     "petFood": 1800,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 22,
+     "petFood": 1900,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 23,
+     "petFood": 2000,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 24,
+     "petFood": 2100,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 25,
+     "petFood": 2200,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 26,
+     "petFood": 2300,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 27,
+     "petFood": 2400,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 28,
+     "petFood": 2500,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 29,
+     "petFood": 2600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 30,
+     "petFood": 2750,
+     "advance": {
+      "growthManual": 110,
+      "nutrientPotion": 15,
+      "promotionMedallion": 0
+     },
+     "score": 2000
+    },
+    {
+     "level": 31,
+     "petFood": 2900,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 32,
+     "petFood": 3050,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 33,
+     "petFood": 3200,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 34,
+     "petFood": 3350,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 35,
+     "petFood": 3500,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 36,
+     "petFood": 3650,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 37,
+     "petFood": 3800,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 38,
+     "petFood": 3950,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 39,
+     "petFood": 4100,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 40,
+     "petFood": 4300,
+     "advance": {
+      "growthManual": 145,
+      "nutrientPotion": 35,
+      "promotionMedallion": 0
+     },
+     "score": 3000
+    },
+    {
+     "level": 41,
+     "petFood": 4500,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 42,
+     "petFood": 4700,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 43,
+     "petFood": 4900,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 44,
+     "petFood": 5100,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 45,
+     "petFood": 5300,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 46,
+     "petFood": 5500,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 47,
+     "petFood": 5700,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 48,
+     "petFood": 5900,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 49,
+     "petFood": 6100,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 50,
+     "petFood": 6350,
+     "advance": {
+      "growthManual": 220,
+      "nutrientPotion": 50,
+      "promotionMedallion": 10
+     },
+     "score": 4500
+    },
+    {
+     "level": 51,
+     "petFood": 6600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 52,
+     "petFood": 6850,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 53,
+     "petFood": 7100,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 54,
+     "petFood": 7350,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 55,
+     "petFood": 7600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 56,
+     "petFood": 7850,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 57,
+     "petFood": 8100,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 58,
+     "petFood": 8350,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 59,
+     "petFood": 8600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 60,
+     "petFood": 8900,
+     "advance": {
+      "growthManual": 290,
+      "nutrientPotion": 65,
+      "promotionMedallion": 20
+     },
+     "score": 6750
+    },
+    {
+     "level": 61,
+     "petFood": 9200,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 62,
+     "petFood": 9500,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 63,
+     "petFood": 9800,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 64,
+     "petFood": 10100,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 65,
+     "petFood": 10400,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 66,
+     "petFood": 10700,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 67,
+     "petFood": 11000,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 68,
+     "petFood": 11300,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 69,
+     "petFood": 11600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 70,
+     "petFood": 11900,
+     "advance": {
+      "growthManual": 365,
+      "nutrientPotion": 85,
+      "promotionMedallion": 40
+     },
+     "score": 10000
+    },
+    {
+     "level": 71,
+     "petFood": 12200,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 72,
+     "petFood": 12500,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 73,
+     "petFood": 12800,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 74,
+     "petFood": 13100,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 75,
+     "petFood": 13400,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 76,
+     "petFood": 13700,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 77,
+     "petFood": 14000,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 78,
+     "petFood": 14300,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 79,
+     "petFood": 14600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 80,
+     "petFood": 15000,
+     "advance": {
+      "growthManual": 440,
+      "nutrientPotion": 100,
+      "promotionMedallion": 60
+     },
+     "score": 12000
+    },
+    {
+     "level": 81,
+     "petFood": 15400,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 82,
+     "petFood": 15800,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 83,
+     "petFood": 16200,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 84,
+     "petFood": 16600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 85,
+     "petFood": 17000,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 86,
+     "petFood": 17400,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 87,
+     "petFood": 17800,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 88,
+     "petFood": 18200,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 89,
+     "petFood": 18600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 90,
+     "petFood": 19000,
+     "advance": {
+      "growthManual": 585,
+      "nutrientPotion": 115,
+      "promotionMedallion": 80
+     },
+     "score": 14500
+    },
+    {
+     "level": 91,
+     "petFood": 19400,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 92,
+     "petFood": 19800,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 93,
+     "petFood": 20200,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 94,
+     "petFood": 20600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 95,
+     "petFood": 21000,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 96,
+     "petFood": 21400,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 97,
+     "petFood": 21800,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 98,
+     "petFood": 22200,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 99,
+     "petFood": 22600,
+     "advance": null,
+     "score": null
+    },
+    {
+     "level": 100,
+     "petFood": 23100,
+     "advance": {
+      "growthManual": 730,
+      "nutrientPotion": 135,
+      "promotionMedallion": 100
+     },
+     "score": 17500
+    }
+   ]
+  }
+ },
+ "pets": [
+  {
+   "id": "gray-wolf",
+   "name": "Gray Wolf",
+   "generation": 1,
+   "unlockDay": 55,
+   "maxLevel": 50,
+   "profile": "gen1_50",
+   "advances": 5,
+   "skill": {
+    "name": "Construction Aide",
+    "say": "The wolf silently yet cleverly delivers tools to the yard, increasing Construction Speed by 15.00% for 5 minutes. (Cooldown: 23h)",
+    "ladder": [
+     {
+      "label": "Construction Speedup",
+      "values": [
+       "5.00%",
+       "7.00%",
+       "9.00%",
+       "12.00%",
+       "15.00%"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    "optimizer",
+    "kingshotdata",
+    "h5joy"
+   ],
+   "verified": true
+  },
+  {
+   "id": "lynx",
+   "name": "Lynx",
+   "generation": 1,
+   "unlockDay": 55,
+   "maxLevel": 60,
+   "profile": "gen1_60",
+   "advances": 6,
+   "skill": {
+    "name": "Comforting Embrace",
+    "say": "Felines of all stripes have the ability to soothe a Governor’s mind, immediately restoring 60 Stamina. (Cooldown: 23h)",
+    "ladder": [
+     {
+      "label": "Governor Stamina Amount",
+      "values": [
+       "35",
+       "40",
+       "45",
+       "50",
+       "55",
+       "60"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    "optimizer",
+    "kingshotdata",
+    "h5joy"
+   ],
+   "verified": true
+  },
+  {
+   "id": "bison",
+   "name": "Bison",
+   "generation": 1,
+   "unlockDay": 55,
+   "maxLevel": 60,
+   "profile": "gen1_60",
+   "advances": 6,
+   "skill": {
+    "name": "Grip of the Titan",
+    "say": "Harnessing your pet’s formidable strength and endurance, instantly complete the gathering upon reaching the next wilderness resource tile. (Cooldown: 15h)",
+    "ladder": [
+     {
+      "label": "Cooldown",
+      "values": [
+       "1d 11h",
+       "1d 7h",
+       "1d 3h",
+       "23h",
+       "19h",
+       "15h"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    "optimizer",
+    "kingshotdata",
+    "h5joy"
+   ],
+   "verified": true
+  },
+  {
+   "id": "moose",
+   "name": "Moose",
+   "generation": 2,
+   "unlockDay": 80,
+   "maxLevel": 70,
+   "profile": "gen2_70",
+   "advances": 7,
+   "skill": {
+    "name": "Horror Stare",
+    "say": "The giant Moose stares the enemy before charging, reducing enemy Squad’s Health by 5.00% for 2h. (Cooldown: 20h)",
+    "ladder": [
+     {
+      "label": "Enemy Squad’s Health Down",
+      "values": [
+       "1.50%",
+       "2.00%",
+       "2.50%",
+       "3.00%",
+       "3.50%",
+       "4.00%",
+       "5.00%"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    "optimizer",
+    "kingshotdata",
+    "h5joy"
+   ],
+   "verified": true
+  },
+  {
+   "id": "cheetah",
+   "name": "Cheetah",
+   "generation": 2,
+   "unlockDay": 80,
+   "maxLevel": 70,
+   "profile": "gen2_70",
+   "advances": 7,
+   "skill": {
+    "name": "Scent Mastery",
+    "say": "As a natural predator, its keen sense of smell allows it to instantly locate 500 pet food. (Cooldown: 23h)",
+    "ladder": [
+     {
+      "label": "Pet Food",
+      "values": [
+       "200",
+       "250",
+       "300",
+       "350",
+       "400",
+       "450",
+       "500"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    "optimizer",
+    "kingshotdata",
+    "h5joy"
+   ],
+   "verified": true
+  },
+  {
+   "id": "lion",
+   "name": "Lion",
+   "generation": 3,
+   "unlockDay": 110,
+   "maxLevel": 80,
+   "profile": "gen3_80",
+   "advances": 8,
+   "skill": {
+    "name": "Gift of the King",
+    "say": "All animals show special deference to the King of the Jungle. Unearths an item lost on the Badland. (Cooldown: 23h)",
+    "ladder": [
+     {
+      "label": "Skill Cooldown",
+      "values": [
+       "2d 3h",
+       "1d 23h",
+       "1d 19h",
+       "1d 15h",
+       "1d 11h",
+       "1d 7h",
+       "1d 3h",
+       "23h"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    "optimizer",
+    "kingshotdata",
+    "h5joy"
+   ],
+   "verified": true
+  },
+  {
+   "id": "grizzly-bear",
+   "name": "Grizzly Bear",
+   "generation": 3,
+   "unlockDay": 110,
+   "maxLevel": 80,
+   "profile": "gen3_80",
+   "advances": 8,
+   "skill": {
+    "name": "The Howler",
+    "say": "Every hunter trembles at the charging howl of the Grizzly Bear. Increases March Speed by 30.00% and reduces enemy squads’ Lethality by 5.00% for 2h. (Cooldown: 20h)",
+    "ladder": [
+     {
+      "label": "March Speed Increase",
+      "values": [
+       "15%",
+       "17%",
+       "19%",
+       "21%",
+       "23%",
+       "25%",
+       "27%",
+       "30%"
+      ]
+     },
+     {
+      "label": "Enemy Lethality Down",
+      "values": [
+       "1.50%",
+       "2.00%",
+       "2.50%",
+       "3.00%",
+       "3.50%",
+       "4.00%",
+       "4.50%",
+       "5.00%"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    "optimizer",
+    "kingshotdata",
+    "h5joy"
+   ],
+   "verified": true
+  },
+  {
+   "id": "mighty-bison",
+   "name": "Mighty Bison",
+   "generation": 4,
+   "unlockDay": 190,
+   "maxLevel": 100,
+   "profile": "gen4_100",
+   "advances": 10,
+   "skill": {
+    "name": "Fearless Roar",
+    "say": "The primeval roar of the bison ignites the self-assurance of your soldiers, increasing Squad Capacity by 15,000 for 2 hours. (Cooldown: 20 hours)",
+    "ladder": [
+     {
+      "label": "Squad Capacity Increase",
+      "values": [
+       "1500",
+       "3000",
+       "4500",
+       "6000",
+       "7500",
+       "9000",
+       "10500",
+       "12000",
+       "13500",
+       "15000"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    "optimizer",
+    "kingshotdata",
+    "h5joy"
+   ],
+   "verified": true
+  },
+  {
+   "id": "giant-rhino",
+   "name": "Giant Rhino",
+   "generation": 4,
+   "unlockDay": 190,
+   "maxLevel": 100,
+   "profile": "gen4_100",
+   "advances": 10,
+   "skill": {
+    "name": "Wild Charge",
+    "say": "The Giant Rhino launches a wild rampage against the enemy’s brittle lines, increasing all Squads’ Attack by 10.00% for 2 hours. (Cooldown: 20 hours)",
+    "ladder": [
+     {
+      "label": "Attack Up",
+      "values": [
+       "2.50%",
+       "3.00%",
+       "3.50%",
+       "4.00%",
+       "5.00%",
+       "6.00%",
+       "7.00%",
+       "8.00%",
+       "9.00%",
+       "10.00%"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    "optimizer",
+    "kingshotdata",
+    "h5joy"
+   ],
+   "verified": true
+  },
+  {
+   "id": "alpha-black-panther",
+   "name": "Alpha Black Panther",
+   "generation": 5,
+   "unlockDay": 270,
+   "maxLevel": 100,
+   "profile": "gen4_100",
+   "advances": 10,
+   "skill": {
+    "name": "Deadly Bite",
+    "say": "The ferocious black panther attacks its target relentlessly, increasing Troop Lethality by 10.00% for 2 hours. (Cooldown: 20 hours)",
+    "ladder": [
+     {
+      "label": "Troop Lethality Increase",
+      "values": [
+       "2.5%",
+       "3.0%",
+       "3.5%",
+       "4.0%",
+       "5.0%",
+       "6.0%",
+       "7.0%",
+       "8.0%",
+       "9.0%",
+       "10.0%"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    "optimizer",
+    "kingshotdata",
+    "h5joy"
+   ],
+   "verified": true
+  },
+  {
+   "id": "great-moose",
+   "name": "Great Moose",
+   "generation": 5,
+   "unlockDay": 270,
+   "maxLevel": 100,
+   "profile": "gen4_100",
+   "advances": 10,
+   "skill": {
+    "name": "Antler Impact",
+    "say": "The great moose offers you guidance, increasing Rally Capacity by 150,000 for 2 hours. (Cooldown: 20 hours)",
+    "ladder": [
+     {
+      "label": "Rally Capacity Increase",
+      "values": [
+       "60000",
+       "70000",
+       "80000",
+       "90000",
+       "100000",
+       "110000",
+       "120000",
+       "130000",
+       "140000",
+       "150000"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    "optimizer",
+    "kingshotdata",
+    "h5joy"
+   ],
+   "verified": true
+  },
+  {
+   "id": "regal-white-lion",
+   "name": "Regal White Lion",
+   "generation": 6,
+   "unlockDay": 350,
+   "maxLevel": 100,
+   "profile": "gen4_100",
+   "advances": 10,
+   "skill": {
+    "name": "Territorial Power",
+    "say": "The king of beasts patrols its territory, increasing Squads’ Defense by 10.00% for 2 hours.",
+    "ladder": [
+     {
+      "label": "Troop Defense Increase",
+      "values": [
+       "2.5%",
+       "3.0%",
+       "3.5%",
+       "4.0%",
+       "5.0%",
+       "6.0%",
+       "7.0%",
+       "8.0%",
+       "9.0%",
+       "10.0%"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    "optimizer",
+    "kingshotdata",
+    "h5joy"
+   ],
+   "verified": true
+  },
+  {
+   "id": "ironclad-war-elephant",
+   "name": "Ironclad War Elephant",
+   "generation": 6,
+   "unlockDay": 350,
+   "maxLevel": 100,
+   "profile": "gen4_100",
+   "advances": 10,
+   "skill": {
+    "name": "Elephant’s Guard",
+    "say": "All creatures are safer in the Elephant’s entourage, increasing Squad Health by 10.00% for 2 hours.",
+    "ladder": [
+     {
+      "label": "Troop Health Increase",
+      "values": [
+       "2.5%",
+       "3.0%",
+       "3.5%",
+       "4.0%",
+       "5.0%",
+       "6.0%",
+       "7.0%",
+       "8.0%",
+       "9.0%",
+       "10.0%"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    "optimizer",
+    "kingshotdata",
+    "h5joy"
+   ],
+   "verified": true
+  },
+  {
+   "id": "ironclad-war-bear",
+   "name": "Ironclad War Bear",
+   "generation": 7,
+   "unlockDay": 440,
+   "maxLevel": 100,
+   "profile": "gen4_100",
+   "advances": 10,
+   "skill": {
+    "name": "Ursa’s Rage",
+    "say": "The fearsome grizzly terrifies the enemy with its mighty roar, reducing Enemy Squad’s Defense by 10.00% for 2 hours. (Cooldown: 20 hours)",
+    "ladder": [
+     {
+      "label": "Enemy Squad’s Defense Reduction",
+      "values": [
+       "2.5%",
+       "3.0%",
+       "3.5%",
+       "4.0%",
+       "5.0%",
+       "6.0%",
+       "7.0%",
+       "8.0%",
+       "9.0%",
+       "10.0%"
+      ]
+     }
+    ]
+   },
+   "sources": [
+    "optimizer",
+    "kingshotdata"
+   ],
+   "verified": false
+  }
+ ]
+}

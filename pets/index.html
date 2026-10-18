@@ -1,0 +1,90 @@
+---
+layout: page
+self: pets
+---
+<nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
+  <a href="#cage" data-i18n="pets.cage">The Beast Cage</a>
+  <a href="#advances" data-i18n="pets.advancesNav">Advances</a>
+  <a href="#pet-sources" data-i18n="directory.sources">Sources &amp; confidence</a>
+</nav>
+<main>
+  <section class="section hero" id="top">
+    <h1 data-i18n="pets.title">Pets</h1>
+    <p class="lede" data-i18n="pets.intro">Fourteen pets, one skill each. Tame yours to plan its Advances.</p>
+    {% include ascii/motif.html kind="pet" %}
+  </section>
+  {% comment %}Pets drawn from a model: one span per ink of .dsh/pet-portraits/<id>.json.{% endcomment %}{% assign portraits = 'grizzly-bear' | split: ',' %}
+  {% assign pets = site.data.pets.pets %}{% assign generations = pets | map: 'generation' | uniq %}
+  <section class="section" id="cage" data-module="pet-den">
+    <h2 data-i18n="pets.cage">The Beast Cage</h2>
+    <p class="pet-count"><output aria-live="polite" dir="auto" data-target="pet-den.count">{{ pets.size }} pets</output></p>
+    <div class="pet-roster">
+    {% for gen in generations %}{% assign band = pets | where: 'generation', gen %}
+      <div class="pet-band" data-generation="{{ gen }}">
+        <p class="band-label"><span class="band-gen"><span class="band-gen-word" data-i18n="pets.genShort">Gen</span> <b>{{ gen }}</b></span></p>
+        <div class="pet-catalogue">
+        {% for pet in band %}{% assign profile = site.data.pets.profiles[pet.profile] %}
+          <article class="pet-card" id="pet-{{ pet.id }}" data-pet="{{ pet.id }}" data-owned="false" data-verified="{{ pet.verified }}">
+            <div class="pet-pen">
+              <span class="ascii-mini ascii-mini--pet" data-pet="{{ pet.id }}" data-mood="content" data-pen aria-hidden="true">{% if portraits contains pet.id %}<span class="ascii-mini--portrait" data-pet="{{ pet.id }}">{% for ink in (0..6) %}<span data-ink="{{ ink }}"></span>{% endfor %}</span>{% endif %}</span>
+              <button type="button" class="pet-stroke" data-target="pet-den.stroke" data-action="pet-den.pat" aria-label="Pet" hidden></button>
+            </div>
+            <label class="pet-tame"><input type="checkbox" data-field="owned" disabled><span class="pet-name"><b lang="en">{{ pet.name | escape }}</b> <small lang="en">{{ pet.skill.name | escape }}</small></span></label>
+            <div class="pet-care" data-target="pet-den.care" hidden>
+              <p class="pet-bowl"><span aria-hidden="true">\_</span><button type="button" class="pet-food" data-target="pet-den.food" data-action="pet-den.feed" aria-label="Feed" data-i18n-key="pets.feed" data-i18n-attr="aria-label"><span aria-hidden="true">@</span></button><span aria-hidden="true">_/</span></p>
+              <p class="pet-meters"><span class="pet-meter-bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-label="Fullness" data-i18n-key="pets.fullness" data-i18n-attr="aria-label" data-meter="fullness"><span></span></span><span class="pet-meter-bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-label="Affection" data-i18n-key="pets.affection" data-i18n-attr="aria-label" data-meter="affection"><span></span></span></p>
+            </div>
+            <details class="pet-dossier" name="pet-dossier" data-module="disclosure" data-deep-link="pet-{{ pet.id }}">
+              <summary data-i18n="pets.dossier">Skill &amp; costs</summary>
+              <div class="pet-dossier-body">
+                <p class="pet-skill"><b lang="en">{{ pet.skill.name | escape }}</b> <span lang="en">{{ pet.skill.say | escape }}</span></p>
+                <div class="pet-ladder-scroll"><table class="pet-ladder">
+                  <thead><tr><th scope="col" data-i18n="pets.advance">Advance</th>{% for value in pet.skill.ladder[0].values %}<th scope="col" data-level="{{ forloop.index }}">{{ forloop.index }}</th>{% endfor %}</tr></thead>
+                  <tbody>{% for row in pet.skill.ladder %}<tr><th scope="row" lang="en">{{ row.label | escape }}</th>{% for value in row.values %}<td data-level="{{ forloop.index }}">{{ value }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+                </table></div>
+                <dl class="pet-facts">
+                  <div><dt data-i18n="pets.unlocks">Unlocks</dt><dd data-i18n="pets.serverDay" data-i18n-n="{{ pet.unlockDay }}">about server day {{ pet.unlockDay }}</dd></div>
+                  <div><dt data-i18n="pets.maxLevel">Max level</dt><dd>{{ pet.maxLevel }}</dd></div>
+                  <div><dt data-i18n="pets.advances">Advances</dt><dd>{{ pet.advances }}</dd></div>
+                </dl>
+                <fieldset class="pet-mine" disabled data-target="pet-den.form">
+                  <legend data-i18n="pets.yours">Your pet</legend>
+                  <label><span data-i18n="pets.level">Level</span><input type="number" min="1" max="{{ pet.maxLevel }}" step="1" inputmode="numeric" placeholder="?" data-field="level"></label>
+                  <label class="pet-advanced" data-target="pet-den.advanced" hidden><input type="checkbox" data-field="advanced"><span data-i18n="pets.advancedHere">The Advance at this level is done</span></label>
+                  <p class="pet-mine-note"><output data-target="pet-den.saved" role="status"></output></p>
+                </fieldset>
+                <p class="pet-next" data-target="pet-den.next"></p>
+                <p class="pet-tomax" data-target="pet-den.tomax"></p>
+                <p class="pet-totals"><span data-i18n="pets.totals" data-i18n-n="{{ pet.maxLevel }}">Level 1 to {{ pet.maxLevel }}:</span> <span data-number="{{ profile.totals.petFood }}">{{ profile.totals.petFood }}</span> <span data-i18n="pets.mat.petFood">Pet Food</span> · <span data-number="{{ profile.totals.growthManual }}">{{ profile.totals.growthManual }}</span> <span data-i18n="pets.mat.growthManual">Growth Manuals</span> · <span data-number="{{ profile.totals.nutrientPotion }}">{{ profile.totals.nutrientPotion }}</span> <span data-i18n="pets.mat.nutrientPotion">Nutrient Potions</span> · <span data-number="{{ profile.totals.promotionMedallion }}">{{ profile.totals.promotionMedallion }}</span> <span data-i18n="pets.mat.promotionMedallion">Promotion Medallions</span></p>
+                {% unless pet.verified %}<p class="note" data-i18n="pets.twoSources">Listed by two of the three sources.</p>{% endunless %}
+              </div>
+            </details>
+          </article>
+        {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+    <noscript><p data-i18n="pets.noJS">Enable JavaScript to tame your pets.</p></noscript>
+  </section>
+  <section class="section" id="advances" data-module="pet-advances" aria-labelledby="advances-title">
+    <h2 id="advances-title" data-i18n="pets.advancesTitle">Advances and KvK points</h2>
+    <p data-i18n="pets.advancesIntro">Each Advance scores Pet Advancement points: 50 KvK prep or Strongest Governor points per score, 30 in Brawl.</p>
+    <p class="hero-points-total"><output data-target="pet-advances.total">—</output></p>
+    <p class="note" data-target="pet-advances.coverage" aria-live="polite"></p>
+    <div class="hero-points-scroll" data-target="pet-advances.table" hidden><table class="hero-points-table">
+      <thead><tr><th scope="col" data-i18n="pets.col.pet">pet</th><th scope="col" data-i18n="pets.col.next">next Advance</th><th scope="col" data-i18n="spend.col.points">KvK prep points</th><th scope="col" data-i18n="pets.col.left">Advances left</th></tr></thead>
+      <tbody data-target="pet-advances.rows"></tbody>
+    </table></div>
+    <div class="hero-points-scroll"><table class="hero-points-table pet-score-table">
+      <thead><tr><th scope="col" data-i18n="pets.col.at">Advance at level</th>{% for row in site.data.pets.points %}<th scope="col">{{ row[0] }}</th>{% endfor %}</tr></thead>
+      <tbody><tr><th scope="row" data-i18n="pets.col.kvk">KvK prep · SG</th>{% for row in site.data.pets.points %}<td data-number="{{ row[1].kvk }}">{{ row[1].kvk }}</td>{% endfor %}</tr>
+      <tr><th scope="row" data-i18n="pets.col.brawl">Brawl</th>{% for row in site.data.pets.points %}<td data-number="{{ row[1].brawl }}">{{ row[1].brawl }}</td>{% endfor %}</tr></tbody>
+    </table></div>
+  </section>
+  <section class="section" id="pet-sources">
+    <h2 data-i18n="directory.sources">Sources &amp; confidence</h2>
+    <p data-i18n="pets.sourceNote">Compared across three community databases on 17 October 2026; where they differ, the two that agree are used. Passive bonuses and refinement are left out until they are checked in game.</p>
+    <ul>{% for entry in site.data.pets.sources %}<li><a href="{{ entry[1].url }}">{{ entry[1].label | escape }}</a></li>{% endfor %}</ul>
+  </section>
+</main>

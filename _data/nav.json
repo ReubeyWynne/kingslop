@@ -106,5 +106,14 @@
     "group": "tools",
     "ledeKey": "ev.deck.lede.governor",
     "lede": "governor gear and charms, planned from your bag."
+  },
+  {
+    "self": "pets",
+    "tail": "pets/",
+    "labelKey": "pets.nav",
+    "label": "Pets",
+    "group": "tools",
+    "ledeKey": "ev.deck.lede.pets",
+    "lede": "tamed, fed and patted; every Advance planned."
   }
 ]
