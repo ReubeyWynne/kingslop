@@ -7,7 +7,7 @@
      1. the posed model is rendered small, with its light, fur colour, depth and fur region;
      2. every character cell is reduced to one glyph and one ink: line glyphs where the
         silhouette (or the muzzle's depth) runs through it, otherwise a glyph from how bright
-        the fur is, in the nearest of seven inks;
+        the fur is, coloured by the fur under it (the nose keeps the darkest of the seven inks);
      3. the cells are drawn from a glyph atlas, with the face (eyes, brows, mouth, blush) and
         anything floating above it (z's, hearts, a thought) laid over them.
    The art only ever changes whole glyphs in a fixed grid: nothing is scaled, rotated or slid.
@@ -22,7 +22,7 @@
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const FPS = 12;                                    // the pen steps like the baked frames, never smoothly
-  const COLS = 72, ROWS = 24, ART = 20, SX = 4, SY = 8;   // the model fills the lower 20 rows; z's and hearts rise into the rest
+  const COLS = 90, ROWS = 30, ART = 25, SX = 4, SY = 8;   // the model fills the lower 25 rows; z's and hearts rise into the rest
   const GLYPHS = " .:-=+*#%@|/_\\o-^w●ωzZO()><♥~vu,'‾";
   const G = c => GLYPHS.indexOf(c);
   // Overlay inks after the seven fur inks: eye, blush, sky, dim sky, coral, tongue.
@@ -94,7 +94,7 @@ void main(){
   oCol=vec4(min(col,1.), 1.); oData=vec4(hi, (d-hi)*255., reg/4., head);
 }`;
   const cellsFS = cfg => `#version 300 es
-precision highp float; uniform sampler2D uCol, uData; uniform vec3 uInk[7]; out vec4 o;
+precision highp float; uniform sampler2D uCol, uData; uniform vec3 uInk[7]; layout(location=0) out vec4 o; layout(location=1) out vec4 oc;
 const int SX=${SX}, SY=${SY};
 float dep(ivec2 t){ vec4 d=texelFetch(uData,t,0); return d.r + d.g/255.; }
 bool cov(ivec2 t){ return texelFetch(uCol,t,0).a>0.5; }
@@ -111,25 +111,28 @@ void main(){
     if(sil||step){ edges++; float gx=fr-fl, gy=fu-fd; float a=mod(degrees(atan(gy,gx))+180.,180.);
       int k=(a<22.5||a>=157.5)?0:(a<67.5?3:(a<112.5?2:1)); hist[k]++; if(k==2) hy+=gy; }   // the line runs across the gradient
   }
-  if(float(n)<0.2*float(SX*SY)){ o=vec4(0); return; }
+  if(float(n)<0.2*float(SX*SY)){ o=vec4(0); oc=vec4(0); return; }
   col/=float(n); int ink=0; float best=9.;
+  float y=dot(col,vec3(.3,.59,.11)); vec3 hue=clamp(mix(vec3(y),col,1.45)*1.08,0.,1.);   // the fur's own colour, a little richer than the inks
   for(int k=0;k<7;k++){ vec3 dd=uInk[k]-col; float e=dot(dd,dd); if(e<best){best=e;ink=k;} }
   int g;
-  if(float(nose)>0.3*float(n)){ g=9; ink=0; }
-  else if(float(edges)>0.1*float(SX*SY)){ int k=0; for(int m=1;m<4;m++) if(hist[m]>hist[k]) k=m; g=(k==2 && hy>0.) ? 33 : 10+k; ink=min(ink+2,6); }   // a top edge hangs from the cell's top
+  oc=vec4(hue,1.);
+  if(float(nose)>0.3*float(n)){ g=9; ink=0; oc.a=0.; }
+  else if(float(edges)>0.1*float(SX*SY)){ int k=0; for(int m=1;m<4;m++) if(hist[m]>hist[k]) k=m; g=(k==2 && hy>0.) ? 33 : 10+k; ink=min(ink+2,6); oc.rgb=min(hue*1.25+0.08,1.); }   // a top edge hangs from the cell's top
   else { float t=min(0.999,dot(col,vec3(.5,.35,.15))/${(+cfg.ramp).toFixed(3)}); g=clamp(int(t*10.),1,8); }   // '@' is kept for the nose
   o=vec4(float(g)/255., float(ink)/255., 1., 1.);
 }`;
   const screenFS = `#version 300 es
-precision highp float; uniform sampler2D uCells, uAtlas, uOver; uniform vec2 uCell; uniform vec3 uAll[13]; uniform vec4 uMono; uniform float uGlyphs; out vec4 o;
+precision highp float; uniform sampler2D uCells, uCellCol, uAtlas, uOver; uniform vec2 uCell; uniform vec3 uAll[13]; uniform vec4 uMono; uniform float uGlyphs; out vec4 o;
 void main(){
   vec2 f=gl_FragCoord.xy; ivec2 c=ivec2(floor(f/uCell)); vec2 local=fract(f/uCell);
   vec4 cell=texelFetch(uCells,c,0); int g=int(cell.r*255.+.5), ink=int(cell.g*255.+.5);
   vec4 ov=texelFetch(uOver,c,0); int om=int(ov.b*255.+.5);
-  if(om==2 || (om==1 && cell.b>0.5)){ g=int(ov.r*255.+.5); ink=int(ov.g*255.+.5); }
+  vec4 hue=texelFetch(uCellCol,c,0);
+  if(om==2 || (om==1 && cell.b>0.5)){ g=int(ov.r*255.+.5); ink=int(ov.g*255.+.5); hue.a=0.; }
   if(g==0){ o=vec4(0); return; }
   float a=texture(uAtlas, vec2((float(g)+local.x)/uGlyphs, local.y)).r;
-  vec3 col=uMono.a>0.5 ? uMono.rgb : uAll[ink];
+  vec3 col=uMono.a>0.5 ? uMono.rgb : hue.a>0.5 ? hue.rgb : uAll[ink];
   o=vec4(col*a, a);
 }`;
 
@@ -156,7 +159,7 @@ void main(){
       [gl.TEXTURE_MIN_FILTER, gl.TEXTURE_MAG_FILTER].forEach(k => gl.texParameteri(gl.TEXTURE_2D, k, gl.NEAREST));
       [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T].forEach(k => gl.texParameteri(gl.TEXTURE_2D, k, gl.CLAMP_TO_EDGE)); return t; };
     const W1 = COLS * SX, H1 = ROWS * SY;
-    const tCol = tex(W1, H1), tData = tex(W1, H1), tCells = tex(COLS, ROWS), tOver = tex(COLS, ROWS), tAtlas = gl.createTexture();
+    const tCol = tex(W1, H1), tData = tex(W1, H1), tCells = tex(COLS, ROWS), tCellCol = tex(COLS, ROWS), tOver = tex(COLS, ROWS), tAtlas = gl.createTexture();
     const over = new Uint8Array(COLS * ROWS * 4);
     const depth = gl.createRenderbuffer(); gl.bindRenderbuffer(gl.RENDERBUFFER, depth); gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, W1, H1);
     const fbScene = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, fbScene);
@@ -166,6 +169,8 @@ void main(){
     gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
     const fbCells = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, fbCells);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tCells, 0);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, tCellCol, 0);
+    gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
     const inkRGB = new Float32Array(cfg.inks.flatMap(rgb));
     const allRGB = new Float32Array(cfg.inks.concat(['#2B1B19', '#F49A9A', '#CFEAF6', '#7FA3B3', '#F0907A', '#EA7F86']).flatMap(rgb));
 
@@ -179,8 +184,14 @@ void main(){
     const proj = new Float32Array([ft / aspect, 0, 0, 0, 0, ft * ky, 0, 0, 0, oy, (far + near) / (near - far), -1, 0, 0, 2 * far * near / (near - far), 0]);
     const toView = d => { const n = norm(d); return [dot(xr, n), dot(yu, n), dot(zf, n)]; };
     const key = norm(toView(cfg.lights.key)), rim = norm(toView(cfg.lights.rim)), fill = norm([0, toView([0, -0.8, 0])[1] * 0.3, 1]);
-    const cellOf = p => { const v = [dot(xr, sub(p, eye)), dot(yu, sub(p, eye)), dot(zf, sub(p, eye))];
-      return [Math.floor(((v[0] * ft / aspect) / -v[2] + 1) / 2 * COLS), Math.floor(((v[1] * ft * ky) / -v[2] - oy + 1) / 2 * ROWS)]; };
+    const at = p => { const v = [dot(xr, sub(p, eye)), dot(yu, sub(p, eye)), dot(zf, sub(p, eye))];
+      return [((v[0] * ft / aspect) / -v[2] + 1) / 2 * COLS, ((v[1] * ft * ky) / -v[2] - oy + 1) / 2 * ROWS]; };
+    const cellOf = p => at(p).map(Math.floor);
+    // Every pet follows the pointer as far: its eyes sweep about a fifth of the pen across and a sixth up and down,
+    // however big its head is in the frame or however far its eyes sit from the neck.
+    const eyeAt = (turn, lift) => at(apply(skeleton(cfg, { lift: cfg.rest.lift + lift, turn: cfg.rest.turn + turn, tilt: 0, earL: 0, earR: 0, earBack: 0, sniff: 1 })[2], cfg.eyes[0]));
+    const reach = (want, got) => Math.min(2.5, Math.max(0.6, want / (Math.abs(got) || 1e-3)));
+    const gain = [reach(COLS * 0.2, eyeAt(0.35, 0)[0] - eyeAt(-0.35, 0)[0]), reach(ROWS * 0.15, eyeAt(0, 0.18)[1] - eyeAt(0, -0.18)[1])];
 
     // the glyph atlas, in the pen's own font, rebuilt when the pen changes size
     let cellPx = [8, 16];
@@ -229,8 +240,8 @@ void main(){
       st.look = st.look.map((v, i) => v + (st.aim[i] * follow - v) * k);
       if (low && now > st.nextSigh) { st.sighUntil = now + 1400; st.nextSigh = now + 6000 + Math.random() * 3000; }
       const breath = asleep ? Math.sin(now / 1500) * 0.035 : 0, sigh = low && now < st.sighUntil ? 0.08 : 0;
-      st.lift += (cfg.rest.lift + lift + st.look[1] * 0.18 + breath + sigh - st.lift) * k;
-      st.turn += (cfg.rest.turn + st.look[0] * 0.35 + (full ? 0.5 : 0) - st.turn) * k;   // turns its nose up at food when full
+      st.lift += (cfg.rest.lift + lift + st.look[1] * 0.18 * gain[1] + breath + sigh - st.lift) * k;
+      st.turn += (cfg.rest.turn + st.look[0] * 0.35 * gain[0] + (full ? 0.5 : 0) - st.turn) * k;   // turns its nose up at food when full
       if (mood === 'content' && now > st.nextTilt) { st.tiltUntil = now + 1800; st.nextTilt = now + 6000 + Math.random() * 6000; }
       st.tilt += ((asleep ? 0.14 : happy ? 0.12 : low ? -0.06 : full ? -0.1 : now < st.tiltUntil ? 0.18 : 0) - st.tilt) * k;   // a curious head tilt
       if (now > st.nextBlink) { st.blinkUntil = now + 140; st.nextBlink = now + 2500 + Math.random() * 3500; }
@@ -297,6 +308,7 @@ void main(){
       gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tCells); gl.uniform1i(u(screen, 'uCells'), 0);
       gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, tAtlas); gl.uniform1i(u(screen, 'uAtlas'), 1);
       gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, tOver); gl.uniform1i(u(screen, 'uOver'), 2);
+      gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D, tCellCol); gl.uniform1i(u(screen, 'uCellCol'), 3);
       gl.uniform2f(u(screen, 'uCell'), cellPx[0], cellPx[1]); gl.uniform3fv(u(screen, 'uAll'), allRGB); gl.uniform1f(u(screen, 'uGlyphs'), GLYPHS.length);
       gl.uniform4f(u(screen, 'uMono'), ...(mono || [0, 0, 0]), mono ? 1 : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);

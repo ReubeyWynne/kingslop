@@ -40,7 +40,8 @@
 .pet-care p { margin: 0; }
 .pet-bowl { flex: none; font-family: var(--ascii-font); font-size: 1rem; line-height: 1.25; color: var(--amber-dim); white-space: pre; }
 .pet-food { position: relative; left: calc(var(--cx, 0) * 1ch); top: calc(var(--cy, 0) * 1.25em); min-width: 40px; min-height: 40px; margin: 0 -.9rem; padding: 0; font: inherit; color: var(--amber); background: transparent; border: 0; cursor: grab; touch-action: none; -webkit-tap-highlight-color: transparent; }
-.pet-food > span { display: inline-block; width: 1ch; height: 1.25em; }
+.pet-food > span { position: relative; display: inline-block; width: 1ch; height: 1.25em; }
+.pet-food img { position: absolute; left: 50%; top: 50%; width: 2.25em; height: 2.25em; margin: -1.125em 0 0 -1.125em; pointer-events: none; -webkit-user-drag: none; user-select: none; }   /* the cell steps; the meat sits on it */
 .pet-food[data-carried] { z-index: 5; cursor: grabbing; color: var(--ink); }
 .pet-food:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 .pet-meters { display: grid; flex: 1 1 auto; gap: .35rem; min-width: 0; }

@@ -49,7 +49,7 @@ try{
  assert.equal(await page.locator('#pet-gray-wolf .pet-ladder td[data-reached]').count(),2);
  assert.match(await page.locator('#pet-gray-wolf [data-target="pet-den.next"]').textContent(),/level 30:/);
  // There are no buttons to read: a click on the pet or its food does nothing.
- assert.equal(await page.locator('#pet-gray-wolf .pet-care button:visible').evaluateAll(n=>n.map(b=>b.textContent.trim())).then(t=>t.join('')),'@');
+ assert.deepEqual(await page.locator('#pet-gray-wolf .pet-care button:visible').evaluateAll(n=>n.map(b=>b.textContent.trim()+(b.querySelector('img')||{}).src)),[origin+'/img/items/stamina.webp']);
  await page.locator('#pet-gray-wolf .pet-stroke').click();await page.locator('#pet-gray-wolf .pet-food').click();
  assert.equal(await pen('gray-wolf').getAttribute('data-react'),null);assert.equal(await page.locator('#pet-gray-wolf [data-meter="affection"]').getAttribute('aria-valuenow'),'50');
  // Rubbing the pet pets it and dragging food onto it feeds it; each shows a reaction, which clears on its own.
