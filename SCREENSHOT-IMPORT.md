@@ -195,10 +195,12 @@ Each step lands as its own commit with its checks passing.
 - [x] 3. `js/ocr-text.js` with node tests (`.dsh/ocr-text-check.cjs`);
   move the sim and hero-gear parsers onto it.
 - [x] 4. Ledger: generalised import records + `applyImport` + checks.
-- [ ] 5. `ScreenImport` registry and router; `overview-resources` and
-  `overview-speedups` adapters with fixture checks through the real worker
-  (`.dsh/screen-import-check.cjs`, Playwright, like
-  `.dsh/hero-gear-visual-check.cjs`).
+- [x] 5. `ScreenImport` registry and router (`js/screen-import-core.js`);
+  `overview-resources` and `overview-speedups` adapters
+  (`js/import-adapters/overview.js`), checked in node against recorded
+  production reads (`.dsh/screen-import-check.cjs`). To record reads for a new
+  fixture: build the site, then `node .dsh/import-record.cjs <fixture-name>`.
+  The real-worker browser check comes with the dock (step 6).
 - [ ] 6. Dock UI: `_includes/screen-import.html`, `css/screen-import.css`,
   module in `js/screen-import.js`, i18n keys in every `i18n/*.js`. Phone
   first (390px), then desktop. Screenshot review in CI.

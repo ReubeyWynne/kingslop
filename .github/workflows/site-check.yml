@@ -298,6 +298,9 @@ jobs:
       - name: Check OCR text helpers
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/ocr-text-check.cjs
+      - name: Check screen import adapters
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/screen-import-check.cjs
 
   build:
     needs: changes
