@@ -331,19 +331,19 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
 }
 /* Each cover keeps its own page's colour, whichever card is selected, so
    covers never recolour as the selection moves. */
-.deck-card[data-page="home"] { --deck-accent: #F5C851; }
-.deck-card[data-page="bearhunt"] { --deck-accent: #AEC878; }
-.deck-card[data-page="vikings"] { --deck-accent: #E08A3C; }
-.deck-card[data-page="swordland"] { --deck-accent: #E05555; }
-.deck-card[data-page="vip"] { --deck-accent: #C5A3EE; }
-.deck-card[data-page="sim"] { --deck-accent: #88A8F0; }
-.deck-card[data-page="kvksg"] { --deck-accent: #5FC8A6; }
-.deck-card[data-page="gear"] { --deck-accent: #72CBDD; }
-.deck-card[data-page="heroes"] { --deck-accent: #E68AB4; }
-.deck-card[data-page="masters"] { --deck-accent: #A29BF4; }
-.deck-card[data-page="governor"] { --deck-accent: #86D48A; }
-.deck-card[data-page="pets"] { --deck-accent: #F0907A; }
-.deck-card[data-page="castle"] { --deck-accent: #DFAA77; }
+:is(.deck-card, .deck-pip)[data-page="home"] { --deck-accent: #F5C851; }
+:is(.deck-card, .deck-pip)[data-page="bearhunt"] { --deck-accent: #AEC878; }
+:is(.deck-card, .deck-pip)[data-page="vikings"] { --deck-accent: #E08A3C; }
+:is(.deck-card, .deck-pip)[data-page="swordland"] { --deck-accent: #E05555; }
+:is(.deck-card, .deck-pip)[data-page="vip"] { --deck-accent: #C5A3EE; }
+:is(.deck-card, .deck-pip)[data-page="sim"] { --deck-accent: #88A8F0; }
+:is(.deck-card, .deck-pip)[data-page="kvksg"] { --deck-accent: #5FC8A6; }
+:is(.deck-card, .deck-pip)[data-page="gear"] { --deck-accent: #72CBDD; }
+:is(.deck-card, .deck-pip)[data-page="heroes"] { --deck-accent: #E68AB4; }
+:is(.deck-card, .deck-pip)[data-page="masters"] { --deck-accent: #A29BF4; }
+:is(.deck-card, .deck-pip)[data-page="governor"] { --deck-accent: #86D48A; }
+:is(.deck-card, .deck-pip)[data-page="pets"] { --deck-accent: #F0907A; }
+:is(.deck-card, .deck-pip)[data-page="castle"] { --deck-accent: #DFAA77; }
 .deck-card::before {
   content: '';
   position: absolute;
@@ -387,6 +387,33 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
 .deck-footer { direction: ltr; padding: 0; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
 .deck-footer button { font-size: 2rem; line-height: 1; }
 .deck-position { min-width: 0; text-align: center; color: var(--ink-dim); font-size: var(--step--1); }
+/* The rail: a mark per page in ledger order, each in its own page's colour,
+   with a little air between the groups. The selected page is a solid
+   diamond, the page you came from a hollow one, the rest small dots; a mark
+   changes glyph, never size or position. The whole rail is the target, so
+   the marks can sit closer than a tap's width: a touch picks the nearest. */
+.deck-locator { flex: 0 1 18rem; min-width: 0; display: grid; justify-items: center; gap: 0.2rem; }
+.deck-rail {
+  pointer-events: auto;
+  touch-action: none;
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-family: var(--ascii-font);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.deck-rail:focus-visible { outline-offset: 0; }
+.deck-pip { flex: 1 1 0; text-align: center; color: color-mix(in srgb, var(--deck-accent) 62%, #090d14); }
+.deck-pip-break { margin-inline-start: 0.6rem; }
+.deck-pip::before { content: "\2022"; }
+.deck-pip.is-last::before { content: "\25C7"; }
+.deck-pip.is-selected::before { content: "\25C6"; }
+.deck-pip:is(.is-selected, .is-last) { color: var(--deck-accent); }
 #deck-hint { margin-block: 0; text-align: center; color: var(--ink-dim); font-size: var(--step--1); }
 html[dir="rtl"] .deck-card { direction: rtl; }
 @media (prefers-reduced-motion: no-preference) {

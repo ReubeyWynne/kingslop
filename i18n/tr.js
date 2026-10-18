@@ -681,6 +681,7 @@ window.__BH_I18N_DATA["tr"] = {
   "ev.deck.next": "sonraki sayfa",
   "ev.deck.open": "açmak için dokun",
   "ev.deck.hint": "gezinmek için kaydır · gitmek için dokun",
+  "ev.deck.rail": "bir sayfaya git",
   "ev.deck.lede.home": "rehberler, araçlar ve bunların ardındaki hesaplar.",
   "ev.deck.lede.events": "bugün neler var, ne puan kazandırır ve ne saklanmalı.",
   "ev.deck.lede.bear": "yürüyüşlerini hazırla, rallileri doldur ve avı düzenle.",

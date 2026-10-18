@@ -682,6 +682,7 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "ev.deck.next": "próxima página",
   "ev.deck.open": "toque para abrir",
   "ev.deck.hint": "deslize para explorar · toque para ir",
+  "ev.deck.rail": "ir para uma página",
   "ev.deck.lede.home": "os guias, as ferramentas e a matemática por trás deles.",
   "ev.deck.lede.events": "o que acontece hoje, o que pontua e o que guardar.",
   "ev.deck.lede.bear": "prepare suas marchas, preencha os ralis e organize a caçada.",

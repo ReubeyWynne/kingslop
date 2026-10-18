@@ -690,6 +690,7 @@ window.__BH_I18N_DATA["vi"] = {
   "ev.deck.next": "trang tiếp theo",
   "ev.deck.open": "chạm để mở",
   "ev.deck.hint": "vuốt để xem · chạm để chuyển",
+  "ev.deck.rail": "chuyển đến trang",
   "ev.deck.lede.home": "hướng dẫn, công cụ và các phép tính phía sau.",
   "ev.deck.lede.events": "sự kiện hôm nay, cách ghi điểm và những gì cần giữ lại.",
   "ev.deck.lede.bear": "sắp xếp đội hành quân, lấp đầy tập kết và tổ chức săn.",

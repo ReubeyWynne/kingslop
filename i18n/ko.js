@@ -682,6 +682,7 @@ window.__BH_I18N_DATA["ko"] = {
   "ev.deck.next": "다음 페이지",
   "ev.deck.open": "탭하여 열기",
   "ev.deck.hint": "스와이프하여 둘러보기 · 탭하여 이동",
+  "ev.deck.rail": "페이지로 이동",
   "ev.deck.lede.home": "가이드와 도구, 그리고 그 바탕이 되는 계산.",
   "ev.deck.lede.events": "오늘의 이벤트, 점수 획득 방법, 아껴 둘 자원.",
   "ev.deck.lede.bear": "행군을 편성하고 집결을 채워 사냥을 운영하세요.",

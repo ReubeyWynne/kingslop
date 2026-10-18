@@ -682,6 +682,7 @@ window.__BH_I18N_DATA["it"] = {
   "ev.deck.next": "pagina successiva",
   "ev.deck.open": "tocca per aprire",
   "ev.deck.hint": "scorri per esplorare · tocca per aprire",
+  "ev.deck.rail": "vai a una pagina",
   "ev.deck.lede.home": "le guide, gli strumenti e i calcoli alla base.",
   "ev.deck.lede.events": "gli eventi di oggi, cosa dà punti e cosa conservare.",
   "ev.deck.lede.bear": "prepara le marce, riempi i raduni e organizza la caccia.",

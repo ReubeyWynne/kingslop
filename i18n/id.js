@@ -690,6 +690,7 @@ window.__BH_I18N_DATA["id"] = {
   "ev.deck.next": "halaman berikutnya",
   "ev.deck.open": "ketuk untuk membuka",
   "ev.deck.hint": "geser untuk menelusuri · ketuk untuk menuju halaman",
+  "ev.deck.rail": "lompat ke halaman",
   "ev.deck.lede.home": "panduan, alat, dan perhitungan di baliknya.",
   "ev.deck.lede.events": "acara hari ini, sumber poin, dan yang perlu disimpan.",
   "ev.deck.lede.bear": "susun pasukan, penuhi reli, dan atur perburuan.",

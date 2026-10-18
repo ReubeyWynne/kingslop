@@ -682,6 +682,7 @@ window.__BH_I18N_DATA["de"] = {
   "ev.deck.next": "nächste Seite",
   "ev.deck.open": "zum Öffnen tippen",
   "ev.deck.hint": "zum Blättern wischen · zum Öffnen tippen",
+  "ev.deck.rail": "zu einer Seite springen",
   "ev.deck.lede.home": "die Anleitungen, die Werkzeuge und die Mathematik dahinter.",
   "ev.deck.lede.events": "was heute ansteht, was Punkte bringt und was du aufheben solltest.",
   "ev.deck.lede.bear": "stelle deine Märsche zusammen, fülle Rallys und organisiere die Jagd.",

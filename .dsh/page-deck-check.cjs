@@ -251,7 +251,7 @@ test('cancelled and multitouch gestures leave a usable deck and history restores
 test('all dictionaries carry plain-text deck labels and the template covers the nav data', () => {
   const template = fs.readFileSync(path.join(root, '_includes/page-deck.html'), 'utf8');
   const keys = [...template.matchAll(/data-i18n(?:-key)?="(ev\.deck\.[^"]+)"/g)].map(match => match[1]);
-  assert.equal(new Set(keys).size, 6);
+  assert.equal(new Set(keys).size, 7);
   for (const file of fs.readdirSync(path.join(root, 'i18n')).filter(name => name.endsWith('.js'))) {
     const scope = { window: {} };
     vm.runInNewContext(fs.readFileSync(path.join(root, 'i18n', file), 'utf8'), scope);

@@ -27,7 +27,10 @@
     </div>
     <footer class="deck-footer">
       <button type="button" class="deck-prev" aria-label="Previous page" data-i18n-key="ev.deck.prev" data-i18n-attr="aria-label">‹</button>
-      <span class="deck-position" aria-live="polite" aria-atomic="true"></span>
+      <div class="deck-locator">
+        <div class="deck-rail" role="slider" tabindex="0" aria-label="Jump to a page" data-i18n-key="ev.deck.rail" data-i18n-attr="aria-label" aria-orientation="horizontal" aria-valuemin="1" aria-valuemax="{{ site.data.nav | size }}" aria-valuenow="1">{% assign railGroup = '' %}{% for n in site.data.nav %}{% assign entry = site.data.pages[n.self] %}<span class="deck-pip{% if railGroup != '' and railGroup != n.group %} deck-pip-break{% endif %}" data-page="{{ entry.token }}" aria-hidden="true"></span>{% assign railGroup = n.group %}{% endfor %}</div>
+        <span class="deck-position" aria-live="polite" aria-atomic="true"></span>
+      </div>
       <button type="button" class="deck-next" aria-label="Next page" data-i18n-key="ev.deck.next" data-i18n-attr="aria-label">›</button>
     </footer>
     <p id="deck-hint" data-i18n="ev.deck.hint">swipe to browse · tap to go</p>

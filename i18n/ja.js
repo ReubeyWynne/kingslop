@@ -682,6 +682,7 @@ window.__BH_I18N_DATA["ja"] = {
   "ev.deck.next": "次のページ",
   "ev.deck.open": "タップして開く",
   "ev.deck.hint": "スワイプして閲覧 · タップして移動",
+  "ev.deck.rail": "ページへ移動",
   "ev.deck.lede.home": "ガイド、ツール、そしてその根拠となる計算。",
   "ev.deck.lede.events": "今日のイベント、得点対象、取っておくべき資源。",
   "ev.deck.lede.bear": "行軍を編成し、集結を満たして狩りを進めよう。",
