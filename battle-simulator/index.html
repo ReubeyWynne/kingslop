@@ -394,7 +394,7 @@ self: sim
         <fieldset class="sim-troop-march{% if sd[0] == 'you' %} sim-for{% endif %}"{% if sd[0] == 'you' %} data-for="march" hidden{% endif %}>
           <legend data-i18n="sim.army.march">In the march</legend>
           <label class="sim-field sim-count"><span data-i18n="sim.dmg.thCount">troops</span>
-            <input id="{{ sd[1] }}n-{{ tp[0] }}" type="number" min="0" step="1000" inputmode="numeric" value="50000" placeholder="0"{% if sd[0] == 'you' %} data-player-march="amount" data-troop="{{ tp[0] }}"{% endif %}></label>
+            <input id="{{ sd[1] }}n-{{ tp[0] }}" type="number" min="0" step="1000" inputmode="numeric" value="50000" placeholder="0" data-unit-input="count"{% if sd[0] == 'you' %} data-player-march="amount" data-troop="{{ tp[0] }}"{% endif %}></label>
           <label class="sim-field"><span data-i18n="sim.dmg.thTier">tier</span>
             <select id="{{ sd[1] }}tier-{{ tp[0] }}"{% if sd[0] == 'you' %} data-player-march="tier" data-troop="{{ tp[0] }}"{% endif %}>{% for i in (1..11) %}<option value="{{ i }}"{% if i == 10 %} selected{% endif %}>T{{ i }}</option>{% endfor %}</select></label>
           <label class="sim-field"><span data-i18n="sim.dmg.thTg">TG</span>
@@ -439,7 +439,7 @@ self: sim
             <label class="sim-field"><span data-i18n="sim.dmg.thTg">TG</span>
               <select data-field="tg" data-action="troop-roster.move">{% for i in (0..5) %}<option value="{{ i }}">TG{{ i }}</option>{% endfor %}</select></label>
             <label class="sim-field"><span data-i18n="sim.dmg.thCount">troops</span>
-              <input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="0" data-field="amount" data-action="troop-roster.set"></label>
+              <input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="0" data-field="amount" data-unit-input="count" data-action="troop-roster.set"></label>
             <button type="button" class="roster-remove" data-action="troop-roster.remove" aria-label="Remove this tier"
               data-i18n-key="sim.roster.remove" data-i18n-attr="aria-label">×</button>
           </li>

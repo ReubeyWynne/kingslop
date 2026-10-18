@@ -244,15 +244,11 @@ self: town
     <dialog class="town-dialog" data-target="town-inventory.dialog" aria-labelledby="town-edit-title">
       <div class="town-heading"><h2 id="town-edit-title" data-target="town-inventory.title"></h2><button type="button" data-action="town-inventory.close" data-i18n="gear.done">done</button></div>
       <div class="town-panel" data-panel="count" hidden>
-        <label class="town-big"><span data-i18n="town.howMany">quantity</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="count" data-action="town-inventory.count"></label>
+        <label class="town-big"><span data-i18n="town.howMany">quantity</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="count" data-unit-input="count" data-action="town-inventory.count"></label>
         <p class="town-gloss" data-target="town-inventory.rate"></p>
       </div>
       <div class="town-panel" data-panel="duration" hidden>
-        <div class="town-duration">
-          <label><span data-i18n="town.daysUnit">days</span><input type="number" min="0" max="694444" step="1" inputmode="numeric" placeholder="?" data-unit="d" data-action="town-inventory.duration town-inventory.settle"></label>
-          <label><span data-i18n="town.hours">hours</span><input type="number" min="0" max="16666666" step="1" inputmode="numeric" placeholder="?" data-unit="h" data-action="town-inventory.duration town-inventory.settle"></label>
-          <label><span data-i18n="town.minutes">minutes</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-unit="m" data-action="town-inventory.duration town-inventory.settle"></label>
-        </div>
+        <label class="town-big"><span data-i18n="town.howLong">time</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="duration" data-unit-input="duration" data-action="town-inventory.duration town-inventory.settle"></label>
         <p class="town-gloss" data-target="town-inventory.durationRate"></p>
       </div>
       <div class="town-panel" data-panel="hero" hidden>

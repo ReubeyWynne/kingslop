@@ -146,7 +146,7 @@
   window.Interactions.register('town-inventory', function (context) {
     var H = window.HeroGear, G = window.Governor, T = window.TownCentre, B = window.BuildingSpend, R = window.TroopSpend, store = window.PlayerLedger.shared(), api = context.api, root = context.root;
     var dialog = context.targets('dialog')[0], editing = null, art = '../img/governor/';
-    var UNIT = { d: 1440, h: 60, m: 1 }, TROOPS = { inf: 'Infantry', cav: 'Cavalry', arc: 'Archer' };
+    var TROOPS = { inf: 'Infantry', cav: 'Cavalry', arc: 'Archer' };
     function target(key) { return context.targets(key)[0]; }
     function put(key, value) { context.targets(key).forEach(function (node) { node.textContent = value; }); }
     function part(node, key) { return node.querySelector('[data-part="' + key + '"]'); }
@@ -333,10 +333,7 @@
         value(dialog.querySelector('[data-field="count"]'), confirmed(snapshot, editing.id));
         put('rate', rateText(editing.id));
       } else if (editing.type === 'duration') {
-        var minutes = confirmed(snapshot, editing.id), inputs = dialog.querySelectorAll('[data-unit]');
-        var typing = Array.from(inputs).some(function (input) { return input === document.activeElement; });
-        var parts = minutes === null ? null : { d: Math.floor(minutes / 1440), h: Math.floor(minutes % 1440 / 60), m: minutes % 60 };
-        if (!typing) inputs.forEach(function (input) { input.value = parts ? parts[input.dataset.unit] : ''; });
+        value(dialog.querySelector('[data-field="duration"]'), confirmed(snapshot, editing.id));
         put('durationRate', rateText(editing.id));
       } else if (editing.type === 'hero') {
         var piece = Object.hasOwn(snapshot.heroGear.pieces, editing.id) ? snapshot.heroGear.pieces[editing.id] : null;
@@ -426,14 +423,9 @@
         if (!editing || !input.validity.valid) return;
         write(function () { store.setBalance(editing.id, input.value === '' ? null : Number(input.value)); });
       } },
-      duration: { events: ['input'], run: function () {
-        if (!editing) return;
-        var inputs = Array.from(dialog.querySelectorAll('[data-unit]')), minutes = 0;
-        if (!inputs.every(function (input) { return input.validity.valid; })) return;
-        var blank = inputs.every(function (input) { return input.value === ''; });
-        inputs.forEach(function (input) { minutes += (Number(input.value) || 0) * UNIT[input.dataset.unit]; });
-        if (!blank && !(Number.isSafeInteger(minutes) && minutes <= 1e9)) return;
-        write(function () { store.setBalance(editing.id, blank ? null : minutes); });
+      duration: { events: ['input'], run: function (input) {
+        if (!editing || !input.validity.valid) return;
+        write(function () { store.setBalance(editing.id, input.value === '' ? null : Number(input.value)); });
       } },
       settle: { events: ['change'], run: function (input) { input.blur(); render(); } },
       quality: { run: function (chip) { if (editing) writePiece({ quality: chip.dataset.quality }); } },

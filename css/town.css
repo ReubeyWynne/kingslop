@@ -153,14 +153,17 @@
 .town-dialog button:hover { color: var(--ink); border-bottom-color: var(--signal-line); }
 .town-dialog :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 .town-dialog label { display: grid; gap: .2rem; color: var(--ink-muted); font-size: .8rem; }
-.town-dialog input[type="number"] { width: 100%; min-width: 0; padding: .2rem 0; font: 1.5rem var(--display-2); font-variant-numeric: tabular-nums; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--signal-line); border-radius: 0; text-align: center; }
-.town-dialog input[type="number"]:focus { border-bottom-color: var(--amber); outline: none; }
+.town-dialog input[type="number"], .town-dialog input[data-unit-input] { width: 100%; min-width: 0; padding: .2rem 0; font: 1.5rem var(--display-2); font-variant-numeric: tabular-nums; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--signal-line); border-radius: 0; text-align: center; }
+.town-dialog input[type="number"]:focus, .town-dialog input[data-unit-input]:focus { border-bottom-color: var(--amber); outline: none; }
 .town-dialog input::placeholder { color: var(--ink-muted); }
 .town-dialog select { width: 100%; min-width: 0; min-height: 2.75rem; font: max(1rem, 16px) var(--body); color: var(--ink); background: var(--void); border: 1px solid var(--signal-line); border-radius: 0; padding: .3rem; }
 .town-dialog option { background: var(--void); color: var(--ink); }
 .town-panel { margin-top: .8rem; }
-.town-big input[type="number"] { font-size: 2rem; }
-.town-dialog .town-duration { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; }
+.town-big input[type="number"], .town-big input[data-unit-input] { font-size: 2rem; }
+/* A figure with its unit (js/unit-input.js): the box, then the unit beside it. */
+.town-big:has(.unit-select) { grid-template-columns: minmax(0, 1fr) auto; column-gap: .6rem; align-items: end; }
+.town-big:has(.unit-select) > span { grid-column: 1 / -1; }
+.town-dialog .unit-select { width: auto; min-width: 4.5rem; }
 .town-edit-art { display: flex; align-items: center; gap: 1rem; margin-bottom: .6rem; }
 .town-edit-art .town-gear-item, .town-edit-art .town-gov-card { flex: 0 0 6rem; width: 6rem; }
 .town-edit-art p { font: 1.2rem var(--display-2); margin: 0; }
