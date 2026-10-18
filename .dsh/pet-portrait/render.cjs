@@ -11,8 +11,11 @@ import * as THREE from 'three';import {STLLoader} from 'three/addons/loaders/STL
 const o=${JSON.stringify(o)};
 const r=new THREE.WebGLRenderer({canvas:c,preserveDrawingBuffer:true,antialias:false});
 const g=new STLLoader().parse(await (await fetch('/model.stl')).arrayBuffer());
+// turn the model so its own up is +y and its forward +z (as mesh.cjs does), then fit it to -1..1
+{const up=new THREE.Vector3(...(o.up||[0,0,1])).normalize(),f=new THREE.Vector3(...(o.fwd||[0,-1,0]));f.addScaledVector(up,-f.dot(up)).normalize();const x=new THREE.Vector3().crossVectors(up,f);
+ g.applyMatrix4(new THREE.Matrix4().makeBasis(x,up,f).transpose());}
 g.computeBoundingBox();const b=g.boundingBox,ctr=new THREE.Vector3();b.getCenter(ctr);const s=2/Math.max(...b.getSize(new THREE.Vector3()).toArray());
-g.translate(-ctr.x,-ctr.y,-ctr.z);g.scale(s,s,s);g.rotateX(-Math.PI/2);g.setAttribute('rest',g.attributes.position.clone());
+g.translate(-ctr.x,-ctr.y,-ctr.z);g.scale(s,s,s);g.setAttribute('rest',g.attributes.position.clone());
 for(const d of (o.deform||[])){const P=g.attributes.position,v=new THREE.Vector3(),pv=new THREE.Vector3(...d.pivot),q=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(...(d.axis||[0,0,1])).normalize(),d.angle||0);
  for(let i=0;i<P.count;i++){v.fromBufferAttribute(P,i);const s=d.sel;if(v.y<(s.ymin??-9)||v.y>(s.ymax??9)||v.x<(s.xmin??-9)||v.x>(s.xmax??9)||v.z<(s.zmin??-9))continue;
   let w=1;if(d.soft){const a=v.getComponent(d.softAxis??2);const t=Math.min(1,Math.max(0,(a-d.soft[0])/(d.soft[1]-d.soft[0])));w=t*t*(3-2*t);}
@@ -20,7 +23,7 @@ for(const d of (o.deform||[])){const P=g.attributes.position,v=new THREE.Vector3
   v.sub(pv);if(d.scale)v.multiplyScalar(1+(d.scale-1)*w);v.applyQuaternion(qw);v.add(pv);if(d.move)v.add(new THREE.Vector3(...d.move).multiplyScalar(w));P.setXYZ(i,v.x,v.y,v.z);}}
 g.computeVertexNormals();
 const scene=new THREE.Scene();const cam=new THREE.PerspectiveCamera(o.fov,o.w/o.h,0.1,20);
-const t=new THREE.Vector3(...o.target);cam.position.set(t.x+o.dist*Math.sin(o.yaw)*Math.cos(o.pitch),t.y+o.dist*Math.sin(o.pitch),t.z+o.dist*Math.cos(o.yaw)*Math.cos(o.pitch));cam.lookAt(t);cam.near=o.dist-1.5;cam.far=o.dist+1.5;cam.updateProjectionMatrix();
+const t=new THREE.Vector3(...o.target);cam.position.set(t.x+o.dist*Math.sin(o.yaw)*Math.cos(o.pitch),t.y+o.dist*Math.sin(o.pitch),t.z+o.dist*Math.cos(o.yaw)*Math.cos(o.pitch));cam.lookAt(t);cam.near=Math.max(0.05,o.dist-1.5);cam.far=o.dist+1.5;cam.updateProjectionMatrix();
 const mats={
  lit:new THREE.MeshLambertMaterial({color:0x8c8c8c,flatShading:true}),
  normal:new THREE.MeshNormalMaterial({flatShading:true}),

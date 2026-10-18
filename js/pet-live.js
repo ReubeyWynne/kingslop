@@ -1,7 +1,7 @@
 /* Pets drawn live from their model: a small WebGL 2 text shader in the pen.
 
-   A pet listed in PETS gets a canvas in its pen that draws its model as character cells,
-   twelve times a second. The model (pets/models/<id>.bin, from .dsh/pet-portrait/mesh.cjs) is
+   A pen marked data-model gets a canvas that draws its pet's model as character cells,
+   twelve times a second. The model (pets/models/<id>.bin and .json, from .dsh/pet-portrait/shade.py) is
    skinned to a six-bone skeleton (body, neck, head, both ears, nose), so the head can follow
    the pointer, tilt, droop and perk, the ears flick and fold, and the nose twitch. Each frame:
      1. the posed model is rendered small, with its light, fur colour, depth and fur region;
@@ -30,33 +30,22 @@
   const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255);
   const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
-  // Per pet: inks, fur regions, the face's anchor points and the skeleton's weights, all in
-  // model space (fits -1..1, snout towards +z, up +y), and the camera shade.py framed it with.
-  const PETS = {
-    'grizzly-bear': {
-      inks: ['#6E4636', '#93604A', '#B67F5A', '#D49C6C', '#EDBC86', '#F8DDB0', '#FFF5E2'],
-      fur: [0.62, 0.40, 0.27],
-      regions: [                                     // later regions paint over earlier ones; 3 is the nose
-        [1, 'p.y>=0.44', [0.84, 0.54, 0.36]],
-        [2, 'p.z>=0.74 && p.y<=0.12', [1.0, 0.86, 0.64]],
-        [3, 'p.z>=0.96 && p.y>=-0.03', [0.10, 0.07, 0.07]]
-      ],
-      headZ: 0.3,
-      eyes: [[-0.14, 0.16, 0.80], [0.14, 0.16, 0.80]], mouth: [0, -0.07, 0.99], top: [0, 0.6, 0.5], cheeks: [[-0.26, 0.0, 0.72], [0.26, 0.0, 0.72]],
-      pivots: { neck: [0, 0.12, 0.0], head: [0, 0.22, 0.32], ear: [0.22, 0.47, 0.52], nose: [0, 0.0, 0.92] },
-      // body ← neck ← head ← (left ear, right ear, nose): nested masks keep every weight >= 0 and the sum at 1
-      weights: ([x, y, z]) => {
-        const neck = smooth(-0.15, 0.2, z), head = smooth(0.15, 0.42, z) * neck;
-        const ear = s => smooth(0.45, 0.52, y) * smooth(0.12, 0.17, s * x) * smooth(0.2, 0.12, Math.hypot(s * x - 0.24, z - 0.53)) * head;
-        const el = ear(-1), er = ear(1), nose = smooth(0.9, 0.97, z) * smooth(-0.06, 0.0, y) * head;
-        return [1 - neck, neck - head, head - el - er - nose, el, er, nose];
-      },
-      camera: { yaw: -0.5, pitch: 0.05, fov: 26, dist: 2.3705, target: [-0.1628, 0.3354, 0.5033] },
-      lights: { key: [-0.6, 2.4, 0.4], rim: [2, 0.6, -1.5] }
-    }
-  };
-  // How each mood holds the head: lift (negative raises the chin), how closely it follows you.
-  const POSTURE = { content: [-0.4, 1], delighted: [-0.44, 1], restless: [-0.36, 0.7], lonely: [-0.32, 1], hungry: [-0.34, 0.4], asleep: [-0.3, 0], happy: [-0.45, 1] };
+  // Each pet's inks, fur regions, face anchors, skeleton and camera come from pets/models/<id>.json,
+  // written by .dsh/pet-portrait/shade.py with the baked frames, in model space (fits -1..1,
+  // snout towards +z, up +y). The skeleton's weights are painted here from those numbers:
+  // body ← neck ← head ← (left ear, right ear, nose), nested so every weight is >= 0 and they sum to 1.
+  function weigher(w) {
+    const band = (spec, p) => Object.keys(spec).reduce((v, k) => v * smooth(spec[k][0], spec[k][1], p['xyz'.indexOf(k)]), 1);
+    return p => {
+      const [x, y, z] = p, neck = band(w.neck, p), head = band(w.head, p) * neck, e = w.ear, cx = e.cx || 0;
+      const ear = s => { const u = s * (x - cx); return smooth(e.y[0], e.y[1], y) * smooth(e.x[0], e.x[1], u) * smooth(e.r[1], e.r[0], Math.hypot(u - e.c[0], z - e.c[1])) * head; };
+      const el = ear(-1), er = ear(1), nose = band(w.nose, p) * head;
+      return [1 - neck, neck - head, head - el - er - nose, el, er, nose];
+    };
+  }
+
+  // How each mood holds the head against the pet's rest pose: lift (negative raises the chin), how closely it follows you.
+  const POSTURE = { content: [0, 1], delighted: [-0.04, 1], restless: [0.04, 0.7], lonely: [0.08, 1], hungry: [0.06, 0.4], asleep: [0.1, 0], happy: [-0.05, 1] };
 
   // ── column-major 4x4 matrices ──
   const mul = (a, b) => { const o = new Float32Array(16); for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) { let v = 0; for (let k = 0; k < 4; k++) v += a[k * 4 + r] * b[c * 4 + k]; o[c * 4 + r] = v; } return o; };
@@ -73,8 +62,8 @@
   function skeleton(cfg, s) {
     const P = cfg.pivots;
     const neck = about(P.neck, R('y', s.turn * 0.4), R('x', s.lift * 0.4));
-    const head = mul(neck, about(P.head, R('y', s.turn * 0.6), R('x', s.lift * 0.6), R('z', s.tilt), Sc(1.12)));
-    const ear = (side, flick) => mul(head, about([P.ear[0] * side, P.ear[1], P.ear[2]], R('x', s.earBack), R('z', flick * side)));
+    const head = mul(neck, about(P.head, R('y', s.turn * 0.6), R('x', s.lift * 0.6), R('z', s.tilt), Sc(cfg.rest.scale)));
+    const cx = cfg.weights.ear.cx || 0, ear = (side, flick) => mul(head, about([cx + (P.ear[0] - cx) * side, P.ear[1], P.ear[2]], R('x', s.earBack), R('z', flick * side)));
     return [I(), neck, head, ear(-1, s.earL), ear(1, s.earR), mul(head, about(P.nose, Sc(s.sniff)))];
   }
 
@@ -87,7 +76,9 @@ void main(){
   vec4 r=vec4(aPos,1.);
   vec3 p=(aW0.x*(uBone[0]*r) + aW0.y*(uBone[1]*r) + aW0.z*(uBone[2]*r) + aW1.x*(uBone[3]*r) + aW1.y*(uBone[4]*r) + aW1.z*(uBone[5]*r)).xyz;
   vRest=aPos; vec4 v=uView*vec4(p,1.); vView=v.xyz; gl_Position=uProj*v; }`;
-  const vec = a => `vec3(${a.map(v => v.toFixed(3)).join(',')})`;
+  const vec = a => `vec3(${a.map(v => (+v).toFixed(3)).join(',')})`;
+  // a fur region's box as GLSL: {zmin: 0.74, ymax: 0.12} → p.z>=0.740 && p.y<=0.120
+  const region = r => Object.keys(r).filter(k => /^[xyz]m(in|ax)$/.test(k)).map(k => `p.${k[0]}${k.endsWith('min') ? '>=' : '<='}${(+r[k]).toFixed(3)}`).join(' && ') || 'true';
   const sceneFS = cfg => `#version 300 es
 precision highp float; in vec3 vRest; in vec3 vView;
 uniform vec3 uKey, uFill, uRim; uniform float uNear, uFar;
@@ -97,12 +88,12 @@ void main(){
   float lum=0.25 + 2.2*max(dot(n,uKey),0.) + 0.66*max(dot(n,uFill),0.) + 0.35*max(dot(n,uRim),0.);
   float L=clamp((lum-0.35)/2.0, 0., 1.);
   vec3 p=vRest; vec3 alb=${vec(cfg.fur)}; float reg=0.;
-  ${cfg.regions.map(([id, cond, c]) => `if (${cond}) { alb=${vec(c)}; reg=${id}.; }`).join('\n  ')}
-  vec3 col=alb*(0.3+0.95*L); float head=p.z>${cfg.headZ.toFixed(2)} ? 1. : 0.; if (head<.5) col*=0.8;
+  ${cfg.regions.map(r => `if (${region(r)}) { alb=${vec(r.rgb)}; reg=${r.id}.; }`).join('\n  ')}
+  vec3 col=alb*(0.3+0.95*L); float head=(${region(cfg.head)}) ? 1. : 0.; if (head<.5) col*=0.8;
   float d=clamp((-vView.z-uNear)/(uFar-uNear), 0., 1.); float hi=floor(d*255.)/255.;
   oCol=vec4(min(col,1.), 1.); oData=vec4(hi, (d-hi)*255., reg/4., head);
 }`;
-  const cellsFS = `#version 300 es
+  const cellsFS = cfg => `#version 300 es
 precision highp float; uniform sampler2D uCol, uData; uniform vec3 uInk[7]; out vec4 o;
 const int SX=${SX}, SY=${SY};
 float dep(ivec2 t){ vec4 d=texelFetch(uData,t,0); return d.r + d.g/255.; }
@@ -126,7 +117,7 @@ void main(){
   int g;
   if(float(nose)>0.3*float(n)){ g=9; ink=0; }
   else if(float(edges)>0.1*float(SX*SY)){ int k=0; for(int m=1;m<4;m++) if(hist[m]>hist[k]) k=m; g=(k==2 && hy>0.) ? 33 : 10+k; ink=min(ink+2,6); }   // a top edge hangs from the cell's top
-  else { float t=min(0.999,dot(col,vec3(.5,.35,.15))/.82); g=clamp(int(t*10.),1,8); }   // '@' is kept for the nose
+  else { float t=min(0.999,dot(col,vec3(.5,.35,.15))/${(+cfg.ramp).toFixed(3)}); g=clamp(int(t*10.),1,8); }   // '@' is kept for the nose
   o=vec4(float(g)/255., float(ink)/255., 1., 1.);
 }`;
   const screenFS = `#version 300 es
@@ -149,13 +140,13 @@ void main(){
     if (!gl) return null;
     const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
     const prog = (vs, fs) => { const p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(p); if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p)); return p; };
-    const scene = prog(sceneVS, sceneFS(cfg)), cells = prog(quadVS, cellsFS), screen = prog(quadVS, screenFS);
+    const scene = prog(sceneVS, sceneFS(cfg)), cells = prog(quadVS, cellsFS(cfg)), screen = prog(quadVS, screenFS);
     const locations = new Map(), u = (p, name) => { const key = p === scene ? 's' + name : p === cells ? 'c' + name : 'q' + name;
       if (!locations.has(key)) locations.set(key, gl.getUniformLocation(p, name)); return locations.get(key); };
 
     // the mesh, unindexed (flat faces), with each corner's bone weights painted from its rest position
-    const { pos, tri } = mesh, flat = new Float32Array(tri.length * 3), W = new Float32Array(tri.length * 6);
-    tri.forEach((v, k) => { const p = pos.subarray(v * 3, v * 3 + 3); flat.set(p, k * 3); W.set(cfg.weights(p), k * 6); });
+    const weights = weigher(cfg.weights), { pos, tri } = mesh, flat = new Float32Array(tri.length * 3), W = new Float32Array(tri.length * 6);
+    tri.forEach((v, k) => { const p = pos.subarray(v * 3, v * 3 + 3); flat.set(p, k * 3); W.set(weights(p), k * 6); });
     const vao = gl.createVertexArray(); gl.bindVertexArray(vao);
     const buffer = (data, attrs) => { const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
       attrs.forEach(([name, stride, off]) => { const l = gl.getAttribLocation(scene, name); gl.enableVertexAttribArray(l); gl.vertexAttribPointer(l, 3, gl.FLOAT, false, stride, off); }); };
@@ -183,7 +174,7 @@ void main(){
     const eye = [cam.target[0] + cam.dist * Math.sin(cam.yaw) * Math.cos(cam.pitch), cam.target[1] + cam.dist * Math.sin(cam.pitch), cam.target[2] + cam.dist * Math.cos(cam.yaw) * Math.cos(cam.pitch)];
     const zf = norm(sub(eye, cam.target)), xr = norm(cross([0, 1, 0], zf)), yu = cross(zf, xr);
     const view = new Float32Array([xr[0], yu[0], zf[0], 0, xr[1], yu[1], zf[1], 0, xr[2], yu[2], zf[2], 0, -dot(xr, eye), -dot(yu, eye), -dot(zf, eye), 1]);
-    const near = cam.dist - 1.5, far = cam.dist + 1.5, aspect = (COLS * 0.6) / (ART * 1.25), ft = 1 / Math.tan(cam.fov * Math.PI / 360);
+    const near = Math.max(0.05, cam.dist - 1.5), far = cam.dist + 1.5, aspect = (COLS * 0.6) / (ART * 1.25), ft = 1 / Math.tan(cam.fov * Math.PI / 360);
     const ky = ART / ROWS, oy = (ROWS - ART) / ROWS;
     const proj = new Float32Array([ft / aspect, 0, 0, 0, 0, ft * ky, 0, 0, 0, oy, (far + near) / (near - far), -1, 0, 0, 2 * far * near / (near - far), 0]);
     const toView = d => { const n = norm(d); return [dot(xr, n), dot(yu, n), dot(zf, n)]; };
@@ -209,7 +200,7 @@ void main(){
     }
 
     // ── behaviour ──
-    const st = { look: [0, 0], aim: [0, 0], lift: -0.4, turn: -0.45, tilt: 0, ear: 0, earL: 0, earBack: 0,
+    const st = { look: [0, 0], aim: [0, 0], lift: cfg.rest.lift, turn: cfg.rest.turn, tilt: 0, ear: 0, earL: 0, earBack: 0,
       blinkUntil: 0, nextBlink: 2000, earUntil: 0, nextEar: 5000, sniffUntil: 0, nextSniff: 3500, tiltUntil: 0, nextTilt: 6000,
       sighUntil: 0, nextSigh: 4000, lickUntil: 0, nextLick: 2500, grrUntil: 0, nextGrr: 5000, glanceAt: 0, nextSpark: 0, moodAt: 0, mood: '', react: '', sparks: [] };
     let mono = null, owned = null;
@@ -238,8 +229,8 @@ void main(){
       st.look = st.look.map((v, i) => v + (st.aim[i] * follow - v) * k);
       if (low && now > st.nextSigh) { st.sighUntil = now + 1400; st.nextSigh = now + 6000 + Math.random() * 3000; }
       const breath = asleep ? Math.sin(now / 1500) * 0.035 : 0, sigh = low && now < st.sighUntil ? 0.08 : 0;
-      st.lift += (lift + st.look[1] * 0.18 + breath + sigh - st.lift) * k;
-      st.turn += (-0.45 + st.look[0] * 0.35 + (full ? 0.5 : 0) - st.turn) * k;   // turns its nose up at food when full
+      st.lift += (cfg.rest.lift + lift + st.look[1] * 0.18 + breath + sigh - st.lift) * k;
+      st.turn += (cfg.rest.turn + st.look[0] * 0.35 + (full ? 0.5 : 0) - st.turn) * k;   // turns its nose up at food when full
       if (mood === 'content' && now > st.nextTilt) { st.tiltUntil = now + 1800; st.nextTilt = now + 6000 + Math.random() * 6000; }
       st.tilt += ((asleep ? 0.14 : happy ? 0.12 : low ? -0.06 : full ? -0.1 : now < st.tiltUntil ? 0.18 : 0) - st.tilt) * k;   // a curious head tilt
       if (now > st.nextBlink) { st.blinkUntil = now + 140; st.nextBlink = now + 2500 + Math.random() * 3500; }
@@ -327,19 +318,20 @@ void main(){
   }
 
   function load(id) {
-    return fetch(new URL(`../pets/models/${id}.bin`, script.src)).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(buf => {
+    const get = (ext, as) => fetch(new URL(`../pets/models/${id}.${ext}`, script.src)).then(r => { if (!r.ok) throw new Error(r.status); return r[as](); });
+    return Promise.all([get('json', 'json'), get('bin', 'arrayBuffer')]).then(([cfg, buf]) => {
       const head = new DataView(buf), nv = head.getUint32(0, true), ni = head.getUint32(4, true), at = 8 + Math.ceil(nv * 6 / 4) * 4;
       const q = new Int16Array(buf, 8, nv * 3), tri = new Uint16Array(buf, at, ni), pos = new Float32Array(nv * 3);
       q.forEach((v, i) => { pos[i] = v / 32767; });
-      return { pos: pos, tri: tri };
+      return [cfg, { pos: pos, tri: tri }];
     });
   }
 
+  // Pens marked data-model (pets/index.html) have a model to draw.
   function start() {
-    document.querySelectorAll('[data-pen][data-pet]').forEach(pen => {
-      const cfg = PETS[pen.dataset.pet];
-      if (!cfg) return;
-      load(pen.dataset.pet).then(mesh => { try { Pen(pen, cfg, mesh); } catch (cause) { delete pen.dataset.live; pen.querySelectorAll('.pet-live').forEach(c => c.remove()); } }, () => {});
+    document.querySelectorAll('[data-pen][data-model]').forEach(pen => {
+      if (!/^[a-z][a-z-]{0,39}$/.test(pen.dataset.model)) return;
+      load(pen.dataset.model).then(([cfg, mesh]) => { try { Pen(pen, cfg, mesh); } catch (cause) { delete pen.dataset.live; pen.querySelectorAll('.pet-live').forEach(c => c.remove()); } }, () => {});
     });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
