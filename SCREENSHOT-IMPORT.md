@@ -248,6 +248,10 @@ Each step lands as its own commit with its checks passing.
 
 Resources are saved as both Items and In Stock (owner, 18 Oct).
 
+Missing screens are requested by email: the dock's gloss and its "can't read"
+and "nothing found" messages point to screenshots@dey.ci (owner, 18 Oct).
+Keep the gloss's wanted list in step with the missing references above.
+
 ## Fixtures
 
 `.dsh/import-fixtures/` holds the owner's screenshots (1440 × 3216 phone,

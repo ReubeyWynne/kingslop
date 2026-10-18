@@ -151,3 +151,5 @@
 .import-grid[data-layout="grid"] .import-name { font-size: 0.8rem; }
 .import-grid[data-layout="grid"] .import-field input { width: 100%; flex: none; }
 .import-grid[data-layout="grid"] .import-include { align-self: end; padding: 0.2rem 0 0.2rem 0.2rem; }
+.import-gloss a { color: var(--amber); font-style: normal; text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+.import-gloss a:hover, .import-gloss a:focus-visible { color: var(--ink); }

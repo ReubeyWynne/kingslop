@@ -302,8 +302,8 @@
       }
       tiles(entry);
       if (waiting.length) status(tr('import.readingStatus', 'Reading {n} screenshot(s)… the first read downloads about 14 MB of models, once per device.', { n: api.fmt(waiting.length) }));
-      else if (entries.some(function (e) { return e.status === 'unknown'; })) status(tr('import.unknown', 'One screenshot isn’t a screen I can read yet. It was skipped.'));
-      else if (entries.some(function (e) { return e.status === 'empty'; })) status(tr('import.empty', 'No items I track were found on one screenshot. It was skipped.'));
+      else if (entries.some(function (e) { return e.status === 'unknown'; })) status(tr('import.unknown', 'One screenshot isn’t a screen I can read yet. It was skipped. Email it to screenshots@dey.ci to have it added.'));
+      else if (entries.some(function (e) { return e.status === 'empty'; })) status(tr('import.empty', 'No items I track were found on one screenshot. It was skipped. If it shows items that should count, email it to screenshots@dey.ci.'));
       else if (entries.some(function (e) { return e.status === 'failed'; })) status(tr('import.failed', 'A screenshot couldn’t be read. Try it again, or a clearer shot.'));
       else if (entry) status(checks ? tr('import.check', '{n} values need a look. Everything else is ticked.', { n: api.fmt(checks) }) : tr('import.allSure', 'Everything was read. Check the numbers, then apply.'));
       // Unknown and failed shots are reported once, then dropped from the queue.
