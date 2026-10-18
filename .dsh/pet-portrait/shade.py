@@ -87,7 +87,7 @@ PETS = {
         regions=dict(ears=dict(ymin=0.3, rgb=[0.42, 0.43, 0.5]),
                      muzzle=dict(zmin=0.88, ymax=0.1, rgb=[0.98, 0.95, 0.9]),
                      nose=dict(zmin=0.965, ymin=-0.06, ymax=0.02, rgb=[0.1, 0.1, 0.12])),
-        eyes=[(-0.086, 0.155, 0.956), (0.086, 0.156, 0.942)], head=dict(zmin=0.6),
+        eyes=[(-0.09, 0.115, 0.945), (0.09, 0.115, 0.945)], head=dict(zmin=0.6),
         rest=dict(lift=-0.35, turn=-0.4, scale=1.1), low=0.1, asleep=0.18,
         neck=dict(pivot=[0, 0.1, 0.65], soft=[0.55, 0.78]),
         ear_flick=dict(sel=dict(ymin=0.28, xmin=0.04, zmin=0.75), pivot=[0.11, 0.3, 0.85], axis=[0, 0, 1], angle=0.28),
@@ -170,9 +170,12 @@ PETS = {
     'cheetah': dict(
         orient=dict(up=[0, 0, 1], fwd=[1, 0, 0]),
         inks={'night': '#6B4A2A', 'umber': '#8E6638', 'bark': '#B0854A', 'fur': '#CDA45E', 'tawny': '#E3C27E', 'cream': '#F2DDAA', 'bone': '#FFF5DE'},
-        cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(zmin=0.55, ymin=0.0), start=dict(target=[0, 0.35, 0.85], dist=2.0),
-        fur=[0.82, 0.62, 0.36],
+        cols=72, rows=24, render_rows=30, yaw=-0.9, pitch=0.08, focus=dict(zmin=0.0, ymin=-0.2), start=dict(target=[0, 0.2, 0.5], dist=3.0),
+        fur=[0.86, 0.64, 0.34],
+        spots=dict(scale=30, cut=0.33, zmax=0.9, ymin=-0.45, rgb=[0.24, 0.15, 0.09]),
         regions=dict(muzzle=dict(zmin=0.93, ymax=0.38, rgb=[1.0, 0.93, 0.8]),
+                     **{'tear-l': dict(xmin=-0.07, xmax=-0.03, ymin=0.31, ymax=0.41, zmin=0.955, rgb=[0.12, 0.08, 0.06]),
+                        'tear-r': dict(xmin=0.03, xmax=0.07, ymin=0.31, ymax=0.41, zmin=0.955, rgb=[0.12, 0.08, 0.06])},
                      nose=dict(zmin=0.985, ymin=0.33, ymax=0.38, xmin=-0.035, xmax=0.035, rgb=[0.15, 0.1, 0.1])),
         eyes=[(-0.051, 0.418, 0.981), (0.058, 0.42, 0.98)], head=dict(zmin=0.75),
         rest=dict(lift=-0.2, turn=-0.4, scale=1.15), low=0.1, asleep=0.18,
@@ -314,7 +317,7 @@ def laplace(a):
 def region(p, spec):
     m = np.ones(p.shape[:2], bool)
     for k, v in spec.items():
-        if k == 'rgb':
+        if k[1:] not in ('min', 'max'):         # rgb, and a coat's own settings
             continue
         axis = 'xyz'.index(k[0])
         m &= (p[..., axis] >= v) if k.endswith('min') else (p[..., axis] <= v)
@@ -326,6 +329,14 @@ def ramp(cfg):
     return round(0.82 * float(np.array(cfg['fur']) @ [0.5, 0.35, 0.15]) / 0.4905, 3)
 
 
+def spots(p, spec):
+    """A spotted coat: blobs where three crossed, wobbled waves all peak, so a point on the model always gets the
+    same spot in every pose. js/pet-live.js paints the same pattern."""
+    a = spec['scale']; b = a * 0.37; x, y, z = p[..., 0], p[..., 1], p[..., 2]
+    s = np.sin(a * x + 2 * np.sin(b * y)) * np.sin(a * y + 2 * np.sin(b * z)) * np.sin(a * z + 2 * np.sin(b * x))
+    return (np.abs(s) > spec['cut']) & region(p, spec)
+
+
 def shade(R, cfg, cols, rows, eye='o', mouth='w', body_dim=0.8, edge_frac=0.1, dstep=0.02):
     a = R['lit'][..., 3]; m = a > 0.5
     lum = R['lit'][..., 0]
@@ -335,6 +346,8 @@ def shade(R, cfg, cols, rows, eye='o', mouth='w', body_dim=0.8, edge_frac=0.1, d
     alb = np.broadcast_to(np.array(cfg['fur']), p.shape).copy()
     masks = {}
     NAMES = list(cfg['inks']); INK_RGB = np.stack([[int(v[i:i + 2], 16) / 255 for i in (1, 3, 5)] for v in cfg['inks'].values()])
+    if 'spots' in cfg:
+        alb[spots(p, cfg['spots'])] = cfg['spots']['rgb']
     for name in cfg['regions']:                 # later regions paint over earlier ones
         masks[name] = region(p, cfg['regions'][name])
         alb[masks[name]] = cfg['regions'][name]['rgb']
@@ -402,7 +415,7 @@ def live(cfg, cam):
     return dict(inks=list(cfg['inks'].values()), fur=cfg['fur'], regions=regions, head=cfg['head'], ramp=ramp(cfg), eyes=[list(e) for e in cfg['eyes']],
                 rest=dict(lift=cfg['rest']['lift'], turn=cfg['rest']['turn'], scale=cfg['live']['scale']),
                 camera={k: cam[k] for k in ('yaw', 'pitch', 'fov', 'dist', 'target')}, lights=dict(key=LIGHT['keypos'], rim=[2, 0.6, -1.5]),
-                **{k: v for k, v in cfg['live'].items() if k != 'scale'})
+                **({'spots': cfg['spots']} if 'spots' in cfg else {}), **{k: v for k, v in cfg['live'].items() if k != 'scale'})
 
 
 def main(pet, stl):
