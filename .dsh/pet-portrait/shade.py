@@ -3,10 +3,13 @@
 
     npm i --no-save three@0.169.0
     python3 -m pip install numpy pillow
+    npm i --no-save meshoptimizer@0.22.0
     python3 .dsh/pet-portrait/shade.py grizzly-bear path/to/model.stl
 
 Writes .dsh/pet-portraits/<pet>.json, which .dsh/build-ascii.py turns into
-stepped CSS frames. This runs offline only; the site never loads the model.
+stepped CSS frames, and, for the live pen (js/pet-live.js), pets/models/<pet>.bin
+(the simplified mesh, via mesh.cjs) and pets/models/<pet>.json (its skeleton,
+face and camera).
 
 The shader follows the usual text-shader recipe: render the model, then for
 each character cell pick a glyph from the light falling on it, a colour from
@@ -23,43 +26,162 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', 'pet-portraits')
 CW, CH = 8, 17                      # render pixels per character cell
 RAMP = ' .:-=+*#%@'
-# The inks, darkest first; css/ascii.css holds the same names as tokens.
-INKS = {'night': '#6E4636', 'umber': '#93604A', 'bark': '#B67F5A', 'fur': '#D49C6C',
-        'tawny': '#EDBC86', 'cream': '#F8DDB0', 'bone': '#FFF5E2'}
-INK_RGB = np.stack([[int(v[i:i + 2], 16) / 255 for i in (1, 3, 5)] for v in INKS.values()])
-NAMES = list(INKS)
 LIGHT = dict(key=2.2, amb=0.25, rim=0.7, fill=1.1, keypos=[-0.6, 2.4, 0.4])
+LIVE = os.path.join(HERE, '..', '..', 'pets', 'models')
 
 
-def grizzly_pose(lift=-0.4, turn=-0.45, head=1.1):
-    """Chin up and head turned to the viewer: the model's own pose hangs its head."""
-    neck = dict(sel={}, soft=[0.08, 0.36], pivot=[0, 0.2, 0.2])
-    return [dict(neck, axis=[1, 0, 0], angle=lift, scale=head), dict(neck, axis=[0, 1, 0], angle=turn)]
+def neck_pose(cfg, lift=None, turn=None, head=None):
+    """The head lifted and turned about the neck; the rest of the body stays put."""
+    r = cfg['rest']
+    neck = dict(sel=cfg['neck'].get('sel', {}), soft=cfg['neck']['soft'], softAxis=cfg['neck'].get('axis', 2), pivot=cfg['neck']['pivot'])
+    return [dict(neck, axis=[1, 0, 0], angle=r['lift'] if lift is None else lift, scale=r['scale'] if head is None else head),
+            dict(neck, axis=[0, 1, 0], angle=r['turn'] if turn is None else turn)]
 
 
-EAR_FLICK = dict(sel=dict(ymin=0.36, xmin=0.08, zmin=0.25), pivot=[0.2, 0.4, 0.45], axis=[0, 0, 1], angle=0.28)
-SNIFF = dict(sel=dict(zmin=0.9), pivot=[0, 0.0, 0.95], scale=1.12, move=[0, 0.015, 0])
+def poses(cfg):
+    ear, sniff = dict(cfg['ear_flick']), dict(cfg['sniff'])
+    low, asleep = cfg['rest']['lift'] + cfg['low'], cfg['rest']['lift'] + cfg['asleep']
+    return {
+        'still': dict(deform=neck_pose(cfg)),
+        'blink': dict(deform=neck_pose(cfg), eye='-'),
+        'ear': dict(deform=[ear] + neck_pose(cfg)),
+        'sniff': dict(deform=[sniff] + neck_pose(cfg)),
+        'happy': dict(deform=neck_pose(cfg), eye='^'),
+        'happy-ear': dict(deform=[ear] + neck_pose(cfg), eye='^'),
+        'low': dict(deform=neck_pose(cfg, lift=low)),
+        'low-blink': dict(deform=neck_pose(cfg, lift=low), eye='-'),
+        'asleep': dict(deform=neck_pose(cfg, lift=asleep), eye='-'),
+    }
 
+
+# Every pet, in model space after mesh.cjs/render.cjs turn it to stand up +y and face +z and fit
+# it to -1..1. `inks` darkest first, always these seven names (css/ascii.css holds the same
+# values as --tone-0..6); `regions` paint fur colours (later over earlier; the nose last);
+# `focus` is what the camera frames (`start` seeds the search when the head is small, `fill`
+# loosens it); `head` is the box the face leads from; `neck`, `ear_flick` and `sniff` bend the
+# model for the baked poses; `live` is the skeleton and face js/pet-live.js uses
+# (pets/models/<pet>.json).
 PETS = {
     'grizzly-bear': dict(
-        cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05,
+        orient=dict(up=[0, 0, 1], fwd=[0, -1, 0]),
+        inks={'night': '#6E4636', 'umber': '#93604A', 'bark': '#B67F5A', 'fur': '#D49C6C', 'tawny': '#EDBC86', 'cream': '#F8DDB0', 'bone': '#FFF5E2'},
+        cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(zmin=0.3, ymin=-0.2),
         fur=[0.62, 0.40, 0.27],
-        # model-space regions (the model is scaled to fit -1..1 with the snout towards +z)
-        regions=dict(muzzle=dict(zmin=0.74, ymax=0.12, rgb=[1.0, 0.86, 0.64]),
-                     nose=dict(zmin=0.96, ymin=-0.03, rgb=[0.10, 0.07, 0.07]),
-                     ears=dict(ymin=0.44, rgb=[0.84, 0.54, 0.36])),
-        eyes=[(-0.14, 0.16, 0.80), (0.14, 0.16, 0.80)], head_z=0.3,
-        poses={
-            'still': dict(deform=grizzly_pose()),
-            'blink': dict(deform=grizzly_pose(), eye='-'),
-            'ear': dict(deform=[EAR_FLICK] + grizzly_pose()),
-            'sniff': dict(deform=[SNIFF] + grizzly_pose()),
-            'happy': dict(deform=grizzly_pose(), eye='^'),
-            'happy-ear': dict(deform=[EAR_FLICK] + grizzly_pose(), eye='^'),
-            'low': dict(deform=grizzly_pose(lift=-0.3)),
-            'low-blink': dict(deform=grizzly_pose(lift=-0.3), eye='-'),
-            'asleep': dict(deform=grizzly_pose(lift=-0.22), eye='-'),
-        }),
+        regions=dict(ears=dict(ymin=0.44, rgb=[0.84, 0.54, 0.36]),
+                     muzzle=dict(zmin=0.74, ymax=0.12, rgb=[1.0, 0.86, 0.64]),
+                     nose=dict(zmin=0.96, ymin=-0.03, rgb=[0.10, 0.07, 0.07])),
+        eyes=[(-0.14, 0.16, 0.80), (0.14, 0.16, 0.80)], head=dict(zmin=0.3),
+        rest=dict(lift=-0.4, turn=-0.45, scale=1.1), low=0.1, asleep=0.18,
+        neck=dict(pivot=[0, 0.2, 0.2], soft=[0.08, 0.36]),
+        ear_flick=dict(sel=dict(ymin=0.36, xmin=0.08, zmin=0.25), pivot=[0.2, 0.4, 0.45], axis=[0, 0, 1], angle=0.28),
+        sniff=dict(sel=dict(zmin=0.9), pivot=[0, 0.0, 0.95], scale=1.12, move=[0, 0.015, 0]),
+        live=dict(mouth=[0, -0.07, 0.99], top=[0, 0.6, 0.5], cheeks=[[-0.26, 0.0, 0.72], [0.26, 0.0, 0.72]],
+                  pivots=dict(neck=[0, 0.12, 0.0], head=[0, 0.22, 0.32], ear=[0.22, 0.47, 0.52], nose=[0, 0.0, 0.92]),
+                  weights=dict(neck=dict(z=[-0.15, 0.2]), head=dict(z=[0.15, 0.42]), ear=dict(y=[0.45, 0.52], x=[0.12, 0.17], c=[0.24, 0.53], r=[0.12, 0.2]), nose=dict(z=[0.9, 0.97], y=[-0.06, 0.0])),
+                  scale=1.12)),
+    'gray-wolf': dict(
+        orient=dict(up=[0, 0, 1], fwd=[0, -1, 0]),
+        inks={'night': '#4C4E5C', 'umber': '#666A7A', 'bark': '#848899', 'fur': '#A4A8B6', 'tawny': '#C3C5CE', 'cream': '#DEDDDC', 'bone': '#F7F4EE'},
+        cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(zmin=0.45, ymin=-0.2),
+        fur=[0.56, 0.57, 0.63],
+        regions=dict(ears=dict(ymin=0.3, rgb=[0.42, 0.43, 0.5]),
+                     muzzle=dict(zmin=0.88, ymax=0.1, rgb=[0.98, 0.95, 0.9]),
+                     nose=dict(zmin=0.965, ymin=-0.06, ymax=0.02, rgb=[0.1, 0.1, 0.12])),
+        eyes=[(-0.086, 0.155, 0.956), (0.086, 0.156, 0.942)], head=dict(zmin=0.6),
+        rest=dict(lift=-0.35, turn=-0.4, scale=1.1), low=0.1, asleep=0.18,
+        neck=dict(pivot=[0, 0.1, 0.65], soft=[0.55, 0.78]),
+        ear_flick=dict(sel=dict(ymin=0.28, xmin=0.04, zmin=0.75), pivot=[0.11, 0.3, 0.85], axis=[0, 0, 1], angle=0.28),
+        sniff=dict(sel=dict(zmin=0.92, ymax=0.05), pivot=[0, -0.02, 0.95], scale=1.12, move=[0, 0.015, 0]),
+        live=dict(mouth=[0, -0.1, 0.95], top=[0, 0.42, 0.8], cheeks=[[-0.15, 0.05, 0.88], [0.15, 0.05, 0.88]],
+                  pivots=dict(neck=[0, 0.1, 0.45], head=[0, 0.15, 0.7], ear=[0.12, 0.31, 0.84], nose=[0, -0.02, 0.94]),
+                  weights=dict(neck=dict(z=[0.3, 0.6]), head=dict(z=[0.6, 0.78]), ear=dict(y=[0.28, 0.33], x=[0.03, 0.07], c=[0.12, 0.85], r=[0.08, 0.14]), nose=dict(z=[0.93, 0.97], y=[-0.08, -0.03])),
+                  scale=1.12)),
+    'bison': dict(
+        orient=dict(up=[0, 0, 1], fwd=[0, -1, 0]),
+        inks={'night': '#4A3128', 'umber': '#694535', 'bark': '#895D44', 'fur': '#A87956', 'tawny': '#C79A70', 'cream': '#E2C29C', 'bone': '#F8EDDA'},
+        cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(zmin=0.55, ymin=-0.3),
+        fur=[0.5, 0.33, 0.24],
+        regions={'mane': dict(ymin=0.05, zmax=0.82, rgb=[0.66, 0.46, 0.3]),
+                 'horn-l': dict(xmax=-0.22, ymin=0.18, zmin=0.65, rgb=[0.95, 0.9, 0.8]),
+                 'horn-r': dict(xmin=0.22, ymin=0.18, zmin=0.65, rgb=[0.95, 0.9, 0.8]),
+                 'muzzle': dict(zmin=0.92, ymax=0.02, rgb=[0.42, 0.3, 0.24]),
+                 'nose': dict(zmin=0.975, rgb=[0.1, 0.07, 0.07])},
+        eyes=[(-0.145, 0.126, 0.869), (0.145, 0.126, 0.869)], head=dict(zmin=0.55),
+        rest=dict(lift=-0.25, turn=-0.4, scale=1.1), low=0.1, asleep=0.18,
+        neck=dict(pivot=[0, 0.05, 0.6], soft=[0.5, 0.72]),
+        ear_flick=dict(sel=dict(ymin=0.06, ymax=0.18, xmin=0.2, zmin=0.65), pivot=[0.24, 0.12, 0.76], axis=[0, 0, 1], angle=0.3),
+        sniff=dict(sel=dict(zmin=0.93), pivot=[0, -0.06, 0.96], scale=1.12, move=[0, 0.015, 0]),
+        live=dict(mouth=[0, -0.13, 0.97], top=[0, 0.48, 0.7], cheeks=[[-0.2, 0.0, 0.86], [0.2, 0.0, 0.86]],
+                  pivots=dict(neck=[0, 0.05, 0.4], head=[0, 0.1, 0.65], ear=[0.24, 0.12, 0.76], nose=[0, -0.06, 0.95]),
+                  weights=dict(neck=dict(z=[0.3, 0.55]), head=dict(z=[0.55, 0.72]), ear=dict(y=[0.06, 0.1], x=[0.2, 0.24], c=[0.27, 0.76], r=[0.05, 0.1]), nose=dict(z=[0.94, 0.98], y=[-0.12, -0.07])),
+                  scale=1.12)),
+    'lion': dict(
+        orient=dict(up=[0, 0, 1], fwd=[0, -1, 0]),
+        inks={'night': '#7A4826', 'umber': '#9C6330', 'bark': '#BE8240', 'fur': '#D9A255', 'tawny': '#EBC175', 'cream': '#F6DDA2', 'bone': '#FFF4D8'},
+        cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(ymin=0.15, zmin=0.0), fill=0.7, start=dict(target=[0, 0.6, 0.3], dist=3.0),
+        fur=[0.86, 0.64, 0.36],
+        regions=dict(mane=dict(ymin=0.05, zmax=0.66, rgb=[0.56, 0.31, 0.16]),
+                     muzzle=dict(zmin=0.86, ymin=0.3, ymax=0.52, rgb=[1.0, 0.9, 0.7]),
+                     nose=dict(zmin=0.975, ymin=0.42, rgb=[0.35, 0.18, 0.14])),
+        eyes=[(-0.189, 0.598, 0.752), (0.086, 0.603, 0.734)], head=dict(ymin=0.15),
+        rest=dict(lift=0.0, turn=-0.35, scale=1.05), low=0.1, asleep=0.18,
+        neck=dict(pivot=[-0.05, 0.2, 0.4], soft=[0.05, 0.3], axis=1),
+        ear_flick=dict(sel=dict(ymin=0.68, xmin=0.15, zmin=0.3), pivot=[0.22, 0.72, 0.5], axis=[0, 0, 1], angle=0.28),
+        sniff=dict(sel=dict(zmin=0.9, ymin=0.36, ymax=0.52), pivot=[-0.07, 0.45, 0.95], scale=1.12, move=[0, 0.015, 0]),
+        live=dict(mouth=[-0.07, 0.35, 0.97], top=[-0.05, 0.97, 0.45], cheeks=[[-0.25, 0.47, 0.86], [0.12, 0.47, 0.86]],
+                  pivots=dict(neck=[-0.05, 0.0, 0.4], head=[-0.05, 0.25, 0.55], ear=[0.25, 0.75, 0.5], nose=[-0.07, 0.45, 0.94]),
+                  weights=dict(neck=dict(y=[-0.2, 0.1]), head=dict(y=[0.1, 0.3]), ear=dict(cx=-0.05, y=[0.7, 0.75], x=[0.2, 0.25], c=[0.3, 0.5], r=[0.08, 0.14]), nose=dict(z=[0.92, 0.97], y=[0.38, 0.42])),
+                  scale=1.06)),
+    'alpha-black-panther': dict(
+        orient=dict(up=[0, 0, 1], fwd=[-1, 0, 0]),
+        inks={'night': '#433E58', 'umber': '#585273', 'bark': '#6F688E', 'fur': '#8881A8', 'tawny': '#A6A0C2', 'cream': '#C7C2DA', 'bone': '#EEEBF6'},
+        cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(zmin=0.45, ymin=-0.1), start=dict(target=[0, 0.25, 0.75], dist=2.5),
+        fur=[0.5, 0.47, 0.62],
+        regions=dict(muzzle=dict(zmin=0.95, ymax=0.15, rgb=[0.62, 0.59, 0.74]),
+                     nose=dict(zmin=0.99, rgb=[0.12, 0.1, 0.15])),
+        eyes=[(0.003, 0.238, 0.933), (0.101, 0.218, 0.95)], head=dict(zmin=0.55),
+        rest=dict(lift=-0.3, turn=-0.4, scale=1.1), low=0.1, asleep=0.18,
+        neck=dict(pivot=[0.03, 0.2, 0.6], soft=[0.5, 0.72]),
+        ear_flick=dict(sel=dict(ymin=0.31, xmin=0.1, zmin=0.65), pivot=[0.15, 0.32, 0.78], axis=[0, 0, 1], angle=0.28),
+        sniff=dict(sel=dict(zmin=0.94), pivot=[0.08, 0.13, 0.98], scale=1.12, move=[0, 0.015, 0]),
+        live=dict(mouth=[0.08, 0.07, 0.97], top=[0.05, 0.42, 0.75], cheeks=[[-0.03, 0.16, 0.93], [0.15, 0.16, 0.93]],
+                  pivots=dict(neck=[0.03, 0.15, 0.4], head=[0.03, 0.2, 0.65], ear=[0.17, 0.33, 0.8], nose=[0.08, 0.13, 0.97]),
+                  weights=dict(neck=dict(z=[0.3, 0.55]), head=dict(z=[0.55, 0.7]), ear=dict(cx=0.05, y=[0.31, 0.35], x=[0.05, 0.09], c=[0.12, 0.78], r=[0.06, 0.1]), nose=dict(z=[0.95, 0.99], y=[0.08, 0.11])),
+                  scale=1.12)),
+    'ironclad-war-elephant': dict(
+        orient=dict(up=[0, 0, 1], fwd=[0, -1, 0]),
+        inks={'night': '#55504F', 'umber': '#716A69', 'bark': '#8E8684', 'fur': '#ABA29F', 'tawny': '#C6BEBA', 'cream': '#DFD8D3', 'bone': '#F7F2EC'},
+        cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(zmin=0.35, ymin=-0.3), fill=0.7, start=dict(target=[0, 0.2, 0.6], dist=3.0),
+        fur=[0.62, 0.58, 0.57],
+        regions={'ear-l': dict(xmax=-0.3, ymin=-0.1, zmin=0.2, rgb=[0.78, 0.64, 0.62]),
+                 'ear-r': dict(xmin=0.22, ymin=-0.1, zmin=0.2, rgb=[0.78, 0.64, 0.62]),
+                 'nose': dict(zmin=0.86, ymin=0.06, rgb=[0.3, 0.27, 0.27])},
+        eyes=[(-0.201, 0.28, 0.485), (0.116, 0.273, 0.503)], head=dict(zmin=0.3),
+        rest=dict(lift=-0.1, turn=-0.3, scale=1.05), low=0.1, asleep=0.18,
+        neck=dict(pivot=[0, 0.25, 0.3], soft=[0.25, 0.45]),
+        ear_flick=dict(sel=dict(xmin=0.22, ymin=-0.1, zmin=0.2), pivot=[0.22, 0.3, 0.42], axis=[0, 1, 0], angle=0.3),
+        sniff=dict(sel=dict(zmin=0.62, ymax=0.3), pivot=[-0.05, 0.1, 0.6], scale=1.06, move=[0, 0.03, 0]),
+        live=dict(mouth=[-0.05, 0.0, 0.6], top=[-0.04, 0.62, 0.3], cheeks=[[-0.22, 0.18, 0.5], [0.14, 0.18, 0.5]],
+                  pivots=dict(neck=[0, 0.15, 0.1], head=[0, 0.25, 0.35], ear=[0.22, 0.3, 0.42], nose=[-0.05, 0.1, 0.6]),
+                  weights=dict(neck=dict(z=[0.0, 0.25]), head=dict(z=[0.25, 0.4]), ear=dict(cx=-0.04, y=[-0.12, -0.05], x=[0.22, 0.28], c=[0.4, 0.35], r=[0.2, 0.3]), nose=dict(z=[0.6, 0.7], y=[-0.3, 0.3])),
+                  scale=1.06)),
+    'lynx': dict(
+        orient=dict(up=[0, 0, 1], fwd=[-0.71, -0.70, 0]),
+        inks={'night': '#5C4535', 'umber': '#7F604A', 'bark': '#A07E62', 'fur': '#BF9C7C', 'tawny': '#D8BA98', 'cream': '#EBD6BC', 'bone': '#FAF1E4'},
+        cols=72, rows=24, render_rows=30, yaw=-0.2, pitch=0.05, focus=dict(ymin=0.1, xmin=0.45), start=dict(target=[0.75, 0.5, -0.1], dist=2.0),
+        fur=[0.78, 0.62, 0.48],
+        regions=dict(ears=dict(ymin=0.6, rgb=[0.36, 0.28, 0.24]),
+                     muzzle=dict(xmin=0.78, ymax=0.34, zmin=0.04, rgb=[1.0, 0.94, 0.85]),
+                     nose=dict(xmin=0.85, ymin=0.29, zmin=0.105, rgb=[0.4, 0.22, 0.2])),
+        eyes=[(0.792, 0.407, 0.04), (0.901, 0.407, 0.016)], head=dict(xmin=0.5, ymin=0.15),
+        rest=dict(lift=0.0, turn=-0.45, scale=1.08), low=0.1, asleep=0.18,
+        neck=dict(sel=dict(xmin=0.4), pivot=[0.7, 0.32, -0.05], soft=[0.5, 0.65], axis=0),
+        ear_flick=dict(sel=dict(xmin=0.84, ymin=0.52), pivot=[0.9, 0.54, -0.15], axis=[0.39, 0, 0.92], angle=0.28),
+        sniff=dict(sel=dict(xmin=0.8, ymin=0.24, ymax=0.36, zmin=0.05), pivot=[0.88, 0.31, 0.1], scale=1.12, move=[0, 0.015, 0]),
+        live=dict(mouth=[0.88, 0.24, 0.12], top=[0.78, 0.72, -0.1], cheeks=[[0.72, 0.33, 0.05], [0.95, 0.33, 0.05]],
+                  pivots=dict(neck=[0.4, 0.3, -0.05], head=[0.68, 0.35, -0.05], ear=[0.9, 0.55, -0.12], nose=[0.86, 0.31, 0.08]),
+                  weights=dict(neck=dict(x=[0.3, 0.5]), head=dict(x=[0.5, 0.65]), ear=dict(cx=0.775, y=[0.52, 0.58], x=[0.08, 0.11], c=[0.15, -0.12], r=[0.1, 0.16]), nose=dict(z=[0.07, 0.11], y=[0.26, 0.3])),
+                  scale=1.1)),
 }
 
 
@@ -70,14 +192,14 @@ def render(stl, tmp, cols, rows, modes=('lit', 'normal', 'depth', 'pos'), **opts
     return {k: np.asarray(Image.open(f'{out}-{k}.png').convert('RGBA')).astype(float) / 255 for k in modes}
 
 
-def fit(stl, tmp, cols, rows, yaw, pitch, deform, fov=26, fill=0.8, lift=0.04):
-    """Aim the camera so the head (model z > 0.3, above the chest) fills the frame."""
-    t, dist = np.array([0, 0.2, 0.6]), 2.6
+def fit(stl, tmp, cols, rows, yaw, pitch, deform, focus, orient, fov=26, fill=0.8, lift=0.04, start=None):
+    """Aim the camera so the head (the `focus` box: in front of the chest, above the legs) fills the frame."""
+    t, dist = np.array((start or {}).get('target', [0, 0.2, 0.6])), (start or {}).get('dist', 2.6)
     for _ in range(4):
-        R = render(stl, tmp, cols // 2, rows // 2, yaw=yaw, pitch=pitch, fov=fov, dist=dist, target=t.tolist(), modes=['pos'], deform=deform)
+        R = render(stl, tmp, cols // 2, rows // 2, yaw=yaw, pitch=pitch, fov=fov, dist=dist, target=t.tolist(), modes=['pos'], deform=deform, **orient)
         im = R['pos']; h, w = im.shape[:2]
         p = im[..., :3] * 2 - 1
-        ys, xs = np.nonzero((im[..., 3] > 0.5) & (p[..., 2] > 0.3) & (p[..., 1] > -0.2))
+        ys, xs = np.nonzero((im[..., 3] > 0.5) & region(p, focus))
         cx, cy = (xs.min() + xs.max()) / 2 / w - 0.5, (ys.min() + ys.max()) / 2 / h - 0.5 - lift
         f = -np.array([np.sin(yaw) * np.cos(pitch), np.sin(pitch), np.cos(yaw) * np.cos(pitch)])
         right = np.cross(f, [0, 1, 0]); right /= np.linalg.norm(right); up = np.cross(right, f)
@@ -109,6 +231,11 @@ def region(p, spec):
     return m
 
 
+def ramp(cfg):
+    """What brightness reads as the densest fur glyph: the grizzly's 0.82, scaled by how light the pet's fur is."""
+    return round(0.82 * float(np.array(cfg['fur']) @ [0.5, 0.35, 0.15]) / 0.4905, 3)
+
+
 def shade(R, cfg, cols, rows, eye='o', mouth='w', body_dim=0.8, edge_frac=0.1, dstep=0.02):
     a = R['lit'][..., 3]; m = a > 0.5
     lum = R['lit'][..., 0]
@@ -117,11 +244,12 @@ def shade(R, cfg, cols, rows, eye='o', mouth='w', body_dim=0.8, edge_frac=0.1, d
     z = p[..., 2]
     alb = np.broadcast_to(np.array(cfg['fur']), p.shape).copy()
     masks = {}
-    for name in ('ears', 'muzzle', 'nose'):     # later regions paint over earlier ones
+    NAMES = list(cfg['inks']); INK_RGB = np.stack([[int(v[i:i + 2], 16) / 255 for i in (1, 3, 5)] for v in cfg['inks'].values()])
+    for name in cfg['regions']:                 # later regions paint over earlier ones
         masks[name] = region(p, cfg['regions'][name])
         alb[masks[name]] = cfg['regions'][name]['rgb']
     rgb = alb * (0.3 + 0.95 * L[..., None])
-    head = z > cfg['head_z']
+    head = region(p, cfg['head'])
     rgb[~head] *= body_dim                      # the body sinks back so the face leads
     depth = np.where(m, R['depth'][..., 0], 1.0)
     sx, sy = sobel(m.astype(float))
@@ -151,7 +279,7 @@ def shade(R, cfg, cols, rows, eye='o', mouth='w', body_dim=0.8, edge_frac=0.1, d
             if e.sum() > CW * CH * edge_frac:   # line glyphs a little brighter than the fill
                 put(r, c, '|/_\\'[np.bincount(slope[sl][e], minlength=4).argmax()], NAMES[min(len(NAMES) - 1, ink + 2)])
             else:
-                t = min(0.999, float(col @ [0.5, 0.35, 0.15]) / 0.82)
+                t = min(0.999, float(col @ [0.5, 0.35, 0.15]) / ramp(cfg))
                 put(r, c, RAMP[max(1, min(9, int(t * 10)))], NAMES[ink])
 
     def cell_of(mask):
@@ -177,25 +305,39 @@ def shade(R, cfg, cols, rows, eye='o', mouth='w', body_dim=0.8, edge_frac=0.1, d
     return {k: [''.join(row).rstrip() for row in g] for k, g in layers.items()}
 
 
+def live(cfg, cam):
+    """What js/pet-live.js needs besides the mesh: inks, fur regions, face, skeleton and camera."""
+    ids = {'muzzle': 2, 'nose': 3}
+    regions = [dict(id=ids.get(name, 1), rgb=spec['rgb'], **{k: v for k, v in spec.items() if k != 'rgb'}) for name, spec in cfg['regions'].items()]
+    return dict(inks=list(cfg['inks'].values()), fur=cfg['fur'], regions=regions, head=cfg['head'], ramp=ramp(cfg), eyes=[list(e) for e in cfg['eyes']],
+                rest=dict(lift=cfg['rest']['lift'], turn=cfg['rest']['turn'], scale=cfg['live']['scale']),
+                camera={k: cam[k] for k in ('yaw', 'pitch', 'fov', 'dist', 'target')}, lights=dict(key=LIGHT['keypos'], rim=[2, 0.6, -1.5]),
+                **{k: v for k, v in cfg['live'].items() if k != 'scale'})
+
+
 def main(pet, stl):
     cfg = PETS[pet]
     cols, rows, tall = cfg['cols'], cfg['rows'], cfg['render_rows']
+    subprocess.run(['node', os.path.join(HERE, 'mesh.cjs'), pet, stl, json.dumps(dict(cfg['orient'], tris=cfg.get('tris', 1000)))], check=True)
     with tempfile.TemporaryDirectory() as tmp:
-        cam = fit(stl, tmp, cols, tall, cfg['yaw'], cfg['pitch'], cfg['poses']['still']['deform'])
+        cam = fit(stl, tmp, cols, tall, cfg['yaw'], cfg['pitch'], neck_pose(cfg), cfg['focus'], cfg['orient'], fill=cfg.get('fill', 0.8), start=cfg.get('start'))
         cam.update(LIGHT)
-        poses = {}
-        for name, pose in cfg['poses'].items():
-            R = render(stl, tmp, cols, tall, deform=pose['deform'], **cam)
-            poses[name] = shade(R, cfg, cols, tall, eye=pose.get('eye', 'o'))
+        baked = {}
+        for name, pose in poses(cfg).items():
+            R = render(stl, tmp, cols, tall, deform=pose['deform'], **cam, **cfg['orient'])
+            baked[name] = shade(R, cfg, cols, tall, eye=pose.get('eye', 'o'))
     # crop every pose to the same rows: the art's top, then as many rows as the pen holds
-    used = [r for pose in poses.values() for g in pose.values() for r, row in enumerate(g) if row.strip()]
+    used = [r for pose in baked.values() for g in pose.values() for r, row in enumerate(g) if row.strip()]
     top = max(0, min(used) - 1)
-    poses = {n: {k: g[top:top + rows] for k, g in pose.items()} for n, pose in poses.items()}
+    baked = {n: {k: g[top:top + rows] for k, g in pose.items()} for n, pose in baked.items()}
     os.makedirs(OUT, exist_ok=True)
     with open(os.path.join(OUT, f'{pet}.json'), 'w') as f:
-        json.dump({'cols': cols, 'rows': rows, 'inks': NAMES, 'poses': poses}, f, indent=1, ensure_ascii=False)
+        json.dump({'cols': cols, 'rows': rows, 'inks': list(cfg['inks']), 'poses': baked}, f, indent=1, ensure_ascii=False)
         f.write('\n')
-    print(f'{pet}: {len(poses)} poses, rows {top}..{top + rows} of {tall}')
+    with open(os.path.join(LIVE, f'{pet}.json'), 'w') as f:
+        json.dump(live(cfg, cam), f, separators=(',', ':'))
+        f.write('\n')
+    print(f'{pet}: {len(baked)} poses, rows {top}..{top + rows} of {tall}')
 
 
 if __name__ == '__main__':

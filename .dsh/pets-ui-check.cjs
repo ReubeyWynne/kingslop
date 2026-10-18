@@ -7,7 +7,8 @@ const root=path.resolve('_site'),output=path.resolve('.dsh/pets-preview');
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml'};
 const server=http.createServer((req,res)=>{let file=path.resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname));if(file!==root&&!file.startsWith(root+path.sep))return res.writeHead(403).end();if(fs.existsSync(file)&&fs.statSync(file).isDirectory())file=path.join(file,'index.html');if(!fs.existsSync(file))return res.writeHead(404).end();res.setHeader('Content-Type',mime[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).pipe(res);});
 (async()=>{await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin='http://127.0.0.1:'+server.address().port;fs.mkdirSync(output,{recursive:true});
-const browser=await chromium.launch({headless:true});const errors=[];
+// The care and layout runs draw the baked frames (no WebGL here); the live pets get their own browser below.
+const browser=await chromium.launch({headless:true,args:['--disable-3d-apis']});const errors=[];
 try{
  // Six in the morning on the page's clock, so nobody is asleep yet.
  const context=await browser.newContext({viewport:{width:390,height:844},timezoneId:'UTC'}),page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
@@ -30,7 +31,7 @@ try{
  for(const p of pets){const card=page.locator('#pet-'+p.id);assert.equal(await card.locator('.pet-name b').textContent(),p.name);assert.equal(await card.locator('.pet-ladder tbody tr').count(),p.skill.ladder.length);assert.equal(await card.locator('.pet-ladder thead th[data-level]').count(),p.advances);}
  // Untamed pets stand in their pens without care controls.
  assert.equal(await page.locator('.pet-care:visible').count(),0);assert.equal(await pen('lion').getAttribute('data-mood'),'content');
- assert.equal(await pen('lion').evaluate(n=>getComputedStyle(n,'::before').animationName),'ascii-pet-lion');
+ assert.equal(await pen('moose').evaluate(n=>getComputedStyle(n,'::before').animationName),'ascii-pet-moose');
  // Every dossier is a link, and one is open at a time.
  await page.goto(origin+'/pets/?lang=en#pet-moose');await ready();assert.equal(await page.locator('#pet-moose .pet-dossier').getAttribute('open'),'');
  await page.locator('#pet-gray-wolf summary').click();assert.equal(await page.locator('.pet-dossier[open]').count(),1);await page.waitForURL(/#pet-gray-wolf$/);
@@ -95,14 +96,14 @@ try{
  // Without JavaScript the roster and dossiers still read.
  const nojs=await browser.newContext({javaScriptEnabled:false});const plain=await nojs.newPage();await plain.goto(origin+'/pets/');assert.equal(await plain.locator('.pet-card').count(),pets.length);assert.equal(await plain.locator('[data-field="owned"]').first().isDisabled(),true);await plain.locator('#pet-bison summary').click();assert.equal(await plain.locator('#pet-bison .pet-ladder').isVisible(),true);await nojs.close();
  const home=await browser.newPage();await home.goto(origin+'/?lang=en');assert.equal(await home.locator('#tools a[href="pets/"]').count(),1);await home.close();
- // The grizzly drawn live (js/pet-live.js): with WebGL 2 its canvas covers the pen, draws, and reacts; the baked
+ // The pets drawn live (js/pet-live.js): with WebGL 2 the grizzly's canvas covers the pen, draws, and reacts; the baked
  // frames stay underneath. With reduced motion, or with the script blocked, the baked frames show.
  const gpu=await chromium.launch({headless:true,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
  try{
   const ctx=await gpu.newContext({viewport:{width:390,height:900}}),live=await ctx.newPage();live.on('pageerror',e=>errors.push(e.message));
   await live.goto(origin+'/pets/?lang=en');const pen=live.locator('#pet-grizzly-bear [data-pen]');await pen.scrollIntoViewIfNeeded();
   await live.waitForFunction(()=>document.querySelector('#pet-grizzly-bear [data-pen]').hasAttribute('data-live'),null,{timeout:10000});
-  assert.equal(await live.locator('#pet-grizzly-bear canvas.pet-live').count(),1);assert.equal(await live.locator('#pet-lion canvas.pet-live').count(),0);
+  assert.equal(await live.locator('#pet-grizzly-bear canvas.pet-live').count(),1);assert.equal(await live.locator('#pet-moose canvas.pet-live').count(),0);
   assert.equal(await live.locator('#pet-grizzly-bear .ascii-mini--portrait').evaluate(n=>getComputedStyle(n).visibility),'hidden');
   const box=await pen.boundingBox(),canvasBox=await live.locator('#pet-grizzly-bear canvas.pet-live').boundingBox();
   assert.ok(Math.abs(canvasBox.width-box.width)<1&&canvasBox.height<=box.height+1,'the live pet fits its pen');
@@ -111,12 +112,17 @@ try{
   await live.locator('#pet-grizzly-bear .pet-pen').screenshot({path:path.join(output,'live-asleep.png')});
   await pen.evaluate(n=>{n.dataset.mood='content';n.dataset.react='pet';});await live.waitForTimeout(1500);
   await live.locator('#pet-grizzly-bear .pet-pen').screenshot({path:path.join(output,'live-petted.png')});
+  // every other pet with a model comes alive too, its canvas drawn over its pen
+  for(const id of fs.readdirSync(path.join(__dirname,'pet-portraits')).map(f=>f.replace(/\.json$/,'')).filter(id=>id!=='grizzly-bear')){
+   const other=live.locator('#pet-'+id+' [data-pen]');await other.scrollIntoViewIfNeeded();
+   await live.waitForFunction(id=>document.querySelector('#pet-'+id+' [data-pen]').hasAttribute('data-live'),id,{timeout:10000});
+   await live.waitForTimeout(400);assert.ok((await live.locator('#pet-'+id+' canvas.pet-live').screenshot()).length>3000,id+' draws live');}
   await ctx.close();
   const still=await gpu.newContext({viewport:{width:390,height:900},reducedMotion:'reduce'}),calm=await still.newPage();
   await calm.goto(origin+'/pets/?lang=en');await calm.waitForTimeout(800);
   assert.equal(await calm.locator('canvas.pet-live').count(),0);assert.equal(await calm.locator('#pet-grizzly-bear .ascii-mini--portrait').evaluate(n=>getComputedStyle(n).visibility),'visible');
   await still.close();
  }finally{await gpu.close();}
- assert.deepEqual(errors,[]);console.log('Pets UI: pens, deep-linked dossiers, taming, petting by rubbing and feeding by dragging, care with real-time decay, sleep and reactions, the live grizzly and its baked fallback, the Advances table, static fallback and 17 languages at 5 widths pass.');
+ assert.deepEqual(errors,[]);console.log('Pets UI: pens, deep-linked dossiers, taming, petting by rubbing and feeding by dragging, care with real-time decay, sleep and reactions, the live pets and their baked fallback, the Advances table, static fallback and 17 languages at 5 widths pass.');
 }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1;});
