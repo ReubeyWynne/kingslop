@@ -125,7 +125,7 @@ the rest. Every disclosure gets a stable id and deep link (AGENTS.md).
 ### 5. Queue that survives navigation — `js/import-queue.js`
 
 The worker dies with the page, so the dock persists its state in IndexedDB
-(`bh:screen-import:v1`): each file's blob, SHA-256, status (`queued`,
+(database `bh-screen-import`): each file's blob, SHA-256, status (`queued`,
 `reading`, `review`, `applied`, `failed`), proposals and the player's edits.
 On load the module restores the chip and resumes any `queued`/`reading` file.
 Wrap every IndexedDB call; with storage unavailable the dock still works for
@@ -201,10 +201,15 @@ Each step lands as its own commit with its checks passing.
   production reads (`.dsh/screen-import-check.cjs`). To record reads for a new
   fixture: build the site, then `node .dsh/import-record.cjs <fixture-name>`.
   The real-worker browser check comes with the dock (step 6).
-- [ ] 6. Dock UI: `_includes/screen-import.html`, `css/screen-import.css`,
-  module in `js/screen-import.js`, i18n keys in every `i18n/*.js`. Phone
-  first (390px), then desktop. Screenshot review in CI.
-- [ ] 7. IndexedDB queue and resume across pages.
+- [x] 6. Dock UI: `_includes/screen-import.html` (in the layout),
+  `css/screen-import.css`, the `screen-import` module in `js/screen-import.js`
+  (loads the OCR side on first use), English keys `import.*` in `i18n/en.js`
+  (other languages fall back). Pages open it with `data-screen-import="pick"`
+  (Town Centre's "read screenshots"); a pasted image anywhere also opens it.
+  Browser check through the real worker: `.dsh/screen-import-ui-check.cjs`,
+  previews in `.dsh/import-preview/`, CI group `import`.
+- [x] 7. IndexedDB queue (`js/import-queue.js`); reviews and unread files
+  resume on the next page.
 - [ ] 8. `backpack-other` adapter: tile finder, icon signatures, count crops,
   stitching and newest-wins.
 - [ ] 9. Hero gear onto the shared dock; remove its private dialog.

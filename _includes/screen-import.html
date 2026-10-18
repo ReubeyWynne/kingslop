@@ -1,0 +1,46 @@
+<aside class="import-dock" id="screen-import" data-module="screen-import" data-filter="all" hidden aria-labelledby="import-title">
+  <button type="button" class="import-chip" data-target="screen-import.chip" data-action="screen-import.toggle" aria-expanded="false" aria-controls="import-sheet" data-deep-link="screenshot-import">
+    <span class="import-chip-mark" aria-hidden="true">❧</span>
+    <span data-i18n="import.chip">Import</span>
+    <output data-target="screen-import.count"></output>
+  </button>
+  <section class="import-sheet" id="import-sheet" data-target="screen-import.sheet" hidden>
+    <header class="import-head">
+      <h2 id="import-title" data-i18n="import.title">Screenshot import</h2>
+      <button type="button" class="import-prompt" data-action="screen-import.toggle" data-i18n="import.minimise">minimise</button>
+    </header>
+    <p class="import-status" data-target="screen-import.status" role="status"></p>
+    <div class="import-shot" data-target="screen-import.shot" hidden>
+      <p class="import-shot-name"><strong data-target="screen-import.screen"></strong> <small data-target="screen-import.name"></small></p>
+      <ul class="import-grid" data-target="screen-import.tiles"></ul>
+      <div class="import-bar">
+        <button type="button" class="import-prompt" data-action="screen-import.needsLook" aria-pressed="false" data-target="screen-import.needsLook"></button>
+        <span class="import-steps">
+          <button type="button" class="import-prompt" data-action="screen-import.prev" aria-label="Previous screenshot" data-i18n-key="import.prev" data-i18n-attr="aria-label">‹</button>
+          <output data-target="screen-import.position"></output>
+          <button type="button" class="import-prompt" data-action="screen-import.next" aria-label="Next screenshot" data-i18n-key="import.next" data-i18n-attr="aria-label">›</button>
+        </span>
+      </div>
+      <div class="import-bar">
+        <button type="button" class="import-prompt" data-action="screen-import.discard" data-i18n="import.discard">skip this shot</button>
+        <button type="button" class="import-apply" data-action="screen-import.apply" data-target="screen-import.apply" data-i18n="import.apply">apply</button>
+      </div>
+    </div>
+    <div class="import-bar">
+      <button type="button" class="import-prompt" data-action="screen-import.pick" data-i18n="import.add">add screenshots</button>
+      <button type="button" class="import-prompt" data-action="screen-import.undo" data-target="screen-import.undo" data-i18n="import.undo" hidden>undo last apply</button>
+    </div>
+    <p class="import-gloss" data-i18n="import.gloss">Backpack Overview popups for now: tap the chart beside Backpack, then screenshot its Resources and Speedups tabs. You can also paste a screenshot anywhere on the site.</p>
+    <input type="file" accept="image/*" multiple hidden data-target="screen-import.files" data-action="screen-import.add">
+  </section>
+  <template data-target="screen-import.tile">
+    <li class="import-tile" data-state="sure">
+      <img data-field="crop" alt="" width="358" height="40">
+      <label class="import-field">
+        <span class="import-name"><span data-field="label"></span><small class="import-note" data-field="note"></small></span>
+        <input type="number" inputmode="numeric" min="0" step="1" data-field="value" data-action="screen-import.edit">
+      </label>
+      <label class="import-include"><input type="checkbox" data-field="include" data-action="screen-import.edit"><span class="import-hidden" data-i18n="import.include">include</span></label>
+    </li>
+  </template>
+</aside>

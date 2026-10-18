@@ -203,13 +203,23 @@ jobs:
               - js/ocr-text.js
               - css/hero-gear.css
               - img/hero-gear/**
+            import:
+              - *shared
+              - .dsh/screen-import*.cjs
+              - .dsh/import-fixtures/**
+              - js/ocr-*.js
+              - js/screen-import*.js
+              - js/import-*.js
+              - js/import-adapters/**
+              - css/screen-import.css
+              - town-centre/**
       - id: plan
         shell: bash
         env:
           FILTERED: ${{ github.event_name == 'pull_request' }}
           CHANGES: ${{ steps.filter.outputs.changes || '[]' }}
         run: |
-          all='["interactions","heroes","masters","pets","castle","events","governor","town","deck","ascii-capture","hero-gear"]'
+          all='["interactions","heroes","masters","pets","castle","events","governor","town","deck","ascii-capture","hero-gear","import"]'
           if [ "$FILTERED" != true ]; then
             echo "logic=true" >> "$GITHUB_OUTPUT"
             echo "ascii=true" >> "$GITHUB_OUTPUT"
@@ -398,6 +408,9 @@ jobs:
       - name: Check hero gear automatic recommendations
         if: matrix.group == 'hero-gear'
         run: node .dsh/hero-gear-interaction-check.cjs
+      - name: Check screenshot import dock
+        if: matrix.group == 'import'
+        run: node .dsh/screen-import-ui-check.cjs
       - name: Upload previews
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -419,6 +432,7 @@ jobs:
             .dsh/deck-preview/
             .dsh/sim-preview/
             .dsh/ascii-preview/
+            .dsh/import-preview/
 
   check:
     needs: [changes, logic, build, browser]
