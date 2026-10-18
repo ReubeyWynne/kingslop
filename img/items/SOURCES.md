@@ -11,7 +11,7 @@ No generated raster artwork is included.
 | `taming-mark-advanced.webp`, `taming-mark-common.webp` | `https://kingshotoptimizer.com/images/icons/resources/{name}.webp` |
 | `shard-mythic.webp`, `shard-epic.webp`, `shard-rare.webp` | `https://kingshotoptimizer.com/images/icons/resources/{name}.webp` |
 | `general-speedup.webp`, `learning-speedup.webp` | `https://kingshotoptimizer.com/images/icons/resources/{name}.webp` |
-| `bread.webp`, `wood.webp`, `stone.webp`, `iron.webp` | `https://kingshotoptimizer.com/images/icons/resources/{name}.webp` |
+| `bread.webp`, `wood.webp`, `stone.webp`, `iron.webp`, `stamina.webp` | `https://kingshotoptimizer.com/images/icons/resources/{name}.webp` |
 
 The 64-pixel WebP files are unchanged. Assets are served from this
 repository, without runtime hotlinks. `healing-speedup.svg` and `hero-widget-chest.svg` are original static vector

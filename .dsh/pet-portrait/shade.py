@@ -192,6 +192,7 @@ PETS = {
                      muzzle=dict(zmin=0.9, ymax=0.25, rgb=[0.62, 0.48, 0.38]),
                      nose=dict(zmin=0.985, ymin=0.08, ymax=0.16, xmin=-0.07, xmax=0.07, rgb=[0.15, 0.1, 0.08])),
         eyes=[(-0.11, 0.333, 0.736), (0.111, 0.334, 0.734)], head=dict(zmin=0.6),
+        shape=[dict(sel=dict(ymin=0.45), pivot=[0, 0.47, 0.66], scale=0.55)],   # the model's antlers are wider than the pen
         rest=dict(lift=-0.15, turn=-0.4, scale=1.08), low=0.1, asleep=0.18,
         neck=dict(pivot=[0, 0.3, 0.55], soft=[0.45, 0.65]),
         ear_flick=dict(sel=dict(ymin=0.38, ymax=0.47, xmin=0.15, zmin=0.55), pivot=[0.16, 0.42, 0.62], axis=[0, 0, 1], angle=0.3),
@@ -247,17 +248,17 @@ PETS['mighty-bison'] = dict(PETS['bison'],
            dict(sel=dict(xmin=0.22, ymin=0.18, zmin=0.65), pivot=[0.24, 0.2, 0.76], scale=1.3)],
     rest=dict(PETS['bison']['rest'], lift=-0.3))
 PETS['regal-white-lion'] = dict(PETS['lion'],
-    inks={'night': '#8C7A62', 'umber': '#A8957A', 'bark': '#C4B194', 'fur': '#DACBB0', 'tawny': '#EBE0CA', 'cream': '#F6EFE2', 'bone': '#FFFFFF'},
-    fur=[0.92, 0.88, 0.8],
-    regions=dict(mane=dict(PETS['lion']['regions']['mane'], rgb=[0.86, 0.74, 0.52]),
-                 muzzle=dict(PETS['lion']['regions']['muzzle'], rgb=[1.0, 1.0, 0.97]),
-                 nose=dict(PETS['lion']['regions']['nose'], rgb=[0.55, 0.36, 0.36])),
+    inks={'night': '#6E6A8C', 'umber': '#A07A48', 'bark': '#C9984E', 'fur': '#E2B868', 'tawny': '#EED6A2', 'cream': '#F8EEDB', 'bone': '#FFFFFF'},
+    fur=[0.95, 0.9, 0.8],
+    regions=dict(mane=dict(PETS['lion']['regions']['mane'], rgb=[0.95, 0.68, 0.32]),
+                 muzzle=dict(PETS['lion']['regions']['muzzle'], rgb=[1.0, 0.98, 0.93]),
+                 nose=dict(PETS['lion']['regions']['nose'], rgb=[0.82, 0.45, 0.48])),
     rest=dict(PETS['lion']['rest'], lift=-0.1, scale=1.1))
 PETS['great-moose'] = dict(PETS['moose'],
     inks={'night': '#3A2A22', 'umber': '#55402F', 'bark': '#725A43', 'fur': '#8E7559', 'tawny': '#AC9375', 'cream': '#CDB698', 'bone': '#EEE3D2'},
     fur=[0.42, 0.31, 0.23],
     regions=dict(PETS['moose']['regions'], antlers=dict(ymin=0.47, rgb=[0.95, 0.88, 0.72])),
-    shape=[dict(sel=dict(ymin=0.45), pivot=[0, 0.45, 0.72], scale=1.25)])
+    shape=[dict(sel=dict(ymin=0.45), pivot=[0, 0.47, 0.66], scale=0.7)])
 PETS['ironclad-war-bear'] = dict(PETS['grizzly-bear'],
     inks={'night': '#3F4652', 'umber': '#56606E', 'bark': '#6F7A89', 'fur': '#8A95A3', 'tawny': '#A8B1BD', 'cream': '#C8CED6', 'bone': '#EEF1F4'},
     fur=[0.5, 0.52, 0.56],
