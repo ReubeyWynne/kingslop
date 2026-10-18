@@ -329,7 +329,7 @@ test('palette selection is declared in CSS without JavaScript colour writes or f
   assert.doesNotMatch(css, /deck-wash/);
   for (const n of nav) {
     assert.ok(css.includes(`.page-deck[data-selected="${pages[n.self].token}"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint)`));
-    assert.ok(css.includes(`.deck-card[data-page="${pages[n.self].token}"] { --deck-accent:`));
+    assert.ok(css.includes(`:is(.deck-card, .deck-pip)[data-page="${pages[n.self].token}"] { --deck-accent:`), "each cover and its rail mark carry the page colour");
   }
   assert.doesNotMatch(source, /requestAnimationFrame|cancelAnimationFrame|getComputedStyle/);
   const s = setup(); s.fire(s.ledgerButton, 'click'); s.fire(s.next, 'click');
