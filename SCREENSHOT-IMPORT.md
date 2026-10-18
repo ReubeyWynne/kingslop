@@ -214,9 +214,12 @@ Each step lands as its own commit with its checks passing.
   finder, icon signatures, white-glyph count crops, 3-column review grid and
   newest-wins; applying a shot drops the same items from older shots waiting
   in the dock. References exist for masters-manuscript, both taming marks,
-  mithril, forgehammer, the three hero shards and truegold. Still missing:
-  Gen widget chests, tempered-truegold, truegold-dust (no clean fixture
-  tiles yet); add them with `.dsh/import-signatures.cjs` once a shot shows
+  mithril, forgehammer, the three hero shards, truegold and Gen 1–3 widget
+  chests (`other-d1.jpg`; Gen 1 is the unbadged chest, Gen 2 and 3 carry S2
+  and S3 badges). Still missing: Gen 4+ widget chests, tempered-truegold,
+  truegold-dust (the owner hasn't unlocked them; web icons are rendered
+  differently from in-game tiles, so references must come from a real
+  screenshot); add them with `.dsh/import-signatures.cjs` once a shot shows
   them.
 - [ ] 9. Hero gear onto the shared dock; remove its private dialog.
 - [ ] 10. Battle simulator onto the shared dock with review-before-apply.
@@ -258,6 +261,7 @@ English, re-encoded at JPEG quality 80):
 | other-b1.jpg | Other tab, top, later | keys 140, ? chests 3,605 |
 | other-c1..c4.jpg | Other tab, four scrolls, later session | top to bottom, each overlapping the next |
 | resources-a.jpg | Resources tab, top | truegold reference tile |
+| other-d1.jpg | Other tab, top, 18 Oct | Gen 1 widget chest 34, Gen 2 4, Gen 3 4 |
 | pet-list.jpg | Pets screen, Pet List popover | Lion 70, Grizzly Bear 26, Moose 50, Cheetah 50, Bison 60, Lynx 40, Gray Wolf 50 |
 | community/ | Sourced English and Japanese shots (PR #109) | see `community/manifest.json`; no OCR ground truth yet |
 

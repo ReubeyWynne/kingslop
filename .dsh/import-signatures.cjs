@@ -27,7 +27,7 @@ const server = http.createServer((q, r) => {
       const c = document.createElement('canvas'); c.width = 360; c.height = Math.round(bm.height * 360 / bm.width);
       const ctx = c.getContext('2d', { willReadFrequently: true }); ctx.drawImage(bm, 0, 0, c.width, c.height);
       const px = ctx.getImageData(0, 0, c.width, c.height), A = ScreenImport.get(id);
-      return A.findTiles(px).map((t, i) => ({ i, sig: A.signature(px, t), match: (A.identify(A.signature(px, t)) || {}).id || null }));
+      return A.findTiles(px).map((t, i) => ({ i, sig: A.signature(px, t), match: ((m) => m ? m.id + '@' + m.dist.toFixed(3) : null)(A.identify(A.signature(px, t))) }));
     }, [name, adapter]);
     console.log('== ' + name + ' (' + out.length + ' tiles)');
     out.forEach(t => console.log(t.i, t.match || '-', t.sig));
