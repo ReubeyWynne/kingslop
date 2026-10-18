@@ -8,6 +8,7 @@
 // fit -1..1 (as render.cjs frames it for shade.py), welded, simplified to about `tris`
 // triangles and quantised. Layout, little-endian:
 //   uint32 vertices, uint32 indices, int16 x/y/z per vertex (padded to 4 bytes), uint16 indices.
+// `shape` reshapes a variant (bigger horns, smaller ears) with the same bends render.cjs uses.
 const fs = require('node:fs');
 const path = require('node:path');
 const { MeshoptSimplifier } = require(require.resolve('meshoptimizer', { paths: [process.cwd(), __dirname] }));
@@ -21,6 +22,22 @@ const unit = a => { const l = Math.hypot(...a); return a.map(v => v / l); };
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 const up = unit(opt.up), f0 = opt.fwd.map((v, i) => v - up[i] * dot(opt.fwd, up)), fwd = unit(f0);
 const right = [up[1] * fwd[2] - up[2] * fwd[1], up[2] * fwd[0] - up[0] * fwd[2], up[0] * fwd[1] - up[1] * fwd[0]];
+
+// One bend as render.cjs does it: the selected part scaled and turned about a pivot, eased in along an axis when soft.
+function bend(v) {
+  for (const d of opt.shape || []) {
+    const s = d.sel || {};
+    if (v[1] < (s.ymin ?? -9) || v[1] > (s.ymax ?? 9) || v[0] < (s.xmin ?? -9) || v[0] > (s.xmax ?? 9) || v[2] < (s.zmin ?? -9)) continue;
+    let w = 1;
+    if (d.soft) { const t = Math.min(1, Math.max(0, (v[d.softAxis ?? 2] - d.soft[0]) / (d.soft[1] - d.soft[0]))); w = t * t * (3 - 2 * t); }
+    const k = unit(d.axis || [0, 0, 1]), a = (d.angle || 0) * w, c = Math.cos(a), sn = Math.sin(a);
+    let p = v.map((x, i) => (x - d.pivot[i]) * (d.scale ? 1 + (d.scale - 1) * w : 1));
+    const kp = dot(k, p), kx = [k[1] * p[2] - k[2] * p[1], k[2] * p[0] - k[0] * p[2], k[0] * p[1] - k[1] * p[0]];
+    p = p.map((x, i) => x * c + kx[i] * sn + k[i] * kp * (1 - c));
+    v = p.map((x, i) => x + d.pivot[i] + (d.move ? d.move[i] * w : 0));
+  }
+  return v;
+}
 
 (async () => {
   await MeshoptSimplifier.ready;
@@ -36,7 +53,7 @@ const right = [up[1] * fwd[2] - up[2] * fwd[1], up[2] * fwd[0] - up[0] * fwd[2],
   // Weld on the fitted model, so the tolerance doesn't depend on the file's units.
   const seen = new Map(), pos = [], idx = new Uint32Array(count * 3);
   for (let c = 0; c < count * 3; c++) {
-    const v = [0, 1, 2].map(a => (raw[c * 3 + a] - centre[a]) * scale), key = v.map(x => Math.round(x * 1e5)).join();
+    const v = bend([0, 1, 2].map(a => (raw[c * 3 + a] - centre[a]) * scale)), key = v.map(x => Math.round(x * 1e5)).join();
     let i = seen.get(key);
     if (i === undefined) { i = pos.length / 3; seen.set(key, i); pos.push(...v); }
     idx[c] = i;

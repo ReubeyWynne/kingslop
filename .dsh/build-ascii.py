@@ -996,135 +996,12 @@ def minis():
 
 
 # ── the beast cage: one pet per pen ──────────────────────────────────────
-# Every pet stands in profile facing right on the ground row of a 44 x 15 pen,
-# with 'o' for its eye. Four bodies per pet: up (tail or an ear flicking
-# through three poses, a blink), low (tail still, a slower blink), happy (while
-# it is stroked, fed or offered food: eyes squeezed shut, a quick wag) and
-# asleep (lying down: the leg rows are dropped so the belly rests on the
-# ground, eyes shut). The page picks one by mood and reaction. Over the head
-# sits a shared two-row layer of marks (zzz, a question, hearts) that steps in
-# place; the generator moves it sideways until no mark lands on the pet in any
-# frame. A pet with a model (see the portraits below) has no drawing here, except
-# the gray wolf, which still stands in the home deck and the motif; its pen on the
-# pets page shows the portrait instead.
+# Every pet is a portrait drawn from its model (below) in a 44-column pen. Over
+# the head sits a shared two-row layer of marks (zzz, a question, hearts) that
+# steps in place; portrait_marks() moves it sideways until no mark lands on the
+# pet in any frame.
 
-PET_W, PET_H = 44, 15
-PETS = {  # id: (drawing, leg rows dropped when asleep, the two wag poses as (column, row, text) over the drawing)
-    'gray-wolf': (r"""
-                                  /\
-                                 /  )_
-                   __..,,,,,..__/ o   '._
-          _..--''''        ,          ___>
-       .-'    ,      ,          \  ,-'
-   _.-/   ,       ,       ,      '.|
-  (  ;          ________      ,   |
-   \ |  ,   _.-'        '-.     , /
-    \ \    /               \  ,  |
-     ' |  |                 |  | |
-       |  |                 |  | |
-       |  |                 |  | |
-      (__)|_               (__)|_)""", 4, [[(4, 8, '|'), (5, 9, ' '), (4, 9, "'")], [(4, 8, '/'), (5, 9, ' '), (3, 9, "'")]]),
-    'moose': (r"""
-                          ,_,_,_,_
-                          \      _/   _
-                           '-.__/\  ( )
-                 ______.......-'  '-.
-         _..--'''    ,     ,     o   '.
-     _.-'   ,     ,      ,     ,       \
-    / ,         ,     ,      \   '.     )
-   ( ,    ,  ___________  ,   |    '._.'
-  ' '. ,   ,'           '. ,  |   (_)
-      | |  |              | | |
-      | |  |              | | |
-      | |  |              | | |
-      |_|__|              |_|_|""", 4, [[(2, 8, '.'), (37, 2, "'")], [(2, 8, ',')]]),
-    'cheetah': (r"""
-                                     ,_
-                                    / ')_
-                     __...----...__/ o   '.
-            _.--'''''  .   .   .    \ ;    >
-        _.-' .   .   .   .   .   .  \ '. .'
-      ,'  .    .   .   .   .   .   .'-.''
-  _  /  .   .   _..---''''--._  .   /
- / \/ .   .  ,-'              '.   |
- | /  /  |  |                  |  |\
- | |  |  |  |                  |  | \
- \ \  |  |  |                  |  |  |
-  '.' (__)(_)                 (__)(_)""", 4, [[(2, 6, ' '), (1, 6, '.'), (1, 7, '|')], [(2, 6, ' '), (0, 6, '_'), (1, 7, '\\')]]),
-    'mighty-bison': (r"""
-                _..--''''--.._
-            _.-' [==][==][==]''-.
-         .-'   [==][==][==][==][='.
-       .'      [==][==][==][==][==\   _
-   ,-./        ;;;;;;;;;;;;;;;;;;;;;\_/ )
-  ( ;'|        ;;;;;;;;;;;;;;;;;;;;;;;[o]
-   ' ;|         ';;;;;;;;;;;;;;;;;;;;    '.
-     |            ';;;;;;;;;;;;;;;;; ,__,_)
-     \    ______   ;;;;;;;;;;;;;;;;;;;;;'
-      |  |      |  ;;;;;;;;;;;;';;;;;;'
-      |  |      |  |;;;|      |;;;'
-      |[]|      |[]|[];|      |[]|
-      '''''     '''''''       ''''""", 4, [[(2, 5, '|'), (3, 6, '.')], [(2, 5, ' '), (3, 5, '('), (3, 6, ' '), (4, 6, "'")]]),
-    'giant-rhino': (r"""
-                                        /|
-                            ,_    /|   / |
-             _..--------.._( )___/ |__/  |
-         _.-' :  :  ) :  :  '-.      o   |
-       ,'  :    :  (    :  :  : \        _)
-      /  :   :    : )  :   :     \  ,_.-'
-     ;   ,  :   :  (  :  :   :   |  /
-    \|        :    ) :    :   :  | /
-   ' ;       ______________     ,'
-      \    ,'              '.  |
-       |  |                  | |
-       |  |                  | |
-      (,,,|                 (,,,|""", 3, [[(4, 7, '|'), (3, 8, ' '), (4, 8, "'")], [(4, 7, '/'), (3, 8, ' '), (3, 7, "'")]]),
-    'great-moose': (r"""
-                 _,_,_,_     ,_,_,_,_
-                 \      '-._ \      _/   _
-                  '-._      '-'-.__/\  ( )
-                 ______.......-'  '-.
-         _..--'''    ,     ,     o   '.
-     _.-'   ,     ,      ,     ,       \
-    / ,         ,     ,      \   '.     )
-   ( ,    ,  ___________  ,   |    '._.'
-  ' '. ,   ,'           '. ,  |   (_)
-      | |  |              | | |
-      | |  |              | | |
-      | |  |              | | |
-      |_|__|              |_|_|""", 4, [[(2, 8, '.'), (40, 2, "'")], [(2, 8, ',')]]),
-    'regal-white-lion': (r"""
-                            .^.^.^.
-                           ,~~~~~~~~~.
-                ________ ,~~~~~'  '.~~~~
-         _..--''        ~~~~~'   o  \~~~
-      .-'    ,      ,  ~~~~~|        '-.
-    ,'   ,       ,    ~~~~~~~\     ,_.-'
-   /  ,      ,        '~~~~~~~'.__/~
-  |       _..--''''--.. '~~~~~~~~~~'
-  | ,   ,'              ', '~~~~~~'
-  |    /                  \  |  |
-   \  |                    | |  |
- ,-.| |                    | |  |
- '~'(__)                  (__)(__)""", 4, [[(1, 11, '.-,')], [(1, 11, ',-,'), (1, 12, "';,")]]),
-    'ironclad-war-bear': (r"""
-             __..--..__
-        _.-''[==][==][=''-._
-    _.-'  [==][==][==][==]  '.  _^_
-  .'    [==][==][==][==][==] \ [#=#]
- /              ,              '-'  '-._
-;    ,                              o   '-.
-|          ,          ,                    @
-;               ,              \     ._.-'
- \   ,     _..--''''--..        '-.-'
-  \  \,,  ,'            '.     |,,
-   |[]  |                 |[]  |
-   |    |                 |    |
-  (,,,,_|                (,,,,_|""", 3, [[(34, 2, '-')], []]),
-}
-PET_FPS = 8
-PET_UP, PET_LOW, PET_HAPPY = 16, 24, 8
-# The marks over the head: a 6 x 2 layer, (column, row, glyph) per frame.
+PET_W = 44
 PET_MARK_W = 6
 PET_MARKS = {  # name: (seconds a frame, frames)
     'asleep': (1 / 3, [[(0, 1, 'z')]] * 4 + [[(0, 1, 'z'), (2, 0, 'Z')]] * 4 + [[(2, 0, 'Z')]] * 2 + [[]] * 2),
@@ -1137,58 +1014,8 @@ PET_MARKS = {  # name: (seconds a frame, frames)
 }
 
 
-def pet_body(pet, pose, i):
-    drawing, legs, wags = PETS[pet]
-    rows = [r.rstrip() for r in art(drawing)]
-    if pose == 'asleep':
-        rows = rows[:-legs]
-    arr = grid(PET_W, PET_H)
-    top = PET_H - len(rows)
-    for r, row in enumerate(rows):
-        put(arr, 0, top + r, row, ' ')
-    eye = next((c, top + r) for r, row in enumerate(rows) for c, ch in enumerate(row) if ch == 'o')
-    if pose in ('up', 'happy'):
-        wag = (0, 1, 2, 1)[(i if pose == 'happy' else i // 2) % 4]
-        for c, r, text in ([], *wags)[wag]:
-            put(arr, c, top + r, text)
-    if pose == 'happy':
-        put(arr, *eye, '^')
-    elif pose == 'asleep' or (pose == 'up' and i in (12, 13)) or (pose == 'low' and i in (18, 19, 20)):
-        put(arr, *eye, '-')
-    return arr, eye
-
-
-def pet_marks(pet):
-    """The column the marks layer sits at: over the head, clear of the pet."""
-    body = {(c, r) for pose, n in (('up', PET_UP), ('happy', PET_HAPPY)) for i in range(n)
-            for r, row in enumerate(pet_body(pet, pose, i)[0]) for c, ch in enumerate(row) if ch != ' '}
-    eye = pet_body(pet, 'up', 0)[1]
-    cells = {(c + dc, r) for _, frames in PET_MARKS.values() for frame in frames
-             for c, r, text in frame for dc in range(len(text))}
-    for x in sorted(range(PET_W - PET_MARK_W + 1), key=lambda x: (abs(x - (eye[0] - 3)), x)):
-        if not any((x + c, r) in body for c, r in cells):
-            return x
-    raise AssertionError(f'{pet}: no room over the head for the marks')
-
-
 def pets():
     css = ['/* the beast cage */']
-    sel = '.ascii-mini--pet[data-pet="{}"]'
-    for pet, (drawing, legs, wags) in PETS.items():
-        rows = [r.rstrip() for r in art(drawing)]
-        assert max(map(len, rows)) <= PET_W and len(rows) <= PET_H - 2, f'{pet}: the drawing outgrows its pen'
-        assert sum(r.count('o') for r in rows) == 1, f'{pet}: one eye'
-        assert len(wags) == 2 and legs < len(rows), f'{pet}: two wag poses and a body to lie on'
-        css.append(f'{sel.format(pet)}{{--marks:{pet_marks(pet)}}}\n')
-        up = [pet_body(pet, 'up', i)[0] for i in range(PET_UP)]
-        css.append(animation(sel.format(pet) + '::before', f'ascii-pet-{pet}', up, PET_UP / PET_FPS))
-        low = [pet_body(pet, 'low', i)[0] for i in range(PET_LOW)]
-        css.append(animation(sel.format(pet) + ':is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])::before',
-                             f'ascii-pet-{pet}-low', low, PET_LOW / 6))
-        css.append(f'{sel.format(pet)}[data-mood="asleep"]::before{{content:{content(pet_body(pet, "asleep", 0)[0])};animation:none}}\n')
-        happy = [pet_body(pet, 'happy', i)[0] for i in range(PET_HAPPY)]
-        css.append(animation(sel.format(pet) + ':is([data-react="pet"], [data-react="feed"], [data-sniff])[data-mood]::before',
-                             f'ascii-pet-{pet}-happy', happy, PET_HAPPY / PET_FPS))
     for name, (step, frames) in PET_MARKS.items():
         layers = []
         for frame in frames:

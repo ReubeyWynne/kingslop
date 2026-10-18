@@ -13,7 +13,7 @@ self: pets
     <p class="lede" data-i18n="pets.intro">Fourteen pets, one skill each. Tame yours to plan its Advances.</p>
     {% include ascii/motif.html kind="pet" %}
   </section>
-  {% comment %}Pets drawn from a model: one span per ink of .dsh/pet-portraits/<id>.json.{% endcomment %}{% assign portraits = 'alpha-black-panther,bison,gray-wolf,grizzly-bear,ironclad-war-elephant,lion,lynx' | split: ',' %}
+  {% comment %}Pets drawn from a model: one span per ink of .dsh/pet-portraits/<id>.json.{% endcomment %}{% assign portraits = 'alpha-black-panther,bison,cheetah,giant-rhino,gray-wolf,great-moose,grizzly-bear,ironclad-war-bear,ironclad-war-elephant,lion,lynx,mighty-bison,moose,regal-white-lion' | split: ',' %}
   {% assign pets = site.data.pets.pets %}{% assign generations = pets | map: 'generation' | uniq %}
   <section class="section" id="cage" data-module="pet-den">
     <h2 data-i18n="pets.cage">The Beast Cage</h2>
@@ -25,7 +25,7 @@ self: pets
         <div class="pet-catalogue">
         {% for pet in band %}{% assign profile = site.data.pets.profiles[pet.profile] %}
           <article class="pet-card" id="pet-{{ pet.id }}" data-pet="{{ pet.id }}" data-owned="false" data-verified="{{ pet.verified }}">
-            <div class="pet-pen">
+            <div class="pet-pen" data-swipe-ignore>
               <span class="ascii-mini ascii-mini--pet" data-pet="{{ pet.id }}" data-mood="content" data-pen{% if portraits contains pet.id %} data-model="{{ pet.id }}"{% endif %} aria-hidden="true">{% if portraits contains pet.id %}<span class="ascii-mini--portrait" data-pet="{{ pet.id }}">{% for ink in (0..6) %}<span data-ink="{{ ink }}"></span>{% endfor %}</span>{% endif %}</span>
               <button type="button" class="pet-stroke" data-target="pet-den.stroke" data-action="pet-den.pat" aria-label="Pet" hidden></button>
             </div>
@@ -86,5 +86,12 @@ self: pets
     <h2 data-i18n="directory.sources">Sources &amp; confidence</h2>
     <p data-i18n="pets.sourceNote">Compared across three community databases on 17 October 2026; where they differ, the two that agree are used. Passive bonuses and refinement are left out until they are checked in game.</p>
     <ul>{% for entry in site.data.pets.sources %}<li><a href="{{ entry[1].url }}">{{ entry[1].label | escape }}</a></li>{% endfor %}</ul>
+    {% comment %}Models the pens draw from that ask for credit (pets/models; sources in the project files).{% endcomment %}
+    <ul class="pet-credits" lang="en">
+      <li><a href="https://sketchfab.com/3d-models/cheetah-rigged-6ac8e66b1b6d4cc7845e5e0572fe4ef1">Cheetah Rigged</a> · jurassicdinomax123 · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></li>
+      <li><a href="https://sketchfab.com/3d-models/moose-animated-low-poly-928a1731284d4466b684723ec1977b0f">Moose - Animated Low Poly</a> · WildPoly3D · <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></li>
+      <li><a href="https://sketchfab.com/3d-models/low-poly-elephant-84fd98c561464b1ba5d3dd48ab161b9c">Low poly elephant</a> · MrEliptik · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></li>
+      <li><a href="https://sketchfab.com/3d-models/lowpoly-rhino-62771a21b17646648a588b223afd6692">Lowpoly rhino</a> · mrkdji · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></li>
+    </ul>
   </section>
 </main>
