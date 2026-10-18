@@ -705,6 +705,7 @@ window.__BH_I18N_DATA["en"] = {
   "ev.deck.next": "next page",
   "ev.deck.open": "tap to open",
   "ev.deck.hint": "swipe to browse · tap to go",
+  "ev.deck.rail": "jump to a page",
   "ev.deck.lede.home": "the guides, the tools, and the maths behind them.",
   "ev.deck.lede.events": "what’s on today, what scores, and what to save.",
   "ev.deck.lede.bear": "build your marches, fill rallies, and run the hunt.",

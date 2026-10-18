@@ -185,6 +185,56 @@ async function fits(page, zoomed = false) {
     }
     assert.equal(await touchPage.locator('#page-deck').evaluate(el => el.open), true);
     await touchPage.close();
+    // The rail jumps to the mark under a tap, scrubs as a press slides along
+    // it, steps and clamps from the keyboard while keeping focus, and never
+    // closes the deck as a background tap would.
+    const pip = async token => {
+      const box = await page.locator('.deck-pip[data-page="' + token + '"]').boundingBox();
+      return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    };
+    await page.keyboard.press('Home');
+    await selected(page, 'home');
+    let at = await pip(tokens.at(-2));
+    await page.mouse.click(at.x, at.y);
+    await selected(page, tokens.at(-2));
+    assert.equal(await page.locator('#page-deck').evaluate(el => el.open), true);
+    at = await pip(tokens[1]);
+    await page.mouse.move(at.x, at.y);
+    await page.mouse.down();
+    for (const token of tokens.slice(2, 6)) {
+      at = await pip(token);
+      await page.mouse.move(at.x, at.y, { steps: 3 });
+      await selected(page, token);
+    }
+    await page.mouse.up();
+    assert.equal(await page.locator('.deck-pip.is-selected').getAttribute('data-page'), tokens[5]);
+    assert.match(await page.locator('.deck-position').textContent(), new RegExp(' 6 / ' + tokens.length + '$'));
+    await page.locator('.deck-rail').focus();
+    await page.keyboard.press('End');
+    await selected(page, tokens.at(-1));
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowLeft');
+    await selected(page, tokens.at(-2));
+    assert.equal(await page.locator('.deck-rail').evaluate(el => el === document.activeElement && el.getAttribute('aria-valuenow')), String(tokens.length - 1));
+    await page.keyboard.press('Escape');
+    // The page you came from opens beside this one, out of ledger order, and
+    // the rail and the count still say where it lives in the ledger.
+    const vip = nav.findIndex(entry => pages[entry.self].token === 'vip');
+    await page.goto(origin + '/' + nav[vip].tail + '?lang=en');
+    await page.goto(origin + '/?lang=en');
+    await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
+    await page.locator('#ledger-btn').click();
+    await selected(page, 'home');
+    assert.equal(await page.locator('.deck-pip.is-last').getAttribute('data-page'), 'vip');
+    await page.locator('.deck-next').click();
+    await selected(page, 'vip');
+    assert.match(await page.locator('.deck-position').textContent(), new RegExp(' ' + (vip + 1) + ' / ' + tokens.length + '$'));
+    await page.locator('.deck-next').click();
+    await selected(page, tokens[1]);
+    await page.locator('[data-deck-group="tools"]').click();
+    await selected(page, 'vip');
+    await page.keyboard.press('Escape');
+    await page.evaluate(() => sessionStorage.clear());
     for (const lang of ['de', 'ar']) {
       await page.goto(origin + '/?lang=' + lang);
       await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
@@ -198,7 +248,7 @@ async function fits(page, zoomed = false) {
     await selected(page, 'home');
     await fits(page, true);
     await page.close();
-    console.log('Deck geometry, native scrolling, keyboard, colour interpolation, translations and reduced motion passed.');
+    console.log('Deck geometry, native scrolling, keyboard, rail, last page, colour interpolation, translations and reduced motion passed.');
   } finally {
     await browser.close();
     await new Promise(resolve => server.close(resolve));

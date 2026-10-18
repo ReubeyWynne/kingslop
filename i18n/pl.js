@@ -682,6 +682,7 @@ window.__BH_I18N_DATA["pl"] = {
   "ev.deck.next": "następna strona",
   "ev.deck.open": "dotknij, aby otworzyć",
   "ev.deck.hint": "przesuń, aby przeglądać · dotknij, aby przejść",
+  "ev.deck.rail": "przejdź do strony",
   "ev.deck.lede.home": "poradniki, narzędzia i obliczenia, na których się opierają.",
   "ev.deck.lede.events": "co dzieje się dziś, za co są punkty i co warto zachować.",
   "ev.deck.lede.bear": "przygotuj marsze, wypełnij rajdy i zorganizuj polowanie.",

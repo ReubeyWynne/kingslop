@@ -682,6 +682,7 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "ev.deck.next": "下一页",
   "ev.deck.open": "轻点打开",
   "ev.deck.hint": "滑动浏览 · 轻点前往",
+  "ev.deck.rail": "跳转到页面",
   "ev.deck.lede.home": "指南、工具，以及背后的计算。",
   "ev.deck.lede.events": "今天有哪些活动、如何得分、哪些资源该留着。",
   "ev.deck.lede.bear": "编组行军、填满集结，安排狩猎。",
