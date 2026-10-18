@@ -194,7 +194,7 @@ Each step lands as its own commit with its checks passing.
   Extend `.dsh/ocr-backend-check.cjs` to cover the client (stub worker).
 - [x] 3. `js/ocr-text.js` with node tests (`.dsh/ocr-text-check.cjs`);
   move the sim and hero-gear parsers onto it.
-- [ ] 4. Ledger: generalised import records + `applyImport` + checks.
+- [x] 4. Ledger: generalised import records + `applyImport` + checks.
 - [ ] 5. `ScreenImport` registry and router; `overview-resources` and
   `overview-speedups` adapters with fixture checks through the real worker
   (`.dsh/screen-import-check.cjs`, Playwright, like

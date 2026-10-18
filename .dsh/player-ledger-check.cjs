@@ -261,4 +261,17 @@ assert.deepEqual(trainingCopy.training(), trainingStore.training());
 trainingStore.setTraining('arc', null); trainingStore.setTrainingBuff(false);
 assert.deepEqual(Object.keys(trainingStore.training().facts), ['speed', 'capacity']);
 assert.equal(trainingStore.snapshot().preferences.training, undefined);
-console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, undo, revision, combat stat, troop, hero roster, building level and training checks passed.');
+// Backpack screenshots: inventory deltas with screenshot provenance, no repeats.
+const bagDisk = storage(), bag = Ledger.create(bagDisk);
+bag.setBalance('bread', 5);
+const bagRecord = { id: 'bag-' + 'c'.repeat(64), sourceType: 'backpack', at: new Date().toISOString(), contentHash: 'c'.repeat(64), confirmation: 'confirmed', inventoryDelta: { bread: { before: 5, after: 805510000 }, 'speedup-general': { before: null, after: 25681 } } };
+const bagRevision = bag.snapshot().revision;
+bag.applyImport(bagRecord, bagRevision);
+assert.equal(bag.balance('bread').amount, 805510000);
+assert.deepEqual({ source: bag.balance('speedup-general').provenance.source, importId: bag.balance('speedup-general').provenance.importId }, { source: 'screenshot', importId: bagRecord.id });
+assert.throws(() => bag.applyImport(Object.assign({}, bagRecord, { id: 'bag-other' })), /already confirmed/);
+assert.throws(() => bag.applyImport(Object.assign({}, bagRecord, { contentHash: 'd'.repeat(64), id: 'bag-d' }), bagRevision), /changed/);
+assert.throws(() => bag.applyImport(Object.assign({}, bagRecord, { sourceType: 'mystery', contentHash: 'e'.repeat(64), id: 'bag-e' })));
+assert.throws(() => bag.applyImport(Object.assign({}, bagRecord, { contentHash: 'f'.repeat(64), id: 'bag-f', inventoryDelta: { bread: { before: 1, after: -2 } } })));
+assert.equal(Ledger.validate(JSON.parse(bagDisk.getItem(Ledger.KEY))).imports.length, 1, 'a backpack record survives validation on reload');
+console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, backpack imports, undo, revision, combat stat, troop, hero roster, building level and training checks passed.');

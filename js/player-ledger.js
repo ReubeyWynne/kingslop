@@ -91,6 +91,16 @@
   function empty() {
     return { format: 'kingshot-player', schemaVersion: 1, revision: 0, updatedAt: new Date().toISOString(), inventory: {}, heroGear: { pieces: {}, provenance: {}, parts: null }, governorGear: { status: 'unsupported', pieces: {} }, governorCharms: { status: 'unsupported', slots: {} }, combat: { stats: {}, provenance: {} }, imports: [], preferences: { heroGear: {} }, migration: null };
   }
+  // A confirmed screenshot import. Hero gear records carry equipment deltas;
+  // every source may carry inventory deltas ({ id: { before, after } }).
+  var IMPORT_SOURCES = ['hero-gear', 'backpack'];
+  function importRecord(record) {
+    if (!(object(record) && id(record.id) && IMPORT_SOURCES.includes(record.sourceType) && timestamp(record.at) && /^[a-f0-9]{64}$/.test(record.contentHash) && record.confirmation === 'confirmed')) return false;
+    var gear = record.itemDelta === undefined ? {} : record.itemDelta, stock = record.inventoryDelta === undefined ? {} : record.inventoryDelta;
+    if (!object(gear) || !object(stock) || (record.sourceType === 'hero-gear' && !object(record.itemDelta))) return false;
+    return Object.keys(gear).every(function (key) { var delta = gear[key]; return PIECES.includes(key) && object(delta) && (delta.before === null || piece(delta.before)) && piece(delta.after); }) &&
+      Object.keys(stock).every(function (key) { var delta = stock[key]; return id(key) && object(delta) && (delta.before === null || count(delta.before)) && count(delta.after); });
+  }
   function validate(value) {
     valid(object(value) && value.format === 'kingshot-player' && value.schemaVersion === 1 && Number.isSafeInteger(value.revision) && value.revision >= 0 && timestamp(value.updatedAt));
     valid(object(value.inventory) && Object.keys(value.inventory).length <= 500);
@@ -165,9 +175,8 @@
     valid(Array.isArray(value.imports) && value.imports.length <= 1000);
     var hashes = new Set(), ids = new Set();
     value.imports.forEach(function (record) {
-      valid(object(record) && id(record.id) && !ids.has(record.id) && record.sourceType === 'hero-gear' && timestamp(record.at) && /^[a-f0-9]{64}$/.test(record.contentHash) && !hashes.has(record.contentHash) && record.confirmation === 'confirmed' && object(record.itemDelta));
+      valid(importRecord(record) && !ids.has(record.id) && !hashes.has(record.contentHash));
       ids.add(record.id); hashes.add(record.contentHash);
-      Object.keys(record.itemDelta).forEach(function (key) { var delta = record.itemDelta[key]; valid(PIECES.includes(key) && object(delta) && (delta.before === null || piece(delta.before)) && piece(delta.after)); });
     });
     valid(value.migration === null || object(value.migration) && value.migration.from === LEGACY && timestamp(value.migration.at));
     return copy(value);
@@ -474,6 +483,22 @@
       });
       return commit(next, next.revision);
     }
+    // Apply one reviewed screenshot: its inventory balances become confirmed
+    // facts with screenshot provenance, and the record joins the history. The
+    // same file (by content hash) can never be applied twice.
+    function applyImport(record, expected) {
+      valid(importRecord(record));
+      return transaction(function (next) {
+        if (next.imports.some(function (old) { return old.contentHash === record.contentHash || old.id === record.id; })) throw new Error('Screenshot already confirmed');
+        var at = new Date().toISOString();
+        next.imports.push(copy(record));
+        Object.keys(record.inventoryDelta || {}).forEach(function (key) {
+          next.inventory[key] = { amount: record.inventoryDelta[key].after, status: 'confirmed', provenance: { source: 'screenshot', at: at, importId: record.id } };
+          if (key === ITEMS.xp) next.heroGear.parts = null;
+        });
+        Object.keys(record.itemDelta || {}).forEach(function (key) { next.heroGear.pieces[key] = copy(record.itemDelta[key].after); next.heroGear.provenance[key] = { source: 'screenshot', at: at, importId: record.id }; });
+      }, expected);
+    }
     function migrate() { return snapshot(); }
     function importJSON(input, engine, expected) {
       var data = typeof input === 'string' ? JSON.parse(input) : input;
@@ -487,7 +512,7 @@
     if (events && events.addEventListener) events.addEventListener('storage', function (event) {
       if ((event.key === KEY || event.key === null) && (!event.storageArea || event.storageArea === storage)) { try { current = read(); notify(); } catch (error) { if (events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:error', { detail: error.message })); } }
     });
-    return { kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, masters: masters, setMaster: setMaster, pets: pets, setPet: setPet, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, training: training, setTraining: setTraining, setTrainingPlan: setTrainingPlan, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
+    return { kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, masters: masters, setMaster: setMaster, pets: pets, setPet: setPet, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, training: training, setTraining: setTraining, setTrainingPlan: setTrainingPlan, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, applyImport: applyImport, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
   }
-  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), TRAINING: TRAINING.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), MASTER: copy(MASTER), PET: copy(PET), troopId: troopId, masterEmblemId: masterEmblemId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, empty: empty, validate: validate, create: create };
+  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), TRAINING: TRAINING.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), MASTER: copy(MASTER), PET: copy(PET), troopId: troopId, masterEmblemId: masterEmblemId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, IMPORT_SOURCES: IMPORT_SOURCES.slice(), empty: empty, validate: validate, create: create };
 });
