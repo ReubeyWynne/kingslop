@@ -13,6 +13,7 @@ self: pets
     <p class="lede" data-i18n="pets.intro">Fourteen pets, one skill each. Tame yours to plan its Advances.</p>
     {% include ascii/motif.html kind="pet" %}
   </section>
+  {% comment %}Pets drawn from a model: one span per ink of .dsh/pet-portraits/<id>.json.{% endcomment %}{% assign portraits = 'grizzly-bear' | split: ',' %}
   {% assign pets = site.data.pets.pets %}{% assign generations = pets | map: 'generation' | uniq %}
   <section class="section" id="cage" data-module="pet-den">
     <h2 data-i18n="pets.cage">The Beast Cage</h2>
@@ -25,7 +26,7 @@ self: pets
         {% for pet in band %}{% assign profile = site.data.pets.profiles[pet.profile] %}
           <article class="pet-card" id="pet-{{ pet.id }}" data-pet="{{ pet.id }}" data-owned="false" data-verified="{{ pet.verified }}">
             <div class="pet-pen">
-              <span class="ascii-mini ascii-mini--pet" data-pet="{{ pet.id }}" data-mood="content" data-pen aria-hidden="true"></span>
+              <span class="ascii-mini ascii-mini--pet" data-pet="{{ pet.id }}" data-mood="content" data-pen aria-hidden="true">{% if portraits contains pet.id %}<span class="ascii-mini--portrait" data-pet="{{ pet.id }}">{% for ink in (0..6) %}<span data-ink="{{ ink }}"></span>{% endfor %}</span>{% endif %}</span>
               <button type="button" class="pet-stroke" data-target="pet-den.stroke" data-action="pet-den.pat" aria-label="Pet" hidden></button>
             </div>
             <label class="pet-tame"><input type="checkbox" data-field="owned" disabled><span class="pet-name"><b lang="en">{{ pet.name | escape }}</b> <small lang="en">{{ pet.skill.name | escape }}</small></span></label>

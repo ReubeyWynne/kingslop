@@ -87,7 +87,8 @@ const decode = body => body.split('\\A ').map(line => line.replace(/\\(.)/g, '$1
 
 // Every frame of a scene fits the box ascii.css gives it, so nothing is clipped.
 function box(selector) {
-  const scene = (selector.match(/\.ascii-(mini--\w+|march|forge|hearth)\b/) || [])[1];
+  // The innermost scene the selector reaches is the box its frames draw in.
+  const scene = ([...selector.matchAll(/\.ascii-(mini--\w+|march|forge|hearth)\b/g)].pop() || [])[1];
   if (!scene) return null;
   const base = scene.startsWith('mini--') ? rule('.ascii-mini') : rule('.ascii-' + scene);
   const own = scene.startsWith('mini--') ? rule('.ascii-' + scene) : '';

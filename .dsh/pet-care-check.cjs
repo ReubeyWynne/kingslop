@@ -98,7 +98,21 @@ assert.deepEqual(Object.keys(ledger.pets().roster), ['gray-wolf']);
 
 // The scene: every pet has a pen, four bodies and a place for its marks.
 const frames = read('css/ascii-frames.css');
-for (const pet of data.pets) {
+// A pet drawn from its model has a portrait instead: one span per ink, each with
+// the same poses, and the pens page gives it those spans.
+const portraits = fs.readdirSync(path.join(__dirname, 'pet-portraits')).map(file => file.replace(/\.json$/, ''));
+const pens = read('pets/index.html');
+for (const id of portraits) {
+  const baked = JSON.parse(read(`.dsh/pet-portraits/${id}.json`));
+  assert.ok(pens.includes(`{% assign portraits = '${portraits.join(',')}' | split: ',' %}`), id + ' listed on the page');
+  assert.ok(pens.includes(`{% for ink in (0..${baked.inks.length - 1}) %}`), id + ' one span per ink');
+  baked.inks.forEach((ink, i) => {
+    for (const mood of ['', '-low', '-happy']) assert.ok(frames.includes(`@keyframes ascii-portrait-${id}${mood}-${i}{`), `${id}${mood} ink ${i}`);
+    assert.ok(frames.includes(`.ascii-mini--pet[data-mood="asleep"] > .ascii-mini--portrait[data-pet="${id}"] > [data-ink="${i}"]::before{`), `${id} asleep ink ${i}`);
+  });
+  assert.match(frames, new RegExp(`\\.ascii-mini--pet\\[data-pet="${id}"\\]\\{--marks:\\d+\\}`));
+}
+for (const pet of data.pets.filter(pet => !portraits.includes(pet.id))) {
   assert.ok(frames.includes(`@keyframes ascii-pet-${pet.id}{`), pet.id);
   assert.ok(frames.includes(`@keyframes ascii-pet-${pet.id}-low{`), pet.id + ' low');
   assert.ok(frames.includes(`.ascii-mini--pet[data-pet="${pet.id}"]:is([data-react="pet"], [data-react="feed"], [data-sniff])[data-mood]::before{`), pet.id + ' happy');

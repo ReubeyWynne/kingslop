@@ -15,6 +15,7 @@ The house style (DESIGN.md, "Animation style"):
 Hand-written layout, colours and placement live in css/ascii.css.
 """
 import html
+import json
 import math
 import random
 from pathlib import Path
@@ -1090,20 +1091,6 @@ PETS = {  # id: (drawing, leg rows dropped when asleep, the two wag poses as (co
    \  |                    | |  |
  ,-.| |                    | |  |
  ';'(__)                  (__)(__)""", 4, [[(1, 11, '.-,')], [(1, 11, ',-,'), (1, 12, "';,")]]),
-    'grizzly-bear': (r"""
-             __..--..__
-        _.-''          ''-._
-    _.-'                    '.   __
-  .'    ,           ,         \ (  )
- /              ,              '-'  '-._
-;    ,                              o   '-.
-|          ,          ,                    @
-;               ,              \     ._.-'
- \   ,     _..--''''--..        '-.-'
-  \  \,,  ,'            '.     |,,
-   |    |                 |    |
-   |    |                 |    |
-  (,,,,_|                (,,,,_|""", 3, [[(34, 2, '.')], []]),
     'mighty-bison': (r"""
                 _..--''''--.._
             _.-' [==][==][==]''-.
@@ -1278,6 +1265,68 @@ def pets():
             layers.append(arr)
         attr = 'data-react' if name in ('pet', 'feed', 'full') else 'data-mood'
         css.append(animation(f'.ascii-mini--pet[{attr}="{name}"]::after', f'ascii-pet-marks-{name}', layers, round(step * len(frames), 3)))
+    return '\n'.join(css) + '\n'
+
+
+# ── pet portraits ────────────────────────────────────────────────────────
+# A pet with a portrait is drawn from its low-poly model instead of by hand:
+# .dsh/pet-portrait/shade.py renders the model offline through a text shader
+# and bakes each pose into .dsh/pet-portraits/<pet>.json as one layer of rows
+# per ink, darkest first. Here every ink becomes a span in the pen whose
+# frames step together, so the portrait keeps its colours. The poses are the
+# same model bent a little (an ear tipped, the nose flared, the head lowered)
+# through the same camera; nothing moves at runtime but the glyphs.
+
+PORTRAIT_FPS = 8
+PORTRAIT_UP = [('still', 20), ('blink', 1), ('still', 14), ('ear', 2), ('still', 1), ('ear', 2), ('still', 16),
+               ('sniff', 1), ('still', 1), ('sniff', 1), ('still', 12)]
+PORTRAIT_LOW = [('low', 36), ('low-blink', 2), ('low', 20), ('low-blink', 2)]
+PORTRAIT_HAPPY = [('happy', 3), ('happy-ear', 2), ('happy', 3)]
+
+
+def portraits_baked():
+    found = {}
+    for path in sorted((ROOT / '.dsh' / 'pet-portraits').glob('*.json')):
+        found[path.stem] = json.loads(path.read_text(encoding='utf-8'))
+    return found
+
+
+def portrait_marks(pet, data):
+    """The pen column for the marks layer, clear of every pose's top rows."""
+    scale = data['cols'] / PET_W            # portrait columns per pen column
+    reach = math.ceil(2 * scale)            # the marks' two pen rows, in portrait rows (both line-height 1.25)
+    busy = {c for pose in data['poses'].values() for rows in pose.values()
+            for row in rows[:reach] for c, ch in enumerate(row) if ch != ' '}
+    eye = min(c for rows in data['poses']['still'].values() for row in rows for c, ch in enumerate(row) if ch == 'o')
+    for x in sorted(range(PET_W - PET_MARK_W + 1), key=lambda x: (abs(x - (eye / scale - 3)), x)):
+        if not any(c in busy for c in range(math.floor(x * scale), math.ceil((x + PET_MARK_W) * scale))):
+            return x
+    raise AssertionError(f'{pet}: no room over the head for the marks')
+
+
+def portraits():
+    css = ['/* pet portraits */']
+    for pet, data in portraits_baked().items():
+        poses = data['poses']
+        for name in {n for n, _ in PORTRAIT_UP + PORTRAIT_LOW + PORTRAIT_HAPPY} | {'asleep'}:
+            assert name in poses, f'{pet}: no {name} pose'
+            for rows in poses[name].values():
+                assert len(rows) <= data['rows'] and max(map(len, rows), default=0) <= data['cols'], f'{pet}: {name} outgrows its frame'
+        css.append(f'.ascii-mini--pet[data-pet="{pet}"]{{--marks:{portrait_marks(pet, data)}}}\n')
+        portrait = f' > .ascii-mini--portrait[data-pet="{pet}"]'
+        pen = '.ascii-mini--pet'
+        when = {'up': portrait[3:], 'low': pen + ':is([data-mood="hungry"], [data-mood="lonely"], [data-mood="restless"])' + portrait,
+                'asleep': pen + '[data-mood="asleep"]' + portrait,
+                'happy': pen + ':is([data-react="pet"], [data-react="feed"], [data-sniff])[data-mood]' + portrait}
+        for i, ink in enumerate(data['inks']):
+            layer = f' > [data-ink="{i}"]::before'
+            for mood, timeline in (('up', PORTRAIT_UP), ('low', PORTRAIT_LOW), ('happy', PORTRAIT_HAPPY)):
+                frames = [poses[n][ink] for n, _ in timeline]
+                holds = [h for _, h in timeline]
+                name = f'ascii-portrait-{pet}' + ('' if mood == 'up' else f'-{mood}') + f'-{i}'
+                css.append(animation(when[mood] + layer, name, frames, round(sum(holds) / PORTRAIT_FPS, 3), holds))
+                if mood == 'low':   # asleep comes after low and before happy, so a reaction still wakes it
+                    css.append(f'{when["asleep"]}{layer}{{content:{content(poses["asleep"][ink])};animation:none}}\n')
     return '\n'.join(css) + '\n'
 
 
@@ -1797,6 +1846,6 @@ def aurora():
 
 if __name__ == '__main__':
     header = '/* Generated by .dsh/build-ascii.py — edit the generator, not this file.\n   Layout and colour for these scenes live in css/ascii.css. */\n'
-    write('css/ascii-frames.css', header + campfire() + hearth() + forge() + minis() + pets() + march() + constellations() + aurora())
+    write('css/ascii-frames.css', header + campfire() + hearth() + forge() + minis() + pets() + portraits() + march() + constellations() + aurora())
     print('wrote css/ascii-frames.css and _includes/ascii/campfire.html')
 

@@ -22,6 +22,7 @@
 /* Until you tame a pet it is a sketch of the wild one; once you keep pets, the rest step back. */
 .pet-card[data-owned="false"] .pet-pen .ascii-mini { color: var(--amber-dim); }
 [data-collection] .pet-card[data-owned="false"] .pet-pen .ascii-mini { color: var(--ink-muted); opacity: .6; }
+.pet-card[data-owned="false"] .ascii-mini--portrait > span { color: inherit; }
 
 .pet-tame { display: flex; align-items: flex-start; gap: .45rem; min-height: 40px; padding-top: .2rem; cursor: pointer; }
 .pet-tame input { flex: none; width: 1.15rem; height: 1.15rem; margin: .15rem 0 0; accent-color: var(--amber); }
