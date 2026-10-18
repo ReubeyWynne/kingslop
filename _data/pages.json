@@ -757,7 +757,8 @@
       "../js/pet-data.js",
       "../js/pet-plan.js",
       "../js/pet-care.js",
-      "../js/pet-den.js"
+      "../js/pet-den.js",
+      "../js/pet-live.js"
     ],
     "footMainKey": "pets.title",
     "footMain": "Pets",

@@ -67,6 +67,8 @@ const server = http.createServer((request, response) => {
         (!process.argv.includes('--castle') || scene[0].startsWith('castle')) &&
         (!only.length || only.some(prefix => scene[0].startsWith(prefix))))) {
         const page = await context.newPage();
+        // These are the baked frames: the live pet (js/pet-live.js) is kept off so they show.
+        await page.route('**/js/pet-live.js*', route => route.abort());
         await page.goto(base + url + '?lang=en', { waitUntil: 'networkidle' });
         await page.evaluate(() => document.fonts.ready);
         if (name.endsWith('-card')) {

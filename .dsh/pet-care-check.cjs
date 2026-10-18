@@ -127,7 +127,14 @@ const nav = require('../_data/nav.json'), pages = require('../_data/pages.json')
 assert.equal(nav.at(-1).self, 'pets'); assert.equal(nav.at(-2).self, 'governor');
 assert.equal(pages.pets.swipePrev.page, 'governor'); assert.equal(pages.pets.swipeNext.page, 'home');
 assert.equal(pages.governor.swipeNext.page, 'pets'); assert.equal(pages.home.swipePrev.page, 'pets');
-assert.deepEqual(pages.pets.scripts.map(s => s.replace('../js/', '')), ['i18n.js', 'common.js', 'pet-data.js', 'pet-plan.js', 'pet-care.js', 'pet-den.js']);
+assert.deepEqual(pages.pets.scripts.map(s => s.replace('../js/', '')), ['i18n.js', 'common.js', 'pet-data.js', 'pet-plan.js', 'pet-care.js', 'pet-den.js', 'pet-live.js']);
+// A pet drawn live has its model and keeps its baked portrait as the fallback.
+for (const [, id] of read('js/pet-live.js').matchAll(/^    '([a-z-]+)': \{$/gm)) {
+  assert.ok(portraits.includes(id), id + ' live pet has baked frames');
+  const mesh = fs.readFileSync(path.join(__dirname, '..', 'pets/models', id + '.bin'));
+  assert.ok(mesh.length < 16384 && mesh.readUInt32LE(4) % 3 === 0 && mesh.readUInt32LE(4) <= 3600, id + ' model is small');
+}
+assert.doesNotMatch(read('js/pet-live.js'), /innerHTML/);
 assert.ok(pages.pets.css.includes('../css/pets.css') && pages.pets.css.includes('../css/heroes.css'));
 assert.match(read('_includes/ascii/deck-scene.html'), /{% when 'pets' %}\n<span class="ascii-mini ascii-mini--pet" data-pet="gray-wolf"/);
 const page = read('pets/index.html');

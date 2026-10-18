@@ -23,6 +23,9 @@
 .pet-card[data-owned="false"] .pet-pen .ascii-mini { color: var(--amber-dim); }
 [data-collection] .pet-card[data-owned="false"] .pet-pen .ascii-mini { color: var(--ink-muted); opacity: .6; }
 .pet-card[data-owned="false"] .ascii-mini--portrait > span { color: inherit; }
+/* A pet drawn live (js/pet-live.js) covers the pen with its canvas; the baked frames stay underneath for when it can't run. */
+.pet-live { position: absolute; inset: 0 auto auto 0; display: block; width: 100%; aspect-ratio: 43.2 / 30; pointer-events: none; }
+[data-pen][data-live] > .ascii-mini--portrait, [data-pen][data-live]::after { visibility: hidden; }   /* it acts out the marks (z's, hearts, a thought) itself */
 
 .pet-tame { display: flex; align-items: flex-start; gap: .45rem; min-height: 40px; padding-top: .2rem; cursor: pointer; }
 .pet-tame input { flex: none; width: 1.15rem; height: 1.15rem; margin: .15rem 0 0; accent-color: var(--amber); }
