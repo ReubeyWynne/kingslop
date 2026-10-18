@@ -59,7 +59,7 @@
     return out;
   }
 
-  // Bidi marks out, Arabic-Indic / Persian / full-width digits to ASCII,
+  // Bidi marks out, Arabic-Indic / Persian / full-width digits to Latin ones,
   // accents stripped, non-breaking spaces to spaces.
   function normalise(value) {
     return String(value || '').replace(/[‎‏‪-‮⁦-⁩؜]/g, '')

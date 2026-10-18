@@ -35,7 +35,12 @@ const server = http.createServer((request, response) => {
     await page.locator('.import-tile').first().waitFor({ timeout: 240000 });
     await page.locator('#screen-import [data-target~="screen-import.count"]', { hasText: '2 to review' }).waitFor({ timeout: 240000 });
     await page.screenshot({ path: path.join(output, 'review-resources-390.png') });
-    const tiles = () => page.locator('.import-tile').evaluateAll(list => list.map(li => ({ key: li.dataset.key, value: li.querySelector('[data-field="value"]').value, state: li.dataset.state, crop: li.querySelector('img').naturalWidth > 0 })));
+    const tiles = () => page.locator('.import-tile').evaluateAll(list => Promise.all(list.map(async li => {
+      // A freshly rendered cut-out may still be decoding.
+      const img = li.querySelector('img');
+      await img.decode().catch(() => {});
+      return { key: li.dataset.key, value: li.querySelector('[data-field="value"]').value, state: li.dataset.state, crop: img.naturalWidth > 0 };
+    })));
     const first = await tiles();
     const screen = await page.locator('[data-target~="screen-import.screen"]').textContent();
     const resources = screen.includes('Resources') ? first : null;
