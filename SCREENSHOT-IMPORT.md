@@ -225,16 +225,15 @@ Each step lands as its own commit with its checks passing.
 - [ ] 10. Battle simulator onto the shared dock with review-before-apply.
 - [ ] 11. Update ROADMAP.md milestone 6, PLAYER-LEDGER.md, INTERACTIONS.md
   and HERO-GEAR-SOURCES.md.
-- [ ] 12. Unit pickers on manual inputs (owner, 18 Oct): one number input plus
-  a unit select instead of raw figures. Quantities (Town Centre item
-  quantity, troop roster amount, simulator march counts) take ×1 / K / M / B;
-  durations (Town Centre speedups, now separate days/hours/minutes inputs)
-  become one input with min / hr / day. The ledger keeps raw integers
-  (amounts, minutes); the unit is display only and is remembered per field.
-  Parse typed suffixes ("1.2m", "3d") with `OcrText.parseShort` and
-  `parseDuration`. One shared helper with a `data-unit-input` hook, no
-  per-page copies; i18n keys in en.js.
-
+- [x] 12. Unit pickers (`js/unit-input.js`, loaded on every page): an input
+  marked `data-unit-input="count"` (×1 / K / M / B) or `"duration"` (min / hr /
+  day) gets a unit select beside it. `input.value` still reads and writes the
+  raw whole number, so modules and checks are unchanged; what the reader types
+  is read in the chosen unit and typed suffixes win ("1.2m", "3d"). Used by
+  the Town Centre quantity and speedup dialogs (one time box replaces
+  days/hours/minutes), troop roster amounts and the simulator's march counts.
+  Playwright's `inputValue()` reads the shown text; use `el.value` for raw.
+  Checked by `.dsh/unit-input-check.cjs`.
 - [x] 13. `pet-list` adapter (`js/import-adapters/pets.js`): finds the white
   Pet List popover and its portraits, identifies the seven pets in
   `pet-list.jpg` by portrait signature, reads "Lv. N" from an enlarged crop of

@@ -68,11 +68,15 @@ const num = text => Number(String(text).replace(/[^0-9]/g, '')) || 0;
       assert.equal(await page.locator('#town-speedups').isVisible(), true);
       assert.equal(await page.locator('#town-bag').isVisible(), false);
       await edit('[data-duration="speedup-general"]');
-      await dialog.locator('[data-unit="d"]').fill('1'); await dialog.locator('[data-unit="h"]').fill('2'); await dialog.locator('[data-unit="m"]').fill('90');
-      await dialog.locator('[data-unit="m"]').blur();
+      // One box with a unit: a typed suffix wins, and the box settles into
+      // the largest unit that keeps the figure whole.
+      const time = dialog.locator('[data-field="duration"]'), timeUnit = dialog.locator('[data-panel="duration"] .unit-select');
+      await time.fill('27.5h'); await time.blur();
       assert.equal((await ledger()).inventory['speedup-general'].amount, 1440 + 120 + 90);
-      assert.equal(await dialog.locator('[data-unit="h"]').inputValue(), '3');
-      assert.equal(await dialog.locator('[data-unit="m"]').inputValue(), '30');
+      assert.equal(await timeUnit.inputValue(), 'min');
+      await timeUnit.selectOption('hr');
+      assert.equal(await time.evaluate(el => Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').get.call(el)), '27.5', 'rescaling shows the same time in hours');
+      assert.equal(await time.evaluate(el => el.value), '1650', 'the page still reads minutes');
       await done();
       assert.equal(await page.locator('[data-duration="speedup-general"] [data-amount]').textContent(), '1d 3h 30m');
       assert.equal(await prep(), 1650 * 30);

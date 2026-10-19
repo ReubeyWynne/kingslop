@@ -50,6 +50,7 @@ jobs:
               - js/interactions.js
               - js/player-ledger.js
               - js/player-modules.js
+              - js/unit-input.js
               - js/server-age.js
               - js/kingdom-progression.js
               - js/kingdom-data.liquid
@@ -311,6 +312,9 @@ jobs:
       - name: Check screen import adapters
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/screen-import-check.cjs
+      - name: Check unit inputs
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/unit-input-check.cjs
 
   build:
     needs: changes
