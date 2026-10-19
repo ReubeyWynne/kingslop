@@ -78,7 +78,6 @@
 /* The same forge, small, while screenshots are being read. */
 .ascii-hammer-loader { display: none; margin: .25rem 0; }
 .ascii-hammer-loader .ascii-forge { font-size: 6px; }
-#sim-ocr-status.busy + .ascii-hammer-loader { display: inline-block; }
 
 /* ─── Emblems — the small scene under each hero ───────── */
 .ascii-motif-rail { display: flex; align-items: center; gap: clamp(.5rem, 3vw, 1.2rem); margin: clamp(1rem, 3vw, 1.4rem) 0 0; isolation: isolate; direction: ltr; }

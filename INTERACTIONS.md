@@ -30,7 +30,7 @@ Its `sim-army` module (`js/sim-army.js`) turns the sheet into army cards. A tile
 
 Its `sim-run` module (`js/sim-run.js`) is the sweep's run meter. The sweep fires `sim:sweep` on the console with `{ phase, done, of, battles, planned, ms }` (phase `start`, `progress`, `done` or `fail`); the module fills `[data-target="sim-run.bar"]`, a `<progress>` with one step per mix, and `[data-target="sim-run.meter"]`, the live line of battles fought out of the plan, the rate and the time left, then the totals once it is done. The root's `data-run` (`running` or `done`) shows the loader while a sweep runs.
 
-Hero gear composes these capabilities in its existing markup. Resource persistence, file export/import, tab keyboard handling and status output no longer live in its page controller. Optimisation, gear editing and the specialised screenshot review remain domain-specific consumers of the ledger and semantic events.
+Hero gear composes these capabilities in its existing markup. Resource persistence, file export/import, tab keyboard handling and status output no longer live in its page controller. Optimisation and gear editing remain domain-specific consumers of the ledger and semantic events. Screenshot review is the site-wide import panel: a page opens it with `data-screen-import="pick"` on a button, and a page with its own sheet to fill (the battle simulator) marks it `data-screen-import-sheet="battle-report"` and answers the panel's `screen-import:sheet` event (`detail.values` by field id; it fills `detail.before` with what it replaced, for undo).
 
 ## Example
 

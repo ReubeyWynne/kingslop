@@ -181,6 +181,7 @@ jobs:
             deck:
               - *shared
               - .dsh/page-deck-browser-check.cjs
+              - .dsh/simulator-ui-check.cjs
               - '**/index.html'
               - css/**
               - js/**
@@ -403,7 +404,7 @@ jobs:
       - name: Check page navigation in browser
         if: matrix.group == 'deck'
         run: node .dsh/page-deck-browser-check.cjs
-      - name: Check simulator OCR review and activity
+      - name: Check simulator battle reports and activity
         if: matrix.group == 'deck'
         run: node .dsh/simulator-ui-check.cjs
       - name: Check ASCII scenes frame by frame

@@ -6,10 +6,13 @@
    page     = { items, rows, width, height }   (coordinates in the read's preview)
    adapter  = { id, sourceType, detect(page) → 0..1, probe?(pixels) → 0..1,
                 read(page, tools) → proposals | Promise<proposals> }
-   proposal = { target: 'inventory' | 'pet' | 'gear', id, value | null,
-                confidence 0..1, crop: { x, y, w, h } | Blob, label, note }
+   proposal = { target: 'inventory' | 'pet' | 'gear' | 'sheet', id, value | null,
+                confidence 0..1, crop: { x, y, w, h } | Blob, label, note,
+                y?, max?, min?, step? }
    A 'gear' proposal also carries piece ('inf-helm'), field ('level' or
-   'mastery') and quality; a red piece's level is shown as its +N. */
+   'mastery') and quality; a red piece's level is shown as its +N. A 'sheet'
+   proposal names the page sheet it fills (sheet: 'battle-report') and the
+   field's id; it never reaches the player save. */
 (function (root, factory) {
   var api = factory(root.OcrText || (typeof require === 'function' ? require('./ocr-text.js') : null));
   if (typeof module === 'object' && module.exports) module.exports = api;

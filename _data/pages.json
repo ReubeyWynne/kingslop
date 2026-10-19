@@ -400,8 +400,6 @@
       "../js/sim-player.js",
       "../js/sim-army.js",
       "../js/sim-run.js",
-      "../js/ocr-client.js",
-      "../js/ocr-text.js",
       "../js/sim.js"
     ],
     "footMainKey": "sim.foot.main",

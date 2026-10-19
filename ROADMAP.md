@@ -16,7 +16,7 @@ This roadmap extends the current site; it does not propose a new application.
 
 - The site is a static Jekyll/GitHub Pages tool suite. Pages and their navigation are described by `_data/nav.json` and `_data/pages.json`; shared page behaviour lives in `js/common.js`.
 - Hero data already exists in `_data/heroes.json`.
-- `hero-gear/` is the established optimiser pattern: resource inputs, a saved local ledger, JSON export/import, an upgrade engine (`js/hero-gear-engine.js`) and screenshot import (`js/hero-gear-ocr.js` + `js/ocr-worker.js`).
+- `hero-gear/` is the established optimiser pattern: resource inputs, a saved local ledger, JSON export/import, an upgrade engine (`js/hero-gear-engine.js`) and screenshot import through the site-wide import panel (`js/import-adapters/hero-gear.js` over `js/hero-gear-ocr.js` + `js/ocr-worker.js`).
 - `events/` and `js/kvk.js` already model the 28-day cycle, KvK prep, Strongest Governor, Alliance Brawl and their point-bearing items. Governor gear and governor charms are already recognised as scoring actions, but the page does not know a player's holdings.
 - The repository is deliberately client-side. Player data must remain local-first; there is no server account or shared database to introduce.
 
@@ -122,7 +122,7 @@ Do not present unverified governor costs, charm tables or combat weights as exac
 
 ## Milestone 6 — screenshot import
 
-The hero-gear screenshot importer proves that client-side import is viable, but its gear-tile detection is specialised. Preserve it as an adapter while building a generic import shell.
+Delivered as the site-wide import panel ([SCREENSHOT-IMPORT.md](SCREENSHOT-IMPORT.md)): one minimisable dock on every page, review before apply, a cut-out and one input per value, undo, and shots that wait across pages. Adapters read the Backpack's Other tab, both Overview tabs, the Pet List, hero gear overviews and detail screens, and battle reports (into the simulator's sheet, not the ledger). Governor screens are still to come.
 
 Every adapter follows the same pipeline:
 

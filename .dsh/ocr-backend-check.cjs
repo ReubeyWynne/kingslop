@@ -83,5 +83,5 @@ async function client() {
   await check('?build=123&backend=wasm', false);
   await check('', false);
   await check('', true);
-  console.log('OCR client: one worker, wasm retry, hang-breaker and close pass. Gear selects WASM before its first read; simulator automatic backend and silent/throwing GPU recovery remain intact.');
+  console.log('OCR client: one worker, wasm retry, hang-breaker and close pass. A WASM client starts on WASM; the automatic backend and silent/throwing GPU recovery remain intact.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

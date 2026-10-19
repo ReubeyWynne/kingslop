@@ -12,7 +12,7 @@
   if (!M) return;
 
   // Files load in order; each is skipped when what it provides is already on
-  // the page (the simulator loads the OCR side itself).
+  // the page.
   var LAZY = [
     ['ocr-text.js', function () { return window.OcrText; }],
     ['ocr-client.js', function () { return window.OcrClient; }],
@@ -21,7 +21,8 @@
     ['import-adapters/backpack.js', function () { return window.ScreenImport.get('backpack-items'); }],
     ['import-adapters/pets.js', function () { return window.ScreenImport.get('pet-list'); }],
     ['hero-gear-ocr.js', function () { return window.HeroGearOCR; }],
-    ['import-adapters/hero-gear.js', function () { return window.ScreenImport.get('hero-gear'); }]
+    ['import-adapters/hero-gear.js', function () { return window.ScreenImport.get('hero-gear'); }],
+    ['import-adapters/battle-report.js', function () { return window.ScreenImport.get('battle-report'); }]
   ];
   var here = document.currentScript && document.currentScript.src;
 
@@ -254,7 +255,7 @@
               // Review follows the screen top to bottom; values never found go last.
               next.proposals = proposals.map(function (p, i) {
                 var item = { target: p.target || 'inventory', id: p.id, label: p.label, value: p.value, confidence: p.confidence, note: p.note || '', unit: p.unit || (/^speedup-/.test(p.id) ? 'minutes' : 'count'), crop: crops[i], y: typeof p.y === 'number' ? p.y : p.crop && typeof p.crop.y === 'number' ? p.crop.y : Infinity };
-                if (p.max !== undefined) item.max = p.max;
+                ['max', 'min', 'step', 'side', 'sheet'].forEach(function (k) { if (p[k] !== undefined) item[k] = p[k]; });
                 if (p.target === 'gear') { item.piece = p.piece; item.field = p.field; item.quality = p.quality; }
                 return item;
               }).sort(function (a, b) { return a.y - b.y; });
@@ -280,12 +281,13 @@
     }
 
     // ── review ─────────────────────────────────────────
-    var SCREENS = { 'overview-resources': ['import.screen.resources', 'Overview · Resources'], 'overview-speedups': ['import.screen.speedups', 'Overview · Speedups'], 'backpack-items': ['import.screen.backpack', 'Backpack items'], 'pet-list': ['import.screen.pets', 'Pet List'], 'hero-gear': ['import.screen.gear', 'Hero gear'] };
+    var SCREENS = { 'overview-resources': ['import.screen.resources', 'Overview · Resources'], 'overview-speedups': ['import.screen.speedups', 'Overview · Speedups'], 'backpack-items': ['import.screen.backpack', 'Backpack items'], 'pet-list': ['import.screen.pets', 'Pet List'], 'hero-gear': ['import.screen.gear', 'Hero gear'], 'battle-report': ['import.screen.battle', 'Battle report'] };
     var QUALITY = { epic: ['import.quality.epic', 'epic'], mythic: ['import.quality.mythic', 'mythic'], red: ['import.quality.red', 'red'] };
 
     function note(p, value) {
       if (p.unit === 'minutes') return tr('import.minutesNote', 'minutes{d}', { d: value === null || value === undefined ? '' : ' · ' + duration(value) });
       if (p.unit === 'level') return tr('import.levelNote', 'level');
+      if (p.side) return (p.side === 'you' ? tr('import.side.you', 'you') : tr('import.side.foe', 'opponent')) + (p.unit === 'percent' ? ' · %' : '');
       if (p.unit === 'gear-level' || p.unit === 'gear-mastery') {
         var q = QUALITY[p.quality], field = p.unit === 'gear-level' ? tr('import.gearLevel', 'enhancement') : tr('import.gearMastery', 'forge mastery');
         return q ? field + ' · ' + tr(q[0], q[1]) : field;
@@ -316,6 +318,8 @@
         if (document.activeElement !== input) input.value = value === null || value === undefined ? '' : String(value);
         input.placeholder = tr('import.unread', 'not read');
         if (p.max !== undefined) input.max = String(p.max); else input.removeAttribute('max');
+        input.min = p.min !== undefined ? String(p.min) : '0';
+        input.step = p.step !== undefined ? String(p.step) : '1';
         field(li, 'note').textContent = note(p, value);
         field(li, 'include').checked = included(entry, p);
         var later = newer(entry, p);
@@ -378,15 +382,46 @@
       return out;
     }
 
+    // A ticked number the box refuses, if any.
+    function invalidInput() {
+      return Array.from(target('tiles').querySelectorAll('[data-field="value"]')).filter(function (input) {
+        var li = input.closest('[data-key]'), box = li && li.querySelector('[data-field="include"]');
+        return box && box.checked && input.value !== '' && !input.validity.valid;
+      })[0] || null;
+    }
+
+    // A page's own sheet (the battle simulator's Bonus Details) takes a shot's
+    // values when it is open: it marks itself [data-screen-import-sheet] and
+    // answers 'screen-import:sheet' { values, before } by writing the values
+    // and filling `before` with what they replaced. Nothing reaches the
+    // player save.
+    function sheetHost(name) { return document.querySelector('[data-screen-import-sheet~="' + name + '"]'); }
+    function applySheet(entry) {
+      var name = entry.proposals[0].sheet, host = sheetHost(name), values = {}, n = 0;
+      if (!host) { status(tr('import.openSheet', 'Open the battle simulator to apply this report. It waits here until then.')); return; }
+      entry.proposals.forEach(function (p) {
+        var value = valueOf(entry, p);
+        if (!included(entry, p) || value === null || !isFinite(value)) return;
+        values[p.id] = value; n++;
+      });
+      if (!n) { status(tr('import.nothing', 'Nothing is ticked to apply.')); return; }
+      var detail = { values: values, before: {} };
+      host.dispatchEvent(new CustomEvent('screen-import:sheet', { bubbles: true, detail: detail }));
+      lastApply = { sheet: name, before: detail.before, name: entry.name };
+      forget(entry).then(function () {
+        render();
+        status(tr('import.applied', 'Saved {n} values from {name}.', { n: api.fmt(n), name: entry.name }));
+        context.emit('screen-import:applied', { sheet: name, values: values });
+      });
+    }
+
     function apply() {
       var entry = reviewable()[current];
       if (!entry || !ledger) return;
       // A number the box refuses is never applied as the value read before it.
-      var bad = Array.from(target('tiles').querySelectorAll('[data-field="value"]')).filter(function (input) {
-        var li = input.closest('[data-key]'), box = li && li.querySelector('[data-field="include"]');
-        return box && box.checked && input.value !== '' && !input.validity.valid;
-      })[0];
+      var bad = invalidInput();
       if (bad) { status(tr('import.invalid', 'One value can’t be saved. Fix the marked number, or untick it.')); if (bad.reportValidity) bad.reportValidity(); return; }
+      if (entry.proposals.some(function (p) { return p.target === 'sheet'; })) return applySheet(entry);
       // Inventory counts, pet levels and gear pieces go to their own parts of the record.
       var before = ledger.snapshot(), applied = {}, stock = {}, pets = {}, gear = {};
       entry.proposals.forEach(function (p) {
@@ -443,6 +478,15 @@
     }
 
     function undo() {
+      if (lastApply && lastApply.sheet) {
+        var host = sheetHost(lastApply.sheet);
+        if (!host) { status(tr('import.openSheet', 'Open the battle simulator to apply this report. It waits here until then.')); return; }
+        host.dispatchEvent(new CustomEvent('screen-import:sheet', { bubbles: true, detail: { values: lastApply.before, before: {} } }));
+        status(tr('import.undone', 'Undone. {name} can be applied again.', { name: lastApply.name }));
+        lastApply = null;
+        render();
+        return;
+      }
       if (!lastApply || !ledger) return;
       try { ledger.importJSON(lastApply.before, null, ledger.snapshot().revision); } catch (err) { status(tr('import.changed', 'Your saved data changed in another tab. Check the numbers and apply again.')); return; }
       status(tr('import.undone', 'Undone. {name} can be applied again.', { name: lastApply.name }));

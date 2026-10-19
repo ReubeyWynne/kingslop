@@ -61,18 +61,10 @@ self: sim
     <div class="sim-workspace">
       <!-- ── The armies: a card per side, a tile per troop type ── -->
       <div class="sim-armies" id="sim-armies" role="tabpanel" aria-labelledby="sim-view-armies">
-        <div class="load" id="sim-load">
+        <div class="load" id="sim-load" data-screen-import-sheet="battle-report">
           <div class="sim-ocr">
-            <button type="button" id="sim-ocr-btn" data-i18n="sim.ocr.btn">Read a battle screenshot</button>
-            <span class="sim-ocr-hint" data-i18n="sim.ocr.hint">fills both Bonus Details columns — or paste one</span>
-            <input type="file" id="sim-ocr-file" accept="image/*" hidden>
-          </div>
-          <output id="sim-ocr-status" class="sim-ocr-status" aria-live="polite" hidden></output>
-          {% include ascii/hammer-loader.html %}
-
-          <div class="sim-ocr-shot" id="sim-ocr-shot" hidden>
-            <button type="button" id="sim-ocr-review-btn" data-i18n="sim.review.open">Review screenshot &amp; missing values</button>
-            <output id="sim-ocr-review-count"></output>
+            <button type="button" id="sim-ocr-btn" data-screen-import="pick" data-i18n="sim.ocr.btn">Read a battle screenshot</button>
+            <span class="sim-ocr-hint" data-i18n="sim.ocr.hint">you check the numbers, then they fill both Bonus Details columns — or paste one</span>
           </div>
 
           {%- for side in sides %}{% assign sd = side | split: "|" %}
@@ -342,24 +334,6 @@ self: sim
         </div>
       </div>
     </div>
-
-    <dialog class="sim-dialog sim-review-dialog" id="sim-review-dialog" aria-labelledby="sim-review-title">
-      <div class="sim-dialog-head">
-        <h2 id="sim-review-title" data-i18n="sim.review.title">Review Bonus Details</h2>
-        <button type="button" data-action="sim-army.close" data-i18n="sim.army.done">done</button>
-      </div>
-      <p class="sim-gloss" data-i18n="sim.review.hint">Check each snippet against the values below. Highlighted values were not read; previous values are kept until you correct them.</p>
-      <div class="sim-tabs" data-module="tabs" data-tabs-bind="review" role="tablist" aria-label="Troop type" data-i18n-key="sim.army.troopAria" data-i18n-attr="aria-label">
-        {%- for t in types %}{% assign tp = t | split: "|" %}
-        <button type="button" id="sim-review-tab-{{ tp[0] }}" role="tab" aria-controls="sim-review-fields" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"{% unless forloop.first %} tabindex="-1"{% endunless %} data-value="{{ tp[0] }}" data-action="tabs.select" data-i18n="{{ tp[1] }}">{{ tp[2] }}</button>
-        {%- endfor %}
-      </div>
-      <div id="sim-review-fields" role="tabpanel" aria-labelledby="sim-review-tab-inf"></div>
-      <details id="full-screenshot" class="sim-why sim-review-original">
-        <summary data-i18n="sim.review.original">Show full screenshot</summary>
-        <div class="sim-review-image"><img id="sim-review-image" alt="" decoding="async"></div>
-      </details>
-    </dialog>
 
     <!-- ── Edit dialogs: one per side, a tab per troop type ── -->
     {%- for side in sides %}{% assign sd = side | split: "|" %}
