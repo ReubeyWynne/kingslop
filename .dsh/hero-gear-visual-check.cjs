@@ -246,6 +246,8 @@ async function fits(page, label) {
       const dock=overviewPage.locator('#screen-import');
       const ledgerGear=()=>overviewPage.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear));
       async function pick(names){
+        // The open panel can cover the page's button on a phone; minimise it first.
+        if(await dock.locator('.import-sheet').isVisible())await dock.locator('[data-target="screen-import.chip"]').click();
         const [chooser]=await Promise.all([overviewPage.waitForEvent('filechooser'),overviewPage.locator('#gear-import').click()]);
         await chooser.setFiles(names.map(name=>path.resolve('.dsh/gear-fixtures/'+name+'.jpg')));
         await overviewPage.waitForFunction(()=>{const t=document.querySelector('[data-target="screen-import.count"]').textContent;return t&&!/reading/.test(t);},null,{timeout:240000});
