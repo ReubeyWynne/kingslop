@@ -27,7 +27,7 @@ self: gear
       <div class="gear-editor">
         <div class="gear-heading">
           <div><h2 data-i18n="gear.yourGear">Your gear</h2><small class="gear-edit-hint" data-i18n="gear.tapToEdit">tap a slot to edit</small></div>
-          <div class="gear-heading-tools"><button type="button" id="gear-share" data-i18n="gear.share">copy gear link</button><span id="gear-share-status" class="gear-sr" role="status"></span><button type="button" id="gear-import" data-i18n="gear.import">read screenshots</button></div>
+          <div class="gear-heading-tools"><button type="button" id="gear-share" data-i18n="gear.share">copy gear link</button><span id="gear-share-status" class="gear-sr" role="status"></span><button type="button" id="gear-import" data-screen-import="pick" data-i18n="gear.import">read screenshots</button></div>
         </div>
         <input type="url" id="gear-link" class="gear-link" readonly hidden aria-label="Gear link" data-i18n-key="gear.linkLabel" data-i18n-attr="aria-label">
         <div class="gear-rail" id="gear-troops" data-module="tabs" data-tabs-bind="troop" role="tablist" aria-label="Troop type" data-i18n-key="gear.troopType" data-i18n-attr="aria-label">
@@ -137,23 +137,6 @@ self: gear
   <div class="gear-heading"><h2 id="gear-edit-title" data-i18n="gear.editPiece">edit selected piece</h2><button type="button" id="gear-close-edit" data-i18n="gear.done">done</button></div>
   <div id="gear-edit-fields"></div>
   <p class="gear-gloss" data-i18n="gear.levelHint">Use the total level: red +20 is level 120.</p>
-</dialog>
-<dialog id="gear-import-dialog" class="gear-dialog gear-import-dialog" aria-labelledby="gear-import-title">
-  <header class="gear-import-header">
-    <div class="gear-heading"><h2 id="gear-import-title" data-i18n="gear.importTitle">Read your gear</h2><button type="button" id="gear-close-import" data-i18n="gear.close">close</button></div>
-    <output id="gear-read-status" role="status" aria-live="polite"></output>
-    {% include ascii/hammer-loader.html %}
-  </header>
-  <div id="gear-import-scroll" class="gear-import-scroll">
-    <div id="gear-import-pick">
-      <p class="gear-import-intro" data-i18n="gear.importIntro">Choose hero gear overviews or piece detail screens, then check the crops and numbers.</p>
-      <label class="gear-import-picker"><span data-i18n="gear.chooseScreenshots">choose screenshots</span><input type="file" id="gear-images" accept="image/*" multiple></label>
-    </div>
-    <button type="button" id="gear-replace-images" hidden data-i18n="gear.replaceScreenshots">choose other screenshots</button>
-    <p class="gear-gloss gear-import-hint" data-i18n="gear.importNumbers">Use the numbers shown on the crop: red +20 stays 20 here. Blank fields keep your saved values.</p>
-    <div id="gear-import-review"></div>
-  </div>
-  <footer class="gear-tools gear-import-actions"><button type="button" id="gear-apply-import" class="gear-primary" disabled data-i18n="gear.applyImport">apply reviewed gear</button><button type="button" id="gear-cancel-import" data-i18n="gear.cancel">cancel</button></footer>
 </dialog>
 <dialog id="gear-reset-dialog" class="gear-dialog" aria-labelledby="gear-reset-title">
   <h2 id="gear-reset-title" data-i18n="gear.resetTitle">Reset your hero gear?</h2>

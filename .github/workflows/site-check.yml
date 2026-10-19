@@ -204,6 +204,11 @@ jobs:
               - js/ocr-text.js
               - css/hero-gear.css
               - img/hero-gear/**
+              - js/screen-import*.js
+              - js/import-*.js
+              - js/import-adapters/**
+              - css/screen-import.css
+              - _includes/screen-import.html
             import:
               - *shared
               - .dsh/screen-import*.cjs
@@ -212,6 +217,7 @@ jobs:
               - js/screen-import*.js
               - js/import-*.js
               - js/import-adapters/**
+              - js/hero-gear-ocr.js
               - css/screen-import.css
               - town-centre/**
       - id: plan
