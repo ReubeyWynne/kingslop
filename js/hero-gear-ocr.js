@@ -76,10 +76,17 @@ function detect(image){
   var kind=1;for(var k=2;k<4;k++)if(counts[k]>counts[kind])kind=k;
   return counts[kind]>=4?{x:x,y:y,w:size,h:size,quality:['','mythic','red','epic'][kind],support:counts[kind]}:null;
  }
+ // A hero's gear sits either side of the hero; the Backpack's item grid,
+ // which shows the same frames, fills the space between the two columns.
+ function apart(y){
+  var n=0,m=0;
+  for(var yy=y;yy<y+size&&yy<h;yy++)for(var x=left+size;x<w-left-size;x++){m++;if(mask[yy*w+x])n++;}
+  return m?n/m:0;
+ }
  for(var r=0;r<rows.length;r++)for(var s=r+1;s<rows.length;s++){
   var gap=rows[s]-rows[r];if(gap<size*1.35||gap>size*2.8)continue;
   var tiles=[tile(left,rows[r]),tile(w-left-size,rows[r]),tile(left,rows[s]),tile(w-left-size,rows[s])];
-  if(tiles.every(Boolean))return tiles.map(function(t,i){t.slot=['helm','gloves','chest','boots'][i];return t;});
+  if(tiles.every(Boolean)&&(apart(rows[r])+apart(rows[s]))/2<.2)return tiles.map(function(t,i){t.slot=['helm','gloves','chest','boots'][i];return t;});
  }
  return null;
 }

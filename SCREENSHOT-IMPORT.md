@@ -221,9 +221,34 @@ Each step lands as its own commit with its checks passing.
   differently from in-game tiles, so references must come from a real
   screenshot); add them with `.dsh/import-signatures.cjs` once a shot shows
   them.
-- [ ] 9. Hero gear onto the shared dock; remove its private dialog.
-- [ ] 10. Battle simulator onto the shared dock with review-before-apply.
-- [ ] 11. Update ROADMAP.md milestone 6, PLAYER-LEDGER.md, INTERACTIONS.md
+- [x] 9. `hero-gear` adapter (`js/import-adapters/hero-gear.js`) over
+  `js/hero-gear-ocr.js`; the page's button is `data-screen-import="pick"` and
+  its own dialog, worker client and CSS are gone. Adapters may now offer
+  `probe(pixels)`: the dock decodes every shot at 360px first, and a probe
+  above 0.5 (`ScreenImport.probe`) claims it without the whole-screen read. A
+  hero overview is probed by its tile frames; `HeroGearOCR.detect` rejects the
+  Backpack grid (frames fill the space between the columns). Tile labels read
+  on the WASM engine (`tools.readWasm`), crops may be Blobs, and `tools.selected`
+  (the gear page's last piece) stands in for an unread troop badge, flagged.
+  Each piece gives two proposals (`target: 'gear'`, `piece`, `field`,
+  `quality`; red levels shown as +N; `max` sets the input's limit); apply
+  groups them into one `itemDelta` per piece, keeping unticked fields, and a
+  refused input or invalid piece blocks the apply (`import.invalid`).
+  `.dsh/hero-gear-visual-check.cjs` reads all 24 fixture pieces through the
+  dock with the production worker.
+- [x] 10. `battle-report` adapter (`js/import-adapters/battle-report.js`,
+  the sim's `parseItems` ported). Proposals are `target: 'sheet'` with
+  `sheet: 'battle-report'`, the sheet field id as `id`, `side`, `step`
+  and `min`; a side's total (`sim-n-total`, `sim-foe-n-total`) is given only
+  when the report doesn't split it. The dock applies a sheet shot only where
+  `[data-screen-import-sheet~="battle-report"]` is on the page, by dispatching
+  `screen-import:sheet` { values, before }; the sim writes the fields (sharing
+  totals out in the typed mix) and fills `before`, which the dock's undo sends
+  back. Elsewhere the shot waits (`import.openSheet`). No ledger record. The
+  sim's button is `data-screen-import="pick"`; its fill-then-flag review
+  dialog, warm-up and paste handler are gone. Checked by
+  `.dsh/screen-import-check.cjs` (parsing) and `.dsh/simulator-ui-check.cjs`.
+- [x] 11. Update ROADMAP.md milestone 6, PLAYER-LEDGER.md, INTERACTIONS.md
   and HERO-GEAR-SOURCES.md.
 - [x] 12. Unit pickers (`js/unit-input.js`, loaded on every page): an input
   marked `data-unit-input="count"` (×1 / K / M / B) or `"duration"` (min / hr /

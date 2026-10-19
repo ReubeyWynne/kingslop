@@ -116,18 +116,26 @@ surfaces, hairline rules and restrained signal colour.
 
 ## Screenshot import and local state
 
-The simulator's existing `js/ocr-worker.js` supplies PaddleOCR words and polygons
-using the existing self-hosted models. Detail screens use English level/mastery
+Gear screenshots go through the site-wide import panel
+([SCREENSHOT-IMPORT.md](SCREENSHOT-IMPORT.md)); the page's "read screenshots"
+button opens it. The `hero-gear` adapter (`js/import-adapters/hero-gear.js`)
+wraps `js/hero-gear-ocr.js`, and `js/ocr-worker.js` supplies PaddleOCR words
+and polygons using the existing self-hosted models. A hero overview is known by
+its tile frames before any reading, so the panel skips the whole-screen read;
+the tile labels are read on the WASM engine. Detail screens use English level/mastery
 labels and slot aliases. Hero overviews are detected locally from connected
 orange/red/purple regions, repeated tile dimensions, two aligned rows and
-mirrored columns. Border samples identify mythic/red/epic rarity; the layout
-assigns helm, gloves, chest and boots. The centred exclusive widget is excluded.
+mirrored columns, with the space between the columns clear of tile frames
+(the Backpack's item grid shows the same frames edge to edge). Border samples
+identify mythic/red/epic rarity; the layout assigns helm, gloves, chest and
+boots. The centred exclusive widget is excluded.
 
 Troop identification compares the four corner badges against 16 × 16 luminance
 signatures extracted from the supplied Zoe, Marlin and Petra screenshots. Small
 position shifts are compared; three confident agreeing badges are required.
-Unknown badges leave troop assignment empty for review rather than borrowing
-the selected troop. Hero names and their language are not needed.
+An unknown badge falls back to the piece last selected on the gear page and
+flags the piece's values for a look. Hero names and their language are not
+needed.
 
 Each detected tile is cropped from the original-resolution image. Its enhancement
 and mastery bands are filtered to their white/yellow glyphs, with glyph size,
@@ -137,22 +145,26 @@ Unread labels retry their original-colour crops to retain anti-aliased glyph
 edges. Absent label pixels read as zero; a present label without recognised
 numbers or a reader failure leaves the field unread. Red enhancement
 is converted to total level `100 + displayed enhancement`, while `Lv.` in the
-lower band is mastery. Each crop appears separately for review, with editable
-troop, slot, rarity, numbers and an include checkbox. Only one included piece
-per troop/slot is allowed; overlapping hero sets must be deselected. Unknown
-fields preserve saved values. No values apply before review, and import supports
-one-step undo. This planner stores one transferable set per troop, not per hero.
+lower band is mastery. Each piece gives two review tiles, enhancement (a red
+piece shows its +N) and forge mastery, each with the piece's crop, one input
+and an include tick. Each screenshot applies on its own; where two waiting shots
+show the same piece, the newer file wins. Unticked fields preserve saved values,
+and a number the input refuses (enhancement over 100, or 80 for epic) blocks
+the apply instead of being dropped. No values apply before review, and the
+panel's undo restores the gear from before the last apply. This planner stores
+one transferable set per troop, not per hero.
 
 Six original supplied screenshots are test fixtures in `.dsh/gear-fixtures/`.
-The browser test reads all 24 pieces through the actual worker without word
-stubs, checks every field, review-before-apply, duplicate selection, unlevelled
-imports, resource preservation and undo. Detail-import UI orchestration also has
-a separate stubbed test. Current overview detection targets the portrait gear
+The browser test reads all 24 pieces through the actual worker and the import
+panel without word stubs, checks every field, the WASM backend, review-before-
+apply, refused values, unlevelled imports, resource preservation and undo. A
+detail screen read is also covered with stubbed words. Current overview detection targets the portrait gear
 screen and three supported rarities; other crops/layouts and unread labels still
 need manual review. The underlying recognition engine is reused unchanged.
 
 Only the structured ledger is saved in `localStorage['bh:hero-gear:v1']`.
-Screenshots remain on-device, and temporary preview URLs are revoked on close.
+Screenshots remain on-device; shots waiting for review are kept in the
+browser's IndexedDB until applied or skipped.
 Resources, twelve pieces, exclusions, priorities, mode, mobile view, selected piece, targets,
 reforge choice and XP-part counts persist. Unavailable storage is reported;
 JSON export/import provides a fallback. Applying an upgrade plan updates local

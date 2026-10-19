@@ -73,13 +73,19 @@ async function fits(page, label) {
     await page.locator('#gear-undo').click();
     assert.equal(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),100);
     await page.route('**/js/ocr-worker.js**',route=>route.fulfill({contentType:'text/javascript',body:`self.onmessage=e=>{let texts=['Infantry Helm','Lv. +19','Forge Mastery 10'];self.postMessage({id:e.data.id,ok:true,items:texts.map((text,i)=>({text,poly:[[0,i*30],[250,i*30],[250,i*30+20],[0,i*30+20]]}))});};`}));
-    await page.locator('#gear-import').click();
-    await page.locator('#gear-images').setInputFiles({name:'gear.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6vGQAAAAASUVORK5CYII=','base64')});
-    await page.locator('[data-import-field="level"]').waitFor();
-    assert.equal(await page.locator('[data-import-field="level"]').inputValue(),'19');
-    assert.equal(await page.locator('[data-import-field="quality"]').inputValue(),'red');
-    await page.locator('#gear-apply-import').click();
-    assert.equal(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),119);
+    // The page's button hands screenshots to the site-wide import panel.
+    const [chooser]=await Promise.all([page.waitForEvent('filechooser'),page.locator('#gear-import').click()]);
+    await chooser.setFiles({name:'gear.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6vGQAAAAASUVORK5CYII=','base64')});
+    const detailLevel=page.locator('#screen-import [data-key="gear-inf-helm-level"] [data-field="value"]');
+    await detailLevel.waitFor();
+    assert.equal(await detailLevel.inputValue(),'19','a red level reviews as its +N');
+    assert.equal(await page.locator('#screen-import [data-key="gear-inf-helm-mastery"] [data-field="value"]').inputValue(),'10');
+    assert.match(await page.locator('#screen-import [data-key="gear-inf-helm-level"] [data-field="note"]').textContent(),/enhancement · red/);
+    await page.locator('#screen-import [data-action="screen-import.apply"]').click();
+    await page.waitForFunction(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level===119);
+    assert.deepEqual(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm']),{quality:'red',level:119,mastery:10});
+    await page.locator('#screen-import [data-target="screen-import.chip"]').click();
+    await page.unroute('**/js/ocr-worker.js**');
     await page.locator('#gear-mode-milestones').click();
     await page.locator('#gear-selected').selectOption('inf-helm');
     await page.locator('#gear-apply-milestone').click();
@@ -130,7 +136,7 @@ async function fits(page, label) {
     for(const width of [320,390,768,1280,1440]){
       const height=width===390?844:900;
       await page.setViewportSize({width,height});await fits(page,'width '+width);
-      await page.locator('#gear-import').click();await fits(page,'dialog '+width);await page.locator('#gear-close-import').click();
+      await Promise.all([page.waitForEvent('filechooser'),page.locator('#gear-import').click()]);await fits(page,'import panel '+width);await page.locator('#screen-import [data-target="screen-import.chip"]').click();
       if(width<=768){
         await page.locator('#gear-view-gear').click();
         assert.equal(await page.locator('.gear-answer').isVisible(),false);
@@ -236,19 +242,38 @@ async function fits(page, label) {
     try {
       await overviewPage.goto(origin+'/hero-gear/?lang=en');
       await overviewPage.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
-      await overviewPage.locator('#gear-import').click();
       const fixtures=['zoe','marlin','petra','jabel','diana','howard'];
-      await overviewPage.locator('#gear-images').setInputFiles(fixtures.map(name=>path.resolve('.dsh/gear-fixtures/'+name+'.jpg')));
-      await overviewPage.locator('#gear-apply-import:enabled').waitFor({timeout:240000});
-      assert.ok(await overviewPage.evaluate(()=>navigator.userAgent.includes('Android')));
-      assert.ok(await overviewPage.evaluate(()=>window.__gearWorkerURLs.every(url=>new URL(url).searchParams.get('backend')==='wasm')),'gear number recognition bypasses mobile GPU inference');
-      const actual=await overviewPage.locator('.gear-import-item').evaluateAll(items=>items.map(item=>{
-        const values=Object.fromEntries([...item.querySelectorAll('[data-import-field]')].filter(el=>el.type!=='checkbox').map(el=>[el.dataset.importField,el.value]));
-        if(values.quality==='red' && values.level!=='')values.level=String(Number(values.level)+100);
-        return values;
-      }));
-      fs.writeFileSync(path.join(output,'overview-reads.json'),JSON.stringify(actual,null,2));
-      fs.writeFileSync(path.join(output,'overview-ocr.json'),JSON.stringify(await overviewPage.evaluate(()=>window.__gearReads),null,2));
+      const dock=overviewPage.locator('#screen-import');
+      const ledgerGear=()=>overviewPage.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear));
+      async function pick(names){
+        // The open panel can cover the page's button on a phone; minimise it first.
+        if(await dock.locator('.import-sheet').isVisible())await dock.locator('[data-target="screen-import.chip"]').click();
+        const [chooser]=await Promise.all([overviewPage.waitForEvent('filechooser'),overviewPage.locator('#gear-import').click()]);
+        await chooser.setFiles(names.map(name=>path.resolve('.dsh/gear-fixtures/'+name+'.jpg')));
+        await overviewPage.waitForFunction(()=>{const t=document.querySelector('[data-target="screen-import.count"]').textContent;return t&&!/reading/.test(t);},null,{timeout:240000});
+        assert.equal(await dock.locator('[data-target="screen-import.count"]').textContent(),names.length+' to review',names.join(', ')+' all read as hero gear');
+      }
+      // Every shot's tiles, by file: troop, slot, quality, and the level as
+      // the game shows it (red +20 reviews as 20).
+      async function reads(n){
+        const out={};
+        for(let i=0;i<n;i++){
+          const name=(await dock.locator('[data-target="screen-import.name"]').textContent()).replace(/\.jpg$/,'');
+          out[name]=await dock.locator('.import-tile').evaluateAll(tiles=>tiles.map(li=>({key:li.dataset.key,value:li.querySelector('[data-field="value"]').value,note:li.querySelector('[data-field="note"]').textContent,crop:!li.querySelector('[data-field="crop"]').hidden})));
+          await dock.locator('[data-action="screen-import.next"]').click();
+        }
+        return out;
+      }
+      function pieces(tiles){
+        const by={};
+        for(const t of tiles){
+          const [,troop,slot,field]=/^gear-(inf|cav|arc)-(\w+)-(level|mastery)$/.exec(t.key);
+          const p=by[troop+'-'+slot]||(by[troop+'-'+slot]={troop,slot});
+          if(field==='level'){p.quality=/· (\w+)$/.exec(t.note)[1];p.level=t.value;}else p.mastery=t.value;
+          assert.ok(t.crop,'each value shows its tile');
+        }
+        return Object.values(by).map(p=>({...p,level:p.quality==='red'&&p.level!==''?String(Number(p.level)+100):p.level}));
+      }
       const expected=[
         ['inf',[['mythic',69,2],['red',120,11],['mythic',100,6],['mythic',72,3]]],
         ['arc',[['mythic',100,6],['mythic',69,2],['mythic',69,2],['mythic',100,6]]],
@@ -256,77 +281,55 @@ async function fits(page, label) {
         ['cav',[['epic',0,0],['mythic',0,0],['mythic',0,0],['mythic',0,0]]],
         ['arc',[['mythic',0,0],['mythic',0,0],['mythic',0,0],['epic',0,0]]],
         ['inf',[['mythic',0,0],['mythic',0,0],['mythic',0,0],['mythic',0,0]]]
-      ].flatMap(([troop,pieces])=>pieces.map(([quality,level,mastery],i)=>({troop,slot:E.SLOTS[i],quality,level:String(level),mastery:String(mastery)})));
-      assert.deepEqual(actual,expected,'real overview screenshots using the production OCR worker');
-      assert.equal(await overviewPage.locator('#gear-import-pick').isVisible(),false,'upload instructions yield to the gear review');
-      assert.equal(await overviewPage.locator('#gear-replace-images').isVisible(),true);
-      assert.equal(await overviewPage.locator('[data-import-index="1"][data-import-field="level"]').inputValue(),'20','red enhancement matches the crop');
-      await overviewPage.locator('#gear-import-scroll').evaluate(el=>el.scrollTop=el.scrollHeight);
-      const dialog=await overviewPage.locator('#gear-import-dialog').boundingBox();
-      for(const selector of ['#gear-import-title','#gear-close-import','#gear-apply-import']){
-        const box=await overviewPage.locator(selector).boundingBox();
-        assert.ok(box.y>=dialog.y && box.y+box.height<=dialog.y+dialog.height,'review chrome remains visible while scrolling '+selector);
-      }
-      assert.equal(await overviewPage.locator('#gear-import-dialog').evaluate(el=>el.scrollTop),0,'only the list scrolls');
-      await overviewPage.locator('#gear-import-scroll').evaluate(el=>el.scrollTop=0);
+      ].map(([troop,list])=>list.map(([quality,level,mastery],i)=>({troop,slot:E.SLOTS[i],quality,level:String(level),mastery:String(mastery)})));
+      await pick(fixtures.slice(0,3));
+      assert.ok(await overviewPage.evaluate(()=>navigator.userAgent.includes('Android')));
+      assert.ok(await overviewPage.evaluate(()=>window.__gearWorkerURLs.length>0&&window.__gearWorkerURLs.every(url=>new URL(url).searchParams.get('backend')==='wasm')),'gear number recognition bypasses mobile GPU inference, and overviews skip the whole-screen read');
+      const first=await reads(3);
+      fs.writeFileSync(path.join(output,'overview-reads.json'),JSON.stringify(first,null,2));
+      fs.writeFileSync(path.join(output,'overview-ocr.json'),JSON.stringify(await overviewPage.evaluate(()=>window.__gearReads),null,2));
+      for(let i=0;i<3;i++)assert.deepEqual(pieces(first[fixtures[i]]),expected[i],'real overview screenshot '+fixtures[i]+' using the production OCR worker');
+      assert.equal((await ledgerGear()).pieces['inf-helm'].level,0,'review has not applied any values');
       await overviewPage.screenshot({path:path.join(output,'mobile-import-review.png')});
       for(const width of [320,390,768,1280]){
         await overviewPage.setViewportSize({width,height:844});await fits(overviewPage,'populated review '+width);
-        await overviewPage.locator('.gear-import-identity').first().locator('summary').click();
-        await fits(overviewPage,'identity controls '+width);
-        await overviewPage.locator('.gear-import-identity').first().locator('summary').click();
+        const box=await dock.locator('.import-sheet').boundingBox();
+        assert.ok(box.x>=0&&box.x+box.width<=width+1&&box.y>=0&&box.y+box.height<=845,'the review panel fits at '+width);
       }
-      await overviewPage.setViewportSize({width:390,height:500});
-      await overviewPage.locator('[data-import-index="0"][data-import-field="level"]').focus();
-      for(const selector of ['#gear-close-import','#gear-apply-import']){
-        const box=await overviewPage.locator(selector).boundingBox();assert.ok(box.y>=0&&box.y+box.height<=500,'short viewport actions '+selector);
-      }
-      await overviewPage.screenshot({path:path.join(output,'mobile-import-short.png')});
       await overviewPage.setViewportSize({width:390,height:844});
-      await overviewPage.evaluate(()=>{
-        Object.defineProperty(visualViewport,'height',{configurable:true,value:440});
-        Object.defineProperty(visualViewport,'offsetTop',{configurable:true,value:40});
-        visualViewport.dispatchEvent(new Event('resize'));
-      });
-      for(const selector of ['#gear-import-title','#gear-close-import','#gear-apply-import']){
-        const box=await overviewPage.locator(selector).boundingBox();assert.ok(box.y>=40&&box.y+box.height<=480,'keyboard visual viewport '+selector);
+      // A number the box refuses is never applied as the value read before it.
+      while(!/^zoe/.test(await dock.locator('[data-target="screen-import.name"]').textContent()))await dock.locator('[data-action="screen-import.next"]').click();
+      const helm=dock.locator('[data-key="gear-inf-helm-level"] [data-field="value"]');
+      assert.equal(await helm.getAttribute('max'),'100');
+      await helm.fill('101');await helm.dispatchEvent('change');
+      await dock.locator('[data-action="screen-import.apply"]').click();
+      assert.match(await dock.locator('[data-target="screen-import.status"]').textContent(),/can’t be saved/);
+      assert.equal((await ledgerGear()).pieces['inf-helm'].level,0,'an invalid visible number applies nothing');
+      await helm.fill('69');await helm.dispatchEvent('change');
+      let beforeLast=null;
+      for(let i=0;i<3;i++){
+        beforeLast=(await ledgerGear()).pieces;
+        const revision=await overviewPage.evaluate(()=>window.PlayerLedger.shared().snapshot().revision);
+        await dock.locator('[data-action="screen-import.apply"]').click();
+        await overviewPage.waitForFunction(r=>window.PlayerLedger.shared().snapshot().revision>r,revision);
       }
-      await overviewPage.screenshot({path:path.join(output,'mobile-import-keyboard.png')});
-      await overviewPage.evaluate(()=>{delete visualViewport.height;delete visualViewport.offsetTop;visualViewport.dispatchEvent(new Event('resize'));});
-      const enhancement=overviewPage.locator('[data-import-index="0"][data-import-field="level"]');
-      await enhancement.fill('101');await overviewPage.locator('#gear-apply-import').click();
-      assert.equal(await overviewPage.locator('#gear-import-dialog').evaluate(el=>el.open),true,'invalid visible numbers cannot apply a silently clamped value');
-      await enhancement.fill('69');
-      assert.equal(await overviewPage.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),0,'review has not applied any values');
-      await fits(overviewPage,'real overview review');
-      await overviewPage.locator('#gear-apply-import').click();
-      assert.equal(await overviewPage.locator('#gear-import-dialog').evaluate(el=>el.open),true,'duplicate slots require selection');
-      await overviewPage.locator('#gear-import-scroll').evaluate(el=>el.scrollTop=0);
-      await overviewPage.screenshot({path:path.join(output,'overview-review.png')});
-      for(let i=12;i<24;i++)await overviewPage.locator('[data-import-index="'+i+'"][data-import-field="included"]').uncheck();
-      await overviewPage.locator('#gear-apply-import').click();
-      const imported=await overviewPage.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear));
-      for(const item of expected.slice(0,12))assert.deepEqual(imported.pieces[item.troop+'-'+item.slot],{quality:item.quality,level:Number(item.level),mastery:Number(item.mastery)});
+      const imported=await ledgerGear();
+      for(const item of expected.slice(0,3).flat())assert.deepEqual(imported.pieces[item.troop+'-'+item.slot],{quality:item.quality,level:Number(item.level),mastery:Number(item.mastery)});
       assert.deepEqual(imported.resources,E.defaults().resources);
-      await overviewPage.locator('#gear-undo').click();
-      assert.equal(await overviewPage.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level),0);
-      await overviewPage.locator('#gear-import').click();
-      await overviewPage.locator('#gear-images').setInputFiles(fixtures.slice(3).map(name=>path.resolve('.dsh/gear-fixtures/'+name+'.jpg')));
-      await overviewPage.locator('#gear-apply-import:enabled').waitFor({timeout:180000});
-      await overviewPage.locator('#gear-apply-import').click();
-      const unlevelled=await overviewPage.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear));
-      for(const item of expected.slice(12))assert.deepEqual(unlevelled.pieces[item.troop+'-'+item.slot],{quality:item.quality,level:0,mastery:0});
-      console.log('Production OCR: all 24 pieces in six supplied hero overviews matched rarity, troop, enhancement and mastery; duplicate selection, review, apply, unlevelled pieces and undo passed.');
-      await overviewPage.locator('#gear-import').click();
-      await overviewPage.route('**/js/ocr-worker.js**',route=>route.fulfill({contentType:'text/javascript',body:'self.onmessage=()=>{};'}));
-      await overviewPage.locator('#gear-images').setInputFiles(path.resolve('.dsh/gear-fixtures/zoe.jpg'));
-      await overviewPage.locator('#gear-import-dialog[aria-busy="true"]').waitFor();
-      await overviewPage.locator('#gear-close-import').click();
-      assert.equal(await overviewPage.locator('#gear-import-dialog').evaluate(el=>el.open),false,'a cold or stalled mobile read is cancellable');
-      await overviewPage.locator('#gear-import').click();
-      assert.equal(await overviewPage.locator('.gear-import-item').count(),0,'cancelled results cannot populate the next review');
-      assert.equal(await overviewPage.locator('#gear-images').isEnabled(),true);
-      await overviewPage.locator('#gear-cancel-import').click();
+      assert.match(await overviewPage.locator('.gear-row[data-select="inf-gloves"]').textContent(),/\+20/,'the gear page repaints from the ledger');
+      await dock.locator('[data-action="screen-import.undo"]').click();
+      assert.deepEqual((await ledgerGear()).pieces,beforeLast,'undo restores the gear before the last shot');
+      await pick(fixtures.slice(3));
+      const second=await reads(3);
+      for(let i=3;i<6;i++)assert.deepEqual(pieces(second[fixtures[i]]),expected[i],'real overview screenshot '+fixtures[i]);
+      for(let i=0;i<3;i++){
+        const revision=await overviewPage.evaluate(()=>window.PlayerLedger.shared().snapshot().revision);
+        await dock.locator('[data-action="screen-import.apply"]').click();
+        await overviewPage.waitForFunction(r=>window.PlayerLedger.shared().snapshot().revision>r,revision);
+      }
+      const unlevelled=await ledgerGear();
+      for(const item of expected.slice(3).flat())assert.deepEqual(unlevelled.pieces[item.troop+'-'+item.slot],{quality:item.quality,level:0,mastery:0});
+      console.log('Production OCR: all 24 pieces in six supplied hero overviews matched rarity, troop, enhancement and mastery through the import panel; review, invalid values, apply, unlevelled pieces and undo passed.');
     } catch(error) { await overviewPage.screenshot({path:path.join(output,'overview-failure.png')});throw error; } finally { await mobileContext.close(); }
     const guestContext=await browser.newContext({viewport:{width:1280,height:900}});
     try {

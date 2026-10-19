@@ -47,11 +47,15 @@ async function fixtures(page) {
     };
   });
 }
-async function upload(page) {
+// The simulator's button hands the shot to the site-wide import panel, which
+// reviews it before anything reaches the sheet.
+async function upload(page, name = 'report.png') {
   const buffer = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==', 'base64');
-  await page.locator('#sim-ocr-file').setInputFiles({ name: 'report.png', mimeType: 'image/png', buffer });
-  await page.waitForFunction(() => document.getElementById('sim-review-dialog').open && !document.getElementById('sim-ocr-btn').disabled);
+  const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.locator('#sim-ocr-btn').click()]);
+  await chooser.setFiles({ name, mimeType: 'image/png', buffer });
 }
+const raw = (page, id) => page.evaluate(id => document.getElementById(id).value, id);
+const tiles = page => page.locator('#screen-import .import-tile').evaluateAll(list => Object.fromEntries(list.map(li => [li.dataset.key, li.querySelector('[data-field="value"]').value])));
 (async () => {
   fs.mkdirSync(output, { recursive: true });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -64,24 +68,25 @@ async function upload(page) {
       await fixtures(page);
       await page.goto('http://127.0.0.1:' + server.address().port + '/battle-simulator/?mode=battle&lang=' + lang);
       await page.waitForFunction(() => document.getElementById('sim-fight-headline').textContent.trim());
+      const atkBefore = await raw(page, 'sim-atk-inf');
       await upload(page);
-      assert.equal(await page.locator('#sim-atk-inf').inputValue(), '411.5');
-      assert.equal(await page.locator('#sim-let-inf').inputValue(), '163');
-      assert.equal(await page.locator('#sim-n-inf').inputValue(), '12345');
-      assert.equal(await page.locator('#sim-foe-n-inf').inputValue(), '23456');
-      assert.equal(await page.locator('.sim-review-snippet').count(), 3);
-      assert.equal(await page.locator('#sim-review-fields input').count(), 10);
-      assert.equal(await page.locator('#sim-review-fields input[data-ocr="missing"]').count(), 5);
-      await page.locator('[data-source="sim-let-inf"]').fill('333.3');
-      assert.equal(await page.locator('#sim-let-inf').inputValue(), '333.3');
-      assert.equal(await page.locator('#sim-review-fields input[data-ocr="missing"]').count(), 4);
-      await page.locator('#sim-review-tab-cav').click();
-      assert.equal(await page.locator('[data-source$="-cav"]').count(), 10);
-      await page.locator('#sim-review-tab-inf').click();
-      assert.ok(await page.evaluate(() => document.getElementById('sim-review-dialog').scrollWidth <= document.getElementById('sim-review-dialog').clientWidth + 1));
+      await page.locator('#screen-import .import-chip', { hasText: '1 to review' }).waitFor();
+      assert.equal(await page.locator('#screen-import [data-target="screen-import.screen"]').textContent(), 'Battle report');
+      assert.deepEqual(await tiles(page), { 'sim-atk-inf': '411.5', 'sim-foe-atk-inf': '220', 'sim-foe-let-inf': '230', 'sim-n-inf': '12345', 'sim-foe-n-inf': '23456' });
+      assert.equal(await page.locator('#screen-import .import-tile [data-field="crop"]:not([hidden])').count(), 5, 'each value shows its row');
+      assert.equal(await raw(page, 'sim-atk-inf'), atkBefore, 'review comes before the sheet changes');
+      const lethality = page.locator('#screen-import [data-key="sim-foe-let-inf"] [data-field="value"]');
+      await lethality.fill('333.3'); await lethality.dispatchEvent('change');
+      assert.ok(await page.evaluate(() => { const box = document.querySelector('#screen-import .import-sheet').getBoundingClientRect(); return box.left >= 0 && box.right <= innerWidth + 1 && document.documentElement.scrollWidth <= innerWidth + 1; }));
       await page.screenshot({ path: path.join(output, 'review-' + lang + '-' + width + '.png') });
-      await page.locator('#sim-review-dialog .sim-dialog-head button').click();
-      assert.ok(await page.evaluate(() => !document.getElementById('sim-review-dialog').open));
+      await page.locator('#screen-import [data-action="screen-import.apply"]').click();
+      await page.locator('#screen-import [data-target="screen-import.status"]', { hasText: 'Saved 5 values' }).waitFor();
+      assert.equal(await raw(page, 'sim-atk-inf'), '411.5');
+      assert.equal(await raw(page, 'sim-let-inf'), '163', 'a value the report lacks keeps the sheet');
+      assert.equal(await raw(page, 'sim-foe-let-inf'), '333.3', 'the correction is what lands');
+      assert.equal(await raw(page, 'sim-n-inf'), '12345');
+      assert.equal(await raw(page, 'sim-foe-n-inf'), '23456');
+      await page.locator('#screen-import [data-target="screen-import.chip"]').click();
       if (width <= 860) await page.locator('#sim-view-answer').click();
       await page.locator('.sweep-settings summary').click();
       await page.locator('#sim-sw-step').selectOption('0.1');
@@ -109,16 +114,18 @@ async function upload(page) {
       await page.screenshot({ path: path.join(output, 'answer-' + lang + '-' + width + '.png') });
       await page.locator('[data-mode="bear-ratio"]').first().click();
       if (width <= 860) await page.locator('#sim-view-armies').click();
-      await page.locator('#sim-ocr-review-btn').click();
-      assert.equal(await page.locator('#sim-review-fields input').count(), 2);
-      await page.locator('#sim-review-dialog .sim-dialog-head button').click();
+      // Undo puts back what the report replaced.
+      await page.locator('#screen-import [data-target="screen-import.chip"]').click();
+      await page.locator('#screen-import [data-action="screen-import.undo"]').click();
+      assert.equal(await raw(page, 'sim-atk-inf'), atkBefore);
+      await page.locator('#screen-import [data-target="screen-import.chip"]').click();
       await page.evaluate(() => { window.unreadable = true; });
-      await upload(page);
-      assert.equal(await page.locator('#sim-atk-inf').inputValue(), '411.5');
-      assert.equal(await page.locator('#sim-review-fields input[data-ocr="missing"]').count(), 2);
+      await upload(page, 'blank.png');
+      await page.locator('#screen-import [data-target="screen-import.status"]', { hasText: 'isn’t a screen I can read' }).waitFor();
+      assert.equal(await raw(page, 'sim-atk-inf'), atkBefore, 'an unreadable shot changes nothing');
       assert.deepEqual(errors, []);
       await page.close();
     }
-    console.log('Simulator OCR review, corrections, unreadable images, worker/fallback sweep, progress, mobile and RTL layouts passed.');
+    console.log('Simulator battle reports through the import panel (review, correction, apply, undo), unreadable images, worker/fallback sweep, progress, mobile and RTL layouts passed.');
   } finally { await browser.close(); server.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; server.close(); });

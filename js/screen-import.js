@@ -12,14 +12,17 @@
   if (!M) return;
 
   // Files load in order; each is skipped when what it provides is already on
-  // the page (the simulator and hero gear load the OCR side themselves).
+  // the page.
   var LAZY = [
     ['ocr-text.js', function () { return window.OcrText; }],
     ['ocr-client.js', function () { return window.OcrClient; }],
     ['screen-import-core.js', function () { return window.ScreenImport; }],
     ['import-adapters/overview.js', function () { return window.ScreenImport.get('overview-resources'); }],
     ['import-adapters/backpack.js', function () { return window.ScreenImport.get('backpack-items'); }],
-    ['import-adapters/pets.js', function () { return window.ScreenImport.get('pet-list'); }]
+    ['import-adapters/pets.js', function () { return window.ScreenImport.get('pet-list'); }],
+    ['hero-gear-ocr.js', function () { return window.HeroGearOCR; }],
+    ['import-adapters/hero-gear.js', function () { return window.ScreenImport.get('hero-gear'); }],
+    ['import-adapters/battle-report.js', function () { return window.ScreenImport.get('battle-report'); }]
   ];
   var here = document.currentScript && document.currentScript.src;
 
@@ -50,8 +53,10 @@
 
   // A cut-out of the read's preview at twice its size, as a PNG blob, so it
   // survives the page and is sharp enough to check digits against. Adapters
-  // give crops in preview pixels, or as fractions of the image.
+  // give crops in preview pixels, as fractions of the image, or as a ready
+  // image blob.
   function cut(bitmap, crop) {
+    if (typeof Blob !== 'undefined' && crop instanceof Blob) return Promise.resolve(crop);
     if (!bitmap || !crop) return Promise.resolve(null);
     if (crop.unit === 'fraction') crop = { x: crop.x * bitmap.width, y: crop.y * bitmap.height, w: crop.w * bitmap.width, h: crop.h * bitmap.height };
     var scale = 2, w = Math.max(1, Math.round(crop.w * scale)), h = Math.max(1, Math.round(crop.h * scale));
@@ -68,6 +73,8 @@
   // What pixel-reading adapters get besides the words: the shot at 360px wide,
   // and a way to read small regions of the original enlarged. Regions are
   // stacked into strips, a band each, so a whole screen costs one or two reads.
+  // Adapters that crop for themselves get the file and readWasm(blob), a read
+  // on the WASM engine for tiny labels.
   var BAND = 96, GAP = 32, PER_STRIP = 6;
 
   // Game counts are white glyphs with a dark rim over a coloured tile. Keeping
@@ -81,11 +88,16 @@
     }
     ctx.putImageData(img, x, y);
   }
-  function tools(blob, reader) {
+  function tools(blob, reader, wasm, selected) {
     var full = null;
     function bitmap() { return full || (full = createImageBitmap(blob)); }
     return {
       pixels: null,
+      blob: blob,
+      selected: selected,
+      readWasm: function (png) {
+        return wasm().read(png).then(function (res) { if (res.preview) res.preview.close(); return res; }, function (err) { if (err && err.preview) err.preview.close(); throw err; });
+      },
       load: function () {
         var self = this;
         return bitmap().then(function (bm) {
@@ -114,7 +126,7 @@
                 ctx.drawImage(bm, s.sx, s.sy, s.sw, s.sh, GAP, top, s.w, BAND);
                 if (strip[k].ink === 'white') keepWhite(ctx, GAP, top, s.w, BAND);
               });
-              return blobOf(c).then(function (png) { return reader.read(png); }).then(function (res) {
+              return blobOf(c).then(function (png) { return reader().read(png); }).then(function (res) {
                 var scale = res.preview && res.preview.height ? c.height / res.preview.height : 1, bands = strip.map(function () { return []; });
                 if (res.preview) res.preview.close();
                 // Words come back in the detector's (possibly smaller) frame.
@@ -142,7 +154,7 @@
 
   M.register('screen-import', function (context) {
     var api = context.api, root = context.root;
-    var queue = null, entries = [], current = 0, ocr = null, busy = false, lastApply = null, urls = [];
+    var queue = null, entries = [], current = 0, ocr = null, small = null, busy = false, lastApply = null, urls = [];
     var ledger = window.PlayerLedger && window.PlayerLedger.shared();
 
     function tr(key, fallback, vars) { var text = api.tr(key, fallback); return vars ? api.fill(text, vars) : text; }
@@ -179,6 +191,13 @@
       return valueOf(entry, p) !== null && !newer(entry, p);
     }
 
+    function wasm() { return small || (small = window.OcrClient.create({ backend: 'wasm' })); }
+    // The piece last chosen on the hero gear page, for a gear shot whose troop
+    // badge didn't read.
+    function selectedGear() {
+      try { return ledger ? ledger.snapshot().preferences.heroGear.selected || null : null; } catch (e) { return null; }
+    }
+
     function save(entry) { return queue ? queue.put(entry).catch(function () {}) : Promise.resolve(); }
     function forget(entry) { entries = entries.filter(function (e) { return e !== entry; }); return queue ? queue.remove(entry.id).catch(function () {}) : Promise.resolve(); }
 
@@ -208,37 +227,49 @@
       busy = true;
       next.status = 'reading';
       render();
+      var kit = null, bitmap = null;
       return engine().then(function () {
         var S = window.ScreenImport;
-        if (!ocr) ocr = window.OcrClient.create();
-        return ocr.read(next.blob, { useful: function (res) { return !!S.route(S.page({ items: res.items })); } }).then(function (res) {
-          var bitmap = res.preview;
-          var page = S.page({ items: res.items, width: bitmap ? bitmap.width : 0, height: bitmap ? bitmap.height : 0 });
-          var claim = S.route(page);
-          if (!claim) { next.status = 'unknown'; if (bitmap) bitmap.close(); return; }
-          var kit = tools(next.blob, ocr);
-          return (claim.adapter.layout === 'grid' ? kit.load() : Promise.resolve(kit)).then(function () {
-            return claim.adapter.read(page, kit);
-          }).then(function (proposals) {
-            kit.close();
+        kit = tools(next.blob, function () { return ocr; }, wasm, selectedGear());
+        // A screen known by its pixels skips the whole-screen read.
+        // An image the page can't decode still goes to the reader.
+        return kit.load().catch(function () { return null; }).then(function () {
+          var known = kit.pixels && S.probe(kit.pixels);
+          if (known) return { claim: known, page: S.page({ items: [] }) };
+          if (!ocr) ocr = window.OcrClient.create();
+          return ocr.read(next.blob, { useful: function (res) { return !!S.route(S.page({ items: res.items })); } }).then(function (res) {
+            bitmap = res.preview;
+            var page = S.page({ items: res.items, width: bitmap ? bitmap.width : 0, height: bitmap ? bitmap.height : 0 });
+            var claim = S.route(page);
+            return claim ? { claim: claim, page: page } : null;
+          });
+        }).then(function (found) {
+          if (!found) { next.status = 'unknown'; return null; }
+          var claim = found.claim;
+          return Promise.resolve(claim.adapter.read(found.page, kit)).then(function (proposals) {
             proposals = proposals || [];
-            if (!proposals.length) { next.status = 'empty'; if (bitmap) bitmap.close(); return null; }
-            return Promise.all(proposals.map(function (p) { return cut(bitmap, p.crop); })).then(function (crops) { return { proposals: proposals, crops: crops }; });
-          }).then(function (done) {
-            if (!done) return;
-            var proposals = done.proposals, crops = done.crops;
-            if (bitmap) bitmap.close();
-            next.adapter = claim.adapter.id;
-            next.sourceType = claim.adapter.sourceType;
-            // Review follows the screen top to bottom; values never found go last.
-            next.proposals = proposals.map(function (p, i) {
-              return { target: p.target || 'inventory', id: p.id, label: p.label, value: p.value, confidence: p.confidence, note: p.note || '', unit: p.unit || (/^speedup-/.test(p.id) ? 'minutes' : 'count'), crop: crops[i], y: p.crop ? p.crop.y : Infinity };
-            }).sort(function (a, b) { return a.y - b.y; });
-            next.layout = claim.adapter.layout || 'list';
-            next.status = 'review';
+            if (!proposals.length) { next.status = 'empty'; return null; }
+            return Promise.all(proposals.map(function (p) { return cut(bitmap, p.crop); })).then(function (crops) {
+              next.adapter = claim.adapter.id;
+              next.sourceType = claim.adapter.sourceType;
+              // Review follows the screen top to bottom; values never found go last.
+              next.proposals = proposals.map(function (p, i) {
+                var item = { target: p.target || 'inventory', id: p.id, label: p.label, value: p.value, confidence: p.confidence, note: p.note || '', unit: p.unit || (/^speedup-/.test(p.id) ? 'minutes' : 'count'), crop: crops[i], y: typeof p.y === 'number' ? p.y : p.crop && typeof p.crop.y === 'number' ? p.crop.y : Infinity };
+                ['max', 'min', 'step', 'side', 'sheet'].forEach(function (k) { if (p[k] !== undefined) item[k] = p[k]; });
+                if (p.target === 'gear') { item.piece = p.piece; item.field = p.field; item.quality = p.quality; }
+                return item;
+              }).sort(function (a, b) { return a.y - b.y; });
+              next.layout = claim.adapter.layout || 'list';
+              next.status = 'review';
+            });
           });
         });
+      }).then(function () {
+        if (kit) kit.close();
+        if (bitmap) bitmap.close();
       }).catch(function (err) {
+        if (kit) kit.close();
+        if (bitmap) bitmap.close();
         if (err && err.preview) err.preview.close();
         next.status = 'failed';
         if (window.console && console.error) console.error('[screen-import]', (err && err.message) || err);
@@ -250,7 +281,19 @@
     }
 
     // ── review ─────────────────────────────────────────
-    var SCREENS = { 'overview-resources': ['import.screen.resources', 'Overview · Resources'], 'overview-speedups': ['import.screen.speedups', 'Overview · Speedups'], 'backpack-items': ['import.screen.backpack', 'Backpack items'], 'pet-list': ['import.screen.pets', 'Pet List'] };
+    var SCREENS = { 'overview-resources': ['import.screen.resources', 'Overview · Resources'], 'overview-speedups': ['import.screen.speedups', 'Overview · Speedups'], 'backpack-items': ['import.screen.backpack', 'Backpack items'], 'pet-list': ['import.screen.pets', 'Pet List'], 'hero-gear': ['import.screen.gear', 'Hero gear'], 'battle-report': ['import.screen.battle', 'Battle report'] };
+    var QUALITY = { epic: ['import.quality.epic', 'epic'], mythic: ['import.quality.mythic', 'mythic'], red: ['import.quality.red', 'red'] };
+
+    function note(p, value) {
+      if (p.unit === 'minutes') return tr('import.minutesNote', 'minutes{d}', { d: value === null || value === undefined ? '' : ' · ' + duration(value) });
+      if (p.unit === 'level') return tr('import.levelNote', 'level');
+      if (p.side) return (p.side === 'you' ? tr('import.side.you', 'you') : tr('import.side.foe', 'opponent')) + (p.unit === 'percent' ? ' · %' : '');
+      if (p.unit === 'gear-level' || p.unit === 'gear-mastery') {
+        var q = QUALITY[p.quality], field = p.unit === 'gear-level' ? tr('import.gearLevel', 'enhancement') : tr('import.gearMastery', 'forge mastery');
+        return q ? field + ' · ' + tr(q[0], q[1]) : field;
+      }
+      return p.note;
+    }
 
     function translate(node) {
       node.querySelectorAll('[data-i18n]').forEach(function (n) { n.textContent = tr(n.dataset.i18n, n.textContent); });
@@ -274,7 +317,10 @@
         var input = field(li, 'value');
         if (document.activeElement !== input) input.value = value === null || value === undefined ? '' : String(value);
         input.placeholder = tr('import.unread', 'not read');
-        field(li, 'note').textContent = p.unit === 'minutes' ? tr('import.minutesNote', 'minutes{d}', { d: value === null || value === undefined ? '' : ' · ' + duration(value) }) : p.unit === 'level' ? tr('import.levelNote', 'level') : p.note;
+        if (p.max !== undefined) input.max = String(p.max); else input.removeAttribute('max');
+        input.min = p.min !== undefined ? String(p.min) : '0';
+        input.step = p.step !== undefined ? String(p.step) : '1';
+        field(li, 'note').textContent = note(p, value);
         field(li, 'include').checked = included(entry, p);
         var later = newer(entry, p);
         if (later) field(li, 'note').textContent = tr('import.newer', 'a newer shot reads {v}', { v: api.fmt(valueOf(later, later.proposals.filter(function (q) { return q.id === p.id; })[0])) });
@@ -324,32 +370,92 @@
       render();
     }
 
+    // A hero gear piece's ticked fields; the fields left out keep their saved
+    // value. A red piece's level is reviewed as its +N.
+    function gearDelta(before, fields) {
+      var out = {};
+      Object.keys(fields).forEach(function (id) {
+        var old = before.heroGear.pieces[id] || null, base = old || { quality: null, level: null, mastery: null }, f = fields[id];
+        var quality = f.quality || base.quality;
+        out[id] = { before: old, after: { quality: quality, level: f.level !== undefined ? f.level + (quality === 'red' ? 100 : 0) : base.level, mastery: f.mastery !== undefined ? f.mastery : base.mastery } };
+      });
+      return out;
+    }
+
+    // A ticked number the box refuses, if any.
+    function invalidInput() {
+      return Array.from(target('tiles').querySelectorAll('[data-field="value"]')).filter(function (input) {
+        var li = input.closest('[data-key]'), box = li && li.querySelector('[data-field="include"]');
+        return box && box.checked && input.value !== '' && !input.validity.valid;
+      })[0] || null;
+    }
+
+    // A page's own sheet (the battle simulator's Bonus Details) takes a shot's
+    // values when it is open: it marks itself [data-screen-import-sheet] and
+    // answers 'screen-import:sheet' { values, before } by writing the values
+    // and filling `before` with what they replaced. Nothing reaches the
+    // player save.
+    function sheetHost(name) { return document.querySelector('[data-screen-import-sheet~="' + name + '"]'); }
+    function applySheet(entry) {
+      var name = entry.proposals[0].sheet, host = sheetHost(name), values = {}, n = 0;
+      if (!host) { status(tr('import.openSheet', 'Open the battle simulator to apply this report. It waits here until then.')); return; }
+      entry.proposals.forEach(function (p) {
+        var value = valueOf(entry, p);
+        if (!included(entry, p) || value === null || !isFinite(value)) return;
+        values[p.id] = value; n++;
+      });
+      if (!n) { status(tr('import.nothing', 'Nothing is ticked to apply.')); return; }
+      var detail = { values: values, before: {} };
+      host.dispatchEvent(new CustomEvent('screen-import:sheet', { bubbles: true, detail: detail }));
+      lastApply = { sheet: name, before: detail.before, name: entry.name };
+      forget(entry).then(function () {
+        render();
+        status(tr('import.applied', 'Saved {n} values from {name}.', { n: api.fmt(n), name: entry.name }));
+        context.emit('screen-import:applied', { sheet: name, values: values });
+      });
+    }
+
     function apply() {
       var entry = reviewable()[current];
       if (!entry || !ledger) return;
-      // Inventory counts and pet levels go to their own parts of the record.
-      var before = ledger.snapshot(), delta = {}, stock = {}, pets = {};
+      // A number the box refuses is never applied as the value read before it.
+      var bad = invalidInput();
+      if (bad) { status(tr('import.invalid', 'One value can’t be saved. Fix the marked number, or untick it.')); if (bad.reportValidity) bad.reportValidity(); return; }
+      if (entry.proposals.some(function (p) { return p.target === 'sheet'; })) return applySheet(entry);
+      // Inventory counts, pet levels and gear pieces go to their own parts of the record.
+      var before = ledger.snapshot(), applied = {}, stock = {}, pets = {}, gear = {};
       entry.proposals.forEach(function (p) {
         var value = valueOf(entry, p), include = included(entry, p);
         if (!include || value === null || !Number.isSafeInteger(value) || value < 0) return;
+        if (p.target === 'gear') {
+          var f = gear[p.piece] || (gear[p.piece] = { quality: p.quality });
+          f[p.field] = value;
+          applied[p.id] = true;
+          return;
+        }
         if (p.target === 'pet') {
           if (value < 1) return;
           var pet = (before.pets && before.pets.roster || {})[p.id];
-          pets[p.id] = delta[p.id] = { before: pet ? pet.level : null, after: value };
+          pets[p.id] = { before: pet ? pet.level : null, after: value };
+          applied[p.id] = true;
           return;
         }
         var held = before.inventory[p.id];
-        stock[p.id] = delta[p.id] = { before: held && held.status === 'confirmed' ? held.amount : null, after: value };
+        stock[p.id] = { before: held && held.status === 'confirmed' ? held.amount : null, after: value };
+        applied[p.id] = true;
       });
-      if (!Object.keys(delta).length) { status(tr('import.nothing', 'Nothing is ticked to apply.')); return; }
+      var n = Object.keys(applied).length;
+      if (!n) { status(tr('import.nothing', 'Nothing is ticked to apply.')); return; }
       var record = { id: 'shot-' + entry.hash, sourceType: entry.sourceType, at: new Date().toISOString(), contentHash: entry.hash, confirmation: 'confirmed' };
       if (Object.keys(stock).length) record.inventoryDelta = stock;
       if (Object.keys(pets).length) record.petDelta = pets;
+      if (Object.keys(gear).length || entry.sourceType === 'hero-gear') record.itemDelta = gearDelta(before, gear);
       try {
         ledger.applyImport(record, before.revision);
       } catch (err) {
-        status(/already/.test(err.message) ? tr('import.already', '{name} was already applied.', { name: entry.name }) : tr('import.changed', 'Your saved data changed in another tab. Check the numbers and apply again.'));
-        if (/already/.test(err.message)) forget(entry).then(render);
+        var already = /already/.test(err.message), moved = /changed/.test(err.message);
+        status(already ? tr('import.already', '{name} was already applied.', { name: entry.name }) : moved ? tr('import.changed', 'Your saved data changed in another tab. Check the numbers and apply again.') : tr('import.invalid', 'One value can’t be saved. Fix the marked number, or untick it.'));
+        if (already) forget(entry).then(render);
         return;
       }
       lastApply = { before: before, name: entry.name };
@@ -361,17 +467,26 @@
         return e !== entry && (theirs[0] < mine[0] || (theirs[0] === mine[0] && theirs[1] < mine[1]));
       });
       var cleared = Promise.all(stale.map(function (e) {
-        e.proposals = e.proposals.filter(function (p) { return !delta[p.id]; });
+        e.proposals = e.proposals.filter(function (p) { return !applied[p.id]; });
         return e.proposals.length ? save(e) : forget(e);
       }));
       cleared.then(function () { return forget(entry); }).then(function () {
         render();
-        status(tr('import.applied', 'Saved {n} values from {name}.', { n: api.fmt(Object.keys(delta).length), name: entry.name }));
+        status(tr('import.applied', 'Saved {n} values from {name}.', { n: api.fmt(n), name: entry.name }));
         context.emit('screen-import:applied', { record: record });
       });
     }
 
     function undo() {
+      if (lastApply && lastApply.sheet) {
+        var host = sheetHost(lastApply.sheet);
+        if (!host) { status(tr('import.openSheet', 'Open the battle simulator to apply this report. It waits here until then.')); return; }
+        host.dispatchEvent(new CustomEvent('screen-import:sheet', { bubbles: true, detail: { values: lastApply.before, before: {} } }));
+        status(tr('import.undone', 'Undone. {name} can be applied again.', { name: lastApply.name }));
+        lastApply = null;
+        render();
+        return;
+      }
       if (!lastApply || !ledger) return;
       try { ledger.importJSON(lastApply.before, null, ledger.snapshot().revision); } catch (err) { status(tr('import.changed', 'Your saved data changed in another tab. Check the numbers and apply again.')); return; }
       status(tr('import.undone', 'Undone. {name} can be applied again.', { name: lastApply.name }));
@@ -406,7 +521,7 @@
       render();
       work();
     });
-    context.cleanup(function () { urls.forEach(function (u) { URL.revokeObjectURL(u); }); if (ocr) ocr.close(); });
+    context.cleanup(function () { urls.forEach(function (u) { URL.revokeObjectURL(u); }); if (ocr) ocr.close(); if (small) small.close(); });
 
     return { refresh: function () { if (!root.hidden) render(); }, actions: {
       toggle: { run: function () { open(target('sheet').hidden); render(); } },

@@ -3,7 +3,7 @@
   var E = window.HeroGear, BH, state, previous, result, running = false, revision = 0, planIndex = 0, resultTroop = 'inf', strategyResult = null;
   var searchWorker, searchTimer, searchDelay, searchFailed = false;
   var activePage = 'planner', splitResult = null, splitRevision = -1, splitWorker = null;
-  var ledger, ledgerRevision = 0, saving = false, imports = [], reader = null, importSequence = 0;
+  var ledger, ledgerRevision = 0, saving = false;
   var scriptURL = new URL(document.currentScript.src);
   var base = new URL('./', scriptURL);
   var art = new URL('../img/hero-gear/', base), troopArt = { inf: 'infantry', cav: 'cavalry', arc: 'archer' };
@@ -428,70 +428,6 @@
     el('weights').scrollIntoView({ block: 'nearest' });
     el('weights').querySelector('input').focus({ preventScroll: true });
   }
-  // Gear labels are tiny crops, where the GPU path gains nothing and fails most:
-  // read them on wasm from the first call. js/ocr-client.js owns the worker.
-  function killReader() { if (reader) reader.close(); reader = null; }
-  function read(file) {
-    if (!reader) reader = window.OcrClient.create({ backend: 'wasm' });
-    return reader.read(file).then(function (res) { if (res.preview) res.preview.close(); return res; }, function (error) { if (error.preview) error.preview.close(); throw error; });
-  }
-  function clearImports() {
-    importSequence++;
-    killReader();
-    imports.forEach(function (item) { URL.revokeObjectURL(item.url); }); imports = [];
-    el('import-review').textContent = ''; el('read-status').textContent = ''; el('apply-import').disabled = true;
-    el('images').value = ''; el('images').disabled = false;
-    el('import-pick').hidden = false; el('replace-images').hidden = true;
-    el('import-dialog').removeAttribute('aria-busy');
-    el('import-scroll').scrollTop = 0;
-  }
-  function fitImportViewport() {
-    var viewport = window.visualViewport, dialog = el('import-dialog');
-    if (!viewport || !dialog.open) return;
-    dialog.style.setProperty('--gear-view-height', Math.round(viewport.height) + 'px');
-    dialog.style.setProperty('--gear-view-top', Math.round(viewport.offsetTop) + 'px');
-  }
-  function importItem(item, index) {
-    function input(key, max) { var value = item[key] === null ? '' : item[key] - (key === 'level' && item.quality === 'red' ? 100 : 0); return '<label><span>' + esc(tr(key === 'level' ? 'importEnhancement' : key)) + '</span><input type="number" inputmode="numeric" min="0" max="' + max + '" step="1" data-import-index="' + index + '" data-import-field="' + key + '" value="' + value + '" placeholder="' + esc(tr('unread')) + '"></label>'; }
-    function select(key, values) { return '<label><span>' + esc(tr(key)) + '</span><select data-import-index="' + index + '" data-import-field="' + key + '">' + values.map(function (v) { return '<option value="' + v + '"' + (item[key] === v ? ' selected' : '') + '>' + esc(v === '' ? tr('chooseTroop') : v === 'mythic' ? tr('mythicQuality') : tr(v)) + '</option>'; }).join('') + '</select></label>'; }
-    return '<div class="gear-import-item" data-review-index="' + index + '"><div class="gear-import-source"><img src="' + esc(item.url) + '" alt="' + esc(item.filename) + '"><label class="gear-include"><input type="checkbox" checked data-import-index="' + index + '" data-import-field="included"><span>' + esc(tr('includeImport')) + '</span></label></div><div class="gear-import-fields"><strong class="gear-import-name">' + esc((item.troop ? tr(item.troop) : tr('chooseTroop')) + ' · ' + tr(item.slot)) + '<small>' + esc(quality(item.quality)) + '</small></strong>' + input('level', item.quality === 'epic' ? 80 : 100) + input('mastery', 20) + '<details class="gear-import-identity"' + (!item.troop ? ' open' : '') + '><summary>' + esc(tr('changeImportPiece')) + '</summary><div>' + select('troop', item.overview ? [''].concat(E.TYPES) : E.TYPES) + select('slot', E.SLOTS) + select('quality', ['keep','epic','mythic','red']) + '</div></details>' + (item.level === null || item.mastery === null ? '<p class="gear-import-warning">' + esc(tr(item.failed ? 'importReaderFailed' : 'importUnread')) + '</p>' : '') + '</div></div>';
-  }
-  async function readImages() {
-    var files = Array.from(el('images').files || []);
-    clearImports();
-    if (!files.length) return;
-    if (files.length > 12 || files.some(function (file) { return !file.type.startsWith('image/') || file.size > 20 * 1024 * 1024; })) { el('read-status').textContent = tr('imageLimit'); return; }
-    var sequence = importSequence;
-    el('images').disabled = true;
-    el('import-pick').hidden = true; el('replace-images').hidden = false; el('replace-images').disabled = true;
-    el('import-dialog').setAttribute('aria-busy', 'true');
-    try {
-      for (var i = 0; i < files.length; i++) {
-        el('read-status').textContent = BH.fill(tr('reading'), { n: i + 1, total: files.length });
-        var pieces, contentHash = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', await files[i].arrayBuffer()))).map(function (n) { return n.toString(16).padStart(2, '0'); }).join('');
-        try { pieces = await window.HeroGearOCR.overview(files[i], function (file) { if (sequence !== importSequence) return Promise.reject(new Error('Cancelled')); return read(file); }); }
-        catch (error) { pieces = null; }
-        if (sequence !== importSequence) return;
-        try {
-          if (!pieces) pieces = [window.HeroGearOCR.parse((await read(files[i])).items)];
-        } catch (error) { pieces = [{ level: null, mastery: null, failed: true }]; }
-        if (sequence !== importSequence) return;
-        el('import-review').insertAdjacentHTML('beforeend', '<p class="gear-import-file">' + esc(files[i].name) + '</p>');
-        pieces.forEach(function (parsed) {
-          var item = Object.assign({}, parsed, { troop: parsed.overview ? parsed.troop || '' : parsed.troop || state.troop, slot: parsed.slot || state.selected.split('-')[1], quality: parsed.quality || 'keep', filename: files[i].name, contentHash: contentHash, url: URL.createObjectURL(parsed.preview || files[i]), included: true });
-          delete item.preview;
-          imports.push(item);
-          el('import-review').insertAdjacentHTML('beforeend', importItem(item, imports.length - 1));
-        });
-      }
-      el('read-status').textContent = BH.fill(tr('importReady'), { n: imports.length });
-      el('apply-import').disabled = false;
-    } catch (error) {
-      if (sequence === importSequence) { el('read-status').textContent = tr('importReaderFailed'); el('apply-import').disabled = true; }
-    } finally {
-      if (sequence === importSequence) { el('images').disabled = false; el('replace-images').disabled = false; el('import-dialog').removeAttribute('aria-busy'); }
-    }
-  }
   function boot(api) {
     BH = api; state = E.defaults();
     try {
@@ -602,58 +538,6 @@
     el('reset').addEventListener('click', function () { el('reset-dialog').showModal(); });
     el('cancel-reset').addEventListener('click', function () { el('reset-dialog').close(); });
     el('confirm-reset').addEventListener('click', function () { if (applyState(Object.assign(E.defaults(), { parts: { ten: 0, hundred: 0, remainder: 0 } }), { all: true, source: 'reset' })) { el('reset-dialog').close(); note('resetDone'); } });
-    el('import').addEventListener('click', function () { clearImports(); document.documentElement.classList.add('gear-import-open'); el('import-dialog').showModal(); fitImportViewport(); });
-    if (window.visualViewport) { window.visualViewport.addEventListener('resize', fitImportViewport); window.visualViewport.addEventListener('scroll', fitImportViewport); }
-    ['close-import', 'cancel-import'].forEach(function (id) { el(id).addEventListener('click', function () { clearImports(); el('import-dialog').close(); }); });
-    el('import-dialog').addEventListener('close', function () { document.documentElement.classList.remove('gear-import-open'); });
-    el('import-dialog').addEventListener('cancel', clearImports);
-    el('images').addEventListener('change', readImages);
-    el('replace-images').addEventListener('click', function () { el('images').click(); });
-    el('import-review').addEventListener('input', function (event) {
-      var node = event.target, i = node.dataset.importIndex, field = node.dataset.importField;
-      if (i === undefined || !field) return;
-      var item = imports[i]; if (!item) return;
-      if (field === 'quality' && item.level !== null) item.level += (node.value === 'red' ? 100 : 0) - (item.quality === 'red' ? 100 : 0);
-      item[field] = field === 'included' ? node.checked : field === 'level' || field === 'mastery' ? (node.value === '' ? null : Math.max(0, Math.min(field === 'level' ? item.quality === 'epic' ? 80 : 100 : 20, Math.floor(Number(node.value) || 0))) + (field === 'level' && item.quality === 'red' ? 100 : 0)) : node.value;
-      var row = node.closest('.gear-import-item');
-      row.dataset.included = String(item.included);
-      if (['troop', 'slot', 'quality'].includes(field)) {
-        row.querySelector('.gear-import-name').innerHTML = esc((item.troop ? tr(item.troop) : tr('chooseTroop')) + ' · ' + tr(item.slot)) + '<small>' + esc(quality(item.quality)) + '</small>';
-        row.querySelector('[data-import-field="level"]').max = item.quality === 'epic' ? 80 : 100;
-      }
-    });
-    el('apply-import').addEventListener('click', function () {
-      var invalidInput = Array.from(el('import-review').querySelectorAll('input[type="number"]')).find(function (node) { return imports[node.dataset.importIndex].included && !node.validity.valid; });
-      if (invalidInput) { el('read-status').textContent = tr('overviewConflict'); invalidInput.reportValidity(); return; }
-      var next = copy(state), seen = {}, invalid = false;
-      imports.forEach(function (item) {
-        if (!item.included) return;
-        var id = item.troop + '-' + item.slot;
-        if (!next.pieces[id]) { invalid = true; return; }
-        if (seen[id]) invalid = true; seen[id] = true;
-        var old = next.pieces[id], p = Object.assign({}, old);
-        if (item.quality !== 'keep') p.quality = item.quality;
-        if (item.level !== null) p.level = item.level;
-        if (item.mastery !== null) p.mastery = item.mastery;
-        if ((p.quality === 'epic' && (p.level > 80 || p.mastery > 0)) || (p.quality === 'mythic' && p.level > 100) || (p.quality === 'red' && p.level < 100)) invalid = true;
-        next.pieces[id] = E.normalisePiece(p);
-      });
-      if (invalid) { el('read-status').textContent = tr('overviewConflict'); return; }
-      if (!Object.keys(seen).length) { el('read-status').textContent = tr('includeOne'); return; }
-      next.selected = Object.keys(seen)[0];
-      next.troop = next.selected.split('-')[0];
-      next.view = 'gear';
-      var records = {}, snapshot;
-      try { snapshot = ledger.snapshot(); } catch (error) { note('loadFailed'); return; }
-      imports.filter(function (item) { return item.included; }).forEach(function (item) {
-        var hash = item.contentHash, id = item.troop + '-' + item.slot;
-        if (!records[hash]) records[hash] = { id: 'gear-' + hash, sourceType: 'hero-gear', at: new Date().toISOString(), contentHash: hash, confirmation: 'confirmed', itemDelta: {} };
-        var old = snapshot.heroGear.pieces[id] || { quality: null, level: null, mastery: null };
-        records[hash].itemDelta[id] = { before: snapshot.heroGear.pieces[id] || null, after: { quality: item.quality === 'keep' ? old.quality : item.quality, level: item.level === null ? old.level : next.pieces[id].level, mastery: item.mastery === null ? old.mastery : next.pieces[id].mastery } };
-      });
-      if (snapshot.imports.some(function (record) { return records[record.contentHash]; })) { el('read-status').textContent = tr('overviewConflict'); return; }
-      if (applyState(next, { source: 'screenshot', records: Object.values(records) })) { el('import-dialog').close(); clearImports(); note('imported'); }
-    });
   }
   window.BH.registerPage({ boot: boot, onChange: function () { if (!state) return; paint(); persist(); paintResults(); } });
 })();

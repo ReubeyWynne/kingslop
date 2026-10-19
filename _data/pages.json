@@ -400,8 +400,6 @@
       "../js/sim-player.js",
       "../js/sim-army.js",
       "../js/sim-run.js",
-      "../js/ocr-client.js",
-      "../js/ocr-text.js",
       "../js/sim.js"
     ],
     "footMainKey": "sim.foot.main",
@@ -461,9 +459,6 @@
       "../js/i18n.js",
       "../js/common.js",
       "../js/hero-gear-engine.js",
-      "../js/ocr-client.js",
-      "../js/ocr-text.js",
-      "../js/hero-gear-ocr.js",
       "../js/hero-gear.js"
     ],
     "footMainKey": "gear.kicker",

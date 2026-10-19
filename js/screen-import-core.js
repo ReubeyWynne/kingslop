@@ -4,9 +4,15 @@
    adapter claims it.
 
    page     = { items, rows, width, height }   (coordinates in the read's preview)
-   adapter  = { id, sourceType, detect(page) → 0..1, read(page) → proposals }
-   proposal = { target: 'inventory', id, value | null, confidence 0..1,
-                crop: { x, y, w, h }, label, note } */
+   adapter  = { id, sourceType, detect(page) → 0..1, probe?(pixels) → 0..1,
+                read(page, tools) → proposals | Promise<proposals> }
+   proposal = { target: 'inventory' | 'pet' | 'gear' | 'sheet', id, value | null,
+                confidence 0..1, crop: { x, y, w, h } | Blob, label, note,
+                y?, max?, min?, step? }
+   A 'gear' proposal also carries piece ('inf-helm'), field ('level' or
+   'mastery') and quality; a red piece's level is shown as its +N. A 'sheet'
+   proposal names the page sheet it fills (sheet: 'battle-report') and the
+   field's id; it never reaches the player save. */
 (function (root, factory) {
   var api = factory(root.OcrText || (typeof require === 'function' ? require('./ocr-text.js') : null));
   if (typeof module === 'object' && module.exports) module.exports = api;
@@ -37,6 +43,20 @@
     adapters.forEach(function (a) {
       var s = 0;
       try { s = Number(a.detect(p)) || 0; } catch (e) { s = 0; }
+      if (s > score) { best = a; score = s; }
+    });
+    return best ? { adapter: best, score: score } : null;
+  }
+
+  // Some screens are known by their pixels before any reading: an adapter
+  // with probe(pixels) → 0..1 claims a shot outright, and the dock skips the
+  // whole-screen read (pixels: the shot at 360px wide, ImageData-like).
+  function probe(pixels) {
+    var best = null, score = 0.5;
+    adapters.forEach(function (a) {
+      if (typeof a.probe !== 'function') return;
+      var s = 0;
+      try { s = Number(a.probe(pixels)) || 0; } catch (e) { s = 0; }
       if (s > score) { best = a; score = s; }
     });
     return best ? { adapter: best, score: score } : null;
@@ -103,7 +123,7 @@
   function fraction(box, px) { return { x: box.x / px.width, y: box.y / px.height, w: box.w / px.width, h: box.h / px.height, unit: 'fraction' }; }
 
   return {
-    register: register, route: route, page: page, rowCrop: rowCrop, DOUBT: DOUBT,
+    register: register, route: route, probe: probe, page: page, rowCrop: rowCrop, DOUBT: DOUBT,
     signature: signature, identify: identify, runs: runs, fraction: fraction,
     adapters: function () { return adapters.slice(); },
     get: function (id) { return adapters.filter(function (a) { return a.id === id; })[0] || null; }
