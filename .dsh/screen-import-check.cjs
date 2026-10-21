@@ -48,6 +48,7 @@ for (const [type, mine, lethal] of [['inf', 30.5, 167.5], ['cav', 30.5, 155.8], 
 Object.assign(want, { 'sim-n-inf': 70500, 'sim-n-cav': 30000, 'sim-n-arc': 49500, 'sim-foe-n-inf': 60000, 'sim-foe-n-cav': 45000, 'sim-foe-n-arc': 45000 });
 assert.deepEqual(values(sheetRead), want, 'every Bonus Details cell and troop count of a real report');
 assert.ok(sheetRead.every(p => p.target === 'sheet' && p.sheet === 'battle-report' && p.crop && p.crop.w === sheet.width));
+assert.deepEqual(sheetRead.filter(p => p.group === 'icons').map(p => p.id), ['sim-n-inf', 'sim-n-cav', 'sim-n-arc', 'sim-foe-n-inf', 'sim-foe-n-cav', 'sim-foe-n-arc'], 'your troops, then the opponent’s');
 assert.equal(new Set(sheetRead.map(p => p.group)).size, 13, 'twelve stat rows and one row of counts, each reviewed under one cut-out');
 const totals = S.page({ width: 500, height: 100, items: [
   { text: '+10%', poly: poly(5, 10) }, { text: 'Cavalry Defense', poly: poly(150, 10, 200) }, { text: '+20%', poly: poly(400, 10) },

@@ -252,8 +252,11 @@ Each step lands as its own commit with its checks passing.
   from the one row of six numbers under the troop icons (yours, then theirs,
   each infantry, cavalry, archer); the Troop Power Comparison rows above name
   a type over a bar and are never read as counts. Proposals carry a `group`
-  (one per report row); the dock shows a group's cut-out once and the rest of
-  its values follow it, naming only their side. The dock's instructions fold
+  (one per report row); the adapter's `table` layout shows each row's
+  cut-out once as a row of its own, with its values side by side under it
+  (`cols` sixths wide: a stat's two sides, then counts three to a line, all
+  yours before the opponent's). `named` leaves a label the cut-out already
+  shows to screen readers. The dock's instructions fold
   into a "what can I screenshot?" disclosure (`#screenshot-help`).
 - [x] 11. Update ROADMAP.md milestone 6, PLAYER-LEDGER.md, INTERACTIONS.md
   and HERO-GEAR-SOURCES.md.

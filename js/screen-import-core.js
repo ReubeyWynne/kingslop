@@ -8,7 +8,11 @@
                 read(page, tools) → proposals | Promise<proposals> }
    proposal = { target: 'inventory' | 'pet' | 'gear' | 'sheet', id, value | null,
                 confidence 0..1, crop: { x, y, w, h } | Blob, label, note,
-                y?, max?, min?, step? }
+                y?, max?, min?, step?, side?, group?, cols?, named? }
+   Proposals sharing a group were read from one row: review shows its
+   cut-out once, with the values side by side under it, each cols sixths
+   wide in the 'table' layout. named says the cut-out already names the
+   value, so its label is left to screen readers.
    A 'gear' proposal also carries piece ('inf-helm'), field ('level' or
    'mastery') and quality; a red piece's level is shown as its +N. A 'sheet'
    proposal names the page sheet it fills (sheet: 'battle-report') and the

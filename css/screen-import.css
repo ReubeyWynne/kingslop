@@ -131,8 +131,13 @@
 .import-note { color: var(--ink-muted); font-style: italic; font-size: 0.85em; }
 .import-note:empty { display: none; }
 
-/* Values from one row of the report follow its cut-out without a rule. */
-.import-tile[data-group="follow"] { border-top: 0; padding-top: 0; }
+/* A report row's cut-out, ruled once, with its values side by side below. */
+.import-crop { grid-column: 1 / -1; padding: 0.5rem 0 0.2rem; border-top: 1px solid rgba(157, 149, 127, 0.25); }
+.import-crop img { display: block; width: 100%; height: auto; border-radius: 1px; }
+.import-crop[hidden] { display: none; }
+.import-crop[data-state="doubt"] { border-top-color: var(--amber); }
+.import-dock[data-filter="doubt"] .import-crop[data-state="sure"] { display: none; }
+.import-tile[data-group="cell"] { border-top: 0; padding-top: 0; }
 
 /* A value to check carries the signal on its rule and its label. */
 .import-tile[data-state="doubt"] { border-top-color: var(--amber); }
@@ -159,5 +164,19 @@ ul.import-gloss li + li { margin-top: 0.15rem; }
 .import-grid[data-layout="grid"] .import-name { font-size: 0.8rem; }
 .import-grid[data-layout="grid"] .import-field input { width: 100%; flex: none; }
 .import-grid[data-layout="grid"] .import-include { align-self: end; padding: 0.2rem 0 0.2rem 0.2rem; }
+
+/* A battle report reviews as a table: each row's cut-out over its values,
+   yours beside the opponent's, troop counts three to a line. */
+.import-grid[data-layout="table"] { grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: 0.8rem; }
+.import-grid[data-layout="table"] .import-tile { grid-column: span 6; gap: 0 0.2rem; padding-bottom: 0.4rem; }
+.import-grid[data-layout="table"] .import-tile[data-cols="3"] { grid-column: span 3; }
+.import-grid[data-layout="table"] .import-tile[data-cols="2"] { grid-column: span 2; }
+.import-grid[data-layout="table"] .import-field { gap: 0.3rem; }
+.import-grid[data-layout="table"] .import-name { flex: none; }
+.import-grid[data-layout="table"] .import-field input { width: auto; flex: 1 1 0; font-size: var(--step--1); }
+.import-grid[data-layout="table"] .import-tile[data-cols="2"] .import-field { flex-direction: column; align-items: stretch; gap: 0.1rem; }
+.import-grid[data-layout="table"] .import-tile[data-cols="2"] .import-name { flex-direction: row; gap: 0.3rem; flex-wrap: wrap; }
+.import-grid[data-layout="table"] .import-crop { padding-bottom: 0; }
+.import-grid[data-layout="table"] .import-include { padding: 0.2rem 0 0.2rem 0.1rem; }
 .import-gloss a { color: var(--amber); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
 .import-gloss a:hover, .import-gloss a:focus-visible { color: var(--ink); }

@@ -255,7 +255,7 @@
               // Review follows the screen top to bottom; values never found go last.
               next.proposals = proposals.map(function (p, i) {
                 var item = { target: p.target || 'inventory', id: p.id, label: p.label, value: p.value, confidence: p.confidence, note: p.note || '', unit: p.unit || (/^speedup-/.test(p.id) ? 'minutes' : 'count'), crop: crops[i], y: typeof p.y === 'number' ? p.y : p.crop && typeof p.crop.y === 'number' ? p.crop.y : Infinity };
-                ['max', 'min', 'step', 'side', 'sheet', 'group'].forEach(function (k) { if (p[k] !== undefined) item[k] = p[k]; });
+                ['max', 'min', 'step', 'side', 'sheet', 'group', 'cols', 'named'].forEach(function (k) { if (p[k] !== undefined) item[k] = p[k]; });
                 if (p.target === 'gear') { item.piece = p.piece; item.field = p.field; item.quality = p.quality; }
                 return item;
               }).sort(function (a, b) { return a.y - b.y; });
@@ -303,22 +303,37 @@
     function tiles(entry) {
       var list = target('tiles'), template = target('tile');
       urls.forEach(function (u) { URL.revokeObjectURL(u); }); urls = [];
-      Array.from(list.children).forEach(function (li) { if (!entry || !entry.proposals.some(function (p) { return p.id === li.dataset.key; })) li.remove(); });
+      var keys = entry ? entry.proposals.map(function (p) { return p.id; }).concat(entry.proposals.map(function (p) { return p.group ? 'crop:' + p.group : null; })) : [];
+      Array.from(list.children).forEach(function (li) { if (keys.indexOf(li.dataset.key) === -1) li.remove(); });
       list.dataset.layout = entry ? entry.layout || 'list' : 'list';
       if (!entry) return;
-      var doubts = doubtful(entry);
+      var doubts = doubtful(entry), at = 0;
+      function place(li) { if (list.children[at] !== li) list.insertBefore(li, list.children[at] || null); at++; }
+      function show(img, blob) {
+        if (blob) { var url = URL.createObjectURL(blob); urls.push(url); img.src = url; img.hidden = false; } else { img.removeAttribute('src'); img.hidden = true; }
+      }
       entry.proposals.forEach(function (p, i) {
+        // Values read from one row (a stat's two sides, the troop counts) sit
+        // side by side under its cut-out, shown once as a row of its own.
+        var prev = entry.proposals[i - 1], follows = !!(p.group && prev && prev.group === p.group);
+        if (p.group && !follows) {
+          var row = list.querySelector('[data-key="crop:' + p.group + '"]');
+          if (!row) { row = document.createElement('li'); row.className = 'import-crop'; row.dataset.key = 'crop:' + p.group; row.appendChild(document.createElement('img')).alt = ''; }
+          show(row.firstChild, p.crop);
+          row.hidden = !p.crop;
+          row.dataset.state = entry.proposals.some(function (q) { return q.group === p.group && doubts.indexOf(q) !== -1; }) ? 'doubt' : 'sure';
+          place(row);
+        }
         var li = list.querySelector('[data-key="' + p.id + '"]');
         if (!li) { li = template.content.firstElementChild.cloneNode(true); li.dataset.key = p.id; translate(li); }
         var edit = entry.edits[p.id] || {}, value = edit.value !== undefined ? edit.value : p.value;
-        // Values read from one row (a stat's two sides, the troop counts) show
-        // its cut-out once; the rest follow it, naming only what differs.
-        var prev = entry.proposals[i - 1], follows = !!(p.group && prev && prev.group === p.group);
-        li.dataset.group = follows ? 'follow' : 'lead';
-        field(li, 'label').hidden = !!(follows && prev.label === p.label);
-        var img = field(li, 'crop');
-        if (p.crop && !follows) { var url = URL.createObjectURL(p.crop); urls.push(url); img.src = url; img.hidden = false; } else { img.removeAttribute('src'); img.hidden = true; }
-        field(li, 'label').textContent = tr('import.item.' + p.id, p.label);
+        li.dataset.group = p.group ? 'cell' : 'own';
+        if (p.cols) li.dataset.cols = String(p.cols); else delete li.dataset.cols;
+        show(field(li, 'crop'), p.group ? null : p.crop);
+        // A cut-out that names the value leaves its label to screen readers.
+        var label = field(li, 'label');
+        label.textContent = tr('import.item.' + p.id, p.label);
+        label.classList.toggle('import-hidden', !!p.named);
         var input = field(li, 'value');
         if (document.activeElement !== input) input.value = value === null || value === undefined ? '' : String(value);
         input.placeholder = tr('import.unread', 'not read');
@@ -330,7 +345,7 @@
         var later = newer(entry, p);
         if (later) field(li, 'note').textContent = tr('import.newer', 'a newer shot reads {v}', { v: api.fmt(valueOf(later, later.proposals.filter(function (q) { return q.id === p.id; })[0])) });
         li.dataset.state = doubts.indexOf(p) !== -1 ? 'doubt' : 'sure';
-        if (list.children[i] !== li) list.insertBefore(li, list.children[i] || null);
+        place(li);
       });
     }
 
