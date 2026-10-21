@@ -32,13 +32,13 @@ async function fixtures(page) {
         ctx.font = '16px sans-serif'; ctx.fillStyle = '#f1e3c2';
         ctx.fillText('+411.5%    Infantry Attack             +220%', 5, 45);
         ctx.fillText('                  Infantry Lethality         +230%', 5, 85);
-        ctx.fillText('12,345            Infantry                   23,456', 5, 125);
+        ctx.fillText('70,500  30,000  49,500   60,000  45,000  45,000', 5, 125);
         const poly = (x, y, width = 80) => [[x, y], [x + width, y], [x + width, y + 16], [x, y + 16]];
         const items = [
           { text: '+411.5%', poly: poly(5, 30) }, { text: 'Infantry Attack', poly: poly(150, 30, 200) },
           { text: '+220%', poly: poly(400, 30) }, { text: 'Infantry Lethality', poly: poly(150, 70, 200) },
-          { text: '+230%', poly: poly(400, 70) }, { text: '12,345', poly: poly(5, 110) },
-          { text: 'Infantry', poly: poly(150, 110, 200) }, { text: '23,456', poly: poly(400, 110) }
+          { text: '+230%', poly: poly(400, 70) },
+          ...['70,500', '30,000', '49,500', '60,000', '45,000', '45,000'].map((text, i) => ({ text, poly: poly(5 + i * 80, 110, 70) }))
         ];
         const preview = message.type === 'predict' ? await createImageBitmap(canvas) : null;
         setTimeout(() => this.onmessage({ data: { id: message.id, ok: true, preview, items: window.unreadable ? [] : items } }), 5);
@@ -72,20 +72,23 @@ const tiles = page => page.locator('#screen-import .import-tile').evaluateAll(li
       await upload(page);
       await page.locator('#screen-import .import-chip', { hasText: '1 to review' }).waitFor();
       assert.equal(await page.locator('#screen-import [data-target="screen-import.screen"]').textContent(), 'Battle report');
-      assert.deepEqual(await tiles(page), { 'sim-atk-inf': '411.5', 'sim-foe-atk-inf': '220', 'sim-foe-let-inf': '230', 'sim-n-inf': '12345', 'sim-foe-n-inf': '23456' });
-      assert.equal(await page.locator('#screen-import .import-tile [data-field="crop"]:not([hidden])').count(), 5, 'each value shows its row');
+      assert.deepEqual(await tiles(page), { 'sim-atk-inf': '411.5', 'sim-foe-atk-inf': '220', 'sim-foe-let-inf': '230', 'sim-n-inf': '70500', 'sim-foe-n-inf': '60000', 'sim-n-cav': '30000', 'sim-foe-n-cav': '45000', 'sim-n-arc': '49500', 'sim-foe-n-arc': '45000' });
+      assert.equal(await page.locator('#screen-import .import-tile [data-field="crop"]:not([hidden])').count(), 3, 'each row of the report shows its cut-out once');
+      assert.equal(await page.locator('#screen-import .import-tile[data-group="follow"]').count(), 6);
+      assert.equal(await page.locator('#screen-import [data-key="sim-foe-atk-inf"] [data-field="label"]').isHidden(), true, 'the second side names only its side');
+      assert.equal(await page.locator('#screen-import #screenshot-help').getAttribute('open'), null, 'the instructions start folded');
       assert.equal(await raw(page, 'sim-atk-inf'), atkBefore, 'review comes before the sheet changes');
       const lethality = page.locator('#screen-import [data-key="sim-foe-let-inf"] [data-field="value"]');
       await lethality.fill('333.3'); await lethality.dispatchEvent('change');
       assert.ok(await page.evaluate(() => { const box = document.querySelector('#screen-import .import-sheet').getBoundingClientRect(); return box.left >= 0 && box.right <= innerWidth + 1 && document.documentElement.scrollWidth <= innerWidth + 1; }));
       await page.screenshot({ path: path.join(output, 'review-' + lang + '-' + width + '.png') });
       await page.locator('#screen-import [data-action="screen-import.apply"]').click();
-      await page.locator('#screen-import [data-target="screen-import.status"]', { hasText: 'Saved 5 values' }).waitFor();
+      await page.locator('#screen-import [data-target="screen-import.status"]', { hasText: 'Saved 9 values' }).waitFor();
       assert.equal(await raw(page, 'sim-atk-inf'), '411.5');
       assert.equal(await raw(page, 'sim-let-inf'), '163', 'a value the report lacks keeps the sheet');
       assert.equal(await raw(page, 'sim-foe-let-inf'), '333.3', 'the correction is what lands');
-      assert.equal(await raw(page, 'sim-n-inf'), '12345');
-      assert.equal(await raw(page, 'sim-foe-n-inf'), '23456');
+      assert.equal(await raw(page, 'sim-n-inf'), '70500');
+      assert.equal(await raw(page, 'sim-foe-n-inf'), '60000');
       await page.locator('#screen-import [data-target="screen-import.chip"]').click();
       if (width <= 860) await page.locator('#sim-view-answer').click();
       await page.locator('.sweep-settings summary').click();

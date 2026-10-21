@@ -255,7 +255,7 @@
               // Review follows the screen top to bottom; values never found go last.
               next.proposals = proposals.map(function (p, i) {
                 var item = { target: p.target || 'inventory', id: p.id, label: p.label, value: p.value, confidence: p.confidence, note: p.note || '', unit: p.unit || (/^speedup-/.test(p.id) ? 'minutes' : 'count'), crop: crops[i], y: typeof p.y === 'number' ? p.y : p.crop && typeof p.crop.y === 'number' ? p.crop.y : Infinity };
-                ['max', 'min', 'step', 'side', 'sheet'].forEach(function (k) { if (p[k] !== undefined) item[k] = p[k]; });
+                ['max', 'min', 'step', 'side', 'sheet', 'group'].forEach(function (k) { if (p[k] !== undefined) item[k] = p[k]; });
                 if (p.target === 'gear') { item.piece = p.piece; item.field = p.field; item.quality = p.quality; }
                 return item;
               }).sort(function (a, b) { return a.y - b.y; });
@@ -311,8 +311,13 @@
         var li = list.querySelector('[data-key="' + p.id + '"]');
         if (!li) { li = template.content.firstElementChild.cloneNode(true); li.dataset.key = p.id; translate(li); }
         var edit = entry.edits[p.id] || {}, value = edit.value !== undefined ? edit.value : p.value;
+        // Values read from one row (a stat's two sides, the troop counts) show
+        // its cut-out once; the rest follow it, naming only what differs.
+        var prev = entry.proposals[i - 1], follows = !!(p.group && prev && prev.group === p.group);
+        li.dataset.group = follows ? 'follow' : 'lead';
+        field(li, 'label').hidden = !!(follows && prev.label === p.label);
         var img = field(li, 'crop');
-        if (p.crop) { var url = URL.createObjectURL(p.crop); urls.push(url); img.src = url; img.hidden = false; } else { img.removeAttribute('src'); img.hidden = true; }
+        if (p.crop && !follows) { var url = URL.createObjectURL(p.crop); urls.push(url); img.src = url; img.hidden = false; } else { img.removeAttribute('src'); img.hidden = true; }
         field(li, 'label').textContent = tr('import.item.' + p.id, p.label);
         var input = field(li, 'value');
         if (document.activeElement !== input) input.value = value === null || value === undefined ? '' : String(value);

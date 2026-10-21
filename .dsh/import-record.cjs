@@ -17,6 +17,8 @@ const server = http.createServer((q, r) => {
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const b = await chromium.launch(); const p = await b.newPage();
   await p.goto('http://127.0.0.1:' + server.address().port + '/battle-simulator/?lang=en');
+  // Pages load the OCR side only when a screenshot arrives; load it here.
+  for (const src of ['/js/ocr-text.js', '/js/ocr-client.js']) await p.addScriptTag({ url: src });
   for (const name of process.argv.slice(2)) {
     const out = await p.evaluate(async n => {
       const blob = await (await fetch('/fx/' + n + '.jpg')).blob();

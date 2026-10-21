@@ -131,12 +131,20 @@
 .import-note { color: var(--ink-muted); font-style: italic; font-size: 0.85em; }
 .import-note:empty { display: none; }
 
+/* Values from one row of the report follow its cut-out without a rule. */
+.import-tile[data-group="follow"] { border-top: 0; padding-top: 0; }
+
 /* A value to check carries the signal on its rule and its label. */
 .import-tile[data-state="doubt"] { border-top-color: var(--amber); }
 .import-tile[data-state="doubt"] .import-name { color: var(--amber); }
 .import-dock[data-filter="doubt"] .import-tile[data-state="sure"] { display: none; }
 
-.import-gloss { margin: 0.8rem 0 0; color: var(--ink-muted); font-style: italic; font-size: var(--step--1); }
+.import-help { margin-top: 0.8rem; }
+.import-help summary { cursor: pointer; color: var(--ink-dim); font-size: var(--step--1); }
+.import-help summary:hover, .import-help summary:focus-visible { color: var(--ink); outline: none; }
+.import-gloss { margin: 0.4rem 0 0; color: var(--ink-muted); font-size: var(--step--1); }
+ul.import-gloss { padding-inline-start: 1.1rem; }
+ul.import-gloss li + li { margin-top: 0.15rem; }
 
 @media (prefers-reduced-motion: no-preference) {
   .import-sheet { transition: opacity 0.15s ease; }
@@ -151,5 +159,5 @@
 .import-grid[data-layout="grid"] .import-name { font-size: 0.8rem; }
 .import-grid[data-layout="grid"] .import-field input { width: 100%; flex: none; }
 .import-grid[data-layout="grid"] .import-include { align-self: end; padding: 0.2rem 0 0.2rem 0.2rem; }
-.import-gloss a { color: var(--amber); font-style: normal; text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+.import-gloss a { color: var(--amber); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
 .import-gloss a:hover, .import-gloss a:focus-visible { color: var(--ink); }
