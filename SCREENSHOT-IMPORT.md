@@ -247,7 +247,14 @@ Each step lands as its own commit with its checks passing.
   back. Elsewhere the shot waits (`import.openSheet`). No ledger record. The
   sim's button is `data-screen-import="pick"`; its fill-then-flag review
   dialog, warm-up and paste handler are gone. Checked by
-  `.dsh/screen-import-check.cjs` (parsing) and `.dsh/simulator-ui-check.cjs`.
+  `.dsh/screen-import-check.cjs` (parsing, against the owner's report
+  `battle-report.jpg`) and `.dsh/simulator-ui-check.cjs`. Troop counts come
+  from the one row of six numbers under the troop icons (yours, then theirs,
+  each infantry, cavalry, archer); the Troop Power Comparison rows above name
+  a type over a bar and are never read as counts. Proposals carry a `group`
+  (one per report row); the dock shows a group's cut-out once and the rest of
+  its values follow it, naming only their side. The dock's instructions fold
+  into a "what can I screenshot?" disclosure (`#screenshot-help`).
 - [x] 11. Update ROADMAP.md milestone 6, PLAYER-LEDGER.md, INTERACTIONS.md
   and HERO-GEAR-SOURCES.md.
 - [x] 12. Unit pickers (`js/unit-input.js`, loaded on every page): an input
