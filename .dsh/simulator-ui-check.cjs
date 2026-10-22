@@ -73,9 +73,14 @@ const tiles = page => page.locator('#screen-import .import-tile').evaluateAll(li
       await page.locator('#screen-import .import-chip', { hasText: '1 to review' }).waitFor();
       assert.equal(await page.locator('#screen-import [data-target="screen-import.screen"]').textContent(), 'Battle report');
       assert.deepEqual(await tiles(page), { 'sim-atk-inf': '411.5', 'sim-foe-atk-inf': '220', 'sim-foe-let-inf': '230', 'sim-n-inf': '70500', 'sim-foe-n-inf': '60000', 'sim-n-cav': '30000', 'sim-foe-n-cav': '45000', 'sim-n-arc': '49500', 'sim-foe-n-arc': '45000' });
-      assert.equal(await page.locator('#screen-import .import-tile [data-field="crop"]:not([hidden])').count(), 3, 'each row of the report shows its cut-out once');
-      assert.equal(await page.locator('#screen-import .import-tile[data-group="follow"]').count(), 6);
-      assert.equal(await page.locator('#screen-import [data-key="sim-foe-atk-inf"] [data-field="label"]').isHidden(), true, 'the second side names only its side');
+      assert.equal(await page.locator('#screen-import .import-crop:not([hidden])').count(), 3, 'each row of the report shows its cut-out once');
+      assert.equal(await page.locator('#screen-import .import-tile [data-field="crop"]:not([hidden])').count(), 0, 'the values sit under their row, not under copies of it');
+      assert.deepEqual(await page.locator('#screen-import .import-tile[data-key^="sim-"][data-key*="-n-"]').evaluateAll(list => list.map(li => li.dataset.key)), ['sim-n-inf', 'sim-n-cav', 'sim-n-arc', 'sim-foe-n-inf', 'sim-foe-n-cav', 'sim-foe-n-arc'], 'your troops, then the opponent’s');
+      assert.ok(await page.evaluate(() => {
+        const box = key => document.querySelector('#screen-import [data-key="' + key + '"]').getBoundingClientRect();
+        return Math.abs(box('sim-atk-inf').top - box('sim-foe-atk-inf').top) < 2 && Math.abs(box('sim-n-inf').top - box('sim-n-arc').top) < 2 && box('sim-foe-n-inf').top > box('sim-n-inf').bottom - 1;
+      }), 'the two sides of a row share a line; counts run three to a line');
+      assert.equal(await page.locator('#screen-import [data-key="sim-foe-atk-inf"] [data-field="label"]').evaluate(n => n.getBoundingClientRect().width <= 1), true, 'the cut-out names the stat');
       assert.equal(await page.locator('#screen-import #screenshot-help').getAttribute('open'), null, 'the instructions start folded');
       assert.equal(await raw(page, 'sim-atk-inf'), atkBefore, 'review comes before the sheet changes');
       const lethality = page.locator('#screen-import [data-key="sim-foe-let-inf"] [data-field="value"]');

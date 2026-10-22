@@ -101,7 +101,7 @@
   var adapter = {
     id: 'battle-report',
     sourceType: 'battle-report',
-    layout: 'list',
+    layout: 'table',
     sheet: 'battle-report',
     // Two or more stat rows with a percentage make a Bonus Details sheet.
     detect: function (p) {
@@ -118,30 +118,34 @@
         var pad = (y1 - y0) * 0.5, top = Math.max(0, y0 - (r === parsed.snippets.icons ? (y1 - y0) * 5 : pad));
         return { x: 0, y: top, w: p.width, h: Math.min(p.height || Infinity, y1 + pad) - top };
       }
-      function add(side, label, id, kind, name) {
+      function add(side, label, id, kind, name, extra) {
         var value = v[side + '|' + label];
         if (value === undefined) return;
         var c = crop(label), row = parsed.snippets[label];
-        out.push({
+        out.push(Object.assign({
           // Values from one row of the report share its cut-out in review.
           group: row === parsed.snippets.icons ? 'icons' : label,
           target: 'sheet', sheet: 'battle-report', id: id, side: side === 'L' ? 'you' : 'foe', label: name,
           value: kind === 'count' ? Math.round(value) : Math.round(value * 10) / 10, unit: kind === 'count' ? 'count' : 'percent',
           step: kind === 'count' ? 1 : 0.1, min: kind === 'count' ? 0 : -100, confidence: 0.9, crop: c,
-          y: c ? c.y : Infinity
-        });
+          y: c ? c.y : Infinity, cols: 3
+        }, extra));
       }
+      function prefix(side) { return side === 'L' ? 'sim-' : 'sim-foe-'; }
+      // Counts: all of yours, then all of theirs, three to a line.
+      ['L', 'R'].forEach(function (side) {
+        TYPES.forEach(function (t) { add(side, t.block + '|' + TROOPS, prefix(side) + 'n-' + t.key, 'count', t.block, { cols: 2 }); });
+      });
+      // Stats: one line per report row, yours beside theirs.
       TYPES.forEach(function (t) {
-        ['L', 'R'].forEach(function (side) {
-          var prefix = side === 'L' ? 'sim-' : 'sim-foe-';
-          add(side, t.block + '|' + TROOPS, prefix + 'n-' + t.key, 'count', t.block + ' troops');
-          STATS.forEach(function (s) { add(side, t.block + '|' + s.ocr, prefix + s.key + '-' + t.key, 'percent', t.block + ' ' + s.ocr); });
+        STATS.forEach(function (s) {
+          ['L', 'R'].forEach(function (side) { add(side, t.block + '|' + s.ocr, prefix(side) + s.key + '-' + t.key, 'percent', t.block + ' ' + s.ocr, { named: true }); });
         });
       });
       // A total only where the report gives no split for that side.
       ['L', 'R'].forEach(function (side) {
         var split = TYPES.some(function (t) { return v[side + '|' + t.block + '|' + TROOPS] !== undefined; });
-        if (!split) add(side, TROOPS, side === 'L' ? 'sim-n-total' : 'sim-foe-n-total', 'count', 'All troops');
+        if (!split) add(side, TROOPS, side === 'L' ? 'sim-n-total' : 'sim-foe-n-total', 'count', 'All troops', { named: true });
       });
       return out;
     },
