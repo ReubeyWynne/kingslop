@@ -952,14 +952,14 @@ html[data-page="governor"], html[data-page="home"]:has(.event-card[data-hover-pa
 
 /* ─── Pets — the coral Beast Cage ─────────────────────── */
 html[data-page="pets"], html[data-page="home"]:has(.event-card[data-hover-page="pets"]:is(:hover, :focus-within)), .deck-card[data-page="pets"] {
-  --void: #140F10;        /* den night — warm earth-black       */
-  --void-2: #1E1718;      /* one step up (fields)              */
+  --void: #1D1516;        /* den dusk — warm earth, a step lighter than the other pages */
+  --void-2: #281E1F;      /* one step up (fields)              */
   --amber: #F0907A;       /* fox coral — the beast signal       */
   --amber-dim: #BC6A58;   /* pressed coral — secondary          */
   --ember: rgba(240, 144, 122, 0.15); /* hearth-warm motes      */
   --ember-2: rgba(200, 120, 100, 0.10);
   --ember-3: rgba(241, 227, 194, 0.07);
-  --chrome: rgba(20, 15, 16, .94);
+  --chrome: rgba(29, 21, 22, .94);
   --signal-line: rgba(240, 144, 122, .35);
   --signal-tint: rgba(240, 144, 122, .07);
   --signal-glow: rgba(240, 144, 122, .22);

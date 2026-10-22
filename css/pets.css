@@ -16,6 +16,9 @@
    A tamed pet is covered by a clear button you rub to pet it; it scrolls on a vertical swipe. */
 .pet-pen { position: relative; display: grid; place-items: center; padding-bottom: .15rem; border-bottom: 1px solid var(--signal-line); overflow: hidden; container-type: inline-size; }
 .pet-pen .ascii-mini { font-size: min(13px, 3.5cqi); }
+/* The pets are lit a little brighter than the other pages' scenes, baked frames and live canvas alike. */
+html[data-page="pets"] .ascii-mini--pet { filter: brightness(1.25) saturate(1.1); }
+html[data-page="pets"] .hero .ascii-mini--pet { filter: brightness(1.7) saturate(1.1); }   /* the wolf's grey coat sits in the darkest tones */
 .pet-stroke { position: absolute; inset: 0; padding: 0; background: transparent; border: 0; cursor: pointer; touch-action: pan-y; -webkit-tap-highlight-color: transparent; }
 .pet-stroke[hidden] { display: none; }
 .pet-stroke:focus-visible { outline: 2px solid var(--amber); outline-offset: -2px; }
