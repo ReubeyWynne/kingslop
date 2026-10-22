@@ -85,13 +85,13 @@ uniform vec3 uKey, uFill, uRim; uniform float uNear, uFar;
 layout(location=0) out vec4 oCol; layout(location=1) out vec4 oData;
 void main(){
   vec3 n=normalize(cross(dFdx(vView), dFdy(vView)));
-  float lum=0.25 + 2.2*max(dot(n,uKey),0.) + 0.66*max(dot(n,uFill),0.) + 0.35*max(dot(n,uRim),0.);
+  float lum=0.5 + 2.2*max(dot(n,uKey),0.) + 0.66*max(dot(n,uFill),0.) + 0.35*max(dot(n,uRim),0.);
   float L=clamp((lum-0.35)/2.0, 0., 1.);
   vec3 p=vRest; vec3 alb=${vec(cfg.fur)}; float reg=0.;
   ${cfg.spots ? `{ float a=${(+cfg.spots.scale).toFixed(3)}, b=a*0.37, s=sin(a*p.x+2.*sin(b*p.y))*sin(a*p.y+2.*sin(b*p.z))*sin(a*p.z+2.*sin(b*p.x));
     if (abs(s)>${(+cfg.spots.cut).toFixed(3)} && ${region(cfg.spots)}) alb=${vec(cfg.spots.rgb)}; }` : ''}   // a spotted coat, as shade.py paints it
   ${cfg.regions.map(r => `if (${region(r)}) { alb=${vec(r.rgb)}; reg=${r.id}.; }`).join('\n  ')}
-  vec3 col=alb*(0.3+0.95*L); float head=(${region(cfg.head)}) ? 1. : 0.; if (head<.5) col*=0.8;
+  vec3 col=alb*(0.3+0.95*L); float head=(${region(cfg.head)}) ? 1. : 0.; if (head<.5) col*=0.9;
   float d=clamp((-vView.z-uNear)/(uFar-uNear), 0., 1.); float hi=floor(d*255.)/255.;
   oCol=vec4(min(col,1.), 1.); oData=vec4(hi, (d-hi)*255., reg/4., head);
 }`;
@@ -115,7 +115,7 @@ void main(){
   }
   if(float(n)<0.2*float(SX*SY)){ o=vec4(0); oc=vec4(0); return; }
   col/=float(n); int ink=0; float best=9.;
-  float y=dot(col,vec3(.3,.59,.11)); vec3 hue=clamp(mix(vec3(y),col,1.45)*1.08,0.,1.);   // the fur's own colour, a little richer than the inks
+  float y=dot(col,vec3(.3,.59,.11)); vec3 hue=pow(clamp(mix(vec3(y),col,1.45)*1.1,0.,1.),vec3(.8));   // the fur's own colour, a little richer than the inks
   for(int k=0;k<7;k++){ vec3 dd=uInk[k]-col; float e=dot(dd,dd); if(e<best){best=e;ink=k;} }
   int g;
   oc=vec4(hue,1.);
