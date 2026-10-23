@@ -72,7 +72,7 @@ const tiles = page => page.locator('#screen-import .import-tile').evaluateAll(li
       await upload(page);
       await page.locator('#screen-import .import-chip', { hasText: '1 to review' }).waitFor();
       assert.equal(await page.locator('#screen-import [data-target="screen-import.screen"]').textContent(), 'Battle report');
-      assert.deepEqual(await tiles(page), { 'sim-atk-inf': '411.5', 'sim-foe-atk-inf': '220', 'sim-foe-let-inf': '230', 'sim-n-inf': '70500', 'sim-foe-n-inf': '60000', 'sim-n-cav': '30000', 'sim-foe-n-cav': '45000', 'sim-n-arc': '49500', 'sim-foe-n-arc': '45000' });
+      assert.deepEqual(await tiles(page), { 'sim-atk-inf': '411.5', 'sim-foe-atk-inf': '220', 'sim-foe-let-inf': '230', 'sim-n-inf': '70,500', 'sim-foe-n-inf': '60,000', 'sim-n-cav': '30,000', 'sim-foe-n-cav': '45,000', 'sim-n-arc': '49,500', 'sim-foe-n-arc': '45,000' });
       assert.equal(await page.locator('#screen-import .import-crop:not([hidden])').count(), 3, 'each row of the report shows its cut-out once');
       assert.equal(await page.locator('#screen-import .import-tile [data-field="crop"]:not([hidden])').count(), 0, 'the values sit under their row, not under copies of it');
       assert.deepEqual(await page.locator('#screen-import .import-tile[data-key^="sim-"][data-key*="-n-"]').evaluateAll(list => list.map(li => li.dataset.key)), ['sim-n-inf', 'sim-n-cav', 'sim-n-arc', 'sim-foe-n-inf', 'sim-foe-n-cav', 'sim-foe-n-arc'], 'your troops, then the opponent’s');

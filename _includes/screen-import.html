@@ -10,6 +10,7 @@
       <button type="button" class="import-prompt" data-action="screen-import.toggle" data-i18n="import.minimise">minimise</button>
     </header>
     <p class="import-status" data-target="screen-import.status" role="status"></p>
+    <progress class="import-progress" data-target="screen-import.progress" max="1" aria-label="Reading progress" data-i18n-key="import.progress" data-i18n-attr="aria-label" hidden></progress>
     <div class="import-shot" data-target="screen-import.shot" hidden>
       <p class="import-shot-name"><strong data-target="screen-import.screen"></strong> <small data-target="screen-import.name"></small></p>
       <ul class="import-grid" data-target="screen-import.tiles"></ul>
@@ -49,7 +50,7 @@
       <img data-field="crop" alt="" width="358" height="40">
       <label class="import-field">
         <span class="import-name"><span data-field="label"></span><small class="import-note" data-field="note"></small></span>
-        <input type="number" inputmode="numeric" min="0" step="1" data-field="value" data-action="screen-import.edit">
+        <input type="text" inputmode="numeric" autocomplete="off" spellcheck="false" min="0" step="1" data-field="value" data-action="screen-import.edit">
       </label>
       <label class="import-include"><input type="checkbox" data-field="include" data-action="screen-import.edit"><span class="import-hidden" data-i18n="import.include">include</span></label>
     </li>

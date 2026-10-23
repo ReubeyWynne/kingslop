@@ -32,6 +32,10 @@ const server = http.createServer((request, response) => {
     const chooser = page.waitForEvent('filechooser');
     await page.locator('[data-screen-import="pick"]').click();
     await (await chooser).setFiles([fixture('overview-resources'), fixture('overview-speedups')]);
+    // A device without the models downloads them once, with a bar that says how far it has got.
+    await page.locator('#screen-import [data-target~="screen-import.status"]', { hasText: 'Downloading the reading models' }).waitFor({ timeout: 120000 });
+    assert.equal(await page.locator('#screen-import [data-target~="screen-import.progress"]').isVisible(), true, 'the download shows its progress');
+    await page.screenshot({ path: path.join(output, 'downloading-390.png') });
     await page.locator('.import-tile').first().waitFor({ timeout: 240000 });
     await page.locator('#screen-import [data-target~="screen-import.count"]', { hasText: '2 to review' }).waitFor({ timeout: 240000 });
     await page.screenshot({ path: path.join(output, 'review-resources-390.png') });
@@ -48,12 +52,13 @@ const server = http.createServer((request, response) => {
     if (!resources) await page.locator('[data-action~="screen-import.next"]').click();
     const res = Object.fromEntries((await tiles()).map(t => [t.key, t]));
     assert.deepEqual(Object.keys(res), ['bread', 'wood', 'stone', 'iron']);
-    assert.equal(res.bread.value, '805510000');
+    assert.equal(res.bread.value, '805,510,000', 'values are grouped the way the page language writes them');
     assert.ok(Object.values(res).every(t => t.state === 'sure' && t.crop), 'every value carries its cut-out');
 
     // Correct one value, untick another, apply.
-    await page.locator('.import-tile[data-key="wood"] [data-field="value"]').fill('766000000');
+    await page.locator('.import-tile[data-key="wood"] [data-field="value"]').fill('766,000,000');
     await page.locator('.import-tile[data-key="wood"] [data-field="value"]').press('Enter');
+    assert.equal(await page.locator('.import-tile[data-key="wood"] [data-field="value"]').inputValue(), '766,000,000', 'a typed number is read with its separators');
     await page.locator('.import-tile[data-key="iron"] [data-field="include"]').uncheck();
     await page.locator('[data-action~="screen-import.apply"]').click();
     await page.locator('[data-target~="screen-import.status"]', { hasText: 'Saved 3 values' }).waitFor();
@@ -67,7 +72,7 @@ const server = http.createServer((request, response) => {
     await page.locator('#screen-import .import-chip').click();
     await page.screenshot({ path: path.join(output, 'review-speedups-390.png') });
     const spd = Object.fromEntries((await tiles()).map(t => [t.key, t.value]));
-    assert.equal(spd['speedup-general'], String(17 * 1440 + 20 * 60 + 1));
+    assert.equal(spd['speedup-general'], (17 * 1440 + 20 * 60 + 1).toLocaleString('en-GB'));
     assert.equal(spd['speedup-learning'], '720');
     await page.locator('[data-action~="screen-import.apply"]').click();
     await page.locator('[data-target~="screen-import.status"]', { hasText: 'Saved 6 values' }).waitFor();
@@ -78,6 +83,11 @@ const server = http.createServer((request, response) => {
     // A file already applied is refused before it is read again.
     await page.locator('#screen-import [data-target~="screen-import.files"]').setInputFiles(fixture('overview-resources'));
     await page.locator('[data-target~="screen-import.status"]', { hasText: 'already applied' }).waitFor();
+
+    // The models are on this device now: later reads say which shot they are on, not that a download is coming.
+    const said = [];
+    await page.exposeFunction('importStatus', text => said.push(text));
+    await page.evaluate(() => { const node = document.querySelector('[data-target~="screen-import.status"]'); new MutationObserver(() => window.importStatus(node.textContent)).observe(node, { childList: true, characterData: true, subtree: true }); });
 
     // Backpack tiles: icons matched to event items, counts read enlarged. The
     // two shots come from different moments; the later file wins.
@@ -90,14 +100,16 @@ const server = http.createServer((request, response) => {
       screens[read['masters-manuscript']] = { read, include: await page.locator('.import-tile[data-key="masters-manuscript"] [data-field="include"]').isChecked(), note: await page.locator('.import-tile[data-key="masters-manuscript"] [data-field="note"]').textContent() };
       if (i === 0) { await page.screenshot({ path: path.join(output, 'review-backpack-390.png') }); await page.locator('[data-action~="screen-import.next"]').click(); }
     }
-    assert.deepEqual(screens['3102'].read, { 'masters-manuscript': '3102', 'advanced-taming-mark': '4', 'common-taming-mark': '63', mithril: '4', forgehammer: '209' });
-    assert.deepEqual(screens['2632'].read, { 'masters-manuscript': '2632', 'advanced-taming-mark': '4', 'common-taming-mark': '60', mithril: '4', forgehammer: '201', 'mythic-hero-shard': '316', 'epic-hero-shard': '74', 'rare-hero-shard': '5' });
-    assert.equal(screens['3102'].include, false, 'an item a newer shot also shows starts unticked');
-    assert.match(screens['3102'].note, /newer shot reads 2,632/);
-    assert.equal(screens['2632'].include, true);
+    assert.ok(said.some(text => /Reading screenshot 1 of 2/.test(text)), 'reading says which shot it is on');
+    assert.ok(!said.some(text => /Downloading/.test(text)), 'a device with the models cached is not warned about a download');
+    assert.deepEqual(screens['3,102'].read, { 'masters-manuscript': '3,102', 'advanced-taming-mark': '4', 'common-taming-mark': '63', mithril: '4', forgehammer: '209' });
+    assert.deepEqual(screens['2,632'].read, { 'masters-manuscript': '2,632', 'advanced-taming-mark': '4', 'common-taming-mark': '60', mithril: '4', forgehammer: '201', 'mythic-hero-shard': '316', 'epic-hero-shard': '74', 'rare-hero-shard': '5' });
+    assert.equal(screens['3,102'].include, false, 'an item a newer shot also shows starts unticked');
+    assert.match(screens['3,102'].note, /newer shot reads 2,632/);
+    assert.equal(screens['2,632'].include, true);
     // Applying the newer shot settles the older one: every item it showed was
     // superseded, so it leaves the dock rather than writing stale counts.
-    if ((await backpack())['masters-manuscript'] !== '2632') await page.locator('[data-action~="screen-import.next"]').click();
+    if ((await backpack())['masters-manuscript'] !== '2,632') await page.locator('[data-action~="screen-import.next"]').click();
     await page.locator('[data-action~="screen-import.apply"]').click();
     await page.locator('[data-target~="screen-import.status"]', { hasText: 'Saved 8 values' }).waitFor();
     assert.equal(await page.locator('.import-tile').count(), 0, 'the superseded shot left the dock');
@@ -120,9 +132,10 @@ const server = http.createServer((request, response) => {
 
     const desktop = await browser.newContext({ viewport: { width: 1280, height: 900 } });
     const wide = await desktop.newPage();
-    await wide.goto(base + '/town-centre/?lang=en');
+    await wide.goto(base + '/town-centre/?lang=de');
     await wide.locator('#screen-import [data-target~="screen-import.files"]').setInputFiles(fixture('overview-speedups'));
     await wide.locator('.import-tile').first().waitFor({ timeout: 240000 });
+    assert.equal(await wide.locator('.import-tile[data-key="speedup-general"] [data-field="value"]').inputValue(), '25.681', 'German groups digits with a full stop');
     await wide.screenshot({ path: path.join(output, 'review-1280.png') });
     await desktop.close();
     assert.deepEqual(errors, []);
