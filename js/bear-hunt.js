@@ -33,7 +33,7 @@
   }
 
   function formatNumber(n) {
-    return Math.max(0, Math.round(n)).toLocaleString(undefined);
+    return Math.max(0, Math.round(n)).toLocaleString((window.I18N && window.I18N.locale) || 'en-GB');
   }
 
   function wireAllocator() {
