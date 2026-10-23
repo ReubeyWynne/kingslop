@@ -147,14 +147,47 @@
     };
   }
 
+  // Every number in the dock is written the way the page's language writes
+  // it: 805,510,000 · 805.510.000 · 805 510 000.
+  function locale() { return (window.I18N && window.I18N.locale) || 'en-GB'; }
+  function number(n, options) { return new Intl.NumberFormat(locale(), options).format(n); }
+
   function duration(minutes) {
     var d = Math.floor(minutes / 1440), h = Math.floor(minutes % 1440 / 60), m = minutes % 60;
-    return [d && d + 'd', h && h + 'h', (m || (!d && !h)) && m + 'm'].filter(Boolean).join(' ');
+    return [d && number(d) + 'd', h && number(h) + 'h', (m || (!d && !h)) && number(m) + 'm'].filter(Boolean).join(' ');
+  }
+
+  // The review boxes are text rather than type=number, which never groups
+  // digits. A box shows its value in the page's format and reads typed numbers
+  // back the same way, with or without the separators. Its min, max and step
+  // attributes become a custom validity, so the box still refuses what a number
+  // box would.
+  function places(step) { var tail = String(step || 1).split('.')[1]; return tail ? tail.length : 0; }
+  function shown(value, step) { return value === null || value === undefined ? '' : number(value, { maximumFractionDigits: places(step) }); }
+  function parse(text) {
+    var parts = new Intl.NumberFormat(locale()).formatToParts(1234567.5), sign = function (type) { var hit = parts.filter(function (x) { return x.type === type; })[0]; return hit ? hit.value : null; };
+    var group = sign('group'), decimal = sign('decimal') || '.', digits = {};
+    for (var i = 0; i < 10; i++) digits[number(i)] = String(i);
+    var plain = Array.from(text.trim()).map(function (c) { return digits[c] || c; }).join('').replace(/[\s\u00a0\u202f]/g, '');
+    if (group) plain = plain.split(group).join('');
+    plain = plain.split(decimal).join('.').replace(/^[\u2212\u2013]/, '-');
+    return /^-?\d+(\.\d+)?$/.test(plain) ? Number(plain) : NaN;
+  }
+  // The box's value: a number, null when empty, undefined when it refuses it.
+  function boxValue(input, message) {
+    var text = input.value.trim(), n = text === '' ? null : parse(text);
+    var min = input.getAttribute('min'), max = input.getAttribute('max'), step = Number(input.getAttribute('step')) || 1;
+    var ok = n === null || (isFinite(n) && (min === null || n >= Number(min)) && (max === null || n <= Number(max)) && Math.abs(n / step - Math.round(n / step)) < 1e-9);
+    input.setCustomValidity(ok ? '' : message);
+    return ok ? n : undefined;
   }
 
   M.register('screen-import', function (context) {
     var api = context.api, root = context.root;
     var queue = null, entries = [], current = 0, ocr = null, small = null, busy = false, lastApply = null, urls = [];
+    // How far the model download has got ({ loaded, total }, null when nothing
+    // is downloading) and how many shots this run of reading has finished.
+    var download = null, done = 0;
     var ledger = window.PlayerLedger && window.PlayerLedger.shared();
 
     function tr(key, fallback, vars) { var text = api.tr(key, fallback); return vars ? api.fill(text, vars) : text; }
@@ -191,7 +224,9 @@
       return valueOf(entry, p) !== null && !newer(entry, p);
     }
 
-    function wasm() { return small || (small = window.OcrClient.create({ backend: 'wasm' })); }
+    function downloading(p) { download = p.total && p.loaded >= p.total ? null : p; progress(); }
+    function reader() { return ocr || (ocr = window.OcrClient.create({ onProgress: downloading })); }
+    function wasm() { return small || (small = window.OcrClient.create({ backend: 'wasm', onProgress: downloading })); }
     // The piece last chosen on the hero gear page, for a gear shot whose troop
     // badge didn't read.
     function selectedGear() {
@@ -230,14 +265,13 @@
       var kit = null, bitmap = null;
       return engine().then(function () {
         var S = window.ScreenImport;
-        kit = tools(next.blob, function () { return ocr; }, wasm, selectedGear());
+        kit = tools(next.blob, reader, wasm, selectedGear());
         // A screen known by its pixels skips the whole-screen read.
         // An image the page can't decode still goes to the reader.
         return kit.load().catch(function () { return null; }).then(function () {
           var known = kit.pixels && S.probe(kit.pixels);
           if (known) return { claim: known, page: S.page({ items: [] }) };
-          if (!ocr) ocr = window.OcrClient.create();
-          return ocr.read(next.blob, { useful: function (res) { return !!S.route(S.page({ items: res.items })); } }).then(function (res) {
+          return reader().read(next.blob, { useful: function (res) { return !!S.route(S.page({ items: res.items })); } }).then(function (res) {
             bitmap = res.preview;
             var page = S.page({ items: res.items, width: bitmap ? bitmap.width : 0, height: bitmap ? bitmap.height : 0 });
             var claim = S.route(page);
@@ -275,6 +309,7 @@
         if (window.console && console.error) console.error('[screen-import]', (err && err.message) || err);
       }).then(function () {
         busy = false;
+        done++;
         if (next.status === 'review') current = reviewable().indexOf(next);
         return save(next);
       }).then(work);
@@ -335,15 +370,17 @@
         label.textContent = tr('import.item.' + p.id, p.label);
         label.classList.toggle('import-hidden', !!p.named);
         var input = field(li, 'value');
-        if (document.activeElement !== input) input.value = value === null || value === undefined ? '' : String(value);
         input.placeholder = tr('import.unread', 'not read');
-        if (p.max !== undefined) input.max = String(p.max); else input.removeAttribute('max');
-        input.min = p.min !== undefined ? String(p.min) : '0';
-        input.step = p.step !== undefined ? String(p.step) : '1';
+        if (p.max !== undefined) input.setAttribute('max', String(p.max)); else input.removeAttribute('max');
+        input.setAttribute('min', p.min !== undefined ? String(p.min) : '0');
+        input.setAttribute('step', p.step !== undefined ? String(p.step) : '1');
+        input.inputMode = places(p.step) || p.min < 0 ? 'decimal' : 'numeric';
+        if (document.activeElement !== input) input.value = shown(value, p.step);
+        boxValue(input, tr('import.badNumber', 'Enter a number this box can take.'));
         field(li, 'note').textContent = note(p, value);
         field(li, 'include').checked = included(entry, p);
         var later = newer(entry, p);
-        if (later) field(li, 'note').textContent = tr('import.newer', 'a newer shot reads {v}', { v: api.fmt(valueOf(later, later.proposals.filter(function (q) { return q.id === p.id; })[0])) });
+        if (later) field(li, 'note').textContent = tr('import.newer', 'a newer shot reads {v}', { v: shown(valueOf(later, later.proposals.filter(function (q) { return q.id === p.id; })[0]), p.step) });
         li.dataset.state = doubts.indexOf(p) !== -1 ? 'doubt' : 'sure';
         place(li);
       });
@@ -367,13 +404,36 @@
         target('needsLook').hidden = !doubts && root.dataset.filter !== 'doubt';
       }
       tiles(entry);
-      if (waiting.length) status(tr('import.readingStatus', 'Reading {n} screenshot(s)… the first read downloads about 14 MB of models, once per device.', { n: api.fmt(waiting.length) }));
+      if (waiting.length) progress();
       else if (entries.some(function (e) { return e.status === 'unknown'; })) status(tr('import.unknown', 'One screenshot isn’t a screen I can read yet. It was skipped. Email it to screenshots@dey.ci to have it added.'));
       else if (entries.some(function (e) { return e.status === 'empty'; })) status(tr('import.empty', 'No items I track were found on one screenshot. It was skipped. If it shows items that should count, email it to screenshots@dey.ci.'));
       else if (entries.some(function (e) { return e.status === 'failed'; })) status(tr('import.failed', 'A screenshot couldn’t be read. Try it again, or a clearer shot.'));
       else if (entry) status(checks ? tr('import.check', '{n} values need a look. Everything else is ticked.', { n: api.fmt(checks) }) : tr('import.allSure', 'Everything was read. Check the numbers, then apply.'));
+      if (!waiting.length) { done = 0; progress(); }
       // Unknown and failed shots are reported once, then dropped from the queue.
       entries.filter(function (e) { return e.status === 'unknown' || e.status === 'failed' || e.status === 'empty'; }).forEach(forget);
+    }
+
+    // While shots wait: the model download on a device that doesn't have the
+    // models yet, then which shot is being read. Repainted on every download
+    // step without touching the tiles.
+    function progress() {
+      var bar = target('progress'), waiting = entries.filter(function (e) { return e.status === 'queued' || e.status === 'reading'; }).length;
+      bar.hidden = !waiting;
+      if (!waiting) return;
+      var total = done + waiting, mb = function (bytes) { return number(bytes / 1e6, { style: 'unit', unit: 'megabyte', maximumFractionDigits: 1 }); };
+      if (download) {
+        status(download.total
+          ? tr('import.downloadingOf', 'Downloading the reading models, once per device: {loaded} of {total}.', { loaded: mb(download.loaded), total: mb(download.total) })
+          : tr('import.downloading', 'Downloading the reading models, once per device: {loaded}.', { loaded: mb(download.loaded) }));
+        bar.max = download.total || 1;
+        if (download.total) bar.value = download.loaded; else bar.removeAttribute('value');
+      } else {
+        status(tr('import.readingOf', 'Reading screenshot {i} of {n}…', { i: api.fmt(done + 1), n: api.fmt(total) }));
+        // One shot has no steps to show, so its bar just says it is working.
+        bar.max = total;
+        if (total > 1) bar.value = done; else bar.removeAttribute('value');
+      }
     }
 
     function edit(node) {
@@ -381,8 +441,10 @@
       if (!entry || !li) return;
       var e = entry.edits[li.dataset.key] || (entry.edits[li.dataset.key] = {});
       if (node.dataset.field === 'value') {
-        if (node.value !== '' && !node.validity.valid) return;
-        e.value = node.value === '' ? null : Number(node.value);
+        var p = entry.proposals.filter(function (q) { return q.id === li.dataset.key; })[0], n = boxValue(node, tr('import.badNumber', 'Enter a number this box can take.'));
+        if (n === undefined) return;
+        e.value = n;
+        node.value = shown(n, p && p.step);
         if (e.include === undefined) e.include = e.value !== null;
       } else e.include = node.checked;
       e.touched = true;

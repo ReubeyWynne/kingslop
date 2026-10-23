@@ -4,6 +4,8 @@
    and the GPU → wasm retry. Pages never build the worker themselves.
 
    var ocr = OcrClient.create({ backend: 'wasm' });   // or 'auto' (default)
+   OcrClient.create({ onProgress: fn })   → fn({ loaded, total }) while the models
+                                            download (total null when unknown)
    ocr.warm()                       → Promise
    ocr.read(blob, { useful })       → Promise<{ items, metrics, preview }>
    ocr.close()                      → drops the worker and fails reads in flight
@@ -66,6 +68,7 @@
       worker = new Worker(workerUrl(backend, options.base), { type: 'module' });
       worker.onmessage = function (e) {
         var m = e.data || {}, p = pending[m.id];
+        if (m.progress) { if (options.onProgress) options.onProgress(m.progress); return; }
         if (!p) { closeBitmap(m.preview); return; }
         delete pending[m.id];
         if (m.ok) {

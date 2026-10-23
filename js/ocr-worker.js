@@ -15,7 +15,9 @@
      in : { id, type: 'warm' }                  → { id, ok: true }
      in : { id, type: 'predict', blob: File }   → { id, ok: true, items, metrics }
      any failure                                → { id, ok: false, error }
-   'predict' implies 'warm'; both share one engine promise. */
+   'predict' implies 'warm'; both share one engine promise. While the models
+   download, unsolicited { progress: { loaded, total } } messages (no id) say
+   how far it has got; a device that has them cached sends none. */
 'use strict';
 
 // ── Worker environment stubs ──────────────────────────
@@ -45,6 +47,77 @@ var DET_SIDE = 800;
 
 function modelsUrl(file) {
   return new URL('../models/' + file, self.location.href).href;
+}
+
+// The models are fetched here rather than by the engine, into Cache Storage, so
+// the page can show the download's progress and only ever warns about it on a
+// device that doesn't have them yet. Bump the cache name when a model changes.
+// Anything missing (no fetch, no caches, a failed request) leaves the engine to
+// fetch the plain URLs itself, as it always did.
+var MODEL_CACHE = 'ocr-models-v6-tiny';
+var MODEL_FILES = ['det-v6-tiny.tar', 'rec-v6-tiny.tar'];
+var modelsPromise = null;
+
+function readWithProgress(response, tick) {
+  if (!response.body || !response.body.getReader) return response.blob();
+  var reader = response.body.getReader(), chunks = [];
+  function pump() {
+    return reader.read().then(function (step) {
+      if (step.done) return new Blob(chunks);
+      chunks.push(step.value);
+      tick(step.value.byteLength);
+      return pump();
+    });
+  }
+  return pump();
+}
+
+function downloadModels(cache, urls) {
+  return Promise.all(urls.map(function (url) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error('model download failed: HTTP ' + r.status);
+      return r;
+    });
+  })).then(function (responses) {
+    // A compressed transfer's length isn't the bytes the body yields; the bar
+    // then runs without a total.
+    var total = responses.reduce(function (sum, r) {
+      var n = Number(r.headers.get('content-length'));
+      return sum === null || !n || r.headers.get('content-encoding') ? null : sum + n;
+    }, 0);
+    var loaded = 0;
+    var tick = function (n) {
+      loaded += n;
+      self.postMessage({ progress: { loaded: loaded, total: total && Math.max(total, loaded) } });
+    };
+    self.postMessage({ progress: { loaded: 0, total: total } });
+    return Promise.all(responses.map(function (r, i) {
+      return readWithProgress(r, tick).then(function (blob) {
+        return cache.put(urls[i], new Response(blob)).catch(function () {}).then(function () { return blob; });
+      });
+    })).then(function (blobs) {
+      // The last word always has a total, so the page knows the download is over.
+      self.postMessage({ progress: { loaded: loaded, total: loaded } });
+      return blobs;
+    });
+  });
+}
+
+function loadModels() {
+  var urls = MODEL_FILES.map(modelsUrl);
+  if (typeof fetch !== 'function' || !self.caches) return Promise.resolve(urls);
+  if (modelsPromise) return modelsPromise;
+  var p = caches.open(MODEL_CACHE).then(function (cache) {
+    return Promise.all(urls.map(function (url) { return cache.match(url); })).then(function (hits) {
+      if (hits.every(Boolean)) return Promise.all(hits.map(function (r) { return r.blob(); }));
+      return downloadModels(cache, urls);
+    });
+  }).then(function (blobs) {
+    return blobs.map(function (blob) { return URL.createObjectURL(blob); });
+  });
+  modelsPromise = p;
+  p.catch(function () { if (modelsPromise === p) modelsPromise = null; });
+  return p.catch(function () { return urls; });
 }
 
 // Resample a decoded bitmap, degrading instead of failing: a browser that
@@ -113,13 +186,14 @@ var engineKind = new URL(self.location.href).searchParams.get('backend') === 'wa
 // deliberate: this file *is* the worker, so the pipeline runs directly here
 // rather than the library spawning a second one.
 function createEngine(backend) {
-  return import(PADDLE_ESM).then(function (m) {
+  return Promise.all([import(PADDLE_ESM), loadModels()]).then(function (got) {
+    var m = got[0], models = got[1];
     return m.PaddleOCR.create({
       worker: false,
       textDetectionModelName: 'PP-OCRv6_tiny_det',
       textRecognitionModelName: 'PP-OCRv6_tiny_rec',
-      textDetectionModelAsset: { url: modelsUrl('det-v6-tiny.tar') },
-      textRecognitionModelAsset: { url: modelsUrl('rec-v6-tiny.tar') },
+      textDetectionModelAsset: { url: models[0] },
+      textRecognitionModelAsset: { url: models[1] },
       textDetLimitSideLen: DET_SIDE,
       textDetLimitType: 'max',
       ortOptions: { backend: backend }

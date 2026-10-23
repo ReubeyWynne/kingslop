@@ -78,10 +78,35 @@ async function client() {
   await assert.rejects(pending, /closed/);
 }
 
+// The worker fetches the models itself into Cache Storage: the first engine
+// reports the download's progress, a later one finds them cached and says nothing.
+async function models() {
+  const store = new Map(), fetched = [];
+  const caches = { open: async () => ({ match: async url => store.get(url), put: async (url, res) => { store.set(url, res); } }) };
+  const fetch = async url => { fetched.push(url); const body = new Uint8Array(1000); return new Response(body, { headers: { 'content-length': '1000' } }); };
+  async function engine() {
+    const answers = [], assets = [];
+    const engineModule = { PaddleOCR: { create: async options => { assets.push(options.textDetectionModelAsset.url, options.textRecognitionModelAsset.url); return { predict: async () => [{ items: [] }] }; } } };
+    const scope = { URL: class extends URL { static createObjectURL() { return 'blob:model'; } }, Promise, Response, Blob, fetch, caches, engineModule, OffscreenCanvas: class { getContext() { return { fillRect() {} }; } transferToImageBitmap() { return { close() {} }; } }, self: { caches, location: { href: 'https://dey.ci/js/ocr-worker.js' }, postMessage: out => answers.push(out) } };
+    vm.runInNewContext(source, scope);
+    scope.self.onmessage({ data: { id: 1, type: 'warm' } });
+    while (!answers.some(a => a.id === 1)) await new Promise(resolve => setImmediate(resolve));
+    assert.equal(answers.find(a => a.id === 1).ok, true);
+    assert.equal(assets.join(), 'blob:model,blob:model', 'the engine reads the fetched models');
+    return answers.filter(a => a.progress).map(a => a.progress);
+  }
+  const first = await engine();
+  assert.equal(JSON.stringify(first.at(-1)), JSON.stringify({ loaded: 2000, total: 2000 }), 'the download counts both models');
+  assert.equal(fetched.length, 2);
+  assert.equal((await engine()).length, 0, 'cached models are not downloaded or announced again');
+  assert.equal(fetched.length, 2);
+}
+
 (async () => {
   await client();
+  await models();
   await check('?build=123&backend=wasm', false);
   await check('', false);
   await check('', true);
-  console.log('OCR client: one worker, wasm retry, hang-breaker and close pass. A WASM client starts on WASM; the automatic backend and silent/throwing GPU recovery remain intact.');
+  console.log('OCR client: one worker, wasm retry, hang-breaker and close pass. Models download once with progress, then come from the cache. A WASM client starts on WASM; the automatic backend and silent/throwing GPU recovery remain intact.');
 })().catch(error => { console.error(error); process.exitCode = 1; });
