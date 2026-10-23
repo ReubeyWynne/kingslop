@@ -16,6 +16,23 @@
    A tamed pet is covered by a clear button you rub to pet it; it scrolls on a vertical swipe. */
 .pet-pen { position: relative; display: grid; place-items: center; padding-bottom: .15rem; border-bottom: 1px solid var(--signal-line); overflow: hidden; container-type: inline-size; }
 .pet-pen .ascii-mini { font-size: min(13px, 3.5cqi); }
+/* The pets are lit a step brighter than their tones (js/pet-live.js lifts the live ones to match);
+   the hero wolf's grey coat sits in the darkest tones, so it lifts more. Static colours, not filters:
+   a filter on every pen made each frame of the ASCII capture slow. */
+.pet-card[data-owned="true"] .ascii-mini--portrait > [data-ink="0"] { color: oklch(from var(--tone-0) calc(l + .07) c h); }
+.pet-card[data-owned="true"] .ascii-mini--portrait > [data-ink="1"] { color: oklch(from var(--tone-1) calc(l + .07) c h); }
+.pet-card[data-owned="true"] .ascii-mini--portrait > [data-ink="2"] { color: oklch(from var(--tone-2) calc(l + .07) c h); }
+.pet-card[data-owned="true"] .ascii-mini--portrait > [data-ink="3"] { color: oklch(from var(--tone-3) calc(l + .07) c h); }
+.pet-card[data-owned="true"] .ascii-mini--portrait > [data-ink="4"] { color: oklch(from var(--tone-4) calc(l + .07) c h); }
+.pet-card[data-owned="true"] .ascii-mini--portrait > [data-ink="5"] { color: oklch(from var(--tone-5) calc(l + .07) c h); }
+.pet-card[data-owned="true"] .ascii-mini--portrait > [data-ink="6"] { color: oklch(from var(--tone-6) calc(l + .07) c h); }
+.hero .ascii-mini--portrait > [data-ink="0"] { color: oklch(from var(--tone-0) calc(l + .16) c h); }
+.hero .ascii-mini--portrait > [data-ink="1"] { color: oklch(from var(--tone-1) calc(l + .16) c h); }
+.hero .ascii-mini--portrait > [data-ink="2"] { color: oklch(from var(--tone-2) calc(l + .16) c h); }
+.hero .ascii-mini--portrait > [data-ink="3"] { color: oklch(from var(--tone-3) calc(l + .16) c h); }
+.hero .ascii-mini--portrait > [data-ink="4"] { color: oklch(from var(--tone-4) calc(l + .16) c h); }
+.hero .ascii-mini--portrait > [data-ink="5"] { color: oklch(from var(--tone-5) calc(l + .16) c h); }
+.hero .ascii-mini--portrait > [data-ink="6"] { color: oklch(from var(--tone-6) calc(l + .16) c h); }
 .pet-stroke { position: absolute; inset: 0; padding: 0; background: transparent; border: 0; cursor: pointer; touch-action: pan-y; -webkit-tap-highlight-color: transparent; }
 .pet-stroke[hidden] { display: none; }
 .pet-stroke:focus-visible { outline: 2px solid var(--amber); outline-offset: -2px; }
@@ -25,6 +42,10 @@
 .pet-card[data-owned="false"] .ascii-mini--portrait > span { color: inherit; }
 /* A pet drawn live (js/pet-live.js) covers the pen with its canvas; the baked frames stay underneath for when it can't run. */
 .pet-live { position: absolute; inset: 0 auto auto 0; display: block; width: 100%; aspect-ratio: 43.2 / 30; pointer-events: none; }
+/* Tamed pets are lit: a faint warm light in the pen, and richer fur with a soft halo on the live pet, so they stand out on the dark page.
+   The filter is on the live canvas only, so the baked frames and the ASCII capture are untouched. */
+.pet-card[data-owned="true"] .pet-pen { background: radial-gradient(ellipse 60% 55% at 50% 58%, color-mix(in srgb, var(--amber) 12%, transparent), transparent 72%); }
+.pet-card[data-owned="true"] .pet-live, .hero .pet-live { filter: saturate(1.5) contrast(1.1) brightness(1.1) drop-shadow(0 0 5px rgb(255 180 140 / .5)); }
 [data-pen][data-live] > .ascii-mini--portrait, [data-pen][data-live]::after { visibility: hidden; }   /* it acts out the marks (z's, hearts, a thought) itself */
 
 .pet-tame { display: flex; align-items: flex-start; gap: .45rem; min-height: 40px; padding-top: .2rem; cursor: pointer; }
