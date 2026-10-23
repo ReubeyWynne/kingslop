@@ -115,7 +115,7 @@ void main(){
   }
   if(float(n)<0.2*float(SX*SY)){ o=vec4(0); oc=vec4(0); return; }
   col/=float(n); int ink=0; float best=9.;
-  float y=dot(col,vec3(.3,.59,.11)); vec3 hue=pow(clamp(mix(vec3(y),col,1.45)*1.1,0.,1.),vec3(.8));   // the fur's own colour, a little richer than the inks
+  float y=dot(col,vec3(.3,.59,.11)); vec3 hue=pow(clamp(mix(vec3(y),col,1.45)*1.1,0.,1.),vec3(.7));   // the fur's own colour, a little richer than the inks
   for(int k=0;k<7;k++){ vec3 dd=uInk[k]-col; float e=dot(dd,dd); if(e<best){best=e;ink=k;} }
   int g;
   oc=vec4(hue,1.);
