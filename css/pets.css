@@ -42,6 +42,10 @@
 .pet-card[data-owned="false"] .ascii-mini--portrait > span { color: inherit; }
 /* A pet drawn live (js/pet-live.js) covers the pen with its canvas; the baked frames stay underneath for when it can't run. */
 .pet-live { position: absolute; inset: 0 auto auto 0; display: block; width: 100%; aspect-ratio: 43.2 / 30; pointer-events: none; }
+/* Tamed pets are lit: a faint warm light in the pen, and richer fur with a soft halo on the live pet, so they stand out on the dark page.
+   The filter is on the live canvas only, so the baked frames and the ASCII capture are untouched. */
+.pet-card[data-owned="true"] .pet-pen { background: radial-gradient(ellipse 60% 55% at 50% 58%, color-mix(in srgb, var(--amber) 12%, transparent), transparent 72%); }
+.pet-card[data-owned="true"] .pet-live, .hero .pet-live { filter: saturate(1.5) contrast(1.1) brightness(1.1) drop-shadow(0 0 5px rgb(255 180 140 / .5)); }
 [data-pen][data-live] > .ascii-mini--portrait, [data-pen][data-live]::after { visibility: hidden; }   /* it acts out the marks (z's, hearts, a thought) itself */
 
 .pet-tame { display: flex; align-items: flex-start; gap: .45rem; min-height: 40px; padding-top: .2rem; cursor: pointer; }
