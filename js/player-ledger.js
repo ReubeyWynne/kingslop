@@ -13,6 +13,13 @@
 })(typeof window === 'object' ? window : globalThis, function () {
   'use strict';
   var KEY = 'bh:player-ledger:v1', LEGACY = 'bh:hero-gear:v1';
+  /* Inventory history: every confirmed balance change, kept beside the save so income can be
+     learned and projected later. Each entry is { at, id, before, after, source }; `before` is
+     null when the balance was unknown. A change to unknown is not a reading and is skipped.
+     Entries in the last FULL_DAYS stay whole; older ones fold into one per item per UTC day
+     (first `before`, last `after`), and at most MAX_ENTRIES are kept. A history that cannot
+     be read or written never blocks a save. */
+  var HISTORY = 'bh:player-history:v1', FULL_DAYS = 28, MAX_ENTRIES = 8000;
   var ITEMS = { xp: 'hero-gear-xp', hammers: 'forgehammer', mythic: 'spare-mythic-gear', mithril: 'mithril' };
   var PREFS = ['included', 'weights', 'profile', 'reforge', 'troop', 'mode', 'view', 'selected', 'goal', 'target', 'targetMastery'];
   var TYPES = ['inf', 'cav', 'arc'], STATS = ['attack', 'lethality', 'defense', 'health'];
@@ -40,6 +47,7 @@
      Minister, never both), whether your kingdom holds the High King, and whether your king uses
      Mobilize on event days. Each is absent when off. */
   var TRAINING_PLANS = { buff: [true], position: ['advisor', 'minister'], highKing: [true], mobilize: [true] };
+  var PRIORITY_ROLES = ['lead', 'joiner', 'farm'];
   function trainingFact(key, value) { return key === 'speed' ? percent(value) : key === 'capacity' ? count(value) && value >= 1 : Number.isSafeInteger(value) && value >= 1 && value <= 11; }
   function copy(value) { return JSON.parse(JSON.stringify(value)); }
   function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
@@ -155,7 +163,7 @@
     valid(object(value.preferences) && object(value.preferences.heroGear));
     if (value.preferences.kingdom !== undefined) valid(kingdomProfile(value.preferences.kingdom));
     if (value.preferences.training !== undefined) valid(object(value.preferences.training) && Object.keys(value.preferences.training).every(function (key) { return Object.hasOwn(TRAINING_PLANS, key) && TRAINING_PLANS[key].includes(value.preferences.training[key]); }));
-    valid(Object.keys(value.preferences).every(function (key) { return key === 'heroGear' || key === 'governor' || key === 'training' || key === 'kingdom' || key === 'buildings'; }) && Object.keys(value.preferences.heroGear).every(function (key) { return PREFS.includes(key); }));
+    valid(Object.keys(value.preferences).every(function (key) { return key === 'heroGear' || key === 'governor' || key === 'training' || key === 'kingdom' || key === 'buildings' || key === 'priority'; }) && Object.keys(value.preferences.heroGear).every(function (key) { return PREFS.includes(key); }));
     if (value.preferences.governor !== undefined) {
       var gov = value.preferences.governor;
       valid(object(gov) && Object.keys(gov).every(function (key) { return Object.hasOwn(GOVERNOR_PREFS, key); }));
@@ -167,6 +175,7 @@
       if (order.tiers !== undefined) valid(object(order.tiers) && Object.keys(order.tiers).every(function (key) { return id(key) && [0, 1, 2, 3].includes(order.tiers[key]); }));
       if (order.order !== undefined) valid(Array.isArray(order.order) && order.order.length <= 50 && order.order.every(id) && new Set(order.order).size === order.order.length);
     }
+    if (value.preferences.priority !== undefined) valid(object(value.preferences.priority) && Object.keys(value.preferences.priority).every(function (key) { return key === 'role'; }) && PRIORITY_ROLES.includes(value.preferences.priority.role));
     var prefs = value.preferences.heroGear;
     if (prefs.included !== undefined) valid(object(prefs.included) && ['inf', 'cav', 'arc'].every(function (key) { return typeof prefs.included[key] === 'boolean'; }));
     if (prefs.weights !== undefined) valid(object(prefs.weights) && ['inf', 'cav', 'arc'].every(function (key) { return Array.isArray(prefs.weights[key]) && prefs.weights[key].length === 2 && prefs.weights[key].every(function (n) { return Number.isFinite(n) && n >= 0 && n <= 100; }); }));
@@ -209,6 +218,41 @@
       stored = encoded;
       return current = next;
     }
+    function readHistory() {
+      try {
+        var raw = storage.getItem(HISTORY), value = raw === null ? null : JSON.parse(raw);
+        return value && value.schemaVersion === 1 && Array.isArray(value.entries) ? value : { schemaVersion: 1, entries: [] };
+      } catch (cause) { return { schemaVersion: 1, entries: [] }; }
+    }
+    function fold(entries, now) {
+      var cutoff = now - FULL_DAYS * 864e5, out = [], days = {};
+      entries.forEach(function (entry) {
+        if (Date.parse(entry.at) >= cutoff) { out.push(entry); return; }
+        var key = entry.id + '|' + entry.at.slice(0, 10), kept = days[key];
+        if (kept) { kept.after = entry.after; kept.at = entry.at; kept.source = entry.source; }
+        else { days[key] = Object.assign({}, entry); out.push(days[key]); }
+      });
+      out.sort(function (a, b) { return a.at < b.at ? -1 : a.at > b.at ? 1 : 0; });
+      return out.slice(-MAX_ENTRIES);
+    }
+    function record(before, after) {
+      var changes = [];
+      Object.keys(after.inventory).forEach(function (key) {
+        var next = after.inventory[key], last = before.inventory[key];
+        if (next.status !== 'confirmed') return;
+        var was = last && last.status === 'confirmed' ? last.amount : null;
+        if (was === next.amount) return;
+        changes.push({ at: after.updatedAt, id: key, before: was, after: next.amount, source: next.provenance ? next.provenance.source : null });
+      });
+      if (!changes.length) return;
+      try {
+        var log = readHistory();
+        log.entries = fold(log.entries.concat(changes), Date.parse(after.updatedAt));
+        storage.setItem(HISTORY, JSON.stringify(log));
+      } catch (cause) { /* the save itself already succeeded */ }
+    }
+    // Recorded balance changes, oldest first; `key` limits them to one inventory id.
+    function history(key) { return readHistory().entries.filter(function (entry) { return key === undefined || entry.id === key; }).map(copy); }
     function notify() {
       listeners.slice().forEach(function (listener) { listener(copy(current)); });
       if (events && events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:change', { detail: copy(current) }));
@@ -224,6 +268,7 @@
       storage.setItem(KEY, encoded);
       stored = encoded;
       current = next;
+      record(latest, next);
       notify();
       return copy(next);
     }
@@ -394,6 +439,12 @@
         next.preferences.buildings = current;
       });
     }
+    // The account's part in its alliance, which the upgrade priority page orders by; null forgets it.
+    function priority() { var saved = snapshot().preferences.priority; return { role: saved ? saved.role : null }; }
+    function setPriorityRole(role) {
+      valid(role === null || PRIORITY_ROLES.includes(role));
+      return transaction(function (next) { if (role === null) delete next.preferences.priority; else next.preferences.priority = { role: role }; });
+    }
     function kingdom() {
       return copy(snapshot().preferences.kingdom || { position: null, generation: null, truegold: null, warAcademy: null });
     }
@@ -531,7 +582,7 @@
     if (events && events.addEventListener) events.addEventListener('storage', function (event) {
       if ((event.key === KEY || event.key === null) && (!event.storageArea || event.storageArea === storage)) { try { current = read(); notify(); } catch (error) { if (events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:error', { detail: error.message })); } }
     });
-    return { kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, masters: masters, setMaster: setMaster, pets: pets, setPet: setPet, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, training: training, setTraining: setTraining, setTrainingPlan: setTrainingPlan, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, applyImport: applyImport, importJSON: importJSON, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
+    return { kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, masters: masters, setMaster: setMaster, pets: pets, setPet: setPet, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, priority: priority, setPriorityRole: setPriorityRole, training: training, setTraining: setTraining, setTrainingPlan: setTrainingPlan, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, applyImport: applyImport, importJSON: importJSON, history: history, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
   }
   return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), TRAINING: TRAINING.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), MASTER: copy(MASTER), PET: copy(PET), troopId: troopId, masterEmblemId: masterEmblemId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, IMPORT_SOURCES: IMPORT_SOURCES.slice(), empty: empty, validate: validate, create: create };
 });

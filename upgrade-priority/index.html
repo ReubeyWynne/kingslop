@@ -1,0 +1,84 @@
+---
+layout: page
+self: priority
+---
+<nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
+  <a href="#where" data-i18n="priority.where">Where you stand</a>
+  <a href="#next" data-i18n="priority.next">Do these next</a>
+  <a href="#order" data-i18n="priority.order">The order, system by system</a>
+  <a href="#timing" data-i18n="priority.timing">Spend it when it scores</a>
+  <a href="#priority-sources" data-i18n="directory.sources">Sources &amp; confidence</a>
+</nav>
+<main data-module="upgrade-priority">
+  <section class="section hero" id="top">
+    <h1 data-i18n="priority.title">Upgrade priority</h1>
+    <p class="lede" data-i18n="priority.intro">What to upgrade next, worked out from your own save: your Town Centre sets the stage, your part in the alliance sets the order, and every step names the fact behind it.</p>
+    <p class="note" data-i18n="priority.approximate">Community guides agree on the big order and disagree on the details. Where they disagree, this page says so and follows the one that fits your role.</p>
+  </section>
+
+  <section class="section" id="where">
+    <h2 data-i18n="priority.where">Where you stand</h2>
+    <p class="priority-status" data-target="upgrade-priority.status" aria-live="polite" data-i18n="priority.tcUnknown">Record your Town Centre level and the list below fills in from your save.</p>
+    <ol class="priority-stages">
+      {% for stage in site.data.upgrade_priority.stages %}
+      <li class="priority-stage" id="stage-{{ stage.id }}" data-stage="{{ stage.id }}" data-target="upgrade-priority.stage">
+        <button type="button" data-action="upgrade-priority.preview" data-stage="{{ stage.id }}" aria-pressed="false" disabled><b data-i18n="priority.stage.{{ stage.id }}">{{ stage.id }}</b> <small>{% unless stage.from contains "TG" %}TC {% endunless %}{{ stage.from }} – {{ stage.to }}</small></button>
+        <p data-i18n="priority.stageNote.{{ stage.id }}"></p>
+      </li>
+      {% endfor %}
+    </ol>
+    <fieldset class="priority-roles">
+      <legend data-i18n="priority.roleLegend">Your part in the alliance</legend>
+      {% for role in site.data.upgrade_priority.roles %}
+      <button type="button" data-action="upgrade-priority.role" data-role="{{ role }}" data-target="upgrade-priority.role" aria-pressed="false" disabled><b data-i18n="priority.role.{{ role }}">{{ role }}</b> <small data-i18n="priority.roleNote.{{ role }}"></small></button>
+      {% endfor %}
+    </fieldset>
+    <p class="note" data-target="upgrade-priority.saved" role="status"></p>
+    <noscript><p data-i18n="priority.noJS">Enable JavaScript to read your save. The order below still applies.</p></noscript>
+  </section>
+
+  <section class="section" id="next">
+    <h2 data-i18n="priority.next">Do these next</h2>
+    <p data-i18n="priority.nextIntro">Ranked for your stage and role. Each step comes from your save; blank facts are asked for, never guessed.</p>
+    <ol class="rule-list priority-list" data-target="upgrade-priority.list"></ol>
+    <details class="priority-more" id="next-more" data-target="upgrade-priority.more" hidden>
+      <summary data-target="upgrade-priority.moreLabel" data-i18n="priority.more">More steps</summary>
+      <ol class="rule-list priority-list" data-target="upgrade-priority.rest"></ol>
+    </details>
+    <template data-target="upgrade-priority.item">
+      <li class="priority-step"><span class="rule-num" aria-hidden="true"></span><div><h3 data-part="title"></h3><p data-part="why"></p><p class="priority-scores" data-part="scores" hidden data-i18n="priority.scores">Scores in KvK prep and Strongest Governor.</p><a data-part="link"></a></div></li>
+    </template>
+  </section>
+
+  <section class="section" id="order">
+    <h2 data-i18n="priority.order">The order, system by system</h2>
+    <p data-i18n="priority.orderIntro">The rules behind the list. Steps for a later stage or another role are dimmed.</p>
+    {% for ladder in site.data.upgrade_priority.ladders %}
+    <details class="priority-ladder" id="order-{{ ladder.id }}" data-target="upgrade-priority.ladder" data-ladder="{{ ladder.id }}" data-stage="{{ ladder.stage }}"{% if forloop.first %} open{% endif %}>
+      <summary data-i18n="{{ ladder.titleKey }}">{{ ladder.id }}</summary>
+      <ol class="priority-rungs">
+        {% for rung in ladder.rungs %}
+        <li data-stage="{{ rung.stage }}" data-role="{{ rung.role }}"><span data-i18n="{{ rung.key }}"></span>{% if rung.stage != nil %} <small class="priority-from" data-i18n="priority.from.{{ rung.stage }}"></small>{% endif %}{% if rung.role != nil %} <small class="priority-from" data-i18n="priority.roleOnly.{{ rung.role }}"></small>{% endif %} <small class="priority-cite">{% for key in rung.sources %}{% assign source = site.data.upgrade_priority.sources[key] %}{% unless forloop.first %} · {% endunless %}<a href="{{ source.url }}" title="{{ source.label | escape }}" lang="en">{{ source.label | split: " · " | last | escape }}</a>{% endfor %}</small></li>
+        {% endfor %}
+      </ol>
+      {% if ladder.href != "" %}<a class="priority-tool" href="../{{ ladder.href }}" data-i18n="priority.openTool">Open the tool</a>{% endif %}
+    </details>
+    {% endfor %}
+  </section>
+
+  <section class="section" id="timing">
+    <h2 data-i18n="priority.timing">Spend it when it scores</h2>
+    <ol class="rule-list">
+      <li><span class="rule-num" aria-hidden="true">1</span><div><h3 data-i18n="priority.t1h">Hold what scores.</h3><p data-i18n="priority.t1p">Truegold, Tempered Truegold, hero shards and widgets, master emblems, Forgehammers, governor materials, pet Advances and speedups all score in KvK prep and Strongest Governor. Unless an upgrade is blocking your Town Centre, do it on its scoring day.</p></div></li>
+      <li><span class="rule-num" aria-hidden="true">2</span><div><h3 data-i18n="priority.t2h">Never leave a queue idle.</h3><p data-i18n="priority.t2p">Holding materials is not holding time. Keep both builders and the Academy working on steps that cost no scoring materials, and start long ones with buffs on.</p></div></li>
+      <li><span class="rule-num" aria-hidden="true">3</span><div><h3 data-i18n="priority.t3h">Count before you hold.</h3><p data-i18n="priority.t3p">The Town Centre and Event Cycle count what your bag can score on each day, so you can see whether a step is worth waiting for.</p></div></li>
+    </ol>
+    <p><a href="../events/#availability" data-i18n="priority.eventsLink">What your bag scores, day by day</a> · <a href="../town-centre/#town-points" data-i18n="town.nav">Town Centre</a></p>
+  </section>
+
+  <section class="section" id="priority-sources">
+    <h2 data-i18n="directory.sources">Sources &amp; confidence</h2>
+    <p data-i18n="priority.sourceNote">The order follows community guides, checked on 23 October 2026; the numbers behind each step (Town Centre prerequisites, governor costs, star and widget costs, pet Advances, master classes) come from the tables the other tools already use. The guides are fan sites and often disagree: research order, early Truegold on troop buildings and pet order vary most. Check a long upgrade's prerequisites in game before you start it.</p>
+    <ol class="priority-sources">{% for entry in site.data.upgrade_priority.sources %}<li><a href="{{ entry[1].url }}">{{ entry[1].label | escape }}</a></li>{% endfor %}</ol>
+  </section>
+</main>
