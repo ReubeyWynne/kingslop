@@ -1,0 +1,503 @@
+{
+  "checkedAt": "2026-10-23",
+  "note": "Stage, weight and ladder rules for /upgrade-priority/. The weights only order the page's list; they are not game numbers. Every ladder rung names the community guides it follows. See UPGRADE-PRIORITY.md.",
+  "roles": [
+    "lead",
+    "joiner",
+    "farm"
+  ],
+  "stages": [
+    {
+      "id": "foundation",
+      "from": "1",
+      "to": "14"
+    },
+    {
+      "id": "gear",
+      "from": "15",
+      "to": "21"
+    },
+    {
+      "id": "governor",
+      "from": "22",
+      "to": "29"
+    },
+    {
+      "id": "truegold",
+      "from": "30",
+      "to": "TG4-4"
+    },
+    {
+      "id": "tempered",
+      "from": "TG 5",
+      "to": "TG 10"
+    }
+  ],
+  "unlocks": {
+    "heroGear": "15",
+    "governorGear": "22",
+    "governorCharms": "25",
+    "warAcademy": "TG 1",
+    "t11": "TG 5",
+    "heroGearSource": "confirmed in game by the alliance, 24 October 2026"
+  },
+  "weights": {
+    "tc-next": {
+      "foundation": 100,
+      "gear": 100,
+      "governor": 100,
+      "truegold": 92,
+      "tempered": 88
+    },
+    "tc-blocker": {
+      "foundation": 98,
+      "gear": 98,
+      "governor": 98,
+      "truegold": 95,
+      "tempered": 92
+    },
+    "research": {
+      "foundation": 85,
+      "gear": 80,
+      "governor": 78,
+      "truegold": 70,
+      "tempered": 66
+    },
+    "troop-lag": {
+      "foundation": 0,
+      "gear": 0,
+      "governor": 0,
+      "truegold": 88,
+      "tempered": 86
+    },
+    "war-academy": {
+      "foundation": 0,
+      "gear": 0,
+      "governor": 0,
+      "truegold": 74,
+      "tempered": 86
+    },
+    "command-center": {
+      "foundation": 0,
+      "gear": 0,
+      "governor": 0,
+      "truegold": 60,
+      "tempered": 64
+    },
+    "hero-stars": {
+      "foundation": 70,
+      "gear": 76,
+      "governor": 80,
+      "truegold": 80,
+      "tempered": 82
+    },
+    "hero-widget": {
+      "foundation": 0,
+      "gear": 60,
+      "governor": 66,
+      "truegold": 68,
+      "tempered": 70
+    },
+    "gear-spend": {
+      "foundation": 0,
+      "gear": 66,
+      "governor": 64,
+      "truegold": 66,
+      "tempered": 68
+    },
+    "governor-gear": {
+      "foundation": 0,
+      "gear": 0,
+      "governor": 74,
+      "truegold": 76,
+      "tempered": 78
+    },
+    "governor-charms": {
+      "foundation": 0,
+      "gear": 0,
+      "governor": 72,
+      "truegold": 75,
+      "tempered": 77
+    },
+    "pet-advance": {
+      "foundation": 50,
+      "gear": 56,
+      "governor": 62,
+      "truegold": 66,
+      "tempered": 70
+    },
+    "pet-focus": {
+      "foundation": 40,
+      "gear": 46,
+      "governor": 54,
+      "truegold": 58,
+      "tempered": 60
+    },
+    "master-class": {
+      "foundation": 0,
+      "gear": 0,
+      "governor": 60,
+      "truegold": 64,
+      "tempered": 66
+    },
+    "master-skills": {
+      "foundation": 0,
+      "gear": 0,
+      "governor": 52,
+      "truegold": 56,
+      "tempered": 58
+    },
+    "record": {
+      "foundation": 30,
+      "gear": 30,
+      "governor": 30,
+      "truegold": 30,
+      "tempered": 30
+    },
+    "gear-next": {
+      "foundation": 0,
+      "gear": 72,
+      "governor": 70,
+      "truegold": 72,
+      "tempered": 74
+    }
+  },
+  "roleWeights": {
+    "lead": {
+      "command-center": 1.25,
+      "hero-widget": 1.15,
+      "governor-gear": 1.05,
+      "war-academy": 1.05
+    },
+    "joiner": {
+      "command-center": 0,
+      "hero-widget": 0.8
+    },
+    "farm": {
+      "command-center": 0,
+      "troop-lag": 0,
+      "war-academy": 0,
+      "hero-widget": 0,
+      "gear-spend": 0.6,
+      "governor-gear": 0.5,
+      "governor-charms": 0.5,
+      "master-class": 0.6,
+      "master-skills": 0.6,
+      "gear-next": 0.5
+    }
+  },
+  "lagSteps": 5,
+  "petFocus": {
+    "lead": [
+      "mighty-bison",
+      "giant-rhino",
+      "grizzly-bear",
+      "moose"
+    ],
+    "joiner": [
+      "lion",
+      "moose",
+      "grizzly-bear",
+      "gray-wolf"
+    ],
+    "farm": [
+      "lion",
+      "moose",
+      "gray-wolf",
+      "bison"
+    ]
+  },
+  "research": {
+    "foundation": "growth",
+    "gear": "queues",
+    "governor": "battle",
+    "truegold": "warAcademy",
+    "tempered": "t11"
+  },
+  "ladders": [
+    {
+      "id": "buildings",
+      "titleKey": "priority.sys.buildings",
+      "href": "town-centre/#town-buildings",
+      "rungs": [
+        {
+          "key": "priority.l.b1",
+          "sources": [
+            "mastery-buildings",
+            "mastery-complete"
+          ]
+        },
+        {
+          "key": "priority.l.b2",
+          "sources": [
+            "mastery-buildings",
+            "buildings-data"
+          ]
+        },
+        {
+          "key": "priority.l.b3",
+          "stage": "truegold",
+          "sources": [
+            "mastery-truegold"
+          ]
+        },
+        {
+          "key": "priority.l.b4",
+          "sources": [
+            "mastery-truegold",
+            "mastery-buildings"
+          ]
+        },
+        {
+          "key": "priority.l.b5",
+          "sources": [
+            "mastery-buildings"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "research",
+      "titleKey": "priority.sys.research",
+      "href": "",
+      "rungs": [
+        {
+          "key": "priority.l.r1",
+          "sources": [
+            "wiki-research",
+            "mastery-research",
+            "optimizer-research"
+          ]
+        },
+        {
+          "key": "priority.l.r2",
+          "sources": [
+            "wiki-research",
+            "guides-research"
+          ]
+        },
+        {
+          "key": "priority.l.r3",
+          "stage": "governor",
+          "sources": [
+            "wiki-research",
+            "mastery-complete"
+          ]
+        },
+        {
+          "key": "priority.l.r4",
+          "stage": "truegold",
+          "sources": [
+            "mastery-truegold",
+            "war-academy-data"
+          ]
+        },
+        {
+          "key": "priority.l.r5",
+          "role": "farm",
+          "sources": [
+            "wiki-research",
+            "guide-farm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "heroes",
+      "titleKey": "priority.sys.heroes",
+      "href": "town-centre/#town-heroes",
+      "rungs": [
+        {
+          "key": "priority.l.h1",
+          "sources": [
+            "mastery-complete"
+          ]
+        },
+        {
+          "key": "priority.l.h2",
+          "sources": [
+            "mastery-complete",
+            "hero-roles"
+          ]
+        },
+        {
+          "key": "priority.l.h3",
+          "sources": [
+            "optimizer-gear",
+            "guide-grow"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gear",
+      "titleKey": "priority.sys.gear",
+      "href": "hero-gear/",
+      "stage": "gear",
+      "rungs": [
+        {
+          "key": "priority.l.g1",
+          "sources": [
+            "guide-grow",
+            "lootbar-gear",
+            "mastery-gear"
+          ]
+        },
+        {
+          "key": "priority.l.g2",
+          "sources": [
+            "mastery-gear"
+          ]
+        },
+        {
+          "key": "priority.l.g3",
+          "sources": [
+            "guide-grow",
+            "mastery-complete"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "governor",
+      "titleKey": "priority.sys.governor",
+      "href": "governor-gear/",
+      "stage": "governor",
+      "rungs": [
+        {
+          "key": "priority.l.v1",
+          "sources": [
+            "guide-governor",
+            "governor-data"
+          ]
+        },
+        {
+          "key": "priority.l.v2",
+          "sources": [
+            "guide-governor",
+            "governor-data"
+          ]
+        },
+        {
+          "key": "priority.l.v3",
+          "sources": [
+            "mastery-charms"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pets",
+      "titleKey": "priority.sys.pets",
+      "href": "pets/#cage",
+      "rungs": [
+        {
+          "key": "priority.l.p1",
+          "sources": [
+            "guide-pets",
+            "guides-pets"
+          ]
+        },
+        {
+          "key": "priority.l.p2",
+          "sources": [
+            "guide-pets"
+          ]
+        },
+        {
+          "key": "priority.l.p3",
+          "sources": [
+            "pets-data",
+            "guides-pets"
+          ]
+        }
+      ]
+    }
+  ],
+  "sources": {
+    "mastery-buildings": {
+      "label": "Kingshot Mastery · Building priority guide",
+      "url": "https://kingshotmastery.com/guides/building-priority-guide"
+    },
+    "mastery-complete": {
+      "label": "Kingshot Mastery · Complete guide",
+      "url": "https://kingshotmastery.com/guides/kingshot-complete-guide"
+    },
+    "mastery-truegold": {
+      "label": "Kingshot Mastery · Truegold guide",
+      "url": "https://kingshotmastery.com/guides/kingshot-truegold-guide"
+    },
+    "mastery-research": {
+      "label": "Kingshot Mastery · Academy research guide",
+      "url": "https://kingshotmastery.com/guides/kingshot-academy-research-guide"
+    },
+    "mastery-gear": {
+      "label": "Kingshot Mastery · Gear guide",
+      "url": "https://kingshotmastery.com/guides/kingshot-gear-guide"
+    },
+    "mastery-charms": {
+      "label": "Kingshot Mastery · Governor charms guide",
+      "url": "https://kingshotmastery.com/guides/kingshot-governor-charms-guide"
+    },
+    "wiki-research": {
+      "label": "kingshot.net · Research priority",
+      "url": "https://kingshot.net/wiki/research/research-priority"
+    },
+    "optimizer-research": {
+      "label": "Kingshot Optimizer · Research calculator",
+      "url": "https://kingshotoptimizer.com/calculators/research/"
+    },
+    "optimizer-gear": {
+      "label": "Kingshot Optimizer · Hero gear basics",
+      "url": "https://kingshotoptimizer.com/hero-gear/basics/"
+    },
+    "guides-research": {
+      "label": "Kingshot Guides · Research strategy",
+      "url": "https://kingshotguides.com/guide/kingshot-research-strategy-what-to-focus-on-in-the-academy/"
+    },
+    "guide-farm": {
+      "label": "Kingshot Guide · Farm account guide",
+      "url": "https://kingshotguide.org/guide/kingshot-farm-account-guide"
+    },
+    "guide-grow": {
+      "label": "Kingshot Guide · Grow your heroes (gear)",
+      "url": "https://www.kingshotguide.org/guide/kingshot-grow-your-heroes"
+    },
+    "lootbar-gear": {
+      "label": "LootBar · Hero gear priorities",
+      "url": "https://lootbar.gg/blog/en/kingshot-hero-gear-guide-best-upgrade-priorities-and-tips.html"
+    },
+    "guide-governor": {
+      "label": "Kingshot Guide · Governor gear priority",
+      "url": "https://kingshotguide.com/guides/governor-gear-upgrade-priority-guide"
+    },
+    "guide-pets": {
+      "label": "Kingshot Guide · Pet upgrade order",
+      "url": "https://kingshotguide.com/guides/kingshot-pet-upgrade-order-guide"
+    },
+    "guides-pets": {
+      "label": "Kingshot Guides · Pet priority and refinement",
+      "url": "https://kingshotguides.com/guide/pets-in-kingshot-priority-refinement-guide/"
+    },
+    "buildings-data": {
+      "label": "dey.ci · Building data (two sources agree)",
+      "url": "../town-centre/#town-buildings"
+    },
+    "war-academy-data": {
+      "label": "dey.ci · War Academy research tables",
+      "url": "https://github.com/ReubeyWynne/kingslop/blob/main/UPGRADE-PRIORITY.md#war-academy"
+    },
+    "governor-data": {
+      "label": "dey.ci · Governor gear tables",
+      "url": "../governor-gear/#governor-sources"
+    },
+    "pets-data": {
+      "label": "dey.ci · Pet Advances",
+      "url": "../pets/#advances"
+    },
+    "hero-roles": {
+      "label": "dey.ci · Hero roles",
+      "url": "../heroes/#roles"
+    }
+  }
+}

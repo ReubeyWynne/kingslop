@@ -235,6 +235,17 @@ buildingStore.setBuildingPriorities({ tiers: { range: 1 } });
 assert.deepEqual(buildingStore.snapshot().preferences.buildings, { tiers: { infirmary: 0, 'command-center': 2, range: 1 }, order: ['range', 'barracks', 'stable'] });
 assert.throws(() => buildingStore.setBuildingPriorities({ tiers: { range: 4 } }));
 assert.throws(() => buildingStore.setBuildingPriorities({ order: ['range', 'range'] }));
+// The upgrade priority page's role travels with the save; null forgets it.
+assert.deepEqual(buildingStore.priority(), { role: null });
+buildingStore.setPriorityRole('lead');
+assert.deepEqual(buildingStore.priority(), { role: 'lead' });
+assert.throws(() => buildingStore.setPriorityRole('whale'));
+for (const bad of [{ role: 'whale' }, { role: 'lead', extra: 1 }, 'lead']) {
+  const data = JSON.parse(buildingStore.exportJSON()); data.preferences.priority = bad; assert.throws(() => Ledger.validate(data));
+}
+buildingStore.setPriorityRole(null);
+assert.equal(buildingStore.snapshot().preferences.priority, undefined);
+buildingStore.setPriorityRole('joiner');
 const buildingBefore2 = buildingStore.exportJSON();
 const buildingCopy = Ledger.create(storage());
 buildingCopy.importJSON(buildingBefore2, E);
@@ -283,4 +294,26 @@ assert.deepEqual(bag.pets().roster, { lion: { level: 70, advanced: true }, lynx:
 assert.deepEqual({ source: bag.pets().provenance.bison.source, importId: bag.pets().provenance.bison.importId }, { source: 'screenshot', importId: petRecord.id });
 assert.throws(() => bag.applyImport(Object.assign({}, petRecord, { contentHash: 'b'.repeat(64), id: 'pets-b', petDelta: { lion: { before: 70, after: 101 } } })));
 assert.equal(Ledger.validate(JSON.parse(bagDisk.getItem(Ledger.KEY))).imports.length, 2, 'a pet record survives validation on reload');
-console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, backpack and pet imports, undo, revision, combat stat, troop, hero roster, building level and training checks passed.');
+// Inventory history: confirmed balance changes are recorded beside the save, unknowns are not.
+const historyDisk = storage(), historyStore = Ledger.create(historyDisk);
+historyStore.setBalance('truegold', 120);
+historyStore.setBalance('truegold', 120);
+historyStore.setBalance('truegold', 95, 'screenshot');
+historyStore.setBalance('truegold', null);
+historyStore.setBalance('truegold', 140);
+historyStore.setBuilding('town-center', 'TG 3');
+assert.deepEqual(historyStore.history('truegold').map(e => [e.before, e.after, e.source]), [[null, 120, 'manual'], [120, 95, 'screenshot'], [null, 140, 'manual']]);
+assert.equal(historyStore.history().length, 3, 'only inventory changes are recorded');
+// Old entries fold into one reading per item per day; a broken history never blocks a save.
+const old = { schemaVersion: 1, entries: [
+  { at: '2026-01-02T01:00:00.000Z', id: 'forgehammer', before: 10, after: 40, source: 'manual' },
+  { at: '2026-01-02T05:00:00.000Z', id: 'forgehammer', before: 40, after: 70, source: 'screenshot' },
+  { at: '2026-01-03T05:00:00.000Z', id: 'forgehammer', before: 70, after: 20, source: 'manual' }] };
+historyDisk.setItem('bh:player-history:v1', JSON.stringify(old));
+historyStore.setBalance('forgehammer', 25);
+assert.deepEqual(historyStore.history('forgehammer').map(e => [e.at.slice(0, 10), e.before, e.after]), [['2026-01-02', 10, 70], ['2026-01-03', 70, 20], [new Date().toISOString().slice(0, 10), null, 25]]);
+historyDisk.setItem('bh:player-history:v1', '{not json');
+historyStore.setBalance('forgehammer', 30);
+assert.equal(historyStore.balance('forgehammer').amount, 30);
+assert.deepEqual(historyStore.history('forgehammer').map(e => [e.before, e.after]), [[25, 30]]);
+console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, backpack and pet imports, undo, revision, combat stat, troop, hero roster, building level, training and inventory history checks passed.');

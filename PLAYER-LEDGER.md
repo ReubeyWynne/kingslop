@@ -68,6 +68,13 @@ store.setTrainingBuff(true);
 store.setTrainingPlan('position', 'advisor'); // null or false turns a plan off
 ```
 
+`preferences.priority` holds the Upgrade priority page's choice: `role` is `lead`, `joiner` or `farm`, and the key is absent until a player picks one (the page then assumes a joiner). See [UPGRADE-PRIORITY.md](UPGRADE-PRIORITY.md).
+
+```js
+store.priority(); // { role: 'lead' } or { role: null }
+store.setPriorityRole('farm'); // null forgets it; anything else is rejected
+```
+
 `preferences.heroGear` holds only optimisation/UI choices. Resource bags and piece lists are derived from the ledger, not duplicated in preferences. A write touches changed facts and explicitly edited fields, preserving unrelated inventory and provenance. `source` distinguishes manual, legacy, screenshot, plan, reset and file edits.
 
 ## Kingdom context
@@ -96,6 +103,12 @@ The first store read migrates a valid `bh:hero-gear:v1` save, even when a differ
 `exportJSON()` exports the whole player ledger. The existing export button downloads `kingshot-player.json`. `importJSON(data, engine, expectedRevision)` validates a unified save before replacing it; it also accepts the old hero-gear format and updates only hero equipment, its resources and preferences. File import supports undo. Hero gear reset affects that tool's equipment, resources and preferences while retaining other inventory and import history.
 
 Screenshot review remains explicit. SHA-256 hashes of the original uploaded files identify confirmed imports. Records contain source type, timestamp, confirmation state and equipment before/after deltas, including review corrections. Duplicate confirmed files cannot be applied again; unread fields retain previous values. Undo restores the prior ledger, including history, allowing the file to be reviewed again. Records have `sourceType` `hero-gear` (equipment `itemDelta`) `backpack` (inventory `inventoryDelta`, `{ id: { before, after } }`) or `pets` (levels `petDelta`, same shape; a level marks the pet tamed and keeps its Advance only when the level is unchanged). `applyImport(record, expectedRevision)` writes a reviewed record's inventory, pet levels and equipment with `screenshot` provenance and its `importId`, and refuses a content hash already in the history. Every record comes from the shared import panel; its adapters are described in [SCREENSHOT-IMPORT.md](SCREENSHOT-IMPORT.md). Battle reports are the exception: they fill the simulator's sheet and leave no record.
+
+## Inventory history
+
+Every committed write also appends confirmed inventory changes to a separate key, `bh:player-history:v1` (`{ schemaVersion: 1, entries }`). An entry is `{ at, id, before, after, source }`: the save's `updatedAt`, the inventory id, the confirmed amount before (`null` when it was unknown) and after, and the write's provenance source. Becoming unknown is not recorded, and nothing outside `inventory` is. Entries from the last 28 days are kept whole; older ones fold to the first and last change per id per UTC day, and the log keeps at most 8,000 entries. The history is written after the save and inside its own `try`, so a full or failing storage never blocks a save, and an unreadable history starts again empty. `history(id)` returns the entries, oldest first, optionally for one id.
+
+Nothing reads it yet and it is not part of `exportJSON()`. It is the base for savings rates, projections to the next KvK prep and goal shortfalls.
 
 ## Validation
 

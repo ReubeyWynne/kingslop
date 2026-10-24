@@ -1,0 +1,41 @@
+/* Upgrade priority: the stage rail, the role choice, the ranked steps and the ladders. */
+html[data-page="priority"] {
+  --void: #120d17;
+  --void-2: #1b1421;
+  --amber: #dd8fd6;
+  --amber-dim: #ae6aa8;
+  --signal-line: rgba(221, 143, 214, 0.35);
+  --signal-tint: rgba(221, 143, 214, 0.07);
+}
+.priority-status { color: var(--ink); }
+.priority-stages { list-style: none; padding: 0; margin-block: var(--space-m); display: grid; gap: 0; }
+.priority-stage { position: relative; border-inline-start: 1px solid var(--ink-muted); padding: 0 0 var(--space-s) var(--space-m); }
+.priority-stage::before { content: ''; position: absolute; inset-inline-start: -5px; top: 0.9rem; width: 9px; height: 9px; background: var(--void); border: 1px solid var(--ink-muted); }
+.priority-stage[data-state="current"] { border-inline-start: 3px solid var(--amber); }
+.priority-stage[data-state="current"]::before, .priority-stage[data-state="preview"]::before { background: var(--amber); border-color: var(--amber); }
+.priority-stage p { margin: 0; color: var(--ink-dim); font-size: var(--step--1); }
+.priority-stage button, .priority-roles button { min-height: 44px; padding: 0.4rem 0; border: 0; border-bottom: 1px solid transparent; background: none; color: var(--ink); font: inherit; text-align: start; cursor: pointer; }
+.priority-stage button small, .priority-roles button small { color: var(--ink-muted); font-size: var(--step--1); }
+.priority-stage button[aria-pressed="true"] b, .priority-roles button[aria-pressed="true"] b { color: var(--amber); }
+.priority-stage button:hover, .priority-stage button:focus-visible, .priority-roles button:hover, .priority-roles button:focus-visible { border-bottom-color: var(--amber-dim); outline: none; }
+.priority-stage button:disabled, .priority-roles button:disabled { cursor: default; }
+.priority-roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: 0 var(--space-m); border: 0; padding: 0; margin: var(--space-m) 0 0; }
+.priority-roles legend { margin-block-end: 0.4rem; font-weight: bold; }
+.priority-roles button { display: grid; gap: 0.1rem; border-top: 1px solid var(--ink-muted); }
+.priority-roles button[aria-pressed="true"] { border-top: 3px solid var(--amber); }
+.priority-roles button[aria-pressed="true"][data-default="true"] { border-top-style: dashed; }
+.priority-list { padding: 0; }
+.priority-list li > div { min-width: 0; }
+.priority-step a { display: inline-block; min-height: 44px; padding-block: 0.6rem; color: var(--amber); }
+.priority-scores { margin-block: 0.4rem 0; color: var(--amber-dim) !important; font-style: italic; }
+.priority-step[data-kind="record"] .rule-num, .priority-step[data-kind="research"] .rule-num { background: none; color: var(--amber); outline: 1px solid var(--amber-dim); outline-offset: -1px; }
+.priority-more { margin-block-start: var(--space-m); }
+.priority-ladder { margin-block: var(--space-s); }
+.priority-ladder[data-later="true"] > summary { color: var(--ink-muted); }
+.priority-rungs { margin: 0.6rem 0; padding-inline-start: 1.4rem; display: grid; gap: 0.6rem; }
+.priority-rungs li[data-later="true"] { color: var(--ink-muted); }
+.priority-from { color: var(--amber-dim); font-size: var(--step--1); white-space: nowrap; }
+.priority-cite { display: block; color: var(--ink-muted); font-size: 0.8rem; }
+.priority-cite a { color: inherit; }
+.priority-tool { display: inline-block; min-height: 44px; padding-block: 0.6rem; color: var(--amber); }
+.priority-sources { padding-inline-start: 1.4rem; }

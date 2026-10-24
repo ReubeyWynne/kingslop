@@ -195,6 +195,25 @@ jobs:
               - css/masters.css
               - _includes/masters/**
               - img/masters/**
+            priority:
+              - *shared
+              - .dsh/upgrade-priority-ui-check.cjs
+              - upgrade-priority/**
+              - js/upgrade-priority*
+              - _data/upgrade_priority.json
+              - css/priority.css
+              - js/hero-spend.js
+              - js/master-*
+              - _data/masters.json
+              - js/hero-gear-engine.js
+              - js/governor-*
+              - _data/governor.json
+              - js/building-*
+              - _data/buildings.json
+              - js/hero-data.liquid
+              - _data/heroes.json
+              - js/pet-*
+              - _data/pets.json
             # The deck walks every page and fails on any script error.
             deck:
               - *shared
@@ -245,7 +264,7 @@ jobs:
           FILTERED: ${{ github.event_name == 'pull_request' }}
           CHANGES: ${{ steps.filter.outputs.changes || '[]' }}
         run: |
-          all='["interactions","heroes","masters","pets","castle","events","governor","town","deck","ascii-capture","hero-gear","import"]'
+          all='["interactions","heroes","masters","pets","castle","events","governor","town","priority","deck","ascii-capture","hero-gear","import"]'
           if [ "$FILTERED" != true ]; then
             echo "logic=true" >> "$GITHUB_OUTPUT"
             echo "ascii=true" >> "$GITHUB_OUTPUT"
@@ -321,6 +340,9 @@ jobs:
       - name: Check shared spending consistency
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/spending-consistency-check.cjs
+      - name: Check upgrade priority
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/upgrade-priority-check.cjs
       - name: Check governor equipment presentation
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/governor-view-check.cjs
@@ -429,6 +451,9 @@ jobs:
       - name: Check Town Centre UI
         if: matrix.group == 'town'
         run: node .dsh/town-centre-ui-check.cjs
+      - name: Check upgrade priority UI
+        if: matrix.group == 'priority'
+        run: node .dsh/upgrade-priority-ui-check.cjs
       - name: Check page navigation in browser
         if: matrix.group == 'deck'
         run: node .dsh/page-deck-browser-check.cjs
@@ -468,6 +493,7 @@ jobs:
             .dsh/castle-preview/
             .dsh/governor-preview/
             .dsh/town-preview/
+            .dsh/priority-preview/
             .dsh/deck-preview/
             .dsh/sim-preview/
             .dsh/ascii-preview/

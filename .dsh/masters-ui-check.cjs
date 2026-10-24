@@ -60,7 +60,7 @@ const ledger=()=>page.evaluate(()=>PlayerLedger.shared().masters());
   if(lang==='ar'){await page.setViewportSize({width:390,height:844});await page.locator('#roster').screenshot({path:path.join(output,'ar.png')});}
  }
  // Without JavaScript the roster and dossiers still read.
- const nojs=await browser.newContext({javaScriptEnabled:false});const plain=await nojs.newPage();await plain.goto(origin+'/masters/');assert.equal(await plain.locator('[data-master]').count(),masters.length);assert.equal(await plain.locator('.master-mine [data-field="owned"]').first().isDisabled(),true);await plain.locator('#master-pan summary').click();assert.equal(await plain.locator('#master-pan .master-skills').isVisible(),true);await nojs.close();
+ const nojs=await browser.newContext({javaScriptEnabled:false});const plain=await nojs.newPage();await plain.goto(origin+'/masters/');await plain.evaluate(()=>document.fonts.ready);assert.equal(await plain.locator('[data-master]').count(),masters.length);assert.equal(await plain.locator('.master-mine [data-field="owned"]').first().isDisabled(),true);await plain.locator('#master-pan summary').click();assert.equal(await plain.locator('#master-pan .master-skills').isVisible(),true);await nojs.close();
  await page.goto(origin+'/?lang=en');assert.equal(await page.locator('#tools a[href="masters/"]').count(),1);
  assert.deepEqual(errors,[]);console.log('Masters UI: roster, deep-linked dossiers, the shared save, class gates, KvK points, the Town Centre shelf and totals, static fallback and 17 languages at 5 widths pass.');
 }).catch(e=>{console.error(e);process.exitCode=1;});
