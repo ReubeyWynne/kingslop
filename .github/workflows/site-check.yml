@@ -201,6 +201,9 @@ jobs:
               - upgrade-priority/**
               - js/upgrade-priority*
               - js/upgrade-goals*
+              - js/upgrade-savings*
+              - js/event-rules.js
+              - _data/event_rules.json
               - _data/upgrade_priority.json
               - css/priority.css
               - js/hero-spend.js
@@ -347,6 +350,9 @@ jobs:
       - name: Check upgrade goals and shortfalls
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/upgrade-goals-check.cjs
+      - name: Check savings rates and projections to the next scoring event
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/upgrade-savings-check.cjs
       - name: Check governor equipment presentation
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/governor-view-check.cjs
