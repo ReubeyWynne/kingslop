@@ -530,6 +530,8 @@
       if (Object.keys(stock).length) record.inventoryDelta = stock;
       if (Object.keys(pets).length) record.petDelta = pets;
       if (Object.keys(gear).length || entry.sourceType === 'hero-gear') record.itemDelta = gearDelta(before, gear);
+      // Undo restores the save and its history, so an undone shot leaves no history behind.
+      var backup = ledger.backup ? ledger.backup() : before;
       try {
         ledger.applyImport(record, before.revision);
       } catch (err) {
@@ -538,7 +540,7 @@
         if (already) forget(entry).then(render);
         return;
       }
-      lastApply = { before: before, name: entry.name };
+      lastApply = { before: backup, name: entry.name };
       // Older shots in the dock lose the items this one just saved; their
       // values are stale now. A shot left with nothing goes too.
       var stamp = function (e) { return [e.lastModified || 0, e.added || 0]; }, mine = stamp(entry);

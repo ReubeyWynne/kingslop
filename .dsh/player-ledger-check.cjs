@@ -236,13 +236,35 @@ assert.deepEqual(buildingStore.snapshot().preferences.buildings, { tiers: { infi
 assert.throws(() => buildingStore.setBuildingPriorities({ tiers: { range: 4 } }));
 assert.throws(() => buildingStore.setBuildingPriorities({ order: ['range', 'range'] }));
 // The upgrade priority page's role travels with the save; null forgets it.
-assert.deepEqual(buildingStore.priority(), { role: null });
+assert.deepEqual(buildingStore.priority(), { role: null, goals: [] });
 buildingStore.setPriorityRole('lead');
-assert.deepEqual(buildingStore.priority(), { role: 'lead' });
+assert.deepEqual(buildingStore.priority(), { role: 'lead', goals: [] });
 assert.throws(() => buildingStore.setPriorityRole('whale'));
 for (const bad of [{ role: 'whale' }, { role: 'lead', extra: 1 }, 'lead']) {
   const data = JSON.parse(buildingStore.exportJSON()); data.preferences.priority = bad; assert.throws(() => Ledger.validate(data));
 }
+buildingStore.setPriorityRole(null);
+assert.equal(buildingStore.snapshot().preferences.priority, undefined);
+// Goals travel with the role in preferences.priority; each is absent when unset.
+const goalList = [{ kind: 'building', target: 'town-center', level: 'TG 5' }, { kind: 'hero', target: 'amadeus', level: 24 }, { kind: 'hero-gear', target: 'inf-helm', level: 140 }, { kind: 'governor-gear', target: 'arc-1', level: 40 }, { kind: 'governor-charm', target: 'cav-2-3', level: 12 }, { kind: 'pet', target: 'gray-wolf', level: 50 }, { kind: 'master', target: 'valora', level: 40 }];
+buildingStore.setPriorityGoals(goalList);
+assert.deepEqual(buildingStore.priority(), { role: null, goals: goalList });
+buildingStore.setPriorityRole('farm');
+assert.deepEqual(buildingStore.snapshot().preferences.priority, { goals: goalList, role: 'farm' }, 'setting the role keeps the goals');
+for (const bad of [
+  [{ kind: 'building', target: 'town-center', level: 'TG 11' }], [{ kind: 'building', target: 'town-center', level: '0' }], [{ kind: 'hero', target: 'amadeus', level: 31 }],
+  [{ kind: 'hero-gear', target: 'inf-ring', level: 10 }], [{ kind: 'governor-gear', target: 'arc-1', level: 59 }], [{ kind: 'governor-charm', target: 'arc-1', level: 5 }],
+  [{ kind: 'pet', target: 'gray-wolf', level: 0 }], [{ kind: 'master', target: 'valora', level: 1.5 }], [{ kind: 'research', target: 'x', level: 1 }],
+  [{ kind: 'pet', target: 'gray-wolf', level: 10, note: 'x' }], [{ kind: 'pet', target: 'gray-wolf', level: 10 }, { kind: 'pet', target: 'gray-wolf', level: 20 }],
+  Array.from({ length: 21 }, (_, i) => ({ kind: 'pet', target: 'pet-' + String.fromCharCode(97 + i), level: 10 }))
+]) {
+  assert.throws(() => buildingStore.setPriorityGoals(bad), JSON.stringify(bad[0]));
+  const data = JSON.parse(buildingStore.exportJSON()); data.preferences.priority.goals = bad; assert.throws(() => Ledger.validate(data));
+}
+{ const data = JSON.parse(buildingStore.exportJSON()); data.preferences.priority = {}; assert.throws(() => Ledger.validate(data), 'an empty section is never stored'); }
+{ const data = JSON.parse(buildingStore.exportJSON()); data.preferences.priority.goals = []; assert.throws(() => Ledger.validate(data), 'an empty goal list is never stored'); }
+buildingStore.setPriorityGoals([]);
+assert.deepEqual(buildingStore.snapshot().preferences.priority, { role: 'farm' });
 buildingStore.setPriorityRole(null);
 assert.equal(buildingStore.snapshot().preferences.priority, undefined);
 buildingStore.setPriorityRole('joiner');
@@ -316,4 +338,44 @@ historyDisk.setItem('bh:player-history:v1', '{not json');
 historyStore.setBalance('forgehammer', 30);
 assert.equal(historyStore.balance('forgehammer').amount, 30);
 assert.deepEqual(historyStore.history('forgehammer').map(e => [e.before, e.after]), [[25, 30]]);
-console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, backpack and pet imports, undo, revision, combat stat, troop, hero roster, building level, training and inventory history checks passed.');
+// The history travels with the save: export carries it, import replaces it, undo restores it.
+const file = JSON.parse(historyStore.exportJSON());
+assert.deepEqual(file.history, { schemaVersion: 1, entries: historyStore.history() });
+const moved = Ledger.create(storage());
+moved.setBalance('forgehammer', 999);
+moved.importJSON(file, E);
+assert.deepEqual(moved.history(), historyStore.history(), 'the file history replaces the local one; the import itself is not a reading');
+assert.equal(moved.snapshot().history, undefined, 'the history never lands inside the save');
+assert.equal(moved.balance('forgehammer').amount, 30);
+// A file exported before the history was included keeps the local history and records the import.
+const older = JSON.parse(historyStore.exportJSON()); delete older.history;
+const kept = Ledger.create(storage());
+kept.setBalance('forgehammer', 5);
+kept.importJSON(older, E);
+assert.deepEqual(kept.history('forgehammer').map(e => [e.before, e.after]), [[null, 5], [5, 30]]);
+// Undo through a backup restores the save and its history together.
+const undoStore = Ledger.create(storage());
+undoStore.setBalance('truegold', 10);
+const backup = undoStore.backup();
+undoStore.importJSON(file, E);
+undoStore.importJSON(backup, E);
+assert.equal(undoStore.balance('truegold').amount, 10);
+assert.deepEqual(undoStore.history().map(e => [e.id, e.before, e.after]), [['truegold', null, 10]]);
+// A malformed or future history rejects the whole file and leaves the save alone.
+const untouched = moved.exportJSON();
+for (const mutate of [
+  data => { data.history.schemaVersion = 2; },
+  data => { data.history = []; },
+  data => { data.history.entries[0].after = -1; },
+  data => { data.history.entries[0].before = '3'; },
+  data => { data.history.entries[0].at = 'yesterday'; },
+  data => { data.history.entries[0].source = 'guess'; },
+  data => { data.history.entries[0].extra = 1; },
+  data => { data.history.entries = Array.from({ length: 8001 }, () => data.history.entries[0]); }
+]) { const bad = JSON.parse(untouched); mutate(bad); assert.throws(() => moved.importJSON(bad, E)); assert.equal(moved.exportJSON(), untouched); }
+// An unreadable local history exports empty rather than blocking the export.
+const unreadDisk = storage(), unread = Ledger.create(unreadDisk);
+unread.setBalance('truegold', 1);
+unreadDisk.setItem('bh:player-history:v1', '{not json');
+assert.deepEqual(JSON.parse(unread.exportJSON()).history, { schemaVersion: 1, entries: [] });
+console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, backpack and pet imports, undo, revision, combat stat, troop, hero roster, building level, training, inventory history and history export checks passed.');

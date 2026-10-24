@@ -5,6 +5,7 @@ self: priority
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
   <a href="#where" data-i18n="priority.where">Where you stand</a>
   <a href="#next" data-i18n="priority.next">Do these next</a>
+  <a href="#goals" data-i18n="priority.goals">Your goals</a>
   <a href="#order" data-i18n="priority.order">The order, system by system</a>
   <a href="#timing" data-i18n="priority.timing">Spend it when it scores</a>
   <a href="#priority-sources" data-i18n="directory.sources">Sources &amp; confidence</a>
@@ -47,6 +48,31 @@ self: priority
     </details>
     <template data-target="upgrade-priority.item">
       <li class="priority-step"><span class="rule-num" aria-hidden="true"></span><div><h3 data-part="title"></h3><p data-part="why"></p><p class="priority-scores" data-part="scores" hidden data-i18n="priority.scores">Scores in KvK prep and Strongest Governor.</p><a data-part="link"></a></div></li>
+    </template>
+  </section>
+
+  <section class="section" id="goals" data-module="upgrade-goals">
+    <h2 data-i18n="priority.goals">Your goals</h2>
+    <p data-i18n="priority.goalsIntro">Set a level you are working towards and see what it still takes from your bag. Balances your save does not hold are asked for, never counted as zero.</p>
+    <form class="priority-goal-form" data-action="upgrade-goals.add">
+      <label><span data-i18n="priority.goal.kind">Goal</span>
+        <select name="kind" data-target="upgrade-goals.kind" data-action="upgrade-goals.kind" disabled>
+          {% for kind in site.data.upgrade_priority.goalKinds %}<option value="{{ kind }}" data-i18n="priority.goal.kind.{{ kind }}">{{ kind }}</option>{% endfor %}
+        </select>
+      </label>
+      <label><span data-i18n="priority.goal.target">Which</span><select name="target" data-target="upgrade-goals.target" data-action="upgrade-goals.target" disabled></select></label>
+      <label><span data-i18n="priority.goal.level">Up to</span><select name="level" data-target="upgrade-goals.level" disabled></select></label>
+      <button type="submit" disabled data-i18n="priority.goal.add">Add goal</button>
+    </form>
+    <p class="note" data-target="upgrade-goals.saved" role="status"></p>
+    <p class="note" data-target="upgrade-goals.full" data-i18n="priority.goal.full" hidden>That is the most goals the save keeps. Remove one to add another.</p>
+    <p data-target="upgrade-goals.empty" data-i18n="priority.goal.none">No goals yet. Pick one above and it stays with your player save.</p>
+    <ol class="priority-goals" data-target="upgrade-goals.list"></ol>
+    <template data-target="upgrade-goals.item">
+      <li class="priority-goal"><h3 data-part="title"></h3><p class="priority-goal-state" data-part="state"></p><ul class="priority-goal-lines" data-part="lines"></ul><p class="note" data-part="notes"></p><p class="priority-goal-actions"><a data-part="link"></a><button type="button" data-part="remove" data-action="upgrade-goals.remove" data-i18n="priority.goal.remove">Remove</button></p></li>
+    </template>
+    <template data-target="upgrade-goals.line">
+      <li><b data-part="item"></b> <span data-part="figures"></span><span class="priority-goal-record" data-part="record"><label hidden><span></span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-action="upgrade-goals.balance"></label></span></li>
     </template>
   </section>
 

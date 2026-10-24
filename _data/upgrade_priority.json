@@ -6,6 +6,15 @@
     "joiner",
     "farm"
   ],
+  "goalKinds": [
+    "building",
+    "hero",
+    "hero-gear",
+    "governor-gear",
+    "governor-charm",
+    "pet",
+    "master"
+  ],
   "stages": [
     {
       "id": "foundation",
