@@ -985,9 +985,13 @@
       "../js/hero-spend.js",
       "../js/master-spend.js",
       "../js/hero-gear-engine.js",
+      "../js/building-spend.js",
+      "../js/pet-plan.js",
       "../js/upgrade-priority.js",
       "../js/upgrade-priority-words.js",
-      "../js/upgrade-priority-page.js"
+      "../js/upgrade-goals.js",
+      "../js/upgrade-priority-page.js",
+      "../js/upgrade-goals-page.js"
     ],
     "footMainKey": "priority.kicker",
     "footMain": "what to raise next",

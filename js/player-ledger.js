@@ -48,6 +48,21 @@
      Mobilize on event days. Each is absent when off. */
   var TRAINING_PLANS = { buff: [true], position: ['advisor', 'minister'], highKing: [true], mobilize: [true] };
   var PRIORITY_ROLES = ['lead', 'joiner', 'farm'];
+  /* Upgrade goals the player sets: a kind, the thing it targets and the level wanted. Building
+     targets use the game's level ids; heroes the star index (6 × stars + tier); hero gear its
+     enhancement level; governor gear and charms their level index; pets their level; masters
+     their affinity. One goal per target. */
+  var GOALS = { max: 20, kinds: { building: null, hero: 30, 'hero-gear': 200, 'governor-gear': 58, 'governor-charm': 22, pet: 100, master: 100 } };
+  function goal(value) {
+    if (!(object(value) && same(Object.keys(value).sort(), ['kind', 'level', 'target']) && Object.hasOwn(GOALS.kinds, value.kind))) return false;
+    if (value.kind === 'building') return id(value.target) && buildingLevel(value.level) && value.level !== '0';
+    var target = value.kind === 'hero' ? heroKey(value.target) : value.kind === 'hero-gear' ? PIECES.includes(value.target)
+      : value.kind === 'governor-gear' ? GOVERNOR.gear.ids.includes(value.target) : value.kind === 'governor-charm' ? GOVERNOR.charms.ids.includes(value.target) : id(value.target);
+    return target && Number.isSafeInteger(value.level) && value.level >= 1 && value.level <= GOALS.kinds[value.kind];
+  }
+  function goals(list) {
+    return Array.isArray(list) && list.length <= GOALS.max && list.every(goal) && new Set(list.map(function (g) { return g.kind + '|' + g.target; })).size === list.length;
+  }
   function trainingFact(key, value) { return key === 'speed' ? percent(value) : key === 'capacity' ? count(value) && value >= 1 : Number.isSafeInteger(value) && value >= 1 && value <= 11; }
   function copy(value) { return JSON.parse(JSON.stringify(value)); }
   function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
@@ -110,6 +125,17 @@
     if (!Object.keys(pets).every(function (key) { var delta = pets[key]; return id(key) && object(delta) && (delta.before === null || petLevel(delta.before)) && petLevel(delta.after); })) return false;
     return Object.keys(gear).every(function (key) { var delta = gear[key]; return PIECES.includes(key) && object(delta) && (delta.before === null || piece(delta.before)) && piece(delta.after); }) &&
       Object.keys(stock).every(function (key) { var delta = stock[key]; return id(key) && object(delta) && (delta.before === null || count(delta.before)) && count(delta.after); });
+  }
+  /* The history section of a save file: { schemaVersion: 1, entries }, each entry as recorded.
+     Another schema version or a malformed entry rejects the whole file. */
+  function validHistory(value) {
+    valid(object(value) && value.schemaVersion === 1 && Array.isArray(value.entries) && value.entries.length <= MAX_ENTRIES);
+    value.entries.forEach(function (entry) { valid(historyEntry(entry)); });
+    return value;
+  }
+  function historyEntry(entry) {
+    return object(entry) && same(Object.keys(entry).sort(), ['after', 'at', 'before', 'id', 'source']) && timestamp(entry.at) && id(entry.id) && (entry.before === null || count(entry.before)) && count(entry.after) &&
+      (entry.source === null || ['manual', 'legacy', 'screenshot', 'plan', 'reset', 'file'].includes(entry.source));
   }
   function validate(value) {
     valid(object(value) && value.format === 'kingshot-player' && value.schemaVersion === 1 && Number.isSafeInteger(value.revision) && value.revision >= 0 && timestamp(value.updatedAt));
@@ -175,7 +201,12 @@
       if (order.tiers !== undefined) valid(object(order.tiers) && Object.keys(order.tiers).every(function (key) { return id(key) && [0, 1, 2, 3].includes(order.tiers[key]); }));
       if (order.order !== undefined) valid(Array.isArray(order.order) && order.order.length <= 50 && order.order.every(id) && new Set(order.order).size === order.order.length);
     }
-    if (value.preferences.priority !== undefined) valid(object(value.preferences.priority) && Object.keys(value.preferences.priority).every(function (key) { return key === 'role'; }) && PRIORITY_ROLES.includes(value.preferences.priority.role));
+    if (value.preferences.priority !== undefined) {
+      var priority = value.preferences.priority;
+      valid(object(priority) && Object.keys(priority).length && Object.keys(priority).every(function (key) { return key === 'role' || key === 'goals'; }));
+      if (priority.role !== undefined) valid(PRIORITY_ROLES.includes(priority.role));
+      if (priority.goals !== undefined) valid(goals(priority.goals) && priority.goals.length);
+    }
     var prefs = value.preferences.heroGear;
     if (prefs.included !== undefined) valid(object(prefs.included) && ['inf', 'cav', 'arc'].every(function (key) { return typeof prefs.included[key] === 'boolean'; }));
     if (prefs.weights !== undefined) valid(object(prefs.weights) && ['inf', 'cav', 'arc'].every(function (key) { return Array.isArray(prefs.weights[key]) && prefs.weights[key].length === 2 && prefs.weights[key].every(function (n) { return Number.isFinite(n) && n >= 0 && n <= 100; }); }));
@@ -253,12 +284,16 @@
     }
     // Recorded balance changes, oldest first; `key` limits them to one inventory id.
     function history(key) { return readHistory().entries.filter(function (entry) { return key === undefined || entry.id === key; }).map(copy); }
+    // A history carried in a save file replaces this one; it is folded and capped like a live one.
+    function writeHistory(log) {
+      try { storage.setItem(HISTORY, JSON.stringify({ schemaVersion: 1, entries: fold(log.entries.map(copy), Date.now()) })); } catch (cause) { /* the save itself already succeeded */ }
+    }
     function notify() {
       listeners.slice().forEach(function (listener) { listener(copy(current)); });
       if (events && events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:change', { detail: copy(current) }));
     }
     function snapshot() { current = read(); return copy(current); }
-    function commit(next, expected) {
+    function commit(next, expected, log) {
       var latest = read();
       if (latest.revision !== expected) throw new Error('Player ledger changed in another tool');
       next.revision = latest.revision + 1;
@@ -268,7 +303,7 @@
       storage.setItem(KEY, encoded);
       stored = encoded;
       current = next;
-      record(latest, next);
+      if (log) writeHistory(log); else record(latest, next);
       notify();
       return copy(next);
     }
@@ -440,10 +475,21 @@
       });
     }
     // The account's part in its alliance, which the upgrade priority page orders by; null forgets it.
-    function priority() { var saved = snapshot().preferences.priority; return { role: saved ? saved.role : null }; }
+    function priority() { var saved = snapshot().preferences.priority || {}; return { role: saved.role || null, goals: copy(saved.goals || []) }; }
+    // Each part of preferences.priority is absent when unset, and the section when both are.
+    function writePriority(next, key, value) {
+      var section = Object.assign({}, next.preferences.priority);
+      if (value === null) delete section[key]; else section[key] = value;
+      if (Object.keys(section).length) next.preferences.priority = section; else delete next.preferences.priority;
+    }
     function setPriorityRole(role) {
       valid(role === null || PRIORITY_ROLES.includes(role));
-      return transaction(function (next) { if (role === null) delete next.preferences.priority; else next.preferences.priority = { role: role }; });
+      return transaction(function (next) { writePriority(next, 'role', role); });
+    }
+    // The whole goal list, in the player's order; an empty list forgets it.
+    function setPriorityGoals(list, expected) {
+      valid(goals(list));
+      return transaction(function (next) { writePriority(next, 'goals', list.length ? copy(list) : null); }, expected);
     }
     function kingdom() {
       return copy(snapshot().preferences.kingdom || { position: null, generation: null, truegold: null, warAcademy: null });
@@ -570,19 +616,26 @@
       }, expected);
     }
     function migrate() { return snapshot(); }
+    // The whole save with its inventory history, as exported; importJSON restores both, so undo can too.
+    function backup() { var out = snapshot(); out.history = { schemaVersion: 1, entries: readHistory().entries.filter(historyEntry) }; return out; }
     function importJSON(input, engine, expected) {
       var data = typeof input === 'string' ? JSON.parse(input) : input;
       if (data && data.format === 'kingshot-player') {
-        var next = validate(data), old = snapshot();
+        // The file's history travels beside the save, never inside it. Files exported before it
+        // was included have none: the local history is kept and the import recorded as a change.
+        var save = Object.assign({}, data), log = save.history;
+        delete save.history;
+        if (log !== undefined) validHistory(log);
+        var next = validate(save), old = snapshot();
         if (expected !== undefined && expected !== old.revision) throw new Error('Player ledger changed in another tool');
-        return commit(next, old.revision);
+        return commit(next, old.revision, log);
       }
       return writeHeroGear(legacy(data, engine), engine, { all: true, source: 'file', expectedRevision: expected });
     }
     if (events && events.addEventListener) events.addEventListener('storage', function (event) {
       if ((event.key === KEY || event.key === null) && (!event.storageArea || event.storageArea === storage)) { try { current = read(); notify(); } catch (error) { if (events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:error', { detail: error.message })); } }
     });
-    return { kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, masters: masters, setMaster: setMaster, pets: pets, setPet: setPet, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, priority: priority, setPriorityRole: setPriorityRole, training: training, setTraining: setTraining, setTrainingPlan: setTrainingPlan, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, applyImport: applyImport, importJSON: importJSON, history: history, exportJSON: function () { return JSON.stringify(snapshot(), null, 2); } };
+    return { kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, masters: masters, setMaster: setMaster, pets: pets, setPet: setPet, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, priority: priority, setPriorityRole: setPriorityRole, setPriorityGoals: setPriorityGoals, training: training, setTraining: setTraining, setTrainingPlan: setTrainingPlan, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, applyImport: applyImport, importJSON: importJSON, history: history, backup: backup, exportJSON: function () { return JSON.stringify(backup(), null, 2); } };
   }
-  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), TRAINING: TRAINING.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), MASTER: copy(MASTER), PET: copy(PET), troopId: troopId, masterEmblemId: masterEmblemId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, IMPORT_SOURCES: IMPORT_SOURCES.slice(), empty: empty, validate: validate, create: create };
+  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), TRAINING: TRAINING.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), MASTER: copy(MASTER), PET: copy(PET), troopId: troopId, masterEmblemId: masterEmblemId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, IMPORT_SOURCES: IMPORT_SOURCES.slice(), empty: empty, validate: validate, validHistory: validHistory, HISTORY_KEY: HISTORY, GOALS: copy(GOALS), goal: goal, create: create };
 });
