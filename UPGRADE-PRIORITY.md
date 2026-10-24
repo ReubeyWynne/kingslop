@@ -8,6 +8,7 @@
 | --- | --- |
 | `_data/upgrade_priority.json` | Stages, unlock levels, list weights, role multipliers, pet focus per role, research focus per stage, the system-by-system ladders and their sources |
 | `js/upgrade-priority.js` | Pure engine (UMD, requireable in Node): `evaluate(snapshot, { stage })` returns the stage, the saved role and the ranked actions |
+| `js/upgrade-priority-words.js` | `UpgradePriorityWords(api)`: a step's title and reason, shared by the page and the next-step lines |
 | `js/upgrade-priority-page.js` | The `upgrade-priority` interaction module: paints the list, the stage rail, role buttons and dims ladder rungs for a later stage or another role |
 | `js/upgrade-priority-data.liquid` | Publishes the rules as `window.UpgradePriorityData` |
 | `js/upgrade-goals.js` | Pure goal engine (UMD): `evaluate(snapshot, goal)` and `all(snapshot)` return each goal's state and shortfall; `targets`, `levels` and `current` feed the editor |
@@ -17,6 +18,21 @@
 | `css/priority.css` | Page hue (orchid) and layout |
 
 The weights only order the list. They are not game numbers, and changing one never changes a cost or a stat.
+
+## Next-step lines on the tool pages
+
+Town Centre, Heroes, Hero gear, Governor, Pets and Masters each carry a short "Your next step" note (`_includes/next-step.html`, `js/next-step.js`, `css/next-step.css`) with at most two steps from `evaluate`, filtered to the kinds that page handles and linking back to `upgrade-priority/#next`. The include names the kinds in `kinds`; `record:<what>` names a step that asks for a missing fact.
+
+| Page | Kinds |
+| --- | --- |
+| Town Centre | `tc-blocker`, `tc-next`, `troop-lag`, `command-center`, `war-academy`, records for the Town Centre, troop buildings, Command Center and War Academy |
+| Heroes | `hero-stars`, `hero-widget`, `record:heroes`, `record:hero-stars` |
+| Hero gear | `gear-next`, `gear-spend`, `record:hero-gear` |
+| Governor | `governor-gear`, `governor-charms`, `record:governor`, `record:governor-materials` |
+| Pets | `pet-advance`, `pet-focus`, `record:pets` |
+| Masters | `master-class`, `master-skills` |
+
+Every page asks for an unknown Town Centre first, since the stage weighs every step. The note reads the player's own save, follows it live, and stays hidden when nothing on the page is due, under Hero Gear's guest or shared-link store, and without JavaScript. Each page loads the engine after its own engines; a system whose engine a page does not load (the governor planner on Heroes, say) simply adds no steps there.
 
 ## Stages
 
@@ -87,7 +103,8 @@ The section `#savings` learns how fast each balance grows from that history and 
 
 ## Checks
 
-- `node .dsh/upgrade-priority-check.cjs`: stages, blockers, core heroes, gear and governor picks matching `HeroGear.redPlans` and `Governor.plan`, role effects, rule shapes, page wiring and every `priority.*` key in all 17 dictionaries with matching placeholders.
+- `node .dsh/upgrade-priority-check.cjs`: stages, blockers, core heroes, gear and governor picks matching `HeroGear.redPlans` and `Governor.plan`, role effects, rule shapes, page wiring (including the next-step scripts, styles, include and kinds on the six tool pages) and every `priority.*` key in all 17 dictionaries with matching placeholders.
 - `node .dsh/upgrade-goals-check.cjs`: each goal kind's shortfall against its planner, prerequisite chains, unknown levels and balances, caps, the export round trip, page wiring and every `priority.goal*` and `priority.item.*` key in all 17 dictionaries.
 - `node .dsh/upgrade-savings-check.cjs`: rates and spending, the enough-data rule, chain breaks and the four-week window, the next KvK prep and Strongest Governor dates, every projection state including pooled lines, page wiring and every `priority.savings*` key in all 17 dictionaries.
 - `node .dsh/upgrade-priority-ui-check.cjs` (after a Jekyll build): the page in a browser, empty and filled saves, role and preview, adding, replacing and removing goals and recording a balance in place, savings before and after enough history and switching the event, three languages and three widths, screenshots in `.dsh/priority-preview/`.
+- `node .dsh/next-step-ui-check.cjs` (after a Jekyll build): the next-step note on all six pages, empty and filled saves, live updates, guest mode, three languages, 320px and no JavaScript, screenshots in `.dsh/next-step-preview/`.

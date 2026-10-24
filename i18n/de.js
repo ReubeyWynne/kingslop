@@ -1255,6 +1255,8 @@ window.__BH_I18N_DATA["de"] = {
   "priority.order": "Die Reihenfolge, System für System",
   "priority.orderIntro": "Die Regeln hinter der Liste. Schritte für eine spätere Stufe oder eine andere Rolle sind abgeblendet.",
   "priority.openTool": "Werkzeug öffnen",
+  "priority.hint.label": "Dein nächster Schritt",
+  "priority.hint.more": "Die ganze Ausbau-Reihenfolge",
   "priority.from.gear": "ab TC 15",
   "priority.from.governor": "ab TC 22",
   "priority.from.truegold": "ab TC 30",

@@ -1266,6 +1266,8 @@ window.__BH_I18N_DATA["vi"] = {
   "priority.order": "Thứ tự, từng hệ thống",
   "priority.orderIntro": "Các quy tắc đằng sau danh sách. Bước cho giai đoạn sau hoặc vai trò khác được làm mờ.",
   "priority.openTool": "Mở công cụ",
+  "priority.hint.label": "Bước tiếp theo của bạn",
+  "priority.hint.more": "Xem toàn bộ thứ tự nâng cấp",
   "priority.from.gear": "từ TC 15",
   "priority.from.governor": "từ TC 22",
   "priority.from.truegold": "từ TC 30",

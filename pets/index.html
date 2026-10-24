@@ -13,6 +13,7 @@ self: pets
     <p class="lede" data-i18n="pets.intro">Fourteen pets, one skill each. Tame yours to plan its Advances.</p>
     {% include ascii/motif.html kind="pet" %}
   </section>
+  {% include next-step.html kinds="pet-advance pet-focus record:pets" %}
   {% comment %}Pets drawn from a model: one span per ink of .dsh/pet-portraits/<id>.json.{% endcomment %}{% assign portraits = 'alpha-black-panther,bison,cheetah,giant-rhino,gray-wolf,great-moose,grizzly-bear,ironclad-war-bear,ironclad-war-elephant,lion,lynx,mighty-bison,moose,regal-white-lion' | split: ',' %}
   {% assign pets = site.data.pets.pets %}{% assign generations = pets | map: 'generation' | uniq %}
   <section class="section" id="cage" data-module="pet-den">

@@ -1256,6 +1256,8 @@ window.__BH_I18N_DATA["fr"] = {
   "priority.order": "L’ordre, système par système",
   "priority.orderIntro": "Les règles derrière la liste. Les étapes d’une étape ultérieure ou d’un autre rôle sont estompées.",
   "priority.openTool": "Ouvrir l’outil",
+  "priority.hint.label": "Votre prochaine étape",
+  "priority.hint.more": "Voir tout l’ordre des améliorations",
   "priority.from.gear": "dès TC 15",
   "priority.from.governor": "dès TC 22",
   "priority.from.truegold": "dès TC 30",

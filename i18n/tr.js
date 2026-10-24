@@ -1254,6 +1254,8 @@ window.__BH_I18N_DATA["tr"] = {
   "priority.order": "Sistem sistem sıra",
   "priority.orderIntro": "Listenin arkasındaki kurallar. Daha sonraki bir aşamaya ya da başka bir role ait adımlar soluk gösterilir.",
   "priority.openTool": "Aracı aç",
+  "priority.hint.label": "Sıradaki adımın",
+  "priority.hint.more": "Tüm yükseltme sırasını gör",
   "priority.from.gear": "TC 15'ten itibaren",
   "priority.from.governor": "TC 22'den itibaren",
   "priority.from.truegold": "TC 30'dan itibaren",

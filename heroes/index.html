@@ -14,6 +14,7 @@ self: heroes
     <p class="lede" data-i18n="directory.intro">Choose the job first. Then find the hero whose skills fit it.</p>
     {% include ascii/motif.html kind="helm" %}
   </section>
+  {% include next-step.html kinds="hero-stars hero-widget record:heroes record:hero-stars" %}
   <section class="section" id="directory" data-module="hero-directory">
     <h2 data-i18n="directory.browse">Browse heroes</h2>
     {% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}
