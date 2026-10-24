@@ -214,6 +214,32 @@ jobs:
               - _data/heroes.json
               - js/pet-*
               - _data/pets.json
+            # Next-step lines from the upgrade priority on six tool pages.
+            hints:
+              - *shared
+              - .dsh/next-step-ui-check.cjs
+              - _includes/next-step.html
+              - js/next-step.js
+              - css/next-step.css
+              - js/upgrade-priority*
+              - _data/upgrade_priority.json
+              - town-centre/**
+              - heroes/**
+              - hero-gear/**
+              - governor-gear/**
+              - pets/**
+              - masters/**
+              - js/hero-spend.js
+              - js/master-*
+              - js/hero-gear-engine.js
+              - js/governor-*
+              - js/building-*
+              - js/pet-*
+              - _data/buildings.json
+              - _data/governor.json
+              - _data/heroes.json
+              - _data/masters.json
+              - _data/pets.json
             # The deck walks every page and fails on any script error.
             deck:
               - *shared
@@ -264,7 +290,7 @@ jobs:
           FILTERED: ${{ github.event_name == 'pull_request' }}
           CHANGES: ${{ steps.filter.outputs.changes || '[]' }}
         run: |
-          all='["interactions","heroes","masters","pets","castle","events","governor","town","priority","deck","ascii-capture","hero-gear","import"]'
+          all='["interactions","heroes","masters","pets","castle","events","governor","town","priority","hints","deck","ascii-capture","hero-gear","import"]'
           if [ "$FILTERED" != true ]; then
             echo "logic=true" >> "$GITHUB_OUTPUT"
             echo "ascii=true" >> "$GITHUB_OUTPUT"
@@ -454,6 +480,9 @@ jobs:
       - name: Check upgrade priority UI
         if: matrix.group == 'priority'
         run: node .dsh/upgrade-priority-ui-check.cjs
+      - name: Check next-step lines on the tool pages
+        if: matrix.group == 'hints'
+        run: node .dsh/next-step-ui-check.cjs
       - name: Check page navigation in browser
         if: matrix.group == 'deck'
         run: node .dsh/page-deck-browser-check.cjs
@@ -494,6 +523,7 @@ jobs:
             .dsh/governor-preview/
             .dsh/town-preview/
             .dsh/priority-preview/
+            .dsh/next-step-preview/
             .dsh/deck-preview/
             .dsh/sim-preview/
             .dsh/ascii-preview/

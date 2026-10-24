@@ -1,0 +1,7 @@
+{% comment %}A tool page's next step from the upgrade priority (js/next-step.js), for the step kinds in include.kinds. Hidden until the save has one.{% endcomment %}{% assign depth = site.data.pages[page.self].depth %}
+<aside class="next-step" data-module="next-step" data-kinds="{{ include.kinds }}" aria-labelledby="next-step-label" hidden>
+  <p class="next-step-label" id="next-step-label" data-i18n="priority.hint.label">Your next step</p>
+  <ul class="next-step-list" data-target="next-step.list"></ul>
+  <a class="next-step-more" href="{{ depth }}upgrade-priority/#next" data-i18n="priority.hint.more">See the whole upgrade order</a>
+  <template data-target="next-step.item"><li><b data-part="title"></b> <span data-part="why"></span></li></template>
+</aside>

@@ -1477,6 +1477,8 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "priority.order": "A ordem, sistema por sistema",
   "priority.orderIntro": "As regras por trás da lista. Passos de uma fase posterior ou de outro papel ficam esmaecidos.",
   "priority.openTool": "Abrir a ferramenta",
+  "priority.hint.label": "Seu próximo passo",
+  "priority.hint.more": "Ver toda a ordem de melhorias",
   "priority.from.gear": "a partir do TC 15",
   "priority.from.governor": "a partir do TC 22",
   "priority.from.truegold": "a partir do TC 30",

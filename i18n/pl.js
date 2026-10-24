@@ -1255,6 +1255,8 @@ window.__BH_I18N_DATA["pl"] = {
   "priority.order": "Kolejność, system po systemie",
   "priority.orderIntro": "Zasady stojące za listą. Kroki dla późniejszego etapu lub innej roli są przygaszone.",
   "priority.openTool": "Otwórz narzędzie",
+  "priority.hint.label": "Twój następny krok",
+  "priority.hint.more": "Zobacz całą kolejność ulepszeń",
   "priority.from.gear": "od TC 15",
   "priority.from.governor": "od TC 22",
   "priority.from.truegold": "od TC 30",

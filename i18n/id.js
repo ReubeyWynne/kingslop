@@ -1266,6 +1266,8 @@ window.__BH_I18N_DATA["id"] = {
   "priority.order": "Urutan, sistem demi sistem",
   "priority.orderIntro": "Aturan di balik daftar. Langkah untuk tahap berikutnya atau peran lain diredupkan.",
   "priority.openTool": "Buka alat",
+  "priority.hint.label": "Langkah berikutnya",
+  "priority.hint.more": "Lihat seluruh urutan upgrade",
   "priority.from.gear": "mulai TC 15",
   "priority.from.governor": "mulai TC 22",
   "priority.from.truegold": "mulai TC 30",

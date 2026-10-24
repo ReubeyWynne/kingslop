@@ -1255,6 +1255,8 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "priority.order": "逐个系统的顺序",
   "priority.orderIntro": "列表背后的规则。属于后续阶段或其他角色的步骤会变暗。",
   "priority.openTool": "打开工具",
+  "priority.hint.label": "你的下一步",
+  "priority.hint.more": "查看完整的升级顺序",
   "priority.from.gear": "TC 15 起",
   "priority.from.governor": "TC 22 起",
   "priority.from.truegold": "TC 30 起",
