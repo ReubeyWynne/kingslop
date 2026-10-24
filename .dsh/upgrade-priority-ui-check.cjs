@@ -92,6 +92,37 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.waitForFunction(() => window.PlayerLedger.shared().priority().goals.length === 1);
   assert.equal(await page.evaluate(() => document.activeElement.textContent), 'Remove');
 
+  // Savings: no rate until enough readings; then each goal is projected to the soonest scoring event.
+  const savings = page.locator('#savings');
+  assert.equal(await savings.locator('[data-target="upgrade-savings.learning"]').isVisible(), true);
+  assert.equal(await savings.locator('[data-target="upgrade-savings.rates"] li').count(), 0);
+  const soonest = await page.evaluate(() => window.UpgradeSavings.next(Date.now())[0]);
+  assert.equal(await savings.locator('[data-event="' + soonest.event + '"]').getAttribute('aria-pressed'), 'true');
+  assert.match(await savings.locator('[data-target="upgrade-savings.status"]').textContent(), /^(KvK prep|Strongest Governor) opens on .+ \(UTC\), (today|in 1 day|in \d+ days)\.$/);
+  assert.match(await savings.locator('[data-target="upgrade-savings.goals"] > li').first().textContent(), /Record what this goal still needs/);
+  await page.evaluate(() => {
+    const store = window.PlayerLedger.shared(), day = 864e5, now = Date.now(), at = d => new Date(now - d * day).toISOString();
+    ['wood', 'stone', 'iron'].forEach(id => store.setBalance(id, 1e9));
+    const entries = [[10, null, 0], [7, 0, 4e8], [4, 4e8, 1e8], [1, 1e8, 9e8]].map(([d, before, after], i) => ({ at: at(d), id: 'bread', before, after, source: i === 2 ? 'plan' : 'manual' }));
+    entries.push({ at: at(3), id: 'satin', before: null, after: 10, source: 'manual' }, { at: at(2), id: 'satin', before: 10, after: 20, source: 'manual' });
+    localStorage.setItem(window.PlayerLedger.HISTORY_KEY, JSON.stringify({ schemaVersion: 1, entries: entries.sort((a, b) => a.at < b.at ? -1 : 1) }));
+  });
+  await page.reload();
+  await page.waitForFunction(() => document.querySelector('[data-target="upgrade-savings.rates"] li'));
+  const rates = await savings.locator('[data-target="upgrade-savings.rates"] li').allTextContents();
+  assert.deepEqual(rates, ['Bread: about 133,333,333 a day over 9 days of readings (300,000,000 spent in that time)']);
+  assert.equal(await savings.locator('[data-target="upgrade-savings.learning"]').isVisible(), false);
+  let pace = savings.locator('[data-target="upgrade-savings.goals"] > li').first();
+  assert.equal(await pace.locator('h4').textContent(), 'Town Center to 25');
+  assert.equal(await pace.getAttribute('data-state'), 'reached');
+  assert.match(await pace.locator('[data-part="state"]').textContent(), /^On pace: covered by .+, before (KvK prep|Strongest Governor)\.$/);
+  assert.match(await pace.locator('[data-part="lines"]').textContent(), /^Bread: [\d,]+ short, about 133,333,333 a day: covered in 1 day$/);
+  const other = soonest.event === 'prep' ? 'sg' : 'prep';
+  await savings.locator('[data-event="' + other + '"]').click();
+  assert.equal(await savings.locator('[data-event="' + other + '"]').getAttribute('aria-pressed'), 'true');
+  assert.match(await savings.locator('[data-target="upgrade-savings.status"]').textContent(), other === 'sg' ? /^Strongest Governor/ : /^KvK prep/);
+  await savings.screenshot({ path: path.join(output, 'priority-savings-390.png') });
+
   // A Truegold lead: troop buildings a tier behind, the War Academy, and steps that score.
   await page.evaluate(() => window.PlayerLedger.shared().setBuildings({ 'town-center': 'TG 5', embassy: 'TG 5', academy: '30', barracks: 'TG 3', range: 'TG 5', stable: 'TG 5', 'command-center': 'TG 2', 'war-academy': 'TG 2' }));
   await page.waitForFunction(() => /TG 5: Tempered/.test(document.querySelector('[data-target="upgrade-priority.status"]').textContent));

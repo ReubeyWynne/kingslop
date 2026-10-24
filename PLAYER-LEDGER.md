@@ -109,7 +109,7 @@ Screenshot review remains explicit. SHA-256 hashes of the original uploaded file
 
 Every committed write also appends confirmed inventory changes to a separate key, `bh:player-history:v1` (`{ schemaVersion: 1, entries }`). An entry is `{ at, id, before, after, source }`: the save's `updatedAt`, the inventory id, the confirmed amount before (`null` when it was unknown) and after, and the write's provenance source. Becoming unknown is not recorded, and nothing outside `inventory` is. Entries from the last 28 days are kept whole; older ones fold to the first and last change per id per UTC day, and the log keeps at most 8,000 entries. The history is written after the save and inside its own `try`, so a full or failing storage never blocks a save, and an unreadable history starts again empty. `history(id)` returns the entries, oldest first, optionally for one id.
 
-It travels with the save file (see [Migration and recovery](#migration-and-recovery)). Nothing reads it yet; it is the base for savings rates and projections to the next KvK prep.
+It travels with the save file (see [Migration and recovery](#migration-and-recovery)). The Upgrade priority page's savings section reads it for daily income rates and projections to the next KvK prep or Strongest Governor (see [UPGRADE-PRIORITY.md](UPGRADE-PRIORITY.md#savings)).
 
 ## Validation
 

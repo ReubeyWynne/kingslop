@@ -6,6 +6,7 @@ self: priority
   <a href="#where" data-i18n="priority.where">Where you stand</a>
   <a href="#next" data-i18n="priority.next">Do these next</a>
   <a href="#goals" data-i18n="priority.goals">Your goals</a>
+  <a href="#savings" data-i18n="priority.savings">Saving for the next event</a>
   <a href="#order" data-i18n="priority.order">The order, system by system</a>
   <a href="#timing" data-i18n="priority.timing">Spend it when it scores</a>
   <a href="#priority-sources" data-i18n="directory.sources">Sources &amp; confidence</a>
@@ -73,6 +74,27 @@ self: priority
     </template>
     <template data-target="upgrade-goals.line">
       <li><b data-part="item"></b> <span data-part="figures"></span><span class="priority-goal-record" data-part="record"><label hidden><span></span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-action="upgrade-goals.balance"></label></span></li>
+    </template>
+  </section>
+
+  <section class="section" id="savings" data-module="upgrade-savings">
+    <h2 data-i18n="priority.savings">Saving for the next event</h2>
+    <p data-i18n="priority.savingsIntro">How fast your bag fills, learned from the balances you record, and what your goals can reach by the next KvK prep or Strongest Governor.</p>
+    <fieldset class="priority-roles priority-events">
+      <legend data-i18n="priority.savings.by">Count up to</legend>
+      <button type="button" data-action="upgrade-savings.event" data-event="prep" aria-pressed="false" disabled><b data-i18n="priority.savings.event.prep">KvK prep</b> <small></small></button>
+      <button type="button" data-action="upgrade-savings.event" data-event="sg" aria-pressed="false" disabled><b data-i18n="priority.savings.event.sg">Strongest Governor</b> <small></small></button>
+    </fieldset>
+    <p class="priority-status" data-target="upgrade-savings.status" aria-live="polite"></p>
+    <h3 data-i18n="priority.savings.goals">Your goals by then</h3>
+    <p data-target="upgrade-savings.none" data-i18n="priority.savings.none">Add a goal above that is still short and its pace shows here.</p>
+    <ol class="priority-goals" data-target="upgrade-savings.goals"></ol>
+    <h3 data-i18n="priority.savings.rates">What comes in each day</h3>
+    <p data-target="upgrade-savings.learning" data-i18n="priority.savings.learning">Nothing to show yet. A balance gets a rate once you have recorded it at least three times, three or more days apart from first to last.</p>
+    <ul class="priority-rates" data-target="upgrade-savings.rates"></ul>
+    <p class="note" data-i18n="priority.savings.how">A rate counts what came in between your readings over the last four weeks. What you spent is shown apart and never taken off as a loss, but spending between two readings hides income, so rates err low. Each goal is projected on its own from today, as if you spend nothing more on what it needs. Save-file imports and resets are not income.</p>
+    <template data-target="upgrade-savings.goal">
+      <li class="priority-goal"><h4 data-part="title"></h4><p class="priority-goal-state" data-part="state"></p><ul class="priority-goal-lines" data-part="lines"></ul></li>
     </template>
   </section>
 
