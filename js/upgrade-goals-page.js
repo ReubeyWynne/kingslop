@@ -5,12 +5,11 @@
 (function () {
   'use strict';
   var TOOLS = { building: ['town-centre/#town-buildings', 'town.nav', 'Town Centre'], hero: ['town-centre/#town-heroes', 'town.nav', 'Town Centre'], 'hero-gear': ['hero-gear/', 'ev.switch.gear', 'Gear'], 'governor-gear': ['governor-gear/#governor-planner', 'gov.nav', 'Governor'], 'governor-charm': ['governor-gear/#governor-planner', 'gov.nav', 'Governor'], pet: ['pets/#cage', 'pets.nav', 'Pets'], master: ['masters/', 'masters.nav', 'Masters'] };
-  window.Interactions.register('upgrade-goals', function (context) {
-    var api = context.api, engine = window.UpgradeGoals, store = null, painted = false;
-    try { store = context.ledger; store.snapshot(); } catch (cause) { store = null; }
+  // Goal titles, levels and item names, shared with the savings section (js/upgrade-savings-page.js).
+  function text(api) {
+    var engine = window.UpgradeGoals;
     function t(key, fallback) { return api.tr('priority.' + key, fallback || key); }
     function tpl(key, vars) { return api.fill(t(key), vars); }
-    function one(key) { return context.targets(key)[0]; }
     function troop(type) { return api.tr('gear.' + type, type); }
     function building(id) { var b = window.BuildingData.buildings.find(function (x) { return x.id === id; }); return api.tr('town.building.' + id, b ? b.name : id); }
     function govPiece(id) {
@@ -43,6 +42,15 @@
       if (name.kind === 'emblems') return tpl('item.emblems', { master: name.master });
       return t('item.' + name.id);
     }
+    function title(goal) { return tpl('goal.title', { what: subject(goal.kind, goal.target), level: level(goal.kind, goal.level) }); }
+    return { t: t, tpl: tpl, building: building, subject: subject, level: level, item: item, title: title };
+  }
+  window.UpgradeGoalsText = text;
+  window.Interactions.register('upgrade-goals', function (context) {
+    var api = context.api, engine = window.UpgradeGoals, store = null, painted = false;
+    var words = text(api), t = words.t, tpl = words.tpl, building = words.building, subject = words.subject, level = words.level, item = words.item;
+    try { store = context.ledger; store.snapshot(); } catch (cause) { store = null; }
+    function one(key) { return context.targets(key)[0]; }
     function option(value, text) { var node = document.createElement('option'); node.value = value; node.textContent = text; return node; }
     function fillSelect(select, values, keep) {
       var was = keep ? select.value : '';
@@ -89,7 +97,7 @@
       var g = r.goal, node = one('item').content.firstElementChild.cloneNode(true), lines = node.querySelector('[data-part="lines"]');
       var unknown = r.lines.some(function (l) { return l.have === null; }), notes = [];
       node.dataset.state = r.state;
-      node.querySelector('[data-part="title"]').textContent = tpl('goal.title', { what: subject(g.kind, g.target), level: level(g.kind, g.level) });
+      node.querySelector('[data-part="title"]').textContent = words.title(g);
       var state = r.state === 'short' && (unknown || r.beyond || r.record.length) ? 'shortSoFar' : r.state;
       node.querySelector('[data-part="state"]').textContent = r.state === 'met' || r.state === 'cap' ? tpl('goal.state.' + state, { level: level(g.kind, r.from) }) : t('goal.state.' + state);
       r.lines.forEach(function (l) { lines.appendChild(lineNode(l)); });

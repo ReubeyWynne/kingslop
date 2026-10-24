@@ -63,3 +63,12 @@ html[data-page="priority"] {
 .priority-goal-record input { width: 100%; min-width: 0; }
 .priority-goal-actions { display: flex; flex-wrap: wrap; gap: 0 var(--space-m); margin: 0; }
 .priority-goal-actions a { display: inline-block; min-height: 44px; padding-block: 0.6rem; color: var(--amber); }
+/* Savings: the event choice reuses the role buttons; each goal's pace is a ruled entry like a goal. */
+.priority-events { grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
+#savings h3 { margin-block: var(--space-m) 0.4rem; }
+.priority-goal h4 { margin-block: 0 0.3rem; }
+.priority-goal[data-state="reached"], .priority-goal[data-state="covered"] { border-inline-start: 3px solid var(--amber); }
+.priority-goal[data-state="short"] .priority-goal-state { color: var(--amber); }
+.priority-goal-lines li[data-state="unknown"] { color: var(--ink-dim); }
+.priority-rates { margin: 0; padding-inline-start: 1.2rem; display: grid; gap: 0.4rem; }
+.priority-rates li { overflow-wrap: anywhere; }

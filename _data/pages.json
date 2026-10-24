@@ -990,8 +990,10 @@
       "../js/upgrade-priority.js",
       "../js/upgrade-priority-words.js",
       "../js/upgrade-goals.js",
+      "../js/upgrade-savings.js",
       "../js/upgrade-priority-page.js",
-      "../js/upgrade-goals-page.js"
+      "../js/upgrade-goals-page.js",
+      "../js/upgrade-savings-page.js"
     ],
     "footMainKey": "priority.kicker",
     "footMain": "what to raise next",

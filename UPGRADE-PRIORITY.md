@@ -12,7 +12,9 @@
 | `js/upgrade-priority-page.js` | The `upgrade-priority` interaction module: paints the list, the stage rail, role buttons and dims ladder rungs for a later stage or another role |
 | `js/upgrade-priority-data.liquid` | Publishes the rules as `window.UpgradePriorityData` |
 | `js/upgrade-goals.js` | Pure goal engine (UMD): `evaluate(snapshot, goal)` and `all(snapshot)` return each goal's state and shortfall; `targets`, `levels` and `current` feed the editor |
-| `js/upgrade-goals-page.js` | The `upgrade-goals` interaction module: the goal editor, the goal list and balances recorded in place |
+| `js/upgrade-goals-page.js` | The `upgrade-goals` interaction module: the goal editor, the goal list and balances recorded in place; `UpgradeGoalsText` names goals for the savings section too |
+| `js/upgrade-savings.js` | Pure savings engine (UMD): `rate(entries)` and `rates(history)` learn daily income from the inventory history, `next(now)` gives the next KvK prep and Strongest Governor, `project` and `all` project goals to one of them |
+| `js/upgrade-savings-page.js` | The `upgrade-savings` interaction module: the event choice, each goal's pace and the daily rates |
 | `css/priority.css` | Page hue (orchid) and layout |
 
 The weights only order the list. They are not game numbers, and changing one never changes a cost or a stat.
@@ -87,11 +89,22 @@ Blank is never zero. A goal whose own level the save does not hold asks for it a
 
 ## Inventory history
 
-The ledger keeps a silent history of confirmed inventory changes (`bh:player-history:v1`, see [PLAYER-LEDGER.md](PLAYER-LEDGER.md#inventory-history)), and the save file carries it. Nothing reads it yet. It is the base for later steps: savings rates per item and projections to the next KvK prep, which can then say when a goal's shortfall will be met.
+The ledger keeps a silent history of confirmed inventory changes (`bh:player-history:v1`, see [PLAYER-LEDGER.md](PLAYER-LEDGER.md#inventory-history)), and the save file carries it. The savings section reads it.
+
+## Savings
+
+The section `#savings` learns how fast each balance grows from that history and projects the goals to the next scoring event.
+
+- **Rates.** A rate is income over time: the rises between consecutive readings of one item, divided by the days those readings span. A fall is spending; it is shown apart ("spent in that time") and never netted off as a loss. Spending inside one interval hides income, so a rate errs low, which keeps projections on the safe side.
+- **Enough data.** Only readings in the 28 days before an item's latest one count. An item shows no rate until it has at least two intervals (three readings) spanning at least three days. Troops are not listed.
+- **Chain breaks.** A reading from a save file (`file`), the legacy migration (`legacy`) or a hero gear reset (`reset`) is not income, and neither is a balance read again after it was unknown: each starts a new chain rather than counting as a rise.
+- **Event.** `EventRules.opens` gives day 1 of the next KvK prep (cycle day 22) and Strongest Governor (cycle day 8), counting today. The soonest is shown; the other can be picked. The choice is a view and is not saved.
+- **Projection.** Each goal from `UpgradeGoals.all` is projected alone, from today, assuming nothing more is spent on what it needs. A short line gains its rate times the days to the event; a line drawn from own and general shards or emblems needs a rate for both. States: `covered` (the bag covers it now), `reached` (every short line is covered in time, with the day the slowest one is), `short` (what each line still lacks at the event), `rate` (a short line has no rate yet) and `unknown` (a balance, level or cost is missing). Met, capped and removed goals are left out.
 
 ## Checks
 
 - `node .dsh/upgrade-priority-check.cjs`: stages, blockers, core heroes, gear and governor picks matching `HeroGear.redPlans` and `Governor.plan`, role effects, rule shapes, page wiring (including the next-step scripts, styles, include and kinds on the six tool pages) and every `priority.*` key in all 17 dictionaries with matching placeholders.
 - `node .dsh/upgrade-goals-check.cjs`: each goal kind's shortfall against its planner, prerequisite chains, unknown levels and balances, caps, the export round trip, page wiring and every `priority.goal*` and `priority.item.*` key in all 17 dictionaries.
-- `node .dsh/upgrade-priority-ui-check.cjs` (after a Jekyll build): the page in a browser, empty and filled saves, role and preview, adding, replacing and removing goals and recording a balance in place, three languages and three widths, screenshots in `.dsh/priority-preview/`.
+- `node .dsh/upgrade-savings-check.cjs`: rates and spending, the enough-data rule, chain breaks and the four-week window, the next KvK prep and Strongest Governor dates, every projection state including pooled lines, page wiring and every `priority.savings*` key in all 17 dictionaries.
+- `node .dsh/upgrade-priority-ui-check.cjs` (after a Jekyll build): the page in a browser, empty and filled saves, role and preview, adding, replacing and removing goals and recording a balance in place, savings before and after enough history and switching the event, three languages and three widths, screenshots in `.dsh/priority-preview/`.
 - `node .dsh/next-step-ui-check.cjs` (after a Jekyll build): the next-step note on all six pages, empty and filled saves, live updates, guest mode, three languages, 320px and no JavaScript, screenshots in `.dsh/next-step-preview/`.
