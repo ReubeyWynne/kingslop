@@ -55,6 +55,43 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.reload();
   await page.waitForFunction(() => document.querySelector('[data-role="lead"]').getAttribute('aria-pressed') === 'true');
 
+  // Goals: the editor adds one per target, each shows its shortfall, blanks can be recorded in place.
+  const goalTitles = () => page.locator('[data-target="upgrade-goals.list"] > li h3').allTextContents();
+  assert.equal(await page.locator('[data-target="upgrade-goals.empty"]').isVisible(), true);
+  await page.selectOption('[data-target="upgrade-goals.kind"]', 'building');
+  await page.selectOption('[data-target="upgrade-goals.target"]', 'town-center');
+  await page.selectOption('[data-target="upgrade-goals.level"]', '25');
+  await page.getByRole('button', { name: 'Add goal' }).click();
+  await page.waitForFunction(() => window.PlayerLedger.shared().priority().goals.length === 1);
+  assert.deepEqual(await goalTitles(), ['Town Center to 25']);
+  let goal = page.locator('[data-target="upgrade-goals.list"] > li').first();
+  assert.match(await goal.textContent(), /This counts the prerequisites too: Embassy 23 to 24, Barracks 22 to 24/);
+  assert.match(await goal.textContent(), /how many you have is not recorded/);
+  assert.equal(await goal.getAttribute('data-state'), 'unknown');
+  // Recording one blank fills its line; the others stay unknown, never zero.
+  const bread = goal.locator('input[data-item="bread"]');
+  await bread.fill('5000'); await bread.press('Enter');
+  await page.waitForFunction(() => window.PlayerLedger.shared().balance('bread').amount === 5000);
+  goal = page.locator('[data-target="upgrade-goals.list"] > li').first();
+  assert.match(await goal.locator('li[data-state="short"]').first().textContent(), /^Bread needs [\d,]+, you have 5,000: [\d,]+ short$/);
+  assert.equal(await goal.getAttribute('data-state'), 'short');
+  assert.match(await goal.locator('[data-part="state"]').textContent(), /blanks below may add more/);
+  // A pet goal; the same target again replaces the level rather than adding a second goal.
+  await page.selectOption('[data-target="upgrade-goals.kind"]', 'pet');
+  await page.selectOption('[data-target="upgrade-goals.target"]', 'lion');
+  await page.selectOption('[data-target="upgrade-goals.level"]', '30');
+  await page.getByRole('button', { name: 'Add goal' }).click();
+  await page.selectOption('[data-target="upgrade-goals.level"]', '40');
+  await page.getByRole('button', { name: 'Add goal' }).click();
+  await page.waitForFunction(() => window.PlayerLedger.shared().priority().goals.some(g => g.level === 40));
+  assert.deepEqual(await goalTitles(), ['Town Center to 25', 'Lion to level 40']);
+  await page.screenshot({ path: path.join(output, 'priority-goals-390.png'), fullPage: true });
+  await page.reload();
+  await page.waitForFunction(() => document.querySelectorAll('[data-target="upgrade-goals.list"] > li').length === 2);
+  await page.getByRole('button', { name: 'Remove the Lion goal' }).click();
+  await page.waitForFunction(() => window.PlayerLedger.shared().priority().goals.length === 1);
+  assert.equal(await page.evaluate(() => document.activeElement.textContent), 'Remove');
+
   // A Truegold lead: troop buildings a tier behind, the War Academy, and steps that score.
   await page.evaluate(() => window.PlayerLedger.shared().setBuildings({ 'town-center': 'TG 5', embassy: 'TG 5', academy: '30', barracks: 'TG 3', range: 'TG 5', stable: 'TG 5', 'command-center': 'TG 2', 'war-academy': 'TG 2' }));
   await page.waitForFunction(() => /TG 5: Tempered/.test(document.querySelector('[data-target="upgrade-priority.status"]').textContent));
@@ -71,6 +108,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.waitForFunction(() => document.querySelector('[data-target="upgrade-priority.list"] li'));
     await page.waitForFunction(l => document.documentElement.lang === l, lang);
     await page.waitForTimeout(150);
+    await page.waitForFunction(() => document.querySelector('[data-target="upgrade-goals.list"] li'));
     const text = await page.locator('main').innerText();
     assert.doesNotMatch(text, /priority\.[a-z]/, lang);
     await page.screenshot({ path: path.join(output, 'priority-' + lang + '-390.png'), fullPage: true });

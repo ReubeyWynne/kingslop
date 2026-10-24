@@ -68,11 +68,12 @@ store.setTrainingBuff(true);
 store.setTrainingPlan('position', 'advisor'); // null or false turns a plan off
 ```
 
-`preferences.priority` holds the Upgrade priority page's choice: `role` is `lead`, `joiner` or `farm`, and the key is absent until a player picks one (the page then assumes a joiner). See [UPGRADE-PRIORITY.md](UPGRADE-PRIORITY.md).
+`preferences.priority` holds the Upgrade priority page's choices. `role` is `lead`, `joiner` or `farm`, absent until a player picks one (the page then assumes a joiner). `goals` is the player's ordered list of upgrade goals, at most 20, one per target: `{ kind, target, level }` where `kind` is `building` (target a building id, level a level id such as `TG 5`), `hero` (a hero key and star index 1–30), `hero-gear` (a piece id and enhancement level 1–200), `governor-gear` (`inf-1` … `arc-2`, level 1–58), `governor-charm` (`inf-1-1` … `arc-2-3`, level 1–22), `pet` (a pet id and level 1–100) or `master` (a master id and affinity 1–100). Each part is absent when unset, and the section is absent when both are. See [UPGRADE-PRIORITY.md](UPGRADE-PRIORITY.md#goals).
 
 ```js
-store.priority(); // { role: 'lead' } or { role: null }
+store.priority(); // { role: 'lead', goals: [{ kind: 'building', target: 'town-center', level: 'TG 5' }] } or { role: null, goals: [] }
 store.setPriorityRole('farm'); // null forgets it; anything else is rejected
+store.setPriorityGoals([{ kind: 'pet', target: 'gray-wolf', level: 50 }]); // the whole list; [] forgets it
 ```
 
 `preferences.heroGear` holds only optimisation/UI choices. Resource bags and piece lists are derived from the ledger, not duplicated in preferences. A write touches changed facts and explicitly edited fields, preserving unrelated inventory and provenance. `source` distinguishes manual, legacy, screenshot, plan, reset and file edits.
@@ -100,7 +101,7 @@ Writes notify subscribers and emit `player-ledger:change`. Browser storage event
 
 The first store read migrates a valid `bh:hero-gear:v1` save, even when a different tool accesses the store first. It retains gear, resource balances, XP parts and preferences. The original storage entry is kept unchanged, so migration is reversible and repeat reads do not import it again. Invalid legacy saves, corrupt unified saves, future schema versions and storage failures are surfaced without replacing the saved bytes with defaults.
 
-`exportJSON()` exports the whole player ledger. The existing export button downloads `kingshot-player.json`. `importJSON(data, engine, expectedRevision)` validates a unified save before replacing it; it also accepts the old hero-gear format and updates only hero equipment, its resources and preferences. File import supports undo. Hero gear reset affects that tool's equipment, resources and preferences while retaining other inventory and import history.
+`exportJSON()` exports the whole player ledger with its inventory history beside it, as a top-level `history` (`{ schemaVersion: 1, entries }`, see [Inventory history](#inventory-history)). The existing export button downloads `kingshot-player.json`. `importJSON(data, engine, expectedRevision)` validates a unified save before replacing it; it also accepts the old hero-gear format and updates only hero equipment, its resources and preferences. A file's `history` is validated whole and replaces the local history (folded and capped like a live one), and the import itself is not recorded as a change; another history schema version or a malformed entry rejects the file and changes nothing. A file exported before the history was included has no `history`: it imports as before, the local history is kept and the import is recorded like any other write. The history never lands inside the stored save. `backup()` returns the same object `exportJSON()` serialises; save-file import and screenshot import keep it for undo, so undo restores the history too. File import supports undo. Hero gear reset affects that tool's equipment, resources and preferences while retaining other inventory and import history.
 
 Screenshot review remains explicit. SHA-256 hashes of the original uploaded files identify confirmed imports. Records contain source type, timestamp, confirmation state and equipment before/after deltas, including review corrections. Duplicate confirmed files cannot be applied again; unread fields retain previous values. Undo restores the prior ledger, including history, allowing the file to be reviewed again. Records have `sourceType` `hero-gear` (equipment `itemDelta`) `backpack` (inventory `inventoryDelta`, `{ id: { before, after } }`) or `pets` (levels `petDelta`, same shape; a level marks the pet tamed and keeps its Advance only when the level is unchanged). `applyImport(record, expectedRevision)` writes a reviewed record's inventory, pet levels and equipment with `screenshot` provenance and its `importId`, and refuses a content hash already in the history. Every record comes from the shared import panel; its adapters are described in [SCREENSHOT-IMPORT.md](SCREENSHOT-IMPORT.md). Battle reports are the exception: they fill the simulator's sheet and leave no record.
 
@@ -108,7 +109,7 @@ Screenshot review remains explicit. SHA-256 hashes of the original uploaded file
 
 Every committed write also appends confirmed inventory changes to a separate key, `bh:player-history:v1` (`{ schemaVersion: 1, entries }`). An entry is `{ at, id, before, after, source }`: the save's `updatedAt`, the inventory id, the confirmed amount before (`null` when it was unknown) and after, and the write's provenance source. Becoming unknown is not recorded, and nothing outside `inventory` is. Entries from the last 28 days are kept whole; older ones fold to the first and last change per id per UTC day, and the log keeps at most 8,000 entries. The history is written after the save and inside its own `try`, so a full or failing storage never blocks a save, and an unreadable history starts again empty. `history(id)` returns the entries, oldest first, optionally for one id.
 
-Nothing reads it yet and it is not part of `exportJSON()`. It is the base for savings rates, projections to the next KvK prep and goal shortfalls.
+It travels with the save file (see [Migration and recovery](#migration-and-recovery)). Nothing reads it yet; it is the base for savings rates and projections to the next KvK prep.
 
 ## Validation
 

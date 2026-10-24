@@ -44,7 +44,8 @@
       import: { events: ['change'], run: async function (node) {
         var file = node.files[0], token = ++sequence; node.value = ''; if (!file) return;
         try {
-          var before = store.snapshot();
+          // The backup carries the history too, so undoing an import restores both.
+          var before = store.backup ? store.backup() : store.snapshot();
           if (file.size > 1024 * 1024) throw new Error('Too large');
           var data = JSON.parse(await file.text()); if (token !== sequence || !context.root.isConnected) return;
           var after = store.importJSON(data, window.HeroGear, before.revision);

@@ -39,3 +39,27 @@ html[data-page="priority"] {
 .priority-cite a { color: inherit; }
 .priority-tool { display: inline-block; min-height: 44px; padding-block: 0.6rem; color: var(--amber); }
 .priority-sources { padding-inline-start: 1.4rem; }
+/* Goals: the editor is three ink-line selects and a margin prompt; each goal is a ruled entry with its shortfall lines. */
+.priority-goal-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: var(--space-s) var(--space-m); align-items: end; margin-block: var(--space-m) 0; }
+.priority-goal-form label { display: grid; gap: 0.2rem; min-width: 0; font-size: var(--step--1); color: var(--ink-dim); }
+.priority-goal-form select { width: 100%; min-width: 0; min-height: 2.75rem; padding: 0.3rem; font: max(1rem, 16px) var(--body); color: var(--ink); background: var(--void-2); border: 1px solid var(--signal-line); border-radius: 0; }
+.priority-goal-form select:focus-visible { border-color: var(--amber); outline: none; }
+.priority-goal-form button, .priority-goal-actions button { min-height: 44px; padding: 0.4rem 0; border: 0; border-bottom: 1px solid transparent; background: none; color: var(--amber); font: inherit; font-size: var(--step--1); font-weight: bold; letter-spacing: 0.12em; text-transform: uppercase; text-align: start; cursor: pointer; }
+.priority-goal-form button:hover, .priority-goal-form button:focus-visible, .priority-goal-actions button:hover, .priority-goal-actions button:focus-visible { color: var(--ink); border-bottom-color: var(--amber-dim); outline: none; }
+.priority-goal-form button:disabled { color: var(--ink-muted); cursor: default; }
+.priority-goals { list-style: none; padding: 0; margin: var(--space-m) 0 0; display: grid; gap: var(--space-m); }
+.priority-goal { border-inline-start: 1px solid var(--ink-muted); padding-inline-start: var(--space-m); min-width: 0; }
+.priority-goal[data-state="ready"], .priority-goal[data-state="met"] { border-inline-start: 3px solid var(--amber); }
+.priority-goal h3 { margin-block: 0 0.3rem; }
+.priority-goal-state { margin: 0; color: var(--ink); }
+.priority-goal[data-state="short"] .priority-goal-state { color: var(--amber); }
+.priority-goal-lines { margin: 0.6rem 0; padding-inline-start: 1.2rem; display: grid; gap: 0.4rem; }
+.priority-goal-lines li { overflow-wrap: anywhere; }
+.priority-goal-lines li[data-state="short"] span[data-part="figures"] { color: var(--amber); }
+.priority-goal-lines li[data-state="unknown"] span[data-part="figures"] { color: var(--ink-dim); }
+.priority-goal-record { display: grid; gap: 0.4rem; }
+.priority-goal-record label { display: grid; grid-template-columns: minmax(0, 1fr) minmax(6rem, 9rem); gap: var(--space-s); align-items: end; font-size: var(--step--1); color: var(--ink-dim); }
+.priority-goal-record label[hidden] { display: none; }
+.priority-goal-record input { width: 100%; min-width: 0; }
+.priority-goal-actions { display: flex; flex-wrap: wrap; gap: 0 var(--space-m); margin: 0; }
+.priority-goal-actions a { display: inline-block; min-height: 44px; padding-block: 0.6rem; color: var(--amber); }
