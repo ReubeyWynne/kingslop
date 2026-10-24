@@ -110,15 +110,14 @@
     });
     return result;
   }
-  // Points per troop by tier for one event day: a "T{n} troop" rule row wins, and a tier it
-  // does not name takes the cross-checked rate in _data/troops.json for that event, if any.
-  var POINTS = { prep: 'kvk', sg: 'sg' };
+  // Explicit tier rates win; other tiers use the row's cross-checked rate set, if any.
   function rates(rows, event) {
-    var troopRows = rows.filter(function (row) { return !row.items && /\btroops?\b/i.test(row.label); }), out = {};
+    var troopRows = rows.filter(function (row) { return row.scoring && row.scoring.type === 'troops'; }), out = {};
     if (!troopRows.length) return null;
+    var fallback = troopRows.find(function (row) { return row.scoring.rateSet; });
     Object.keys(TIERS).forEach(function (tier) {
-      var row = troopRows.find(function (r) { return new RegExp('^T' + tier + ' troop$', 'i').test(r.label.trim()); });
-      var value = row ? Number(String(row.points).replace(/,/g, '')) : POINTS[event] ? TIERS[tier].points[POINTS[event]] : undefined;
+      var row = troopRows.find(function (r) { return Object.hasOwn(r.scoring.rates, tier); });
+      var value = row ? row.scoring.rates[tier] : fallback ? TIERS[tier].points[fallback.scoring.rateSet] : undefined;
       if (Number.isSafeInteger(value) && value > 0) out[tier] = value;
     });
     return { rows: troopRows, rates: out };

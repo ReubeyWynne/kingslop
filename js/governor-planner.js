@@ -4,9 +4,7 @@
 (function () {
   'use strict';
   var EN = {
-    'tier.green': 'Green', 'tier.blue': 'Blue', 'tier.purple': 'Purple', 'tier.gold': 'Gold', 'tier.red': 'Red',
     'slot.hat': 'Hat', 'slot.amulet': 'Amulet', 'slot.armour': 'Armour', 'slot.trousers': 'Trousers', 'slot.ring': 'Ring', 'slot.staff': 'Staff',
-    notSet: 'not set', notCrafted: 'not crafted', noCharm: 'no charm', lv: 'Lv {n}',
     pieceTroop: '{slot} · {troop}', charmOf: '{slot} · charm {c}', tileLabel: '{name}: {level}. Charms: {charms}.',
     statGear: '+{n}% attack & defence', charmTotal: '+{n}% health & lethality from these three',
     nextGear: 'Next: {level}', nextMax: 'Fully upgraded.', nextUnset: 'Pick the level you see in game.',
@@ -22,8 +20,10 @@
   var EVENTS = { prep: ['ks.today.kickerPrep', 'KvK prep'], sg: ['ks.governor.title', 'Strongest Governor'], brawl: ['ks.brawl.title', 'Alliance Brawl'] };
   var TROOPS = { inf: 'Infantry', cav: 'Cavalry', arc: 'Archer' };
   window.Interactions.register('governor-planner', function (context) {
-    var G = window.Governor, store = window.PlayerLedger.shared(), api = context.api, root = context.root;
+    var G = window.Governor, store = context.ledger, api = context.api, root = context.root;
     var kind = 'gear', mode = 'spend', editing = null, art = root.dataset.art || '../img/governor/';
+    var view = window.GovernorView.create(G, api, art);
+    var levelName = view.levelName, state = view.state, paintCard = view.paintCard, paintGem = view.paintGem;
     function t(key) { return api.tr('gov.' + key, EN[key]); }
     function fill(key, values) { return api.fill(t(key), values); }
     function troop(id) { return api.tr('gear.' + id, TROOPS[id]); }
@@ -32,13 +32,6 @@
     function itemName(id) {
       var parts = id.split('-');
       return parts.length === 2 ? fill('pieceTroop', { slot: slotName(id), troop: troop(parts[0]) }) : fill('charmOf', { slot: slotName(id), c: parts[2] });
-    }
-    function levelName(which, index) {
-      if (index === null || index === undefined) return t('notSet');
-      if (which === 'charms') return index ? fill('lv', { n: api.fmt(index) }) : t('noCharm');
-      if (!index) return t('notCrafted');
-      var d = G.describe('gear', index);
-      return t('tier.' + d.tier) + (d.grade ? ' T' + api.fmt(d.grade) : '') + ' ' + api.fmt(d.stars) + '★';
     }
     function material(id) { return G.data.materials.find(function (m) { return m.id === id; }); }
     function materialName(id) { var item = material(id); return api.tr(item.key, item.label); }
@@ -55,21 +48,6 @@
       return { amounts: out, unknown: unknown };
     }
     function pct(n) { return new Intl.NumberFormat((window.I18N && window.I18N.locale) || 'en-GB', { maximumFractionDigits: 2 }).format(n); }
-    function setSrc(img, src) { if (img && img.getAttribute('src') !== src) img.setAttribute('src', src); }
-    function gearArt(id, index) { var d = index ? G.describe('gear', index) : { tier: 'green', grade: 0 }; return art + 'gear/' + id + '-' + d.tier + '-' + d.grade + '.webp'; }
-    function charmArt(id, level) { return art + 'charms/' + id.split('-')[0] + '-' + Math.max(1, level || 1) + '.webp'; }
-    function state(index) { return index === null || index === undefined ? 'unset' : index === 0 ? 'empty' : 'set'; }
-    // A card is the piece art for its tier and grade; the level line beside it carries the stars.
-    function paintCard(card, id, index) {
-      card.dataset.state = state(index);
-      card.dataset.tier = index ? G.describe('gear', index).tier : '';
-      setSrc(card.querySelector('img'), gearArt(id, index));
-    }
-    function paintGem(gem, id, level) {
-      gem.dataset.state = state(level);
-      setSrc(gem.querySelector('img'), charmArt(id, level));
-      var label = gem.querySelector('b'); if (label) label.textContent = level ? api.fmt(level) : '·';
-    }
     function card(id, index, which) {
       var wrap;
       if (which === 'gear') { wrap = el('span', null, 'gov-card'); var img = el('img'); img.alt = ''; img.width = 160; img.height = 160; wrap.appendChild(img); paintCard(wrap, id, index); }

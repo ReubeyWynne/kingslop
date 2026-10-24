@@ -3,6 +3,57 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const E = require('../js/hero-gear-engine.js');
 const OCR = require('../js/hero-gear-ocr.js');
+const View = require('../js/hero-gear-view.js');
+const Ledger = require('../js/player-ledger.js');
+
+function checkGuestLedger() {
+  const memory = new Map();
+  const persistent = Ledger.create({ getItem: key => memory.get(key) ?? null, setItem: (key, value) => memory.set(key, value) });
+  persistent.setBalance('forgehammer', 50);
+  const kingdom = { position: null, generation: 4, truegold: 5, warAcademy: true };
+  persistent.setKingdom(kingdom);
+  const before = persistent.exportJSON(), encoded = E.encodeLink(E.defaults());
+  for (const search of ['?guest', '?gear=invalid', '?gear=' + encoded.gear + '&w=' + encoded.w]) {
+    let reads = 0;
+    const nodes = new Map();
+    const shared = () => { reads++; return persistent; };
+    const scope = {
+      URL, URLSearchParams, location: { search },
+      document: {
+        currentScript: { src: 'https://dey.ci/js/hero-gear.js' },
+        getElementById: id => {
+          if (!nodes.has(id)) nodes.set(id, { dataset: {}, setAttribute() {} });
+          return nodes.get(id);
+        }
+      },
+      window: { HeroGear: E, HeroGearView: View, PlayerLedger: { ...Ledger, shared }, BH: { registerPage() {} } }
+    };
+    vm.runInNewContext(fs.readFileSync('js/interactions.js', 'utf8'), scope);
+    vm.runInNewContext(fs.readFileSync('js/hero-gear.js', 'utf8'), scope);
+    assert.equal(reads, 0, 'guest configuration does not read storage before module mount');
+    const selected = scope.window.Interactions.ledger();
+    assert.notEqual(selected, persistent);
+    assert.equal(scope.window.Interactions.ledger(), selected);
+    assert.equal(scope.window.PlayerLedger.shared, shared);
+    if (search === '?guest') assert.equal(selected.balance('forgehammer').amount, 50, 'plain guest mode starts with saved facts');
+    selected.setBalance('forgehammer', 90);
+    const record = {
+      id: 'guest-shot', sourceType: 'backpack', at: new Date().toISOString(), contentHash: 'f'.repeat(64), confirmation: 'confirmed',
+      inventoryDelta: { mithril: { before: selected.balance('mithril').amount, after: 19 } }
+    };
+    selected.applyImport(record, selected.snapshot().revision);
+    const backup = JSON.parse(selected.exportJSON());
+    backup.inventory.forgehammer.amount = 120;
+    selected.importJSON(backup, E, selected.snapshot().revision);
+    assert.equal(selected.balance('forgehammer').amount, 120);
+    assert.equal(selected.balance('mithril').amount, 19);
+    assert.equal(selected.snapshot().imports.length, 1);
+    assert.equal(persistent.exportJSON(), before, 'guest resources, screenshot imports and save transfers leave the persistent ledger intact');
+    assert.deepEqual(scope.window.PlayerLedger.shared().kingdom(), kingdom, 'persistent kingdom facts remain available');
+  }
+}
+
+checkGuestLedger();
 assert.deepEqual(OCR.overviewLabels([{text:'Lv. 2',poly:[[0,120],[20,120],[20,140],[0,140]]}], 'mythic', 110, [false,true]), {level:0,mastery:2});
 assert.deepEqual(OCR.overviewLabels([{text:'69',poly:[[0,10],[20,10],[20,30],[0,30]]}], 'mythic', 110, [true,false]), {level:69,mastery:0});
 
@@ -283,4 +334,4 @@ for (let t = 0; t < 6; t++) {
   assert.ok(set.score <= brute + 1e-9 && set.score >= brute * 0.997, 'best split within 0.3% of brute force: ' + set.score + ' vs ' + brute);
 }
 
-console.log('Gear costs, milestones, 40 optimiser conservation cases, OCR parsing, share links, best split and copy checks passed.');
+console.log('Guest ledger isolation, gear costs, milestones, 40 optimiser conservation cases, OCR parsing, share links, best split and copy checks passed.');

@@ -1,13 +1,11 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const http = require('node:http');
 const path = require('node:path');
 const vm = require('node:vm');
-const { chromium } = require('playwright');
+const { withBrowser } = require('./lib/browser-harness.cjs');
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/events-preview');
 const langs = ['en', 'es', 'pt-BR', 'de', 'fr', 'it', 'ru', 'pl', 'tr', 'zh-Hans', 'zh-Hant', 'ko', 'ja', 'th', 'id', 'vi', 'ar'];
-const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml' };
 const dictionaries = {};
 for (const lang of langs) {
   const scope = { window: {} };
@@ -16,14 +14,6 @@ for (const lang of langs) {
   for (const key of ['ks.hero.h1', 'ks.today.brawlMeta', 'ks.today.selected', 'ks.today.preview', 'ks.today.copyFailed', 'ks.today.priorities', 'ks.today.save', 'ks.today.sideRun', 'ks.today.includeLink']) assert.ok(dictionaries[lang][key], lang + ': ' + key);
 }
 fs.mkdirSync(output, { recursive: true });
-const server = http.createServer((request, response) => {
-  let file = path.resolve(root, '.' + decodeURIComponent(new URL(request.url, 'http://localhost').pathname));
-  if (!file.startsWith(root + path.sep)) { response.writeHead(403).end(); return; }
-  if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
-  if (!fs.existsSync(file)) { response.writeHead(404).end(); return; }
-  response.setHeader('Content-Type', mime[path.extname(file)] || 'application/octet-stream');
-  fs.createReadStream(file).pipe(response);
-});
 function displayCells(line) {
   return [...line.replace(/<item_icon_[A-Za-z0-9_]+>/g, 'x')].reduce((n, char) => {
     const cp = char.codePointAt(0);
@@ -31,12 +21,9 @@ function displayCells(line) {
     return n + (cp >= 0x2600 && cp <= 0x27bf || cp >= 0x2e80 && cp <= 0xa4cf || cp >= 0xac00 && cp <= 0xd7af || cp >= 0xff00 && cp <= 0xff60 || cp >= 0x1f000 ? 2 : 1);
   }, 0);
 }
-(async () => {
-  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-  let browser;
+withBrowser({ root }, async ({ browser, origin }) => {
   const report = [];
   try {
-    browser = await chromium.launch();
     const context = await browser.newContext();
     for (const [lang, width] of [...langs.map(lang => [lang, 320]), ['en', 390], ['en', 1280], ['ar', 1280]]) {
       const page = await context.newPage();
@@ -53,7 +40,7 @@ function displayCells(line) {
         window.copiedMessages = [];
         Object.defineProperty(navigator, 'clipboard', { value: { writeText: async text => { window.copiedMessages.push(text); } }, configurable: true });
       });
-      await page.goto('http://127.0.0.1:' + server.address().port + '/events/?lang=' + lang, { waitUntil: 'networkidle' });
+      await page.goto(origin + '/events/?lang=' + lang, { waitUntil: 'networkidle' });
       await page.waitForFunction(lang => document.documentElement.lang === lang && document.querySelectorAll('#ks-cycle button').length === 28, lang);
       await page.evaluate(() => document.fonts.ready);
       assert.equal(await page.locator('#ks-cycle [aria-pressed="true"]').getAttribute('data-cycle-day'), '21');
@@ -202,8 +189,6 @@ function displayCells(line) {
     }
   } finally {
     fs.writeFileSync(path.join(output, 'checks.json'), JSON.stringify(report, null, 2));
-    await browser?.close();
-    await new Promise(resolve => server.close(resolve));
   }
   console.log('Passed 100 layout checks across 17 languages, copy placement, optional canonical site links and message limits for all 28 days, KvK task display, day 20 reminders, navigation, UTC rollover, clipboard success/failure and RTL.');
-})().catch(error => { console.error(error); process.exitCode = 1; });
+}).catch(error => { console.error(error); process.exitCode = 1; });

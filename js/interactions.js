@@ -1,6 +1,9 @@
 (function () {
   'use strict';
-  var factories = new Map(), mounted = new Map(), api, started = false, observer;
+  var factories = new Map(), mounted = new Map(), api, started = false, observer, ledger;
+  function selectedLedger() {
+    return ledger === undefined ? window.PlayerLedger.shared() : typeof ledger === 'function' ? ledger() : ledger;
+  }
   function names(node, attribute) { return (node.getAttribute(attribute) || '').trim().split(/\s+/).filter(Boolean); }
   function emit(node, name, detail) { node.dispatchEvent(new CustomEvent(name, { bubbles: true, detail: detail })); }
   function error(root, name, cause) { emit(root, 'module:error', { module: name, message: cause.message || String(cause) }); }
@@ -11,6 +14,7 @@
       if (modules.has(name) || !factories.has(name)) return;
       var cleanups = [], context = {
         root: root, api: api,
+        get ledger() { return selectedLedger(); },
         owns: function (node) { return node.closest('[data-module]') === root; },
         nodes: function (selector) { return [root].concat(Array.from(root.querySelectorAll(selector))).filter(function (node) { return node.matches(selector) && context.owns(node); }); },
         targets: function (key) { return context.nodes('[data-target]').filter(function (node) { return names(node, 'data-target').includes(name + '.' + key); }); },
@@ -47,6 +51,11 @@
     });
   }
   var modules = {
+    configure: function (dependencies) {
+      if (started) throw new Error('Configure interactions before start');
+      if (dependencies && Object.hasOwn(dependencies, 'ledger')) ledger = dependencies.ledger;
+    },
+    ledger: selectedLedger,
     register: function (name, factory) {
       if (!/^[a-z][a-z0-9-]*$/.test(name) || factories.has(name)) throw new Error('Invalid or duplicate module: ' + name);
       factories.set(name, factory); if (started) scan(document);

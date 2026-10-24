@@ -4,24 +4,13 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const http = require('node:http');
-const { chromium } = require('playwright');
+const { withBrowser } = require('./lib/browser-harness.cjs');
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/import-preview');
 const fixture = name => path.resolve('.dsh/import-fixtures', name + '.jpg');
-const server = http.createServer((request, response) => {
-  let file = path.resolve(root, '.' + decodeURIComponent(new URL(request.url, 'http://localhost').pathname));
-  if (!file.startsWith(root + path.sep)) return response.writeHead(403).end();
-  if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
-  if (!fs.existsSync(file)) return response.writeHead(404).end();
-  response.setHeader('Content-Type', { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml' }[path.extname(file)] || 'application/octet-stream');
-  fs.createReadStream(file).pipe(response);
-});
-(async () => {
+withBrowser({ root }, async ({ browser, origin: base }) => {
   fs.mkdirSync(output, { recursive: true });
-  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-  const base = 'http://127.0.0.1:' + server.address().port;
-  const browser = await chromium.launch({ headless: true });
+
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
   const page = await context.newPage();
   const errors = [];
@@ -143,5 +132,5 @@ const server = http.createServer((request, response) => {
   } catch (error) {
     await page.screenshot({ path: path.join(output, 'failure.png') }).catch(() => {});
     throw error;
-  } finally { await browser.close(); server.close(); }
-})().catch(error => { console.error(error); process.exitCode = 1; });
+  }
+}).catch(error => { console.error(error); process.exitCode = 1; });

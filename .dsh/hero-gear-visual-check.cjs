@@ -1,30 +1,18 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const http = require('node:http');
-const { chromium, devices } = require('playwright');
+const { devices } = require('playwright');
+const { withBrowser } = require('./lib/browser-harness.cjs');
 const E = require('../js/hero-gear-engine.js');
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/gear-preview');
 const langs = ['en','es','pt-BR','de','fr','it','ru','pl','tr','zh-Hans','zh-Hant','ko','ja','th','id','vi','ar'];
-const mime = { '.html':'text/html', '.js':'text/javascript', '.css':'text/css', '.json':'application/json', '.png':'image/png', '.webp':'image/webp' };
-const server = http.createServer((request, response) => {
-  let file = path.resolve(root, '.' + decodeURIComponent(new URL(request.url,'http://localhost').pathname));
-  if (!file.startsWith(root + path.sep)) return response.writeHead(403).end();
-  if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
-  if (!fs.existsSync(file)) return response.writeHead(404).end();
-  response.setHeader('Content-Type', mime[path.extname(file)] || 'application/octet-stream');
-  fs.createReadStream(file).pipe(response);
-});
 async function fits(page, label) {
   const failures = await page.evaluate(() => [...document.querySelectorAll('.gear-main,.gear-bag,.gear-workspace,.gear-editor,.gear-answer,.gear-row,.topbar,.ev-switch,.gear-dialog[open]')].filter(el=>el.getClientRects().length && el.scrollWidth>el.clientWidth+2).map(el=>el.className));
   assert.deepEqual(failures, [], label);
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1), label);
 }
-(async()=>{
-  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
-  const browser=await chromium.launch({headless:true});
-  const origin='http://127.0.0.1:'+server.address().port;
+withBrowser({ root }, async ({ browser, origin }) => {
   fs.mkdirSync(output,{recursive:true});
   let page;
   try {
@@ -400,6 +388,6 @@ async function fits(page, label) {
   }catch(error){
     if(page){await page.screenshot({path:path.join(output,'failure.png'),fullPage:true});fs.writeFileSync(path.join(output,'failure.txt'),page.url()+'\n'+error.stack);}
     throw error;
-  }finally{await browser.close();server.close();}
-})().catch(error=>{console.error(error);process.exitCode=1;server.close();});
+  }
+}).catch(error=>{console.error(error);process.exitCode=1;});
 

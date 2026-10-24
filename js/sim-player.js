@@ -20,7 +20,7 @@
   'use strict';
 
   window.Interactions.register('sim-player', function (context) {
-    var store = window.PlayerLedger.shared(), note = null, filled = false;
+    var store = context.ledger, note = null, filled = false;
 
     function stats() { return context.nodes('[data-player-stat][data-troop]'); }
     function march(troop, part) { return context.nodes('[data-player-march="' + part + '"][data-troop="' + troop + '"]')[0]; }

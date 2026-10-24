@@ -4,7 +4,7 @@
     var role = 'defense', view = 'event';
     var stage = context.targets('stage')[0];
     var store = null;
-    try { store = window.PlayerLedger.shared(); store.snapshot(); } catch (cause) { store = null; }
+    try { store = context.ledger; store.snapshot(); } catch (cause) { store = null; }
     stage.disabled = false;
     function paintCopies() {
       var roster = {};

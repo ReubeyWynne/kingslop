@@ -1,20 +1,11 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const http = require('node:http');
-const { chromium } = require('playwright');
+const { withBrowser } = require('./lib/browser-harness.cjs');
 const E = require('../js/hero-gear-engine.js');
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/gear-preview');
 const key = 'bh:hero-gear:v1';
-const server = http.createServer((request, response) => {
-  let file = path.resolve(root, '.' + decodeURIComponent(new URL(request.url, 'http://localhost').pathname));
-  if (!file.startsWith(root + path.sep)) return response.writeHead(403).end();
-  if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
-  if (!fs.existsSync(file)) return response.writeHead(404).end();
-  response.setHeader('Content-Type', { '.html':'text/html', '.js':'text/javascript', '.css':'text/css' }[path.extname(file)] || 'application/octet-stream');
-  fs.createReadStream(file).pipe(response);
-});
 const workerBody = "importScripts('hero-gear-engine.js' + self.location.search);self.onmessage=e=>setTimeout(()=>self.postMessage({ok:true,result:self.HeroGear.strategyComparison(e.data)}),400);";
 function fixture() {
   const state = E.defaults();
@@ -25,10 +16,8 @@ function fixture() {
   for (const slot of E.SLOTS) state.pieces['arc-' + slot] = { quality:'mythic', level:69, mastery:2 };
   return state;
 }
-(async () => {
-  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-  const browser = await chromium.launch({ headless:true });
-  const url = 'http://127.0.0.1:' + server.address().port + '/hero-gear/?lang=en';
+withBrowser({ root }, async ({ browser, origin }) => {
+  const url = origin + '/hero-gear/?lang=en';
   fs.mkdirSync(output, { recursive:true });
   let page;
   async function open(state, options = {}) {
@@ -211,6 +200,6 @@ function fixture() {
   } catch (error) {
     if (page && !page.isClosed()) await page.screenshot({ path:path.join(output, 'interaction-failure.png'), fullPage:true });
     fs.writeFileSync(path.join(output, 'interaction-failure.txt'), error.stack); throw error;
-  } finally { await browser.close(); server.close(); }
-})().catch(error => { console.error(error); process.exitCode = 1; server.close(); });
+  }
+}).catch(error => { console.error(error); process.exitCode = 1; });
 

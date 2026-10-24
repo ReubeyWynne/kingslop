@@ -1,22 +1,12 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const http = require('node:http');
-const { chromium } = require('playwright');
+const { withBrowser } = require('./lib/browser-harness.cjs');
 const root = path.resolve('_site');
 const nav = require('../_data/nav.json');
 const pages = require('../_data/pages.json');
 const tokens = nav.map(entry => pages[entry.self].token);
 const output = path.resolve('.dsh/deck-preview');
-const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json' };
-const server = http.createServer((request, response) => {
-  let file = path.resolve(root, '.' + decodeURIComponent(new URL(request.url, 'http://localhost').pathname));
-  if (file !== root && !file.startsWith(root + path.sep)) return response.writeHead(403).end();
-  if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
-  if (!fs.existsSync(file)) return response.writeHead(404).end();
-  response.setHeader('Content-Type', mime[path.extname(file)] || 'application/octet-stream');
-  fs.createReadStream(file).pipe(response);
-});
 async function selected(page, token) {
   await page.waitForFunction(token => {
     const card = document.querySelector('.deck-card.is-selected');
@@ -44,214 +34,207 @@ async function fits(page, zoomed = false) {
   assert.ok(geometry.titleClear && geometry.copyClear && !geometry.clipped, JSON.stringify(geometry));
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
 }
-(async () => {
-  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-  const browser = await chromium.launch({ headless: true });
-  const origin = 'http://127.0.0.1:' + server.address().port;
+withBrowser({ root }, async ({ browser, origin }) => {
   fs.mkdirSync(output, { recursive: true });
-  try {
-    for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 1280, height: 900 }]) {
-      const page = await browser.newPage({ viewport, reducedMotion: 'reduce' });
-      const errors = []; page.on('pageerror', error => errors.push(error.message));
-      await page.goto(origin + '/?lang=en');
-      await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
-      await page.locator('#ledger-btn').click();
-      for (const token of tokens) {
-        await selected(page, token);
-        await fits(page);
-        assert.equal(await page.locator('.deck-card.is-selected .deck-ascii > *').count() > 0, true);
-        assert.deepEqual(await page.locator('.deck-ascii > *,.ascii-ambient > span').evaluateAll(elements => [...new Set(elements.flatMap(el => ['', '::before', '::after'].map(pseudo => getComputedStyle(el, pseudo || null).animationName)))]), ['none']);
-        await page.screenshot({ path: path.join(output, `${viewport.width}-${token}.png`) });
-        await page.locator('.deck-next').click();
-      }
-      await selected(page, 'home');
-      await page.locator('.deck-prev').click();
-      await selected(page, tokens.at(-1));
-      await page.keyboard.press('Home');
-      await selected(page, 'home');
-      await page.locator('[data-deck-group="tools"]').click();
-      await selected(page, 'vip');
-      await page.keyboard.press('ArrowRight');
-      await selected(page, 'sim');
-      assert.equal(await page.locator('.deck-card.is-selected').evaluate(el => el === document.activeElement), true);
-      await page.keyboard.press('Escape');
-      assert.equal(await page.locator('#ledger-btn').evaluate(el => el === document.activeElement), true);
-      assert.equal(await page.locator('html').getAttribute('data-page'), 'home');
-      assert.deepEqual(errors, []);
-      await page.close();
-    }
-    const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+
+  for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 1280, height: 900 }]) {
+    const page = await browser.newPage({ viewport, reducedMotion: 'reduce' });
+    const errors = []; page.on('pageerror', error => errors.push(error.message));
     await page.goto(origin + '/?lang=en');
     await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
     await page.locator('#ledger-btn').click();
-    await selected(page, 'home');
-    await page.waitForTimeout(1100);
-    const flameBefore = await page.locator('.deck-card.is-selected .ascii-campfire .flame').evaluate(el => getComputedStyle(el, '::before').content);
-    await page.waitForTimeout(180);
-    const flameAfter = await page.locator('.deck-card.is-selected .ascii-campfire .flame').evaluate(el => getComputedStyle(el, '::before').content);
-    assert.notEqual(flameBefore, flameAfter);
-    assert.equal(await page.locator('.deck-card.is-selected .ascii-campfire .flame').evaluate(el => getComputedStyle(el).transform), 'none');
-    assert.match(await page.locator('.deck-card.is-selected .ascii-campfire .flame').evaluate(el => getComputedStyle(el, '::before').animationTimingFunction), /steps/);
-    // A jump across several cards moves the ground straight from the old
-    // page's colour to the new one: no stop at the cards it passes, and no
-    // dip in brightness on the way (a cross-fade of two washes used to pulse).
-    const ground = () => page.locator('#page-deck .deck-ground').evaluate(el => {
-      const c = document.createElement('canvas').getContext('2d');
-      c.fillStyle = getComputedStyle(el).backgroundColor; c.fillRect(0, 0, 1, 1);
-      return [...c.getImageData(0, 0, 1, 1).data].slice(0, 3);
-    });
-    const lightness = rgb => rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
-    const start = await ground();
-    // Sample every frame inside the page, starting with the click, so a slow
-    // runner's round trips cannot skip past the whole fade.
-    const samples = await page.evaluate(() => new Promise(resolve => {
-      const el = document.querySelector('#page-deck .deck-ground');
-      const c = document.createElement('canvas').getContext('2d');
-      const out = [];
-      const t0 = performance.now();
-      document.querySelector('[data-deck-group="tools"]').click();
-      (function tick() {
-        c.fillStyle = getComputedStyle(el).backgroundColor; c.fillRect(0, 0, 1, 1);
-        out.push({ rgb: [...c.getImageData(0, 0, 1, 1).data].slice(0, 3), page: document.querySelector('.deck-card.is-selected').dataset.page });
-        if (performance.now() - t0 < 900) requestAnimationFrame(tick); else resolve(out);
-      })();
-    }));
-    const trail = samples.map(sample => sample.rgb);
-    const picked = new Set(samples.map(sample => sample.page));
-    await selected(page, 'vip');
-    await page.waitForTimeout(1000);
-    const end = await ground();
-    assert.deepEqual([...picked], ['vip']);
-    assert.notDeepEqual(start, end);
-    assert.ok(trail.some(rgb => rgb.join() !== start.join() && rgb.join() !== end.join()), 'the ground blends: ' + JSON.stringify({ start, end, trail }));
-    const floor = Math.min(lightness(start), lightness(end)) - 1.5;
-    assert.ok(trail.every(rgb => lightness(rgb) >= floor), JSON.stringify({ start, end, trail }));
-    // The deck is a ring: past either end it carries on into a copy of the
-    // covers and settles back on the real one without a visible jump.
-    await page.keyboard.press('Home');
-    await selected(page, 'home');
-    const startLeft = await page.locator('.deck-viewport').evaluate(el => el.scrollLeft);
-    await page.locator('.deck-prev').click();
-    await page.waitForTimeout(900);
-    await selected(page, tokens.at(-1));
-    const ring = await page.evaluate(() => {
-      const v = document.querySelector('.deck-viewport');
-      const c = v.scrollLeft + v.clientWidth / 2;
-      const at = [...v.querySelectorAll('.deck-card')].sort((a, b) => Math.abs(a.offsetLeft + a.offsetWidth / 2 - c) - Math.abs(b.offsetLeft + b.offsetWidth / 2 - c))[0];
-      return { copy: at.classList.contains('deck-copy'), page: at.dataset.page, copies: v.querySelectorAll('.deck-copy[inert][aria-hidden="true"]').length / v.querySelectorAll('.deck-card:not(.deck-copy)').length };
-    });
-    assert.deepEqual(ring, { copy: false, page: tokens.at(-1), copies: 2 });
-    await page.locator('.deck-next').click();
-    await selected(page, 'home');
-    assert.ok(Math.abs(await page.locator('.deck-viewport').evaluate(el => el.scrollLeft) - startLeft) < 2);
-    await page.locator('[data-deck-group="tools"]').click();
-    await selected(page, 'vip');
-    assert.equal(await page.locator('.deck-card.is-selected .ascii-mini--crown').evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'running');
-    assert.equal(await page.locator('.deck-card:not(.is-selected) .ascii-mini--aurora .aurora-edge').first().evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'paused');
-    // Covers keep their own colours whichever is selected, and the ring's
-    // copies of the selected cover run with it.
-    const covers = () => page.locator('.deck-card').evaluateAll(cards => cards.map(card => getComputedStyle(card.querySelector('.deck-card-title')).color + getComputedStyle(card).borderTopColor));
-    const vipCovers = await covers();
-    await page.keyboard.press('Home');
-    await selected(page, 'home');
-    await page.waitForTimeout(800);
-    assert.deepEqual(await covers(), vipCovers);
-    // The selected cover and one cover either side of it run, so a swipe
-    // never brings in a still scene; the rest of the ring stays paused.
-    assert.deepEqual(await page.locator('.deck-card.is-running').evaluateAll(cards => cards.map(card => card.dataset.page)), [tokens[tokens.length - 1], tokens[0], tokens[1]]);
-    assert.equal(await page.locator('.deck-card.is-running[data-page="' + tokens[1] + '"] .deck-ascii > *').first().evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'running');
-    // A sideways swipe moves the strip wherever the thumb lands on it: the
-    // art, the title, the lede in the lower half of the cover, and the
-    // position label and hint under the covers.
-    const touchPage = await (await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true })).newPage();
-    await touchPage.goto(origin + '/?lang=de');
-    await touchPage.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
-    await touchPage.locator('#ledger-btn').click();
-    await selected(touchPage, 'home');
-    const cdp = await touchPage.context().newCDPSession(touchPage);
-    const zones = ['.deck-card.is-selected .deck-ascii', '.deck-card.is-selected .deck-card-title', '.deck-card.is-selected .deck-card-lede', '.deck-position', '#deck-hint'];
-    for (const [i, zone] of zones.entries()) {
-      // The cover a swipe brings in is already running before it arrives.
-      assert.equal(await touchPage.locator('.deck-card.is-running[data-page="' + tokens[i + 1] + '"]').count(), 1);
-      const box = await touchPage.locator(zone).boundingBox();
-      const x = Math.round(box.x + box.width / 2), y = Math.round(box.y + box.height / 2);
-      await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
-      for (let step = 1; step <= 12; step++) {
-        await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x - step * 20, y }] });
-        await touchPage.waitForTimeout(16);
-      }
-      await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-      await selected(touchPage, tokens[i + 1]);
-    }
-    assert.equal(await touchPage.locator('#page-deck').evaluate(el => el.open), true);
-    await touchPage.close();
-    // The rail jumps to the mark under a tap, scrubs as a press slides along
-    // it, steps and clamps from the keyboard while keeping focus, and never
-    // closes the deck as a background tap would.
-    const pip = async token => {
-      const box = await page.locator('.deck-pip[data-page="' + token + '"]').boundingBox();
-      return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
-    };
-    await page.keyboard.press('Home');
-    await selected(page, 'home');
-    let at = await pip(tokens.at(-2));
-    await page.mouse.click(at.x, at.y);
-    await selected(page, tokens.at(-2));
-    assert.equal(await page.locator('#page-deck').evaluate(el => el.open), true);
-    at = await pip(tokens[1]);
-    await page.mouse.move(at.x, at.y);
-    await page.mouse.down();
-    for (const token of tokens.slice(2, 6)) {
-      at = await pip(token);
-      await page.mouse.move(at.x, at.y, { steps: 3 });
+    for (const token of tokens) {
       await selected(page, token);
+      await fits(page);
+      assert.equal(await page.locator('.deck-card.is-selected .deck-ascii > *').count() > 0, true);
+      assert.deepEqual(await page.locator('.deck-ascii > *,.ascii-ambient > span').evaluateAll(elements => [...new Set(elements.flatMap(el => ['', '::before', '::after'].map(pseudo => getComputedStyle(el, pseudo || null).animationName)))]), ['none']);
+      await page.screenshot({ path: path.join(output, `${viewport.width}-${token}.png`) });
+      await page.locator('.deck-next').click();
     }
-    await page.mouse.up();
-    assert.equal(await page.locator('.deck-pip.is-selected').getAttribute('data-page'), tokens[5]);
-    assert.match(await page.locator('.deck-position').textContent(), new RegExp(' 6 / ' + tokens.length + '$'));
-    await page.locator('.deck-rail').focus();
-    await page.keyboard.press('End');
-    await selected(page, tokens.at(-1));
-    await page.keyboard.press('ArrowRight');
-    await page.keyboard.press('ArrowLeft');
-    await selected(page, tokens.at(-2));
-    assert.equal(await page.locator('.deck-rail').evaluate(el => el === document.activeElement && el.getAttribute('aria-valuenow')), String(tokens.length - 1));
-    await page.keyboard.press('Escape');
-    // The page you came from opens beside this one, out of ledger order, and
-    // the rail and the count still say where it lives in the ledger.
-    const vip = nav.findIndex(entry => pages[entry.self].token === 'vip');
-    await page.goto(origin + '/' + nav[vip].tail + '?lang=en');
-    await page.goto(origin + '/?lang=en');
-    await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
-    await page.locator('#ledger-btn').click();
     await selected(page, 'home');
-    assert.equal(await page.locator('.deck-pip.is-last').getAttribute('data-page'), 'vip');
-    await page.locator('.deck-next').click();
-    await selected(page, 'vip');
-    assert.match(await page.locator('.deck-position').textContent(), new RegExp(' ' + (vip + 1) + ' / ' + tokens.length + '$'));
-    await page.locator('.deck-next').click();
-    await selected(page, tokens[1]);
+    await page.locator('.deck-prev').click();
+    await selected(page, tokens.at(-1));
+    await page.keyboard.press('Home');
+    await selected(page, 'home');
     await page.locator('[data-deck-group="tools"]').click();
     await selected(page, 'vip');
+    await page.keyboard.press('ArrowRight');
+    await selected(page, 'sim');
+    assert.equal(await page.locator('.deck-card.is-selected').evaluate(el => el === document.activeElement), true);
     await page.keyboard.press('Escape');
-    await page.evaluate(() => sessionStorage.clear());
-    for (const lang of ['de', 'ar']) {
-      await page.goto(origin + '/?lang=' + lang);
-      await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
-      await page.locator('#ledger-btn').click();
-      for (const token of tokens) {
-        await selected(page, token); await fits(page);
-        await page.locator('.deck-next').click();
-      }
-    }
-    await page.evaluate(() => document.documentElement.style.fontSize = '200%');
-    await selected(page, 'home');
-    await fits(page, true);
+    assert.equal(await page.locator('#ledger-btn').evaluate(el => el === document.activeElement), true);
+    assert.equal(await page.locator('html').getAttribute('data-page'), 'home');
+    assert.deepEqual(errors, []);
     await page.close();
-    console.log('Deck geometry, native scrolling, keyboard, rail, last page, colour interpolation, translations and reduced motion passed.');
-  } finally {
-    await browser.close();
-    await new Promise(resolve => server.close(resolve));
   }
-})().catch(error => { console.error(error); server.close(); process.exitCode = 1; });
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  await page.goto(origin + '/?lang=en');
+  await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
+  await page.locator('#ledger-btn').click();
+  await selected(page, 'home');
+  await page.waitForTimeout(1100);
+  const flameBefore = await page.locator('.deck-card.is-selected .ascii-campfire .flame').evaluate(el => getComputedStyle(el, '::before').content);
+  await page.waitForTimeout(180);
+  const flameAfter = await page.locator('.deck-card.is-selected .ascii-campfire .flame').evaluate(el => getComputedStyle(el, '::before').content);
+  assert.notEqual(flameBefore, flameAfter);
+  assert.equal(await page.locator('.deck-card.is-selected .ascii-campfire .flame').evaluate(el => getComputedStyle(el).transform), 'none');
+  assert.match(await page.locator('.deck-card.is-selected .ascii-campfire .flame').evaluate(el => getComputedStyle(el, '::before').animationTimingFunction), /steps/);
+  // A jump across several cards moves the ground straight from the old
+  // page's colour to the new one: no stop at the cards it passes, and no
+  // dip in brightness on the way (a cross-fade of two washes used to pulse).
+  const ground = () => page.locator('#page-deck .deck-ground').evaluate(el => {
+    const c = document.createElement('canvas').getContext('2d');
+    c.fillStyle = getComputedStyle(el).backgroundColor; c.fillRect(0, 0, 1, 1);
+    return [...c.getImageData(0, 0, 1, 1).data].slice(0, 3);
+  });
+  const lightness = rgb => rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
+  const start = await ground();
+  // Sample every frame inside the page, starting with the click, so a slow
+  // runner's round trips cannot skip past the whole fade.
+  const samples = await page.evaluate(() => new Promise(resolve => {
+    const el = document.querySelector('#page-deck .deck-ground');
+    const c = document.createElement('canvas').getContext('2d');
+    const out = [];
+    const t0 = performance.now();
+    document.querySelector('[data-deck-group="tools"]').click();
+    (function tick() {
+      c.fillStyle = getComputedStyle(el).backgroundColor; c.fillRect(0, 0, 1, 1);
+      out.push({ rgb: [...c.getImageData(0, 0, 1, 1).data].slice(0, 3), page: document.querySelector('.deck-card.is-selected').dataset.page });
+      if (performance.now() - t0 < 900) requestAnimationFrame(tick); else resolve(out);
+    })();
+  }));
+  const trail = samples.map(sample => sample.rgb);
+  const picked = new Set(samples.map(sample => sample.page));
+  await selected(page, 'vip');
+  await page.waitForTimeout(1000);
+  const end = await ground();
+  assert.deepEqual([...picked], ['vip']);
+  assert.notDeepEqual(start, end);
+  assert.ok(trail.some(rgb => rgb.join() !== start.join() && rgb.join() !== end.join()), 'the ground blends: ' + JSON.stringify({ start, end, trail }));
+  const floor = Math.min(lightness(start), lightness(end)) - 1.5;
+  assert.ok(trail.every(rgb => lightness(rgb) >= floor), JSON.stringify({ start, end, trail }));
+  // The deck is a ring: past either end it carries on into a copy of the
+  // covers and settles back on the real one without a visible jump.
+  await page.keyboard.press('Home');
+  await selected(page, 'home');
+  const startLeft = await page.locator('.deck-viewport').evaluate(el => el.scrollLeft);
+  await page.locator('.deck-prev').click();
+  await page.waitForTimeout(900);
+  await selected(page, tokens.at(-1));
+  const ring = await page.evaluate(() => {
+    const v = document.querySelector('.deck-viewport');
+    const c = v.scrollLeft + v.clientWidth / 2;
+    const at = [...v.querySelectorAll('.deck-card')].sort((a, b) => Math.abs(a.offsetLeft + a.offsetWidth / 2 - c) - Math.abs(b.offsetLeft + b.offsetWidth / 2 - c))[0];
+    return { copy: at.classList.contains('deck-copy'), page: at.dataset.page, copies: v.querySelectorAll('.deck-copy[inert][aria-hidden="true"]').length / v.querySelectorAll('.deck-card:not(.deck-copy)').length };
+  });
+  assert.deepEqual(ring, { copy: false, page: tokens.at(-1), copies: 2 });
+  await page.locator('.deck-next').click();
+  await selected(page, 'home');
+  assert.ok(Math.abs(await page.locator('.deck-viewport').evaluate(el => el.scrollLeft) - startLeft) < 2);
+  await page.locator('[data-deck-group="tools"]').click();
+  await selected(page, 'vip');
+  assert.equal(await page.locator('.deck-card.is-selected .ascii-mini--crown').evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'running');
+  assert.equal(await page.locator('.deck-card:not(.is-selected) .ascii-mini--aurora .aurora-edge').first().evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'paused');
+  // Covers keep their own colours whichever is selected, and the ring's
+  // copies of the selected cover run with it.
+  const covers = () => page.locator('.deck-card').evaluateAll(cards => cards.map(card => getComputedStyle(card.querySelector('.deck-card-title')).color + getComputedStyle(card).borderTopColor));
+  const vipCovers = await covers();
+  await page.keyboard.press('Home');
+  await selected(page, 'home');
+  await page.waitForTimeout(800);
+  assert.deepEqual(await covers(), vipCovers);
+  // The selected cover and one cover either side of it run, so a swipe
+  // never brings in a still scene; the rest of the ring stays paused.
+  assert.deepEqual(await page.locator('.deck-card.is-running').evaluateAll(cards => cards.map(card => card.dataset.page)), [tokens[tokens.length - 1], tokens[0], tokens[1]]);
+  assert.equal(await page.locator('.deck-card.is-running[data-page="' + tokens[1] + '"] .deck-ascii > *').first().evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'running');
+  // A sideways swipe moves the strip wherever the thumb lands on it: the
+  // art, the title, the lede in the lower half of the cover, and the
+  // position label and hint under the covers.
+  const touchPage = await (await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true })).newPage();
+  await touchPage.goto(origin + '/?lang=de');
+  await touchPage.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
+  await touchPage.locator('#ledger-btn').click();
+  await selected(touchPage, 'home');
+  const cdp = await touchPage.context().newCDPSession(touchPage);
+  const zones = ['.deck-card.is-selected .deck-ascii', '.deck-card.is-selected .deck-card-title', '.deck-card.is-selected .deck-card-lede', '.deck-position', '#deck-hint'];
+  for (const [i, zone] of zones.entries()) {
+    // The cover a swipe brings in is already running before it arrives.
+    assert.equal(await touchPage.locator('.deck-card.is-running[data-page="' + tokens[i + 1] + '"]').count(), 1);
+    const box = await touchPage.locator(zone).boundingBox();
+    const x = Math.round(box.x + box.width / 2), y = Math.round(box.y + box.height / 2);
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+    for (let step = 1; step <= 12; step++) {
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x - step * 20, y }] });
+      await touchPage.waitForTimeout(16);
+    }
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await selected(touchPage, tokens[i + 1]);
+  }
+  assert.equal(await touchPage.locator('#page-deck').evaluate(el => el.open), true);
+  await touchPage.close();
+  // The rail jumps to the mark under a tap, scrubs as a press slides along
+  // it, steps and clamps from the keyboard while keeping focus, and never
+  // closes the deck as a background tap would.
+  const pip = async token => {
+    const box = await page.locator('.deck-pip[data-page="' + token + '"]').boundingBox();
+    return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  };
+  await page.keyboard.press('Home');
+  await selected(page, 'home');
+  let at = await pip(tokens.at(-2));
+  await page.mouse.click(at.x, at.y);
+  await selected(page, tokens.at(-2));
+  assert.equal(await page.locator('#page-deck').evaluate(el => el.open), true);
+  at = await pip(tokens[1]);
+  await page.mouse.move(at.x, at.y);
+  await page.mouse.down();
+  for (const token of tokens.slice(2, 6)) {
+    at = await pip(token);
+    await page.mouse.move(at.x, at.y, { steps: 3 });
+    await selected(page, token);
+  }
+  await page.mouse.up();
+  assert.equal(await page.locator('.deck-pip.is-selected').getAttribute('data-page'), tokens[5]);
+  assert.match(await page.locator('.deck-position').textContent(), new RegExp(' 6 / ' + tokens.length + '$'));
+  await page.locator('.deck-rail').focus();
+  await page.keyboard.press('End');
+  await selected(page, tokens.at(-1));
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowLeft');
+  await selected(page, tokens.at(-2));
+  assert.equal(await page.locator('.deck-rail').evaluate(el => el === document.activeElement && el.getAttribute('aria-valuenow')), String(tokens.length - 1));
+  await page.keyboard.press('Escape');
+  // The page you came from opens beside this one, out of ledger order, and
+  // the rail and the count still say where it lives in the ledger.
+  const vip = nav.findIndex(entry => pages[entry.self].token === 'vip');
+  await page.goto(origin + '/' + nav[vip].tail + '?lang=en');
+  await page.goto(origin + '/?lang=en');
+  await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
+  await page.locator('#ledger-btn').click();
+  await selected(page, 'home');
+  assert.equal(await page.locator('.deck-pip.is-last').getAttribute('data-page'), 'vip');
+  await page.locator('.deck-next').click();
+  await selected(page, 'vip');
+  assert.match(await page.locator('.deck-position').textContent(), new RegExp(' ' + (vip + 1) + ' / ' + tokens.length + '$'));
+  await page.locator('.deck-next').click();
+  await selected(page, tokens[1]);
+  await page.locator('[data-deck-group="tools"]').click();
+  await selected(page, 'vip');
+  await page.keyboard.press('Escape');
+  await page.evaluate(() => sessionStorage.clear());
+  for (const lang of ['de', 'ar']) {
+    await page.goto(origin + '/?lang=' + lang);
+    await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
+    await page.locator('#ledger-btn').click();
+    for (const token of tokens) {
+      await selected(page, token); await fits(page);
+      await page.locator('.deck-next').click();
+    }
+  }
+  await page.evaluate(() => document.documentElement.style.fontSize = '200%');
+  await selected(page, 'home');
+  await fits(page, true);
+  await page.close();
+  console.log('Deck geometry, native scrolling, keyboard, rail, last page, colour interpolation, translations and reduced motion passed.');
+}).catch(error => { console.error(error); process.exitCode = 1; });
 

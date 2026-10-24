@@ -60,18 +60,12 @@
 .gov-totals { display: flex; gap: .3rem 1.5rem; flex-wrap: wrap; margin: 0; padding-top: .45rem; border-top: 1px solid var(--signal-line); color: var(--ink-muted); font-size: .8rem; }
 .gov-totals output { color: var(--ink); font: 1rem var(--display-2); font-variant-numeric: tabular-nums; margin-inline-start: .25rem; }
 
-/* Piece art carries its own tier frame; an unset or uncrafted piece shows it dimmed. */
-.gov-card { display: block; width: 100%; max-width: 4.5rem; aspect-ratio: 1; }
-.gov-card > img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.gov-card[data-state="unset"] > img, .gov-card[data-state="empty"] > img { filter: grayscale(1); opacity: .35; }
-
 /* Charms as three square rule cells. */
 .gov-gems { display: flex; gap: .25rem; margin-top: .15rem; }
 .gov-gems .gov-gem { display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border: 1px solid var(--signal-line); }
 .gov-gems .gov-gem b { font: .8rem var(--display-2); color: var(--amber); font-variant-numeric: tabular-nums; }
 .gov-gems .gov-gem[data-state="unset"] b, .gov-gems .gov-gem[data-state="empty"] b { color: var(--ink-muted); }
-.gov-gem img { display: block; width: 2.4rem; height: 2.4rem; object-fit: contain; }
-.gov-gem[data-state="unset"] img, .gov-gem[data-state="empty"] img { filter: grayscale(1); opacity: .35; }
+.gov-gem img { display: block; }
 
 /* Quick fill tucked under the board. */
 .gov-fill { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem 1rem; align-items: end; }

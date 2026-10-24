@@ -39,6 +39,8 @@
     ],
     "scripts": [
       "js/i18n.js",
+      "js/page-deck.js",
+      "js/page-chrome.js",
       "js/common.js"
     ],
     "footMainKey": "home.foot.main",
@@ -97,15 +99,24 @@
     ],
     "scripts": [
       "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
       "../js/common.js",
       "../js/event-data.js",
       "../js/event-rules.js",
+      "../js/governor-data.js",
+      "../js/governor-engine.js",
       "../js/hero-gear-engine.js",
-      "../js/event-availability.js",
+      "../js/hero-data.js",
+      "../js/hero-spend.js",
       "../js/building-data.js",
       "../js/building-spend.js",
       "../js/troop-data.js",
       "../js/troop-spend.js",
+      "../js/master-data.js",
+      "../js/master-spend.js",
+      "../js/town-centre-engine.js",
+      "../js/event-availability.js",
       "../js/kvk.js"
     ],
     "footMainKey": "ks.foot.main",
@@ -161,6 +172,8 @@
     ],
     "scripts": [
       "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
       "../js/common.js",
       "../js/bind.js",
       "../js/bear-allocator.js",
@@ -224,6 +237,8 @@
     ],
     "scripts": [
       "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
       "../js/common.js",
       "../js/vikings.js"
     ],
@@ -281,6 +296,8 @@
     ],
     "scripts": [
       "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
       "../js/common.js",
       "../js/swordland.js"
     ],
@@ -338,6 +355,8 @@
     ],
     "scripts": [
       "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
       "../js/common.js",
       "../js/vip.js"
     ],
@@ -395,11 +414,14 @@
     ],
     "scripts": [
       "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
       "../js/common.js",
       "../js/battle-engine.js",
       "../js/sim-player.js",
       "../js/sim-army.js",
       "../js/sim-run.js",
+      "../js/sim-sheet.js",
       "../js/sim.js"
     ],
     "footMainKey": "sim.foot.main",
@@ -457,8 +479,11 @@
     ],
     "scripts": [
       "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
       "../js/common.js",
       "../js/hero-gear-engine.js",
+      "../js/hero-gear-view.js",
       "../js/hero-gear.js"
     ],
     "footMainKey": "gear.kicker",
@@ -511,12 +536,15 @@
     ],
     "scripts": [
       "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
       "../js/common.js",
       "../js/event-data.js",
       "../js/event-rules.js",
       "../js/hero-data.js",
       "../js/hero-spend.js",
       "../js/hero-directory-engine.js",
+      "../js/roster-editor.js",
       "../js/hero-directory.js",
       "../js/hero-points.js"
     ],
@@ -571,6 +599,8 @@
     ],
     "scripts": [
       "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
       "../js/common.js",
       "../js/event-data.js",
       "../js/event-rules.js",
@@ -578,6 +608,7 @@
       "../js/hero-spend.js",
       "../js/master-data.js",
       "../js/master-spend.js",
+      "../js/roster-editor.js",
       "../js/master-directory.js",
       "../js/master-points.js"
     ],
@@ -614,6 +645,7 @@
     "brandNoteKey": "town.kicker",
     "brandNote": "everything you own, counted",
     "css": [
+      "../css/equipment.css",
       "../css/styles.css",
       "../css/events.css",
       "../css/heroes.css",
@@ -622,6 +654,8 @@
     ],
     "scripts": [
       "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
       "../js/common.js",
       "../js/event-data.js",
       "../js/governor-data.js",
@@ -638,10 +672,12 @@
       "../js/master-spend.js",
       "../js/town-centre-engine.js",
       "../js/hero-directory-engine.js",
+      "../js/roster-editor.js",
       "../js/hero-directory.js",
       "../js/hero-points.js",
       "../js/master-directory.js",
       "../js/master-points.js",
+      "../js/governor-view.js",
       "../js/town-centre.js"
     ],
     "footMainKey": "town.kicker",
@@ -689,16 +725,21 @@
       "lede": "tamed, fed and patted; every Advance planned."
     },
     "css": [
+      "../css/equipment.css",
       "../css/styles.css",
       "../css/events.css",
       "../css/governor.css"
     ],
     "scripts": [
       "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
       "../js/common.js",
       "../js/event-data.js",
       "../js/governor-data.js",
+      "../js/event-rules.js",
       "../js/governor-engine.js",
+      "../js/governor-view.js",
       "../js/governor-planner.js"
     ],
     "footMainKey": "gov.kicker",
@@ -752,10 +793,13 @@
     ],
     "scripts": [
       "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
       "../js/common.js",
       "../js/pet-data.js",
       "../js/pet-plan.js",
       "../js/pet-care.js",
+      "../js/roster-editor.js",
       "../js/pet-den.js",
       "../js/pet-live.js"
     ],
@@ -809,6 +853,8 @@
     ],
     "scripts": [
       "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
       "../js/common.js",
       "../js/castle-battle.js"
     ],
@@ -851,6 +897,8 @@
     "scripts": [
       "../js/kingdom-data.js",
       "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
       "../js/common.js"
     ],
     "footMainKey": "kingdom.kicker",

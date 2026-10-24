@@ -1,13 +1,11 @@
 // Masters page and the Town Centre's Masters shelf in a browser: roster, dossiers as links, the shared save, KvK points and layout in every language.
-const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http');const {chromium}=require('playwright');
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');const { withBrowser } = require('./lib/browser-harness.cjs');
 const masters=require('../_data/masters.json').masters;
 const root=path.resolve('_site'),output=path.resolve('.dsh/masters-preview');
-const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml'};
-const server=http.createServer((req,res)=>{let file=path.resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname));if(file!==root&&!file.startsWith(root+path.sep))return res.writeHead(403).end();if(fs.existsSync(file)&&fs.statSync(file).isDirectory())file=path.join(file,'index.html');if(!fs.existsSync(file))return res.writeHead(404).end();res.setHeader('Content-Type',mime[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).pipe(res);});
-(async()=>{await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const browser=await chromium.launch({headless:true}),context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'}),page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));const origin='http://127.0.0.1:'+server.address().port;fs.mkdirSync(output,{recursive:true});
+withBrowser({ root }, async ({ browser, origin }) => {const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'}),page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));fs.mkdirSync(output,{recursive:true});
 const ready=p=>p.waitForFunction(()=>![...document.querySelectorAll('.master-mine')].some(f=>f.disabled));
 const ledger=()=>page.evaluate(()=>PlayerLedger.shared().masters());
-try{
+
  await page.goto(origin+'/masters/?lang=en');await ready(page);
  assert.equal(await page.locator('h1').count(),1);assert.equal(await page.locator('[data-master]').count(),masters.length);
  for(const m of masters){const card=page.locator('#master-'+m.id);assert.equal(await card.locator('h3').textContent(),m.name);assert.equal(await card.locator('.master-classes li').count(),11);assert.equal(await card.locator('.master-skills li').count(),4);assert.equal(await card.getAttribute('data-verified'),String(m.verified));}
@@ -65,5 +63,4 @@ try{
  const nojs=await browser.newContext({javaScriptEnabled:false});const plain=await nojs.newPage();await plain.goto(origin+'/masters/');assert.equal(await plain.locator('[data-master]').count(),masters.length);assert.equal(await plain.locator('.master-mine [data-field="owned"]').first().isDisabled(),true);await plain.locator('#master-pan summary').click();assert.equal(await plain.locator('#master-pan .master-skills').isVisible(),true);await nojs.close();
  await page.goto(origin+'/?lang=en');assert.equal(await page.locator('#tools a[href="masters/"]').count(),1);
  assert.deepEqual(errors,[]);console.log('Masters UI: roster, deep-linked dossiers, the shared save, class gates, KvK points, the Town Centre shelf and totals, static fallback and 17 languages at 5 widths pass.');
-}finally{await context.close();await browser.close();server.close();}
-})().catch(e=>{console.error(e);server.close();process.exitCode=1;});
+}).catch(e=>{console.error(e);process.exitCode=1;});

@@ -185,10 +185,8 @@
   M.register('screen-import', function (context) {
     var api = context.api, root = context.root;
     var queue = null, entries = [], current = 0, ocr = null, small = null, busy = false, lastApply = null, urls = [];
-    // How far the model download has got ({ loaded, total }, null when nothing
-    // is downloading) and how many shots this run of reading has finished.
     var download = null, done = 0;
-    var ledger = window.PlayerLedger && window.PlayerLedger.shared();
+    var ledger = context.ledger;
 
     function tr(key, fallback, vars) { var text = api.tr(key, fallback); return vars ? api.fill(text, vars) : text; }
     function target(key) { return context.targets(key)[0]; }

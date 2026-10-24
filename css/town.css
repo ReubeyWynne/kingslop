@@ -128,14 +128,10 @@
 .town-gov-piece[data-gov="inf-1"] { grid-area: inf1; } .town-gov-piece[data-gov="inf-2"] { grid-area: inf2; }
 .town-gov-piece[data-gov="arc-1"] { grid-area: arc1; } .town-gov-piece[data-gov="arc-2"] { grid-area: arc2; }
 .town-main .town-gov-piece { display: grid; justify-items: center; gap: .25rem; min-width: 0; padding: 0; color: var(--ink); }
-.town-gov-card { position: relative; display: block; width: 100%; max-width: 5.5rem; aspect-ratio: 1; }
-.town-gov-card > img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.town-gov-card[data-state="unset"] > img, .town-gov-card[data-state="empty"] > img { filter: grayscale(1); opacity: .35; }
+.town-gov-card { --equipment-card-size: 5.5rem; position: relative; }
 .town-gov-stars { position: absolute; inset-inline-start: .3rem; inset-block-end: .25rem; display: flex; flex-direction: column-reverse; color: #ffd75e; font-size: .8rem; line-height: .85; text-shadow: 0 0 2px #000, 0 0 2px #000; writing-mode: vertical-lr; letter-spacing: -.05em; }
 .town-gov-gems { display: flex; gap: .15rem; }
-.town-gov-gem { position: relative; display: block; width: 1.55rem; height: 1.55rem; }
-.town-gov-gem img { width: 100%; height: 100%; object-fit: contain; }
-.town-gov-gem[data-state="unset"] img, .town-gov-gem[data-state="empty"] img { filter: grayscale(1); opacity: .3; }
+.town-gov-gem { --equipment-gem-size: 100%; --equipment-empty-opacity: .3; position: relative; display: block; width: 1.55rem; height: 1.55rem; }
 .town-gov-gem b { position: absolute; inset-inline-end: -.2rem; inset-block-end: -.25rem; font: 700 .6rem/1 var(--display-2); color: var(--ink); text-shadow: 0 0 2px #000, 0 0 2px #000; }
 .town-gov-piece .town-tile-name { font-size: .8rem; margin: 0; }
 .town-main .town-gov-piece:hover .town-gov-card, .town-main .town-gov-piece:focus-visible .town-gov-card { outline: 1px solid var(--amber); outline-offset: 2px; }

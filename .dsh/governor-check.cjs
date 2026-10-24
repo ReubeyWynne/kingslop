@@ -61,6 +61,14 @@ assert.equal(G.toTarget('gear', { 'inf-1': 57 }, 58, {}).unverified, true);
 assert.deepEqual(G.events('gear', 100).map(e => [e.event, e.day, e.rate]), [['brawl', 5, 22], ['brawl', 6, 22]]);
 assert.equal(G.events('charms', 1).length, 11);
 assert.ok(G.events('charms', 625).some(e => e.event === 'prep' && e.points === 43750));
+assert.throws(() => G.events('unknown', 100));
+assert.ok(G.events('gear', null).every(event => event.points === null));
+const eventData = JSON.parse(JSON.stringify(require('../_data/event_rules.json')));
+for (const days of Object.values(eventData.events)) for (const day of days) for (const row of day.rows) { row.label = '表示'; row.points = 'presentation'; }
+const eventContext = { window: { EventRuleData: eventData, GovernorData: data } };
+vm.runInNewContext(fs.readFileSync('js/event-rules.js', 'utf8'), eventContext);
+vm.runInNewContext(fs.readFileSync('js/governor-engine.js', 'utf8'), eventContext);
+for (const kind of ['gear', 'charms']) assert.deepEqual(JSON.parse(JSON.stringify(eventContext.window.Governor.events(kind, 625))), G.events(kind, 625), kind + ' scores from metadata when labels and display points change');
 
 // Ledger: governor sections stay unsupported until written, then validate strictly.
 function storage(seed = {}) { const v = new Map(Object.entries(seed)); return { getItem: k => v.has(k) ? v.get(k) : null, setItem: (k, x) => v.set(k, x), removeItem: k => v.delete(k) }; }

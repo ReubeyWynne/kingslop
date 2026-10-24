@@ -2,9 +2,9 @@
   'use strict';
   window.Interactions.register('hero-directory', function (context) {
     var nodes = context.nodes('[data-hero]'), fields = {}, currentGeneration = window.KS_SERVER_AGE.getGeneration();
-    var Ledger = window.PlayerLedger, store = null, mine = { roster: {}, shards: {}, widgets: {} };
+    var Ledger = window.PlayerLedger, editor = window.RosterEditor, store = null, mine = { roster: {}, shards: {}, widgets: {} };
     // Browsing still works when storage is blocked; only the collection forms stay disabled.
-    try { store = Ledger.shared(); store.snapshot(); } catch (cause) { store = null; }
+    try { store = context.ledger; store.snapshot(); } catch (cause) { store = null; }
     ['query', 'troop', 'generation', 'server', 'role', 'mine'].forEach(function (key) { fields[key] = context.targets(key)[0]; });
     var records = nodes.map(function (node) { return { node: node, form: node.querySelector('[data-target~="hero-directory.form"]'), badge: node.querySelector('[data-target~="hero-directory.badge"]'), hero: { key: node.dataset.hero, name: node.dataset.name, type: node.dataset.troop, generation: Number(node.dataset.generation), roles: (node.dataset.roles || '').split(' ').filter(Boolean), owned: false } }; });
     context.targets('filters').forEach(function (node) { node.disabled = false; });
@@ -82,51 +82,31 @@
       context.targets('empty').forEach(function (node) { node.hidden = count !== 0; });
       context.emit('hero-directory:filtered', { count: count, filters: filters });
     }
-    function number(input) { return input.value === '' ? null : Number(input.value); }
     function edit(input) {
-      var record = records.filter(function (item) { return item.node.contains(input); })[0];
-      if (!record || (input.matches('input[type="number"]') && !input.validity.valid)) return;
+      var record = editor.recordOf(records, input);
+      if (!record || !store || (input.matches('input[type="number"]') && !input.validity.valid)) return;
       var key = record.hero.key, field = input.dataset.field, saved = record.form.querySelector('[data-target~="hero-directory.saved"]');
-      try {
-        if (field === 'shards') store.setBalance(Ledger.heroShardId(key), number(input));
-        else if (field === 'widgets') store.setBalance(Ledger.heroWidgetId(key), number(input));
+      editor.save(context.api, saved, load, function () {
+        if (field === 'shards') store.setBalance(Ledger.heroShardId(key), editor.number(input));
+        else if (field === 'widgets') store.setBalance(Ledger.heroWidgetId(key), editor.number(input));
         else if (field === 'owned') { delete record.pending; store.setHero(key, input.checked ? (mine.roster[key] || {}) : null); }
         else {
           var copy = Object.assign({ level: null, stars: null, widget: null, skills: null }, mine.roster[key]);
           if (field === 'skill') {
             var skills = (copy.skills || record.pending || []).slice(), size = Number(record.node.dataset.skills), at = Number(input.dataset.skill);
             while (skills.length < size) skills.push(null);
-            skills[at] = number(input);
+            skills[at] = editor.number(input);
             // A skill list stays whole: any unread level forgets the list rather than storing gaps.
             copy.skills = skills.every(function (level) { return level !== null; }) ? skills : null;
             if (copy.skills === null) record.pending = skills; else delete record.pending;
-          } else copy[field] = number(input);
+          } else copy[field] = editor.number(input);
           store.setHero(key, copy);
         }
-        if (saved) saved.textContent = context.api.tr('gear.saved', '');
-      } catch (cause) {
-        if (saved) saved.textContent = context.api.tr('gear.saveFailed', '');
-        load(); throw cause;
-      }
-    }
-    // One dossier open at a time (native via details[name]; this covers older browsers),
-    // and the opened one is brought into view because the tiles reflow around it.
-    records.forEach(function (record) {
-      var dossier = record.node.querySelector('.hero-dossier');
-      if (!dossier) return;
-      context.listen(dossier, 'toggle', function () {
-        if (!dossier.open) return;
-        records.forEach(function (other) { var d = other.node.querySelector('.hero-dossier'); if (d && d !== dossier && d.open) d.open = false; });
-        var top = record.node.getBoundingClientRect().top;
-        if (top < 0 || top > window.innerHeight * 0.6) record.node.scrollIntoView({ block: 'start' });
       });
-    });
+    }
+    editor.dossiers(context, records, '.hero-dossier');
     context.listen(document, 'ks:server-age-change', function (event) { currentGeneration = event.detail ? event.detail.generation : null; serverValue(); render(); });
-    // Each dossier is its own disclosure module, so its form changes are heard here rather than as actions.
-    context.listen(context.root, 'change', function (event) {
-      var input = event.target.closest && event.target.closest('.hero-mine [data-field]');
-      if (input && store) try { edit(input); } catch (cause) { context.emit('module:error', { module: 'hero-directory', message: cause.message }); }
-    });
+    editor.onChange(context, 'hero-directory', '.hero-mine [data-field]', edit);
     if (store) context.cleanup(store.subscribe(function () { load(); restorePending(); render(); }));
     // Skill levels picked before the whole list is known stay on screen until the rest are chosen.
     function restorePending() {

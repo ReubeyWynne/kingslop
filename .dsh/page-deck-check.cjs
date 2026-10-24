@@ -143,6 +143,7 @@ function setup(current = 'home', reduced = false) {
     requestIdleCallback() {}
   });
   scope.fetch = () => Promise.resolve({ ok: false });
+  for (const file of ['page-deck.js', 'page-chrome.js']) vm.runInNewContext(fs.readFileSync(path.join(root, 'js', file), 'utf8'), scope, { filename: file });
   vm.runInNewContext(source, scope, { filename: 'common.js' });
   window.boot();
   function advance(ms) {
