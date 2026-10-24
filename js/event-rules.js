@@ -10,6 +10,16 @@
     if (!Number.isInteger(day) || day < 1 || day > list.length) throw new Error('Unsupported event day');
     return list[day - 1];
   }
+  function speedupKinds(row) { return row.scoring && row.scoring.type === 'speedup' ? row.scoring.kinds.slice() : null; }
+  function governorKind(row) { return row.scoring && row.scoring.type === 'governor' ? row.scoring.kind : null; }
+  function rate(row) { return row.scoring && Number.isSafeInteger(row.scoring.rate) && row.scoring.rate > 0 ? row.scoring.rate : null; }
+  function tasks(event, group) {
+    var key = { sg: 'SG_TASKS', armament: 'ARM_TASKS', officer: 'OFF_TASKS' }[event];
+    if (!key) throw new Error('Unsupported task event');
+    var index = event === 'sg' ? group - 1 : group, rows = data.legacy[key][index], ids = data.legacyTaskIds[key][index];
+    if (!rows || !ids) throw new Error('Unsupported task group');
+    return rows.map(function (row, i) { return Object.assign({ id: ids[i], label: row[0], points: row[1] }, data.tasks[ids[i]]); });
+  }
   /* The 28-day wheel runs on UTC and every kingdom turns it together: cycle day 1 is Monday
      2026-08-17 (the anchor js/kvk.js counts from). Brawl days are cycle days 1–6, Strongest
      Governor 8–14 and KvK prep 22–26. */
@@ -42,27 +52,5 @@
       unknown: unknown, complete: !unknown.length, shortfall: target === null || target === undefined ? null : Math.max(0, target - total),
       unquantified: selected.rows.filter(function (row) { return !row.items; }) };
   }
-  function labelToItemId(label) {
-    var l = String(label).toLowerCase();
-    if (/truck|beast|terror|rally and hunt|wilderness/.test(l)) return 'free';
-    if (/tempered truegold|temp tg/.test(l)) return 'Tempered TG';
-    if (/mithril/.test(l)) return 'Mithril';
-    if (/widget/.test(l)) return 'Widget gear';
-    if (/forgehammer|hammer/.test(l)) return 'Forgehammer';
-    if (/governor charm|charm/.test(l)) return 'Gov charm';
-    if (/governor gear|gear max score|gov gear/.test(l)) return 'Gov gear';
-    if (/master emblem/.test(l)) return 'Master emblem';
-    if (/mythic|epic|rare|hero shard|shard/.test(l)) return 'Hero shard';
-    if (/roulette/.test(l)) return 'Hero roulette';
-    if (/taming mark|pet advancement|pet refinement|pets/.test(l)) return 'Pets advance';
-    if (/intel mission/.test(l)) return 'Intel missions';
-    if (/truegold dust/.test(l)) return null; // dust is not a tracked material
-    if (/t10|t11|t[0-9] troop|troop training|training/.test(l)) return 'Troop';
-    if (/construction/.test(l)) return 'Building';
-    if (/research/.test(l)) return 'Research';
-    if (/gather/.test(l)) return 'Gathering';
-    if (/truegold/.test(l)) return 'Truegold';
-    if (/master\u2019s manuscript|manuscript/.test(l)) return null;
-    return null;
-  }  return { data: data, days: days, rules: rules, calculate: calculate, labelToItemId: labelToItemId, CYCLE: CYCLE, EPOCH: EPOCH, DAY_MS: DAY_MS, cycleDay: cycleDay, opens: opens };
+  return { data: data, days: days, rules: rules, calculate: calculate, speedupKinds: speedupKinds, governorKind: governorKind, rate: rate, tasks: tasks, CYCLE: CYCLE, EPOCH: EPOCH, DAY_MS: DAY_MS, cycleDay: cycleDay, opens: opens };
 });

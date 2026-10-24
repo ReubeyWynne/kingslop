@@ -9,8 +9,8 @@
   };
   function t(api, key) { return api.tr('masters.' + key, EN[key]); }
   window.Interactions.register('master-directory', function (context) {
-    var Ledger = window.PlayerLedger, Spend = window.MasterSpend, api = context.api, store = null, mine = { roster: {}, emblems: {} };
-    try { store = Ledger.shared(); store.snapshot(); } catch (cause) { store = null; }
+    var Ledger = window.PlayerLedger, Spend = window.MasterSpend, editor = window.RosterEditor, api = context.api, store = null, mine = { roster: {}, emblems: {} };
+    try { store = context.ledger; store.snapshot(); } catch (cause) { store = null; }
     var records = context.nodes('[data-master]').map(function (node) {
       return { node: node, id: node.dataset.master, master: Spend.find(node.dataset.master), data: window.MasterData.masters.find(function (entry) { return entry.id === node.dataset.master; }),
         form: node.querySelector('[data-target~="master-directory.form"]'), badge: node.querySelector('[data-target~="master-directory.badge"]') };
@@ -76,44 +76,25 @@
       if (owned) text += ' · ' + api.fill(t(api, 'owned'), { n: api.fmt(owned) });
       context.targets('count').forEach(function (node) { node.textContent = text; });
     }
-    function number(input) { return input.value === '' ? null : Number(input.value); }
     function edit(input) {
-      var record = records.filter(function (item) { return item.node.contains(input); })[0];
-      if (!record || (input.matches('input[type="number"]') && !input.validity.valid)) return;
+      var record = editor.recordOf(records, input);
+      if (!record || !store || (input.matches('input[type="number"]') && !input.validity.valid)) return;
       var key = record.id, field = input.dataset.field, saved = record.form.querySelector('[data-target~="master-directory.saved"]');
-      try {
-        if (field === 'emblems') store.setBalance(Ledger.masterEmblemId(key), number(input));
+      editor.save(api, saved, render, function () {
+        if (field === 'emblems') store.setBalance(Ledger.masterEmblemId(key), editor.number(input));
         else if (field === 'owned') store.setMaster(key, input.checked ? (mine.roster[key] || {}) : null);
         else {
           var copy = Object.assign({ affinity: null, ready: false, skills: [null, null, null, null] }, mine.roster[key]);
           copy.skills = copy.skills.slice();
-          if (field === 'skill') copy.skills[Number(input.dataset.skill)] = number(input);
+          if (field === 'skill') copy.skills[Number(input.dataset.skill)] = editor.number(input);
           else if (field === 'ready') copy.ready = input.checked;
-          else copy.affinity = number(input);
+          else copy.affinity = editor.number(input);
           store.setMaster(key, copy);
         }
-        if (saved) saved.textContent = api.tr('gear.saved', '');
-      } catch (cause) {
-        if (saved) saved.textContent = api.tr('gear.saveFailed', '');
-        render(); throw cause;
-      }
-    }
-    // One dossier open at a time (native via details[name]; this covers older browsers),
-    // and the opened one is brought into view because the tiles reflow around it.
-    records.forEach(function (record) {
-      var dossier = record.node.querySelector('.master-dossier');
-      context.listen(dossier, 'toggle', function () {
-        if (!dossier.open) return;
-        records.forEach(function (other) { var d = other.node.querySelector('.master-dossier'); if (d !== dossier && d.open) d.open = false; });
-        var top = record.node.getBoundingClientRect().top;
-        if (top < 0 || top > window.innerHeight * 0.6) record.node.scrollIntoView({ block: 'start' });
       });
-    });
-    // Each dossier is its own disclosure module, so its form changes are heard here rather than as actions.
-    context.listen(context.root, 'change', function (event) {
-      var input = event.target.closest && event.target.closest('.master-mine [data-field]');
-      if (input && store) try { edit(input); } catch (cause) { context.emit('module:error', { module: 'master-directory', message: cause.message }); }
-    });
+    }
+    editor.dossiers(context, records, '.master-dossier');
+    editor.onChange(context, 'master-directory', '.master-mine [data-field]', edit);
     context.listen(document, 'ks:kingdom-change', render);
     if (store) context.cleanup(store.subscribe(render));
     render();

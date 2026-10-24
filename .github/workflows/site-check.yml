@@ -46,6 +46,12 @@ jobs:
               - css/ascii.css
               - css/ascii-frames.css
               - js/common.js
+              - js/page-chrome.js
+              - js/page-deck.js
+              - js/roster-editor.js
+              - js/governor-view.js
+              - css/equipment.css
+              - .dsh/lib/**
               - js/i18n.js
               - js/interactions.js
               - js/player-ledger.js
@@ -73,6 +79,7 @@ jobs:
             ascii:
               - .github/workflows/site-check.yml
               - .dsh/build-ascii.py
+              - .dsh/pet-portraits/**
               - .dsh/ascii-style-check.cjs
               - _includes/ascii/**
               - css/**
@@ -116,6 +123,7 @@ jobs:
               - js/pet-*
               - _data/pets.json
               - css/pets.css
+              - css/ascii-frames-pets.css
               - css/heroes.css
             castle:
               - *shared
@@ -133,6 +141,16 @@ jobs:
               - js/event-*
               - js/kvk.js
               - js/hero-gear-engine.js
+              - js/hero-spend.js
+              - js/hero-data.liquid
+              - _data/heroes.json
+              - js/governor-engine.js
+              - js/governor-data.liquid
+              - _data/governor.json
+              - js/master-spend.js
+              - js/master-data.liquid
+              - _data/masters.json
+              - js/town-centre-engine.js
               - js/troop-*
               - js/building-*
               - _data/event_rules.json
@@ -267,8 +285,7 @@ jobs:
       - name: Check ASCII animation style
         if: needs.changes.outputs.ascii == 'true'
         run: |
-          python3 .dsh/build-ascii.py
-          git diff --exit-code -- css/ascii-frames.css _includes/ascii/campfire.html || { echo "::error::ASCII frames are stale or hand-edited. Change .dsh/build-ascii.py and regenerate."; exit 1; }
+          python3 .dsh/build-ascii.py --check
           node .dsh/ascii-style-check.cjs
           python3 .dsh/moon-check.py
       - name: Check troop allocation
@@ -301,6 +318,15 @@ jobs:
       - name: Check Town Centre points and wiring
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/town-centre-check.cjs
+      - name: Check shared spending consistency
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/spending-consistency-check.cjs
+      - name: Check governor equipment presentation
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/governor-view-check.cjs
+      - name: Check shared roster editing
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/roster-editor-check.cjs
       - name: Check hero spending plan and Heroes page points
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/hero-spend-check.cjs
@@ -376,7 +402,9 @@ jobs:
           echo "NODE_PATH=$RUNNER_TEMP/visuals/node_modules" >> "$GITHUB_ENV"
       - name: Check shared interaction modules
         if: matrix.group == 'interactions'
-        run: node .dsh/interaction-modules-check.cjs
+        run: |
+          node --test .dsh/lib/browser-harness.test.cjs
+          node .dsh/interaction-modules-check.cjs
       - name: Check kingdom timeline UI
         if: matrix.group == 'heroes'
         run: node .dsh/kingdom-progression-ui-check.cjs

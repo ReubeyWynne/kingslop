@@ -1,16 +1,14 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const http = require('node:http');
 const path = require('node:path');
 const vm = require('node:vm');
-const { chromium } = require('playwright');
+const { withBrowser } = require('./lib/browser-harness.cjs');
 
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/visual-preview');
 const langs = ['en', 'es', 'pt-BR', 'de', 'fr', 'it', 'ru', 'pl', 'tr', 'zh-Hans', 'zh-Hant', 'ko', 'ja', 'th', 'id', 'vi', 'ar'];
 const diagrams = ['rally-anatomy', 'march-composition', 'hunt-opening'];
 const screenshotStyle = '.topbar, .toc { visibility: hidden !important; }';
-const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml' };
 
 fs.mkdirSync(output, { recursive: true });
 const dictionaries = {};
@@ -22,23 +20,10 @@ for (const lang of langs) {
   assert.equal(dictionaries[lang]['bh.opening.gathering'], undefined, lang + ': stale gathering label');
 }
 
-const server = http.createServer((request, response) => {
-  let file = path.resolve(root, '.' + decodeURIComponent(new URL(request.url, 'http://localhost').pathname));
-  if (!file.startsWith(root + path.sep)) { response.writeHead(403).end(); return; }
-  if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
-  if (!fs.existsSync(file)) { response.writeHead(404).end(); return; }
-  response.setHeader('Content-Type', mime[path.extname(file)] || 'application/octet-stream');
-  fs.createReadStream(file).pipe(response);
-});
-
-(async () => {
-  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-  const base = 'http://127.0.0.1:' + server.address().port;
-  let browser;
+withBrowser({ root }, async ({ browser, origin: base }) => {
   const report = [];
   const failures = [];
   try {
-    browser = await chromium.launch();
     const context = await browser.newContext();
     for (const [lang, width] of [...langs.map(lang => [lang, 320]), ['en', 390], ['en', 1280], ['ar', 1280]]) {
       const page = await context.newPage();
@@ -130,9 +115,7 @@ const server = http.createServer((request, response) => {
     }
   } finally {
     fs.writeFileSync(path.join(output, 'checks.json'), JSON.stringify({ report, failures }, null, 2));
-    await browser?.close();
-    await new Promise(resolve => server.close(resolve));
   }
   assert.equal(failures.length, 0, JSON.stringify(failures, null, 2));
   console.log('Passed ' + report.length + ' diagram checks across all 17 languages, mobile and desktop, including RTL.');
-})().catch(error => { console.error(error); process.exitCode = 1; });
+}).catch(error => { console.error(error); process.exitCode = 1; });

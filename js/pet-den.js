@@ -28,10 +28,10 @@
     var parts = window.PetPlan.KEYS.filter(function (key) { return cost[key] > 0; }).map(function (key) { return api.fill(t(api, 'm.' + key), { n: api.fmt(cost[key]) }); });
     return parts.length ? parts.join(', ') : t(api, 'free');
   }
-  function shared() { try { var store = window.PlayerLedger.shared(); store.snapshot(); return store; } catch (cause) { return null; } }
+  function shared(context) { try { var store = context.ledger; store.snapshot(); return store; } catch (cause) { return null; } }
 
   window.Interactions.register('pet-den', function (context) {
-    var api = context.api, Plan = window.PetPlan, Care = window.PetCare, store = shared(), mine = { roster: {} }, storage = null, den = {}, timers = {};
+    var api = context.api, Plan = window.PetPlan, Care = window.PetCare, editor = window.RosterEditor, store = shared(context), mine = { roster: {} }, storage = null, den = {}, timers = {};
     try { storage = window.localStorage; den = Care.load(storage); } catch (cause) { storage = null; }
     var records = context.nodes('[data-pet].pet-card').map(function (node) {
       return { node: node, id: node.dataset.pet, pet: Plan.find(node.dataset.pet), pen: node.querySelector('[data-pen]'), owned: node.querySelector('[data-field="owned"]'),
@@ -117,7 +117,7 @@
       record.pen.toggleAttribute('data-welcome', Boolean(welcome));
       timers[record.id] = setTimeout(function () { delete record.pen.dataset.react; record.pen.removeAttribute('data-favourite'); record.pen.removeAttribute('data-welcome'); render(); }, 2400);
     }
-    function recordOf(node) { return records.filter(function (item) { return item.node.contains(node); })[0]; }
+    function recordOf(node) { return editor.recordOf(records, node); }
     function act(record, kind, spot) {
       if (!record || !Object.hasOwn(mine.roster, record.id)) return;
       var now = Date.now(), result = (kind === 'feed' ? Care.feed : Care.pat)(den[record.id] || Care.fresh(now), now);
@@ -189,38 +189,21 @@
       done.record.pen.removeAttribute('data-sniff');
       if (event.type === 'pointerup' && done.moved && over(done.record, event)) act(done.record, 'feed');
     }
-    function number(input) { return input.value === '' ? null : Number(input.value); }
     function edit(input) {
-      var record = records.filter(function (item) { return item.node.contains(input); })[0];
+      var record = recordOf(input);
       if (!record || !store || (input.type === 'number' && !input.validity.valid)) return;
       var field = input.dataset.field, saved = record.node.querySelector('[data-target~="pet-den.saved"]');
-      try {
+      editor.save(api, saved, render, function () {
         if (field === 'owned') store.setPet(record.id, input.checked ? (mine.roster[record.id] || {}) : null);
         else {
           var copy = Object.assign({ level: null, advanced: false }, mine.roster[record.id]);
-          if (field === 'advanced') copy.advanced = input.checked; else copy.level = number(input);
+          if (field === 'advanced') copy.advanced = input.checked; else copy.level = editor.number(input);
           store.setPet(record.id, copy);
         }
-        if (saved) saved.textContent = api.tr('gear.saved', '');
-      } catch (cause) {
-        if (saved) saved.textContent = api.tr('gear.saveFailed', '');
-        render(); throw cause;
-      }
-    }
-    // One dossier open at a time; the opened one is brought into view as the pens reflow.
-    records.forEach(function (record) {
-      var dossier = record.node.querySelector('.pet-dossier');
-      context.listen(dossier, 'toggle', function () {
-        if (!dossier.open) return;
-        records.forEach(function (other) { var d = other.node.querySelector('.pet-dossier'); if (d !== dossier && d.open) d.open = false; });
-        var top = record.node.getBoundingClientRect().top;
-        if (top < 0 || top > window.innerHeight * 0.6) record.node.scrollIntoView({ block: 'start' });
       });
-    });
-    context.listen(context.root, 'change', function (event) {
-      var input = event.target.closest && event.target.closest('.pet-card [data-field]');
-      if (input) try { edit(input); } catch (cause) { context.emit('module:error', { module: 'pet-den', message: cause.message }); }
-    });
+    }
+    editor.dossiers(context, records, '.pet-dossier');
+    editor.onChange(context, 'pet-den', '.pet-card [data-field]', edit);
     ['pointermove', 'pointerdown'].forEach(function (type) { context.listen(context.root, type, stroke); });
     ['pointerup', 'pointercancel', 'pointerout'].forEach(function (type) { context.listen(context.root, type, unstroke); });
     context.listen(context.root, 'pointerdown', lift);
@@ -268,7 +251,7 @@
   });
 
   window.Interactions.register('pet-advances', function (context) {
-    var api = context.api, Plan = window.PetPlan, store = shared();
+    var api = context.api, Plan = window.PetPlan, store = shared(context);
     function render() {
       var roster = {};
       try { roster = store ? store.pets().roster : {}; } catch (cause) { roster = {}; }

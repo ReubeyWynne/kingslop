@@ -24,7 +24,7 @@
 
   window.Interactions.register('master-points', function (context) {
     var S = window.MasterSpend, rules = window.EventRules, api = context.api, store = null;
-    try { store = window.PlayerLedger.shared(); store.snapshot(); } catch (cause) { store = null; }
+    try { store = context.ledger; store.snapshot(); } catch (cause) { store = null; }
     function put(key, value) { context.targets(key).forEach(function (node) { node.textContent = value; }); }
     function render() {
       if (!store) return;

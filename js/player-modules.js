@@ -3,7 +3,7 @@
   var M = window.Interactions;
   function status(context, key) { context.emit('player-status', { scope: context.root.dataset.statusScope || 'player', key: key }); }
   M.register('ledger-form', function (context) {
-    var store = window.PlayerLedger.shared();
+    var store = context.ledger;
     function render() {
       var snapshot = store.snapshot();
       context.nodes('[data-bind]').forEach(function (node) {
@@ -33,7 +33,7 @@
     } }, normalize: { events: ['change'], run: render } } };
   });
   M.register('save-transfer', function (context) {
-    var store = window.PlayerLedger.shared(), sequence = 0;
+    var store = context.ledger, sequence = 0;
     return { dispose: function () { sequence++; }, actions: {
       export: { run: function () {
         var url = URL.createObjectURL(new Blob([store.exportJSON()], { type: 'application/json' })), link = document.createElement('a');
@@ -85,7 +85,7 @@
   // keys each row by its ledger id and reconciles in place, so a field being
   // typed into is never replaced under the cursor.
   M.register('troop-roster', function (context) {
-    var store = window.PlayerLedger.shared(), Ledger = window.PlayerLedger, pending = {};
+    var store = context.ledger, Ledger = window.PlayerLedger, pending = {};
     function translate(node) {
       node.querySelectorAll('[data-i18n]').forEach(function (n) { n.textContent = context.api.tr(n.dataset.i18n, n.textContent); });
       node.querySelectorAll('[data-i18n-attr]').forEach(function (n) { n.setAttribute(n.dataset.i18nAttr, context.api.tr(n.dataset.i18nKey, n.getAttribute(n.dataset.i18nAttr) || '')); });

@@ -6,21 +6,26 @@
   var ledger, ledgerRevision = 0, saving = false;
   var scriptURL = new URL(document.currentScript.src);
   var base = new URL('./', scriptURL);
-  var art = new URL('../img/hero-gear/', base), troopArt = { inf: 'infantry', cav: 'cavalry', arc: 'archer' };
-  var resourceArt = { xp: 'xp-part-100', hammers: 'forgehammer', mythic: 'mythic-gear', mithril: 'mithril' };
+  var view = window.HeroGearView.create({
+    engine: E, tr: tr, fmt: fmt,
+    art: new URL('../img/hero-gear/', base),
+    fill: function (text, values) { return BH.fill(text, values); }
+  });
   var parts = { ten: 0, hundred: 0, remainder: 0 };
-  // Guest mode: ?guest or a shared ?gear= link runs the page on a ledger held in memory, so
-  // nothing typed here reaches the saved gear or the inventory other tools read. It is swapped
-  // in before the shared modules mount, so the bag fields and backups use it too.
   var params = new URLSearchParams(location.search), link = E.readLink(location.search);
   var guest = params.has('guest') || !!link, linkFailed = !!(link && link.invalid);
   ['gear-settings', 'theory'].forEach(function (id) { document.getElementById(id).hidden = true; });
   if (guest) {
-    var Ledger = window.PlayerLedger, memory = {}, guestLedger;
-    if (!link) try { memory[Ledger.KEY] = JSON.stringify(Ledger.shared().snapshot()); } catch (ignored) {}
-    guestLedger = Ledger.create({ getItem: function (key) { return key in memory ? memory[key] : null; }, setItem: function (key, value) { memory[key] = String(value); } }, null);
-    if (link && !link.invalid) guestLedger.writeHeroGear(Object.assign(E.defaults(), link), E, { source: 'manual' });
-    Ledger.shared = function () { return guestLedger; };
+    var guestLedger;
+    window.Interactions.configure({ ledger: function () {
+      if (guestLedger) return guestLedger;
+      var Ledger = window.PlayerLedger, memory = {};
+      if (!link) try { memory[Ledger.KEY] = JSON.stringify(Ledger.shared().snapshot()); } catch (ignored) {}
+      var store = Ledger.create({ getItem: function (key) { return key in memory ? memory[key] : null; }, setItem: function (key, value) { memory[key] = String(value); } }, null);
+      if (link && !link.invalid) store.writeHeroGear(Object.assign(E.defaults(), link), E, { source: 'manual' });
+      guestLedger = store;
+      return store;
+    } });
     var forge = document.getElementById('gear-forge');
     forge.dataset.guest = 'true';
     forge.dataset.savedKey = 'gear.guestSaved';
@@ -37,7 +42,6 @@
   function syncXP() { state.resources.xp = partsTotal(); }
   function el(id) { return document.getElementById('gear-' + id); }
   function tr(key) { return BH.tr('gear.' + key, key); }
-  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function fmt(n) { return BH.fmt(n); }
   function copy(s) { return JSON.parse(JSON.stringify(s)); }
   function keptParams() { var kept = new URLSearchParams(location.search); ['guest', 'gear', 'w'].forEach(function (key) { kept.delete(key); }); return kept.toString(); }
@@ -70,35 +74,13 @@
       shareReset = setTimeout(function () { button.textContent = tr('share'); delete button.dataset.copied; el('share-status').textContent = ''; }, 2500);
     }, fallback);
   }
-  function name(id) { var p = id.split('-'); return tr(p[0]) + ' · ' + tr(p[1]); }
-  function quality(q) { return tr(q === 'mythic' ? 'mythicQuality' : q); }
-  function image(filename, cls) { return '<img class="' + cls + '" src="' + new URL(filename + '.webp', art).href + '" alt="" width="256" height="256">'; }
-  function gearImage(id, cls) { var p = id.split('-'); return image(troopArt[p[0]] + '-' + p[1], cls); }
-  function gearItem(id, p) {
-    return '<span class="gear-item" data-quality="' + p.quality + '" role="img" aria-label="' + esc(pieceLabel(p)) + '">' + gearImage(id, 'gear-art') + '<strong class="gear-item-level" aria-hidden="true">' + levelLabel(p) + '</strong><span class="gear-item-mastery" aria-hidden="true">' + image('forgehammer', 'gear-mastery-art') + p.mastery + '</span><span class="gear-item-rarity" aria-hidden="true">' + esc(quality(p.quality)) + '</span></span>';
-  }
-  function checkpoint(from, to) {
-    if (to.quality !== 'red') return null;
-    if (from.quality !== 'red') return { kind: 'ascension', label: tr('ascend') };
-    if ([120, 160, 200].some(function (level) { return from.level < level && to.level >= level; })) return { kind: 'mithril', label: tr('mithrilCheckpoint') };
-    if (to.mastery > from.mastery) return { kind: 'mastery', label: tr('redMasteryUpgrade') };
-    return null;
-  }
-  function checkpointLabel(mark) { return mark ? '<span class="gear-checkpoint-label">' + esc(mark.label) + '</span>' : ''; }
-  function kvkScore(costs, summary) {
-    var points = E.kvkPoints(costs);
-    return '<span class="gear-kvk-points' + (summary ? ' gear-kvk-summary' : '') + '" data-kvk-points="' + points + '" title="' + esc(tr('kvkWindow')) + '"><strong>' + fmt(points) + '</strong> <span>' + esc(tr('kvkPoints')) + '</span>' + (summary ? '<small>' + esc(tr('kvkWindow')) + '</small>' : '') + '</span>';
-  }
-  // Explanations live on the Theory tab; results link to their section instead of folding them in.
-  function theoryLink(id, key) { return '<a class="gear-theory-link" href="#' + id + '">' + esc(tr(key)) + ' →</a>'; }
-  function kvkNote() { return theoryLink('kvk-points', 'kvkScoring'); }
   function paintTheory() {
-    el('cost-units').textContent = costText(E.redPlans(state).scale);
+    el('cost-units').textContent = view.costText(E.redPlans(state).scale);
     el('kvk-formula').textContent = BH.fill(tr('kvkFormula'), { hammers: fmt(E.KVK_RATES.hammers), mithril: fmt(E.KVK_RATES.mithril) });
     // The same spending plan the Town Centre scores: what this bag can actually put into this gear.
     var spend = E.spendable(state.pieces, state.resources);
     el('kvk-bag').textContent = BH.fill(tr('kvkBag'), { hammers: fmt(spend.spent.hammers), mithril: fmt(spend.spent.mithril), points: fmt(spend.points) });
-    el('roles').innerHTML = E.TYPES.map(function (type) { return '<li><strong>' + esc(tr(type)) + '</strong> ' + esc(roleText(type)) + '</li>'; }).join('');
+    el('roles').innerHTML = E.TYPES.map(function (type) { return '<li><strong>' + view.esc(tr(type)) + '</strong> ' + view.esc(view.roleText(type)) + '</li>'; }).join('');
   }
   function paintPage() {
     el('views').querySelectorAll('[role="tab"]').forEach(function (button) {
@@ -109,18 +91,6 @@
     document.getElementById('theory').hidden = activePage !== 'theory';
   }
   function showPage(page) { activePage = page; note(null); paintPage(); if (page === 'planner') scheduleSearch(0); else cancelSearch(); }
-  function pieceInfo(slot, p) { return '<span class="gear-piece-info"><span class="gear-slot">' + esc(tr(slot)) + '</span><span class="gear-rarity gear-rarity-' + p.quality + '">' + esc(quality(p.quality)) + '</span></span>'; }
-  function comparison(id, from, to, detail) {
-    var direction = detail.refund ? 'down' : detail.costs.xp ? 'up' : 'same', mark = checkpoint(from, to);
-    var resources = E.RES.filter(function (r) { return r !== 'xp' && detail.costs[r]; }).map(function (r) {
-      return '<span class="gear-row-cost" role="img" aria-label="' + esc(fmt(detail.costs[r]) + ' ' + tr(r)) + '" title="' + esc(tr(r)) + '">' + image(resourceArt[r], 'gear-resource-art') + '<span aria-hidden="true">' + fmt(detail.costs[r]) + '</span></span>';
-    }).join('');
-    var xp = direction === 'same' ? '' : '<span class="gear-xp-flow">' + (direction === 'down' ? '↓ ' + fmt(detail.refund) + ' XP · ' + esc(tr('recoverXP')) : '↑ ' + fmt(detail.costs.xp) + ' XP · ' + esc(tr('redistributeXP'))) + '</span>';
-    return '<article class="gear-row gear-change" data-direction="' + direction + '" data-changed="true" data-checkpoint="' + (mark ? mark.kind : '') + '" data-piece-id="' + id + '"><div class="gear-before-after"><span class="gear-state"><small>' + esc(tr('before')) + '</small>' + gearItem(id, from) + '</span><span class="gear-change-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" focusable="false"><path d="M2 10h15m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="gear-state"><small>' + esc(tr('after')) + '</small>' + gearItem(id, to) + '</span></div><div class="gear-change-info"><strong class="gear-change-name">' + esc(tr(id.split('-')[1])) + '</strong>' + checkpointLabel(mark) + '<div class="gear-row-costs">' + xp + resources + kvkScore(detail.costs) + '</div><small class="gear-tile-impact">' + esc(statText(detail.delta).replace(tr('core'), tr(id.split('-')[1] === 'helm' || id.split('-')[1] === 'boots' ? 'lethality' : 'health'))) + '</small></div></article>';
-  }
-  function fullLevel(p) { return (p.quality === 'red' ? quality('red') + ' ' : '') + levelLabel(p); }
-  function levelLabel(p) { return '+' + (p.quality === 'red' ? p.level - 100 : p.level); }
-  function pieceLabel(p) { return quality(p.quality) + ' ' + (p.quality === 'red' ? '+' + (p.level - 100) : p.level) + ' · ' + tr('mastery') + ' ' + p.mastery; }
   function note(key) { document.dispatchEvent(new CustomEvent('player-status', { detail: { scope: 'hero-gear', key: key ? 'gear.' + key : null } })); }
   function persist(options) {
     try {
@@ -150,9 +120,6 @@
     paintAnswer(); paintTheory();
     return saved;
   }
-  function numberInput(id, key, p, max) {
-    return '<label><span>' + esc(tr(key)) + '</span><input type="number" inputmode="numeric" min="' + (key === 'level' && p.quality === 'red' ? 100 : 0) + '" max="' + max + '" step="1" data-piece="' + id + '" data-field="' + key + '" value="' + p[key] + '" aria-label="' + esc(name(id) + ' · ' + tr(key)) + '"' + (key === 'mastery' && p.quality === 'epic' ? ' disabled' : '') + '></label>';
-  }
   function paintView() {
     el('forge').dataset.view = state.view;
     paintPage();
@@ -160,8 +127,8 @@
   }
   function paintEdit() {
     var id = state.selected, p = state.pieces[id];
-    el('edit-title').textContent = name(id);
-    el('edit-fields').innerHTML = '<div class="gear-edit-art">' + gearItem(id, p) + '<span>' + esc(pieceLabel(p)) + '</span></div><div class="gear-edit-inputs"><label><span>' + esc(tr('quality')) + '</span><select data-piece="' + id + '" data-field="quality">' + ['epic','mythic','red'].map(function (q) { return '<option value="' + q + '"' + (q === p.quality ? ' selected' : '') + '>' + esc(quality(q)) + '</option>'; }).join('') + '</select></label>' + numberInput(id, 'level', p, E.cap(p)) + numberInput(id, 'mastery', p, 20) + '</div>';
+    el('edit-title').textContent = view.name(id);
+    el('edit-fields').innerHTML = view.editorFields(id, p);
   }
   function editPiece(id) { if (id) selectPiece(id); paintEdit(); el('edit-dialog').showModal(); }
   function paintEditor() {
@@ -174,89 +141,42 @@
     el('include').checked = state.included[state.troop];
     el('rows').innerHTML = E.SLOTS.map(function (slot) {
       var id = state.troop + '-' + slot, p = state.pieces[id];
-      return '<button type="button" class="gear-row" data-select="' + id + '" data-selected="' + (state.selected === id) + '" aria-pressed="' + (state.selected === id) + '" aria-label="' + esc(name(id) + ' · ' + pieceLabel(p)) + '">' + gearItem(id, p) + pieceInfo(slot, p) + '</button>';
+      return '<button type="button" class="gear-row" data-select="' + id + '" data-selected="' + (state.selected === id) + '" aria-pressed="' + (state.selected === id) + '" aria-label="' + view.esc(view.name(id) + ' · ' + view.pieceLabel(p)) + '">' + view.gearItem(id, p) + view.pieceInfo(slot, p) + '</button>';
     }).join('');
-    el('selected').innerHTML = Object.keys(state.pieces).map(function (id) { return '<option value="' + id + '"' + (id === state.selected ? ' selected' : '') + '>' + esc(name(id)) + '</option>'; }).join('');
+    el('selected').innerHTML = Object.keys(state.pieces).map(function (id) { return '<option value="' + id + '"' + (id === state.selected ? ' selected' : '') + '>' + view.esc(view.name(id)) + '</option>'; }).join('');
     el('profile').value = state.profile;
     el('reforge').checked = state.reforge;
-    el('weights').innerHTML = '<div class="gear-weight-row gear-weight-head" aria-hidden="true"><span></span><span>' + esc(tr('lethality')) + '</span><span>' + esc(tr('health')) + '</span></div>' + E.TYPES.map(function (type) {
-      return '<div class="gear-weight-row"><span>' + esc(tr(type)) + '</span>' + [0, 1].map(function (i) {
+    el('weights').innerHTML = '<div class="gear-weight-row gear-weight-head" aria-hidden="true">' +
+      '<span>' +
+      '</span>' +
+      '<span>' + view.esc(tr('lethality')) + '</span>' +
+      '<span>' + view.esc(tr('health')) + '</span>' +
+      '</div>' +
+      E.TYPES.map(function (type) {
+      return '<div class="gear-weight-row"><span>' + view.esc(tr(type)) + '</span>' + [0, 1].map(function (i) {
         var label = tr(i ? 'health' : 'lethality');
-        return '<label><input type="number" min="0" max="100" step="0.1" inputmode="decimal" data-weight="' + type + '" data-stat="' + i + '" value="' + state.weights[type][i] + '" aria-label="' + esc(tr(type) + ' · ' + label) + '"></label>';
+        return '<label>' +
+          '<input type="number" min="0" max="100" step="0.1" inputmode="decimal" data-weight="' + type + '" data-stat="' + i + '" value="' + state.weights[type][i] + '" aria-label="' + view.esc(tr(type) + ' · ' + label) + '">' +
+          '</label>';
       }).join('') + '</div>';
     }).join('');
   }
-  function costTable(costs) {
-    var gaps = E.gap(costs, state.resources);
-    return '<div class="gear-cost-ledger" role="list">' + E.RES.map(function (r) {
-      var progress = costs[r] ? Math.min(100, state.resources[r] / costs[r] * 100) : 100;
-      return '<div class="gear-cost-row" data-cost-resource="' + r + '" role="listitem">' + image(resourceArt[r], 'gear-resource-art') + '<div class="gear-cost-info"><span>' + esc(tr(r)) + '</span><progress max="100" value="' + progress + '" aria-label="' + esc(tr(r)) + '"></progress><small>' + esc(tr('have')) + ' ' + fmt(state.resources[r]) + '</small></div><div class="gear-cost-numbers"><strong>' + fmt(costs[r]) + '</strong><small class="' + (gaps[r] ? 'gear-short' : 'gear-ready') + '">' + (gaps[r] ? fmt(gaps[r]) + ' ' + esc(tr('missingShort')) : esc(tr('readyShort'))) + '</small></div></div>';
-    }).join('') + '</div>';
-  }
   function paintPreview(from, to) {
-    el('preview').innerHTML = '<button type="button" data-view="plan" class="gear-preview-button">' + gearImage(state.selected, 'gear-preview-art') + '<span><strong>' + esc(name(state.selected)) + '</strong><span>' + levelLabel(from) + (to ? ' → ' + levelLabel(to) : '') + '</span></span><span class="gear-preview-link">' + esc(tr('viewPlan')) + ' →</span></button>';
+    el('preview').innerHTML = view.preview(state.selected, from, to);
   }
   function nextTarget() {
     var p = state.pieces[state.selected];
     return E.milestone(p, state.goal);
   }
-  function statText(delta) {
-    return ['core', 'attack', 'defense'].filter(function (key) { return Math.abs(delta[key]) > .01; }).map(function (key) {
-      return (delta[key] > 0 ? '+' : '') + (Math.abs(delta[key]) < 10 ? delta[key].toFixed(1) : Math.round(delta[key])) + ' ' + tr(key);
-    }).join(' · ') || tr('noStatChange');
-  }
-  function costText(costs) {
-    return E.RES.filter(function (r) { return costs[r]; }).map(function (r) { return fmt(costs[r]) + ' ' + tr(r); }).join(' · ') || tr('noCost');
-  }
-  function gainPct(gain, baseline) { return '+' + (baseline > 0 ? gain / baseline * 100 : 0).toFixed(1) + '%'; }
-  function roleText(type) { return tr(type === 'arc' ? 'archerRole' : type === 'inf' ? 'infantryRole' : 'cavalryRole'); }
-  function costStrip(costs, remaining) {
-    return '<div class="gear-cost-strip">' + E.RES.map(function (r) { return '<div data-cost-resource="' + r + '">' + image(resourceArt[r], 'gear-resource-art') + '<strong>' + fmt(costs[r]) + '</strong><small>' + esc(tr(r + 'Unit')) + '</small>' + (remaining ? '<span>' + (remaining[r] ? fmt(remaining[r]) + ' ' + esc(tr('missingShort')) : esc(tr('readyShort'))) + '</span>' : '') + '</div>'; }).join('') + '</div>';
-  }
-  function cavalryNote(pieces) {
-    if (!state.included.cav) return '';
-    pieces = pieces || state.pieces;
-    function core(type) { return E.SLOTS.reduce(function (sum, slot) { return sum + E.stats(pieces[type + '-' + slot], slot).core; }, 0); }
-    var leaders = ['inf','arc'].filter(function (type) { return state.included[type]; });
-    var lag = leaders.length && core('cav') < .65 * Math.min.apply(null, leaders.map(core));
-    return lag ? '<p class="gear-catchup">' + esc(tr('cavalryCatchup')) + '</p>' : '';
-  }
   function planOutput() {
-    var forecast = E.redPlans(state), routes = forecast.routes;
-    planIndex = Math.min(planIndex, Math.max(0, routes.length - 1));
-    if (!routes.length) return '<p class="gear-gloss">' + esc(tr('noRedRoutes')) + '</p>';
-    var active = routes[planIndex], slot = active.id.split('-')[1], w = state.weights[active.id.split('-')[0]];
-    var cards = routes.map(function (route, i) {
-      var mark = checkpoint(route.from, route.to);
-      return '<button type="button" class="gear-route" data-route="' + i + '" data-checkpoint="' + (mark ? mark.kind : '') + '" aria-pressed="' + (i === planIndex) + '">' + gearItem(route.id, route.to) + '<span class="gear-route-piece"><small>' + esc(tr(route.distance === 0 ? 'readyShort' : ['nearBudget','largerBudget','furtherBudget'][i])) + '</small><strong>' + esc(name(route.id)) + '</strong>' + checkpointLabel(mark) + '<span class="gear-route-levels">' + levelLabel(route.from) + ' → <b class="gear-rarity-red">' + esc(quality('red')) + ' ' + levelLabel(route.to) + '</b><small>' + esc(tr('mastery')) + ' ' + route.from.mastery + ' → ' + route.to.mastery + '</small></span></span><span class="gear-route-metrics"><span aria-label="' + esc(tr('weightedGain')) + '"><b>' + gainPct(route.gain, forecast.baseline) + '</b></span><span aria-label="' + esc(tr('perCostUnit')) + '"><b>' + route.efficiency.toFixed(1) + '</b></span></span></button>';
-    }).join('');
-    return '<p class="gear-gloss gear-route-caption">' + esc(tr('savingChoices')) + '</p><div class="gear-route-head"><span>' + esc(tr('upgradeChoice')) + '</span><div class="gear-route-metrics"><small>' + esc(tr('weightedGain')) + '</small><small>' + esc(tr('perCostUnit')) + '</small></div></div><div class="gear-routes">' + cards + '</div><div class="gear-route-detail"><p class="gear-route-impact">' + esc(statText(active.delta).replace(tr('core'), tr(slot === 'helm' || slot === 'boots' ? 'lethality' : 'health'))) + '</p><div class="gear-cost-title"><strong>' + esc(tr('totalCost')) + '</strong><small>' + esc(tr('shortfalls')) + '</small></div>' + costStrip(active.costs, active.gap) + '</div>' + kvkScore(active.costs, true) + kvkNote() + cavalryNote() + '<p class="gear-role">' + esc(roleText(active.id.split('-')[0])) + '</p><p class="gear-gloss">' + esc(tr('pieceWeights')) + ': ' + w[slot === 'helm' || slot === 'boots' ? 0 : 1] + ' × ' + esc(tr(slot === 'helm' || slot === 'boots' ? 'lethality' : 'health')) + ', ' + w[0] + ' × ' + esc(tr('attack')) + ', ' + w[1] + ' × ' + esc(tr('defense')) + '.</p>' + theoryLink('ranking', 'scoreCostExplained');
-  }
-  function splitChip(r, from, to) {
-    if (!from && !to) return '';
-    var over = from - to;
-    return '<span class="gear-split-chip" data-split-resource="' + r + '"' + (over > 0 ? ' data-over="true"' : '') + ' role="img" aria-label="' + esc(tr(r) + ' ' + fmt(from) + ' → ' + fmt(to)) + '" title="' + esc(tr(r)) + '">' + image(resourceArt[r], 'gear-resource-art') + '<span aria-hidden="true">' + fmt(from) + ' → ' + fmt(to) + '</span></span>';
-  }
-  function splitSet(set) {
-    var gain = set.score - set.current, moved = set.pieces.filter(function (p) { return JSON.stringify(p.from) !== JSON.stringify(p.to); });
-    var over = ['hammers', 'mithril'].map(function (r) {
-      var heavy = set.pieces.filter(function (p) { return p.fromCost[r] > p.toCost[r]; });
-      return heavy.length ? BH.fill(tr('splitOver'), { amount: fmt(heavy.reduce(function (sum, p) { return sum + p.fromCost[r] - p.toCost[r]; }, 0)), resource: tr(r + 'Unit'), pieces: heavy.map(function (p) { return tr(p.id.split('-')[1]); }).join(', ') }) : '';
-    }).filter(Boolean);
-    var matched = gain <= set.current * 5e-4;
-    var rows = matched ? '' : moved.map(function (p) {
-      return '<article class="gear-row gear-change gear-split-row" data-piece-id="' + p.id + '"><div class="gear-before-after"><span class="gear-state"><small>' + esc(tr('splitNow')) + '</small>' + gearItem(p.id, p.from) + '</span><span class="gear-change-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" focusable="false"><path d="M2 10h15m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="gear-state"><small>' + esc(tr('splitBest')) + '</small>' + gearItem(p.id, p.to) + '</span></div><div class="gear-change-info"><strong class="gear-change-name">' + esc(tr(p.id.split('-')[1])) + '</strong><div class="gear-row-costs">' + ['hammers', 'mithril', 'mythic'].map(function (r) { return splitChip(r, p.fromCost[r], p.toCost[r]); }).join('') + '</div></div></article>';
-    }).join('');
-    return '<section class="gear-split" data-split-troop="' + set.type + '"><div class="gear-result-summary"><strong>' + (matched ? '✓' : gainPct(gain, set.current)) + '</strong><span>' + esc(tr(set.type)) + '</span><small>' + esc(tr(matched ? 'splitMatches' : 'splitGain')) + '</small></div>' + (matched ? '' : over.map(function (line) { return '<p class="gear-split-over">' + esc(line) + '</p>'; }).join('') + '<div class="gear-result-grid">' + rows + '</div>') + '</section>';
-  }
-  function splitOutput(sets) {
-    if (!sets.length) return '<p class="gear-gloss">' + esc(tr('noTroopsSelected')) + '</p>';
-    return '<p class="gear-gloss">' + esc(tr('splitIntro')) + '</p>' + sets.map(splitSet).join('') + theoryLink('best-split-method', 'splitMethodTitle');
+    var forecast = E.redPlans(state);
+    planIndex = Math.min(planIndex, Math.max(0, forecast.routes.length - 1));
+    return view.planOutput(state, forecast, planIndex);
   }
   function paintSplit() {
     var out = el('milestone-out');
-    if (splitResult && splitRevision === revision) { out.innerHTML = splitOutput(splitResult); return; }
-    out.innerHTML = '<p class="gear-search-status" role="status">' + esc(tr('calculatingSplit')) + '</p>';
+    if (splitResult && splitRevision === revision) { out.innerHTML = view.splitOutput(splitResult); return; }
+    out.innerHTML = '<p class="gear-search-status" role="status">' + view.esc(tr('calculatingSplit')) + '</p>';
     if (splitWorker) return;
     var at = revision;
     function done(sets) {
@@ -289,24 +209,20 @@
     if (isPlan) { paintPreview(state.pieces[state.selected], nextTarget()); el('milestone-out').innerHTML = planOutput(); return; }
     var from = state.pieces[state.selected], to = nextTarget(), out = el('milestone-out');
     paintPreview(from, to);
-    if (!to) { out.innerHTML = '<p class="gear-gloss">' + esc(tr(from.quality === 'epic' ? 'epicBlocked' : state.goal === 'red' ? 'alreadyRed' : 'maxed')) + '</p>' + nearList(); return; }
+    if (!to) { out.innerHTML = '<p class="gear-gloss">' + view.esc(tr(from.quality === 'epic' ? 'epicBlocked' : state.goal === 'red' ? 'alreadyRed' : 'maxed')) + '</p>' +
+      view.nearList(state); return; }
     var costs = E.cost(from, to), ready = E.affordable(costs, state.resources);
-    out.innerHTML = '<h3>' + esc(name(state.selected)) + '</h3><button type="button" class="gear-upgrade" data-edit-piece="' + state.selected + '" aria-label="' + esc(tr('editPiece')) + '">' + gearImage(state.selected, 'gear-upgrade-art') + '<span><span class="gear-upgrade-levels">' + levelLabel(from) + ' <span>→</span> ' + levelLabel(to) + '</span><small>' + esc(tr('mastery')) + ' ' + from.mastery + ' → ' + to.mastery + '</small><small>' + esc(quality(from.quality)) + (from.quality !== to.quality ? ' → ' + esc(quality(to.quality)) : '') + '</small></span></button>' + kvkScore(costs, true) + costTable(costs) + kvkNote() +
-      (ready ? '<p class="gear-gloss">' + esc(tr('ready')) + '</p><button type="button" id="gear-apply-milestone" class="gear-primary">' + esc(tr('applyMilestone')) + '</button>' : '') +
-      theoryLink('cost-includes', 'costIncludes') + (isPlan ? '' : nearList());
-  }
-  function nearList() {
-    var candidates = Object.keys(state.pieces).filter(function (id) { return state.included[id.split('-')[0]]; }).map(function (id) {
-      var to = E.milestone(state.pieces[id], state.goal);
-      if (!to) return null;
-      var costs = E.cost(state.pieces[id], to), gap = E.gap(costs, state.resources);
-      var distance = E.RES.reduce(function (sum, r) { return sum + gap[r] / Math.max(1, costs[r]); }, 0);
-      return { id: id, to: to, gap: gap, distance: distance };
-    }).filter(Boolean).sort(function (a, b) { return a.distance - b.distance || a.id.localeCompare(b.id); });
-    return '<section class="gear-near-list"><h3 class="gear-subhead">' + esc(tr('comparePieces')) + '</h3>' + candidates.map(function (c) {
-      var missing = E.RES.filter(function (r) { return c.gap[r]; }).map(function (r) { return fmt(c.gap[r]) + ' ' + tr(r); }).join(' · ');
-      return '<button type="button" class="gear-near-piece" data-select="' + c.id + '"><span>' + esc(name(c.id)) + ' → ' + (c.to.quality === 'red' ? '+' + (c.to.level - 100) : c.to.level) + '</span><span>' + esc(missing || tr('readyShort')) + '</span></button>';
-    }).join('') + '</section>';
+    out.innerHTML = '<h3>' + view.esc(view.name(state.selected)) + '</h3>' +
+      '<button type="button" class="gear-upgrade" data-edit-piece="' + state.selected + '" aria-label="' + view.esc(tr('editPiece')) + '">' + view.gearImage(state.selected, 'gear-upgrade-art') + '<span>' +
+      '<span class="gear-upgrade-levels">' + view.levelLabel(from) + ' <span>→</span> ' + view.levelLabel(to) + '</span>' +
+      '<small>' + view.esc(tr('mastery')) + ' ' + from.mastery + ' → ' + to.mastery + '</small>' +
+      '<small>' + view.esc(view.quality(from.quality)) + (from.quality !== to.quality ? ' → ' + view.esc(view.quality(to.quality)) : '') + '</small>' +
+      '</span>' +
+      '</button>' +
+      view.kvkScore(costs, true) + view.costTable(costs, state.resources) + view.kvkNote() +
+      (ready ? '<p class="gear-gloss">' + view.esc(tr('ready')) + '</p>' +
+        '<button type="button" id="gear-apply-milestone" class="gear-primary">' + view.esc(tr('applyMilestone')) + '</button>' : '') +
+      view.theoryLink('cost-includes', 'costIncludes') + (isPlan ? '' : view.nearList(state));
   }
   function paint() {
     paintEditor(); paintAnswer(); paintView(); paintTheory();
@@ -336,16 +252,16 @@
       var note = tr(r.reforgeNow ? 'oppReforge' : r.optimalAtThreshold ? 'oppOptimal' : r.beatsCurrentPlan ? 'oppBeats' : 'oppBehind');
       function shortBy(gap) { return E.RES.filter(function (key) { return gap[key] > 0; }).map(function (key) { return fmt(gap[key]) + ' ' + tr(key + 'Unit'); }).join(' · '); }
       return '<article class="gear-opportunity">' +
-        '<div class="gear-opportunity-head">' + gearImage(r.id, 'gear-opportunity-art') +
-        '<div><strong>' + esc(name(r.id)) + ' · ' + esc(fullLevel(r.from)) + ' → ' + esc(fullLevel(r.to)) + '</strong>' +
-        '<small>' + esc(tr('mithrilCheckpoint')) + ' · ' + gainPct(r.milestoneGain, baseline) + ' ' + esc(tr('weightedGain')) + '</small></div></div>' +
-        '<p>' + esc(missing ? BH.fill(tr('oppShort'), { missing: missing }) : tr('oppAffordable')) + ' ' + esc(note) + '</p>' +
-        (delayed ? '<p>' + esc(BH.fill(tr('oppDelayed'), { missing: shortBy(r.afterSpendGap) })) + '</p>' : '') +
-        (r.futurePlan ? '<p>' + esc(BH.fill(tr('oppFuture'), { plan: gainPct(r.futurePlan.score - baseline, baseline), best: gainPct(r.futureBestScore - baseline, baseline) })) + '</p>' : '') +
-        (r.reforgeNow ? '<p>' + esc(BH.fill(tr('oppReforgePlan'), { gain: gainPct(r.reforgeNow.score - baseline, baseline) })) + '</p>' : '') +
-        '<button type="button" data-mode="plan">' + esc(tr('seeSavingCosts')) + ' →</button></article>';
+        '<div class="gear-opportunity-head">' + view.gearImage(r.id, 'gear-opportunity-art') +
+        '<div><strong>' + view.esc(view.name(r.id)) + ' · ' + view.esc(view.fullLevel(r.from)) + ' → ' + view.esc(view.fullLevel(r.to)) + '</strong>' +
+        '<small>' + view.esc(tr('mithrilCheckpoint')) + ' · ' + view.gainPct(r.milestoneGain, baseline) + ' ' + view.esc(tr('weightedGain')) + '</small></div></div>' +
+        '<p>' + view.esc(missing ? BH.fill(tr('oppShort'), { missing: missing }) : tr('oppAffordable')) + ' ' + view.esc(note) + '</p>' +
+        (delayed ? '<p>' + view.esc(BH.fill(tr('oppDelayed'), { missing: shortBy(r.afterSpendGap) })) + '</p>' : '') +
+        (r.futurePlan ? '<p>' + view.esc(BH.fill(tr('oppFuture'), { plan: view.gainPct(r.futurePlan.score - baseline, baseline), best: view.gainPct(r.futureBestScore - baseline, baseline) })) + '</p>' : '') +
+        (r.reforgeNow ? '<p>' + view.esc(BH.fill(tr('oppReforgePlan'), { gain: view.gainPct(r.reforgeNow.score - baseline, baseline) })) + '</p>' : '') +
+        '<button type="button" data-mode="plan">' + view.esc(tr('seeSavingCosts')) + ' →</button></article>';
     }).join('');
-    host.innerHTML = cards ? '<section class="gear-saving-options"><h3 class="gear-subhead">' + esc(tr('budgetRoutes')) + '</h3>' + cards + '</section>' : '';
+    host.innerHTML = cards ? '<section class="gear-saving-options"><h3 class="gear-subhead">' + view.esc(tr('budgetRoutes')) + '</h3>' + cards + '</section>' : '';
   }
   function paintResults() {
     paintOpportunities(strategyResult);
@@ -356,18 +272,37 @@
     if (!result.changes.length) {
       var included = E.TYPES.filter(function (type) { return state.included[type]; });
       var message = !included.length ? 'noTroopsSelected' : included.every(function (type) { return state.weights[type].every(function (w) { return w === 0; }); }) ? 'noWeightsSelected' : E.RES.every(function (r) { return !state.resources[r]; }) && !state.reforge ? 'addBudgetHint' : 'noSpendMoves';
-      el('results').innerHTML = '<div class="gear-empty"><p class="gear-gloss">' + esc(tr(message)) + '</p>' + (message === 'noTroopsSelected' ? '<button type="button" class="gear-action" data-view="gear">' + esc(tr('chooseTroops')) + '</button>' : message === 'noWeightsSelected' ? '<button type="button" class="gear-action" data-show-weights="true">' + esc(tr('editWeights')) + '</button>' : '<button type="button" class="gear-action" data-mode="plan">' + esc(tr('seeSavingCosts')) + '</button>') + '</div>'; return;
+      el('results').innerHTML = '<div class="gear-empty">' +
+        '<p class="gear-gloss">' + view.esc(tr(message)) + '</p>' +
+        (message === 'noTroopsSelected' ? '<button type="button" class="gear-action" data-view="gear">' + view.esc(tr('chooseTroops')) + '</button>' : message === 'noWeightsSelected' ? '<button type="button" class="gear-action" data-show-weights="true">' + view.esc(tr('editWeights')) + '</button>' : '<button type="button" class="gear-action" data-mode="plan">' + view.esc(tr('seeSavingCosts')) + '</button>') + '</div>'; return;
     }
     if (!state.included[resultTroop]) resultTroop = result.changes[0].split('-')[0];
-    var details = result.details, tabs = E.TYPES.filter(function (type) { return state.included[type]; }).map(function (type) { var count = details.filter(function (d) { return d.id.startsWith(type + '-'); }).length; return '<button type="button" data-result-troop="' + type + '" aria-pressed="' + (type === resultTroop) + '">' + esc(tr(type)) + ' <small>' + count + '</small></button>'; }).join('');
+    var details = result.details, tabs = E.TYPES.filter(function (type) { return state.included[type]; }).map(function (type) { var count = details.filter(function (d) { return d.id.startsWith(type + '-'); }).length; return '<button type="button" data-result-troop="' + type + '" aria-pressed="' + (type === resultTroop) + '">' + view.esc(tr(type)) + ' <small>' + count + '</small>' +
+      '</button>'; }).join('');
     var tiles = details.filter(function (d) { return d.id.startsWith(resultTroop + '-'); }).sort(function (a, b) {
-      function priority(d) { return d.refund ? 2 : checkpoint(d.from, d.to) ? 0 : 1; }
+      function priority(d) { return d.refund ? 2 : view.checkpoint(d.from, d.to) ? 0 : 1; }
       return priority(a) - priority(b) || b.gain - a.gain;
     }).map(function (detail) {
-      return comparison(detail.id, detail.from, detail.to, detail);
+      return view.comparison(detail.id, detail.from, detail.to, detail);
     }).join('');
     var kept = E.SLOTS.filter(function (slot) { return !result.changes.includes(resultTroop + '-' + slot); });
-    el('results').innerHTML = '<div class="gear-result-summary"><strong>' + gainPct(result.gain, result.baseline) + '</strong><span>' + esc(tr('weightedGain')) + '</span><small>' + result.changes.length + ' ' + esc(tr('piecesChanged')) + '</small></div>' + kvkScore(result.spent, true) + '<div class="gear-rail gear-result-troops">' + tabs + '</div><div class="gear-result-grid">' + tiles + '</div>' + (kept.length ? '<p class="gear-kept">' + esc(tr('unchangedSlots')) + ': ' + kept.map(function (slot) { return esc(tr(slot)); }).join(' · ') + '</p>' : '') + (result.refund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.refund) + ' XP ' + esc(tr('recoverXP')) + ' → ↑ ' + fmt(result.spent.xp) + ' XP ' + esc(tr('redistributeXP')) + '</p>' : '') + '<div class="gear-cost-title"><strong>' + esc(tr('spend')) + '</strong></div>' + costStrip(result.spent) + kvkNote() + cavalryNote(result.pieces) + '<div class="gear-cost-title"><strong>' + esc(tr('remaining')) + '</strong></div>' + costStrip(result.remaining) + '<div class="gear-record-action"><button type="button" id="gear-apply-result" class="gear-primary gear-action" aria-describedby="gear-record-hint">' + esc(tr('applyResult')) + '</button><p id="gear-record-hint" class="gear-gloss">' + esc(tr('applyHint')) + '</p></div>';
+    el('results').innerHTML = '<div class="gear-result-summary">' +
+      '<strong>' + view.gainPct(result.gain, result.baseline) + '</strong>' +
+      '<span>' + view.esc(tr('weightedGain')) + '</span>' +
+      '<small>' + result.changes.length + ' ' + view.esc(tr('piecesChanged')) + '</small>' +
+      '</div>' +
+      view.kvkScore(result.spent, true) + '<div class="gear-rail gear-result-troops">' + tabs + '</div>' +
+      '<div class="gear-result-grid">' + tiles + '</div>' +
+      (kept.length ? '<p class="gear-kept">' + view.esc(tr('unchangedSlots')) + ': ' + kept.map(function (slot) { return view.esc(tr(slot)); }).join(' · ') + '</p>' : '') + (result.refund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.refund) + ' XP ' + view.esc(tr('recoverXP')) + ' → ↑ ' + fmt(result.spent.xp) + ' XP ' + view.esc(tr('redistributeXP')) + '</p>' : '') + '<div class="gear-cost-title">' +
+      '<strong>' + view.esc(tr('spend')) + '</strong>' +
+      '</div>' +
+      view.costStrip(result.spent) + view.kvkNote() + view.cavalryNote(state, result.pieces) + '<div class="gear-cost-title">' +
+      '<strong>' + view.esc(tr('remaining')) + '</strong>' +
+      '</div>' +
+      view.costStrip(result.remaining) + '<div class="gear-record-action">' +
+      '<button type="button" id="gear-apply-result" class="gear-primary gear-action" aria-describedby="gear-record-hint">' + view.esc(tr('applyResult')) + '</button>' +
+      '<p id="gear-record-hint" class="gear-gloss">' + view.esc(tr('applyHint')) + '</p>' +
+      '</div>';
   }
   function searchVisible() { return state.mode === 'optimise' && el('answer-panel').getClientRects().length > 0; }
   function cancelSearch() {
@@ -431,7 +366,7 @@
   function boot(api) {
     BH = api; state = E.defaults();
     try {
-      ledger = window.PlayerLedger.shared();
+      ledger = window.Interactions.ledger();
       var saved = ledger.migrate(E), input = ledger.heroGear(E);
       ledgerRevision = saved.revision;
       state = E.normaliseState(input); readParts(input);
@@ -457,7 +392,7 @@
       if (node.dataset.piece && node.dataset.field !== 'quality') {
         state.pieces[node.dataset.piece] = E.normalisePiece(Object.assign({}, state.pieces[node.dataset.piece], { [node.dataset.field]: Number(node.value) }));
         paintEditor();
-        el('edit-fields').querySelector('.gear-edit-art').innerHTML = gearItem(node.dataset.piece, state.pieces[node.dataset.piece]) + '<span>' + esc(pieceLabel(state.pieces[node.dataset.piece])) + '</span>';
+        el('edit-fields').querySelector('.gear-edit-art').innerHTML = view.gearItem(node.dataset.piece, state.pieces[node.dataset.piece]) + '<span>' + view.esc(view.pieceLabel(state.pieces[node.dataset.piece])) + '</span>';
       } else if (node.dataset.weight) {
         state.profile = 'custom'; el('profile').value = 'custom';
         state.weights[node.dataset.weight][Number(node.dataset.stat)] = Math.min(100, Math.max(0, Number(node.value) || 0));

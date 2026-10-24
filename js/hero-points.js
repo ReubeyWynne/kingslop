@@ -25,7 +25,7 @@
 
   window.Interactions.register('hero-points', function (context) {
     var S = window.HeroSpend, rules = window.EventRules, api = context.api, store = null;
-    try { store = window.PlayerLedger.shared(); store.snapshot(); } catch (cause) { store = null; }
+    try { store = context.ledger; store.snapshot(); } catch (cause) { store = null; }
     function put(key, value) { context.targets(key).forEach(function (node) { node.textContent = value; }); }
     function render() {
       if (!store) return;

@@ -69,18 +69,26 @@ self: events
       <p class="note" data-target="event-availability.coverage"></p>
     </div>
     <p class="note" data-i18n="ks.available.limit">These points need upgrades you can actually make. Check the in-game requirements before spending. Comparing days does not give you a second bag of items.</p>
+    <p class="note"><a href="../town-centre/" data-i18n="town.title">Town Centre</a></p>
     <div class="availability-inventory-heading"><h3 data-i18n="ks.available.inventory">Your inventory</h3><label class="availability-show-all"><input type="checkbox" data-target="event-availability.all" data-action="event-availability.showAll"><span data-i18n="ks.available.showAll">show items that do not score today</span></label></div>
     <div class="availability-items">
       {% for item in site.data.event_rules.items %}
       <div class="availability-item" data-item="{{ item.id }}">
         <h3 data-i18n="{{ item.key }}">{{ item.label | escape }}</h3>
+        {% if item.id == 'hero-widget' %}
+        <a href="../town-centre/#town-heroes" data-i18n="town.shelf.heroes">Heroes</a>
+        {% elsif item.id == 'master-emblem' %}
+        <a href="../town-centre/#town-masters" data-i18n="town.shelf.masters">Masters</a>
+        {% else %}
         <label data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed"><span data-i18n="ks.available.owned">in your bag</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize"><small data-target="ledger-form.save" aria-live="polite"></small></label>
         <label><span data-i18n="ks.available.held">keep for later</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" data-held="{{ item.id }}" data-action="event-availability.reserve"></label>
+        {% endif %}
         <p><span data-i18n="ks.available.rate">points each</span> <output data-rate>—</output></p>
         <p><span data-i18n="ks.available.contribution">points available</span> <output data-points>—</output></p>
       </div>
       {% endfor %}
     </div>
+    <ul class="availability-potential" data-target="event-availability.additional"></ul>
     <p class="note" data-i18n="ks.available.reserveNote">Keeping items aside changes this calculation, not your saved bag. A backup includes your inventory; it does not include this plan.</p>
     <h3 data-i18n="ks.available.potential">Other ways to score</h3>
     <p class="note" data-i18n="ks.available.potentialNote">There may be more points here. They need an in-game check, so they are not included in the total above.</p>
@@ -147,7 +155,7 @@ self: events
       into Sunday. Below: each day's tasks, points per action.</p>
 
     <details id="brawl-day-1" class="day">
-      <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 1 · Rise of the City</span>
+      <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">{{ site.data.event_rules.events.brawl[0].title | escape }}</span>
       <span class="day-meta">24h · building and gathering day</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.brawl[0].rows %}
@@ -158,7 +166,7 @@ self: events
         here; if you hold them for prep days 2–3, weigh it against today's rate.</p>
     </details>
     <details id="brawl-day-2" class="day">
-      <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 2 · Hero Development</span>
+      <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">{{ site.data.event_rules.events.brawl[1].title | escape }}</span>
       <span class="day-meta">24h · hero day</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.brawl[1].rows %}
@@ -169,7 +177,7 @@ self: events
         cheapest shard spend — but every shard is one Strongest Governor week wants.</p>
     </details>
     <details id="brawl-day-3" class="day">
-      <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 3 · Pet Training</span>
+      <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">{{ site.data.event_rules.events.brawl[2].title | escape }}</span>
       <span class="day-meta">24h · pet and charm day</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.brawl[2].rows %}
@@ -181,7 +189,7 @@ self: events
         only what today's chest needs.</p>
     </details>
     <details id="brawl-day-4" class="day">
-      <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 4 · Gear Enhancement</span>
+      <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">{{ site.data.event_rules.events.brawl[3].title | escape }}</span>
       <span class="day-meta">24h · gear and troop day</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.brawl[3].rows %}
@@ -191,7 +199,7 @@ self: events
       <p class="note" data-i18n="ks.today.budget">Choose your reward target before spending. Keep materials reserved for another event unless you decide to use them here.</p>
     </details>
     <details id="brawl-day-5" class="day">
-      <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 5 · Trade Baron</span>
+      <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">{{ site.data.event_rules.events.brawl[4].title | escape }}</span>
       <span class="day-meta">24h · beast day</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.brawl[4].rows %}
@@ -202,7 +210,7 @@ self: events
         alliance pushes a day, this is the one that costs you no prep.</p>
     </details>
     <details id="brawl-day-6" class="day">
-      <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">Day 6 · Full-Scale Competition</span>
+      <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">{{ site.data.event_rules.events.brawl[5].title | escape }}</span>
       <span class="day-meta">~36h finale · every day's tasks at once, into Sunday</span></summary>
       <table class="pt"><tbody>
         {% for row in site.data.event_rules.events.brawl[5].rows %}

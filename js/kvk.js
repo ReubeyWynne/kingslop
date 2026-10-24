@@ -12,7 +12,7 @@
   // Brawl week (1-7) → Strongest Governor (8-14) → Alliance
   // Mobilization (15-20) → a quiet gap (21) → KvK prep (22-26)
   // + battle weekend (27-28).
-  var CYCLE_LEN = 28;
+  var CYCLE_LEN = window.EventRules.CYCLE;
 
   // The alliance's prep chart, validated against the community tables:
   // 16 materials × the 5 prep days, each cell best|ok|no.
@@ -24,7 +24,6 @@
 
   var KOP_THEMES = window.EventRules.data.legacy.KOP_THEMES;
   var SG_THEMES = window.EventRules.data.legacy.SG_THEMES;
-  var SG_TASKS = window.EventRules.data.legacy.SG_TASKS;
   // Canonical tracked items — the prep chart's 16 materials. Every row shown
   // in any phase maps back to one of these; ids ARE the MATRIX row names.
   var VITEMS = window.EventRules.data.legacy.VITEMS;
@@ -48,11 +47,6 @@
     'Mithril': '\u26CF\uFE0F', 'Forgehammer': ksIco('forgehammer.png')
   };
 
-  // Map any row label (prep/SG/brawl tables, run task rows) back to a tracked
-  // item: an id, 'free' (nothing from the hoard), or null (skip — not a
-  // tracked material). Lowercased, first match wins in this order.
-  var labelToItemId = window.EventRules.labelToItemId;
-
   // ── The light weeks — day-aware runs, orthogonal to the phase axis ──
   // Owner-confirmed schedule. Alliance Brawl fills week 1 (days 1–7, the
   // week right after KvK). Inside each light week (days 1–7 and 15–20;
@@ -66,11 +60,6 @@
   var ARMAMENT_RUNS = window.EventRules.data.legacy.ARMAMENT_RUNS;
   var OFFICER_RUNS = window.EventRules.data.legacy.OFFICER_RUNS;
 
-  // Points per action for each run type — owner-confirmed task tables; the
-  // page sections carry the same numbers. Row = [task label, points] (a
-  // string points value is used verbatim, e.g. the officer troop ladder).
-  var ARM_TASKS = window.EventRules.data.legacy.ARM_TASKS;
-  var OFF_TASKS = window.EventRules.data.legacy.OFF_TASKS;
   // Which run (if any) is live on cycle day d. Armament and Officer never
   // overlap in the confirmed schedule, so at most one is returned.
   function liveRun(d) {
@@ -88,14 +77,6 @@
     return null;
   }
 
-  // ── Short task names for the KingShot copy (keeps lines under the width cap).
-  var SG_SHORT = {
-    'Hero Roulette': 'Roulette', 'Widget gear': 'Widget', 'Mythic shard': 'Mythic',
-    'Epic shard': 'Epic', 'Rare shard': 'Rare', 'Advanced Taming Mark': 'Adv Taming',
-    'Common Taming Mark': 'Taming', 'Pet Advancement': 'Pets', 'T10 troops': 'T10',
-    'Gathering': 'Gather', 'Tempered Truegold': 'temp TG', 'Speedups': 'spd'
-  };
-
   // ── State — the schedule is GLOBAL: one wheel, anchored to dates ──
   // Cycle day 1 is always a Monday. The default anchor is Monday
   // 2026-08-17, so 2026-09-01 is day 16 and 2026-09-02 (a Wednesday) is
@@ -103,15 +84,15 @@
   // on day 22 (2026-09-07); the battle weekend is days 27–28. Every
   // kingdom turns the same wheel on the same day, anchored to a fixed,
   // global day 1 — there is no per-reader calibration.
-  var EPOCH = new Date(2026, 7, 17); // month 7 = August; day 1 is a Monday
+  var EPOCH = window.EventRules.EPOCH;
 
   // "Today" is the UTC calendar date — the game runs the wheel on UTC, so a
   // reader's local clock must not shift the day (commentary on the widget).
   function todayDay() {
     var n = new Date();
     var ms = Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate()) -
-             Date.UTC(EPOCH.getFullYear(), EPOCH.getMonth(), EPOCH.getDate());
-    return ((Math.floor(ms / 86400000) % CYCLE_LEN) + CYCLE_LEN) % CYCLE_LEN + 1;
+             EPOCH;
+    return ((Math.floor(ms / window.EventRules.DAY_MS) % CYCLE_LEN) + CYCLE_LEN) % CYCLE_LEN + 1;
   }
 
   var day = todayDay();
@@ -203,9 +184,9 @@
     var run = liveRun(day);
     var out = new Set();
     if (!run) return out;
-    var tasks = run.event === 'armament' ? ARM_TASKS[run.run.type] : OFF_TASKS[run.run.type];
+    var tasks = window.EventRules.tasks(run.event, run.run.type);
     for (var i = 0; i < tasks.length; i++) {
-      var id = labelToItemId(tasks[i][0]);
+      var id = tasks[i].category;
       if (id && id !== 'free') out.add(id);
     }
     return out;
@@ -229,9 +210,9 @@
       var pts = (val === 'best' || val === 'ok') && ctx.ptsById[id] ? ctx.ptsById[id] : '';
       if (val === 'low' && !ctx.prepN && !ctx.sgN && !ctx.brawlIds) {
         var run = liveRun(day);
-        var tasks = run.event === 'armament' ? ARM_TASKS[run.run.type] : OFF_TASKS[run.run.type];
+        var tasks = window.EventRules.tasks(run.event, run.run.type);
         for (var t = 0; t < tasks.length; t++) {
-          if (labelToItemId(tasks[t][0]) === id) { pts = typeof tasks[t][1] === 'number' ? BH.fmt(tasks[t][1]) : String(tasks[t][1]); break; }
+          if (tasks[t].category === id) { pts = typeof tasks[t].points === 'number' ? BH.fmt(tasks[t].points) : String(tasks[t].points); break; }
         }
       }
       if (['Hero shard', 'Pets advance', 'Gathering', 'Gov charm', 'Gov gear'].indexOf(id) !== -1 || (id === 'Troop' && !ctx.prepN)) pts = '';
@@ -269,12 +250,12 @@
   function sgCard(n, BH) {
     var sgIds = new Set();
     var ptsById = {};
-    var dayRows = SG_TASKS[n - 1];
+    var dayRows = window.EventRules.tasks('sg', n);
     var i;
     for (i = 0; i < dayRows.length; i++) {
-      var id = labelToItemId(dayRows[i][0]);
+      var id = dayRows[i].category;
       if (!id || id === 'free') continue;   // e.g. 'Speedups' → null: not tracked
-      if (!sgIds.has(id)) ptsById[id] = typeof dayRows[i][1] === 'number' ? BH.fmt(dayRows[i][1]) : String(dayRows[i][1]);
+      if (!sgIds.has(id)) ptsById[id] = typeof dayRows[i].points === 'number' ? BH.fmt(dayRows[i].points) : String(dayRows[i].points);
       sgIds.add(id);
     }
     var head = '<p class="today-kicker">' + BH.tr('ks.today.kickerSg', 'Strongest Governor') + ' \u00B7 ' + BH.tr('ks.today.day', 'day') + ' ' + n + '</p>' +
@@ -299,34 +280,11 @@
   var BRAWL_THEMES = window.EventRules.data.legacy.BRAWL_THEMES;
   function brawlThemeIdx(d) { return d > 6 ? 6 : d; }
 
-  // ── The week's main event feeds the card (single source: the section DOM) ──
-  function brawlDayDetails(n) {
-    var sec = document.getElementById('brawl');
-    if (!sec) return null;
-    var days = sec.querySelectorAll('details.day');
-    if (!days.length) return null;
-    var i = (n - 1) % days.length;
-    var d = days[i];
-    if (!d) return null;
-    var rows = [];
-    var trs = d.querySelectorAll('table.pt tbody tr');
-    for (var r = 0; r < trs.length; r++) {
-      var cells = trs[r].querySelectorAll('td');
-      if (cells.length < 2) continue;
-      var label = cells[0].textContent.replace(/\s+/g, ' ').trim();
-      var p = cells[1].textContent.replace(/,/g, '').trim();
-      var pts = /^\d+$/.test(p) ? parseInt(p, 10) : p;
-      rows.push({ label: label, pts: pts });
-    }
-    var v = d.querySelector('.bd-verdict');
-    return { title: d.querySelector('.day-title') ? d.querySelector('.day-title').textContent.replace(/\s+/g, ' ').trim() : '', verdict: v ? v.textContent.replace(/\s+/g, ' ').trim() : null, rows: rows };
-  }
-
   function brawlCard(BH) {
     var n = brawlThemeIdx(day);
     var kicker = 'Alliance Brawl \u00B7 day ' + n + ' of the week';
-    var det = brawlDayDetails(n);
-    var title = det ? det.title : (BRAWL_THEMES[n - 1] || '');
+    var det = window.EventRules.rules('brawl', n);
+    var title = det.title;
     var meta = BH.tr('ks.today.brawlMeta', 'Your personal ranking is against your alliance members. Check any agreed ranking before pushing your score.');
     var brawlIds = new Set();
     var ptsById = {};
@@ -334,8 +292,9 @@
     if (det && det.rows.length) {
       for (var i = 0; i < det.rows.length; i++) {
         var row = det.rows[i];
-        var id = labelToItemId(row.label);
-        var ptsTxt = typeof row.pts === 'number' ? BH.fmt(row.pts) : String(row.pts);
+        var id = row.category;
+        var numeric = Number(row.points.replace(/,/g, ''));
+        var ptsTxt = Number.isFinite(numeric) ? BH.fmt(numeric) : row.points;
         if (id === 'free') { freeActions.push({ label: row.label, pts: ptsTxt }); continue; }
         if (!id) continue;
         if (!brawlIds.has(id)) ptsById[id] = ptsTxt;
@@ -500,7 +459,7 @@
 
   function reminderCopy(w) {
     if (w === 'brawl') return ['ALLIANCE BRAWL · DAY ' + day, BRAWL_THEMES[brawlThemeIdx(day) - 1], 'Check agreed alliance ranks', 'Then check your next chest', 'Trucks: Merchant overlap', 'where available'].join('\n');
-    if (w === 'gap') return ['BEFORE KVK PREP', itemTag('Intel') + 'Hold intel from 08:00 UTC', 'Prep begins next reset', 'Swordland: alliance time', 'Keep prep materials'].join('\n');
+    if (w === 'gap') return ['BEFORE KVK PREP', itemTag('Intel missions') + 'Hold intel from 08:00 UTC', 'Prep begins next reset', 'Swordland: alliance time', 'Keep prep materials'].join('\n');
     if (day === 20) return ['BEFORE KVK PREP', 'Plan spending for day 22', 'Tomorrow: hold intel', 'from 08:00 UTC', 'Check KvK matchmaking', 'Finish Mobilization missions'].join('\n');
     return ['ALLIANCE MOBILIZATION', 'Accept mission before task', 'Check overlapping events', 'Keep planned prep materials'].join('\n');
   }
@@ -590,26 +549,9 @@
     return n;
   }
 
-  // Map a copy label to its KingShot item-icon tag, returned as an inline
-  // <item_icon_N> tag ('' when the item has no icon). The tag, not the raw
-  // PUA codepoint, is the reliable in-game notation — the game font aliases
-  // the raw codepoints and pasting them produces duplicate glyphs.
-  function itemTag(label) {
-    var l = String(label).toLowerCase();
-    if (/dust/.test(l)) return '';                                          // Truegold Dust → no icon
-    if (/temp(ered)?\s*tg/.test(l)) return '<item_icon_100081>';             // Tempered TG / temp TG
-    if (/truegold/.test(l)) return '<item_icon_100081>';                     // KINGSHOT TRUEGOLD
-    if (/speedup|\bspd\b/.test(l)) return '<item_icon_200101>';              // GENERAL SPEEDUP (combined)
-    if (/hero shard|shard/.test(l)) return '<item_icon_500220>';            // KINGSHOT HERO SHARD
-    if (/building|construction/.test(l)) return '<item_icon_200201>';       // BUILDING SPEEDUP
-    if (/troop|t1[01]|train|promot/.test(l)) return '<item_icon_200301>';   // TROOP SPEEDUP
-    if (/research/.test(l)) return '<item_icon_200401>';                    // RESEARCH SPEEDUP
-    if (/intel/.test(l)) return '<item_icon_620163>';                       // INTEL MISSIONS — owner: the Energy Booster icon
-    if (/roulette/.test(l)) return '<item_icon_101>';                  // HERO ROULETTE — spins cost GEMS (KINGSHOT GEM)
-    if (/wheel coin/.test(l)) return '<item_icon_109>';                 // WHEEL COIN
-    if (/forgehammer|hammer/.test(l)) return '<item_icon_500240>';          // FORGEHAMMER
-    return '';  // Mithril, Widget, emblem/manuscript, Gov charm/gear, intel,
-                // gathering, pets, trucks/beasts/terror → no Kingshot icon.
+  function itemTag(category) {
+    var entry = window.EventRules.data.categories[category];
+    return entry && entry.icon ? '<item_icon_' + entry.icon + '>' : '';
   }
 
   // Wrap items into ≤maxCells display lines. Every line of a group is marked
@@ -647,11 +589,11 @@
   }
 
   function sgCopy(n) {
-    var tasks = SG_TASKS[n - 1].slice().sort(function (a, b) { return b[1] - a[1]; });
+    var tasks = window.EventRules.tasks('sg', n).sort(function (a, b) { return b.points - a.points; });
     var pieces = [];
     for (var i = 0; i < tasks.length; i++) {
-      var label = tasks[i][0];
-      pieces.push(tasks[i][1].toLocaleString('en-GB') + ' ' + itemTag(label) + (SG_SHORT[label] || label));
+      var task = tasks[i];
+      pieces.push(task.points.toLocaleString('en-GB') + ' ' + (task.icon ? '<item_icon_' + task.icon + '>' : '') + task.copyLabel);
     }
     var lines = ['\uD83D\uDC51SG DAY ' + n + '\uD83D\uDC51', SG_THEMES[n - 1]];
     var cur = '';
@@ -662,7 +604,7 @@
       else cur += add;
     }
     if (cur) lines.push(cur);
-    if (tasks.some(function (task) { return task[0] === 'Hero Roulette'; })) lines.push('roulette costs gems');
+    if (tasks.some(function (task) { return task.id === 'hero-roulette'; })) lines.push('roulette costs gems');
     return lines.join('\n');
   }
 

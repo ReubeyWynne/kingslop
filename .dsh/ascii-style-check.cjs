@@ -16,7 +16,7 @@ const failures = [];
 const check = (ok, message) => { if (!ok) failures.push(message); };
 
 const MOTION = /\b(transform|translate|rotate|scale|skew|matrix|perspective|offset-path|animation-timeline|scroll-timeline|view-timeline)\b/;
-const sheets = ['css/ascii.css', 'css/ascii-frames.css'];
+const sheets = ['css/ascii.css', ...fs.readdirSync(path.join(root, 'css')).filter(file => /^ascii-frames.*\.css$/.test(file)).sort().map(file => 'css/' + file)];
 const LIVE = 'pet-live.js';
 
 function keyframes(css) {
@@ -83,8 +83,8 @@ for (const file of fs.readdirSync(path.join(root, '_includes/ascii'))) {
   check(!/style="[^"]*(transform|rotate|skew|scale)/.test(markup), `_includes/ascii/${file}: no inline transforms`);
 }
 
-// Every scene in ascii-frames.css must have a still first frame for reduced motion.
-const frames = read('css/ascii-frames.css');
+// Every generated scene must have a still first frame for reduced motion.
+const frames = sheets.slice(1).map(read).join('\n');
 for (const [, selector, name] of frames.matchAll(/([^\n{}]+)\{content:"[^\n]*?";animation:([\w-]+) /g)) {
   check(frames.includes(`@keyframes ${name}{`), `${selector}: missing @keyframes ${name}`);
 }

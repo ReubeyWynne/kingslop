@@ -16,21 +16,8 @@
   // Speedup balances are minutes. General speedups can pay for any timer, so they score wherever a speedup row does.
   var SPEEDUPS = ['general', 'construction', 'research', 'training', 'learning', 'healing'].map(function (kind) { return { id: 'speedup-' + kind, kind: kind }; });
   var RESOURCES = ['bread', 'wood', 'stone', 'iron'];
-  var GOVERNOR_ROWS = { gear: /^governor gear max score \+1$/i, charms: /^governor charm max score \+1$/i };
-  function rate(row) { var value = Number(String(row.points).replace(/,/g, '')); return Number.isSafeInteger(value) && value > 0 ? value : null; }
+  var rate = rules.rate, speedupKinds = rules.speedupKinds, governorKind = rules.governorKind;
   function confirmed(snapshot, id) { var entry = snapshot.inventory && Object.hasOwn(snapshot.inventory, id) ? snapshot.inventory[id] : null; return entry && entry.status === 'confirmed' ? entry.amount : null; }
-  function speedupKinds(label) {
-    var l = String(label).toLowerCase();
-    if (!/speedup/.test(l)) return null;
-    if (/all kinds/.test(l) || /^1 ?m(in)? speedups$/.test(l.trim())) return SPEEDUPS.map(function (s) { return s.kind; });
-    var kinds = ['general'];
-    if (/construction/.test(l)) kinds.push('construction');
-    if (/research/.test(l)) kinds.push('research');
-    if (/training/.test(l)) kinds.push('training');
-    if (/learning|master/.test(l)) kinds.push('learning');
-    return kinds;
-  }
-  function governorKind(label) { return Object.keys(GOVERNOR_ROWS).find(function (kind) { return GOVERNOR_ROWS[kind].test(String(label).trim()); }) || null; }
   // Score the bag's governor materials could add, spending them for score. Unknown levels or materials make it unknown.
   function governorGain(snapshot, kind) {
     var section = kind === 'gear' ? snapshot.governorGear : snapshot.governorCharms, field = kind === 'gear' ? 'pieces' : 'slots';
@@ -81,16 +68,17 @@
   function day(snapshot, event, number, known) {
     var shared = known || context(snapshot), score = shared.score;
     var base = rules.calculate(budget(snapshot, shared), event, number, null, null), selected = rules.rules(event, number);
-    var lines = [], unknown = base.unknown.slice(), unquantified = [], counted = Object.create(null), troops = troopSpend.rates(selected.rows, event), trained = null;
+    var lines = [], unknown = base.unknown.slice(), unknownItems = Object.create(null), unquantified = [], counted = Object.create(null), troops = troopSpend.rates(selected.rows, event), trained = null;
     function note(id) { if (!unknown.includes(id)) unknown.push(id); }
     base.items.forEach(function (item) {
       var spend = usable(shared, item.id);
+      unknownItems[item.id] = item.eligible ? (item.amount === null ? [item.id] : []).concat(spend ? spend.unknown : []) : [];
       if (item.eligible && spend) spend.unknown.forEach(function (id) { if (!unknown.includes(id)) unknown.push(id); });
       if (item.eligible && item.points !== null && (!spend || item.amount > 0)) lines.push({ kind: spend ? 'usable' : 'item', id: item.id, amount: item.amount, rate: item.rate, points: item.points });
     });
     selected.rows.forEach(function (row) {
       if (row.items || troops && troops.rows.includes(row)) return;
-      var kinds = speedupKinds(row.label), gov = governorKind(row.label), each = rate(row);
+      var kinds = speedupKinds(row), gov = governorKind(row), each = rate(row);
       if (kinds && each) kinds.forEach(function (kind) {
         var id = 'speedup-' + kind; if (counted[id]) return; counted[id] = true;
         var amount = confirmed(snapshot, id);
@@ -109,17 +97,17 @@
       trained.unknown.forEach(note);
       trained.lines.forEach(function (line) {
         var group = line.group === 'batch' ? 'troops-batch' : 'speedup-' + line.group;
-        lines.push({ kind: 'troops', id: 'troops-' + line.group + '-t' + line.tier, group: group, amount: line.troops, rate: line.rate, points: line.points });
+        lines.push({ kind: 'troops', id: 'troops-' + line.group + '-t' + line.tier, group: group, training: line.group, tier: line.tier, amount: line.troops, rate: line.rate, points: line.points });
       });
     }
     lines.sort(function (a, b) { return b.points - a.points; });
-    return { event: event, day: number, lines: lines, total: lines.reduce(function (sum, line) { return sum + line.points; }, 0), unknown: unknown, complete: !unknown.length, unquantified: unquantified, troops: trained };
+    return { event: event, day: number, lines: lines, total: lines.reduce(function (sum, line) { return sum + line.points; }, 0), unknown: unknown, unknownItems: unknownItems, complete: !unknown.length, unquantified: unquantified, troops: trained };
   }
   /* Each holding on the day it scores most. Days are alternatives, so this is not the sum of
      the days. Lines that spend the same holding share a group (a speedup kind and the troops
      it trains), and a group is taken whole from the one day it scores most. */
-  function best(snapshot, event) {
-    var shared = context(snapshot), days = rules.days(event).map(function (entry) { return day(snapshot, event, entry.day, shared); });
+  function best(snapshot, event, known, knownDays) {
+    var shared = known || context(snapshot), days = knownDays || rules.days(event).map(function (entry) { return day(snapshot, event, entry.day, shared); });
     var top = Object.create(null), unknown = Object.create(null);
     days.forEach(function (result) {
       result.unknown.forEach(function (id) { unknown[id] = true; });
@@ -148,13 +136,94 @@
         entry.rows.forEach(function (row) {
           var each = null;
           if (row.items) row.items.forEach(function (item) { if (item.id === id) each = item.rate; });
-          else if (/^speedup-/.test(id) && (speedupKinds(row.label) || []).includes(id.slice(8))) each = rate(row);
+          else if (/^speedup-/.test(id) && (speedupKinds(row) || []).includes(id.slice(8))) each = rate(row);
           if (each && (!out || each > out.rate)) out = { event: event, day: entry.day, rate: each };
         });
       });
     });
     return out;
   }
-  return { SPEEDUPS: SPEEDUPS, RESOURCES: RESOURCES, speedupKinds: speedupKinds, governorKind: governorKind, governorGain: governorGain, heroGearSpend: heroGearSpend, context: context, buildingPoints: buildingPoints, day: day, best: best, topRate: topRate };
+  var calculators = new WeakMap();
+  function forLedger(store) {
+    if (calculators.has(store)) return calculators.get(store);
+    var saved, shared, days, results, availability;
+    function refresh() {
+      var next = store.snapshot();
+      if (!saved || next.revision !== saved.revision || next.updatedAt !== saved.updatedAt) {
+        saved = next;
+        shared = context(saved);
+        days = Object.create(null);
+        results = Object.create(null);
+        availability = Object.create(null);
+      }
+      return saved;
+    }
+    function selected(event, number) {
+      refresh();
+      var key = event + ':' + number;
+      if (!Object.hasOwn(days, key)) days[key] = day(saved, event, number, shared);
+      return days[key];
+    }
+    function eventBest(event) {
+      refresh();
+      if (!Object.hasOwn(results, event)) {
+        var list = rules.days(event).map(function (entry) { return selected(event, entry.day); });
+        results[event] = best(saved, event, shared, list);
+      }
+      return results[event];
+    }
+    var calculator = {
+      snapshot: refresh,
+      context: function () { refresh(); return shared; },
+      day: selected,
+      best: eventBest,
+      available: function (event, number, held, target) {
+        refresh();
+        var key = JSON.stringify([event, number, Object.keys(held || {}).sort().map(function (id) { return [id, held[id]]; })]);
+        if (!Object.hasOwn(availability, key)) availability[key] = available(saved, event, number, held, null, { original: selected(event, number) });
+        if (target !== null && target !== undefined && (!Number.isSafeInteger(target) || target < 0 || target > 1e9)) throw new Error('Invalid point target');
+        return Object.assign({}, availability[key], { shortfall: target === null || target === undefined ? null : Math.max(0, target - availability[key].total) });
+      },
+      all: function () {
+        refresh();
+        Object.keys(data.events).forEach(eventBest);
+        return { snapshot: saved, context: shared, results: results };
+      }
+    };
+    calculators.set(store, calculator);
+    return calculator;
+  }
+  function available(snapshot, event, number, held, target, known) {
+    held = held || {};
+    var inventory = Object.assign({}, snapshot.inventory), reserved = Object.create(null);
+    Object.keys(held).forEach(function (id) {
+      var count = held[id];
+      if (!Number.isSafeInteger(count) || count < 0 || count > 1e9) throw new Error('Invalid reservation');
+      var amount = confirmed(snapshot, id);
+      reserved[id] = amount === null ? 0 : Math.min(count, amount);
+      if (amount !== null) inventory[id] = Object.assign({}, inventory[id], { amount: amount - reserved[id] });
+    });
+    if (target !== null && target !== undefined && (!Number.isSafeInteger(target) || target < 0 || target > 1e9)) throw new Error('Invalid point target');
+    var original = known && known.original || day(snapshot, event, number);
+    var remaining = Object.values(reserved).some(function (n) { return n > 0; }) ? day(Object.assign({}, snapshot, { inventory: inventory }), event, number) : original;
+    var rates = Object.create(null), lines = Object.create(null);
+    rules.rules(event, number).rows.forEach(function (row) {
+      (row.items || []).forEach(function (item) { rates[item.id] = item.rate; });
+    });
+    remaining.lines.forEach(function (line) { lines[line.id] = line; });
+    var items = data.items.map(function (item) {
+      var amount = confirmed(snapshot, item.id), line = lines[item.id];
+      return {
+        id: item.id, label: item.label, eligible: Object.hasOwn(rates, item.id), rate: rates[item.id] || 0,
+        amount: amount, reserved: reserved[item.id] || 0, usable: line ? line.amount : 0,
+        points: line && line.points > 0 ? line.points : (remaining.unknownItems[item.id] || []).length ? null : 0
+      };
+    });
+    return Object.assign({}, remaining, {
+      items: items, inventoryPoints: original.total, reservedPoints: Math.max(0, original.total - remaining.total),
+      shortfall: target === null || target === undefined ? null : Math.max(0, target - remaining.total)
+    });
+  }
+  return { SPEEDUPS: SPEEDUPS, RESOURCES: RESOURCES, speedupKinds: speedupKinds, governorKind: governorKind, governorGain: governorGain, heroGearSpend: heroGearSpend, context: context, buildingPoints: buildingPoints, day: day, best: best, topRate: topRate, forLedger: forLedger, available: available };
 });
 

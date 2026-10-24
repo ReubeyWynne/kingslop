@@ -2,6 +2,10 @@
 
 The layout loads `interactions.js` and `player-modules.js` before page scripts. `common.js` starts module discovery with the normal `BH` API before booting the page and refreshes modules after a language change. Existing page controllers remain compatible.
 
+Load `page-deck.js` and `page-chrome.js` before `common.js` on every page. These classic scripts define factories; `common.js` creates the navigation and chrome at parse time, retaining early keyboard/swipe listeners and scroll restoration. Dictionary readiness and completion of page-script parsing gate chrome wiring, then module discovery, then the page's `boot`; neighbour prefetching is scheduled last. If a cached dictionary arrives during parsing, discovery waits for DOMContentLoaded so later page scripts can configure their store and register their controller. A language change still repaints the page before refreshing modules.
+
+Hero Gear loads `hero-gear-view.js` before `hero-gear.js`. Its view factory receives the engine, translations, number formatting, text substitution and art URL, and returns HTML without owning state, persistence, workers or listeners. The simulator loads `sim-sheet.js` before `sim.js`; it owns the existing debounced report-sheet save and restore, using the console's `data-sheet-key`, separately from the selected player ledger. Both helpers also support CommonJS domain checks.
+
 ## Markup contract
 
 | Attribute | Meaning |
@@ -83,6 +87,20 @@ Rules for new markup:
 
 ## Extension API
 
+Modules read the selected player store through the lazy `context.ledger` getter. Controllers outside a module use `Interactions.ledger()` (also `BH.modules.ledger()`). With no configuration, either lookup calls `PlayerLedger.shared()`. Constructing a context never reads storage; a factory's lookup failure is caught as that module's `module:error`, so unrelated modules still mount.
+
+Configure page dependencies before `Interactions.start(BH)` discovers roots:
+
+```js
+Interactions.configure({ ledger: store });
+// Or defer store construction until a consumer requests it:
+Interactions.configure({ ledger: function () { return selectedStore; } });
+```
+
+Providers return the same store for every consumer. Configuration does not call the provider, and changing configuration while started throws to prevent mixed subscriptions. `destroy()` removes mounts but retains the page configuration; configure again before restarting if needed. Configuring `ledger: undefined` restores the default lookup.
+
+Hero Gear's `?guest` and shared `?gear=` links configure a memoized in-memory store before discovery. Its controller, ledger forms, save transfer and screenshot import use that store. Plain guest mode starts from a snapshot of saved facts when readable; a shared link starts with its own gear. Resource edits, confirmed imports, save-file imports and undo stay in that store. `PlayerLedger.shared()` is never replaced: consumers that deliberately need persistent kingdom facts can still access them independently.
+
 `BH.modules` exposes the same registry as `window.Interactions`. Register capabilities before boot or later:
 
 ```js
@@ -107,4 +125,4 @@ BH.modules.register('example', function (context) {
 
 `context.nodes(selector)` and `context.targets(key)` stay within ownership boundaries. `context.listen` tracks listener cleanup; `context.cleanup(fn)` tracks subscriptions. An instance may return `refresh` and `dispose`. Action failures emit `module:error` with the module name and message; one failed module does not prevent other roots from mounting. `Interactions.destroy()` removes delegated listeners, observers and module subscriptions.
 
-Run the ledger and gear domain checks locally. CI also runs `.dsh/interaction-modules-check.cjs` in Chromium, covering nested roots, idempotent start, unknown/invalid bindings, RTL tabs, disclosure, scoped messages, export/import, dynamic discovery and cleanup, followed by the existing hero-gear visual/OCR/interaction checks.
+Run the ledger and gear domain checks locally. `node .dsh/interaction-modules-check.cjs --pure` checks lazy selection, persistent accessor compatibility, module-local storage failures, cleanup and boot ordering without launching a browser. Its normal invocation also runs the existing Chromium checks covering nested roots, idempotent start, unknown/invalid bindings, RTL tabs, disclosure, scoped messages, export/import, dynamic discovery and cleanup, followed by the existing hero-gear visual/OCR/interaction checks. The Node page-deck harness must evaluate `page-deck.js`, `page-chrome.js` and `common.js`, in that order, in its existing VM scope. CI's existing recursive syntax check covers all four helpers. Add `js/page-deck.js` and `js/page-chrome.js` to the shared changed-path filter; `hero-gear-view.js` already matches the Hero Gear filter, and `sim-sheet.js` matches the deck/simulator filter's `js/**`.

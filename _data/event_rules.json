@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "source": "Existing events guide and alliance-confirmed kvk.js tables, extracted 2026-10-08",
   "legacy": {
     "MATRIX": [
@@ -590,11 +590,15 @@
                 "id": "tempered-truegold",
                 "rate": 30000
               }
-            ]
+            ],
+            "id": "tempered-truegold",
+            "category": "Tempered TG"
           },
           {
             "label": "Watchtower Intel Mission",
-            "points": "6,000"
+            "points": "6,000",
+            "id": "intel-mission",
+            "category": "Intel missions"
           },
           {
             "label": "Truegold (building upgrade)",
@@ -604,7 +608,9 @@
                 "id": "truegold",
                 "rate": 2000
               }
-            ]
+            ],
+            "id": "truegold",
+            "category": "Truegold"
           },
           {
             "label": "Truegold Dust (tech research)",
@@ -614,15 +620,37 @@
                 "id": "truegold-dust",
                 "rate": 1000
               }
-            ]
+            ],
+            "id": "truegold-dust",
+            "category": null
           },
           {
             "label": "Governor Charm max score +1",
-            "points": "70"
+            "points": "70",
+            "id": "governor-charms",
+            "category": "Gov charm",
+            "scoring": {
+              "type": "governor",
+              "kind": "charms",
+              "rate": 70
+            }
           },
           {
             "label": "1 min construction / research / training / learning speedup",
-            "points": "30"
+            "points": "30",
+            "id": "speedup-development",
+            "category": "Troop",
+            "scoring": {
+              "type": "speedup",
+              "kinds": [
+                "general",
+                "construction",
+                "research",
+                "training",
+                "learning"
+              ],
+              "rate": 30
+            }
           }
         ]
       },
@@ -637,11 +665,15 @@
                 "id": "tempered-truegold",
                 "rate": 30000
               }
-            ]
+            ],
+            "id": "tempered-truegold",
+            "category": "Tempered TG"
           },
           {
             "label": "Hero Roulette (1 spin)",
-            "points": "8,000"
+            "points": "8,000",
+            "id": "hero-roulette",
+            "category": "Hero roulette"
           },
           {
             "label": "Master Emblem",
@@ -651,7 +683,9 @@
                 "id": "master-emblem",
                 "rate": 6000
               }
-            ]
+            ],
+            "id": "master-emblem",
+            "category": "Master emblem"
           },
           {
             "label": "Mythic hero shard",
@@ -661,7 +695,9 @@
                 "id": "mythic-hero-shard",
                 "rate": 3040
               }
-            ]
+            ],
+            "id": "mythic-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Truegold",
@@ -671,7 +707,9 @@
                 "id": "truegold",
                 "rate": 2000
               }
-            ]
+            ],
+            "id": "truegold",
+            "category": "Truegold"
           },
           {
             "label": "Epic hero shard",
@@ -681,7 +719,9 @@
                 "id": "epic-hero-shard",
                 "rate": 1220
               }
-            ]
+            ],
+            "id": "epic-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Truegold Dust",
@@ -691,7 +731,9 @@
                 "id": "truegold-dust",
                 "rate": 1000
               }
-            ]
+            ],
+            "id": "truegold-dust",
+            "category": null
           },
           {
             "label": "Rare hero shard",
@@ -701,7 +743,9 @@
                 "id": "rare-hero-shard",
                 "rate": 350
               }
-            ]
+            ],
+            "id": "rare-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Master's Manuscript",
@@ -711,15 +755,33 @@
                 "id": "masters-manuscript",
                 "rate": 60
               }
-            ]
+            ],
+            "id": "masters-manuscript",
+            "category": null
           },
           {
             "label": "1 min speedups (all kinds)",
-            "points": "30"
+            "points": "30",
+            "id": "speedup-all",
+            "category": null,
+            "scoring": {
+              "type": "speedup",
+              "kinds": [
+                "general",
+                "construction",
+                "research",
+                "training",
+                "learning",
+                "healing"
+              ],
+              "rate": 30
+            }
           },
           {
             "label": "Gather 1,000 bread/wood, 200 stone, 50 iron",
-            "points": "2"
+            "points": "2",
+            "id": "gathering",
+            "category": "Gathering"
           }
         ]
       },
@@ -734,11 +796,15 @@
                 "id": "advanced-taming-mark",
                 "rate": 15000
               }
-            ]
+            ],
+            "id": "advanced-taming-mark",
+            "category": "Pets advance"
           },
           {
             "label": "Hero Roulette",
-            "points": "8,000"
+            "points": "8,000",
+            "id": "hero-roulette",
+            "category": "Hero roulette"
           },
           {
             "label": "Master Emblem",
@@ -748,11 +814,15 @@
                 "id": "master-emblem",
                 "rate": 6000
               }
-            ]
+            ],
+            "id": "master-emblem",
+            "category": "Master emblem"
           },
           {
             "label": "Watchtower Intel Mission",
-            "points": "6,000"
+            "points": "6,000",
+            "id": "intel-mission",
+            "category": "Intel missions"
           },
           {
             "label": "Mythic hero shard",
@@ -762,7 +832,9 @@
                 "id": "mythic-hero-shard",
                 "rate": 3040
               }
-            ]
+            ],
+            "id": "mythic-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Epic hero shard",
@@ -772,7 +844,9 @@
                 "id": "epic-hero-shard",
                 "rate": 1220
               }
-            ]
+            ],
+            "id": "epic-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Common Taming Mark",
@@ -782,7 +856,9 @@
                 "id": "common-taming-mark",
                 "rate": 1150
               }
-            ]
+            ],
+            "id": "common-taming-mark",
+            "category": "Pets advance"
           },
           {
             "label": "Rare hero shard",
@@ -792,11 +868,20 @@
                 "id": "rare-hero-shard",
                 "rate": 350
               }
-            ]
+            ],
+            "id": "rare-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Governor Charm max score +1",
-            "points": "70"
+            "points": "70",
+            "id": "governor-charms",
+            "category": "Gov charm",
+            "scoring": {
+              "type": "governor",
+              "kind": "charms",
+              "rate": 70
+            }
           },
           {
             "label": "Master's Manuscript",
@@ -806,11 +891,15 @@
                 "id": "masters-manuscript",
                 "rate": 60
               }
-            ]
+            ],
+            "id": "masters-manuscript",
+            "category": null
           },
           {
             "label": "Pet Advancement score +1",
-            "points": "50"
+            "points": "50",
+            "id": "pet-advancement",
+            "category": "Pets advance"
           }
         ]
       },
@@ -825,7 +914,9 @@
                 "id": "mithril",
                 "rate": 40000
               }
-            ]
+            ],
+            "id": "mithril",
+            "category": "Mithril"
           },
           {
             "label": "Widget (hero exclusive gear)",
@@ -835,7 +926,9 @@
                 "id": "hero-widget",
                 "rate": 8000
               }
-            ]
+            ],
+            "id": "hero-widget",
+            "category": "Widget gear"
           },
           {
             "label": "Hero Gear Forgehammer",
@@ -845,43 +938,124 @@
                 "id": "forgehammer",
                 "rate": 4000
               }
-            ]
+            ],
+            "id": "forgehammer",
+            "category": "Forgehammer"
           },
           {
             "label": "Governor Charm max score +1",
-            "points": "70"
+            "points": "70",
+            "id": "governor-charms",
+            "category": "Gov charm",
+            "scoring": {
+              "type": "governor",
+              "kind": "charms",
+              "rate": 70
+            }
           },
           {
             "label": "T11 troop",
-            "points": "75"
+            "points": "75",
+            "id": "troops-t11",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "11": 75
+              },
+              "rateSet": "kvk"
+            }
           },
           {
             "label": "T10 troop",
-            "points": "60"
+            "points": "60",
+            "id": "troops-t10",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "10": 60
+              },
+              "rateSet": "kvk"
+            }
           },
           {
             "label": "T9 troop",
-            "points": "45"
+            "points": "45",
+            "id": "troops-t9",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "9": 45
+              },
+              "rateSet": "kvk"
+            }
           },
           {
             "label": "T8 troop",
-            "points": "35"
+            "points": "35",
+            "id": "troops-t8",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "8": 35
+              },
+              "rateSet": "kvk"
+            }
           },
           {
             "label": "T7 troop",
-            "points": "25"
+            "points": "25",
+            "id": "troops-t7",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "7": 25
+              },
+              "rateSet": "kvk"
+            }
           },
           {
             "label": "T6 troop",
-            "points": "18"
+            "points": "18",
+            "id": "troops-t6",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "6": 18
+              },
+              "rateSet": "kvk"
+            }
           },
           {
             "label": "T5 troop",
-            "points": "12"
+            "points": "12",
+            "id": "troops-t5",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "5": 12
+              },
+              "rateSet": "kvk"
+            }
           },
           {
             "label": "T4 troop",
-            "points": "8"
+            "points": "8",
+            "id": "troops-t4",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "4": 8
+              },
+              "rateSet": "kvk"
+            }
           }
         ]
       },
@@ -890,7 +1064,14 @@
         "rows": [
           {
             "label": "Governor gear",
-            "points": "·"
+            "points": "·",
+            "id": "governor-gear",
+            "category": "Gov gear",
+            "scoring": {
+              "type": "governor",
+              "kind": "gear",
+              "rate": null
+            }
           },
           {
             "label": "Truegold + Tempered Truegold",
@@ -904,7 +1085,9 @@
                 "id": "tempered-truegold",
                 "rate": 30000
               }
-            ]
+            ],
+            "id": "truegold-combined",
+            "category": "Tempered TG"
           },
           {
             "label": "Mithril / widget / forgehammer",
@@ -922,23 +1105,43 @@
                 "id": "forgehammer",
                 "rate": 4000
               }
-            ]
+            ],
+            "id": "hero-gear-materials",
+            "category": "Mithril"
           },
           {
             "label": "1 min construction / research / training speedups",
-            "points": "30"
+            "points": "30",
+            "id": "speedup-city",
+            "category": "Troop",
+            "scoring": {
+              "type": "speedup",
+              "kinds": [
+                "general",
+                "construction",
+                "research",
+                "training"
+              ],
+              "rate": 30
+            }
           },
           {
             "label": "Watchtower Intel Mission",
-            "points": "6,000"
+            "points": "6,000",
+            "id": "intel-mission",
+            "category": "Intel missions"
           },
           {
             "label": "Gathering",
-            "points": "2"
+            "points": "2",
+            "id": "gathering",
+            "category": "Gathering"
           },
           {
             "label": "Pets advance",
-            "points": "50"
+            "points": "50",
+            "id": "pet-advancement",
+            "category": "Pets advance"
           }
         ]
       }
@@ -955,7 +1158,9 @@
                 "id": "tempered-truegold",
                 "rate": 30000
               }
-            ]
+            ],
+            "id": "tempered-truegold",
+            "category": "Tempered TG"
           },
           {
             "label": "Truegold",
@@ -965,15 +1170,36 @@
                 "id": "truegold",
                 "rate": 2000
               }
-            ]
+            ],
+            "id": "truegold",
+            "category": "Truegold"
           },
           {
             "label": "Governor Charm max score +1",
-            "points": "70"
+            "points": "70",
+            "id": "governor-charms",
+            "category": "Gov charm",
+            "scoring": {
+              "type": "governor",
+              "kind": "charms",
+              "rate": 70
+            }
           },
           {
             "label": "1 min construction / research / training speedup",
-            "points": "30"
+            "points": "30",
+            "id": "speedup-city",
+            "category": "Troop",
+            "scoring": {
+              "type": "speedup",
+              "kinds": [
+                "general",
+                "construction",
+                "research",
+                "training"
+              ],
+              "rate": 30
+            }
           }
         ]
       },
@@ -988,7 +1214,9 @@
                 "id": "mithril",
                 "rate": 40000
               }
-            ]
+            ],
+            "id": "mithril",
+            "category": "Mithril"
           },
           {
             "label": "Widget (hero exclusive gear)",
@@ -998,11 +1226,15 @@
                 "id": "hero-widget",
                 "rate": 8000
               }
-            ]
+            ],
+            "id": "hero-widget",
+            "category": "Widget gear"
           },
           {
             "label": "Hero Roulette",
-            "points": "8,000"
+            "points": "8,000",
+            "id": "hero-roulette",
+            "category": "Hero roulette"
           },
           {
             "label": "Hero Gear Forgehammer",
@@ -1012,7 +1244,9 @@
                 "id": "forgehammer",
                 "rate": 4000
               }
-            ]
+            ],
+            "id": "forgehammer",
+            "category": "Forgehammer"
           },
           {
             "label": "Mythic hero shard",
@@ -1022,7 +1256,9 @@
                 "id": "mythic-hero-shard",
                 "rate": 3040
               }
-            ]
+            ],
+            "id": "mythic-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Truegold",
@@ -1032,7 +1268,9 @@
                 "id": "truegold",
                 "rate": 2000
               }
-            ]
+            ],
+            "id": "truegold",
+            "category": "Truegold"
           },
           {
             "label": "Epic hero shard",
@@ -1042,7 +1280,9 @@
                 "id": "epic-hero-shard",
                 "rate": 1220
               }
-            ]
+            ],
+            "id": "epic-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Rare hero shard",
@@ -1052,11 +1292,27 @@
                 "id": "rare-hero-shard",
                 "rate": 350
               }
-            ]
+            ],
+            "id": "rare-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "1 min speedups",
-            "points": "30"
+            "points": "30",
+            "id": "speedup-all",
+            "category": null,
+            "scoring": {
+              "type": "speedup",
+              "kinds": [
+                "general",
+                "construction",
+                "research",
+                "training",
+                "learning",
+                "healing"
+              ],
+              "rate": 30
+            }
           }
         ]
       },
@@ -1071,11 +1327,15 @@
                 "id": "advanced-taming-mark",
                 "rate": 15000
               }
-            ]
+            ],
+            "id": "advanced-taming-mark",
+            "category": "Pets advance"
           },
           {
             "label": "Hero Roulette",
-            "points": "8,000"
+            "points": "8,000",
+            "id": "hero-roulette",
+            "category": "Hero roulette"
           },
           {
             "label": "Master Emblem",
@@ -1085,7 +1345,9 @@
                 "id": "master-emblem",
                 "rate": 6000
               }
-            ]
+            ],
+            "id": "master-emblem",
+            "category": "Master emblem"
           },
           {
             "label": "Mythic hero shard",
@@ -1095,7 +1357,9 @@
                 "id": "mythic-hero-shard",
                 "rate": 3040
               }
-            ]
+            ],
+            "id": "mythic-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Epic hero shard",
@@ -1105,7 +1369,9 @@
                 "id": "epic-hero-shard",
                 "rate": 1220
               }
-            ]
+            ],
+            "id": "epic-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Common Taming Mark",
@@ -1115,7 +1381,9 @@
                 "id": "common-taming-mark",
                 "rate": 1150
               }
-            ]
+            ],
+            "id": "common-taming-mark",
+            "category": "Pets advance"
           },
           {
             "label": "Rare hero shard",
@@ -1125,15 +1393,26 @@
                 "id": "rare-hero-shard",
                 "rate": 350
               }
-            ]
+            ],
+            "id": "rare-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Governor Charm max score +1",
-            "points": "70"
+            "points": "70",
+            "id": "governor-charms",
+            "category": "Gov charm",
+            "scoring": {
+              "type": "governor",
+              "kind": "charms",
+              "rate": 70
+            }
           },
           {
             "label": "Pet Advancement score +1",
-            "points": "50"
+            "points": "50",
+            "id": "pet-advancement",
+            "category": "Pets advance"
           }
         ]
       },
@@ -1148,7 +1427,9 @@
                 "id": "mithril",
                 "rate": 40000
               }
-            ]
+            ],
+            "id": "mithril",
+            "category": "Mithril"
           },
           {
             "label": "Widget",
@@ -1158,7 +1439,9 @@
                 "id": "hero-widget",
                 "rate": 8000
               }
-            ]
+            ],
+            "id": "hero-widget",
+            "category": "Widget gear"
           },
           {
             "label": "Hero Gear Forgehammer",
@@ -1168,15 +1451,31 @@
                 "id": "forgehammer",
                 "rate": 4000
               }
-            ]
+            ],
+            "id": "forgehammer",
+            "category": "Forgehammer"
           },
           {
             "label": "Governor Charm max score +1",
-            "points": "70"
+            "points": "70",
+            "id": "governor-charms",
+            "category": "Gov charm",
+            "scoring": {
+              "type": "governor",
+              "kind": "charms",
+              "rate": 70
+            }
           },
           {
             "label": "T10 → T1 troop",
-            "points": "39 → 1"
+            "points": "39 → 1",
+            "id": "troops-sg",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {},
+              "rateSet": "sg"
+            }
           }
         ]
       },
@@ -1191,7 +1490,9 @@
                 "id": "mithril",
                 "rate": 40000
               }
-            ]
+            ],
+            "id": "mithril",
+            "category": "Mithril"
           },
           {
             "label": "Widget",
@@ -1201,7 +1502,9 @@
                 "id": "hero-widget",
                 "rate": 8000
               }
-            ]
+            ],
+            "id": "hero-widget",
+            "category": "Widget gear"
           },
           {
             "label": "Hero Gear Forgehammer",
@@ -1211,7 +1514,9 @@
                 "id": "forgehammer",
                 "rate": 4000
               }
-            ]
+            ],
+            "id": "forgehammer",
+            "category": "Forgehammer"
           },
           {
             "label": "Truegold",
@@ -1221,11 +1526,25 @@
                 "id": "truegold",
                 "rate": 2000
               }
-            ]
+            ],
+            "id": "truegold",
+            "category": "Truegold"
           },
           {
             "label": "1 min construction / research / training speedup",
-            "points": "30"
+            "points": "30",
+            "id": "speedup-city",
+            "category": "Troop",
+            "scoring": {
+              "type": "speedup",
+              "kinds": [
+                "general",
+                "construction",
+                "research",
+                "training"
+              ],
+              "rate": 30
+            }
           }
         ]
       },
@@ -1234,11 +1553,25 @@
         "rows": [
           {
             "label": "Governor Charm max score +1",
-            "points": "36"
+            "points": "36",
+            "id": "governor-charms",
+            "category": "Gov charm",
+            "scoring": {
+              "type": "governor",
+              "kind": "charms",
+              "rate": 36
+            }
           },
           {
             "label": "T10 → T1 troop",
-            "points": "39 → 1"
+            "points": "39 → 1",
+            "id": "troops-sg",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {},
+              "rateSet": "sg"
+            }
           }
         ]
       },
@@ -1253,7 +1586,9 @@
                 "id": "advanced-taming-mark",
                 "rate": 15000
               }
-            ]
+            ],
+            "id": "advanced-taming-mark",
+            "category": "Pets advance"
           },
           {
             "label": "Mythic hero shard",
@@ -1263,7 +1598,9 @@
                 "id": "mythic-hero-shard",
                 "rate": 3040
               }
-            ]
+            ],
+            "id": "mythic-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Truegold",
@@ -1273,7 +1610,9 @@
                 "id": "truegold",
                 "rate": 2000
               }
-            ]
+            ],
+            "id": "truegold",
+            "category": "Truegold"
           },
           {
             "label": "Epic hero shard",
@@ -1283,7 +1622,9 @@
                 "id": "epic-hero-shard",
                 "rate": 1220
               }
-            ]
+            ],
+            "id": "epic-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Common Taming Mark",
@@ -1293,7 +1634,9 @@
                 "id": "common-taming-mark",
                 "rate": 1150
               }
-            ]
+            ],
+            "id": "common-taming-mark",
+            "category": "Pets advance"
           },
           {
             "label": "Rare hero shard",
@@ -1303,23 +1646,50 @@
                 "id": "rare-hero-shard",
                 "rate": 350
               }
-            ]
+            ],
+            "id": "rare-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Pet Advancement score +1",
-            "points": "50"
+            "points": "50",
+            "id": "pet-advancement",
+            "category": "Pets advance"
           },
           {
             "label": "Governor Charm max score +1",
-            "points": "36"
+            "points": "36",
+            "id": "governor-charms",
+            "category": "Gov charm",
+            "scoring": {
+              "type": "governor",
+              "kind": "charms",
+              "rate": 36
+            }
           },
           {
             "label": "1 min speedups",
-            "points": "30"
+            "points": "30",
+            "id": "speedup-all",
+            "category": null,
+            "scoring": {
+              "type": "speedup",
+              "kinds": [
+                "general",
+                "construction",
+                "research",
+                "training",
+                "learning",
+                "healing"
+              ],
+              "rate": 30
+            }
           },
           {
             "label": "Gather 2,500 bread/wood, 500 stone, 100 iron",
-            "points": "3"
+            "points": "3",
+            "id": "gathering",
+            "category": "Gathering"
           }
         ]
       }
@@ -1330,11 +1700,15 @@
         "rows": [
           {
             "label": "Escort a truck (any grade)",
-            "points": "10,000"
+            "points": "10,000",
+            "id": "truck-escort",
+            "category": "free"
           },
           {
             "label": "Raid a truck (any grade)",
-            "points": "10,000"
+            "points": "10,000",
+            "id": "truck-raid",
+            "category": "free"
           },
           {
             "label": "Master Emblem",
@@ -1344,7 +1718,9 @@
                 "id": "master-emblem",
                 "rate": 3600
               }
-            ]
+            ],
+            "id": "master-emblem",
+            "category": "Master emblem"
           },
           {
             "label": "Truegold (building upgrade)",
@@ -1354,7 +1730,9 @@
                 "id": "truegold",
                 "rate": 1250
               }
-            ]
+            ],
+            "id": "truegold",
+            "category": "Truegold"
           },
           {
             "label": "Truegold Dust (tech research)",
@@ -1364,7 +1742,9 @@
                 "id": "truegold-dust",
                 "rate": 625
               }
-            ]
+            ],
+            "id": "truegold-dust",
+            "category": null
           },
           {
             "label": "Master's Manuscript",
@@ -1374,28 +1754,50 @@
                 "id": "masters-manuscript",
                 "rate": 36
               }
-            ]
+            ],
+            "id": "masters-manuscript",
+            "category": null
           },
           {
             "label": "1m construction / research / training / master speedup",
-            "points": "18"
+            "points": "18",
+            "id": "speedup-development",
+            "category": "Troop",
+            "scoring": {
+              "type": "speedup",
+              "kinds": [
+                "general",
+                "construction",
+                "research",
+                "training",
+                "learning"
+              ],
+              "rate": 18
+            }
           },
           {
             "label": "Gather in the wilderness (bread / wood / stone / iron)",
-            "points": "2"
+            "points": "2",
+            "id": "wilderness-gathering",
+            "category": "free"
           }
-        ]
+        ],
+        "title": "Day 1 · Rise of the City"
       },
       {
         "day": 2,
         "rows": [
           {
             "label": "Escort a truck (any grade)",
-            "points": "10,000"
+            "points": "10,000",
+            "id": "truck-escort",
+            "category": "free"
           },
           {
             "label": "Raid a truck (any grade)",
-            "points": "10,000"
+            "points": "10,000",
+            "id": "truck-raid",
+            "category": "free"
           },
           {
             "label": "Master Emblem",
@@ -1405,11 +1807,15 @@
                 "id": "master-emblem",
                 "rate": 3600
               }
-            ]
+            ],
+            "id": "master-emblem",
+            "category": "Master emblem"
           },
           {
             "label": "Finish an intel mission",
-            "points": "3,000"
+            "points": "3,000",
+            "id": "intel-mission",
+            "category": "Intel missions"
           },
           {
             "label": "Mythic hero shard",
@@ -1419,7 +1825,9 @@
                 "id": "mythic-hero-shard",
                 "rate": 1875
               }
-            ]
+            ],
+            "id": "mythic-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Truegold (building upgrade)",
@@ -1429,7 +1837,9 @@
                 "id": "truegold",
                 "rate": 1250
               }
-            ]
+            ],
+            "id": "truegold",
+            "category": "Truegold"
           },
           {
             "label": "Epic hero shard",
@@ -1439,7 +1849,9 @@
                 "id": "epic-hero-shard",
                 "rate": 750
               }
-            ]
+            ],
+            "id": "epic-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Truegold Dust (tech research)",
@@ -1449,7 +1861,9 @@
                 "id": "truegold-dust",
                 "rate": 625
               }
-            ]
+            ],
+            "id": "truegold-dust",
+            "category": null
           },
           {
             "label": "Rare hero shard",
@@ -1459,7 +1873,9 @@
                 "id": "rare-hero-shard",
                 "rate": 210
               }
-            ]
+            ],
+            "id": "rare-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Master's Manuscript",
@@ -1469,24 +1885,44 @@
                 "id": "masters-manuscript",
                 "rate": 36
               }
-            ]
+            ],
+            "id": "masters-manuscript",
+            "category": null
           },
           {
             "label": "1m construction / research / training / master speedup",
-            "points": "18"
+            "points": "18",
+            "id": "speedup-development",
+            "category": "Troop",
+            "scoring": {
+              "type": "speedup",
+              "kinds": [
+                "general",
+                "construction",
+                "research",
+                "training",
+                "learning"
+              ],
+              "rate": 18
+            }
           }
-        ]
+        ],
+        "title": "Day 2 · Hero Development"
       },
       {
         "day": 3,
         "rows": [
           {
             "label": "Escort a truck (any grade)",
-            "points": "10,000"
+            "points": "10,000",
+            "id": "truck-escort",
+            "category": "free"
           },
           {
             "label": "Raid a truck (any grade)",
-            "points": "10,000"
+            "points": "10,000",
+            "id": "truck-raid",
+            "category": "free"
           },
           {
             "label": "Advanced Taming Mark (pet refinement)",
@@ -1496,7 +1932,9 @@
                 "id": "advanced-taming-mark",
                 "rate": 9370
               }
-            ]
+            ],
+            "id": "advanced-taming-mark",
+            "category": "Pets advance"
           },
           {
             "label": "Common Taming Mark (pet refinement)",
@@ -1506,32 +1944,50 @@
                 "id": "common-taming-mark",
                 "rate": 680
               }
-            ]
+            ],
+            "id": "common-taming-mark",
+            "category": "Pets advance"
           },
           {
             "label": "Governor Charm max score +1",
-            "points": "45"
+            "points": "45",
+            "id": "governor-charms",
+            "category": "Gov charm",
+            "scoring": {
+              "type": "governor",
+              "kind": "charms",
+              "rate": 45
+            }
           },
           {
             "label": "Pet Advancement score +1",
-            "points": "30"
+            "points": "30",
+            "id": "pet-advancement",
+            "category": "Pets advance"
           },
           {
             "label": "Gather in the wilderness (bread / wood / stone / iron)",
-            "points": "2"
+            "points": "2",
+            "id": "wilderness-gathering",
+            "category": "free"
           }
-        ]
+        ],
+        "title": "Day 3 · Pet Training"
       },
       {
         "day": 4,
         "rows": [
           {
             "label": "Escort a truck (any grade)",
-            "points": "10,000"
+            "points": "10,000",
+            "id": "truck-escort",
+            "category": "free"
           },
           {
             "label": "Raid a truck (any grade)",
-            "points": "10,000"
+            "points": "10,000",
+            "id": "truck-raid",
+            "category": "free"
           },
           {
             "label": "Mithril",
@@ -1541,7 +1997,9 @@
                 "id": "mithril",
                 "rate": 18750
               }
-            ]
+            ],
+            "id": "mithril",
+            "category": "Mithril"
           },
           {
             "label": "Widget (hero exclusive gear)",
@@ -1551,11 +2009,15 @@
                 "id": "hero-widget",
                 "rate": 3750
               }
-            ]
+            ],
+            "id": "hero-widget",
+            "category": "Widget gear"
           },
           {
             "label": "Finish an intel mission",
-            "points": "3,000"
+            "points": "3,000",
+            "id": "intel-mission",
+            "category": "Intel missions"
           },
           {
             "label": "Hero Gear Forgehammer",
@@ -1565,92 +2027,206 @@
                 "id": "forgehammer",
                 "rate": 1875
               }
-            ]
+            ],
+            "id": "forgehammer",
+            "category": "Forgehammer"
           },
           {
             "label": "T11 troop",
-            "points": "30"
+            "points": "30",
+            "id": "troops-t11",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "11": 30
+              }
+            }
           },
           {
             "label": "T10 troop",
-            "points": "24"
+            "points": "24",
+            "id": "troops-t10",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "10": 24
+              }
+            }
           },
           {
             "label": "T9 troop",
-            "points": "18"
+            "points": "18",
+            "id": "troops-t9",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "9": 18
+              }
+            }
           },
           {
             "label": "T8 troop",
-            "points": "14"
+            "points": "14",
+            "id": "troops-t8",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "8": 14
+              }
+            }
           },
           {
             "label": "T7 troop",
-            "points": "10"
+            "points": "10",
+            "id": "troops-t7",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "7": 10
+              }
+            }
           },
           {
             "label": "T6 troop",
-            "points": "7"
+            "points": "7",
+            "id": "troops-t6",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "6": 7
+              }
+            }
           },
           {
             "label": "T5 troop",
-            "points": "4"
+            "points": "4",
+            "id": "troops-t5",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "5": 4
+              }
+            }
           },
           {
             "label": "T4 troop",
-            "points": "3"
+            "points": "3",
+            "id": "troops-t4",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "4": 3
+              }
+            }
           },
           {
             "label": "T3 troop",
-            "points": "2"
+            "points": "2",
+            "id": "troops-t3",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "3": 2
+              }
+            }
           },
           {
             "label": "T2 troop",
-            "points": "1"
+            "points": "1",
+            "id": "troops-t2",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "2": 1
+              }
+            }
           },
           {
             "label": "T1 troop",
-            "points": "1"
+            "points": "1",
+            "id": "troops-t1",
+            "category": "Troop",
+            "scoring": {
+              "type": "troops",
+              "rates": {
+                "1": 1
+              }
+            }
           },
           {
             "label": "Governor Charm max score +1",
-            "points": "45"
+            "points": "45",
+            "id": "governor-charms",
+            "category": "Gov charm",
+            "scoring": {
+              "type": "governor",
+              "kind": "charms",
+              "rate": 45
+            }
           }
-        ]
+        ],
+        "title": "Day 4 · Gear Enhancement"
       },
       {
         "day": 5,
         "rows": [
           {
             "label": "Escort a truck (any grade)",
-            "points": "10,000"
+            "points": "10,000",
+            "id": "truck-escort",
+            "category": "free"
           },
           {
             "label": "Raid a truck (any grade)",
-            "points": "10,000"
+            "points": "10,000",
+            "id": "truck-raid",
+            "category": "free"
           },
           {
             "label": "Call a rally and hunt a Terror",
-            "points": "15,000"
+            "points": "15,000",
+            "id": "terror-rally",
+            "category": "free"
           },
           {
             "label": "Defeat a level 26–30 beast",
-            "points": "6,000"
+            "points": "6,000",
+            "id": "beast-26-30",
+            "category": "free"
           },
           {
             "label": "Defeat a level 21–25 beast",
-            "points": "5,500"
+            "points": "5,500",
+            "id": "beast-21-25",
+            "category": "free"
           },
           {
             "label": "Defeat a level 16–20 beast",
-            "points": "5,000"
+            "points": "5,000",
+            "id": "beast-16-20",
+            "category": "free"
           },
           {
             "label": "Defeat a level 11–15 beast",
-            "points": "4,500"
+            "points": "4,500",
+            "id": "beast-11-15",
+            "category": "free"
           },
           {
             "label": "Defeat a level 1–10 beast",
-            "points": "4,000"
+            "points": "4,000",
+            "id": "beast-1-10",
+            "category": "free"
           },
           {
             "label": "Truegold (building upgrade)",
@@ -1660,7 +2236,9 @@
                 "id": "truegold",
                 "rate": 1250
               }
-            ]
+            ],
+            "id": "truegold",
+            "category": "Truegold"
           },
           {
             "label": "Truegold Dust (tech research)",
@@ -1670,28 +2248,55 @@
                 "id": "truegold-dust",
                 "rate": 625
               }
-            ]
+            ],
+            "id": "truegold-dust",
+            "category": null
           },
           {
             "label": "Governor Gear max score +1",
-            "points": "22"
+            "points": "22",
+            "id": "governor-gear",
+            "category": "Gov gear",
+            "scoring": {
+              "type": "governor",
+              "kind": "gear",
+              "rate": 22
+            }
           },
           {
             "label": "1m construction / research / training / master speedup",
-            "points": "18"
+            "points": "18",
+            "id": "speedup-development",
+            "category": "Troop",
+            "scoring": {
+              "type": "speedup",
+              "kinds": [
+                "general",
+                "construction",
+                "research",
+                "training",
+                "learning"
+              ],
+              "rate": 18
+            }
           }
-        ]
+        ],
+        "title": "Day 5 · Trade Baron"
       },
       {
         "day": 6,
         "rows": [
           {
             "label": "Escort a truck (any grade)",
-            "points": "10,000"
+            "points": "10,000",
+            "id": "truck-escort",
+            "category": "free"
           },
           {
             "label": "Raid a truck (any grade)",
-            "points": "10,000"
+            "points": "10,000",
+            "id": "truck-raid",
+            "category": "free"
           },
           {
             "label": "Mithril",
@@ -1701,11 +2306,15 @@
                 "id": "mithril",
                 "rate": 18750
               }
-            ]
+            ],
+            "id": "mithril",
+            "category": "Mithril"
           },
           {
             "label": "Call a rally and hunt a Terror",
-            "points": "15,000"
+            "points": "15,000",
+            "id": "terror-rally",
+            "category": "free"
           },
           {
             "label": "Advanced Taming Mark (pet refinement)",
@@ -1715,27 +2324,39 @@
                 "id": "advanced-taming-mark",
                 "rate": 9370
               }
-            ]
+            ],
+            "id": "advanced-taming-mark",
+            "category": "Pets advance"
           },
           {
             "label": "Defeat a level 26–30 beast",
-            "points": "6,000"
+            "points": "6,000",
+            "id": "beast-26-30",
+            "category": "free"
           },
           {
             "label": "Defeat a level 21–25 beast",
-            "points": "5,500"
+            "points": "5,500",
+            "id": "beast-21-25",
+            "category": "free"
           },
           {
             "label": "Defeat a level 16–20 beast",
-            "points": "5,000"
+            "points": "5,000",
+            "id": "beast-16-20",
+            "category": "free"
           },
           {
             "label": "Defeat a level 11–15 beast",
-            "points": "4,500"
+            "points": "4,500",
+            "id": "beast-11-15",
+            "category": "free"
           },
           {
             "label": "Defeat a level 1–10 beast",
-            "points": "4,000"
+            "points": "4,000",
+            "id": "beast-1-10",
+            "category": "free"
           },
           {
             "label": "Widget (hero exclusive gear)",
@@ -1745,7 +2366,9 @@
                 "id": "hero-widget",
                 "rate": 3750
               }
-            ]
+            ],
+            "id": "hero-widget",
+            "category": "Widget gear"
           },
           {
             "label": "Mythic hero shard",
@@ -1755,7 +2378,9 @@
                 "id": "mythic-hero-shard",
                 "rate": 1875
               }
-            ]
+            ],
+            "id": "mythic-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Hero Gear Forgehammer",
@@ -1765,7 +2390,9 @@
                 "id": "forgehammer",
                 "rate": 1875
               }
-            ]
+            ],
+            "id": "forgehammer",
+            "category": "Forgehammer"
           },
           {
             "label": "Truegold (building upgrade)",
@@ -1775,7 +2402,9 @@
                 "id": "truegold",
                 "rate": 1250
               }
-            ]
+            ],
+            "id": "truegold",
+            "category": "Truegold"
           },
           {
             "label": "Epic hero shard",
@@ -1785,7 +2414,9 @@
                 "id": "epic-hero-shard",
                 "rate": 750
               }
-            ]
+            ],
+            "id": "epic-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Common Taming Mark (pet refinement)",
@@ -1795,7 +2426,9 @@
                 "id": "common-taming-mark",
                 "rate": 680
               }
-            ]
+            ],
+            "id": "common-taming-mark",
+            "category": "Pets advance"
           },
           {
             "label": "Truegold Dust (tech research)",
@@ -1805,7 +2438,9 @@
                 "id": "truegold-dust",
                 "rate": 625
               }
-            ]
+            ],
+            "id": "truegold-dust",
+            "category": null
           },
           {
             "label": "Rare hero shard",
@@ -1815,25 +2450,57 @@
                 "id": "rare-hero-shard",
                 "rate": 210
               }
-            ]
+            ],
+            "id": "rare-hero-shard",
+            "category": "Hero shard"
           },
           {
             "label": "Governor Charm max score +1",
-            "points": "45"
+            "points": "45",
+            "id": "governor-charms",
+            "category": "Gov charm",
+            "scoring": {
+              "type": "governor",
+              "kind": "charms",
+              "rate": 45
+            }
           },
           {
             "label": "Pet Advancement score +1",
-            "points": "30"
+            "points": "30",
+            "id": "pet-advancement",
+            "category": "Pets advance"
           },
           {
             "label": "Governor Gear max score +1",
-            "points": "22"
+            "points": "22",
+            "id": "governor-gear",
+            "category": "Gov gear",
+            "scoring": {
+              "type": "governor",
+              "kind": "gear",
+              "rate": 22
+            }
           },
           {
             "label": "1m construction / research / training / master speedup",
-            "points": "18"
+            "points": "18",
+            "id": "speedup-development",
+            "category": "Troop",
+            "scoring": {
+              "type": "speedup",
+              "kinds": [
+                "general",
+                "construction",
+                "research",
+                "training",
+                "learning"
+              ],
+              "rate": 18
+            }
           }
-        ]
+        ],
+        "title": "Day 6 · Full-Scale Competition"
       }
     ]
   },
@@ -1903,5 +2570,260 @@
       "label": "Forgehammer",
       "key": "gear.hammers"
     }
-  ]
+  ],
+  "categories": {
+    "Truegold": {
+      "icon": "100081"
+    },
+    "Tempered TG": {
+      "icon": "100081"
+    },
+    "Hero shard": {
+      "icon": "500220"
+    },
+    "Master emblem": {
+      "icon": ""
+    },
+    "Building": {
+      "icon": "200201"
+    },
+    "Troop": {
+      "icon": "200301"
+    },
+    "Research": {
+      "icon": "200401"
+    },
+    "Hero roulette": {
+      "icon": "101"
+    },
+    "Gathering": {
+      "icon": ""
+    },
+    "Intel missions": {
+      "icon": "620163"
+    },
+    "Pets advance": {
+      "icon": ""
+    },
+    "Gov charm": {
+      "icon": ""
+    },
+    "Gov gear": {
+      "icon": ""
+    },
+    "Widget gear": {
+      "icon": ""
+    },
+    "Mithril": {
+      "icon": ""
+    },
+    "Forgehammer": {
+      "icon": "500240"
+    }
+  },
+  "tasks": {
+    "tempered-truegold": {
+      "category": "Tempered TG",
+      "icon": "100081",
+      "copyLabel": "temp TG"
+    },
+    "truegold": {
+      "category": "Truegold",
+      "icon": "100081",
+      "copyLabel": "Truegold"
+    },
+    "governor-charms": {
+      "category": "Gov charm",
+      "icon": "",
+      "copyLabel": "Gov charm"
+    },
+    "speedup-all": {
+      "category": null,
+      "icon": "200101",
+      "copyLabel": "spd"
+    },
+    "mithril": {
+      "category": "Mithril",
+      "icon": "",
+      "copyLabel": "Mithril"
+    },
+    "hero-widget": {
+      "category": "Widget gear",
+      "icon": "",
+      "copyLabel": "Widget"
+    },
+    "hero-roulette": {
+      "category": "Hero roulette",
+      "icon": "101",
+      "copyLabel": "Roulette"
+    },
+    "forgehammer": {
+      "category": "Forgehammer",
+      "icon": "500240",
+      "copyLabel": "Forgehammer"
+    },
+    "mythic-hero-shard": {
+      "category": "Hero shard",
+      "icon": "500220",
+      "copyLabel": "Mythic"
+    },
+    "epic-hero-shard": {
+      "category": "Hero shard",
+      "icon": "500220",
+      "copyLabel": "Epic"
+    },
+    "rare-hero-shard": {
+      "category": "Hero shard",
+      "icon": "500220",
+      "copyLabel": "Rare"
+    },
+    "advanced-taming-mark": {
+      "category": "Pets advance",
+      "icon": "",
+      "copyLabel": "Adv Taming"
+    },
+    "master-emblem": {
+      "category": "Master emblem",
+      "icon": "",
+      "copyLabel": "Master emblem"
+    },
+    "common-taming-mark": {
+      "category": "Pets advance",
+      "icon": "",
+      "copyLabel": "Taming"
+    },
+    "pet-advancement": {
+      "category": "Pets advance",
+      "icon": "",
+      "copyLabel": "Pets"
+    },
+    "troops-t10": {
+      "category": "Troop",
+      "icon": "200301",
+      "copyLabel": "T10"
+    },
+    "gathering": {
+      "category": "Gathering",
+      "icon": "",
+      "copyLabel": "Gather"
+    },
+    "truegold-dust": {
+      "category": null,
+      "icon": "",
+      "copyLabel": "Truegold Dust (tech research)"
+    },
+    "governor-gear": {
+      "category": "Gov gear",
+      "icon": "",
+      "copyLabel": "Governor Gear max score +1"
+    },
+    "speedup-city": {
+      "category": "Troop",
+      "icon": "200101",
+      "copyLabel": "1m construction / research / training speedup"
+    },
+    "troops-officer": {
+      "category": "Troop",
+      "icon": "200301",
+      "copyLabel": "Troop training (T1–T11)"
+    }
+  },
+  "legacyTaskIds": {
+    "SG_TASKS": [
+      [
+        "tempered-truegold",
+        "truegold",
+        "governor-charms",
+        "speedup-all"
+      ],
+      [
+        "mithril",
+        "hero-widget",
+        "hero-roulette",
+        "forgehammer",
+        "mythic-hero-shard",
+        "truegold",
+        "epic-hero-shard",
+        "rare-hero-shard"
+      ],
+      [
+        "advanced-taming-mark",
+        "hero-roulette",
+        "master-emblem",
+        "mythic-hero-shard",
+        "epic-hero-shard",
+        "common-taming-mark",
+        "rare-hero-shard",
+        "governor-charms",
+        "pet-advancement"
+      ],
+      [
+        "mithril",
+        "hero-widget",
+        "forgehammer",
+        "governor-charms",
+        "troops-t10"
+      ],
+      [
+        "mithril",
+        "hero-widget",
+        "forgehammer",
+        "truegold",
+        "speedup-all"
+      ],
+      [
+        "governor-charms",
+        "troops-t10"
+      ],
+      [
+        "advanced-taming-mark",
+        "mythic-hero-shard",
+        "truegold",
+        "epic-hero-shard",
+        "common-taming-mark",
+        "rare-hero-shard",
+        "pet-advancement",
+        "gathering"
+      ]
+    ],
+    "ARM_TASKS": {
+      "1": [
+        "tempered-truegold",
+        "mythic-hero-shard",
+        "truegold",
+        "epic-hero-shard",
+        "truegold-dust",
+        "rare-hero-shard",
+        "governor-gear",
+        "speedup-city"
+      ],
+      "2": [
+        "mithril",
+        "hero-widget",
+        "tempered-truegold",
+        "forgehammer",
+        "truegold",
+        "truegold-dust",
+        "governor-gear",
+        "speedup-city"
+      ]
+    },
+    "OFF_TASKS": {
+      "A": [
+        "hero-widget",
+        "forgehammer",
+        "mithril",
+        "governor-charms",
+        "troops-officer"
+      ],
+      "B": [
+        "hero-widget",
+        "forgehammer",
+        "mythic-hero-shard",
+        "epic-hero-shard",
+        "rare-hero-shard",
+        "governor-gear"
+      ]
+    }
+  }
 }

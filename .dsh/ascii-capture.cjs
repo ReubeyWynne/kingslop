@@ -10,16 +10,14 @@
 // The check fails when a scene overflows a phone screen, an emblem leaves the
 // centre of its rail, or a scene that should move holds a single frame.
 const fs = require('node:fs');
-const http = require('node:http');
 const path = require('node:path');
-const { chromium } = require('playwright');
+const { withBrowser } = require('./lib/browser-harness.cjs');
 
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/ascii-preview');
 const writeFrames = process.argv.includes('--frames');
 // --only=march,hearth steps just the scenes whose names start with those words.
 const only = (process.argv.find(arg => arg.startsWith('--only=')) || '').slice(7).split(',').filter(Boolean);
-const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
 
 // [name, page, selector, seconds per authored frame, frames in one loop]
 const scenes = [
@@ -44,96 +42,81 @@ const scenes = [
   ['portrait', '/pets/', '#pet-grizzly-bear .ascii-mini--pet', 1 / 8, 71],
 ];
 
-const server = http.createServer((request, response) => {
-  let file = path.resolve(root, '.' + decodeURIComponent(new URL(request.url, 'http://localhost').pathname));
-  if (!file.startsWith(root)) { response.writeHead(403).end(); return; }
-  if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
-  if (!fs.existsSync(file)) { response.writeHead(404).end(); return; }
-  response.setHeader('Content-Type', mime[path.extname(file)] || 'application/octet-stream');
-  fs.createReadStream(file).pipe(response);
-});
-
-(async () => {
-  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-  const base = 'http://127.0.0.1:' + server.address().port;
+withBrowser({ root }, async ({ browser, origin: base }) => {
   const failures = [];
-  let browser;
-  try {
-    browser = await chromium.launch();
-    for (const width of [320, 390]) {
-      const context = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 2 });
-      for (const [name, url, selector, period, count] of scenes.filter(scene =>
-        (!process.argv.includes('--moon') || scene[0].startsWith('moon')) &&
-        (!process.argv.includes('--castle') || scene[0].startsWith('castle')) &&
-        (!only.length || only.some(prefix => scene[0].startsWith(prefix))))) {
-        const page = await context.newPage();
-        // These are the baked frames: the live pet (js/pet-live.js) is kept off so they show.
-        await page.route('**/js/pet-live.js*', route => route.abort());
-        await page.goto(base + url + '?lang=en', { waitUntil: 'networkidle' });
-        await page.evaluate(() => document.fonts.ready);
-        if (name.endsWith('-card')) {
-          await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
-          await page.locator('#ledger-btn').click();
-          await page.waitForFunction(token => document.querySelector('.deck-card.is-selected')?.dataset.page === token, name === 'castle-card' ? 'castle' : 'kvksg');
-        }
-        await page.addStyleTag({ content: '.topbar, .toc { visibility: hidden !important; }' });
-        // Open the collapsed section the scene sits in.
-        await page.evaluate(selector => {
-          document.querySelector(selector)?.closest('section')?.querySelector('.section-toggle[aria-expanded="false"]')?.click();
-        }, selector);
-        const scene = page.locator(selector).first();
-        await scene.scrollIntoViewIfNeeded();
-        await page.evaluate(() => document.getAnimations().forEach(animation => animation.pause()));
 
-        const fit = await scene.evaluate(element => {
-          const box = element.getBoundingClientRect();
-          const rail = element.closest('.ascii-motif-rail, .deck-ascii');
-          const railBox = rail && rail.getBoundingClientRect();
-          return { left: box.left, right: box.right, width: innerWidth, skew: railBox ? (box.left - railBox.left) - (railBox.right - box.right) : 0 };
-        });
-        if (fit.left < -0.5 || fit.right > fit.width + 0.5) failures.push(`${name} @${width}px: overflows the screen (${fit.left.toFixed(1)} to ${fit.right.toFixed(1)})`);
-        if (Math.abs(fit.skew) > 1) failures.push(`${name} @${width}px: sits ${fit.skew.toFixed(1)}px off the centre of its rail`);
-
-        const box = await scene.boundingBox();
-        const clip = { x: Math.max(0, box.x - 8), y: box.y - 8, width: Math.min(width - Math.max(0, box.x - 8), box.width + 16), height: box.height + 16 };
-        const dir = path.join(output, `${width}`, name);
-        if (writeFrames) fs.mkdirSync(dir, { recursive: true });
-        const seen = new Set();
-        for (let i = 0; i < count; i++) {
-          // The middle of each authored frame, so rounding never lands on a boundary.
-          const time = (i + 0.5) * period * 1000;
-          await page.evaluate(time => document.getAnimations().forEach(animation => { animation.currentTime = time; }), time);
-          const image = await page.screenshot({ clip, path: writeFrames ? path.join(dir, String(i).padStart(3, '0') + '.png') : undefined });
-          seen.add(image.toString('base64'));
-        }
-        if (seen.size < 2) failures.push(`${name} @${width}px: holds one frame for the whole loop`);
-        if (name.startsWith('moon') || name.startsWith('castle')) {
-          await page.emulateMedia({ reducedMotion: 'reduce' });
-          const still = await scene.evaluate((element, layers) => layers.map(pseudo => ({
-            animation: getComputedStyle(element, pseudo).animationName,
-            content: getComputedStyle(element, pseudo).content
-          })), ['::before', '::after']);
-          if (name.startsWith('castle')) {
-            const layers = await scene.locator('.castle-smoke, .castle-lamps, .castle-siege').evaluateAll(elements => elements.map(element => ({
-              animation: getComputedStyle(element, '::before').animationName,
-              content: getComputedStyle(element, '::before').content
-            })));
-            still.push(...layers);
-          }
-          if (still.some(layer => layer.animation !== 'none' || layer.content === 'none')) failures.push(`${name} @${width}px: missing reduced-motion still`);
-        }
-        await page.close();
+  for (const width of [320, 390]) {
+    const context = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 2 });
+    for (const [name, url, selector, period, count] of scenes.filter(scene =>
+      (!process.argv.includes('--moon') || scene[0].startsWith('moon')) &&
+      (!process.argv.includes('--castle') || scene[0].startsWith('castle')) &&
+      (!only.length || only.some(prefix => scene[0].startsWith(prefix))))) {
+      const page = await context.newPage();
+      // These are the baked frames: the live pet (js/pet-live.js) is kept off so they show.
+      await page.route('**/js/pet-live.js*', route => route.abort());
+      await page.goto(base + url + '?lang=en', { waitUntil: 'networkidle' });
+      await page.evaluate(() => document.fonts.ready);
+      if (name.endsWith('-card')) {
+        await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
+        await page.locator('#ledger-btn').click();
+        await page.waitForFunction(token => document.querySelector('.deck-card.is-selected')?.dataset.page === token, name === 'castle-card' ? 'castle' : 'kvksg');
       }
-      await context.close();
+      await page.addStyleTag({ content: '.topbar, .toc { visibility: hidden !important; }' });
+      // Open the collapsed section the scene sits in.
+      await page.evaluate(selector => {
+        document.querySelector(selector)?.closest('section')?.querySelector('.section-toggle[aria-expanded="false"]')?.click();
+      }, selector);
+      const scene = page.locator(selector).first();
+      await scene.scrollIntoViewIfNeeded();
+      await page.evaluate(() => document.getAnimations().forEach(animation => animation.pause()));
+
+      const fit = await scene.evaluate(element => {
+        const box = element.getBoundingClientRect();
+        const rail = element.closest('.ascii-motif-rail, .deck-ascii');
+        const railBox = rail && rail.getBoundingClientRect();
+        return { left: box.left, right: box.right, width: innerWidth, skew: railBox ? (box.left - railBox.left) - (railBox.right - box.right) : 0 };
+      });
+      if (fit.left < -0.5 || fit.right > fit.width + 0.5) failures.push(`${name} @${width}px: overflows the screen (${fit.left.toFixed(1)} to ${fit.right.toFixed(1)})`);
+      if (Math.abs(fit.skew) > 1) failures.push(`${name} @${width}px: sits ${fit.skew.toFixed(1)}px off the centre of its rail`);
+
+      const box = await scene.boundingBox();
+      const clip = { x: Math.max(0, box.x - 8), y: box.y - 8, width: Math.min(width - Math.max(0, box.x - 8), box.width + 16), height: box.height + 16 };
+      const dir = path.join(output, `${width}`, name);
+      if (writeFrames) fs.mkdirSync(dir, { recursive: true });
+      const seen = new Set();
+      for (let i = 0; i < count; i++) {
+        // The middle of each authored frame, so rounding never lands on a boundary.
+        const time = (i + 0.5) * period * 1000;
+        await page.evaluate(time => document.getAnimations().forEach(animation => { animation.currentTime = time; }), time);
+        const image = await page.screenshot({ clip, path: writeFrames ? path.join(dir, String(i).padStart(3, '0') + '.png') : undefined });
+        seen.add(image.toString('base64'));
+      }
+      if (seen.size < 2) failures.push(`${name} @${width}px: holds one frame for the whole loop`);
+      if (name.startsWith('moon') || name.startsWith('castle')) {
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        const still = await scene.evaluate((element, layers) => layers.map(pseudo => ({
+          animation: getComputedStyle(element, pseudo).animationName,
+          content: getComputedStyle(element, pseudo).content
+        })), ['::before', '::after']);
+        if (name.startsWith('castle')) {
+          const layers = await scene.locator('.castle-smoke, .castle-lamps, .castle-siege').evaluateAll(elements => elements.map(element => ({
+            animation: getComputedStyle(element, '::before').animationName,
+            content: getComputedStyle(element, '::before').content
+          })));
+          still.push(...layers);
+        }
+        if (still.some(layer => layer.animation !== 'none' || layer.content === 'none')) failures.push(`${name} @${width}px: missing reduced-motion still`);
+      }
+      await page.close();
     }
-  } finally {
-    if (browser) await browser.close();
-    server.close();
+    await context.close();
   }
+
   if (failures.length) {
     console.error(failures.join('\n'));
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
   console.log(`ASCII scenes: ${scenes.length} scenes stepped at 320px and 390px` + (writeFrames ? `; frames in ${path.relative(process.cwd(), output)}` : ''));
-})().catch(error => { console.error(error); process.exit(1); });
+}).catch(error => { console.error(error); process.exitCode = 1; });
 

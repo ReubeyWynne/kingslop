@@ -126,7 +126,7 @@ ledger.setPet('lion', null);
 assert.deepEqual(Object.keys(ledger.pets().roster), ['gray-wolf']);
 
 // The scene: every pet has a pen, four bodies and a place for its marks.
-const frames = read('css/ascii-frames.css');
+const frames = ['css/ascii-frames.css', 'css/ascii-frames-pets.css'].map(read).join('\n');
 // A pet drawn from its model has a portrait instead: one span per ink, each with
 // the same poses, and the pens page gives it those spans.
 const portraits = fs.readdirSync(path.join(__dirname, 'pet-portraits')).map(file => file.replace(/\.json$/, ''));
@@ -156,7 +156,10 @@ const nav = require('../_data/nav.json'), pages = require('../_data/pages.json')
 assert.equal(nav.at(-1).self, 'pets'); assert.equal(nav.at(-2).self, 'governor');
 assert.equal(pages.pets.swipePrev.page, 'governor'); assert.equal(pages.pets.swipeNext.page, 'home');
 assert.equal(pages.governor.swipeNext.page, 'pets'); assert.equal(pages.home.swipePrev.page, 'pets');
-assert.deepEqual(pages.pets.scripts.map(s => s.replace('../js/', '')), ['i18n.js', 'common.js', 'pet-data.js', 'pet-plan.js', 'pet-care.js', 'pet-den.js', 'pet-live.js']);
+const petScripts = pages.pets.scripts.map(script => script.split('/').at(-1));
+for (const [dependency, consumer] of [['pet-data.js', 'pet-plan.js'], ['pet-plan.js', 'pet-den.js'], ['pet-care.js', 'pet-den.js'], ['roster-editor.js', 'pet-den.js'], ['pet-den.js', 'pet-live.js']]) {
+  assert.ok(petScripts.indexOf(dependency) >= 0 && petScripts.indexOf(consumer) > petScripts.indexOf(dependency), dependency + ' before ' + consumer);
+}
 // Every pet with a portrait is drawn live from its model (pets/models/<id>.bin and .json) and keeps its baked portrait as the fallback.
 for (const id of portraits) {
   const model = JSON.parse(read(`pets/models/${id}.json`));

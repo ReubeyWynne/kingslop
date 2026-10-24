@@ -445,7 +445,7 @@
       if (ok) fits = opt;
     });
     var picked = select.options[select.selectedIndex];
-    if (fits && picked && picked.disabled) { select.value = fits.value; save(); }
+    if (fits && picked && picked.disabled) { select.value = fits.value; sheet.save(); }
   }
 
   function paintSweepSize(BH) {
@@ -809,44 +809,11 @@
     window.addEventListener('popstate', function () { setMode(readMode(), false); });
   }
 
-  // ── Remembering the sheets ────────────────────────────
-  // Every sheet value is kept in this browser, so a reload or tomorrow's
-  // stage starts from the last report. A convenience only: storage can be
-  // missing or full, and the page works the same without it.
-  // The player save (your stats, the troops you own) is a separate concern:
-  // js/sim-player.js reads the same key off #console[data-sheet-key] to know
-  // whether this sheet has a save of its own before filling from it.
-  var STORE_KEY = 'bh:sim:v1';
-
-  function fields() {
-    return document.querySelectorAll('#console input[id^="sim-"]:not([type="file"]), #console select[id^="sim-"]');
-  }
-
-  function restore() {
-    var saved = null;
-    try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { saved = null; }
-    if (!saved || typeof saved !== 'object') return;
-    Array.prototype.forEach.call(fields(), function (f) {
-      var v = saved[f.id];
-      if (typeof v !== 'string') return;
-      if (f.tagName === 'SELECT') {
-        for (var i = 0; i < f.options.length; i++) if (f.options[i].value === v) { f.value = v; return; }
-      } else {
-        f.value = v;
-      }
-    });
-    if (typeof saved.room === 'string') pickedRoom = saved.room || null;
-  }
-
-  var saveTimer = null;
-  function save() {
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(function () {
-      var out = { room: pickedRoom || '' };
-      Array.prototype.forEach.call(fields(), function (f) { out[f.id] = f.value; });
-      try { localStorage.setItem(STORE_KEY, JSON.stringify(out)); } catch (e) { /* private mode, full storage */ }
-    }, 250);
-  }
+  var sheet = window.SimulatorSheet.create({
+    root: el('console'),
+    getRoom: function () { return pickedRoom; },
+    setRoom: function (room) { pickedRoom = room; }
+  });
 
   // ── Wiring ────────────────────────────────────────────
   var paintTimer = null;
@@ -854,9 +821,9 @@
     function later() {
       clearTimeout(paintTimer);
       paintTimer = setTimeout(function () { paint(BH); }, 60);
-      save();
+      sheet.save();
     }
-    Array.prototype.forEach.call(fields(), function (f) {
+    Array.prototype.forEach.call(sheet.fields(), function (f) {
       f.addEventListener(f.tagName === 'SELECT' ? 'change' : 'input', later);
     });
     Array.prototype.forEach.call(document.querySelectorAll('#sim-rooms .room-pick'), function (btn) {
@@ -864,7 +831,7 @@
         var row = btn.closest('.sim-row');
         var id = row && row.getAttribute('data-room');
         pickedRoom = pickedRoom === id ? null : id;
-        save();
+        sheet.save();
         paintMystic(BH);
         paintSweep(BH);
       });
@@ -874,7 +841,7 @@
   }
 
   function boot(BH) {
-    restore();
+    sheet.restore();
     wireInputs(BH);
     wireImport(BH);
     paint(BH);
@@ -914,7 +881,7 @@
         e.value = String(/-n-/.test(id) ? Math.round(v) : Math.round(v * 10) / 10);
       });
       paint(BH);
-      save();
+      sheet.save();
     });
   }
 

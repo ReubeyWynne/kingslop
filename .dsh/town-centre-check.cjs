@@ -5,14 +5,14 @@ const storage = { getItem(k) { return this[k] ?? null; }, setItem(k, v) { this[k
 const store = Ledger.create(storage);
 
 // Speedup rows: general counts wherever a speedup does; healing only where every kind does.
-assert.deepEqual(T.speedupKinds('1 min construction / research / training / learning speedup'), ['general', 'construction', 'research', 'training', 'learning']);
-assert.deepEqual(T.speedupKinds('1m construction / research / training / master speedup'), ['general', 'construction', 'research', 'training', 'learning']);
-assert.equal(T.speedupKinds('1 min speedups (all kinds)').length, 6);
-assert.equal(T.speedupKinds('1 min speedups').length, 6);
-assert.equal(T.speedupKinds('Mithril'), null);
-assert.equal(T.governorKind('Governor Charm max score +1'), 'charms');
-assert.equal(T.governorKind('Governor Gear max score +1'), 'gear');
-assert.equal(T.governorKind('Governor gear'), null);
+const speedups = rules.days('prep').flatMap(day => day.rows).filter(row => row.scoring?.type === 'speedup');
+assert.deepEqual(T.speedupKinds(speedups[0]), ['general', 'construction', 'research', 'training', 'learning']);
+assert.equal(T.speedupKinds(speedups.find(row => row.scoring.kinds.includes('healing'))).length, 6);
+assert.equal(T.speedupKinds({ label: 'Mithril' }), null);
+const governorRows = rules.days('prep').flatMap(day => day.rows).filter(row => row.scoring?.type === 'governor');
+assert.equal(T.governorKind(governorRows.find(row => row.scoring.kind === 'charms')), 'charms');
+assert.equal(T.governorKind(governorRows.find(row => row.scoring.kind === 'gear')), 'gear');
+assert.equal(T.governorKind({ label: 'Governor gear' }), null);
 
 // Empty ledger: nothing counted, everything unknown, never a confirmed zero.
 let best = T.best(store.snapshot(), 'prep');
@@ -54,7 +54,7 @@ assert.equal(day.lines.find(l => l.id === 'speedup-construction').points, 300);
 assert.equal(day.lines.find(l => l.id === 'speedup-healing'), undefined, 'healing is not a construction / research / training / learning speedup');
 assert.equal(T.day(store.snapshot(), 'prep', 2).lines.find(l => l.id === 'speedup-healing').points, 1500);
 assert.equal(T.day(store.snapshot(), 'brawl', 1).lines.find(l => l.id === 'speedup-general').rate, 18);
-assert.ok(T.day(store.snapshot(), 'prep', 1).unquantified.every(r => !T.speedupKinds(r.label) && !T.governorKind(r.label) && !r.items));
+assert.ok(T.day(store.snapshot(), 'prep', 1).unquantified.every(r => !T.speedupKinds(r) && !T.governorKind(r) && !r.items));
 
 // Governor score: the planner's score gain × the row's rate; unknown until levels and materials are known.
 assert.equal(T.governorGain(store.snapshot(), 'charms').score, null);

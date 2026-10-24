@@ -1,12 +1,11 @@
 /* Pure governor gear and charm arithmetic. Levels are indices: 0 is nothing yet,
    index n is the nth row of the sourced table, and each row's cost buys that step. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/governor.json'), require('../_data/event_rules.json'));
-  else root.Governor = factory(root.GovernorData, root.EventRuleData);
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/governor.json'), require('./event-rules.js'));
+  else root.Governor = factory(root.GovernorData, root.EventRules);
 })(typeof window === 'object' ? window : globalThis, function (data, rules) {
   'use strict';
   var KINDS = { gear: data.gear.pieces, charms: data.charms.slots };
-  var SCORE_ROW = { gear: /^governor gear max score \+1$/i, charms: /^governor charm max score \+1$/i };
   function spec(kind) { if (!Object.hasOwn(KINDS, kind)) throw new Error('Unsupported governor kind'); return data[kind]; }
   function max(kind) { return spec(kind).levels.length; }
   function row(kind, index) { return index > 0 ? spec(kind).levels[index - 1] : null; }
@@ -82,13 +81,13 @@
   }
   // Event days that score governor score gains, with the points a score gain would be worth.
   function events(kind, gain) {
-    if (!Object.hasOwn(SCORE_ROW, kind)) throw new Error('Unsupported governor kind');
+    spec(kind);
     var out = [];
-    Object.keys(rules.events).forEach(function (event) {
-      rules.events[event].forEach(function (day) {
+    Object.keys(rules.data.events).forEach(function (event) {
+      rules.days(event).forEach(function (day) {
         day.rows.forEach(function (entry) {
-          var rate = Number(entry.points);
-          if (!SCORE_ROW[kind].test(entry.label) || !Number.isFinite(rate)) return;
+          var rate = rules.rate(entry);
+          if (rules.governorKind(entry) !== kind || rate === null) return;
           out.push({ event: event, day: day.day, rate: rate, points: gain === null || gain === undefined ? null : gain * rate });
         });
       });

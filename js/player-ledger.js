@@ -184,12 +184,18 @@
     return copy(value);
   }
   function create(storage, events) {
-    var listeners = [], current;
+    var listeners = [], current, stored, oldStored;
     function read() {
       var raw = storage.getItem(KEY);
-      if (raw !== null) return validate(JSON.parse(raw));
+      if (raw !== null) {
+        if (current && raw === stored) return current;
+        var saved = validate(JSON.parse(raw));
+        stored = raw;
+        return current = saved;
+      }
       var old = storage.getItem(LEGACY);
-      if (old === null) return empty();
+      if (current && stored === null && old === oldStored) return current;
+      if (old === null) { stored = null; oldStored = null; return current = empty(); }
       var input = legacy(JSON.parse(old)), next = empty(), facts = { source: 'legacy', at: next.updatedAt };
       Object.keys(ITEMS).forEach(function (key) { next.inventory[ITEMS[key]] = { amount: input.resources[key], status: 'confirmed', provenance: copy(facts) }; });
       PIECES.forEach(function (key) { next.heroGear.pieces[key] = copy(input.pieces[key]); next.heroGear.provenance[key] = copy(facts); });
@@ -198,8 +204,10 @@
       next.heroGear.parts = parts && count(parts.ten) && count(parts.hundred) && count(parts.remainder) && parts.remainder < 10 && parts.ten * 10 + parts.hundred * 100 + parts.remainder === xp ? copy(parts) : { ten: Math.floor(xp % 100 / 10), hundred: Math.floor(xp / 100), remainder: xp % 10 };
       next.migration = { from: LEGACY, at: next.updatedAt }; next.revision = 1;
       next = validate(next);
-      storage.setItem(KEY, JSON.stringify(next));
-      return next;
+      var encoded = JSON.stringify(next);
+      storage.setItem(KEY, encoded);
+      stored = encoded;
+      return current = next;
     }
     function notify() {
       listeners.slice().forEach(function (listener) { listener(copy(current)); });
@@ -212,7 +220,9 @@
       next.revision = latest.revision + 1;
       next.updatedAt = new Date().toISOString();
       next = validate(next);
-      storage.setItem(KEY, JSON.stringify(next));
+      var encoded = JSON.stringify(next);
+      storage.setItem(KEY, encoded);
+      stored = encoded;
       current = next;
       notify();
       return copy(next);
@@ -417,8 +427,8 @@
     }
     function setTrainingBuff(on) { valid(typeof on === 'boolean'); return setTrainingPlan('buff', on); }
     function governorSpec(kind) { valid(Object.hasOwn(GOVERNOR, kind)); return GOVERNOR[kind]; }
-    function governor(kind) {
-      var spec = governorSpec(kind), section = snapshot()[spec.section], levels = {};
+    function governor(kind, known) {
+      var spec = governorSpec(kind), section = (known || snapshot())[spec.section], levels = {};
       spec.ids.forEach(function (id) { levels[id] = section.status === 'tracked' && Object.hasOwn(section[spec.field], id) ? section[spec.field][id].level : null; });
       return levels;
     }

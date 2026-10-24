@@ -1,15 +1,13 @@
 // Pets page in a browser: pens, deep-linked dossiers, taming into the shared save, care that
 // decays with the clock, petting by rubbing and feeding by dragging food onto the pet, the
 // Advances table, and layout in every language.
-const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http');const {chromium}=require('playwright');
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');const { withBrowser } = require('./lib/browser-harness.cjs');
 const pets=require('../_data/pets.json').pets;
 const root=path.resolve('_site'),output=path.resolve('.dsh/pets-preview');
-const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml'};
-const server=http.createServer((req,res)=>{let file=path.resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname));if(file!==root&&!file.startsWith(root+path.sep))return res.writeHead(403).end();if(fs.existsSync(file)&&fs.statSync(file).isDirectory())file=path.join(file,'index.html');if(!fs.existsSync(file))return res.writeHead(404).end();res.setHeader('Content-Type',mime[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).pipe(res);});
-(async()=>{await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin='http://127.0.0.1:'+server.address().port;fs.mkdirSync(output,{recursive:true});
+withBrowser({ root, launchOptions: { args: ['--disable-3d-apis'] } }, async ({ browser, origin, launch }) => {fs.mkdirSync(output,{recursive:true});
 // The care and layout runs draw the baked frames (no WebGL here); the live pets get their own browser below.
-const browser=await chromium.launch({headless:true,args:['--disable-3d-apis']});const errors=[];
-try{
+const errors=[];
+
  // Six in the morning on the page's clock, so nobody is asleep yet.
  const context=await browser.newContext({viewport:{width:390,height:844},timezoneId:'UTC'}),page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  await page.clock.install({time:new Date('2026-10-17T06:00:00Z')});
@@ -125,7 +123,7 @@ try{
  const home=await browser.newPage();await home.goto(origin+'/?lang=en');assert.equal(await home.locator('#tools a[href="pets/"]').count(),1);await home.close();
  // The pets drawn live (js/pet-live.js): with WebGL 2 the grizzly's canvas covers the pen, draws, and reacts; the baked
  // frames stay underneath. With reduced motion, or with the script blocked, the baked frames show.
- const gpu=await chromium.launch({headless:true,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
+ const gpu=await launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
  try{
   const ctx=await gpu.newContext({viewport:{width:390,height:900}}),live=await ctx.newPage();live.on('pageerror',e=>errors.push(e.message));
   await live.goto(origin+'/pets/?lang=en');const pen=live.locator('#pet-grizzly-bear [data-pen]');await pen.scrollIntoViewIfNeeded();
@@ -153,5 +151,4 @@ try{
   await still.close();
  }finally{await gpu.close();}
  assert.deepEqual(errors,[]);console.log('Pets UI: pens, deep-linked dossiers, taming, petting by rubbing and feeding by dragging, care with real-time decay, sleep and reactions, the live pets and their baked fallback, the Advances table, static fallback and 17 languages at 5 widths pass.');
-}finally{await browser.close();server.close();}
-})().catch(e=>{console.error(e);server.close();process.exitCode=1;});
+}).catch(e=>{console.error(e);process.exitCode=1;});
