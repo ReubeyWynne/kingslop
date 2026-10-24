@@ -475,7 +475,8 @@
     "css": [
       "../css/styles.css",
       "../css/events.css",
-      "../css/hero-gear.css"
+      "../css/hero-gear.css",
+      "../css/next-step.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -484,7 +485,12 @@
       "../js/common.js",
       "../js/hero-gear-engine.js",
       "../js/hero-gear-view.js",
-      "../js/hero-gear.js"
+      "../js/hero-gear.js",
+      "../js/upgrade-priority-data.js",
+      "../js/building-data.js",
+      "../js/upgrade-priority.js",
+      "../js/upgrade-priority-words.js",
+      "../js/next-step.js"
     ],
     "footMainKey": "gear.kicker",
     "footMain": "the forge ledger",
@@ -532,7 +538,8 @@
     "css": [
       "../css/styles.css",
       "../css/events.css",
-      "../css/heroes.css"
+      "../css/heroes.css",
+      "../css/next-step.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -546,7 +553,12 @@
       "../js/hero-directory-engine.js",
       "../js/roster-editor.js",
       "../js/hero-directory.js",
-      "../js/hero-points.js"
+      "../js/hero-points.js",
+      "../js/upgrade-priority-data.js",
+      "../js/building-data.js",
+      "../js/upgrade-priority.js",
+      "../js/upgrade-priority-words.js",
+      "../js/next-step.js"
     ],
     "footMainKey": "directory.title",
     "footMain": "Hero directory",
@@ -595,7 +607,8 @@
       "../css/styles.css",
       "../css/events.css",
       "../css/heroes.css",
-      "../css/masters.css"
+      "../css/masters.css",
+      "../css/next-step.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -610,7 +623,12 @@
       "../js/master-spend.js",
       "../js/roster-editor.js",
       "../js/master-directory.js",
-      "../js/master-points.js"
+      "../js/master-points.js",
+      "../js/upgrade-priority-data.js",
+      "../js/building-data.js",
+      "../js/upgrade-priority.js",
+      "../js/upgrade-priority-words.js",
+      "../js/next-step.js"
     ],
     "footMainKey": "masters.title",
     "footMain": "Masters",
@@ -650,7 +668,8 @@
       "../css/events.css",
       "../css/heroes.css",
       "../css/masters.css",
-      "../css/town.css"
+      "../css/town.css",
+      "../css/next-step.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -678,7 +697,11 @@
       "../js/master-directory.js",
       "../js/master-points.js",
       "../js/governor-view.js",
-      "../js/town-centre.js"
+      "../js/town-centre.js",
+      "../js/upgrade-priority-data.js",
+      "../js/upgrade-priority.js",
+      "../js/upgrade-priority-words.js",
+      "../js/next-step.js"
     ],
     "footMainKey": "town.kicker",
     "footMain": "everything you own, counted",
@@ -728,7 +751,8 @@
       "../css/equipment.css",
       "../css/styles.css",
       "../css/events.css",
-      "../css/governor.css"
+      "../css/governor.css",
+      "../css/next-step.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -740,7 +764,12 @@
       "../js/event-rules.js",
       "../js/governor-engine.js",
       "../js/governor-view.js",
-      "../js/governor-planner.js"
+      "../js/governor-planner.js",
+      "../js/upgrade-priority-data.js",
+      "../js/building-data.js",
+      "../js/upgrade-priority.js",
+      "../js/upgrade-priority-words.js",
+      "../js/next-step.js"
     ],
     "footMainKey": "gov.kicker",
     "footMain": "the governor's wardrobe",
@@ -789,7 +818,8 @@
       "../css/styles.css",
       "../css/events.css",
       "../css/heroes.css",
-      "../css/pets.css"
+      "../css/pets.css",
+      "../css/next-step.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -801,7 +831,12 @@
       "../js/pet-care.js",
       "../js/roster-editor.js",
       "../js/pet-den.js",
-      "../js/pet-live.js"
+      "../js/pet-live.js",
+      "../js/upgrade-priority-data.js",
+      "../js/building-data.js",
+      "../js/upgrade-priority.js",
+      "../js/upgrade-priority-words.js",
+      "../js/next-step.js"
     ],
     "footMainKey": "pets.title",
     "footMain": "Pets",
@@ -953,6 +988,7 @@
       "../js/building-spend.js",
       "../js/pet-plan.js",
       "../js/upgrade-priority.js",
+      "../js/upgrade-priority-words.js",
       "../js/upgrade-goals.js",
       "../js/upgrade-priority-page.js",
       "../js/upgrade-goals-page.js"

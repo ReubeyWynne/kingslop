@@ -1255,6 +1255,8 @@ window.__BH_I18N_DATA["ru"] = {
   "priority.order": "Порядок по системам",
   "priority.orderIntro": "Правила, на которых стоит список. Шаги для более позднего этапа или другой роли приглушены.",
   "priority.openTool": "Открыть инструмент",
+  "priority.hint.label": "Ваш следующий шаг",
+  "priority.hint.more": "Весь порядок улучшений",
   "priority.from.gear": "с TC 15",
   "priority.from.governor": "с TC 22",
   "priority.from.truegold": "с TC 30",

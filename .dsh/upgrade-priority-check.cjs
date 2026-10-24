@@ -108,14 +108,32 @@ rules.ladders.forEach(l => l.rungs.forEach(r => r.sources.forEach(s => assert.ok
 const pages = JSON.parse(fs.readFileSync('_data/pages.json', 'utf8'));
 const page = (Array.isArray(pages) ? pages : Object.values(pages).flat()).find(p => p && p.token === 'priority');
 assert.ok(page, 'priority page registered');
-['../js/upgrade-priority.js', '../js/upgrade-priority-page.js', '../js/governor-engine.js', '../js/hero-gear-engine.js'].forEach(s => assert.ok(page.scripts.includes(s), s));
+['../js/upgrade-priority.js', '../js/upgrade-priority-words.js', '../js/upgrade-priority-page.js', '../js/governor-engine.js', '../js/hero-gear-engine.js'].forEach(s => assert.ok(page.scripts.includes(s), s));
+assert.ok(page.scripts.indexOf('../js/upgrade-priority-words.js') < page.scripts.indexOf('../js/upgrade-priority-page.js'), 'words before the page');
+// Next-step lines: each tool page loads the engine after its own engines, the shared words and
+// the module, includes the line once, and names only step kinds the engine produces.
+const engineSource = fs.readFileSync('js/upgrade-priority.js', 'utf8');
+const stepKinds = new Set([...engineSource.matchAll(/add\('([a-z-]+)'/g)].map(m => m[1]).concat(['governor-gear', 'governor-charms']));
+const recordWhats = new Set([...engineSource.matchAll(/add\('record', \{ what: '([a-z-]+)'/g)].map(m => m[1]).concat(['barracks', 'range', 'stable', 'command-center']));
+const hintPages = { town: 'town-centre', heroes: 'heroes', gear: 'hero-gear', governor: 'governor-gear', pets: 'pets', masters: 'masters' };
+Object.entries(hintPages).forEach(([token, dir]) => {
+  const entry = pages[token], html = fs.readFileSync(dir + '/index.html', 'utf8');
+  const needed = ['../js/upgrade-priority-data.js', '../js/building-data.js', '../js/upgrade-priority.js', '../js/upgrade-priority-words.js', '../js/next-step.js'];
+  needed.forEach(s => assert.ok(entry.scripts.includes(s), token + ' ' + s));
+  ['../js/upgrade-priority-data.js', '../js/building-data.js', '../js/hero-spend.js', '../js/master-spend.js', '../js/hero-gear-engine.js', '../js/governor-engine.js', '../js/pet-data.js', '../js/hero-data.js', '../js/governor-data.js'].forEach(s => { if (entry.scripts.includes(s)) assert.ok(entry.scripts.indexOf(s) < entry.scripts.indexOf('../js/upgrade-priority.js'), token + ' loads ' + s + ' before the engine'); });
+  assert.ok(entry.scripts.indexOf('../js/upgrade-priority.js') < entry.scripts.indexOf('../js/next-step.js') && entry.scripts.indexOf('../js/upgrade-priority-words.js') < entry.scripts.indexOf('../js/next-step.js'), token + ' engine and words before the module');
+  assert.ok(entry.css.includes('../css/next-step.css'), token + ' next-step.css');
+  const includes = [...html.matchAll(/\{% include next-step\.html kinds="([^"]+)" %\}/g)];
+  assert.equal(includes.length, 1, dir + ' includes the next step once');
+  includes[0][1].split(' ').forEach(k => assert.ok(k.startsWith('record:') ? recordWhats.has(k.slice(7)) : stepKinds.has(k), dir + ' kind ' + k));
+});
 assert.match(fs.readFileSync('_includes/topbar.html', 'utf8'), /upgrade-priority\//);
 const dict = lang => { const sandbox = { window: {} }; vm.runInNewContext(fs.readFileSync('i18n/' + lang + '.js', 'utf8'), sandbox); return sandbox.window.__BH_I18N_DATA[lang]; };
 const en = dict('en'), keys = Object.keys(en).filter(k => k.startsWith('priority.'));
 const used = new Set();
-const markup = fs.readFileSync('upgrade-priority/index.html', 'utf8') + fs.readFileSync('js/upgrade-priority-page.js', 'utf8');
+const markup = fs.readFileSync('upgrade-priority/index.html', 'utf8') + fs.readFileSync('_includes/next-step.html', 'utf8');
 for (const m of markup.matchAll(/data-i18n="(priority\.[A-Za-z0-9.-]+)"/g)) used.add(m[1]);
-for (const m of fs.readFileSync('js/upgrade-priority-page.js', 'utf8').matchAll(/t(?:pl)?\('([A-Za-z0-9.-]+)'/g)) if (!m[1].endsWith('.')) used.add('priority.' + m[1]);
+for (const file of ['js/upgrade-priority-page.js', 'js/upgrade-priority-words.js']) for (const m of fs.readFileSync(file, 'utf8').matchAll(/t(?:pl)?\('([A-Za-z0-9.-]+)'/g)) if (!m[1].endsWith('.')) used.add('priority.' + m[1]);
 rules.ladders.forEach(l => { used.add(l.titleKey); l.rungs.forEach(r => used.add(r.key)); });
 stages.forEach(s => ['stage.', 'stageNote.'].forEach(p => used.add('priority.' + p + s)));
 rules.roles.forEach(r => ['role.', 'roleNote.'].forEach(p => used.add('priority.' + p + r)));

@@ -141,6 +141,7 @@
      affordable step with the most gain for the share of the bag it uses. Stats are weighted
      per troop there, so infantry and archer pieces often run ahead of cavalry. */
   function governorSteps(snapshot, at, add) {
+    if (!governor) return;
     var prefs = Object.assign({ goal: 'stats', focus: 'all' }, (snapshot.preferences && snapshot.preferences.governor) || {});
     var kinds = at >= rank(rules.unlocks.governorCharms) ? ['gear', 'charms'] : ['gear'], recorded = false;
     kinds.forEach(function (kind) {

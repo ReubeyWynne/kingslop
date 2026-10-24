@@ -2118,6 +2118,8 @@ window.__BH_I18N_DATA["en"] = {
   "priority.order": "The order, system by system",
   "priority.orderIntro": "The rules behind the list. Steps for a later stage or another role are dimmed.",
   "priority.openTool": "Open the tool",
+  "priority.hint.label": "Your next step",
+  "priority.hint.more": "See the whole upgrade order",
   "priority.from.gear": "from TC 15",
   "priority.from.governor": "from TC 22",
   "priority.from.truegold": "from TC 30",

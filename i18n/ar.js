@@ -1252,6 +1252,8 @@ window.__BH_I18N_DATA["ar"] = {
   "priority.order": "الترتيب، نظامًا بنظام",
   "priority.orderIntro": "القواعد وراء القائمة. الخطوات الخاصة بمرحلة لاحقة أو دور آخر باهتة.",
   "priority.openTool": "افتح الأداة",
+  "priority.hint.label": "خطوتك التالية",
+  "priority.hint.more": "اعرض ترتيب الترقيات كاملًا",
   "priority.from.gear": "من TC 15",
   "priority.from.governor": "من TC 22",
   "priority.from.truegold": "من TC 30",

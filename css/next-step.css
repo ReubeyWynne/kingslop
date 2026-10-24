@@ -1,0 +1,10 @@
+/* A tool page's next step from the upgrade priority: a margin note ruled in the page's own
+   signal, with the step in ink and its reason dimmed. */
+.next-step { margin-block: 0 var(--space-m); padding-inline-start: var(--space-s); border-inline-start: 1px solid var(--amber-dim); }
+.next-step[hidden] { display: none; }
+.next-step-label { margin: 0; color: var(--amber); font-size: var(--step--1); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+.next-step-label::before { content: '❧ '; }
+.next-step-list { list-style: none; margin: 0.4rem 0 0; padding: 0; display: grid; gap: 0.4rem; }
+.next-step-list b { color: var(--ink); }
+.next-step-list span { color: var(--ink-dim); }
+.next-step-more { display: inline-block; min-height: 44px; padding-block: 0.6rem; color: var(--amber); }

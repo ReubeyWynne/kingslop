@@ -1255,6 +1255,8 @@ window.__BH_I18N_DATA["ko"] = {
   "priority.order": "시스템별 순서",
   "priority.orderIntro": "목록 뒤의 규칙입니다. 이후 단계나 다른 역할의 단계는 흐리게 표시됩니다.",
   "priority.openTool": "도구 열기",
+  "priority.hint.label": "다음 단계",
+  "priority.hint.more": "업그레이드 순서 전체 보기",
   "priority.from.gear": "TC 15부터",
   "priority.from.governor": "TC 22부터",
   "priority.from.truegold": "TC 30부터",

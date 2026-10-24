@@ -1266,6 +1266,8 @@ window.__BH_I18N_DATA["th"] = {
   "priority.order": "ลำดับ ทีละระบบ",
   "priority.orderIntro": "กฎเบื้องหลังรายการ ขั้นสำหรับช่วงถัดไปหรือบทบาทอื่นจะแสดงจางลง",
   "priority.openTool": "เปิดเครื่องมือ",
+  "priority.hint.label": "ขั้นต่อไปของคุณ",
+  "priority.hint.more": "ดูลำดับการอัปเกรดทั้งหมด",
   "priority.from.gear": "ตั้งแต่ TC 15",
   "priority.from.governor": "ตั้งแต่ TC 22",
   "priority.from.truegold": "ตั้งแต่ TC 30",

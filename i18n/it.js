@@ -1257,6 +1257,8 @@ window.__BH_I18N_DATA["it"] = {
   "priority.order": "L’ordine, sistema per sistema",
   "priority.orderIntro": "Le regole dietro l’elenco. I passi di una fase successiva o di un altro ruolo sono attenuati.",
   "priority.openTool": "Apri lo strumento",
+  "priority.hint.label": "Il tuo prossimo passo",
+  "priority.hint.more": "Vedi tutto l’ordine dei potenziamenti",
   "priority.from.gear": "da TC 15",
   "priority.from.governor": "da TC 22",
   "priority.from.truegold": "da TC 30",

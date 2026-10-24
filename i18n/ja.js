@@ -1255,6 +1255,8 @@ window.__BH_I18N_DATA["ja"] = {
   "priority.order": "システムごとの順番",
   "priority.orderIntro": "リストの背後にあるルール。後の段階や別の役割向けのステップは薄く表示します。",
   "priority.openTool": "ツールを開く",
+  "priority.hint.label": "次の一手",
+  "priority.hint.more": "強化の優先順位をすべて見る",
   "priority.from.gear": "TC 15 から",
   "priority.from.governor": "TC 22 から",
   "priority.from.truegold": "TC 30 から",
