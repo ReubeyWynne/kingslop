@@ -35,13 +35,30 @@
     "css": [
       "css/styles.css",
       "css/events.css",
-      "css/home.css"
+      "css/home.css",
+      "css/next-step.css"
     ],
     "scripts": [
       "js/i18n.js",
       "js/page-deck.js",
       "js/page-chrome.js",
-      "js/common.js"
+      "js/common.js",
+      "js/upgrade-priority-data.js",
+      "js/building-data.js",
+      "js/hero-data.js",
+      "js/pet-data.js",
+      "js/governor-data.js",
+      "js/governor-engine.js",
+      "js/event-data.js",
+      "js/event-rules.js",
+      "js/master-data.js",
+      "js/hero-spend.js",
+      "js/master-spend.js",
+      "js/hero-gear-engine.js",
+      "js/upgrade-priority.js",
+      "js/upgrade-priority-words.js",
+      "js/next-step.js",
+      "js/home-yours.js"
     ],
     "footMainKey": "home.foot.main",
     "footMain": "JUST THE GUIDES",

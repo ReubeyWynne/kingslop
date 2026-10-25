@@ -90,3 +90,8 @@ html[data-page="home"]:has(.event-card[data-hover-page="kvksg"]:is(:hover, :focu
   .event-card h3 { font-size: var(--step-2); }
 }
 
+
+/* ─── Home — your kingdom, once the save holds something ─ */
+.home-yours[hidden] { display: none; }
+/* The next step sits in the grid as one more rank line. */
+.home-yours .next-step { margin: 0; padding: var(--space-m) 0 0; border-inline-start: 0; border-top: 1px solid var(--signal-line); }

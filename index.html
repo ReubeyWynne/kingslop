@@ -17,6 +17,21 @@ self: home
     {% include ascii/campfire.html %}
   </section>
 
+  <section class="section home-yours" id="yours" data-module="home-yours" aria-labelledby="yours-title" hidden>
+    <h2 id="yours-title" data-i18n="home.yours.title">your kingdom</h2>
+    <div class="event-grid">
+      <a class="event-card" href="events/" data-hover-page="kvksg">
+        <h3 data-i18n="ks.today.title">Today</h3>
+        <p class="event-lede" data-target="home-yours.today"></p>
+      </a>
+      {% include next-step.html kinds="*" %}
+      <a class="event-card" href="town-centre/" data-hover-page="town">
+        <h3 data-i18n="home.yours.held">What you’re holding</h3>
+        <p class="event-lede" data-target="home-yours.held"></p>
+      </a>
+    </div>
+  </section>
+
   <section class="section" id="events">
     <h2 data-i18n="ev.ledger.guides">the events</h2>
     <div class="event-grid">

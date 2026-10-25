@@ -1,6 +1,6 @@
 /* A tool page's next step: the first UpgradePriority.evaluate steps of the kinds this page
    handles, with a link to the whole order. `data-kinds` lists step kinds; `record:<what>` names
-   a step that asks for a missing fact. It reads the player's own save, so it stays hidden under
+   a step that asks for a missing fact, and `*` takes every kind (the home page). It reads the player's own save, so it stays hidden under
    a guest or shared-link store and when nothing on this page is due. Every page asks for an
    unknown Town Centre first. */
 (function () {
@@ -14,7 +14,7 @@
     function render() {
       if (!store) { root.hidden = true; return; }
       // The Town Centre sets the stage every page's steps are weighed by, so it is asked for first.
-      var result = engine.evaluate(store.snapshot()), steps = result.actions.filter(function (step) { return token(step) === 'record:town-center' || kinds.includes(token(step)); });
+      var result = engine.evaluate(store.snapshot()), steps = result.actions.filter(function (step) { return token(step) === 'record:town-center' || kinds.includes('*') || kinds.includes(token(step)); });
       var list = context.targets('list')[0];
       list.textContent = '';
       steps.slice(0, SHOWN).forEach(function (step) {
