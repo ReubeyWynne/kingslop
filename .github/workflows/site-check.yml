@@ -265,6 +265,8 @@ jobs:
               - .dsh/hero-gear-visual-check.cjs
               - .dsh/hero-gear-interaction-check.cjs
               - .dsh/gear-fixtures/**
+              - .dsh/gear-troop-names-check.cjs
+              - i18n/**
               - hero-gear/**
               - js/hero-gear*.js
               - js/ocr-worker.js
@@ -511,6 +513,9 @@ jobs:
       - name: Check hero gear automatic recommendations
         if: matrix.group == 'hero-gear'
         run: node .dsh/hero-gear-interaction-check.cjs
+      - name: Check hero gear troop and slot names in every language
+        if: matrix.group == 'hero-gear'
+        run: node .dsh/gear-troop-names-check.cjs
       - name: Check screenshot import dock
         if: matrix.group == 'import'
         run: node .dsh/screen-import-ui-check.cjs
