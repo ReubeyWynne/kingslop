@@ -1396,6 +1396,20 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "priority.savings.lineNoRate": "{item}：差 {short}；暂无速度",
   "priority.savings.lineReached": "{item}：差 {short}，每天约 {rate}：{when}凑齐",
   "priority.savings.lineShort": "{item}：差 {short}，到{event}前再得 {gain}：仍差 {left}",
-  "priority.savings.lineCovered": "{item}：差 {short}，到{event}前再得 {gain}：够了"
+  "priority.savings.lineCovered": "{item}：差 {short}，到{event}前再得 {gain}：够了",
+  "import.recipe.title": "五张截图，工具就认识你",
+  "import.recipe.count": "{i} / {n}",
+  "import.recipe.done": "已保存",
+  "import.recipe.resources": "背包 → 图表图标 → 资源",
+  "import.recipe.resourcesFills": "面包、木材、石头和铁的总量",
+  "import.recipe.speedups": "背包 → 图表图标 → 加速",
+  "import.recipe.speedupsFills": "每种加速，以分钟计",
+  "import.recipe.backpack": "背包 → 其他，每滚动一屏截一张",
+  "import.recipe.backpackFills": "活动道具和小部件宝箱",
+  "import.recipe.gear": "英雄的装备界面",
+  "import.recipe.gearFills": "该英雄的装备部件",
+  "import.recipe.pets": "宠物 → 宠物列表",
+  "import.recipe.petsFills": "宠物等级",
+  "import.recipe.next": "背包已录入。看看它能得多少分："
 }
 ;

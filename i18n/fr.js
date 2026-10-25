@@ -1397,6 +1397,20 @@ window.__BH_I18N_DATA["fr"] = {
   "priority.savings.lineNoRate": "{item} : il manque {short} ; pas encore de rythme",
   "priority.savings.lineReached": "{item} : il manque {short}, environ {rate} par jour : couvert {when}",
   "priority.savings.lineShort": "{item} : il manque {short}, {gain} de plus d'ici {event} : il manque encore {left}",
-  "priority.savings.lineCovered": "{item} : il manque {short}, {gain} de plus d'ici {event} : couvert"
+  "priority.savings.lineCovered": "{item} : il manque {short}, {gain} de plus d'ici {event} : couvert",
+  "import.recipe.title": "Cinq captures et les outils vous connaissent",
+  "import.recipe.count": "{i} sur {n}",
+  "import.recipe.done": "enregistré",
+  "import.recipe.resources": "Sac → icône graphique → Ressources",
+  "import.recipe.resourcesFills": "Totaux de pain, bois, pierre et fer",
+  "import.recipe.speedups": "Sac → icône graphique → Accélérations",
+  "import.recipe.speedupsFills": "Chaque accélération, en minutes",
+  "import.recipe.backpack": "Sac → Autres, une capture par défilement",
+  "import.recipe.backpackFills": "Objets d’événement et coffres de widgets",
+  "import.recipe.gear": "L’écran d’équipement d’un héros",
+  "import.recipe.gearFills": "Les pièces d’équipement de ce héros",
+  "import.recipe.pets": "Familiers → Liste des familiers",
+  "import.recipe.petsFills": "Niveaux des familiers",
+  "import.recipe.next": "Votre sac est enregistré. Voyez ce qu’il rapporte :"
 }
 ;

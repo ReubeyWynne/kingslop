@@ -1396,6 +1396,20 @@ window.__BH_I18N_DATA["ja"] = {
   "priority.savings.lineNoRate": "{item}:{short}不足、ペースはまだなし",
   "priority.savings.lineReached": "{item}:{short}不足、1日約{rate}:{when}に足ります",
   "priority.savings.lineShort": "{item}:{short}不足、{event}までに+{gain}:まだ{left}不足",
-  "priority.savings.lineCovered": "{item}:{short}不足、{event}までに+{gain}:足ります"
+  "priority.savings.lineCovered": "{item}:{short}不足、{event}までに+{gain}:足ります",
+  "import.recipe.title": "スクショ5枚でツールがあなたを把握",
+  "import.recipe.count": "{i} / {n}",
+  "import.recipe.done": "保存済み",
+  "import.recipe.resources": "バッグ → グラフアイコン → 資源",
+  "import.recipe.resourcesFills": "パン・木材・石材・鉄の合計",
+  "import.recipe.speedups": "バッグ → グラフアイコン → 加速",
+  "import.recipe.speedupsFills": "各加速アイテム（分単位）",
+  "import.recipe.backpack": "バッグ → その他、スクロールごとに1枚",
+  "import.recipe.backpackFills": "イベントアイテムとウィジェット宝箱",
+  "import.recipe.gear": "英雄の装備画面",
+  "import.recipe.gearFills": "その英雄の装備",
+  "import.recipe.pets": "ペット → ペット一覧",
+  "import.recipe.petsFills": "ペットのレベル",
+  "import.recipe.next": "バッグを登録しました。獲得ポイントを見る："
 }
 ;

@@ -1396,6 +1396,20 @@ window.__BH_I18N_DATA["pl"] = {
   "priority.savings.lineNoRate": "{item}: brakuje {short}; jeszcze bez tempa",
   "priority.savings.lineReached": "{item}: brakuje {short}, około {rate} dziennie: pokryte {when}",
   "priority.savings.lineShort": "{item}: brakuje {short}, {gain} więcej do {event}: wciąż brakuje {left}",
-  "priority.savings.lineCovered": "{item}: brakuje {short}, {gain} więcej do {event}: pokryte"
+  "priority.savings.lineCovered": "{item}: brakuje {short}, {gain} więcej do {event}: pokryte",
+  "import.recipe.title": "Pięć zrzutów i narzędzia cię znają",
+  "import.recipe.count": "{i} z {n}",
+  "import.recipe.done": "zapisano",
+  "import.recipe.resources": "Plecak → ikona wykresu → Zasoby",
+  "import.recipe.resourcesFills": "Sumy chleba, drewna, kamienia i żelaza",
+  "import.recipe.speedups": "Plecak → ikona wykresu → Przyspieszenia",
+  "import.recipe.speedupsFills": "Każde przyspieszenie, w minutach",
+  "import.recipe.backpack": "Plecak → Inne, jeden zrzut na przewinięcie",
+  "import.recipe.backpackFills": "Przedmioty z wydarzeń i skrzynie widżetów",
+  "import.recipe.gear": "Ekran ekwipunku bohatera",
+  "import.recipe.gearFills": "Elementy ekwipunku tego bohatera",
+  "import.recipe.pets": "Zwierzaki → Lista zwierzaków",
+  "import.recipe.petsFills": "Poziomy zwierzaków",
+  "import.recipe.next": "Plecak zapisany. Zobacz, ile punktów daje:"
 }
 ;

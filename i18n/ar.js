@@ -1393,5 +1393,19 @@ window.__BH_I18N_DATA["ar"] = {
   "priority.savings.lineNoRate": "{item}: ينقص {short}؛ لا وتيرة بعد",
   "priority.savings.lineReached": "{item}: ينقص {short}، نحو {rate} يوميًا: يكتمل {when}",
   "priority.savings.lineShort": "{item}: ينقص {short}، و{gain} إضافية قبل {event}: ما زال ينقص {left}",
-  "priority.savings.lineCovered": "{item}: ينقص {short}، و{gain} إضافية قبل {event}: مكتمل"
+  "priority.savings.lineCovered": "{item}: ينقص {short}، و{gain} إضافية قبل {event}: مكتمل",
+  "import.recipe.title": "خمس لقطات شاشة وتعرفك الأدوات",
+  "import.recipe.count": "{i} من {n}",
+  "import.recipe.done": "محفوظ",
+  "import.recipe.resources": "الحقيبة ← أيقونة الرسم البياني ← الموارد",
+  "import.recipe.resourcesFills": "مجموع الخبز والخشب والحجر والحديد",
+  "import.recipe.speedups": "الحقيبة ← أيقونة الرسم البياني ← التسريعات",
+  "import.recipe.speedupsFills": "كل تسريع، بالدقائق",
+  "import.recipe.backpack": "الحقيبة ← أخرى، لقطة لكل تمرير",
+  "import.recipe.backpackFills": "عناصر الفعاليات وصناديق الأدوات",
+  "import.recipe.gear": "شاشة عتاد أحد الأبطال",
+  "import.recipe.gearFills": "قطع عتاد ذلك البطل",
+  "import.recipe.pets": "الحيوانات الأليفة ← قائمة الحيوانات",
+  "import.recipe.petsFills": "مستويات الحيوانات الأليفة",
+  "import.recipe.next": "حقيبتك مسجلة. شاهد كم تحصد من النقاط:"
 };

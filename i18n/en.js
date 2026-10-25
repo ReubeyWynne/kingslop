@@ -2259,6 +2259,20 @@ window.__BH_I18N_DATA["en"] = {
   "priority.savings.lineNoRate": "{item}: {short} short; no rate yet",
   "priority.savings.lineReached": "{item}: {short} short, about {rate} a day: covered {when}",
   "priority.savings.lineShort": "{item}: {short} short, {gain} more by {event}: {left} still short",
-  "priority.savings.lineCovered": "{item}: {short} short, {gain} more by {event}: covered"
+  "priority.savings.lineCovered": "{item}: {short} short, {gain} more by {event}: covered",
+  "import.recipe.title": "Five screenshots and the tools know you",
+  "import.recipe.count": "{i} of {n}",
+  "import.recipe.done": "saved",
+  "import.recipe.resources": "Backpack → chart icon → Resources",
+  "import.recipe.resourcesFills": "Bread, wood, stone and iron totals",
+  "import.recipe.speedups": "Backpack → chart icon → Speedups",
+  "import.recipe.speedupsFills": "Every speedup, in minutes",
+  "import.recipe.backpack": "Backpack → Other, one shot per scroll",
+  "import.recipe.backpackFills": "Event items and widget chests",
+  "import.recipe.gear": "A hero’s gear screen",
+  "import.recipe.gearFills": "That hero’s gear pieces",
+  "import.recipe.pets": "Pets → Pet List",
+  "import.recipe.petsFills": "Pet levels",
+  "import.recipe.next": "Your bag is in. See what it scores:"
 }
 ;

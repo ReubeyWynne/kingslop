@@ -138,7 +138,13 @@
     });
   }
 
-  if (window.I18N && window.I18N.onReady) window.I18N.onReady(start);
-  else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
-  else start();
+  // Start after the page has booted, so the buttons it presses are wired:
+  // common.js boots on DOMContentLoaded when the dictionary is ready first,
+  // and its listener was added before this one.
+  function begin() {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+  }
+  if (window.I18N && window.I18N.onReady) window.I18N.onReady(begin);
+  else begin();
 })();

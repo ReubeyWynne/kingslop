@@ -34,7 +34,7 @@ Its `sim-army` module (`js/sim-army.js`) turns the sheet into army cards. A tile
 
 Its `sim-run` module (`js/sim-run.js`) is the sweep's run meter. The sweep fires `sim:sweep` on the console with `{ phase, done, of, battles, planned, ms }` (phase `start`, `progress`, `done` or `fail`); the module fills `[data-target="sim-run.bar"]`, a `<progress>` with one step per mix, and `[data-target="sim-run.meter"]`, the live line of battles fought out of the plan, the rate and the time left, then the totals once it is done. The root's `data-run` (`running` or `done`) shows the loader while a sweep runs.
 
-Hero gear composes these capabilities in its existing markup. Resource persistence, file export/import, tab keyboard handling and status output no longer live in its page controller. Optimisation and gear editing remain domain-specific consumers of the ledger and semantic events. Screenshot review is the site-wide import panel: a page opens it with `data-screen-import="pick"` on a button, and a page with its own sheet to fill (the battle simulator) marks it `data-screen-import-sheet="battle-report"` and answers the panel's `screen-import:sheet` event (`detail.values` by field id; it fills `detail.before` with what it replaced, for undo).
+Hero gear composes these capabilities in its existing markup. Resource persistence, file export/import, tab keyboard handling and status output no longer live in its page controller. Optimisation and gear editing remain domain-specific consumers of the ledger and semantic events. Screenshot review is the site-wide import panel: a page opens it with `data-screen-import="pick"` on a button (any other value, such as `"recipe"`, opens it without the file picker, at the screenshot recipe; a link to `#screenshot-recipe` does the same), and a page with its own sheet to fill (the battle simulator) marks it `data-screen-import-sheet="battle-report"` and answers the panel's `screen-import:sheet` event (`detail.values` by field id; it fills `detail.before` with what it replaced, for undo).
 
 ## Example
 
@@ -64,7 +64,7 @@ A new tool can use these controls without a new page controller. It adds only it
 
 ## Deep links
 
-Every disclosure is addressable by its URL. A `#id` link opens the disclosure it names and scrolls to it, and opening one writes its id to the address bar, so a reader can copy the link from wherever they are. The address is the state: there is no router, no `pushState` history and no query-string scheme. `js/deep-link.js` is loaded on every page by the layout, after the page scripts, and reads only markup:
+Every disclosure is addressable by its URL. A `#id` link opens the disclosure it names and scrolls to it, and opening one writes its id to the address bar, so a reader can copy the link from wherever they are. The address is the state: there is no router, no `pushState` history and no query-string scheme. `js/deep-link.js` is loaded on every page by the layout, after the page scripts, starts only once the page has booted (so a custom button it presses is already wired), and reads only markup:
 
 | Markup | Link |
 | --- | --- |
