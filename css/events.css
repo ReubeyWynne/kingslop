@@ -981,3 +981,79 @@ html[data-page="town"], html[data-page="home"]:has(.event-card[data-hover-page="
   --signal-glow: rgba(220, 143, 219, .22);
   --signal-halo: rgba(220, 143, 219, .28);
 }
+
+/* ─── The guide: two notes that teach the page deck (js/site-guide.js) ───
+   A marginal gloss, not a dialog: it floats above the import chip, says one
+   line, and leaves when the reader does the thing it teaches. */
+.site-guide {
+  position: fixed;
+  inset-inline: 0;
+  bottom: calc(max(0.75rem, env(safe-area-inset-bottom)) + 3.25rem);
+  /* Under the import dock (80), so an open import sheet always covers it. */
+  z-index: 75;
+  width: fit-content;
+  max-width: min(22rem, calc(100vw - 2rem));
+  margin-inline: auto;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  padding: 0.7rem 0.95rem 0.55rem;
+  background: var(--void-2);
+  border: 1px solid var(--signal-line);
+  border-radius: 2px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+}
+.site-guide[hidden] { display: none; }
+.site-guide-line { margin: 0; text-align: center; color: var(--ink); font-style: italic; font-size: var(--step--1); line-height: 1.45; }
+.site-guide[data-input="touch"] .site-guide-desk,
+.site-guide:not([data-input="touch"]) .site-guide-touch,
+.site-guide:not([data-input="touch"]) .ascii-mini--swipe { display: none; }
+.site-guide-done {
+  min-height: 44px;
+  padding: 0 0.8rem;
+  border: 0;
+  background: none;
+  color: var(--amber);
+  font: 700 var(--step--1) / 1 var(--body);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.site-guide-done:hover, .site-guide-done:focus-visible { color: var(--ink); text-decoration: underline; text-underline-offset: 0.25em; }
+
+/* It takes the hint's place under the rail while it shows, so the deck's
+   layout never shifts and touches there still reach the strip. */
+.deck-stage > .guide-rail { grid-row: 3; grid-column: 1; position: relative; z-index: 1; margin: 0; color: var(--deck-accent, var(--amber)); font-style: italic; font-size: var(--step--1); text-align: center; pointer-events: none; }
+.page-deck[data-guide="rail"] #deck-hint { visibility: hidden; }
+.guide-rail[hidden] { display: none; }
+/* The rail wakes once, left to right: each mark shows the selected diamond for
+   a beat. A mark changes glyph, never size or position. */
+.deck-rail.is-waking .deck-pip::before { animation: rail-wake 0.18s steps(1, end) calc(0.3s + var(--i, 0) * 0.09s) 1; }
+@keyframes rail-wake {
+  0% { content: "\25C6"; }
+  100% { content: "\25C6"; }
+}
+.deck-guide { margin-inline-start: auto; padding: 0.6rem 0.2rem; color: var(--ink-dim); font-style: italic; font-size: var(--step--1); text-decoration: none; white-space: nowrap; }
+.deck-guide:hover, .deck-guide:focus-visible { color: var(--amber); text-decoration: underline; text-underline-offset: 0.25em; }
+.ledger a.ledger-guide { margin-top: 0.7rem; border-bottom: 0; color: var(--ink-dim); font-style: italic; text-transform: none; letter-spacing: 0.02em; font-weight: 400; }
+@media (prefers-reduced-motion: reduce) {
+  .deck-rail.is-waking .deck-pip::before { animation: none; }
+}
+
+/* The door card: two questions and three ways in, in the same slip. */
+.site-door { width: min(24rem, calc(100vw - 2rem)); justify-items: stretch; gap: 0.75rem; padding: 0.9rem 1rem 0.5rem; max-height: calc(100dvh - 8rem); overflow-y: auto; }
+.site-door-title { margin: 0; font-family: var(--body); font-size: var(--step-0); font-weight: 700; color: var(--ink); text-wrap: balance; }
+.site-door-row { display: grid; gap: 0.35rem; margin: 0; padding: 0; border: 0; min-width: 0; font-size: var(--step--1); color: var(--ink-dim); }
+.site-door-row legend, .site-door-row > p { padding: 0; margin: 0 0 0.35rem; }
+.site-door select { min-height: 44px; background: transparent; color: var(--ink); border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; font: inherit; font-size: var(--step-0); }
+.site-door select:focus-visible { outline: none; border-bottom-color: var(--amber); }
+.site-door-roles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.site-door-roles legend { grid-column: 1 / -1; float: left; width: 100%; }
+.site-door-roles button { min-height: 44px; padding: 0.3rem 0.4rem; border: 1px solid var(--signal-line); border-radius: 2px; background: transparent; color: var(--ink-dim); font: 700 var(--step--1) / 1.2 var(--body); cursor: pointer; }
+.site-door-roles button[aria-pressed="true"] { color: var(--amber); border-color: var(--amber); }
+.site-door-roles button:hover, .site-door-roles button:focus-visible { color: var(--ink); }
+.site-door-ways a { display: flex; align-items: center; min-height: 40px; color: var(--amber); font-weight: 700; text-decoration: none; border-bottom: 1px solid rgba(157, 149, 127, 0.12); }
+.site-door-ways a::before { content: "\2767\00a0"; }
+.site-door-ways a:hover, .site-door-ways a:focus-visible { color: var(--ink); }
+.site-door-saved { min-height: 1.2em; font-size: var(--step--1); color: var(--ink-dim); font-style: italic; }
+.site-door .site-guide-done { justify-self: center; }

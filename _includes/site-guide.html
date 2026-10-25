@@ -1,0 +1,26 @@
+{% assign p = site.data.pages[page.self] %}<div class="site-guide-root" data-module="site-guide">
+<aside class="site-guide" id="site-guide" data-target="site-guide.swipe" aria-labelledby="site-guide-line" hidden>
+  <span class="ascii-mini ascii-mini--swipe" aria-hidden="true"></span>
+  <p class="site-guide-line" id="site-guide-line"><span class="site-guide-touch" data-i18n="guide.swipe">swipe sideways for every page</span><span class="site-guide-desk" data-i18n="guide.keys">❧ opens every page · ← → turn the page</span></p>
+  <button type="button" class="site-guide-done" data-action="site-guide.dismiss" data-i18n="guide.done">got it</button>
+</aside>
+<aside class="site-guide site-door" id="site-door" data-target="site-guide.door" aria-labelledby="site-door-title" hidden>
+  <h2 class="site-door-title" id="site-door-title" data-i18n="guide.door.title">Two quick questions, so the tools fit you</h2>
+  <label class="site-door-row"><span data-i18n="directory.server">Server generation</span>
+    <select data-target="site-guide.generation" data-action="site-guide.generation"><option value="" data-i18n="kingdom.unknown">Not sure</option>{% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}{% for gen in generations %}<option value="{{ gen }}">{{ gen }}</option>{% endfor %}</select>
+  </label>
+  <fieldset class="site-door-row site-door-roles">
+    <legend data-i18n="priority.roleLegend">Your part in the alliance</legend>
+    {% for role in site.data.upgrade_priority.roles %}<button type="button" data-action="site-guide.role" data-door-role="{{ role }}" data-target="site-guide.role" aria-pressed="false" data-i18n="priority.role.{{ role }}">{{ role }}</button>
+    {% endfor %}
+  </fieldset>
+  <nav class="site-door-row site-door-ways" aria-labelledby="site-door-why">
+    <p id="site-door-why" data-i18n="guide.door.why">What brought you here?</p>
+    <a href="{{ p.depth }}events/" data-action="site-guide.go" data-i18n="guide.door.today">today’s event</a>
+    <a href="{{ p.depth }}upgrade-priority/" data-action="site-guide.go" data-i18n="guide.door.upgrade">my next upgrade</a>
+    <a href="{{ p.depth }}bear-hunt/" data-action="site-guide.go" data-i18n="guide.door.bear">my bear march</a>
+  </nav>
+  <output class="site-door-saved" data-target="site-guide.saved" role="status"></output>
+  <button type="button" class="site-guide-done" data-action="site-guide.skip" data-i18n="guide.door.done">just looking</button>
+</aside>
+</div>

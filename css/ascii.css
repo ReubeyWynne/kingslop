@@ -103,6 +103,9 @@
 .ascii-mini--castle::after,
 .ascii-mini > span { position: absolute; inset: 0; display: block; white-space: pre; }
 .ascii-mini--castle .castle-smoke { color: var(--ink-muted); }
+/* The guide's swipe: a fingertip sliding left towards two fixed chevrons. */
+.ascii-mini--swipe { width: 26ch; height: 3.75em; font-size: 12px; }
+.ascii-mini--swipe::before { color: var(--amber); }
 .ascii-mini > span::before { display: block; white-space: pre; }
 /* The moon is four layers: stars, earthshine, the lit phase, and a wisp of
    cloud that veils whatever it crosses (the mask is generated with it). */

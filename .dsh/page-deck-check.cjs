@@ -48,6 +48,7 @@ class Element {
     });
   }
   closest(selector) { return this.matches(selector) ? this : this.parentNode?.closest(selector) ?? null; }
+  dispatchEvent(event) { (this.dispatched ??= []).push(event.type); (this.listeners[event.type] ?? []).slice().forEach(fn => fn(event)); return true; }
   focus() { this.owner.activeElement = this; }
 }
 
@@ -124,7 +125,7 @@ function setup(current = 'home', reduced = false) {
   const window = new Element('window');
   const location = { href: 'https://dey.ci' + pages[current].canonicalPath, origin: 'https://dey.ci', hash: '' };
   const scope = {
-    document, window, location, URL, Intl, console, performance: { now: () => time }, navigator: {},
+    document, window, location, URL, Intl, console, CustomEvent: class { constructor(type, init = {}) { this.type = type; this.detail = init.detail; this.bubbles = !!init.bubbles; } }, performance: { now: () => time }, navigator: {},
     sessionStorage: { getItem: k => storage.get(k) ?? null, setItem: (k, v) => storage.set(k, v) },
     setTimeout: (fn, ms) => { const id = ++nextFrame; timers.set(id, { fn, at: time + ms }); return id; },
     clearTimeout: id => timers.delete(id)
@@ -225,6 +226,14 @@ test('ledger, groups, keyboard and Escape share a modal and restore focus and sc
   assert.equal(s.document.activeElement, s.ledgerButton);
   assert.equal(s.document.documentElement.scrollTop, 540);
   assert.equal(s.document.documentElement.classList.contains('deck-open'), false);
+});
+
+test('the deck tells the guide when it opens and closes', () => {
+  const s = setup('bear');
+  s.fire(s.ledgerButton, 'click');
+  assert.deepEqual(s.document.dispatched, ['deck:open']);
+  s.fire(s.deck, 'cancel');
+  assert.equal(s.document.dispatched.at(-1), 'deck:close');
 });
 
 test('ring browsing works in both directions and reduced motion settles immediately', () => {
