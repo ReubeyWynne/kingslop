@@ -22,6 +22,7 @@ self: masters
   </section>
   <section class="section master-points" id="kvk-points" data-module="master-points" aria-labelledby="kvk-points-title">
     <h2 id="kvk-points-title" data-i18n="masterPoints.title">KvK points from your masters</h2>
+    {% include empty-state.html needs="masters" key="empty.masters" text="Add your masters to see your KvK points." fill="../town-centre/#town-masters" %}
     <p data-i18n="masterPoints.intro">An emblem or manuscript only scores when it is spent. This counts what your masters can actually take: the next class for each master whose affinity bar is full, paid with its own emblems first and then general ones, and whole skill levels, cheapest first, once each level's requirement is met.</p>
     <p class="hero-points-total"><output data-target="master-points.total">—</output></p>
     <p class="note" data-target="master-points.coverage" aria-live="polite"></p>

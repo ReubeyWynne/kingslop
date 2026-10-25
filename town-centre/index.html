@@ -294,6 +294,7 @@ self: town
 
   <section class="section town-points" id="town-points" aria-labelledby="town-points-title">
     <h2 id="town-points-title" data-i18n="town.pointsTitle">Event points</h2>
+    {% include empty-state.html needs="inventory" key="empty.town" text="Count what's in your bag to see the event points it can score." import=true fill="#town-bag" %}
     <div class="town-events" data-module="tabs" data-tabs-bind="town-event" role="tablist" aria-label="Event" data-i18n-key="town.event" data-i18n-attr="aria-label">
       <button type="button" role="tab" aria-selected="true" data-value="prep" data-action="tabs.select"><span data-i18n="ks.today.kickerPrep">KvK prep</span><output data-event-total="prep">—</output></button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="sg" data-action="tabs.select"><span data-i18n="ks.governor.title">Strongest Governor</span><output data-event-total="sg">—</output></button>
