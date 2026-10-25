@@ -19,7 +19,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     await page.goto(base + '/town-centre/?lang=en');
     assert.equal(await page.locator('#screen-import').isHidden(), true, 'the dock stays out of the way until there is something to read');
     const chooser = page.waitForEvent('filechooser');
-    await page.locator('[data-screen-import="pick"]').click();
+    await page.locator('.town-read-shots').click();
     await (await chooser).setFiles([fixture('overview-resources'), fixture('overview-speedups')]);
     // A device without the models downloads them once, with a bar that says how far it has got.
     await page.locator('#screen-import [data-target~="screen-import.status"]', { hasText: 'Downloading the reading models' }).waitFor({ timeout: 120000 });
