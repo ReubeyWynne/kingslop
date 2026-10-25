@@ -1407,6 +1407,20 @@ window.__BH_I18N_DATA["id"] = {
   "priority.savings.lineNoRate": "{item}: kurang {short}; belum ada laju",
   "priority.savings.lineReached": "{item}: kurang {short}, sekitar {rate} per hari: tercukupi {when}",
   "priority.savings.lineShort": "{item}: kurang {short}, {gain} lagi sebelum {event}: masih kurang {left}",
-  "priority.savings.lineCovered": "{item}: kurang {short}, {gain} lagi sebelum {event}: tercukupi"
+  "priority.savings.lineCovered": "{item}: kurang {short}, {gain} lagi sebelum {event}: tercukupi",
+  "import.recipe.title": "Lima tangkapan layar dan alat-alat ini mengenalmu",
+  "import.recipe.count": "{i} dari {n}",
+  "import.recipe.done": "tersimpan",
+  "import.recipe.resources": "Ransel → ikon grafik → Sumber Daya",
+  "import.recipe.resourcesFills": "Total roti, kayu, batu, dan besi",
+  "import.recipe.speedups": "Ransel → ikon grafik → Percepatan",
+  "import.recipe.speedupsFills": "Setiap percepatan, dalam menit",
+  "import.recipe.backpack": "Ransel → Lainnya, satu tangkapan per gulir",
+  "import.recipe.backpackFills": "Item event dan peti widget",
+  "import.recipe.gear": "Layar perlengkapan seorang pahlawan",
+  "import.recipe.gearFills": "Bagian perlengkapan pahlawan itu",
+  "import.recipe.pets": "Peliharaan → Daftar Peliharaan",
+  "import.recipe.petsFills": "Level peliharaan",
+  "import.recipe.next": "Ranselmu sudah masuk. Lihat berapa poinnya:"
 }
 ;

@@ -1395,6 +1395,20 @@ window.__BH_I18N_DATA["tr"] = {
   "priority.savings.lineNoRate": "{item}: {short} eksik; henüz hız yok",
   "priority.savings.lineReached": "{item}: {short} eksik, günde yaklaşık {rate}: {when} karşılanıyor",
   "priority.savings.lineShort": "{item}: {short} eksik, {event} zamanına kadar {gain} daha: hâlâ {left} eksik",
-  "priority.savings.lineCovered": "{item}: {short} eksik, {event} zamanına kadar {gain} daha: karşılanıyor"
+  "priority.savings.lineCovered": "{item}: {short} eksik, {event} zamanına kadar {gain} daha: karşılanıyor",
+  "import.recipe.title": "Beş ekran görüntüsü ve araçlar sizi tanır",
+  "import.recipe.count": "{i} / {n}",
+  "import.recipe.done": "kaydedildi",
+  "import.recipe.resources": "Çanta → grafik simgesi → Kaynaklar",
+  "import.recipe.resourcesFills": "Ekmek, odun, taş ve demir toplamları",
+  "import.recipe.speedups": "Çanta → grafik simgesi → Hızlandırmalar",
+  "import.recipe.speedupsFills": "Her hızlandırma, dakika olarak",
+  "import.recipe.backpack": "Çanta → Diğer, her kaydırmada bir görüntü",
+  "import.recipe.backpackFills": "Etkinlik eşyaları ve widget sandıkları",
+  "import.recipe.gear": "Bir kahramanın ekipman ekranı",
+  "import.recipe.gearFills": "O kahramanın ekipman parçaları",
+  "import.recipe.pets": "Evcil Hayvanlar → Evcil Hayvan Listesi",
+  "import.recipe.petsFills": "Evcil hayvan seviyeleri",
+  "import.recipe.next": "Çantanız kaydedildi. Kaç puan ettiğine bakın:"
 }
 ;

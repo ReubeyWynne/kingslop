@@ -1618,6 +1618,20 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "priority.savings.lineNoRate": "{item}: faltam {short}; ainda sem ritmo",
   "priority.savings.lineReached": "{item}: faltam {short}, cerca de {rate} por dia: coberto {when}",
   "priority.savings.lineShort": "{item}: faltam {short}, mais {gain} até {event}: ainda faltam {left}",
-  "priority.savings.lineCovered": "{item}: faltam {short}, mais {gain} até {event}: coberto"
+  "priority.savings.lineCovered": "{item}: faltam {short}, mais {gain} até {event}: coberto",
+  "import.recipe.title": "Cinco capturas e as ferramentas conhecem você",
+  "import.recipe.count": "{i} de {n}",
+  "import.recipe.done": "salvo",
+  "import.recipe.resources": "Mochila → ícone de gráfico → Recursos",
+  "import.recipe.resourcesFills": "Totais de pão, madeira, pedra e ferro",
+  "import.recipe.speedups": "Mochila → ícone de gráfico → Aceleradores",
+  "import.recipe.speedupsFills": "Cada acelerador, em minutos",
+  "import.recipe.backpack": "Mochila → Outros, uma captura por rolagem",
+  "import.recipe.backpackFills": "Itens de evento e baús de widgets",
+  "import.recipe.gear": "A tela de equipamento de um herói",
+  "import.recipe.gearFills": "As peças de equipamento desse herói",
+  "import.recipe.pets": "Pets → Lista de pets",
+  "import.recipe.petsFills": "Níveis dos pets",
+  "import.recipe.next": "Sua mochila está salva. Veja quanto ela pontua:"
 }
 ;

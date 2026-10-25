@@ -1398,6 +1398,20 @@ window.__BH_I18N_DATA["it"] = {
   "priority.savings.lineNoRate": "{item}: mancano {short}; ancora nessun ritmo",
   "priority.savings.lineReached": "{item}: mancano {short}, circa {rate} al giorno: coperto {when}",
   "priority.savings.lineShort": "{item}: mancano {short}, {gain} in più entro {event}: mancano ancora {left}",
-  "priority.savings.lineCovered": "{item}: mancano {short}, {gain} in più entro {event}: coperto"
+  "priority.savings.lineCovered": "{item}: mancano {short}, {gain} in più entro {event}: coperto",
+  "import.recipe.title": "Cinque screenshot e gli strumenti ti conoscono",
+  "import.recipe.count": "{i} di {n}",
+  "import.recipe.done": "salvato",
+  "import.recipe.resources": "Zaino → icona grafico → Risorse",
+  "import.recipe.resourcesFills": "Totali di pane, legno, pietra e ferro",
+  "import.recipe.speedups": "Zaino → icona grafico → Acceleratori",
+  "import.recipe.speedupsFills": "Ogni acceleratore, in minuti",
+  "import.recipe.backpack": "Zaino → Altro, uno screenshot per scorrimento",
+  "import.recipe.backpackFills": "Oggetti evento e forzieri di widget",
+  "import.recipe.gear": "La schermata equipaggiamento di un eroe",
+  "import.recipe.gearFills": "I pezzi di equipaggiamento di quell’eroe",
+  "import.recipe.pets": "Animali → Elenco animali",
+  "import.recipe.petsFills": "Livelli degli animali",
+  "import.recipe.next": "Il tuo zaino è registrato. Guarda quanto vale:"
 }
 ;

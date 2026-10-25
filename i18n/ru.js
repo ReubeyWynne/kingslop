@@ -1396,6 +1396,20 @@ window.__BH_I18N_DATA["ru"] = {
   "priority.savings.lineNoRate": "{item}: не хватает {short}; темпа пока нет",
   "priority.savings.lineReached": "{item}: не хватает {short}, около {rate} в день: хватит {when}",
   "priority.savings.lineShort": "{item}: не хватает {short}, +{gain} к событию «{event}»: всё ещё не хватает {left}",
-  "priority.savings.lineCovered": "{item}: не хватает {short}, +{gain} к событию «{event}»: хватит"
+  "priority.savings.lineCovered": "{item}: не хватает {short}, +{gain} к событию «{event}»: хватит",
+  "import.recipe.title": "Пять скриншотов — и инструменты знают вас",
+  "import.recipe.count": "{i} из {n}",
+  "import.recipe.done": "сохранено",
+  "import.recipe.resources": "Рюкзак → значок графика → Ресурсы",
+  "import.recipe.resourcesFills": "Итоги хлеба, дерева, камня и железа",
+  "import.recipe.speedups": "Рюкзак → значок графика → Ускорения",
+  "import.recipe.speedupsFills": "Каждое ускорение, в минутах",
+  "import.recipe.backpack": "Рюкзак → Прочее, по скриншоту на прокрутку",
+  "import.recipe.backpackFills": "Предметы событий и сундуки виджетов",
+  "import.recipe.gear": "Экран снаряжения героя",
+  "import.recipe.gearFills": "Предметы снаряжения этого героя",
+  "import.recipe.pets": "Питомцы → Список питомцев",
+  "import.recipe.petsFills": "Уровни питомцев",
+  "import.recipe.next": "Рюкзак внесён. Посмотрите, сколько он даёт очков:"
 }
 ;

@@ -1396,6 +1396,20 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "priority.savings.lineNoRate": "{item}：差 {short}；暫無速度",
   "priority.savings.lineReached": "{item}：差 {short}，每天約 {rate}：{when}湊齊",
   "priority.savings.lineShort": "{item}：差 {short}，到{event}前再得 {gain}：仍差 {left}",
-  "priority.savings.lineCovered": "{item}：差 {short}，到{event}前再得 {gain}：夠了"
+  "priority.savings.lineCovered": "{item}：差 {short}，到{event}前再得 {gain}：夠了",
+  "import.recipe.title": "五張截圖，工具就認識你",
+  "import.recipe.count": "{i} / {n}",
+  "import.recipe.done": "已儲存",
+  "import.recipe.resources": "背包 → 圖表圖示 → 資源",
+  "import.recipe.resourcesFills": "麵包、木材、石頭和鐵的總量",
+  "import.recipe.speedups": "背包 → 圖表圖示 → 加速",
+  "import.recipe.speedupsFills": "每種加速，以分鐘計",
+  "import.recipe.backpack": "背包 → 其他，每捲動一屏截一張",
+  "import.recipe.backpackFills": "活動道具和小部件寶箱",
+  "import.recipe.gear": "英雄的裝備畫面",
+  "import.recipe.gearFills": "該英雄的裝備部件",
+  "import.recipe.pets": "寵物 → 寵物列表",
+  "import.recipe.petsFills": "寵物等級",
+  "import.recipe.next": "背包已錄入。看看它能得多少分："
 }
 ;

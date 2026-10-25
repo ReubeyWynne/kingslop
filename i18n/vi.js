@@ -1407,6 +1407,20 @@ window.__BH_I18N_DATA["vi"] = {
   "priority.savings.lineNoRate": "{item}: thiếu {short}; chưa có tốc độ",
   "priority.savings.lineReached": "{item}: thiếu {short}, khoảng {rate} mỗi ngày: đủ {when}",
   "priority.savings.lineShort": "{item}: thiếu {short}, thêm {gain} trước {event}: vẫn thiếu {left}",
-  "priority.savings.lineCovered": "{item}: thiếu {short}, thêm {gain} trước {event}: đủ"
+  "priority.savings.lineCovered": "{item}: thiếu {short}, thêm {gain} trước {event}: đủ",
+  "import.recipe.title": "Năm ảnh chụp màn hình là công cụ hiểu bạn",
+  "import.recipe.count": "{i} / {n}",
+  "import.recipe.done": "đã lưu",
+  "import.recipe.resources": "Ba lô → biểu tượng biểu đồ → Tài nguyên",
+  "import.recipe.resourcesFills": "Tổng bánh mì, gỗ, đá và sắt",
+  "import.recipe.speedups": "Ba lô → biểu tượng biểu đồ → Tăng tốc",
+  "import.recipe.speedupsFills": "Mọi vật phẩm tăng tốc, tính bằng phút",
+  "import.recipe.backpack": "Ba lô → Khác, mỗi lần cuộn một ảnh",
+  "import.recipe.backpackFills": "Vật phẩm sự kiện và rương widget",
+  "import.recipe.gear": "Màn hình trang bị của một anh hùng",
+  "import.recipe.gearFills": "Các món trang bị của anh hùng đó",
+  "import.recipe.pets": "Thú cưng → Danh sách thú cưng",
+  "import.recipe.petsFills": "Cấp thú cưng",
+  "import.recipe.next": "Ba lô đã được lưu. Xem nó ghi được bao nhiêu điểm:"
 }
 ;

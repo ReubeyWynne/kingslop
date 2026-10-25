@@ -1396,6 +1396,20 @@ window.__BH_I18N_DATA["de"] = {
   "priority.savings.lineNoRate": "{item}: {short} fehlen; noch keine Rate",
   "priority.savings.lineReached": "{item}: {short} fehlen, etwa {rate} pro Tag: gedeckt {when}",
   "priority.savings.lineShort": "{item}: {short} fehlen, {gain} mehr bis {event}: {left} fehlen noch",
-  "priority.savings.lineCovered": "{item}: {short} fehlen, {gain} mehr bis {event}: gedeckt"
+  "priority.savings.lineCovered": "{item}: {short} fehlen, {gain} mehr bis {event}: gedeckt",
+  "import.recipe.title": "Fünf Screenshots, und die Tools kennen dich",
+  "import.recipe.count": "{i} von {n}",
+  "import.recipe.done": "gespeichert",
+  "import.recipe.resources": "Rucksack → Diagramm-Symbol → Ressourcen",
+  "import.recipe.resourcesFills": "Summen für Brot, Holz, Stein und Eisen",
+  "import.recipe.speedups": "Rucksack → Diagramm-Symbol → Beschleuniger",
+  "import.recipe.speedupsFills": "Jeder Beschleuniger, in Minuten",
+  "import.recipe.backpack": "Rucksack → Sonstiges, ein Screenshot pro Bildlauf",
+  "import.recipe.backpackFills": "Event-Gegenstände und Widget-Truhen",
+  "import.recipe.gear": "Der Ausrüstungsbildschirm eines Helden",
+  "import.recipe.gearFills": "Die Ausrüstungsteile dieses Helden",
+  "import.recipe.pets": "Haustiere → Haustierliste",
+  "import.recipe.petsFills": "Haustierstufen",
+  "import.recipe.next": "Dein Rucksack ist erfasst. Sieh, was er bringt:"
 }
 ;

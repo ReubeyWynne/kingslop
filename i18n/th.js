@@ -1407,6 +1407,20 @@ window.__BH_I18N_DATA["th"] = {
   "priority.savings.lineNoRate": "{item}: ขาด {short}; ยังไม่มีอัตรา",
   "priority.savings.lineReached": "{item}: ขาด {short} ประมาณ {rate} ต่อวัน: พอ{when}",
   "priority.savings.lineShort": "{item}: ขาด {short} ได้เพิ่ม {gain} ก่อน {event}: ยังขาด {left}",
-  "priority.savings.lineCovered": "{item}: ขาด {short} ได้เพิ่ม {gain} ก่อน {event}: พอ"
+  "priority.savings.lineCovered": "{item}: ขาด {short} ได้เพิ่ม {gain} ก่อน {event}: พอ",
+  "import.recipe.title": "ห้าภาพหน้าจอ แล้วเครื่องมือจะรู้จักคุณ",
+  "import.recipe.count": "{i} จาก {n}",
+  "import.recipe.done": "บันทึกแล้ว",
+  "import.recipe.resources": "กระเป๋า → ไอคอนกราฟ → ทรัพยากร",
+  "import.recipe.resourcesFills": "ยอดรวมขนมปัง ไม้ หิน และเหล็ก",
+  "import.recipe.speedups": "กระเป๋า → ไอคอนกราฟ → เร่งความเร็ว",
+  "import.recipe.speedupsFills": "ไอเทมเร่งทุกชนิด เป็นนาที",
+  "import.recipe.backpack": "กระเป๋า → อื่นๆ หนึ่งภาพต่อการเลื่อน",
+  "import.recipe.backpackFills": "ไอเทมอีเวนต์และหีบวิดเจ็ต",
+  "import.recipe.gear": "หน้าจออุปกรณ์ของฮีโร่",
+  "import.recipe.gearFills": "ชิ้นอุปกรณ์ของฮีโร่นั้น",
+  "import.recipe.pets": "สัตว์เลี้ยง → รายชื่อสัตว์เลี้ยง",
+  "import.recipe.petsFills": "เลเวลสัตว์เลี้ยง",
+  "import.recipe.next": "บันทึกกระเป๋าแล้ว ดูว่าได้กี่คะแนน:"
 }
 ;

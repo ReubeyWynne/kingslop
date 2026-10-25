@@ -149,6 +149,37 @@
 .import-tile[data-state="doubt"] .import-name { color: var(--amber); }
 .import-dock[data-filter="doubt"] .import-tile[data-state="sure"] { display: none; }
 
+/* The recipe: five screens to read, each beside a small picture of it, ticked
+   off from the save's import history. A done row keeps its place and dims; the
+   signal marks only what it saved. */
+.import-recipe { margin-top: 0.7rem; }
+.import-recipe[hidden], .import-recipe-list[hidden], .import-recipe-next[hidden] { display: none; }
+.import-recipe-head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; margin: 0; font-size: var(--step--1); }
+.import-recipe-head strong { color: var(--ink); }
+.import-recipe-head output { flex: none; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.import-recipe-list { list-style: none; margin: 0.3rem 0 0; padding: 0; counter-reset: recipe; }
+.import-recipe-list li {
+  counter-increment: recipe;
+  display: grid;
+  grid-template-columns: 3.4rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.45rem 0;
+  border-top: 1px solid rgba(157, 149, 127, 0.25);
+}
+.import-recipe-list img { display: block; width: 3.4rem; height: auto; aspect-ratio: 4 / 5; border: 1px solid rgba(157, 149, 127, 0.35); border-radius: 1px; }
+.import-recipe-text { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; font-size: var(--step--1); line-height: 1.2; }
+.import-recipe-text strong { color: var(--ink-dim); font-weight: 700; }
+.import-recipe-text strong::before { content: counter(recipe) ". "; color: var(--amber); }
+.import-recipe-text small { color: var(--ink-muted); font-style: italic; }
+.import-recipe-state { color: var(--amber); font: 700 var(--step--1) / 1.2 var(--body); letter-spacing: 0.1em; text-transform: uppercase; }
+.import-recipe-state:not(:empty)::before { content: "✓ "; }
+.import-recipe-list li[data-done="true"] img { opacity: 0.55; }
+.import-recipe-list li[data-done="true"] .import-recipe-text strong { color: var(--ink-muted); }
+.import-recipe-next { margin: 0.5rem 0 0; color: var(--ink-dim); font-size: var(--step--1); }
+.import-recipe-next a { color: var(--amber); font-weight: 700; text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+.import-recipe-next a:hover, .import-recipe-next a:focus-visible { color: var(--ink); }
+
 .import-help { margin-top: 0.8rem; }
 .import-help summary { cursor: pointer; color: var(--ink-dim); font-size: var(--step--1); }
 .import-help summary:hover, .import-help summary:focus-visible { color: var(--ink); outline: none; }

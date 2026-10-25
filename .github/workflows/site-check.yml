@@ -57,6 +57,7 @@ jobs:
               - js/player-ledger.js
               - js/player-modules.js
               - js/unit-input.js
+              - js/deep-link.js
               - js/server-age.js
               - js/kingdom-progression.js
               - js/kingdom-data.liquid
@@ -287,6 +288,7 @@ jobs:
               - js/import-adapters/**
               - js/hero-gear-ocr.js
               - css/screen-import.css
+              - img/screen-import/**
               - town-centre/**
       - id: plan
         shell: bash
@@ -514,6 +516,9 @@ jobs:
       - name: Check screenshot import dock
         if: matrix.group == 'import'
         run: node .dsh/screen-import-ui-check.cjs
+      - name: Check the screenshot recipe in the import dock
+        if: matrix.group == 'import'
+        run: node .dsh/screen-import-recipe-check.cjs
       - name: Upload previews
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

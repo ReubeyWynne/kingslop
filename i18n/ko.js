@@ -1396,6 +1396,20 @@ window.__BH_I18N_DATA["ko"] = {
   "priority.savings.lineNoRate": "{item}: {short} 부족, 아직 속도 없음",
   "priority.savings.lineReached": "{item}: {short} 부족, 하루 약 {rate}: {when} 충분",
   "priority.savings.lineShort": "{item}: {short} 부족, {event}까지 +{gain}: 아직 {left} 부족",
-  "priority.savings.lineCovered": "{item}: {short} 부족, {event}까지 +{gain}: 충분"
+  "priority.savings.lineCovered": "{item}: {short} 부족, {event}까지 +{gain}: 충분",
+  "import.recipe.title": "스크린샷 다섯 장이면 도구가 당신을 압니다",
+  "import.recipe.count": "{i} / {n}",
+  "import.recipe.done": "저장됨",
+  "import.recipe.resources": "가방 → 차트 아이콘 → 자원",
+  "import.recipe.resourcesFills": "빵, 목재, 석재, 철 합계",
+  "import.recipe.speedups": "가방 → 차트 아이콘 → 가속",
+  "import.recipe.speedupsFills": "모든 가속, 분 단위",
+  "import.recipe.backpack": "가방 → 기타, 스크롤마다 한 장씩",
+  "import.recipe.backpackFills": "이벤트 아이템과 위젯 상자",
+  "import.recipe.gear": "영웅의 장비 화면",
+  "import.recipe.gearFills": "그 영웅의 장비 부위",
+  "import.recipe.pets": "펫 → 펫 목록",
+  "import.recipe.petsFills": "펫 레벨",
+  "import.recipe.next": "가방이 저장되었습니다. 점수를 확인하세요:"
 }
 ;
