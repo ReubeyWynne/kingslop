@@ -490,7 +490,8 @@
       "../js/building-data.js",
       "../js/upgrade-priority.js",
       "../js/upgrade-priority-words.js",
-      "../js/next-step.js"
+      "../js/next-step.js",
+      "../js/empty-state.js"
     ],
     "footMainKey": "gear.kicker",
     "footMain": "the forge ledger",
@@ -558,7 +559,8 @@
       "../js/building-data.js",
       "../js/upgrade-priority.js",
       "../js/upgrade-priority-words.js",
-      "../js/next-step.js"
+      "../js/next-step.js",
+      "../js/empty-state.js"
     ],
     "footMainKey": "directory.title",
     "footMain": "Hero directory",
@@ -628,7 +630,8 @@
       "../js/building-data.js",
       "../js/upgrade-priority.js",
       "../js/upgrade-priority-words.js",
-      "../js/next-step.js"
+      "../js/next-step.js",
+      "../js/empty-state.js"
     ],
     "footMainKey": "masters.title",
     "footMain": "Masters",
@@ -701,7 +704,8 @@
       "../js/upgrade-priority-data.js",
       "../js/upgrade-priority.js",
       "../js/upgrade-priority-words.js",
-      "../js/next-step.js"
+      "../js/next-step.js",
+      "../js/empty-state.js"
     ],
     "footMainKey": "town.kicker",
     "footMain": "everything you own, counted",
@@ -769,7 +773,8 @@
       "../js/building-data.js",
       "../js/upgrade-priority.js",
       "../js/upgrade-priority-words.js",
-      "../js/next-step.js"
+      "../js/next-step.js",
+      "../js/empty-state.js"
     ],
     "footMainKey": "gov.kicker",
     "footMain": "the governor's wardrobe",
@@ -836,7 +841,8 @@
       "../js/building-data.js",
       "../js/upgrade-priority.js",
       "../js/upgrade-priority-words.js",
-      "../js/next-step.js"
+      "../js/next-step.js",
+      "../js/empty-state.js"
     ],
     "footMainKey": "pets.title",
     "footMain": "Pets",

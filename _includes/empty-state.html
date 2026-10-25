@@ -1,0 +1,5 @@
+{% comment %}A tool's teaching empty state (js/empty-state.js): one line naming the missing part of the save, a button to read screenshots when an import adapter fills that part (include.import), and a link to where it is filled in by hand (include.fill, relative to the page). Hidden until the save is known to lack include.needs.{% endcomment %}
+<aside class="empty-state" data-module="empty-state" data-needs="{{ include.needs }}" hidden>
+  <p class="empty-state-line" data-i18n="{{ include.key }}">{{ include.text }}</p>
+  <p class="empty-state-ways">{% if include.import %}<button type="button" data-screen-import="pick" data-i18n="empty.import">Import a screenshot</button>{% endif %}<a href="{{ include.fill }}" data-i18n="empty.fill">Fill it in</a></p>
+</aside>

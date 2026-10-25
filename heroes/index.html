@@ -23,6 +23,7 @@ self: heroes
   </section>
   <section class="section hero-points" id="kvk-points" data-module="hero-points" aria-labelledby="kvk-points-title">
     <h2 id="kvk-points-title" data-i18n="spend.title">KvK points from your heroes</h2>
+    {% include empty-state.html needs="heroes" key="empty.heroes" text="Add your heroes to see your KvK points." fill="../town-centre/#town-heroes" %}
     <p data-i18n="spend.intro">A shard or widget only scores when it is spent. This counts what the heroes you own can actually use: whole star steps up to 5★ and widget levels up to 10, paid with each hero’s own shards first, then general shards of the same rarity where they finish the most steps. Amadeus and Helga take only their own shards.</p>
     <p class="hero-points-total"><output data-target="hero-points.total">—</output></p>
     <p class="note" data-target="hero-points.coverage" aria-live="polite"></p>

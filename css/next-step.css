@@ -8,3 +8,13 @@
 .next-step-list b { color: var(--ink); }
 .next-step-list span { color: var(--ink-dim); }
 .next-step-more { display: inline-block; min-height: 44px; padding-block: 0.6rem; color: var(--amber); }
+
+/* A tool's teaching empty state: the same margin rule, one line in ink and two margin prompts. */
+.empty-state { margin-block: var(--space-s) var(--space-m); padding-inline-start: var(--space-s); border-inline-start: 1px solid var(--amber-dim); }
+.empty-state[hidden] { display: none; }
+.empty-state-line { margin: 0; color: var(--ink); }
+.empty-state-ways { display: flex; flex-wrap: wrap; gap: 0 var(--space-m); margin: 0; }
+/* aside.empty-state outranks a page's own button rules (Town Centre's .town-main button). */
+aside.empty-state .empty-state-ways :is(button, a) { display: inline-flex; align-items: center; min-height: 44px; padding: 0; background: none; border: 0; border-bottom: 1px solid transparent; border-radius: 0; color: var(--amber); font: 700 0.8rem/1.2 var(--body); letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; cursor: pointer; }
+aside.empty-state .empty-state-ways button::before { content: '❧ '; white-space: pre; }
+aside.empty-state .empty-state-ways :is(button, a):is(:hover, :focus-visible) { color: var(--ink); border-bottom-color: var(--amber); outline: none; }

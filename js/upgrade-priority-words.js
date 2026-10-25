@@ -8,7 +8,7 @@
     function t(key, fallback) { return api.tr('priority.' + key, fallback || key); }
     function tpl(key, vars) { return api.fill(t(key), vars); }
     function building(id) { var b = window.BuildingData.buildings.find(function (x) { return x.id === id; }); return api.tr('town.building.' + id, b ? b.name : id); }
-    // The simulator's troop names are in every dictionary; the gear page's are not yet.
+    // Every dictionary has both the simulator's troop names and the gear page's.
     function troop(type) { return api.tr('sim.calc.' + type, api.tr('gear.' + type, type)); }
     function stars(at) { return api.fmt(at.stars) + '★' + (at.tier ? ' ' + api.fmt(at.tier) + '/6' : ''); }
     function govLevel(index) {

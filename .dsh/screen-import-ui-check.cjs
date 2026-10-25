@@ -27,7 +27,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
       new MutationObserver(() => window.importSaid.push({ text: node.textContent, bar: !bar.hidden })).observe(node, { childList: true, characterData: true, subtree: true });
     });
     const chooser = page.waitForEvent('filechooser');
-    await page.locator('[data-screen-import="pick"]').click();
+    await page.locator('.town-read-shots').click();
     await (await chooser).setFiles([fixture('overview-resources'), fixture('overview-speedups')]);
     // A device without the models downloads them once, with a bar that says how far it has got.
     await page.waitForFunction(() => window.importSaid.some(s => s.text.includes('Downloading the reading models')), null, { timeout: 120000 });
