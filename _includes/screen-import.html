@@ -1,16 +1,27 @@
 <aside class="import-dock" id="screen-import" data-module="screen-import" data-filter="all" hidden aria-labelledby="import-title">
-  <button type="button" class="import-chip" data-target="screen-import.chip" data-action="screen-import.toggle" aria-expanded="false" aria-controls="import-sheet" data-deep-link="screenshot-import">
+  <button type="button" class="import-chip" data-target="screen-import.chip" data-action="screen-import.toggle" aria-expanded="false" aria-controls="screenshot-import" data-deep-link="screenshot-import">
     <span class="import-chip-mark" aria-hidden="true">❧</span>
     <span data-i18n="import.chip">Import</span>
     <output data-target="screen-import.count"></output>
   </button>
-  <section class="import-sheet" id="import-sheet" data-target="screen-import.sheet" hidden>
+  <section class="import-sheet" id="screenshot-import" data-target="screen-import.sheet" hidden>
     <header class="import-head">
       <h2 id="import-title" data-i18n="import.title">Screenshot import</h2>
       <button type="button" class="import-prompt" data-action="screen-import.toggle" data-i18n="import.minimise">minimise</button>
     </header>
     <p class="import-status" data-target="screen-import.status" role="status"></p>
     <progress class="import-progress" data-target="screen-import.progress" max="1" aria-label="Reading progress" data-i18n-key="import.progress" data-i18n-attr="aria-label" hidden></progress>
+    <section class="import-recipe" id="screenshot-recipe" data-target="screen-import.recipe" aria-labelledby="import-recipe-title">
+      <p class="import-recipe-head"><strong id="import-recipe-title" data-i18n="import.recipe.title">Five screenshots and the tools know you</strong> <output data-target="screen-import.recipeCount"></output></p>
+      <ol class="import-recipe-list" data-target="screen-import.recipeList">
+        <li data-recipe="resources" data-done="false"><img src="{{ p.depth }}img/screen-import/resources.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.resources">Backpack → chart icon → Resources</strong><small data-i18n="import.recipe.resourcesFills">Bread, wood, stone and iron totals</small></span><span class="import-recipe-state" data-field="state"></span></li>
+        <li data-recipe="speedups" data-done="false"><img src="{{ p.depth }}img/screen-import/speedups.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.speedups">Backpack → chart icon → Speedups</strong><small data-i18n="import.recipe.speedupsFills">Every speedup, in minutes</small></span><span class="import-recipe-state" data-field="state"></span></li>
+        <li data-recipe="backpack" data-done="false"><img src="{{ p.depth }}img/screen-import/backpack.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.backpack">Backpack → Other, one shot per scroll</strong><small data-i18n="import.recipe.backpackFills">Event items and widget chests</small></span><span class="import-recipe-state" data-field="state"></span></li>
+        <li data-recipe="gear" data-done="false"><img src="{{ p.depth }}img/screen-import/gear.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.gear">A hero’s gear screen</strong><small data-i18n="import.recipe.gearFills">That hero’s gear pieces</small></span><span class="import-recipe-state" data-field="state"></span></li>
+        <li data-recipe="pets" data-done="false"><img src="{{ p.depth }}img/screen-import/pets.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.pets">Pets → Pet List</strong><small data-i18n="import.recipe.petsFills">Pet levels</small></span><span class="import-recipe-state" data-field="state"></span></li>
+      </ol>
+      <p class="import-recipe-next" data-target="screen-import.recipeNext" hidden><span data-i18n="import.recipe.next">Your bag is in. See what it scores:</span> <a href="{{ p.depth }}town-centre/"{% if page.self == 'town' %} aria-current="page"{% endif %} data-i18n="town.nav">Town Centre</a></p>
+    </section>
     <div class="import-shot" data-target="screen-import.shot" hidden>
       <p class="import-shot-name"><strong data-target="screen-import.screen"></strong> <small data-target="screen-import.name"></small></p>
       <ul class="import-grid" data-target="screen-import.tiles"></ul>

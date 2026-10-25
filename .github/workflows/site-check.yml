@@ -57,6 +57,7 @@ jobs:
               - js/player-ledger.js
               - js/player-modules.js
               - js/unit-input.js
+              - js/deep-link.js
               - js/server-age.js
               - js/kingdom-progression.js
               - js/kingdom-data.liquid
@@ -244,6 +245,27 @@ jobs:
               - _data/heroes.json
               - _data/masters.json
               - _data/pets.json
+            # Teaching empty states on the six tool pages.
+            empty:
+              - *shared
+              - .dsh/empty-state-ui-check.cjs
+              - _includes/empty-state.html
+              - js/empty-state.js
+              - css/next-step.css
+              - js/screen-import*.js
+              - town-centre/**
+              - heroes/**
+              - hero-gear/**
+              - governor-gear/**
+              - pets/**
+              - masters/**
+              - js/hero-gear*.js
+              - js/governor-*
+              - js/pet-*
+              - js/master-*
+              - js/hero-directory*.js
+              - js/hero-points.js
+              - js/town-centre*.js
             # The deck walks every page and fails on any script error.
             deck:
               - *shared
@@ -265,6 +287,8 @@ jobs:
               - .dsh/hero-gear-visual-check.cjs
               - .dsh/hero-gear-interaction-check.cjs
               - .dsh/gear-fixtures/**
+              - .dsh/gear-troop-names-check.cjs
+              - i18n/**
               - hero-gear/**
               - js/hero-gear*.js
               - js/ocr-worker.js
@@ -287,6 +311,7 @@ jobs:
               - js/import-adapters/**
               - js/hero-gear-ocr.js
               - css/screen-import.css
+              - img/screen-import/**
               - town-centre/**
       - id: plan
         shell: bash
@@ -294,7 +319,7 @@ jobs:
           FILTERED: ${{ github.event_name == 'pull_request' }}
           CHANGES: ${{ steps.filter.outputs.changes || '[]' }}
         run: |
-          all='["interactions","heroes","masters","pets","castle","events","governor","town","priority","hints","deck","ascii-capture","hero-gear","import"]'
+          all='["interactions","heroes","masters","pets","castle","events","governor","town","priority","hints","empty","deck","ascii-capture","hero-gear","import"]'
           if [ "$FILTERED" != true ]; then
             echo "logic=true" >> "$GITHUB_OUTPUT"
             echo "ascii=true" >> "$GITHUB_OUTPUT"
@@ -493,6 +518,9 @@ jobs:
       - name: Check next-step lines on the tool pages
         if: matrix.group == 'hints'
         run: node .dsh/next-step-ui-check.cjs
+      - name: Check teaching empty states on the tool pages
+        if: matrix.group == 'empty'
+        run: node .dsh/empty-state-ui-check.cjs
       - name: Check page navigation in browser
         if: matrix.group == 'deck'
         run: node .dsh/page-deck-browser-check.cjs
@@ -511,9 +539,15 @@ jobs:
       - name: Check hero gear automatic recommendations
         if: matrix.group == 'hero-gear'
         run: node .dsh/hero-gear-interaction-check.cjs
+      - name: Check hero gear troop and slot names in every language
+        if: matrix.group == 'hero-gear'
+        run: node .dsh/gear-troop-names-check.cjs
       - name: Check screenshot import dock
         if: matrix.group == 'import'
         run: node .dsh/screen-import-ui-check.cjs
+      - name: Check the screenshot recipe in the import dock
+        if: matrix.group == 'import'
+        run: node .dsh/screen-import-recipe-check.cjs
       - name: Upload previews
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -534,6 +568,7 @@ jobs:
             .dsh/town-preview/
             .dsh/priority-preview/
             .dsh/next-step-preview/
+            .dsh/empty-state-preview/
             .dsh/deck-preview/
             .dsh/sim-preview/
             .dsh/ascii-preview/

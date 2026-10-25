@@ -402,6 +402,7 @@
         target('needsLook').hidden = !doubts && root.dataset.filter !== 'doubt';
       }
       tiles(entry);
+      recipe(!!entry || !!waiting.length);
       if (waiting.length) progress();
       else if (entries.some(function (e) { return e.status === 'unknown'; })) status(tr('import.unknown', 'One screenshot isn’t a screen I can read yet. It was skipped. Email it to screenshots@dey.ci to have it added.'));
       else if (entries.some(function (e) { return e.status === 'empty'; })) status(tr('import.empty', 'No items I track were found on one screenshot. It was skipped. If it shows items that should count, email it to screenshots@dey.ci.'));
@@ -410,6 +411,37 @@
       if (!waiting.length) { done = 0; progress(); }
       // Unknown and failed shots are reported once, then dropped from the queue.
       entries.filter(function (e) { return e.status === 'unknown' || e.status === 'failed' || e.status === 'empty'; }).forEach(forget);
+    }
+
+    // ── recipe ─────────────────────────────────────────
+    // Five screens that fill most of the save, ticked off from its import
+    // history: an undone apply leaves no record, so its row unticks too. The
+    // Overview shots are told apart by what they saved, since both are
+    // 'backpack' records.
+    var BASICS = ['bread', 'wood', 'stone', 'iron'], BAG = ['resources', 'speedups', 'backpack'];
+    function covered(record) {
+      var stock = Object.keys(record.inventoryDelta || {}), out = [];
+      if (stock.some(function (id) { return BASICS.indexOf(id) !== -1; })) out.push('resources');
+      if (stock.some(function (id) { return /^speedup-/.test(id); })) out.push('speedups');
+      if (record.sourceType === 'backpack' && stock.some(function (id) { return BASICS.indexOf(id) === -1 && !/^speedup-/.test(id); })) out.push('backpack');
+      if (record.sourceType === 'hero-gear') out.push('gear');
+      if (record.sourceType === 'pets') out.push('pets');
+      return out;
+    }
+    function recipe(reviewing) {
+      var done = {}, rows = target('recipeList').querySelectorAll('[data-recipe]'), n = 0;
+      try { (ledger ? ledger.snapshot().imports : []).forEach(function (r) { covered(r).forEach(function (k) { done[k] = true; }); }); } catch (e) {}
+      Array.from(rows).forEach(function (li) {
+        var on = !!done[li.dataset.recipe];
+        if (on) n++;
+        li.dataset.done = String(on);
+        li.querySelector('[data-field="state"]').textContent = on ? tr('import.recipe.done', 'saved') : '';
+      });
+      // Reviews come first; a finished recipe folds to its count.
+      target('recipe').hidden = reviewing;
+      target('recipeList').hidden = n === rows.length;
+      target('recipeCount').textContent = tr('import.recipe.count', '{i} of {n}', { i: api.fmt(n), n: api.fmt(rows.length) });
+      target('recipeNext').hidden = !BAG.every(function (k) { return done[k]; });
     }
 
     // While shots wait: the model download on a device that doesn't have the
@@ -599,7 +631,7 @@
       return q.all();
     }).then(function (saved) {
       entries = saved.filter(function (e) { return e.status !== 'applied'; }).concat(entries.filter(function (e) { return !saved.some(function (s) { return s.id === e.id; }); }));
-      if (entries.length) { root.hidden = false; open(false); }
+      if (entries.length && root.dataset.open !== 'true') { root.hidden = false; open(false); }
       render();
       work();
     });

@@ -279,6 +279,20 @@ Each step lands as its own commit with its checks passing.
   `.dsh/import-signatures.cjs <adapter> <fixtures…>` prints references.
   Pets not in the fixture (Ironclad War Bear and the rest) need a screenshot
   showing them before they can be recognised.
+- [x] 14. The recipe (onboarding step 3): "Five screenshots and the tools
+  know you", a numbered list at the top of the dock with a small picture of
+  each in-game screen (`img/screen-import/*.webp`, cropped from the fixtures):
+  Overview Resources, Overview Speedups, Backpack Other, a hero's gear screen,
+  Pet List. Rows tick from the save's import history (`imports`), so an
+  undone apply unticks its row; the two Overview shots are told apart by what
+  they saved, since both are `backpack` records. Once the first three are in,
+  the dock links to Town Centre; a finished recipe folds to its count, and a
+  shot under review hides it. `#screenshot-recipe` opens the dock at it from
+  any page, and so does a button marked `data-screen-import` with any value
+  but `pick`. The sheet's id is `screenshot-import`, the chip's deep link, so
+  `#screenshot-import` and `#screenshot-help` open the dock too. Checked by
+  `.dsh/screen-import-recipe-check.cjs` (no OCR; records are seeded into the
+  save).
 
 Resources are saved as both Items and In Stock (owner, 18 Oct).
 

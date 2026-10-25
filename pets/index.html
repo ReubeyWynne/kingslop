@@ -70,6 +70,7 @@ self: pets
   </section>
   <section class="section" id="advances" data-module="pet-advances" aria-labelledby="advances-title">
     <h2 id="advances-title" data-i18n="pets.advancesTitle">Advances and KvK points</h2>
+    {% include empty-state.html needs="pets" key="empty.pets" text="Tame your pets to plan their Advances." import=true fill="#cage" %}
     <p data-i18n="pets.advancesIntro">Each Advance scores Pet Advancement points: 50 KvK prep or Strongest Governor points per score, 30 in Brawl.</p>
     <p class="hero-points-total"><output data-target="pet-advances.total">—</output></p>
     <p class="note" data-target="pet-advances.coverage" aria-live="polite"></p>
