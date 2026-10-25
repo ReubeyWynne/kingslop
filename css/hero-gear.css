@@ -250,6 +250,7 @@ html[data-page="gear"] .topbar h1.brand { margin: 0; line-height: 1.2; }
   .gear-views .gear-wide { display: none; }
   .gear-views .gear-narrow { display: block; }
   .gear-views { margin: .4rem 0 .6rem; border: 1px solid var(--signal-line); }
+  .gear-views button { flex: 1 1 auto; font-size: .9rem; }
   .gear-views button[aria-selected="true"] { background: color-mix(in srgb, var(--amber) 8%, transparent); }
   .gear-main .gear-route { grid-template-columns: 3rem minmax(0,1fr) 6.5rem; gap: .4rem; padding-block: .25rem; }
   .gear-route-piece { gap: .05rem; }
