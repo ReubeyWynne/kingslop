@@ -256,6 +256,7 @@
       arrangeDeck();
       measureDeck();
       browseDeck(Math.max(0, cards.findIndex(function (card) { return card.hasAttribute('aria-current'); })), false, true);
+      document.dispatchEvent(new CustomEvent('deck:open'));
       return true;
     }
 
@@ -270,6 +271,7 @@
       if (btn) { btn.setAttribute('aria-expanded', 'false'); btn.classList.remove('open'); }
       if (returnFocus && returnFocus.isConnected) returnFocus.focus({ preventScroll: true });
       returnFocus = null;
+      document.dispatchEvent(new CustomEvent('deck:close'));
     }
 
     function closeDeck() {
@@ -401,6 +403,7 @@
         scrubbing = e.pointerId;
         if (rail.setPointerCapture) rail.setPointerCapture(e.pointerId);
         rail.classList.add('is-scrubbing');
+        rail.dispatchEvent(new CustomEvent('deck:scrub', { bubbles: true }));
         scrubTo(e.clientX);
       });
       rail.addEventListener('pointermove', function (e) { if (scrubbing === e.pointerId) scrubTo(e.clientX); });
@@ -415,6 +418,7 @@
         e.preventDefault();
         e.stopPropagation();
         to = Math.max(0, Math.min(ledgerCards.length - 1, to));
+        rail.dispatchEvent(new CustomEvent('deck:scrub', { bubbles: true }));
         if (to !== at) jumpDeck(to);
       });
     }

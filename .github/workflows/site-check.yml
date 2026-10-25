@@ -248,6 +248,7 @@ jobs:
             deck:
               - *shared
               - .dsh/page-deck-browser-check.cjs
+              - .dsh/site-guide-ui-check.cjs
               - .dsh/simulator-ui-check.cjs
               - '**/index.html'
               - css/**
@@ -496,6 +497,9 @@ jobs:
       - name: Check page navigation in browser
         if: matrix.group == 'deck'
         run: node .dsh/page-deck-browser-check.cjs
+      - name: Check the deck guide in browser
+        if: matrix.group == 'deck'
+        run: node .dsh/site-guide-ui-check.cjs
       - name: Check simulator battle reports and activity
         if: matrix.group == 'deck'
         run: node .dsh/simulator-ui-check.cjs
@@ -535,6 +539,7 @@ jobs:
             .dsh/priority-preview/
             .dsh/next-step-preview/
             .dsh/deck-preview/
+            .dsh/guide-preview/
             .dsh/sim-preview/
             .dsh/ascii-preview/
             .dsh/import-preview/

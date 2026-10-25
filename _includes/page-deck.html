@@ -5,6 +5,7 @@
     <header class="deck-header">
       <h2 id="deck-title" data-i18n="ev.ledger.aria">the ledger — every page</h2>
       <a class="deck-town" href="{{ p.depth }}town-centre/"{% if page.self == 'town' %} aria-current="page"{% endif %}><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M6 26V14l10-7 10 7v12h-7v-7h-6v7z"/></svg><span data-i18n="town.nav">Town Centre</span></a>
+      <a class="deck-guide" href="#site-guide" data-guide-replay data-i18n="guide.replayShort">show me how</a>
       <button type="button" class="deck-close" data-i18n="ev.deck.close" autofocus>close</button>
     </header>
     <nav class="deck-groups" aria-label="Page groups" data-i18n-key="ev.deck.groups" data-i18n-attr="aria-label">
@@ -28,12 +29,13 @@
     <footer class="deck-footer">
       <button type="button" class="deck-prev" aria-label="Previous page" data-i18n-key="ev.deck.prev" data-i18n-attr="aria-label">‹</button>
       <div class="deck-locator">
-        <div class="deck-rail" role="slider" tabindex="0" aria-label="Jump to a page" data-i18n-key="ev.deck.rail" data-i18n-attr="aria-label" aria-orientation="horizontal" aria-valuemin="1" aria-valuemax="{{ site.data.nav | size }}" aria-valuenow="1">{% assign railGroup = '' %}{% for n in site.data.nav %}{% assign entry = site.data.pages[n.self] %}<span class="deck-pip{% if railGroup != '' and railGroup != n.group %} deck-pip-break{% endif %}" data-page="{{ entry.token }}" aria-hidden="true"></span>{% assign railGroup = n.group %}{% endfor %}</div>
+        <div class="deck-rail" role="slider" tabindex="0" aria-label="Jump to a page" data-i18n-key="ev.deck.rail" data-i18n-attr="aria-label" aria-orientation="horizontal" aria-valuemin="1" aria-valuemax="{{ site.data.nav | size }}" aria-valuenow="1">{% assign railGroup = '' %}{% for n in site.data.nav %}{% assign entry = site.data.pages[n.self] %}<span class="deck-pip{% if railGroup != '' and railGroup != n.group %} deck-pip-break{% endif %}" data-page="{{ entry.token }}" style="--i: {{ forloop.index0 }}" aria-hidden="true"></span>{% assign railGroup = n.group %}{% endfor %}</div>
         <span class="deck-position" aria-live="polite" aria-atomic="true"></span>
       </div>
       <button type="button" class="deck-next" aria-label="Next page" data-i18n-key="ev.deck.next" data-i18n-attr="aria-label">›</button>
     </footer>
     <p id="deck-hint" data-i18n="ev.deck.hint">swipe to browse · tap to go</p>
+    <p class="guide-rail" id="guide-rail" hidden><span aria-hidden="true">↑</span> <span data-i18n="guide.rail">slide along here to jump</span></p>
     </div>
   </div>
 </dialog>
