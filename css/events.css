@@ -989,7 +989,8 @@ html[data-page="town"], html[data-page="home"]:has(.event-card[data-hover-page="
   position: fixed;
   inset-inline: 0;
   bottom: calc(max(0.75rem, env(safe-area-inset-bottom)) + 3.25rem);
-  z-index: 85;
+  /* Under the import dock (80), so an open import sheet always covers it. */
+  z-index: 75;
   width: fit-content;
   max-width: min(22rem, calc(100vw - 2rem));
   margin-inline: auto;
@@ -1038,3 +1039,21 @@ html[data-page="town"], html[data-page="home"]:has(.event-card[data-hover-page="
 @media (prefers-reduced-motion: reduce) {
   .deck-rail.is-waking .deck-pip::before { animation: none; }
 }
+
+/* The door card: two questions and three ways in, in the same slip. */
+.site-door { width: min(24rem, calc(100vw - 2rem)); justify-items: stretch; gap: 0.75rem; padding: 0.9rem 1rem 0.5rem; max-height: calc(100dvh - 8rem); overflow-y: auto; }
+.site-door-title { margin: 0; font-family: var(--body); font-size: var(--step-0); font-weight: 700; color: var(--ink); text-wrap: balance; }
+.site-door-row { display: grid; gap: 0.35rem; margin: 0; padding: 0; border: 0; min-width: 0; font-size: var(--step--1); color: var(--ink-dim); }
+.site-door-row legend, .site-door-row > p { padding: 0; margin: 0 0 0.35rem; }
+.site-door select { min-height: 44px; background: transparent; color: var(--ink); border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; font: inherit; font-size: var(--step-0); }
+.site-door select:focus-visible { outline: none; border-bottom-color: var(--amber); }
+.site-door-roles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.site-door-roles legend { grid-column: 1 / -1; float: left; width: 100%; }
+.site-door-roles button { min-height: 44px; padding: 0.3rem 0.4rem; border: 1px solid var(--signal-line); border-radius: 2px; background: transparent; color: var(--ink-dim); font: 700 var(--step--1) / 1.2 var(--body); cursor: pointer; }
+.site-door-roles button[aria-pressed="true"] { color: var(--amber); border-color: var(--amber); }
+.site-door-roles button:hover, .site-door-roles button:focus-visible { color: var(--ink); }
+.site-door-ways a { display: flex; align-items: center; min-height: 40px; color: var(--amber); font-weight: 700; text-decoration: none; border-bottom: 1px solid rgba(157, 149, 127, 0.12); }
+.site-door-ways a::before { content: "\2767\00a0"; }
+.site-door-ways a:hover, .site-door-ways a:focus-visible { color: var(--ink); }
+.site-door-saved { min-height: 1.2em; font-size: var(--step--1); color: var(--ink-dim); font-style: italic; }
+.site-door .site-guide-done { justify-self: center; }
