@@ -18,13 +18,21 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
   try {
     await page.goto(base + '/town-centre/?lang=en');
     assert.equal(await page.locator('#screen-import').isHidden(), true, 'the dock stays out of the way until there is something to read');
+    // The download can be over in a few milliseconds from a local server, too
+    // quick to catch by polling, so every status line is recorded with
+    // whether the bar showed beside it.
+    await page.evaluate(() => {
+      const node = document.querySelector('#screen-import [data-target~="screen-import.status"]'), bar = document.querySelector('#screen-import [data-target~="screen-import.progress"]');
+      window.importSaid = [];
+      new MutationObserver(() => window.importSaid.push({ text: node.textContent, bar: !bar.hidden })).observe(node, { childList: true, characterData: true, subtree: true });
+    });
     const chooser = page.waitForEvent('filechooser');
     await page.locator('.town-read-shots').click();
     await (await chooser).setFiles([fixture('overview-resources'), fixture('overview-speedups')]);
     // A device without the models downloads them once, with a bar that says how far it has got.
-    await page.locator('#screen-import [data-target~="screen-import.status"]', { hasText: 'Downloading the reading models' }).waitFor({ timeout: 120000 });
-    assert.equal(await page.locator('#screen-import [data-target~="screen-import.progress"]').isVisible(), true, 'the download shows its progress');
-    await page.screenshot({ path: path.join(output, 'downloading-390.png') });
+    await page.waitForFunction(() => window.importSaid.some(s => s.text.includes('Downloading the reading models')), null, { timeout: 120000 });
+    if ((await page.locator('#screen-import [data-target~="screen-import.status"]').textContent()).includes('Downloading')) await page.screenshot({ path: path.join(output, 'downloading-390.png') });
+    assert.ok(await page.evaluate(() => window.importSaid.filter(s => s.text.includes('Downloading the reading models')).every(s => s.bar)), 'the download shows its progress');
     await page.locator('.import-tile').first().waitFor({ timeout: 240000 });
     await page.locator('#screen-import [data-target~="screen-import.count"]', { hasText: '2 to review' }).waitFor({ timeout: 240000 });
     await page.screenshot({ path: path.join(output, 'review-resources-390.png') });
