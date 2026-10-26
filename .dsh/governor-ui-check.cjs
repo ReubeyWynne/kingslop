@@ -63,7 +63,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await tile('cav-2').getAttribute('data-state'), 'empty');
     assert.equal(await page.locator('[data-option="focus"][data-value="cav"]').getAttribute('aria-pressed'), 'true');
     assert.equal(await page.locator('[data-bind="inventory.satin"]').inputValue(), '20000');
-    const other = await context.newPage(); await other.goto(origin + '/hero-gear/?lang=en');
+    const other = await context.newPage(); await other.goto(origin + '/hero-gear/?lang=en'); await other.evaluate(() => new Promise(resolve => window.I18N.onReady(resolve)));
     await other.locator('#gear-mithril').fill('7');
     await page.click('[data-action="governor-planner.reset"]');
     await page.waitForFunction(() => document.querySelector('.gov-tile[data-item="inf-1"]').dataset.state === 'unset');

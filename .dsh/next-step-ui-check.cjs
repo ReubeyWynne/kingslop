@@ -21,6 +21,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
   });
   async function open(dir, lang) {
     await page.goto(origin + '/' + dir + '/?lang=' + (lang || 'en'));
+    // English pages boot once the dictionary arrives after first paint, which can follow load.
+    await page.evaluate(() => new Promise(resolve => window.I18N.onReady(resolve)));
     await page.waitForFunction(() => window.UpgradePriority && document.querySelector('.next-step') && (document.querySelector('.next-step').hidden || document.querySelector('.next-step-list li')));
   }
 

@@ -230,7 +230,9 @@ strong, b { color: var(--ink); font-weight: 700; }
 html[dir="rtl"] .progress-fill { transform-origin: right; }
 
 /* ─── Main ────────────────────────────────────────────── */
-main { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--space-s) var(--space-xl); }
+/* At least a screen tall: the tool pages draw most of their content by script
+   after first paint, and a footer that started on screen would be shoved off it. */
+main { position: relative; z-index: 1; max-width: var(--maxw); min-height: 100vh; margin: 0 auto; padding: 0 var(--space-s) var(--space-xl); }
 
 /* ─── Hero ────────────────────────────────────────────── */
 .hero { padding: var(--space-xl) 0 var(--space-l); }

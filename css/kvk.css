@@ -120,6 +120,9 @@
   margin-top: var(--space-m);
   border-top: 1px solid var(--signal-line);
   padding-top: var(--space-m);
+  /* The day is drawn by script after first paint. Holding the shortest day's
+     height keeps the jump buttons below from being pushed down as it fills. */
+  min-height: 18rem;
 }
 .today-empty { font-style: italic; color: var(--ink-muted); font-size: var(--step--1); }
 .today-head { margin-bottom: var(--space-s); }
@@ -343,6 +346,8 @@ section[data-phase][hidden], .toc a[hidden] { display: none !important; }
 .today-heading h2 { font-family: var(--body); font-size: var(--step-0); letter-spacing: 0.1em; color: var(--amber); }
 .today-heading h2::before { display: none; }
 #ks-date { font-size: var(--step--1); color: var(--ink-muted); }
+/* The date is written by script; an empty one still holds its line. */
+#ks-date:empty::before { content: "\00a0"; }
 .today-card { margin-top: 0.6rem; padding: var(--space-s); border-top: 2px solid var(--amber); background: var(--void-2); }
 .today-title { font-size: clamp(1.35rem, 4.5vw, 2rem); text-transform: none; overflow-wrap: anywhere; }
 .today-kicker { letter-spacing: 0.07em; }
