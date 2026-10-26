@@ -459,7 +459,9 @@ jobs:
     if: needs.changes.outputs.browser != '[]'
     name: browser (${{ matrix.group }})
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # The checks take a few minutes; the rest is headroom for the system
+    # libraries below when the package mirror is slow and the cache is cold.
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -484,7 +486,22 @@ jobs:
         run: |
           npm install --prefix "$RUNNER_TEMP/visuals" --no-audit --no-fund playwright@1.63.0
           node "$RUNNER_TEMP/visuals/node_modules/playwright/cli.js" install chromium
+      # Every group installs the same ~25 MB of fonts and libraries, all at
+      # once, and the runners' Ubuntu mirror has crawled under that load (one
+      # 3.7 MB package took 90 s), so the downloaded packages are kept in a
+      # cache that apt reads before it goes to the mirror.
+      - name: Keep downloaded system packages
+        run: |
+          mkdir -p ~/apt-cache/partial
+          printf '%s\n' 'Dir::Cache::Archives "/home/runner/apt-cache";' 'APT::Keep-Downloaded-Packages "true";' 'APT::Sandbox::User "root";' 'Acquire::Retries "3";' \
+            | sudo tee /etc/apt/apt.conf.d/99-ci-cache > /dev/null
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          key: apt-playwright-1.63.0-chromium-${{ runner.os }}
+          # Only the packages: apt keeps its partial/ directory to root.
+          path: ~/apt-cache/*.deb
       - name: Install browser system libraries
+        timeout-minutes: 15
         run: |
           node "$RUNNER_TEMP/visuals/node_modules/playwright/cli.js" install-deps chromium
           echo "NODE_PATH=$RUNNER_TEMP/visuals/node_modules" >> "$GITHUB_ENV"
