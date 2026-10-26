@@ -210,35 +210,14 @@
     onReady: function (cb) { if (ready) cb(); else pending.push(cb); }
   };
 
-  var booted = false;
-  function boot() {
-    if (booted) return;
-    booted = true;
-    loadDict(lang, function (ok) {
-      if (!ok && lang !== 'en') {
-        // This page falls back to English — the HTML fallback IS the English
-        // copy — but the reader's saved language stays as they chose it, so the
-        // next page load tries again instead of silently changing their mind.
-        lang = 'en';
-      }
-      apply();
-      finish();
-    });
-  }
-  // The page is already written in English, so an English reader's dictionary
-  // changes nothing they see: it waits until the first frame is on screen
-  // rather than taking bandwidth from it. A tab opened in the background paints
-  // nothing, so a timer stands in for the paint there. Any other language is
-  // the copy the reader is waiting for, so it is asked for at once.
-  var paints = window.PerformanceObserver && PerformanceObserver.supportedEntryTypes;
-  if (lang === 'en' && paints && paints.indexOf('paint') !== -1 &&
-      !performance.getEntriesByName('first-contentful-paint').length) {
-    new PerformanceObserver(function (list, observer) {
-      observer.disconnect();
-      boot();
-    }).observe({ type: 'paint' });
-    window.setTimeout(boot, 500);
-  } else {
-    boot();
-  }
+  loadDict(lang, function (ok) {
+    if (!ok && lang !== 'en') {
+      // This page falls back to English — the HTML fallback IS the English
+      // copy — but the reader's saved language stays as they chose it, so the
+      // next page load tries again instead of silently changing their mind.
+      lang = 'en';
+    }
+    apply();
+    finish();
+  });
 })();
