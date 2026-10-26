@@ -35,14 +35,18 @@
     "css": [
       "css/styles.css",
       "css/events.css",
-      "css/home.css",
-      "css/next-step.css"
+      "css/home.css"
     ],
     "scripts": [
       "js/i18n.js",
       "js/page-deck.js",
       "js/page-chrome.js",
-      "js/common.js",
+      "js/common.js"
+    ],
+    "lateCss": [
+      "css/next-step.css"
+    ],
+    "lateScripts": [
       "js/upgrade-priority-data.js",
       "js/building-data.js",
       "js/hero-data.js",

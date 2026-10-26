@@ -1,7 +1,8 @@
 // Home's own corner (js/home-yours.js), after a Jekyll build: hidden on an empty save, then once
 // the save holds something it shows today on the 28-day clock, the first upgrade step of any
 // kind, and what the save is holding, each linking to its page; it follows the save live, and
-// reads in every language at 320px. Screenshots in .dsh/home-preview/.
+// reads in every language at 320px. Its scripts and styles stay off first paint: an empty save
+// never fetches them, and a save fetches them once the page has loaded. Screenshots in .dsh/home-preview/.
 const assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path');
 const { withBrowser } = require('./lib/browser-harness.cjs');
 const root = path.resolve('_site'), output = path.resolve('.dsh/home-preview');
@@ -13,15 +14,17 @@ withBrowser({ root }, async ({ browser, origin }) => {
   const yours = page.locator('#yours');
   async function open(lang) {
     await page.goto(origin + '/?lang=' + (lang || 'en'));
-    await page.waitForFunction(lang => document.documentElement.lang === lang && window.UpgradePriority && window.Interactions, lang || 'en');
+    await page.waitForFunction(lang => document.documentElement.lang === lang && window.PlayerLedger && window.Interactions, lang || 'en');
   }
 
   // A first visit sees the plain guide list.
   await open();
   assert.equal(await yours.isVisible(), false, 'hidden on an empty save');
+  assert.equal(await page.evaluate(() => Boolean(window.UpgradePriority || document.querySelector('script[src*="home-yours"], link[rel=stylesheet][href*="next-step.css"]'))), false, 'an empty save fetches none of the corner');
 
   // Something in the save brings the corner, live.
   await page.evaluate(() => window.PlayerLedger.shared().setBuildings({ 'town-center': '24', embassy: '23', barracks: '22' }));
+  await page.waitForFunction(() => window.UpgradePriority && document.querySelector('script[src*="home-yours"]'));
   assert.equal(await yours.isVisible(), false, 'buildings alone are not holdings');
   await page.evaluate(() => { const s = window.PlayerLedger.shared(); s.setHero('jabel', { level: 60, stars: 10, widget: 2, skills: null }); s.setBalance('mythic-hero-shard', 200); s.setPet('lion', { level: 20, advanced: false }); });
   await page.waitForSelector('#yours:not([hidden])');
@@ -65,6 +68,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   // A save with nothing to hold gives back the held space.
   await page.evaluate(() => window.PlayerLedger.shared().setBuildings({ 'town-center': '24' }));
   await open();
+  await page.waitForLoadState('networkidle'); // the corner's scripts follow the page's load
   assert.equal(await page.evaluate(() => document.documentElement.classList.contains('has-save')), false, 'an empty save gives back the space');
   assert.deepEqual(await page.evaluate(() => window.moduleErrors), []);
   assert.deepEqual(errors, []);
