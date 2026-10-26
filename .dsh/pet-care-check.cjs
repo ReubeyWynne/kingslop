@@ -126,7 +126,7 @@ ledger.setPet('lion', null);
 assert.deepEqual(Object.keys(ledger.pets().roster), ['gray-wolf']);
 
 // The scene: every pet has a pen, four bodies and a place for its marks.
-const frames = ['css/ascii-frames.css', 'css/ascii-frames-pets.css'].map(read).join('\n');
+const frames = ['css/ascii-frames.css', 'css/ascii-frames-motion.css', 'css/ascii-frames-pets.css', 'css/ascii-frames-pets-motion.css'].map(read).join('\n');
 // A pet drawn from its model has a portrait instead: one span per ink, each with
 // the same poses, and the pens page gives it those spans.
 const portraits = fs.readdirSync(path.join(__dirname, 'pet-portraits')).map(file => file.replace(/\.json$/, ''));
