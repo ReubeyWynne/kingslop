@@ -22,35 +22,30 @@
 
 {% include screen-import.html %}
 
-<script defer src="{{ p.depth }}js/player-ledger.js?v={{ site.time | date: '%s' }}"></script>
-<script defer src="{{ p.depth }}js/unit-input.js?v={{ site.time | date: '%s' }}"></script>
-<script defer src="{{ p.depth }}js/interactions.js?v={{ site.time | date: '%s' }}"></script>
-<script defer src="{{ p.depth }}js/player-modules.js?v={{ site.time | date: '%s' }}"></script>
-<script defer src="{{ p.depth }}js/import-queue.js?v={{ site.time | date: '%s' }}"></script>
-<script defer src="{{ p.depth }}js/screen-import.js?v={{ site.time | date: '%s' }}"></script>
-<script defer src="{{ p.depth }}js/server-age.js?v={{ site.time | date: '%s' }}"></script>
-<script defer src="{{ p.depth }}js/kingdom-progression.js?v={{ site.time | date: '%s' }}"></script>
-<script defer src="{{ p.depth }}js/site-guide.js?v={{ site.time | date: '%s' }}"></script>
-{% for s in p.scripts %}<script defer src="{{ s }}?v={{ site.time | date: '%s' }}"></script>
-{% endfor %}<script defer src="{{ p.depth }}js/deep-link.js?v={{ site.time | date: '%s' }}"></script>
-{% if p.lateScripts %}<script>
-/* What only a returning player's save needs (pages.json lateCss, lateScripts) stays off first paint:
-   it is fetched once the page has loaded, and an empty save waits for its first write. The
-   styles land before the scripts that fill them; the scripts keep their listed order. */
+{% capture boot %}{{ p.depth }}js/player-ledger.js {{ p.depth }}js/unit-input.js {{ p.depth }}js/interactions.js {{ p.depth }}js/player-modules.js {{ p.depth }}js/import-queue.js {{ p.depth }}js/screen-import.js {{ p.depth }}js/server-age.js {{ p.depth }}js/kingdom-progression.js {{ p.depth }}js/site-guide.js {{ p.scripts | join: ' ' }} {{ p.depth }}js/deep-link.js{% endcapture %}{% assign boot = boot | split: ' ' %}{% unless p.lateBoot %}{% for s in boot %}<script defer src="{{ s }}?v={{ site.time | date: '%s' }}"></script>
+{% endfor %}{% endunless %}{% if p.lateBoot or p.lateScripts %}<script>
+/* A lateBoot page (pages.json) starts its scripts once the page has painted, so its first paint
+   waits on nothing but the stylesheets; they keep their listed order, as defer would.
+   What only a returning player's save needs (lateCss, lateScripts) follows: when the head
+   script marked a save, or on the save's first write. Its styles land before its scripts. */
 (function () {
-  var css = {{ p.lateCss | jsonify }} || [], js = {{ p.lateScripts | jsonify }}, v = '?v={{ site.time | date: '%s' }}', started = false;
-  function scripts() { js.forEach(function (src) { var s = document.createElement('script'); s.src = src + v; s.async = false; document.body.appendChild(s); }); }
-  function load() {
+  var boot = {% if p.lateBoot %}{{ boot | jsonify }}{% else %}[]{% endif %}, css = {{ p.lateCss | jsonify }} || [], js = {{ p.lateScripts | jsonify }} || [], v = '?v={{ site.time | date: '%s' }}', started = false;
+  function add(list, done) {
+    list.forEach(function (src, i) { var s = document.createElement('script'); s.src = src + v; s.async = false; if (done && i === list.length - 1) s.onload = s.onerror = done; document.body.appendChild(s); });
+    if (done && !list.length) done();
+  }
+  function corner() {
     if (started) return; started = true;
     var left = css.length;
-    if (!left) return scripts();
-    css.forEach(function (href) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + v; l.onload = l.onerror = function () { if (!--left) scripts(); }; document.head.appendChild(l); });
+    if (!left) return add(js);
+    css.forEach(function (href) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + v; l.onload = l.onerror = function () { if (!--left) add(js); }; document.head.appendChild(l); });
   }
-  function start() {
-    if (document.documentElement.classList.contains('has-save')) return load();
-    try { var off = window.PlayerLedger.shared().subscribe(function () { off(); load(); }); } catch (e) { /* no store: nothing to show */ }
+  function save() {
+    if (!js.length) return;
+    if (document.documentElement.classList.contains('has-save')) return corner();
+    try { var off = window.PlayerLedger.shared().subscribe(function () { off(); corner(); }); } catch (e) { /* no store: nothing to show */ }
   }
-  if (document.readyState === 'complete') start(); else addEventListener('load', start);
+  window.__bhAfterPaint(function () { add(boot, save); });
 })();
 </script>
 {% endif %}</body>

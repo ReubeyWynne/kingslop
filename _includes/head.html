@@ -9,6 +9,22 @@
 <meta property="og:type" content="website">
 <title data-i18n="{{ p.titleKey }}">{{ p.titleText }}</title>
 {{ p.icon }}
+<script>
+/* Work that can wait (the moving ASCII frames, a lateBoot page's scripts) runs once the page has
+   both loaded and painted: load can come before the first paint, and anything fetched before it
+   counts against it. A hidden page never paints, so it only waits for load. */
+window.__bhAfterPaint = (function () {
+  var loaded = document.readyState === 'complete', painted = document.visibilityState === 'hidden', queue = [];
+  function run() { if (!loaded || !painted) return; var due = queue; queue = []; due.forEach(function (cb) { cb(); }); }
+  function paint() { painted = true; run(); }
+  var types = (window.PerformanceObserver && PerformanceObserver.supportedEntryTypes) || [];
+  var type = types.indexOf('largest-contentful-paint') !== -1 ? 'largest-contentful-paint' : types.indexOf('paint') !== -1 ? 'paint' : null;
+  if (type) new PerformanceObserver(paint).observe({ type: type, buffered: true }); else painted = true;
+  setTimeout(paint, 3000);
+  if (!loaded) addEventListener('load', function () { loaded = true; run(); }, { once: true });
+  return function (cb) { queue.push(cb); run(); };
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 {% comment %} The faces swap in once they arrive (display=swap), so the sheet that names them
@@ -38,8 +54,7 @@
       document.head.appendChild(link);
     });
   }
-  if (document.readyState === 'complete') load();
-  else window.addEventListener('load', load, { once: true });
+  window.__bhAfterPaint(load);
 })();
 </script>
 
