@@ -33,6 +33,26 @@
 <script defer src="{{ p.depth }}js/site-guide.js?v={{ site.time | date: '%s' }}"></script>
 {% for s in p.scripts %}<script defer src="{{ s }}?v={{ site.time | date: '%s' }}"></script>
 {% endfor %}<script defer src="{{ p.depth }}js/deep-link.js?v={{ site.time | date: '%s' }}"></script>
-</body>
+{% if p.lateScripts %}<script>
+/* What only a returning player's save needs (pages.json lateCss, lateScripts) stays off first paint:
+   it is fetched once the page has loaded, and an empty save waits for its first write. The
+   styles land before the scripts that fill them; the scripts keep their listed order. */
+(function () {
+  var css = {{ p.lateCss | jsonify }} || [], js = {{ p.lateScripts | jsonify }}, v = '?v={{ site.time | date: '%s' }}', started = false;
+  function scripts() { js.forEach(function (src) { var s = document.createElement('script'); s.src = src + v; s.async = false; document.body.appendChild(s); }); }
+  function load() {
+    if (started) return; started = true;
+    var left = css.length;
+    if (!left) return scripts();
+    css.forEach(function (href) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + v; l.onload = l.onerror = function () { if (!--left) scripts(); }; document.head.appendChild(l); });
+  }
+  function start() {
+    if (document.documentElement.classList.contains('has-save')) return load();
+    try { var off = window.PlayerLedger.shared().subscribe(function () { off(); load(); }); } catch (e) { /* no store: nothing to show */ }
+  }
+  if (document.readyState === 'complete') start(); else addEventListener('load', start);
+})();
+</script>
+{% endif %}</body>
 </html>
 
