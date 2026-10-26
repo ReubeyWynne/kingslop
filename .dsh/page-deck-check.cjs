@@ -350,7 +350,7 @@ test('palette selection is declared in CSS without JavaScript colour writes or f
 
 test('every cover has an ASCII HTML scene with a static fallback and reduced-motion styling', () => {
   const css = fs.readFileSync(path.join(root, 'css/ascii.css'), 'utf8');
-  const motion = fs.readFileSync(path.join(root, 'css/ascii-frames-motion.css'), 'utf8');
+  const motion = fs.readdirSync(path.join(root, 'css')).filter(file => /^ascii-frames-motion-\d+\.css$/.test(file)).map(file => fs.readFileSync(path.join(root, 'css', file), 'utf8')).join('\n');
   const head = fs.readFileSync(path.join(root, '_includes/head.html'), 'utf8');
   const scene = fs.readFileSync(path.join(root, '_includes/ascii/deck-scene.html'), 'utf8');
   const template = fs.readFileSync(path.join(root, '_includes/page-deck.html'), 'utf8');

@@ -27,7 +27,9 @@
 (function () {
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   function load() {
-    ['{{ p.depth }}css/ascii-frames-motion.css'{% if page.self == 'pets' %}, '{{ p.depth }}css/ascii-frames-pets-motion.css'{% endif %}].forEach(function (href) {
+    // One sheet per part (.dsh/build-ascii.py writes the list), so each parses
+    // as its own short task rather than one long freeze.
+    [{% for f in site.data.ascii_motion.shared %}'{{ p.depth }}{{ f }}', {% endfor %}{% if page.self == 'pets' %}{% for f in site.data.ascii_motion.pets %}'{{ p.depth }}{{ f }}', {% endfor %}{% endif %}].forEach(function (href) {
       var link = document.createElement('link');
       link.rel = 'stylesheet';
       link.media = 'print';
