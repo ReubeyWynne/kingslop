@@ -93,5 +93,7 @@ html[data-page="home"]:has(.event-card[data-hover-page="kvksg"]:is(:hover, :focu
 
 /* ─── Home — your kingdom, once the save holds something ─ */
 .home-yours[hidden] { display: none; }
+/* A returning player's corner holds its place until the script fills it (head script in pages.json). */
+html.has-save .home-yours[hidden] { display: block; visibility: hidden; }
 /* The next step sits in the grid as one more rank line. */
 .home-yours .next-step { margin: 0; padding: var(--space-m) 0 0; border-inline-start: 0; border-top: 1px solid var(--signal-line); }

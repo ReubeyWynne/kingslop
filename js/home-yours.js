@@ -33,7 +33,8 @@
     function render() {
       var parts = store ? held(store.snapshot()) : null, shown = parts ? PARTS.filter(function (part) { return parts[part] > 0; }) : [];
       root.hidden = !shown.length;
-      if (!shown.length) return;
+      // Nothing to show: give back the space the head script held for it.
+      if (!shown.length) { document.documentElement.classList.remove('has-save'); return; }
       var day = today(), week = weekOf(day);
       context.targets('today')[0].textContent = api.tpl('ks.today.dayOut', 'day {n} of 28', { n: day }) + ' · ' + (week === 'gap' ? api.tr('ks.today.between', 'Between weeks') : api.tr('ks.week.' + week, week));
       context.targets('held')[0].textContent = shown.map(function (part) { return api.tpl('home.yours.count.' + part, part + ': {n}', { n: api.fmt(parts[part]) }); }).join(' · ');

@@ -37,8 +37,13 @@ withBrowser({ root }, async ({ browser, origin }) => {
   assert.deepEqual(await page.locator('#yours .next-step-list li b').allTextContents(), want);
   assert.equal(await page.locator('#yours .next-step-more').getAttribute('href'), 'upgrade-priority/#next');
   await page.screenshot({ path: path.join(output, 'yours-390.png'), fullPage: true });
-  await page.reload();
-  await page.waitForSelector('#yours:not([hidden])');
+  // A returning player's corner holds its place from first paint, so the guide list is not shoved.
+  await page.reload({ waitUntil: 'commit' });
+  await page.waitForSelector('#events');
+  const early = await page.locator('#events').evaluate(el => el.getBoundingClientRect().top + scrollY);
+  await page.waitForSelector('#yours:not([hidden]) .next-step:not([hidden])');
+  const late = await page.locator('#events').evaluate(el => el.getBoundingClientRect().top + scrollY);
+  assert.ok(late - early < 200, 'the corner held most of its space: shift ' + (late - early) + 'px');
 
   // Every language fills the corner and fits a 320px phone.
   await page.setViewportSize({ width: 320, height: 700 });
@@ -57,6 +62,10 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.evaluate(() => localStorage.removeItem('bh:player-ledger:v1'));
   await open();
   assert.equal(await yours.isVisible(), false, 'hidden again once the save is cleared');
+  // A save with nothing to hold gives back the held space.
+  await page.evaluate(() => window.PlayerLedger.shared().setBuildings({ 'town-center': '24' }));
+  await open();
+  assert.equal(await page.evaluate(() => document.documentElement.classList.contains('has-save')), false, 'an empty save gives back the space');
   assert.deepEqual(await page.evaluate(() => window.moduleErrors), []);
   assert.deepEqual(errors, []);
   console.log('Home: hidden on an empty save; once it holds something, today on the clock, the first upgrade steps of any kind and the holdings, live; 17 languages at 320px.');
