@@ -225,7 +225,11 @@ jobs:
             hints:
               - *shared
               - .dsh/next-step-ui-check.cjs
+              - .dsh/home-yours-ui-check.cjs
               - _includes/next-step.html
+              - index.html
+              - js/home-yours.js
+              - css/home.css
               - js/next-step.js
               - css/next-step.css
               - js/upgrade-priority*
@@ -522,6 +526,9 @@ jobs:
       - name: Check next-step lines on the tool pages
         if: matrix.group == 'hints'
         run: node .dsh/next-step-ui-check.cjs
+      - name: Check your kingdom on the home page
+        if: matrix.group == 'hints'
+        run: node .dsh/home-yours-ui-check.cjs
       - name: Check teaching empty states on the tool pages
         if: matrix.group == 'empty'
         run: node .dsh/empty-state-ui-check.cjs
@@ -578,6 +585,7 @@ jobs:
             .dsh/town-preview/
             .dsh/priority-preview/
             .dsh/next-step-preview/
+            .dsh/home-preview/
             .dsh/empty-state-preview/
             .dsh/deck-preview/
             .dsh/guide-preview/
