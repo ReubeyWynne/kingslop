@@ -68,6 +68,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   // A save with nothing to hold gives back the held space.
   await page.evaluate(() => window.PlayerLedger.shared().setBuildings({ 'town-center': '24' }));
   await open();
+  await page.waitForLoadState('networkidle'); // the corner's scripts follow the page's load
   assert.equal(await page.evaluate(() => document.documentElement.classList.contains('has-save')), false, 'an empty save gives back the space');
   assert.deepEqual(await page.evaluate(() => window.moduleErrors), []);
   assert.deepEqual(errors, []);
