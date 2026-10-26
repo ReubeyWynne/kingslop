@@ -45,7 +45,8 @@ jobs:
               - css/styles.css
               - css/ascii.css
               - css/ascii-frames.css
-              - css/ascii-frames-motion.css
+              - css/ascii-frames-motion-*.css
+              - _data/ascii_motion.json
               - js/common.js
               - js/page-chrome.js
               - js/page-deck.js
@@ -126,7 +127,7 @@ jobs:
               - _data/pets.json
               - css/pets.css
               - css/ascii-frames-pets.css
-              - css/ascii-frames-pets-motion.css
+              - css/ascii-frames-pets-motion-*.css
               - css/heroes.css
             castle:
               - *shared

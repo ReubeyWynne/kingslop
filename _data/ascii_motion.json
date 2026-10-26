@@ -1,0 +1,29 @@
+{
+  "shared": [
+    "css/ascii-frames-motion-1.css",
+    "css/ascii-frames-motion-2.css",
+    "css/ascii-frames-motion-3.css",
+    "css/ascii-frames-motion-4.css",
+    "css/ascii-frames-motion-5.css",
+    "css/ascii-frames-motion-6.css",
+    "css/ascii-frames-motion-7.css",
+    "css/ascii-frames-motion-8.css",
+    "css/ascii-frames-motion-9.css",
+    "css/ascii-frames-motion-10.css",
+    "css/ascii-frames-motion-11.css",
+    "css/ascii-frames-motion-12.css",
+    "css/ascii-frames-motion-13.css",
+    "css/ascii-frames-motion-14.css"
+  ],
+  "pets": [
+    "css/ascii-frames-pets-motion-1.css",
+    "css/ascii-frames-pets-motion-2.css",
+    "css/ascii-frames-pets-motion-3.css",
+    "css/ascii-frames-pets-motion-4.css",
+    "css/ascii-frames-pets-motion-5.css",
+    "css/ascii-frames-pets-motion-6.css",
+    "css/ascii-frames-pets-motion-7.css",
+    "css/ascii-frames-pets-motion-8.css",
+    "css/ascii-frames-pets-motion-9.css"
+  ]
+}
