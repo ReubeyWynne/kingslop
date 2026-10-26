@@ -45,6 +45,7 @@ jobs:
               - css/styles.css
               - css/ascii.css
               - css/ascii-frames.css
+              - css/ascii-frames-motion.css
               - js/common.js
               - js/page-chrome.js
               - js/page-deck.js
@@ -125,6 +126,7 @@ jobs:
               - _data/pets.json
               - css/pets.css
               - css/ascii-frames-pets.css
+              - css/ascii-frames-pets-motion.css
               - css/heroes.css
             castle:
               - *shared
@@ -293,6 +295,7 @@ jobs:
               - .dsh/hero-gear-interaction-check.cjs
               - .dsh/gear-fixtures/**
               - .dsh/gear-troop-names-check.cjs
+              - .dsh/gear-translations-check.cjs
               - i18n/**
               - hero-gear/**
               - js/hero-gear*.js
@@ -553,6 +556,9 @@ jobs:
       - name: Check hero gear troop and slot names in every language
         if: matrix.group == 'hero-gear'
         run: node .dsh/gear-troop-names-check.cjs
+      - name: Check hero gear strings in every language at 320px
+        if: matrix.group == 'hero-gear'
+        run: node .dsh/gear-translations-check.cjs
       - name: Check screenshot import dock
         if: matrix.group == 'import'
         run: node .dsh/screen-import-ui-check.cjs

@@ -350,7 +350,7 @@ test('palette selection is declared in CSS without JavaScript colour writes or f
 
 test('every cover has an ASCII HTML scene with a static fallback and reduced-motion styling', () => {
   const css = fs.readFileSync(path.join(root, 'css/ascii.css'), 'utf8');
-  const frames = fs.readFileSync(path.join(root, 'css/ascii-frames.css'), 'utf8');
+  const motion = fs.readFileSync(path.join(root, 'css/ascii-frames-motion.css'), 'utf8');
   const head = fs.readFileSync(path.join(root, '_includes/head.html'), 'utf8');
   const scene = fs.readFileSync(path.join(root, '_includes/ascii/deck-scene.html'), 'utf8');
   const template = fs.readFileSync(path.join(root, '_includes/page-deck.html'), 'utf8');
@@ -364,7 +364,7 @@ test('every cover has an ASCII HTML scene with a static fallback and reduced-mot
   assert.equal(/[^\x00-\x7F]/.test(scene), false);
   assert.match(css, /\.deck-ascii \{[\s\S]*?top: 50%;[\s\S]*?left: 50%;/);
   assert.match(css, /prefers-reduced-motion: reduce[\s\S]*animation: none !important/);
-  const flame = frames.match(/@keyframes ascii-fire\{([\s\S]*?)\n\}/)[1];
+  const flame = motion.match(/@keyframes ascii-fire\{([\s\S]*?)\n\}/)[1];
   assert.equal([...flame.matchAll(/content:/g)].length, 72);
   const campfire = fs.readFileSync(path.join(root, '_includes/ascii/campfire.html'), 'utf8');
   assert.equal([...campfire.matchAll(/class="patch patch-/g)].length, 6);

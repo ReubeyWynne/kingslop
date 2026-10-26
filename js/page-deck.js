@@ -467,16 +467,24 @@
         return r.ok ? r.text() : '';
       }).then(function (html) {
         if (!html) return;
-        var doc = new DOMParser().parseFromString(html, 'text/html');
         var mine = {};
         [].slice.call(document.querySelectorAll('link[rel="stylesheet"][href], script[src]')).forEach(function (el) {
           mine[el.href || el.src] = true;   // links expose href, scripts src
         });
-        [].slice.call(doc.querySelectorAll('link[rel="stylesheet"][href], script[src]')).forEach(function (el) {
+        // The tags are read straight off the markup rather than through
+        // DOMParser: building a whole neighbour document only to read its
+        // head was a long task of its own on a phone, for a few attributes
+        // the layout always writes the same way.
+        var tags = html.match(/<(?:link|script)\b[^>]*>/gi) || [];
+        tags.forEach(function (tag) {
+          var isLink = /^<link/i.test(tag);
+          if (isLink && !/\srel=["']?stylesheet\b/i.test(tag)) return;
+          var m = tag.match(isLink ? /\shref=(?:"([^"]*)"|'([^']*)')/i : /\ssrc=(?:"([^"]*)"|'([^']*)')/i);
+          if (!m) return;
           var abs;
-          try { abs = new URL(el.getAttribute('href') || el.getAttribute('src'), url).href; } catch (e) { return; }
+          try { abs = new URL((m[1] != null ? m[1] : m[2]).replace(/&amp;/g, '&'), url).href; } catch (e) { return; }
           if (abs.indexOf(location.origin + '/') !== 0 || mine[abs]) return;
-          prefetch(abs, el.tagName === 'LINK' ? 'style' : 'script');
+          prefetch(abs, isLink ? 'style' : 'script');
         });
       }).catch(function () { /* a neighbour that will not load is not this page's problem */ });
     }

@@ -11,11 +11,36 @@
 {{ p.icon }}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel:wght@400..900&family=Cinzel+Decorative:wght@400;700;900&family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+{% comment %} The faces swap in once they arrive (display=swap), so the sheet that names them
+   need not hold up first paint: it loads as print and switches itself on. {% endcomment %}<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel:wght@400..900&family=Cinzel+Decorative:wght@400;700;900&family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel:wght@400..900&family=Cinzel+Decorative:wght@400;700;900&family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="{{ p.depth }}css/ascii.css?v={{ site.time | date: '%s' }}">
 <link rel="stylesheet" href="{{ p.depth }}css/ascii-frames.css?v={{ site.time | date: '%s' }}">
 {% if page.self == 'pets' %}<link rel="stylesheet" href="{{ p.depth }}css/ascii-frames-pets.css?v={{ site.time | date: '%s' }}">
-{% endif %}
+{% endif %}<script>
+/* The frames that move the ASCII scenes are nearly all of their bytes, so the
+   stills above paint first and the keyframes follow once the page has loaded,
+   taking no bandwidth from anything the first view needs. Each sheet arrives
+   as print (lowest priority, never render-blocking) and is then switched on
+   for readers who have not asked for reduced motion. Reduced motion rests on
+   the stills, so it never downloads them. */
+(function () {
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  function load() {
+    ['{{ p.depth }}css/ascii-frames-motion.css'{% if page.self == 'pets' %}, '{{ p.depth }}css/ascii-frames-pets-motion.css'{% endif %}].forEach(function (href) {
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.media = 'print';
+      link.onload = function () { link.media = '(prefers-reduced-motion: no-preference)'; };
+      link.href = href + '?v={{ site.time | date: '%s' }}';
+      document.head.appendChild(link);
+    });
+  }
+  if (document.readyState === 'complete') load();
+  else window.addEventListener('load', load, { once: true });
+})();
+</script>
+
 <link rel="stylesheet" href="{{ p.depth }}css/kingdom.css?v={{ site.time | date: '%s' }}">
 <link rel="stylesheet" href="{{ p.depth }}css/screen-import.css?v={{ site.time | date: '%s' }}">
 {% for c in p.css %}<link rel="stylesheet" href="{{ c }}?v={{ site.time | date: '%s' }}">
