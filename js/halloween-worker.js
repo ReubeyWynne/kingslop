@@ -1,5 +1,6 @@
 self.window = self;
-importScripts('seasonal-data.js', 'halloween-engine.js');
+var assetVersion = new URL(self.location.href).search;
+importScripts('seasonal-data.js' + assetVersion, 'halloween-engine.js' + assetVersion);
 self.onmessage = function (event) {
   var input = event.data, E = self.Halloween, data = E.data, cache = new Map(), compareSamples;
   function send(part, result) { self.postMessage({ id: input.id, part: part, result: result }); }
@@ -26,9 +27,9 @@ self.onmessage = function (event) {
     send('total', { held: input.candy, future: future, purchaseCandy: selectedCandy, cents: cents, value: total });
     var offers = data.packs.map(function (pack, i) {
       if (input.next >= 0 && i < input.next || i === 6 && input.next === 6 && !input.remaining) return null;
-      var result = value(baseCandy + pack.candy, input.options), rewards = difference(result.rewards, base.rewards, E.mergeRewards(items(pack.items, 1), topUp(pack.topUpPoints)));
+      var result = value(baseCandy + pack.candy, input.options), fixed = items(pack.items, 1), candyRewards = difference(result.rewards, base.rewards, {}), bonus = topUp(pack.topUpPoints), rewards = E.mergeRewards(E.mergeRewards(fixed, candyRewards), bonus);
       var unlockCents = data.packs.slice(Math.max(0, input.next), i + 1).reduce(function (n, p) { return n + Math.round(p['price' + input.currency] * 100); }, 0);
-      return { index: i, candy: pack.candy, cents: Math.round(pack['price' + input.currency] * 100), points: result.points - base.points, rewards: rewards, unlockCents: unlockCents };
+      return { index: i, candy: pack.candy, cents: Math.round(pack['price' + input.currency] * 100), points: result.points - base.points, fixed: fixed, candyRewards: candyRewards, bonus: bonus, valuation: E.valueRewards(rewards), rewards: rewards, unlockCents: unlockCents };
     }).filter(Boolean);
     send('offers', offers);
     var passes = input.points === null || input.variant === null ? [] : data.passes.map(function (spec) {

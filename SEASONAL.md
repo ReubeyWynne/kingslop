@@ -43,3 +43,13 @@ The checks cover candy-only EV, sub-attack balances, rare-item expectations, pit
 The compact progress values beside the candy answer open a focused editor for score, event day, pass ownership/claims, or collected income. They use the shared save automatically. Pass variants are retained across reloads in the optional `passVariant` field; older records remain valid. Where the kingdom age is saved, a known shared Town Center level also resolves the variant. Owned pass candy feeds back into the EV and is retained in the baseline for purchase comparisons.
 
 Future plans respect saved gathering/Beast caps, remaining door days, current event day and claimed mission milestones. The remaining-known-rewards shortcut fills only sources with known saved progress. Unknown claims are excluded rather than re-awarded.
+
+## Whole-pack comparison and artwork
+
+The comparison table displays every remaining tier's overall item EV, gem-equivalent EV per currency unit, and points per currency unit at once. Each card shows every fixed reward with its original game icon and quantity, then separates fixed-item value, candy-derived expected value and any top-up bonus. `valueRewards` prices the entire reward vector, rather than just the candy. Cosmetics are displayed and explicitly unpriced.
+
+Reference item weights were extracted from the same Kingshot Packs public item catalogue (`index-cda25e45.js`) on 28 October 2026 and are stored in the event data with their source. These are comparison weights, not cash or resale prices. Secured resources use the source's per-unit resource prices; alternate 5-minute healing/1,000-XP labels use their corresponding source item value. Candy itself is not separately priced after its rewards have been valued.
+
+The event day is the only day count entered. Event and Trick or Treat remaining days derive from their respective configured durations. A saved “today's doors done” flag subtracts today's door visit. The remaining-door count is displayed, not entered again. Legacy saved door limits are still respected.
+
+Artwork is locally served, original game artwork. `img/seasonal/SOURCES.md` records the source URLs. Small event, currency, chest and material icons identify rewards; no raster artwork or animations were generated.

@@ -3,8 +3,8 @@
   window.Interactions.register('seasonal', function (context) {
     var E = window.Halloween, data = E.data, store = context.ledger, occurrence = context.root.dataset.occurrence;
     var facts = store.seasonal(occurrence) || E.blank(), selected = Array(7).fill(0), passSelected = [false, false];
-    var choice = { next: -1, remaining: 3, currency: 'USD', metric: 'points', variant: null };
-    var future = { doors: 0, gathering: 0, beasts: 0, gems: 0, speedupMinutes: 0, other: 0, eventDay: 0, missionTarget: 0, missionClaimed: null };
+    var choice = { next: -1, remaining: 3, currency: 'USD', variant: null };
+    var future = { dailyDoors: false, doors: 0, gathering: 0, beasts: 0, gems: 0, speedupMinutes: 0, other: 0, eventDay: 0, missionTarget: 0, missionClaimed: null };
     var worker, timer, token = 0, heldValue, totalValue, offers = [], passes = [], lastCandy;
     var incomeLabels = { doors: 'Trick or Treat (estimated)', gathering: 'Gathering', beasts: 'Beasts', gems: 'Gem spending', speedups: 'Speedups', missions: 'Prankster King', other: 'Other' };
     function node(key) { return context.targets(key)[0]; }
@@ -34,21 +34,19 @@
       var priority = ['Gems', 'Forgehammer', 'Governor Gear Material Chest', 'Random Governor Charm Material Chest', 'Lucky Hero Gear Chest', 'General speedups', 'Construction speedups', 'Research speedups', 'Training speedups', 'Stamina', 'Hero XP'];
       var keys = Array.from(new Set(Object.keys(left).concat(right ? Object.keys(right) : []))).sort(function (a, b) { var ai = priority.indexOf(a), bi = priority.indexOf(b); return (ai < 0 ? 100 : ai) - (bi < 0 ? 100 : bi) || a.localeCompare(b); });
       var labels = { Forgehammer: 'Forgehammers', 'Governor Gear Material Chest': 'Gear material chests', 'Random Governor Charm Material Chest': 'Charm material chests', 'Lucky Hero Gear Chest': 'Lucky Hero Gear Chests' };
-      return '<table class="candy-rewards"><caption>' + (total ? 'Held candy vs your full plan' : 'Expected items from this candy') + '</caption><thead><tr><th scope="col">Reward</th><th scope="col">' + (total ? 'Held' : 'Expected') + '</th>' + (total ? '<th scope="col">Total</th>' : '') + '</tr></thead><tbody>' + keys.map(function (key) { return '<tr><th scope="row">' + esc(labels[key] || key) + '</th><td>' + esc(rewardAmount(key, left[key] || 0)) + '</td>' + (right ? '<td>' + esc(rewardAmount(key, right[key] || 0)) + '</td>' : '') + '</tr>'; }).join('') + '</tbody></table>';
+      return '<table class="candy-rewards"><caption>' + (total ? 'Held candy vs your full plan' : 'Expected items from this candy') + '</caption><thead><tr><th scope="col">Reward</th><th scope="col">' + (total ? 'Held' : 'Expected') + '</th>' + (total ? '<th scope="col">Total</th>' : '') + '</tr></thead><tbody>' + keys.map(function (key) { return '<tr><th scope="row">' + art(key, 22) + esc(labels[key] || key) + '</th><td>' + esc(rewardAmount(key, left[key] || 0)) + '</td>' + (right ? '<td>' + esc(rewardAmount(key, right[key] || 0)) + '</td>' : '') + '</tr>'; }).join('') + '</tbody></table>';
     }
     function valueMarkup(value, held) {
-      return '<div class="candy-headline"><strong>≈ ' + esc(fmt(value.points)) + '</strong><span>' + (facts.points === null ? 'expected Prankster Points' : 'expected additional Prankster Points') + '</span></div>' + rewardTable(held || value, held ? value : null);
+      return '<div class="candy-headline"><strong>≈ ' + esc(fmt(value.points)) + '</strong><span>' + (facts.points === null ? 'expected Prankster Points' : 'expected additional Prankster Points') + '</span></div>' + '<p class="candy-item-ev">Item EV: ≈ ' + esc(compact(E.valueRewards(value.rewards).gems)) + ' <a href="#item-values">gem-equivalent</a></p>' + rewardTable(held || value, held ? value : null);
     }
-    function metric(result) {
-      if (choice.metric === 'points') return result.points;
-      if (choice.metric === 'speedups') return Object.entries(normalise(result.rewards)).filter(function (entry) { return entry[0].endsWith('speedups'); }).reduce(function (n, entry) { return n + entry[1]; }, 0);
-      return result.rewards[choice.metric] || 0;
+    function compact(value) { return new Intl.NumberFormat(document.documentElement.lang || 'en', { notation: 'compact', maximumFractionDigits: 1 }).format(value); }
+    function art(name, size) {
+      var aliases = { 'General speedups': '1 Hour Speedup', 'Construction speedups': '1 Hour Construction Speedup', 'Research speedups': '1 Hour Research Speedup', 'Training speedups': '1 Hour Training Speedup', Stamina: '10 Stamina', 'Hero XP': '5k Hero XP' };
+      var path = data.art[name] || data.art[aliases[name]];
+      return path ? '<img src="' + esc(context.root.dataset.depth + path) + '" width="' + size + '" height="' + size + '" alt="" loading="lazy" decoding="async">' : '';
     }
-    function metricLabel() { return { points: 'points', speedups: 'speedup minutes', Forgehammer: 'Forgehammers', 'Governor Gear Material Chest': 'gear chests', 'Random Governor Charm Material Chest': 'charm chests', 'Lucky Hero Gear Chest': 'gear chests' }[choice.metric] || choice.metric; }
-    function contents(rewards) { return Object.entries(rewards).filter(function (entry) { return entry[1] > .005; }).map(function (entry) { return esc(quantity(entry[1])) + ' × ' + esc(entry[0]); }).join(' · '); }
-    function highlights(pack) {
-      var preferred = pack.items.filter(function (item) { return ['Gems', 'Truegold', 'Halloween Custom Chest', '1 Hour Speedup'].includes(item.name); });
-      return Object.fromEntries((preferred.length ? preferred : pack.items).slice(0, 3).map(function (item) { return [item.name, item.amount]; }));
+    function fixedItems(rewards) {
+      return '<ul class="candy-fixed-items">' + Object.entries(rewards).filter(function (entry) { return entry[1] > 0; }).map(function (entry) { return '<li title="' + esc(fmt(entry[1]) + ' × ' + entry[0]) + '">' + art(entry[0], 36) + '<b>' + esc(quantity(entry[1])) + '</b><span>' + esc(entry[0]) + '</span></li>'; }).join('') + '</ul>';
     }
     function replaceOffers(key, html) {
       var root = node(key), active = document.activeElement, action = root.contains(active) ? active.dataset.action : null, index = action ? active.dataset.index : null;
@@ -56,18 +54,21 @@
       if (action && index !== undefined) { var replacement = root.querySelector('[data-action="' + action + '"][data-index="' + index + '"]'); if (replacement) replacement.focus({ preventScroll: true }); }
     }
     function renderOffers() {
+      var best = offers.filter(function (offer) { return offer.cents > 0; }).sort(function (a, b) { return b.valuation.gems / b.cents - a.valuation.gems / a.cents; })[0];
+      node('pack-comparison').innerHTML = offers.length ? '<table class="candy-rewards candy-compare-table"><caption>All remaining packs · item EV in gem-equivalents · each pack’s own price</caption><thead><tr><th>Pack</th><th>Price</th><th>Total EV</th><th>EV/' + esc(unit()) + '</th><th>Points/' + esc(unit()) + '</th></tr></thead><tbody>' + offers.map(function (offer) { return '<tr' + (best && best.index === offer.index ? ' class="candy-best-value"' : '') + '><th scope="row">' + (offer.index + 1) + (offer.index === choice.next ? ' · next' : '') + '</th><td>' + (offer.cents ? esc(money(offer.cents)) : 'Free') + '</td><td>' + esc(compact(offer.valuation.gems)) + '</td><td>' + (offer.cents ? esc(compact(offer.valuation.gems / (offer.cents / 100))) : '—') + '</td><td>' + (offer.cents ? esc(fmt(offer.points / (offer.cents / 100))) : '—') + '</td></tr>'; }).join('') + '</tbody></table>' : '';
       replaceOffers('offers', offers.length ? offers.map(function (offer) {
         var i = offer.index, count = selected[i], locked = choice.next < 0 || i > choice.next, available = choice.next >= 0 && choice.next < 7;
-        return '<article class="candy-offer"><div class="candy-offer-heading"><h3>Pack ' + (i + 1) + (i === choice.next ? ' · next' : '') + '</h3><span class="candy-price">' + (offer.cents ? esc(money(offer.cents)) : 'Free') + '</span></div><div class="candy-offer-stats"><div><strong>' + esc(fmt(offer.candy, 0)) + '</strong><span>candy</span></div><div><strong>≈ ' + esc(fmt(offer.points)) + '</strong><span>additional points</span></div><div><strong>' + (offer.cents ? esc(quantity(metric(offer) / (offer.cents / 100))) : 'Free') + '</strong><span>' + esc(metricLabel()) + ' per ' + esc(unit()) + '</span></div>' + (choice.metric === 'points' ? '' : '<div><strong>' + esc(quantity(metric(offer))) + '</strong><span>' + esc(metricLabel()) + ' in total</span></div>') + '</div>' + (locked && choice.next >= 0 ? '<p class="candy-context">Requires earlier packs. Total from your next pack: ' + esc(money(offer.unlockCents)) + '.</p>' : '') + '<p class="candy-offer-items">Guaranteed: ' + contents(highlights(data.packs[i])) + '.</p><details id="pack-value-' + (i + 1) + '"><summary>All expected items from this purchase</summary>' + rewardTable({ rewards: offer.rewards }) + '</details><button type="button" class="seasonal-link" data-action="seasonal.addPack" data-index="' + i + '"' + (!available ? ' disabled' : '') + '>' + (count ? 'Included ×' + count : locked ? 'Include unlock sequence' : 'Include in total') + '</button>' + (count ? '<button type="button" class="seasonal-link" data-action="seasonal.removePack" data-index="' + i + '">Remove</button>' : '') + '</article>';
+        var fixed = E.valueRewards(offer.fixed), candyEV = E.valueRewards(offer.candyRewards), bonus = E.valueRewards(offer.bonus);
+        return '<article class="candy-offer"><div class="candy-offer-heading"><h3>' + art('Candy Party Pack', 36) + 'Pack ' + (i + 1) + (i === choice.next ? ' · next' : '') + '</h3><span class="candy-price">' + (offer.cents ? esc(money(offer.cents)) : 'Free') + '</span></div><div class="candy-offer-stats"><div><strong>≈ ' + esc(compact(offer.valuation.gems)) + '</strong><span>overall item EV · gem-equivalent</span></div><div><strong>' + (offer.cents ? esc(compact(offer.valuation.gems / (offer.cents / 100))) : 'Free') + '</strong><span>gem-equivalent EV per ' + esc(unit()) + '</span></div><div><strong>≈ ' + esc(fmt(offer.points)) + '</strong><span>additional Prankster Points</span></div><div><strong>' + (offer.cents ? esc(fmt(offer.points / (offer.cents / 100))) : '—') + '</strong><span>points per ' + esc(unit()) + '</span></div></div><p class="candy-value-split">' + esc(compact(fixed.gems)) + ' fixed items + ≈ ' + esc(compact(candyEV.gems)) + ' from candy' + (bonus.gems ? ' + ' + esc(compact(bonus.gems)) + ' top-up bonus' : '') + ' = ≈ ' + esc(compact(offer.valuation.gems)) + ' gem-equivalent EV.</p>' + (locked && choice.next >= 0 ? '<p class="candy-context">Requires earlier packs. Total from your next pack: ' + esc(money(offer.unlockCents)) + '.</p>' : '') + '<h4>Fixed rewards · guaranteed</h4>' + fixedItems(offer.fixed) + '<p class="candy-currency-bonus">' + art('Halloween Candy', 28) + esc(fmt(offer.candy, 0)) + ' candy adds ≈ ' + esc(fmt(offer.points)) + ' points and its expected chest rewards.</p>' + (offer.valuation.unpriced.length ? '<p class="candy-context">Shown but unpriced in EV: ' + esc(offer.valuation.unpriced.join(', ')) + '.</p>' : '') + '<details id="pack-value-' + (i + 1) + '"><summary>Combined items: fixed rewards + candy EV</summary>' + rewardTable({ rewards: offer.rewards }) + '</details><button type="button" class="seasonal-link" data-action="seasonal.addPack" data-index="' + i + '"' + (!available ? ' disabled' : '') + '>' + (count ? 'Included ×' + count : locked ? 'Include unlock sequence' : 'Include in total') + '</button>' + (count ? '<button type="button" class="seasonal-link" data-action="seasonal.removePack" data-index="' + i + '">Remove</button>' : '') + '</article>';
       }).join('') : '<p>All Candy Party packs have been bought.</p>');
-      text('selection', selected.some(Boolean) ? 'Included: ' + selected.map(function (n, i) { return n ? 'Pack ' + (i + 1) + (n > 1 ? ' ×' + n : '') : ''; }).filter(Boolean).join(', ') + '. The total above includes their items and candy rewards.' : choice.next < 0 ? 'Choose your next available pack to include purchases. No purchases are assumed.' : 'No purchases included in your total.');
+      text('selection', selected.some(Boolean) ? 'Included: ' + selected.map(function (n, i) { return n ? 'Pack ' + (i + 1) + (n > 1 ? ' ×' + n : '') : ''; }).filter(Boolean).join(', ') + '. The total above includes their fixed items and candy rewards.' : choice.next < 0 ? 'Choose your next available pack to include purchases. No purchases are assumed.' : 'No purchases included in your total.');
     }
     function renderPasses() {
       if (facts.points === null || choice.variant === null) { text('pass-offers', 'Enter current points and choose a reward variant to compare pass value.'); return; }
       replaceOffers('pass-offers', passes.map(function (offer, i) {
-        var owned = facts.tracks[i] === true;
-        if (owned) return '<article class="candy-offer"><h3>' + esc(offer.label) + ' · owned</h3><p class="candy-context">' + (facts.claimedPass[i + 1] === null ? 'Set your claimed level to include this track.' : esc(facts.claimedPass[i + 1]) + ' of 21 levels claimed. Remaining rewards are included above.') + '</p><button type="button" class="seasonal-link" data-action="seasonal.progress" data-panel="passes">Edit pass progress</button></article>';
-        return '<article class="candy-offer"><div class="candy-offer-heading"><h3>' + esc(offer.label) + '</h3><span class="candy-price">' + esc(money(offer.cents)) + '</span></div><div class="candy-offer-stats"><div><strong>≈ ' + esc(fmt(offer.points)) + '</strong><span>additional points</span></div><div><strong>' + esc(quantity(metric(offer) / (offer.cents / 100))) + '</strong><span>' + esc(metricLabel()) + ' per ' + esc(unit()) + '</span></div></div><p class="candy-context">≈ ' + esc(fmt(offer.candy)) + ' pass candy unlocked, included in this value.</p><details id="pass-value-' + esc(offer.id) + '"><summary>Expected pass items and extra chest rewards</summary>' + rewardTable({ rewards: offer.rewards }) + '</details><button type="button" class="seasonal-link" data-action="seasonal.addPass" data-index="' + i + '"' + (owned ? ' disabled' : '') + '>' + (owned ? 'Already owned' : passSelected[i] ? 'Remove from total' : 'Include in total') + '</button><button type="button" class="seasonal-link" data-action="seasonal.owned" data-index="' + i + '">' + (owned ? 'Mark unowned' : 'I already own this') + '</button></article>';
+        var owned = facts.tracks[i] === true, value = E.valueRewards(offer.rewards);
+        if (owned) return '<article class="candy-offer"><h3>' + art(offer.label, 32) + esc(offer.label) + ' · owned</h3><p class="candy-context">' + (facts.claimedPass[i + 1] === null ? 'Set your claimed level to include this track.' : esc(facts.claimedPass[i + 1]) + ' of 21 levels claimed. Remaining rewards are included above.') + '</p><button type="button" class="seasonal-link" data-action="seasonal.progress" data-panel="passes">Edit pass progress</button></article>';
+        return '<article class="candy-offer"><div class="candy-offer-heading"><h3>' + art(offer.label, 32) + esc(offer.label) + '</h3><span class="candy-price">' + esc(money(offer.cents)) + '</span></div><div class="candy-offer-stats"><div><strong>≈ ' + esc(fmt(offer.points)) + '</strong><span>additional points</span></div><div><strong>≈ ' + esc(compact(value.gems)) + '</strong><span>overall item EV · gem-equivalent</span></div><div><strong>' + esc(compact(value.gems / (offer.cents / 100))) + '</strong><span>' + 'gem-equivalent EV per ' + esc(unit()) + '</span></div></div><p class="candy-context">≈ ' + esc(fmt(offer.candy)) + ' pass candy unlocked, included in this value.</p><details id="pass-value-' + esc(offer.id) + '"><summary>Expected pass items and extra chest rewards</summary>' + rewardTable({ rewards: offer.rewards }) + '</details><button type="button" class="seasonal-link" data-action="seasonal.addPass" data-index="' + i + '"' + (owned ? ' disabled' : '') + '>' + (owned ? 'Already owned' : passSelected[i] ? 'Remove from total' : 'Include in total') + '</button><button type="button" class="seasonal-link" data-action="seasonal.owned" data-index="' + i + '">' + (owned ? 'Mark unowned' : 'I already own this') + '</button></article>';
       }).join(''));
     }
     function skin() {
@@ -83,18 +84,21 @@
       else { var next = facts.packs.findIndex(function (n, i) { return n === null || n < (i === 6 ? 3 : 1); }); choice.next = next < 0 ? 7 : next; choice.remaining = choice.next === 6 ? 3 - (facts.packs[6] || 0) : 3; }
     }
     function fill() {
-      context.nodes('[data-fact]').forEach(function (field) { if (field !== document.activeElement) { var saved = field.dataset.index === undefined ? facts[field.dataset.fact] : facts[field.dataset.fact][Number(field.dataset.index)]; field.value = field.dataset.fact === 'candy' ? candy() : saved === null ? '' : saved; } });
+      context.nodes('[data-fact]').forEach(function (field) { if (field !== document.activeElement) { var saved = field.dataset.index === undefined ? facts[field.dataset.fact] : facts[field.dataset.fact][Number(field.dataset.index)]; if (field.type === 'checkbox') field.checked = Boolean(saved); else field.value = field.dataset.fact === 'candy' ? candy() : saved === null ? '' : saved; } });
       context.nodes('[data-choice]').forEach(function (field) { field.value = choice[field.dataset.choice] === null ? '' : choice[field.dataset.choice]; });
       node('last-pack-control').hidden = choice.next !== 6;
       text('example', facts.candy === null ? 'Example: 1,000 candy. Replace this with the amount you have.' : 'Your held candy. The expected rewards update automatically.');
       text('door-rate', fmt(E.doorDaily(), 0));
-      var day = facts.daysLeft === null ? null : 9 - facts.daysLeft, progress = E.progressOptions(facts, choice.variant);
+      var day = facts.daysLeft === null ? null : data.rules.eventDays + 1 - facts.daysLeft, progress = E.progressOptions(facts, choice.variant);
       text('score-summary', facts.points === null ? 'Points: set yours' : fmt(facts.points, 0) + ' points');
-      text('day-summary', day ? 'Day ' + day : 'Day: set yours');
+      text('day-summary', day ? 'Day ' + day + ' · ' + facts.daysLeft + (facts.daysLeft === 1 ? ' day left' : ' days left') : 'Day: set yours');
+      text('mission-day', day ? 'Event day ' + day + ' · edit' : 'Set event day');
+      var timing = E.eventTiming(facts);
+      text('door-days', timing.doorDaysLeft === null ? 'Set your event day; remaining days are calculated automatically.' : timing.doorDaysLeft + (timing.doorDaysLeft === 1 ? ' door day remaining' : ' door days remaining') + ' · doors end on day 7.');
       text('pass-summary', facts.tracks.some(Boolean) ? data.passes.filter(function (_, i) { return facts.tracks[i]; }).map(function (p) { return p.label; }).join(' + ') : 'Passes: set yours');
       text('progress-note', progress.missing.length ? 'Owned pass rewards need ' + progress.missing.join(', ') + '. Tap Passes to set them.' : progress.options.passes.length ? 'Using saved pass progress; claimed levels are excluded.' : 'Set progress to include your pass rewards.');
       context.targets('pass-owned').forEach(function (button, i) { button.textContent = data.passes[i].label + ': ' + (facts.tracks[i] === null ? 'not set' : facts.tracks[i] ? 'owned' : 'not owned'); button.setAttribute('aria-pressed', String(facts.tracks[i] === true)); });
-      node('event-day').value = day || '';
+      node('event-day').value = day > 8 ? 8 : day || '';
       node('today-claims').value = day && day <= 7 && facts.missions[day - 1] !== null ? facts.missions[day - 1] : '';
       if (day && day <= 8) { future.eventDay = day; future.missionClaimed = day <= 7 ? facts.missions[day - 1] : null; }
       context.nodes('[data-future="eventDay"]').forEach(function (field) { field.value = future.eventDay; });
@@ -122,7 +126,7 @@
             if (part === 'total') {
               totalValue = result; node('total').removeAttribute('aria-busy');
               var extra = result.future.candy + result.purchaseCandy;
-              text('income-summary', '+' + fmt(result.future.candy, 0) + ' future candy' + (future.doors ? ' (includes estimated door rewards)' : '') + '.');
+              text('income-summary', '+' + fmt(result.future.candy, 0) + ' future candy' + (result.future.lines.some(function (line) { return line.id === 'doors' && line.candy; }) ? ' (includes estimated door rewards)' : '') + '.');
               node('income-lines').innerHTML = '<p class="candy-context">' + result.future.lines.filter(function (line) { return line.candy; }).map(function (line) { return esc(incomeLabels[line.id]) + ': ' + esc(fmt(line.candy, 0)); }).join(' · ') + '</p>';
               node('total-section').hidden = !(extra || result.cents || passSelected.some(Boolean));
               text('total-context', fmt(result.held, 0) + ' held + ' + fmt(result.future.candy, 0) + ' future + ' + fmt(result.purchaseCandy, 0) + ' purchased candy' + (result.value.passCandy ? ' + ≈ ' + fmt(result.value.passCandy, 0) + ' pass candy' : '') + '. Additional spending: ' + money(result.cents) + '.');
@@ -147,12 +151,12 @@
     return { refresh: function () { fill(); calculate(); }, actions: {
       progress: { run: function (button) { var panel = button.dataset.panel; context.nodes('[data-progress-panel]').forEach(function (part) { part.hidden = part.dataset.progressPanel !== panel; }); text('progress-title', { score: 'Your current points', day: 'Where you are in the event', passes: 'Your pass progress', income: 'Candy already collected' }[panel]); node('progress-dialog').showModal(); } },
       closeProgress: { run: function () { node('progress-dialog').close(); } },
-      eventDay: { events: ['change'], run: function (field) { facts.daysLeft = field.value === '' ? null : 9 - Number(field.value); future.eventDay = field.value === '' ? 0 : Number(field.value); future.missionClaimed = null; fill(); calculate(); saveFacts(facts); } },
-      todayClaims: { events: ['change'], run: function (field) { var day = facts.daysLeft === null ? 0 : 9 - facts.daysLeft; if (day >= 1 && day <= 7) facts.missions[day - 1] = field.value === '' ? null : Number(field.value); fill(); calculate(); saveFacts(facts); } },
-      remaining: { run: function () { if (facts.gatheringCollected !== null) future.gathering = Math.max(0, 3000 - facts.gatheringCollected); if (facts.beastsCollected !== null) future.beasts = Math.max(0, 4000 - facts.beastsCollected); if (facts.doorDaysLeft !== null) future.doors = facts.doorDaysLeft; if (facts.daysLeft !== null) future.missionTarget = 5; future = E.remainingIncome(facts, future); context.nodes('[data-future]').forEach(function (field) { var value = field.dataset.future === 'speedupHours' ? future.speedupMinutes / 60 : future[field.dataset.future]; field.value = value === null ? '' : value; }); fill(); calculate(); } },
+      eventDay: { events: ['change'], run: function (field) { var nextDays = field.value === '' ? null : data.rules.eventDays + 1 - Number(field.value); if (facts.daysLeft !== null && nextDays !== facts.daysLeft) { facts.doorsDoneToday = false; facts.doorDaysLeft = null; } facts.daysLeft = nextDays; future.eventDay = field.value === '' ? 0 : Number(field.value); future.missionClaimed = null; fill(); calculate(); saveFacts(facts); } },
+      todayClaims: { events: ['change'], run: function (field) { var day = facts.daysLeft === null ? 0 : data.rules.eventDays + 1 - facts.daysLeft; if (day >= 1 && day <= 7) facts.missions[day - 1] = field.value === '' ? null : Number(field.value); fill(); calculate(); saveFacts(facts); } },
+      remaining: { run: function () { if (facts.gatheringCollected !== null) future.gathering = Math.max(0, 3000 - facts.gatheringCollected); if (facts.beastsCollected !== null) future.beasts = Math.max(0, 4000 - facts.beastsCollected); if (E.eventTiming(facts).doorDaysLeft !== null) future.dailyDoors = true; if (facts.daysLeft !== null) future.missionTarget = 5; future = E.remainingIncome(facts, future); context.nodes('[data-future]').forEach(function (field) { var value = field.dataset.future === 'speedupHours' ? future.speedupMinutes / 60 : future[field.dataset.future]; if (field.type === 'checkbox') field.checked = Boolean(value); else field.value = value === null ? '' : value; }); fill(); calculate(); } },
       fact: { events: ['input', 'change'], run: function (field, event) {
         if (!field.validity.valid) { text('status', 'Use a whole number within the input limits.'); return; }
-        var value = field.value === '' ? null : Number(field.value), index = field.dataset.index === undefined ? null : Number(field.dataset.index), previous = index === null ? facts[field.dataset.fact] : facts[field.dataset.fact][index], changed = value !== previous;
+        var value = field.type === 'checkbox' ? field.checked : field.value === '' ? null : Number(field.value), index = field.dataset.index === undefined ? null : Number(field.dataset.index), previous = index === null ? facts[field.dataset.fact] : facts[field.dataset.fact][index], changed = value !== previous;
         if (index === null) facts[field.dataset.fact] = value; else facts[field.dataset.fact][index] = value;
         if (field.dataset.fact === 'points' && value === null) passSelected.fill(false);
         if (changed) { fill(); calculate(); }
@@ -160,16 +164,17 @@
       } },
       future: { events: ['input', 'change'], run: function (field) {
         if (!field.validity.valid) return;
-        var key = field.dataset.future, value = field.value === '' ? null : Number(field.value);
+        var key = field.dataset.future, value = field.type === 'checkbox' ? field.checked : field.value === '' ? null : Number(field.value);
+        if (key === 'dailyDoors') { future.dailyDoors = value; fill(); calculate(); return; }
         if (key === 'missionClaimed') { future[key] = value; if (future.eventDay >= 1 && future.eventDay <= 7) { facts.missions[future.eventDay - 1] = value; saveFacts(facts); } }
         else if (key === 'speedupHours') future.speedupMinutes = Math.round((value || 0) * 60);
         else future[key] = value || 0;
-        if (key === 'eventDay') { facts.daysLeft = value ? 9 - value : null; saveFacts(facts); }
+        if (key === 'eventDay') { facts.daysLeft = value ? data.rules.eventDays + 1 - value : null; saveFacts(facts); }
         fill(); calculate();
       } },
       choice: { events: ['change'], run: function (field) {
-        var key = field.dataset.choice; choice[key] = ['currency', 'metric'].includes(key) ? field.value : field.value === '' ? null : Number(field.value);
-        if (key === 'metric') { renderOffers(); renderPasses(); return; }
+        var key = field.dataset.choice; choice[key] = key === 'currency' ? field.value : field.value === '' ? null : Number(field.value);
+
         if (key === 'next' || key === 'remaining') {
           selected.fill(0);
           if (choice.next >= 0) { facts.packs = data.packs.map(function (_, i) { return i < choice.next ? i === 6 ? 3 : 1 : i === 6 && choice.next === 6 ? 3 - choice.remaining : 0; }); saveFacts(facts); }
