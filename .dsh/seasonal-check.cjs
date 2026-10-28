@@ -96,3 +96,32 @@ test('seasonal save round-trips, keeps occurrences separate and rejects malforme
   store.setSeasonal('halloween-2026', null); assert.equal(store.seasonal('halloween-2026'), null);
   assert.equal(L.validate(L.empty()).schemaVersion, 1);
 });
+test('candy EV needs only candy and returns no invented rewards below one paid hit', () => {
+  for (const amount of [0, 19]) { const v = E.candyValue(amount); assert.equal(v.points, 0); assert.ok(Object.values(v.rewards).every(n => n === 0)); }
+  const a = E.candyValue(1000), b = E.candyValue(1000);
+  assert.deepEqual(a, b); assert.ok(a.points > 100 && a.points < 150); assert.equal(a.hits, a.points / 2);
+  assert.ok(a.rewards.Gems > 0 && a.rewards.Forgehammer > 0);
+});
+test('rare item EV uses chest probabilities rather than random item drops', () => {
+  const value = E.candyValue(20, { witchRemaining: 15, samples: 1000 });
+  assert.ok(Math.abs(value.rewards.Forgehammer / value.hits - .02) < 1e-9);
+  assert.ok(Math.abs(value.rewards.Gems / value.hits - 260.5) < 1e-9);
+  const pity = E.candyValue(20, { pity: 39 }); assert.ok(pity.points >= 8 && pity.freeHits >= 3);
+});
+test('remaining mission income counts today once and excludes closed stages', () => {
+  const input = { doors: 0, gathering: 0, beasts: 0, gems: 0, speedupMinutes: 0, other: 0, eventDay: 6, missionClaimed: 3, missionTarget: 5 };
+  assert.equal(E.futureIncome(input).candy, 2500);
+  input.missionClaimed = null; assert.equal(E.futureIncome(input).candy, 1700);
+  input.eventDay = 8; assert.equal(E.futureIncome(input).candy, 0);
+  input.eventDay = 0; input.doors = 2; assert.equal(E.futureIncome(input).candy, Math.round(2 * E.doorDaily()));
+});
+test('purchase selection adds only missing unlock tiers and respects the last pack limit', () => {
+  assert.deepEqual(E.purchaseSequence(2, [0, 0, 0, 1, 0, 0, 0], 3), [0, 0, 1, 1, 0, 0, 0]);
+  assert.deepEqual(E.purchaseSequence(6, [0, 0, 0, 0, 0, 0, 3], 1), [0, 0, 0, 0, 0, 0, 1]);
+});
+test('pass comparison includes already unlocked unclaimed rewards and spends pass candy', () => {
+  const purchased = E.candyValue(0, { points: 10000, passes: [{ track: 'witchbane', variant: D.passVariants[0].id, claimed: 0 }] });
+  assert.equal(purchased.passCandy, 1000); assert.ok(purchased.points > 100); assert.ok(purchased.rewards['Mythic General Hero Shard'] > 0);
+  const claimed = E.candyValue(0, { points: 10000, passes: [{ track: 'witchbane', variant: D.passVariants[0].id, claimed: 21 }] });
+  assert.equal(claimed.points, 0); assert.equal(claimed.passCandy, 0);
+});
