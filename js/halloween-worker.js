@@ -21,7 +21,7 @@ self.onmessage = function (event) {
     var selectedPasses = input.passes.filter(function (p) { return p.selected; });
     selectedPasses.forEach(function (pass) { var spec = data.passes.find(function (p) { return p.id === pass.track; }); cents += Math.round(spec['price' + input.currency] * 100); topUps += spec.topUpPoints; });
     direct = E.mergeRewards(direct, topUp(topUps));
-    var total = value(baseCandy + selectedCandy, Object.assign({}, input.options, { points: input.points || 0, passes: selectedPasses }));
+    var total = value(baseCandy + selectedCandy, Object.assign({}, input.options, { points: input.points || 0, passes: (input.options.passes || []).concat(selectedPasses) }));
     total = Object.assign({}, total, { rewards: E.mergeRewards(total.rewards, direct) });
     send('total', { held: input.candy, future: future, purchaseCandy: selectedCandy, cents: cents, value: total });
     var offers = data.packs.map(function (pack, i) {
@@ -32,7 +32,8 @@ self.onmessage = function (event) {
     }).filter(Boolean);
     send('offers', offers);
     var passes = input.points === null || input.variant === null ? [] : data.passes.map(function (spec) {
-      var pass = { track: spec.id, variant: input.variant, claimed: 0 }, result = value(baseCandy, Object.assign({}, input.options, { points: input.points, passes: [pass] }));
+      if ((input.options.passes || []).some(function (p) { return p.track === spec.id; })) return { id: spec.id, label: spec.label, cents: Math.round(spec['price' + input.currency] * 100), points: 0, candy: 0, rewards: {}, owned: true };
+      var pass = { track: spec.id, variant: input.variant, claimed: 0 }, result = value(baseCandy, Object.assign({}, input.options, { points: input.points, passes: (input.options.passes || []).concat([pass]) }));
       return { id: spec.id, label: spec.label, cents: Math.round(spec['price' + input.currency] * 100), points: result.points - base.points, candy: result.passCandy, rewards: difference(result.rewards, base.rewards, topUp(spec.topUpPoints)) };
     });
     send('passes', passes);

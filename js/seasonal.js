@@ -37,7 +37,7 @@
       return '<table class="candy-rewards"><caption>' + (total ? 'Held candy vs your full plan' : 'Expected items from this candy') + '</caption><thead><tr><th scope="col">Reward</th><th scope="col">' + (total ? 'Held' : 'Expected') + '</th>' + (total ? '<th scope="col">Total</th>' : '') + '</tr></thead><tbody>' + keys.map(function (key) { return '<tr><th scope="row">' + esc(labels[key] || key) + '</th><td>' + esc(rewardAmount(key, left[key] || 0)) + '</td>' + (right ? '<td>' + esc(rewardAmount(key, right[key] || 0)) + '</td>' : '') + '</tr>'; }).join('') + '</tbody></table>';
     }
     function valueMarkup(value, held) {
-      return '<div class="candy-headline"><strong>≈ ' + esc(fmt(value.points)) + '</strong><span>expected Prankster Points</span></div>' + rewardTable(held || value, held ? value : null);
+      return '<div class="candy-headline"><strong>≈ ' + esc(fmt(value.points)) + '</strong><span>' + (facts.points === null ? 'expected Prankster Points' : 'expected additional Prankster Points') + '</span></div>' + rewardTable(held || value, held ? value : null);
     }
     function metric(result) {
       if (choice.metric === 'points') return result.points;
@@ -66,6 +66,7 @@
       if (facts.points === null || choice.variant === null) { text('pass-offers', 'Enter current points and choose a reward variant to compare pass value.'); return; }
       replaceOffers('pass-offers', passes.map(function (offer, i) {
         var owned = facts.tracks[i] === true;
+        if (owned) return '<article class="candy-offer"><h3>' + esc(offer.label) + ' · owned</h3><p class="candy-context">' + (facts.claimedPass[i + 1] === null ? 'Set your claimed level to include this track.' : esc(facts.claimedPass[i + 1]) + ' of 21 levels claimed. Remaining rewards are included above.') + '</p><button type="button" class="seasonal-link" data-action="seasonal.progress" data-panel="passes">Edit pass progress</button></article>';
         return '<article class="candy-offer"><div class="candy-offer-heading"><h3>' + esc(offer.label) + '</h3><span class="candy-price">' + esc(money(offer.cents)) + '</span></div><div class="candy-offer-stats"><div><strong>≈ ' + esc(fmt(offer.points)) + '</strong><span>additional points</span></div><div><strong>' + esc(quantity(metric(offer) / (offer.cents / 100))) + '</strong><span>' + esc(metricLabel()) + ' per ' + esc(unit()) + '</span></div></div><p class="candy-context">≈ ' + esc(fmt(offer.candy)) + ' pass candy unlocked, included in this value.</p><details id="pass-value-' + esc(offer.id) + '"><summary>Expected pass items and extra chest rewards</summary>' + rewardTable({ rewards: offer.rewards }) + '</details><button type="button" class="seasonal-link" data-action="seasonal.addPass" data-index="' + i + '"' + (owned ? ' disabled' : '') + '>' + (owned ? 'Already owned' : passSelected[i] ? 'Remove from total' : 'Include in total') + '</button><button type="button" class="seasonal-link" data-action="seasonal.owned" data-index="' + i + '">' + (owned ? 'Mark unowned' : 'I already own this') + '</button></article>';
       }).join(''));
     }
@@ -75,15 +76,31 @@
       text('skin', !gap ? 'You have reached 12,500 points and qualified through the points route.' : fmt(gap, 0) + ' points remain.' + (totalValue ? ' Your full plan adds ≈ ' + fmt(totalValue.value.points) + ' points on average.' : '') + ' ' + fmt(Math.ceil(gap / 2) * 20, 0) + ' additional candy is sufficient even without free attacks.');
     }
     function availability() {
+      var contextFacts = Object.assign({}, facts), level = store.buildings().levels['town-center'];
+      if (contextFacts.townCenter === null && level && level !== '0') contextFacts.townCenter = level.startsWith('TG') || level.startsWith('30') ? 30 : Number(level);
+      var progress = E.progressOptions(contextFacts); choice.variant = progress.variant;
       if (facts.packs.every(function (n) { return n === null; })) choice.next = -1;
       else { var next = facts.packs.findIndex(function (n, i) { return n === null || n < (i === 6 ? 3 : 1); }); choice.next = next < 0 ? 7 : next; choice.remaining = choice.next === 6 ? 3 - (facts.packs[6] || 0) : 3; }
     }
     function fill() {
-      context.nodes('[data-fact]').forEach(function (field) { if (field !== document.activeElement) field.value = field.dataset.fact === 'candy' ? candy() : facts[field.dataset.fact] === null ? '' : facts[field.dataset.fact]; });
+      context.nodes('[data-fact]').forEach(function (field) { if (field !== document.activeElement) { var saved = field.dataset.index === undefined ? facts[field.dataset.fact] : facts[field.dataset.fact][Number(field.dataset.index)]; field.value = field.dataset.fact === 'candy' ? candy() : saved === null ? '' : saved; } });
       context.nodes('[data-choice]').forEach(function (field) { field.value = choice[field.dataset.choice] === null ? '' : choice[field.dataset.choice]; });
       node('last-pack-control').hidden = choice.next !== 6;
       text('example', facts.candy === null ? 'Example: 1,000 candy. Replace this with the amount you have.' : 'Your held candy. The expected rewards update automatically.');
       text('door-rate', fmt(E.doorDaily(), 0));
+      var day = facts.daysLeft === null ? null : 9 - facts.daysLeft, progress = E.progressOptions(facts, choice.variant);
+      text('score-summary', facts.points === null ? 'Points: set yours' : fmt(facts.points, 0) + ' points');
+      text('day-summary', day ? 'Day ' + day : 'Day: set yours');
+      text('pass-summary', facts.tracks.some(Boolean) ? data.passes.filter(function (_, i) { return facts.tracks[i]; }).map(function (p) { return p.label; }).join(' + ') : 'Passes: set yours');
+      text('progress-note', progress.missing.length ? 'Owned pass rewards need ' + progress.missing.join(', ') + '. Tap Passes to set them.' : progress.options.passes.length ? 'Using saved pass progress; claimed levels are excluded.' : 'Set progress to include your pass rewards.');
+      context.targets('pass-owned').forEach(function (button, i) { button.textContent = data.passes[i].label + ': ' + (facts.tracks[i] === null ? 'not set' : facts.tracks[i] ? 'owned' : 'not owned'); button.setAttribute('aria-pressed', String(facts.tracks[i] === true)); });
+      node('event-day').value = day || '';
+      node('today-claims').value = day && day <= 7 && facts.missions[day - 1] !== null ? facts.missions[day - 1] : '';
+      if (day && day <= 8) { future.eventDay = day; future.missionClaimed = day <= 7 ? facts.missions[day - 1] : null; }
+      context.nodes('[data-future="eventDay"]').forEach(function (field) { field.value = future.eventDay; });
+      context.nodes('[data-future="missionClaimed"]').forEach(function (field) { field.value = future.missionClaimed === null ? '' : future.missionClaimed; });
+      var remaining = E.remainingIncome(facts, future);
+      ['gathering', 'beasts', 'doors'].forEach(function (key) { var limit = key === 'gathering' ? 3000 - (facts.gatheringCollected || 0) : key === 'beasts' ? 4000 - (facts.beastsCollected || 0) : Math.min(7, facts.doorDaysLeft === null ? 7 : facts.doorDaysLeft, facts.daysLeft === null ? 8 : facts.daysLeft); context.nodes('[data-future="' + key + '"]').forEach(function (field) { field.max = Math.max(0, limit); if (future[key] > limit) { future[key] = Math.max(0, limit); field.value = future[key]; } }); });
     }
     function clearStale() {
       node('held').setAttribute('aria-busy', 'true'); node('offers').setAttribute('aria-busy', 'true');
@@ -95,13 +112,13 @@
       clearTimeout(timer); if (worker) worker.terminate(); token++; var id = token;
       clearStale(); skin();
       timer = setTimeout(function () {
-        var input = { id: id, candy: candy(), options: { pity: facts.pity || 0, pumpkinRemaining: facts.pumpkinRemaining || 10, witchRemaining: facts.witchRemaining || 0 }, future: future, selected: selected, next: choice.next, remaining: choice.remaining, currency: choice.currency, points: facts.points, variant: choice.variant, topUpPoints: facts.topUpPoints, passes: data.passes.map(function (p, i) { return { track: p.id, variant: choice.variant, claimed: 0, selected: passSelected[i] && facts.points !== null && choice.variant !== null }; }) };
+        var input = { id: id, candy: candy(), options: E.progressOptions(facts, choice.variant).options, future: E.remainingIncome(facts, future), selected: selected, next: choice.next, remaining: choice.remaining, currency: choice.currency, points: facts.points, variant: choice.variant, topUpPoints: facts.topUpPoints, passes: data.passes.map(function (p, i) { return { track: p.id, variant: choice.variant, claimed: 0, selected: passSelected[i] && facts.points !== null && choice.variant !== null }; }) };
         try {
           worker = new Worker(new URL(context.root.dataset.worker, document.baseURI));
           worker.onmessage = function (event) {
             if (event.data.id !== token) return;
             var part = event.data.part, result = event.data.result;
-            if (part === 'held') { heldValue = result; node('held').innerHTML = valueMarkup(result); node('held').removeAttribute('aria-busy'); text('status', ''); }
+            if (part === 'held') { heldValue = result; if (result.passCandy) text('progress-note', 'Includes ≈ ' + fmt(result.passCandy, 0) + ' candy from unclaimed or newly unlocked rewards on your owned tracks. Claimed levels are excluded.'); node('held').innerHTML = valueMarkup(result); node('held').removeAttribute('aria-busy'); text('status', ''); }
             if (part === 'total') {
               totalValue = result; node('total').removeAttribute('aria-busy');
               var extra = result.future.candy + result.purchaseCandy;
@@ -128,10 +145,15 @@
     availability();
     context.cleanup(store.subscribe(refresh)); context.cleanup(function () { clearTimeout(timer); if (worker) worker.terminate(); });
     return { refresh: function () { fill(); calculate(); }, actions: {
+      progress: { run: function (button) { var panel = button.dataset.panel; context.nodes('[data-progress-panel]').forEach(function (part) { part.hidden = part.dataset.progressPanel !== panel; }); text('progress-title', { score: 'Your current points', day: 'Where you are in the event', passes: 'Your pass progress', income: 'Candy already collected' }[panel]); node('progress-dialog').showModal(); } },
+      closeProgress: { run: function () { node('progress-dialog').close(); } },
+      eventDay: { events: ['change'], run: function (field) { facts.daysLeft = field.value === '' ? null : 9 - Number(field.value); future.eventDay = field.value === '' ? 0 : Number(field.value); future.missionClaimed = null; fill(); calculate(); saveFacts(facts); } },
+      todayClaims: { events: ['change'], run: function (field) { var day = facts.daysLeft === null ? 0 : 9 - facts.daysLeft; if (day >= 1 && day <= 7) facts.missions[day - 1] = field.value === '' ? null : Number(field.value); fill(); calculate(); saveFacts(facts); } },
+      remaining: { run: function () { if (facts.gatheringCollected !== null) future.gathering = Math.max(0, 3000 - facts.gatheringCollected); if (facts.beastsCollected !== null) future.beasts = Math.max(0, 4000 - facts.beastsCollected); if (facts.doorDaysLeft !== null) future.doors = facts.doorDaysLeft; if (facts.daysLeft !== null) future.missionTarget = 5; future = E.remainingIncome(facts, future); context.nodes('[data-future]').forEach(function (field) { var value = field.dataset.future === 'speedupHours' ? future.speedupMinutes / 60 : future[field.dataset.future]; field.value = value === null ? '' : value; }); fill(); calculate(); } },
       fact: { events: ['input', 'change'], run: function (field, event) {
         if (!field.validity.valid) { text('status', 'Use a whole number within the input limits.'); return; }
-        var value = field.value === '' ? null : Number(field.value), changed = value !== facts[field.dataset.fact];
-        facts[field.dataset.fact] = value;
+        var value = field.value === '' ? null : Number(field.value), index = field.dataset.index === undefined ? null : Number(field.dataset.index), previous = index === null ? facts[field.dataset.fact] : facts[field.dataset.fact][index], changed = value !== previous;
+        if (index === null) facts[field.dataset.fact] = value; else facts[field.dataset.fact][index] = value;
         if (field.dataset.fact === 'points' && value === null) passSelected.fill(false);
         if (changed) { fill(); calculate(); }
         if (event.type === 'change') saveFacts(facts);
@@ -139,10 +161,11 @@
       future: { events: ['input', 'change'], run: function (field) {
         if (!field.validity.valid) return;
         var key = field.dataset.future, value = field.value === '' ? null : Number(field.value);
-        if (key === 'missionClaimed') future[key] = value;
+        if (key === 'missionClaimed') { future[key] = value; if (future.eventDay >= 1 && future.eventDay <= 7) { facts.missions[future.eventDay - 1] = value; saveFacts(facts); } }
         else if (key === 'speedupHours') future.speedupMinutes = Math.round((value || 0) * 60);
         else future[key] = value || 0;
-        calculate();
+        if (key === 'eventDay') { facts.daysLeft = value ? 9 - value : null; saveFacts(facts); }
+        fill(); calculate();
       } },
       choice: { events: ['change'], run: function (field) {
         var key = field.dataset.choice; choice[key] = ['currency', 'metric'].includes(key) ? field.value : field.value === '' ? null : Number(field.value);
@@ -151,13 +174,13 @@
           selected.fill(0);
           if (choice.next >= 0) { facts.packs = data.packs.map(function (_, i) { return i < choice.next ? i === 6 ? 3 : 1 : i === 6 && choice.next === 6 ? 3 - choice.remaining : 0; }); saveFacts(facts); }
         }
-        if (key === 'variant') passSelected.fill(false);
+        if (key === 'variant') { passSelected.fill(false); facts.passVariant = choice.variant; saveFacts(facts); }
         fill(); calculate();
       } },
       addPack: { run: function (field) { var i = Number(field.dataset.index); if (choice.next < 0) return; selected[i] = Math.min(selected[i] + 1, i === 6 ? choice.next === 6 ? choice.remaining : 3 : 1); selected = E.purchaseSequence(choice.next, selected, choice.remaining); calculate(); } },
       removePack: { run: function (field) { var i = Number(field.dataset.index); if (i === 6 && selected[i] > 1) selected[i]--; else for (var j = i; j < 7; j++) selected[j] = 0; calculate(); } },
       addPass: { run: function (field) { var i = Number(field.dataset.index); if (facts.tracks[i]) return; passSelected[i] = !passSelected[i]; calculate(); } },
-      owned: { run: function (field) { var i = Number(field.dataset.index); facts.tracks[i] = !facts.tracks[i]; passSelected[i] = false; saveFacts(facts); } }
+      owned: { run: function (field) { var i = Number(field.dataset.index); facts.tracks[i] = !facts.tracks[i]; passSelected[i] = false; fill(); calculate(); saveFacts(facts); } }
     } };
   });
 })();

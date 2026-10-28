@@ -125,3 +125,17 @@ test('pass comparison includes already unlocked unclaimed rewards and spends pas
   const claimed = E.candyValue(0, { points: 10000, passes: [{ track: 'witchbane', variant: D.passVariants[0].id, claimed: 21 }] });
   assert.equal(claimed.points, 0); assert.equal(claimed.passCandy, 0);
 });
+test('existing owned tracks use saved claimed levels and points', () => {
+  const f = facts(); f.passVariant = D.passVariants[0].id; f.tracks = [true, false]; f.claimedPass = [21, 0, null];
+  const progress = E.progressOptions(f); assert.deepEqual(progress.options.passes.map(p => [p.track, p.claimed]), [['free', 21], ['witchbane', 0]]);
+  assert.ok(E.candyValue(0, progress.options).passCandy > 0);
+  f.claimedPass[1] = 21; assert.equal(E.candyValue(0, E.progressOptions(f).options).passCandy, 0);
+  f.claimedPass[1] = null; assert.ok(E.progressOptions(f).missing.includes('witchbane claimed level'));
+});
+test('existing collection and stage progress bound future income', () => {
+  const f = facts(); f.gatheringCollected = 2990; f.beastsCollected = 3900; f.doorDaysLeft = 1; f.missions[5] = 3;
+  const p = { gathering: 3000, beasts: 4000, doors: 7, gems: 0, speedupMinutes: 0, other: 0, eventDay: 1, missionClaimed: 0, missionTarget: 5 };
+  const remaining = E.remainingIncome(f, p); assert.equal(remaining.gathering, 10); assert.equal(remaining.beasts, 100); assert.equal(remaining.doors, 1); assert.equal(remaining.eventDay, 6); assert.equal(remaining.missionClaimed, 3);
+  assert.equal(E.futureIncome(remaining).lines.find(l => l.id === 'missions').candy, 2500);
+  const store = L.create(storage()); f.passVariant = 1; store.setSeasonal('halloween-2026', f); const copy = L.create(storage()); copy.importJSON(store.exportJSON()); assert.equal(copy.seasonal('halloween-2026').passVariant, 1);
+});

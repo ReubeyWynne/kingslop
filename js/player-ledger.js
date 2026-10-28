@@ -116,7 +116,8 @@
   function seasonalRecord(value) {
     if (!object(value)) return false;
     var fields = SEASONAL_COUNTS.concat(Object.keys(SEASONAL_LIMITS), ['packs', 'tracks', 'claimedPass', 'missions']);
-    if (!same(Object.keys(value).sort(), fields.sort())) return false;
+    if (!same(Object.keys(value).filter(function (key) { return key !== 'passVariant'; }).sort(), fields.sort())) return false;
+    if (value.passVariant !== undefined && value.passVariant !== null && ![1, 2, 3, 65, 66].includes(value.passVariant)) return false;
     if (!SEASONAL_COUNTS.every(function (key) { return upTo(value[key], 10000000); })) return false;
     if (!Object.keys(SEASONAL_LIMITS).every(function (key) { return upTo(value[key], SEASONAL_LIMITS[key], ['kingdomDay', 'townCenter', 'pumpkinRemaining'].includes(key) ? 1 : 0); })) return false;
     if (!Array.isArray(value.packs) || value.packs.length !== 7 || !value.packs.every(function (n, i) { return upTo(n, i === 6 ? 3 : 1); })) return false;
