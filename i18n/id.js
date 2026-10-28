@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["id"] = {
+  "seasonal.nav": "Musiman",
+  "seasonal.lede": "rencanakan acara musiman dari progresmu saat ini.",
   "castle.nav": "Kastel",
   "castle.deck.lede": "kontrol kastel, mekanik pertempuran, keterampilan peserta reli, dan pilihan pasukan.",
   "meta.title": "Bear Hunt, Dibongkar",

@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["tr"] = {
+  "seasonal.nav": "Sezonluk",
+  "seasonal.lede": "mevcut ilerlemene göre sezonluk etkinlik planları.",
   "castle.nav": "Kale",
   "castle.deck.lede": "kale kontrolü, savaş mekanikleri, ralli katılımcılarının becerileri ve birlik seçimi.",
   "meta.title": "Bear Hunt, gizemi çözüldü",

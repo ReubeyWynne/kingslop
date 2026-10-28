@@ -110,10 +110,10 @@
       "lede": "the alliance events in plain words — how each one scores, what to do about it."
     },
     "swipeNext": {
-      "url": "../bear-hunt/",
-      "page": "bearhunt",
-      "title": "Bear Hunt",
-      "lede": "the lead's stats × your troops — with a square root on your count."
+      "url": "../seasonal/",
+      "page": "seasonal",
+      "title": "Seasonal",
+      "lede": "seasonal events, planned from where you are now."
     },
     "css": [
       "../css/styles.css",
@@ -178,10 +178,10 @@
     "brandNoteKey": "",
     "brandNote": "guide",
     "swipePrev": {
-      "url": "../events/",
-      "page": "kvksg",
-      "title": "Event Cycle",
-      "lede": "the recurring events on one 28-day clock: what's on today, what to save, and what to copy into KingShot."
+      "url": "../seasonal/",
+      "page": "seasonal",
+      "title": "Seasonal",
+      "lede": "seasonal events, planned from where you are now."
     },
     "swipeNext": {
       "url": "../vikings-vengeance/",
@@ -1081,5 +1081,116 @@
       "title": "The events",
       "lede": "the alliance events in plain words — how each one scores, what to do about it."
     }
+  },
+  "seasonal": {
+    "token": "seasonal",
+    "depth": "../",
+    "canonicalPath": "/seasonal/",
+    "themeColor": "#14101B",
+    "icon": "",
+    "titleKey": "",
+    "titleText": "Seasonal events — dey.ci",
+    "metaDescKey": "",
+    "metaDesc": "Halloween Party rewards, candy and spending, planned from your current progress.",
+    "ogTitleKey": "",
+    "ogTitle": "Seasonal events",
+    "ogDescKey": "",
+    "ogDesc": "Plan seasonal rewards from where you are now.",
+    "skipHref": "#seasonal-events",
+    "skipKey": "",
+    "skipText": "Skip to the events",
+    "dust": "",
+    "brand": "SEASONAL",
+    "brandNoteKey": "",
+    "brandNote": "from where you are now",
+    "swipePrev": {
+      "url": "../events/",
+      "page": "kvksg",
+      "title": "Event Cycle",
+      "lede": "what’s on today, what scores, and what to save."
+    },
+    "swipeNext": {
+      "url": "../bear-hunt/",
+      "page": "bearhunt",
+      "title": "Bear Hunt",
+      "lede": "build your marches, fill rallies, and run the hunt."
+    },
+    "css": [
+      "../css/styles.css",
+      "../css/events.css",
+      "../css/seasonal.css"
+    ],
+    "scripts": [
+      "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
+      "../js/common.js"
+    ],
+    "footMainKey": "",
+    "footMain": "SEASONAL EVENTS",
+    "footSubs": [
+      {
+        "key": "",
+        "html": "Event data from <a href=\"https://kingshotpacks.com/halloween-party\">Kingshot Packs</a>, extracted 28 October 2026. Community data; check your in-game rules and timer."
+      }
+    ],
+    "headScripts": []
+  },
+  "halloween": {
+    "token": "seasonal",
+    "depth": "../../",
+    "canonicalPath": "/seasonal/halloween-party/",
+    "themeColor": "#14101B",
+    "icon": "",
+    "titleKey": "",
+    "titleText": "Halloween Party — dey.ci",
+    "metaDescKey": "",
+    "metaDesc": "Halloween Party rewards, candy and spending, planned from your current progress.",
+    "ogTitleKey": "",
+    "ogTitle": "Halloween Party",
+    "ogDescKey": "",
+    "ogDesc": "Plan seasonal rewards from where you are now.",
+    "skipHref": "#planner",
+    "skipKey": "",
+    "skipText": "Skip to the planner",
+    "dust": "",
+    "brand": "SEASONAL",
+    "brandNoteKey": "",
+    "brandNote": "from where you are now",
+    "swipePrev": {
+      "url": "../../events/",
+      "page": "kvksg",
+      "title": "Event Cycle",
+      "lede": "what’s on today, what scores, and what to save."
+    },
+    "swipeNext": {
+      "url": "../../bear-hunt/",
+      "page": "bearhunt",
+      "title": "Bear Hunt",
+      "lede": "build your marches, fill rallies, and run the hunt."
+    },
+    "css": [
+      "../../css/styles.css",
+      "../../css/events.css",
+      "../../css/seasonal.css"
+    ],
+    "scripts": [
+      "../../js/i18n.js",
+      "../../js/page-deck.js",
+      "../../js/page-chrome.js",
+      "../../js/common.js",
+      "../../js/seasonal-data.js",
+      "../../js/halloween-engine.js",
+      "../../js/seasonal.js"
+    ],
+    "footMainKey": "",
+    "footMain": "SEASONAL EVENTS",
+    "footSubs": [
+      {
+        "key": "",
+        "html": "Event data from <a href=\"https://kingshotpacks.com/halloween-party\">Kingshot Packs</a>, extracted 28 October 2026. Community data; check your in-game rules and timer."
+      }
+    ],
+    "headScripts": []
   }
 }

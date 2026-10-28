@@ -1,0 +1,73 @@
+---
+layout: page
+self: halloween
+navSelf: seasonal
+---
+{% assign event = site.data.seasonal.halloween_party %}
+<main class="seasonal-page" lang="en" dir="ltr">
+  <header class="seasonal-heading" id="top"><p class="tag"><a href="../">Seasonal events</a> / 2026</p><h1>Halloween Party</h1><p class="lede">Start where you are. See what your remaining candy can earn.</p><nav class="seasonal-jumps" aria-label="Halloween sections"><a href="#planner">Your plan</a><a href="#missions">Missions</a><a href="#spending">Packs &amp; passes</a><a href="#reference">Event rules</a></nav></header>
+  <noscript><p class="note">Enable JavaScript for the planner. All event rules and reward tables are available below.</p></noscript>
+  <div data-module="seasonal" data-occurrence="halloween-2026" data-worker="../../js/halloween-worker.js">
+  <section id="planner" aria-labelledby="progress-title">
+    <div class="seasonal-section-head"><h2 id="progress-title">Where you are now</h2><span class="tag">Saved progress</span></div>
+    <p>Enter what the game shows now. Leave an unread value blank; enter 0 when you know it is zero.</p>
+    <div class="seasonal-inputs">
+      <label>Current Prankster Points<input type="number" min="0" max="10000000" step="1" inputmode="numeric" data-fact="points" data-action="seasonal.fact"></label>
+      <label>Candy held now<input type="number" min="0" max="10000000" step="1" inputmode="numeric" data-fact="candy" data-action="seasonal.fact"></label>
+      <label>Days left, including today<input type="number" min="0" max="8" step="1" inputmode="numeric" data-fact="daysLeft" data-action="seasonal.fact"></label>
+      <label>Your target points<input type="number" min="1" max="10000000" step="1" inputmode="numeric" value="12500" data-plan="target" data-action="seasonal.plan"></label>
+    </div>
+    <div class="seasonal-result" role="status" aria-live="polite" aria-atomic="true"><p class="tag">From here</p><p data-target="seasonal.summary">Enter your current points and candy to calculate the gap.</p><dl class="seasonal-facts" data-target="seasonal.totals"></dl></div>
+    <p class="note">Earn the permanent Blaze Bungalow by reaching 12,500 points or finishing in the top 10. The points route does not require a ranking position.</p>
+    <p class="note" data-target="seasonal.issues"></p>
+    <p class="seasonal-status" data-target="seasonal.status" role="status"></p>
+    <details id="attack-progress"><summary>Daily chest and current attack progress</summary><div class="seasonal-inputs">
+      <label>Points earned today<input type="number" min="0" max="10000000" data-fact="todayPoints" data-action="seasonal.fact"></label>
+      <label>Paid attacks since last free burst<input type="number" min="0" max="39" data-fact="pity" data-action="seasonal.fact"></label>
+      <label>Hits left on Pumpkin Man<input type="number" min="1" max="10" data-fact="pumpkinRemaining" data-action="seasonal.fact"></label>
+      <label>Hits left on Witch (0 if absent)<input type="number" min="0" max="15" data-fact="witchRemaining" data-action="seasonal.fact"></label>
+    </div><p data-target="seasonal.daily"></p><p class="note">Unknown attack progress uses a fresh Pumpkin Man, no active Witch and zero pity in the forecast. Free attacks are assumed not to advance pity.</p></details>
+  </section>
+  <section id="candy-sources" aria-labelledby="sources-title"><div class="seasonal-section-head"><h2 id="sources-title">Candy still available</h2><span class="tag">Plan from now</span></div>
+    <p>Only enter resources you intend to spend before the event ends. These plans do not change your inventory.</p>
+    <div class="seasonal-inputs">
+      <label>Additional gems to spend<input type="number" min="0" max="10000000" value="0" data-plan="gems" data-action="seasonal.plan"></label>
+      <label>Additional speedup minutes to use<input type="number" min="0" max="10000000" value="0" data-plan="speedupMinutes" data-action="seasonal.plan"></label>
+      <label>Gathering candy already collected<input type="number" min="0" max="3000" data-fact="gatheringCollected" data-action="seasonal.fact"></label>
+      <label>Additional gathering candy planned<input type="number" min="0" max="3000" value="0" data-plan="gathering" data-action="seasonal.plan"></label>
+      <label>Beast candy already collected<input type="number" min="0" max="4000" data-fact="beastsCollected" data-action="seasonal.fact"></label>
+      <label>Additional Beast candy planned<input type="number" min="0" max="4000" value="0" data-plan="beasts" data-action="seasonal.plan"></label>
+      <label>Trick or Treat days remaining<input type="number" min="0" max="7" data-fact="doorDaysLeft" data-action="seasonal.fact"></label>
+      <label>Full door days you plan to complete<input type="number" min="0" max="7" value="0" data-plan="doors" data-action="seasonal.plan"></label>
+      <label>Other additional candy<input type="number" min="0" max="10000000" value="0" data-plan="other" data-action="seasonal.plan"></label>
+    </div>
+    <p class="note">A full door day means one own-door visit, two shared-door visits and the modelled sharing rewards. Door candy is an estimate. Gathering and Beast plans stop at their remaining caps.</p>
+    <table class="seasonal-table"><caption>Candy in this plan</caption><thead><tr><th scope="col">Source</th><th scope="col">Candy</th></tr></thead><tbody data-target="seasonal.sources"></tbody></table>
+  </section>
+  <section id="missions" aria-labelledby="missions-title"><h2 id="missions-title">Prankster King</h2><p>Record the milestones already claimed for each day. Choose the final milestone count you intend to reach; only the difference counts.</p>
+    <label class="seasonal-single">Kingdom age in days<input type="number" min="1" max="10000" data-fact="kingdomDay" data-action="seasonal.fact"></label>
+    <label class="seasonal-single">Town Center level (30 for any Truegold level)<input type="number" min="1" max="30" data-fact="townCenter" data-action="seasonal.fact"></label>
+    <p class="note">The Town Center field uses your saved building level when available. Kingdom age selects task and pass variants. A hero generation alone does not give an exact kingdom age.</p>
+    <div class="seasonal-table-wrap"><table class="seasonal-table"><caption>Seven stages · five milestones each</caption><thead><tr><th scope="col">Stage</th><th scope="col">Claimed</th><th scope="col">Finish at</th></tr></thead><tbody>
+      {% for stage in (1..7) %}<tr><th scope="row">Day {{ stage }}<span class="seasonal-sub" data-target="seasonal.mission-name" data-stage="{{ forloop.index0 }}"></span></th><td><label><span class="sr-only">Day {{ stage }} claimed milestones</span><select data-fact="missions" data-index="{{ forloop.index0 }}" data-action="seasonal.fact"><option value="">Unknown</option>{% for n in (0..5) %}<option value="{{ n }}">{{ n }}</option>{% endfor %}</select></label></td><td><label><span class="sr-only">Day {{ stage }} planned milestones</span><select data-plan="missions" data-index="{{ forloop.index0 }}" data-action="seasonal.plan">{% for n in (0..5) %}<option value="{{ n }}">{{ n }}</option>{% endfor %}</select></label></td></tr>{% endfor %}
+    </tbody></table></div><p class="note">The milestone candy is 250 / 300 / 350 / 400 / 400. Completing all five gives 1,700 candy per stage. A plan for a day that has already closed cannot be completed.</p>
+  </section>
+  <section id="spending" aria-labelledby="spending-title"><div class="seasonal-section-head"><h2 id="spending-title">Packs &amp; passes</h2><span class="tag">Additional purchases</span></div>
+    <p>Record past purchases first. Held candy already includes their unspent candy. Only new purchases add candy here.</p>
+    <label class="seasonal-single">Listed store currency<select data-plan="currency" data-action="seasonal.plan"><option value="USD">USD</option><option value="EUR">EUR</option></select></label><p class="note">The source lists USD and EUR prices. Check your local store price; no exchange-rate conversion is applied.</p>
+    <div class="seasonal-table-wrap"><table class="seasonal-table"><caption>Candy Party packs · buy in tier order</caption><thead><tr><th scope="col">Pack / price</th><th scope="col">Bought</th><th scope="col">Buy now</th></tr></thead><tbody>
+      {% for pack in event.packs %}<tr><th scope="row">Pack {{ pack.tier }}<span class="seasonal-sub">{{ pack.candy }} candy · <span data-target="seasonal.pack-price" data-index="{{ forloop.index0 }}"></span></span></th><td><label><span class="sr-only">Pack {{ pack.tier }} already bought</span><select data-fact="packs" data-index="{{ forloop.index0 }}" data-action="seasonal.fact"><option value="">Unknown</option>{% assign limit = pack.purchaseLimit | default: 1 %}{% for n in (0..limit) %}<option value="{{ n }}">{{ n }}</option>{% endfor %}</select></label></td><td><label><span class="sr-only">Pack {{ pack.tier }} additional purchases</span><select data-plan="packs" data-index="{{ forloop.index0 }}" data-action="seasonal.plan">{% for n in (0..limit) %}<option value="{{ n }}">{{ n }}</option>{% endfor %}</select></label></td></tr>{% endfor %}
+    </tbody></table></div>
+    <div class="seasonal-table-wrap"><table class="seasonal-table"><caption>Audacious Adventure · record claimed levels on each track</caption><thead><tr><th scope="col">Track</th><th scope="col">Owned</th><th scope="col">Claimed levels</th><th scope="col">Buy</th></tr></thead><tbody>
+      <tr><th scope="row">Free</th><td>Always</td><td><label><span class="sr-only">Free track claimed levels</span><input type="number" min="0" max="21" data-fact="claimedPass" data-index="0" data-action="seasonal.fact"></label></td><td>—</td></tr>
+      {% for pass in event.passes %}<tr><th scope="row">{{ pass.label }}<span class="seasonal-sub" data-target="seasonal.pass-price" data-index="{{ forloop.index0 }}"></span></th><td><label><span class="sr-only">{{ pass.label }} owned</span><select data-fact="tracks" data-index="{{ forloop.index0 }}" data-action="seasonal.fact"><option value="">Unknown</option><option value="false">No</option><option value="true">Yes</option></select></label></td><td><label><span class="sr-only">{{ pass.label }} claimed levels</span><input type="number" min="0" max="21" data-fact="claimedPass" data-index="{{ forloop.index }}" data-action="seasonal.fact"></label></td><td><label><span class="sr-only">Buy {{ pass.label }}</span><input type="checkbox" data-plan="tracks" data-index="{{ forloop.index0 }}" data-action="seasonal.plan"></label></td></tr>{% endfor %}
+    </tbody></table></div>
+    <p class="note">“Claimed levels” is the number collected, from 0 to 21, starting at level 1. Enter 0 for a new pass. Unread claims or kingdom age exclude pass rewards from the forecast.</p>
+    <label class="seasonal-single">Top-up points already earned<input type="number" min="0" max="10000000" data-fact="topUpPoints" data-action="seasonal.fact"></label>
+    <p data-target="seasonal.spend"></p><details id="planned-rewards"><summary>Rewards from additional purchases and missions</summary><p class="note">Top-up rewards assume you collected previously unlocked tiers. Unknown top-up progress excludes these rewards.</p><div data-target="seasonal.purchase-rewards"></div></details>
+  </section>
+  <section id="forecast" aria-labelledby="forecast-title"><h2 id="forecast-title">Where this plan could finish</h2><p>The forecast spends the planned candy and any newly claimable pass candy. It includes random free attacks and chest drops. It excludes jackpot winnings and future daily chests.</p><button type="button" class="seasonal-link" data-action="seasonal.forecast" data-target="seasonal.run">❧ Forecast this plan</button><p data-target="seasonal.forecast-status" role="status"></p><div data-target="seasonal.forecast-result"></div><p class="note">The range is the 10th–90th percentile from 200 seeded runs, conditional on completing your candy plan. It does not measure uncertainty in the source rules or door income.</p></section>
+  <section id="seasonal-save"><h2>Your saved progress</h2><p>Your progress is included in the shared player save. Plans are temporary and reset on reload. Halloween 2026 has its own progress record.</p><div data-module="save-transfer"><button type="button" class="seasonal-link" data-action="save-transfer.export">❧ Export player save</button> <button type="button" class="seasonal-link" data-action="save-transfer.choose">❧ Import player save</button><input type="file" accept="application/json,.json" data-target="save-transfer.file" data-action="save-transfer.import" hidden></div><p data-target="seasonal.transfer-status" role="status"></p></section>
+  </div>
+  {% include seasonal/halloween-reference.html %}
+</main>

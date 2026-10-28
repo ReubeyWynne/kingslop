@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["zh-Hans"] = {
+  "seasonal.nav": "季节活动",
+  "seasonal.lede": "根据当前进度规划季节活动。",
   "castle.nav": "城堡",
   "castle.deck.lede": "城堡控制、战斗机制、集结参与者技能与兵种选择。",
   "meta.title": "Bear Hunt, 解密",

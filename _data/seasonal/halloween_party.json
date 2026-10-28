@@ -1,0 +1,3853 @@
+{
+  "schemaVersion": 1,
+  "id": "halloween-party",
+  "occurrence": "halloween-2026",
+  "title": "Halloween Party",
+  "source": {
+    "url": "https://kingshotpacks.com/halloween-party",
+    "module": "https://kingshotpacks.com/assets/CovenClash-f1da1b82.js",
+    "retrieved": "2026-10-28",
+    "status": "Community calculator data; not independently verified in game",
+    "assumptions": [
+      "Free attacks do not advance pity.",
+      "Candy rain averages 100 candy.",
+      "Jackpot pot varies by server; excluded from the default forecast.",
+      "Event dates must be entered from the in-game timer."
+    ],
+    "corrections": [
+      {
+        "date": "2026-10-28",
+        "source": "User event clarification",
+        "rule": "The permanent skin requires 12,500 points OR a top-10 finish. The points route has no rank restriction."
+      }
+    ]
+  },
+  "rules": {
+    "attackCandy": 20,
+    "attackPoints": 2,
+    "pumpkinHits": 10,
+    "witchChance": 0.2,
+    "treasureMinHits": 10,
+    "skinPoints": 12500,
+    "dailyPoints": 300,
+    "autoAttackAt": 60,
+    "pity": {
+      "base": 0.002,
+      "flatThrough": 12,
+      "step": 0.036,
+      "certainAt": 40
+    },
+    "treasureChances": [
+      {
+        "minPoints": 10000,
+        "chance": 0.006
+      },
+      {
+        "minPoints": 20000,
+        "chance": 0.01
+      }
+    ],
+    "treasurePot": {
+      "basePoints": 10000,
+      "pointsPerKill": 2,
+      "candyPerPoint": 0.4
+    },
+    "conversions": {
+      "gemsPerTenCandy": 1000,
+      "speedupSecondsPerTenCandy": 7200
+    },
+    "eventDays": 8,
+    "gatheringCap": 3000,
+    "beastCap": 4000,
+    "skinTopRank": 10
+  },
+  "chests": {
+    "pumpkin": [
+      {
+        "name": "Lucky Hero Gear Chest",
+        "amount": 1,
+        "chance": 1
+      },
+      {
+        "name": "10 Stamina",
+        "amount": 1,
+        "chance": 3
+      },
+      {
+        "name": "Gems",
+        "amount": 100,
+        "chance": 10
+      },
+      {
+        "name": "5k Hero XP",
+        "amount": 1,
+        "chance": 17
+      },
+      {
+        "name": "5 Minute Construction Speedup",
+        "amount": 1,
+        "chance": 23
+      },
+      {
+        "name": "5 Minute Research Speedup",
+        "amount": 1,
+        "chance": 23
+      },
+      {
+        "name": "5 Minute Training Speedup",
+        "amount": 1,
+        "chance": 23
+      }
+    ],
+    "pumpkinKill": [
+      {
+        "name": "Gems",
+        "amount": 100,
+        "chance": 86
+      },
+      {
+        "name": "1 Hour Speedup",
+        "amount": 1,
+        "chance": 8
+      },
+      {
+        "name": "Governor Gear Material Chest",
+        "amount": 1,
+        "chance": 2
+      },
+      {
+        "name": "Random Governor Charm Material Chest",
+        "amount": 1,
+        "chance": 2
+      },
+      {
+        "name": "Forgehammer",
+        "amount": 1,
+        "chance": 2
+      }
+    ],
+    "witch": [
+      {
+        "name": "Gems",
+        "amount": 100,
+        "chance": 60.5
+      },
+      {
+        "name": "Gems",
+        "amount": 1000,
+        "chance": 20
+      },
+      {
+        "name": "3 Hour Speedup",
+        "amount": 1,
+        "chance": 12
+      },
+      {
+        "name": "Governor Gear Material Chest",
+        "amount": 1,
+        "chance": 2
+      },
+      {
+        "name": "Random Governor Charm Material Chest",
+        "amount": 1,
+        "chance": 2
+      },
+      {
+        "name": "Forgehammer",
+        "amount": 1,
+        "chance": 2
+      },
+      {
+        "name": "Lucky Hero Gear Chest",
+        "amount": 2,
+        "chance": 1.5
+      }
+    ]
+  },
+  "witchHits": [
+    {
+      "hits": 3,
+      "chance": 56
+    },
+    {
+      "hits": 4,
+      "chance": 7
+    },
+    {
+      "hits": 5,
+      "chance": 6
+    },
+    {
+      "hits": 6,
+      "chance": 6
+    },
+    {
+      "hits": 7,
+      "chance": 5
+    },
+    {
+      "hits": 8,
+      "chance": 5
+    },
+    {
+      "hits": 9,
+      "chance": 5
+    },
+    {
+      "hits": 10,
+      "chance": 2.5
+    },
+    {
+      "hits": 11,
+      "chance": 2.5
+    },
+    {
+      "hits": 12,
+      "chance": 2
+    },
+    {
+      "hits": 13,
+      "chance": 1.5
+    },
+    {
+      "hits": 14,
+      "chance": 1
+    },
+    {
+      "hits": 15,
+      "chance": 0.5
+    }
+  ],
+  "freeAttacks": [
+    {
+      "attacks": 3,
+      "chance": 70
+    },
+    {
+      "attacks": 4,
+      "chance": 7
+    },
+    {
+      "attacks": 5,
+      "chance": 6
+    },
+    {
+      "attacks": 6,
+      "chance": 4
+    },
+    {
+      "attacks": 7,
+      "chance": 4
+    },
+    {
+      "attacks": 8,
+      "chance": 3
+    },
+    {
+      "attacks": 9,
+      "chance": 3
+    },
+    {
+      "attacks": 10,
+      "chance": 2
+    },
+    {
+      "attacks": 11,
+      "chance": 1
+    }
+  ],
+  "dailyRewards": [
+    {
+      "name": "Mythic General Hero Shard",
+      "amount": 2
+    },
+    {
+      "name": "Forgehammer",
+      "amount": 3
+    },
+    {
+      "name": "3 Hour Speedup",
+      "amount": 1
+    }
+  ],
+  "doors": {
+    "houses": [
+      {
+        "id": "veteran",
+        "name": "Veteran Witch's House",
+        "weight": 10.5,
+        "visitors": 10,
+        "rainChance": 0.2,
+        "candy": [
+          {
+            "name": "Halloween Candy",
+            "amount": 300,
+            "chance": 3
+          },
+          {
+            "name": "Halloween Candy",
+            "amount": 250,
+            "chance": 12
+          },
+          {
+            "name": "Halloween Candy",
+            "amount": 200,
+            "chance": 20
+          },
+          {
+            "name": "Halloween Candy",
+            "amount": 150,
+            "chance": 25
+          },
+          {
+            "name": "Halloween Candy",
+            "amount": 100,
+            "chance": 40
+          }
+        ]
+      },
+      {
+        "id": "candy",
+        "name": "Candy Witch's House",
+        "weight": 15.5,
+        "visitors": 5,
+        "rainChance": 0.2,
+        "candy": [
+          {
+            "name": "Halloween Candy",
+            "amount": 250,
+            "chance": 2
+          },
+          {
+            "name": "Halloween Candy",
+            "amount": 200,
+            "chance": 10
+          },
+          {
+            "name": "Halloween Candy",
+            "amount": 150,
+            "chance": 20
+          },
+          {
+            "name": "Halloween Candy",
+            "amount": 100,
+            "chance": 28
+          },
+          {
+            "name": "Halloween Candy",
+            "amount": 70,
+            "chance": 40
+          }
+        ]
+      },
+      {
+        "id": "apprentice",
+        "name": "Witch Apprentice's House",
+        "weight": 74,
+        "visitors": 0,
+        "rainChance": 0,
+        "candy": [
+          {
+            "name": "Halloween Candy",
+            "amount": 200,
+            "chance": 1
+          },
+          {
+            "name": "Halloween Candy",
+            "amount": 150,
+            "chance": 9
+          },
+          {
+            "name": "Halloween Candy",
+            "amount": 100,
+            "chance": 20
+          },
+          {
+            "name": "Halloween Candy",
+            "amount": 70,
+            "chance": 28
+          },
+          {
+            "name": "Halloween Candy",
+            "amount": 50,
+            "chance": 42
+          }
+        ]
+      }
+    ],
+    "days": 7,
+    "ownVisitsPerDay": 1,
+    "otherVisitsPerDay": 2,
+    "sharePerVisitor": 20,
+    "candyRainAverage": 100
+  },
+  "milestoneCandy": [
+    250,
+    300,
+    350,
+    400,
+    400
+  ],
+  "missions": [
+    {
+      "stage": 1,
+      "name": "Power Boost",
+      "fromDay": 1,
+      "tasks": [
+        {
+          "task": "Raise 1 Power through Construction",
+          "points": 1
+        },
+        {
+          "task": "Raise 1 Power through Research",
+          "points": 1
+        },
+        {
+          "task": "Raise 1 Power by training/promoting troops",
+          "points": 1
+        },
+        {
+          "task": "Use Epic Recruitment 1 time(s)",
+          "points": 11000
+        },
+        {
+          "task": "Use Advanced Recruitment 1 time(s)",
+          "points": 3300
+        },
+        {
+          "task": "Use 1 Rare Hero Shard(s) to ascend Heroes",
+          "points": 500
+        },
+        {
+          "task": "Use 1 Epic Hero Shard(s) to ascend Heroes",
+          "points": 2200
+        },
+        {
+          "task": "Use 1 Mythic Hero Shard(s) to ascend Heroes",
+          "points": 6000
+        }
+      ],
+      "milestones": [
+        26000,
+        55000,
+        98000,
+        169000,
+        274000
+      ]
+    },
+    {
+      "stage": 2,
+      "name": "Defeat Beasts",
+      "fromDay": 1,
+      "tasks": [
+        {
+          "task": "Call rally and hunt down 1 Terror(s)",
+          "points": 30000
+        },
+        {
+          "task": "Kill a Lv.1-30 Beast",
+          "points": 9900
+        }
+      ],
+      "milestones": [
+        72000,
+        163500,
+        291000,
+        433500,
+        586500
+      ]
+    },
+    {
+      "stage": 3,
+      "name": "Hero Development",
+      "fromDay": 1,
+      "tasks": [
+        {
+          "task": "Use Epic Recruitment 1 time(s)",
+          "points": 11000
+        },
+        {
+          "task": "Use Advanced Recruitment 1 time(s)",
+          "points": 3300
+        },
+        {
+          "task": "Use 1 Rare Hero Shard(s) to ascend Heroes",
+          "points": 500
+        },
+        {
+          "task": "Use 1 Epic Hero Shard(s) to ascend Heroes",
+          "points": 2200
+        },
+        {
+          "task": "Use 1 Mythic Hero Shard(s) to ascend Heroes",
+          "points": 6000
+        },
+        {
+          "task": "Use 1m of Speedups for Construction (Gem Speedups excluded)",
+          "points": 60
+        },
+        {
+          "task": "Use 1m of Speedups for Research (Gem Speedups excluded)",
+          "points": 60
+        },
+        {
+          "task": "Use 1m of Speedups for Troop Training/Promotion (Gem Speedups excluded)",
+          "points": 60
+        }
+      ],
+      "milestones": [
+        19000,
+        58000,
+        170000,
+        339000,
+        595000
+      ]
+    },
+    {
+      "stage": 3,
+      "name": "Hero Development",
+      "fromDay": 113,
+      "tasks": [
+        {
+          "task": "Use Epic Recruitment 1 time(s)",
+          "points": 11000
+        },
+        {
+          "task": "Use Advanced Recruitment 1 time(s)",
+          "points": 3300
+        },
+        {
+          "task": "Use 1 Rare Hero Shard(s) to ascend Heroes",
+          "points": 500
+        },
+        {
+          "task": "Use 1 Epic Hero Shard(s) to ascend Heroes",
+          "points": 2200
+        },
+        {
+          "task": "Use 1 Mythic Hero Shard(s) to ascend Heroes",
+          "points": 6000
+        },
+        {
+          "task": "Use 1m of Speedups for Construction (Gem Speedups excluded)",
+          "points": 60
+        },
+        {
+          "task": "Use 1m of Speedups for Research (Gem Speedups excluded)",
+          "points": 60
+        },
+        {
+          "task": "Use 1m of Speedups for Troop Training/Promotion (Gem Speedups excluded)",
+          "points": 60
+        },
+        {
+          "task": "Use 1m of Speedups to Learn Master Skills (Gem Speedups excluded)",
+          "points": 60
+        }
+      ],
+      "milestones": [
+        19000,
+        58000,
+        170000,
+        339000,
+        595000
+      ]
+    },
+    {
+      "stage": 4,
+      "name": "Soldier Training",
+      "fromDay": 1,
+      "tasks": [
+        {
+          "task": "Train 1 Lv. 1 Troop(s)",
+          "points": 5
+        },
+        {
+          "task": "Train 1 Lv. 2 Troop(s)",
+          "points": 7
+        },
+        {
+          "task": "Train 1 Lv. 3 Troop(s)",
+          "points": 10
+        },
+        {
+          "task": "Train 1 Lv. 4 Troop(s)",
+          "points": 16
+        },
+        {
+          "task": "Train 1 Lv. 5 Troop(s)",
+          "points": 23
+        },
+        {
+          "task": "Train 1 Lv. 6 Troop(s)",
+          "points": 36
+        },
+        {
+          "task": "Train 1 Lv. 7 Troop(s)",
+          "points": 50
+        },
+        {
+          "task": "Train 1 Lv. 8 Troop(s)",
+          "points": 68
+        },
+        {
+          "task": "Train 1 Lv. 9 Troop(s)",
+          "points": 90
+        },
+        {
+          "task": "Train 1 Lv. 10 Troop(s)",
+          "points": 118
+        },
+        {
+          "task": "Points earned from promotion are the difference in points between training troops of the corresponding levels.",
+          "points": 1
+        }
+      ],
+      "milestones": [
+        26000,
+        55000,
+        98000,
+        169000,
+        274000
+      ]
+    },
+    {
+      "stage": 4,
+      "name": "Soldier Training",
+      "fromDay": 218,
+      "tasks": [
+        {
+          "task": "Train 1 Lv. 1 Troop(s)",
+          "points": 5
+        },
+        {
+          "task": "Train 1 Lv. 2 Troop(s)",
+          "points": 7
+        },
+        {
+          "task": "Train 1 Lv. 3 Troop(s)",
+          "points": 10
+        },
+        {
+          "task": "Train 1 Lv. 4 Troop(s)",
+          "points": 16
+        },
+        {
+          "task": "Train 1 Lv. 5 Troop(s)",
+          "points": 23
+        },
+        {
+          "task": "Train 1 Lv. 6 Troop(s)",
+          "points": 36
+        },
+        {
+          "task": "Train 1 Lv. 7 Troop(s)",
+          "points": 50
+        },
+        {
+          "task": "Train 1 Lv. 8 Troop(s)",
+          "points": 68
+        },
+        {
+          "task": "Train 1 Lv. 9 Troop(s)",
+          "points": 90
+        },
+        {
+          "task": "Train 1 Lv. 10 Troop(s)",
+          "points": 118
+        },
+        {
+          "task": "Train 1 Lv. 11 Troop(s)",
+          "points": 140
+        },
+        {
+          "task": "Points earned from promotion are the difference in points between training troops of the corresponding levels.",
+          "points": 1
+        }
+      ],
+      "milestones": [
+        26000,
+        55000,
+        98000,
+        169000,
+        274000
+      ]
+    },
+    {
+      "stage": 5,
+      "name": "Hero Gear",
+      "fromDay": 1,
+      "tasks": [
+        {
+          "task": "Use 1 Hero Gear Forgehammer(s)",
+          "points": 25000
+        },
+        {
+          "task": "Use 1 Widget(s) of any Hero Exclusive Gear",
+          "points": 50000
+        },
+        {
+          "task": "Use 1 Gem(s)",
+          "points": 10
+        }
+      ],
+      "milestones": [
+        19000,
+        58000,
+        170000,
+        339000,
+        595000
+      ]
+    },
+    {
+      "stage": 6,
+      "name": "Gather Resources",
+      "fromDay": 1,
+      "tasks": [
+        {
+          "task": "Gather 1,000 Bread in the Wilderness",
+          "points": 10
+        },
+        {
+          "task": "Gather 1,000 Wood in the Wilderness",
+          "points": 10
+        },
+        {
+          "task": "Gather 200 Stone in the Wilderness",
+          "points": 10
+        },
+        {
+          "task": "Gather 50 Iron in the Wilderness",
+          "points": 10
+        },
+        {
+          "task": "Raise 1 Power through Construction",
+          "points": 1
+        },
+        {
+          "task": "Raise 1 Power through Research",
+          "points": 1
+        },
+        {
+          "task": "Raise 1 Power by training/promoting troops",
+          "points": 1
+        }
+      ],
+      "milestones": [
+        60000,
+        154000,
+        244000,
+        292000,
+        356000
+      ]
+    },
+    {
+      "stage": 7,
+      "name": "Governor Gear",
+      "fromDay": 1,
+      "tasks": [
+        {
+          "task": "Raise Governor Gear max score by 1",
+          "points": 50
+        },
+        {
+          "task": "Use 1m of Speedups for Construction (Gem Speedups excluded)",
+          "points": 60
+        },
+        {
+          "task": "Use 1m of Speedups for Research (Gem Speedups excluded)",
+          "points": 60
+        },
+        {
+          "task": "Use 1m of Speedups for Troop Training/Promotion (Gem Speedups excluded)",
+          "points": 60
+        }
+      ],
+      "milestones": [
+        19000,
+        58000,
+        170000,
+        339000,
+        595000
+      ]
+    },
+    {
+      "stage": 7,
+      "name": "Governor Gear",
+      "fromDay": 113,
+      "tasks": [
+        {
+          "task": "Raise Governor Gear max score by 1",
+          "points": 50
+        },
+        {
+          "task": "Use 1m of Speedups for Construction (Gem Speedups excluded)",
+          "points": 60
+        },
+        {
+          "task": "Use 1m of Speedups for Research (Gem Speedups excluded)",
+          "points": 60
+        },
+        {
+          "task": "Use 1m of Speedups for Troop Training/Promotion (Gem Speedups excluded)",
+          "points": 60
+        },
+        {
+          "task": "Use 1m of Speedups to Learn Master Skills (Gem Speedups excluded)",
+          "points": 60
+        }
+      ],
+      "milestones": [
+        19000,
+        58000,
+        170000,
+        339000,
+        595000
+      ]
+    }
+  ],
+  "missionRewards": [
+    [
+      {
+        "name": "Halloween Candy",
+        "amount": 250
+      },
+      {
+        "name": "1K Bread (Secured)",
+        "amount": 100
+      },
+      {
+        "name": "1K Wood (Secured)",
+        "amount": 100
+      },
+      {
+        "name": "5m Healing Speedup",
+        "amount": 10
+      }
+    ],
+    [
+      {
+        "name": "Halloween Candy",
+        "amount": 300
+      },
+      {
+        "name": "1K Stone (Secured)",
+        "amount": 20
+      },
+      {
+        "name": "1K Iron (Secured)",
+        "amount": 5
+      },
+      {
+        "name": "1,000 Hero XP",
+        "amount": 2
+      }
+    ],
+    [
+      {
+        "name": "Halloween Candy",
+        "amount": 350
+      },
+      {
+        "name": "Epic Conquest Skill Book",
+        "amount": 5
+      },
+      {
+        "name": "Epic Expedition Skill Manual",
+        "amount": 5
+      }
+    ],
+    [
+      {
+        "name": "Halloween Candy",
+        "amount": 400
+      },
+      {
+        "name": "Mythic Conquest Skill Book",
+        "amount": 3
+      },
+      {
+        "name": "Mythic Expedition Skill Manual",
+        "amount": 3
+      }
+    ],
+    [
+      {
+        "name": "Halloween Candy",
+        "amount": 400
+      },
+      {
+        "name": "Gold Key",
+        "amount": 1
+      },
+      {
+        "name": "Gems",
+        "amount": 2000
+      }
+    ]
+  ],
+  "ranks": [
+    {
+      "id": "1",
+      "label": "Rank 1",
+      "minRank": 1,
+      "maxRank": 1,
+      "skin": "permanent",
+      "goalReward": "none",
+      "rewards": [
+        {
+          "name": "Blaze Bungalow",
+          "amount": 1
+        },
+        {
+          "name": "Gems",
+          "amount": 80000
+        },
+        {
+          "name": "1 Hour Construction Speedup",
+          "amount": 30
+        },
+        {
+          "name": "1 Hour Research Speedup",
+          "amount": 30
+        },
+        {
+          "name": "1 Hour Training Speedup",
+          "amount": 30
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "label": "Rank 2",
+      "minRank": 2,
+      "maxRank": 2,
+      "skin": "permanent",
+      "goalReward": "none",
+      "rewards": [
+        {
+          "name": "Blaze Bungalow",
+          "amount": 1
+        },
+        {
+          "name": "Gems",
+          "amount": 48000
+        },
+        {
+          "name": "1 Hour Construction Speedup",
+          "amount": 21
+        },
+        {
+          "name": "1 Hour Research Speedup",
+          "amount": 21
+        },
+        {
+          "name": "1 Hour Training Speedup",
+          "amount": 21
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "label": "Rank 3",
+      "minRank": 3,
+      "maxRank": 3,
+      "skin": "permanent",
+      "goalReward": "none",
+      "rewards": [
+        {
+          "name": "Blaze Bungalow",
+          "amount": 1
+        },
+        {
+          "name": "Gems",
+          "amount": 28800
+        },
+        {
+          "name": "1 Hour Construction Speedup",
+          "amount": 18
+        },
+        {
+          "name": "1 Hour Research Speedup",
+          "amount": 18
+        },
+        {
+          "name": "1 Hour Training Speedup",
+          "amount": 18
+        }
+      ]
+    },
+    {
+      "id": "4-5",
+      "label": "Rank 4 to 5",
+      "minRank": 4,
+      "maxRank": 5,
+      "skin": "permanent",
+      "goalReward": "none",
+      "rewards": [
+        {
+          "name": "Blaze Bungalow",
+          "amount": 1
+        },
+        {
+          "name": "Gems",
+          "amount": 18000
+        },
+        {
+          "name": "1 Hour Construction Speedup",
+          "amount": 14
+        },
+        {
+          "name": "1 Hour Research Speedup",
+          "amount": 14
+        },
+        {
+          "name": "1 Hour Training Speedup",
+          "amount": 14
+        }
+      ]
+    },
+    {
+      "id": "6-10",
+      "label": "Rank 6 to 10",
+      "minRank": 6,
+      "maxRank": 10,
+      "skin": "permanent",
+      "goalReward": "none",
+      "rewards": [
+        {
+          "name": "Blaze Bungalow",
+          "amount": 1
+        },
+        {
+          "name": "Gems",
+          "amount": 10000
+        },
+        {
+          "name": "1 Hour Construction Speedup",
+          "amount": 11
+        },
+        {
+          "name": "1 Hour Research Speedup",
+          "amount": 11
+        },
+        {
+          "name": "1 Hour Training Speedup",
+          "amount": 11
+        }
+      ]
+    },
+    {
+      "id": "11-25",
+      "label": "Rank 11 to 25",
+      "minRank": 11,
+      "maxRank": 25,
+      "skin": "30-day",
+      "goalReward": "upgrade",
+      "rewards": [
+        {
+          "name": "Blaze Bungalow (30-Day)",
+          "amount": 1
+        },
+        {
+          "name": "Gems",
+          "amount": 5000
+        },
+        {
+          "name": "1 Hour Construction Speedup",
+          "amount": 8
+        },
+        {
+          "name": "1 Hour Research Speedup",
+          "amount": 8
+        },
+        {
+          "name": "1 Hour Training Speedup",
+          "amount": 8
+        }
+      ]
+    },
+    {
+      "id": "26-50",
+      "label": "Rank 26 to 50",
+      "minRank": 26,
+      "maxRank": 50,
+      "skin": null,
+      "goalReward": "extra-skin",
+      "rewards": [
+        {
+          "name": "Gems",
+          "amount": 3000
+        },
+        {
+          "name": "1 Hour Construction Speedup",
+          "amount": 5
+        },
+        {
+          "name": "1 Hour Research Speedup",
+          "amount": 5
+        },
+        {
+          "name": "1 Hour Training Speedup",
+          "amount": 5
+        }
+      ]
+    },
+    {
+      "id": "51-200",
+      "label": "Rank 51 to 200",
+      "minRank": 51,
+      "maxRank": 200,
+      "skin": null,
+      "goalReward": "extra-skin",
+      "rewards": [
+        {
+          "name": "Gems",
+          "amount": 1500
+        },
+        {
+          "name": "1 Hour Construction Speedup",
+          "amount": 3
+        },
+        {
+          "name": "1 Hour Research Speedup",
+          "amount": 3
+        },
+        {
+          "name": "1 Hour Training Speedup",
+          "amount": 3
+        }
+      ]
+    },
+    {
+      "id": "201-500",
+      "label": "Rank 201 to 500",
+      "minRank": 201,
+      "maxRank": 500,
+      "skin": null,
+      "goalReward": "extra-skin",
+      "rewards": [
+        {
+          "name": "Gems",
+          "amount": 800
+        },
+        {
+          "name": "1 Hour Construction Speedup",
+          "amount": 2
+        },
+        {
+          "name": "1 Hour Research Speedup",
+          "amount": 2
+        },
+        {
+          "name": "1 Hour Training Speedup",
+          "amount": 2
+        }
+      ]
+    },
+    {
+      "id": "outside",
+      "label": "Outside the top 500",
+      "minRank": 501,
+      "maxRank": null,
+      "skin": null,
+      "goalReward": "extra-skin",
+      "rewards": []
+    }
+  ],
+  "topUps": [
+    {
+      "points": 2500,
+      "rewards": [
+        {
+          "name": "Gems",
+          "amount": 1000
+        },
+        {
+          "name": "Lucky Hero Gear Chest",
+          "amount": 1
+        },
+        {
+          "name": "1 Hour Training Speedup",
+          "amount": 4
+        },
+        {
+          "name": "1 Hour Construction Speedup",
+          "amount": 4
+        }
+      ]
+    },
+    {
+      "points": 7500,
+      "rewards": [
+        {
+          "name": "Gems",
+          "amount": 2000
+        },
+        {
+          "name": "Gold Key",
+          "amount": 5
+        },
+        {
+          "name": "1 Hour Training Speedup",
+          "amount": 5
+        },
+        {
+          "name": "1 Hour Construction Speedup",
+          "amount": 5
+        }
+      ]
+    },
+    {
+      "points": 12500,
+      "rewards": [
+        {
+          "name": "Nocturne Ball Name Card",
+          "amount": 1
+        },
+        {
+          "name": "Mythic Conquest Skill Book",
+          "amount": 5
+        },
+        {
+          "name": "1 Hour Research Speedup",
+          "amount": 6
+        },
+        {
+          "name": "1 Hour Training Speedup",
+          "amount": 6
+        },
+        {
+          "name": "1 Hour Construction Speedup",
+          "amount": 6
+        }
+      ]
+    },
+    {
+      "points": 20000,
+      "rewards": [
+        {
+          "name": "Mythic Expedition Skill Manual",
+          "amount": 5
+        },
+        {
+          "name": "1 Hour Speedup",
+          "amount": 8
+        },
+        {
+          "name": "1 Hour Research Speedup",
+          "amount": 8
+        },
+        {
+          "name": "1 Hour Training Speedup",
+          "amount": 8
+        },
+        {
+          "name": "1 Hour Construction Speedup",
+          "amount": 8
+        }
+      ]
+    },
+    {
+      "points": 30000,
+      "rewards": [
+        {
+          "name": "All Hallows Knight",
+          "amount": 1
+        },
+        {
+          "name": "Mythic General Hero Shard",
+          "amount": 2
+        },
+        {
+          "name": "1 Hour Research Speedup",
+          "amount": 10
+        },
+        {
+          "name": "1 Hour Training Speedup",
+          "amount": 10
+        },
+        {
+          "name": "1 Hour Construction Speedup",
+          "amount": 10
+        }
+      ]
+    }
+  ],
+  "serverAges": [
+    {
+      "id": "d1",
+      "label": "Day 1 to 69",
+      "fromDay": 1,
+      "toDay": 69
+    },
+    {
+      "id": "d70",
+      "label": "Day 70 to 154",
+      "fromDay": 70,
+      "toDay": 154
+    },
+    {
+      "id": "d155",
+      "label": "Day 155 to 224",
+      "fromDay": 155,
+      "toDay": 224
+    },
+    {
+      "id": "d225",
+      "label": "Day 225 to 322",
+      "fromDay": 225,
+      "toDay": 322
+    },
+    {
+      "id": "d323",
+      "label": "Day 323 to 448",
+      "fromDay": 323,
+      "toDay": 448
+    },
+    {
+      "id": "d449",
+      "label": "Day 449 and later",
+      "fromDay": 449,
+      "toDay": null
+    }
+  ],
+  "packs": [
+    {
+      "tier": 1,
+      "priceEUR": 0,
+      "priceUSD": 0,
+      "candy": 100,
+      "topUpPoints": 0,
+      "items": [
+        {
+          "name": "Nocturne Ball Name Card (3-Day)",
+          "amount": 1
+        },
+        {
+          "name": "Gold Key",
+          "amount": 2
+        },
+        {
+          "name": "10k Food",
+          "amount": 100
+        },
+        {
+          "name": "10k Wood",
+          "amount": 100
+        },
+        {
+          "name": "10k Stone",
+          "amount": 20
+        },
+        {
+          "name": "10k Iron",
+          "amount": 5
+        }
+      ]
+    },
+    {
+      "tier": 2,
+      "priceEUR": 5.99,
+      "priceUSD": 4.99,
+      "candy": 1000,
+      "topUpPoints": 2500,
+      "items": [
+        {
+          "name": "Gems",
+          "amount": 2500
+        },
+        {
+          "name": "Truegold",
+          "amount": 60
+        },
+        {
+          "name": "Halloween Custom Chest",
+          "amount": 15
+        },
+        {
+          "name": "Jack-o'-Jitters Avatar Frame",
+          "amount": 1
+        },
+        {
+          "name": "100 VIP XP",
+          "amount": 25
+        },
+        {
+          "name": "10k Food",
+          "amount": 500
+        },
+        {
+          "name": "10k Wood",
+          "amount": 500
+        },
+        {
+          "name": "10k Stone",
+          "amount": 100
+        },
+        {
+          "name": "10k Iron",
+          "amount": 25
+        }
+      ]
+    },
+    {
+      "tier": 3,
+      "priceEUR": 11.99,
+      "priceUSD": 9.99,
+      "candy": 1600,
+      "topUpPoints": 5000,
+      "items": [
+        {
+          "name": "Gems",
+          "amount": 5000
+        },
+        {
+          "name": "Truegold",
+          "amount": 120
+        },
+        {
+          "name": "Halloween Custom Chest",
+          "amount": 30
+        },
+        {
+          "name": "Jack-o'-Jitters Nameplate",
+          "amount": 1
+        },
+        {
+          "name": "100 VIP XP",
+          "amount": 40
+        },
+        {
+          "name": "10k Food",
+          "amount": 1000
+        },
+        {
+          "name": "10k Wood",
+          "amount": 1000
+        },
+        {
+          "name": "10k Stone",
+          "amount": 200
+        },
+        {
+          "name": "10k Iron",
+          "amount": 50
+        }
+      ]
+    },
+    {
+      "tier": 4,
+      "priceEUR": 23.99,
+      "priceUSD": 19.99,
+      "candy": 2200,
+      "topUpPoints": 10000,
+      "items": [
+        {
+          "name": "Gems",
+          "amount": 10000
+        },
+        {
+          "name": "Truegold",
+          "amount": 210
+        },
+        {
+          "name": "Halloween Custom Chest",
+          "amount": 60
+        },
+        {
+          "name": "1 Hour Speedup",
+          "amount": 80
+        },
+        {
+          "name": "100 VIP XP",
+          "amount": 60
+        },
+        {
+          "name": "10k Food",
+          "amount": 2000
+        },
+        {
+          "name": "10k Wood",
+          "amount": 2000
+        },
+        {
+          "name": "10k Stone",
+          "amount": 400
+        },
+        {
+          "name": "10k Iron",
+          "amount": 100
+        }
+      ]
+    },
+    {
+      "tier": 5,
+      "priceEUR": 59.99,
+      "priceUSD": 49.99,
+      "candy": 5000,
+      "topUpPoints": 25000,
+      "items": [
+        {
+          "name": "Gems",
+          "amount": 25000
+        },
+        {
+          "name": "Truegold",
+          "amount": 420
+        },
+        {
+          "name": "Halloween Custom Chest",
+          "amount": 120
+        },
+        {
+          "name": "1 Hour Speedup",
+          "amount": 200
+        },
+        {
+          "name": "1000 VIP XP",
+          "amount": 12
+        },
+        {
+          "name": "100k Food",
+          "amount": 500
+        },
+        {
+          "name": "100k Wood",
+          "amount": 500
+        },
+        {
+          "name": "100k Stone",
+          "amount": 100
+        },
+        {
+          "name": "100k Iron",
+          "amount": 25
+        }
+      ]
+    },
+    {
+      "tier": 6,
+      "priceEUR": 119.99,
+      "priceUSD": 99.99,
+      "candy": 8200,
+      "topUpPoints": 50000,
+      "items": [
+        {
+          "name": "Gems",
+          "amount": 50000
+        },
+        {
+          "name": "Truegold",
+          "amount": 860
+        },
+        {
+          "name": "Halloween Custom Chest",
+          "amount": 240
+        },
+        {
+          "name": "1 Hour Speedup",
+          "amount": 400
+        },
+        {
+          "name": "1000 VIP XP",
+          "amount": 20
+        },
+        {
+          "name": "100k Food",
+          "amount": 1000
+        },
+        {
+          "name": "100k Wood",
+          "amount": 1000
+        },
+        {
+          "name": "100k Stone",
+          "amount": 200
+        },
+        {
+          "name": "100k Iron",
+          "amount": 50
+        }
+      ]
+    },
+    {
+      "tier": 7,
+      "priceEUR": 119.99,
+      "priceUSD": 99.99,
+      "candy": 20000,
+      "topUpPoints": 50000,
+      "purchaseLimit": 3,
+      "items": [
+        {
+          "name": "Gems",
+          "amount": 50000
+        },
+        {
+          "name": "Halloween Custom Chest",
+          "amount": 300
+        },
+        {
+          "name": "1 Hour Speedup",
+          "amount": 260
+        },
+        {
+          "name": "1000 VIP XP",
+          "amount": 20
+        },
+        {
+          "name": "100k Food",
+          "amount": 1000
+        },
+        {
+          "name": "100k Wood",
+          "amount": 1000
+        },
+        {
+          "name": "100k Stone",
+          "amount": 200
+        },
+        {
+          "name": "100k Iron",
+          "amount": 50
+        }
+      ]
+    }
+  ],
+  "passes": [
+    {
+      "id": "witchbane",
+      "label": "Witchbane",
+      "priceEUR": 5.99,
+      "priceUSD": 4.99,
+      "topUpPoints": 2500
+    },
+    {
+      "id": "pranksterbane",
+      "label": "Pranksterbane",
+      "priceEUR": 11.99,
+      "priceUSD": 9.99,
+      "topUpPoints": 5000
+    }
+  ],
+  "passThresholds": [
+    0,
+    8,
+    24,
+    48,
+    80,
+    120,
+    168,
+    224,
+    288,
+    360,
+    440,
+    536,
+    648,
+    776,
+    920,
+    1080,
+    1256,
+    1448,
+    1656,
+    1880,
+    2120
+  ],
+  "passVariants": [
+    {
+      "id": 1,
+      "fromDay": 1,
+      "minTownCenter": 0,
+      "levels": [
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Action Emote: Mischievous",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Blaze Bungalow (3-Day)",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 6
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 5
+            },
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 200
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gold Key",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 6
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 5
+            },
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Lucky Hero Gear Chest",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 200
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Epic General Hero Shard",
+              "amount": 5
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "50k Hero XP",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "50k Hero XP",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 300
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Blaze Bungalow (14-Day)",
+              "amount": 1
+            },
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 300
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 800
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Lucky Hero Gear Chest",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gold Key",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Enhancement XP Part",
+              "amount": 2
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Enhancement XP Part",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "10k Hero XP",
+              "amount": 5
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "10k Hero XP",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "fromDay": 70,
+      "minTownCenter": 30,
+      "levels": [
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Truegold",
+              "amount": 15
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Truegold",
+              "amount": 30
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Action Emote: Mischievous",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Blaze Bungalow (3-Day)",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 6
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 5
+            },
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 200
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gold Key",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 6
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 5
+            },
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Lucky Hero Gear Chest",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 200
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Epic General Hero Shard",
+              "amount": 5
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "50k Hero XP",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "50k Hero XP",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Truegold",
+              "amount": 15
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Truegold",
+              "amount": 30
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 300
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Blaze Bungalow (14-Day)",
+              "amount": 1
+            },
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 300
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 800
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Lucky Hero Gear Chest",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gold Key",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Enhancement XP Part",
+              "amount": 2
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Enhancement XP Part",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "10k Hero XP",
+              "amount": 5
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "10k Hero XP",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Truegold",
+              "amount": 15
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Truegold",
+              "amount": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "fromDay": 225,
+      "minTownCenter": 30,
+      "levels": [
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Truegold",
+              "amount": 20
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Truegold",
+              "amount": 40
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Action Emote: Mischievous",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Blaze Bungalow (3-Day)",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 6
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 5
+            },
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 200
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gold Key",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 6
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 5
+            },
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Lucky Hero Gear Chest",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 200
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Epic General Hero Shard",
+              "amount": 5
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "50k Hero XP",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "50k Hero XP",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Truegold",
+              "amount": 20
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Truegold",
+              "amount": 40
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 300
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Blaze Bungalow (14-Day)",
+              "amount": 1
+            },
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 300
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 800
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Lucky Hero Gear Chest",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gold Key",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Enhancement XP Part",
+              "amount": 2
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Enhancement XP Part",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "10k Hero XP",
+              "amount": 5
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "10k Hero XP",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Truegold",
+              "amount": 20
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Truegold",
+              "amount": 40
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "fromDay": 323,
+      "minTownCenter": 30,
+      "levels": [
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Truegold",
+              "amount": 25
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Truegold",
+              "amount": 50
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Action Emote: Mischievous",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Blaze Bungalow (3-Day)",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 6
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 5
+            },
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 200
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gold Key",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 6
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 5
+            },
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Lucky Hero Gear Chest",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 200
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Epic General Hero Shard",
+              "amount": 5
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "50k Hero XP",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "50k Hero XP",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Truegold",
+              "amount": 25
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Truegold",
+              "amount": 50
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 300
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Blaze Bungalow (14-Day)",
+              "amount": 1
+            },
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 300
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 800
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Lucky Hero Gear Chest",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gold Key",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Enhancement XP Part",
+              "amount": 2
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Enhancement XP Part",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "10k Hero XP",
+              "amount": 5
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "10k Hero XP",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Truegold",
+              "amount": 25
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Truegold",
+              "amount": 50
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 66,
+      "fromDay": 449,
+      "minTownCenter": 30,
+      "levels": [
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Truegold",
+              "amount": 30
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Truegold",
+              "amount": 60
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Action Emote: Mischievous",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Blaze Bungalow (3-Day)",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 6
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 5
+            },
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 200
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gold Key",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 6
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 5
+            },
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Lucky Hero Gear Chest",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 200
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Epic General Hero Shard",
+              "amount": 5
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "50k Hero XP",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "50k Hero XP",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Truegold",
+              "amount": 30
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Truegold",
+              "amount": 60
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic General Hero Shard",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gems",
+              "amount": 2000
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 300
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Blaze Bungalow (14-Day)",
+              "amount": 1
+            },
+            {
+              "name": "Halloween Candy",
+              "amount": 400
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 300
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Halloween Candy",
+              "amount": 800
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Lucky Hero Gear Chest",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Gold Key",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Gold Key",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Conquest Skill Book",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 1
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "8 Hour Speedup",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Gems",
+              "amount": 1000
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Enhancement XP Part",
+              "amount": 2
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Enhancement XP Part",
+              "amount": 5
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "Mythic Expedition Skill Manual",
+              "amount": 1
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "10k Hero XP",
+              "amount": 5
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "10k Hero XP",
+              "amount": 10
+            }
+          ]
+        },
+        {
+          "free": [
+            {
+              "name": "1 Hour Speedup",
+              "amount": 4
+            }
+          ],
+          "witchbane": [
+            {
+              "name": "Truegold",
+              "amount": 30
+            }
+          ],
+          "pranksterbane": [
+            {
+              "name": "Truegold",
+              "amount": 60
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

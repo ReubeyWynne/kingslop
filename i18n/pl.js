@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["pl"] = {
+  "seasonal.nav": "Sezonowe",
+  "seasonal.lede": "wydarzenia sezonowe z uwzględnieniem twoich postępów.",
   "castle.nav": "Zamek",
   "castle.deck.lede": "kontrola zamku, mechanika walki, umiejętności uczestników rajdu i dobór wojsk.",
   "meta.title": "Bear Hunt, bez tajemnic",

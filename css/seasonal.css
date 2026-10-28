@@ -1,0 +1,43 @@
+.seasonal-page { max-width: 46rem; margin: 0 auto; padding: 5rem 1.25rem 3rem; }
+.seasonal-heading { padding-block: .5rem 1.5rem; }
+.seasonal-heading h1 { font-size: clamp(2rem, 6vw, 3rem); line-height: 1.08; margin-block: .6rem 1rem; }
+.seasonal-page section { padding-block: 1.5rem; border-top: 1px solid var(--ink-muted); scroll-margin-top: 5rem; }
+.seasonal-page h2 { margin-block: 0 .75rem; font-size: clamp(1.5rem, 4vw, 1.85rem); line-height: 1.2; }
+.seasonal-page h3 { margin-block: 1.5rem .5rem; }
+.seasonal-page p { margin-block: .7rem 1rem; }
+.seasonal-jumps { display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; padding-top: 1rem; }
+.seasonal-section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem 1rem; }
+.seasonal-inputs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-block: 1rem; }
+.seasonal-page label { display: flex; flex-direction: column; gap: .4rem; color: var(--ink-dim); font-size: 1rem; min-width: 0; }
+.seasonal-page :is(input[type="number"], select) { width: 100%; min-width: 0; min-height: 44px; padding: .45rem .25rem; color: var(--ink); background: var(--void-2); border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; font: inherit; }
+.seasonal-page :is(input, select, button):focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.seasonal-page input[type="checkbox"] { accent-color: var(--amber); min-width: 24px; min-height: 24px; margin: .5rem; }
+.seasonal-single { max-width: 20rem; margin-block: 1rem; }
+.seasonal-result { border-inline-start: 3px solid var(--amber); padding: 1rem 1.25rem; margin-block: 1.75rem 1rem; background: var(--void-2); }
+.seasonal-result > p:nth-child(2) { font-size: 1.4rem; color: var(--ink); }
+.seasonal-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1rem 0; }
+.seasonal-facts div { min-width: 0; }
+.seasonal-facts dt { font-size: .95rem; color: var(--ink-muted); }
+.seasonal-facts dd { color: var(--amber); font-family: var(--display-2); font-size: 1.3rem; margin: .35rem 0 0; overflow-wrap: anywhere; }
+.seasonal-table-wrap { overflow-x: auto; }
+.seasonal-table { width: 100%; border-collapse: collapse; font-size: 1rem; margin-block: 1rem; }
+.seasonal-table caption { text-align: start; color: var(--ink-dim); margin-block: .5rem; }
+.seasonal-table :is(th, td) { text-align: start; padding: .7rem .35rem; border-bottom: 1px solid var(--navy); vertical-align: top; }
+.seasonal-table th { color: var(--ink-dim); font-weight: 700; }
+.seasonal-table td:last-child { font-variant-numeric: tabular-nums; }
+.seasonal-table :is(select, input[type="number"]) { min-width: 4.5rem; }
+.seasonal-sub { display: block; color: var(--ink-muted); font-size: .9rem; font-weight: 400; }
+.seasonal-page details { margin-block: 1rem; padding-block: .5rem; scroll-margin-top: 5rem; }
+.seasonal-page summary { cursor: pointer; color: var(--amber); min-height: 44px; padding-block: .6rem; }
+.seasonal-page details[open] > summary { margin-bottom: .75rem; }
+.seasonal-page details details { padding-inline-start: .5rem; border-inline-start: 1px solid var(--navy); }
+.seasonal-link { display: inline-block; color: var(--amber); background: none; border: 0; border-bottom: 1px solid currentColor; border-radius: 0; padding: .7rem 0; margin-inline-end: 1rem; font: inherit; cursor: pointer; }
+.seasonal-link:disabled { opacity: .55; cursor: default; }
+.seasonal-status:empty { display: none; }
+.seasonal-reward-list { padding-inline-start: 1.25rem; }
+.seasonal-reward-list li { margin-block: .35rem; }
+@media (max-width: 359px) { .seasonal-inputs { gap: .85rem; } .seasonal-page { padding-inline: 1rem; } .seasonal-result { padding-inline: .8rem; } }
+.seasonal-page .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+#planner > p:first-of-type { font-size: 1rem; }
+.seasonal-inputs label { justify-content: flex-end; }

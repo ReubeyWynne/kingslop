@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["ru"] = {
+  "seasonal.nav": "Сезонные",
+  "seasonal.lede": "сезонные события с учётом вашего прогресса.",
   "castle.nav": "Замок",
   "castle.deck.lede": "контроль замка, механика боя, навыки участников сбора и выбор войск.",
   "meta.title": "Bear Hunt: без загадок",

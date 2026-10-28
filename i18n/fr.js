@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["fr"] = {
+  "seasonal.nav": "Saisonniers",
+  "seasonal.lede": "les événements saisonniers, selon votre progression actuelle.",
   "castle.nav": "Château",
   "castle.deck.lede": "contrôle du château, mécaniques de combat, compétences des participants et choix des troupes.",
   "meta.title": "Bear Hunt, Démystifié",
