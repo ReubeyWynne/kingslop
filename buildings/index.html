@@ -45,10 +45,24 @@ self: buildings
       <button type="button" data-target="building-paths.addGoal" data-action="building-paths.addGoal" data-i18n="reqs.addGoal" hidden>Add to my goals</button>
       <output role="status" data-target="building-paths.copied"></output>
     </div>
-    <details class="reqs-more" id="reqs-speed">
-      <summary data-i18n="reqs.speedTitle">Construction speed</summary>
-      <label><span data-i18n="reqs.speed">Construction speed bonus (%)</span><input type="number" inputmode="decimal" min="0" max="1000" step="0.1" data-target="building-paths.speed" data-action="building-paths.speed" disabled></label>
-      <p class="note" data-i18n="reqs.speedNote">From your Bonus Overview. Without it, times are base times before any speed.</p>
+    <details class="reqs-more reqs-speed" id="reqs-speed">
+      <summary><span data-i18n="reqs.speedTitle">Construction speed</span> <span class="reqs-speed-sum" data-target="building-paths.speedSum"></span></summary>
+      <div class="reqs-chips reqs-mode" role="group" data-target="building-paths.speedMode"></div>
+      <div class="reqs-boost" data-target="building-paths.overview">
+        <label><span data-i18n="reqs.speed">Construction speed bonus (%)</span><input type="number" inputmode="decimal" min="0" max="1000" step="0.1" data-target="building-paths.speed" data-field="overview" data-action="building-paths.number" disabled></label>
+        <p class="note" data-i18n="reqs.overviewNote">Construction Speed from your Bonus Overview, read with no temporary boosts running. Add those below.</p>
+      </div>
+      <div data-target="building-paths.parts" hidden>
+        <div class="reqs-boost"><span class="reqs-boost-name">VIP</span><div class="reqs-chips" role="group" aria-label="VIP" data-boost="vip"></div></div>
+        <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.saulSkill">Saul's construction skill</span><div class="reqs-chips" role="group" data-boost="saul"></div></div>
+        <div class="reqs-boost"><label><span data-i18n="reqs.research">Research and alliance tech (%)</span><input type="number" inputmode="decimal" min="0" max="500" step="0.1" data-field="research" data-action="building-paths.number"></label><p class="note" data-i18n="reqs.researchNote">Tooling Up in the Academy and Adaptive Tools in alliance tech.</p></div>
+      </div>
+      <h3 class="reqs-boost-head" data-i18n="reqs.whileBuilding">Boosts when you start each upgrade</h3>
+      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.wolfSkill">Gray Wolf's skill</span><div class="reqs-chips" role="group" data-boost="wolf"></div></div>
+      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.position">Kingdom position</span><div class="reqs-chips" role="group" data-boost="position"></div></div>
+      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.decrees">Decrees and events</span><div class="reqs-chips" role="group" data-boost="toggles"></div></div>
+      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.pan">Pan's Master Architect: hours off every upgrade</span><div class="reqs-chips" role="group" data-boost="pan"></div></div>
+      <p class="note" data-i18n="reqs.speedHow">Speed bonuses add up and divide each upgrade's base time. Double Time then takes 20% off, and Pan's hours come off last, from every upgrade. † The High King's construction value comes from one alliance's report.</p>
     </details>
     <details class="reqs-more" id="reqs-order">
       <summary data-i18n="reqs.inOrder">Every step, in order</summary>

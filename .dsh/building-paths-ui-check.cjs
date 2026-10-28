@@ -120,7 +120,39 @@ withBrowser({ root }, async ({ browser, origin }) => {
 
   // Construction speed shortens the time and rides in the link.
   await open('?lang=en&b=town-center&to=20&speed=100');
-  assert.match(await page.locator('.reqs-time').innerText(), /at \+100% construction speed/);
+  assert.match(await page.locator('.reqs-time').innerText(), /with \+100%$/);
+
+  // The goals and the construction speed settings are kept for the next visit.
+  await open('?lang=en&goal=town-center:TG2,barracks:TG2');
+  await page.locator('#reqs-speed summary').click();
+  await page.locator('[data-key="mode"][data-value="parts"]').click();
+  await page.locator('[data-key="vip"][data-value="9"]').click();
+  await page.locator('[data-key="saul"][data-value="5"]').click();
+  await page.locator('[data-key="doubleTime"]').click();
+  await page.locator('[data-key="pan"][data-value="5"]').click();
+  await page.waitForFunction(() => /speed=35&dt=1&pan=5/.test(location.search));
+  assert.match(await page.locator('.reqs-time').innerText(), /with \+35% · Double Time · Pan −8h$/);
+  await page.screenshot({ path: path.join(output, 'en-390-speed.png'), fullPage: true });
+  await page.goto(origin + '/buildings/?lang=en');
+  await page.waitForFunction(() => document.querySelector('.reqs-headline').textContent.startsWith('Town Center TG 2 + Barracks TG 2'));
+  assert.equal(await page.locator('[data-key="vip"][data-value="9"]').getAttribute('aria-pressed'), 'true');
+  assert.match(page.url(), /goal=town-center:TG2,barracks:TG2&speed=35&dt=1&pan=5/);
+  // Guest links keep their own settings and never overwrite the kept ones.
+  await open('?lang=en&goal=academy:5&have=academy:1&speed=10');
+  await page.goto(origin + '/buildings/?lang=en');
+  await page.waitForFunction(() => document.querySelector('.reqs-headline').textContent.startsWith('Town Center TG 2 + Barracks TG 2'));
+
+  // In the page deck a tap in the gap beside the middle card opens that card, not closes the deck.
+  await page.goto(origin + '/pets/?lang=en');
+  await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
+  await page.locator('#ledger-btn').click();
+  await page.locator('.deck-next').click();
+  await page.waitForFunction(() => document.querySelector('.deck-card.is-selected')?.dataset.page === 'buildings');
+  await page.waitForTimeout(500);
+  const gap = await page.locator('.deck-card.is-selected').evaluate(card => { const r = card.getBoundingClientRect(); return { x: r.right + 6, y: r.top + r.height / 2 }; });
+  assert.ok(await page.evaluate(({ x, y }) => !document.elementFromPoint(x, y).closest('.deck-card'), gap), 'the probe lands in the gap');
+  await page.mouse.click(gap.x, gap.y);
+  await page.waitForURL(/\/buildings\//);
 
   // Every language at phone width: translated, no sideways scroll.
   await page.setViewportSize({ width: 320, height: 800 });

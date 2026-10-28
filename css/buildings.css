@@ -109,3 +109,16 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
   .reqs-answer .reqs-cost img { width: 20px; height: 20px; }
 }
 .reqs-picker .reqs-drop { color: var(--ink-dim); }
+
+/* Construction speed: where the base figure comes from, then one row of chips per boost. */
+.reqs-speed-sum { color: var(--ink-dim); font-size: var(--step--1); letter-spacing: 0; text-transform: none; margin-inline-start: .4rem; }
+.reqs-chips { display: flex; flex-wrap: wrap; gap: .3rem; }
+.reqs-chips button { min-height: 40px; padding: .2rem .6rem; border: 1px solid var(--signal-line); border-radius: 2px; background: var(--void-2); color: var(--ink-dim); font: .9rem/1.15 var(--body); font-variant-numeric: tabular-nums; cursor: pointer; }
+.reqs-chips button:hover, .reqs-chips button:focus-visible { border-color: var(--amber); outline: none; }
+.reqs-chips button[aria-pressed="true"] { border-color: var(--amber); background: var(--signal-tint); color: var(--amber); }
+.reqs-mode { margin-block: .2rem .6rem; }
+.reqs-boost { display: grid; gap: .35rem; margin-block: .6rem; }
+.reqs-boost-name { color: var(--ink); font-size: var(--step--1); }
+.reqs-boost .note { margin: 0; font-size: var(--step--1); }
+.reqs-boost-head { margin: 1rem 0 .2rem; font-size: 1rem; }
+.reqs-boost-head::before { display: none; }
