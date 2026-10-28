@@ -7,8 +7,9 @@
    Levels are the shared save's buildings.levels (any building, numbered copies as house-1), so the
    Town Centre and Upgrade priority see them. ?guest, or a link carrying levels (have=), runs on a
    copy held in memory instead: the address bar then follows every edit and nothing reaches the
-   save. The guest switch beside the goal reloads the page into or out of it. The goals and
-   construction speed live in the address only. */
+   save. The guest switch beside the goal reloads the page into or out of it. The goals and the
+   construction speed settings ride in the address and, outside guest mode, are kept on this
+   device (bh:building-goals, bh:construction) so the page opens as it was left. */
 (function () {
   'use strict';
   var E = window.BuildingPathsEngine, D = window.BuildingPaths;
@@ -33,8 +34,23 @@
     var api = context.api, store = null;
     try { store = context.ledger; store.snapshot(); } catch (cause) { store = null; }
     var memory = {};   // levels when no store can be read (storage blocked): this visit only
-    var goals = link.goals.length ? link.goals : [{ building: 'town-center', level: null }], speed = link.speed;
-    if (speed === null) try { speed = Number(localStorage.getItem('bh:construction-speed')) || null; } catch (ignored) {}
+    function stored(key) { try { return JSON.parse(localStorage.getItem(key)); } catch (ignored) { return null; } }
+    function keep(key, value) { if (!guest) try { localStorage.setItem(key, JSON.stringify(value)); } catch (ignored) {} }
+    var lastGoals = Array.isArray(stored('bh:building-goals')) ? E.goals(D, stored('bh:building-goals').map(function (x) { return Array.isArray(x) ? { building: x[0], level: x[1] } : null; })) : [];
+    var goals = link.goals.length ? link.goals : lastGoals.length ? lastGoals : [{ building: 'town-center', level: null }];
+    // Construction speed: the Bonus Overview figure or its parts, the boosts running when an upgrade
+    // starts, and Pan's Master Architect level (from the save's Masters when it is not set here).
+    var cs = { mode: 'overview', overview: null, vip: 0, saul: 0, research: null, wolf: 0, position: '', groundWorks: false, kvk: false, doubleTime: false, pan: null };
+    if (link.speed !== null || link.doubleTime || link.pan !== null) Object.assign(cs, { overview: link.speed, doubleTime: link.doubleTime, pan: link.pan });
+    else {
+      var savedSpeed = stored('bh:construction');
+      if (savedSpeed && typeof savedSpeed === 'object') Object.keys(cs).forEach(function (k) { if (k in savedSpeed) cs[k] = savedSpeed[k]; });
+      else cs.overview = Number(stored('bh:construction-speed')) || null;
+    }
+    if (cs.pan === null && store) try {
+      var architect = ((((store.snapshot().masters || {}).roster || {}).pan || {}).skills || [])[2];
+      if (architect > 0) cs.pan = Math.min(5, architect);
+    } catch (ignored) {}
 
     function one(key) { return context.targets(key)[0]; }
     function t(key, fallback, vars) { var text = api.tr('reqs.' + key, fallback); return vars ? api.fill(text, vars) : text; }
@@ -62,8 +78,8 @@
     function compact(n) {
       try { return new Intl.NumberFormat((window.I18N && window.I18N.locale) || 'en-GB', { notation: 'compact', maximumFractionDigits: n >= 1e6 ? 2 : 1 }).format(n); } catch (ignored) { return api.fmt(n); }
     }
-    function duration(seconds) {
-      var s = E.atSpeed(seconds, speed || 0), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), parts = [];
+    function duration(s) {
+      var d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), parts = [];
       if (d) parts.push(t('days', '{n}d', { n: api.fmt(d) }));
       if (h) parts.push(t('hours', '{n}h', { n: api.fmt(h) }));
       if (m && !d) parts.push(t('minutes', '{n}m', { n: api.fmt(m) }));
@@ -83,10 +99,18 @@
         list.appendChild(li);
       });
     }
-    function timeText(total) {
-      var text = duration(total.time) + (total.unverified.time ? '†' : '');
-      return speed ? t('timeAt', '{time} at +{speed}% construction speed', { time: text, speed: api.fmt(speed) }) : t('timeBase', '{time} base time, before construction speed', { time: text });
+    function boosts() {
+      var b = E.boost(cs), out = [];
+      if (b.speed) out.push('+' + api.fmt(b.speed) + '%');
+      if (b.doubleTime) out.push(t('doubleTime', 'Double Time'));
+      if (b.pan) out.push(t('panShort', 'Pan −{h}h', { h: api.fmt(b.pan) }));
+      return out.join(' · ');
     }
+    function timeText(total, steps) {
+      var text = duration(E.timed(steps, E.boost(cs)).time) + (total.unverified.time ? '†' : ''), list = boosts();
+      return list ? t('timeWith', '{time} with {boosts}', { time: text, boosts: list }) : t('timeBase', '{time} base time, before construction speed', { time: text });
+    }
+    function stepTime(steps) { return duration(E.timed(steps, E.boost(cs)).time); }
     function arrow() { return document.documentElement.dir === 'rtl' ? ' ← ' : ' → '; }
     function say(text) { one('copied').textContent = text; }
 
@@ -121,7 +145,42 @@
         tile.querySelector('.reqs-badge').textContent = g ? E.short(g.level) : '';
       });
       one('guest').setAttribute('aria-checked', String(guest));
+      keep('bh:building-goals', goals.map(function (g) { return [g.building, g.level]; }));
     }
+
+    // The construction speed panel: a choice of where the base figure comes from, then one row of
+    // chips per boost. Every chip is a button; the two figures are number fields.
+    function chip(key, value, text, on, label) {
+      var b = el('button', '', text);
+      b.type = 'button'; b.dataset.key = key; b.dataset.value = String(value);
+      b.setAttribute('data-action', 'building-paths.set'); b.setAttribute('aria-pressed', String(on));
+      if (label) b.setAttribute('aria-label', label);
+      return b;
+    }
+    function group(name, chips) { var box = one('speedMode').parentNode.querySelector('[data-boost="' + name + '"]'); box.textContent = ''; chips.forEach(function (c) { box.appendChild(c); }); }
+    function fillSpeed() {
+      var none = t('none', 'none'), mode = one('speedMode');
+      mode.textContent = '';
+      mode.appendChild(chip('mode', 'overview', t('speedFrom', 'Bonus Overview'), cs.mode !== 'parts'));
+      mode.appendChild(chip('mode', 'parts', t('speedAddUp', 'Add it up'), cs.mode === 'parts'));
+      one('overview').hidden = cs.mode === 'parts'; one('parts').hidden = cs.mode !== 'parts';
+      if (document.activeElement !== one('speed')) one('speed').value = cs.overview === null ? '' : String(cs.overview);
+      var research = one('parts').querySelector('[data-field="research"]');
+      if (document.activeElement !== research) research.value = cs.research === null ? '' : String(cs.research);
+      group('vip', [chip('vip', 0, '—', !cs.vip, none), chip('vip', 4, 'VIP 4–8 · +10%', cs.vip === 4), chip('vip', 9, 'VIP 9+ · +20%', cs.vip === 9)]);
+      group('saul', E.BOOST.saul.map(function (p, i) { return chip('saul', i, i ? '+' + api.fmt(p) + '%' : '—', (cs.saul || 0) === i, i ? t('skillLevel', 'level {n}', { n: i }) + ', +' + p + '%' : none); }));
+      group('wolf', E.BOOST.wolf.map(function (p, i) { return chip('wolf', i, i ? '+' + api.fmt(p) + '%' : '—', (cs.wolf || 0) === i, i ? t('skillLevel', 'level {n}', { n: i }) + ', +' + p + '%' : none); }));
+      var minister = api.tr('town.training.minister', 'Chief Minister');
+      group('position', [chip('position', '', '—', !cs.position, none), chip('position', 'minister', minister + ' · +10%', cs.position === 'minister'),
+        chip('position', 'highKing', minister + ' + ' + api.tr('town.training.highKing', 'High King') + ' · +15%†', cs.position === 'highKing')]);
+      group('toggles', [['groundWorks', t('groundWorks', 'Ground Works') + ' · +10%'], ['kvk', 'KvK · +5%'], ['doubleTime', t('doubleTime', 'Double Time') + ' · −20%']].map(function (x) {
+        var b = chip(x[0], '', x[1], !!cs[x[0]]); b.setAttribute('data-action', 'building-paths.toggle'); return b;
+      }));
+      group('pan', E.BOOST.pan.map(function (h, i) { return chip('pan', i, i ? '−' + api.fmt(h) + 'h' : '—', (cs.pan || 0) === i, i ? t('skillLevel', 'level {n}', { n: i }) + ', −' + h + 'h' : none); }));
+      fillSpeedSum();
+    }
+    function fillSpeedSum() { var list = boosts(); one('speedSum').textContent = list ? '(' + list + ')' : ''; }
+    function speedChanged() { keep('bh:construction', cs); fillSpeed(); render(); }
 
     // The level grid. Up to 30 levels show at once; past that, one tab for levels 1–30 (and 30-1…30-4)
     // and one per TG, so every level is two taps away at most and nothing scrolls.
@@ -187,13 +246,13 @@
     }
 
     function address(withLevels) {
-      var state = { goals: goals, speed: speed };
-      if (withLevels) { var h = have(), keep = E.involved(D, goals); state.have = {}; keep.forEach(function (k) { if (h[k] !== undefined) state.have[k] = h[k]; }); }
+      var b = E.boost(cs), state = { goals: goals, speed: b.speed, doubleTime: b.doubleTime, pan: cs.pan || 0 };
+      if (withLevels) { var h = have(), named = E.involved(D, goals); state.have = {}; named.forEach(function (k) { if (h[k] !== undefined) state.have[k] = h[k]; }); }
       return E.encode(state);
     }
     function syncAddress() {
       var kept = new URLSearchParams(location.search);
-      ['b', 'to', 'goal', 'have', 'speed'].forEach(function (k) { kept.delete(k); });
+      ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan'].forEach(function (k) { kept.delete(k); });
       var rest = kept.toString().replace(/(^|&)guest=(&|$)/, '$1guest$2');
       try { history.replaceState(history.state, '', location.pathname + '?' + (rest ? rest + '&' : '') + address(guest) + location.hash); } catch (ignored) {}
     }
@@ -209,7 +268,7 @@
       } else {
         head.textContent = t('headline', '{goal} · upgrades: {n}', { goal: goalName, n: api.fmt(result.total.steps) });
         costList(one('total'), result.total);
-        one('time').textContent = timeText(result.total);
+        one('time').textContent = timeText(result.total, result.steps.map(function (x) { return x.step; }));
       }
       // One row per building the plan raises, plus any level the reader gave that the goal's
       // path names, so a level set too high can be set back. Prerequisites first, the goal last.
@@ -237,7 +296,7 @@
         if (part.length) {
           var sub = E.total(part), costs = el('ul', 'reqs-cost reqs-cost-small');
           costList(costs, sub, true);
-          if (sub.time) costs.appendChild(el('li', 'reqs-run-time', duration(sub.time) + (sub.unverified.time ? '†' : '')));
+          if (sub.time) costs.appendChild(el('li', 'reqs-run-time', stepTime(part) + (sub.unverified.time ? '†' : '')));
           body.appendChild(costs);
         }
         li.appendChild(body);
@@ -245,7 +304,7 @@
       });
       (result.runs || []).forEach(function (r) {
         var li = el('li', '', name(r.building) + ' ' + levelName(r.building, r.from) + arrow() + levelName(r.building, r.level));
-        li.appendChild(el('small', '', ' · ' + duration(r.total.time)));
+        li.appendChild(el('small', '', ' · ' + stepTime(r.steps)));
         steps.appendChild(li);
       });
       (result.blocked || []).forEach(function (b) { steps.appendChild(el('li', 'reqs-blocked', name(b.building) + ' ' + b.level + ' · ' + t('blocked', 'no source lists what this step needs'))); });
@@ -270,8 +329,8 @@
     // A tap on the backdrop (the dialog box itself, outside its content) closes the grid.
     one('picker').addEventListener('click', function (event) { if (event.target === event.currentTarget) closePicker(); });
     ['speed', 'guest'].forEach(function (k) { one(k).disabled = false; });
-    if (speed) one('speed').value = String(speed);
     fillGoals();
+    fillSpeed();
 
     return {
       refresh: function () { fillGoals(); render(); },
@@ -306,15 +365,20 @@
           // Guest mode is chosen before the page's modules mount, so the switch reloads the
           // page into or out of it with the same goals; leaving drops the link's levels.
           var kept = new URLSearchParams(location.search);
-          ['b', 'to', 'goal', 'have', 'speed', 'guest'].forEach(function (k) { kept.delete(k); });
+          ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan', 'guest'].forEach(function (k) { kept.delete(k); });
           var rest = kept.toString();
           location.assign(location.pathname + '?' + (rest ? rest + '&' : '') + address(false) + (guest ? '' : '&guest') + location.hash);
         } },
-        speed: { events: ['change'], run: function (node) {
+        set: { run: function (node) {
+          var k = node.dataset.key, v = node.dataset.value;
+          cs[k] = k === 'mode' || k === 'position' ? v : Number(v);
+          speedChanged();
+        } },
+        toggle: { run: function (node) { cs[node.dataset.key] = !cs[node.dataset.key]; speedChanged(); } },
+        number: { events: ['change', 'input'], run: function (node) {
           var n = Number(node.value);
-          speed = node.value !== '' && isFinite(n) && n > 0 && n <= 1000 ? n : null;
-          try { if (!guest) { if (speed) localStorage.setItem('bh:construction-speed', String(speed)); else localStorage.removeItem('bh:construction-speed'); } } catch (ignored) {}
-          render();
+          cs[node.dataset.field] = node.value !== '' && isFinite(n) && n >= 0 && n <= 1000 ? n : null;
+          keep('bh:construction', cs); render(); fillSpeedSum();
         } },
         copy: { run: function () { copy(address(false)); } },
         copyLevels: { run: function () { copy(address(true)); } },

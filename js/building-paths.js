@@ -143,7 +143,8 @@
   // Every building the goal's whole path can name, from scratch.
   function involved(data, goal) { var t = {}; goals(data, goal).forEach(function (g) { t[g.building] = g.level; }); return Object.keys(close(data, t, {})); }
 
-  // A link: ?goal=town-center:TG3,barracks:TG3[&have=house-1:2,embassy:TG1-2][&speed=42.5].
+  // A link: ?goal=town-center:TG3,barracks:TG3[&have=house-1:2,embassy:TG1-2][&speed=42.5][&dt=1][&pan=5]
+  // (speed is the whole construction speed bonus, dt Double Time, pan Pan's Master Architect level).
   // Without have the reader's own levels fill in the plan; with it the link opens as the sender
   // left it. The first links carried one goal as ?b=town-center&to=3; those still open.
   function pairs(list) { return list.map(function (x) { return x[0] + ':' + short(x[1]); }).join(','); }
@@ -152,13 +153,15 @@
     var have = Object.keys(state.have || {}).sort().map(function (k) { return [k, state.have[k]]; });
     if (have.length) out.push('have=' + pairs(have));
     if (state.speed > 0) out.push('speed=' + state.speed);
+    if (state.doubleTime) out.push('dt=1');
+    if (state.pan > 0) out.push('pan=' + state.pan);
     return out.join('&');
   }
   function read(text) {
     return (text || '').split(',').map(function (pair) { var at = pair.lastIndexOf(':'); return at > 0 ? [pair.slice(0, at), level(pair.slice(at + 1))] : null; }).filter(Boolean);
   }
   function decode(data, search) {
-    var q = new URLSearchParams(search), out = { goals: [], have: null, speed: null };
+    var q = new URLSearchParams(search), out = { goals: [], have: null, speed: null, doubleTime: q.get('dt') === '1', pan: null };
     var wanted = q.has('goal') ? read(q.get('goal')) : q.has('b') ? [[q.get('b'), level(q.get('to') || '')]] : [];
     out.goals = goals(data, wanted.filter(function (x) { return building(data, x[0]) && !building(data, x[0]).single; }).map(function (x) { return { building: x[0], level: x[1] }; }));
     if (q.has('have')) {
@@ -167,11 +170,42 @@
     }
     var speed = Number(q.get('speed'));
     if (q.has('speed') && isFinite(speed) && speed > 0 && speed <= 1000) out.speed = speed;
+    var pan = Number(q.get('pan'));
+    if (Number.isInteger(pan) && pan >= 1 && pan < BOOST.pan.length) out.pan = pan;
     return out;
   }
 
   // Base seconds at a construction speed bonus (%).
   function atSpeed(seconds, speed) { return speed > 0 ? Math.floor(seconds / (1 + speed / 100)) : seconds; }
 
-  return { RESOURCES: RESOURCES, rank: rank, level: level, short: short, key: key, split: split, building: building, levels: levels, before: before, steps: steps, total: function (steps) { return total(steps.map(function (step) { return { step: step }; })); }, goals: goals, plan: plan, involved: involved, encode: encode, decode: decode, atSpeed: atSpeed };
+  // What shortens an upgrade. Speed bonuses add up and divide the base time; Double Time then
+  // takes 20% off; Pan's Master Architect takes whole hours off every upgrade last ("after speed
+  // bonuses"). Values: VIP (none, 4–8, 9+), Saul's construction skill and the Gray Wolf's by
+  // level, the Chief Minister (and while the kingdom holds the High King), the Ground Works
+  // decree and KvK, as read in game and on Kingshot Optimizer's building calculator.
+  var BOOST = {
+    vip: { 0: 0, 4: 10, 9: 20 }, saul: [0, 3, 6, 9, 12, 15], wolf: [0, 5, 7, 9, 12, 15],
+    position: { '': 0, minister: 10, highKing: 15 }, groundWorks: 10, kvk: 5, doubleTime: 0.8, pan: [0, 2, 3, 4, 6, 8]
+  };
+  function pick(list, i) { return list[i] || 0; }
+  // settings: { mode: 'overview' | 'parts', overview, vip, saul, research, wolf, position, groundWorks, kvk, doubleTime, pan }
+  function boost(settings) {
+    var b = settings || {}, base = b.mode === 'parts' ? pick(BOOST.vip, b.vip) + pick(BOOST.saul, b.saul) + (Number(b.research) || 0) : Number(b.overview) || 0;
+    var speed = base + pick(BOOST.wolf, b.wolf) + pick(BOOST.position, b.position || '') + (b.groundWorks ? BOOST.groundWorks : 0) + (b.kvk ? BOOST.kvk : 0);
+    return { speed: Math.round(speed * 100) / 100, doubleTime: !!b.doubleTime, pan: pick(BOOST.pan, b.pan) };
+  }
+  function stepSeconds(seconds, b) {
+    b = b || {};
+    var s = seconds / (1 + (b.speed || 0) / 100);
+    if (b.doubleTime) s *= BOOST.doubleTime;
+    return Math.max(0, Math.floor(s) - (b.pan || 0) * 3600);
+  }
+  // The time a list of steps takes, each its own upgrade.
+  function timed(list, b) {
+    var time = 0, known = true;
+    list.forEach(function (step) { if (typeof step.time === 'number') time += stepSeconds(step.time, b); else known = false; });
+    return { time: time, known: known };
+  }
+
+  return { RESOURCES: RESOURCES, rank: rank, level: level, short: short, key: key, split: split, building: building, levels: levels, before: before, steps: steps, total: function (steps) { return total(steps.map(function (step) { return { step: step }; })); }, goals: goals, plan: plan, involved: involved, encode: encode, decode: decode, atSpeed: atSpeed, BOOST: BOOST, boost: boost, stepSeconds: stepSeconds, timed: timed };
 }));

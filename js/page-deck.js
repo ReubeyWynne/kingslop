@@ -300,7 +300,7 @@
       if (Math.abs(dx) < Math.abs(dy) * 1.2 && !gesture.active) return;
       if (gesture.inDeck) {
         gesture.active = true;
-        suppressUntil = performance.now() + 400;
+        suppressUntil = performance.now() + 200;
         return;
       }
       if (!gesture.active) {
@@ -319,7 +319,7 @@
       // pause; any scroll that does follow clears this and waits for its end.
       if (g.inDeck) { window.clearTimeout(announceTimer); announceTimer = window.setTimeout(finishDeckScroll, 180); }
       if (!g.active) return;
-      suppressUntil = performance.now() + 400;
+      suppressUntil = performance.now() + 200;
       if (!g.inDeck && e.changedTouches.length) {
         var dx = e.changedTouches[0].clientX - g.x;
         browseDeck(position + (dx < 0 ? 1 : -1));
@@ -338,13 +338,20 @@
       viewport.addEventListener('scrollend', finishDeckScroll);
       deck.addEventListener('click', function (e) {
         if (performance.now() < suppressUntil && e.detail !== 0) { e.preventDefault(); return; }
-        var card = e.target.closest('.deck-card');
+        var card = e.target.closest('.deck-card'), missed = false;
+        // A tap in the strip that misses every card (the gap beside one, or a card still sliding
+        // into place) is meant for the card in the middle, not for closing the deck.
+        if (!card && e.target.closest('.deck-viewport')) {
+          var middle = deck.querySelector('.deck-card.is-selected'), box = middle && middle.getBoundingClientRect();
+          if (box && e.clientY >= box.top && e.clientY <= box.bottom) { card = middle; missed = true; }
+        }
         if (card) {
           if (card.hasAttribute('aria-current')) { e.preventDefault(); closeDeck(); return; }
           if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
           navigatingDeck = true;
           document.documentElement.setAttribute('data-entry', 'deck');
           try { sessionStorage.setItem('bh:deck', new URL(card.href).pathname); } catch (err) {}
+          if (missed) location.assign(card.href);
           return;
         }
         if (!e.target.closest('button, .deck-rail')) closeDeck();
