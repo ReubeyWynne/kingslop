@@ -298,3 +298,7 @@ Following the rules is not enough; a scene also has to look good frame by frame.
 
 The directory adds a ninth navigation entry. The desktop strip now starts at 1600px, with a 62rem masthead width allowance; the shared drawer carries navigation below that width. The complete strip and directory are checked in all 17 languages at phone, tablet and desktop widths. The directory is a roster, not a scroll: heroes sit as portrait tiles in one band per generation with its rank in a narrow gutter (generation 1 split by rarity tier; from 651px the tiers sit side by side and later generations pair up), rarity reads as border brightness (legendary full signal, epic dim, rare muted), and tapping a tile opens one dossier at a time across the full row on a void-2 field. A single banner-rose signal hue throughout.
 
+
+### Halloween seasonal page
+
+The Halloween candy calculator uses the purple, green and orange palette requested by the user on 28 October 2026. Purple is the background and secondary navigation, green marks expected rewards, and orange marks candy and purchase costs. This page is an explicit exception to the single signal hue rule. It retains the existing typography, ruled tables and stepped character art.

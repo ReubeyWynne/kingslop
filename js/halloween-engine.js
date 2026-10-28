@@ -133,5 +133,84 @@
     if (f.topUpPoints !== null) data.topUps.filter(function (t) { return t.points > f.topUpPoints && t.points <= f.topUpPoints + b.packs.topUp; }).forEach(function (t) { t.rewards.forEach(function (v) { add(rewards, v.name, v.amount); }); });
     return rewards;
   }
-  return { data: data, blank: blank, plan: plan, budget: budget, packPlan: packPlan, variant: variant, missions: missions, doorDaily: doorDaily, pityChance: pityChance, simulate: simulate, forecast: forecast, incrementalRewards: incrementalRewards };
+  function rewardMean(pool) {
+    var out = {};
+    pool.forEach(function (item) { add(out, item.name, item.amount * item.chance / 100); });
+    return out;
+  }
+  function candyValue(candy, options) {
+    options = options || {}; assert(integer(candy, 2000000));
+    var samples = options.samples || Math.min(2000, Math.max(100, Math.floor(1500000 / (Math.floor(candy / r.attackCandy) + 1))));
+    assert(integer(samples, 4000) && samples >= 10);
+    var passList = options.passes || [], startPoints = options.points || 0;
+    passList.forEach(function (pass) { assert(tracks.includes(pass.track) && data.passVariants.some(function (v) { return v.id === pass.variant; }) && integer(pass.claimed, 21)); });
+    var totals = { pumpkin: 0, pumpkinKill: 0, witch: 0 }, passRewards = {}, points = 0, freeHits = 0, passCandy = 0, finishes = [];
+    for (var sample = 0; sample < samples; sample++) {
+      var random = rng(20261028 + sample * 7919), remaining = candy, pity = options.pity || 0, pumpkin = options.pumpkinRemaining || r.pumpkinHits, witch = options.witchRemaining || 0;
+      var free = 0, hits = 0, claimed = passList.map(function (p) { return p.claimed; });
+      function claimPasses() {
+        passList.forEach(function (pass, index) {
+          var v = data.passVariants.find(function (entry) { return entry.id === pass.variant; });
+          while (claimed[index] < data.passThresholds.length && startPoints + hits * r.attackPoints >= data.passThresholds[claimed[index]]) {
+            v.levels[claimed[index]][pass.track].forEach(function (item) {
+              if (item.name === I_NAME) { remaining += item.amount; passCandy += item.amount / samples; }
+              else add(passRewards, item.name, item.amount / samples);
+            });
+            claimed[index]++;
+          }
+        });
+      }
+      if (passList.length) claimPasses();
+      while (remaining >= r.attackCandy || free > 0) {
+        var paid = free === 0;
+        if (paid) remaining -= r.attackCandy; else { free--; freeHits += 1 / samples; }
+        hits++;
+        if (witch) { totals.witch += 1 / samples; witch--; }
+        else {
+          totals.pumpkin += 1 / samples;
+          if (!--pumpkin) { totals.pumpkinKill += 1 / samples; pumpkin = r.pumpkinHits; if (random() < r.witchChance) witch = pick(data.witchHits, random).hits; }
+        }
+        if (paid && random() < pityChance(++pity)) { free += pick(data.freeAttacks, random).attacks; pity = 0; }
+        if (passList.length) claimPasses();
+      }
+      points += hits * r.attackPoints / samples; finishes.push(hits * r.attackPoints);
+    }
+    var rewards = Object.assign({}, passRewards);
+    Object.keys(totals).forEach(function (chest) { var mean = rewardMean(data.chests[chest]); Object.keys(mean).forEach(function (name) { add(rewards, name, mean[name] * totals[chest]); }); });
+    finishes.sort(function (a, b) { return a - b; });
+    return { candy: candy, points: points, hits: points / r.attackPoints, freeHits: freeHits, rewards: rewards, passCandy: passCandy, chests: totals, low: finishes[Math.floor(samples * .1)], high: finishes[Math.floor(samples * .9)], samples: samples };
+  }
+  var I_NAME = 'Halloween Candy';
+  function futureIncome(input) {
+    var out = { candy: 0, rewards: {}, lines: [] };
+    function line(id, amount, estimate) { assert(Number.isFinite(amount) && amount >= 0); out.lines.push({ id: id, candy: amount, estimate: Boolean(estimate) }); out.candy += amount; }
+    ['doors', 'gathering', 'beasts', 'gems', 'speedupMinutes', 'other', 'eventDay', 'missionTarget'].forEach(function (key) { assert(integer(input[key], key === 'eventDay' ? 8 : key === 'missionTarget' ? 5 : 10000000)); });
+    assert(input.doors <= 7 && input.gathering <= r.gatheringCap && input.beasts <= r.beastCap);
+    assert(input.missionClaimed === null || integer(input.missionClaimed, 5));
+    line('doors', Math.round(input.doors * doorDaily()), true); line('gathering', input.gathering); line('beasts', input.beasts);
+    line('gems', Math.floor(input.gems / r.conversions.gemsPerTenCandy) * 10);
+    line('speedups', Math.floor(input.speedupMinutes * 60 / r.conversions.speedupSecondsPerTenCandy) * 10);
+    var missionCandy = 0;
+    if (input.eventDay) {
+      for (var day = input.eventDay; day <= 7; day++) {
+        var first = day === input.eventDay ? input.missionClaimed : 0;
+        if (first === null) continue;
+        for (var milestone = first; milestone < input.missionTarget; milestone++) {
+          missionCandy += data.milestoneCandy[milestone];
+          data.missionRewards[milestone].filter(function (item) { return item.name !== I_NAME; }).forEach(function (item) { add(out.rewards, item.name, item.amount); });
+        }
+      }
+    }
+    line('missions', missionCandy); line('other', input.other); return out;
+  }
+  function mergeRewards(a, b) { var out = Object.assign({}, a); Object.keys(b).forEach(function (key) { add(out, key, b[key]); }); return out; }
+  function purchaseSequence(next, selected, lastRemaining) {
+    assert(integer(next, 7) && integer(lastRemaining, 3)); assert(Array.isArray(selected) && selected.length === 7 && selected.every(function (n, i) { return integer(n, i === 6 ? 3 : 1); }));
+    var counts = selected.slice(), highest = -1;
+    counts.forEach(function (n, i) { if (n) highest = i; if (i < next) counts[i] = 0; });
+    for (var i = next; i < highest; i++) counts[i] = 1;
+    counts[6] = Math.min(counts[6], next === 6 ? lastRemaining : 3);
+    return counts;
+  }
+  return { candyValue: candyValue, futureIncome: futureIncome, mergeRewards: mergeRewards, purchaseSequence: purchaseSequence, data: data, blank: blank, plan: plan, budget: budget, packPlan: packPlan, variant: variant, missions: missions, doorDaily: doorDaily, pityChance: pityChance, simulate: simulate, forecast: forecast, incrementalRewards: incrementalRewards };
 });

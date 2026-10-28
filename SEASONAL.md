@@ -1,49 +1,39 @@
-# Seasonal events
+# Halloween candy value
 
-`/seasonal/` lists calendar events separately from the recurring 28-day Event Cycle. Its first planner is `/seasonal/halloween-party/` for Halloween 2026. Seasonal dates are not inferred from the recurring clock; players enter the remaining days from their in-game timer.
+Both `/seasonal/` and `/seasonal/halloween-party/` open the Halloween candy calculator. There is no intermediate event listing while Halloween is the only seasonal event. The existing Seasonal navigation, carousel and footer links remain in place.
 
-## Source and rules
+## User flow
 
-`_data/seasonal/halloween_party.json` contains factual tables extracted on 28 October 2026 from https://kingshotpacks.com/halloween-party and its public `CovenClash-f1da1b82.js` module. This is a community calculator source, not independent confirmation of the game. The module URL and retrieval date are recorded in the data. No source UI or simulator implementation is copied.
+The first screen takes one input: candy held. It immediately shows expected Prankster Points and the expected items from all three chest types. It requires no score, event date, target, purchase history or pass setup. A new visitor sees an explicitly labelled 1,000-candy example; this example is not written to the player save. Replacing it records the player's candy.
 
-The tables include three chest distributions, Witch visit and free-attack distributions, seven pack tiers, five top-up thresholds, ranking brackets, ten mission variants across seven stages, and five server-age pass variants with 21 levels on three tracks. Static reference tables and browser data consume the same JSON through Liquid.
+Future income expands separately. Players enter remaining door days, gathering/Beast candy, future gem/speedup spending and other income. Gathering and Beast fields are remaining candy, not full caps to be awarded again. A small mission calculator counts today's unclaimed milestones and future stages. It excludes closed stages and excludes today's rewards when current claims are unknown. The full-plan result compares held-candy rewards with all planned rewards, including mission items and selected pack contents.
 
-The new pure engine implements the source model independently. Paid attacks cost 20 candy and score 2 points; free attacks score points too. A Pumpkin takes ten hits. Its defeat can summon a Witch. Paid hits on either target advance the pity counter. Free hits do not advance it, following the source's stated assumption. The source's candy-rain average is also an assumption. Forecasts exclude the shared jackpot because pot size and other players' wins are not known.
+Purchase comparisons show the pack's own items plus the expected rewards from its candy. Players can compare points, Gems, Forgehammers, shards, Truegold, custom chests, material chests or speedup minutes per currency unit. No universal gem-price score is imposed. Rates use the source's USD/EUR prices without conversion. Every remaining tier is visible, with unlock costs identified. Selecting a later pack adds its missing prerequisite tiers; quantities respect the final pack's remaining allowance. Previously purchased items are not re-added to held candy.
 
-## Progress and plans
+Pass comparisons are separate because they need current points and the in-game reward variant. They value a new unclaimed paid track, including already unlocked rewards and the further attacks its candy enables. Owned passes cannot be selected for another purchase. Top-up bonuses are optional and require known prior top-up points; previously unlocked tiers are treated as collected. Free-track rewards, already owned pass rewards, future daily chests and the shared jackpot are excluded from candy-only EV.
 
-The optional `seasonal` section of the shared player save holds validated progress by occurrence ID (`halloween-2026`). Existing saves remain valid. Save export/import, revision checks, storage failure handling and cross-tab notifications use the existing ledger. Each occurrence has separate state; the planner never rolls progress forward into another year.
+The permanent skin is an optional section. It explains the two independent routes: 12,500 points regardless of rank, or a top-10 finish. It shows the points gap and a conservative candy amount that is sufficient without free attacks. The calculator does not predict final rank.
 
-Saved fields are current points and candy, remaining event and door days, today's points, collected gathering/Beast candy, purchase counts, owned pass tracks, claimed pass levels, claimed mission milestones, top-up progress, kingdom age, Town Center and attack progress. Null means unknown and zero means confirmed zero. The Town Center input uses the shared building level when no event-specific value is recorded. A shared hero generation is not converted into a guessed kingdom age.
+## Expected value
 
-Target points, future spending, additional purchases and intended milestones are temporary what-if inputs. They do not deduct inventory or write holdings. Reload resets them. Importing progress retains the open temporary plan, which is recalculated and validated against the imported facts.
+`_data/seasonal/halloween_party.json` holds the factual tables extracted on 28 October 2026 from https://kingshotpacks.com/halloween-party and its public `CovenClash-f1da1b82.js` module. It includes drop pools, Witch and free-attack distributions, packs, top-up thresholds, ranking brackets, missions and pass variants. The user-corrected skin rule is recorded separately from the source's original restriction.
 
-Held candy is authoritative. Past packs and previously claimed rewards do not generate more candy. New pack purchases require known purchase counts, earlier tiers unlocked, and remaining allowance. Mission plans count only milestones after the claimed count and reject closed stages. Gathering and Beast plans clamp to remaining caps. Unknown source progress excludes the corresponding planned income and marks the budget partial.
+`Halloween.candyValue(candy, options)` runs seeded target/free-attack simulations. It records Pumpkin hits, Pumpkin kills and Witch hits, then applies the exact expected reward vector of each chest pool. It does not simulate individual rare drops, so a rare item's fractional EV does not turn into an arbitrary zero from a small sample. Returned points are the arithmetic mean, not a median or a target success percentage.
 
-Top-up rewards are incremental: previously earned thresholds are excluded and are assumed to have been collected. The planner does not recover previously unlocked but unclaimed top-up rewards. The daily chest display reports the remaining points and hits for today; future daily chests are not added to forecast rewards.
+Free hits score points but do not advance pity, following the source's stated assumption. Paid hits on either target advance it. Pass candy feeds back into attacks when a new pass is included. Reward variants and claimed levels are explicit options. Maximum input is bounded at two million candy per calculation. Sample counts adapt to the workload; results are estimates, labelled as such. Pack comparisons use matched seeds and the same sample count for their baseline and candidate values. All costs and expected rewards are incremental from held plus planned future candy, before selected purchases.
 
-## Forecast
+`halloween-worker.js` sends held-candy EV first, then the full plan and purchase comparisons. New input cancels superseded work, and results are marked as updating without collapsing the layout. Owned candy EV does not change when future income is edited. The full event reference is a separate disclosure with stable deep links.
 
-The worker runs 200 reproducible seeded simulations on explicit request. It starts at the current points, held/planned candy, known attack progress and claimed pass levels. Newly claimable candy on active pass tracks feeds back into attacks. Other newly claimable pass rewards and random chest drops are counted separately from planned purchase and mission rewards. Unknown pass claims or unknown age/Town Center variants exclude those pass rewards.
+## Save and presentation
 
-Results show the median, 10th–90th percentile finish, and fraction reaching the points target. A purchase scenario also runs a matched scenario without additional purchases for comparison. Editing progress or plans cancels the worker and clears stale results. A bounded simulation reports that its limit was reached instead of presenting a truncated forecast as a complete result.
+The shared ledger's optional `seasonal.halloween-2026` record retains candy, score, purchase counts and existing progress fields. Export/import, revisions and cross-tab updates continue to use the shared save. Future income, currency, comparison metric and selected purchases are temporary scenarios; they never deduct inventory. Old records remain readable.
 
-The range is conditional on completing planned candy income and on the source model. Door income uses its expected value, so the percentile range does not include uncertainty in door rewards. No jackpot, final rank, live account reading or automatic purchase is modelled. The permanent skin has two independent routes: 12,500 points regardless of rank, or a top-10 finish. This corrects the source calculator’s top-500 restriction, following the user’s event clarification on 28 October 2026.
+The page uses the requested purple, green and orange Halloween palette. Purple defines the background and secondary accents, green marks expected rewards, and orange marks candy and money. This is the explicit Halloween exception documented in DESIGN.md. No new animations are authored.
 
-## UI and verification
+The calculator and reference copy is English, marked `lang="en"` and `dir="ltr"`; navigation labels remain translated. Changing the site's language preserves the calculator. Both URL aliases load the same include and worker.
 
-Pages use the existing layout, page deck, shared save controls and declarative modules. The navigation labels are translated in all dictionaries. The first event's guide and planner copy is explicitly English (`lang="en"`, `dir="ltr"`), following the Castle guide's existing pattern; selecting another site language preserves progress and the open scenario. Full planner translation is separate work.
+## Verification
 
-All reference disclosures have stable IDs and use the shared deep-link handler. The page reuses the existing moon scene without changing generated animations.
+Run `node --test .dsh/seasonal-check.cjs`, `node .dsh/player-ledger-check.cjs`, `node --test .dsh/page-deck-check.cjs`, then build Jekyll and run `node .dsh/seasonal-ui-check.cjs`. The browser check accepts `SITE_ROOT` for an alternate build directory.
 
-Run:
-
-```
-node --test .dsh/seasonal-check.cjs
-node .dsh/player-ledger-check.cjs
-node --test .dsh/page-deck-check.cjs
-jekyll build
-node .dsh/seasonal-ui-check.cjs
-```
-
-The UI check accepts `SITE_ROOT` for an alternate build location and uses the shared browser harness. It exercises the worker, incremental purchases, reloads, shared Town Center fallback, cross-tab updates, save import/export, nested deep links, navigation and 320/768/1920px layouts. CI runs both seasonal checks.
+The checks cover candy-only EV, sub-attack balances, rare-item expectations, pity, mission income, prerequisite pack purchases, pass candy feedback, automatic recalculation, per-item rates, full-plan comparisons, unchanged inventory, save round-trips, cross-tab updates, nested reference links, both URL aliases, and phone/tablet/desktop layouts. CI runs the seasonal tests and browser check.
