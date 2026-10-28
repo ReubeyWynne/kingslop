@@ -1701,8 +1701,6 @@ window.__BH_I18N_DATA["it"] = {
   "reqs.timeAt": "{time} con +{speed}% di velocità di costruzione",
   "reqs.oneSource": "† Solo una fonte dà questo valore.",
   "reqs.guestBanner": "<b>Modalità ospite.</b> I livelli inseriti restano su questa pagina. Il tuo salvataggio non cambia.",
-  "reqs.leaveGuest": "esci dalla modalità ospite",
-  "reqs.tryGuest": "prova la modalità ospite",
   "reqs.guestNote": "Modalità ospite: i livelli restano su questa pagina.",
   "reqs.savedNote": "I livelli inseriti sono salvati su questo dispositivo, e il Centro Città e la Priorità dei potenziamenti li usano.",
   "reqs.noJS": "Attiva JavaScript per calcolare un piano.",
@@ -1731,6 +1729,11 @@ window.__BH_I18N_DATA["it"] = {
   "reqs.saveFailed": "Impossibile salvare.",
   "reqs.shareNote": "Un link semplice apre l’obiettivo con i livelli di ciascun lettore. Un link con livelli apre esattamente questo piano, in modalità ospite.",
   "reqs.sourceNote": "Requisiti, costi e tempi base da Kingshot Optimizer, confrontati con Kingshot Data e KS h5joy. Un valore con † ha una sola fonte: Case, Clinica, edifici delle risorse e ogni livello oltre TG 8 vengono solo da Kingshot Optimizer. Lo sconto risorse di Saul non è applicato. Controlla un potenziamento lungo nel gioco prima di avviarlo.",
-  "reqs.fromTown": "cosa chiede un livello"
+  "reqs.fromTown": "cosa chiede un livello",
+  "reqs.addBuilding": "aggiungi un altro edificio",
+  "reqs.guestSwitch": "Modalità ospite",
+  "reqs.removeGoal": "Rimuovi {goal}",
+  "ev.deck.lede.buildings": "cosa chiede ogni livello, ogni passo verso l’obiettivo.",
+  "reqs.cardLede": "Scegli uno o più obiettivi di edificio e vedi ogni potenziamento richiesto, con risorse e tempo, dai tuoi livelli."
 }
 ;

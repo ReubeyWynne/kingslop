@@ -1699,8 +1699,6 @@ window.__BH_I18N_DATA["de"] = {
   "reqs.timeAt": "{time} bei +{speed} % Baugeschwindigkeit",
   "reqs.oneSource": "† Nur eine Quelle nennt diesen Wert.",
   "reqs.guestBanner": "<b>Gastmodus.</b> Eingetragene Stufen bleiben auf dieser Seite. Dein Spielstand bleibt unberührt.",
-  "reqs.leaveGuest": "Gastmodus verlassen",
-  "reqs.tryGuest": "Gastmodus ausprobieren",
   "reqs.guestNote": "Gastmodus: Stufen bleiben auf dieser Seite.",
   "reqs.savedNote": "Eingetragene Stufen werden auf diesem Gerät gespeichert, und Stadtzentrum und Upgrade-Priorität nutzen sie.",
   "reqs.noJS": "Aktiviere JavaScript, um einen Plan zu berechnen.",
@@ -1729,6 +1727,11 @@ window.__BH_I18N_DATA["de"] = {
   "reqs.saveFailed": "Konnte nicht gespeichert werden.",
   "reqs.shareNote": "Ein einfacher Link öffnet das Ziel mit den eigenen Stufen jedes Lesers. Ein Link mit Stufen öffnet genau diesen Plan, im Gastmodus.",
   "reqs.sourceNote": "Voraussetzungen, Kosten und Grundzeiten von Kingshot Optimizer, abgeglichen mit Kingshot Data und KS h5joy. Ein Wert mit † hat nur eine Quelle: Häuser, Klinik, Ressourcengebäude und jede Stufe über TG 8 stammen nur von Kingshot Optimizer. Sauls Ressourcenrabatt ist nicht eingerechnet. Prüfe ein langes Upgrade im Spiel, bevor du es startest.",
-  "reqs.fromTown": "was eine Stufe braucht"
+  "reqs.fromTown": "was eine Stufe braucht",
+  "reqs.addBuilding": "weiteres Gebäude hinzufügen",
+  "reqs.guestSwitch": "Gastmodus",
+  "reqs.removeGoal": "{goal} entfernen",
+  "ev.deck.lede.buildings": "was jede Stufe braucht, jeder Schritt zum Ziel.",
+  "reqs.cardLede": "Wähle ein oder mehrere Gebäudeziele und sieh jedes nötige Upgrade mit Ressourcen und Zeit, ab deinen eigenen Stufen."
 }
 ;

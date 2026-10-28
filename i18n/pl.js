@@ -1699,8 +1699,6 @@ window.__BH_I18N_DATA["pl"] = {
   "reqs.timeAt": "{time} przy +{speed}% szybkości budowy",
   "reqs.oneSource": "† Tę wartość podaje tylko jedno źródło.",
   "reqs.guestBanner": "<b>Tryb gościa.</b> Podane poziomy zostają na tej stronie. Twój zapis się nie zmienia.",
-  "reqs.leaveGuest": "wyjdź z trybu gościa",
-  "reqs.tryGuest": "wypróbuj tryb gościa",
   "reqs.guestNote": "Tryb gościa: poziomy zostają na tej stronie.",
   "reqs.savedNote": "Podane poziomy są zapisywane na tym urządzeniu, a Ratusz i Priorytet ulepszeń z nich korzystają.",
   "reqs.noJS": "Włącz JavaScript, aby obliczyć plan.",
@@ -1729,6 +1727,11 @@ window.__BH_I18N_DATA["pl"] = {
   "reqs.saveFailed": "Nie udało się zapisać.",
   "reqs.shareNote": "Zwykły link otwiera cel z poziomami każdego czytelnika. Link z poziomami otwiera dokładnie ten plan, w trybie gościa.",
   "reqs.sourceNote": "Wymagania, koszty i czasy bazowe z Kingshot Optimizer, sprawdzone z Kingshot Data i KS h5joy. Wartość z † ma jedno źródło: Domy, Klinika, budynki surowcowe i każdy poziom powyżej TG 8 pochodzą tylko z Kingshot Optimizer. Zniżka surowców Saula nie jest uwzględniona. Sprawdź długie ulepszenie w grze, zanim je zaczniesz.",
-  "reqs.fromTown": "czego wymaga poziom"
+  "reqs.fromTown": "czego wymaga poziom",
+  "reqs.addBuilding": "dodaj kolejny budynek",
+  "reqs.guestSwitch": "Tryb gościa",
+  "reqs.removeGoal": "Usuń {goal}",
+  "ev.deck.lede.buildings": "czego wymaga każdy poziom, każdy krok do celu.",
+  "reqs.cardLede": "Wybierz jeden lub kilka celów budynków i zobacz każde potrzebne ulepszenie, z surowcami i czasem, od twoich poziomów."
 }
 ;

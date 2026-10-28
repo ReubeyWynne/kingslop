@@ -1,17 +1,23 @@
 /* Building requirements: the goal picker, the answer, and one row per building the goal needs. */
-html[data-page="buildings"] {
-  --void: #171310;
-  --void-2: #221c17;
-  --amber: #e0956a;
-  --amber-dim: #b17150;
-  --signal-line: rgba(224, 149, 106, 0.35);
-  --signal-tint: rgba(224, 149, 106, 0.07);
-}
 html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
-.reqs-pick { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: var(--space-s); margin-block: var(--space-m); }
-.reqs-pick label { display: grid; gap: 0.4rem; min-width: 0; }
-.reqs-pick select, .reqs-run select, .reqs-more input { width: 100%; min-height: 44px; color: var(--ink); background: var(--void-2); border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; font: inherit; }
-.reqs-pick select:focus-visible, .reqs-run select:focus-visible, .reqs-more input:focus-visible { outline: none; border-bottom-color: var(--amber); }
+.reqs-goals { list-style: none; padding: 0; margin-block: var(--space-m) var(--space-s); display: grid; gap: var(--space-s); }
+.reqs-goal-row { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr) auto; align-items: end; gap: var(--space-s); }
+.reqs-goal-row label { display: grid; gap: 0.4rem; min-width: 0; }
+.reqs-goal-row:only-child { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+.reqs-remove { width: 44px; min-height: 44px; border: 0; border-bottom: 1px solid var(--ink-muted); background: none; color: var(--ink-dim); font: inherit; font-size: 1.25rem; cursor: pointer; }
+.reqs-remove:hover, .reqs-remove:focus-visible { color: var(--amber); border-bottom-color: var(--amber); outline: none; }
+.reqs-goal-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1.5rem; }
+.reqs-add { min-height: 44px; padding: 0.4rem 0; border: 0; border-bottom: 1px solid var(--amber-dim); color: var(--amber); background: none; font: inherit; cursor: pointer; }
+.reqs-add::before { content: '+ '; }
+/* Guest mode is a switch: a track with a knob that moves a whole cell, no sliding. */
+.reqs-switch { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink-dim); font: inherit; cursor: pointer; }
+.reqs-switch::after { content: ''; width: 2.6rem; height: 1.3rem; border: 1px solid var(--ink-muted); border-radius: 2px; background: linear-gradient(90deg, var(--ink-muted) 0 50%, transparent 50%); }
+.reqs-switch[aria-checked="true"] { color: var(--amber); }
+.reqs-switch[aria-checked="true"]::after { border-color: var(--amber); background: linear-gradient(90deg, transparent 50%, var(--amber) 50%); }
+.reqs-switch:focus-visible, .reqs-add:focus-visible { outline: 1px solid var(--amber); outline-offset: 2px; }
+.reqs-switch:disabled, .reqs-add:disabled { opacity: 0.5; cursor: default; }
+.reqs-goal-row select, .reqs-run select, .reqs-more input { width: 100%; min-height: 44px; color: var(--ink); background: var(--void-2); border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; font: inherit; }
+.reqs-goal-row select:focus-visible, .reqs-run select:focus-visible, .reqs-more input:focus-visible { outline: none; border-bottom-color: var(--amber); }
 .reqs-guest { padding: var(--space-s); border-inline-start: 3px solid var(--amber); background: var(--signal-tint); }
 .reqs-answer { border-block: 1px solid var(--signal-line); padding-block: var(--space-s); margin-block: var(--space-m); }
 .reqs-headline { margin: 0 0 var(--space-s); font-size: var(--step-1, 1.25rem); color: var(--amber); }

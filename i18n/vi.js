@@ -1710,8 +1710,6 @@ window.__BH_I18N_DATA["vi"] = {
   "reqs.timeAt": "{time} với +{speed}% tốc độ xây dựng",
   "reqs.oneSource": "† Chỉ một nguồn đưa ra số này.",
   "reqs.guestBanner": "<b>Chế độ khách.</b> Cấp bạn nhập chỉ ở lại trang này. Dữ liệu lưu của bạn không đổi.",
-  "reqs.leaveGuest": "thoát chế độ khách",
-  "reqs.tryGuest": "thử chế độ khách",
   "reqs.guestNote": "Chế độ khách: cấp chỉ ở lại trang này.",
   "reqs.savedNote": "Cấp bạn nhập được lưu trên thiết bị này, Trung tâm Thành phố và Ưu tiên nâng cấp cũng dùng chúng.",
   "reqs.noJS": "Bật JavaScript để tính kế hoạch.",
@@ -1740,6 +1738,11 @@ window.__BH_I18N_DATA["vi"] = {
   "reqs.saveFailed": "Không lưu được.",
   "reqs.shareNote": "Liên kết thường mở mục tiêu với cấp của từng người đọc. Liên kết kèm cấp mở đúng kế hoạch này, ở chế độ khách.",
   "reqs.sourceNote": "Yêu cầu, chi phí và thời gian gốc từ Kingshot Optimizer, đối chiếu với Kingshot Data và KS h5joy. Số có † chỉ có một nguồn: Nhà, Phòng khám, công trình tài nguyên và mọi cấp trên TG 8 chỉ từ Kingshot Optimizer. Chưa áp dụng giảm tài nguyên của Saul. Hãy kiểm tra trong game trước khi bắt đầu một nâng cấp dài.",
-  "reqs.fromTown": "một cấp cần gì"
+  "reqs.fromTown": "một cấp cần gì",
+  "reqs.addBuilding": "thêm công trình khác",
+  "reqs.guestSwitch": "Chế độ khách",
+  "reqs.removeGoal": "Bỏ {goal}",
+  "ev.deck.lede.buildings": "mỗi cấp cần gì, từng bước tới mục tiêu.",
+  "reqs.cardLede": "Chọn một hoặc nhiều mục tiêu công trình và xem mọi nâng cấp cần làm, kèm tài nguyên và thời gian, từ cấp của bạn."
 }
 ;

@@ -151,11 +151,12 @@ for (const pet of data.pets.filter(pet => !portraits.includes(pet.id))) {
 for (const mood of ['asleep', 'hungry', 'lonely', 'delighted']) assert.ok(frames.includes(`@keyframes ascii-pet-marks-${mood}{`), mood);
 for (const react of ['pet', 'feed', 'full']) assert.ok(frames.includes(`.ascii-mini--pet[data-react="${react}"]::after{`), react);
 
-// Wiring: the page closes the ring after Governor gear, loads its scripts in order, and every key is translated.
+// Wiring: the page follows Governor gear in the ring, Building requirements after it, loads its scripts in order, and every key is translated.
 const nav = require('../_data/nav.json'), pages = require('../_data/pages.json');
-assert.equal(nav.at(-1).self, 'pets'); assert.equal(nav.at(-2).self, 'governor');
-assert.equal(pages.pets.swipePrev.page, 'governor'); assert.equal(pages.pets.swipeNext.page, 'home');
-assert.equal(pages.governor.swipeNext.page, 'pets'); assert.equal(pages.home.swipePrev.page, 'pets');
+const petsAt = nav.findIndex(entry => entry.self === 'pets');
+assert.equal(nav[petsAt - 1].self, 'governor'); assert.equal(nav[petsAt + 1].self, 'buildings');
+assert.equal(pages.pets.swipePrev.page, 'governor'); assert.equal(pages.pets.swipeNext.page, 'buildings');
+assert.equal(pages.governor.swipeNext.page, 'pets'); assert.equal(pages.buildings.swipePrev.page, 'pets');
 const petScripts = pages.pets.scripts.map(script => script.split('/').at(-1));
 for (const [dependency, consumer] of [['pet-data.js', 'pet-plan.js'], ['pet-plan.js', 'pet-den.js'], ['pet-care.js', 'pet-den.js'], ['roster-editor.js', 'pet-den.js'], ['pet-den.js', 'pet-live.js']]) {
   assert.ok(petScripts.indexOf(dependency) >= 0 && petScripts.indexOf(consumer) > petScripts.indexOf(dependency), dependency + ' before ' + consumer);

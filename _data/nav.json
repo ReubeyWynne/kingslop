@@ -124,5 +124,14 @@
     "group": "tools",
     "ledeKey": "ev.deck.lede.pets",
     "lede": "tamed, fed and patted; every Advance planned."
+  },
+  {
+    "self": "buildings",
+    "tail": "buildings/",
+    "labelKey": "reqs.nav",
+    "label": "Building requirements",
+    "group": "tools",
+    "ledeKey": "ev.deck.lede.buildings",
+    "lede": "what each level needs, every step to your goal."
   }
 ]

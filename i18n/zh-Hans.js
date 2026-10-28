@@ -1699,8 +1699,6 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "reqs.timeAt": "建造速度 +{speed}% 时 {time}",
   "reqs.oneSource": "† 只有一个来源给出这个数值。",
   "reqs.guestBanner": "<b>访客模式。</b>你填的等级只留在这个页面，你的存档不受影响。",
-  "reqs.leaveGuest": "退出访客模式",
-  "reqs.tryGuest": "试试访客模式",
   "reqs.guestNote": "访客模式：等级只留在这个页面。",
   "reqs.savedNote": "你填的等级保存在这台设备上，市政厅和升级优先级页面也会使用。",
   "reqs.noJS": "请开启 JavaScript 来计算计划。",
@@ -1729,6 +1727,11 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "reqs.saveFailed": "无法保存。",
   "reqs.shareNote": "普通链接会用每位读者自己的等级打开目标。带等级的链接会以访客模式打开这份计划。",
   "reqs.sourceNote": "前置条件、消耗和基础时间来自 Kingshot Optimizer，并与 Kingshot Data 和 KS h5joy 核对。标 † 的数值只有一个来源：民居、诊所、资源建筑以及 TG 8 以上的所有等级只来自 Kingshot Optimizer。未计入 Saul 的资源减免。开始长时间升级前请在游戏中确认。",
-  "reqs.fromTown": "每一级需要什么"
+  "reqs.fromTown": "每一级需要什么",
+  "reqs.addBuilding": "再加一座建筑",
+  "reqs.guestSwitch": "访客模式",
+  "reqs.removeGoal": "移除{goal}",
+  "ev.deck.lede.buildings": "每一级需要什么，通往目标的每一步。",
+  "reqs.cardLede": "选择一个或多个建筑目标，从你自己的等级算起，查看所需的每次升级、资源和时间。"
 }
 ;

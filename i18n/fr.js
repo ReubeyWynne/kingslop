@@ -1700,8 +1700,6 @@ window.__BH_I18N_DATA["fr"] = {
   "reqs.timeAt": "{time} à +{speed} % de vitesse de construction",
   "reqs.oneSource": "† Une seule source donne ce chiffre.",
   "reqs.guestBanner": "<b>Mode invité.</b> Les niveaux saisis restent sur cette page. Votre sauvegarde n’est pas modifiée.",
-  "reqs.leaveGuest": "quitter le mode invité",
-  "reqs.tryGuest": "essayer le mode invité",
   "reqs.guestNote": "Mode invité : les niveaux restent sur cette page.",
   "reqs.savedNote": "Les niveaux saisis sont enregistrés sur cet appareil, et le Centre-ville et la Priorité d’amélioration s’en servent.",
   "reqs.noJS": "Activez JavaScript pour calculer un plan.",
@@ -1730,6 +1728,11 @@ window.__BH_I18N_DATA["fr"] = {
   "reqs.saveFailed": "Enregistrement impossible.",
   "reqs.shareNote": "Un lien simple ouvre l’objectif avec les niveaux de chaque lecteur. Un lien avec niveaux ouvre exactement ce plan, en mode invité.",
   "reqs.sourceNote": "Prérequis, coûts et temps de base de Kingshot Optimizer, vérifiés avec Kingshot Data et KS h5joy. Un chiffre marqué † n’a qu’une source : les Maisons, la Clinique, les bâtiments de ressources et tout niveau au-delà de TG 8 viennent seulement de Kingshot Optimizer. La remise de ressources de Saul n’est pas appliquée. Vérifiez une longue amélioration en jeu avant de la lancer.",
-  "reqs.fromTown": "ce que demande un niveau"
+  "reqs.fromTown": "ce que demande un niveau",
+  "reqs.addBuilding": "ajouter un autre bâtiment",
+  "reqs.guestSwitch": "Mode invité",
+  "reqs.removeGoal": "Retirer {goal}",
+  "ev.deck.lede.buildings": "ce que demande chaque niveau, chaque étape vers votre objectif.",
+  "reqs.cardLede": "Choisissez un ou plusieurs objectifs de bâtiment et voyez chaque amélioration requise, avec ressources et temps, depuis vos niveaux."
 }
 ;

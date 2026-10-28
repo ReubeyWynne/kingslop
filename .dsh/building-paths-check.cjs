@@ -52,13 +52,34 @@ assert.equal(at.barracks, 'TG 8');
 // Met goals, speed, links.
 assert.equal(E.plan(D, { building: 'academy', level: '5' }, { academy: '9' }).state, 'met');
 assert.equal(E.atSpeed(3600, 100), 1800);
-const state = { building: 'town-center', level: 'TG 2', have: { 'house-1': '2', embassy: 'TG1-2' }, speed: 42.5 };
+const state = { goals: [{ building: 'town-center', level: 'TG 2' }, { building: 'barracks', level: 'TG 2' }], have: { 'house-1': '2', embassy: 'TG1-2' }, speed: 42.5 };
 const query = E.encode(state);
-assert.equal(query, 'b=town-center&to=TG2&have=embassy:TG1-2,house-1:2&speed=42.5');
+assert.equal(query, 'goal=town-center:TG2,barracks:TG2&have=embassy:TG1-2,house-1:2&speed=42.5');
 const back = E.decode(D, '?' + query);
-assert.deepEqual({ building: back.building, level: back.level, have: back.have, speed: back.speed }, state);
-assert.deepEqual(E.decode(D, '?b=nope&to=3&have=embassy:99,house-1:2&speed=-4'), { have: { 'house-1': '2' }, speed: null });
-assert.equal(E.decode(D, '?b=town-center').have, null);
+assert.deepEqual({ goals: back.goals, have: back.have, speed: back.speed }, state);
+assert.deepEqual(E.decode(D, '?goal=nope:3,town-center:99,embassy:5&have=embassy:99,house-1:2&speed=-4'), { goals: [{ building: 'embassy', level: '5' }], have: { 'house-1': '2' }, speed: null });
+assert.equal(E.decode(D, '?goal=town-center:3').have, null);
+// The first links carried one goal as b and to; they still open.
+assert.deepEqual(E.decode(D, '?b=town-center&to=TG2').goals, [{ building: 'town-center', level: 'TG 2' }]);
+
+// Several goals share their prerequisites: one plan, each step once, every goal reached.
+const both = [{ building: 'town-center', level: 'TG 3' }, { building: 'barracks', level: 'TG 3' }];
+const city = { 'town-center': 'TG 1', barracks: 'TG 1', embassy: 'TG 1', stable: 'TG 1', range: 'TG 1', academy: '30' };
+p = E.plan(D, both, city);
+assert.equal(p.state, 'plan');
+const reached = Object.assign({}, p.current);
+const seen = new Set();
+for (const s of p.steps) { const id = s.building + ' ' + s.level; assert.ok(!seen.has(id), 'once: ' + id); seen.add(id); reached[s.building] = s.level; }
+assert.equal(reached['town-center'], 'TG 3');
+assert.equal(reached.barracks, 'TG 3');
+const alone = E.plan(D, both[0], city), other = E.plan(D, both[1], city);
+assert.ok(p.total.steps < alone.total.steps + other.total.steps, 'shared prerequisites are counted once');
+assert.equal(p.runs[p.runs.length - 1].building, 'barracks', 'the goals come last, in the order given');
+// Two goals on one building keep the higher; a met goal drops out of the plan, all met is met.
+assert.deepEqual(E.goals(D, [{ building: 'embassy', level: '5' }, { building: 'embassy', level: '9' }]), [{ building: 'embassy', level: '9' }]);
+p = E.plan(D, [{ building: 'academy', level: '5' }, { building: 'town-center', level: '12' }], { academy: '9', 'town-center': '11', embassy: '11', 'command-center': '1' });
+assert.deepEqual(p.runs.map(r => r.building), ['town-center']);
+assert.equal(E.plan(D, [{ building: 'academy', level: '5' }, { building: 'embassy', level: '3' }], { academy: '9', embassy: '8' }).state, 'met');
 
 // Page wiring and dictionaries.
 const page = fs.readFileSync(path.join(root, 'buildings/index.html'), 'utf8');

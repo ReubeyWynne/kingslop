@@ -1699,8 +1699,6 @@ window.__BH_I18N_DATA["ja"] = {
   "reqs.timeAt": "建設速度 +{speed}% で {time}",
   "reqs.oneSource": "† この数値は1つの出典にしかありません。",
   "reqs.guestBanner": "<b>ゲストモード。</b>入力したレベルはこのページだけに残り、セーブは変わりません。",
-  "reqs.leaveGuest": "ゲストモードを終了",
-  "reqs.tryGuest": "ゲストモードを試す",
   "reqs.guestNote": "ゲストモード：レベルはこのページだけに残ります。",
   "reqs.savedNote": "入力したレベルはこの端末に保存され、市庁舎とアップグレード優先度でも使われます。",
   "reqs.noJS": "プランを計算するには JavaScript を有効にしてください。",
@@ -1729,6 +1727,11 @@ window.__BH_I18N_DATA["ja"] = {
   "reqs.saveFailed": "保存できませんでした。",
   "reqs.shareNote": "通常のリンクは、開いた人自身のレベルで目標を表示します。レベル付きリンクはこのプランをそのままゲストモードで開きます。",
   "reqs.sourceNote": "前提条件・コスト・基本時間は Kingshot Optimizer のもので、Kingshot Data と KS h5joy で照合しています。† の数値は出典が1つだけです：住宅、診療所、資源建築、TG 8 より上の全レベルは Kingshot Optimizer のみ。Saul の資源割引は含みません。長いアップグレードは始める前にゲーム内で確認してください。",
-  "reqs.fromTown": "各レベルに必要なもの"
+  "reqs.fromTown": "各レベルに必要なもの",
+  "reqs.addBuilding": "建築を追加",
+  "reqs.guestSwitch": "ゲストモード",
+  "reqs.removeGoal": "{goal} を外す",
+  "ev.deck.lede.buildings": "各レベルに必要なもの、目標までの全手順。",
+  "reqs.cardLede": "建築の目標を1つでも複数でも選ぶと、自分のレベルから必要なアップグレードと資源・時間が分かります。"
 }
 ;

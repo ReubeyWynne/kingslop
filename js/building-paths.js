@@ -5,10 +5,11 @@
    is House 1); the same keys hold its level in the save's buildings.levels. Levels are the game's ids ('0' not built, '1'…'30', '30-1', 'TG 1', 'TG1-1' …);
    rank() orders them the way the optimizer does, 30 + 5 × TG.
 
-   plan(data, goal, have) answers a goal { building, level } from the levels the player gave
+   plan(data, goals, have) answers goals [{ building, level }, …] from the levels the player gave
    (have). A building they have not given is assumed at the least the rest of their city needs:
-   everything the goal building's current level, and each level they did give, required on the
-   way. The plan is every step from there to the goal, prerequisites first, with what it costs. */
+   everything each goal building's current level, and each level they did give, required on the
+   way. The plan is every step from there to every goal, prerequisites shared and counted once,
+   prerequisites first, with what it costs. */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
   else root.BuildingPathsEngine = factory();
@@ -69,40 +70,53 @@
     return out;
   }
 
+  // Goals are a list of { building, level }; one goal on its own is a list of one. Two goals
+  // on one building keep the higher level.
+  function goals(data, list) {
+    var out = [], at = {};
+    (Array.isArray(list) ? list : [list]).forEach(function (g) {
+      if (!g || !building(data, g.building) || levels(data, g.building).indexOf(g.level) < 0) return;
+      if (at[g.building] === undefined) { at[g.building] = out.length; out.push({ building: g.building, level: g.level }); }
+      else if (rank(g.level) > rank(out[at[g.building]].level)) out[at[g.building]].level = g.level;
+    });
+    return out;
+  }
+
   function plan(data, goal, have) {
     have = have || {};
-    var g = goal.building, to = goal.level, b = building(data, g);
-    if (!b || levels(data, g).indexOf(to) < 0) return { state: 'unknown' };
-    var start = {};
+    var list = goals(data, goal);
+    if (!list.length) return { state: 'unknown' };
+    var start = {}, mine = {};
     Object.keys(have).forEach(function (k) { if (building(data, k) && !isNaN(rank(have[k]))) start[k] = have[k]; });
-    if (start[g] === undefined) start[g] = before(data, g, to);
+    list.forEach(function (g) { mine[g.building] = true; if (start[g.building] === undefined) start[g.building] = before(data, g.building, g.level); });
     // The least each other building must already be, given the levels we know.
     var floor = close(data, start, {}), current = {}, assumed = {};
     Object.keys(floor).forEach(function (k) {
       current[k] = start[k] !== undefined ? start[k] : floor[k];
       if (start[k] === undefined) assumed[k] = true;
     });
-    if (rank(current[g]) >= rank(to)) return { state: 'met', goal: goal, current: current, assumed: assumed, steps: [], total: total([]) };
     var want = {};
-    want[g] = to;
+    list.forEach(function (g) { if (rank(current[g.building]) < rank(g.level)) want[g.building] = g.level; });
+    if (!Object.keys(want).length) return { state: 'met', goals: list, current: current, assumed: assumed, want: {}, steps: [], runs: [], blocked: [], total: total([]) };
     want = close(data, want, current);
     // Order: a step goes once its prerequisites are reached; prerequisites before the goal
-    // building, and among them the building first named. A step whose prerequisite no plan
+    // buildings, and among each the building first named. A step whose prerequisite no plan
     // reaches (a source gap) is listed as blocked rather than dropped.
     var at = Object.assign({}, current), queue = {}, order = Object.keys(want), out = [], blocked = [];
+    var last = list.map(function (g) { return g.building; }).filter(function (k) { return want[k] !== undefined; });
+    order = order.filter(function (k) { return !mine[k]; }).concat(last);
     order.forEach(function (k) { queue[k] = steps(data, k, current[k] || '0', want[k]); });
     function ready(step) { return (step.needs || []).every(function (n) { return rank(at[key(n)]) >= rank(n[1] || '1'); }); }
-    for (var guard = 0; guard < 2000; guard++) {
+    for (var guard = 0; guard < 5000; guard++) {
       var pick = null;
-      for (var i = 0; i < order.length && !pick; i++) { var k = order[i]; if (k !== g && queue[k].length && ready(queue[k][0])) pick = k; }
-      if (!pick && queue[g].length && ready(queue[g][0])) pick = g;
+      for (var i = 0; i < order.length && !pick; i++) { var k = order[i]; if (queue[k].length && ready(queue[k][0])) pick = k; }
       if (!pick) break;
       var step = queue[pick].shift();
       out.push({ building: pick, from: at[pick] || '0', level: step.id, step: step });
       at[pick] = step.id;
     }
     order.forEach(function (k) { queue[k].forEach(function (step) { blocked.push({ building: k, level: step.id, step: step }); }); });
-    return { state: blocked.length ? 'blocked' : 'plan', goal: goal, current: current, assumed: assumed, want: want, steps: out, runs: runs(out), blocked: blocked, total: total(out) };
+    return { state: blocked.length ? 'blocked' : 'plan', goals: list, current: current, assumed: assumed, want: want, steps: out, runs: runs(out), blocked: blocked, total: total(out) };
   }
 
   // Consecutive steps on one building read as one line: Embassy 10 → 14.
@@ -127,26 +141,29 @@
     return { cost: cost, resources: RESOURCES.filter(function (r) { return cost[r]; }), unverified: unverified, time: time, timeKnown: timeKnown, steps: list.length };
   }
   // Every building the goal's whole path can name, from scratch.
-  function involved(data, goal) { var t = {}; t[goal.building] = goal.level; return Object.keys(close(data, t, {})); }
+  function involved(data, goal) { var t = {}; goals(data, goal).forEach(function (g) { t[g.building] = g.level; }); return Object.keys(close(data, t, {})); }
 
-  // A link: ?b=town-center&to=3[&have=house-1:2,embassy:TG1-2][&speed=42.5]. Without have the
-  // reader's own levels fill in the plan; with it the link opens as the sender left it.
+  // A link: ?goal=town-center:TG3,barracks:TG3[&have=house-1:2,embassy:TG1-2][&speed=42.5].
+  // Without have the reader's own levels fill in the plan; with it the link opens as the sender
+  // left it. The first links carried one goal as ?b=town-center&to=3; those still open.
+  function pairs(list) { return list.map(function (x) { return x[0] + ':' + short(x[1]); }).join(','); }
   function encode(state) {
-    var out = ['b=' + state.building, 'to=' + short(state.level)];
-    var have = Object.keys(state.have || {}).sort().map(function (k) { return k + ':' + short(state.have[k]); });
-    if (have.length) out.push('have=' + have.join(','));
+    var out = ['goal=' + pairs((state.goals || []).map(function (g) { return [g.building, g.level]; }))];
+    var have = Object.keys(state.have || {}).sort().map(function (k) { return [k, state.have[k]]; });
+    if (have.length) out.push('have=' + pairs(have));
     if (state.speed > 0) out.push('speed=' + state.speed);
     return out.join('&');
   }
+  function read(text) {
+    return (text || '').split(',').map(function (pair) { var at = pair.lastIndexOf(':'); return at > 0 ? [pair.slice(0, at), level(pair.slice(at + 1))] : null; }).filter(Boolean);
+  }
   function decode(data, search) {
-    var q = new URLSearchParams(search), b = q.get('b'), to = level(q.get('to') || ''), out = { have: null, speed: null };
-    if (b && building(data, b) && !building(data, b).single && levels(data, b).indexOf(to) >= 0) { out.building = b; out.level = to; }
+    var q = new URLSearchParams(search), out = { goals: [], have: null, speed: null };
+    var wanted = q.has('goal') ? read(q.get('goal')) : q.has('b') ? [[q.get('b'), level(q.get('to') || '')]] : [];
+    out.goals = goals(data, wanted.filter(function (x) { return building(data, x[0]) && !building(data, x[0]).single; }).map(function (x) { return { building: x[0], level: x[1] }; }));
     if (q.has('have')) {
       out.have = {};
-      (q.get('have') || '').split(',').forEach(function (pair) {
-        var at = pair.lastIndexOf(':'), k = pair.slice(0, at), l = level(pair.slice(at + 1));
-        if (at > 0 && building(data, k) && (l === '0' || levels(data, k).indexOf(l) >= 0)) out.have[k] = l;
-      });
+      read(q.get('have')).forEach(function (x) { if (building(data, x[0]) && (x[1] === '0' || levels(data, x[0]).indexOf(x[1]) >= 0)) out.have[x[0]] = x[1]; });
     }
     var speed = Number(q.get('speed'));
     if (q.has('speed') && isFinite(speed) && speed > 0 && speed <= 1000) out.speed = speed;
@@ -156,5 +173,5 @@
   // Base seconds at a construction speed bonus (%).
   function atSpeed(seconds, speed) { return speed > 0 ? Math.floor(seconds / (1 + speed / 100)) : seconds; }
 
-  return { RESOURCES: RESOURCES, rank: rank, level: level, short: short, key: key, split: split, building: building, levels: levels, before: before, steps: steps, total: function (steps) { return total(steps.map(function (step) { return { step: step }; })); }, plan: plan, involved: involved, encode: encode, decode: decode, atSpeed: atSpeed };
+  return { RESOURCES: RESOURCES, rank: rank, level: level, short: short, key: key, split: split, building: building, levels: levels, before: before, steps: steps, total: function (steps) { return total(steps.map(function (step) { return { step: step }; })); }, goals: goals, plan: plan, involved: involved, encode: encode, decode: decode, atSpeed: atSpeed };
 }));
