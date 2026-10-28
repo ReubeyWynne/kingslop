@@ -202,6 +202,11 @@ jobs:
             priority:
               - *shared
               - .dsh/upgrade-priority-ui-check.cjs
+              - .dsh/building-paths-ui-check.cjs
+              - buildings/**
+              - js/building-paths*
+              - _data/building_paths.json
+              - css/buildings.css
               - upgrade-priority/**
               - js/upgrade-priority*
               - js/upgrade-goals*
@@ -407,6 +412,9 @@ jobs:
       - name: Check upgrade priority
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/upgrade-priority-check.cjs
+      - name: Check building requirements data, planner and wiring
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/building-paths-check.cjs
       - name: Check upgrade goals and shortfalls
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/upgrade-goals-check.cjs
@@ -541,6 +549,9 @@ jobs:
       - name: Check upgrade priority UI
         if: matrix.group == 'priority'
         run: node .dsh/upgrade-priority-ui-check.cjs
+      - name: Check building requirements UI
+        if: matrix.group == 'priority'
+        run: node .dsh/building-paths-ui-check.cjs
       - name: Check next-step lines on the tool pages
         if: matrix.group == 'hints'
         run: node .dsh/next-step-ui-check.cjs

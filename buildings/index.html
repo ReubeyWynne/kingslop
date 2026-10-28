@@ -1,0 +1,58 @@
+---
+layout: page
+self: buildings
+---
+{% assign data = site.data.building_paths %}{% assign tc = data.buildings | first %}
+<main data-module="building-paths">
+  <section class="section hero" id="top">
+    <h1 data-i18n="reqs.title">Building requirements</h1>
+    <p class="lede" data-i18n="reqs.intro">Pick a goal and see every upgrade it takes, in order, with the resources and time. Then set your real levels to sharpen it, and send the link.</p>
+  </section>
+
+  <section class="section reqs-goal" id="goal" aria-labelledby="goal-title">
+    <h2 id="goal-title" data-i18n="reqs.goal">Your goal</h2>
+    <div class="reqs-pick">
+      <label><span data-i18n="reqs.building">Building</span><select data-target="building-paths.building" data-action="building-paths.goal" disabled>{% for b in data.buildings %}<option value="{{ b.id }}" data-i18n="town.building.{{ b.id }}">{{ b.name }}</option>{% endfor %}</select></label>
+      <label><span data-i18n="reqs.level">Level</span><select data-target="building-paths.level" data-action="building-paths.goal" disabled>{% for l in tc.levels offset: 1 %}<option value="{{ l.id }}"{% if l.id == "3" %} selected{% endif %}>{{ l.id }}</option>{% endfor %}</select></label>
+    </div>
+
+    <p class="reqs-guest" data-target="building-paths.guestBanner" hidden><span data-i18n-html="reqs.guestBanner"><b>Guest mode.</b> Levels you set stay on this page. Your save is untouched.</span> <a href="./" data-target="building-paths.guestLeave" data-i18n="reqs.leaveGuest">leave guest mode</a></p>
+
+    <div class="reqs-answer" aria-live="polite">
+      <p class="reqs-headline" data-target="building-paths.headline"></p>
+      <ul class="reqs-cost" data-target="building-paths.total"></ul>
+      <p class="reqs-time" data-target="building-paths.time"></p>
+      <p class="reqs-flag" data-target="building-paths.flag" hidden></p>
+    </div>
+    <noscript><p data-i18n="reqs.noJS">Turn on JavaScript to work out a plan.</p></noscript>
+  </section>
+
+  <section class="section reqs-levels" id="your-levels" aria-labelledby="levels-title">
+    <h2 id="levels-title" data-i18n="reqs.yourLevels">Your levels</h2>
+    <p data-i18n="reqs.levelsNote">Each building the goal needs, from your level to the level it must reach. Set the ones you know and the plan shrinks to what is really left.</p>
+    <ol class="reqs-runs" data-target="building-paths.summary"></ol>
+    <p class="note"><span data-target="building-paths.saveNote"></span> <a href="?guest" data-target="building-paths.guestEnter" data-i18n="reqs.tryGuest">try guest mode</a></p>
+    <details class="reqs-more" id="reqs-speed">
+      <summary data-i18n="reqs.speedTitle">Construction speed</summary>
+      <label><span data-i18n="reqs.speed">Construction speed bonus (%)</span><input type="number" inputmode="decimal" min="0" max="1000" step="0.1" data-target="building-paths.speed" data-action="building-paths.speed" disabled></label>
+      <p class="note" data-i18n="reqs.speedNote">From your Bonus Overview. Without it, times are base times before any speed.</p>
+    </details>
+    <details class="reqs-more" id="reqs-order">
+      <summary data-i18n="reqs.inOrder">Every step, in order</summary>
+      <ol class="reqs-steps" data-target="building-paths.steps"></ol>
+    </details>
+    <div class="reqs-share">
+      <button type="button" data-action="building-paths.copy" data-i18n="reqs.copy">Copy link</button>
+      <button type="button" data-action="building-paths.copyLevels" data-i18n="reqs.copyLevels">Copy link with these levels</button>
+      <button type="button" data-target="building-paths.addGoal" data-action="building-paths.addGoal" data-i18n="reqs.addGoal" hidden>Add to my goals</button>
+      <output role="status" data-target="building-paths.copied"></output>
+    </div>
+    <p class="note" data-i18n="reqs.shareNote">A plain link opens the goal with each reader's own levels. A link with levels opens exactly this plan, in guest mode.</p>
+  </section>
+
+  <section class="section" id="reqs-sources">
+    <h2 data-i18n="directory.sources">Sources &amp; confidence</h2>
+    <p data-i18n="reqs.sourceNote">Prerequisites, costs and base times from Kingshot Optimizer, checked against Kingshot Data and KS h5joy. A figure marked † has only one source: Houses, the Clinic, resource buildings and every level past TG 8 are Kingshot Optimizer only. Saul's resource discount is not applied. Check a long upgrade in game before you start it.</p>
+    <ul>{% for s in data.sources %}<li><a href="{{ s[1].url }}">{{ s[1].label | escape }}</a></li>{% endfor %}</ul>
+  </section>
+</main>
