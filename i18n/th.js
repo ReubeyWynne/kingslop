@@ -1742,6 +1742,7 @@ window.__BH_I18N_DATA["th"] = {
   "reqs.tapLevel": "ระดับที่มี ? เป็นค่าประมาณ: ต่ำสุดที่เมืองของคุณจะมีได้ แตะระดับใดก็ได้เพื่อใส่ระดับของคุณ แล้วแผนจะเหลือแค่สิ่งที่ยังขาดจริง ๆ",
   "reqs.goalTag": "เป้าหมาย",
   "reqs.goalLevel": "ระดับเป้าหมายของ{building}",
+  "reqs.removeFromGoal": "นำออกจากเป้าหมาย",
   "reqs.unsureShort": "ไม่แน่ใจ",
   "reqs.close": "ปิด",
   "reqs.aboutLinks": "เกี่ยวกับลิงก์",

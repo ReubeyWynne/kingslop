@@ -1728,6 +1728,7 @@ window.__BH_I18N_DATA["ar"] = {
   "reqs.tapLevel": "المستوى المعلّم بـ ? مفترض: أقل ما يمكن أن تملكه مدينتك. اضغط أي مستوى لتحدد مستواك، فتتقلص الخطة إلى ما تبقى فعلًا.",
   "reqs.goalTag": "الهدف",
   "reqs.goalLevel": "المستوى المستهدف لـ{building}",
+  "reqs.removeFromGoal": "إزالة من الهدف",
   "reqs.unsureShort": "غير متأكد",
   "reqs.close": "إغلاق",
   "reqs.aboutLinks": "عن الروابط",

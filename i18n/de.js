@@ -1731,6 +1731,7 @@ window.__BH_I18N_DATA["de"] = {
   "reqs.tapLevel": "Eine Stufe mit ? ist angenommen: das Mindeste, was deine Stadt haben kann. Tippe auf eine Stufe, um deine einzutragen, und der Plan schrumpft auf das, was wirklich fehlt.",
   "reqs.goalTag": "Ziel",
   "reqs.goalLevel": "Zielstufe für {building}",
+  "reqs.removeFromGoal": "Aus dem Ziel entfernen",
   "reqs.unsureShort": "unsicher",
   "reqs.close": "Schließen",
   "reqs.aboutLinks": "Über Links",

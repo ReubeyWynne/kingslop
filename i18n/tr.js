@@ -1730,6 +1730,7 @@ window.__BH_I18N_DATA["tr"] = {
   "reqs.tapLevel": "? işaretli seviye varsayımdır: şehrinin sahip olabileceği en az seviye. Kendi seviyeni girmek için bir seviyeye dokun; plan gerçekten kalan işe iner.",
   "reqs.goalTag": "hedef",
   "reqs.goalLevel": "{building} hedef seviyesi",
+  "reqs.removeFromGoal": "Hedeften çıkar",
   "reqs.unsureShort": "emin değilim",
   "reqs.close": "Kapat",
   "reqs.aboutLinks": "Bağlantılar hakkında",

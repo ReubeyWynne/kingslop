@@ -108,3 +108,4 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
   .reqs-answer .reqs-res { display: none; }
   .reqs-answer .reqs-cost img { width: 20px; height: 20px; }
 }
+.reqs-picker .reqs-drop { color: var(--ink-dim); }

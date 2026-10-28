@@ -2365,6 +2365,7 @@ window.__BH_I18N_DATA["en"] = {
   "reqs.tapLevel": "A level marked ? is assumed: the least your city can have. Tap any level to set yours, and the plan shrinks to what is really left.",
   "reqs.goalTag": "goal",
   "reqs.goalLevel": "{building} goal level",
+  "reqs.removeFromGoal": "Remove from goal",
   "reqs.unsureShort": "not sure",
   "reqs.close": "Close",
   "reqs.aboutLinks": "About links",

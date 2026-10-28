@@ -148,11 +148,15 @@
       if (picking.kind === 'have') {
         extra.appendChild(choice('', t('unsureShort', 'not sure'), 'reqs-wide'));
         extra.appendChild(choice('0', levelName(k, '0'), 'reqs-wide'));
+      } else if (goals.length > 1) {
+        var drop = el('button', 'reqs-drop', t('removeFromGoal', 'Remove from goal'));
+        drop.type = 'button'; drop.setAttribute('data-action', 'building-paths.drop');
+        extra.appendChild(drop);
       }
       list.filter(function (id) { return tiers.length < 2 || tier(id) === picking.tier; }).forEach(function (id) { grid.appendChild(choice(id, E.building(D, k).single ? levelName(k, id) : E.short(id))); });
     }
-    function openPicker(kind, k, value, index) {
-      picking = { kind: kind, building: k, value: value, index: index };
+    function openPicker(kind, k, value, index, fromTile) {
+      picking = { kind: kind, building: k, value: value, index: index, fromTile: !!fromTile };
       one('pickerTitle').textContent = kind === 'goal' ? t('goalLevel', '{building} goal level', { building: name(k) }) : t('yourLevel', 'Your {building} level', { building: name(k) });
       var box = one('pickerArt'); box.textContent = ''; box.appendChild(art(k));
       fillPicker();
@@ -165,7 +169,8 @@
       var dialog = one('picker'), back = picking;
       picking = null;
       if (typeof dialog.close === 'function' && dialog.open) dialog.close(); else dialog.removeAttribute('open');
-      if (back) {
+      if (back && back.fromTile) { var tile = one('picks').querySelector('.reqs-pick[data-building="' + back.building + '"]'); if (tile) tile.focus(); }
+      else if (back) {
         var again = one('summary').querySelector('.reqs-lv[data-kind="' + back.kind + '"][data-building="' + back.building + '"]');
         if (again) again.focus();
       }
@@ -261,11 +266,18 @@
     return {
       refresh: function () { fillGoals(); render(); },
       actions: {
+        // A tile opens its goal level at once: a new building joins the goal first, one already
+        // in it can be removed from the grid.
         pick: { run: function (node) {
           var k = node.dataset.building, at = goals.findIndex(function (g) { return g.building === k; });
-          if (at < 0) goals.push({ building: k, level: null });
-          else if (goals.length > 1) goals.splice(at, 1);
-          else return openPicker('goal', k, goals[at].level, at);
+          if (at < 0) { goals.push({ building: k, level: null }); at = goals.length - 1; fillGoals(); render(); }
+          openPicker('goal', k, goals[at].level, at, true);
+        } },
+        drop: { run: function () {
+          if (!picking || goals.length < 2) return;
+          var index = picking.index;
+          closePicker();
+          goals.splice(index, 1);
           fillGoals(); render();
         } },
         open: { run: function (node) { openPicker(node.dataset.kind, node.dataset.building, node.dataset.value, node.dataset.index === undefined ? null : Number(node.dataset.index)); } },
@@ -276,6 +288,7 @@
           closePicker();
           if (p.kind === 'goal') { goals[p.index].level = value; fillGoals(); render(); }
           else setLevel(p.building, value === '' ? null : value);
+          if (p.fromTile) return;
           var again = one('summary').querySelector('.reqs-lv[data-kind="' + p.kind + '"][data-building="' + p.building + '"]');
           if (again) again.focus();
         } },

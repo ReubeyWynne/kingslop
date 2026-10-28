@@ -1731,6 +1731,7 @@ window.__BH_I18N_DATA["pl"] = {
   "reqs.tapLevel": "Poziom oznaczony ? jest założony: najmniej, ile może mieć twoje miasto. Dotknij poziomu, aby wpisać swój, a plan skurczy się do tego, co naprawdę zostało.",
   "reqs.goalTag": "cel",
   "reqs.goalLevel": "Docelowy poziom: {building}",
+  "reqs.removeFromGoal": "Usuń z celu",
   "reqs.unsureShort": "nie wiem",
   "reqs.close": "Zamknij",
   "reqs.aboutLinks": "O linkach",

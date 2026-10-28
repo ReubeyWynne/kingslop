@@ -22,7 +22,7 @@
 2. **What it takes.** From there the plan raises each building until every step up to the goal has its prerequisites, recursively, and lists every step. A step goes once its prerequisites are reached; prerequisites go before the goal building, in the order first named. A step whose prerequisite no source lists stays as blocked rather than dropped.
 3. **Refining.** Each building in the plan is one card: its art, the reader's level (dashed and marked `?` while assumed), the level it must reach, and that run's cost and time. Tapping a level opens one small grid of levels in place of a long select: buildings past level 30 get a tab for 1–30 and one per TG, so any level is at most two taps away and the grid never scrolls on a phone. A level set high enough stays listed with a tick, so it can be set back; "not sure" forgets it. Construction speed (%) is optional; without it times are base times.
 
-The goal is a row of building tiles (all 20, art from `img/buildings/`, see its `SOURCES.md`): a tap adds or removes a goal, and the tile badge shows its goal level, set from the goal's own card. The answer (headline, totals, time) is pinned to the foot of the screen while the cards scroll under it.
+The goal is a row of building tiles (all 20, art from `img/buildings/`, see its `SOURCES.md`): a tap opens that building's goal level grid (adding it to the goal first if it was not in it), the grid has **Remove from goal** once there are two goals, and the tile badge shows the goal level. The answer (headline, totals, time) is pinned to the foot of the screen while the cards scroll under it.
 
 Totals add every step's cost and base time. Saul's resource discount and Double Time are not applied.
 
