@@ -1057,3 +1057,7 @@ html[data-page="town"], html[data-page="home"]:has(.event-card[data-hover-page="
 .site-door-ways a:hover, .site-door-ways a:focus-visible { color: var(--ink); }
 .site-door-saved { min-height: 1.2em; font-size: var(--step--1); color: var(--ink-dim); font-style: italic; }
 .site-door .site-guide-done { justify-self: center; }
+
+html[data-page="seasonal"], .deck-card[data-page="seasonal"] { --void: #14101B; --void-2: #201A29; --amber: #D3D47A; --amber-dim: #9F9F4C; }
+:is(.deck-card, .deck-pip)[data-page="seasonal"] { --deck-accent: #D3D47A; }
+.page-deck[data-selected="seasonal"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #D3D47A; --deck-ground: #201A29; }

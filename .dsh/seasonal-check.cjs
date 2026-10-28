@@ -1,0 +1,98 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const E = require('../js/halloween-engine.js');
+const L = require('../js/player-ledger.js');
+const D = E.data;
+function facts() { return Object.assign(E.blank(), { points: 10000, candy: 1000, daysLeft: 3 }); }
+function storage() { const data = new Map(); return { getItem: key => data.get(key) || null, setItem: (key, value) => data.set(key, value), removeItem: key => data.delete(key) }; }
+test('source distributions and variants are complete', () => {
+  for (const pool of [...Object.values(D.chests), D.witchHits, D.freeAttacks, ...D.doors.houses.map(h => h.candy)]) assert.equal(pool.reduce((n, v) => n + v.chance, 0), 100);
+  assert.equal(D.doors.houses.reduce((n, v) => n + v.weight, 0), 100);
+  assert.equal(D.passThresholds.length, 21);
+  for (const v of D.passVariants) assert.equal(v.levels.length, 21);
+  assert.equal(D.milestoneCandy.reduce((a, b) => a + b), 1700);
+});
+test('uses current points and held candy, without re-adding past purchases', () => {
+  const f = facts(), p = E.plan(); f.packs.fill(1); f.packs[6] = 3;
+  assert.equal(E.budget(f, p).total, 1000);
+  assert.equal(E.budget(f, p).pointGap, 2500);
+  assert.equal(E.budget(f, p).paidCandy, 25000);
+  f.points = 13000; assert.equal(E.budget(f, p).pointGap, 0);
+});
+test('unknown and zero are distinct and caps use remaining balance', () => {
+  const f = facts(), p = E.plan(); p.gathering = 3000; p.beasts = 4000;
+  assert.deepEqual(E.budget(f, p).missing, ['gathering', 'beasts']);
+  f.gatheringCollected = 2990; f.beastsCollected = 0;
+  assert.equal(E.budget(f, p).total, 5010);
+  f.candy = null; assert.ok(E.budget(f, p).missing.includes('candy'));
+});
+test('conversions round complete ten-candy units', () => {
+  const f = facts(), p = E.plan(); p.gems = 1999; p.speedupMinutes = 239;
+  assert.equal(E.budget(f, p).total, 1020);
+});
+test('remaining mission claims exclude previous rewards and closed days', () => {
+  const f = facts(), p = E.plan(); f.missions[5] = 3; p.missions[5] = 5;
+  assert.equal(E.budget(f, p).total, 1800);
+  p.missions[4] = 5; f.missions[4] = 0;
+  assert.ok(E.budget(f, p).errors.includes('missionClosed'));
+  f.missions[4] = null; assert.ok(E.budget(f, p).missing.includes('missions'));
+});
+test('packs require known counts, unlock order and remaining limits', () => {
+  const f = facts(), p = E.plan(); p.packs[1] = 1;
+  assert.ok(E.budget(f, p).errors.includes('packUnknown'));
+  f.packs.fill(0); assert.ok(E.budget(f, p).errors.includes('packOrder'));
+  f.packs[0] = 1; assert.deepEqual(E.budget(f, p).errors, []);
+  assert.equal(E.budget(f, p).total, 2000); assert.equal(E.budget(f, p).packs.cents, 499);
+  f.packs[1] = 1; assert.ok(E.budget(f, p).errors.includes('packLimit'));
+  f.packs.fill(1); f.packs[6] = 2; p.packs.fill(0); p.packs[6] = 1;
+  assert.deepEqual(E.budget(f, p).errors, []); p.packs[6] = 2; assert.ok(E.budget(f, p).errors.includes('packLimit'));
+});
+test('passes cannot be repurchased and variant requires age and Town Center', () => {
+  const f = facts(), p = E.plan(); p.tracks[0] = true;
+  assert.ok(E.budget(f, p).errors.includes('trackUnknown'));
+  f.tracks[0] = true; assert.ok(E.budget(f, p).errors.includes('trackOwned'));
+  assert.equal(E.variant(null, 30), null); assert.equal(E.variant(200, null), null);
+  assert.equal(E.variant(200, 29).fromDay, 1); assert.equal(E.variant(500, 30).fromDay, 449);
+});
+test('unknown pass claims exclude rewards; known unclaimed levels feed candy back', () => {
+  const f = facts(), p = E.plan(); f.candy = 0; f.tracks[0] = true; f.kingdomDay = 1; f.townCenter = 20;
+  const unknown = E.simulate(f, p, 12); assert.equal(unknown.points, 10000); assert.ok(unknown.missing.includes('passClaims'));
+  f.claimedPass = [0, 0, 0]; const fresh = E.simulate(f, p, 12);
+  assert.ok(fresh.passCandy > 0); assert.ok(fresh.points > 10000);
+  f.claimedPass = [21, 21, 0]; const collected = E.simulate(f, p, 12);
+  assert.equal(collected.passCandy, 0); assert.equal(collected.points, 10000);
+});
+test('seeded forecasts are repeatable, respect current points and do not mutate facts', () => {
+  const f = facts(), p = E.plan(), before = JSON.stringify(f);
+  const a = E.forecast(f, p, 20), b = E.forecast(f, p, 20);
+  assert.deepEqual(a, b); assert.equal(JSON.stringify(f), before);
+  assert.ok(a.low >= 10100 && a.high >= a.median && a.median >= a.low); assert.equal(a.chance, 0);
+  p.target = 10001; assert.equal(E.forecast(f, p, 20).chance, 1);
+});
+test('pity uses paid attacks and reaches certainty at forty', () => {
+  assert.equal(E.pityChance(12), .002); assert.equal(E.pityChance(13), .038); assert.equal(E.pityChance(40), 1);
+});
+test('remaining doors cannot exceed event or door days; ended events cannot forecast', () => {
+  const f = facts(), p = E.plan(); f.doorDaysLeft = 2; p.doors = 3;
+  assert.ok(E.budget(f, p).errors.includes('doorLimit'));
+  f.daysLeft = 0; assert.ok(E.budget(f, p).errors.includes('ended')); assert.throws(() => E.forecast(f, p, 10));
+});
+test('top-up rewards are incremental and excluded when progress is unknown', () => {
+  const f = facts(), p = E.plan(); f.packs.fill(0); f.packs[0] = 1; p.packs[1] = 1;
+  const without = E.incrementalRewards(f, p); f.topUpPoints = 0;
+  assert.equal(E.incrementalRewards(f, p).Gems - without.Gems, 1000);
+  f.topUpPoints = 2500; assert.equal(E.incrementalRewards(f, p).Gems, without.Gems);
+});
+test('seasonal save round-trips, keeps occurrences separate and rejects malformed data', () => {
+  const store = L.create(storage()), f = facts(); store.setBalance('forgehammer', 42);
+  const before = store.snapshot().inventory; store.setSeasonal('halloween-2026', f);
+  const next = L.create(storage()); next.importJSON(store.exportJSON());
+  assert.deepEqual(next.seasonal('halloween-2026'), f); assert.equal(next.seasonal('halloween-2027'), null);
+  assert.deepEqual(store.snapshot().inventory, before);
+  assert.throws(() => store.setSeasonal('halloween-2026', { ...f, packs: [99] }));
+  assert.throws(() => store.setSeasonal('halloween-2026', { ...f, unknown: 1 }));
+  const revision = store.snapshot().revision; store.setBalance('forgehammer', 43);
+  assert.throws(() => store.setSeasonal('halloween-2026', f, revision));
+  store.setSeasonal('halloween-2026', null); assert.equal(store.seasonal('halloween-2026'), null);
+  assert.equal(L.validate(L.empty()).schemaVersion, 1);
+});

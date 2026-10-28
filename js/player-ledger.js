@@ -111,6 +111,19 @@
       (value.position === null || id(value.position)) && (value.generation === null || Number.isInteger(value.generation) && value.generation >= 1 && value.generation <= 99) &&
       (value.truegold === null || [0, 3, 5, 8, 10].includes(value.truegold)) && (value.warAcademy === null || typeof value.warAcademy === 'boolean');
   }
+  var SEASONAL_COUNTS = ['points', 'candy', 'todayPoints', 'gatheringCollected', 'beastsCollected', 'topUpPoints'];
+  var SEASONAL_LIMITS = { daysLeft: 8, doorDaysLeft: 7, kingdomDay: 10000, pity: 39, pumpkinRemaining: 10, witchRemaining: 15, townCenter: 30 };
+  function seasonalRecord(value) {
+    if (!object(value)) return false;
+    var fields = SEASONAL_COUNTS.concat(Object.keys(SEASONAL_LIMITS), ['packs', 'tracks', 'claimedPass', 'missions']);
+    if (!same(Object.keys(value).sort(), fields.sort())) return false;
+    if (!SEASONAL_COUNTS.every(function (key) { return upTo(value[key], 10000000); })) return false;
+    if (!Object.keys(SEASONAL_LIMITS).every(function (key) { return upTo(value[key], SEASONAL_LIMITS[key], ['kingdomDay', 'townCenter', 'pumpkinRemaining'].includes(key) ? 1 : 0); })) return false;
+    if (!Array.isArray(value.packs) || value.packs.length !== 7 || !value.packs.every(function (n, i) { return upTo(n, i === 6 ? 3 : 1); })) return false;
+    if (!Array.isArray(value.tracks) || value.tracks.length !== 2 || !value.tracks.every(function (n) { return n === null || typeof n === 'boolean'; })) return false;
+    return Array.isArray(value.claimedPass) && value.claimedPass.length === 3 && value.claimedPass.every(function (n) { return upTo(n, 21); }) &&
+      Array.isArray(value.missions) && value.missions.length === 7 && value.missions.every(function (n) { return upTo(n, 5); });
+  }
   function empty() {
     return { format: 'kingshot-player', schemaVersion: 1, revision: 0, updatedAt: new Date().toISOString(), inventory: {}, heroGear: { pieces: {}, provenance: {}, parts: null }, governorGear: { status: 'unsupported', pieces: {} }, governorCharms: { status: 'unsupported', slots: {} }, combat: { stats: {}, provenance: {} }, imports: [], preferences: { heroGear: {} }, migration: null };
   }
@@ -185,6 +198,10 @@
     if (value.training !== undefined) {
       valid(object(value.training) && object(value.training.facts) && object(value.training.provenance) && same(Object.keys(value.training.facts).sort(), Object.keys(value.training.provenance).sort()));
       Object.keys(value.training.facts).forEach(function (key) { valid(TRAINING.includes(key) && trainingFact(key, value.training.facts[key]) && provenance(value.training.provenance[key])); });
+    }
+    if (value.seasonal !== undefined) {
+      valid(object(value.seasonal) && Object.keys(value.seasonal).length <= 24);
+      Object.keys(value.seasonal).forEach(function (key) { valid(id(key) && seasonalRecord(value.seasonal[key])); });
     }
     valid(object(value.preferences) && object(value.preferences.heroGear));
     if (value.preferences.kingdom !== undefined) valid(kingdomProfile(value.preferences.kingdom));
@@ -491,6 +508,18 @@
       valid(goals(list));
       return transaction(function (next) { writePriority(next, 'goals', list.length ? copy(list) : null); }, expected);
     }
+    function seasonal(occurrence) {
+      valid(id(occurrence));
+      return copy((snapshot().seasonal || {})[occurrence] || null);
+    }
+    function setSeasonal(occurrence, record, expected) {
+      valid(id(occurrence) && (record === null || seasonalRecord(record)));
+      return transaction(function (value) {
+        value.seasonal = Object.assign({}, value.seasonal);
+        if (record === null) delete value.seasonal[occurrence]; else value.seasonal[occurrence] = copy(record);
+        if (!Object.keys(value.seasonal).length) delete value.seasonal;
+      }, expected);
+    }
     function kingdom() {
       return copy(snapshot().preferences.kingdom || { position: null, generation: null, truegold: null, warAcademy: null });
     }
@@ -635,7 +664,7 @@
     if (events && events.addEventListener) events.addEventListener('storage', function (event) {
       if ((event.key === KEY || event.key === null) && (!event.storageArea || event.storageArea === storage)) { try { current = read(); notify(); } catch (error) { if (events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:error', { detail: error.message })); } }
     });
-    return { kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, masters: masters, setMaster: setMaster, pets: pets, setPet: setPet, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, priority: priority, setPriorityRole: setPriorityRole, setPriorityGoals: setPriorityGoals, training: training, setTraining: setTraining, setTrainingPlan: setTrainingPlan, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, applyImport: applyImport, importJSON: importJSON, history: history, backup: backup, exportJSON: function () { return JSON.stringify(backup(), null, 2); } };
+    return { seasonal: seasonal, setSeasonal: setSeasonal, kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, masters: masters, setMaster: setMaster, pets: pets, setPet: setPet, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, priority: priority, setPriorityRole: setPriorityRole, setPriorityGoals: setPriorityGoals, training: training, setTraining: setTraining, setTrainingPlan: setTrainingPlan, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, applyImport: applyImport, importJSON: importJSON, history: history, backup: backup, exportJSON: function () { return JSON.stringify(backup(), null, 2); } };
   }
-  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), TRAINING: TRAINING.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), MASTER: copy(MASTER), PET: copy(PET), troopId: troopId, masterEmblemId: masterEmblemId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, IMPORT_SOURCES: IMPORT_SOURCES.slice(), empty: empty, validate: validate, validHistory: validHistory, HISTORY_KEY: HISTORY, GOALS: copy(GOALS), goal: goal, create: create };
+  return { KEY: KEY, LEGACY_KEY: LEGACY, ITEMS: copy(ITEMS), GOVERNOR: copy(GOVERNOR), TROOP_TYPES: TYPES.slice(), TRAINING: TRAINING.slice(), COMBAT_STATS: STATS.slice(), HERO: copy(HERO), MASTER: copy(MASTER), PET: copy(PET), troopId: troopId, masterEmblemId: masterEmblemId, heroShardId: heroShardId, heroWidgetId: heroWidgetId, widgetChestId: widgetChestId, buildingLevel: buildingLevel, IMPORT_SOURCES: IMPORT_SOURCES.slice(), empty: empty, seasonalRecord: seasonalRecord, validate: validate, validHistory: validHistory, HISTORY_KEY: HISTORY, GOALS: copy(GOALS), goal: goal, create: create };
 });

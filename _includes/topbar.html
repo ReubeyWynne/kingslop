@@ -2,7 +2,7 @@
 <header class="topbar">
   {% if p.brandHeadingKey %}<h1 class="brand" data-i18n="{{ p.brandHeadingKey }}">{{ p.brand }}</h1>{% else %}<span class="brand">{{ p.brand }}</span>{% endif %}
   <nav class="ev-switch" aria-label="Events" data-i18n-key="ev.switchAria" data-i18n-attr="aria-label">
-    {% for n in site.data.nav %}{% if n.self == page.self %}{% if n.self == 'home' %}<a href="./" class="active" aria-current="page" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
+    {% for n in site.data.nav %}{% if n.self == page.self or n.self == page.navSelf %}{% if n.self == 'home' %}<a href="./" class="active" aria-current="page" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% else %}<a href="{{ p.depth }}{{ n.tail }}" class="active" aria-current="page" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% endif %}{% else %}<a href="{{ p.depth }}{{ n.tail }}" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% endif %}{% endfor %}
@@ -37,15 +37,15 @@
   </div>
   <nav id="ledger" class="ledger" aria-label="the ledger — every page" data-i18n-key="ev.ledger.aria" data-i18n-attr="aria-label" hidden>
     <p class="ledger-group" data-i18n="ev.ledger.home">the index</p>
-    {% for n in site.data.nav %}{% if n.self == 'home' %}{% if n.self == page.self %}<a href="./" class="active" aria-current="page" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
+    {% for n in site.data.nav %}{% if n.self == 'home' %}{% if n.self == page.self or n.self == page.navSelf %}<a href="./" class="active" aria-current="page" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% else %}<a href="{{ p.depth }}" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% endif %}{% endif %}{% endfor %}
     <p class="ledger-group" data-i18n="ev.ledger.guides">the events</p>
-    {% for n in site.data.nav %}{% if n.group == 'events' %}{% if n.self == page.self %}<a href="{{ p.depth }}{{ n.tail }}" class="active" aria-current="page" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
+    {% for n in site.data.nav %}{% if n.group == 'events' %}{% if n.self == page.self or n.self == page.navSelf %}<a href="{{ p.depth }}{{ n.tail }}" class="active" aria-current="page" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% else %}<a href="{{ p.depth }}{{ n.tail }}" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% endif %}{% endif %}{% endfor %}
     <p class="ledger-group" data-i18n="ev.ledger.tools">the tools</p>
-    {% for n in site.data.nav %}{% if n.group == 'tools' %}{% if n.self == page.self %}<a href="{{ p.depth }}{{ n.tail }}" class="active" aria-current="page" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
+    {% for n in site.data.nav %}{% if n.group == 'tools' %}{% if n.self == page.self or n.self == page.navSelf %}<a href="{{ p.depth }}{{ n.tail }}" class="active" aria-current="page" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% else %}<a href="{{ p.depth }}{{ n.tail }}" data-i18n="{{ n.labelKey }}">{{ n.label }}</a>
 {% endif %}{% endif %}{% endfor %}
     <a href="{{ p.depth }}upgrade-priority/"{% if page.self == 'priority' %} class="active" aria-current="page"{% endif %} data-i18n="priority.title">Upgrade priority</a>

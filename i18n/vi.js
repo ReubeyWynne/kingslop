@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["vi"] = {
+  "seasonal.nav": "Theo mùa",
+  "seasonal.lede": "lập kế hoạch sự kiện theo mùa từ tiến độ hiện tại.",
   "castle.nav": "Lâu đài",
   "castle.deck.lede": "kiểm soát lâu đài, cơ chế chiến đấu, kỹ năng người tham gia tập kết và lựa chọn quân.",
   "meta.title": "Bear Hunt, Giải Mã",

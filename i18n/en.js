@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["en"] = {
+  "seasonal.nav": "Seasonal",
+  "seasonal.lede": "seasonal events, planned from where you are now.",
   "castle.nav": "Castle",
   "castle.deck.lede": "castle control, combat mechanics, joiner skills and troop choices.",
   "castle.meta.title": "Castle Battle — dey.ci",

@@ -181,11 +181,12 @@ test('an opening swipe browses one neighbour without scheduling animation frames
 
 test('native scroll position selects the centred cover as the strip moves', () => {
   const s = setup(); s.fire(s.ledgerButton, 'click');
-  s.viewport.scrollLeft = 305 * 4;
+  const index = nav.findIndex(entry => entry.self === 'swordland');
+  s.viewport.scrollLeft = 305 * index;
   s.fire(s.viewport, 'scroll');
-  assert.equal(s.selected(), 4, 'selection follows the strip, so nothing changes when it stops');
+  assert.equal(s.selected(), index, 'selection follows the strip, so nothing changes when it stops');
   s.fire(s.viewport, 'scrollend');
-  assert.equal(s.selected(), 4);
+  assert.equal(s.selected(), index);
   assert.match(s.status.textContent, /Swordland/);
   assert.equal(s.frames.size, 0);
 });
@@ -211,7 +212,7 @@ test('dragging a cover cannot activate its link; a settled tap can', () => {
 test('ledger, groups, keyboard and Escape share a modal and restore focus and scroll', () => {
   const s = setup('bear'); s.ledgerButton.focus(); s.document.documentElement.scrollTop = 540;
   s.fire(s.ledgerButton, 'click');
-  assert.equal(s.selected(), 2);
+  assert.equal(s.selected(), nav.findIndex(entry => entry.self === 'bear'));
   assert.equal(s.ledgerButton.getAttribute('aria-controls'), 'page-deck');
   s.fire(s.groupButtons[2], 'click'); s.advance(1000);
   const toolIndex = nav.findIndex(entry => entry.group === 'tools');

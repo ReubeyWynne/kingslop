@@ -278,6 +278,15 @@ jobs:
               - js/hero-directory*.js
               - js/hero-points.js
               - js/town-centre*.js
+            seasonal:
+              - *shared
+              - seasonal/**
+              - _includes/seasonal/**
+              - _data/seasonal/**
+              - js/seasonal*
+              - js/halloween*
+              - css/seasonal.css
+              - .dsh/seasonal*.cjs
             # The deck walks every page and fails on any script error.
             deck:
               - *shared
@@ -333,7 +342,7 @@ jobs:
           FILTERED: ${{ github.event_name == 'pull_request' }}
           CHANGES: ${{ steps.filter.outputs.changes || '[]' }}
         run: |
-          all='["interactions","heroes","masters","pets","castle","events","governor","town","priority","hints","empty","deck","ascii-capture","hero-gear","import"]'
+          all='["interactions","heroes","masters","pets","castle","events","seasonal","governor","town","priority","hints","empty","deck","ascii-capture","hero-gear","import"]'
           if [ "$FILTERED" != true ]; then
             echo "logic=true" >> "$GITHUB_OUTPUT"
             echo "ascii=true" >> "$GITHUB_OUTPUT"
@@ -388,6 +397,10 @@ jobs:
       - name: Check player ledger and migration
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/player-ledger-check.cjs
+
+      - name: Seasonal event calculations and save compatibility
+        if: needs.changes.outputs.logic == 'true'
+        run: node --test .dsh/seasonal-check.cjs
       - name: Check kingdom progression and migration
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/kingdom-progression-check.cjs
@@ -522,6 +535,9 @@ jobs:
         run: |
           node --test .dsh/lib/browser-harness.test.cjs
           node .dsh/interaction-modules-check.cjs
+      - name: Check seasonal event UI
+        if: matrix.group == 'seasonal'
+        run: node .dsh/seasonal-ui-check.cjs
       - name: Check kingdom timeline UI
         if: matrix.group == 'heroes'
         run: node .dsh/kingdom-progression-ui-check.cjs

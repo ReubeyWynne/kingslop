@@ -16,7 +16,7 @@
     <div class="deck-stage">
     <div class="deck-viewport">
       {% for n in site.data.nav %}{% assign entry = site.data.pages[n.self] %}
-      <a class="deck-card" href="{{ p.depth }}{{ n.tail }}" data-page="{{ entry.token }}" data-group="{{ n.group }}"{% if n.self == page.self %} aria-current="page"{% endif %} tabindex="-1">
+      <a class="deck-card" href="{{ p.depth }}{{ n.tail }}" data-page="{{ entry.token }}" data-group="{{ n.group }}"{% if n.self == page.self or n.self == page.navSelf %} aria-current="page"{% endif %} tabindex="-1">
         <span class="deck-card-title" data-i18n="{{ n.labelKey }}">{{ n.label }}</span>
         <div class="deck-ascii" aria-hidden="true">{% include ascii/deck-scene.html token=entry.token %}</div>
         <span class="deck-card-copy">

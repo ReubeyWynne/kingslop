@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["es"] = {
+  "seasonal.nav": "Temporada",
+  "seasonal.lede": "eventos de temporada, según tu progreso actual.",
   "castle.nav": "Castillo",
   "castle.deck.lede": "control del castillo, mecánicas de combate, habilidades de los participantes y elección de tropas.",
   "meta.title": "Bear Hunt, sin misterios",

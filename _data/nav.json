@@ -18,6 +18,15 @@
     "lede": "what’s on today, what scores, and what to save."
   },
   {
+    "self": "seasonal",
+    "tail": "seasonal/",
+    "labelKey": "seasonal.nav",
+    "label": "Seasonal",
+    "group": "events",
+    "ledeKey": "seasonal.lede",
+    "lede": "seasonal events, planned from where you are now."
+  },
+  {
     "self": "bear",
     "tail": "bear-hunt/",
     "labelKey": "ev.switch.bear",

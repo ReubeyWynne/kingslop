@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["ar"] = {
+  "seasonal.nav": "الموسمية",
+  "seasonal.lede": "خطط للفعاليات الموسمية انطلاقًا من تقدمك الحالي.",
   "castle.nav": "القلعة",
   "castle.deck.lede": "السيطرة على القلعة وآليات القتال ومهارات المنضمين واختيار القوات.",
   "meta.title": "Bear Hunt، بلا أسرار",

@@ -1,5 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["th"] = {
+  "seasonal.nav": "กิจกรรมตามฤดูกาล",
+  "seasonal.lede": "วางแผนกิจกรรมตามฤดูกาลจากความคืบหน้าปัจจุบัน",
   "castle.nav": "ปราสาท",
   "castle.deck.lede": "การควบคุมปราสาท กลไกการต่อสู้ ทักษะผู้เข้าร่วมแรลลี่ และการเลือกทหาร",
   "meta.title": "Bear Hunt, ไขความลับ",
