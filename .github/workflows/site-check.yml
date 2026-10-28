@@ -621,6 +621,7 @@ jobs:
             .dsh/sim-preview/
             .dsh/ascii-preview/
             .dsh/import-preview/
+            .dsh/buildings-preview/
 
   check:
     needs: [changes, logic, build, browser]
