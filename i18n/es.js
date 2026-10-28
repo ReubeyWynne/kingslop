@@ -1734,6 +1734,7 @@ window.__BH_I18N_DATA["es"] = {
   "reqs.tapLevel": "Un nivel con ? es supuesto: lo mínimo que puede tener tu ciudad. Toca cualquier nivel para poner el tuyo y el plan se reduce a lo que de verdad falta.",
   "reqs.goalTag": "meta",
   "reqs.goalLevel": "Nivel meta de {building}",
+  "reqs.removeFromGoal": "Quitar de la meta",
   "reqs.unsureShort": "no lo sé",
   "reqs.close": "Cerrar",
   "reqs.aboutLinks": "Sobre los enlaces",

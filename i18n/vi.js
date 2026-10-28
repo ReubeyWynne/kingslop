@@ -1742,6 +1742,7 @@ window.__BH_I18N_DATA["vi"] = {
   "reqs.tapLevel": "Cấp có dấu ? là giả định: mức thấp nhất thành của bạn có thể có. Chạm vào cấp bất kỳ để nhập cấp của bạn, kế hoạch sẽ thu gọn còn phần thật sự còn lại.",
   "reqs.goalTag": "mục tiêu",
   "reqs.goalLevel": "Cấp mục tiêu của {building}",
+  "reqs.removeFromGoal": "Bỏ khỏi mục tiêu",
   "reqs.unsureShort": "không rõ",
   "reqs.close": "Đóng",
   "reqs.aboutLinks": "Về liên kết",

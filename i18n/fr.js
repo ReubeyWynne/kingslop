@@ -1732,6 +1732,7 @@ window.__BH_I18N_DATA["fr"] = {
   "reqs.tapLevel": "Un niveau marqué ? est supposé : le minimum que votre ville peut avoir. Touchez un niveau pour indiquer le vôtre, et le plan se réduit à ce qui reste vraiment.",
   "reqs.goalTag": "objectif",
   "reqs.goalLevel": "Niveau visé pour {building}",
+  "reqs.removeFromGoal": "Retirer de l'objectif",
   "reqs.unsureShort": "je ne sais pas",
   "reqs.close": "Fermer",
   "reqs.aboutLinks": "À propos des liens",

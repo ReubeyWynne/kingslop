@@ -49,8 +49,10 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.locator('.reqs-tiers [data-tier="3"]').click();
   assert.equal(await page.locator('.reqs-grid button').count(), 5);
   await page.screenshot({ path: path.join(output, 'en-390-grid.png') });
-  await page.keyboard.press('Escape');
+  // Tapping a TG tab again (a double tap) takes that TG level itself.
+  await page.locator('.reqs-tiers [data-tier="4"]').dblclick();
   await page.waitForFunction(() => !document.querySelector('.reqs-picker').open);
+  await page.waitForFunction(() => location.search.includes('goal=town-center:TG4'));
 
   // A saved level fills the goal and the plan; "not sure" forgets it again.
   await choose('goal', 'town-center', '15');
@@ -65,15 +67,26 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await choose('have', 'stable', '');
   assert.equal((await saved()).stable, undefined);
 
-  // A second goal tile joins the same plan, rides in the link, and taps off again.
+  // A tile opens its goal level at once; with one goal there is nothing to remove.
+  await page.locator('.reqs-pick[data-building="town-center"]').click();
+  await page.locator('.reqs-picker[open]').waitFor();
+  assert.equal(await page.locator('.reqs-picker [data-action="building-paths.drop"]').count(), 0);
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => !document.querySelector('.reqs-picker').open);
+  // A second goal tile joins the same plan with its level picked straight from the grid, rides in
+  // the link, and is removed from the same grid.
   await page.locator('.reqs-pick[data-building="barracks"]').click();
-  await choose('goal', 'barracks', '15');
+  await page.locator('.reqs-picker[open]').waitFor();
+  await page.locator('.reqs-picker button[data-level="15"]').click();
+  await page.waitForFunction(() => !document.querySelector('.reqs-picker').open);
   await page.waitForFunction(() => /^Town Center 15 \+ Barracks 15 · upgrades: \d+$/.test(document.querySelector('.reqs-headline').textContent));
   assert.match(page.url(), /goal=town-center:15,barracks:15/);
   assert.equal(await page.locator('.reqs-run').last().locator('.reqs-run-name').innerText(), 'Barracks');
   await page.screenshot({ path: path.join(output, 'en-390-two-goals.png'), fullPage: true });
   assert.equal(await page.locator('.reqs-pick[data-building="barracks"] .reqs-badge').innerText(), '15');
   await page.locator('.reqs-pick[data-building="barracks"]').click();
+  await page.locator('.reqs-picker[open] [data-action="building-paths.drop"]').click();
+  await page.waitForFunction(() => !document.querySelector('.reqs-picker').open);
   assert.equal(await page.locator('.reqs-pick[aria-pressed="true"]').count(), 1);
   assert.match(page.url(), /goal=town-center:15$/);
 
