@@ -1,55 +1,109 @@
-/* Building requirements: the goal picker, the answer, and one row per building the goal needs. */
+/* Building requirements: goal tiles, one card per building the goal needs, the answer pinned
+   to the foot of the screen, and one small level grid in place of long selects. Tiles and art
+   frames follow the Town Centre shelves. */
 html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
-.reqs-goals { list-style: none; padding: 0; margin-block: var(--space-m) var(--space-s); display: grid; gap: var(--space-s); }
-.reqs-goal-row { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr) auto; align-items: end; gap: var(--space-s); }
-.reqs-goal-row label { display: grid; gap: 0.4rem; min-width: 0; }
-.reqs-goal-row:only-child { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
-.reqs-remove { width: 44px; min-height: 44px; border: 0; border-bottom: 1px solid var(--ink-muted); background: none; color: var(--ink-dim); font: inherit; font-size: 1.25rem; cursor: pointer; }
-.reqs-remove:hover, .reqs-remove:focus-visible { color: var(--amber); border-bottom-color: var(--amber); outline: none; }
-.reqs-goal-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1.5rem; }
-.reqs-add { min-height: 44px; padding: 0.4rem 0; border: 0; border-bottom: 1px solid var(--amber-dim); color: var(--amber); background: none; font: inherit; cursor: pointer; }
-.reqs-add::before { content: '+ '; }
+.reqs-art { position: relative; display: grid; place-items: center; flex: none; width: 3.2rem; aspect-ratio: 1; border: 1px solid var(--signal-line); background: radial-gradient(circle at 50% 35%, var(--signal-tint), transparent 70%), var(--void-2); }
+.reqs-art img { width: 86%; height: 86%; object-fit: contain; }
+
+/* The goal: a strip of building tiles that scrolls sideways inside itself. */
+.reqs-picks { list-style: none; display: flex; gap: .5rem; margin: var(--space-s) 0 0; padding: .2rem .1rem .7rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: var(--amber-dim) transparent; }
+.reqs-picks li { flex: none; scroll-snap-align: start; }
+.reqs-pick { display: grid; justify-items: center; align-content: start; gap: .3rem; width: 4.6rem; padding: .3rem .1rem; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--ink-dim); font: inherit; text-align: center; cursor: pointer; }
+.reqs-pick .reqs-art { width: 3.6rem; }
+.reqs-pick[aria-pressed="false"] img { filter: grayscale(.6); opacity: .6; }
+.reqs-pick[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--amber); }
+.reqs-pick[aria-pressed="true"] .reqs-art { border-color: var(--amber); }
+.reqs-pick:hover .reqs-art, .reqs-pick:focus-visible .reqs-art { border-color: var(--amber); }
+.reqs-pick:hover img, .reqs-pick:focus-visible img { filter: none; opacity: 1; }
+.reqs-pick:focus-visible { outline: 1px solid var(--amber); outline-offset: 2px; }
+.reqs-pick:disabled { cursor: default; }
+.reqs-pick-name { font-size: .72rem; line-height: 1.15; overflow-wrap: anywhere; }
+.reqs-badge { position: absolute; inset-inline-end: -.35rem; inset-block-end: -.45rem; padding: .05rem .3rem; background: var(--void); border: 1px solid var(--amber); color: var(--amber); font: .8rem/1.2 var(--display-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.reqs-badge:empty { display: none; }
+.reqs-goal-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 1rem; }
+.reqs-goal-tools .note { margin: 0; }
 /* Guest mode is a switch: a track with a knob that moves a whole cell, no sliding. */
 .reqs-switch { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink-dim); font: inherit; cursor: pointer; }
 .reqs-switch::after { content: ''; width: 2.6rem; height: 1.3rem; border: 1px solid var(--ink-muted); border-radius: 2px; background: linear-gradient(90deg, var(--ink-muted) 0 50%, transparent 50%); }
 .reqs-switch[aria-checked="true"] { color: var(--amber); }
 .reqs-switch[aria-checked="true"]::after { border-color: var(--amber); background: linear-gradient(90deg, transparent 50%, var(--amber) 50%); }
-.reqs-switch:focus-visible, .reqs-add:focus-visible { outline: 1px solid var(--amber); outline-offset: 2px; }
-.reqs-switch:disabled, .reqs-add:disabled { opacity: 0.5; cursor: default; }
-.reqs-goal-row select, .reqs-run select, .reqs-more input { width: 100%; min-height: 44px; color: var(--ink); background: var(--void-2); border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; font: inherit; }
-.reqs-goal-row select:focus-visible, .reqs-run select:focus-visible, .reqs-more input:focus-visible { outline: none; border-bottom-color: var(--amber); }
+.reqs-switch:focus-visible { outline: 1px solid var(--amber); outline-offset: 2px; }
+.reqs-switch:disabled { opacity: 0.5; cursor: default; }
 .reqs-guest { padding: var(--space-s); border-inline-start: 3px solid var(--amber); background: var(--signal-tint); }
-.reqs-answer { border-block: 1px solid var(--signal-line); padding-block: var(--space-s); margin-block: var(--space-m); }
-.reqs-headline { margin: 0 0 var(--space-s); font-size: var(--step-1, 1.25rem); color: var(--amber); }
-.reqs-cost { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+
+/* One card per building: art, name, your level → the level it must reach, and what that costs. */
+.reqs-runs { list-style: none; padding: 0; margin-block: var(--space-s); display: grid; gap: .2rem; }
+.reqs-run { display: flex; gap: .75rem; align-items: flex-start; padding: .55rem 0; border-bottom: 1px solid var(--signal-line); }
+.reqs-run-body { flex: 1 1 auto; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .3rem .6rem; }
+.reqs-run-body .reqs-cost { flex-basis: 100%; }
+.reqs-run-head, .reqs-run-levels { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .6rem; margin: 0; }
+.reqs-run-name { min-width: 0; }
+.reqs-tag { padding: 0 .35rem; border: 1px solid var(--amber-dim); color: var(--amber); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
+.reqs-run[data-goal] .reqs-art { border-color: var(--amber); }
+.reqs-run[data-state="done"] { opacity: .7; }
+.reqs-lv { min-width: 3.4rem; min-height: 44px; padding: .2rem .55rem; border: 1px solid var(--amber-dim); border-radius: 2px; background: var(--void-2); color: var(--ink); font: 1rem/1.2 var(--display-2); font-variant-numeric: tabular-nums; cursor: pointer; }
+.reqs-run[data-state="assumed"] .reqs-lv[data-kind="have"] { border-style: dashed; border-color: var(--ink-muted); color: var(--ink-dim); }
+.reqs-lv-goal { border-color: var(--amber); color: var(--amber); background: var(--signal-tint); }
+.reqs-lv:hover, .reqs-lv:focus-visible { border-color: var(--amber); outline: none; box-shadow: 0 0 0 1px var(--amber); }
+.reqs-arrow { flex: none; color: var(--amber); white-space: nowrap; }
+
+/* The answer stays pinned to the foot of the screen while the cards scroll under it. */
+.reqs-answer { position: sticky; inset-block-end: 0; z-index: 2; margin-block: var(--space-s); padding: .6rem var(--space-s) .7rem; border-top: 1px solid var(--amber-dim); background: var(--void-2); box-shadow: 0 -.6rem 1rem -.4rem var(--void); }
+.reqs-headline { margin: 0 0 .35rem; font-size: var(--step-1, 1.25rem); line-height: 1.25; color: var(--amber); }
+.reqs-cost { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; }
 .reqs-cost li { display: inline-flex; align-items: center; gap: 0.35rem; min-width: 0; }
 .reqs-cost img { flex: none; }
 .reqs-res { color: var(--ink-dim); font-size: var(--step--1); }
-.reqs-cost-small { gap: 0.25rem 0.9rem; font-size: var(--step--1); }
+.reqs-cost-small { gap: 0.2rem 0.8rem; font-size: var(--step--1); }
 .reqs-cost-small .reqs-res { display: none; }
-.reqs-time, .reqs-flag { margin: var(--space-s) 0 0; color: var(--ink-dim); }
-.reqs-flag { font-size: var(--step--1); }
-.reqs-runs { list-style: none; padding: 0; margin-block: var(--space-m); }
-.reqs-run { position: relative; border-inline-start: 1px solid var(--ink-muted); padding: 0 0 var(--space-m) var(--space-m); }
-.reqs-run::before { content: ''; position: absolute; inset-inline-start: -5px; top: 0.9rem; width: 9px; height: 9px; background: var(--void); border: 1px solid var(--ink-muted); }
-.reqs-run[data-state="known"]::before { background: var(--amber); border-color: var(--amber); }
-.reqs-run[data-state="assumed"] { border-inline-start-style: dashed; }
-.reqs-run[data-state="done"] { opacity: 0.7; }
-.reqs-run:last-child { border-inline-start-color: var(--amber); }
-.reqs-run-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 1rem; }
-.reqs-run-name { flex: 1 1 8rem; min-width: 0; }
-.reqs-run-levels { display: flex; align-items: center; gap: 0.6rem; flex: 1 1 12rem; min-width: 0; }
-.reqs-run-levels select { flex: 1 1 auto; min-width: 0; }
-.reqs-arrow { flex: none; color: var(--amber); white-space: nowrap; }
-.reqs-assumed, .reqs-run-time { display: block; color: var(--ink-muted); font-size: var(--step--1); margin-block: 0.3rem; }
+.reqs-run-time { color: var(--ink-muted); }
+.reqs-time, .reqs-flag { margin: .35rem 0 0; color: var(--ink-dim); font-size: var(--step--1); }
 .reqs-more { margin-block: var(--space-s); }
 .reqs-more summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--amber); }
 .reqs-more label { display: grid; gap: 0.4rem; max-width: 20rem; }
+.reqs-more input { width: 100%; min-height: 44px; color: var(--ink); background: var(--void-2); border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; font: inherit; }
+.reqs-more input:focus-visible { outline: none; border-bottom-color: var(--amber); }
 .reqs-steps { padding-inline-start: 1.5rem; }
 .reqs-steps li { margin-block: 0.3rem; }
 .reqs-steps small { color: var(--ink-muted); }
 .reqs-blocked { color: var(--ink-muted); }
-.reqs-share { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.5rem; margin-block: var(--space-m) 0; }
+.reqs-share { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1.5rem; }
 .reqs-share button { min-height: 44px; padding: 0.4rem 0; border: 0; border-bottom: 1px solid var(--amber-dim); color: var(--amber); background: none; font: inherit; cursor: pointer; }
 .reqs-share button[hidden] { display: none; }
-.reqs-share output { flex-basis: 100%; min-height: 1.5em; overflow-wrap: anywhere; color: var(--ink-dim); }
+.reqs-share output { flex-basis: 100%; overflow-wrap: anywhere; color: var(--ink-dim); }
+.reqs-share output:empty { display: none; }
+
+/* The level grid: a tab per tier past level 30, then every level in it as a button. */
+.reqs-picker { position: fixed; inset: 0; margin: auto; width: min(24rem, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); overflow: auto; overscroll-behavior: contain; padding: 1rem; border: 1px solid var(--signal-line); border-radius: 2px; color: var(--ink); background: var(--void-2); }
+.reqs-picker::backdrop { background: rgba(10, 8, 6, .8); }
+.reqs-picker-head { display: flex; align-items: center; gap: .7rem; margin-bottom: .6rem; }
+.reqs-picker-head .reqs-art { width: 2.6rem; }
+.reqs-picker h2 { flex: 1 1 auto; min-width: 0; margin: 0; font-size: 1.1rem; }
+.reqs-picker h2::before { display: none; }
+.reqs-picker button { min-height: 44px; border: 1px solid var(--signal-line); border-radius: 2px; background: var(--void); color: var(--ink); font: .95rem/1.1 var(--display-2); font-variant-numeric: tabular-nums; cursor: pointer; }
+.reqs-picker button:hover, .reqs-picker button:focus-visible { border-color: var(--amber); outline: none; }
+.reqs-picker button[aria-pressed="true"] { border-color: var(--amber); background: var(--amber); color: var(--void); }
+.reqs-close { flex: none; width: 44px; font-size: 1.3rem !important; }
+.reqs-picker-extra { display: flex; gap: .4rem; margin-bottom: .5rem; }
+.reqs-picker-extra:empty { display: none; }
+.reqs-picker-extra button { flex: 1 1 0; padding-inline: .5rem; font-family: inherit; }
+.reqs-tiers { display: grid; grid-template-columns: repeat(auto-fill, minmax(3.2rem, 1fr)); gap: .3rem; padding-bottom: .5rem; margin-bottom: .5rem; border-bottom: 1px solid var(--signal-line); }
+.reqs-tiers[hidden] { display: none; }
+.reqs-tiers button { min-height: 36px; color: var(--ink-dim); }
+.reqs-tiers button[aria-pressed="true"] { background: var(--signal-tint); color: var(--amber); }
+.reqs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(3.2rem, 1fr)); gap: .3rem; }
+
+/* The page is one tool, so its sections sit closer than the site's essay spacing. */
+.reqs-goal { padding-block: var(--space-m) var(--space-s); }
+.reqs-sources { padding-top: var(--space-m); }
+.reqs-levels { padding-block: var(--space-m) 0; }
+.reqs-tail { padding-block: var(--space-s) var(--space-m); }
+/* With room for them all, the goal tiles wrap instead of scrolling sideways. */
+@media (min-width: 48rem) { .reqs-picks { flex-wrap: wrap; overflow: visible; } }
+/* On a phone the pinned answer stays short: amounts with their icons, names on hover only. */
+@media (max-width: 40rem) {
+  .reqs-headline { font-size: 1.05rem; }
+  .reqs-answer .reqs-cost { gap: .2rem .9rem; }
+  .reqs-answer .reqs-res { display: none; }
+  .reqs-answer .reqs-cost img { width: 20px; height: 20px; }
+}
