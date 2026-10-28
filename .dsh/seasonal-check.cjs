@@ -139,3 +139,22 @@ test('existing collection and stage progress bound future income', () => {
   assert.equal(E.futureIncome(remaining).lines.find(l => l.id === 'missions').candy, 2500);
   const store = L.create(storage()); f.passVariant = 1; store.setSeasonal('halloween-2026', f); const copy = L.create(storage()); copy.importJSON(store.exportJSON()); assert.equal(copy.seasonal('halloween-2026').passVariant, 1);
 });
+test('event day derives both event and door days without a second day count', () => {
+  const f = E.blank(); assert.equal(E.eventTiming(f).doorDaysLeft, null);
+  f.daysLeft = 8; assert.deepEqual(E.eventTiming(f), { day: 1, daysLeft: 8, doorDaysLeft: 7 });
+  f.daysLeft = 3; assert.equal(E.eventTiming(f).doorDaysLeft, 2);
+  f.doorsDoneToday = true; assert.equal(E.eventTiming(f).doorDaysLeft, 1);
+  f.daysLeft = 1; assert.equal(E.eventTiming(f).doorDaysLeft, 0);
+  f.daysLeft = 3; f.doorsDoneToday = false;
+  const plan = { dailyDoors: true, doors: 0, gathering: 0, beasts: 0, gems: 0, speedupMinutes: 0, other: 0, eventDay: 0, missionClaimed: null, missionTarget: 0 };
+  assert.equal(E.remainingIncome(f, plan).doors, 2);
+});
+test('overall item value includes fixed pack items and does not price candy twice', () => {
+  assert.equal(E.valueRewards({ Gems: 2500, Truegold: 60, 'Halloween Custom Chest': 15 }).gems, 83875);
+  const pack = E.data.packs[1], fixed = Object.fromEntries(pack.items.map(item => [item.name, item.amount]));
+  assert.equal(E.valueRewards(fixed).gems, 92875);
+  assert.ok(E.valueRewards(fixed).unpriced.includes("Jack-o'-Jitters Avatar Frame"));
+  assert.deepEqual(E.valueRewards({ Gems: 100, 'Halloween Candy': 1000 }), { gems: 100, unpriced: [] });
+  const candy = E.candyValue(1000).rewards, total = E.mergeRewards(fixed, candy);
+  assert.ok(Math.abs(E.valueRewards(total).gems - E.valueRewards(fixed).gems - E.valueRewards(candy).gems) < 1e-6);
+});
