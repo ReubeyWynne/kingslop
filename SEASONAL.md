@@ -10,7 +10,7 @@ Future income expands separately. Players enter remaining door days, gathering/B
 
 Purchase comparisons show the pack's own items plus the expected rewards from its candy. Players can compare points, Gems, Forgehammers, shards, Truegold, custom chests, material chests or speedup minutes per currency unit. No universal gem-price score is imposed. Rates use the source's USD/EUR prices without conversion. Every remaining tier is visible, with unlock costs identified. Selecting a later pack adds its missing prerequisite tiers; quantities respect the final pack's remaining allowance. Previously purchased items are not re-added to held candy.
 
-Pass comparisons are separate because they need current points and the in-game reward variant. They value a new unclaimed paid track, including already unlocked rewards and the further attacks its candy enables. Owned passes cannot be selected for another purchase. Top-up bonuses are optional and require known prior top-up points; previously unlocked tiers are treated as collected. Free-track rewards, already owned pass rewards, future daily chests and the shared jackpot are excluded from candy-only EV.
+Pass comparisons are separate because they need current points and the in-game reward variant. They value a new unclaimed paid track, including already unlocked rewards and the further attacks its candy enables. Owned passes cannot be selected for another purchase. Top-up bonuses are optional and require known prior top-up points; previously unlocked tiers are treated as collected. Saved free and owned paid tracks are included once their current points, variant and claimed levels are known. Previously claimed levels are excluded. Future daily chests and the shared jackpot remain excluded.
 
 The permanent skin is an optional section. It explains the two independent routes: 12,500 points regardless of rank, or a top-10 finish. It shows the points gap and a conservative candy amount that is sufficient without free attacks. The calculator does not predict final rank.
 
@@ -37,3 +37,9 @@ The calculator and reference copy is English, marked `lang="en"` and `dir="ltr"`
 Run `node --test .dsh/seasonal-check.cjs`, `node .dsh/player-ledger-check.cjs`, `node --test .dsh/page-deck-check.cjs`, then build Jekyll and run `node .dsh/seasonal-ui-check.cjs`. The browser check accepts `SITE_ROOT` for an alternate build directory.
 
 The checks cover candy-only EV, sub-attack balances, rare-item expectations, pity, mission income, prerequisite pack purchases, pass candy feedback, automatic recalculation, per-item rates, full-plan comparisons, unchanged inventory, save round-trips, cross-tab updates, nested reference links, both URL aliases, and phone/tablet/desktop layouts. CI runs the seasonal tests and browser check.
+
+## Existing progress
+
+The compact progress values beside the candy answer open a focused editor for score, event day, pass ownership/claims, or collected income. They use the shared save automatically. Pass variants are retained across reloads in the optional `passVariant` field; older records remain valid. Where the kingdom age is saved, a known shared Town Center level also resolves the variant. Owned pass candy feeds back into the EV and is retained in the baseline for purchase comparisons.
+
+Future plans respect saved gathering/Beast caps, remaining door days, current event day and claimed mission milestones. The remaining-known-rewards shortcut fills only sources with known saved progress. Unknown claims are excluded rather than re-awarded.

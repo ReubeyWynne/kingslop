@@ -212,5 +212,26 @@
     counts[6] = Math.min(counts[6], next === 6 ? lastRemaining : 3);
     return counts;
   }
-  return { candyValue: candyValue, futureIncome: futureIncome, mergeRewards: mergeRewards, purchaseSequence: purchaseSequence, data: data, blank: blank, plan: plan, budget: budget, packPlan: packPlan, variant: variant, missions: missions, doorDaily: doorDaily, pityChance: pityChance, simulate: simulate, forecast: forecast, incrementalRewards: incrementalRewards };
+  function progressOptions(facts, chosenVariant) {
+    var v = data.passVariants.find(function (entry) { return entry.id === (chosenVariant || facts.passVariant); }) || variant(facts.kingdomDay, facts.townCenter);
+    var options = { points: facts.points || 0, pity: facts.pity || 0, pumpkinRemaining: facts.pumpkinRemaining || 10, witchRemaining: facts.witchRemaining || 0, passes: [] }, missing = [];
+    tracks.forEach(function (track, i) {
+      if (i > 0 && facts.tracks[i - 1] !== true) return;
+      if (facts.claimedPass[i] === null) { if (i > 0) missing.push(track + ' claimed level'); return; }
+      if (!v || facts.points === null) { missing.push('points and pass variant'); return; }
+      options.passes.push({ track: track, variant: v.id, claimed: facts.claimedPass[i] });
+    });
+    return { options: options, variant: v ? v.id : null, missing: Array.from(new Set(missing)) };
+  }
+  function remainingIncome(facts, plan) {
+    var next = Object.assign({}, plan);
+    if (facts.gatheringCollected !== null) next.gathering = Math.min(next.gathering, Math.max(0, r.gatheringCap - facts.gatheringCollected));
+    if (facts.beastsCollected !== null) next.beasts = Math.min(next.beasts, Math.max(0, r.beastCap - facts.beastsCollected));
+    if (facts.doorDaysLeft !== null) next.doors = Math.min(next.doors, facts.doorDaysLeft);
+    if (facts.daysLeft !== null) { next.doors = Math.min(next.doors, facts.daysLeft); next.eventDay = 9 - facts.daysLeft; }
+    if (next.eventDay >= 1 && next.eventDay <= 7 && facts.missions[next.eventDay - 1] !== null) next.missionClaimed = facts.missions[next.eventDay - 1];
+    if (facts.daysLeft === 0) { next.doors = 0; next.gathering = 0; next.beasts = 0; next.gems = 0; next.speedupMinutes = 0; next.other = 0; next.eventDay = 8; }
+    return next;
+  }
+  return { progressOptions: progressOptions, remainingIncome: remainingIncome, candyValue: candyValue, futureIncome: futureIncome, mergeRewards: mergeRewards, purchaseSequence: purchaseSequence, data: data, blank: blank, plan: plan, budget: budget, packPlan: packPlan, variant: variant, missions: missions, doorDaily: doorDaily, pityChance: pityChance, simulate: simulate, forecast: forecast, incrementalRewards: incrementalRewards };
 });
