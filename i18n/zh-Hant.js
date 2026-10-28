@@ -1697,8 +1697,6 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "reqs.timeAt": "建造速度 +{speed}% 時 {time}",
   "reqs.oneSource": "† 只有一個來源提供這個數值。",
   "reqs.guestBanner": "<b>訪客模式。</b>你填的等級只留在這個頁面，你的存檔不受影響。",
-  "reqs.leaveGuest": "離開訪客模式",
-  "reqs.tryGuest": "試試訪客模式",
   "reqs.guestNote": "訪客模式：等級只留在這個頁面。",
   "reqs.savedNote": "你填的等級儲存在這台裝置上，市政廳和升級優先順序頁面也會使用。",
   "reqs.noJS": "請開啟 JavaScript 來計算計畫。",
@@ -1727,6 +1725,11 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "reqs.saveFailed": "無法儲存。",
   "reqs.shareNote": "一般連結會用每位讀者自己的等級開啟目標。帶等級的連結會以訪客模式開啟這份計畫。",
   "reqs.sourceNote": "前置條件、消耗和基礎時間來自 Kingshot Optimizer，並與 Kingshot Data 和 KS h5joy 核對。標 † 的數值只有一個來源：民居、診所、資源建築以及 TG 8 以上的所有等級只來自 Kingshot Optimizer。未計入 Saul 的資源減免。開始長時間升級前請在遊戲中確認。",
-  "reqs.fromTown": "每一級需要什麼"
+  "reqs.fromTown": "每一級需要什麼",
+  "reqs.addBuilding": "再加一座建築",
+  "reqs.guestSwitch": "訪客模式",
+  "reqs.removeGoal": "移除{goal}",
+  "ev.deck.lede.buildings": "每一級需要什麼，通往目標的每一步。",
+  "reqs.cardLede": "選擇一個或多個建築目標，從你自己的等級算起，查看所需的每次升級、資源和時間。"
 }
 ;

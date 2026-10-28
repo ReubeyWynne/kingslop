@@ -1708,8 +1708,6 @@ window.__BH_I18N_DATA["id"] = {
   "reqs.timeAt": "{time} dengan kecepatan konstruksi +{speed}%",
   "reqs.oneSource": "† Hanya satu sumber memberi angka ini.",
   "reqs.guestBanner": "<b>Mode tamu.</b> Level yang kamu isi tetap di halaman ini. Simpananmu tidak berubah.",
-  "reqs.leaveGuest": "keluar dari mode tamu",
-  "reqs.tryGuest": "coba mode tamu",
   "reqs.guestNote": "Mode tamu: level tetap di halaman ini.",
   "reqs.savedNote": "Level yang kamu isi disimpan di perangkat ini, dan Pusat Kota serta Prioritas peningkatan memakainya.",
   "reqs.noJS": "Aktifkan JavaScript untuk menghitung rencana.",
@@ -1738,6 +1736,11 @@ window.__BH_I18N_DATA["id"] = {
   "reqs.saveFailed": "Tidak bisa menyimpan.",
   "reqs.shareNote": "Tautan biasa membuka target dengan level masing-masing pembaca. Tautan dengan level membuka rencana ini persis, dalam mode tamu.",
   "reqs.sourceNote": "Syarat, biaya, dan waktu dasar dari Kingshot Optimizer, dicek dengan Kingshot Data dan KS h5joy. Angka bertanda † hanya punya satu sumber: Rumah, Klinik, bangunan sumber daya, dan semua level di atas TG 8 hanya dari Kingshot Optimizer. Diskon sumber daya Saul tidak diterapkan. Periksa peningkatan panjang di game sebelum memulainya.",
-  "reqs.fromTown": "yang dibutuhkan satu level"
+  "reqs.fromTown": "yang dibutuhkan satu level",
+  "reqs.addBuilding": "tambah bangunan lain",
+  "reqs.guestSwitch": "Mode tamu",
+  "reqs.removeGoal": "Hapus {goal}",
+  "ev.deck.lede.buildings": "yang dibutuhkan tiap level, setiap langkah ke targetmu.",
+  "reqs.cardLede": "Pilih satu atau beberapa target bangunan dan lihat setiap peningkatan yang dibutuhkan, dengan sumber daya dan waktu, dari levelmu."
 }
 ;

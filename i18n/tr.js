@@ -1696,8 +1696,6 @@ window.__BH_I18N_DATA["tr"] = {
   "reqs.timeAt": "+%{speed} inşaat hızıyla {time}",
   "reqs.oneSource": "† Bu değeri yalnızca bir kaynak veriyor.",
   "reqs.guestBanner": "<b>Misafir modu.</b> Girdiğin seviyeler bu sayfada kalır. Kaydın değişmez.",
-  "reqs.leaveGuest": "misafir modundan çık",
-  "reqs.tryGuest": "misafir modunu dene",
   "reqs.guestNote": "Misafir modu: seviyeler bu sayfada kalır.",
   "reqs.savedNote": "Girdiğin seviyeler bu cihaza kaydedilir; Şehir Merkezi ve Yükseltme önceliği bunları kullanır.",
   "reqs.noJS": "Plan hesaplamak için JavaScript’i aç.",
@@ -1726,6 +1724,11 @@ window.__BH_I18N_DATA["tr"] = {
   "reqs.saveFailed": "Kaydedilemedi.",
   "reqs.shareNote": "Düz bağlantı hedefi her okuyucunun kendi seviyeleriyle açar. Seviyeli bağlantı tam bu planı misafir modunda açar.",
   "reqs.sourceNote": "Gereksinimler, maliyetler ve temel süreler Kingshot Optimizer’dan, Kingshot Data ve KS h5joy ile karşılaştırıldı. † işaretli değerin tek kaynağı var: Evler, Klinik, kaynak binaları ve TG 8 üstündeki her seviye yalnızca Kingshot Optimizer’da. Saul’un kaynak indirimi uygulanmaz. Uzun bir yükseltmeyi başlatmadan önce oyunda kontrol et.",
-  "reqs.fromTown": "bir seviyenin istedikleri"
+  "reqs.fromTown": "bir seviyenin istedikleri",
+  "reqs.addBuilding": "başka bina ekle",
+  "reqs.guestSwitch": "Misafir modu",
+  "reqs.removeGoal": "{goal} kaldır",
+  "ev.deck.lede.buildings": "her seviyenin istedikleri, hedefe her adım.",
+  "reqs.cardLede": "Bir veya birkaç bina hedefi seç; kendi seviyelerinden gereken her yükseltmeyi kaynak ve süreyle gör."
 }
 ;

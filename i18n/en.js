@@ -2331,8 +2331,6 @@ window.__BH_I18N_DATA["en"] = {
   "reqs.timeAt": "{time} at +{speed}% construction speed",
   "reqs.oneSource": "† Only one source gives this figure.",
   "reqs.guestBanner": "<b>Guest mode.</b> Levels you set stay on this page. Your save is untouched.",
-  "reqs.leaveGuest": "leave guest mode",
-  "reqs.tryGuest": "try guest mode",
   "reqs.guestNote": "Guest mode: levels stay on this page.",
   "reqs.savedNote": "Levels you set are saved on this device, and the Town Centre and Upgrade priority use them.",
   "reqs.noJS": "Turn on JavaScript to work out a plan.",
@@ -2361,6 +2359,11 @@ window.__BH_I18N_DATA["en"] = {
   "reqs.saveFailed": "Could not save that.",
   "reqs.shareNote": "A plain link opens the goal with each reader's own levels. A link with levels opens exactly this plan, in guest mode.",
   "reqs.sourceNote": "Prerequisites, costs and base times from Kingshot Optimizer, checked against Kingshot Data and KS h5joy. A figure marked † has only one source: Houses, the Clinic, resource buildings and every level past TG 8 are Kingshot Optimizer only. Saul's resource discount is not applied. Check a long upgrade in game before you start it.",
-  "reqs.fromTown": "what a level needs"
+  "reqs.fromTown": "what a level needs",
+  "reqs.addBuilding": "add another building",
+  "reqs.guestSwitch": "Guest mode",
+  "reqs.removeGoal": "Remove {goal}",
+  "ev.deck.lede.buildings": "what each level needs, every step to your goal.",
+  "reqs.cardLede": "Pick one building goal or several and see every upgrade it takes, with the resources and time, from your own levels."
 }
 ;
