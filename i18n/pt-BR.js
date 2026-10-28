@@ -1699,8 +1699,6 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "reqs.timeAt": "{time} com +{speed}% de velocidade de construção",
   "reqs.oneSource": "† Só uma fonte dá este número.",
   "reqs.guestBanner": "<b>Modo convidado.</b> Os níveis que você define ficam nesta página. Seu save não é alterado.",
-  "reqs.leaveGuest": "sair do modo convidado",
-  "reqs.tryGuest": "usar modo convidado",
   "reqs.guestNote": "Modo convidado: os níveis ficam nesta página.",
   "reqs.savedNote": "Os níveis que você define são salvos neste dispositivo, e o Centro da Cidade e a Prioridade de melhorias usam esses dados.",
   "reqs.noJS": "Ative o JavaScript para calcular um plano.",
@@ -1729,6 +1727,11 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "reqs.saveFailed": "Não foi possível salvar.",
   "reqs.shareNote": "Um link simples abre a meta com os níveis de cada leitor. Um link com níveis abre exatamente este plano, em modo convidado.",
   "reqs.sourceNote": "Requisitos, custos e tempos base do Kingshot Optimizer, conferidos com Kingshot Data e KS h5joy. Um número marcado com † tem só uma fonte: Casas, Clínica, construções de recursos e todo nível acima de TG 8 vêm só do Kingshot Optimizer. O desconto de recursos do Saul não é aplicado. Confira uma melhoria longa no jogo antes de começar.",
-  "reqs.fromTown": "o que cada nível pede"
+  "reqs.fromTown": "o que cada nível pede",
+  "reqs.addBuilding": "adicionar outra construção",
+  "reqs.guestSwitch": "Modo convidado",
+  "reqs.removeGoal": "Remover {goal}",
+  "ev.deck.lede.buildings": "o que cada nível pede, cada passo até sua meta.",
+  "reqs.cardLede": "Escolha uma ou várias metas de construção e veja cada melhoria necessária, com recursos e tempo, a partir dos seus níveis."
 }
 ;

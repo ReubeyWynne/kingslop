@@ -1697,8 +1697,6 @@ window.__BH_I18N_DATA["ko"] = {
   "reqs.timeAt": "건설 속도 +{speed}%일 때 {time}",
   "reqs.oneSource": "† 이 수치는 한 출처에만 있습니다.",
   "reqs.guestBanner": "<b>게스트 모드.</b> 입력한 레벨은 이 페이지에만 남고 저장 데이터는 바뀌지 않습니다.",
-  "reqs.leaveGuest": "게스트 모드 나가기",
-  "reqs.tryGuest": "게스트 모드 사용",
   "reqs.guestNote": "게스트 모드: 레벨은 이 페이지에만 남습니다.",
   "reqs.savedNote": "입력한 레벨은 이 기기에 저장되며, 도시 센터와 업그레이드 우선순위에서도 사용됩니다.",
   "reqs.noJS": "계획을 계산하려면 JavaScript를 켜 주세요.",
@@ -1727,6 +1725,11 @@ window.__BH_I18N_DATA["ko"] = {
   "reqs.saveFailed": "저장하지 못했습니다.",
   "reqs.shareNote": "일반 링크는 각 사용자의 레벨로 목표를 엽니다. 레벨이 담긴 링크는 이 계획을 그대로 게스트 모드로 엽니다.",
   "reqs.sourceNote": "요구 조건, 비용, 기본 시간은 Kingshot Optimizer 기준이며 Kingshot Data, KS h5joy와 대조했습니다. † 표시 수치는 출처가 하나입니다: 주택, 진료소, 자원 건물, TG 8 이후 모든 레벨은 Kingshot Optimizer에만 있습니다. Saul의 자원 할인은 적용하지 않았습니다. 긴 업그레이드는 시작 전에 게임에서 확인하세요.",
-  "reqs.fromTown": "레벨마다 필요한 것"
+  "reqs.fromTown": "레벨마다 필요한 것",
+  "reqs.addBuilding": "건물 추가",
+  "reqs.guestSwitch": "게스트 모드",
+  "reqs.removeGoal": "{goal} 제거",
+  "ev.deck.lede.buildings": "레벨마다 필요한 것, 목표까지의 모든 단계.",
+  "reqs.cardLede": "건물 목표를 하나 이상 고르면 내 레벨부터 필요한 모든 업그레이드와 자원, 시간을 보여 줍니다."
 }
 ;

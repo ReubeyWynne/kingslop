@@ -176,6 +176,7 @@ html, body { overscroll-behavior-x: none; }
 .page-deck[data-selected="masters"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #A29BF4; --deck-ground: #1d1c30; }
 .page-deck[data-selected="governor"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #86D48A; --deck-ground: #19241b; }
 .page-deck[data-selected="pets"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #F0907A; --deck-ground: #271b1b; }
+.page-deck[data-selected="buildings"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #D8B08C; --deck-ground: #241e18; }
 .page-deck[data-selected="castle"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #DFAA77; --deck-ground: #27201b; }
 /* The selected page's colours land only on the parts that use them, not on
    the strip, so a change restyles a handful of elements rather than every
@@ -343,6 +344,7 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
 :is(.deck-card, .deck-pip)[data-page="masters"] { --deck-accent: #A29BF4; }
 :is(.deck-card, .deck-pip)[data-page="governor"] { --deck-accent: #86D48A; }
 :is(.deck-card, .deck-pip)[data-page="pets"] { --deck-accent: #F0907A; }
+:is(.deck-card, .deck-pip)[data-page="buildings"] { --deck-accent: #D8B08C; }
 :is(.deck-card, .deck-pip)[data-page="castle"] { --deck-accent: #DFAA77; }
 .deck-card::before {
   content: '';
@@ -948,6 +950,22 @@ html[data-page="governor"], html[data-page="home"]:has(.event-card[data-hover-pa
   --signal-tint: rgba(134, 212, 138, .07);
   --signal-glow: rgba(134, 212, 138, .22);
   --signal-halo: rgba(134, 212, 138, .28);
+}
+
+/* ─── Building requirements — the mason's sandstone ──── */
+html[data-page="buildings"], html[data-page="home"]:has(.event-card[data-hover-page="buildings"]:is(:hover, :focus-within)), .deck-card[data-page="buildings"] {
+  --void: #15120F;        /* quarry night — dusty umber-black   */
+  --void-2: #201B16;      /* one step up (fields)              */
+  --amber: #D8B08C;       /* mason's sandstone — the build signal */
+  --amber-dim: #A9825F;   /* weathered stone — secondary        */
+  --ember: rgba(216, 176, 140, 0.15); /* stone-dust motes      */
+  --ember-2: rgba(180, 146, 112, 0.10);
+  --ember-3: rgba(241, 227, 194, 0.07);
+  --chrome: rgba(21, 18, 15, .94);
+  --signal-line: rgba(216, 176, 140, .35);
+  --signal-tint: rgba(216, 176, 140, .07);
+  --signal-glow: rgba(216, 176, 140, .22);
+  --signal-halo: rgba(216, 176, 140, .28);
 }
 
 /* ─── Pets — the coral Beast Cage ─────────────────────── */

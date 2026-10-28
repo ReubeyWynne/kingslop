@@ -384,7 +384,8 @@ def forge():
 
 # ── the small emblems ────────────────────────────────────────────────────
 # Each is 29 cells wide, 9 rows tall (crown and charm 10, seal 11), set at line-height 1.25.
-# The helm stands over the hero directory; the seal over governor gear.
+# The helm stands over the hero directory; the seal over governor gear; the keep over
+# building requirements.
 
 MW = 29
 
@@ -471,6 +472,20 @@ TOME = r'''
              / \ '''
 TOME_TEXT = [("~~~ ~~ ~~~", "~~ ~~~ ~~~"), ("~~ ~~~~ ~~", "~~~~ ~ ~~~"), ("~ ~~~ ~~~~", "~~ ~~ ~~~~"),
              ("~~~~ ~ ~~~", "~ ~~~~ ~~~"), ("~~ ~~ ~~~ ", " ~~~ ~ ~~~")]
+# Building requirements: a keep between two towers, a hoist gantry on its
+# battlement. A block comes out of the gate, rides the rope up a cell at a time,
+# is taken in through the gap in the battlement, and the empty hook goes back
+# down for the next. Everything but the rope and the block mirrors.
+KEEP = r'''
+           +--o--+
+           |     |
+  n_n_n_n  |     |  n_n_n_n
+  |     |n_n_n n_n_n|     |
+  |  +  |           |  +  |
+  |     |           |     |
+  |     |   .---.   |     |
+  |  +  |   |   |   |  +  |
+ _|_____|___|___|___|_____|_ '''
 PIPS = {1: [(2, 1)], 2: [(0, 0), (4, 2)], 3: [(0, 0), (2, 1), (4, 2)],
         4: [(0, 0), (4, 0), (0, 2), (4, 2)], 5: [(0, 0), (4, 0), (2, 1), (0, 2), (4, 2)],
         6: [(0, 0), (4, 0), (0, 1), (4, 1), (0, 2), (4, 2)]}
@@ -563,6 +578,38 @@ def mini_frames(kind):
             for n, (r, c) in enumerate([(0, 1), (3, 28), (8, 0), (10, 22)]):
                 cycle = (i + n * 12) % 48
                 put(arr, c, r, '.+*+.'[cycle - 2] if 2 <= cycle < 7 else ' ')
+            frames.append(arr)
+    elif kind == 'keep':
+        # The hoist: the block waits in the gate on the hook, rises one row a
+        # frame to the gap in the battlement, sits there a beat and is taken in
+        # with a glint; the empty hook drops a row a frame and the next block is
+        # brought out of the gate as it arrives. The tower windows light now and
+        # then, each on its own beat.
+        base = [list(r.ljust(MW)) for r in art(KEEP)]
+        col, gate, gap = MW // 2, 7, 3
+        def hoist(arr, end, glyph):
+            for r in range(1, end):
+                arr[r][col] = '|'
+            arr[end][col] = glyph
+        for i in range(40):
+            arr = [r[:] for r in base]
+            if i < 6:
+                hoist(arr, gate, '#')
+            elif i < 10:
+                hoist(arr, gate - (i - 5), '#')
+            elif i < 12:
+                hoist(arr, gap, '#')
+            elif i < 17:
+                hoist(arr, 2, 'j')
+                if i < 14:
+                    arr[gap][col] = '*' if i == 12 else '+'
+            elif i < 21:
+                hoist(arr, 2 + (i - 16), 'j')
+            else:
+                hoist(arr, gate, '#')
+            for n, (c, r) in enumerate(((5, 4), (23, 4), (5, 7), (23, 7))):
+                if (i + n * 10) % 40 in (32, 33):
+                    arr[r][c] = '*'
             frames.append(arr)
     elif kind == 'dice':
         # Two dice tumble side over side, each through a pose balanced on a
@@ -966,10 +1013,10 @@ def minis():
     # Emblems that face the viewer are drawn symmetrical (DESIGN.md, "Animation quality").
     # The helm is drawn in profile, the way a Spartan helm is best known, and
     # the seal's quartered field is counterchanged rather than mirrored.
-    for name, drawing in (('crown', CROWN), ('charm', CHARM), ('tome', TOME)):
+    for name, drawing in (('crown', CROWN), ('charm', CHARM), ('tome', TOME), ('keep', KEEP)):
         assert symmetrical(drawing), f'{name}: the emblem is not symmetrical about column {MW // 2}'
     css = ['/* emblems */']
-    durations = {'charm': 6.4, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 19.6, 'helm': 8, 'seal': 8, 'tome': 8, 'castle': CASTLE_FRAMES / FPS}
+    durations = {'charm': 6.4, 'crown': 8, 'dice': 5.6, 'banner': 3.6, 'moon': 19.6, 'helm': 8, 'seal': 8, 'tome': 8, 'keep': 6, 'castle': CASTLE_FRAMES / FPS}
     for kind, duration in durations.items():
         frames, holds = mini_frames(kind)
         if kind == 'moon':
