@@ -1,6 +1,7 @@
 // Building requirements in a browser (after a Jekyll build): a quick answer with nothing saved,
-// refining one building at a time into the shared save, several goals in one plan, the guest
-// switch and links (the first ?b=&to= form included), the met state,
+// pinned in view; refining one building at a time through the level grid (no selects) into the
+// shared save; goal tiles for several goals in one plan; the guest switch and links (the first
+// ?b=&to= form included); the met state;
 // every language at phone width, screenshots in .dsh/buildings-preview/.
 const assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path');
 const { withBrowser } = require('./lib/browser-harness.cjs');
@@ -12,7 +13,18 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await context.addInitScript(() => document.addEventListener('module:error', e => { throw new Error(e.detail.module + ': ' + e.detail.message); }));
   const open = async query => {
     await page.goto(origin + '/buildings/' + query);
-    await page.waitForFunction(() => !document.querySelector('[data-target="building-paths.more"]').disabled && document.querySelector('.reqs-headline').textContent);
+    await page.waitForFunction(() => !document.querySelector('.reqs-pick').disabled && document.querySelector('.reqs-headline').textContent);
+  };
+  // A level is set through the grid: open it from the card, pick the tier tab past 30, tap the level.
+  const choose = async (kind, building, level) => {
+    await page.locator(`.reqs-lv[data-kind="${kind}"][data-building="${building}"]`).click();
+    await page.locator('.reqs-picker[open]').waitFor();
+    if (level !== '' && level !== '0' && await page.locator('.reqs-tiers').isVisible()) {
+      await page.locator(`.reqs-tiers [data-tier="${(/^TG ?(\d+)/.exec(level) || [0, 0])[1]}"]`).click();
+    }
+    await page.locator(`.reqs-picker button[data-level="${level}"]`).click();
+    await page.locator('.reqs-picker[open]').waitFor({ state: 'detached' }).catch(() => {});
+    await page.waitForFunction(() => !document.querySelector('.reqs-picker').open);
   };
   const headline = () => page.locator('.reqs-headline').innerText();
   const saved = () => page.evaluate(() => PlayerLedger.shared().snapshot().buildings?.levels || {});
@@ -22,35 +34,47 @@ withBrowser({ root }, async ({ browser, origin }) => {
   assert.equal(await headline(), 'Town Center 3 · upgrades: 3');
   assert.match(page.url(), /goal=town-center:3$/);
   assert.equal(await page.locator('.reqs-run[data-state="assumed"]').count(), 2);
-  await page.locator('select[data-building="house-1"]').selectOption('2');
+  assert.equal(await page.locator('main select').count(), 0, 'no long selects');
+  assert.equal(await page.locator('.reqs-run .reqs-art img').count(), await page.locator('.reqs-run').count(), 'every card shows its building');
+  assert(await page.evaluate(() => document.querySelector('.reqs-headline').getBoundingClientRect().bottom <= innerHeight), 'the answer is in view at once');
+  await choose('have', 'house-1', '2');
   await page.waitForFunction(() => document.querySelector('.reqs-headline').textContent === 'Town Center 3 · upgrades: 1');
   assert.deepEqual(await saved(), { 'house-1': '2' });
   assert.equal(await page.locator('.reqs-run[data-state="done"]').count(), 1, 'a level set high enough stays listed, ticked');
   await page.screenshot({ path: path.join(output, 'en-390.png'), fullPage: true });
 
+  // The level grid fits a phone screen without scrolling, TG tiers included.
+  await page.locator('.reqs-lv[data-kind="goal"][data-building="town-center"]').click();
+  assert(await page.evaluate(() => { const d = document.querySelector('.reqs-picker'); return d.scrollHeight <= d.clientHeight + 1; }), 'the grid does not scroll');
+  await page.locator('.reqs-tiers [data-tier="3"]').click();
+  assert.equal(await page.locator('.reqs-grid button').count(), 5);
+  await page.screenshot({ path: path.join(output, 'en-390-grid.png') });
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => !document.querySelector('.reqs-picker').open);
+
   // A saved level fills the goal and the plan; "not sure" forgets it again.
-  await page.locator('.reqs-goal-row select[data-field="level"]').selectOption('15');
-  await page.locator('select[data-building="town-center"]').selectOption('14');
+  await choose('goal', 'town-center', '15');
+  await choose('have', 'town-center', '14');
   await page.waitForFunction(() => /Town Center 15 · upgrades: \d+/.test(document.querySelector('.reqs-headline').textContent));
   assert.equal((await saved())['town-center'], '14');
-  await page.locator('select[data-building="embassy"]').selectOption('14');
-  await page.locator('select[data-building="stable"]').selectOption('14');
+  await choose('have', 'embassy', '14');
+  await choose('have', 'stable', '14');
   await page.waitForFunction(() => document.querySelector('.reqs-headline').textContent === 'Town Center 15 · upgrades: 1');
   await page.locator('[data-action="building-paths.addGoal"]').click();
   assert.deepEqual(await page.evaluate(() => PlayerLedger.shared().priority().goals), [{ kind: 'building', target: 'town-center', level: '15' }]);
-  await page.locator('select[data-building="stable"]').selectOption('');
+  await choose('have', 'stable', '');
   assert.equal((await saved()).stable, undefined);
 
-  // A second goal joins the same plan, rides in the link, and can be removed again.
-  await page.locator('[data-action="building-paths.more"]').click();
-  await page.locator('.reqs-goal-row').nth(1).locator('select[data-field="building"]').selectOption('barracks');
-  await page.locator('.reqs-goal-row').nth(1).locator('select[data-field="level"]').selectOption('15');
+  // A second goal tile joins the same plan, rides in the link, and taps off again.
+  await page.locator('.reqs-pick[data-building="barracks"]').click();
+  await choose('goal', 'barracks', '15');
   await page.waitForFunction(() => /^Town Center 15 \+ Barracks 15 · upgrades: \d+$/.test(document.querySelector('.reqs-headline').textContent));
   assert.match(page.url(), /goal=town-center:15,barracks:15/);
   assert.equal(await page.locator('.reqs-run').last().locator('.reqs-run-name').innerText(), 'Barracks');
   await page.screenshot({ path: path.join(output, 'en-390-two-goals.png'), fullPage: true });
-  await page.locator('.reqs-goal-row').nth(1).locator('[data-action="building-paths.remove"]').click();
-  assert.equal(await page.locator('.reqs-goal-row').count(), 1);
+  assert.equal(await page.locator('.reqs-pick[data-building="barracks"] .reqs-badge').innerText(), '15');
+  await page.locator('.reqs-pick[data-building="barracks"]').click();
+  assert.equal(await page.locator('.reqs-pick[aria-pressed="true"]').count(), 1);
   assert.match(page.url(), /goal=town-center:15$/);
 
   // The guest switch reloads into guest mode with the same goal, and back out.
@@ -59,7 +83,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await open(page.url().slice(page.url().indexOf('/buildings/') + '/buildings/'.length));
   assert.equal(await page.locator('[data-action="building-paths.guest"]').getAttribute('aria-checked'), 'true');
   assert.ok(await page.locator('[data-target="building-paths.guestBanner"]').isVisible());
-  await page.locator('select[data-building="embassy"]').selectOption('20');
+  await choose('have', 'embassy', '20');
   await page.waitForFunction(() => location.search.includes('embassy:20'));
   assert.equal((await saved()).embassy, '14', 'guest edits stay off the save');
   await page.locator('[data-action="building-paths.guest"]').click();
@@ -71,14 +95,14 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await open('?lang=en&goal=barracks:TG3&have=town-center:TG1,barracks:TG1');
   assert.ok(await page.locator('[data-target="building-paths.guestBanner"]').isVisible());
   assert.ok(await page.locator('[data-target="building-paths.addGoal"]').isHidden());
-  await page.locator('select[data-building="embassy"]').selectOption('TG 2');
+  await choose('have', 'embassy', 'TG 2');
   await page.waitForFunction(() => location.search.includes('embassy:TG2'));
   assert.deepEqual(await saved(), before);
   // A plain link uses the reader's own levels.
   await open('?lang=en&goal=town-center:15');
   assert.ok(await page.locator('[data-target="building-paths.guestBanner"]').isHidden());
   assert.equal(await headline(), 'Town Center 15 · upgrades: 5', 'the stable forgotten above is assumed again');
-  await page.locator('select[data-building="town-center"]').selectOption('15');
+  await choose('have', 'town-center', '15');
   await page.waitForFunction(() => document.querySelector('.reqs-headline').textContent === 'Your Town Center 15 is already done.');
 
   // Construction speed shortens the time and rides in the link.
