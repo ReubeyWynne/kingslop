@@ -13,6 +13,13 @@
       "Candy rain averages 100 candy.",
       "Jackpot pot varies by server; excluded from the default forecast.",
       "Event dates must be entered from the in-game timer."
+    ],
+    "corrections": [
+      {
+        "date": "2026-10-28",
+        "source": "User event clarification",
+        "rule": "The permanent skin requires 12,500 points OR a top-10 finish. The points route has no rank restriction."
+      }
     ]
   },
   "rules": {
@@ -51,7 +58,8 @@
     },
     "eventDays": 8,
     "gatheringCap": 3000,
-    "beastCap": 4000
+    "beastCap": 4000,
+    "skinTopRank": 10
   },
   "chests": {
     "pumpkin": [
@@ -1143,7 +1151,7 @@
       "minRank": 501,
       "maxRank": null,
       "skin": null,
-      "goalReward": "none",
+      "goalReward": "extra-skin",
       "rewards": []
     }
   ],

@@ -41,7 +41,7 @@
     function render() {
       var b = engine.budget(known, scenario), issues = b.errors.concat(b.missing);
       var baseline = known.points === null ? null : known.points + Math.floor(b.total / data.rules.attackCandy) * data.rules.attackPoints;
-      say('summary', b.errors.length ? 'Resolve the plan below before using these totals.' : known.points === null || known.candy === null ? 'Enter your current points and candy to calculate the gap.' : b.pointGap === 0 ? 'You have reached your points target. Ranking requirements still apply.' : number(b.pointGap) + ' points still needed.');
+      say('summary', b.errors.length ? 'Resolve the plan below before using these totals.' : known.points === null || known.candy === null ? 'Enter your current points and candy to calculate the gap.' : b.pointGap === 0 ? 'You have reached your points target.' : number(b.pointGap) + ' points still needed.');
       target('totals').innerHTML = [
         ['Candy in this plan', number(b.total) + (b.estimated ? ' ≈' : '')],
         ['Paid-attack finish', baseline === null ? '—' : number(baseline)],

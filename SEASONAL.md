@@ -28,7 +28,7 @@ The worker runs 200 reproducible seeded simulations on explicit request. It star
 
 Results show the median, 10th–90th percentile finish, and fraction reaching the points target. A purchase scenario also runs a matched scenario without additional purchases for comparison. Editing progress or plans cancels the worker and clears stale results. A bounded simulation reports that its limit was reached instead of presenting a truncated forecast as a complete result.
 
-The range is conditional on completing planned candy income and on the source model. Door income uses its expected value, so the percentile range does not include uncertainty in door rewards. No jackpot, final rank, live account reading or automatic purchase is modelled. The 12,500-point skin target always retains its top-500 condition.
+The range is conditional on completing planned candy income and on the source model. Door income uses its expected value, so the percentile range does not include uncertainty in door rewards. No jackpot, final rank, live account reading or automatic purchase is modelled. The permanent skin has two independent routes: 12,500 points regardless of rank, or a top-10 finish. This corrects the source calculator’s top-500 restriction, following the user’s event clarification on 28 October 2026.
 
 ## UI and verification
 
