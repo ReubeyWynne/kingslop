@@ -5,11 +5,11 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 .reqs-art { position: relative; display: grid; place-items: center; flex: none; width: 3.2rem; aspect-ratio: 1; border: 1px solid var(--signal-line); background: radial-gradient(circle at 50% 35%, var(--signal-tint), transparent 70%), var(--void-2); }
 .reqs-art img { width: 86%; height: 86%; object-fit: contain; }
 
-/* The goal: a strip of building tiles that scrolls sideways inside itself. */
-.reqs-picks { list-style: none; display: flex; gap: .5rem; margin: var(--space-s) 0 0; padding: .2rem .1rem .7rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: var(--amber-dim) transparent; }
-.reqs-picks li { flex: none; scroll-snap-align: start; }
-.reqs-pick { display: grid; justify-items: center; align-content: start; gap: .3rem; width: 4.6rem; padding: .3rem .1rem; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--ink-dim); font: inherit; text-align: center; cursor: pointer; }
-.reqs-pick .reqs-art { width: 3.6rem; }
+/* The goal: every building tile in view at once, as a grid that wraps (no sideways scroll). */
+.reqs-picks { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(4rem, 1fr)); gap: .35rem .2rem; margin: var(--space-s) 0 0; padding: .2rem 0 .4rem; }
+.reqs-picks li { min-width: 0; display: grid; }
+.reqs-pick { display: grid; justify-items: center; align-content: start; gap: .25rem; min-width: 0; padding: .25rem .05rem; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--ink-dim); font: inherit; text-align: center; cursor: pointer; }
+.reqs-pick .reqs-art { width: 2.9rem; }
 .reqs-pick[aria-pressed="false"] img { filter: grayscale(.6); opacity: .6; }
 .reqs-pick[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--amber); }
 .reqs-pick[aria-pressed="true"] .reqs-art { border-color: var(--amber); }
@@ -17,7 +17,7 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 .reqs-pick:hover img, .reqs-pick:focus-visible img { filter: none; opacity: 1; }
 .reqs-pick:focus-visible { outline: 1px solid var(--amber); outline-offset: 2px; }
 .reqs-pick:disabled { cursor: default; }
-.reqs-pick-name { font-size: .72rem; line-height: 1.15; overflow-wrap: anywhere; }
+.reqs-pick-name { font-size: .66rem; line-height: 1.1; overflow-wrap: anywhere; hyphens: auto; }
 .reqs-badge { position: absolute; inset-inline-end: -.35rem; inset-block-end: -.45rem; padding: .05rem .3rem; background: var(--void); border: 1px solid var(--amber); color: var(--amber); font: .8rem/1.2 var(--display-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .reqs-badge:empty { display: none; }
 .reqs-goal-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 1rem; }
@@ -96,10 +96,11 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 /* The page is one tool, so its sections sit closer than the site's essay spacing. */
 .reqs-goal { padding-block: var(--space-m) var(--space-s); }
 .reqs-sources { padding-top: var(--space-m); }
-.reqs-levels { padding-block: var(--space-m) 0; }
+.reqs-levels { padding-block: var(--space-s) 0; }
+/* The plan needs no display heading: it stays for screen readers only. */
+.reqs-levels > h2 { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.reqs-levels > .note { margin-top: 0; }
 .reqs-tail { padding-block: var(--space-s) var(--space-m); }
-/* With room for them all, the goal tiles wrap instead of scrolling sideways. */
-@media (min-width: 48rem) { .reqs-picks { flex-wrap: wrap; overflow: visible; } }
 /* On a phone the pinned answer stays short: amounts with their icons, names on hover only. */
 @media (max-width: 40rem) {
   .reqs-headline { font-size: 1.05rem; }
