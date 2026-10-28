@@ -165,6 +165,16 @@
       var on = dialog.querySelector('.reqs-grid [aria-pressed="true"], .reqs-picker-extra [aria-pressed="true"]');
       (on || dialog.querySelector('.reqs-grid button')).focus();
     }
+    function choose(value) {
+      if (!picking) return;
+      var p = picking;
+      closePicker();
+      if (p.kind === 'goal') { goals[p.index].level = value; fillGoals(); render(); }
+      else setLevel(p.building, value === '' ? null : value);
+      if (p.fromTile) return;
+      var again = one('summary').querySelector('.reqs-lv[data-kind="' + p.kind + '"][data-building="' + p.building + '"]');
+      if (again) again.focus();
+    }
     function closePicker() {
       var dialog = one('picker'), back = picking;
       picking = null;
@@ -281,17 +291,16 @@
           fillGoals(); render();
         } },
         open: { run: function (node) { openPicker(node.dataset.kind, node.dataset.building, node.dataset.value, node.dataset.index === undefined ? null : Number(node.dataset.index)); } },
-        tier: { run: function (node) { if (!picking) return; picking.tier = Number(node.dataset.tier); fillPicker(); var first = one('grid').querySelector('button'); if (first) first.focus(); } },
-        choose: { run: function (node) {
+        // A TG tab shows that tier's levels; tapping it again (a double tap) takes the TG level itself.
+        tier: { run: function (node) {
           if (!picking) return;
-          var p = picking, value = node.dataset.level;
-          closePicker();
-          if (p.kind === 'goal') { goals[p.index].level = value; fillGoals(); render(); }
-          else setLevel(p.building, value === '' ? null : value);
-          if (p.fromTile) return;
-          var again = one('summary').querySelector('.reqs-lv[data-kind="' + p.kind + '"][data-building="' + p.building + '"]');
-          if (again) again.focus();
+          var n = Number(node.dataset.tier);
+          if (n && picking.tier === n && E.levels(D, picking.building).indexOf('TG ' + n) >= 0) return choose('TG ' + n);
+          picking.tier = n; fillPicker();
+          var tab = one('tiers').querySelector('[data-tier="' + n + '"]');
+          if (tab) tab.focus();
         } },
+        choose: { run: function (node) { choose(node.dataset.level); } },
         close: { run: closePicker },
         guest: { run: function () {
           // Guest mode is chosen before the page's modules mount, so the switch reloads the

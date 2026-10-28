@@ -49,8 +49,10 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.locator('.reqs-tiers [data-tier="3"]').click();
   assert.equal(await page.locator('.reqs-grid button').count(), 5);
   await page.screenshot({ path: path.join(output, 'en-390-grid.png') });
-  await page.keyboard.press('Escape');
+  // Tapping a TG tab again (a double tap) takes that TG level itself.
+  await page.locator('.reqs-tiers [data-tier="4"]').dblclick();
   await page.waitForFunction(() => !document.querySelector('.reqs-picker').open);
+  await page.waitForFunction(() => location.search.includes('goal=town-center:TG4'));
 
   // A saved level fills the goal and the plan; "not sure" forgets it again.
   await choose('goal', 'town-center', '15');
