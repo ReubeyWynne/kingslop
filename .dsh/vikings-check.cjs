@@ -31,5 +31,8 @@ test('event days follow the fortnightly Tuesday and Thursday schedule', () => {
   assert.deepEqual(iso(E.eventDays(day('2026-11-05') + 8e7)), ['2026-11-05', '2026-11-17']);
   assert.deepEqual(iso(E.eventDays(day('2026-11-06'), 3)), ['2026-11-17', '2026-11-19', '2026-12-01']);
   assert.deepEqual(iso(E.eventDays(day('2026-10-21'))), ['2026-10-22', '2026-11-03']);
+  // Strongest Governor (cycle days 8–14) and KvK prep (22–28) weeks on the event-rules wheel.
+  const R = require('../js/event-rules.js');
+  for (let t = day('2026-08-17'); t < day('2027-08-17'); t += 864e5) { const cycle = Math.floor((t - R.EPOCH) / 864e5) % 28 + 1; const event = E.eventDays(t, 1)[0] === t; assert.equal(event, [9, 11, 23, 25].includes(cycle), new Date(t).toISOString()); }
   for (let t = day('2026-01-01'); t < day('2027-06-01'); t += 9e6) { const [a, b] = E.eventDays(t); assert(a >= Math.floor(t / 864e5) * 864e5 && b > a && [2, 4].includes(new Date(a).getUTCDay())); }
 });

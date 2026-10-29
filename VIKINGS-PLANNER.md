@@ -16,7 +16,7 @@ Creating a shared plan or joining one saves that leader or player link on the de
 
 ## Event days
 
-Vikings opens every fourteen days on Tuesday and Thursday, server time (UTC); R4/R5 choose the hour. `VikingsEngine.eventDays` counts from one known Tuesday (`SCHEDULE.anchor` in `js/vikings-engine.js`). The page shows the next window, and a new plan offers the next four event days with the start time in UTC, remembering the last time used on the device.
+Vikings opens every fourteen days on Tuesday and Thursday, server time (UTC); R4/R5 choose the hour. It runs in the Strongest Governor and KvK prep weeks of the 28-day wheel. `VikingsEngine.eventDays` counts from the Strongest Governor Tuesday of the wheel's first cycle, 25 August 2026 (`SCHEDULE.anchor` in `js/vikings-engine.js`). The page shows the next window, and a new plan offers the next four event days with the start time in UTC, remembering the last time used on the device.
 
 ## Assignments and publication
 

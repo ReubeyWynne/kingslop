@@ -101,8 +101,9 @@
     return lines.join('\n');
   }
   /* Vikings opens every fourteen days, on Tuesday and Thursday by the server clock (UTC); R4/R5 pick the hour.
-     SCHEDULE.anchor is one known Tuesday. Change it here if the fortnight moves. */
-  var DAY = 86400000, SCHEDULE = { anchor: Date.UTC(2026, 10, 3), every: 14, days: [0, 2] };
+     It falls in the Strongest Governor and KvK prep weeks of the 28-day wheel in js/event-rules.js (cycle day 1 is
+     Monday 2026-08-17), so the anchor is cycle day 9, Tuesday 2026-08-25, and the KvK prep Tuesday follows 14 days later. */
+  var DAY = 86400000, SCHEDULE = { anchor: Date.UTC(2026, 7, 25), every: 14, days: [0, 2] };
   // The next `count` event days as UTC midnights, counting today while it lasts.
   function eventDays(now, count) {
     var today = Math.floor(now / DAY) * DAY, start = SCHEDULE.anchor + Math.floor((today - SCHEDULE.anchor) / (SCHEDULE.every * DAY)) * SCHEDULE.every * DAY, out = [];
