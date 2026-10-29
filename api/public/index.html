@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Vikings plans · Kingslop</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+<main>
+  <header><p class="eyebrow">Kingslop · First version</p><h1>Vikings plans</h1><p>Create a plan, invite your alliance, and collect troop counts. No account needed.</p></header>
+  <p id="status" role="status" aria-live="polite">Checking the service…</p>
+  <section aria-labelledby="open-heading">
+    <h2 id="open-heading">Open a plan</h2>
+    <form id="open-form">
+      <label>Plan ID<input name="id" required autocomplete="off" spellcheck="false"></label>
+      <label>Access code<input name="code" required autocomplete="off" spellcheck="false" type="password"></label>
+      <button>Open plan</button>
+    </form>
+  </section>
+  <section aria-labelledby="create-heading" id="create-section">
+    <h2 id="create-heading">Create a plan</h2>
+    <form id="create-form">
+      <label>Plan name<input name="name" maxlength="80" required placeholder="Thursday Vikings"></label>
+      <label>Event time, in your local timezone<input name="eventAt" type="datetime-local"></label>
+      <label>Alliance instructions<textarea name="notes" maxlength="2000" rows="3"></textarea></label>
+      <button>Create plan</button>
+    </form>
+    <p class="note">Plans expire after 30 days. Share only Vikings planning information.</p>
+  </section>
+  <section id="codes-section" hidden aria-labelledby="codes-heading">
+    <h2 id="codes-heading">Save your codes</h2>
+    <p>Copy these somewhere safe. We cannot recover a lost code. Anyone with a code has its permissions.</p>
+    <label>Plan ID<input id="created-id" readonly></label>
+    <label>Management code<textarea id="manage-code" readonly rows="2"></textarea></label>
+    <p class="note">Keep this private. It allows editing and deleting the plan.</p>
+    <label>Invitation code<textarea id="join-code" readonly rows="2"></textarea></label>
+    <p class="note">Share this with players who should register.</p>
+    <label>Viewing code<textarea id="view-code" readonly rows="2"></textarea></label>
+    <p class="note">Share this with people who only need to read the plan.</p>
+  </section>
+  <section id="plan-section" hidden aria-labelledby="plan-heading">
+    <p class="eyebrow" id="access-role"></p><h2 id="plan-heading"></h2>
+    <p id="plan-time"></p><p id="plan-notes" class="preserve"></p><p id="plan-meta" class="note"></p>
+    <div class="actions"><button id="refresh" type="button">Refresh registrations</button><button id="close-plan" type="button" hidden>Close registration</button></div>
+    <p id="roster-total"></p><ul id="roster"></ul>
+  </section>
+  <section id="registration-section" hidden aria-labelledby="registration-heading">
+    <h2 id="registration-heading">Your registration</h2>
+    <form id="registration-form">
+      <label>Nickname<input name="nickname" maxlength="40" required></label>
+      <label>Availability<select name="availability"><option value="unknown">Not sure yet</option><option value="online">Online</option><option value="offline">Offline</option></select></label>
+      <div class="troops">
+        <label>Infantry<input name="infantry" type="number" min="0" max="100000000" step="1" value="0" required></label>
+        <label>Cavalry<input name="cavalry" type="number" min="0" max="100000000" step="1" value="0" required></label>
+        <label>Archers<input name="archers" type="number" min="0" max="100000000" step="1" value="0" required></label>
+        <label>March capacity<input name="marchCapacity" type="number" min="0" max="10000000" step="1" value="0" required></label>
+        <label>Marches<input name="marches" type="number" min="1" max="6" step="1" value="5" required></label>
+      </div>
+      <label>Vikings notes<textarea name="notes" maxlength="300" rows="2"></textarea></label>
+      <button id="registration-submit">Register</button>
+    </form>
+    <div id="edit-code-section" hidden><label>Your private edit code<textarea id="edit-code" readonly rows="2"></textarea></label><p class="note">Save this with the plan ID to change your registration later.</p></div>
+  </section>
+  <section id="delete-section" hidden aria-labelledby="delete-heading">
+    <h2 id="delete-heading">Delete this plan</h2>
+    <p>This removes the plan and all its registrations.</p>
+    <label><input id="confirm-delete" type="checkbox"> I want to delete this plan.</label>
+    <button id="delete-plan" type="button" class="danger">Delete plan</button>
+  </section>
+</main>
+</body>
+</html>

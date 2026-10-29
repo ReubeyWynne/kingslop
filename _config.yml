@@ -5,6 +5,7 @@ url: "https://dey.ci"
 
 # Documentation and local validation material must not be published with the site.
 exclude:
+  - "api"
   - ".dsh"
   - ".impeccable"
   - ".gitignore"

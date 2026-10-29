@@ -1,0 +1,16 @@
+{
+  "name": "kingslop-vikings",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler d1 migrations apply DB --local && wrangler dev",
+    "test": "node --test test/*.test.mjs",
+    "deploy": "node scripts/deploy.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "4.155.0"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}
