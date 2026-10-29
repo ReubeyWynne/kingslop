@@ -36,3 +36,22 @@ test('event days follow the fortnightly Tuesday and Thursday schedule', () => {
   for (let t = day('2026-08-17'); t < day('2027-08-17'); t += 864e5) { const cycle = Math.floor((t - R.EPOCH) / 864e5) % 28 + 1; const event = E.eventDays(t, 1)[0] === t; assert.equal(event, [9, 11, 23, 25].includes(cycle), new Date(t).toISOString()); }
   for (let t = day('2026-01-01'); t < day('2027-06-01'); t += 9e6) { const [a, b] = E.eventDays(t); assert(a >= Math.floor(t / 864e5) * 864e5 && b > a && [2, 4].includes(new Date(a).getUTCDay())); }
 });
+test('a room’s event rolls on three hours after its start, on its own weekday', () => {
+  const at = (day, time, now) => new Date(E.nextEvent(day, time, Date.parse(now))).toISOString();
+  assert.equal(at('tue', '20:00', '2026-10-29T12:00:00Z'), '2026-11-03T20:00:00.000Z');
+  assert.equal(at('thu', '02:00', '2026-10-29T12:00:00Z'), '2026-11-05T02:00:00.000Z');
+  assert.equal(at('tue', '20:00', '2026-11-03T22:59:00Z'), '2026-11-03T20:00:00.000Z');
+  assert.equal(at('tue', '20:00', '2026-11-03T23:01:00Z'), '2026-11-17T20:00:00.000Z');
+  assert.equal(E.nextEvent('wed', '20:00', Date.now()), null); assert.equal(E.nextEvent('tue', '25:00', Date.now()), null);
+});
+test('troops given in thousands split into whole thousands and still conserve', () => {
+  let seed = 5; const random = n => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed % n; };
+  for (let i = 0; i < 300; i++) {
+    const p = { infantry: random(900) * 1000, cavalry: random(900) * 1000, archers: random(900) * 1000, marches: 1 + random(6), marchCapacity: (1 + random(200)) * 1000 };
+    const split = E.split(p);
+    for (const k of E.types) assert.equal(split.rows.reduce((n, r) => n + r[k], 0) + split.home[k], p[k]);
+    split.rows.forEach(r => { assert(E.sum(r) <= p.marchCapacity); E.types.forEach(k => assert.equal(r[k] % 1000, 0)); });
+  }
+  const rows = E.hqRows({ capacity: 300000, infantryPercent: 75, cavalryPercent: 25, participants: Array.from({ length: 7 }, (_, i) => ({ playerId: 'p' + i, queue: 1 })) });
+  assert.equal(rows.reduce((n, r) => n + E.sum(r), 0), 300000); rows.forEach(r => E.types.forEach(k => assert.equal(r[k] % 1000, 0)));
+});

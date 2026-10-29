@@ -7,7 +7,18 @@
   var TYPES = ['infantry', 'cavalry', 'archers'];
   function sum(troops) { return TYPES.reduce(function (n, k) { return n + (troops[k] || 0); }, 0); }
   function capacity(player, queue) { return (player.capacities && player.capacities[queue - 1]) ?? player.marchCapacity; }
+  // Whole thousands when every input is in thousands, so a split never asks for 53,334 troops.
+  function unitOf(values) { return values.every(function (n) { return !n || n % 1000 === 0; }) ? 1000 : 1; }
   function split(player) {
+    var unit = unitOf([player.infantry, player.cavalry, player.archers, player.marchCapacity].concat(player.capacities || []));
+    if (unit > 1) {
+      var scaled = { infantry: player.infantry / unit, cavalry: player.cavalry / unit, archers: player.archers / unit, marches: player.marches, marchCapacity: player.marchCapacity / unit, capacities: player.capacities && player.capacities.map(function (n) { return n / unit; }) };
+      var r = splitExact(scaled), up = function (o) { TYPES.forEach(function (k) { o[k] *= unit; }); return o; };
+      r.rows.forEach(up); up(r.home); up(r.deployed); r.total *= unit; return r;
+    }
+    return splitExact(player);
+  }
+  function splitExact(player) {
     var left = {}, rows = [], caps = [], totalCap = 0;
     TYPES.forEach(function (k) { left[k] = player[k]; });
     for (var q = 1; q <= player.marches; q++) { var cap = capacity(player, q); caps.push(cap); totalCap += cap; rows.push({ queue: q, destination: null, infantry: 0, cavalry: 0, archers: 0 }); }
@@ -25,6 +36,11 @@
   function emptyHQ() { return { capacity: 0, infantryPercent: 75, cavalryPercent: 25, participants: [] }; }
   function hqRows(hq) {
     if (!hq.participants.length) return [];
+    var unit = unitOf([hq.capacity]);
+    if (unit > 1) return hqRowsExact(Object.assign({}, hq, { capacity: hq.capacity / unit })).map(function (r) { r.total *= unit; TYPES.forEach(function (k) { r[k] *= unit; }); return r; });
+    return hqRowsExact(hq);
+  }
+  function hqRowsExact(hq) {
     var n = hq.participants.length, base = Math.floor(hq.capacity / n), extra = hq.capacity % n;
     var infTotal = Math.round(hq.capacity * hq.infantryPercent / 100), cavTotal = Math.round(hq.capacity * hq.cavalryPercent / 100);
     cavTotal = Math.min(cavTotal, hq.capacity - infTotal);
@@ -91,7 +107,7 @@
     var p = snapshot.roster.find(function (p) { return p.id === playerId; });
     if (!p) return '';
     var names = Object.fromEntries(snapshot.roster.map(function (p) { return [p.id, p.nickname]; }));
-    function n(x) { return x.toLocaleString('en-US'); }
+    function n(x) { return x >= 1000 && x % 1000 === 0 ? x / 1000 + 'k' : x.toLocaleString('en-US'); }
     function troops(r) { return n(r.infantry) + ' inf / ' + n(r.cavalry) + ' cav / ' + n(r.archers) + ' arc'; }
     var at = snapshot.plan.eventAt ? new Date(snapshot.plan.eventAt) : null;
     var lines = [p.nickname + ' · ' + snapshot.plan.name + (at ? ' · ' + at.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }) + ' ' + at.toISOString().slice(11, 16) + ' UTC' : '')];
@@ -110,5 +126,13 @@
     for (var cycle = start; out.length < (count || 2); cycle += SCHEDULE.every * DAY) SCHEDULE.days.forEach(function (d) { var day = cycle + d * DAY; if (day >= today && out.length < (count || 2)) out.push(day); });
     return out;
   }
-  return { types: TYPES, eventDays: eventDays, schedule: SCHEDULE, sum: sum, capacity: capacity, split: split, emptyHQ: emptyHQ, hqRows: hqRows, validate: validate, instructions: instructions };
+  // The room's current event start: its weekday and UTC time, held until three hours after the start so sign-ups reset once it is over.
+  function nextEvent(day, time, now) {
+    if (!/^(tue|thu)$/.test(day) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(time || '')) return null;
+    var offset = (Number(time.slice(0, 2)) * 60 + Number(time.slice(3))) * 60000, weekday = day === 'tue' ? 2 : 4;
+    var days = eventDays(now - offset - 3 * 3600000, 6).filter(function (d) { return new Date(d).getUTCDay() === weekday; });
+    for (var i = 0; i < days.length; i++) if (days[i] + offset + 3 * 3600000 > now) return days[i] + offset;
+    return null;
+  }
+  return { types: TYPES, eventDays: eventDays, nextEvent: nextEvent, schedule: SCHEDULE, sum: sum, capacity: capacity, split: split, emptyHQ: emptyHQ, hqRows: hqRows, validate: validate, instructions: instructions };
 });

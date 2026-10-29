@@ -235,3 +235,12 @@
 }
 .vv-page .vv-send input { -moz-appearance:textfield; appearance:textfield; }
 .vv-page .vv-send input::-webkit-outer-spin-button,.vv-page .vv-send input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+/* Counts in thousands: the input carries a "k" so 240 reads as 240k. */
+.vv-k { display:flex; flex-direction:column; gap:.25rem; }
+.vv-troop-inputs .vv-k { align-items:center; }
+.vv-k-input { position:relative; display:block; width:100%; }
+.vv-page .vv-k-input input { padding-inline-end:1.4rem; font-variant-numeric:tabular-nums; }
+.vv-k-unit { position:absolute; inset-inline-end:.45rem; top:0; bottom:0; display:flex; align-items:center; color:var(--ink-dim); pointer-events:none; }
+.vv-troop-inputs img { width:48px; height:48px; }
+.vv-faint .vv-row { opacity:.75; }
+.vv-tight { margin:.25rem 0; gap:.25rem 1rem; }
