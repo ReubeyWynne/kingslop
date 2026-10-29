@@ -17,30 +17,56 @@ async function board(s) { return (await call(s, '/board')).data; }
 function revisions(b) { return { revision: b.revision, rosterRevision: b.rosterRevision, planRevision: b.planRevision }; }
 async function assign(s, index, destination) { const p = s.players[index].registration; return call(s, '/assignments/' + p.id, 'PUT', { ...revisions(await board(s)), marches: E.split(p).rows.map(r => ({ ...r, destination })) }); }
 
-test('publication hides drafts from all non-management roles and retains the last snapshot', async () => {
+test('every role sees the live marches, and only management can change them', async () => {
   const s = await setup(); assert.equal((await assign(s, 0, s.players[1].registration.id)).status, 200);
-  assert.equal((await board(s)).rosterRevision, 2);
+  const live = (await board(s)).assignments;
   for (const code of [s.codes.view, s.codes.join, s.players[0].editCode]) {
     const b = (await call(s, '/board', 'GET', undefined, code)).data;
-    assert.equal(b.published, null); assert.equal(b.assignments, undefined); assert.equal(b.hq, undefined); assert.equal(b.roster, undefined);
-    assert.equal((await call(s, '/publish', 'POST', revisions(await board(s)), code)).status, 403);
+    assert.deepEqual(b.assignments, live); assert.equal(b.roster.length, 2);
+    assert.equal((await call(s, '/assignments/' + s.players[0].registration.id, 'PUT', { ...revisions(b), marches: [] }, code)).status, 403);
   }
-  assert.equal((await call(s, '/publish', 'POST', revisions(await board(s)))).status, 200);
-  const first = (await call(s, '/board', 'GET', undefined, s.codes.view)).data;
-  assert.equal(first.publicationRevision, 1); assert.equal(first.published.assignments[s.players[0].registration.id][0].infantry, 300);
-  assert.equal((await assign(s, 0, null)).status, 200);
-  assert.deepEqual((await call(s, '/board', 'GET', undefined, s.codes.view)).data, first);
   s.env.sql.close();
 });
-test('roster edits and deletions invalidate stale draft and publication writes', async () => {
+test('sign-ups arriving do not block a leader, but a stale march save does', async () => {
   const s = await setup(), old = await board(s), p = s.players[0];
-  await call(s, '/registrations/' + p.registration.id, 'PUT', { nickname: 'Changed', revision: 1 }, p.editCode);
+  await call(s, '/registrations/' + p.registration.id, 'PUT', { nickname: 'Changed', infantry: 600, cavalry: 300, archers: 100, marchCapacity: 500, marches: 2, revision: 1 }, p.editCode);
   assert.equal((await board(s)).rosterRevision, old.rosterRevision + 1);
-  assert.equal((await call(s, '/publish', 'POST', revisions(old))).status, 409);
+  assert.equal((await call(s, '/assignments/' + p.registration.id, 'PUT', { ...revisions(old), marches: [] })).status, 200);
   assert.equal((await call(s, '/assignments/' + p.registration.id, 'PUT', { ...revisions(old), marches: [] })).status, 409);
   const before = await board(s); await call(s, '/registrations/' + p.registration.id, 'DELETE');
   assert.equal((await board(s)).rosterRevision, before.rosterRevision + 1);
   assert.equal((await call(s, '/publish', 'POST', revisions(before))).status, 409);
+  s.env.sql.close();
+});
+test('a room rolls on to its next event, resetting sign-ups but keeping troops', async () => {
+  const s = await setup(), real = Date.now;
+  try {
+    Date.now = () => Date.parse('2026-10-29T12:00:00Z');
+    const plan = (await call(s, '')).data.plan;
+    assert.equal((await call(s, '', 'PATCH', { eventDay: 'tue', eventTime: '20:00', revision: plan.revision })).status, 200);
+    let b = await board(s); assert.equal(b.plan.eventAt, '2026-11-03T20:00:00.000Z');
+    const p = s.players[0], q = s.players[1];
+    assert.equal((await call(s, '/registrations/' + p.registration.id, 'PUT', { nickname: 'A', infantry: 640, cavalry: 300, archers: 100, marchCapacity: 500, marches: 2, attending: true, revision: 1 }, p.editCode)).status, 200);
+    assert.equal((await call(s, '/registrations/' + q.registration.id, 'PUT', { nickname: 'B', infantry: 600, cavalry: 300, archers: 100, marchCapacity: 500, marches: 2, attending: false, revision: 1 }, q.editCode)).status, 200);
+    b = await board(s); assert.deepEqual(b.roster.map(r => r.attending), [true, false]);
+    const edited = await call(s, '/registrations/' + p.registration.id, 'PUT', { nickname: 'A', infantry: 650, cavalry: 300, archers: 100, marchCapacity: 500, marches: 2, revision: 2 }, p.editCode);
+    assert.equal(edited.data.registration.attending, true, 'leaving attending out keeps the answer');
+    Date.now = () => Date.parse('2026-11-03T23:30:00Z');
+    b = await board(s); assert.equal(b.plan.eventAt, '2026-11-17T20:00:00.000Z');
+    assert.deepEqual(b.roster.map(r => r.attending), [null, null]); assert.equal(b.roster[0].infantry, 650);
+  } finally { Date.now = real; }
+  s.env.sql.close();
+});
+test('using a room keeps it alive', async () => {
+  const s = await setup(), real = Date.now;
+  try {
+    Date.now = () => real() + 50 * 86400000;
+    assert.equal((await call(s, '', 'GET', undefined, s.codes.view)).status, 200);
+    Date.now = () => real() + 100 * 86400000;
+    assert.equal((await call(s, '', 'GET', undefined, s.codes.view)).status, 200);
+    Date.now = () => real() + 170 * 86400000;
+    assert.equal((await call(s, '', 'GET', undefined, s.codes.view)).status, 404);
+  } finally { Date.now = real; }
   s.env.sql.close();
 });
 test('a concurrent roster write after validation prevents publication atomically', async () => {
@@ -81,13 +107,13 @@ test('per-queue capacities survive registration and constrain assignments', asyn
   assert.equal((await call(s, '/assignments/' + p.id, 'PUT', { ...revisions(await board(s)), marches: [{ queue: 1, destination: s.players[1].registration.id, infantry: 101, cavalry: 0, archers: 0 }] })).status, 400); s.env.sql.close();
 });
 
-test('the lightweight signature changes with roster and publication revisions', async () => {
+test('the lightweight signature changes with roster and march revisions for every role', async () => {
   const s = await setup(), before = (await call(s, '/status')).data.signature;
   assert.equal((await call(s, '/status')).data.signature, before);
   await call(s, '/registrations', 'POST', { nickname: 'Third' });
   const after = (await call(s, '/status')).data.signature; assert.notEqual(after, before);
-  assert.equal((await call(s, '/publish', 'POST', revisions(await board(s)))).status, 200);
-  assert.notEqual((await call(s, '/status')).data.signature, after);
-  assert.equal((await call(s, '/status', 'GET', undefined, s.codes.view)).data.signature.split(':')[3], '0');
+  const viewer = (await call(s, '/status', 'GET', undefined, s.codes.view)).data.signature;
+  assert.equal((await assign(s, 0, s.players[1].registration.id)).status, 200);
+  assert.notEqual((await call(s, '/status', 'GET', undefined, s.codes.view)).data.signature, viewer);
   s.env.sql.close();
 });

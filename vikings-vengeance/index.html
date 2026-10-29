@@ -5,7 +5,7 @@ self: vikings
 {% include vikings-troops.html %}
 <main class="vv-page" data-module="vikings">
   <header class="vv-header" id="top">
-    <div><p class="vv-eyebrow">Vikings Vengeance</p><h1>Vikings planner</h1><p class="vv-intro">Arrange city cover, agree the HQ transfers, and keep your own instructions close.</p></div>
+    <div><p class="vv-eyebrow">Vikings Vengeance</p><h1>Vikings planner</h1></div>
     <img src="../img/buildings/town-center.webp" width="128" height="128" alt="" decoding="async">
   </header>
   <p class="vv-next" data-target="vikings.next">Vikings opens every two weeks, on Tuesday and Thursday.</p>
@@ -22,19 +22,19 @@ self: vikings
     <div class="vv-start" data-target="vikings.start">
       <div data-target="vikings.remembered"></div>
       <div class="vv-paths">
-        <div class="vv-path"><p class="vv-label">Leading</p><h2>Plan your alliance</h2><p>Collect sign-ups, assign city cover and HQ shares, then publish everyone’s marches.</p><button type="button" class="vv-primary" data-action="vikings.create">Create an alliance plan</button></div>
-        <div class="vv-path"><p class="vv-label">Joining</p><h2>Got a link?</h2><p>Paste the link your leader shared in game chat to sign up or see your marches.</p><button type="button" class="vv-primary" data-action="vikings.open">Paste a plan link</button></div>
+        <div class="vv-path"><p class="vv-label">Leading</p><h2>Your alliance</h2><p>Sign-ups every Vikings, marches and HQ.</p><button type="button" class="vv-primary" data-action="vikings.create">Set up your alliance</button></div>
+        <div class="vv-path"><p class="vv-label">Joining</p><h2>Got a link?</h2><p>Paste it to sign up or see your marches.</p><button type="button" class="vv-primary" data-action="vikings.open">Paste a link</button></div>
       </div>
     </div>
     <section data-target="vikings.calculator" class="vv-calculator" aria-labelledby="vv-calc-title">
-      <div class="vv-heading"><div><h2 id="vv-calc-title">Just your own marches</h2><p>Enter your troops to see what each queue can carry.</p></div><button type="button" data-action="vikings.savedTroops">Use my saved troops</button></div>
+      <div class="vv-heading"><h2 id="vv-calc-title">Just your own marches</h2><button type="button" data-action="vikings.savedTroops">Use my saved troops</button></div>
       <form data-action="vikings.calculate" data-target="vikings.calculatorForm">
-        <div class="vv-troop-inputs">{% for t in site.data.vikings.troops %}<label><img src="../img/buildings/{{ t.art }}.webp" width="56" height="56" alt="" loading="lazy"><span>{{ t.name }}</span><input type="number" name="{{ t.id }}" min="0" max="100000000" step="1" inputmode="numeric" placeholder="Not entered" required></label>{% endfor %}</div>
-        <div class="vv-capacity"><img src="../img/buildings/command-center.webp" width="56" height="56" alt=""><label>March capacity<input type="number" name="marchCapacity" min="1" max="10000000" inputmode="numeric" placeholder="e.g. 160000" required></label><label>Queues<input type="number" name="marches" min="1" max="6" value="5" inputmode="numeric" required></label></div>
+        <div class="vv-troop-inputs">{% for t in site.data.vikings.troops %}<label class="vv-k"><img src="../img/buildings/{{ t.art }}.webp" width="48" height="48" alt="" loading="lazy"><span>{{ t.name }}</span><span class="vv-k-input"><input type="number" name="{{ t.id }}" min="0" max="100000" step="1" inputmode="numeric" placeholder="—" required><span class="vv-k-unit">k</span></span></label>{% endfor %}</div>
+        <div class="vv-form-grid"><label class="vv-k"><span>March size</span><span class="vv-k-input"><input type="number" name="marchCapacity" min="1" max="100000" step="1" inputmode="numeric" placeholder="160" required><span class="vv-k-unit">k</span></span></label><label>Marches<input type="number" name="marches" min="1" max="6" value="5" inputmode="numeric" required></label></div>
         <button type="submit" class="vv-primary" disabled>Work out my marches</button>
       </form>
       <div class="vv-local-answer" data-target="vikings.split" aria-live="polite"></div>
-      <p class="vv-caption">This calculation stays on your device. All troop types go out while space remains. <button type="button" class="vv-inline" data-action="vikings.demo">See an example alliance plan</button></p>
+      <p class="vv-caption"><button type="button" class="vv-inline" data-action="vikings.demo">See an example</button></p>
     </section>
   </section>
 
@@ -57,7 +57,7 @@ self: vikings
     <details id="hq"><summary>HQ waves: 10 and 20</summary><p>Agree the participants, effective garrison cap and exact shares. Our starting preset is 75% infantry and 25% cavalry. Leaders can change it for their alliance.</p><p>After wave 9 or 19 resolves, recall the reserved queue and send its agreed HQ share. Return to city cover after the HQ hit. The planner checks capacity and troop availability; it does not predict survival.</p></details>
     <details id="scoring-maths"><summary>What earns points?</summary><p>A town has a finite wave points budget. Reinforcers earn their share through kills. More reinforcers change how that pool is split; they do not multiply it. Aim for full clears, then inspect the kill reports before adjusting cover.</p><p>The community scoring model is approximate. We do not turn assigned troop counts into a promised score.</p></details>
     <details id="heroes"><summary>Heroes, healing and reports</summary><p>Keep the heroes who lead your city in the guard station. Choose reinforcement leads from the skills your alliance needs and check their actual effects in reports. Vikings recommendations should follow Vikings evidence.</p><p>If you heal between waves, send those troops back out unless the city needs them to survive. If a city stops receiving attacks, redeploy its reinforcements to a city still taking waves.</p><a href="../heroes/">Open the hero directory</a></details>
-    <details id="vikings-sharing"><summary>Links and saved plans</summary><p>Anyone holding a management link can change the plan. Invitation links allow sign-ups, viewing links show the published instructions, and private edit links change one registration. Save your private links; there are no accounts to recover them through.</p><p>Shared plans expire 30 days after creation. Only Vikings planning details are sent to the service. Your wider player save stays on your device.</p></details>
+    <details id="vikings-sharing"><summary>Links</summary><p>The leader link runs it, the sign-up link adds players, and your own link edits your troops. There are no accounts, so keep your link.</p><p>It stays while your alliance uses it. Only your Vikings troops and name are sent; the rest of your save stays on this device.</p></details>
   </section>
 
   <dialog class="vv-dialog" data-target="vikings.dialog" aria-labelledby="vv-dialog-title"><div class="vv-dialog-head"><h2 id="vv-dialog-title"></h2><button type="button" data-action="vikings.closeDialog" aria-label="Close editor">×</button></div><p class="vv-dialog-message" data-target="vikings.dialogMessage" role="alert"></p><div data-target="vikings.dialogBody"></div></dialog>

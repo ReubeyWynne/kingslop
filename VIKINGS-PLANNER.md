@@ -1,36 +1,44 @@
 # Vikings planner
 
-The Vikings page now opens a local march calculator. Alliance plans use the same allocation engine, with graphical city rows, manual march assignments, HQ shares and a separate published version for players.
+The Vikings page has a personal march calculator and alliance rooms. A room belongs to one alliance and lasts from one Vikings to the next: it keeps its weekday and start time, its players and their troops, and the leader's marches.
 
-## Local and shared data
+## Rooms and sign-ups
 
-Local drafts use `bh:vikings-local:v1`. Creating or editing one does not call the API. Enable shared sign-ups creates a shared event, copies the local roster and assignments, and retains the local draft as a backup. The management link is saved before copying the roster, so a failed transfer leaves recoverable access. Partial transfers require reviewing the shared roster; they are not retried automatically.
+A room stores `eventDay` (`tue` or `thu`) and `eventTime` (UTC `HH:MM`). Its current event, `eventAt`, is worked out on every read by `VikingsEngine.nextEvent`: the next matching event day of the fortnight, held until three hours after the start. After that the room has rolled on to the next event by itself.
 
-The calculator and registration form can read confirmed troop counts from the shared player ledger. They do not write troop counts back or upload the ledger. Unknown troop types remain blank until entered. Player registration sends only nickname, availability, troop totals, capacity, queue count, optional per-queue capacities and notes.
+Each registration remembers which event its player last answered (`signed_for`) and whether they are in (`attending`). Answers for an earlier event read as `null`, not answered, so sign-ups reset after every Vikings while the troops stay. A player opening their link sees last time's numbers, changes anything that moved and taps **I'm in**, or **Not this time**. A registration update that leaves `attending` out keeps the current answer.
+
+Marches are live. Every role reads the leader's current assignments and HQ plan from `/board`; there is no publishing step. Saving marches or HQ checks only the board revision, because sign-ups keep arriving while a leader assigns, and the engine validates against the roster as it is now. The publish endpoint remains for older clients.
+
+Rooms stay while they are used. Creation sets expiry 60 days ahead and any access pushes it 60 days ahead again (at most one write a day). An unused room is deleted by the daily cleanup.
+
+Troops are entered and shown in thousands. The engine works in whole thousands whenever a player's counts and capacities are all multiples of 1,000, so splits and HQ shares never ask for 53,334 troops.
+
+The calculator and sign-up form can read confirmed troop counts from the shared player ledger. They do not write troop counts back or upload the ledger. Registration sends only nickname, availability, troop totals, march size, march count and the answer for this event.
 
 Access links are short enough for game chat: `https://dey.ci/vv/#join-<code>` (also `lead`, `view` and `me`). `/vv/` forwards to the planner with the fragment intact. Codes are 16 random bytes (22 base64url characters); the prefix only tells people which link is which, and the server decides the role from the code through `GET /v1/access`. Older `#access=<plan UUID>.<code>` links and 43-character codes still work. The early page script consumes either form before the shared deep-link code starts. Requests carry the credential in the Authorization header. JSON plan exports do not contain credentials. The management view can replace invitation/view links and delete the shared event.
 
-## Returning to a plan
+## Returning to a room
 
-Creating a shared plan or joining one saves that leader or player link on the device (`bh:vikings-links:v1`, outside the player ledger), and the next visit reopens the plan the device last led or joined (`bh:vikings-last:v1`). Opening an invitation or viewing link never saves it; a viewer's next visit starts at the plan list. An invitation or viewing link for a plan this device already leads or joined opens that role instead. **Switch plan** keeps the list and waits for a choice on the next visit. A joined player can tell the device to forget the plan; a saved plan that has expired or been deleted is removed with a message.
+Creating a room or joining one saves that leader or player link on the device (`bh:vikings-links:v1`, outside the player ledger), and the next visit reopens the room the device last led or joined (`bh:vikings-last:v1`). Opening a sign-up or viewing link never saves it; a viewer's next visit starts at the room list. A sign-up or viewing link for a room this device already leads or joined opens that role instead. **Switch** keeps the list and waits for a choice on the next visit. The leader signs up on the leader link: the sign-up's id is kept with it as `self`, and a sign-up made earlier on the same device with the sign-up link is taken over. A player can tell the device to forget the room; a saved room that has been deleted is removed with a message.
 
 ## Event days
 
-Vikings opens every fourteen days on Tuesday and Thursday, server time (UTC); R4/R5 choose the hour. It runs in the Strongest Governor and KvK prep weeks of the 28-day wheel. `VikingsEngine.eventDays` counts from the Strongest Governor Tuesday of the wheel's first cycle, 25 August 2026 (`SCHEDULE.anchor` in `js/vikings-engine.js`). The page shows the next window, and a new plan offers the next four event days with the start time in UTC, remembering the last time used on the device.
+Vikings opens every fourteen days on Tuesday and Thursday, server time (UTC); R4/R5 choose the hour. It runs in the Strongest Governor and KvK prep weeks of the 28-day wheel. `VikingsEngine.eventDays` counts from the Strongest Governor Tuesday of the wheel's first cycle, 25 August 2026 (`SCHEDULE.anchor` in `js/vikings-engine.js`). The page shows the next window; a new room picks Tuesday or Thursday and a start time in UTC, remembering the last time used on the device.
 
-## Assignments and publication
+## Assignments
 
 `js/vikings-engine.js` is the pure allocation and validation engine used by the browser and Worker. City splits fill available capacity with infantry, then cavalry, then archers when overflow requires prioritisation. With enough room, they send all troop types. Each type is distributed proportionally across the remaining queue capacities, with deterministic integer rounding.
 
-Each player has up to six draft march rows. Every row names a queue, destination registration and three troop amounts. The Worker checks player membership, queue uniqueness, capacity, troop availability and self-reinforcement. Draft gaps are warnings that a leader must explicitly review before publishing. The engine does not infer combat safety or points from troop counts.
+Each player has up to six draft march rows. Every row names a queue, destination registration and three troop amounts. The Worker checks player membership, queue uniqueness, capacity, troop availability and self-reinforcement. The engine does not infer combat safety or points from troop counts.
 
 HQ configuration names the effective cap, ratio and up to 15 participants with one reserved queue each. Integer contributions sum to the exact cap. In the HQ phase, each participant replaces their reserved city queue with the HQ share; the engine checks that troops still assigned to the other city queues plus HQ do not exceed the player's roster. The interface shows the recall/return instructions for waves 10 and 20. Online-wave rotations remain an alliance instruction rather than an automated schedule in this version.
 
 Migration `0002_assignments.sql` adds per-queue capacities, roster revisions, draft assignments and a planning board. The migration is additive and backfills existing plans. The Worker also lazily creates a missing board for a plan created by the previous Worker during deployment.
 
-The board endpoint reads the plan, roster, draft and HQ configuration in one atomic D1 batch. Saving a draft checks the assignment, roster and plan revisions. Publishing validates the whole plan, then uses a conditional SQL update to check those revisions again before replacing the published snapshot. A registration change between validation and the update prevents publication. Registration insert/update/delete triggers advance the roster revision.
+The board endpoint reads the plan, roster, marches and HQ configuration in one atomic D1 batch. Registration insert/update/delete triggers advance the roster revision. Deleting a registration revokes its edit link and removes its own marches; the leader repairs any destinations or HQ references that pointed at it.
 
-Viewing, invitation and player-edit credentials receive only the published assignments. Management credentials receive the draft and current roster. A published snapshot stays unchanged while the leader edits. Deleting a registration revokes its edit link and removes its own draft rows; the leader must repair any destinations/HQ references before publishing again.
+Migration `0003_rooms.sql` adds the room's weekday and time and each registration's answer. It is additive; a plan without a day and time keeps its fixed `eventAt`.
 
 ## API additions
 

@@ -2,9 +2,14 @@ import Engine from '../../js/vikings-engine.js';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 // New codes are 16 random bytes (22 characters) so links fit in game chat; codes issued before that are 43.
 const TOKEN = /^(?:[A-Za-z0-9_-]{22}|[A-Za-z0-9_-]{43})$/;
-const PLAN_FIELDS = ['name', 'eventAt', 'difficulty', 'notes', 'closed'];
-const PLAYER_FIELDS = ['nickname', 'availability', 'infantry', 'cavalry', 'archers', 'marchCapacity', 'marches', 'notes', 'capacities'];
+const PLAN_FIELDS = ['name', 'eventAt', 'eventDay', 'eventTime', 'difficulty', 'notes', 'closed'];
+const PLAYER_FIELDS = ['nickname', 'availability', 'infantry', 'cavalry', 'archers', 'marchCapacity', 'marches', 'notes', 'capacities', 'attending'];
+// Rooms stay while they are used: any access pushes expiry this far ahead.
+const KEEP_MS = 60 * 86400000;
 const MAX_BODY = 8192;
+
+// Date.now, not new Date(), so tests can move the clock.
+function nowIso() { return new Date(Date.now()).toISOString(); }
 
 class HttpError extends Error {
   constructor(status, message) { super(message); this.status = status; }
@@ -56,7 +61,9 @@ async function body(request, fields) {
 }
 
 function planInput(value, previous = {}) {
-  const merged = { eventAt: null, difficulty: null, notes: '', closed: false, ...previous, ...value };
+  const merged = { eventAt: null, eventDay: null, eventTime: null, difficulty: null, notes: '', closed: false, ...previous, ...value };
+  requireValue(merged.eventDay === null || ['tue', 'thu'].includes(merged.eventDay), 'eventDay must be tue, thu or null.');
+  requireValue(merged.eventTime === null || (typeof merged.eventTime === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(merged.eventTime)), 'eventTime must be HH:MM in UTC, or null.');
   const name = text(merged.name, 'name', 80, true);
   const notes = text(merged.notes, 'notes', 2000);
   requireValue(typeof merged.closed === 'boolean', 'closed must be true or false.');
@@ -66,12 +73,13 @@ function planInput(value, previous = {}) {
     requireValue(typeof eventAt === 'string' && /^\d{4}-\d\d-\d\dT.*(?:Z|[+-]\d\d:\d\d)$/.test(eventAt) && Number.isFinite(Date.parse(eventAt)), 'eventAt must be an ISO timestamp with a timezone, or null.');
     eventAt = new Date(eventAt).toISOString();
   }
-  return { name, notes, difficulty, eventAt, closed: merged.closed };
+  return { name, notes, difficulty, eventAt, eventDay: merged.eventDay, eventTime: merged.eventTime, closed: merged.closed };
 }
 
 function playerInput(value) {
   const merged = { availability: 'unknown', infantry: 0, cavalry: 0, archers: 0, marchCapacity: 0, marches: 5, notes: '', ...value };
   requireValue(['online', 'offline', 'unknown'].includes(merged.availability), 'Invalid availability.');
+  requireValue(merged.attending == null || typeof merged.attending === 'boolean', 'attending must be true, false or null.');
   if (merged.capacities != null) {
     requireValue(Array.isArray(merged.capacities) && merged.capacities.length === merged.marches, 'Provide one capacity per queue.');
     merged.capacities.forEach(cap => integer(cap, 'queue capacity', 0, 10000000));
@@ -83,7 +91,8 @@ function playerInput(value) {
     cavalry: integer(merged.cavalry, 'cavalry', 0, 100000000),
     archers: integer(merged.archers, 'archers', 0, 100000000),
     marchCapacity: integer(merged.marchCapacity, 'marchCapacity', 0, 10000000),
-    marches: integer(merged.marches, 'marches', 1, 6), notes: text(merged.notes, 'notes', 300)
+    marches: integer(merged.marches, 'marches', 1, 6), notes: text(merged.notes, 'notes', 300),
+    attending: merged.attending ?? null
   };
 }
 
@@ -100,12 +109,19 @@ function json(value, status = 200) {
   return Response.json(value, { status });
 }
 
-function planView(row) {
-  return { id: row.id, name: row.name, eventAt: row.event_at, difficulty: row.difficulty, notes: row.notes, closed: Boolean(row.closed), revision: row.revision, rosterRevision: row.roster_revision || 0, createdAt: row.created_at, updatedAt: row.updated_at, expiresAt: row.expires_at };
+// A room with a weekday and time rolls on to its next event by itself.
+function currentEvent(row) {
+  const next = Engine.nextEvent(row.event_day, row.event_time, Date.now());
+  return next === null ? row.event_at : new Date(next).toISOString();
 }
 
-function playerView(row) {
-  return { id: row.id, nickname: row.nickname, availability: row.availability, infantry: row.infantry, cavalry: row.cavalry, archers: row.archers, marchCapacity: row.march_capacity, marches: row.marches, capacities: row.capacities ? JSON.parse(row.capacities) : null, notes: row.notes, revision: row.revision, createdAt: row.created_at, updatedAt: row.updated_at };
+function planView(row) {
+  return { id: row.id, name: row.name, eventAt: currentEvent(row), eventDay: row.event_day || null, eventTime: row.event_time || null, difficulty: row.difficulty, notes: row.notes, closed: Boolean(row.closed), revision: row.revision, rosterRevision: row.roster_revision || 0, createdAt: row.created_at, updatedAt: row.updated_at, expiresAt: row.expires_at };
+}
+
+// attending is the answer for the room's current event; an answer for an earlier one reads as not yet answered.
+function playerView(row, eventAt) {
+  return { attending: row.signed_for && row.signed_for === eventAt ? Boolean(row.attending) : null, id: row.id, nickname: row.nickname, availability: row.availability, infantry: row.infantry, cavalry: row.cavalry, archers: row.archers, marchCapacity: row.march_capacity, marches: row.marches, capacities: row.capacities ? JSON.parse(row.capacities) : null, notes: row.notes, revision: row.revision, createdAt: row.created_at, updatedAt: row.updated_at };
 }
 
 function bearer(request) {
@@ -118,8 +134,10 @@ async function access(request, env, planId) {
   const code = bearer(request);
   const token = await env.DB.prepare('SELECT role, registration_id FROM access_tokens WHERE token_hash = ? AND plan_id = ?').bind(await digest(code), planId).first();
   requireValue(token, 'A valid access code is required.', 401);
-  const plan = await env.DB.prepare('SELECT * FROM plans WHERE id = ? AND expires_at > ?').bind(planId, new Date().toISOString()).first();
+  const plan = await env.DB.prepare('SELECT * FROM plans WHERE id = ? AND expires_at > ?').bind(planId, nowIso()).first();
   requireValue(plan, 'This plan has expired or was deleted.', 404);
+  const keep = Date.now() + KEEP_MS;
+  if (Date.parse(plan.expires_at) < keep - 86400000) await env.DB.prepare('UPDATE plans SET expires_at = ? WHERE id = ?').bind(new Date(keep).toISOString(), planId).run();
   return { token, plan };
 }
 
@@ -144,23 +162,23 @@ async function route(request, env) {
   await limit(env.REQUEST_LIMIT, ip);
   if (url.pathname === '/v1/access' && request.method === 'GET') {
     // A link carries only its code; the code's hash names the plan it opens.
-    const token = await env.DB.prepare('SELECT t.plan_id, t.role FROM access_tokens t JOIN plans p ON p.id = t.plan_id WHERE t.token_hash = ? AND p.expires_at > ?').bind(await digest(bearer(request)), new Date().toISOString()).first();
+    const token = await env.DB.prepare('SELECT t.plan_id, t.role FROM access_tokens t JOIN plans p ON p.id = t.plan_id WHERE t.token_hash = ? AND p.expires_at > ?').bind(await digest(bearer(request)), nowIso()).first();
     requireValue(token, 'This link has expired, was replaced or was deleted.', 404);
     return json({ planId: token.plan_id, access: token.role });
   }
   if (url.pathname === '/v1/plans' && request.method === 'POST') {
     await limit(env.CREATE_LIMIT, ip);
     const input = planInput(await body(request, PLAN_FIELDS));
-    const id = crypto.randomUUID(), now = new Date().toISOString();
-    const expiresAt = new Date(Date.now() + 30 * 86400000).toISOString();
+    const id = crypto.randomUUID(), now = nowIso();
+    const expiresAt = new Date(Date.now() + KEEP_MS).toISOString();
     const codes = { manage: secret(), join: secret(), view: secret() };
     const tokenStatements = await Promise.all(Object.entries(codes).map(async ([role, code]) => env.DB.prepare('INSERT INTO access_tokens (token_hash, plan_id, role) VALUES (?, ?, ?)').bind(await digest(code), id, role)));
     await env.DB.batch([
-      env.DB.prepare('INSERT INTO plans (id, name, event_at, difficulty, notes, closed, created_at, updated_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(id, input.name, input.eventAt, input.difficulty, input.notes, Number(input.closed), now, now, expiresAt),
+      env.DB.prepare('INSERT INTO plans (id, name, event_at, difficulty, notes, closed, created_at, updated_at, expires_at, event_day, event_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(id, input.name, input.eventAt, input.difficulty, input.notes, Number(input.closed), now, now, expiresAt, input.eventDay, input.eventTime),
       env.DB.prepare('INSERT INTO planning_boards (plan_id) VALUES (?)').bind(id),
       ...tokenStatements
     ]);
-    return json({ plan: { id, ...input, revision: 1, createdAt: now, updatedAt: now, expiresAt }, codes }, 201);
+    return json({ plan: planView(await env.DB.prepare('SELECT * FROM plans WHERE id = ?').bind(id).first()), codes }, 201);
   }
   const planning = url.pathname.match(/^\/v1\/plans\/([^/]+)\/(board|status|assignments|hq|publish|rotate)(?:\/([^/]+))?$/);
   if (planning) return planningRoute(request, env, planning);
@@ -171,14 +189,15 @@ async function route(request, env) {
   if (!registrations && request.method === 'GET') {
     const rows = await env.DB.prepare('SELECT * FROM registrations WHERE plan_id = ? ORDER BY created_at, id').bind(planId).all();
     const board = await env.DB.prepare('SELECT * FROM planning_boards WHERE plan_id = ?').bind(planId).first();
-    return json({ plan: planView(plan), registrations: rows.results.map(playerView), access: token.role, registrationId: token.registration_id, publicationRevision: board?.publication_revision || 0 });
+    const eventAt = currentEvent(plan);
+    return json({ plan: planView(plan), registrations: rows.results.map(row => playerView(row, eventAt)), access: token.role, registrationId: token.registration_id, publicationRevision: board?.publication_revision || 0 });
   }
   if (!registrations && request.method === 'PATCH') {
     manager(token);
     const input = await body(request, [...PLAN_FIELDS, 'revision']);
     integer(input.revision, 'revision', 1, Number.MAX_SAFE_INTEGER);
     const next = planInput(input, planView(plan));
-    const result = await env.DB.prepare('UPDATE plans SET name = ?, event_at = ?, difficulty = ?, notes = ?, closed = ?, revision = revision + 1, updated_at = ? WHERE id = ? AND revision = ? AND expires_at > ?').bind(next.name, next.eventAt, next.difficulty, next.notes, Number(next.closed), new Date().toISOString(), planId, input.revision, new Date().toISOString()).run();
+    const result = await env.DB.prepare('UPDATE plans SET name = ?, event_at = ?, difficulty = ?, notes = ?, closed = ?, event_day = ?, event_time = ?, revision = revision + 1, updated_at = ? WHERE id = ? AND revision = ? AND expires_at > ?').bind(next.name, next.eventAt, next.difficulty, next.notes, Number(next.closed), next.eventDay, next.eventTime, nowIso(), planId, input.revision, nowIso()).run();
     requireValue(result.meta.changes === 1, 'This plan changed. Reload before saving.', 409);
     return json({ plan: planView(await env.DB.prepare('SELECT * FROM plans WHERE id = ?').bind(planId).first()) });
   }
@@ -191,12 +210,12 @@ async function route(request, env) {
     requireValue(['join', 'manage'].includes(token.role), 'An invitation or management code is required.', 403);
     requireValue(!plan.closed, 'Registration is closed.', 409);
     const input = playerInput(await body(request, PLAYER_FIELDS));
-    const id = crypto.randomUUID(), editCode = secret(), now = new Date().toISOString();
+    const id = crypto.randomUUID(), editCode = secret(), now = nowIso(), eventAt = currentEvent(plan), attending = input.attending ?? true;
     await env.DB.batch([
-      env.DB.prepare('INSERT INTO registrations (id, plan_id, nickname, availability, infantry, cavalry, archers, march_capacity, marches, notes, created_at, updated_at, capacities) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(id, planId, input.nickname, input.availability, input.infantry, input.cavalry, input.archers, input.marchCapacity, input.marches, input.notes, now, now, input.capacities ? JSON.stringify(input.capacities) : null),
+      env.DB.prepare('INSERT INTO registrations (id, plan_id, nickname, availability, infantry, cavalry, archers, march_capacity, marches, notes, created_at, updated_at, capacities, signed_for, attending) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(id, planId, input.nickname, input.availability, input.infantry, input.cavalry, input.archers, input.marchCapacity, input.marches, input.notes, now, now, input.capacities ? JSON.stringify(input.capacities) : null, eventAt, Number(attending)),
       env.DB.prepare('INSERT INTO access_tokens (token_hash, plan_id, role, registration_id) VALUES (?, ?, ?, ?)').bind(await digest(editCode), planId, 'registration', id)
     ]);
-    return json({ registration: { id, ...input, revision: 1, createdAt: now, updatedAt: now }, editCode }, 201);
+    return json({ registration: { id, ...input, attending: eventAt ? attending : null, revision: 1, createdAt: now, updatedAt: now }, editCode }, 201);
   }
   if (registrations && registrationId && ['PUT', 'DELETE'].includes(request.method)) {
     requireValue(token.role === 'manage' || (token.role === 'registration' && token.registration_id === registrationId), 'You cannot edit this registration.', 403);
@@ -208,16 +227,18 @@ async function route(request, env) {
     const input = await body(request, [...PLAYER_FIELDS, 'revision']);
     integer(input.revision, 'revision', 1, Number.MAX_SAFE_INTEGER);
     const next = playerInput(input);
-    const result = await env.DB.prepare('UPDATE registrations SET nickname = ?, availability = ?, infantry = ?, cavalry = ?, archers = ?, march_capacity = ?, marches = ?, notes = ?, capacities = ?, revision = revision + 1, updated_at = ? WHERE id = ? AND plan_id = ? AND revision = ? AND EXISTS (SELECT 1 FROM plans WHERE id = ? AND expires_at > ? AND (closed = 0 OR ? = 1))').bind(next.nickname, next.availability, next.infantry, next.cavalry, next.archers, next.marchCapacity, next.marches, next.notes, next.capacities ? JSON.stringify(next.capacities) : null, new Date().toISOString(), registrationId, planId, input.revision, planId, new Date().toISOString(), Number(token.role === 'manage')).run();
+    // An answer is for the current event; leaving attending out keeps the earlier answer.
+    const answered = typeof next.attending === 'boolean', eventAt = currentEvent(plan);
+    const result = await env.DB.prepare('UPDATE registrations SET nickname = ?, availability = ?, infantry = ?, cavalry = ?, archers = ?, march_capacity = ?, marches = ?, notes = ?, capacities = ?, signed_for = CASE WHEN ? THEN ? ELSE signed_for END, attending = CASE WHEN ? THEN ? ELSE attending END, revision = revision + 1, updated_at = ? WHERE id = ? AND plan_id = ? AND revision = ? AND EXISTS (SELECT 1 FROM plans WHERE id = ? AND expires_at > ? AND (closed = 0 OR ? = 1))').bind(next.nickname, next.availability, next.infantry, next.cavalry, next.archers, next.marchCapacity, next.marches, next.notes, next.capacities ? JSON.stringify(next.capacities) : null, Number(answered), eventAt, Number(answered), Number(next.attending), nowIso(), registrationId, planId, input.revision, planId, nowIso(), Number(token.role === 'manage')).run();
     requireValue(result.meta.changes === 1, 'This registration changed. Reload before saving.', 409);
-    return json({ registration: playerView(await env.DB.prepare('SELECT * FROM registrations WHERE id = ?').bind(registrationId).first()) });
+    return json({ registration: playerView(await env.DB.prepare('SELECT * FROM registrations WHERE id = ?').bind(registrationId).first(), eventAt) });
   }
   throw new HttpError(405, 'Method not allowed.');
 }
 
 
 async function boardState(env, planId) {
-  await env.DB.prepare('INSERT OR IGNORE INTO planning_boards (plan_id) SELECT id FROM plans WHERE id = ? AND expires_at > ?').bind(planId, new Date().toISOString()).run();
+  await env.DB.prepare('INSERT OR IGNORE INTO planning_boards (plan_id) SELECT id FROM plans WHERE id = ? AND expires_at > ?').bind(planId, nowIso()).run();
   const results = await env.DB.batch([
     env.DB.prepare('SELECT * FROM plans WHERE id = ?').bind(planId),
     env.DB.prepare('SELECT * FROM planning_boards WHERE plan_id = ?').bind(planId),
@@ -227,8 +248,8 @@ async function boardState(env, planId) {
   const rows = results.map(result => result.results);
   requireValue(rows[0][0] && rows[1][0], 'This plan has expired or was deleted.', 404);
   const plan = planView(rows[0][0]);
-  requireValue(plan.expiresAt > new Date().toISOString(), 'This plan has expired or was deleted.', 404);
-  return { plan, board: rows[1][0], roster: rows[2].map(playerView), assignments: Object.fromEntries(rows[3].map(r => [r.registration_id, JSON.parse(r.marches)])), hq: JSON.parse(rows[1][0].hq) };
+  requireValue(plan.expiresAt > nowIso(), 'This plan has expired or was deleted.', 404);
+  return { plan, board: rows[1][0], roster: rows[2].map(row => playerView(row, plan.eventAt)), assignments: Object.fromEntries(rows[3].map(r => [r.registration_id, JSON.parse(r.marches)])), hq: JSON.parse(rows[1][0].hq) };
 }
 
 function expected(value) {
@@ -255,12 +276,12 @@ async function planningRoute(request, env, match) {
   const { token, plan } = await access(request, env, planId);
   if (action === 'status' && request.method === 'GET' && !playerId) {
     const board = await env.DB.prepare('SELECT revision, publication_revision FROM planning_boards WHERE plan_id = ?').bind(planId).first();
-    return json({ signature: [plan.revision, plan.roster_revision, board?.publication_revision || 0, token.role === 'manage' ? board?.revision || 1 : 0].join(':') });
+    return json({ signature: [plan.revision, plan.roster_revision, board?.publication_revision || 0, board?.revision || 1, currentEvent(plan) || ''].join(':') });
   }
   if (action === 'board' && request.method === 'GET' && !playerId) {
     const state = await boardState(env, planId);
     const common = { publicationRevision: state.board.publication_revision, publishedAt: state.board.published_at, published: state.board.published ? JSON.parse(state.board.published) : null };
-    if (token.role !== 'manage') return json(common);
+    // Marches are live: every role sees the leader's current assignments.
     return json({ ...common, plan: state.plan, roster: state.roster, revision: state.board.revision, rosterRevision: state.plan.rosterRevision, planRevision: state.plan.revision, assignments: state.assignments, hq: state.hq });
   }
   manager(token);
@@ -281,7 +302,9 @@ async function planningRoute(request, env, match) {
   const input = await body(request, ['revision', 'rosterRevision', 'planRevision', ...(isAssignment ? ['marches'] : isHQ ? ['hq'] : [])]);
   expected(input);
   const state = await boardState(env, planId);
-  requireValue(state.board.revision === input.revision && state.plan.rosterRevision === input.rosterRevision && state.plan.revision === input.planRevision, 'The roster or plan changed. Refresh before saving.', 409);
+  // Sign-ups keep arriving while a leader assigns, so marches and HQ only check the board revision;
+  // the engine validates them against the roster as it is now.
+  requireValue(state.board.revision === input.revision && (!isPublish || (state.plan.rosterRevision === input.rosterRevision && state.plan.revision === input.planRevision)), 'The marches changed. Refresh before saving.', 409);
   if (isAssignment) {
     requireValue(state.roster.some(p => p.id === playerId), 'Player not found.', 404);
     requireValue(Array.isArray(input.marches) && input.marches.length <= 6, 'Provide at most six marches.');
@@ -289,23 +312,23 @@ async function planningRoute(request, env, match) {
     const check = Engine.validate(state.roster, { [playerId]: input.marches }, Engine.emptyHQ());
     requireValue(!check.errors.length, check.errors[0]);
     const result = await env.DB.prepare(`INSERT INTO assignment_drafts (plan_id, registration_id, marches)
-      SELECT ?, ?, ? WHERE EXISTS (SELECT 1 FROM planning_boards b JOIN plans p ON p.id = b.plan_id WHERE p.id = ? AND b.revision = ? AND p.roster_revision = ? AND p.revision = ? AND p.expires_at > ?)
-      ON CONFLICT (plan_id, registration_id) DO UPDATE SET marches = excluded.marches`).bind(planId, playerId, JSON.stringify(input.marches), planId, input.revision, input.rosterRevision, input.planRevision, new Date().toISOString()).run();
-    requireValue(result.meta.changes > 0, 'The roster or plan changed. Refresh before saving.', 409);
+      SELECT ?, ?, ? WHERE EXISTS (SELECT 1 FROM planning_boards b JOIN plans p ON p.id = b.plan_id WHERE p.id = ? AND b.revision = ? AND p.expires_at > ?)
+      ON CONFLICT (plan_id, registration_id) DO UPDATE SET marches = excluded.marches`).bind(planId, playerId, JSON.stringify(input.marches), planId, input.revision, nowIso()).run();
+    requireValue(result.meta.changes > 0, 'The marches changed. Refresh before saving.', 409);
   } else if (isHQ) {
     const hq = hqInput(input.hq);
     requireValue(hq.participants.every(p => state.roster.some(r => r.id === p.playerId && p.queue <= r.marches)), 'HQ participants must be registered players with an available queue.');
     requireValue(new Set(hq.participants.map(p => p.playerId)).size === hq.participants.length, 'Choose each HQ participant once.');
-    const result = await env.DB.prepare(`UPDATE planning_boards SET hq = ?, revision = revision + 1 WHERE plan_id = ? AND revision = ? AND EXISTS (SELECT 1 FROM plans WHERE id = ? AND roster_revision = ? AND revision = ? AND expires_at > ?)`)
-      .bind(JSON.stringify(hq), planId, input.revision, planId, input.rosterRevision, input.planRevision, new Date().toISOString()).run();
-    requireValue(result.meta.changes === 1, 'The roster or plan changed. Refresh before saving.', 409);
+    const result = await env.DB.prepare(`UPDATE planning_boards SET hq = ?, revision = revision + 1 WHERE plan_id = ? AND revision = ? AND EXISTS (SELECT 1 FROM plans WHERE id = ? AND expires_at > ?)`)
+      .bind(JSON.stringify(hq), planId, input.revision, planId, nowIso()).run();
+    requireValue(result.meta.changes === 1, 'The marches changed. Refresh before saving.', 409);
   } else {
     const check = Engine.validate(state.roster, state.assignments, state.hq);
     requireValue(state.roster.length > 0, 'Register at least one player before publishing.');
     requireValue(!check.errors.length, check.errors[0]);
     const snapshot = { plan: state.plan, roster: state.roster, assignments: state.assignments, hq: state.hq, sourceRevision: state.board.revision, rosterRevision: state.plan.rosterRevision, planRevision: state.plan.revision };
     const result = await env.DB.prepare(`UPDATE planning_boards SET published = ?, publication_revision = publication_revision + 1, published_at = ? WHERE plan_id = ? AND revision = ? AND EXISTS (SELECT 1 FROM plans WHERE id = ? AND roster_revision = ? AND revision = ? AND expires_at > ?)`)
-      .bind(JSON.stringify(snapshot), new Date().toISOString(), planId, input.revision, planId, input.rosterRevision, input.planRevision, new Date().toISOString()).run();
+      .bind(JSON.stringify(snapshot), nowIso(), planId, input.revision, planId, input.rosterRevision, input.planRevision, nowIso()).run();
     requireValue(result.meta.changes === 1, 'The roster or plan changed. Refresh before publishing.', 409);
   }
   return json({ ok: true });
@@ -341,6 +364,6 @@ export default {
     return new Response(response.body, { status: response.status, headers });
   },
   async scheduled(controller, env) {
-    await env.DB.prepare('DELETE FROM plans WHERE id IN (SELECT id FROM plans WHERE expires_at <= ? ORDER BY expires_at LIMIT 100)').bind(new Date().toISOString()).run();
+    await env.DB.prepare('DELETE FROM plans WHERE id IN (SELECT id FROM plans WHERE expires_at <= ? ORDER BY expires_at LIMIT 100)').bind(nowIso()).run();
   }
 };
