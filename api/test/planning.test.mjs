@@ -77,7 +77,7 @@ test('per-queue capacities survive registration and constrain assignments', asyn
   const s = await setup(), p = s.players[0].registration, data = { ...p, capacities: [100, 500] };
   for (const k of ['id', 'createdAt', 'updatedAt']) delete data[k];
   assert.equal((await call(s, '/registrations/' + p.id, 'PUT', data, s.players[0].editCode)).status, 200);
-  assert.deepEqual((await board(s)).roster[0].capacities, [100, 500]);
+  assert.deepEqual((await board(s)).roster.find(player => player.id === p.id).capacities, [100, 500]);
   assert.equal((await call(s, '/assignments/' + p.id, 'PUT', { ...revisions(await board(s)), marches: [{ queue: 1, destination: s.players[1].registration.id, infantry: 101, cavalry: 0, archers: 0 }] })).status, 400); s.env.sql.close();
 });
 
