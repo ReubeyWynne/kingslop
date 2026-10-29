@@ -38,10 +38,12 @@ self: vikings
   </section>
 
   <section class="vv-panel vv-guide" id="vikings-guide" role="tabpanel" aria-labelledby="vv-guide-tab">
+    {% include ascii/motif.html kind="charm" %}
     <h2 id="waves">The twenty waves</h2>
     <p>Choose a wave to check its instructions. Set your place manually as the event runs.</p>
     <div class="vv-waves" data-target="vikings.waves" role="group" aria-label="Wave"></div>
     <p class="vv-wave-detail" data-target="vikings.waveDetail" aria-live="polite">City waves: reinforce your assigned towns before the hit.</p>
+    {% include ascii/march.html %}
     <noscript><p>Waves 7, 14 and 17 hit online cities only. Waves 10 and 20 hit HQ. The other waves hit cities.</p></noscript>
     <div class="vv-prep"><img src="../img/buildings/guard-station.webp" width="96" height="96" alt=""><div id="routine"><h3>Before the first wave</h3><p>Set your guard station, check your march capacities, and agree who covers your city. HQ participants should know which queue to recall.</p></div></div>
     <details id="stand"><summary>Troops out, city covered</summary><p>Use every available queue and send all troop types while space remains. Your limit is the sum of your march capacities. If troops cannot all fit, the baseline leaves surplus archers home first, then cavalry if necessary. Arrange incoming cover before emptying your city.</p><p>Troop counts alone cannot tell us whether a city will clear a wave. Difficulty, troop tiers, garrison stats and skills matter.</p></details>

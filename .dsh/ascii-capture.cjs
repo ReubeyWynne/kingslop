@@ -63,6 +63,9 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
         await page.waitForFunction(token => document.querySelector('.deck-card.is-selected')?.dataset.page === token, name === 'castle-card' ? 'castle' : 'kvksg');
       }
       await page.addStyleTag({ content: '.topbar, .toc { visibility: hidden !important; }' });
+      if (url === '/vikings-vengeance/') {
+        await page.getByRole('tab', { name: 'Guide', exact: true }).click();
+      }
       // Open the collapsed section the scene sits in.
       await page.evaluate(selector => {
         document.querySelector(selector)?.closest('section')?.querySelector('.section-toggle[aria-expanded="false"]')?.click();
