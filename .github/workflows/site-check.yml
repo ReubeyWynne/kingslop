@@ -388,6 +388,9 @@ jobs:
       - name: Check troop allocation
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/bear-allocator-check.cjs
+      - name: Check Vikings allocation
+        if: needs.changes.outputs.logic == 'true'
+        run: node --test .dsh/vikings-check.cjs
       - name: Check battle engine
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/battle-engine-check.cjs
@@ -565,6 +568,9 @@ jobs:
       - name: Check upgrade priority UI
         if: matrix.group == 'priority'
         run: node .dsh/upgrade-priority-ui-check.cjs
+      - name: Check Vikings planner UI
+        if: contains(needs.changes.outputs.browser, 'interactions')
+        run: node .dsh/vikings-ui-check.cjs
       - name: Check building requirements UI
         if: matrix.group == 'priority'
         run: node .dsh/building-paths-ui-check.cjs

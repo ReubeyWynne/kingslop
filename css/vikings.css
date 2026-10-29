@@ -1,29 +1,93 @@
-/* vikings.css — Vikings Vengeance page only (vikings-vengeance/). Loaded
-   after styles.css + events.css (the wave table lives there — it's shared
-   with Swordland). The troop composition rows, and nothing else. */
+.vv-page { max-width:46rem; margin:auto; padding:0 1rem 3rem; }
+.vv-page [hidden] { display:none !important; }
+.vv-page button,.vv-page input,.vv-page select,.vv-page textarea { font:inherit; }
+.vv-page button { color:var(--amber); background:none; border:0; border-bottom:1px solid transparent; padding:.5rem 0; min-height:44px; cursor:pointer; text-align:start; }
+.vv-page button:hover { color:var(--ink); border-bottom-color:var(--amber-dim); }
+.vv-page button:focus-visible,.vv-page input:focus-visible,.vv-page select:focus-visible,.vv-page textarea:focus-visible { outline:2px solid var(--amber); outline-offset:4px; }
+.vv-page button:disabled { opacity:.5; cursor:wait; }
+.vv-page .vv-primary { font-weight:700; border-bottom-color:var(--amber); }
+.vv-header { display:flex; align-items:center; gap:1rem; padding:2.5rem 0 1rem; }
+.vv-header > div { min-width:0; }
+.vv-header h1 { font-size:clamp(1.65rem,5vw,2.6rem); line-height:1.15; letter-spacing:0; }
+.vv-header > img { width:clamp(64px,19vw,112px); height:auto; flex-shrink:0; }
+.vv-eyebrow,.vv-label { color:var(--amber); font-size:var(--step--1); letter-spacing:.1em; text-transform:uppercase; }
+.vv-intro { color:var(--ink-dim); margin:.6rem 0 0; }
+.vv-tabs { display:flex; gap:1.5rem; border-bottom:1px solid var(--ink-muted); margin-bottom:1rem; }
+.vv-tabs button { font-weight:700; padding:.7rem 0; color:var(--ink-dim); }
+.vv-tabs button[aria-selected=true] { color:var(--amber); border-bottom:2px solid var(--amber); }
+.vv-panel { padding:.5rem 0; scroll-margin-top:5rem; }
+.vv-panel h2,.vv-dialog h2 { font-size:var(--step-1); margin:.5rem 0; }
+.vv-panel h2::before { content:none; }
+.vv-heading { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:.5rem 1rem; }
+.vv-heading p { color:var(--ink-dim); margin:0; }
+.vv-message { margin:.5rem 0; color:var(--ink-dim); overflow-wrap:anywhere; }
+.vv-message:empty { display:none; }
+.vv-message[data-error=true],.vv-problems { color:var(--ink); border-inline-start:3px solid var(--amber); padding-inline-start:.8rem; }
+.vv-event { border-bottom:1px solid var(--amber-dim); padding:.25rem 0 1rem; margin-bottom:1rem; }
+.vv-event h2 { font-family:var(--display-2); font-size:var(--step-1); margin:.2rem 0; }
+.vv-caption { font-size:var(--step--1); color:var(--ink-dim); margin:.6rem 0; }
+.vv-toolbar,.vv-entry,.vv-actions { display:flex; flex-wrap:wrap; gap:.25rem 1.25rem; align-items:center; }
+.vv-entry { border-top:1px solid var(--ink-muted); margin-top:1.5rem; padding:.6rem 0; }
+.vv-troop-inputs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.9rem; margin:1rem 0; }
+.vv-troop-inputs label { display:flex; flex-direction:column; align-items:center; min-width:0; gap:.15rem; }
+.vv-troop-symbol { font-size:2rem; line-height:1.2; color:var(--amber); }
+.vv-page input,.vv-page select,.vv-page textarea { color:var(--ink); background:var(--void-2); border:0; border-bottom:1px solid var(--ink-muted); border-radius:0; padding:.45rem .35rem; width:100%; min-width:0; min-height:44px; font-size:1rem; }
+.vv-page input[type=checkbox] { width:1.1rem; height:1.1rem; min-height:0; accent-color:var(--amber); flex-shrink:0; }
+.vv-page label { color:var(--ink-dim); }
+.vv-page select option { background:var(--void-2); color:var(--ink); }
+.vv-troop-inputs input { text-align:center; }
+.vv-capacity { display:grid; grid-template-columns:64px minmax(0,1fr) minmax(0,5rem); align-items:end; gap:.75rem; margin:1rem 0; }
+.vv-capacity img { align-self:center; }
+.vv-capacity label,.vv-form-grid label { display:flex; flex-direction:column; gap:.25rem; }
+.vv-result-head { margin:1rem 0 .25rem; font-family:var(--display-2); font-size:var(--step-1); color:var(--amber); }
+.vv-counts { display:flex; flex-wrap:wrap; gap:.2rem 1rem; font-variant-numeric:tabular-nums; }
+.vv-counts span { white-space:nowrap; }
+.vv-counts abbr { text-decoration:none; color:var(--ink-dim); }
+.vv-march { display:grid; grid-template-columns:2.3rem 48px minmax(0,1fr); gap:.6rem; align-items:center; border-bottom:1px solid color-mix(in srgb,var(--ink-muted) 25%,transparent); padding:.65rem 0; }
+.vv-march .vv-counts { font-size:var(--step--1); }
+.vv-march img { width:48px; height:48px; object-fit:contain; }
+.vv-queue { color:var(--amber); font-family:var(--display-2); font-size:var(--step-1); }
+.vv-march strong { display:block; overflow-wrap:anywhere; }
+.vv-local-answer { margin:.75rem 0; }
+.vv-roster { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 1.3rem; }
+.vv-city { display:grid; grid-template-columns:64px minmax(0,1fr); gap:.7rem; border-bottom:1px solid color-mix(in srgb,var(--ink-muted) 30%,transparent); padding:.75rem 0; align-items:center; }
+.vv-city img { width:64px; height:64px; }
+.vv-city > div { min-width:0; }
+.vv-city button { padding:0; font-weight:700; overflow-wrap:anywhere; }
+.vv-city p { font-size:var(--step--1); margin:.1rem 0; color:var(--ink-dim); }
+.vv-section { padding:1rem 0; border-top:1px solid var(--ink-muted); margin-top:1rem; }
+.vv-section h3 { margin:0 0 .5rem; font-family:var(--display-2); font-size:var(--step-0); }
+.vv-hq { padding:.75rem 0; border-block:1px solid var(--amber-dim); margin:1rem 0; }
+.vv-hq strong { color:var(--amber); }
+.vv-waves { display:grid; grid-template-columns:repeat(10,minmax(0,1fr)); gap:.2rem; margin:1rem 0; }
+.vv-waves button { display:flex; flex-direction:column; align-items:center; justify-content:center; font-variant-numeric:tabular-nums; color:var(--ink-dim); font-size:1rem; }
+.vv-waves small { font-size:.6rem; text-transform:uppercase; }
+.vv-waves [aria-pressed=true] { color:var(--amber); border-bottom:2px solid var(--amber); }
+.vv-waves [data-kind=hq] { background:var(--void-2); color:var(--amber); }
+.vv-wave-detail { min-height:4rem; padding:.6rem 0; border-bottom:1px solid var(--ink-muted); }
+.vv-prep { display:flex; align-items:center; gap:1rem; margin:1.25rem 0; }
+.vv-prep img { width:80px; height:80px; }
+.vv-guide details { padding:.75rem 0; }
+.vv-guide details p { margin:.7rem 0; }
+.vv-check { display:flex; gap:.7rem; align-items:center; margin:.5rem 0; }
+.vv-dialog { background:var(--void-2); color:var(--ink); border:1px solid var(--amber-dim); width:min(38rem,calc(100% - 1.5rem)); max-height:85dvh; overflow:auto; padding:1rem 1.25rem; border-radius:2px; }
+.vv-dialog::backdrop { background:rgba(0,0,0,.7); }
+.vv-dialog-head { display:flex; gap:1rem; justify-content:space-between; align-items:center; }
+.vv-dialog-head button { font-size:1.8rem; min-width:44px; text-align:center; }
+.vv-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem 1rem; margin:.8rem 0; }
+.vv-form-grid .vv-wide { grid-column:1/-1; }
+.vv-editor-row { padding:.8rem 0; border-top:1px solid var(--ink-muted); }
+.vv-editor-row > label { display:flex; align-items:center; gap:.5rem; }
+.vv-editor-row .vv-troop-inputs { margin:.4rem 0; }
+.vv-link { display:block; width:100%; margin:.5rem 0; font-size:.85rem !important; }
+.vv-problems li { margin:.3rem 0; }
+.vv-code { overflow-wrap:anywhere; }
+@media(max-width:520px) { .vv-roster { grid-template-columns:1fr; } .vv-header { padding-top:1.4rem; } .vv-troop-inputs { gap:.5rem; } .vv-march { gap:.4rem; } .vv-dialog { padding:.8rem; } .vv-form-grid { gap:.65rem; } }
+@media(max-width:350px) { .vv-capacity { grid-template-columns:48px minmax(0,1fr) 3.5rem; gap:.4rem; } .vv-capacity img { width:48px; height:48px; } .vv-troop-inputs label > span:not(.vv-troop-symbol) { font-size:.9rem; } }
 
-/* ─── Vikings — troop composition rows ────────────────── */
-.comp { margin: var(--space-m) 0; }
-.comp-row { padding: 0.7rem 0; border-bottom: 1px solid rgba(157, 149, 127, 0.14); }
-.comp-name {
-  font-family: var(--display-2);
-  font-weight: 600;
-  font-size: var(--step-0);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink);
-  margin-bottom: 0.35rem;
-}
-.comp-split { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; }
-.comp-split span { font-family: var(--body); font-weight: 700; font-size: var(--step--1); letter-spacing: 0.06em; }
-.comp-split .inf { color: var(--amber); }
-.comp-split .cav { color: var(--ink); }
-.comp-split .arc { color: var(--ink-muted); }
-.comp-note { margin-top: 0.35rem; font-size: var(--step--1); color: var(--ink-dim); font-style: italic; }
+.troop-sprite { position:absolute; width:0; height:0; overflow:hidden; }
+.vv-symbol { width:1rem; height:1rem; vertical-align:-.15rem; fill:none; stroke:currentColor; stroke-width:1.3; stroke-linejoin:round; }
+.vv-troop-inputs .vv-symbol { width:2rem; height:2rem; color:var(--amber); margin:.25rem; }
 
-#vv-cities { min-height: 44px; }
-
-.wavetable .wt-row > span { min-width: 0; overflow-wrap: anywhere; }
-@media (max-width: 640px) {
-  .wavetable .wt-row { grid-template-columns: 3.6rem minmax(0, 5.5rem) minmax(0, 1fr); }
-}
+.vv-dialog-message:empty { display:none; }
+.vv-dialog-message { border-inline-start:3px solid var(--amber); padding-inline-start:.7rem; overflow-wrap:anywhere; }
