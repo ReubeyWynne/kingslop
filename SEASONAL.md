@@ -53,3 +53,7 @@ Reference item weights were extracted from the same Kingshot Packs public item c
 The event day is the only day count entered. Event and Trick or Treat remaining days derive from their respective configured durations. A saved “today's doors done” flag subtracts today's door visit. The remaining-door count is displayed, not entered again. Legacy saved door limits are still respected.
 
 Artwork is locally served, original game artwork. `img/seasonal/SOURCES.md` records the source URLs. Small event, currency, chest and material icons identify rewards; no raster artwork or animations were generated.
+
+## Item grids
+
+Expected rewards, the full plan, pack contents, combined pack and pass items, and the item value assumptions are grids of items, not tables. Each item is its cut-out icon with the count set on its corner, green for rewards and ivory for gem weights, and the name beneath. No tile, frame or fill is drawn. The remaining packs form a ruled grid: EV per currency unit is the large figure, with price and points per unit beneath. The best rate carries a green rule, and each entry links to its pack card. The heading, candy entry, points headline, inputs and chapters are unchanged. Icon provenance and the reconstructed icons are described in `img/seasonal/SOURCES.md`.

@@ -20,12 +20,6 @@ html[data-page="seasonal"] { --void: #170D25; --void-2: #251535; --navy: #483153
 .candy-headline { display: flex; align-items: baseline; flex-wrap: wrap; gap: .25rem .6rem; border-top: 1px solid var(--navy); padding-top: .8rem; }
 .candy-headline strong { color: var(--halloween-green); font-family: var(--display-2); font-size: 2rem; font-weight: 600; }
 .candy-headline span { color: var(--ink-dim); font-size: 1rem; }
-.candy-rewards { width: 100%; border-collapse: collapse; margin: .5rem 0; font-size: .95rem; font-variant-numeric: tabular-nums; }
-.candy-rewards :is(th, td) { text-align: start; padding: .45rem .2rem; border-bottom: 1px solid var(--navy); }
-.candy-rewards th { color: var(--ink-dim); font-weight: 400; }
-.candy-rewards td { color: var(--halloween-green); text-align: end; }
-.candy-rewards thead th { color: var(--ink-muted); font-size: .8rem; }
-.candy-rewards caption { text-align: start; color: var(--ink-muted); font-size: .8rem; margin-bottom: .4rem; }
 .candy-chapter { border-top: 1px solid var(--halloween-purple); padding: .8rem 0; margin-top: 1rem; }
 .seasonal-page summary { min-height: 44px; cursor: pointer; color: var(--halloween-orange); font-size: 1rem; padding-block: .45rem; }
 .seasonal-page .candy-chapter > summary { display: flex; align-items: baseline; gap: .7rem; font-family: var(--body); letter-spacing: normal; text-transform: none; font-size: 1.15rem; }
@@ -71,22 +65,37 @@ html[data-page="seasonal"] { --void: #170D25; --void-2: #251535; --navy: #483153
 .candy-event-art { float: right; width: 64px; height: 64px; object-fit: contain; margin: 0 0 .4rem .6rem; }
 .candy-unit { display: flex; align-items: center; gap: .2rem; }
 .candy-unit img { object-fit: contain; }
-.candy-rewards th img { width: 22px; height: 22px; object-fit: contain; vertical-align: middle; margin-inline-end: .4rem; }
 .candy-offer-heading h3 { display: flex; align-items: center; gap: .5rem; }
 .candy-offer-heading img { object-fit: contain; }
-.candy-fixed-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: .65rem .4rem; padding: 0; margin: .7rem 0 1rem; list-style: none; }
-.candy-fixed-items li { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; font-size: .75rem; }
-.candy-fixed-items img { width: 36px; height: 36px; object-fit: contain; }
-.candy-fixed-items b { color: var(--halloween-green); font-size: .9rem; font-weight: 400; margin-top: .15rem; }
-.candy-fixed-items span { color: var(--ink-dim); font-size: .7rem; line-height: 1.15; overflow-wrap: anywhere; }
 .candy-value-split, .candy-item-ev { color: var(--halloween-purple); font-size: .9rem; }
 .candy-currency-bonus { display: flex; align-items: center; gap: .5rem; font-size: .9rem; color: var(--halloween-orange); }
 .candy-currency-bonus img { flex: 0 0 28px; object-fit: contain; }
 .candy-offer h4 { font-size: .85rem; font-family: var(--body); font-weight: 400; color: var(--ink-muted); margin: 1rem 0 .4rem; }
-.candy-compare-table { font-size: .8rem; }
-.candy-compare-table :is(th, td) { padding: .5rem .18rem; }
-.candy-compare-table thead th { font-size: .75rem; }
-.candy-best-value { background: #bce87812; }
 .candy-door-plan { font-size: .85rem; color: var(--ink-muted); }
 .candy-door-plan label { display: flex; flex-direction: row; align-items: center; gap: .5rem; min-height: 44px; }
 .candy-door-plan input { accent-color: var(--halloween-green); width: 20px; height: 20px; }
+
+/* Items as the game shows them: a cut-out icon with its count on the corner and the name beneath,
+   in a grid that wraps. No tile, frame or fill; the icon sits on the page. */
+.candy-items-caption { color: var(--ink-muted); font-size: .8rem; margin: .8rem 0 .3rem !important; }
+.candy-items { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(4.4rem, 1fr)); gap: .7rem .4rem; padding: 0; margin: .3rem 0 .9rem; }
+.candy-item { display: flex; flex-direction: column; align-items: center; gap: .15rem; min-width: 0; text-align: center; }
+.candy-item-art { position: relative; display: grid; place-items: center; width: 2.9rem; height: 2.9rem; }
+.candy-item-art img { width: 100%; height: 100%; object-fit: contain; }
+.candy-item-blank { color: var(--halloween-purple); opacity: .45; font-size: 1.5rem; line-height: 1; }
+.candy-item-art b { position: absolute; inset-inline-end: -.1rem; inset-block-end: -.1rem; color: var(--halloween-green); font: 700 .9rem/1 var(--body); font-variant-numeric: tabular-nums; white-space: nowrap; text-shadow: 0 0 2px var(--void), 0 0 2px var(--void), 0 0 4px var(--void); }
+.candy-weights .candy-item-art b { color: var(--ink); }
+.candy-item-name { color: var(--ink-dim); font-size: .72rem; line-height: 1.15; overflow-wrap: break-word; hyphens: auto; max-width: 100%; }
+.candy-item small { color: var(--ink-muted); font-size: .68rem; line-height: 1; }
+
+/* Remaining packs as a ruled grid: the rate is the number to read, price and points beneath. */
+.candy-packs { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(6.2rem, 1fr)); gap: 0 .9rem; padding: 0; margin: .3rem 0 1rem; }
+.candy-packs a { display: flex; flex-direction: column; gap: .05rem; padding: .45rem 0 .5rem; border-top: 1px solid var(--navy); color: var(--ink-dim); text-decoration: none; font-variant-numeric: tabular-nums; }
+.candy-packs a:hover, .candy-packs a:focus-visible { border-top-color: var(--halloween-orange); }
+.candy-packs a[data-best="true"] { border-top: 2px solid var(--halloween-green); }
+.candy-pack-name { color: var(--ink-muted); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; }
+.candy-packs a[data-best="true"] .candy-pack-name { color: var(--halloween-green); }
+.candy-packs strong { color: var(--halloween-green); font: 600 1.35rem/1.15 var(--display-2); }
+.candy-pack-price { color: var(--halloween-orange); font-size: .9rem; }
+.candy-packs small { color: var(--ink-muted); font-size: .75rem; }
+.candy-offer { scroll-margin-top: 4rem; }
