@@ -90,6 +90,15 @@ jobs:
             interactions:
               - *shared
               - .dsh/interaction-modules-check.cjs
+              - .dsh/vikings-ui-check.cjs
+              - vikings-vengeance/**
+              - vv/**
+              - js/vikings*.js
+              - css/vikings.css
+              - _data/vikings.json
+              - api/src/**
+              - api/migrations/**
+              - api/test/database.mjs
             heroes:
               - *shared
               - .dsh/hero-directory-ui-check.cjs
@@ -568,6 +577,11 @@ jobs:
       - name: Check upgrade priority UI
         if: matrix.group == 'priority'
         run: node .dsh/upgrade-priority-ui-check.cjs
+      # The planner check drives the real Worker against node:sqlite, which needs Node 22.13 or later.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        if: matrix.group == 'interactions'
+        with:
+          node-version: 24
       - name: Check Vikings planner UI
         if: matrix.group == 'interactions'
         run: node .dsh/vikings-ui-check.cjs

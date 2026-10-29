@@ -1,1 +1,1 @@
-{"troops": [{"id": "infantry", "name": "Infantry", "symbol": "inf"}, {"id": "cavalry", "name": "Cavalry", "symbol": "cav"}, {"id": "archers", "name": "Archers", "symbol": "arc"}]}
+{"troops": [{"id": "infantry", "name": "Infantry", "symbol": "inf", "art": "barracks"}, {"id": "cavalry", "name": "Cavalry", "symbol": "cav", "art": "stable"}, {"id": "archers", "name": "Archers", "symbol": "arc", "art": "range"}]}

@@ -8,7 +8,15 @@ Local drafts use `bh:vikings-local:v1`. Creating or editing one does not call th
 
 The calculator and registration form can read confirmed troop counts from the shared player ledger. They do not write troop counts back or upload the ledger. Unknown troop types remain blank until entered. Player registration sends only nickname, availability, troop totals, capacity, queue count, optional per-queue capacities and notes.
 
-Access links use `#access=<plan UUID>.<code>`. The early page script consumes this before the shared deep-link code starts. Requests carry the credential in the Authorization header. Current access stays in sessionStorage; remembering a link explicitly saves it separately from the player ledger. JSON plan exports do not contain credentials. The management view can replace invitation/view links and delete the shared event.
+Access links are short enough for game chat: `https://dey.ci/vv/#join-<code>` (also `lead`, `view` and `me`). `/vv/` forwards to the planner with the fragment intact. Codes are 16 random bytes (22 base64url characters); the prefix only tells people which link is which, and the server decides the role from the code through `GET /v1/access`. Older `#access=<plan UUID>.<code>` links and 43-character codes still work. The early page script consumes either form before the shared deep-link code starts. Requests carry the credential in the Authorization header. JSON plan exports do not contain credentials. The management view can replace invitation/view links and delete the shared event.
+
+## Returning to a plan
+
+Creating a shared plan or joining one saves that leader or player link on the device (`bh:vikings-links:v1`, outside the player ledger), and the next visit reopens the plan the device last led or joined (`bh:vikings-last:v1`). Opening an invitation or viewing link never saves it; a viewer's next visit starts at the plan list. An invitation or viewing link for a plan this device already leads or joined opens that role instead. **Switch plan** keeps the list and waits for a choice on the next visit. A joined player can tell the device to forget the plan; a saved plan that has expired or been deleted is removed with a message.
+
+## Event days
+
+Vikings opens every fourteen days on Tuesday and Thursday, server time (UTC); R4/R5 choose the hour. It runs in the Strongest Governor and KvK prep weeks of the 28-day wheel. `VikingsEngine.eventDays` counts from the Strongest Governor Tuesday of the wheel's first cycle, 25 August 2026 (`SCHEDULE.anchor` in `js/vikings-engine.js`). The page shows the next window, and a new plan offers the next four event days with the start time in UTC, remembering the last time used on the device.
 
 ## Assignments and publication
 

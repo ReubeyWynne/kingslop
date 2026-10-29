@@ -1,6 +1,7 @@
 import Engine from '../../js/vikings-engine.js';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
-const TOKEN = /^[A-Za-z0-9_-]{43}$/;
+// New codes are 16 random bytes (22 characters) so links fit in game chat; codes issued before that are 43.
+const TOKEN = /^(?:[A-Za-z0-9_-]{22}|[A-Za-z0-9_-]{43})$/;
 const PLAN_FIELDS = ['name', 'eventAt', 'difficulty', 'notes', 'closed'];
 const PLAYER_FIELDS = ['nickname', 'availability', 'infantry', 'cavalry', 'archers', 'marchCapacity', 'marches', 'notes', 'capacities'];
 const MAX_BODY = 8192;
@@ -87,7 +88,7 @@ function playerInput(value) {
 }
 
 function secret() {
-  return btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32)))).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
+  return btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16)))).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
 }
 
 async function digest(value) {
@@ -107,9 +108,14 @@ function playerView(row) {
   return { id: row.id, nickname: row.nickname, availability: row.availability, infantry: row.infantry, cavalry: row.cavalry, archers: row.archers, marchCapacity: row.march_capacity, marches: row.marches, capacities: row.capacities ? JSON.parse(row.capacities) : null, notes: row.notes, revision: row.revision, createdAt: row.created_at, updatedAt: row.updated_at };
 }
 
-async function access(request, env, planId) {
-  const code = request.headers.get('authorization')?.match(/^Bearer ([A-Za-z0-9_-]{43})$/)?.[1];
+function bearer(request) {
+  const code = request.headers.get('authorization')?.match(/^Bearer ([A-Za-z0-9_-]+)$/)?.[1];
   requireValue(code && TOKEN.test(code), 'A valid access code is required.', 401);
+  return code;
+}
+
+async function access(request, env, planId) {
+  const code = bearer(request);
   const token = await env.DB.prepare('SELECT role, registration_id FROM access_tokens WHERE token_hash = ? AND plan_id = ?').bind(await digest(code), planId).first();
   requireValue(token, 'A valid access code is required.', 401);
   const plan = await env.DB.prepare('SELECT * FROM plans WHERE id = ? AND expires_at > ?').bind(planId, new Date().toISOString()).first();
@@ -136,6 +142,12 @@ async function route(request, env) {
   }
   const ip = request.headers.get('CF-Connecting-IP') || 'local';
   await limit(env.REQUEST_LIMIT, ip);
+  if (url.pathname === '/v1/access' && request.method === 'GET') {
+    // A link carries only its code; the code's hash names the plan it opens.
+    const token = await env.DB.prepare('SELECT t.plan_id, t.role FROM access_tokens t JOIN plans p ON p.id = t.plan_id WHERE t.token_hash = ? AND p.expires_at > ?').bind(await digest(bearer(request)), new Date().toISOString()).first();
+    requireValue(token, 'This link has expired, was replaced or was deleted.', 404);
+    return json({ planId: token.plan_id, access: token.role });
+  }
   if (url.pathname === '/v1/plans' && request.method === 'POST') {
     await limit(env.CREATE_LIMIT, ip);
     const input = planInput(await body(request, PLAN_FIELDS));

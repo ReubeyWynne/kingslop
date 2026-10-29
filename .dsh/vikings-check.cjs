@@ -24,3 +24,15 @@ test('coverage gaps are explicit and impossible HQ shares block publishing', () 
   const check = E.validate(roster, {}, E.emptyHQ()); assert.equal(check.errors.length, 0); assert(check.warnings.some(x => /cover/.test(x)));
   assert(E.validate(roster, {}, { capacity: 200, infantryPercent: 75, cavalryPercent: 25, participants: [{ playerId: 'a', queue: 1 }] }).errors.some(x => /capacity/.test(x)));
 });
+test('event days follow the fortnightly Tuesday and Thursday schedule', () => {
+  const day = s => Date.parse(s + 'T00:00:00Z'), iso = list => list.map(n => new Date(n).toISOString().slice(0, 10));
+  assert.deepEqual(iso(E.eventDays(day('2026-10-29') + 5e6)), ['2026-11-03', '2026-11-05']);
+  assert.deepEqual(iso(E.eventDays(day('2026-11-03') + 5e6)), ['2026-11-03', '2026-11-05']);
+  assert.deepEqual(iso(E.eventDays(day('2026-11-05') + 8e7)), ['2026-11-05', '2026-11-17']);
+  assert.deepEqual(iso(E.eventDays(day('2026-11-06'), 3)), ['2026-11-17', '2026-11-19', '2026-12-01']);
+  assert.deepEqual(iso(E.eventDays(day('2026-10-21'))), ['2026-10-22', '2026-11-03']);
+  // Strongest Governor (cycle days 8–14) and KvK prep (22–28) weeks on the event-rules wheel.
+  const R = require('../js/event-rules.js');
+  for (let t = day('2026-08-17'); t < day('2027-08-17'); t += 864e5) { const cycle = Math.floor((t - R.EPOCH) / 864e5) % 28 + 1; const event = E.eventDays(t, 1)[0] === t; assert.equal(event, [9, 11, 23, 25].includes(cycle), new Date(t).toISOString()); }
+  for (let t = day('2026-01-01'); t < day('2027-06-01'); t += 9e6) { const [a, b] = E.eventDays(t); assert(a >= Math.floor(t / 864e5) * 864e5 && b > a && [2, 4].includes(new Date(a).getUTCDay())); }
+});

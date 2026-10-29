@@ -78,7 +78,7 @@ byId('open-form').addEventListener('submit', event => {
   action(event.submitter, async () => {
     const form = event.currentTarget;
     const id = field(form, 'id').value.trim(), code = field(form, 'code').value.trim();
-    if (!/^[0-9a-f-]{36}$/.test(id) || !/^[A-Za-z0-9_-]{43}$/.test(code)) throw new Error('Check the plan ID and access code.');
+    if (!/^[0-9a-f-]{36}$/.test(id) || !/^(?:[A-Za-z0-9_-]{22}|[A-Za-z0-9_-]{43})$/.test(code)) throw new Error('Check the plan ID and access code.');
     const previous = current;
     current = { id, code };
     try { await load(); } catch (error) { current = previous; throw error; }

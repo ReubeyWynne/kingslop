@@ -32,7 +32,7 @@ test('health checks the database and never includes secrets', async () => {
 test('secret roles protect every write, and player codes cannot edit another registration or plan', async () => {
   const env = environment(), plan = await create(env), path = `/v1/plans/${plan.plan.id}`;
   assert.equal(new Set(Object.values(plan.codes)).size, 3);
-  for (const code of Object.values(plan.codes)) assert.match(code, /^[A-Za-z0-9_-]{43}$/);
+  for (const code of Object.values(plan.codes)) assert.match(code, /^[A-Za-z0-9_-]{22}$/);
   const stored = env.sql.prepare('SELECT token_hash FROM access_tokens').all();
   assert.ok(stored.every(row => row.token_hash.length === 64 && !Object.values(plan.codes).includes(row.token_hash)));
   assert.equal((await call(env, path)).status, 401);
@@ -121,5 +121,33 @@ test('CORS rejects unapproved sites and rate limits fail closed', async () => {
   assert.equal(env.sql.prepare('SELECT count(*) AS total FROM plans').get().total, 0);
   delete env.REQUEST_LIMIT;
   assert.equal((await call(env, '/v1/plans', 'POST', { name: 'x' })).status, 503);
+  env.sql.close();
+});
+
+test('a short link code alone resolves its plan and role, and stops once replaced or deleted', async () => {
+  const env = environment(), plan = await create(env), joined = await register(env, plan);
+  assert.match(joined.editCode, /^[A-Za-z0-9_-]{22}$/);
+  for (const [role, code] of [...Object.entries(plan.codes), ['registration', joined.editCode]]) {
+    const response = await call(env, '/v1/access', 'GET', undefined, code);
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), { planId: plan.plan.id, access: role });
+  }
+  assert.equal((await call(env, '/v1/access')).status, 401);
+  assert.equal((await call(env, '/v1/access', 'GET', undefined, 'a'.repeat(22))).status, 404);
+  assert.equal((await call(env, '/v1/access', 'GET', undefined, 'a'.repeat(30))).status, 401);
+  const rotated = await (await call(env, `/v1/plans/${plan.plan.id}/rotate`, 'POST', { role: 'join' }, plan.codes.manage)).json();
+  assert.equal((await call(env, '/v1/access', 'GET', undefined, plan.codes.join)).status, 404);
+  assert.equal((await call(env, '/v1/access', 'GET', undefined, rotated.code)).status, 200);
+  env.sql.prepare("UPDATE plans SET expires_at = '2000-01-01T00:00:00.000Z'").run();
+  assert.equal((await call(env, '/v1/access', 'GET', undefined, plan.codes.manage)).status, 404);
+  env.sql.close();
+});
+
+test('codes issued before short links keep working', async () => {
+  const env = environment(), plan = await create(env), legacy = 'L'.repeat(43);
+  const hash = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(legacy))), n => n.toString(16).padStart(2, '0')).join('');
+  env.sql.prepare("INSERT INTO access_tokens (token_hash, plan_id, role) VALUES (?, ?, 'view')").run(hash, plan.plan.id);
+  assert.equal((await call(env, `/v1/plans/${plan.plan.id}`, 'GET', undefined, legacy)).status, 200);
+  assert.deepEqual(await (await call(env, '/v1/access', 'GET', undefined, legacy)).json(), { planId: plan.plan.id, access: 'view' });
   env.sql.close();
 });

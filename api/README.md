@@ -36,7 +36,7 @@ To develop locally, run `npm run dev`. To run the API checks, run `npm test` wit
 
 ## Access codes
 
-Send codes in `Authorization: Bearer <code>`. Codes contain 32 random bytes encoded as base64url. Only SHA-256 hashes are stored in D1. Codes never belong in API query strings or request logs. The test page keeps its current code in sessionStorage, for that browser tab, and uses no analytics or third-party scripts.
+Send codes in `Authorization: Bearer <code>`. Codes contain 16 random bytes encoded as base64url (22 characters); codes issued before short links contain 32 bytes and keep working. Only SHA-256 hashes are stored in D1. Codes never belong in API query strings or request logs. The test page keeps its current code in sessionStorage, for that browser tab, and uses no analytics or third-party scripts.
 
 | Code | Permissions |
 | --- | --- |
@@ -54,6 +54,7 @@ All JSON bodies reject unknown properties and have an 8 KiB limit. API responses
 | Method | Path | Result |
 | --- | --- | --- |
 | GET | `/health` | Check the database schema is reachable |
+| GET | `/v1/access` | Resolve the bearer code to its plan ID and role, so a link can carry the code alone |
 | POST | `/v1/plans` | Create a plan and return management, invitation, and viewing codes once |
 | GET | `/v1/plans/:id` | Read the plan, registrations, and current access role |
 | PATCH | `/v1/plans/:id` | Change plan fields with a management code and expected revision |
