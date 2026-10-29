@@ -10,7 +10,7 @@ Set these build settings:
 
 | Setting | Value |
 | --- | --- |
-| Worker name | `kingslop-vikings` |
+| Worker name | `kingslop` |
 | Root directory | `api` |
 | Build command | `npm test` |
 | Deploy command | `npm run deploy` |
