@@ -53,3 +53,7 @@ Reference item weights were extracted from the same Kingshot Packs public item c
 The event day is the only day count entered. Event and Trick or Treat remaining days derive from their respective configured durations. A saved “today's doors done” flag subtracts today's door visit. The remaining-door count is displayed, not entered again. Legacy saved door limits are still respected.
 
 Artwork is locally served, original game artwork. `img/seasonal/SOURCES.md` records the source URLs. Small event, currency, chest and material icons identify rewards; no raster artwork or animations were generated.
+
+## Tiles
+
+The page follows the Hero gear and Building requirements pages: game-style icon tiles instead of text tables. Each reward is its game icon on a square tinted by quality (common green, rare blue, epic purple, mythic gold, from the item's reference gem weight; unpriced cosmetics are gold) with its count printed over the corner and its name small beneath. Held candy rewards, the full plan (total on the tile, held beneath), each pack's fixed rewards, the combined pack and pass items, and the item value assumptions all use the same wrapping grid. The pack comparison is a shelf of pack tiles: number and price on the art, gem-equivalent EV and points per currency unit beneath, the best rate marked and each tile linking to its pack card. Future income is an icon-and-field grid, the progress facts are four small tiles, and chapter headings carry an icon instead of a step number. The event reference tables are unchanged.
