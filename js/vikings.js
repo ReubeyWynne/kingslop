@@ -185,7 +185,7 @@
       rows.forEach(function (r) { marchRow(r, name(r.destination, view.roster), body); });
       var used = { infantry: 0, cavalry: 0, archers: 0 }; rows.forEach(function (r) { TYPES.forEach(function (k) { used[k] += r[k]; }); });
       var home = {}; TYPES.forEach(function (k) { home[k] = Math.max(0, p[k] - used[k]); });
-      body.appendChild(el('p', 'vv-caption', fmt(total(used)) + ' assigned to cities · ' + fmt(total(home)) + ' left at home / unassigned')); body.appendChild(counts(home));
+      body.appendChild(el('p', 'vv-caption', fmt(total(used)) + ' assigned to cities · ' + fmt(total(home)) + ' left at home / unassigned')); if (total(home)) body.appendChild(counts(home));
       var headquarters = E.hqRows(view.hq).find(function (r) { return r.playerId === p.id; });
       if (headquarters) {
         var hq = el('div', 'vv-hq'); hq.appendChild(el('strong', '', 'HQ · waves 10 & 20')); hq.appendChild(counts(headquarters));
@@ -207,12 +207,13 @@
       if (manage) info.appendChild(button('Details', 'editPlayer', { id: p.id })); n.appendChild(info); return n;
     }
     function render() {
+      root.classList.toggle('vv-active', !!state);
       var event = one('event'); event.replaceChildren(); event.hidden = !state;
       if (state) {
         event.appendChild(el('p', 'vv-label', state.example ? 'Example · local only' : state.local ? 'Local draft · only on this device' : ({ manage: 'Leader', join: 'Invitation', view: 'Viewing', registration: 'Player' }[state.access])));
         event.appendChild(el('h2', '', state.plan.name)); event.appendChild(button('Switch plan', 'leave'));
         if (state.plan.eventAt) { var date = new Date(state.plan.eventAt); event.appendChild(el('p', 'vv-caption', date.toLocaleString() + ' · ' + date.toISOString().slice(11, 16) + ' UTC')); }
-        var pub = state.publicationRevision ? 'Published revision ' + state.publicationRevision : 'Not published';
+        var pub = state.publicationRevision ? 'Published revision ' + state.publicationRevision : state.local ? 'Draft preview' : 'Not published';
         if (isManager() && state.published && (state.published.sourceRevision !== state.revision || state.published.rosterRevision !== state.rosterRevision || state.published.planRevision !== state.planRevision)) pub += ' · changes waiting to publish';
         if (lastRefresh) pub += ' · refreshed ' + lastRefresh.toLocaleTimeString();
         event.appendChild(el('p', 'vv-caption', pub + (state.plan.closed ? ' · roster locked' : '')));
@@ -355,11 +356,11 @@
       say('Saved troop counts loaded for review. Missing types remain blank. Nothing has been uploaded.');
     }
     function demo() {
-      state = localState('Thursday Vikings · example'); state.example = true;
+      lastRefresh = null; state = localState('Thursday Vikings · example'); state.example = true;
       ['Rowan', 'Ash', 'Fern', 'Willow'].forEach(function (nickname, i) { state.roster.push({ id: id(), nickname: nickname, availability: i === 3 ? 'offline' : 'online', infantry: 240000, cavalry: 160000, archers: 120000, marchCapacity: 180000, marches: 3, capacities: null, notes: '', revision: 1 }); });
       state.roster.forEach(function (p, i) { state.assignments[p.id] = E.split(p).rows.map(function (r, q) { return { ...r, destination: state.roster[(i + q + 1) % 4].id }; }); });
       state.hq = { capacity: 300000, infantryPercent: 75, cavalryPercent: 25, participants: state.roster.slice(0, 3).map(function (p) { return { playerId: p.id, queue: 1 }; }) };
-      selected = state.roster[0].id; credential = null; mode = 'my-plan'; render(); say('Example data. Your own saved plan and player save are unchanged.');
+      selected = state.roster[0].id; credential = null; mode = 'my-plan'; render(); say('Example plan.');
     }
     function waves() {
       var body = one('waves');
@@ -431,10 +432,11 @@
         var check = E.validate(value.roster, value.assignments, value.hq); if (check.errors.length) throw new Error(check.errors[0]);
         state = { ...localState(), plan: value.plan, roster: value.roster, assignments: value.assignments, hq: value.hq }; credential = null; selected = null; persist(); close(); render(); say('Local plan imported.');
       }, ['change']),
-      leave: action(function () { state = null; credential = null; selected = null; sessionStorage.removeItem(SESSION); close(); mode = 'my-plan'; render(); }),
+      leave: action(function () { state = null; credential = null; selected = null; lastRefresh = null; sessionStorage.removeItem(SESSION); close(); mode = 'my-plan'; render(); }),
       checklist: { events: ['change'], run: function (node) { var data = read(node.dataset.key) || {}; data[node.dataset.index] = node.checked; write(node.dataset.key, data); } },
       wave: { run: function (node) { one('waves').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b === node)); }); one('waveDetail').textContent = node.dataset.kind === 'hq' ? 'HQ wave ' + node.dataset.wave + ': send the agreed share after the preceding city wave resolves. Return to city cover after the HQ hit.' : node.dataset.kind === 'online' ? 'Wave ' + node.dataset.wave + ': online cities only. Check the in-game Members tab and follow any agreed cover rotations.' : 'Wave ' + node.dataset.wave + ': city reinforcements stay in their assigned towns. Check cover before the hit.'; } }
     };
+    one('calculatorForm').querySelector('[type=submit]').disabled = false;
     waves();
     var initial = window.VikingsAccess || read(SESSION, sessionStorage);
     if (initial && UUID.test(initial.planId) && /^[A-Za-z0-9_-]{43}$/.test(initial.code)) {

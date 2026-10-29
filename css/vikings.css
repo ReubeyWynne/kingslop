@@ -91,3 +91,9 @@
 
 .vv-dialog-message:empty { display:none; }
 .vv-dialog-message { border-inline-start:3px solid var(--amber); padding-inline-start:.7rem; overflow-wrap:anywhere; }
+
+.vv-active .vv-header { padding:.75rem 0 .5rem; }
+.vv-active .vv-header h1 { font-size:1.65rem; }
+.vv-active .vv-header > img { width:64px; }
+.vv-active .vv-intro,.vv-active .vv-eyebrow { display:none; }
+.vv-active .vv-event { padding-bottom:.65rem; margin-bottom:.5rem; }

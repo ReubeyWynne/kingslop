@@ -4,8 +4,8 @@ self: vikings
 ---
 {% include vikings-troops.html %}
 <main class="vv-page" data-module="vikings">
-  <header class="vv-header">
-    <div><p class="vv-eyebrow">Vikings Vengeance</p><h1>Plan your reinforcements.</h1><p class="vv-intro">Arrange city cover, agree the HQ transfers, and keep your own instructions close.</p></div>
+  <header class="vv-header" id="top">
+    <div><p class="vv-eyebrow">Vikings Vengeance</p><h1>Vikings planner</h1><p class="vv-intro">Arrange city cover, agree the HQ transfers, and keep your own instructions close.</p></div>
     <img src="../img/buildings/town-center.webp" width="128" height="128" alt="" decoding="async">
   </header>
   <nav class="vv-tabs" role="tablist" aria-label="Vikings planner">
@@ -23,7 +23,7 @@ self: vikings
       <form data-action="vikings.calculate" data-target="vikings.calculatorForm">
         <div class="vv-troop-inputs">{% for t in site.data.vikings.troops %}<label><svg class="vv-troop-symbol vv-symbol" aria-hidden="true"><use href="#troop-{{ t.symbol }}"/></svg><span>{{ t.name }}</span><input type="number" name="{{ t.id }}" min="0" max="100000000" step="1" inputmode="numeric" placeholder="Not entered" required></label>{% endfor %}</div>
         <div class="vv-capacity"><img src="../img/buildings/command-center.webp" width="64" height="64" alt=""><label>March capacity<input type="number" name="marchCapacity" min="1" max="10000000" inputmode="numeric" placeholder="e.g. 160000" required></label><label>Queues<input type="number" name="marches" min="1" max="6" value="5" inputmode="numeric" required></label></div>
-        <button type="submit" class="vv-primary">Work out my marches</button>
+        <button type="submit" class="vv-primary" disabled>Work out my marches</button>
       </form>
       <div class="vv-local-answer" data-target="vikings.split" aria-live="polite"></div>
       <p class="vv-caption">This calculation stays on your device. All troop types go out while space remains.</p>
@@ -38,7 +38,7 @@ self: vikings
   </section>
 
   <section class="vv-panel vv-guide" id="vikings-guide" role="tabpanel" aria-labelledby="vv-guide-tab">
-    <h2>The twenty waves</h2>
+    <h2 id="waves">The twenty waves</h2>
     <p>Choose a wave to check its instructions. Set your place manually as the event runs.</p>
     <div class="vv-waves" data-target="vikings.waves" role="group" aria-label="Wave"></div>
     <p class="vv-wave-detail" data-target="vikings.waveDetail" aria-live="polite">City waves: reinforce your assigned towns before the hit.</p>

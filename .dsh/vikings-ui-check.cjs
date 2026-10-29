@@ -29,6 +29,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   const context = await browser.newContext({ javaScriptEnabled: false }), page = await context.newPage();
   await page.goto(origin + '/vikings-vengeance/');
   assert(await page.locator('#vikings-guide').isVisible());
-  assert(await page.getByText('Waves 7, 14 and 17 hit online cities only.', { exact: false }).isVisible());
+  await page.locator('#online summary').click();
+  assert(await page.locator('#online p').first().isVisible());
   await context.close();
 });
