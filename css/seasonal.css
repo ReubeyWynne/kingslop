@@ -25,7 +25,7 @@ html[data-page="seasonal"] { --void: #170D25; --void-2: #251535; --navy: #483153
 .seasonal-page summary { min-height: 44px; cursor: pointer; color: var(--halloween-orange); font-size: 1rem; padding-block: .45rem; }
 .seasonal-page .candy-chapter > summary { display: flex; align-items: center; gap: .7rem; font-family: var(--body); letter-spacing: normal; text-transform: none; font-size: 1.05rem; }
 .seasonal-page .candy-chapter > summary::before { content: none; }
-.candy-step { flex: none; display: grid; place-items: center; width: 2.4rem; aspect-ratio: 1; border: 1px solid var(--navy); border-radius: .35rem; background: radial-gradient(circle at 50% 35%, #caa0f126, transparent 70%), var(--void-2); }
+.candy-step { flex: none; display: grid; place-items: center; width: 2.4rem; aspect-ratio: 1; border: 1px solid var(--navy); border-radius: 2px; background: radial-gradient(circle at 50% 35%, #caa0f11f, transparent 70%), var(--void-2); }
 .candy-step img { width: 84%; height: 84%; object-fit: contain; }
 .candy-chapter summary small { display: block; color: var(--ink-muted); font-size: .8rem; font-weight: 400; line-height: 1.3; margin-top: .1rem; }
 .candy-chapter > summary::after { content: '+'; margin-inline-start: auto; align-self: center; color: var(--halloween-purple); }
@@ -76,30 +76,34 @@ html[data-page="seasonal"] { --void: #170D25; --void-2: #251535; --navy: #483153
 .candy-door-plan label { display: flex; flex-direction: row; align-items: center; gap: .5rem; min-height: 44px; }
 .candy-door-plan input { accent-color: var(--halloween-green); width: 20px; height: 20px; }
 
-/* Game-style tiles, after Hero gear and Building requirements: the item's icon on a square tinted
-   by its quality, the count printed over its corner, the name small beneath. Grids wrap, never scroll. */
-.candy-tile-art { --tile-hi: #6f8f6a; --tile-lo: #2c3b2c; --tile-frame: #8fae86; position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; border: 2px solid var(--tile-frame); border-radius: .4rem; background: radial-gradient(circle at 50% 30%, var(--tile-hi), var(--tile-lo) 75%); }
-.candy-tile-art img { width: 82%; height: 82%; object-fit: contain; }
-[data-quality="rare"] > .candy-tile-art, .candy-tile-art[data-quality="rare"] { --tile-hi: #4a86c8; --tile-lo: #1c3456; --tile-frame: #79aee0; }
-[data-quality="epic"] > .candy-tile-art, .candy-tile-art[data-quality="epic"] { --tile-hi: #8d6cc9; --tile-lo: #39275c; --tile-frame: #b39be0; }
-[data-quality="mythic"] > .candy-tile-art, .candy-tile-art[data-quality="mythic"] { --tile-hi: #d39a3a; --tile-lo: #5c3a12; --tile-frame: #f0c06a; }
-.candy-tile-art > b { position: absolute; inset-inline-end: .15rem; inset-block-end: .05rem; color: #fff; font: 700 .8rem/1.1 var(--body); font-variant-numeric: tabular-nums; white-space: nowrap; text-shadow: 0 0 2px #000, 0 1px 1px #000, 1px 0 1px #000, -1px 0 1px #000; }
-.candy-tile-art > i { position: absolute; inset-inline-start: .15rem; inset-block-start: .05rem; color: #fff; font: 700 .85rem/1.1 var(--display-2); font-style: normal; text-shadow: 0 0 2px #000, 0 1px 1px #000; }
-.candy-grid { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(4.1rem, 1fr)); gap: .55rem .4rem; padding: 0; margin: .4rem 0 .8rem; }
-.candy-tile { display: grid; justify-items: center; align-content: start; gap: .2rem; min-width: 0; text-align: center; }
+/* Item tiles, after Building requirements: the icon in a hairline square, the border brightening with
+   the item's worth (mythic full green, epic dim green, rare purple, common night), the count in a
+   ruled badge on the corner. Icons whose art already prints a number take the badge beneath. */
+.candy-tile-art { --tile-line: var(--navy); position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; border: 1px solid var(--tile-line); border-radius: 2px; background: radial-gradient(circle at 50% 35%, #caa0f11f, transparent 70%), var(--void-2); }
+.candy-tile-art img { width: 84%; height: 84%; object-fit: contain; }
+[data-quality="rare"] > .candy-tile-art, .candy-tile-art[data-quality="rare"] { --tile-line: #8a6aa8; }
+[data-quality="epic"] > .candy-tile-art, .candy-tile-art[data-quality="epic"] { --tile-line: #7f9a55; }
+[data-quality="mythic"] > .candy-tile-art, .candy-tile-art[data-quality="mythic"] { --tile-line: var(--halloween-green); }
+.candy-tile-count { padding: .05rem .3rem; background: var(--void); border: 1px solid var(--halloween-green); color: var(--halloween-green); font: 400 .72rem/1.2 var(--display-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.candy-tile-art > .candy-tile-count { position: absolute; inset-inline-end: -.3rem; inset-block-end: -.45rem; }
+.candy-tile-art > .candy-price-badge { border-color: var(--halloween-orange); color: var(--halloween-orange); }
+.candy-tile > .candy-tile-count { margin-top: .1rem; }
+.candy-grid { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(3.8rem, 1fr)); gap: .9rem .55rem; padding: .1rem .3rem 0 0; margin: .4rem 0 .8rem; }
+.candy-tile { display: grid; justify-items: center; align-content: start; gap: .3rem; min-width: 0; text-align: center; }
 .candy-tile-name { color: var(--ink-dim); font-size: .66rem; line-height: 1.12; overflow-wrap: anywhere; hyphens: auto; }
 .candy-tile small { color: var(--ink-muted); font-size: .62rem; line-height: 1; }
 .candy-grid-caption { color: var(--ink-muted); font-size: .78rem; margin: .7rem 0 .2rem !important; }
 .candy-value .candy-grid, .candy-total .candy-grid { margin-bottom: .2rem; }
 
 /* Pack shelf: one tile per remaining pack, its number and price on the art, the rate beneath. */
-.candy-pack-grid { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(4.3rem, 1fr)); gap: .5rem .4rem; padding: 0; margin: .3rem 0 1rem; }
-.candy-pack-tile { display: grid; justify-items: center; gap: .1rem; padding-bottom: .25rem; border-bottom: 2px solid transparent; color: var(--ink-dim); text-decoration: none; text-align: center; font-variant-numeric: tabular-nums; }
+.candy-pack-grid { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(3.9rem, 1fr)); gap: .9rem .55rem; padding: .5rem .3rem 0; margin: .3rem 0 1rem; }
+.candy-pack-tile { display: grid; justify-items: center; gap: .15rem; padding-bottom: .25rem; border-bottom: 2px solid transparent; color: var(--ink-dim); text-decoration: none; text-align: center; font-variant-numeric: tabular-nums; }
 .candy-pack-tile[data-next="true"] { border-bottom-color: var(--halloween-orange); }
-.candy-pack-tile:hover .candy-tile-art, .candy-pack-tile:focus-visible .candy-tile-art { border-color: var(--halloween-orange); }
+.candy-pack-tile:hover .candy-tile-art, .candy-pack-tile:focus-visible .candy-tile-art { --tile-line: var(--halloween-orange); }
+.candy-pack-tile .candy-tile-art { margin-bottom: .35rem; }
 .candy-pack-tile:focus-visible { outline: 2px solid var(--halloween-green); outline-offset: 2px; }
-.candy-pack-tile[data-best="true"] .candy-tile-art { border-color: var(--halloween-green); box-shadow: 0 0 0 1px var(--halloween-green); }
-.candy-tile-art > em { position: absolute; inset-inline-end: -.3rem; inset-block-start: -.45rem; padding: 0 .25rem; background: var(--halloween-green); color: var(--void); font: 700 .6rem/1.4 var(--body); font-style: normal; text-transform: uppercase; letter-spacing: .04em; }
+.candy-pack-tile[data-best="true"] .candy-tile-art { --tile-line: var(--halloween-green); }
+.candy-tile-art > em { position: absolute; inset-inline-start: -.3rem; inset-block-start: -.45rem; padding: 0 .25rem; background: var(--void); border: 1px solid var(--halloween-green); color: var(--halloween-green); font: 700 .58rem/1.4 var(--body); font-style: normal; text-transform: uppercase; letter-spacing: .12em; }
 .candy-pack-rate { font-size: .7rem; color: var(--ink-muted); }
 .candy-pack-rate strong { color: var(--halloween-green); font-size: .95rem; font-weight: 600; }
 .candy-pack-points, .candy-pack-next { font-size: .66rem; color: var(--ink-muted); line-height: 1.1; }
@@ -127,7 +131,7 @@ html[data-page="seasonal"] { --void: #170D25; --void-2: #251535; --navy: #483153
 
 /* Progress chips: a small tile per fact. */
 .candy-progress { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .4rem; margin: .7rem 0 .25rem; }
-.candy-progress button { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: .2rem; min-height: 44px; padding: .35rem .15rem; border: 1px solid var(--navy); border-bottom: 1px solid var(--navy); border-radius: .35rem; background: var(--void-2); font-size: .7rem; line-height: 1.15; text-align: center; color: var(--ink-dim); }
+.candy-progress button { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: .2rem; min-height: 44px; padding: .35rem .15rem; border: 1px solid var(--navy); border-radius: 2px; background: none; font-size: .7rem; line-height: 1.15; text-align: center; color: var(--ink-dim); }
 .candy-progress button::before { content: ''; width: 1.8rem; height: 1.8rem; background: center / contain no-repeat; }
 .candy-progress [data-panel="score"]::before { background-image: url(../img/seasonal/pumpkin-man.png); }
 .candy-progress [data-panel="day"]::before { background-image: url(../img/seasonal/gold-key.png); }
@@ -136,6 +140,6 @@ html[data-page="seasonal"] { --void: #170D25; --void-2: #251535; --navy: #483153
 .candy-progress button:hover { border-color: var(--halloween-purple); color: var(--ink); }
 
 .candy-skin { display: grid; grid-template-columns: 3.4rem minmax(0, 16rem); gap: .8rem; align-items: end; margin: .4rem 0; }
-.candy-weights .candy-tile-art > b::after { content: ''; display: inline-block; width: .7rem; height: .7rem; margin-inline-start: .1rem; background: url(../img/kingshot/gem.png) center / contain no-repeat; vertical-align: -.05rem; }
+.candy-weights .candy-tile-count::after { content: ''; display: inline-block; width: .7rem; height: .7rem; margin-inline-start: .1rem; background: url(../img/kingshot/gem.png) center / contain no-repeat; vertical-align: -.05rem; }
 @media (max-width: 359px) { .candy-source-grid { grid-template-columns: minmax(0, 1fr); } .candy-progress { grid-template-columns: repeat(2, minmax(0, 1fr)); } .candy-offer-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 #skin > p { font-size: .95rem; }
