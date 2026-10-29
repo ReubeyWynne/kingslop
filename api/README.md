@@ -23,6 +23,8 @@ The deploy script finds or creates the D1 database named `kingslop-vikings`, app
 
 Open the deployed `workers.dev` URL. The page checks `/health`, lets you create a plan, and displays the three access codes. Save the management code. Open the same plan with its invitation code in another tab to test registration. Save the private edit code returned after registering. The viewing code cannot change anything.
 
+Retrying a build in the Cloudflare dashboard rebuilds that build's original commit, not the latest `main`. To ship the latest code, push or merge to `main`. To check which code is live, send `POST /v1/plans` with `{"eventDay":"xx"}`. The current Worker answers with an `eventDay` validation error. A Worker from before rooms answers "Only Vikings planning fields are accepted."
+
 For local deployment after signing in through Wrangler:
 
 ```sh
