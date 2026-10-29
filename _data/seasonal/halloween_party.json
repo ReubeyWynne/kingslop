@@ -3903,17 +3903,6 @@
       "Truegold": 500
     }
   },
-  "artWithCount": [
-    "img/seasonal/charm-material.png",
-    "img/seasonal/epic-conquest.png",
-    "img/seasonal/epic-expedition.png",
-    "img/seasonal/gear-material.png",
-    "img/seasonal/gold-key.png",
-    "img/seasonal/hero-xp.png",
-    "img/seasonal/lucky-gear.png",
-    "img/seasonal/mythic-conquest.png",
-    "img/seasonal/mythic-expedition.png"
-  ],
   "art": {
     "Gems": "img/kingshot/gem.png",
     "Forgehammer": "img/kingshot/forgehammer.png",
