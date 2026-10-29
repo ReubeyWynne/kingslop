@@ -126,6 +126,9 @@
       var wrap = el('span', 'vv-k-input'), input = el('input'); input.type = 'number'; input.name = key; input.min = '0'; input.max = '100000'; input.step = '1'; input.inputMode = 'numeric'; input.value = toK(value); input.placeholder = '—';
       wrap.appendChild(input); wrap.appendChild(el('span', 'vv-k-unit', 'k')); label.appendChild(wrap); container.appendChild(label); return input;
     }
+    // Dialog footers end with the affirmative action: right in LTR, left in RTL.
+    function foot(container) { var a = el('div', 'vv-actions vv-foot'); container.appendChild(a); return a; }
+    function ask(body, text, label, act, data, kind) { body.appendChild(el('p', '', text)); var a = foot(body); a.appendChild(button('Cancel', 'closeDialog', {}, 'vv-quiet')); a.appendChild(button(label, act, data || {}, kind)); }
     function submit(form, title) { var b = el('button', 'vv-primary', title); b.type = 'submit'; b.dataset.mutation = ''; form.appendChild(b); return b; }
     function symbol(k) { var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'), use = document.createElementNS(svg.namespaceURI, 'use'); svg.setAttribute('class', 'vv-symbol'); svg.setAttribute('aria-hidden', 'true'); use.setAttribute('href', '#troop-' + SYMBOLS[k]); svg.appendChild(use); return svg; }
     function counts(p) {
@@ -173,8 +176,8 @@
     function playerEditor(playerId, title) {
       var p = state.roster.find(function (r) { return r.id === playerId; }) || { nickname: '', marches: 5 };
       modal(title || (playerId ? p.nickname : 'Add a player'), function (body) {
-        var f = form(body, 'player'); f.dataset.id = playerId || ''; playerFields(f, p, true); submit(f, 'Save');
-        if (playerId && isManager()) f.appendChild(button('Remove', 'removePlayer', { id: playerId }, 'vv-danger'));
+        var f = form(body, 'player'); f.dataset.id = playerId || ''; playerFields(f, p, true);
+        var a = foot(f); if (playerId && isManager()) a.appendChild(button('Remove', 'removePlayer', { id: playerId }, 'vv-danger')); submit(a, 'Save');
       });
     }
     function roomEditor() {
@@ -187,9 +190,10 @@
         [['tue', 2], ['thu', 4]].forEach(function (d) { var label = el('label', 'vv-chip'), radio = el('input'), first = upcoming.find(function (t) { return new Date(t).getUTCDay() === d[1]; }); radio.type = 'radio'; radio.name = 'day'; radio.value = d[0]; radio.required = true; radio.checked = (p.eventDay || 'tue') === d[0]; label.append(radio, el('span', '', dayLabel(first))); days.appendChild(label); });
         grid.appendChild(days);
         var time = field(grid, 'Start (UTC)', 'time', p.eventTime || read(TIME) || '', 'time'); time.required = true;
-        grid.appendChild(el('p', 'vv-caption vv-local-time'));
         if (state) field(grid, 'Sign-ups', 'closed', p.closed ? 'true' : 'false', 'select', [['false', 'Open'], ['true', 'Closed']]);
-        submit(f, state ? 'Save' : 'Set up');
+        else submit(grid, 'Set up').classList.add('vv-grid-submit');
+        grid.appendChild(el('p', 'vv-caption vv-local-time vv-wide'));
+        if (state) submit(foot(f), 'Save');
         localTime(f);
       });
     }
@@ -218,7 +222,7 @@
           grid.appendChild(box);
         }
         f.appendChild(grid);
-        var foot = el('div', 'vv-actions'); submit(foot, 'Save'); foot.appendChild(button('Even split', 'fillMarches', { id: p.id })); f.appendChild(foot);
+        var a = foot(f); a.appendChild(button('Even split', 'fillMarches', { id: p.id })); submit(a, 'Save');
       });
     }
     function hqEditor() {
@@ -233,7 +237,7 @@
           check.type = 'checkbox'; check.name = 'participant'; check.value = p.id; check.checked = !!entry; label.append(check, el('span', '', p.nickname)); row.appendChild(label);
           var queues = Array.from({ length: p.marches }, function (_, i) { return [String(i + 1), 'March ' + (i + 1)]; }); var s = field(row, '', 'queue-' + p.id, entry ? entry.queue : 1, 'select', queues); s.setAttribute('aria-label', p.nickname + ' HQ march'); f.appendChild(row);
         });
-        submit(f, 'Save');
+        submit(foot(f), 'Save');
       });
     }
 
@@ -391,7 +395,7 @@
           var role = row[0], code = role === 'manage' ? credential.code : codes[role];
           var line = el('div', 'vv-share'), text = el('div'); text.appendChild(el('strong', '', row[1])); text.appendChild(el('span', 'vv-dim', row[2])); line.appendChild(text);
           var a = el('div', 'vv-share-actions');
-          if (code) { a.appendChild(button('Copy', 'copy', { value: shareText(role, code) }, role === 'join' ? 'vv-primary' : 'vv-secondary')); if (role !== 'manage') a.appendChild(button('Replace', 'rotate', { role: role }, 'vv-quiet')); }
+          if (code) { if (role !== 'manage') a.appendChild(button('Replace', 'rotate', { role: role }, 'vv-quiet')); a.appendChild(button('Copy', 'copy', { value: shareText(role, code) }, role === 'join' ? 'vv-primary' : 'vv-secondary')); }
           else a.appendChild(button('New link', 'rotate', { role: role }, 'vv-secondary'));
           line.appendChild(a); body.appendChild(line);
         });
@@ -428,7 +432,7 @@
           mode = 'my-plan'; render();
           modal('You’re in', function (body) {
             body.appendChild(el('p', '', kept ? 'Next time this page opens straight here, troops filled in.' : 'Copy your link to come back.'));
-            var a = el('div', 'vv-actions'); a.appendChild(button('Copy my link', 'copyPrivate', {}, 'vv-primary')); if (kept) a.appendChild(button('Don’t remember', 'forgetThis', {}, 'vv-quiet')); body.appendChild(a);
+            var a = foot(body); if (kept) a.appendChild(button('Don’t remember', 'forgetThis', {}, 'vv-quiet')); a.appendChild(button('Copy my link', 'copyPrivate', {}, 'vv-primary'));
           });
           persist(); return;
         }
@@ -505,7 +509,7 @@
       create: action(function () { if (state) throw new Error('Switch first.'); roomEditor(); }),
       settings: action(roomEditor),
       demo: action(demo),
-      open: action(function () { modal('Open a link', function (body) { var f = form(body, 'open'); var input = field(f, 'Link from your leader', 'link', '', 'url'); input.required = true; input.placeholder = 'https://dey.ci/vv/#join-…'; submit(f, 'Open'); }); }),
+      open: action(function () { modal('Open a link', function (body) { var f = form(body, 'open'); var input = field(f, 'Link from your leader', 'link', '', 'url'); input.required = true; input.placeholder = 'https://dey.ci/vv/#join-…'; submit(foot(f), 'Open'); }); }),
       addPlayer: action(function () { playerEditor(null); }),
       editPlayer: action(function (node) { playerEditor(node.dataset.id); }),
       editMine: action(function () { playerEditor(state.registrationId, 'My troops'); }),
@@ -525,11 +529,11 @@
       forgetThis: action(function () { forget(credential.planId); drop(LAST); close(); say('Forgotten on this device.'); }),
       restore: action(async function (node) { var c = links()[Number(node.dataset.index)]; if (!c) throw new Error('That one is no longer saved here.'); await open(Object.assign({}, c), false); }),
       forget: action(function () { drop(LINKS); drop(LAST); remembered(); say('Forgotten.'); }),
-      rotate: action(function (node) { var role = node.dataset.role; modal('Replace the ' + (role === 'join' ? 'sign-up' : 'marches') + ' link?', function (body) { body.appendChild(el('p', '', 'The old link stops working.')); body.appendChild(button('Replace', 'confirmRotate', { role: role }, 'vv-primary')); }); }),
+      rotate: action(function (node) { var role = node.dataset.role; modal('Replace the ' + (role === 'join' ? 'sign-up' : 'marches') + ' link?', function (body) { ask(body, 'The old link stops working.', 'Replace', 'confirmRotate', { role: role }, 'vv-primary'); }); }),
       confirmRotate: action(async function (node) { var result = await request('/v1/plans/' + state.plan.id + '/rotate', 'POST', { role: node.dataset.role }); credential.codes = credential.codes || {}; credential.codes[result.role] = result.code; remember(credential); persist(); render(); share(); }),
-      removePlayer: action(function (node) { modal('Remove ' + name(node.dataset.id) + '?', function (body) { body.appendChild(el('p', '', 'Their troops, marches and link go too.')); body.appendChild(button('Remove', 'confirmRemove', { id: node.dataset.id }, 'vv-danger')); }); }),
+      removePlayer: action(function (node) { modal('Remove ' + name(node.dataset.id) + '?', function (body) { ask(body, 'Their troops, marches and link go too.', 'Remove', 'confirmRemove', { id: node.dataset.id }, 'vv-danger'); }); }),
       confirmRemove: action(async function (node) { if (state.example) { state.roster = state.roster.filter(function (p) { return p.id !== node.dataset.id; }); delete state.assignments[node.dataset.id]; close(); render(); return; } await request('/v1/plans/' + state.plan.id + '/registrations/' + node.dataset.id, 'DELETE'); await load(); close(); }),
-      deletePlan: action(function () { modal('Delete ' + state.plan.name + '?', function (body) { body.appendChild(el('p', '', 'Removes it for everyone.')); body.appendChild(button('Delete for everyone', 'confirmDelete', {}, 'vv-danger')); }); }),
+      deletePlan: action(function () { modal('Delete ' + state.plan.name + '?', function (body) { ask(body, 'Removes it for everyone.', 'Delete for everyone', 'confirmDelete', {}, 'vv-danger'); }); }),
       confirmDelete: action(async function () { await request('/v1/plans/' + state.plan.id, 'DELETE'); forget(state.plan.id); drop(LAST); home(); say('Deleted.'); }),
       refresh: action(load),
       // Leaving shows this device's rooms; it forgets nothing. The next visit opens the list until one is chosen.
