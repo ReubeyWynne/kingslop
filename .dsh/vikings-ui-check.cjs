@@ -9,7 +9,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
     await page.getByRole('button', { name: 'Try an example' }).click();
     await page.getByRole('heading', { name: 'Rowan · your marches' }).waitFor();
     assert.equal(await page.locator('#my-plan .vv-march').count(), 3);
-    assert(await page.getByText('HQ · waves 10 & 20', { exact: true }).isVisible());
+    assert(await page.locator('#my-plan').getByText('HQ · waves 10 & 20', { exact: true }).isVisible());
     await page.getByRole('tab', { name: 'Alliance', exact: true }).click();
     await page.locator('.vv-roster').getByRole('button', { name: 'Rowan', exact: true }).click();
     await page.getByRole('dialog').waitFor();

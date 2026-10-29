@@ -569,7 +569,7 @@ jobs:
         if: matrix.group == 'priority'
         run: node .dsh/upgrade-priority-ui-check.cjs
       - name: Check Vikings planner UI
-        if: contains(needs.changes.outputs.browser, 'interactions')
+        if: matrix.group == 'interactions'
         run: node .dsh/vikings-ui-check.cjs
       - name: Check building requirements UI
         if: matrix.group == 'priority'
@@ -644,6 +644,7 @@ jobs:
             .dsh/ascii-preview/
             .dsh/import-preview/
             .dsh/buildings-preview/
+            .dsh/vikings-preview/
 
   check:
     needs: [changes, logic, build, browser]

@@ -210,7 +210,7 @@
       var event = one('event'); event.replaceChildren(); event.hidden = !state;
       if (state) {
         event.appendChild(el('p', 'vv-label', state.example ? 'Example · local only' : state.local ? 'Local draft · only on this device' : ({ manage: 'Leader', join: 'Invitation', view: 'Viewing', registration: 'Player' }[state.access])));
-        event.appendChild(el('h2', '', state.plan.name));
+        event.appendChild(el('h2', '', state.plan.name)); event.appendChild(button('Switch plan', 'leave'));
         if (state.plan.eventAt) { var date = new Date(state.plan.eventAt); event.appendChild(el('p', 'vv-caption', date.toLocaleString() + ' · ' + date.toISOString().slice(11, 16) + ' UTC')); }
         var pub = state.publicationRevision ? 'Published revision ' + state.publicationRevision : 'Not published';
         if (isManager() && state.published && (state.published.sourceRevision !== state.revision || state.published.rosterRevision !== state.rosterRevision || state.published.planRevision !== state.planRevision)) pub += ' · changes waiting to publish';

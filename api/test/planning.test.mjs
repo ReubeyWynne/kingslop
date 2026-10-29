@@ -80,3 +80,14 @@ test('per-queue capacities survive registration and constrain assignments', asyn
   assert.deepEqual((await board(s)).roster[0].capacities, [100, 500]);
   assert.equal((await call(s, '/assignments/' + p.id, 'PUT', { ...revisions(await board(s)), marches: [{ queue: 1, destination: s.players[1].registration.id, infantry: 101, cavalry: 0, archers: 0 }] })).status, 400); s.env.sql.close();
 });
+
+test('the lightweight signature changes with roster and publication revisions', async () => {
+  const s = await setup(), before = (await call(s, '/status')).data.signature;
+  assert.equal((await call(s, '/status')).data.signature, before);
+  await call(s, '/registrations', 'POST', { nickname: 'Third' });
+  const after = (await call(s, '/status')).data.signature; assert.notEqual(after, before);
+  assert.equal((await call(s, '/publish', 'POST', revisions(await board(s)))).status, 200);
+  assert.notEqual((await call(s, '/status')).data.signature, after);
+  assert.equal((await call(s, '/status', 'GET', undefined, s.codes.view)).data.signature.split(':')[3], '0');
+  s.env.sql.close();
+});
