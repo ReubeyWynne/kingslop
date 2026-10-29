@@ -4,8 +4,8 @@
      Resources tab   "Bread 207.60M 597.91M"           (Items, In Stock)
      Speedups tab    "General Speedup 17 day(s)20 hr(s)1 min(s)"
 
-   Resources become one total each (bag items + in stock, matching the Town
-   Centre's "bag and warehouse totals"); speedups become minutes per kind. */
+   The right-hand In Stock column is already the total (bag items included),
+   so each resource takes that figure; speedups become minutes per kind. */
 (function (root, factory) {
   var deps = typeof module === 'object' && module.exports
     ? [require('../ocr-text.js'), require('../screen-import-core.js')]
@@ -51,7 +51,7 @@
   }
 
   function format(n) {
-    return n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(2) + 'K' : String(n);
+    return n >= 1e12 ? (n / 1e12).toFixed(2) + 'T' : n >= 1e9 ? (n / 1e9).toFixed(2) + 'B' : n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(2) + 'K' : String(n);
   }
 
   var resources = {
@@ -68,12 +68,13 @@
         if (i === -1) return proposal;
         var row = p.rows[i], found = amounts(row);
         proposal.crop = S.rowCrop([row], p.width);
-        // Two figures are Items then In Stock. One alone can't be placed in its
-        // column with certainty, so it is offered as the total but flagged.
+        // Two figures are Items then In Stock, and In Stock is the total. One
+        // alone can't be placed in its column with certainty, so it is offered
+        // as the total but flagged.
         if (found.length >= 2) {
-          proposal.value = found[0] + found[1];
+          proposal.value = found[found.length - 1];
           proposal.confidence = 0.9;
-          proposal.note = format(found[0]) + ' + ' + format(found[1]);
+          proposal.note = format(found[found.length - 1]);
         } else if (found.length === 1) {
           proposal.value = found[0];
           proposal.confidence = 0.5;

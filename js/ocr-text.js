@@ -116,11 +116,11 @@
     return parseInt(t.replace(/\D/g, ''), 10);
   }
 
-  // A rounded amount: "207.60M", "6.47K", "3.85M", "1,084", "1.2B".
-  var SCALE = { k: 1e3, m: 1e6, b: 1e9, g: 1e9 };
+  // A rounded amount: "207.60M", "6.47K", "3.85M", "1,084", "1.2B", "1.05T".
+  var SCALE = { k: 1e3, m: 1e6, b: 1e9, g: 1e9, t: 1e12 };
   function parseShort(text) {
     var t = normalise(text).replace(/\s+/g, '');
-    var m = t.match(/^(\d+(?:[.,]\d+)*)([KkMmBbGg]?)$/);
+    var m = t.match(/^(\d+(?:[.,]\d+)*)([KkMmBbGgTt]?)$/);
     if (!m) return null;
     var digits = m[1], scale = m[2] ? SCALE[m[2].toLowerCase()] : 1;
     if (scale === 1) return parseCount(digits);

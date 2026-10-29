@@ -30,7 +30,7 @@
     var since = Math.floor((now - EPOCH) / DAY_MS), today = (since % CYCLE + CYCLE) % CYCLE + 1;
     return EPOCH + (since + ((cycleDay(event, day) - today) % CYCLE + CYCLE) % CYCLE) * DAY_MS;
   }
-  function count(value) { if (!Number.isSafeInteger(value) || value < 0 || value > 1e9) throw new Error('Invalid inventory count'); return value; }
+  function count(value) { if (!Number.isSafeInteger(value) || value < 0 || value > 1e15) throw new Error('Invalid inventory count'); return value; }
   function calculate(snapshot, event, day, held, target) {
     var selected = rules(event, day), rates = Object.create(null), total = 0, reservedPoints = 0, unknown = [];
     selected.rows.forEach(function (row) { (row.items || []).forEach(function (item) {
