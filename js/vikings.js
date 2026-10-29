@@ -171,7 +171,7 @@
         if (!options.includes(chosen)) options.unshift(chosen);
         options.forEach(function (day) { var label = el('label', 'vv-chip'), radio = el('input'); radio.type = 'radio'; radio.name = 'day'; radio.value = day; radio.checked = day === chosen; radio.required = true; label.append(radio, el('span', '', dayLabel(Date.parse(day + 'T00:00:00Z')))); fieldset.appendChild(label); });
         f.appendChild(fieldset);
-        f.appendChild(el('p', 'vv-caption', 'Vikings opens every two weeks on Tuesday and Thursday. Pick the day your R4/R5 will start it.'));
+        f.appendChild(el('p', 'vv-caption', 'Vikings runs on the Tuesday and Thursday of the Strongest Governor and KvK prep weeks, at a time your alliance chooses. Eternity’s Reach is on those Tuesdays too, so pick a time that doesn’t clash.'));
         var grid = el('div', 'vv-form-grid'); f.appendChild(grid);
         var time = field(grid, 'Start time (server time, UTC)', 'time', at !== null ? utcTime(at) : read(TIME) || '', 'time'); time.required = true;
         var local = el('p', 'vv-caption vv-local-time vv-wide'); local.dataset.target = 'vikings.localTime'; grid.appendChild(local);
