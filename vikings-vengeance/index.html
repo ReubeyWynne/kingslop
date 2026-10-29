@@ -27,10 +27,11 @@ self: vikings
       </div>
     </div>
     <section data-target="vikings.calculator" class="vv-calculator" aria-labelledby="vv-calc-title">
-      <div class="vv-heading"><h2 id="vv-calc-title">Just your own marches</h2><button type="button" data-action="vikings.savedTroops">Use my saved troops</button></div>
+      <h2 id="vv-calc-title">Just your own marches</h2>
       <form data-action="vikings.calculate" data-target="vikings.calculatorForm">
-        <div class="vv-troop-inputs">{% for t in site.data.vikings.troops %}<label class="vv-k"><img src="../img/buildings/{{ t.art }}.webp" width="48" height="48" alt="" loading="lazy"><span>{{ t.name }}</span><span class="vv-k-input"><input type="number" name="{{ t.id }}" min="0" max="100000" step="1" inputmode="numeric" placeholder="—" required><span class="vv-k-unit">k</span></span></label>{% endfor %}</div>
-        <div class="vv-form-grid"><label class="vv-k"><span>March size</span><span class="vv-k-input"><input type="number" name="marchCapacity" min="1" max="100000" step="1" inputmode="numeric" placeholder="160" required><span class="vv-k-unit">k</span></span></label><label>Marches<input type="number" name="marches" min="1" max="6" value="5" inputmode="numeric" required></label></div>
+        <div class="vv-troop-inputs">{% for t in site.data.vikings.troops %}<label class="vv-k"><img src="../img/buildings/{{ t.art }}.webp" width="48" height="48" alt="" loading="lazy"><span>{{ t.name }}</span><span class="vv-k-input"><input name="{{ t.id }}" min="0" placeholder="—" required data-unit-input="count" data-unit-default="k"></span></label>{% endfor %}</div>
+        <div class="vv-form-grid"><label class="vv-k"><span>March size</span><span class="vv-k-input"><input name="marchCapacity" min="0" placeholder="160" required data-unit-input="count" data-unit-default="k"></span></label><label>Marches<input type="number" name="marches" min="1" max="6" value="5" inputmode="numeric" required></label></div>
+        <div class="vv-troop-tools" data-target="vikings.calcUnits"></div>
         <button type="submit" class="vv-primary" disabled>Work out my marches</button>
       </form>
       <div class="vv-local-answer" data-target="vikings.split" aria-live="polite"></div>

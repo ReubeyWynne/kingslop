@@ -185,23 +185,21 @@
 .vv-share-actions { display:flex; align-items:center; gap:.75rem; }
 /* March editor: one row per march, troop icons once in the header. */
 .vv-cover-in { display:flex; flex-wrap:wrap; align-items:center; gap:0 .9rem; padding:.25rem 0 .5rem; border-bottom:1px solid color-mix(in srgb,var(--ink-muted) 40%,transparent); }
-.vv-sends-head,.vv-send { display:grid; grid-template-columns:2.4rem minmax(0,1.3fr) repeat(3,minmax(0,1fr)); gap:.35rem; align-items:center; }
-.vv-sends-head { padding:.5rem 0 .2rem; font-size:var(--step--1); color:var(--ink-dim); }
-.vv-sends-head span:nth-child(n+3) { text-align:center; }
-.vv-send { padding:.3rem 0; }
-.vv-send-q { display:flex; flex-direction:column; align-items:center; line-height:1.1; }
-.vv-send-q strong { color:var(--amber); font-family:var(--display-2); font-size:var(--step-0); }
-.vv-send-q small { color:var(--ink-dim); font-size:.7rem; font-variant-numeric:tabular-nums; }
-.vv-page .vv-send input { text-align:center; padding-inline:.15rem; font-size:.9rem; font-variant-numeric:tabular-nums; }
-.vv-page .vv-send select { padding-inline:.25rem; font-size:.9rem; }
-@media(max-width:420px) {
-  .vv-sends-head,.vv-send { grid-template-columns:2rem repeat(3,minmax(0,1fr)); }
-  .vv-sends-head span:nth-child(2) { display:none; }
-  .vv-send-q { grid-row:span 2; }
-  .vv-send select { grid-column:2 / -1; }
-  .vv-send input:nth-of-type(1) { grid-column:2; }
-  .vv-send { padding:.45rem 0; border-bottom:1px solid color-mix(in srgb,var(--ink-muted) 25%,transparent); }
-}
+.vv-send-bar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.4rem 1rem; padding:.6rem 0 .2rem; }
+.vv-send-status { margin:0; font-variant-numeric:tabular-nums; color:var(--ink-dim); }
+.vv-send-status[data-error=true] { color:var(--ink); border-inline-start:3px solid var(--oxblood); padding-inline-start:.5rem; }
+.vv-send { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.45rem .6rem; padding:.7rem 0 .8rem; border-top:1px solid color-mix(in srgb,var(--ink-muted) 35%,transparent); }
+.vv-send-head { grid-column:1/-1; display:flex; align-items:baseline; gap:.6rem; }
+.vv-send-head strong { font-family:var(--display-2); color:var(--amber); }
+.vv-send-cap { margin-inline-start:auto; font-variant-numeric:tabular-nums; color:var(--ink-dim); font-size:var(--step--1); }
+.vv-send[data-over=true] .vv-send-cap { color:var(--ink); }
+.vv-page .vv-send select { grid-column:1/-1; }
+.vv-send-troop { display:flex; align-items:center; gap:.35rem; min-width:0; }
+.vv-send-troop .vv-symbol { flex:none; color:var(--ink-dim); }
+.vv-page .vv-send input { font-variant-numeric:tabular-nums; }
+.vv-meter { grid-column:1/-1; display:block; height:3px; background:color-mix(in srgb,var(--ink-muted) 30%,transparent); }
+.vv-meter span { display:block; height:100%; width:0; background:var(--amber-dim); }
+.vv-send[data-over=true] .vv-meter span { background:var(--oxblood); }
 .vv-link { display:block; width:100%; margin:.5rem 0; font-size:.85rem !important; }
 
 /* Guide */
@@ -235,8 +233,23 @@
   .vv-march img,.vv-hq-mark { width:40px; height:40px; }
   .vv-hq-pick { grid-template-columns:minmax(0,1fr) 6.5rem; }
 }
-.vv-page .vv-send input { -moz-appearance:textfield; appearance:textfield; }
-.vv-page .vv-send input::-webkit-outer-spin-button,.vv-page .vv-send input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+.vv-page [data-scaled] { -moz-appearance:textfield; appearance:textfield; }
+.vv-page [data-scaled]::-webkit-outer-spin-button,.vv-page [data-scaled]::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+/* The save note sits under the troop inputs; each count carries the site's unit select. */
+.vv-troop-tools { display:flex; flex-wrap:wrap; align-items:center; gap:.4rem 1rem; margin:.6rem 0 0; }
+.vv-k-input:has(.unit-select) { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:.25rem; }
+.vv-page .vv-k-input:has(.unit-select) input { padding-inline-end:.3rem; }
+.vv-page .vv-k .unit-select { width:auto; min-width:3rem; padding-inline:.2rem; }
+.vv-sync { margin:0; }
+/* Leaders remove a player straight from the list. */
+.vv-row-line { display:grid; grid-template-columns:minmax(0,1fr) 44px; align-items:stretch; }
+.vv-row-line { grid-template-columns:minmax(0,1fr) 48px; }
+.vv-page .vv-row-x { display:flex; align-items:center; justify-content:center; margin-inline-start:.5rem; color:var(--ink-muted); font-size:1.3rem; border-bottom:1px solid color-mix(in srgb,var(--ink-muted) 35%,transparent); border-inline-start:1px solid color-mix(in srgb,var(--ink-muted) 25%,transparent); }
+.vv-page .vv-row-x:hover { color:var(--ink); border-bottom-color:var(--oxblood); }
+/* While a remembered plan opens, hold its place instead of flashing the start screen. */
+.vv-opening .vv-next,.vv-opening [data-target="vikings.start"],.vv-opening [data-target="vikings.calculator"] { display:none; }
+.vv-opening [data-target="vikings.event"][hidden] { display:block; min-height:7.5rem; }
+.vv-opening [data-target="vikings.personal"]:empty { min-height:24rem; }
 /* Counts in thousands: the input carries a "k" so 240 reads as 240k. */
 .vv-k { display:flex; flex-direction:column; gap:.25rem; }
 .vv-troop-inputs .vv-k { align-items:center; }

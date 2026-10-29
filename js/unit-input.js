@@ -9,6 +9,7 @@
    ("805.51" M, "17" day). What the reader types is read in the chosen unit,
    and a typed suffix wins ("1.2m", "3d", "90 min"). A select is added after
    the input; changing it rescales what is shown, not the stored figure.
+   `data-unit-default` names the unit an empty box starts in.
    Pure parts (pick, parse, format) are exported for checks. */
 (function (root, factory) {
   var api = factory();
@@ -97,8 +98,11 @@
       var n = current();
       input.setCustomValidity(n === null || (Number.isSafeInteger(n) && n >= min && n <= max) ? '' : 'out of range');
     }
+    // An empty box starts in data-unit-default when given ("k" for troop counts typed in thousands).
+    var fallback = input.dataset.unitDefault && unit(kind, input.dataset.unitDefault).id === input.dataset.unitDefault ? input.dataset.unitDefault : null;
+    var before;
     function show(next) {
-      select.value = pick(kind, next);
+      select.value = before = next === null && fallback ? fallback : pick(kind, next);
       NATIVE.set.call(input, format(kind, next, select.value));
       check();
     }
@@ -111,7 +115,6 @@
     // A typed suffix settles into the select once the reader moves on.
     input.addEventListener('change', function () { var n = current(); if (n !== null && !isNaN(n)) show(n); });
     // Rescaling keeps the figure; the box shows it in the new unit.
-    var before = select.value;
     select.addEventListener('focus', function () { before = select.value; });
     select.addEventListener('change', function () {
       var n = parse(kind, NATIVE.get.call(input), before);
