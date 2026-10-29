@@ -15,6 +15,10 @@ Set these build settings:
 | Build command | `npm test` |
 | Deploy command | `npm run deploy` |
 
+For non-production branches, set **Non-production deploy command** to `npm run preview`. Keep **Root directory** as `api` and **Build command** as `npm test` for those builds too. The preview command resolves or creates `kingslop-vikings-preview`, applies migrations to that database, and runs Wrangler with complete preview bindings. Production and previews use separate databases and rate-limit namespaces. The same staging database is shared by branch previews.
+
+The committed `previews` block declares the preview resources. The deployment script supplies the database ID in a temporary configuration. Bare `npx wrangler preview` skips that setup and the migrations.
+
 The deploy script finds or creates the D1 database named `kingslop-vikings`, applies pending migrations, then deploys. It stops if any step fails. Its deployment token needs Workers Scripts Edit and D1 Edit for the selected account. Cloudflare's build settings allow choosing a token with these permissions. The all-zero database ID in the committed configuration is only a local-development placeholder. The deployment script replaces it in a temporary configuration with the real database ID. No runtime secret or player account provider is required.
 
 Open the deployed `workers.dev` URL. The page checks `/health`, lets you create a plan, and displays the three access codes. Save the management code. Open the same plan with its invitation code in another tab to test registration. Save the private edit code returned after registering. The viewing code cannot change anything.

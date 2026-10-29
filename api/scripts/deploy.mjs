@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { deploymentConfig } from './deployment-config.mjs';
 
 process.chdir(fileURLToPath(new URL('..', import.meta.url)));
 const cli = fileURLToPath(new URL('../node_modules/wrangler/bin/wrangler.js', import.meta.url));
@@ -22,16 +23,18 @@ function databases() {
 }
 
 const config = JSON.parse(readFileSync('wrangler.jsonc', 'utf8'));
-const name = config.d1_databases[0].database_name;
+const preview = process.argv.includes('--preview');
+const name = (preview ? config.previews.d1_databases : config.d1_databases)[0].database_name;
 let database = databases().find(row => row.name === name);
 if (!database) {
   run(['d1', 'create', name]);
   database = databases().find(row => row.name === name);
 }
 if (!database?.uuid) throw new Error('Could not find the Vikings database.');
-config.d1_databases[0].database_id = database.uuid;
-writeFileSync('wrangler.deploy.json', JSON.stringify(config, null, 2) + '\n');
+const resolved = deploymentConfig(config, database, preview);
+const file = preview ? 'wrangler.preview.json' : 'wrangler.deploy.json';
+writeFileSync(file, JSON.stringify(resolved, null, 2) + '\n');
 try {
-  run(['d1', 'migrations', 'apply', 'DB', '--remote', '--config', 'wrangler.deploy.json']);
-  run(['deploy', '--config', 'wrangler.deploy.json']);
-} finally { rmSync('wrangler.deploy.json', { force: true }); }
+  run(['d1', 'migrations', 'apply', 'DB', '--remote', '--config', file]);
+  run([preview ? 'preview' : 'deploy', '--config', file, ...(preview ? ['--ignore-base-config'] : [])]);
+} finally { rmSync(file, { force: true }); }
