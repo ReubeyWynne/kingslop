@@ -50,10 +50,6 @@
     return row.items.map(function (b) { return T.parseShort(b.text); }).filter(function (n) { return n !== null; });
   }
 
-  function format(n) {
-    return n >= 1e12 ? (n / 1e12).toFixed(2) + 'T' : n >= 1e9 ? (n / 1e9).toFixed(2) + 'B' : n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(2) + 'K' : String(n);
-  }
-
   var resources = {
     id: 'overview-resources',
     sourceType: 'backpack',
@@ -74,11 +70,9 @@
         if (found.length >= 2) {
           proposal.value = found[found.length - 1];
           proposal.confidence = 0.9;
-          proposal.note = format(found[found.length - 1]);
         } else if (found.length === 1) {
           proposal.value = found[0];
           proposal.confidence = 0.5;
-          proposal.note = format(found[0]);
         }
         return proposal;
       });

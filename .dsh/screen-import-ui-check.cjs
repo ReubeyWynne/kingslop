@@ -50,6 +50,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     const res = Object.fromEntries((await tiles()).map(t => [t.key, t]));
     assert.deepEqual(Object.keys(res), ['bread', 'wood', 'stone', 'iron']);
     assert.equal(res.bread.value, '597,910,000', 'values are grouped the way the page language writes them');
+    assert.equal(await page.locator('.import-tile[data-key="bread"] [data-field="note"]').textContent(), '597.91m', 'a big count is also said short, the British English way');
     assert.ok(Object.values(res).every(t => t.state === 'sure' && t.crop), 'every value carries its cut-out');
 
     // Correct one value, untick another, apply.

@@ -17,7 +17,7 @@ assert.equal(S.route(res).adapter.id, 'overview-resources');
 const resRead = S.route(res).adapter.read(res);
 assert.deepEqual(values(resRead), { bread: 597910000, wood: 557270000, stone: 104680000, iron: 74320000 });
 assert.ok(resRead.every(p => p.confidence >= S.DOUBT && p.crop && p.crop.h > 0 && p.crop.y < res.height));
-assert.equal(resRead[0].note, '597.91M', 'In Stock is already the total; Items are not added');
+assert.equal(resRead[0].note, '', 'the dock writes the short form in the reader\'s language');
 
 const spd = load('overview-speedups');
 assert.equal(S.route(spd).adapter.id, 'overview-speedups');

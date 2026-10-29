@@ -34,6 +34,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.match(await dialog.locator('[data-target="town-inventory.rate"]').textContent(), /40,000/);
     await done();
     assert.equal(await page.locator('#town-bag [data-count="mithril"] [data-amount]').textContent(), '10');
+    // Resources run to billions: the tile says it short, the exact figure stays on hover.
+    await page.evaluate(() => PlayerLedger.shared().setBalance('bread', 1580000000));
+    await page.waitForFunction(() => document.querySelector('[data-count="bread"] [data-amount]').textContent !== '?');
+    assert.equal(await page.locator('[data-count="bread"] [data-amount]').textContent(), '1.58bn', 'British English says billions as bn');
+    assert.equal(await page.locator('[data-count="bread"] [data-amount]').getAttribute('title'), '1,580,000,000');
     // Mithril only scores when hero gear can take it, so with no gear saved it adds nothing yet.
     assert.equal(await prep(), 0);
     assert.ok(await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'prep').unknown.includes('hero-gear-pieces')), 'missing gear is listed, not zero');
