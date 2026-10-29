@@ -86,15 +86,28 @@
     });
     return { errors: Array.from(new Set(errors)), warnings: Array.from(new Set(warnings)), incoming: incoming, hq: headquarters };
   }
+  // Short enough to paste into game chat: one line per march, exact counts.
   function instructions(snapshot, playerId) {
     var p = snapshot.roster.find(function (p) { return p.id === playerId; });
     if (!p) return '';
     var names = Object.fromEntries(snapshot.roster.map(function (p) { return [p.id, p.nickname]; }));
-    var lines = [snapshot.plan.name + ' · ' + p.nickname];
-    (snapshot.assignments[playerId] || []).filter(function (r) { return r.destination; }).forEach(function (r) { lines.push('March ' + r.queue + ' → ' + names[r.destination] + ': ' + r.infantry + ' infantry, ' + r.cavalry + ' cavalry, ' + r.archers + ' archers'); });
+    function n(x) { return x.toLocaleString('en-US'); }
+    function troops(r) { return n(r.infantry) + ' inf / ' + n(r.cavalry) + ' cav / ' + n(r.archers) + ' arc'; }
+    var at = snapshot.plan.eventAt ? new Date(snapshot.plan.eventAt) : null;
+    var lines = [p.nickname + ' · ' + snapshot.plan.name + (at ? ' · ' + at.toISOString().slice(11, 16) + ' UTC' : '')];
+    (snapshot.assignments[playerId] || []).filter(function (r) { return r.destination && sum(r); }).forEach(function (r) { lines.push('M' + r.queue + ' → ' + names[r.destination] + ': ' + troops(r)); });
     var hq = hqRows(snapshot.hq || emptyHQ()).find(function (r) { return r.playerId === playerId; });
-    if (hq) lines.push('HQ waves 10 & 20: after city wave 9/19 resolves, recall march ' + hq.queue + '. Send ' + hq.infantry + ' infantry, ' + hq.cavalry + ' cavalry, ' + hq.archers + ' archers. Return to city cover after the HQ hit.');
+    if (hq) lines.push('HQ (waves 10, 20): after wave 9/19 recall M' + hq.queue + ', send ' + troops(hq) + '. Return after the HQ hit.');
     return lines.join('\n');
   }
-  return { types: TYPES, sum: sum, capacity: capacity, split: split, emptyHQ: emptyHQ, hqRows: hqRows, validate: validate, instructions: instructions };
+  /* Vikings opens every fourteen days, on Tuesday and Thursday by the server clock (UTC); R4/R5 pick the hour.
+     SCHEDULE.anchor is one known Tuesday. Change it here if the fortnight moves. */
+  var DAY = 86400000, SCHEDULE = { anchor: Date.UTC(2026, 9, 27), every: 14, days: [0, 2] };
+  // The next `count` event days as UTC midnights, counting today while it lasts.
+  function eventDays(now, count) {
+    var today = Math.floor(now / DAY) * DAY, start = SCHEDULE.anchor + Math.floor((today - SCHEDULE.anchor) / (SCHEDULE.every * DAY)) * SCHEDULE.every * DAY, out = [];
+    for (var cycle = start; out.length < (count || 2); cycle += SCHEDULE.every * DAY) SCHEDULE.days.forEach(function (d) { var day = cycle + d * DAY; if (day >= today && out.length < (count || 2)) out.push(day); });
+    return out;
+  }
+  return { types: TYPES, eventDays: eventDays, schedule: SCHEDULE, sum: sum, capacity: capacity, split: split, emptyHQ: emptyHQ, hqRows: hqRows, validate: validate, instructions: instructions };
 });

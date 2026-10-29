@@ -275,7 +275,7 @@
       }
     ],
     "headScripts": [
-      "(function () { var match = /^#access=([a-f0-9-]{36})\\.([A-Za-z0-9_-]{43})$/.exec(location.hash); if (!match) return; window.VikingsAccess = { planId: match[1], code: match[2] }; history.replaceState(history.state, '', location.pathname + location.search); })();"
+      "(function () { var h = location.hash, short = /^#(?:lead|join|view|me)-([A-Za-z0-9_-]{22}|[A-Za-z0-9_-]{43})$/.exec(h), long = /^#access=([a-f0-9-]{36})\\.([A-Za-z0-9_-]{43})$/.exec(h); if (!short && !long) return; window.VikingsAccess = short ? { planId: null, code: short[1], fromLink: true } : { planId: long[1], code: long[2], fromLink: true }; history.replaceState(history.state, '', location.pathname + location.search); })();"
     ],
     "skipGuide": true
   },

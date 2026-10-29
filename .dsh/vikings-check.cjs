@@ -24,3 +24,11 @@ test('coverage gaps are explicit and impossible HQ shares block publishing', () 
   const check = E.validate(roster, {}, E.emptyHQ()); assert.equal(check.errors.length, 0); assert(check.warnings.some(x => /cover/.test(x)));
   assert(E.validate(roster, {}, { capacity: 200, infantryPercent: 75, cavalryPercent: 25, participants: [{ playerId: 'a', queue: 1 }] }).errors.some(x => /capacity/.test(x)));
 });
+test('event days follow the fortnightly Tuesday and Thursday schedule', () => {
+  const day = s => Date.parse(s + 'T00:00:00Z'), iso = list => list.map(n => new Date(n).toISOString().slice(0, 10));
+  assert.deepEqual(iso(E.eventDays(day('2026-10-27') + 5e6)), ['2026-10-27', '2026-10-29']);
+  assert.deepEqual(iso(E.eventDays(day('2026-10-29') + 8e7)), ['2026-10-29', '2026-11-10']);
+  assert.deepEqual(iso(E.eventDays(day('2026-10-30'), 3)), ['2026-11-10', '2026-11-12', '2026-11-24']);
+  assert.deepEqual(iso(E.eventDays(day('2026-10-01'))), ['2026-10-01', '2026-10-13']);
+  for (let t = day('2026-01-01'); t < day('2027-06-01'); t += 9e6) { const [a, b] = E.eventDays(t); assert(a >= Math.floor(t / 864e5) * 864e5 && b > a && [2, 4].includes(new Date(a).getUTCDay())); }
+});
