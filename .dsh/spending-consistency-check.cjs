@@ -53,7 +53,7 @@ assert.equal(held.reservedPoints, 400000);
 assert.equal(held.shortfall, 560000);
 assert.equal(Town.available(store.snapshot(), 'prep', 4, { forgehammer: 100 }).total, 0);
 assert.equal(store.exportJSON(), before);
-for (const amount of [-1, 1.5, NaN, Infinity, 1000000001]) {
+for (const amount of [-1, 1.5, NaN, Infinity, 1000000000000001]) {
   assert.throws(() => Town.available(store.snapshot(), 'prep', 4, { mithril: amount }));
   assert.throws(() => Town.available(store.snapshot(), 'prep', 4, {}, amount));
 }

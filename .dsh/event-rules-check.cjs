@@ -19,6 +19,7 @@ assert.equal(rules.calculate(store.snapshot(),'prep',4,{mithril:999},0).items.fi
 assert.equal(rules.calculate(store.snapshot(),'prep',4,{},null).shortfall,null);
 count('mithril',0);assert.equal(rules.calculate(store.snapshot(),'prep',4,{},0).complete,true);
 count('mithril',null);assert.equal(rules.calculate(store.snapshot(),'prep',4,{},0).complete,false);
+count('bread',580e9);assert.equal(rules.calculate(store.snapshot(),'prep',4,{},0).complete,false);
 for(const event of Object.keys(rules.data.events))for(const day of rules.days(event)){
  const r=rules.calculate(store.snapshot(),event,day.day,{},0);assert(Number.isSafeInteger(r.total));
  for(const row of day.rows)for(const item of row.items||[]){assert(rules.data.items.some(x=>x.id===item.id));assert(Number.isSafeInteger(item.rate)&&item.rate>0);}

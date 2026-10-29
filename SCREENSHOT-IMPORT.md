@@ -90,7 +90,7 @@ A proposal is one reviewable value:
 
 ```js
 { target: 'inventory', id: 'bread', value: 597910000, confidence: 0.9,
-  crop: { x, y, w, h }, label: 'Bread', note: 'Items 207.60M · In stock 597.91M' }
+  crop: { x, y, w, h }, label: 'Bread', note: '597.91M' }
 ```
 
 `value: null` means unread (never a guess). The router reads a file once, asks
@@ -156,8 +156,8 @@ the current schema valid. Update PLAYER-LEDGER.md and
 1. **Overview: Resources** (`overview-resources`). Text rows "Bread 207.60M
    597.91M". Detect by the title "Overview: Resources & Speedups" plus the
    "In Stock" header. Writes `bread`, `wood`, `stone`, `iron`. Default value:
-   **In Stock + Items**, matching the Town Centre note "Record your bag and
-   warehouse totals"; the review note shows both figures. Rounding: the
+   **In Stock**, the right-hand column, which already counts the bag's Items
+   (owner, 29 Oct); Items are never added on top. Rounding: the
    popup's M/K precision is accepted as is. Gold and Governor Stamina rows are
    ignored for now.
 2. **Overview: Speedups** (`overview-speedups`). Rows "General Speedup 17

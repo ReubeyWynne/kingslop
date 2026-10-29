@@ -68,7 +68,8 @@
   function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
   function valid(ok) { if (!ok) throw new Error('Invalid player ledger'); }
   function object(value) { return value && typeof value === 'object' && !Array.isArray(value); }
-  function count(value) { return Number.isSafeInteger(value) && value >= 0 && value <= 1e9; }
+  // Resources run to hundreds of billions and beyond; specific fields cap themselves lower.
+  function count(value) { return Number.isSafeInteger(value) && value >= 0 && value <= 1e15; }
   function timestamp(value) { return typeof value === 'string' && Number.isFinite(Date.parse(value)); }
   function id(value) { return typeof value === 'string' && /^[a-z][a-z0-9-]{0,79}$/.test(value); }
   function percent(value) { return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 100000; }
@@ -347,7 +348,7 @@
         var parts = next.heroGear.parts || { ten: Math.floor(xp % 100 / 10), hundred: Math.floor(xp / 100), remainder: xp % 10 };
         parts[key] = amount;
         xp = parts.ten * 10 + parts.hundred * 100 + parts.remainder;
-        valid(count(xp));
+        valid(count(xp) && xp <= 1e9);
         next.heroGear.parts = parts;
         next.inventory[ITEMS.xp] = { amount: xp, status: 'confirmed', provenance: { source: 'manual', at: new Date().toISOString() } };
       });
