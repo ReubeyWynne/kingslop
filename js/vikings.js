@@ -22,6 +22,7 @@
   function until(ms) { var d = Math.round((utcDay(ms) - utcDay(Date.now())) / DAY); return d === 0 ? 'today' : d === 1 ? 'tomorrow' : d > 1 ? 'in ' + d + ' days' : d === -1 ? 'yesterday' : -d + ' days ago'; }
   function utcTime(ms) { return new Date(ms).toISOString().slice(11, 16); }
   function utcWhen(iso) { var t = Date.parse(iso); return dayLabel(t) + ' ' + utcTime(t) + ' UTC'; }
+  function short(n) { return n >= 1e6 ? +(n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? Math.round(n / 1e3) + 'k' : String(n); }
   function localWhen(iso) { return new Date(iso).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
 
   window.Interactions.register('vikings', function (context) {
@@ -30,7 +31,7 @@
     function fmt(n) { return api.fmt(n); }
     function say(message, error) { one('message').textContent = message; one('message').dataset.error = error ? 'true' : 'false'; if (one('dialog').open) one('dialogMessage').textContent = error ? message : ''; }
     function persist() {
-      if (state && state.local && !state.example && !write(KEY, state)) say('Storage is unavailable. Export this plan before leaving.', true);
+      if (state && state.local && !state.example && !write(KEY, state)) say('This browser can’t save. Export the plan.', true);
       if (credential) write(SESSION, credential, sessionStorage);
     }
     function name(playerId, roster) { var p = (roster || (state && state.roster) || []).find(function (r) { return r.id === playerId; }); return p ? p.nickname : 'Player removed'; }
@@ -59,7 +60,7 @@
         var result = response.status === 204 ? null : await response.json();
         if (!response.ok) { var error = new Error((result && result.error) || 'The service could not save this change.'); error.status = response.status; throw error; }
         return result;
-      } catch (cause) { if (cause.name === 'AbortError') throw new Error('The request timed out. Refresh before trying again to check whether it was saved.'); throw cause; }
+      } catch (cause) { if (cause.name === 'AbortError') throw new Error('Timed out. Refresh to check whether it saved.'); throw cause; }
       finally { clearTimeout(timeout); }
     }
     async function run(fn) {
@@ -86,7 +87,7 @@
       credential = own ? Object.assign({}, own) : c; selected = null; filter = '';
       try { await load(true); }
       catch (cause) {
-        if (cause.status === 401 || cause.status === 404) { if (!fromLink) forget(c.planId); credential = null; state = null; drop(SESSION, sessionStorage); render(); throw new Error(fromLink ? 'This link no longer works. The plan expired, was deleted, or the link was replaced. Ask your leader for a new one.' : 'A remembered plan has expired or was deleted, so it was removed from this device.'); }
+        if (cause.status === 401 || cause.status === 404) { if (!fromLink) forget(c.planId); credential = null; state = null; drop(SESSION, sessionStorage); render(); throw new Error(fromLink ? 'This link no longer works. Ask your leader for a new one.' : 'That plan has ended.'); }
         throw cause;
       }
       if (remember(credential)) write(LAST, credential.planId);
@@ -140,12 +141,11 @@
       grid = el('div', 'vv-form-grid'); form.appendChild(grid);
       var cap = field(grid, 'March capacity', 'marchCapacity', p.marchCapacity, 'number'); cap.max = '10000000'; cap.required = true;
       var q = field(grid, 'Queues', 'marches', p.marches || 5, 'number'); q.min = '1'; q.max = '6'; q.required = true;
-      var more = el('details', 'vv-more'); more.appendChild(el('summary', '', 'Notes and per-queue capacity')); var extra = el('div', 'vv-form-grid'); more.appendChild(extra); form.appendChild(more);
+      var more = el('details', 'vv-more'); more.appendChild(el('summary', '', 'More')); var extra = el('div', 'vv-form-grid'); more.appendChild(extra); form.appendChild(more);
       if (p.notes || (p.capacities && p.capacities.length)) more.open = true;
       var notes = field(extra, 'Notes (optional)', 'notes', p.notes || '', 'textarea'); notes.maxLength = 300; notes.parentElement.classList.add('vv-wide');
-      var caps = field(extra, 'Capacity for each queue (comma separated)', 'capacities', (p.capacities || []).join(', ')); caps.parentElement.classList.add('vv-wide');
+      var caps = field(extra, 'Capacity per march, e.g. 120000, 110000', 'capacities', (p.capacities || []).join(', ')); caps.parentElement.classList.add('vv-wide');
       var foot = el('div', 'vv-actions'); foot.appendChild(button('Use my saved troop counts', 'savedTroops')); form.appendChild(foot);
-      form.appendChild(el('p', 'vv-caption', 'Only these Vikings details are shared. A blank troop count is unknown; enter 0 if you have none.'));
     }
     function fromForm(form) {
       var data = Object.fromEntries(new FormData(form));
@@ -163,7 +163,7 @@
       });
     }
     function eventEditor() {
-      modal(state ? 'Event settings' : 'Create an alliance plan', function (body) {
+      modal(state ? 'Event settings' : 'New plan', function (body) {
         var f = form(body, 'event'), p = state ? state.plan : {}, days = E.eventDays(Date.now(), 4), at = p.eventAt ? Date.parse(p.eventAt) : null;
         var chosen = at !== null ? new Date(at).toISOString().slice(0, 10) : new Date(days[0]).toISOString().slice(0, 10);
         var fieldset = el('fieldset', 'vv-days'); fieldset.appendChild(el('legend', '', 'Event day'));
@@ -171,57 +171,55 @@
         if (!options.includes(chosen)) options.unshift(chosen);
         options.forEach(function (day) { var label = el('label', 'vv-chip'), radio = el('input'); radio.type = 'radio'; radio.name = 'day'; radio.value = day; radio.checked = day === chosen; radio.required = true; label.append(radio, el('span', '', dayLabel(Date.parse(day + 'T00:00:00Z')))); fieldset.appendChild(label); });
         f.appendChild(fieldset);
-        f.appendChild(el('p', 'vv-caption', 'Vikings runs on the Tuesday and Thursday of the Strongest Governor and KvK prep weeks, at a time your alliance chooses. Eternity’s Reach is on those Tuesdays too, so pick a time that doesn’t clash.'));
         var grid = el('div', 'vv-form-grid'); f.appendChild(grid);
-        var time = field(grid, 'Start time (server time, UTC)', 'time', at !== null ? utcTime(at) : read(TIME) || '', 'time'); time.required = true;
+        var time = field(grid, 'Start time (UTC)', 'time', at !== null ? utcTime(at) : read(TIME) || '', 'time'); time.required = true;
         var local = el('p', 'vv-caption vv-local-time vv-wide'); local.dataset.target = 'vikings.localTime'; grid.appendChild(local);
-        var n = field(grid, 'Plan name', 'name', p.name || ''); n.maxLength = 80; n.placeholder = 'Vikings · ' + dayLabel(Date.parse(chosen + 'T00:00:00Z')); n.parentElement.classList.add('vv-wide');
-        var more = el('details', 'vv-more'); more.appendChild(el('summary', '', 'Difficulty, notes and roster lock')); var extra = el('div', 'vv-form-grid'); more.appendChild(extra); f.appendChild(more);
+        var n = field(grid, 'Plan name', 'name', p.name || ''); n.maxLength = 80; n.placeholder = 'Vikings'; n.parentElement.classList.add('vv-wide');
+        var more = el('details', 'vv-more'); more.appendChild(el('summary', '', 'More')); var extra = el('div', 'vv-form-grid'); more.appendChild(extra); f.appendChild(more);
         var d = field(extra, 'Difficulty (optional)', 'difficulty', p.difficulty, 'number'); d.min = '1'; d.max = '100';
-        if (state) field(extra, 'Sign-ups and player edits', 'closed', p.closed ? 'true' : 'false', 'select', [['false', 'Open'], ['true', 'Locked']]);
+        if (state) field(extra, 'Sign-ups', 'closed', p.closed ? 'true' : 'false', 'select', [['false', 'Open'], ['true', 'Locked']]);
         var notes = field(extra, 'Notes for the alliance', 'notes', p.notes || '', 'textarea'); notes.maxLength = 2000; notes.parentElement.classList.add('vv-wide');
-        if (state) extra.appendChild(el('p', 'vv-caption vv-wide', 'Locking stops sign-ups and player edits. You can still correct registrations.'));
         submit(f, state ? 'Save event' : 'Create plan');
-        if (!state) f.appendChild(el('p', 'vv-caption', 'The plan starts on this device. Invite players when you are ready; nothing is shared before then.'));
         localTime(f);
       });
     }
     function localTime(f) {
       var out = f.querySelector('.vv-local-time'), day = f.elements.day && (f.querySelector('[name=day]:checked') || {}).value, time = f.elements.time && f.elements.time.value;
       if (!out) return;
-      out.textContent = day && time ? 'That is ' + localWhen(day + 'T' + time + ':00Z') + ' your time.' : 'Kingshot shows server time, which is UTC.';
-      if (f.elements.name && !f.elements.name.value && day) f.elements.name.placeholder = 'Vikings · ' + dayLabel(Date.parse(day + 'T00:00:00Z'));
+      out.textContent = day && time ? localWhen(day + 'T' + time + ':00Z') + ' your time' : '';
     }
     function assignmentEditor(playerId) {
       var p = state.roster.find(function (r) { return r.id === playerId; }); if (!p) return;
       modal(p.nickname, function (body) {
-        var top = el('div', 'vv-editor-top'); top.appendChild(counts(p)); top.appendChild(el('p', 'vv-caption', fmt(total(p)) + ' troops · ' + p.marches + ' queues · ' + (p.availability === 'unknown' ? 'availability unsure' : 'expects to be ' + p.availability)));
-        top.appendChild(button('Edit details', 'editPlayer', { id: p.id })); body.appendChild(top);
+        var top = el('div', 'vv-editor-top'); top.appendChild(counts(p)); top.appendChild(button('Edit', 'editPlayer', { id: p.id }, 'vv-quiet')); body.appendChild(top);
         var check = E.validate(state.roster, state.assignments, state.hq), incoming = check.incoming[p.id] || [];
-        var cover = el('div', 'vv-section'); cover.appendChild(el('h3', '', 'Covering ' + p.nickname + '’s city'));
-        if (!incoming.length) cover.appendChild(el('p', 'vv-caption', 'Nobody is assigned yet. Pick ' + p.nickname + ' as the destination in another player’s marches.'));
-        incoming.forEach(function (r) { cover.appendChild(button(name(r.playerId) + ' · march ' + r.queue + ' · ' + fmt(r.troops), 'assign', { id: r.playerId }, 'vv-link-row')); });
+        var cover = el('div', 'vv-cover-in'); cover.appendChild(el('span', 'vv-label', 'Covered by'));
+        if (!incoming.length) cover.appendChild(el('span', 'vv-dim', 'nobody yet'));
+        incoming.forEach(function (r) { cover.appendChild(button(name(r.playerId) + ' ' + fmt(r.troops), 'assign', { id: r.playerId }, 'vv-quiet')); });
         body.appendChild(cover);
-        var f = form(body, 'assignments'); f.dataset.id = p.id; f.appendChild(el('h3', 'vv-form-title', p.nickname + ' sends'));
+        var f = form(body, 'assignments'); f.dataset.id = p.id;
         var rows = state.assignments[p.id] || E.split(p).rows, hq = E.hqRows(state.hq).find(function (r) { return r.playerId === p.id; });
+        var grid = el('div', 'vv-sends'), head = el('div', 'vv-sends-head'); head.appendChild(el('span')); head.appendChild(el('span', '', 'Sends to')); TYPES.forEach(function (k) { var c = el('span'); c.appendChild(symbol(k)); c.setAttribute('aria-label', LABELS[k]); head.appendChild(c); }); grid.appendChild(head);
+        var targets = [['', '—']].concat(state.roster.filter(function (r) { return r.id !== p.id; }).map(function (r) { return [r.id, r.nickname]; }));
         for (var q = 1; q <= p.marches; q++) {
           var row = rows.find(function (r) { return r.queue === q; }) || { queue: q, destination: null, infantry: 0, cavalry: 0, archers: 0 };
-          var box = el('div', 'vv-editor-row'); box.dataset.queue = q;
-          var targets = [['', 'Not assigned']].concat(state.roster.filter(function (r) { return r.id !== p.id; }).map(function (r) { return [r.id, r.nickname]; }));
-          field(box, 'March ' + q + ' · capacity ' + fmt(E.capacity(p, q)) + (hq && hq.queue === q ? ' · HQ queue' : ''), 'destination-' + q, row.destination || '', 'select', targets);
-          var inputs = el('div', 'vv-troop-inputs vv-compact'); TYPES.forEach(function (k) { var input = field(inputs, LABELS[k], k + '-' + q, row[k], 'number'); input.required = true; input.parentElement.prepend(symbol(k)); }); box.appendChild(inputs); f.appendChild(box);
+          var box = el('div', 'vv-send'); box.dataset.queue = q;
+          var tag = el('span', 'vv-send-q'); tag.appendChild(el('strong', '', String(q))); tag.appendChild(el('small', '', hq && hq.queue === q ? 'HQ' : short(E.capacity(p, q)))); box.appendChild(tag);
+          var select = el('select'); select.name = 'destination-' + q; select.setAttribute('aria-label', 'March ' + q + ' destination'); targets.forEach(function (o) { var opt = el('option', '', o[1]); opt.value = o[0]; select.appendChild(opt); }); select.value = row.destination || ''; box.appendChild(select);
+          TYPES.forEach(function (k) { var input = el('input'); input.type = 'number'; input.name = k + '-' + q; input.min = '0'; input.max = '100000000'; input.step = '1'; input.inputMode = 'numeric'; input.required = true; input.value = row[k]; input.setAttribute('aria-label', 'March ' + q + ' ' + LABELS[k]); box.appendChild(input); });
+          grid.appendChild(box);
         }
-        var foot = el('div', 'vv-actions'); submit(foot, 'Save marches'); foot.appendChild(button('Even split', 'fillMarches', { id: p.id })); f.appendChild(foot);
-        f.appendChild(el('p', 'vv-caption', 'Even split sends all troop types while capacity remains. HQ shares are set in the HQ section.'));
+        f.appendChild(grid);
+        var foot = el('div', 'vv-actions'); submit(foot, 'Save'); foot.appendChild(button('Even split', 'fillMarches', { id: p.id })); f.appendChild(foot);
       });
     }
     function hqEditor() {
       modal('HQ · waves 10 and 20', function (body) {
         var f = form(body, 'hq'), grid = el('div', 'vv-form-grid'); f.appendChild(grid);
-        var cap = field(grid, 'Effective garrison capacity', 'capacity', state.hq.capacity, 'number'); cap.required = true; cap.parentElement.classList.add('vv-wide');
+        var cap = field(grid, 'HQ capacity', 'capacity', state.hq.capacity, 'number'); cap.required = true; cap.parentElement.classList.add('vv-wide');
         var inf = field(grid, 'Infantry %', 'infantryPercent', state.hq.infantryPercent, 'number'); inf.max = '100'; inf.required = true;
         var cav = field(grid, 'Cavalry %', 'cavalryPercent', state.hq.cavalryPercent, 'number'); cav.max = '100'; cav.required = true;
-        f.appendChild(el('p', 'vv-caption', 'Archers make up the rest. 75/25/0 is a starting point; change it for your alliance. Choose up to 15 players and the queue each recalls after city waves 9 and 19.'));
+        f.appendChild(el('p', 'vv-label', 'Who sends, and which march'));
         state.roster.forEach(function (p) {
           var entry = state.hq.participants.find(function (e) { return e.playerId === p.id; }), row = el('div', 'vv-hq-pick'), label = el('label'), check = el('input');
           check.type = 'checkbox'; check.name = 'participant'; check.value = p.id; check.checked = !!entry; label.append(check, el('span', '', p.nickname)); row.appendChild(label);
@@ -244,7 +242,7 @@
     }
     function bar() {
       var event = one('event'); event.replaceChildren(); event.hidden = !state; if (!state) return;
-      var head = el('div', 'vv-bar-head'), tag = el('p', 'vv-label', state.example ? 'Example · only on this device' : state.local ? 'Leader · draft on this device' : ROLES[state.access] + (state.access === 'registration' ? ' · ' + name(state.registrationId) : ''));
+      var head = el('div', 'vv-bar-head'), tag = el('p', 'vv-label', state.example ? 'Example' : state.local ? 'Leader · draft' : ROLES[state.access] + (state.access === 'registration' ? ' · ' + name(state.registrationId) : ''));
       var text = el('div'); text.appendChild(tag); text.appendChild(el('h2', '', state.plan.name)); head.appendChild(text);
       head.appendChild(button('Switch plan', 'leave', {}, 'vv-quiet')); event.appendChild(head);
       var when = el('p', 'vv-when');
@@ -262,8 +260,7 @@
     }
     function joinForm(body) {
       body.appendChild(el('h2', '', 'Sign up'));
-      body.appendChild(el('p', 'vv-lede', 'Add your troops and when you expect to be online. Your leader uses this to assign your marches.'));
-      if (state.plan.closed) { body.appendChild(el('p', 'vv-flag', 'Sign-ups are locked for this plan. Ask your leader to add you.')); return; }
+      if (state.plan.closed) { body.appendChild(el('p', 'vv-flag', 'Sign-ups are closed. Ask your leader to add you.')); return; }
       var f = form(body, 'player'); f.dataset.id = ''; playerFields(f, { nickname: '', infantry: null, cavalry: null, archers: null, marchCapacity: null, marches: 5 }); submit(f, 'Join this event');
     }
     function picker(body, view) {
@@ -283,8 +280,8 @@
       var view = snapshot(), me = state.registrationId;
       if (!view || !view.roster.length) {
         body.appendChild(el('h2', '', me ? 'You’re signed up' : 'No marches yet'));
-        body.appendChild(el('p', 'vv-lede', isManager() ? (state.roster.length ? 'Arrange marches in Alliance, then publish them for your players.' : 'Add players or invite them, then arrange their marches in Alliance.') : 'Your leader hasn’t published marches yet. They will appear here; this page checks every 30 seconds.'));
-        if (me) { var mine = state.roster.find(function (r) { return r.id === me; }); if (mine) { body.appendChild(counts(mine)); var a = el('div', 'vv-actions'); a.appendChild(button('Edit my details', 'editPlayer', { id: me })); a.appendChild(button('Copy my private link', 'copyPrivate')); body.appendChild(a); } }
+        body.appendChild(el('p', 'vv-lede', isManager() ? (state.roster.length ? 'Set marches in Alliance, then publish.' : 'Invite or add players in Alliance.') : 'Marches appear here once your leader publishes.'));
+        if (me) { var mine = state.roster.find(function (r) { return r.id === me; }); if (mine) { body.appendChild(counts(mine)); var a = el('div', 'vv-actions'); a.appendChild(button('Edit my details', 'editPlayer', { id: me })); a.appendChild(button('Copy my link', 'copyPrivate')); body.appendChild(a); } }
         if (isManager()) body.appendChild(button(state.roster.length ? 'Open Alliance' : 'Add players', 'tab', { tab: 'alliance-plan' }, 'vv-primary'));
         return;
       }
@@ -302,15 +299,15 @@
       var headquarters = E.hqRows(view.hq || E.emptyHQ()).find(function (r) { return r.playerId === p.id; });
       if (headquarters) {
         var hq = el('div', 'vv-hq'); hq.appendChild(el('p', 'vv-label', 'HQ · waves 10 & 20'));
-        marchRow({ queue: headquarters.queue, destination: 'hq', infantry: headquarters.infantry, cavalry: headquarters.cavalry, archers: headquarters.archers }, 'Alliance HQ', hq, 'After city wave 9 or 19 resolves, recall march ' + headquarters.queue + ' and send this share. Send it back to its city after the HQ hit.');
+        marchRow({ queue: headquarters.queue, destination: 'hq', infantry: headquarters.infantry, cavalry: headquarters.cavalry, archers: headquarters.archers }, 'Alliance HQ', hq, 'After wave 9 and 19: recall march ' + headquarters.queue + ', send this, return it after the hit.');
         body.appendChild(hq);
       }
       var actions = el('div', 'vv-actions'); actions.appendChild(button('Copy for game chat', 'copyInstructions', {}, 'vv-primary'));
-      if (me) { actions.appendChild(button('Edit my details', 'editPlayer', { id: me })); actions.appendChild(button('Copy my private link', 'copyPrivate')); }
+      if (me) { actions.appendChild(button('Edit my details', 'editPlayer', { id: me })); actions.appendChild(button('Copy my link', 'copyPrivate')); }
       body.appendChild(actions);
       var section = el('div', 'vv-section'); section.appendChild(el('h3', '', 'Covering your city'));
       var cover = []; Object.keys(view.assignments).forEach(function (sender) { (view.assignments[sender] || []).forEach(function (r) { if (r.destination === p.id && total(r)) cover.push([name(sender, view.roster), total(r)]); }); });
-      if (!cover.length) section.appendChild(el('p', 'vv-caption', 'Nobody is assigned to your city. Agree cover with your leader before emptying it.'));
+      if (!cover.length) section.appendChild(el('p', 'vv-caption', 'Nobody yet.'));
       else { var ul = el('ul', 'vv-cover'); cover.forEach(function (c) { var li = el('li'); li.appendChild(el('span', '', c[0])); li.appendChild(el('span', 'vv-total', fmt(c[1]))); ul.appendChild(li); }); section.appendChild(ul); }
       body.appendChild(section);
       var checks = el('div', 'vv-section'); checks.appendChild(el('h3', '', 'Before the first wave'));
@@ -329,10 +326,10 @@
     function tally(container, items) { var dl = el('dl', 'vv-tally'); items.forEach(function (i) { var d = el('div'); d.appendChild(el('dt', '', i[0])); d.appendChild(el('dd', i[2] ? 'vv-short' : '', i[1])); dl.appendChild(d); }); container.appendChild(dl); }
     function alliance() {
       var body = one('alliance'); body.replaceChildren();
-      if (!state) { body.appendChild(el('p', 'vv-lede', 'Create a plan to collect sign-ups and arrange city cover. It stays on this device until you invite players.')); body.appendChild(button('Create an alliance plan', 'create', {}, 'vv-primary')); return; }
+      if (!state) { body.appendChild(el('p', 'vv-lede', 'No plan open.')); body.appendChild(button('Create an alliance plan', 'create', {}, 'vv-primary')); return; }
       if (!isManager()) {
         var view = state.published;
-        if (!view) { body.appendChild(el('p', 'vv-lede', 'The leader has not published the plan yet.')); return; }
+        if (!view) { body.appendChild(el('p', 'vv-lede', 'Not published yet.')); return; }
         body.appendChild(el('h2', '', 'Cities')); var list = el('div', 'vv-rows'); view.roster.forEach(function (p) { list.appendChild(playerRow(p, view, null, false)); }); body.appendChild(list); return;
       }
       var check = E.validate(state.roster, state.assignments, state.hq), queues = state.roster.reduce(function (n, p) { return n + p.marches; }, 0);
@@ -345,11 +342,9 @@
       else actions.appendChild(button('Invite & share links', 'share', {}, 'vv-secondary'));
       body.appendChild(actions);
       if (check.errors.length) { var errs = el('ul', 'vv-problems'); check.errors.forEach(function (m) { errs.appendChild(el('li', '', m)); }); body.appendChild(errs); }
-      else if (state.publicationRevision && !pending()) body.appendChild(el('p', 'vv-caption', 'Players see published version ' + state.publicationRevision + '. Edits stay in your draft until you publish again.'));
       var h = el('div', 'vv-heading'); h.appendChild(el('h2', '', 'Cities')); h.appendChild(button('Add a player', 'addPlayer', {}, 'vv-quiet')); body.appendChild(h);
-      if (!state.roster.length) body.appendChild(el('p', 'vv-caption', state.local ? 'Add players yourself, or invite them to sign up with a link.' : 'Share the invitation link in alliance chat. Players appear here as they sign up.'));
+      if (!state.roster.length) body.appendChild(el('p', 'vv-caption', state.local ? 'No players yet.' : 'No sign-ups yet.'));
       var rows = el('div', 'vv-rows'); state.roster.forEach(function (p) { rows.appendChild(playerRow(p, state, check, true)); }); body.appendChild(rows);
-      if (state.roster.length) body.appendChild(el('p', 'vv-caption', 'Tap a city to set where that player’s marches go and see who covers them.'));
       var hq = el('div', 'vv-section vv-hq-section'), hqHead = el('div', 'vv-hq-head'); hqHead.appendChild(hqMark()); var hqText = el('div'); hqText.appendChild(el('h3', '', 'HQ · waves 10 & 20'));
       hqText.appendChild(el('p', 'vv-dim', state.hq.participants.length ? state.hq.participants.length + ' players · ' + fmt(state.hq.capacity) + ' troops · ' + state.hq.infantryPercent + '/' + state.hq.cavalryPercent + '/' + (100 - state.hq.infantryPercent - state.hq.cavalryPercent) : 'No HQ transfer arranged')); hqHead.appendChild(hqText); hq.appendChild(hqHead);
       if (state.roster.length) hq.appendChild(button(state.hq.participants.length ? 'Change HQ plan' : 'Arrange HQ', 'hq', {}, 'vv-quiet')); body.appendChild(hq);
@@ -371,7 +366,7 @@
       });
       if (local && local.local) { var b = button('', 'openLocal', {}, 'vv-row'), main = el('span', 'vv-row-main'), top = el('span', 'vv-row-top'); top.appendChild(el('strong', '', local.plan.name)); top.appendChild(el('span', 'vv-avail', 'Draft')); main.appendChild(top); main.appendChild(el('span', 'vv-dim', local.roster.length + ' players · only on this device')); b.appendChild(main); b.appendChild(el('span', 'vv-chevron', '›')); list.appendChild(b); }
       body.appendChild(list);
-      if (saved.length) body.appendChild(button('Forget plans on this device', 'forget', {}, 'vv-quiet'));
+      if (saved.length) body.appendChild(button('Forget these', 'forget', {}, 'vv-quiet'));
     }
     function render() {
       root.classList.toggle('vv-active', !!state);
@@ -384,16 +379,15 @@
       return url;
     }
     function share() {
-      modal('Invite & share', function (body) {
+      modal('Links', function (body) {
         var codes = (credential && credential.codes) || {};
-        [['join', 'Sign-up link', 'Post this in alliance chat. Anyone with it can join the roster.'], ['view', 'Marches link', 'Post this once you publish. It shows everyone’s marches and changes nothing.'], ['manage', 'Your leader link', 'Keep this private. It opens the plan as leader on another device. Lost leader links cannot be recovered.']].forEach(function (row) {
+        [['join', 'Sign-up', 'for alliance chat'], ['view', 'Marches', 'after you publish'], ['manage', 'Leader', 'keep private']].forEach(function (row) {
           var role = row[0], code = role === 'manage' ? credential.code : codes[role];
-          var section = el('div', 'vv-share'); section.appendChild(el('h3', '', row[1])); section.appendChild(el('p', 'vv-caption', row[2]));
-          if (code) {
-            var input = el('input', 'vv-link'); input.readOnly = true; input.value = shareUrl(role, code); input.setAttribute('aria-label', row[1]); section.appendChild(input);
-            var a = el('div', 'vv-actions'); a.appendChild(button(role === 'manage' ? 'Copy link' : 'Copy for game chat', 'copy', { value: shareText(role, code) }, role === 'join' ? 'vv-primary' : '')); if (role !== 'manage') a.appendChild(button('Replace link', 'rotate', { role: role }, 'vv-quiet')); section.appendChild(a);
-          } else { section.appendChild(el('p', 'vv-caption', 'This device does not have this link. Replace it to make a new one; the old one stops working.')); section.appendChild(button('Make a new link', 'rotate', { role: role })); }
-          body.appendChild(section);
+          var line = el('div', 'vv-share'), text = el('div'); text.appendChild(el('strong', '', row[1])); text.appendChild(el('span', 'vv-dim', row[2])); line.appendChild(text);
+          var a = el('div', 'vv-share-actions');
+          if (code) { a.appendChild(button('Copy', 'copy', { value: shareText(role, code) }, role === 'join' ? 'vv-primary' : 'vv-secondary')); if (role !== 'manage') a.appendChild(button('Replace', 'rotate', { role: role }, 'vv-quiet')); }
+          else a.appendChild(button('New link', 'rotate', { role: role }, 'vv-secondary'));
+          line.appendChild(a); body.appendChild(line);
         });
       });
     }
@@ -402,14 +396,14 @@
       data = { ...data }; delete data.registrationId;
       var blob = new Blob([JSON.stringify({ format: 'kingslop-vikings', version: 1, state: data }, null, 2)], { type: 'application/json' });
       var a = el('a'); a.href = URL.createObjectURL(blob); a.download = 'vikings-plan.json'; a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
-      say('Exported planning data. Private access links are kept separate.');
+      say('Exported.');
     }
     async function enable() {
       var created = await request('/v1/plans', 'POST', { name: state.plan.name, eventAt: state.plan.eventAt, difficulty: state.plan.difficulty, notes: state.plan.notes, closed: false });
       var local = clone(state), map = {};
       credential = { planId: created.plan.id, code: created.codes.manage, codes: created.codes, role: 'manage' }; write(SESSION, credential, sessionStorage);
       state = { plan: created.plan, roster: [], assignments: {}, hq: E.emptyHQ(), access: 'manage', local: false };
-      if (!remember(credential)) say('Storage is unavailable. Copy your leader link before leaving.', true); else write(LAST, credential.planId);
+      if (!remember(credential)) say('This browser can’t save. Copy your leader link.', true); else write(LAST, credential.planId);
       try {
         for (var p of local.roster) {
           var payload = { ...p }; ['id', 'revision', 'createdAt', 'updatedAt'].forEach(function (k) { delete payload[k]; });
@@ -422,7 +416,7 @@
           await request('/v1/plans/' + credential.planId + '/assignments/' + map[oldId], 'PUT', { ...expected(), marches: marches }); await load(true);
         }
         if (local.hq.participants.length) { var hq = { ...local.hq, participants: local.hq.participants.map(function (p) { return { playerId: map[p.playerId], queue: p.queue }; }) }; await request('/v1/plans/' + credential.planId + '/hq', 'PUT', { ...expected(), hq: hq }); await load(true); }
-        mode = 'alliance-plan'; render(); share(); say('Sign-ups are open. This device will reopen the plan as leader. The local draft is kept as a backup.');
+        mode = 'alliance-plan'; render(); share(); say('Sign-ups are open. Post the sign-up link in alliance chat.');
       } catch (cause) { await load(true).catch(function () {}); share(); throw new Error('The shared plan was created, but some draft details were not copied. Keep its leader link and review the roster. Your local backup remains available. ' + cause.message); }
     }
     async function submitForm(f) {
@@ -430,7 +424,7 @@
       var kind = f.dataset.kind, data;
       if (kind === 'event') {
         var raw = Object.fromEntries(new FormData(f)), eventAt = new Date(raw.day + 'T' + raw.time + ':00Z').toISOString();
-        data = { name: raw.name.trim() || 'Vikings · ' + dayLabel(Date.parse(raw.day + 'T00:00:00Z')), eventAt: eventAt, difficulty: raw.difficulty ? Number(raw.difficulty) : null, notes: raw.notes || '' };
+        data = { name: raw.name.trim() || 'Vikings', eventAt: eventAt, difficulty: raw.difficulty ? Number(raw.difficulty) : null, notes: raw.notes || '' };
         if (state) data.closed = raw.closed === 'true';
         write(TIME, raw.time);
         if (!state) { state = localState(data.name); Object.assign(state.plan, data); write(LAST, 'local'); mode = 'alliance-plan'; }
@@ -449,10 +443,9 @@
             await load(true);
             var kept = remember(credential); if (kept) write(LAST, credential.planId);
             close(); mode = 'my-plan'; render();
-            modal('You’re signed up', function (body) {
-              body.appendChild(el('p', '', kept ? 'This device will reopen your plan whenever you come back. Keep your private link to edit your details from another device.' : 'This browser can’t store your plan. Keep your private link to come back and edit your details.'));
-              var input = el('input', 'vv-link'); input.readOnly = true; input.value = shareUrl('registration', credential.code); input.setAttribute('aria-label', 'Your private link'); body.appendChild(input);
-              var a = el('div', 'vv-actions'); a.appendChild(button('Copy my private link', 'copyPrivate', {}, 'vv-primary')); if (kept) a.appendChild(button('Don’t remember on this device', 'forgetThis', {}, 'vv-quiet')); body.appendChild(a);
+            modal('Signed up', function (body) {
+              body.appendChild(el('p', '', kept ? 'This page opens your plan next time. On another device, use your link.' : 'Copy your link to come back to your plan.'));
+              var a = el('div', 'vv-actions'); a.appendChild(button('Copy my link', 'copyPrivate', {}, 'vv-primary')); if (kept) a.appendChild(button('Don’t remember', 'forgetThis', {}, 'vv-quiet')); body.appendChild(a);
             });
             persist(); return;
           }
@@ -465,12 +458,12 @@
         var assignments = { ...state.assignments, [f.dataset.id]: rows }, check = E.validate(state.roster, { [f.dataset.id]: rows }, E.emptyHQ()); if (check.errors.length) throw new Error(check.errors[0]);
         if (state.local) { state.assignments = assignments; state.revision++; }
         else { await request('/v1/plans/' + state.plan.id + '/assignments/' + f.dataset.id, 'PUT', { ...expected(), marches: rows }); await load(true); }
-        persist(); close(); render(); say('Marches saved to the draft.');
+        persist(); close(); render(); say('Saved.');
       } else if (kind === 'hq') {
         data = new FormData(f); var hq = { capacity: Number(data.get('capacity')), infantryPercent: Number(data.get('infantryPercent')), cavalryPercent: Number(data.get('cavalryPercent')), participants: data.getAll('participant').map(function (pid) { return { playerId: pid, queue: Number(data.get('queue-' + pid)) }; }) };
         if (hq.infantryPercent + hq.cavalryPercent > 100 || hq.participants.length > 15) throw new Error('Use a ratio up to 100% and at most 15 participants.');
         if (state.local) { state.hq = hq; state.revision++; } else { await request('/v1/plans/' + state.plan.id + '/hq', 'PUT', { ...expected(), hq: hq }); await load(true); }
-        persist(); close(); render(); say('HQ draft saved. Review any troop conflicts before publishing.');
+        persist(); close(); render(); say('HQ saved.');
       } else if (kind === 'open') {
         var c = parseLink(f.elements.link.value); if (!c) throw new Error('Paste the whole link, starting with https.');
         close(); await open(c, true);
@@ -489,14 +482,14 @@
       if (TYPES.every(function (k) { return totals[k] === null; })) throw new Error('There are no confirmed troop counts in your save yet.');
       var f = one('dialog').open ? one('dialogBody').querySelector('form') : one('personal').querySelector('form') || one('calculatorForm');
       TYPES.forEach(function (k) { if (f.elements[k]) f.elements[k].value = totals[k] === null ? '' : totals[k]; });
-      say('Saved troop counts filled in for you to check. Missing types stay blank. Nothing has been uploaded.');
+      say('Filled in from your saved troops.');
     }
     function demo() {
-      lastRefresh = null; var day = E.eventDays(Date.now(), 1)[0]; state = localState('Vikings · ' + dayLabel(day) + ' · example'); state.example = true; state.plan.eventAt = new Date(day + 20 * 3600000).toISOString();
+      lastRefresh = null; var day = E.eventDays(Date.now(), 1)[0]; state = localState('Vikings'); state.example = true; state.plan.eventAt = new Date(day + 20 * 3600000).toISOString();
       ['Rowan', 'Ash', 'Fern', 'Willow'].forEach(function (nickname, i) { state.roster.push({ id: id(), nickname: nickname, availability: i === 3 ? 'offline' : 'online', infantry: 240000, cavalry: 160000, archers: 120000, marchCapacity: 180000, marches: 3, capacities: null, notes: '', revision: 1 }); });
       state.roster.forEach(function (p, i) { state.assignments[p.id] = E.split(p).rows.map(function (r, q) { return { ...r, destination: state.roster[(i + q + 1) % 4].id }; }); });
       state.hq = { capacity: 300000, infantryPercent: 75, cavalryPercent: 25, participants: state.roster.slice(0, 3).map(function (p) { return { playerId: p.id, queue: 1 }; }) };
-      selected = state.roster[0].id; credential = null; mode = 'my-plan'; render(); say('This is an example. Nothing is saved.');
+      selected = state.roster[0].id; credential = null; mode = 'my-plan'; render(); say('Example plan. Nothing is saved.');
     }
     function waves() {
       var body = one('waves');
@@ -511,7 +504,7 @@
       clearTimeout(timer); timer = setTimeout(function () {
         if (disposed) return;
         if (!credential || !state || state.local || document.hidden || one('dialog').open || busy || root.querySelector('#my-plan form:focus-within')) return schedule(30000);
-        run(async function () { try { var status = await request('/v1/plans/' + state.plan.id + '/status'); var signature = [state.plan.revision, state.plan.rosterRevision || 0, state.publicationRevision || 0, isManager() ? state.revision : 0].join(':'); if (status.signature !== signature) await load(true); else { lastRefresh = new Date(); bar(); } schedule(30000); } catch (cause) { say('Could not refresh. Showing the last loaded plan; try Refresh when connected.', true); schedule(90000); } });
+        run(async function () { try { var status = await request('/v1/plans/' + state.plan.id + '/status'); var signature = [state.plan.revision, state.plan.rosterRevision || 0, state.publicationRevision || 0, isManager() ? state.revision : 0].join(':'); if (status.signature !== signature) await load(true); else { lastRefresh = new Date(); bar(); } schedule(30000); } catch (cause) { say('Offline. Showing the last copy.', true); schedule(90000); } });
       }, delay);
     }
     context.cleanup(function () { disposed = true; clearTimeout(timer); });
@@ -540,31 +533,31 @@
       filter: { events: ['input'], run: function (node) { filter = node.value; var view = snapshot(); if (view) pickList(one('pickList'), view); } },
       savedTroops: action(savedTroops),
       enable: action(enable), share: action(share),
-      copy: action(function (node) { return copy(node.dataset.value, 'Copied. Paste it into alliance chat.'); }),
-      copyPrivate: action(function () { return copy(shareUrl('registration', credential.code), 'Private link copied. Don’t share it; it edits your registration.'); }),
+      copy: action(function (node) { return copy(node.dataset.value, 'Copied.'); }),
+      copyPrivate: action(function () { return copy(shareUrl('registration', credential.code), 'Copied. Keep it to yourself.'); }),
       copyInstructions: action(function () { return copy(E.instructions(snapshot(), selected), 'Your marches are copied.'); }),
-      forgetThis: action(function () { forget(credential.planId); drop(LAST); close(); say('This device won’t reopen the plan. Keep your private link.'); }),
+      forgetThis: action(function () { forget(credential.planId); drop(LAST); close(); say('Forgotten on this device.'); }),
       restore: action(async function (node) { var c = links()[Number(node.dataset.index)]; if (!c) throw new Error('This saved plan is no longer available.'); await open(Object.assign({}, c), false); }),
       openLocal: action(function () { var local = read(KEY); if (!local || !local.local) throw new Error('The local draft is no longer on this device.'); state = local; credential = null; write(LAST, 'local'); mode = 'alliance-plan'; render(); }),
-      forget: action(function () { drop(LINKS); drop(LAST); remembered(); say('Plans forgotten on this device. Shared plans still exist for anyone with their links.'); }),
-      rotate: action(function (node) { var role = node.dataset.role; modal('Replace the ' + (role === 'join' ? 'sign-up' : 'marches') + ' link?', function (body) { body.appendChild(el('p', '', 'The old link stops working straight away. Post the new one wherever players need it.')); body.appendChild(button('Replace link now', 'confirmRotate', { role: role }, 'vv-primary')); }); }),
+      forget: action(function () { drop(LINKS); drop(LAST); remembered(); say('Forgotten.'); }),
+      rotate: action(function (node) { var role = node.dataset.role; modal('Replace the ' + (role === 'join' ? 'sign-up' : 'marches') + ' link?', function (body) { body.appendChild(el('p', '', 'The old link stops working.')); body.appendChild(button('Replace link now', 'confirmRotate', { role: role }, 'vv-primary')); }); }),
       confirmRotate: action(async function (node) { var result = await request('/v1/plans/' + state.plan.id + '/rotate', 'POST', { role: node.dataset.role }); credential.codes = credential.codes || {}; credential.codes[result.role] = result.code; remember(credential); persist(); share(); }),
-      publish: action(function () { var check = E.validate(state.roster, state.assignments, state.hq); if (check.errors.length) throw new Error(check.errors[0]); modal('Publish these marches?', function (body) { body.appendChild(el('p', '', 'Players see this version until you publish another. Later edits stay in your draft.')); if (check.warnings.length) { body.appendChild(el('p', 'vv-label', 'Still open')); var list = el('ul', 'vv-problems'); check.warnings.forEach(function (warning) { list.appendChild(el('li', '', warning)); }); body.appendChild(list); } body.appendChild(button(check.warnings.length ? 'Publish with these gaps' : 'Publish', 'confirmPublish', {}, 'vv-primary')); }); }),
+      publish: action(function () { var check = E.validate(state.roster, state.assignments, state.hq); if (check.errors.length) throw new Error(check.errors[0]); modal('Publish?', function (body) { if (check.warnings.length) { body.appendChild(el('p', 'vv-label', 'Still open')); var list = el('ul', 'vv-problems'); check.warnings.forEach(function (warning) { list.appendChild(el('li', '', warning)); }); body.appendChild(list); } body.appendChild(button(check.warnings.length ? 'Publish with these gaps' : 'Publish', 'confirmPublish', {}, 'vv-primary')); }); }),
       confirmPublish: action(async function () {
         var check = E.validate(state.roster, state.assignments, state.hq); if (check.errors.length) throw new Error(check.errors[0]);
         if (state.local) { state.published = { plan: clone(state.plan), roster: clone(state.roster), assignments: clone(state.assignments), hq: clone(state.hq), sourceRevision: state.revision, rosterRevision: state.rosterRevision, planRevision: state.planRevision }; state.publicationRevision++; }
         else { await request('/v1/plans/' + state.plan.id + '/publish', 'POST', expected()); await load(true); }
-        persist(); close(); render(); say(state.example ? 'Published in this example. Players would see this version.' : state.local ? 'Published on this device. Invite players to share it.' : 'Published. Players with the marches link see this version now.');
+        persist(); close(); render(); say('Published.');
       }),
-      removePlayer: action(function (node) { modal('Remove ' + name(node.dataset.id) + '?', function (body) { body.appendChild(el('p', '', 'Their private link and draft marches will be removed. Check the cities they covered and HQ before publishing again.')); body.appendChild(button('Remove player', 'confirmRemove', { id: node.dataset.id }, 'vv-danger')); }); }),
+      removePlayer: action(function (node) { modal('Remove ' + name(node.dataset.id) + '?', function (body) { body.appendChild(el('p', '', 'Their marches and link go too.')); body.appendChild(button('Remove player', 'confirmRemove', { id: node.dataset.id }, 'vv-danger')); }); }),
       confirmRemove: action(async function (node) { if (state.local) { state.roster = state.roster.filter(function (p) { return p.id !== node.dataset.id; }); delete state.assignments[node.dataset.id]; state.rosterRevision++; state.revision++; } else { await request('/v1/plans/' + state.plan.id + '/registrations/' + node.dataset.id, 'DELETE'); await load(true); } persist(); close(); render(); }),
-      deletePlan: action(function () { modal('Delete this shared plan?', function (body) { body.appendChild(el('p', '', 'This removes the roster, marches and every link for everyone. Export the plan first if you need a copy.')); body.appendChild(button('Delete for everyone', 'confirmDelete', {}, 'vv-danger')); }); }),
+      deletePlan: action(function () { modal('Delete this shared plan?', function (body) { body.appendChild(el('p', '', 'Removes it for everyone.')); body.appendChild(button('Delete for everyone', 'confirmDelete', {}, 'vv-danger')); }); }),
       confirmDelete: action(async function () { await request('/v1/plans/' + state.plan.id, 'DELETE'); forget(state.plan.id); drop(LAST); home(); say('Shared plan deleted.'); }),
-      discard: action(function () { modal('Discard this draft?', function (body) { body.appendChild(el('p', '', 'The draft only exists on this device. Export it first if you might need it.')); body.appendChild(button('Discard draft', 'confirmDiscard', {}, 'vv-danger')); }); }),
+      discard: action(function () { modal('Discard this draft?', function (body) { body.appendChild(el('p', '', 'It only exists on this device.')); body.appendChild(button('Discard draft', 'confirmDiscard', {}, 'vv-danger')); }); }),
       confirmDiscard: action(function () { drop(KEY); drop(LAST); home(); say('Draft discarded.'); }),
       refresh: action(async function () { if (state.local) { render(); return; } await load(); }),
       export: action(exportFile),
-      import: action(function () { if (!state.local) throw new Error('Switch to a local draft before importing.'); modal('Import a plan file', function (body) { var input = el('input'); input.type = 'file'; input.accept = '.json,application/json'; input.dataset.action = 'vikings.importFile'; body.appendChild(input); body.appendChild(el('p', 'vv-caption', 'This replaces the current local draft. Export it first if you need to keep it.')); }); }),
+      import: action(function () { if (!state.local) throw new Error('Switch to a local draft before importing.'); modal('Import a plan file', function (body) { var input = el('input'); input.type = 'file'; input.accept = '.json,application/json'; input.dataset.action = 'vikings.importFile'; body.appendChild(input); body.appendChild(el('p', 'vv-caption', 'Replaces this draft.')); }); }),
       importFile: action(async function (input) {
         var file = input.files[0]; if (!file || file.size > 300000) throw new Error('Choose a Vikings JSON export under 300 KB.');
         var data = JSON.parse(await file.text()); if (data.format !== 'kingslop-vikings' || data.version !== 1 || !data.state || !Array.isArray(data.state.roster) || data.state.roster.length > 120) throw new Error('This is not a supported Vikings export.');

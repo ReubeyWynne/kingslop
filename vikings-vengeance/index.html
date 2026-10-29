@@ -5,7 +5,7 @@ self: vikings
 {% include vikings-troops.html %}
 <main class="vv-page" data-module="vikings">
   <header class="vv-header" id="top">
-    <div><p class="vv-eyebrow">Vikings Vengeance</p><h1>Vikings planner</h1><p class="vv-intro">Arrange city cover, agree the HQ transfers, and keep your own instructions close.</p></div>
+    <div><p class="vv-eyebrow">Vikings Vengeance</p><h1>Vikings planner</h1></div>
     <img src="../img/buildings/town-center.webp" width="128" height="128" alt="" decoding="async">
   </header>
   <p class="vv-next" data-target="vikings.next">Vikings opens every two weeks, on Tuesday and Thursday.</p>
@@ -22,19 +22,19 @@ self: vikings
     <div class="vv-start" data-target="vikings.start">
       <div data-target="vikings.remembered"></div>
       <div class="vv-paths">
-        <div class="vv-path"><p class="vv-label">Leading</p><h2>Plan your alliance</h2><p>Collect sign-ups, assign city cover and HQ shares, then publish everyone’s marches.</p><button type="button" class="vv-primary" data-action="vikings.create">Create an alliance plan</button></div>
-        <div class="vv-path"><p class="vv-label">Joining</p><h2>Got a link?</h2><p>Paste the link your leader shared in game chat to sign up or see your marches.</p><button type="button" class="vv-primary" data-action="vikings.open">Paste a plan link</button></div>
+        <div class="vv-path"><p class="vv-label">Leading</p><h2>Plan your alliance</h2><p>Sign-ups, city cover and HQ in one place.</p><button type="button" class="vv-primary" data-action="vikings.create">Create an alliance plan</button></div>
+        <div class="vv-path"><p class="vv-label">Joining</p><h2>Got a link?</h2><p>Paste it to sign up or see your marches.</p><button type="button" class="vv-primary" data-action="vikings.open">Paste a plan link</button></div>
       </div>
     </div>
     <section data-target="vikings.calculator" class="vv-calculator" aria-labelledby="vv-calc-title">
-      <div class="vv-heading"><div><h2 id="vv-calc-title">Just your own marches</h2><p>Enter your troops to see what each queue can carry.</p></div><button type="button" data-action="vikings.savedTroops">Use my saved troops</button></div>
+      <div class="vv-heading"><h2 id="vv-calc-title">Just your own marches</h2><button type="button" data-action="vikings.savedTroops">Use my saved troops</button></div>
       <form data-action="vikings.calculate" data-target="vikings.calculatorForm">
         <div class="vv-troop-inputs">{% for t in site.data.vikings.troops %}<label><img src="../img/buildings/{{ t.art }}.webp" width="56" height="56" alt="" loading="lazy"><span>{{ t.name }}</span><input type="number" name="{{ t.id }}" min="0" max="100000000" step="1" inputmode="numeric" placeholder="Not entered" required></label>{% endfor %}</div>
         <div class="vv-capacity"><img src="../img/buildings/command-center.webp" width="56" height="56" alt=""><label>March capacity<input type="number" name="marchCapacity" min="1" max="10000000" inputmode="numeric" placeholder="e.g. 160000" required></label><label>Queues<input type="number" name="marches" min="1" max="6" value="5" inputmode="numeric" required></label></div>
         <button type="submit" class="vv-primary" disabled>Work out my marches</button>
       </form>
       <div class="vv-local-answer" data-target="vikings.split" aria-live="polite"></div>
-      <p class="vv-caption">This calculation stays on your device. All troop types go out while space remains. <button type="button" class="vv-inline" data-action="vikings.demo">See an example alliance plan</button></p>
+      <p class="vv-caption"><button type="button" class="vv-inline" data-action="vikings.demo">See an example alliance plan</button></p>
     </section>
   </section>
 

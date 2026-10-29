@@ -94,7 +94,7 @@
     function n(x) { return x.toLocaleString('en-US'); }
     function troops(r) { return n(r.infantry) + ' inf / ' + n(r.cavalry) + ' cav / ' + n(r.archers) + ' arc'; }
     var at = snapshot.plan.eventAt ? new Date(snapshot.plan.eventAt) : null;
-    var lines = [p.nickname + ' · ' + snapshot.plan.name + (at ? ' · ' + at.toISOString().slice(11, 16) + ' UTC' : '')];
+    var lines = [p.nickname + ' · ' + snapshot.plan.name + (at ? ' · ' + at.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }) + ' ' + at.toISOString().slice(11, 16) + ' UTC' : '')];
     (snapshot.assignments[playerId] || []).filter(function (r) { return r.destination && sum(r); }).forEach(function (r) { lines.push('M' + r.queue + ' → ' + names[r.destination] + ': ' + troops(r)); });
     var hq = hqRows(snapshot.hq || emptyHQ()).find(function (r) { return r.playerId === playerId; });
     if (hq) lines.push('HQ (waves 10, 20): after wave 9/19 recall M' + hq.queue + ', send ' + troops(hq) + '. Return after the HQ hit.');
