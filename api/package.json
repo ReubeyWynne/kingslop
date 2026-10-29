@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "wrangler d1 migrations apply DB --local && wrangler dev",
     "test": "node --test test/*.test.mjs",
-    "deploy": "node scripts/deploy.mjs"
+    "deploy": "node scripts/deploy.mjs",
+    "preview": "node scripts/deploy.mjs --preview"
   },
   "devDependencies": {
     "wrangler": "4.155.0"

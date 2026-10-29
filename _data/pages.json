@@ -226,21 +226,21 @@
     "canonicalPath": "/vikings-vengeance/",
     "themeColor": "#150D08",
     "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23150D08'/%3E%3Ctext x='16' y='24' font-size='22' text-anchor='middle' fill='%23E08A3C'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E\">",
-    "titleKey": "vv.meta.title",
-    "titleText": "Vikings Vengeance, Demystified",
-    "metaDescKey": "vv.meta.description",
-    "metaDesc": "Vikings Vengeance: all queues, all deployable troops, HQ equal shares and the maths of fixed kill-point pools.",
-    "ogTitleKey": "vv.meta.ogTitle",
-    "ogTitle": "Vikings Vengeance, Demystified",
-    "ogDescKey": "vv.meta.ogDescription",
-    "ogDesc": "Empty towns, full clears, and kill-based reinforcement shares — with practical queue and HQ planning.",
-    "skipHref": "#waves",
-    "skipKey": "vv.skip",
-    "skipText": "Skip to the guide",
+    "titleKey": "",
+    "titleText": "Vikings Vengeance planner",
+    "metaDescKey": "",
+    "metaDesc": "Plan Vikings city reinforcements and HQ transfers. Share sign-ups and give every player their own march instructions.",
+    "ogTitleKey": "",
+    "ogTitle": "Vikings Vengeance planner",
+    "ogDescKey": "",
+    "ogDesc": "Plan Vikings city reinforcements and HQ transfers. Share sign-ups and give every player their own march instructions.",
+    "skipHref": "#my-plan",
+    "skipKey": "",
+    "skipText": "Skip to the planner",
     "dust": "<i></i><i></i><i></i>",
     "brand": "VIKINGS VENGEANCE",
-    "brandNoteKey": "vv.brandNote",
-    "brandNote": "just the kills",
+    "brandNoteKey": "",
+    "brandNote": "reinforcements & HQ",
     "swipePrev": {
       "url": "../bear-hunt/",
       "page": "bearhunt",
@@ -263,21 +263,21 @@
       "../js/page-deck.js",
       "../js/page-chrome.js",
       "../js/common.js",
+      "../js/vikings-engine.js",
       "../js/vikings.js"
     ],
-    "footMainKey": "vv.foot.main",
-    "footMain": "JUST THE KILLS",
+    "footMainKey": "",
+    "footMain": "VIKINGS VENGEANCE",
     "footSubs": [
       {
-        "key": "vv.foot.note",
-        "html": "Our baseline: all queues, all deployable troops, and full clears. Difficulty and power can change the best allocation — check your reports."
-      },
-      {
-        "key": "vv.foot.credit",
-        "html": "Event walkthrough from <a href=\"https://www.youtube.com/channel/UCUB-sjmFklRFmVuybS_fOSA\">StratGameSloth</a>'s\n    playlists and the <a href=\"https://www.kingshotguide.org/calculator/viking-vengeance-calculator\">kingshotguide.org</a>\n    Viking Vengeance calculator — community references, not official · built for the [2129]MadNess alliance"
+        "key": "",
+        "html": "Plans describe agreed assignments. Check city cover and troop availability in game before each wave."
       }
     ],
-    "headScripts": []
+    "headScripts": [
+      "(function () { var match = /^#access=([a-f0-9-]{36})\\.([A-Za-z0-9_-]{43})$/.exec(location.hash); if (!match) return; window.VikingsAccess = { planId: match[1], code: match[2] }; history.replaceState(history.state, '', location.pathname + location.search); })();"
+    ],
+    "skipGuide": true
   },
   "swordland": {
     "token": "swordland",

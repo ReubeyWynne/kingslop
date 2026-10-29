@@ -18,7 +18,7 @@
 
 {% include page-deck.html %}
 
-{% include site-guide.html %}
+{% unless p.skipGuide %}{% include site-guide.html %}{% endunless %}
 
 {% include screen-import.html %}
 

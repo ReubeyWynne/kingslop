@@ -46,7 +46,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
       const ids = await page.locator('main [id]').evaluateAll(els => els.map(el => el.id));
       assert.equal(new Set(ids).size, ids.length, route + ': duplicate IDs');
       const sections = await page.locator('main > section').evaluateAll(els => els.map(el => el.id));
-      assert.equal(sections[i === 0 ? 0 : 1], first[i]);
+      if (route === 'vikings-vengeance/') assert(sections.includes('my-plan')); else assert.equal(sections[i === 0 ? 0 : 1], first[i]);
       const buttons = page.locator('.section-toggle');
       for (const button of await buttons.all()) {
         assert.equal(await button.getAttribute('aria-expanded'), width > 760 ? 'true' : 'false');
@@ -98,11 +98,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
         assert.equal(await page.locator('#sw-total').innerText(), await page.evaluate(() => BH.fmt(181000)));
       }
       if (route === 'vikings-vengeance/') {
-        for (const n of [1, 5, 6, 15]) {
-          await setRange(page, '#vv-reinforcers', String(n));
-          const expected = await page.evaluate(n => BH.fmt(10000) + ' ÷ ' + BH.fmt(n) + ' ≈ ' + BH.fmt(10000 / n), n);
-          assert.equal(await page.locator('#vv-outline').innerText(), expected);
-        }
+        await page.locator('[name=infantry]').fill('240000'); await page.locator('[name=cavalry]').fill('160000'); await page.locator('[name=archers]').fill('120000'); await page.locator('[name=marchCapacity]').fill('160000');
+        await page.getByRole('button', { name: 'Work out my marches' }).click();
+        assert.equal(await page.locator('.vv-march').count(), 5);
       }
       if (route === 'battle-simulator/') {
         // Phones show one side of the workspace at a time; wide screens both.

@@ -15,6 +15,10 @@ Set these build settings:
 | Build command | `npm test` |
 | Deploy command | `npm run deploy` |
 
+For non-production branches, set **Non-production deploy command** to `npm run preview`. Keep **Root directory** as `api` and **Build command** as `npm test` for those builds too. The preview command resolves or creates `kingslop-vikings-preview`, applies migrations to that database, and runs Wrangler with complete preview bindings. Production and previews use separate databases and rate-limit namespaces. The same staging database is shared by branch previews.
+
+The committed `previews` block declares the preview resources. The deployment script supplies the database ID in a temporary configuration. Bare `npx wrangler preview` skips that setup and the migrations.
+
 The deploy script finds or creates the D1 database named `kingslop-vikings`, applies pending migrations, then deploys. It stops if any step fails. Its deployment token needs Workers Scripts Edit and D1 Edit for the selected account. Cloudflare's build settings allow choosing a token with these permissions. The all-zero database ID in the committed configuration is only a local-development placeholder. The deployment script replaces it in a temporary configuration with the real database ID. No runtime secret or player account provider is required.
 
 Open the deployed `workers.dev` URL. The page checks `/health`, lets you create a plan, and displays the three access codes. Save the management code. Open the same plan with its invitation code in another tab to test registration. Save the private edit code returned after registering. The viewing code cannot change anything.
@@ -58,10 +62,10 @@ All JSON bodies reject unknown properties and have an 8 KiB limit. API responses
 | PUT | `/v1/plans/:id/registrations/:id` | Replace registration fields with an edit or management code and expected revision |
 | DELETE | `/v1/plans/:id/registrations/:id` | Remove a registration and its edit code |
 
-Plan fields: `name`, `eventAt` (ISO timestamp with timezone or null), `difficulty` (integer or null), `notes`, and `closed`. Updates require `revision` from the latest response. Registration fields: `nickname`, `availability` (`online`, `offline`, or `unknown`), `infantry`, `cavalry`, `archers`, `marchCapacity`, `marches`, and `notes`. Troop counts default to zero, availability to unknown, marches to five, and notes to empty. A registration update requires `nickname` and `revision`; omitted optional fields return to their defaults.
+Plan fields: `name`, `eventAt` (ISO timestamp with timezone or null), `difficulty` (integer or null), `notes`, and `closed`. Updates require `revision` from the latest response. Registration fields: `nickname`, `availability` (`online`, `offline`, or `unknown`), `infantry`, `cavalry`, `archers`, `marchCapacity`, `marches`, and `notes`. `capacities` optionally supplies one march capacity per queue. Troop counts default to zero, availability to unknown, marches to five, and notes to empty. A registration update requires `nickname` and `revision`; omitted optional fields return to their defaults.
 
 Stale revisions return 409. A database trigger enforces the 120-player cap, including concurrent registrations. Cloudflare's native rate limit bindings allow 120 API requests and five plan creations per IP per minute per Cloudflare location. These limits are approximate and are not a global quota or a defence against distributed abuse.
 
-Plans expire 30 days after creation. Expired plans are inaccessible immediately. The daily scheduled handler deletes up to 100 expired plans and cascades deletion to registrations and credentials. Manual deletion also cascades. Cloudflare's backup retention still applies. There is no event archive, billing, account synchronisation, automatic group assignment, or main-site UI integration in this first version.
+Plans expire 30 days after creation. Expired plans are inaccessible immediately. The daily scheduled handler deletes up to 100 expired plans and cascades deletion to registrations and credentials. Manual deletion also cascades. Cloudflare's backup retention still applies. The main-site planner adds city assignments, HQ planning and published instructions. See [VIKINGS-PLANNER.md](../VIKINGS-PLANNER.md) for its data model and the additional endpoints. There is no event archive, billing, account synchronisation or automatic group assignment.
 
 Use backwards-compatible migrations: the previous Worker may still be serving requests while a deployment runs. Cloudflare deployments and D1 migrations are separate operations; rolling back Worker code does not undo schema changes.

@@ -12,6 +12,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { withBrowser } = require('./lib/browser-harness.cjs');
+const motion = require('../_data/ascii_motion.json');
 
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/ascii-preview');
@@ -63,12 +64,24 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
         await page.waitForFunction(token => document.querySelector('.deck-card.is-selected')?.dataset.page === token, name === 'castle-card' ? 'castle' : 'kvksg');
       }
       await page.addStyleTag({ content: '.topbar, .toc { visibility: hidden !important; }' });
+      if (url === '/vikings-vengeance/') {
+        await page.getByRole('tab', { name: 'Guide', exact: true }).click();
+      }
       // Open the collapsed section the scene sits in.
       await page.evaluate(selector => {
         document.querySelector(selector)?.closest('section')?.querySelector('.section-toggle[aria-expanded="false"]')?.click();
       }, selector);
       const scene = page.locator(selector).first();
       await scene.scrollIntoViewIfNeeded();
+      // Motion sheets start after first paint (with a 3s fallback), which can
+      // happen after networkidle. Wait for every part to load and switch out
+      // of print media before freezing the animations for capture.
+      const sheets = [...motion.shared, ...(url === '/pets/' ? motion.pets : [])];
+      await page.waitForFunction(sheets => sheets.every(file =>
+        Array.from(document.querySelectorAll('link[rel="stylesheet"]')).some(link =>
+          new URL(link.href).pathname.endsWith('/' + file) && link.sheet &&
+          link.media === '(prefers-reduced-motion: no-preference)')
+      ), sheets);
       await page.evaluate(() => document.getAnimations().forEach(animation => animation.pause()));
 
       const fit = await scene.evaluate(element => {
