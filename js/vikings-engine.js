@@ -102,7 +102,7 @@
   }
   /* Vikings opens every fourteen days, on Tuesday and Thursday by the server clock (UTC); R4/R5 pick the hour.
      SCHEDULE.anchor is one known Tuesday. Change it here if the fortnight moves. */
-  var DAY = 86400000, SCHEDULE = { anchor: Date.UTC(2026, 9, 27), every: 14, days: [0, 2] };
+  var DAY = 86400000, SCHEDULE = { anchor: Date.UTC(2026, 10, 3), every: 14, days: [0, 2] };
   // The next `count` event days as UTC midnights, counting today while it lasts.
   function eventDays(now, count) {
     var today = Math.floor(now / DAY) * DAY, start = SCHEDULE.anchor + Math.floor((today - SCHEDULE.anchor) / (SCHEDULE.every * DAY)) * SCHEDULE.every * DAY, out = [];
