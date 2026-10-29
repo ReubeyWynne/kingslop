@@ -21,9 +21,12 @@
   function utcTime(ms) { return new Date(ms).toISOString().slice(11, 16); }
   function utcWhen(iso) { var t = Date.parse(iso); return dayLabel(t) + ' ' + utcTime(t) + ' UTC'; }
   function localWhen(iso) { return new Date(iso).toLocaleString(undefined, { hour: '2-digit', minute: '2-digit' }); }
-  // Troops are counted in thousands everywhere on the page: 240k, 1.2M.
+  // Troops show as 240k or 1.2M. A player's own counts use the site's unit inputs (js/unit-input.js), thousands
+  // until they pick another unit; the leader's march editor works in thousands.
   function kfmt(n) { n = n || 0; return n >= 1e6 ? +(n / 1e6).toFixed(2) + 'M' : n >= K ? Math.round(n / K).toLocaleString() + 'k' : String(n); }
-  function toK(n) { return n == null || n === '' ? '' : Math.round(n / K); }
+  var GUEST = new URLSearchParams(location.search).has('guest');
+  function toK(n) { return n == null || n === '' ? '' : +(n / K).toFixed(1); }
+  function fromK(v) { return Math.round(Number(v) * K); }
 
   window.Interactions.register('vikings', function (context) {
     var root = context.root, state = null, credential = null, selected = null, mode = 'my-plan', busy = false, timer = null, disposed = false, filter = '';
@@ -40,7 +43,7 @@
     function remember(c) {
       if (!c || !['manage', 'registration'].includes(c.role)) return false;
       var list = links().filter(function (r) { return r.planId !== c.planId || r.role !== c.role; });
-      list.unshift({ planId: c.planId, code: c.code, role: c.role, codes: c.codes, self: c.self, name: state ? state.plan.name : c.name });
+      list.unshift({ planId: c.planId, code: c.code, role: c.role, codes: c.codes, id: c.id, name: state ? state.plan.name : c.name });
       return write(LINKS, list.slice(0, 20));
     }
     function forget(planId) { write(LINKS, links().filter(function (r) { return r.planId !== planId; })); }
@@ -77,16 +80,18 @@
       if (state.registrationId) selected = state.registrationId;
       persist(); render();
     }
-    // The leader's own sign-up rides on the leader link. One made earlier with the sign-up link on this device is taken over.
+    // The leader link names no player, so R4s can share it. Each leader's own sign-up is their player link, kept beside it on this device.
+    function playerLink(planId) { return links().find(function (r) { return r.planId === planId && r.role === 'registration'; }); }
     async function adopt() {
-      var joined = links().find(function (r) { return r.planId === credential.planId && r.role === 'registration'; });
-      if (!credential.self && joined) {
-        try { credential.self = (await request('/v1/plans/' + credential.planId, 'GET', null, joined.code)).registrationId; } catch (_) { /* a removed sign-up is just dropped */ }
-        write(LINKS, links().filter(function (r) { return r !== joined && !(r.planId === joined.planId && r.role === 'registration'); }));
-        remember(credential); persist();
+      var own = playerLink(credential.planId), id = own && own.id;
+      if (own && !id) {
+        try { id = (await request('/v1/plans/' + credential.planId, 'GET', null, own.code)).registrationId; write(LINKS, links().map(function (r) { return r === own || (r.planId === own.planId && r.role === 'registration') ? Object.assign({}, r, { id: id }) : r; })); }
+        catch (cause) { if (cause.status === 401 || cause.status === 404) write(LINKS, links().filter(function (r) { return !(r.planId === own.planId && r.role === 'registration'); })); }
       }
-      state.registrationId = state.roster.some(function (r) { return r.id === credential.self; }) ? credential.self : null;
+      if (!id) id = credential.self; // a sign-up saved with the leader link by an earlier version
+      state.registrationId = state.roster.some(function (r) { return r.id === id; }) ? id : null;
     }
+    function ownCode() { if (credential.role === 'registration') return credential.code; var own = playerLink(credential.planId); return own && own.code; }
     // Open a link or a remembered room. A link to a room this device already leads or joined opens that instead.
     async function open(c, fromLink) {
       if (!c.planId) { var found = await request('/v1/access', 'GET', null, c.code); c = { planId: found.planId, code: c.code, role: found.access }; }
@@ -120,12 +125,15 @@
       if (type === 'number') { input.min = '0'; input.step = '1'; input.inputMode = 'numeric'; }
       label.appendChild(input); container.appendChild(label); return input;
     }
-    // A count in thousands: the player types 240 and sees "k" beside it.
+    // A march-editor count in thousands: the leader types 80 and sees "k" beside it.
+    function scaled(input, value) { input.type = 'number'; input.min = '0'; input.step = 'any'; input.inputMode = 'decimal'; input.dataset.scaled = ''; input.value = toK(value); return input; }
+    // A player's own count, in the unit they pick beside it.
     function kField(container, title, key, value, picture) {
       var label = el('label', 'vv-k'); if (picture) label.appendChild(picture); label.appendChild(el('span', '', title));
-      var wrap = el('span', 'vv-k-input'), input = el('input'); input.type = 'number'; input.name = key; input.min = '0'; input.max = '100000'; input.step = '1'; input.inputMode = 'numeric'; input.value = toK(value); input.placeholder = '—';
-      wrap.appendChild(input); wrap.appendChild(el('span', 'vv-k-unit', 'k')); label.appendChild(wrap); container.appendChild(label); return input;
+      var wrap = el('span', 'vv-k-input'), input = el('input'); input.name = key; input.min = '0'; input.dataset.unitInput = 'count'; input.dataset.unitDefault = 'k'; input.placeholder = '—'; input.value = value == null ? '' : String(value);
+      wrap.appendChild(input); label.appendChild(wrap); container.appendChild(label); return input;
     }
+    function count(f, key) { var v = f.elements[key].value; return v === '' ? NaN : Number(v); }
     // Dialog footers end with the affirmative action: right in LTR, left in RTL.
     function foot(container) { var a = el('div', 'vv-actions vv-foot'); container.appendChild(a); return a; }
     function ask(body, text, label, act, data, kind) { body.appendChild(el('p', '', text)); var a = foot(body); a.appendChild(button('Cancel', 'closeDialog', {}, 'vv-quiet')); a.appendChild(button(label, act, data || {}, kind)); }
@@ -149,7 +157,8 @@
     var ONLINE = [['unknown', 'Not sure'], ['online', 'Yes'], ['offline', 'No']];
 
     /* Troops, march size and marches, all quick to change. */
-    function playerFields(form, p, withName) {
+    function playerFields(form, p, withName, own) {
+      if (own) { var save = fromSave(); form.dataset.own = ''; if (save) { p = Object.assign({}, p); TYPES.forEach(function (k) { if (save.totals[k] !== null) p[k] = save.totals[k]; }); } }
       var grid = el('div', 'vv-form-grid'); form.appendChild(grid);
       if (withName) { var nick = field(grid, 'In-game name', 'nickname', p.nickname || ''); nick.required = true; nick.maxLength = 40; nick.autocomplete = 'nickname'; }
       else { var hidden = el('input'); hidden.type = 'hidden'; hidden.name = 'nickname'; hidden.value = p.nickname; form.appendChild(hidden); }
@@ -159,11 +168,11 @@
       var row = el('div', 'vv-form-grid'); form.appendChild(row);
       kField(row, 'March size', 'marchCapacity', p.marchCapacity).required = true;
       var q = field(row, 'Marches', 'marches', p.marches || 5, 'number'); q.min = '1'; q.max = '6'; q.required = true;
-      var tools = el('div', 'vv-actions vv-tight'); tools.appendChild(button('Use my saved troops', 'savedTroops', {}, 'vv-quiet')); form.appendChild(tools);
+      if (own) { var tools = el('div', 'vv-troop-tools'); syncNote(tools); form.appendChild(tools); }
     }
     function fromForm(form) {
       var data = Object.fromEntries(new FormData(form));
-      TYPES.concat('marchCapacity').forEach(function (k) { data[k] = Math.round(Number(data[k]) * K); });
+      TYPES.concat('marchCapacity').forEach(function (k) { data[k] = count(form, k); });
       data.marches = Number(data.marches);
       return data;
     }
@@ -173,10 +182,10 @@
       await request('/v1/plans/' + state.plan.id + '/registrations/' + p.id, 'PUT', Object.assign(fullPlayer(p, data), { revision: p.revision }));
       await load();
     }
-    function playerEditor(playerId, title) {
+    function playerEditor(playerId, title, own) {
       var p = state.roster.find(function (r) { return r.id === playerId; }) || { nickname: '', marches: 5 };
       modal(title || (playerId ? p.nickname : 'Add a player'), function (body) {
-        var f = form(body, 'player'); f.dataset.id = playerId || ''; playerFields(f, p, true);
+        var f = form(body, 'player'); f.dataset.id = playerId || ''; playerFields(f, p, true, own);
         var a = foot(f); if (playerId && isManager()) a.appendChild(button('Remove', 'removePlayer', { id: playerId }, 'vv-danger')); submit(a, 'Save');
       });
     }
@@ -201,7 +210,7 @@
     function assignmentEditor(playerId) {
       var p = state.roster.find(function (r) { return r.id === playerId; }); if (!p) return;
       modal(p.nickname, function (body) {
-        var top = el('div', 'vv-editor-top'); top.appendChild(counts(p)); top.appendChild(button('Edit', 'editPlayer', { id: p.id }, 'vv-quiet')); body.appendChild(top);
+        var top = el('div', 'vv-editor-top'); top.appendChild(counts(p)); var tools = el('span', 'vv-actions vv-tight'); tools.appendChild(button('Edit', 'editPlayer', { id: p.id }, 'vv-quiet')); tools.appendChild(button('Remove', 'removePlayer', { id: p.id }, 'vv-danger')); top.appendChild(tools); body.appendChild(top);
         var check = E.validate(state.roster, state.assignments, state.hq), incoming = check.incoming[p.id] || [];
         var cover = el('div', 'vv-cover-in'); cover.appendChild(el('span', 'vv-label', 'Covered by'));
         if (!incoming.length) cover.appendChild(el('span', 'vv-dim', 'nobody yet'));
@@ -209,21 +218,44 @@
         body.appendChild(cover);
         var f = form(body, 'assignments'); f.dataset.id = p.id;
         var rows = state.assignments[p.id] || E.split(p).rows, hq = E.hqRows(state.hq).find(function (r) { return r.playerId === p.id; });
-        var grid = el('div', 'vv-sends'), head = el('div', 'vv-sends-head'); head.appendChild(el('span')); head.appendChild(el('span', '', 'Sends to')); TYPES.forEach(function (k) { var c = el('span'); c.appendChild(symbol(k)); c.appendChild(document.createTextNode(' k')); c.setAttribute('aria-label', LABELS[k] + ', thousands'); head.appendChild(c); }); grid.appendChild(head);
-        var targets = [['', '—']].concat(state.roster.filter(function (r) { return r.id !== p.id && r.attending !== false; }).map(function (r) { return [r.id, r.nickname + (r.attending ? '' : ' ?')]; }));
+        var bar = el('div', 'vv-send-bar'), status = el('p', 'vv-send-status'); status.setAttribute('aria-live', 'polite'); bar.appendChild(status); f.appendChild(bar);
+        var targets = [['', 'Not sent']].concat(state.roster.filter(function (r) { return r.id !== p.id && r.attending !== false; }).map(function (r) { return [r.id, r.nickname + (r.attending ? '' : ' (not answered)')]; }));
+        var list = el('div', 'vv-sends');
         for (var q = 1; q <= p.marches; q++) {
           var row = rows.find(function (r) { return r.queue === q; }) || { queue: q, destination: null, infantry: 0, cavalry: 0, archers: 0 };
           var box = el('div', 'vv-send'); box.dataset.queue = q;
-          var tag = el('span', 'vv-send-q'); tag.appendChild(el('strong', '', String(q))); tag.appendChild(el('small', '', hq && hq.queue === q ? 'HQ' : kfmt(E.capacity(p, q)))); box.appendChild(tag);
-          var select = el('select'); select.name = 'destination-' + q; select.setAttribute('aria-label', 'March ' + q + ' destination'); targets.forEach(function (o) { var opt = el('option', '', o[1]); opt.value = o[0]; select.appendChild(opt); });
+          var head = el('div', 'vv-send-head'), title = el('strong', '', 'March ' + q); head.appendChild(title);
+          if (hq && hq.queue === q) head.appendChild(el('span', 'vv-avail', 'HQ'));
+          head.appendChild(el('span', 'vv-send-cap')); box.appendChild(head);
+          var select = el('select'); select.name = 'destination-' + q; select.setAttribute('aria-label', 'March ' + q + ' goes to'); targets.forEach(function (o) { var opt = el('option', '', o[1]); opt.value = o[0]; select.appendChild(opt); });
           if (row.destination && !targets.some(function (t) { return t[0] === row.destination; })) { var gone = el('option', '', name(row.destination) + ' (out)'); gone.value = row.destination; select.appendChild(gone); }
           select.value = row.destination || ''; box.appendChild(select);
-          TYPES.forEach(function (k) { var input = el('input'); input.type = 'number'; input.name = k + '-' + q; input.min = '0'; input.step = '1'; input.inputMode = 'numeric'; input.required = true; input.value = toK(row[k]); input.setAttribute('aria-label', 'March ' + q + ' ' + LABELS[k] + ' in thousands'); box.appendChild(input); });
-          grid.appendChild(box);
+          TYPES.forEach(function (k) {
+            var label = el('label', 'vv-send-troop'), wrap = el('span', 'vv-k-input'), input = scaled(el('input'), row[k]); input.name = k + '-' + q; input.required = true; input.setAttribute('aria-label', 'March ' + q + ' ' + LABELS[k]);
+            label.appendChild(symbol(k)); wrap.appendChild(input); wrap.appendChild(el('span', 'vv-k-unit', 'k')); label.appendChild(wrap); box.appendChild(label);
+          });
+          var meter = el('span', 'vv-meter'); meter.setAttribute('aria-hidden', 'true'); meter.appendChild(el('span')); box.appendChild(meter);
+          list.appendChild(box);
         }
-        f.appendChild(grid);
+        f.appendChild(list);
         var a = foot(f); a.appendChild(button('Even split', 'fillMarches', { id: p.id })); submit(a, 'Save');
+        sends(f);
       });
+    }
+    // Live totals while the leader types: each march against its size, and what stays home.
+    function sends(f) {
+      var p = state.roster.find(function (r) { return r.id === f.dataset.id; }); if (!p) return;
+      var used = { infantry: 0, cavalry: 0, archers: 0 };
+      f.querySelectorAll('[data-queue]').forEach(function (box) {
+        var q = Number(box.dataset.queue), sum = 0, cap = E.capacity(p, q);
+        TYPES.forEach(function (k) { var v = f.elements[k + '-' + q].value, n = v === '' ? 0 : fromK(v); used[k] += n; sum += n; });
+        box.querySelector('.vv-send-cap').textContent = kfmt(sum) + ' / ' + kfmt(cap);
+        box.querySelector('.vv-meter span').style.width = (cap ? Math.min(100, sum / cap * 100) : 0) + '%';
+        box.dataset.over = String(sum > cap);
+      });
+      var short = TYPES.filter(function (k) { return used[k] > p[k]; }), home = TYPES.reduce(function (n, k) { return n + Math.max(0, p[k] - used[k]); }, 0);
+      var line = f.querySelector('.vv-send-status'); line.textContent = kfmt(total(used)) + ' out · ' + kfmt(home) + ' home';
+      line.dataset.error = String(!!short.length); if (short.length) line.textContent += ' · more ' + short.map(function (k) { return LABELS[k].toLowerCase(); }).join(' and ') + ' than they have';
     }
     function hqEditor() {
       modal('HQ · waves 10 and 20', function (body) {
@@ -264,7 +296,7 @@
     // Are you in for this one? Last time's troops are already filled in.
     function answer(body, p) {
       var f = form(body, 'answer'); f.dataset.id = p ? p.id : '';
-      playerFields(f, p || { marches: 5 }, !p);
+      playerFields(f, p || { marches: 5 }, !p, true);
       var a = el('div', 'vv-actions'); submit(a, 'I’m in');
       if (p) { var out = button('Not this time', 'notIn', {}, 'vv-secondary'); out.dataset.mutation = ''; a.appendChild(out); }
       f.appendChild(a);
@@ -332,7 +364,10 @@
       var main = el('span', 'vv-row-main'), top = el('span', 'vv-row-top'); top.appendChild(el('strong', '', p.nickname)); if (p.availability === 'offline') top.appendChild(el('span', 'vv-avail', 'Offline')); main.appendChild(top);
       main.appendChild(el('span', 'vv-dim', kfmt(total(p)) + ' · sends ' + sent + '/' + p.marches + ' · covered by ' + incoming.length));
       if (manage && p.attending) { var gaps = []; if (!incoming.length) gaps.push('no cover'); if (sent < p.marches) gaps.push(p.marches - sent + ' free'); if (gaps.length) main.appendChild(el('span', 'vv-gap', gaps.join(' · '))); }
-      b.appendChild(main); b.appendChild(el('span', 'vv-chevron', '›')); return b;
+      b.appendChild(main); b.appendChild(el('span', 'vv-chevron', '›'));
+      if (!manage || state.example) return b;
+      var line = el('div', 'vv-row-line'), x = button('×', 'removePlayer', { id: p.id }, 'vv-row-x'); x.setAttribute('aria-label', 'Remove ' + p.nickname); x.title = 'Remove';
+      line.appendChild(b); line.appendChild(x); return line;
     }
     function tally(container, items) { var dl = el('dl', 'vv-tally'); items.forEach(function (i) { var d = el('div'); d.appendChild(el('dt', '', i[0])); d.appendChild(el('dd', i[2] ? 'vv-short' : '', i[1])); dl.appendChild(d); }); container.appendChild(dl); }
     function group(body, title, id, people, check) {
@@ -371,10 +406,11 @@
     }
     function remembered() {
       var body = one('remembered'); body.replaceChildren(); if (state) return;
-      var saved = links(); if (!saved.length) return;
+      // One line per alliance: the leader link when this device has it, else the player link.
+      var all = links(), saved = all.filter(function (r, i) { return all.findIndex(function (x) { return x.planId === r.planId; }) === i; }).map(function (r) { return ownFor(r.planId); }); if (!saved.length) return;
       body.appendChild(el('h2', '', 'Your alliances'));
       var list = el('div', 'vv-rows');
-      saved.forEach(function (p, i) { var b = button('', 'restore', { index: i }, 'vv-row'), main = el('span', 'vv-row-main'), top = el('span', 'vv-row-top'); top.appendChild(el('strong', '', p.name || 'Vikings')); top.appendChild(el('span', 'vv-avail', ROLES[p.role])); main.appendChild(top); b.appendChild(main); b.appendChild(el('span', 'vv-chevron', '›')); list.appendChild(b); });
+      saved.forEach(function (p) { var b = button('', 'restore', { plan: p.planId }, 'vv-row'), main = el('span', 'vv-row-main'), top = el('span', 'vv-row-top'); top.appendChild(el('strong', '', p.name || 'Vikings')); top.appendChild(el('span', 'vv-avail', ROLES[p.role])); main.appendChild(top); b.appendChild(main); b.appendChild(el('span', 'vv-chevron', '›')); list.appendChild(b); });
       body.appendChild(list);
       body.appendChild(button('Forget these', 'forget', {}, 'vv-quiet'));
     }
@@ -419,11 +455,12 @@
       if (kind === 'player' || kind === 'answer') {
         data = fromForm(f); var playerId = f.dataset.id, previous = state.roster.find(function (p) { return p.id === playerId; });
         if (kind === 'answer') data.attending = true;
+        var note = f.dataset.own !== undefined && !state.example ? syncBack(data) : '';
         if (state.example) {
           if (previous) Object.assign(previous, data); else state.roster.push(Object.assign({ id: id(), attending: true, revision: 1, notes: '', capacities: null }, data));
           close(); render(); say('Saved.'); return;
         }
-        if (previous) { await savePlayer(previous, data); close(); say(kind === 'answer' ? 'You’re in.' : 'Saved.'); return; }
+        if (previous) { await savePlayer(previous, data); close(); say(note || (kind === 'answer' ? 'You’re in.' : 'Saved.')); return; }
         var response = await request('/v1/plans/' + state.plan.id + '/registrations', 'POST', Object.assign({ notes: '' }, data, { attending: true }));
         if (state.access === 'join') {
           credential = { planId: state.plan.id, code: response.editCode, role: 'registration' };
@@ -434,20 +471,23 @@
             body.appendChild(el('p', '', kept ? 'Next time this page opens straight here, troops filled in.' : 'Copy your link to come back.'));
             var a = foot(body); if (kept) a.appendChild(button('Don’t remember', 'forgetThis', {}, 'vv-quiet')); a.appendChild(button('Copy my link', 'copyPrivate', {}, 'vv-primary'));
           });
-          persist(); return;
+          persist(); if (note) say(note); return;
         }
-        if (kind === 'answer') { credential.self = response.registration.id; remember(credential); persist(); await load(); close(); say('You’re in.'); return; }
+        if (kind === 'answer') {
+          var kept2 = remember({ planId: state.plan.id, code: response.editCode, role: 'registration', id: response.registration.id }); remember(credential); persist(); await load(); close(); say(note || 'You’re in.');
+          if (!kept2) say('This browser can’t save. Copy your player link.', true); return;
+        }
         await load(); close(); say('Added.'); return;
       }
       if (kind === 'assignments') {
         var rows = [];
-        f.querySelectorAll('[data-queue]').forEach(function (box) { var queue = Number(box.dataset.queue), row = { queue: queue, destination: f.elements['destination-' + queue].value || null }; TYPES.forEach(function (k) { row[k] = Math.round(Number(f.elements[k + '-' + queue].value) * K); }); rows.push(row); });
+        f.querySelectorAll('[data-queue]').forEach(function (box) { var queue = Number(box.dataset.queue), row = { queue: queue, destination: f.elements['destination-' + queue].value || null }; TYPES.forEach(function (k) { row[k] = fromK(f.elements[k + '-' + queue].value); }); rows.push(row); });
         var check = E.validate(state.roster, { [f.dataset.id]: rows }, E.emptyHQ()); if (check.errors.length) throw new Error(check.errors[0]);
         if (state.example) { state.assignments[f.dataset.id] = rows; close(); render(); say('Saved.'); return; }
         await request('/v1/plans/' + state.plan.id + '/assignments/' + f.dataset.id, 'PUT', Object.assign(expected(), { marches: rows })); await load(); close(); say('Saved.'); return;
       }
       if (kind === 'hq') {
-        data = new FormData(f); var hq = { capacity: Math.round(Number(data.get('capacity')) * K), infantryPercent: Number(data.get('infantryPercent')), cavalryPercent: Number(data.get('cavalryPercent')), participants: data.getAll('participant').map(function (pid) { return { playerId: pid, queue: Number(data.get('queue-' + pid)) }; }) };
+        data = new FormData(f); var hq = { capacity: count(f, 'capacity'), infantryPercent: Number(data.get('infantryPercent')), cavalryPercent: Number(data.get('cavalryPercent')), participants: data.getAll('participant').map(function (pid) { return { playerId: pid, queue: Number(data.get('queue-' + pid)) }; }) };
         if (hq.infantryPercent + hq.cavalryPercent > 100 || hq.participants.length > 15) throw new Error('Use a ratio up to 100% and at most 15 players.');
         if (state.example) { state.hq = hq; close(); render(); return; }
         await request('/v1/plans/' + state.plan.id + '/hq', 'PUT', Object.assign(expected(), { hq: hq })); await load(); close(); say('Saved.'); return;
@@ -460,14 +500,35 @@
       if (long && UUID.test(long[1])) return { planId: long[1], code: long[2] };
       return null;
     }
-    async function savedTroops() {
-      var troops; try { troops = context.ledger.combat().troops; } catch (_) { throw new Error('Your save couldn’t be read.'); }
-      var totals = { infantry: null, cavalry: null, archers: null }, map = { inf: 'infantry', cav: 'cavalry', arc: 'archers' };
-      troops.forEach(function (p) { if (map[p.type] && Number.isFinite(p.amount)) totals[map[p.type]] = (totals[map[p.type]] || 0) + p.amount; });
-      if (TYPES.every(function (k) { return totals[k] === null; })) throw new Error('No troop counts saved yet.');
-      var f = one('dialog').open ? one('dialogBody').querySelector('form') : one('personal').querySelector('form') || one('calculatorForm');
-      TYPES.forEach(function (k) { if (f.elements[k]) f.elements[k].value = totals[k] === null ? '' : toK(totals[k]); });
-      say('Filled in from your saved troops.');
+    /* Your own troops follow the save on this device: read from it, and written back where the save has one tier
+       of that troop. Guest mode (?guest) leaves the save alone. */
+    function fromSave() {
+      if (GUEST) return null;
+      var troops; try { troops = context.ledger.combat().troops; } catch (_) { return null; }
+      var out = { totals: {}, rows: {} }, any = false, map = { inf: 'infantry', cav: 'cavalry', arc: 'archers' };
+      TYPES.forEach(function (k) { out.totals[k] = null; out.rows[k] = []; });
+      troops.forEach(function (t) { var k = map[t.type]; if (!k || !Number.isFinite(t.amount)) return; out.totals[k] = (out.totals[k] || 0) + t.amount; out.rows[k].push(t); any = true; });
+      return any ? out : null;
+    }
+    function syncBack(data) {
+      var save = fromSave(), list = [], tiers = []; if (!save) return '';
+      TYPES.forEach(function (k) {
+        if (save.totals[k] === null || data[k] === save.totals[k]) return;
+        if (save.rows[k].length === 1) { var t = save.rows[k][0]; list.push({ type: t.type, tier: t.tier, tg: t.tg, amount: data[k] }); } else tiers.push(LABELS[k].toLowerCase());
+      });
+      if (list.length) try { context.ledger.setCombat({ troops: list }, 'manual'); } catch (_) { return 'Your save couldn’t be updated.'; }
+      return tiers.length ? 'Your save splits ' + tiers.join(' and ') + ' by tier, so change it there too.' : '';
+    }
+    function syncNote(container) {
+      var line = el('p', 'vv-caption vv-sync'), here = location.pathname + location.search.replace(/[?&]guest(=[^&]*)?/, '').replace(/^&/, '?');
+      if (GUEST) { line.appendChild(document.createTextNode('Guest mode: your saved troops aren’t used. ')); var back = el('a', '', 'Leave guest mode'); back.href = here; line.appendChild(back); }
+      else if (fromSave()) { line.appendChild(document.createTextNode('Synced with your saved troops. ')); var go = el('a', '', 'Guest mode'); go.href = location.pathname + '?guest'; line.appendChild(go); }
+      else return null;
+      container.appendChild(line); return line;
+    }
+    function fillCalculator() {
+      var f = one('calculatorForm'), save = fromSave(); if (!save) return;
+      TYPES.forEach(function (k) { if (save.totals[k] !== null && document.activeElement !== f.elements[k]) f.elements[k].value = save.totals[k]; });
     }
     function demo() {
       credential = null;
@@ -486,7 +547,7 @@
     }
     function home() { say(''); state = null; credential = null; selected = null; drop(SESSION, sessionStorage); close(); mode = 'my-plan'; render(); }
     async function attend(value) { var mine = me(); if (!mine) return; await savePlayer(mine, { attending: value }); say(value ? 'You’re in.' : 'Marked out.'); }
-    context.listen(one('dialog'), 'input', function (event) { var f = event.target.form; if (f && f.dataset.kind === 'room') localTime(f); });
+    context.listen(one('dialog'), 'input', function (event) { var f = event.target.form; if (f && f.dataset.kind === 'room') localTime(f); if (f && f.dataset.kind === 'assignments') sends(f); });
     context.listen(root, 'keydown', function (event) { var tabs = Array.from(root.querySelectorAll('[role=tab]')), at = tabs.indexOf(event.target); if (at < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return; event.preventDefault(); var to = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (at + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length; tabs[to].click(); tabs[to].focus(); });
     function schedule(delay) {
       clearTimeout(timer); timer = setTimeout(function () {
@@ -500,7 +561,7 @@
     var actions = {
       tab: { run: function (node) { tab(node.dataset.tab); } },
       calculate: { events: ['submit'], preventDefault: true, run: function (f) { return run(function () {
-        if (!f.reportValidity()) return; var raw = Object.fromEntries(new FormData(f)), p = { marches: Number(raw.marches) }; TYPES.concat('marchCapacity').forEach(function (k) { p[k] = Math.round(Number(raw[k]) * K); });
+        if (!f.reportValidity()) return; var raw = Object.fromEntries(new FormData(f)), p = { marches: Number(raw.marches) }; TYPES.concat('marchCapacity').forEach(function (k) { p[k] = count(f, k); });
         var result = E.split(p), box = one('split'); box.replaceChildren(); box.appendChild(el('p', 'vv-lede', kfmt(result.total) + ' out' + (total(result.home) ? ' · ' + kfmt(total(result.home)) + ' stay home' : '')));
         var list = el('div', 'vv-marches'); result.rows.forEach(function (r) { marchRow(r, 'March ' + r.queue, list); }); box.appendChild(list);
       }); } },
@@ -512,22 +573,21 @@
       open: action(function () { modal('Open a link', function (body) { var f = form(body, 'open'); var input = field(f, 'Link from your leader', 'link', '', 'url'); input.required = true; input.placeholder = 'https://dey.ci/vv/#join-…'; submit(foot(f), 'Open'); }); }),
       addPlayer: action(function () { playerEditor(null); }),
       editPlayer: action(function (node) { playerEditor(node.dataset.id); }),
-      editMine: action(function () { playerEditor(state.registrationId, 'My troops'); }),
+      editMine: action(function () { playerEditor(state.registrationId, 'My troops', true); }),
       notIn: action(function () { return attend(false); }),
       imIn: action(function () { return attend(true); }),
       assign: action(function (node) { assignmentEditor(node.dataset.id); }),
       hq: action(hqEditor),
-      fillMarches: action(function (node) { var p = state.roster.find(function (r) { return r.id === node.dataset.id; }), f = one('dialogBody').querySelector('form'); E.split(p).rows.forEach(function (r) { TYPES.forEach(function (k) { f.elements[k + '-' + r.queue].value = toK(r[k]); }); }); }),
+      fillMarches: action(function (node) { var p = state.roster.find(function (r) { return r.id === node.dataset.id; }), f = one('dialogBody').querySelector('form'); E.split(p).rows.forEach(function (r) { TYPES.forEach(function (k) { f.elements[k + '-' + r.queue].value = toK(r[k]); }); }); sends(f); }),
       selectPlayer: { run: function (node) { selected = node.dataset.id; personal(); tab('my-plan'); } },
       choosePlayer: { run: function () { selected = null; personal(); } },
       filter: { events: ['input'], run: function (node) { filter = node.value; pickList(one('pickList')); } },
-      savedTroops: action(savedTroops),
       share: action(share),
       copy: action(function (node) { return copy(node.dataset.value, 'Copied.'); }),
-      copyPrivate: action(function () { return copy(shareUrl('registration', credential.code), 'Copied. Keep it to yourself.'); }),
+      copyPrivate: action(function () { var code = ownCode(); if (!code) throw new Error('No player link on this device.'); return copy(shareUrl('registration', code), 'Copied. Keep it to yourself.'); }),
       copyInstructions: action(function () { return copy(E.instructions(state, selected), 'Copied.'); }),
       forgetThis: action(function () { forget(credential.planId); drop(LAST); close(); say('Forgotten on this device.'); }),
-      restore: action(async function (node) { var c = links()[Number(node.dataset.index)]; if (!c) throw new Error('That one is no longer saved here.'); await open(Object.assign({}, c), false); }),
+      restore: action(async function (node) { var c = ownFor(node.dataset.plan); if (!c) throw new Error('That one is no longer saved here.'); await open(Object.assign({}, c), false); }),
       forget: action(function () { drop(LINKS); drop(LAST); remembered(); say('Forgotten.'); }),
       rotate: action(function (node) { var role = node.dataset.role; modal('Replace the ' + (role === 'join' ? 'sign-up' : 'marches') + ' link?', function (body) { ask(body, 'The old link stops working.', 'Replace', 'confirmRotate', { role: role }, 'vv-primary'); }); }),
       confirmRotate: action(async function (node) { var result = await request('/v1/plans/' + state.plan.id + '/rotate', 'POST', { role: node.dataset.role }); credential.codes = credential.codes || {}; credential.codes[result.role] = result.code; remember(credential); persist(); render(); share(); }),
@@ -541,13 +601,18 @@
       wave: { run: function (node) { one('waves').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b === node)); }); one('waveDetail').textContent = node.dataset.kind === 'hq' ? 'HQ wave ' + node.dataset.wave + ': send the agreed share after the wave before it. Return after the hit.' : node.dataset.kind === 'online' ? 'Wave ' + node.dataset.wave + ': online cities only.' : 'Wave ' + node.dataset.wave + ': every city.'; } }
     };
     one('calculatorForm').querySelector('[type=submit]').disabled = false;
+    syncNote(one('calcUnits')); fillCalculator();
+    try { context.cleanup(context.ledger.subscribe(function () { fillCalculator(); })); } catch (_) { /* no save on this page */ }
     waves();
     /* Which room to open: a link just followed, this tab's last room, then the room this device last led or joined. */
     var initial = window.VikingsAccess || read(SESSION, sessionStorage), last = read(LAST), saved = links();
-    var mine = last === 'none' ? null : saved.find(function (r) { return r.planId === last; }) || (last === null || last === 'local' ? saved[0] : null);
+    var mine = last === 'none' ? null : (typeof last === 'string' && ownFor(last)) || (last === null || last === 'local' ? saved[0] && ownFor(saved[0].planId) : null);
     render();
-    if (initial && CODE.test(initial.code) && (initial.planId === null || UUID.test(initial.planId))) run(function () { return open(Object.assign({}, initial), !!initial.fromLink); });
-    else if (mine) run(function () { return open(Object.assign({}, mine), false); });
+    // The head script hides the start screen while a remembered plan opens, so the page doesn't jump.
+    function settle() { document.documentElement.classList.remove('vv-opening'); }
+    if (initial && CODE.test(initial.code) && (initial.planId === null || UUID.test(initial.planId))) run(async function () { try { await open(Object.assign({}, initial), !!initial.fromLink); } finally { settle(); } });
+    else if (mine) run(async function () { try { await open(Object.assign({}, mine), false); } finally { settle(); } });
+    else settle();
     schedule(30000);
     return { actions: actions, refresh: function () { if (!one('dialog').open) render(); } };
   });
