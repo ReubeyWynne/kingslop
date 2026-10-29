@@ -22,7 +22,7 @@ self: vikings
     <div class="vv-start" data-target="vikings.start">
       <div data-target="vikings.remembered"></div>
       <div class="vv-paths">
-        <div class="vv-path"><p class="vv-label">Leading</p><h2>Alliance room</h2><p>Sign-ups every Vikings, marches and HQ.</p><button type="button" class="vv-primary" data-action="vikings.create">Create a room</button></div>
+        <div class="vv-path"><p class="vv-label">Leading</p><h2>Your alliance</h2><p>Sign-ups every Vikings, marches and HQ.</p><button type="button" class="vv-primary" data-action="vikings.create">Set up your alliance</button></div>
         <div class="vv-path"><p class="vv-label">Joining</p><h2>Got a link?</h2><p>Paste it to sign up or see your marches.</p><button type="button" class="vv-primary" data-action="vikings.open">Paste a link</button></div>
       </div>
     </div>
@@ -34,7 +34,7 @@ self: vikings
         <button type="submit" class="vv-primary" disabled>Work out my marches</button>
       </form>
       <div class="vv-local-answer" data-target="vikings.split" aria-live="polite"></div>
-      <p class="vv-caption"><button type="button" class="vv-inline" data-action="vikings.demo">See an example room</button></p>
+      <p class="vv-caption"><button type="button" class="vv-inline" data-action="vikings.demo">See an example</button></p>
     </section>
   </section>
 
@@ -57,7 +57,7 @@ self: vikings
     <details id="hq"><summary>HQ waves: 10 and 20</summary><p>Agree the participants, effective garrison cap and exact shares. Our starting preset is 75% infantry and 25% cavalry. Leaders can change it for their alliance.</p><p>After wave 9 or 19 resolves, recall the reserved queue and send its agreed HQ share. Return to city cover after the HQ hit. The planner checks capacity and troop availability; it does not predict survival.</p></details>
     <details id="scoring-maths"><summary>What earns points?</summary><p>A town has a finite wave points budget. Reinforcers earn their share through kills. More reinforcers change how that pool is split; they do not multiply it. Aim for full clears, then inspect the kill reports before adjusting cover.</p><p>The community scoring model is approximate. We do not turn assigned troop counts into a promised score.</p></details>
     <details id="heroes"><summary>Heroes, healing and reports</summary><p>Keep the heroes who lead your city in the guard station. Choose reinforcement leads from the skills your alliance needs and check their actual effects in reports. Vikings recommendations should follow Vikings evidence.</p><p>If you heal between waves, send those troops back out unless the city needs them to survive. If a city stops receiving attacks, redeploy its reinforcements to a city still taking waves.</p><a href="../heroes/">Open the hero directory</a></details>
-    <details id="vikings-sharing"><summary>Links and rooms</summary><p>The leader link runs the room, the sign-up link adds players, and your own link edits your troops. There are no accounts, so keep your link.</p><p>A room stays while your alliance uses it. Only your Vikings troops and name are sent; the rest of your save stays on this device.</p></details>
+    <details id="vikings-sharing"><summary>Links</summary><p>The leader link runs it, the sign-up link adds players, and your own link edits your troops. There are no accounts, so keep your link.</p><p>It stays while your alliance uses it. Only your Vikings troops and name are sent; the rest of your save stays on this device.</p></details>
   </section>
 
   <dialog class="vv-dialog" data-target="vikings.dialog" aria-labelledby="vv-dialog-title"><div class="vv-dialog-head"><h2 id="vv-dialog-title"></h2><button type="button" data-action="vikings.closeDialog" aria-label="Close editor">×</button></div><p class="vv-dialog-message" data-target="vikings.dialogMessage" role="alert"></p><div data-target="vikings.dialogBody"></div></dialog>

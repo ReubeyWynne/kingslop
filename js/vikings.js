@@ -40,11 +40,11 @@
     function remember(c) {
       if (!c || !['manage', 'registration'].includes(c.role)) return false;
       var list = links().filter(function (r) { return r.planId !== c.planId || r.role !== c.role; });
-      list.unshift({ planId: c.planId, code: c.code, role: c.role, codes: c.codes, name: state ? state.plan.name : c.name });
+      list.unshift({ planId: c.planId, code: c.code, role: c.role, codes: c.codes, self: c.self, name: state ? state.plan.name : c.name });
       return write(LINKS, list.slice(0, 20));
     }
     function forget(planId) { write(LINKS, links().filter(function (r) { return r.planId !== planId; })); }
-    function ownFor(planId) { return links().find(function (r) { return r.planId === planId; }); }
+    function ownFor(planId) { var own = links().filter(function (r) { return r.planId === planId; }); return own.find(function (r) { return r.role === 'manage'; }) || own[0]; }
 
     async function copy(value, done) {
       try { await navigator.clipboard.writeText(value); say(done || 'Copied.'); }
@@ -73,8 +73,19 @@
       if (disposed || credential.planId !== planId) return;
       state = { plan: board.plan || data.plan, roster: board.roster || data.registrations, assignments: board.assignments || {}, hq: board.hq || E.emptyHQ(), revision: board.revision, rosterRevision: board.rosterRevision, planRevision: board.planRevision, publicationRevision: board.publicationRevision || 0, access: data.access, registrationId: data.registrationId };
       credential.role = data.access;
+      if (data.access === 'manage') await adopt();
       if (state.registrationId) selected = state.registrationId;
       persist(); render();
+    }
+    // The leader's own sign-up rides on the leader link. One made earlier with the sign-up link on this device is taken over.
+    async function adopt() {
+      var joined = links().find(function (r) { return r.planId === credential.planId && r.role === 'registration'; });
+      if (!credential.self && joined) {
+        try { credential.self = (await request('/v1/plans/' + credential.planId, 'GET', null, joined.code)).registrationId; } catch (_) { /* a removed sign-up is just dropped */ }
+        write(LINKS, links().filter(function (r) { return r !== joined && !(r.planId === joined.planId && r.role === 'registration'); }));
+        remember(credential); persist();
+      }
+      state.registrationId = state.roster.some(function (r) { return r.id === credential.self; }) ? credential.self : null;
     }
     // Open a link or a remembered room. A link to a room this device already leads or joined opens that instead.
     async function open(c, fromLink) {
@@ -83,7 +94,7 @@
       credential = own ? Object.assign({}, own) : c; selected = null; filter = '';
       try { await load(); }
       catch (cause) {
-        if (cause.status === 401 || cause.status === 404) { if (!fromLink) forget(c.planId); credential = null; state = null; drop(SESSION, sessionStorage); render(); throw new Error(fromLink ? 'This link no longer works. Ask your leader for a new one.' : 'That room has closed.'); }
+        if (cause.status === 401 || cause.status === 404) { if (!fromLink) forget(c.planId); credential = null; state = null; drop(SESSION, sessionStorage); render(); throw new Error(fromLink ? 'This link no longer works. Ask your leader for a new one.' : 'That alliance plan has expired.'); }
         throw cause;
       }
       if (remember(credential)) write(LAST, credential.planId);
@@ -168,9 +179,9 @@
     }
     function roomEditor() {
       var p = state ? state.plan : {};
-      modal(state ? 'Room settings' : 'New room', function (body) {
+      modal(state ? 'Settings' : 'Set up Vikings', function (body) {
         var f = form(body, 'room'), grid = el('div', 'vv-form-grid'); f.appendChild(grid);
-        var n = field(grid, 'Room name', 'name', p.name || ''); n.maxLength = 80; n.placeholder = 'Vikings'; n.parentElement.classList.add('vv-wide');
+        var n = field(grid, 'Alliance', 'name', p.name || ''); n.maxLength = 80; n.placeholder = '[TAG] Vikings'; n.parentElement.classList.add('vv-wide');
         var days = el('fieldset', 'vv-days vv-wide'); days.appendChild(el('legend', '', 'Day'));
         var upcoming = E.eventDays(Date.now(), 4);
         [['tue', 2], ['thu', 4]].forEach(function (d) { var label = el('label', 'vv-chip'), radio = el('input'), first = upcoming.find(function (t) { return new Date(t).getUTCDay() === d[1]; }); radio.type = 'radio'; radio.name = 'day'; radio.value = d[0]; radio.required = true; radio.checked = (p.eventDay || 'tue') === d[0]; label.append(radio, el('span', '', dayLabel(first))); days.appendChild(label); });
@@ -178,7 +189,7 @@
         var time = field(grid, 'Start (UTC)', 'time', p.eventTime || read(TIME) || '', 'time'); time.required = true;
         grid.appendChild(el('p', 'vv-caption vv-local-time'));
         if (state) field(grid, 'Sign-ups', 'closed', p.closed ? 'true' : 'false', 'select', [['false', 'Open'], ['true', 'Closed']]);
-        submit(f, state ? 'Save' : 'Create room');
+        submit(f, state ? 'Save' : 'Set up');
         localTime(f);
       });
     }
@@ -269,7 +280,7 @@
       var rows = (state.assignments[p.id] || []).filter(function (r) { return r.destination && total(r); });
       var used = { infantry: 0, cavalry: 0, archers: 0 }; rows.forEach(function (r) { TYPES.forEach(function (k) { used[k] += r[k]; }); });
       var home = {}; TYPES.forEach(function (k) { home[k] = Math.max(0, p[k] - used[k]); });
-      if (!rows.length) { body.appendChild(el('p', 'vv-lede', mine ? 'Your leader hasn’t set your marches yet.' : 'No marches set yet.')); return; }
+      if (!rows.length) { body.appendChild(el('p', 'vv-lede', mine ? (isManager() ? 'Set yours on the Alliance tab.' : 'Your leader hasn’t set your marches yet.') : 'No marches set yet.')); return; }
       body.appendChild(el('p', 'vv-lede', kfmt(total(used)) + ' out' + (total(home) ? ' · ' + kfmt(total(home)) + ' stay home' : '')));
       var list = el('div', 'vv-marches'); rows.forEach(function (r) { marchRow(r, name(r.destination), list); }); body.appendChild(list);
       var headquarters = E.hqRows(state.hq || E.emptyHQ()).find(function (r) { return r.playerId === p.id; });
@@ -295,6 +306,12 @@
         answer(body, null); return;
       }
       var mine = me();
+      if (selected && (!mine || selected !== mine.id) && state.roster.some(function (r) { return r.id === selected && r.attending; })) {
+        var other = state.roster.find(function (r) { return r.id === selected; });
+        var oh = el('div', 'vv-heading'); oh.appendChild(el('h2', '', other.nickname)); oh.appendChild(button(isManager() && !state.example ? 'Mine' : 'Another player', 'choosePlayer', {}, 'vv-quiet')); body.appendChild(oh);
+        marchesFor(body, other, false); return;
+      }
+      if (!mine && isManager() && !state.example) { body.appendChild(el('h2', '', 'In for ' + when() + '?')); answer(body, null); return; }
       if (mine && mine.attending === null) { body.appendChild(el('h2', '', 'In for ' + when() + '?')); body.appendChild(el('p', 'vv-lede', 'Your troops from last time. Change anything that’s moved.')); answer(body, mine); return; }
       if (mine && mine.attending === false) {
         body.appendChild(el('h2', '', 'You’re out for ' + when())); var a = el('div', 'vv-actions'), back = button('I’m in after all', 'imIn', {}, 'vv-primary'); back.dataset.mutation = ''; a.appendChild(back); body.appendChild(a); return;
@@ -303,11 +320,7 @@
         var head = el('div', 'vv-heading'); head.appendChild(el('h2', '', 'Your marches')); var tools = el('div', 'vv-actions vv-tight'); tools.appendChild(button('My troops', 'editMine', {}, 'vv-quiet')); var out = button('Can’t make it', 'notIn', {}, 'vv-quiet'); out.dataset.mutation = ''; tools.appendChild(out); head.appendChild(tools); body.appendChild(head);
         marchesFor(body, mine, true); return;
       }
-      if (!state.roster.some(function (r) { return r.id === selected && r.attending; })) selected = null;
-      if (!selected) { picker(body); return; }
-      var p = state.roster.find(function (r) { return r.id === selected; });
-      var h = el('div', 'vv-heading'); h.appendChild(el('h2', '', p.nickname)); h.appendChild(button('Another player', 'choosePlayer', {}, 'vv-quiet')); body.appendChild(h);
-      marchesFor(body, p, false);
+      selected = null; picker(body);
     }
     function playerRow(p, check, manage) {
       var sent = (state.assignments[p.id] || []).filter(function (r) { return r.destination && total(r); }).length, incoming = check.incoming[p.id] || [];
@@ -324,7 +337,7 @@
     }
     function alliance() {
       var body = one('alliance'); body.replaceChildren();
-      if (!state) { body.appendChild(button('Create a room', 'create', {}, 'vv-primary')); return; }
+      if (!state) { body.appendChild(button('Set up your alliance', 'create', {}, 'vv-primary')); return; }
       var inn = state.roster.filter(function (p) { return p.attending; }), waiting = state.roster.filter(function (p) { return p.attending === null; }), out = state.roster.filter(function (p) { return p.attending === false; });
       var check = E.validate(inn, state.assignments, state.hq);
       if (!isManager()) {
@@ -348,14 +361,14 @@
       var hq = el('div', 'vv-section vv-hq-section'), hqHead = el('div', 'vv-hq-head'); hqHead.appendChild(hqMark()); var hqText = el('div'); hqText.appendChild(el('h3', '', 'HQ · waves 10 & 20'));
       hqText.appendChild(el('p', 'vv-dim', state.hq.participants.length ? state.hq.participants.length + ' players · ' + kfmt(state.hq.capacity) + ' · ' + state.hq.infantryPercent + '/' + state.hq.cavalryPercent + '/' + (100 - state.hq.infantryPercent - state.hq.cavalryPercent) : 'Not set')); hqHead.appendChild(hqText); hq.appendChild(hqHead);
       if (inn.length) hq.appendChild(button(state.hq.participants.length ? 'Change' : 'Set up', 'hq', {}, 'vv-quiet')); body.appendChild(hq);
-      var tools = el('details', 'vv-tools'); tools.id = 'room-tools'; tools.appendChild(el('summary', '', 'Room')); var t = el('div', 'vv-actions');
-      t.appendChild(button('Settings', 'settings')); if (!state.example) { t.appendChild(button('Refresh', 'refresh')); t.appendChild(button('Delete room', 'deletePlan', {}, 'vv-danger')); }
+      var tools = el('details', 'vv-tools'); tools.id = 'room-tools'; tools.appendChild(el('summary', '', 'More')); var t = el('div', 'vv-actions');
+      t.appendChild(button('Settings', 'settings')); if (!state.example) { t.appendChild(button('Refresh', 'refresh')); t.appendChild(button('Delete', 'deletePlan', {}, 'vv-danger')); }
       tools.appendChild(t); body.appendChild(tools);
     }
     function remembered() {
       var body = one('remembered'); body.replaceChildren(); if (state) return;
       var saved = links(); if (!saved.length) return;
-      body.appendChild(el('h2', '', 'Your rooms'));
+      body.appendChild(el('h2', '', 'Your alliances'));
       var list = el('div', 'vv-rows');
       saved.forEach(function (p, i) { var b = button('', 'restore', { index: i }, 'vv-row'), main = el('span', 'vv-row-main'), top = el('span', 'vv-row-top'); top.appendChild(el('strong', '', p.name || 'Vikings')); top.appendChild(el('span', 'vv-avail', ROLES[p.role])); main.appendChild(top); b.appendChild(main); b.appendChild(el('span', 'vv-chevron', '›')); list.appendChild(b); });
       body.appendChild(list);
@@ -414,11 +427,12 @@
           var kept = remember(credential); if (kept) write(LAST, credential.planId);
           mode = 'my-plan'; render();
           modal('You’re in', function (body) {
-            body.appendChild(el('p', '', kept ? 'Next time this page opens your room with your troops filled in.' : 'Copy your link to come back.'));
+            body.appendChild(el('p', '', kept ? 'Next time this page opens straight here, troops filled in.' : 'Copy your link to come back.'));
             var a = el('div', 'vv-actions'); a.appendChild(button('Copy my link', 'copyPrivate', {}, 'vv-primary')); if (kept) a.appendChild(button('Don’t remember', 'forgetThis', {}, 'vv-quiet')); body.appendChild(a);
           });
           persist(); return;
         }
+        if (kind === 'answer') { credential.self = response.registration.id; remember(credential); persist(); await load(); close(); say('You’re in.'); return; }
         await load(); close(); say('Added.'); return;
       }
       if (kind === 'assignments') {
@@ -460,7 +474,7 @@
       var inn = state.roster.slice(0, 4);
       inn.forEach(function (p, i) { state.assignments[p.id] = E.split(p).rows.map(function (r, q) { return Object.assign({}, r, { destination: inn[(i + q + 1) % 4].id }); }); });
       state.hq = { capacity: 300000, infantryPercent: 75, cavalryPercent: 25, participants: inn.slice(0, 3).map(function (p) { return { playerId: p.id, queue: 1 }; }) };
-      selected = state.roster[0].id; mode = 'alliance-plan'; render(); say('Example room. Nothing is saved.');
+      selected = state.roster[0].id; mode = 'alliance-plan'; render(); say('Example. Nothing is saved.');
     }
     function waves() {
       var body = one('waves');
@@ -488,7 +502,7 @@
       }); } },
       submit: { events: ['submit'], preventDefault: true, run: function (f) { return run(function () { return submitForm(f); }); } },
       closeDialog: { run: function () { close(); } },
-      create: action(function () { if (state) throw new Error('Switch room first.'); roomEditor(); }),
+      create: action(function () { if (state) throw new Error('Switch first.'); roomEditor(); }),
       settings: action(roomEditor),
       demo: action(demo),
       open: action(function () { modal('Open a link', function (body) { var f = form(body, 'open'); var input = field(f, 'Link from your leader', 'link', '', 'url'); input.required = true; input.placeholder = 'https://dey.ci/vv/#join-…'; submit(f, 'Open'); }); }),
@@ -509,14 +523,14 @@
       copyPrivate: action(function () { return copy(shareUrl('registration', credential.code), 'Copied. Keep it to yourself.'); }),
       copyInstructions: action(function () { return copy(E.instructions(state, selected), 'Copied.'); }),
       forgetThis: action(function () { forget(credential.planId); drop(LAST); close(); say('Forgotten on this device.'); }),
-      restore: action(async function (node) { var c = links()[Number(node.dataset.index)]; if (!c) throw new Error('That room is no longer saved here.'); await open(Object.assign({}, c), false); }),
+      restore: action(async function (node) { var c = links()[Number(node.dataset.index)]; if (!c) throw new Error('That one is no longer saved here.'); await open(Object.assign({}, c), false); }),
       forget: action(function () { drop(LINKS); drop(LAST); remembered(); say('Forgotten.'); }),
       rotate: action(function (node) { var role = node.dataset.role; modal('Replace the ' + (role === 'join' ? 'sign-up' : 'marches') + ' link?', function (body) { body.appendChild(el('p', '', 'The old link stops working.')); body.appendChild(button('Replace', 'confirmRotate', { role: role }, 'vv-primary')); }); }),
       confirmRotate: action(async function (node) { var result = await request('/v1/plans/' + state.plan.id + '/rotate', 'POST', { role: node.dataset.role }); credential.codes = credential.codes || {}; credential.codes[result.role] = result.code; remember(credential); persist(); render(); share(); }),
       removePlayer: action(function (node) { modal('Remove ' + name(node.dataset.id) + '?', function (body) { body.appendChild(el('p', '', 'Their troops, marches and link go too.')); body.appendChild(button('Remove', 'confirmRemove', { id: node.dataset.id }, 'vv-danger')); }); }),
       confirmRemove: action(async function (node) { if (state.example) { state.roster = state.roster.filter(function (p) { return p.id !== node.dataset.id; }); delete state.assignments[node.dataset.id]; close(); render(); return; } await request('/v1/plans/' + state.plan.id + '/registrations/' + node.dataset.id, 'DELETE'); await load(); close(); }),
-      deletePlan: action(function () { modal('Delete this room?', function (body) { body.appendChild(el('p', '', 'Removes it for everyone.')); body.appendChild(button('Delete for everyone', 'confirmDelete', {}, 'vv-danger')); }); }),
-      confirmDelete: action(async function () { await request('/v1/plans/' + state.plan.id, 'DELETE'); forget(state.plan.id); drop(LAST); home(); say('Room deleted.'); }),
+      deletePlan: action(function () { modal('Delete ' + state.plan.name + '?', function (body) { body.appendChild(el('p', '', 'Removes it for everyone.')); body.appendChild(button('Delete for everyone', 'confirmDelete', {}, 'vv-danger')); }); }),
+      confirmDelete: action(async function () { await request('/v1/plans/' + state.plan.id, 'DELETE'); forget(state.plan.id); drop(LAST); home(); say('Deleted.'); }),
       refresh: action(load),
       // Leaving shows this device's rooms; it forgets nothing. The next visit opens the list until one is chosen.
       leave: action(function () { write(LAST, 'none'); home(); }),

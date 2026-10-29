@@ -25,7 +25,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
       page.on('pageerror', e => errors.push(e.message));
       await page.goto(origin + '/vikings-vengeance/?lang=' + lang);
       assert(await page.locator('.vv-next strong').isVisible());
-      await page.getByRole('button', { name: 'See an example room' }).click();
+      await page.getByRole('button', { name: 'See an example' }).click();
       await page.getByText('Marches set').waitFor();
       assert.equal(await page.locator('#alliance-plan > div > .vv-rows .vv-row').count(), 4);
       await page.locator('.vv-rows .vv-row', { hasText: 'Rowan' }).click();
@@ -47,15 +47,25 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     // A leader opens a room, players sign up in thousands on their own devices, and each comes back to it.
     const errors = [], lead = await device(), L = await lead.newPage(); L.on('pageerror', e => errors.push(e.message));
     await L.goto(origin + '/vikings-vengeance/');
-    await L.getByRole('button', { name: 'Create a room' }).first().click();
+    await L.getByRole('button', { name: 'Set up your alliance' }).first().click();
     await dialog(L).locator('[name=time]').fill('20:00');
-    await L.getByRole('button', { name: 'Create room' }).click();
+    await L.getByRole('button', { name: 'Set up', exact: true }).click();
     await dialog(L).locator('[data-action="vikings.copy"]').first().waitFor();
     const [join, view] = await dialog(L).locator('[data-action="vikings.copy"]').evaluateAll(nodes => nodes.map(n => n.dataset.value.match(/https?:\S+/)[0]));
     assert.match(join, /\/vv\/#join-[A-Za-z0-9_-]{22}$/); assert.match(view, /\/vv\/#view-[A-Za-z0-9_-]{22}$/);
     assert.equal(await L.locator('.vv-event h2').textContent(), 'Vikings');
     assert(await L.locator('.vv-when').getByText(/20:00 UTC/).isVisible());
     await dialog(L).locator('[data-action="vikings.closeDialog"]').click();
+    // The leader signs up on the leader link, not a second link.
+    await L.getByRole('tab', { name: 'My plan', exact: true }).click();
+    const own = L.locator('[data-target="vikings.personal"] form');
+    await own.locator('[name=nickname]').fill('Lead');
+    for (const k of ['infantry', 'cavalry', 'archers']) await own.locator(`[name=${k}]`).fill('60');
+    await own.locator('[name=marchCapacity]').fill('100'); await own.locator('[name=marches]').fill('2');
+    await own.getByRole('button', { name: 'I’m in' }).click();
+    await L.getByRole('heading', { name: 'Your marches' }).waitFor();
+    assert(await L.evaluate(() => { const r = JSON.parse(localStorage.getItem('bh:vikings-links:v1')); return r.length === 1 && r[0].role === 'manage' && r[0].self; }));
+    await L.getByRole('tab', { name: 'Alliance', exact: true }).click();
     let again = await lead.newPage(); await again.goto(origin + '/vikings-vengeance/');
     await again.getByText('Marches set').waitFor(); await again.close();
 
@@ -81,7 +91,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await again.getByRole('heading', { name: /^You’re out for/ }).waitFor(); await again.close();
 
     await L.reload(); await L.getByText('Marches set').waitFor();
-    assert.equal(await L.locator('#alliance-plan > div > .vv-rows .vv-row').count(), 2);
+    assert.equal(await L.locator('#alliance-plan > div > .vv-rows .vv-row').count(), 3);
     const names = ['Rowan', 'Ash'];
     for (let i = 0; i < 2; i++) {
       await L.locator('.vv-rows .vv-row', { hasText: names[i] }).first().click();
@@ -110,12 +120,12 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     const viewer = await device(), V = await viewer.newPage();
     await V.goto(local(view)); await V.getByRole('heading', { name: 'Whose marches?' }).waitFor();
     again = await viewer.newPage(); await again.goto(origin + '/vikings-vengeance/'); await again.waitForTimeout(300);
-    assert(await again.getByRole('button', { name: 'Create a room' }).first().isVisible());
+    assert(await again.getByRole('button', { name: 'Set up your alliance' }).first().isVisible());
     assert.equal(await again.locator('.vv-event').isVisible(), false);
 
     // Switching keeps the room listed, and the next visit waits for a choice.
     await L.getByRole('button', { name: 'Switch' }).click(); await L.reload();
-    await L.getByRole('heading', { name: 'Your rooms' }).waitFor();
+    await L.getByRole('heading', { name: 'Your alliances' }).waitFor();
     await L.locator('.vv-rows .vv-row').first().click(); await L.getByText('Marches set').waitFor();
     assert.deepEqual(errors, []);
 

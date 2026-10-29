@@ -20,7 +20,7 @@ Access links are short enough for game chat: `https://dey.ci/vv/#join-<code>` (a
 
 ## Returning to a room
 
-Creating a room or joining one saves that leader or player link on the device (`bh:vikings-links:v1`, outside the player ledger), and the next visit reopens the room the device last led or joined (`bh:vikings-last:v1`). Opening a sign-up or viewing link never saves it; a viewer's next visit starts at the room list. A sign-up or viewing link for a room this device already leads or joined opens that role instead. **Switch** keeps the list and waits for a choice on the next visit. A player can tell the device to forget the room; a saved room that has been deleted is removed with a message.
+Creating a room or joining one saves that leader or player link on the device (`bh:vikings-links:v1`, outside the player ledger), and the next visit reopens the room the device last led or joined (`bh:vikings-last:v1`). Opening a sign-up or viewing link never saves it; a viewer's next visit starts at the room list. A sign-up or viewing link for a room this device already leads or joined opens that role instead. **Switch** keeps the list and waits for a choice on the next visit. The leader signs up on the leader link: the sign-up's id is kept with it as `self`, and a sign-up made earlier on the same device with the sign-up link is taken over. A player can tell the device to forget the room; a saved room that has been deleted is removed with a message.
 
 ## Event days
 
