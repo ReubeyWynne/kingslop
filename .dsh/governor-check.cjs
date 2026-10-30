@@ -120,6 +120,11 @@ assert.equal(G.readLink('?lang=en'), null);
 for (const bad of ['?gov=short', '?gov=' + 'X'.repeat(24), '?gov=' + '.'.repeat(6) + 'n' + '.'.repeat(17), '?gov=' + '.'.repeat(24) + '&bag=1.2', '?gov=' + '.'.repeat(24) + '&bag=1000000001....', '?gov=' + '.'.repeat(24) + '&f=mage', '?gov=' + '.'.repeat(24) + '&gt=59'])
   assert.deepEqual(G.readLink(bad), { invalid: true }, bad);
 
+// In-game chat takes 512 UTF-16 units (measured by the owner), so a full sheet's link must fit with room to spare.
+const fullest = G.encodeLink({ gear: Object.fromEntries(G.items('gear').map(i => [i.id, 57])), charms: Object.fromEntries(G.items('charms').map(i => [i.id, 21])), bag: Object.fromEntries(G.data.materials.map(m => [m.id, 1e9])), prefs: { goal: 'score', focus: 'arc', gearTarget: 57, charmTarget: 21 } });
+const fullestURL = 'https://dey.ci/governor-gear/?' + new URLSearchParams(fullest).toString();
+assert.ok(fullestURL.length <= 160, 'a full sheet link stays short: ' + fullestURL.length);
+
 // Page integration: navigation, dictionaries and static fallback copy.
 const nav = require('../_data/nav.json'), pages = require('../_data/pages.json');
 assert.equal(nav.filter(n => n.self === 'governor').length, 1);
