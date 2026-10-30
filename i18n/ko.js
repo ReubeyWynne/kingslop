@@ -12,6 +12,8 @@ window.__BH_I18N_DATA["ko"] = {
   "skip": "수학 파트로 건너뛰기",
   "brandNote": "오직 수학만",
   "ui.lang": "언어",
+  "ui.numbers": "숫자 형식",
+  "ui.numbers.auto": "자동",
 
   "nav.aria": "목차",
   "nav.model": "한 문장 요약",

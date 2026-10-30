@@ -12,6 +12,8 @@ window.__BH_I18N_DATA["ja"] = {
   "skip": "数学の話へ",
   "brandNote": "数学だけ",
   "ui.lang": "言語",
+  "ui.numbers": "数値の形式",
+  "ui.numbers.auto": "自動",
 
   "nav.aria": "セクション",
   "nav.model": "一言で言うと",

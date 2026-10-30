@@ -12,6 +12,8 @@ window.__BH_I18N_DATA["vi"] = {
   "skip": "Đi thẳng tới phần toán",
   "brandNote": "chỉ là toán",
   "ui.lang": "Ngôn ngữ",
+  "ui.numbers": "Định dạng số",
+  "ui.numbers.auto": "Tự động",
 
   "nav.aria": "Các phần",
   "nav.model": "Tóm tắt một câu",

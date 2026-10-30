@@ -708,6 +708,22 @@ html { scrollbar-width: thin; scrollbar-color: var(--ink-muted) var(--void); }
   background: var(--signal-tint);
 }
 .lang-menu .flag { width: 1.6rem; height: 0.96rem; flex: 0 0 auto; border-radius: 1px; }
+.lang-list { margin: 0; padding: 0; list-style: none; }
+.lang-numbers {
+  display: flex; flex-direction: column; gap: 0.25rem;
+  margin-block-start: 0.35rem; padding: 0.5rem 0.5rem 0.25rem;
+  border-block-start: 1px solid var(--ink-muted);
+  font-family: var(--body); font-size: var(--step--1);
+  color: var(--ink-dim);
+}
+.lang-numbers select {
+  max-width: 100%;
+  font: inherit; color: var(--ink);
+  background: var(--void-2);
+  border: 1px solid var(--ink-muted);
+  border-radius: 2px;
+  padding: 0.2rem 0.3rem;
+}
 
 .section[data-collapse] > h2 {
   display: flex;

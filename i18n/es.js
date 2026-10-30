@@ -12,6 +12,8 @@ window.__BH_I18N_DATA["es"] = {
   "skip": "Saltar a las cuentas",
   "brandNote": "solo las cuentas",
   "ui.lang": "Idioma",
+  "ui.numbers": "Formato de números",
+  "ui.numbers.auto": "Automático",
 
   "nav.aria": "Secciones",
   "nav.model": "La idea en una frase",

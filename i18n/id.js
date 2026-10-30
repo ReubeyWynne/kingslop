@@ -12,6 +12,8 @@ window.__BH_I18N_DATA["id"] = {
   "skip": "Langsung ke matematikanya",
   "brandNote": "hanya matematikanya",
   "ui.lang": "Bahasa",
+  "ui.numbers": "Format angka",
+  "ui.numbers.auto": "Otomatis",
 
   "nav.aria": "Bagian",
   "nav.model": "Ringkasan satu kalimat",
