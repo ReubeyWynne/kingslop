@@ -1,0 +1,23 @@
+{
+  "note": "Source presets exceed source catalogue limits. This may be a preset exception or a source inconsistency; game behaviour is unverified. Do not silently destroy imported layouts to enforce these limits.",
+  "findings": [
+    {
+      "layout": "kingshot-8900",
+      "piece": "whispering_path",
+      "placed_count": 767,
+      "catalogue_build_limit": 500
+    },
+    {
+      "layout": "kingshot-8901",
+      "piece": "garden_path",
+      "placed_count": 1255,
+      "catalogue_build_limit": 500
+    },
+    {
+      "layout": "kingshot-8902",
+      "piece": "garden_path",
+      "placed_count": 908,
+      "catalogue_build_limit": 500
+    }
+  ]
+}

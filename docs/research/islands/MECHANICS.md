@@ -87,6 +87,8 @@ Additional source editor behaviours, useful for comparison rather than copying:
 - The importer reads but does not retain `effect_limit`, `needs_gap`, `quality`, `build_class`, `build_type` or `prosper` in its live piece model. Their presence in JSON does not mean the tool validates those game rules.
 - Imported layout state serialises `templateSlug`, `name`, `bindings`, `pieces`, `surfaces`, `directions`, `edits`, `seed`, `settings`, `forkedFrom` and `templateSnapshot`. Keys for cell maps are decimal grid indices. This is an observed data model, not a verified share-code specification.
 
+The source also contradicts its own catalogue limits in three game-labelled presets. Layout 8900 contains 767 Whispering Path cells, layout 8901 contains 1,255 Garden Path cells, and layout 8902 contains 908 Garden Path cells. The catalogue limit for each type is 500. See `data/source-limit-conflicts.json`. This could represent preset exceptions or inconsistent source data; the evidence does not choose between them. Imported designs need an explicit excess-limit state rather than silent deletion.
+
 ## Data that is still missing
 
 - Fountain levels, unlock conditions, construction costs, upgrade durations and collection/storage limits.
