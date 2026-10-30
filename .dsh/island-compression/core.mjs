@@ -44,7 +44,7 @@ export function wrap(body, compressed = body, compression = 0) {
 export function unwrap(wire) {
   if (!(wire instanceof Uint8Array) || wire.length > MAX_WIRE) fail();
   const r = new Reader(wire); if (r.bits(16) !== 0x4943 || r.bits(8) !== 1) fail();
-  const compression = r.bits(8); if (compression > 4) fail();
+  const compression = r.bits(8); if (compression > 5) fail();
   const length = r.u(MAX_BODY), crc = r.bits(32); const compressed = r.bytes(wire.length - r.p / 8); r.end();
   return { compression, length, crc, compressed };
 }

@@ -1,0 +1,23 @@
+kingshot-8900: best 78 B / 118 chars (context-bitplanes, none); portable 78 B / 118 chars
+kingshot-8901: best 990 B / 1334 chars (context-ranks, none); portable 990 B / 1334 chars
+kingshot-8902: best 976 B / 1316 chars (context-ranks, none); portable 976 B / 1316 chars
+kingshot-8903: best 294 B / 406 chars (context-bitplanes, none); portable 294 B / 406 chars
+kingshot-8904: best 316 B / 436 chars (context-bitplanes, none); portable 316 B / 436 chars
+empty: best 14 B / 33 chars (fixed, deflate-raw); portable 15 B / 34 chars
+sparse-25: best 79 B / 120 chars (delta, none); portable 79 B / 120 chars
+independent-100: best 321 B / 442 chars (delta, brotli5); portable 333 B / 458 chars
+dense-decorations: best 50 B / 81 chars (delta, brotli5); portable 57 B / 90 chars
+paths-grid: best 37 B / 64 chars (grid-rows, deflate-raw); portable 38 B / 65 chars
+borders-diagonals: best 41 B / 69 chars (groups-adaptive, none); portable 41 B / 69 chars
+symmetric-garden: best 86 B / 129 chars (groups-sparse, deflate-raw); portable 93 B / 138 chars
+repeated-rows: best 50 B / 81 chars (context-ranks, none); portable 50 B / 81 chars
+random-binary-surface: best 467 B / 637 chars (grid-palette, none); portable 467 B / 637 chars
+random-six-surfaces: best 1236 B / 1662 chars (context-ranks, none); portable 1236 B / 1662 chars
+random-dual-layers: best 14555 B / 19421 chars (delta, brotli11); portable 16690 B / 22268 chars
+heldout-meandering-paths: best 134 B / 193 chars (context-bitplanes, none); portable 134 B / 193 chars
+heldout-offset-motifs: best 93 B / 138 chars (grid-rows, deflate-raw); portable 99 B / 146 chars
+heldout-irregular-districts: best 659 B / 893 chars (context-ranks, none); portable 659 B / 893 chars
+heldout-rotated-variants: best 277 B / 384 chars (grid-rows, brotli11); portable 295 B / 408 chars
+Verified 2520 codec/layout combinations.
+heldout-cap-surfaces: best 539 B / 733 chars (context-pairs, none); portable 539 B / 733 chars
+Verified 2646 codec/layout combinations.

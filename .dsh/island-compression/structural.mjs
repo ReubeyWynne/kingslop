@@ -1,6 +1,6 @@
 import { arithmeticEncode, arithmeticDecode } from './arithmetic.mjs';
 import { Writer, Reader, canonical, fail, MAX_BODY } from './core.mjs';
-export const FORMATS = ['fixed', 'delta', 'groups-sparse', 'groups-rice', 'groups-rle', 'groups-bitmap', 'groups-quadtree', 'groups-rows', 'groups-geometry', 'groups-adaptive', 'grid-rle', 'grid-palette', 'grid-blocks', 'grid-rows', 'context-pairs', 'context-ranks', 'context-bitplanes'];
+export const FORMATS = ['fixed', 'delta', 'groups-sparse', 'groups-rice', 'groups-rle', 'groups-bitmap', 'groups-quadtree', 'groups-rows', 'groups-geometry', 'groups-adaptive', 'grid-rle', 'grid-palette', 'grid-blocks', 'grid-rows', 'context-pairs', 'context-ranks', 'context-bitplanes', 'layer-hybrid'];
 const width = n => n <= 1 ? 0 : Math.ceil(Math.log2(n));
 const key = r => `${r[1]},${r[2]},${r[3]}`;
 const groups = a => {
@@ -40,12 +40,12 @@ function shapes(ps) {
     for (let h = 1; y + h <= 60; h++) {
       let w = 0; while (w < maxw && set.has(p + (h - 1) * 60 + w)) w++;
       maxw = Math.min(maxw, w); if (!maxw) break;
-      const score = maxw * h - 4;
+      const score = 14 * maxw * h - 26;
       if (score > saving) { saving = score; best = [1, p, maxw, h]; }
     }
     for (const [dx, dy] of [[1, 1], [-1, 1]]) {
       let n = 1; while (x + dx * n >= 0 && x + dx * n < 60 && y + n < 60 && set.has(p + (60 + dx) * n)) n++;
-      if (n - 3 > saving) { saving = n - 3; best = [dx === 1 ? 2 : 3, p, n, 1]; }
+      if (14 * n - 20 > saving) { saving = 14 * n - 20; best = [dx === 1 ? 2 : 3, p, n, 1]; }
     }
     out.push(best);
     const [op, start, w, h] = best;
@@ -175,6 +175,17 @@ function readGrid(r, f, flags) {
 }
 export function encodeStructural(layout, format = 'groups-adaptive') {
   const l = canonical(layout), f = FORMATS.indexOf(format); if (f < 0) fail(); const w = new Writer(); w.u(f); w.u(l.board);
+  if (f === 17) {
+    for (const a of [l.pieces, l.surfaces]) {
+      let best;
+      for (const mode of ['delta', 'groups-adaptive', 'grid-rle', 'grid-palette', 'grid-blocks', 'grid-rows', 'context-pairs', 'context-ranks', 'context-bitplanes']) {
+        const body = encodeStructural({ board: 0, pieces: a, surfaces: [] }, mode);
+        if (!best || body.length < best.length) best = body;
+      }
+      w.u(best.length); w.bytes(best);
+    }
+    return w.end();
+  }
   for (const a of [l.pieces, l.surfaces]) {
     const flags = flagsFor(a); w.u(flags);
     if (f < 2) {
@@ -191,7 +202,14 @@ export function encodeStructural(layout, format = 'groups-adaptive') {
   return w.end();
 }
 export function decodeStructural(bytes) {
-  if (!(bytes instanceof Uint8Array) || bytes.length > MAX_BODY) fail(); const r = new Reader(bytes), f = r.u(16), board = r.u(255), layers = [];
+  if (!(bytes instanceof Uint8Array) || bytes.length > MAX_BODY) fail(); const r = new Reader(bytes), f = r.u(17), board = r.u(255), layers = [];
+  if (f === 17) {
+    for (let layer = 0; layer < 2; layer++) {
+      const body = r.bytes(r.u(100000)); if (new Reader(body).u(17) === 17) fail();
+      const child = decodeStructural(body); if (child.board !== 0 || child.surfaces.length) fail(); layers.push(child.pieces);
+    }
+    r.end(); return canonical({ board, pieces: layers[0], surfaces: layers[1] });
+  }
   for (let layer = 0; layer < 2; layer++) {
     const flags = r.u(3), a = [];
     if (f < 2) {
@@ -213,9 +231,13 @@ export function decodeStructural(bytes) {
   r.end(); return canonical({ board, pieces: layers[0], surfaces: layers[1] });
 }
 export function encodeHybrid(layout) {
-  const modes = ['delta', 'groups-adaptive', 'grid-rle', 'grid-blocks', 'grid-rows', 'context-pairs', 'context-ranks', 'context-bitplanes']; let best;
+  const modes = productionModes(layout); let best;
   for (const mode of modes) { const body = encodeStructural(layout, mode); if (!best || body.length < best.length) best = body; }
   return best;
+}
+export function productionModes(layout) {
+  const manySymbols = Math.max(...['pieces', 'surfaces'].map(layer => new Set(layout[layer].map(key)).size)) > 128;
+  return (manySymbols ? ['delta', 'grid-rle', 'grid-palette', 'grid-blocks', 'grid-rows'] : ['delta', 'groups-adaptive', 'grid-rle', 'grid-palette', 'grid-blocks', 'grid-rows', 'context-pairs', 'context-ranks', 'context-bitplanes', 'layer-hybrid']);
 }
 export function groupDiagnostics(layout) {
   return ['pieces', 'surfaces'].flatMap(layer => groups(canonical(layout)[layer]).map(g => {

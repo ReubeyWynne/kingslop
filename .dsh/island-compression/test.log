@@ -1,0 +1,17 @@
+✔ Every fixture round trips through all structural and compression modes (38480.151331ms)
+✔ Deterministic encoding ignores insertion order and preserves unknown IDs (2468.559883ms)
+✔ Fixed-seed property corpus with arbitrary directions, variants and layers (20865.924734ms)
+✔ Reject invalid model bounds, duplicates and types (0.727409ms)
+✔ Reject malformed base64url, unsupported versions, corruptions and truncation (452.820275ms)
+✔ Bounded decompression, trailing data and valid-checksum malformed bodies (2178.845429ms)
+✔ Web CompressionStream round trips and decodes Node zlib streams (3249.674842ms)
+✔ Deterministic LZ blocks handle overlapping matches and reject invalid references (6.295471ms)
+✔ Worker module encodes and decodes without DOM or Node dependencies (139.372211ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 67973.412971
