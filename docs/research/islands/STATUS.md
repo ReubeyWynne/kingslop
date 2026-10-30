@@ -1,45 +1,32 @@
 # Research status
 
-Updated 30 October 2026. Investigation in progress. This branch contains research, not the planned Kingslop page.
+Completed 30 October 2026 for the public-site investigation and asset capture. Current-game verification gaps remain in OPEN-QUESTIONS.md. Research only; implementation planning continues separately.
 
-## Published checkpoint
+## Published checkpoints
 
-- Branch created first from main; scope published immediately.
-- Inspected the live island editor and its tutorial through browser accessibility.
-- Recovered the public release asset manifest (1,925 assets) and island factual datasets.
-- Published the 104-piece catalogue, CSV index, terrain reference, road connection rules and five game-labelled map records.
-- Eight Companion-authored showcase layouts are indexed, not copied as Kingslop templates.
+1. Created `islands` from main before investigating and committed the scope.
+2. Published the 104-piece source catalogue, CSV, terrain, road rules and five game-labelled layouts.
+3. Published 186 static piece images, evidence captures, the UX audit, chest coordinates and reconstructed route fixtures. Preserved the parallel engineering proposal when the branch moved during publication.
+4. Added recovered road neighbour offsets, source model observations and the warning that the map's 255 values do not describe legal terrain.
+5. Added five lossless atlases containing 275 tile/chest frames, a derived piece index, source provenance, integration notes, ordered evidence questions, retrieval/validation scripts and HANDOFF.md.
 
-## Important findings for planning now
+## Validation
 
-- This page is a spatial editor with a 60 × 60 island, not primarily an upgrade optimiser.
-- The catalogue has 87 building records plus 17 surface/decoration records. Do not read that as 87 currently obtainable buildings.
-- Separate build limits from effect limits. The browser displays unlimited placement for many buildings despite an effect limit of one.
-- Catalogue fields include names, geometry, build/effect limits and base prosperity. They do not include per-level upgrade costs or complete buff tables.
-- The terrain source explicitly calls drawing scale and offset approximate. Its area_groups is empty. Do not derive clearing costs from its tree tiers without another source.
-- Chest-route progress is described by the live tutorial as session-only and separate from the saved layout.
-- Web search is returning errors in this session; independent mechanics verification remains open.
+- The research validator passed: 104 catalogue records, five map records, 3,479 terrain records, 55 distinct chests, 186 piece images and 275 packed frames.
+- All ten road families cover all 256 neighbour masks. All rule sprite references have metadata and packed image frames.
+- Source hashes, derivative file hashes, image decoding, atlas bounds and exact RGBA frame hashes passed.
+- Both research helper scripts passed Python syntax compilation.
+- Repository generated ASCII checks and ASCII style checks passed; no animation or product code was changed.
+- Desktop site interactions and the first two one-Reservoir route steps were inspected live. Phone gestures and the source share-code round trip were not verified.
 
-## Second checkpoint
+## Decisions still needing evidence
 
-- Added MECHANICS.md with coordinate conversions, route behaviour, confidence levels and missing game rules.
-- Added UX-AUDIT.md with observed workflows and questions for the Kingslop design.
-- Extracted 55 chest coordinate pairs and reconstructed one/two-Reservoir route fixtures.
-- Collected 186 static images (92 icons and 94 sprites), with original URLs and hashes. Review copies are WebP, bounded to 128px icons and 512px sprites.
-- Captured chest-route and generator screenshots, plus a contact sheet of 91 active catalogue entries with available icons.
-- Public share links require sign-in. Code sharing is offered without sign-in; a clipboard payload could not be recovered in this browser, so import/export interoperability is not verified.
-
-## Third checkpoint
-
-- Preserved the parallel editor engineering proposal while publishing the second checkpoint.
-- Recovered road neighbour bit offsets and source matching rules.
-- Important for the cactus-free editor: all five game-labelled maps use 3,600 cells of value 255 for an empty role-binding grid. This is not a legal-placement mask. No cactus-specific restriction was recovered.
-- The source importer discards effect limits, prosperity and gap flags from its live model. Do not assume the source enforces every field in its catalogue.
-
-## Next work
-
-Finish supplementary-source checks, asset verification and retrieval helpers, Kingslop integration notes, and a concise handoff with the unresolved gameplay questions.
+- Cactus-free board definition and exact playable mask.
+- Clearing state, building gap/access rules, rotation and connection behaviour in the game.
+- Current availability and unresolved English labels for catalogue entries.
+- Source art reuse basis before promotion to production.
+- Chest/game progression mechanics if those become later tools.
 
 ## Collaboration
 
-Read README.md and this file first. Planning can proceed alongside this work. Preserve unrelated commits; all research edits remain within docs/research/islands/.
+Start with HANDOFF.md. The parallel proposal at docs/ISLAND-EDITOR-ENGINEERING.md was read and preserved. Research writes remain within docs/research/islands/. Keep new planning or implementation changes separate, preserve upstream work and do not rewrite branch history.

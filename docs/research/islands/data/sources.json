@@ -1,0 +1,74 @@
+{
+  "captured_on": "2026-10-30",
+  "release": "67e43244b12e412f621eb42a",
+  "sources": [
+    {
+      "kind": "data",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/data/garden_catalogue.json",
+      "download_path": "data/garden_catalogue.json",
+      "sha256": "85cd7605ea84d4074a5d24edeb3fe8821546681c730f673d39fdfbb0bb3b832c",
+      "bytes": 111505
+    },
+    {
+      "kind": "data",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/data/garden_road_rules.json",
+      "download_path": "data/garden_road_rules.json",
+      "sha256": "2d2cd41430f5172c24faccc476dfc86c153b4bf9bbbd85101486eb6d1b8ae068",
+      "bytes": 154592
+    },
+    {
+      "kind": "data",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/data/kingshot_layouts.json",
+      "download_path": "data/kingshot_layouts.json",
+      "sha256": "e754273d78bc8f655ee86bd5269ca2c1aa76e27f03f322e3e374ea07284787c7",
+      "bytes": 771566
+    },
+    {
+      "kind": "data",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/data/kingshot_playable_terrain.json",
+      "download_path": "data/kingshot_playable_terrain.json",
+      "sha256": "1514bc755334fb1397e45cf4cffcfeb95a98313ed0c280f69970fdf8c372c78d",
+      "bytes": 65406
+    },
+    {
+      "kind": "inspection-only",
+      "source_url": "https://ks-companion.com/island",
+      "sha256": "6b23ed5c3535c74c14f9b3a840eabda680aa7fb37670560e895f9f47df123907",
+      "bytes": 2582
+    },
+    {
+      "kind": "inspection-only",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/main.dart.js",
+      "sha256": "67e3bf1f082421b840e60ddfc35430e75e0db7b21ebc6c3ada05025b68e2c91f",
+      "bytes": 9261306
+    },
+    {
+      "kind": "inspection-only",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/AssetManifest.bin.json",
+      "sha256": "a3b1e53c4b3eaf065c9b253ae0f583deb60765ecdf4e41fcb9f6da2b60168229",
+      "bytes": 253646
+    }
+  ],
+  "supplementary_checks": [
+    {
+      "url": "https://kingshotwiki.com/sitemap_index.xml",
+      "result": "Retrieved; no island-specific path found in the inspected post, page, event and building maps."
+    },
+    {
+      "url": "https://kingshotwiki.com/wp-json/wp/v2/search?search=island",
+      "result": "401; no content used."
+    },
+    {
+      "url": "https://kingshotdata.com/sitemap-index.xml",
+      "result": "Retrieved index and sitemap-0.xml; no matching island/garden/fountain/reservoir URL found."
+    },
+    {
+      "url": "https://kingshot.net/",
+      "result": "Retrieved homepage; no matching island/garden/fountain/reservoir link found."
+    },
+    {
+      "method": "Web search tool, both search engines and direct open",
+      "result": "Errors with no source content; independent game mechanics not established."
+    }
+  ]
+}
