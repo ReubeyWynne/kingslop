@@ -1,0 +1,532 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Island Unicode transport probe</title><style>body{font:16px system-ui;max-width:1000px;margin:2rem auto;padding:1rem}textarea{display:block;width:100%;height:8rem;margin:1rem 0}button{padding:.6rem 1rem}pre{white-space:pre-wrap;word-break:break-all}</style><h1>Island Unicode transport probe</h1><p>Local diagnostic only. No game messages or external writes.</p><button id="run">Run browser tests</button><p id="status">Not run</p><label>512-unit stress sample<textarea id="stress" readonly></textarea></label><label>Chat field<textarea id="returned" maxlength="512"></textarea></label><button id="check">Check returned link</button><p id="comparison"></p><pre id="result"></pre><script type="module">const PREFIX = 'dey.ci/island#';
+const MAX_BODY = 4000000;
+const MAX_WIRE = 4100000;
+const fail = () => { throw new Error('Invalid or unsupported island payload'); };
+class Writer {
+  constructor() { this.a = []; this.byte = 0; this.used = 0; }
+  bit(v) { this.byte = this.byte * 2 + v; if (++this.used === 8) { this.a.push(this.byte); this.byte = this.used = 0; } }
+  bits(v, n) { for (let i = n - 1; i >= 0; i--) this.bit((v >>> i) & 1); }
+  u(v) { do { const b = v % 128; v = Math.floor(v / 128); this.bits(b | (v ? 128 : 0), 8); } while (v); }
+  bytes(a) { for (const b of a) this.bits(b, 8); }
+  end() { return Uint8Array.from(this.used ? [...this.a, this.byte << (8 - this.used)] : this.a); }
+}
+class Reader {
+  constructor(a) { this.a = a; this.p = 0; }
+  bits(n) { if (this.p + n > this.a.length * 8) fail(); let v = 0; while (n--) { v = v * 2 + ((this.a[this.p >> 3] >> (7 - (this.p & 7))) & 1); this.p++; } return v; }
+  u(max = 65535) { let v = 0, m = 1; for (let i = 0; i < 4; i++) { const b = this.bits(8); v += (b & 127) * m; if (v > max) fail(); if (!(b & 128)) { if (i && !b) fail(); return v; } m *= 128; } fail(); }
+  bytes(n) { if (!Number.isInteger(n) || n < 0 || n > MAX_BODY) fail(); return Uint8Array.from({ length: n }, () => this.bits(8)); }
+  end() { if (this.a.length * 8 - this.p > 7) fail(); while (this.p < this.a.length * 8) if (this.bits(1)) fail(); }
+}
+function canonical(layout) {
+  if (!layout || !Number.isInteger(layout.board) || layout.board < 0 || layout.board > 255) fail();
+  const layers = ['pieces', 'surfaces'].map(key => {
+    if (!Array.isArray(layout[key]) || layout[key].length > 3600) fail();
+    const a = layout[key].map(r => {
+      if (!Array.isArray(r) || r.length !== 4 || !r.every(Number.isInteger)) fail();
+      const [p, id, dir, variant] = r;
+      if (p < 0 || p >= 3600 || id < 0 || id > 65535 || dir < 0 || dir > 3 || variant < 0 || variant > 65535) fail();
+      return [...r];
+    }).sort((a, b) => a[0] - b[0]);
+    for (let i = 1; i < a.length; i++) if (a[i][0] === a[i - 1][0]) fail();
+    return a;
+  });
+  return { board: layout.board, pieces: layers[0], surfaces: layers[1] };
+}
+function crc32(a) {
+  let c = 0xffffffff;
+  for (const b of a) { c ^= b; for (let i = 0; i < 8; i++) c = (c >>> 1) ^ (0xedb88320 & -(c & 1)); }
+  return (c ^ 0xffffffff) >>> 0;
+}
+function wrap(body, compressed = body, compression = 0) {
+  if (body.length > MAX_BODY || compressed.length > MAX_WIRE - 16) fail();
+  const w = new Writer(); w.bytes([73, 67, 1, compression]); w.u(body.length); w.bits(crc32(body), 32); w.bytes(compressed); return w.end();
+}
+function unwrap(wire) {
+  if (!(wire instanceof Uint8Array) || wire.length > MAX_WIRE) fail();
+  const r = new Reader(wire); if (r.bits(16) !== 0x4943 || r.bits(8) !== 1) fail();
+  const compression = r.bits(8); if (compression > 5) fail();
+  const length = r.u(MAX_BODY), crc = r.bits(32); const compressed = r.bytes(wire.length - r.p / 8); r.end();
+  return { compression, length, crc, compressed };
+}
+function verify(body, h) { if (body.length !== h.length || crc32(body) !== h.crc) fail(); return body; }
+function toPayload(a) {
+  let s = ''; for (const b of a) s += String.fromCharCode(b);
+  return btoa(s).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
+}
+function fromPayload(s) {
+  if (typeof s !== 'string' || s.length > Math.ceil(MAX_WIRE * 4 / 3) || !/^[A-Za-z0-9_-]+$/.test(s) || s.length % 4 === 1) fail();
+  let a; try { a = Uint8Array.from(atob(s.replaceAll('-', '+').replaceAll('_', '/') + '='.repeat((4 - s.length % 4) % 4)), c => c.charCodeAt(0)); } catch { fail(); }
+  if (toPayload(a) !== s) fail(); return a;
+}
+const urlLength = a => PREFIX.length + toPayload(a).length;
+
+const HALF = 0x80000000, QUARTER = 0x40000000, FULL = 0x100000000;
+class Encoder {
+  constructor() { this.low = 0; this.high = FULL - 1; this.pending = 0; this.w = new Writer(); }
+  bit(b) { this.w.bit(b); while (this.pending) { this.w.bit(1 - b); this.pending--; } }
+  symbol(lo, hi, total) {
+    const range = this.high - this.low + 1;
+    this.high = this.low + Math.floor(range * hi / total) - 1; this.low += Math.floor(range * lo / total);
+    for (;;) {
+      if (this.high < HALF) this.bit(0);
+      else if (this.low >= HALF) { this.bit(1); this.low -= HALF; this.high -= HALF; }
+      else if (this.low >= QUARTER && this.high < 3 * QUARTER) { this.pending++; this.low -= QUARTER; this.high -= QUARTER; }
+      else break;
+      this.low *= 2; this.high = this.high * 2 + 1;
+    }
+  }
+  end() { this.pending++; this.bit(this.low < QUARTER ? 0 : 1); return this.w.end(); }
+}
+class Decoder {
+  constructor(a) { this.low = 0; this.high = FULL - 1; this.a = a; this.p = 0; this.code = 0; for (let i = 0; i < 32; i++) this.code = this.code * 2 + this.bit(); }
+  bit() { if (this.p > this.a.length * 8 + 32) fail(); const v = this.p < this.a.length * 8 ? (this.a[this.p >> 3] >> (7 - (this.p & 7))) & 1 : 0; this.p++; return v; }
+  target(total) { return Math.floor(((this.code - this.low + 1) * total - 1) / (this.high - this.low + 1)); }
+  symbol(lo, hi, total) {
+    const range = this.high - this.low + 1;
+    this.high = this.low + Math.floor(range * hi / total) - 1; this.low += Math.floor(range * lo / total);
+    for (;;) {
+      if (this.high < HALF) {}
+      else if (this.low >= HALF) { this.code -= HALF; this.low -= HALF; this.high -= HALF; }
+      else if (this.low >= QUARTER && this.high < 3 * QUARTER) { this.code -= QUARTER; this.low -= QUARTER; this.high -= QUARTER; }
+      else break;
+      this.low *= 2; this.high = this.high * 2 + 1; this.code = this.code * 2 + this.bit();
+    }
+  }
+}
+function model(models, context, alphabet) {
+  if (!models.has(context)) models.set(context, { counts: new Uint16Array(alphabet).fill(1), total: alphabet });
+  return models.get(context);
+}
+function update(m, s) {
+  m.counts[s] += 4; m.total += 4;
+  if (m.total >= 4096) { m.total = 0; for (let i = 0; i < m.counts.length; i++) { m.counts[i] = (m.counts[i] + 1) >> 1; m.total += m.counts[i]; } }
+}
+function codeSymbol(coder, m, value, decode) {
+  let lo = 0, s = value;
+  if (decode) { const target = coder.target(m.total); s = 0; while (s < m.counts.length && lo + m.counts[s] <= target) lo += m.counts[s++]; if (s >= m.counts.length) fail(); }
+  else for (let i = 0; i < s; i++) lo += m.counts[i];
+  coder.symbol(lo, lo + m.counts[s], m.total); update(m, s); return s;
+}
+function process(cells, alphabet, mode, coder, decode) {
+  const out = new Uint16Array(3600), models = new Map();
+  if (mode < 2) {
+    for (let p = 0; p < 3600; p++) {
+      const x = p % 60, left = x ? out[p - 1] : 0, up = p >= 60 ? out[p - 60] : 0, diagonal = x && p >= 60 ? out[p - 61] : 0;
+      let context, order;
+      if (!mode) context = left * alphabet + up;
+      else { context = +(left === up) | (+(left === diagonal) << 1) | (+(left === 0) << 2) | (+(up === 0) << 3) | (+(diagonal === 0) << 4); order = [...new Set([left, up, diagonal, 0])]; for (let s = 0; s < alphabet; s++) if (!order.includes(s)) order.push(s); }
+      const m = model(models, context, alphabet), s = codeSymbol(coder, m, decode ? 0 : mode ? order.indexOf(cells[p]) : cells[p], decode);
+      out[p] = mode ? order[s] : s;
+    }
+  } else {
+    const bits = Math.ceil(Math.log2(alphabet));
+    for (let plane = bits - 1; plane >= 0; plane--) {
+      const mask = new Uint8Array(3600);
+      for (let p = 0; p < 3600; p++) {
+        const x = p % 60, context = (x ? mask[p - 1] : 0) | ((p >= 60 ? mask[p - 60] : 0) << 1) | ((x && p >= 60 ? mask[p - 61] : 0) << 2) | ((x < 59 && p >= 60 ? mask[p - 59] : 0) << 3) | (((out[p] >> (plane + 1)) & 1) << 4) | (plane << 5);
+        mask[p] = codeSymbol(coder, model(models, context, 2), decode ? 0 : (cells[p] >> plane) & 1, decode); out[p] |= mask[p] << plane;
+      }
+    }
+    if (out.some(s => s >= alphabet)) fail();
+  }
+  return out;
+}
+function arithmeticEncode(cells, alphabet, mode) { const c = new Encoder(); process(cells, alphabet, mode, c, false); return c.end(); }
+function arithmeticDecode(a, alphabet, mode) {
+  const out = process(null, alphabet, mode, new Decoder(a), true), check = arithmeticEncode(out, alphabet, mode);
+  if (check.length !== a.length || check.some((b, i) => b !== a[i])) fail(); return out;
+}
+
+const FORMATS = ['fixed', 'delta', 'groups-sparse', 'groups-rice', 'groups-rle', 'groups-bitmap', 'groups-quadtree', 'groups-rows', 'groups-geometry', 'groups-adaptive', 'grid-rle', 'grid-palette', 'grid-blocks', 'grid-rows', 'context-pairs', 'context-ranks', 'context-bitplanes', 'layer-hybrid'];
+const width = n => n <= 1 ? 0 : Math.ceil(Math.log2(n));
+const key = r => `${r[1]},${r[2]},${r[3]}`;
+const groups = a => {
+  const m = new Map();
+  for (const r of a) { const k = key(r); if (!m.has(k)) m.set(k, { sym: r.slice(1), ps: [] }); m.get(k).ps.push(r[0]); }
+  return [...m.values()].sort((a, b) => a.sym[0] - b.sym[0] || a.sym[1] - b.sym[1] || a.sym[2] - b.sym[2]);
+};
+function runs(ps) {
+  const a = [];
+  for (const p of ps) { const last = a.at(-1); if (last && last[0] + last[1] === p) last[1]++; else a.push([p, 1]); }
+  return a;
+}
+function quad(w, set, x = 0, y = 0, size = 64) {
+  let n = 0;
+  for (let dy = 0; dy < size; dy++) for (let dx = 0; dx < size; dx++) if (x + dx < 60 && y + dy < 60 && set.has((y + dy) * 60 + x + dx)) n++;
+  if (!n) { w.bit(0); return; }
+  w.bit(1); if (n === size * size) { w.bit(0); return; }
+  w.bit(1); const half = size / 2;
+  for (const [dx, dy] of [[0, 0], [half, 0], [0, half], [half, half]]) quad(w, set, x + dx, y + dy, half);
+}
+function unquad(r, out, x = 0, y = 0, size = 64) {
+  if (!r.bits(1)) return;
+  if (!r.bits(1)) {
+    if (x + size > 60 || y + size > 60) fail();
+    for (let dy = 0; dy < size; dy++) for (let dx = 0; dx < size; dx++) out.push((y + dy) * 60 + x + dx);
+    return;
+  }
+  if (size === 1) fail(); const half = size / 2;
+  for (const [dx, dy] of [[0, 0], [half, 0], [0, half], [half, half]]) unquad(r, out, x + dx, y + dy, half);
+}
+function shapes(ps) {
+  const set = new Set(ps), out = [];
+  for (const p of ps) {
+    if (!set.has(p)) continue;
+    const x = p % 60, y = Math.floor(p / 60);
+    let best = [0, p, 1, 1], saving = 0, maxw = 60 - x;
+    for (let h = 1; y + h <= 60; h++) {
+      let w = 0; while (w < maxw && set.has(p + (h - 1) * 60 + w)) w++;
+      maxw = Math.min(maxw, w); if (!maxw) break;
+      const score = 14 * maxw * h - 26;
+      if (score > saving) { saving = score; best = [1, p, maxw, h]; }
+    }
+    for (const [dx, dy] of [[1, 1], [-1, 1]]) {
+      let n = 1; while (x + dx * n >= 0 && x + dx * n < 60 && y + n < 60 && set.has(p + (60 + dx) * n)) n++;
+      if (14 * n - 20 > saving) { saving = 14 * n - 20; best = [dx === 1 ? 2 : 3, p, n, 1]; }
+    }
+    out.push(best);
+    const [op, start, w, h] = best;
+    if (op < 2) for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) set.delete(start + dy * 60 + dx);
+    else for (let i = 0; i < w; i++) set.delete(start + i * (op === 2 ? 61 : 59));
+  }
+  return out;
+}
+function positionEncode(ps, method) {
+  const w = new Writer();
+  if (method === 0) { let prev = -1; for (const p of ps) { w.u(p - prev - 1); prev = p; } }
+  if (method === 1) {
+    let best;
+    for (let k = 0; k <= 11; k++) {
+      const t = new Writer(); t.bits(k, 4); let prev = -1;
+      for (const p of ps) { const d = p - prev - 1; for (let q = d >>> k; q > 0; q--) t.bit(0); t.bit(1); t.bits(d & ((1 << k) - 1), k); prev = p; }
+      const a = t.end(); if (!best || a.length < best.length) best = a;
+    }
+    return best;
+  }
+  if (method === 2) { let prev = -1; const a = runs(ps); w.u(a.length); for (const [p, n] of a) { w.u(p - prev - 1); w.u(n); prev = p + n - 1; } }
+  if (method === 3) { const set = new Set(ps); for (let p = 0; p < 3600; p++) w.bit(+set.has(p)); }
+  if (method === 4) quad(w, new Set(ps));
+  if (method === 5) {
+    const rows = Array.from({ length: 60 }, () => []); for (const p of ps) rows[Math.floor(p / 60)].push(p % 60);
+    const dict = [...new Set(rows.map(a => a.join(',')))]; w.u(dict.length);
+    for (const row of dict) { const xs = row ? row.split(',').map(Number) : []; w.u(xs.length); for (const x of xs) w.bits(x, 6); }
+    for (const row of rows) w.bits(dict.indexOf(row.join(',')), width(dict.length));
+  }
+  if (method === 6) {
+    const a = shapes(ps); w.u(a.length);
+    for (const [op, p, x, y] of a) { w.bits(op, 2); w.bits(p, 12); if (op) w.bits(x - 1, 6); if (op === 1) w.bits(y - 1, 6); }
+  }
+  return w.end();
+}
+function positionDecode(bytes, method, n) {
+  const r = new Reader(bytes), out = [];
+  if (method === 0 || method === 1) {
+    const k = method === 1 ? r.bits(4) : 0; if (k > 11) fail(); let prev = -1;
+    for (let i = 0; i < n; i++) {
+      let d; if (!method) d = r.u(3599); else { let q = 0; while (!r.bits(1)) if (++q > 3599) fail(); d = q * 2 ** k + r.bits(k); }
+      prev += d + 1; if (prev >= 3600) fail(); out.push(prev);
+    }
+  }
+  if (method === 2) { const count = r.u(3600); let prev = -1; for (let i = 0; i < count; i++) { const p = prev + 1 + r.u(3599), len = r.u(3600); if (!len || p + len > 3600 || out.length + len > n) fail(); for (let j = 0; j < len; j++) out.push(p + j); prev = p + len - 1; } }
+  if (method === 3) for (let p = 0; p < 3600; p++) if (r.bits(1)) out.push(p);
+  if (method === 4) unquad(r, out);
+  if (method === 5) {
+    const d = r.u(60); if (!d) fail(); const dict = [];
+    for (let i = 0; i < d; i++) { const len = r.u(60), a = []; for (let j = 0; j < len; j++) { const x = r.bits(6); if (x >= 60 || (j && x <= a[j - 1])) fail(); a.push(x); } dict.push(a); }
+    for (let y = 0; y < 60; y++) { const index = r.bits(width(d)); if (index >= d) fail(); for (const x of dict[index]) out.push(y * 60 + x); }
+  }
+  if (method === 6) {
+    const count = r.u(3600);
+    for (let i = 0; i < count; i++) {
+      const op = r.bits(2), p = r.bits(12), x = p % 60, y = Math.floor(p / 60), w = op ? r.bits(6) + 1 : 1, h = op === 1 ? r.bits(6) + 1 : 1;
+      if (p >= 3600 || w > 60 || h > 60) fail();
+      if (op < 2) { if (x + w > 60 || y + h > 60 || out.length + w * h > n) fail(); for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) out.push(p + dy * 60 + dx); }
+      else { if (y + w > 60 || (op === 2 ? x + w > 60 : x - w + 1 < 0) || out.length + w > n) fail(); for (let j = 0; j < w; j++) out.push(p + j * (op === 2 ? 61 : 59)); }
+    }
+  }
+  if (method > 6 || out.length !== n || new Set(out).size !== n) fail(); r.end(); return out.sort((a, b) => a - b);
+}
+function symmetry(ps, flags) {
+  const transform = p => { const x = p % 60, y = Math.floor(p / 60); return (flags & 2 ? Math.min(y, 59 - y) : y) * 60 + (flags & 1 ? Math.min(x, 59 - x) : x); };
+  const representatives = [...new Set(ps.map(transform))].sort((a, b) => a - b);
+  const full = expandSymmetry(representatives, flags);
+  return full.length === ps.length && full.every((p, i) => p === ps[i]) ? representatives : null;
+}
+function expandSymmetry(ps, flags) {
+  const set = new Set(); for (const p of ps) { const x = p % 60, y = Math.floor(p / 60); for (const xx of flags & 1 ? [x, 59 - x] : [x]) for (const yy of flags & 2 ? [y, 59 - y] : [y]) set.add(yy * 60 + xx); }
+  return [...set].sort((a, b) => a - b);
+}
+function packGroup(ps, method) {
+  let best;
+  for (let flags = 0; flags < (method === 7 ? 4 : 1); flags++) {
+    const points = flags ? symmetry(ps, flags) : ps; if (!points) continue;
+    for (const m of method === 7 ? [0, 1, 2, 3, 4, 5, 6] : [method]) {
+      const a = positionEncode(points, m), w = new Writer(); w.u(m | (flags << 3)); w.u(points.length); w.u(a.length); w.bytes(a); const b = w.end();
+      if (!best || b.length < best.length) best = b;
+    }
+  }
+  return best;
+}
+function flagsFor(a) { return (a.some(r => r[2]) ? 1 : 0) | (a.some(r => r[3]) ? 2 : 0); }
+function writeSym(w, sym, flags) { w.u(sym[0]); if (flags & 1) w.bits(sym[1], 2); if (flags & 2) w.u(sym[2]); }
+function readSym(r, flags) { return [r.u(), flags & 1 ? r.bits(2) : 0, flags & 2 ? r.u() : 0]; }
+function grid(a) { const gs = groups(a), palette = gs.map(g => g.sym), m = new Map(palette.map((s, i) => [s.join(','), i + 1])); const cells = new Array(3600).fill(0); for (const r of a) cells[r[0]] = m.get(key(r)); return { palette, cells }; }
+function writeGrid(w, a, f, flags) {
+  const { palette, cells } = grid(a); w.u(palette.length); for (const sym of palette) writeSym(w, sym, flags); const bits = width(palette.length + 1);
+  if (f === 10) {
+    const rs = []; for (const v of cells) { if (rs.at(-1)?.[0] === v) rs.at(-1)[1]++; else rs.push([v, 1]); }
+    w.u(rs.length); for (const [v, n] of rs) { w.bits(v, bits); w.u(n); }
+  }
+  if (f === 11) for (const v of cells) w.bits(v, bits);
+  if (f === 12) for (let by = 0; by < 60; by += 10) for (let bx = 0; bx < 60; bx += 10) {
+    const c = []; for (let y = 0; y < 10; y++) for (let x = 0; x < 10; x++) c.push(cells[(by + y) * 60 + bx + x]);
+    const p = [...new Set(c)].sort((a, b) => a - b); w.u(p.length); for (const v of p) w.bits(v, bits); for (const v of c) w.bits(p.indexOf(v), width(p.length));
+  }
+  if (f >= 14) {
+    if (palette.length > 63) { w.u(0); for (const v of cells) w.bits(v, bits); }
+    else { const encoded = arithmeticEncode(cells, palette.length + 1, f - 14); w.u(encoded.length); w.bytes(encoded); }
+  }
+  if (f === 13) {
+    const rows = Array.from({ length: 60 }, (_, y) => cells.slice(y * 60, y * 60 + 60)); const dict = [...new Set(rows.map(a => a.join(',')))];
+    w.u(dict.length); for (const s of dict) for (const v of s.split(',').map(Number)) w.bits(v, bits); for (const row of rows) w.bits(dict.indexOf(row.join(',')), width(dict.length));
+  }
+}
+function readGrid(r, f, flags) {
+  const n = r.u(3600), palette = Array.from({ length: n }, () => readSym(r, flags)), bits = width(n + 1), cells = [];
+  const symbol = () => { const v = r.bits(bits); if (v > n) fail(); return v; };
+  if (f === 10) { const count = r.u(3600); for (let i = 0; i < count; i++) { const v = symbol(), len = r.u(3600); if (!len || cells.length + len > 3600) fail(); for (let j = 0; j < len; j++) cells.push(v); } }
+  if (f === 11) for (let i = 0; i < 3600; i++) cells.push(symbol());
+  if (f === 12) {
+    cells.length = 3600;
+    for (let by = 0; by < 60; by += 10) for (let bx = 0; bx < 60; bx += 10) {
+      const len = r.u(100); if (!len) fail(); const p = Array.from({ length: len }, symbol);
+      for (let y = 0; y < 10; y++) for (let x = 0; x < 10; x++) { const index = r.bits(width(len)); if (index >= len) fail(); cells[(by + y) * 60 + bx + x] = p[index]; }
+    }
+  }
+  if (f === 13) {
+    const len = r.u(60); if (!len) fail(); const rows = Array.from({ length: len }, () => Array.from({ length: 60 }, symbol));
+    for (let y = 0; y < 60; y++) { const index = r.bits(width(len)); if (index >= len) fail(); cells.push(...rows[index]); }
+  }
+  if (f >= 14) { const len = r.u(20000); if (!len) for (let i = 0; i < 3600; i++) cells.push(symbol()); else { if (n > 63) fail(); cells.push(...arithmeticDecode(r.bytes(len), n + 1, f - 14)); } }
+  if (cells.length !== 3600) fail(); return cells.flatMap((v, p) => v ? [[p, ...palette[v - 1]]] : []);
+}
+function encodeStructural(layout, format = 'groups-adaptive') {
+  const l = canonical(layout), f = FORMATS.indexOf(format); if (f < 0) fail(); const w = new Writer(); w.u(f); w.u(l.board);
+  if (f === 17) {
+    for (const a of [l.pieces, l.surfaces]) {
+      let best;
+      for (const mode of ['delta', 'groups-adaptive', 'grid-rle', 'grid-palette', 'grid-blocks', 'grid-rows', 'context-pairs', 'context-ranks', 'context-bitplanes']) {
+        const body = encodeStructural({ board: 0, pieces: a, surfaces: [] }, mode);
+        if (!best || body.length < best.length) best = body;
+      }
+      w.u(best.length); w.bytes(best);
+    }
+    return w.end();
+  }
+  for (const a of [l.pieces, l.surfaces]) {
+    const flags = flagsFor(a); w.u(flags);
+    if (f < 2) {
+      w.u(a.length); let prev = -1;
+      for (const r of a) {
+        if (!f) { w.bits(r[0], 12); w.bits(Math.min(r[1], 127), 7); if (r[1] >= 127) w.u(r[1]); if (flags & 1) w.bits(r[2], 2); if (flags & 2) w.u(r[3]); }
+        else { w.u(r[0] - prev - 1); writeSym(w, r.slice(1), flags); } prev = r[0];
+      }
+    } else if (f < 10) {
+      const gs = groups(a); w.u(gs.length);
+      for (const g of gs) { writeSym(w, g.sym, flags); w.bytes(packGroup(g.ps, f - 2)); }
+    } else writeGrid(w, a, f, flags);
+  }
+  return w.end();
+}
+function decodeStructural(bytes) {
+  if (!(bytes instanceof Uint8Array) || bytes.length > MAX_BODY) fail(); const r = new Reader(bytes), f = r.u(17), board = r.u(255), layers = [];
+  if (f === 17) {
+    for (let layer = 0; layer < 2; layer++) {
+      const body = r.bytes(r.u(100000)); if (new Reader(body).u(17) === 17) fail();
+      const child = decodeStructural(body); if (child.board !== 0 || child.surfaces.length) fail(); layers.push(child.pieces);
+    }
+    r.end(); return canonical({ board, pieces: layers[0], surfaces: layers[1] });
+  }
+  for (let layer = 0; layer < 2; layer++) {
+    const flags = r.u(3), a = [];
+    if (f < 2) {
+      const n = r.u(3600); let prev = -1;
+      for (let i = 0; i < n; i++) {
+        const p = f ? prev + 1 + r.u(3599) : r.bits(12); let sym;
+        if (!f) { let id = r.bits(7); if (id === 127) { id = r.u(); if (id < 127) fail(); } sym = [id, flags & 1 ? r.bits(2) : 0, flags & 2 ? r.u() : 0]; } else sym = readSym(r, flags);
+        a.push([p, ...sym]); prev = p;
+      }
+    } else if (f < 10) {
+      const count = r.u(3600);
+      for (let i = 0; i < count; i++) {
+        const sym = readSym(r, flags), code = r.u(31), n = r.u(3600), len = r.u(MAX_BODY); if (!n || (code & 7) > 6) fail();
+        const ps = expandSymmetry(positionDecode(r.bytes(len), code & 7, n), code >> 3); if (a.length + ps.length > 3600) fail(); for (const p of ps) a.push([p, ...sym]);
+      }
+    } else a.push(...readGrid(r, f, flags));
+    layers.push(a);
+  }
+  r.end(); return canonical({ board, pieces: layers[0], surfaces: layers[1] });
+}
+function encodeHybrid(layout) {
+  const modes = productionModes(layout); let best;
+  for (const mode of modes) { const body = encodeStructural(layout, mode); if (!best || body.length < best.length) best = body; }
+  return best;
+}
+function productionModes(layout) {
+  const manySymbols = Math.max(...['pieces', 'surfaces'].map(layer => new Set(layout[layer].map(key)).size)) > 128;
+  return (manySymbols ? ['delta', 'grid-rle', 'grid-palette', 'grid-blocks', 'grid-rows'] : ['delta', 'groups-adaptive', 'grid-rle', 'grid-palette', 'grid-blocks', 'grid-rows', 'context-pairs', 'context-ranks', 'context-bitplanes', 'layer-hybrid']);
+}
+function groupDiagnostics(layout) {
+  return ['pieces', 'surfaces'].flatMap(layer => groups(canonical(layout)[layer]).map(g => {
+    const bytes = packGroup(g.ps, 7), r = new Reader(bytes), code = r.u(31), representatives = r.u(3600), size = r.u(MAX_BODY);
+    const xs = g.ps.map(p => p % 60), ys = g.ps.map(p => Math.floor(p / 60));
+    return { layer, symbol: g.sym, count: g.ps.length, bounds: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)], horizontalRuns: runs(g.ps).length, method: ['sparse', 'rice', 'rle', 'bitmap', 'quadtree', 'rows', 'geometry'][code & 7], mirrorFlags: code >> 3, representatives, positionBytes: size, framedBytes: bytes.length };
+  }));
+}
+
+const hash = (a, p) => Math.imul(((a[p] << 24) ^ (a[p + 1] << 16) ^ (a[p + 2] << 8) ^ a[p + 3]) >>> 0, 2654435761) >>> 16;
+function lzEncode(a) {
+  const out = [], heads = new Int32Array(65536).fill(-1), prev = new Int32Array(a.length).fill(-1);
+  const add = p => { if (p + 3 >= a.length) return; const h = hash(a, p); prev[p] = heads[h]; heads[h] = p; };
+  const length = n => { while (n >= 255) { out.push(255); n -= 255; } out.push(n); };
+  let p = 0, anchor = 0;
+  while (p + 4 <= a.length) {
+    let best = 0, distance = 0, q = heads[hash(a, p)], tries = 0;
+    while (q >= 0 && p - q <= 65535 && tries++ < 64) {
+      let n = 0; while (p + n < a.length && a[q + n] === a[p + n] && n < 65535) n++;
+      if (n > best && n >= 4) { best = n; distance = p - q; } q = prev[q];
+    }
+    if (best < 4) { add(p++); continue; }
+    const literals = p - anchor; out.push((Math.min(literals, 15) << 4) | Math.min(best - 4, 15)); if (literals >= 15) length(literals - 15);
+    for (let i = anchor; i < p; i++) out.push(a[i]); out.push(distance & 255, distance >> 8); if (best >= 19) length(best - 19);
+    const end = p + best; while (p < end) add(p++); anchor = p;
+  }
+  const literals = a.length - anchor; out.push(Math.min(literals, 15) << 4); if (literals >= 15) length(literals - 15); for (let i = anchor; i < a.length; i++) out.push(a[i]);
+  return Uint8Array.from(out);
+}
+function lzDecode(a, expected) {
+  if (!Number.isInteger(expected) || expected < 0 || expected > MAX_BODY) fail();
+  const out = new Uint8Array(expected); let p = 0, cursor = 0, terminal = false;
+  const byte = () => { if (p >= a.length) fail(); return a[p++]; };
+  const length = n => { if (n === 15) { let v; do { v = byte(); n += v; if (n > expected) fail(); } while (v === 255); } return n; };
+  while (p < a.length) {
+    const token = byte(), literals = length(token >> 4); if (p + literals > a.length || cursor + literals > expected) fail(); out.set(a.subarray(p, p + literals), cursor); p += literals; cursor += literals;
+    if (p === a.length) { if (token & 15) fail(); terminal = true; break; }
+    const distance = byte() | (byte() << 8), match = length(token & 15) + 4; if (!distance || distance > cursor || cursor + match > expected) fail();
+    for (let i = 0; i < match; i++) { out[cursor] = out[cursor - distance]; cursor++; }
+  }
+  if (!terminal || cursor !== expected) fail(); return out;
+}
+
+async function transform(bytes, mode, length) {
+  const stream = mode === 'encode' ? new CompressionStream('deflate') : new DecompressionStream('deflate');
+  const reader = new Blob([bytes]).stream().pipeThrough(stream).getReader(), chunks = []; let n = 0;
+  try { for (;;) { const { value, done } = await reader.read(); if (done) break; n += value.length; if (n > length) { await reader.cancel(); fail(); } chunks.push(value); } } finally { reader.releaseLock(); }
+  const out = new Uint8Array(n); let p = 0; for (const c of chunks) { out.set(c, p); p += c.length; } return out;
+}
+async function encodePayload(layout, { nativeCompression = false } = {}) {
+  let best;
+  for (const format of productionModes(layout)) {
+    const body = encodeStructural(layout, format);
+    const plain = wrap(body); if (!best || plain.length < best.length) best = plain;
+    const lz = wrap(body, lzEncode(body), 5); if (lz.length < best.length) best = lz;
+    if (nativeCompression && typeof CompressionStream !== 'undefined') {
+      const compressed = await transform(body, 'encode', 110000), wire = wrap(body, compressed, 1);
+      if (wire.length < best.length) best = wire;
+    }
+  }
+  return toPayload(best);
+}
+async function decodePayload(payload) {
+  const h = unwrap(fromPayload(payload)); if (h.compression > 1 && h.compression !== 5) fail();
+  const body = h.compression === 5 ? lzDecode(h.compressed, h.length) : h.compression ? await transform(h.compressed, 'decode', h.length) : h.compressed;
+  return decodeStructural(verify(body, h));
+}
+
+const catalogue = {"unicodeDataVersion":"15.0.0","profiles":{"han14":{"marker":"!","bits":14,"ranges":[[19968,36351]],"risk":"CJK unified ideographs; no combining marks, controls or surrogate pairs.","size":16384,"bitsPerUnit":14.0},"east15":{"marker":"~","bits":15,"ranges":[[13312,19455],[19968,40959],[44032,49663]],"risk":"Assigned CJK ideographs and Hangul syllables. NFC/NFKC stable; NFD decomposes Hangul and can be repaired with NFC.","size":32768,"bitsPerUnit":15.0},"assigned":{"marker":"$","ranges":[[33,33],[36,36],[38,38],[40,59],[61,61],[63,91],[93,95],[97,126],[161,167],[169,169],[171,172],[174,174],[176,177],[182,183],[187,187],[191,305],[308,318],[321,328],[330,382],[384,451],[461,496],[500,687],[697,727],[734,735],[741,767],[880,883],[885,887],[891,893],[895,895],[902,902],[904,906],[908,908],[910,929],[931,975],[983,1007],[1011,1011],[1014,1016],[1018,1154],[1162,1327],[1329,1366],[1369,1414],[1416,1418],[1421,1423],[1470,1470],[1472,1472],[1475,1475],[1478,1478],[1488,1514],[1519,1524],[1542,1551],[1563,1563],[1565,1610],[1632,1647],[1649,1652],[1657,1749],[1758,1758],[1765,1766],[1769,1769],[1774,1805],[1808,1808],[1810,1839],[1869,1957],[1969,1969],[1984,2026],[2036,2042],[2046,2069],[2074,2074],[2084,2084],[2088,2088],[2096,2110],[2112,2136],[2142,2142],[2144,2154],[2160,2190],[2208,2249],[2308,2361],[2365,2365],[2384,2384],[2400,2401],[2404,2432],[2437,2444],[2447,2448],[2451,2472],[2474,2480],[2482,2482],[2486,2489],[2493,2493],[2510,2510],[2528,2529],[2534,2557],[2565,2570],[2575,2576],[2579,2600],[2602,2608],[2610,2610],[2613,2613],[2616,2617],[2652,2652],[2662,2671],[2674,2676],[2678,2678],[2693,2701],[2703,2705],[2707,2728],[2730,2736],[2738,2739],[2741,2745],[2749,2749],[2768,2768],[2784,2785],[2790,2801],[2809,2809],[2821,2828],[2831,2832],[2835,2856],[2858,2864],[2866,2867],[2869,2873],[2877,2877],[2911,2913],[2918,2935],[2947,2947],[2949,2954],[2958,2960],[2962,2965],[2969,2970],[2972,2972],[2974,2975],[2979,2980],[2984,2986],[2990,3001],[3024,3024],[3046,3066],[3077,3084],[3086,3088],[3090,3112],[3114,3129],[3133,3133],[3160,3162],[3165,3165],[3168,3169],[3174,3183],[3191,3200],[3204,3212],[3214,3216],[3218,3240],[3242,3251],[3253,3257],[3261,3261],[3293,3294],[3296,3297],[3302,3311],[3313,3314],[3332,3340],[3342,3344],[3346,3386],[3389,3389],[3406,3407],[3412,3414],[3416,3425],[3430,3455],[3461,3478],[3482,3505],[3507,3515],[3517,3517],[3520,3526],[3558,3567],[3572,3572],[3585,3632],[3634,3634],[3647,3654],[3663,3675],[3713,3714],[3716,3716],[3718,3722],[3724,3747],[3749,3749],[3751,3760],[3762,3762],[3773,3773],[3776,3780],[3782,3782],[3792,3801],[3806,3807],[3840,3851],[3853,3863],[3866,3892],[3894,3894],[3896,3896],[3898,3901],[3904,3906],[3908,3911],[3913,3916],[3918,3921],[3923,3926],[3928,3931],[3933,3944],[3946,3948],[3973,3973],[3976,3980],[4030,4037],[4039,4044],[4046,4058],[4096,4138],[4159,4181],[4186,4189],[4193,4193],[4197,4198],[4206,4208],[4213,4225],[4238,4238],[4240,4249],[4254,4293],[4295,4295],[4301,4301],[4304,4347],[4349,4351],[4608,4680],[4682,4685],[4688,4694],[4696,4696],[4698,4701],[4704,4744],[4746,4749],[4752,4784],[4786,4789],[4792,4798],[4800,4800],[4802,4805],[4808,4822],[4824,4880],[4882,4885],[4888,4954],[4960,4988],[4992,5017],[5024,5109],[5112,5117],[5120,5759],[5761,5788],[5792,5880],[5888,5905],[5919,5937],[5941,5942],[5952,5969],[5984,5996],[5998,6000],[6016,6067],[6100,6108],[6112,6121],[6128,6137],[6144,6154],[6160,6169],[6176,6264],[6272,6276],[6279,6312],[6314,6314],[6320,6389],[6400,6430],[6464,6464],[6468,6509],[6512,6516],[6528,6571],[6576,6601],[6608,6618],[6622,6678],[6686,6740],[6784,6793],[6800,6809],[6816,6829],[6917,6963],[6981,6988],[6992,7018],[7028,7038],[7043,7072],[7086,7141],[7164,7203],[7227,7241],[7245,7304],[7312,7354],[7357,7367],[7379,7379],[7401,7404],[7406,7411],[7413,7414],[7418,7418],[7424,7467],[7471,7471],[7483,7483],[7502,7502],[7531,7543],[7545,7578],[7680,7833],[7836,7957],[7960,7965],[7968,8005],[8008,8013],[8016,8023],[8025,8025],[8027,8027],[8029,8029],[8031,8048],[8050,8050],[8052,8052],[8054,8054],[8056,8056],[8058,8058],[8060,8060],[8064,8116],[8118,8122],[8124,8124],[8130,8132],[8134,8136],[8138,8138],[8140,8140],[8144,8146],[8150,8154],[8160,8162],[8164,8170],[8172,8172],[8178,8180],[8182,8184],[8186,8186],[8188,8188],[8208,8208],[8210,8214],[8216,8227],[8231,8231],[8240,8242],[8245,8245],[8248,8251],[8253,8253],[8255,8262],[8266,8278],[8280,8286],[8352,8359],[8361,8384],[8452,8452],[8456,8456],[8468,8468],[8471,8472],[8478,8479],[8483,8483],[8485,8485],[8487,8487],[8489,8489],[8494,8494],[8498,8498],[8506,8506],[8513,8516],[8522,8527],[8576,8584],[8586,8587],[8592,8747],[8750,8750],[8753,9000],[9003,9254],[9280,9290],[9451,10763],[10765,10867],[10871,10971],[10973,11123],[11126,11157],[11159,11387],[11390,11502],[11506,11507],[11513,11557],[11559,11559],[11565,11565],[11568,11623],[11632,11632],[11648,11670],[11680,11686],[11688,11694],[11696,11702],[11704,11710],[11712,11718],[11720,11726],[11728,11734],[11736,11742],[11776,11869],[11904,11929],[11931,11934],[11936,12018],[12272,12283],[12289,12329],[12336,12341],[12343,12343],[12347,12351],[12353,12438],[12445,12446],[12448,12542],[12549,12591],[12688,12689],[12704,12771],[12784,12799],[12872,12879],[12927,12927],[13312,42124],[42128,42182],[42192,42539],[42560,42606],[42611,42611],[42622,42651],[42656,42735],[42738,42743],[42752,42863],[42865,42954],[42960,42961],[42963,42963],[42965,42969],[42997,42999],[43002,43009],[43011,43013],[43015,43018],[43020,43042],[43048,43051],[43056,43065],[43072,43127],[43138,43187],[43214,43225],[43250,43262],[43264,43301],[43310,43334],[43359,43359],[43396,43442],[43457,43469],[43471,43481],[43486,43492],[43494,43518],[43520,43560],[43584,43586],[43588,43595],[43600,43609],[43612,43642],[43646,43695],[43697,43697],[43701,43702],[43705,43709],[43712,43712],[43714,43714],[43739,43754],[43760,43764],[43777,43782],[43785,43790],[43793,43798],[43808,43814],[43816,43822],[43824,43867],[43872,43880],[43882,43883],[43888,44002],[44011,44011],[44016,44025],[44032,55203],[64014,64015],[64017,64017],[64019,64020],[64031,64031],[64033,64033],[64035,64036],[64039,64041],[64434,64450],[64830,64847],[64975,64975],[65021,65023],[65093,65094],[65139,65139],[65532,65533]],"risk":"Assigned letters, numbers, punctuation and symbols stable under NFC/NFKC, excluding combining jamo. Frozen to Unicode 15.0.0. Still includes RTL letters and uncommon scripts.","size":50864,"bitsPerUnit":15.634357301137976},"dense":{"marker":"*","ranges":[[33,33],[36,36],[38,38],[40,59],[61,61],[63,91],[93,95],[97,126],[161,172],[174,1535],[1542,1563],[1565,1756],[1758,1806],[1808,2191],[2194,2273],[2275,5759],[5761,6157],[6159,8191],[8208,8231],[8240,8286],[8293,8293],[8304,12287],[12289,55295],[57344,64975],[65008,65278],[65280,65528],[65532,65533]],"risk":"Diagnostic only: includes private-use, unassigned, combining and normalization-sensitive characters. Excludes surrogates, controls, format characters, whitespace, percent, quotes and selected URL delimiters. Not safe to recommend for game chat.","size":63319,"bitsPerUnit":15.950350850652574}}};
+
+const PROFILES = catalogue.profiles;
+const MAX_BYTES = 65536;
+const MAX_UNITS = 40000;
+const tables = Object.fromEntries(Object.entries(PROFILES).map(([name, p]) => {
+  let offset = 0;
+  return [name, p.ranges.map(([start, end]) => { const row = { start, end, offset }; offset += end - start + 1; return row; })];
+}));
+function char(profile, value) {
+  const rows = tables[profile]; let lo = 0, hi = rows.length - 1;
+  while (lo <= hi) { const mid = (lo + hi) >> 1, r = rows[mid]; if (value < r.offset) hi = mid - 1; else if (value > r.offset + r.end - r.start) lo = mid + 1; else return String.fromCharCode(r.start + value - r.offset); }
+  fail();
+}
+function digit(profile, code) {
+  const rows = tables[profile]; let lo = 0, hi = rows.length - 1;
+  while (lo <= hi) { const mid = (lo + hi) >> 1, r = rows[mid]; if (code < r.start) hi = mid - 1; else if (code > r.end) lo = mid + 1; else return r.offset + code - r.start; }
+  fail();
+}
+function encodeTransport(bytes, profile = 'east15') {
+  if (!(bytes instanceof Uint8Array) || bytes.length > MAX_BYTES) fail();
+  if (profile === 'base64url') return toPayload(bytes);
+  const p = PROFILES[profile]; if (!p) fail();
+  if (p.bits) {
+    const firstBits = (bytes.length * 8 + 1) % p.bits || p.bits, result = []; let accumulator = 1, available = 1, needed = firstBits;
+    const flush = () => { while (available >= needed) { available -= needed; result.push(char(profile, Math.floor(accumulator / 2 ** available))); accumulator %= 2 ** available; needed = p.bits; } };
+    flush(); for (const b of bytes) { accumulator = accumulator * 256 + b; available += 8; flush(); }
+    if (available) fail(); return p.marker + result.join('');
+  }
+  let hex = '1'; for (const b of bytes) hex += b.toString(16).padStart(2, '0');
+  let value = BigInt('0x' + hex); const base = BigInt(p.size), result = [];
+  while (value) { result.push(char(profile, Number(value % base))); value /= base; }
+  return p.marker + result.reverse().join('');
+}
+function decodeTransport(payload, { repairNfc = false } = {}) {
+  if (typeof payload !== 'string' || !payload.length || payload.length > MAX_UNITS) fail();
+  const entry = Object.entries(PROFILES).find(([, p]) => p.marker === payload[0]);
+  if (!entry) { const bytes = fromPayload(payload); if (bytes.length > MAX_BYTES) fail(); return bytes; }
+  const [name, p] = entry; if (repairNfc && name !== 'dense') payload = payload[0] + payload.slice(1).normalize('NFC');
+  const text = payload.slice(1); if (!text.length) fail(); const first = digit(name, text.charCodeAt(0)); if (!first) fail();
+  if (p.bits) {
+    const firstBits = Math.floor(Math.log2(first)) + 1, bitLength = firstBits - 1 + (text.length - 1) * p.bits;
+    if (bitLength % 8 || bitLength / 8 > MAX_BYTES) fail();
+    const out = new Uint8Array(bitLength / 8); let accumulator = first - 2 ** (firstBits - 1), available = firstBits - 1, cursor = 0;
+    const flush = () => { while (available >= 8) { available -= 8; out[cursor++] = Math.floor(accumulator / 2 ** available); accumulator %= 2 ** available; } };
+    flush(); for (let i = 1; i < text.length; i++) { accumulator = accumulator * 2 ** p.bits + digit(name, text.charCodeAt(i)); available += p.bits; flush(); }
+    if (cursor !== out.length || available) fail(); return out;
+  }
+  const base = BigInt(p.size); let value = BigInt(first);
+  for (let i = 1; i < text.length; i++) value = value * base + BigInt(digit(name, text.charCodeAt(i)));
+  const hex = value.toString(16); if (hex[0] !== '1' || hex.length % 2 !== 1 || (hex.length - 1) / 2 > MAX_BYTES) fail();
+  return Uint8Array.from({ length: (hex.length - 1) / 2 }, (_, i) => parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16));
+}
+function fragmentPayload(fragment) {
+  if (typeof fragment !== 'string' || fragment.length > MAX_UNITS * 9 + 1) fail();
+  if (fragment.startsWith('#')) fragment = fragment.slice(1);
+  try { return fragment.includes('%') ? decodeURIComponent(fragment) : fragment; } catch { fail(); }
+}
+function decodeFragment(fragment, options) { return decodeTransport(fragmentPayload(fragment), options); }
+
+
+const fixtures = [{"name":"kingshot-8900","payload":"SUMBAEWat5_NEAAAAQADEbS2AAFnOErRA0S6iThIEDwfoidwhDaqksk5_YHybSmWBhVSBQDl-0pX59gJ8p_CRe3IBbBVw9bWZ1dbglJg","canonicalCrc":775422789},{"name":"kingshot-8901","payload":"SUMBANQHQQ2iRw8AAAoAWlxfYGJjZGVm-wQAAO8u-u180ljiMgpQBHkDw67tT5M4JSvtOr3I_46H6jqGLcniZoQ0BCVWZBUT2eV53EsP_GiIt0GsJqVhuzeZoIK7ldJeyyKrRFUbNK1u9ZCbDwbWl-7I8Kw_VjENNZDs60VhIMd_OBciDM-XfD0FZuX_52RHRqme0ZSZyZhtJVjv2gVHSHUJ_8_3Pi3QViHYhXLevBbSXbSJc01h1-d3ythcSBXUJxAVAqbBxaUBj259BYtuQq0U8u3LPyA4AU1lUmTmA7J7cb9Plxh-aZ2hHYnMdRQql9t3hEuPP5UtzLjN8IJS2a2bJgLc19GOJrWfZSNUnYrghAYvvNpB6KYYQyvVgjdeosJy1-nBcaPDYxWaR92AaEsupt-6kqRxsMYiwq8DAONABqUr7kaAMkg3LEaAnG58s28Qs8iGAib5DiL7aOYWXUMZEUqFNoKnndXXsD8HIvUurz9PXSlWYZVofWu-gupxFZE32cfFfnPzeOxFFvvixZ5ioS13GaDXiNBX8K7b-Y9LrEzKwn-j-0LtNPFNoxKVavZHkoBxQA-Bv-8isivVV7napfSgLE9BmcjbG4K_b4xWXMeBSOCSu1BOfDWRqn-hbfPI_o3ppibZqb4cabDbNYgYyTNJJ_FBYc7Xsr6kTIg1hdidRPSNHnThAf6H3TjckXqnz5sHEFK65EBwXAo7sVncoWsikTRAzg7s6tzU-qrzXZFP9efOBvibQ9q_Xvdk_tenkBGJR27sbXohbOwqFxVK43CvRG6NKA47i-yEUgsWdarR4HFWkUQlrMINU5ijaYaFDZz-4-vdeL2WHM5vcIoqf0DZhJhJbseBVD8ed4MAFOUEoAADWFtewgJAQ4VoRLBOtIjWIYiKylSlETIMSyHmcE6KmaZXMx1-YMva7B7IJu09VS638L_zIDpvrRMmjCZX45xJYNVF8c3rBa8JfZg8nPgPVFZNgpeGxo9bfViYY6sasET1cwC3cG_aPOoZQGMc7zilEREwqWlUv2SmPqR7xGo6Nd7dujluQUOufZLVUzO_jTslnaQLwF7-nGGo65M5Bpa56rly-ifb3oUQ_eP-rDj42ifEF2wLkuEUWOM1Z7n7QCTQkvxtNXQu3NEwjWcQUsufqZOT1oDT6bDTUsrMh2J9a3Dni_O6Sf-nSLuvMTC90pk37qRt1aoJ0nXhFRorxKyB700Rxv8ifqyGWcUEPjLja9iOSuBZJ4T8NnKq9CsEPOdOTULHVVb_nwVyrYgbKV6zWQcucprtrmdTdtVFlAMAq2QQNDyJOeyA","canonicalCrc":2645403513},{"name":"kingshot-8902","payload":"SUMBAMYHkMrXqg8AAAkAWl9gYmNkZWb0BAACNYKnvwnaaBmPRTOjHf4qhLPlboVEZh7Hb8Sg2Qn8GNViWoTbyEYREfujtm76zcKRUqtl2UZyXs-mASFCOh-HJXpRKpZhUfG78mbfNKXiD65YEGQHF4b459FmG6GQkw0Zd1Qw9Uw1ORjuOz8bXKrbDLp36lqzDRRWoghp7P4owiqGfubd5w3Ky9_B9-cgM3LECyg1titWk84jpYLJtS61OYdQJHLxos_Q6Nct78GZ22FZGZQ4mDpy_nCnz8RqydRezZo6rNqbBAfXTT56Q86g5VD1y0R5m-iKSqERqF1RWnZGws5cdAf59NJaXAH18x3SvJ_jgTCF6HDJ-imyNS1iQ91vMgUde8Mxl5EWD_of3YP90Y3GyRppeQpZIEz8tS1aJ59g5apf8usxiMBQtgKWiQLC7D2VUDaZ_n2ZP_9F5x-xXdyn77x3KwU_Qj-0Zd5Wpa6aBq-dCr_XkZ8yakOqUQEV09mK1MDXcZu3iELvcWfino9wCilwO6fHTy8v9eujNxuPTyEqMTCCaijSqO7JEM8gYtF7f1voTdrinPcTqT5gYA7XXZCGKpGyL9vGYY2esHHxDiQTh5SLd9CBN5BZB9onI0fIR5GKATTy2-LpcCWrH2r1xMLQBUly3xXWkZ3EadiMc-DTM1FOCpVpc0inqUPyMYaCUvMA0KhW9AXphzCIRoDeVMRZ1lsO9LZCq01qyqGhoM2UbA-PwWo8u4VXHhf0BEBj9yxbwMs8Ju-1L51iK7U9udAY4Eq180YOA-zuWM74NF7ooiOhYox76aVeuYBlS7hNPi4cAphON-oixz6_0IhbUMOQUeEWdzmDtVoo2oAABFhbXV67AjNAgCZ1054wZ6TmR0PZyhGD-SYTPuzcqrRRwV6SniRlt0TTmmoVgz-dEu3W3rfHa2LPqt8ucgbAwDsjyyPMaeZBWQwAQwkZCaFDKCmN_JibYNbHw0bbhBI6UE-_DzeUPUzJS71iLou5ptck9vJwwspxBXCiCG6BCU4p7iFbOwAlZw1s2STatPqUi3384OGx5U6LLXkgBFnOgNcSl7_IElN91zQoLb-QBE0a-B8yEqMGcQEP4Tw8ngO4gTWrzJNu2eJkzidRR47uZOlnXNX-BRfmyUcAvn5iY_e4QGLROBW1lo96wL9gFWDhCwrq0_-FJWVbL1exUsXLG2XoW-r3EU-G7Cp-0gozC3eNZKb4P_ZFvsovk5W1_kC5-NMNSW1G3ju8KgmWFwTsN98dc8yrGFlyWg-5STDYgQm6Yg","canonicalCrc":2166253100},{"name":"kingshot-8903","payload":"SUMBAJwCeMPzoxAAAAMAWmNnOaY-hV0BHop1PdzqC36i_a0LCMuPD_KadX-26k1D_mevwKy-gZUbjutfdnCNYVB4_1z9gdXglHhclF6i__rvq2dPUOV0udo3mvdlxe1pOkFrXmzvKaeJ_hIV6NXBz2LhJppr5VjuQAACXmenAUadq96NbBs2xaWDTaniyQ42fh64EADrAOm_p8X8XmuisI_6Oc9vgez2F5LEX5Xq4CliGtXtKgxtWuf-m6nx9U-lF55fIwzn_hYn7NNZmCWU3meTS0AbVY0XeiV4Xmeq3mIh_l8POiReHejsG3Z6sEI08jRZ_oJ-EjJSzg6tDr0v1Hakv4cxrWUAdGvZH7zk_gcWaOtOQF3AZEXkzFIzHxoFFykUnmYA","canonicalCrc":1512177467},{"name":"kingshot-8904","payload":"SUMBALICXPKWuBAAAAMAWmKTAURm3tO2hy7u_KBqE0AVMiTXQ-RrdsiFd0ixACUTdwoWoD7OgkAKnDZwRl0EOu-hl15UePzL7YY-JwHCO5C3ZBgk_u7rBrkadcsf7tetvOnK4AXq4uIHp5eR88J55jK10HaGuvxpBEIWmUvclZ5Sha316f6oHdffiScWzUHQSwmKEf9rtJzkf6cDuVzct2jAiGCleAACXmeQASIE-2AYqlyP0QXtssqdgm8HLoYIn-x9a8nAjHrxcgSMDvR8rR8yIg6aekMitondOxYxeB-NTcWuDbtgkc_uTXLstX2Lm43xML6l7UCxAiAQQb-3lxVJ2UTaD1-oGCbe4UOBkoe7D9jzU17CjOKIFzRDXzueEEtUD-i30D--vJPUl9Fdp4kh0WNDKpnAjwhuAA","canonicalCrc":3873817898}];
+const sample = "dey.ci/island#~㕕怀많頭铥霮飩云阣꾃뾇㵖畨捱劈緝紘穰縁偺뾋擉蟫褴杊铏噓麥锒膢䔁兖枱㙅馕扟㒳杕䣆趲䄫斄緛댋猣傶덓쇬澣本枩璧奡㸝鳟醊嗂支娍러箌靅繊畢㣤㶊酫蜈議럇誚귋殡耿恱黴㗛꽅넃茚橧呭挡业곇啾饎빖菿膃緍纐드耝뫳傺槸矹悊뿛谠渹譋耹绌詣蚺㝿檌늪楓귉눟繙댖㖽楰䮅軱躸柲댃䅈兮軫襏湎뜈陋螰鍀㱪賿焬㠅㺌鵐胷鏣疉阂挬圻匶卲夬䣝궖溓僩㿀遳䎬椦劈簡㺌訛蘪忆酢皨땩蟰뼸脧㼝㛢끎緲浆剠旭꾛꿈凨側㟎粦亃㐚寋궱籓䦅嫛㬡獆䉶뼃셵㦛尖눏蛀렓僣㜼蒽橾뭨矦頰㧩瑽矻넀娡㕭閶澅難㾡䪳돏宍㭡頞궪憬䙢鳭运쀱幔枡㽵軟檼郁䕵墠喃潜瞳夾먫遺樝넒䬜後블縋뫢訊摻諹蔄鋼跎蝢龜耧㠒確偋뗣䈧㬨精隲嘲䖽䡟该㮮陾韕㻕鿉雲哊晚撇豶蓐知봕滏귛瓷裂鰯냼䗅벣陲硥竑鉔꽬幺㭕䗵湉㑴户羮뤫搄鐆랭㼋獛뾏秇爎뱽錽渙暲坵瑸끞䑨杯袮邫똣埨粼㤇띪梏뀗麕瘺㓞姚㵿낐悭罸蒄闻묜璎祧伸墓䙻뻂熡褎蜡縬䟎廴壔嗄渶䬮敋晘街弁뿠蘒偒䙌翄땐뷨㖿뢆㘠嫎䉝橥뜸맿뤿㾅寃뵂㵎鍒㹋厙鰸宮깖佻帧䢙艇卶葏齋떇䑕賮擴뚺齭斎靷渑穸귾渰怀纛㞪餈䡽僆挬곩蛙妸灵齌潺產蚦㠊辖壙䔐势捧뷅訪黀洗捔疦菾缣饵㞞䦦馰銗曟癴䠩묾阝㽦皆빷桏蘯띁縀贬鰗扣㽪嚦燣꽕礲䎕卥乤낋洌寝憁㚨㻳牝䑙䓋㫉鉣崜舍遱䇦봩做솵뾲哃䒣漀㙂㓖솉庤䁋赧湱精㯩䜃辷鿜醰뫻讍赳";
+const check = (condition, label) => { if (!condition) throw new Error(label); };
+document.querySelector('#stress').value = sample;
+document.querySelector('#run').addEventListener('click', async () => {
+  const report = { userAgent: navigator.userAgent, rows: [], alphabetChecks: [], failures: [] };
+  try {
+    for (const f of fixtures) {
+      const bytes = fromPayload(f.payload), layout = await decodePayload(f.payload);
+      check(crc32(new TextEncoder().encode(JSON.stringify(layout))) === f.canonicalCrc, 'Decoded canonical value differs');
+      check(await encodePayload(layout) === f.payload, 'Cross-engine deterministic binary differs');
+      for (const profile of ['base64url', ...Object.keys(PROFILES)]) {
+        const payload = encodeTransport(bytes, profile), url = new URL('https://dey.ci/island#' + payload), decoded = decodeFragment(url.hash);
+        check(decoded.length === bytes.length && decoded.every((b, i) => b === bytes[i]), 'Unicode or URL round trip differs');
+        const canonical = await decodePayload(toPayload(decoded)); check(crc32(new TextEncoder().encode(JSON.stringify(canonical))) === f.canonicalCrc, 'Transport canonical value differs');
+        report.rows.push({ layout: f.name, profile, units: 14 + payload.length, encodedHrefUnits: url.href.length, nfcUnchanged: payload.normalize('NFC') === payload, nfkcUnchanged: payload.normalize('NFKC') === payload, roundTrip: true });
+      }
+    }
+    for (const [name, p] of Object.entries(PROFILES)) { const text = p.ranges.map(([a, b]) => Array.from({length:b-a+1},(_,i)=>String.fromCharCode(a+i)).join('')).join(''); report.alphabetChecks.push({profile:name, characters:text.length, nfcStable:text.normalize('NFC')===text, nfkcStable:text.normalize('NFKC')===text}); }
+    report.stress = { units: sample.length, codePoints: [...sample].length, restored: decodeFragment(new URL('https://' + sample).hash).length === 931 };
+  } catch (e) { report.failures.push(e.message); }
+  document.querySelector('#result').textContent = JSON.stringify(report, null, 2);
+  document.querySelector('#status').textContent = report.failures.length ? 'FAIL' : 'PASS: 25 browser transport cases and five full binary re-encodes';
+});
+document.querySelector('#check').addEventListener('click', () => { const value = document.querySelector('#returned').value; document.querySelector('#comparison').textContent = value === sample ? 'Exact 512-unit match' : 'Mismatch: received ' + value.length + ' units'; });
+</script></html>
