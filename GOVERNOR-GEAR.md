@@ -20,17 +20,15 @@ Set bonuses appear in only one table and are not modelled.
 `js/governor-engine.js` is pure and runs under Node for checks. Levels are indices: 0 is not crafted (or no charm), and index n is the nth table row.
 
 - **plan:** one step at a time, the affordable next level with the most gain for the share of the starting bag it uses. Gain is the stat rise weighted by the troop profile, or the governor score rise for the score profile. Ties go to the heavier troop, then the lower level, then table order. Gear and charms use different materials, so they are planned separately. Unset pieces are left out, never treated as zero.
-- **Troop profiles** (`profiles` in `_data/governor.json`) are troop ratios, infantry : cavalry : archers, that weigh each step's stat gain. Bear first by default:
+- **Troop weights** (`profiles` in `_data/governor.json`) multiply each step's stat gain by its troop (infantry : cavalry : archers). Bear first by default:
 
-  | Profile | Ratio | For |
+  | Profile | Weights | For |
   | --- | --- | --- |
-  | `bear` | 19 : 23 : 58 | low and mid spenders: Bear Hunt every two days pays back in hammers. Archers first without leaving infantry and cavalry far behind (owner, 30 Oct: fine as it is) |
-  | `offence` | 50 : 20 : 30 | the usual attacking troop ratio (owner, 30 Oct) |
-  | `defence` | 50 : 30 : 20 | the usual defending troop ratio (owner, 30 Oct) |
-  | `custom` | the player's | a hero meta shifts the ratio (Margot and Alcar allow 60 : 40 : 0 on defence and down to 50 : 0 : 50 on attack); a troop at 0 never moves |
+  | `bear` | 1 : 1 : 3 | Bear Hunt every two days pays back in hammers, so archers lead at about three times; infantry stays level with cavalry because it still carries Vikings, Alliance Championship and more (owner, 30 Oct) |
+  | `custom` | the player's, 0 to 10 in tenths | a hero meta or any other plan; a troop at 0 never moves |
   | `score` | — | the most governor score, for an event day |
 
-  The page shows the ratio of whichever preset is chosen, and typing into it makes it the custom ratio (preference `weights`, `"50:20:30"`; `w=50.20.30` in a link). An older save's `goal: 'score'` reads as the score profile, and an older `even` as a custom 1 : 1 : 1.
+  The page shows the weights of the chosen profile, and typing one makes them custom (preference `weights`, `"1:0.5:3"`; `w=1_0.5_3` in a link). The site publishes no other presets: troop ratios shift with hero metas, so the player sets their own. Older saves and links keep working: `goal: 'score'` reads as the score profile, and the retired `even` and `defence` as custom weights of 1 : 1 : 1 and 1 : 0.5 : 0.7.
 - **toTarget:** materials to bring every set piece, or one troop's (`{ troop }`), to a level, the levels that reaches, and what is still missing from known balances.
 - **events:** event days in `_data/event_rules.json` that score "Governor Gear/Charm max score +1", with the score gain multiplied by that day's rate. These are estimates.
 
@@ -42,7 +40,7 @@ The page never edits the player's save. `js/governor-sheet.js` configures a memo
 
 `Governor.encodeLink(sheet)` and `Governor.readLink(search)` carry a sheet in the address: `gov=` is 24 characters, one per gear piece then one per charm in table order (`0`–`9`, `a`–`z`, `A`–`Z` for the level, `.` for not set); `bag=` holds the five materials in table order joined by `.` (blank is not counted); `p`, `gt` and `ct` carry the troop profile and targets only when they differ from the defaults. A link that cannot be read falls back to the copy of the save and says so. In-game chat takes 512 UTF-16 units; the fullest possible sheet is 143 characters with `https://dey.ci`, and `governor-check` keeps it under 160 so later additions still leave room.
 
-Whenever the sheet differs from the save, every edit rewrites the address with `replaceState`, so the address is always the share link; when it matches, the address is clean. The strip above the materials says which it is (a shared sheet, your save, a blank sheet, or changed on this page only) and offers copy link, start blank, load mine, save as mine and read a screenshot. Save as mine asks first, then replaces the governor levels and choices in the save; a material the sheet has not counted keeps the saved number. The page carries no next-step note and no empty state, since both are about the save.
+Whenever the sheet differs from the save, every edit rewrites the address with `replaceState`, so the address is always the share link; when it matches, the address is clean. One bar above the workspace, "This sheet", says which it is (a shared sheet, your save, a blank sheet, or changed on this page only) and holds the sheet's actions: Copy share link first, Save as mine when the sheet differs from the save, then Load mine and Start blank as quieter links. The screenshot upload sits above the profile. Save as mine asks first, then replaces the governor levels and choices in the save; a material the sheet has not counted keeps the saved number. The page carries no next-step note and no empty state, since both are about the save.
 
 ## Page
 
@@ -62,7 +60,7 @@ Saved levels live in `governorGear.pieces` and `governorCharms.slots` of the sha
 ## Checks
 
 - `node .dsh/governor-check.cjs`: table shape and totals, plans and troop profiles, targets, event rates, sheet links, ledger validation, dictionaries and that every card and gem image exists.
-- `node .dsh/governor-ui-check.cjs` after a Jekyll build: the shared profile and its editor, charm art, set all, the answer under Bear first, Offence and a custom ratio with a troop at 0, cost to reach for one troop, no inner scroll, the sheet in the address, a visitor opening the link, save as mine, start blank, load mine, an unreadable link, the page's own upload area, a Governor Profile screenshot dropped there, read through the dock onto the sheet and undone, RTL and phone widths.
+- `node .dsh/governor-ui-check.cjs` after a Jekyll build: the shared profile and its editor, charm art, set all, the answer under Bear first and custom weights with a troop at 0, cost to reach for one troop, no inner scroll, the sheet in the address, a visitor opening the link, save as mine, start blank, load mine, an unreadable link, the page's own upload area, a Governor Profile screenshot dropped there, read through the dock onto the sheet and undone, RTL and phone widths.
 - `node .dsh/governor-ocr-check.cjs` after a Jekyll build: every screenshot in `.dsh/governor-fixtures/` read against its `truth.json` (no confident misread, 95% or better right) and the Governor Gear screen turned away. `--signatures` prints the charm outlines behind `SEEN` in `js/governor-ocr.js`.
 
 Page copy is English in every language, like hero gear; navigation, the home card and the deck cover are translated into all 17.

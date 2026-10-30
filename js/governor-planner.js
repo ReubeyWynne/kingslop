@@ -7,10 +7,8 @@
   'use strict';
   var EN = {
     'slot.hat': 'Hat', 'slot.amulet': 'Amulet', 'slot.armour': 'Armour', 'slot.trousers': 'Trousers', 'slot.ring': 'Ring', 'slot.staff': 'Staff',
-    'profileNote.bear': 'Archers first, without leaving infantry and cavalry far behind. Bear Hunt runs every two days and pays back in hammers.',
-    'profileNote.offence': 'The usual attacking troop ratio.',
-    'profileNote.defence': 'The usual defending troop ratio, for turrets and garrisons.',
-    'profileNote.custom': 'Your own ratio, for when a hero meta shifts it (60:40:0 on defence, 50:0:50 on attack). A troop at 0 stays where it is.',
+    'profileNote.bear': 'Archers first: Bear Hunt runs every two days and pays back in hammers. Infantry keeps level with cavalry for Vikings, Alliance Championship and the rest.',
+    'profileNote.custom': 'Your own weights: each troop\'s gains count that many times. A troop at 0 stays where it is.',
     'profileNote.score': 'The most governor score for the materials, for an event day.',
     billSpend: 'Spends', billReach: 'Needs', spendLeft: '{n} left', needShort: '{n} short', needEnough: 'enough', needUnknown: 'not counted',
     stays: 'stays', notSet: 'not set', scoreGain: '+{n} governor score', scoreNone: 'No published score for one of these levels.',
@@ -36,7 +34,8 @@
     function prefs() {
       var saved = store.snapshot().preferences.governor || {};
       var out = Object.assign(G.prefDefaults(), saved.goal === 'score' ? { profile: 'score' } : {}, saved);
-      if (out.profile === 'even') { out.profile = 'custom'; out.weights = out.weights || '1:1:1'; }
+      var retired = { even: '1:1:1', defence: '1:0.5:0.7' };
+      if (Object.hasOwn(retired, out.profile)) { out.weights = out.weights || retired[out.profile]; out.profile = 'custom'; }
       return out;
     }
     function bag() {
@@ -116,10 +115,10 @@
       context.targets('reachPanel').forEach(function (node) { node.hidden = mode !== 'reach'; });
       context.nodes('[data-action="governor-planner.profile"]').forEach(function (button) { button.setAttribute('aria-pressed', String(button.dataset.value === options.profile)); });
       put('profileNote', t('profileNote.' + options.profile));
-      // The ratio behind every preset is on show; typing one makes it the custom ratio.
-      var ratio = G.ratio(options);
-      context.targets('ratio').forEach(function (node) { node.hidden = !ratio; });
-      context.nodes('[data-action="governor-planner.ratio"]').forEach(function (input) { if (ratio && document.activeElement !== input) input.value = String(ratio[input.dataset.troop]); });
+      // The weights behind the preset are on show; typing one makes them custom weights.
+      var weights = G.weights(options);
+      context.targets('weights').forEach(function (node) { node.hidden = !weights; });
+      context.nodes('[data-action="governor-planner.weight"]').forEach(function (input) { if (weights && document.activeElement !== input) input.value = String(weights[input.dataset.troop]); });
       ['gearTarget', 'charmTarget'].forEach(function (key) { context.targets(key).forEach(function (select) { select.value = String(options[key]); }); });
       context.targets('reachTroop').forEach(function (select) { select.value = reachTroop; });
       root.dataset.mode = mode;
@@ -135,14 +134,14 @@
     function write(fn) { try { fn(); } catch (cause) { render(); throw cause; } }
     return { refresh: function () { labelOptions(); render(); }, actions: {
       profile: { run: function (button) {
-        // Custom starts from the ratio on show, so a tweak is one number away.
-        var now = prefs(), seed = button.dataset.value === 'custom' && now.profile !== 'custom' && G.ratio(now);
+        // Custom starts from the weights on show, so a tweak is one number away.
+        var now = prefs(), seed = button.dataset.value === 'custom' && now.profile !== 'custom' && G.weights(now);
         write(function () { if (seed) store.setGovernorPreference('weights', [seed.inf, seed.cav, seed.arc].join(':')); store.setGovernorPreference('profile', button.dataset.value); });
       } },
-      ratio: { events: ['change'], run: function (input) {
-        var ratio = G.ratio(prefs()) || { inf: 1, cav: 1, arc: 1 }, n = Math.round(Number(input.value));
-        ratio[input.dataset.troop] = Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : ratio[input.dataset.troop];
-        write(function () { store.setGovernorPreference('weights', [ratio.inf, ratio.cav, ratio.arc].join(':')); store.setGovernorPreference('profile', 'custom'); });
+      weight: { events: ['change'], run: function (input) {
+        var weights = G.weights(prefs()) || { inf: 1, cav: 1, arc: 1 }, n = Math.round(Number(input.value) * 10) / 10;
+        if (input.value !== '' && Number.isFinite(n)) weights[input.dataset.troop] = Math.min(10, Math.max(0, n));
+        write(function () { store.setGovernorPreference('weights', [weights.inf, weights.cav, weights.arc].join(':')); store.setGovernorPreference('profile', 'custom'); });
       } },
       option: { events: ['change'], run: function (select) { write(function () { store.setGovernorPreference(select.dataset.option, Number(select.value)); }); } },
       reachTroop: { events: ['change'], run: function (select) { reachTroop = select.value; render(); } }

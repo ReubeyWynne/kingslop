@@ -7,12 +7,12 @@
   var G = window.Governor, Ledger = window.PlayerLedger;
   var link = G.readLink(location.search), sheetStore = null;
   var MATERIALS = G.data.materials.map(function (m) { return m.id; });
-  var KEPT_OUT = ['gov', 'bag', 'p', 'g', 'f', 'gt', 'ct'];
+  var KEPT_OUT = ['gov', 'bag', 'p', 'w', 'g', 'f', 'gt', 'ct'];
   var EN = {
     sourceLink: 'A shared sheet.', sourceSame: 'Your save.', sourceBlank: 'A blank sheet.', sourceChanged: 'Changed on this page only.',
     untouched: 'Your save is untouched.', saveHint: 'Edits here stay on this page until you save them.',
     linkInvalid: 'That link could not be read, so this is a copy of your save.',
-    copied: 'link copied', saved: 'Saved as yours.'
+    copied: 'Link copied', saved: 'Saved as yours.'
   };
   function mine() { try { return Ledger.shared().snapshot(); } catch (ignored) { return null; } }
 

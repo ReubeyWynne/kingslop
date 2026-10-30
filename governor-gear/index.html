@@ -11,12 +11,15 @@ self: governor
   </section>
 
   <section class="section gov-sheet" id="governor-sheet" data-module="governor-sheet" data-screen-import-sheet="governor" aria-label="This sheet" data-i18n-key="gov.sheet.label" data-i18n-attr="aria-label">
-    <p class="gov-sheet-source" aria-live="polite"><strong data-target="governor-sheet.source"></strong> <span data-target="governor-sheet.hint"></span></p>
+    <div class="gov-sheet-state">
+      <span class="gov-sheet-kicker" data-i18n="gov.sheet.kicker">This sheet</span>
+      <p class="gov-sheet-source" aria-live="polite"><strong data-target="governor-sheet.source"></strong> <span data-target="governor-sheet.hint"></span></p>
+    </div>
     <p class="gov-sheet-actions">
-      <button type="button" data-action="governor-sheet.copy" data-i18n="gov.sheet.copy">copy link</button>
-      <button type="button" data-action="governor-sheet.blank" data-target="governor-sheet.blank" data-i18n="gov.sheet.blank" hidden>start blank</button>
-      <button type="button" data-action="governor-sheet.loadMine" data-target="governor-sheet.loadMine" data-i18n="gov.sheet.loadMine" hidden>load mine</button>
-      <button type="button" data-action="governor-sheet.saveMine" data-target="governor-sheet.saveMine" data-i18n="gov.sheet.saveMine" hidden>save as mine</button>
+      <button type="button" data-kind="primary" data-action="governor-sheet.copy" data-i18n="gov.sheet.copy">Copy share link</button>
+      <button type="button" data-kind="secondary" data-action="governor-sheet.saveMine" data-target="governor-sheet.saveMine" data-i18n="gov.sheet.saveMine" hidden>Save as mine</button>
+      <button type="button" data-kind="quiet" data-action="governor-sheet.loadMine" data-target="governor-sheet.loadMine" data-i18n="gov.sheet.loadMine" hidden>Load mine</button>
+      <button type="button" data-kind="quiet" data-action="governor-sheet.blank" data-target="governor-sheet.blank" data-i18n="gov.sheet.blank" hidden>Start blank</button>
     </p>
     <input class="gov-sheet-link" type="url" readonly hidden data-target="governor-sheet.link" aria-label="Link to this sheet" data-i18n-key="gov.sheet.linkLabel" data-i18n-attr="aria-label">
     <dialog class="gov-dialog gov-confirm" data-target="governor-sheet.confirm" aria-labelledby="gov-confirm-title">
@@ -49,10 +52,10 @@ self: governor
 
         <div class="gov-mode" data-target="governor-planner.spendPanel">
           <div class="gov-chips" role="group" aria-labelledby="gov-profile-label"><span id="gov-profile-label" data-i18n="gov.priority">Priority</span>
-            {% assign profiles = "bear,offence,defence,score,custom" | split: "," %}{% for name in profiles %}<button type="button" aria-pressed="false" data-action="governor-planner.profile" data-value="{{ name }}" data-i18n="gov.profile.{{ name }}">{% case name %}{% when "bear" %}Bear first{% when "offence" %}Offence{% when "defence" %}Defence{% when "custom" %}Custom{% else %}Event score{% endcase %}</button>{% endfor %}
+            {% assign profiles = "bear,score,custom" | split: "," %}{% for name in profiles %}<button type="button" aria-pressed="false" data-action="governor-planner.profile" data-value="{{ name }}" data-i18n="gov.profile.{{ name }}">{% case name %}{% when "bear" %}Bear first{% when "custom" %}Custom weights{% else %}Event score{% endcase %}</button>{% endfor %}
           </div>
-          <div class="gov-ratio" role="group" aria-labelledby="gov-ratio-label" data-target="governor-planner.ratio"><span id="gov-ratio-label" data-i18n="gov.ratio">Troop ratio</span>
-            {% assign ratio = "inf,cav,arc" | split: "," %}{% for troop in ratio %}{% unless forloop.first %}<span aria-hidden="true">:</span>{% endunless %}<label><span data-i18n="gear.{{ troop }}">{% case troop %}{% when "inf" %}Infantry{% when "cav" %}Cavalry{% else %}Archer{% endcase %}</span><input type="number" min="0" max="100" step="1" inputmode="numeric" data-troop="{{ troop }}" data-action="governor-planner.ratio"></label>{% endfor %}
+          <div class="gov-weights" role="group" aria-labelledby="gov-weights-label" data-target="governor-planner.weights"><span id="gov-weights-label" data-i18n="gov.weights">Weights</span>
+            {% assign weighted = "inf,cav,arc" | split: "," %}{% for troop in weighted %}<label><span data-i18n="gear.{{ troop }}">{% case troop %}{% when "inf" %}Infantry{% when "cav" %}Cavalry{% else %}Archer{% endcase %}</span><input type="number" min="0" max="10" step="0.1" inputmode="decimal" data-troop="{{ troop }}" data-action="governor-planner.weight"></label>{% endfor %}
           </div>
           <p class="gov-gloss" data-target="governor-planner.profileNote"></p>
         </div>

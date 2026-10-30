@@ -48,27 +48,30 @@
     return { kind: kind, target: target, troop: troop || 'all', cost: total, missing: missing, steps: steps, levels: levels, unknown: unknown, unverified: unverified, score: scoreKnown ? scoreGain : null };
   }
   function affordable(price, bag) { return Object.keys(price).every(function (id) { return price[id] <= bag[id]; }); }
-  /* Troop profiles are ratios, infantry : cavalry : archers, that weigh each step's stat gain
-     by its troop; "custom" is the player's own ratio ("50:20:30") and "score" ranks by governor
-     score. An older save's goal of score reads as the score profile, and its "even" as a custom
-     1:1:1. A troop at 0 never moves. */
-  var PROFILES = data.profiles, EVEN = '1:1:1';
+  /* Troop weights multiply each step's stat gain by its troop: "bear" is the preset,
+     "custom" the player's own weights ("1:1:3", infantry : cavalry : archers, 0 to 10 in
+     tenths) and "score" ranks by governor score instead. A troop at 0 never moves. Older
+     saves and links keep working: a goal of score reads as the score profile, and the
+     retired "even" and "defence" as custom weights they used to mean. */
+  var PROFILES = data.profiles, RETIRED = { even: '1:1:1', defence: '1:0.5:0.7' }, WEIGHT = '(?:10|\\d(?:\\.\\d)?)';
+  var WEIGHTS = new RegExp('^' + WEIGHT + ':' + WEIGHT + ':' + WEIGHT + '$');
   function profileOf(options) {
     var name = options.profile || (options.goal === 'score' ? 'score' : 'bear');
-    if (name === 'even') return 'custom';
+    if (Object.hasOwn(RETIRED, name)) return 'custom';
     if (name !== 'score' && name !== 'custom' && !Object.hasOwn(PROFILES, name)) throw new Error('Unsupported governor profile');
     return name;
   }
-  function parseRatio(text) {
-    var parts = /^(\d{1,3}):(\d{1,3}):(\d{1,3})$/.exec(text || '');
-    return parts ? { inf: Number(parts[1]), cav: Number(parts[2]), arc: Number(parts[3]) } : null;
+  function parseWeights(text) {
+    if (typeof text !== 'string' || !WEIGHTS.test(text)) return null;
+    var parts = text.split(':').map(Number);
+    return { inf: parts[0], cav: parts[1], arc: parts[2] };
   }
-  // The ratio a profile plays by: a preset's own, or the custom one (1:1:1 until one is set).
-  function ratio(options) {
+  // The weights a profile plays by: the preset's own, or the custom ones (1:1:1 until set).
+  function weightsOf(options) {
     options = options || {};
     var profile = profileOf(options);
     if (profile === 'score') return null;
-    if (profile === 'custom') return parseRatio(options.profile === 'even' && !options.weights ? EVEN : options.weights) || parseRatio(EVEN);
+    if (profile === 'custom') return parseWeights(options.weights) || parseWeights(RETIRED[options.profile] || RETIRED.even);
     return Object.assign({}, PROFILES[profile]);
   }
   /* Greedy, explainable plan: at each step take the affordable next level with the most
@@ -77,7 +80,7 @@
      the heavier troop, then the lower level, then table order, never to table order alone. */
   function plan(kind, state, bag, options) {
     options = options || {};
-    var profile = profileOf(options), goal = profile === 'score' ? 'score' : 'stats', weights = ratio(options) || { inf: 1, cav: 1, arc: 1 };
+    var profile = profileOf(options), goal = profile === 'score' ? 'score' : 'stats', weights = weightsOf(options) || { inf: 1, cav: 1, arc: 1 };
     var focus = options.focus || 'all', limit = options.limit || 60;
     var left = zero(kind), start = zero(kind), levels = {}, steps = [];
     Object.keys(left).forEach(function (id) {
@@ -132,10 +135,10 @@
   /* A sheet in the address. gov= holds one character per gear piece, then one per charm
      (0-9, a-z, A-Z for the level, "." for not set); bag= the materials in table order joined
      by "." (blank is not counted); p, gt and ct the troop profile and targets when they differ
-     from the defaults, and w the custom ratio as 50.20.30. A sheet is { gear, charms, bag, prefs }, each keyed by id. */
+     from the defaults, and w the custom weights as 1_1_3. A sheet is { gear, charms, bag, prefs }, each keyed by id. */
   var DIGITS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', BAG_MAX = 1e9;
   var NAMES = Object.keys(PROFILES).concat('score', 'custom');
-  var PREFS = { profile: ['p', NAMES.concat('even')], weights: ['w', 'ratio'], gearTarget: ['gt', 'gear'], charmTarget: ['ct', 'charms'] };
+  var PREFS = { profile: ['p', NAMES.concat(Object.keys(RETIRED))], weights: ['w', 'weights'], gearTarget: ['gt', 'gear'], charmTarget: ['ct', 'charms'] };
   function prefDefaults() { return { profile: 'bear', gearTarget: max('gear'), charmTarget: max('charms') }; }
   function encodeLink(sheet) {
     var out = { gov: ['gear', 'charms'].map(function (kind) {
@@ -145,7 +148,7 @@
     if (bag.some(Boolean)) out.bag = bag.join('.');
     var own = sheet.prefs || {}, prefs = Object.assign(prefDefaults(), own.goal === 'score' ? { profile: 'score' } : {}, own), defaults = prefDefaults();
     if (prefs.profile !== 'custom') delete prefs.weights;
-    Object.keys(PREFS).forEach(function (key) { if (prefs[key] !== undefined && prefs[key] !== defaults[key]) out[PREFS[key][0]] = key === 'weights' ? prefs[key].replace(/:/g, '.') : String(prefs[key]); });
+    Object.keys(PREFS).forEach(function (key) { if (prefs[key] !== undefined && prefs[key] !== defaults[key]) out[PREFS[key][0]] = key === 'weights' ? prefs[key].replace(/:/g, '_') : String(prefs[key]); });
     return out;
   }
   // The sheet a query string carries: null without gov=, { invalid: true } when it cannot be read.
@@ -172,11 +175,11 @@
       var key = keys[k], rule = PREFS[key], raw = params.get(rule[0]);
       if (raw === null) continue;
       if (Array.isArray(rule[1])) { if (!rule[1].includes(raw)) return invalid; sheet.prefs[key] = raw; }
-      else if (rule[1] === 'ratio') { if (!parseRatio(raw.replace(/\./g, ':'))) return invalid; sheet.prefs[key] = raw.replace(/\./g, ':'); }
+      else if (rule[1] === 'weights') { if (!parseWeights(raw.replace(/_/g, ':'))) return invalid; sheet.prefs[key] = raw.replace(/_/g, ':'); }
       else { var n = Number(raw); if (!/^\d+$/.test(raw) || n < 1 || n > max(rule[1])) return invalid; sheet.prefs[key] = n; }
     }
-    if (sheet.prefs.profile === 'even') { sheet.prefs.profile = 'custom'; if (!sheet.prefs.weights) sheet.prefs.weights = EVEN; }
+    if (Object.hasOwn(RETIRED, sheet.prefs.profile)) { if (!sheet.prefs.weights) sheet.prefs.weights = RETIRED[sheet.prefs.profile]; sheet.prefs.profile = 'custom'; }
     return sheet;
   }
-  return { data: data, max: max, items: items, stat: stat, score: score, verified: verified, cost: cost, toTarget: toTarget, plan: plan, profiles: function () { return NAMES.slice(); }, ratio: ratio, parseRatio: parseRatio, events: events, describe: describe, prefDefaults: prefDefaults, encodeLink: encodeLink, readLink: readLink };
+  return { data: data, max: max, items: items, stat: stat, score: score, verified: verified, cost: cost, toTarget: toTarget, plan: plan, profiles: function () { return NAMES.slice(); }, weights: weightsOf, parseWeights: parseWeights, WEIGHTS: WEIGHTS, events: events, describe: describe, prefDefaults: prefDefaults, encodeLink: encodeLink, readLink: readLink };
 });
