@@ -7,7 +7,7 @@
   var G = window.Governor, Ledger = window.PlayerLedger;
   var link = G.readLink(location.search), sheetStore = null;
   var MATERIALS = G.data.materials.map(function (m) { return m.id; });
-  var KEPT_OUT = ['gov', 'bag', 'g', 'f', 'gt', 'ct'];
+  var KEPT_OUT = ['gov', 'bag', 'p', 'g', 'f', 'gt', 'ct'];
   var EN = {
     sourceLink: 'A shared sheet.', sourceSame: 'Your save.', sourceBlank: 'A blank sheet.', sourceChanged: 'Changed on this page only.',
     untouched: 'Your save is untouched.', saveHint: 'Edits here stay on this page until you save them.',

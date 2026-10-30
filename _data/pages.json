@@ -796,6 +796,8 @@
       "../js/governor-view.js",
       "../js/governor-profile.js",
       "../js/governor-sheet.js",
+      "../js/governor-ocr.js",
+      "../js/governor-read.js",
       "../js/governor-planner.js"
     ],
     "footMainKey": "gov.kicker",

@@ -104,6 +104,33 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.deepEqual(errors, []);
     await context.close();
   }
+  {
+    // A Governor Profile screenshot is read on the page, reviewed, then written to the sheet only.
+    const context = await browser.newContext({ viewport: { width: 390, height: 900 } }), page = await context.newPage(), errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.goto(origin + '/governor-gear/?lang=en'); await page.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
+    const read = key => page.locator('[data-target="governor-read.' + key + '"]');
+    await read('file').setInputFiles(path.resolve('.dsh/governor-fixtures/profile-purple.png'));
+    await page.waitForFunction(() => document.querySelector('[data-target="governor-read.dialog"]').open, null, { timeout: 30000 });
+    assert.equal(await page.locator('.gov-read-row').count(), 6);
+    assert.equal(await page.locator('.gov-read-row canvas.gov-read-shot').count(), 6, 'each piece shows its cut-out');
+    assert.equal(await page.locator('.gov-read-row[data-item="cav-1"] .gov-read-level').textContent(), 'Purple 0★');
+    assert.equal(await page.locator('.gov-read-row[data-item="arc-1"] .gov-read-level').textContent(), 'Purple 1★');
+    assert.equal(await page.locator('.gov-read-row[data-item="cav-1"] .gov-read-charms').textContent(), '3 · 2 · 2');
+    await page.locator('.gov-read-dialog').screenshot({ path: path.join(output, 'read-390.png') });
+    await page.click('[data-action="governor-read.use"]');
+    await page.waitForFunction(() => document.querySelector('.gov-piece[data-gov="cav-1"] [data-part="level"]').textContent === 'Purple 0★');
+    assert.equal(await page.locator('[data-charm="cav-1-1"] b').textContent(), '3');
+    assert.equal(await page.locator('[data-charm="inf-2-3"] b').textContent(), '3');
+    assert.equal(await page.locator('[data-charm="cav-2-1"] b').textContent(), '2');
+    assert.equal(await page.evaluate(() => PlayerLedger.shared().governor('gear')['cav-1']), null, 'the save stays untouched');
+    assert.match(page.url(), /[?&]gov=[^&]{24}/, 'the reading travels in the link');
+    // A picture that is not a profile says so and changes nothing.
+    await read('file').setInputFiles(path.resolve('img/governor/charm-guide.webp'));
+    await page.waitForFunction(() => /does not look like a Governor Profile|could not be opened/.test(document.querySelector('[data-target="governor-read.status"]').textContent), null, { timeout: 30000 });
+    assert.deepEqual(errors, []);
+    await context.close();
+  }
   const context = await browser.newContext({ viewport: { width: 390, height: 900 } }), page = await context.newPage(), errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(origin + '/governor-gear/?lang=ar'); await page.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
@@ -113,5 +140,5 @@ withBrowser({ root }, async ({ browser, origin }) => {
   assert.equal(await page.locator('a.event-card[href="governor-gear/"]').count(), 1);
   assert.deepEqual(errors, []);
   await context.close();
-  console.log('Governor gear UI: the shared profile and its editor, set all, the answer by troop profile and target, no inner scroll, the sheet and its link, save as mine, start blank, RTL and widths pass.');
+  console.log('Governor gear UI: the shared profile and its editor, set all, the answer by troop profile and target, no inner scroll, the sheet and its link, save as mine, start blank, reading a screenshot, RTL and widths pass.');
 }).catch(error => { console.error(error); process.exitCode = 1; });

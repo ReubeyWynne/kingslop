@@ -18,6 +18,17 @@ self: governor
       <button type="button" data-action="governor-sheet.loadMine" data-target="governor-sheet.loadMine" data-i18n="gov.sheet.loadMine" hidden>load mine</button>
       <button type="button" data-action="governor-sheet.saveMine" data-target="governor-sheet.saveMine" data-i18n="gov.sheet.saveMine" hidden>save as mine</button>
     </p>
+    <div class="gov-read" data-module="governor-read" data-art="../img/governor/">
+      <button type="button" data-action="governor-read.pick" data-i18n="gov.read.pick">read a screenshot</button>
+      <input type="file" accept="image/*" hidden data-target="governor-read.file" data-action="governor-read.file" aria-label="Governor Profile screenshot" data-i18n-key="gov.read.fileLabel" data-i18n-attr="aria-label">
+      <output class="gov-read-status" role="status" data-target="governor-read.status"></output>
+      <dialog class="gov-dialog gov-read-dialog" data-target="governor-read.dialog" aria-labelledby="gov-read-title">
+        <h2 id="gov-read-title" data-i18n="gov.read.title">What the screenshot shows</h2>
+        <p class="gov-gloss" data-target="governor-read.summary"></p>
+        <ol class="gov-read-rows" data-target="governor-read.rows"></ol>
+        <p class="gov-confirm-actions"><button type="button" data-action="governor-read.cancel" data-i18n="gov.sheet.cancel">cancel</button> <button type="button" data-action="governor-read.use" data-i18n="gov.read.use">use these</button></p>
+      </dialog>
+    </div>
     <input class="gov-sheet-link" type="url" readonly hidden data-target="governor-sheet.link" aria-label="Link to this sheet" data-i18n-key="gov.sheet.linkLabel" data-i18n-attr="aria-label">
     <dialog class="gov-dialog gov-confirm" data-target="governor-sheet.confirm" aria-labelledby="gov-confirm-title">
       <h2 id="gov-confirm-title" data-i18n="gov.sheet.confirmTitle">Save this sheet as yours?</h2>

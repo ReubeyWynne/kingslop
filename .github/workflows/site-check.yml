@@ -173,6 +173,7 @@ jobs:
             governor:
               - *shared
               - .dsh/governor-ui-check.cjs
+              - .dsh/governor-fixtures/**
               - governor-gear/**
               - js/governor-*
               - js/event-data.liquid
