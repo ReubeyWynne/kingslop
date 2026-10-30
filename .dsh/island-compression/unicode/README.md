@@ -21,3 +21,16 @@ There are 147 measured cases: 21 layouts × seven transport profiles, with origi
 `paste-sample.txt` is an exact 512-unit CJK/Hangul stress string with a diagnostic checksum, not an island. The other specimens are in `paste-samples.json`. Paste a specimen into Kingshot, send it, copy the received message and check the returned text. Successful visual display alone does not establish lossless preservation.
 
 `browser-probe.html` is a self-contained generated browser harness. It includes the actual codec source and can run without a server. The cloud browser's URL policy prevented running it through a data URL in this session; static HTTPS specimen reading and clipboard checks were used instead. Do not describe this as a completed native-browser codec benchmark.
+
+## Blacklist study
+
+[Character analysis and measured trade-offs](../../../docs/ISLAND-CHARACTER-BLACKLIST.md) isolates the 35 changed code points before the truncated suffix. The generated v1 blacklist transport excludes them and preserves all 21 corpus layouts in 84 offline cases. It remains unverified through game chat.
+
+```sh
+node .dsh/island-compression/unicode/blacklist-study.mjs
+node --test .dsh/island-compression/unicode/blacklist-test.mjs
+python3 .dsh/island-compression/unicode/write-blacklist-report.py
+node .dsh/island-compression/unicode/blacklist-study.mjs --verify copied-message.txt
+```
+
+Do not overwrite the original failure fixture or remap the v1 alphabet after later trials; create a new revision. `blacklist-transport-v1.mjs` is generated from the existing transport implementation with only its alphabet import changed. No production decoder or editor route is modified.

@@ -22,6 +22,8 @@ Four recovered layouts fit the original `dey.ci/island#` format using assigned, 
 
 The original 373-byte limit belongs to base64url, not to UTF-16 game chat. These experiments revise that transport assumption without discarding any placement or referencing a preset. All sizes below count actual encoded JavaScript string lengths, including the prefix and a one-unit transport marker. Every transport uses the same original binary codec output, or reconstructs that output byte for byte through the documented compact-header rule.
 
+The [blacklist investigation](ISLAND-CHARACTER-BLACKLIST.md) analyses the failed return and tests a new candidate excluding its 35 observed changed characters. That candidate still fits the numerical root-route budget but is not validated through game chat.
+
 ## Measured recovered layouts
 
 | Layout | Base64url, original route | CJK/Hangul 15-bit, original route | Assigned BMP + compact IC/1, original route | Assigned BMP + compact IC/1, root route | Dense BMP diagnostic, original route |

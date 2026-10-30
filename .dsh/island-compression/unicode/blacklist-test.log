@@ -1,0 +1,12 @@
+✔ Study reuses the reference implementation with only its alphabet import changed (2.133607ms)
+✔ Every candidate reconstructs every original binary layout exactly (1116.608509ms)
+✔ Generated alphabets exclude their declared character classes (38.922034ms)
+✔ New 512-unit specimen preserves the complete largest recovered layout (16.284882ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1301.38595
