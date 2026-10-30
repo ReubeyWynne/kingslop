@@ -272,7 +272,8 @@
         // A screen known by its pixels skips the whole-screen read.
         // An image the page can't decode still goes to the reader.
         return kit.load().catch(function () { return null; }).then(function () {
-          var known = kit.pixels && S.probe(kit.pixels);
+          return Promise.resolve(kit.pixels ? S.probe(kit.pixels) : null);
+        }).then(function (known) {
           if (known) return { claim: known, page: S.page({ items: [] }) };
           return reader().read(next.blob, { useful: function (res) { return !!S.route(S.page({ items: res.items })); } }).then(function (res) {
             bitmap = res.preview;
@@ -629,6 +630,28 @@
       event.preventDefault();
       open(true); render();
       if (opener.dataset.screenImport === 'pick') target('files').click();
+    });
+    // A page's own upload area ([data-screen-import] with -drop) takes dropped
+    // screenshots straight to the dock.
+    function dropZone(event) { return event.target && event.target.closest && event.target.closest('[data-screen-import-drop]'); }
+    function hasFiles(event) { return event.dataTransfer && Array.from(event.dataTransfer.types || []).indexOf('Files') >= 0; }
+    context.listen(document, 'dragover', function (event) {
+      var zone = dropZone(event);
+      if (!zone || !hasFiles(event)) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'copy';
+      zone.dataset.dragging = 'true';
+    });
+    context.listen(document, 'dragleave', function (event) {
+      var zone = dropZone(event);
+      if (zone && !zone.contains(event.relatedTarget)) delete zone.dataset.dragging;
+    });
+    context.listen(document, 'drop', function (event) {
+      var zone = dropZone(event);
+      if (!zone) return;
+      event.preventDefault();
+      delete zone.dataset.dragging;
+      add(event.dataTransfer && event.dataTransfer.files);
     });
     // A screenshot pasted anywhere on the site goes to the dock, unless the
     // reader is pasting into a text field.

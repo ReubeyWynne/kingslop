@@ -17,7 +17,6 @@ self: governor
       <button type="button" data-action="governor-sheet.blank" data-target="governor-sheet.blank" data-i18n="gov.sheet.blank" hidden>start blank</button>
       <button type="button" data-action="governor-sheet.loadMine" data-target="governor-sheet.loadMine" data-i18n="gov.sheet.loadMine" hidden>load mine</button>
       <button type="button" data-action="governor-sheet.saveMine" data-target="governor-sheet.saveMine" data-i18n="gov.sheet.saveMine" hidden>save as mine</button>
-      <button type="button" data-screen-import="pick" data-i18n="gov.sheet.read">read a screenshot</button>
     </p>
     <input class="gov-sheet-link" type="url" readonly hidden data-target="governor-sheet.link" aria-label="Link to this sheet" data-i18n-key="gov.sheet.linkLabel" data-i18n-attr="aria-label">
     <dialog class="gov-dialog gov-confirm" data-target="governor-sheet.confirm" aria-labelledby="gov-confirm-title">
@@ -31,6 +30,7 @@ self: governor
     <div class="gov-workspace">
       <div class="gov-left">
         <h2 data-i18n="gov.theGovernor">The governor</h2>
+        <button type="button" class="gov-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="gov.drop.title">Read a Governor Profile screenshot</strong> <span data-i18n="gov.drop.body">Pick, drop or paste one. You check the levels before they fill this sheet, and your save stays as it is.</span></button>
         {% include governor/profile.html %}
         <div class="gov-bag" id="governor-bag" data-module="ledger-form" data-saved-key="gov.sheet.bagSaved" data-save-failed-key="gear.saveFailed">
           {% for item in gov.materials %}{% if gov.gear.materials contains item.id %}{% assign group = "gear" %}{% else %}{% assign group = "charms" %}{% endif %}

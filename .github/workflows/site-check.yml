@@ -173,6 +173,7 @@ jobs:
             governor:
               - *shared
               - .dsh/governor-ui-check.cjs
+              - .dsh/governor-ocr-check.cjs
               - .dsh/governor-fixtures/**
               - governor-gear/**
               - js/governor-*
@@ -582,6 +583,9 @@ jobs:
       - name: Check governor gear UI
         if: matrix.group == 'governor'
         run: node .dsh/governor-ui-check.cjs
+      - name: Check the Governor Profile reader
+        if: matrix.group == 'governor'
+        run: node .dsh/governor-ocr-check.cjs
       - name: Check Town Centre UI
         if: matrix.group == 'town'
         run: node .dsh/town-centre-ui-check.cjs

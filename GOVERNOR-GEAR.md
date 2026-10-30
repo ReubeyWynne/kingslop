@@ -24,12 +24,12 @@ Set bonuses appear in only one table and are not modelled.
 
   | Profile | Infantry | Cavalry | Archer | For |
   | --- | --- | --- | --- | --- |
-  | `bear` | 0.25 | 0.35 | 1 | low and mid spenders: Bear Hunt every two days pays back in hammers, and their defensive role is joining turrets |
+  | `bear` | 0.33 | 0.4 | 1 | low and mid spenders: Bear Hunt every two days pays back in hammers, and their defensive role is joining turrets |
   | `defence` | 1 | 0.5 | 0.7 | turret and garrison holders |
   | `even` | 1 | 1 | 1 | levelling everything |
   | `score` | — | — | — | the most governor score, for an event day |
 
-  The bear weights follow the Bear Hunt page's 5 / 15 / 80 formation, softened so infantry still moves. An older save's `goal: 'score'` reads as the score profile; without one, the planner used no weights and infantry won every tie because it is first in the table.
+  The bear weights follow the Bear Hunt page's 5 / 15 / 80 formation, softened to about three to one so infantry and cavalry still move. An older save's `goal: 'score'` reads as the score profile; without one, the planner used no weights and infantry won every tie because it is first in the table.
 - **toTarget:** materials to bring every set piece, or one troop's (`{ troop }`), to a level, the levels that reaches, and what is still missing from known balances.
 - **events:** event days in `_data/event_rules.json` that score "Governor Gear/Charm max score +1", with the score gain multiplied by that day's rate. These are estimates.
 
@@ -50,7 +50,7 @@ One column on a phone, two on a wide screen, no tabs between the gear and the an
 - **The governor** is `_includes/governor/profile.html` with `js/governor-profile.js` and `css/governor-profile.css`, the same component the Town Centre's Governor shelf uses: the in-game arrangement (hat, armour and ring on the left; amulet, trousers and staff on the right; gear and charm score between), each piece as its card with stars, its level, and three charms drawn with the game's charm art, where shape is the level and colour the troop (green infantry, blue cavalry, yellow archer), the level number small beside each. Tapping a piece opens one editor for the piece and its charms. "All gear" and "All charms" sit right under the board and apply as soon as a level is picked. The module writes whatever store the page gives it: the sheet here, the save on the Town Centre.
 - **The answer** asks one of two questions. "With what I have" spends the bag by the chosen troop profile; "Cost to reach" prices a gear and a charm target for every piece or one troop. Either way it shows each piece once, gear from → to and each charm from → to (pieces that do not move are dimmed), then one bill: what it spends and leaves, or what it needs and what is still short, the governor score gained and roughly what that is worth on the best event day for gear and for charms. There is no step queue.
 
-- **Read a screenshot** opens the site's import dock. A Governor Profile screenshot (pasted anywhere, or picked) is known by its cards and read by matching this page's own art: each card's tier, grade badge and stars, and each charm's outline and look against its troop's 22 charms. The dock shows each card and charm cut out beside the level read, flags the unsure ones, and on apply writes the sheet, never the save; undo puts the sheet back. See step 15 of [SCREENSHOT-IMPORT.md](SCREENSHOT-IMPORT.md).
+- **Read a Governor Profile screenshot** sits above the profile: pick, drop or paste a shot (a paste works anywhere on the site) and the site's import dock reads it. It is known by its cards and read by matching this page's own art: each card's tier, grade badge and stars, and each charm's outline, look and size against its troop's 22 charms. The dock shows each card and charm cut out beside the level read, flags the unsure ones, and on apply writes the sheet, never the save; undo puts the sheet back. See step 15 of [SCREENSHOT-IMPORT.md](SCREENSHOT-IMPORT.md).
 
 Art is game artwork listed in [img/governor/SOURCES.md](img/governor/SOURCES.md); each gear card is the zero-star art for its tier and grade, and the stars are drawn on it.
 
@@ -61,6 +61,7 @@ Saved levels live in `governorGear.pieces` and `governorCharms.slots` of the sha
 ## Checks
 
 - `node .dsh/governor-check.cjs`: table shape and totals, plans and troop profiles, targets, event rates, sheet links, ledger validation, dictionaries and that every card and gem image exists.
-- `node .dsh/governor-ui-check.cjs` after a Jekyll build: the shared profile and its editor, charm art, set all, the answer under Bear first and Even, cost to reach for one troop, no inner scroll, the sheet in the address, a visitor opening the link, save as mine, start blank, load mine, an unreadable link, a Governor Profile screenshot read through the dock onto the sheet and undone, RTL and phone widths.
+- `node .dsh/governor-ui-check.cjs` after a Jekyll build: the shared profile and its editor, charm art, set all, the answer under Bear first and Even, cost to reach for one troop, no inner scroll, the sheet in the address, a visitor opening the link, save as mine, start blank, load mine, an unreadable link, the page's own upload area, a Governor Profile screenshot dropped there, read through the dock onto the sheet and undone, RTL and phone widths.
+- `node .dsh/governor-ocr-check.cjs` after a Jekyll build: every screenshot in `.dsh/governor-fixtures/` read against its `truth.json` (no confident misread, 95% or better right) and the Governor Gear screen turned away. `--signatures` prints the charm outlines behind `SEEN` in `js/governor-ocr.js`.
 
 Page copy is English in every language, like hero gear; navigation, the home card and the deck cover are translated into all 17.

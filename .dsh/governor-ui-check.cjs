@@ -109,8 +109,18 @@ withBrowser({ root }, async ({ browser, origin }) => {
     const context = await browser.newContext({ viewport: { width: 390, height: 900 } }), page = await context.newPage(), errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(origin + '/governor-gear/?lang=en'); await page.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
-    assert.equal(await page.locator('#governor-sheet [data-screen-import="pick"]').count(), 1, 'the sheet offers the dock');
-    await page.locator('#screen-import [data-target~="screen-import.files"]').setInputFiles(path.resolve('.dsh/governor-fixtures/profile-purple.png'));
+    // The page's own upload area: a pick opens the dock's file picker, a drop goes straight to the dock.
+    const drop = page.locator('.gov-left .gov-drop[data-screen-import="pick"][data-screen-import-drop]');
+    assert.equal(await drop.count(), 1, 'the governor page has its own way in for a screenshot');
+    const [chooser] = await Promise.all([page.waitForEvent('filechooser'), drop.click()]);
+    assert.ok(chooser.isMultiple(), 'the pick is the dock\'s own picker');
+    await page.keyboard.press('Escape');
+    const png = fs.readFileSync(path.resolve('.dsh/governor-fixtures/profile-purple.png')).toString('base64');
+    const dropped = await page.evaluateHandle(png => { const bytes = Uint8Array.from(atob(png), c => c.charCodeAt(0)), t = new DataTransfer(); t.items.add(new File([bytes], 'profile.png', { type: 'image/png' })); return t; }, png);
+    await drop.dispatchEvent('dragover', { dataTransfer: dropped });
+    assert.equal(await drop.getAttribute('data-dragging'), 'true', 'the area answers a drag');
+    await drop.dispatchEvent('drop', { dataTransfer: dropped });
+    assert.equal(await drop.getAttribute('data-dragging'), null);
     await page.waitForFunction(() => document.querySelectorAll('#screen-import .import-tile').length === 24, null, { timeout: 60000 });
     const tile = key => page.locator('#screen-import .import-tile[data-key="' + key + '"]');
     assert.equal(await page.locator('#screen-import [data-target="screen-import.screen"]').textContent(), 'Governor Profile');
@@ -144,5 +154,5 @@ withBrowser({ root }, async ({ browser, origin }) => {
   assert.equal(await page.locator('a.event-card[href="governor-gear/"]').count(), 1);
   assert.deepEqual(errors, []);
   await context.close();
-  console.log('Governor gear UI: the shared profile and its editor, set all, the answer by troop profile and target, no inner scroll, the sheet and its link, save as mine, start blank, reading a screenshot, RTL and widths pass.');
+  console.log('Governor gear UI: the shared profile and its editor, set all, the answer by troop profile and target, no inner scroll, the sheet and its link, save as mine, start blank, reading a dropped screenshot, RTL and widths pass.');
 }).catch(error => { console.error(error); process.exitCode = 1; });

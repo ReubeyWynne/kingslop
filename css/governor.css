@@ -35,6 +35,12 @@
 .gov-confirm p { margin: .6rem 0 0; }
 .gov-confirm-actions { display: flex; justify-content: flex-end; gap: 1rem; }
 
+/* The page's own way in for a screenshot; the shared import dock does the reading. */
+.gov-main .gov-drop { display: grid; gap: .15rem; width: 100%; margin: 0 0 .7rem; padding: .6rem .8rem; text-align: start; color: var(--ink-dim); border: 1px dashed var(--signal-line); background: transparent; }
+.gov-drop strong { color: var(--amber); font-weight: 600; }
+.gov-drop span { font-size: .85rem; }
+.gov-main .gov-drop:hover, .gov-main .gov-drop[data-dragging="true"] { color: var(--ink); border-color: var(--amber); border-bottom-color: var(--amber); background: var(--signal-tint); }
+
 /* Materials — one strip of icons, gear's three then charms' two. */
 .gov-bag { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .8rem; border-block: 1px solid var(--signal-line); padding: .6rem 0 .3rem; }
 .gov-main .gov-bag label { grid-template-columns: 2.5rem minmax(0, 1fr); column-gap: .6rem; row-gap: 0; align-items: center; }
