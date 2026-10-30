@@ -207,49 +207,83 @@
       });
     }
     function localTime(f) { var out = f.querySelector('.vv-local-time'), time = f.elements.time && f.elements.time.value; if (out) out.textContent = time ? localWhen('2026-01-01T' + time + ':00Z') + ' your time' : ''; }
+    // March editor: who each march goes to comes first; troops follow the split, and a tapped march opens to change its own.
     function assignmentEditor(playerId) {
       var p = state.roster.find(function (r) { return r.id === playerId; }); if (!p) return;
       modal(p.nickname, function (body) {
-        var top = el('div', 'vv-editor-top'); top.appendChild(counts(p)); var tools = el('span', 'vv-actions vv-tight'); tools.appendChild(button('Edit', 'editPlayer', { id: p.id }, 'vv-quiet')); tools.appendChild(button('Remove', 'removePlayer', { id: p.id }, 'vv-danger')); top.appendChild(tools); body.appendChild(top);
+        var top = el('div', 'vv-editor-top'); top.appendChild(counts(p)); top.appendChild(button('Edit', 'editPlayer', { id: p.id }, 'vv-quiet')); body.appendChild(top);
         var check = E.validate(state.roster, state.assignments, state.hq), incoming = check.incoming[p.id] || [];
         var cover = el('div', 'vv-cover-in'); cover.appendChild(el('span', 'vv-label', 'Covered by'));
         if (!incoming.length) cover.appendChild(el('span', 'vv-dim', 'nobody yet'));
         incoming.forEach(function (r) { cover.appendChild(button(name(r.playerId) + ' ' + kfmt(r.troops), 'assign', { id: r.playerId }, 'vv-quiet')); });
         body.appendChild(cover);
         var f = form(body, 'assignments'); f.dataset.id = p.id;
-        var rows = state.assignments[p.id] || E.split(p).rows, hq = E.hqRows(state.hq).find(function (r) { return r.playerId === p.id; });
-        var bar = el('div', 'vv-send-bar'), status = el('p', 'vv-send-status'); status.setAttribute('aria-live', 'polite'); bar.appendChild(status); f.appendChild(bar);
-        var targets = [['', 'Not sent']].concat(state.roster.filter(function (r) { return r.id !== p.id && r.attending !== false; }).map(function (r) { return [r.id, r.nickname + (r.attending ? '' : ' (not answered)')]; }));
+        var saved = state.assignments[p.id] || [], hq = E.hqRows(state.hq).find(function (r) { return r.playerId === p.id; });
+        // Each ally with the cover they already have from others, so the leader sends where it is missing.
+        var targets = [['', 'Not sent']].concat(state.roster.filter(function (r) { return r.id !== p.id && r.attending !== false; }).map(function (r) {
+          var cover = (check.incoming[r.id] || []).filter(function (c) { return c.playerId !== p.id; }).reduce(function (n, c) { return n + c.troops; }, 0);
+          return [r.id, r.nickname + (r.attending ? '' : ' (not answered)') + ' · ' + (cover ? kfmt(cover) + ' in' : 'no cover')];
+        }));
+        f.appendChild(el('p', 'vv-label vv-sends-label', 'Sends ' + p.marches + ' march' + (p.marches === 1 ? '' : 'es')));
         var list = el('div', 'vv-sends');
         for (var q = 1; q <= p.marches; q++) {
-          var row = rows.find(function (r) { return r.queue === q; }) || { queue: q, destination: null, infantry: 0, cavalry: 0, archers: 0 };
-          var box = el('div', 'vv-send'); box.dataset.queue = q;
-          var head = el('div', 'vv-send-head'), title = el('strong', '', 'March ' + q); head.appendChild(title);
-          if (hq && hq.queue === q) head.appendChild(el('span', 'vv-avail', 'HQ'));
-          head.appendChild(el('span', 'vv-send-cap')); box.appendChild(head);
+          var row = saved.find(function (r) { return r.queue === q; }) || { queue: q, destination: null }, sent = !!row.destination;
+          var box = el('div', 'vv-send'); box.dataset.queue = q; box.dataset.auto = String(!sent);
+          var toggle = button('', 'toggleMarch', { march: q }, 'vv-send-row'); toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-controls', 'vv-send-' + q);
+          var who = el('span', 'vv-send-who'); who.appendChild(el('span', 'vv-send-name')); who.appendChild(el('small', 'vv-send-mix'));
+          if (hq && hq.queue === q) who.appendChild(el('small', 'vv-send-hq', 'HQ in waves 10 and 20'));
+          toggle.append(el('span', 'vv-send-n', String(q)), who, el('span', 'vv-send-cap'));
+          box.appendChild(toggle);
+          var edit = el('div', 'vv-send-edit'); edit.id = 'vv-send-' + q; edit.hidden = true;
           var select = el('select'); select.name = 'destination-' + q; select.setAttribute('aria-label', 'March ' + q + ' goes to'); targets.forEach(function (o) { var opt = el('option', '', o[1]); opt.value = o[0]; select.appendChild(opt); });
           if (row.destination && !targets.some(function (t) { return t[0] === row.destination; })) { var gone = el('option', '', name(row.destination) + ' (out)'); gone.value = row.destination; select.appendChild(gone); }
-          select.value = row.destination || ''; box.appendChild(select);
+          select.value = row.destination || ''; edit.appendChild(select);
           TYPES.forEach(function (k) {
-            var label = el('label', 'vv-send-troop'), wrap = el('span', 'vv-k-input'), input = scaled(el('input'), row[k]); input.name = k + '-' + q; input.required = true; input.setAttribute('aria-label', 'March ' + q + ' ' + LABELS[k]);
-            label.appendChild(symbol(k)); wrap.appendChild(input); wrap.appendChild(el('span', 'vv-k-unit', 'k')); label.appendChild(wrap); box.appendChild(label);
+            var label = el('label', 'vv-send-troop'), wrap = el('span', 'vv-k-input'), input = scaled(el('input'), sent ? row[k] : 0); input.name = k + '-' + q; input.setAttribute('aria-label', 'March ' + q + ' ' + LABELS[k]);
+            label.appendChild(symbol(k)); wrap.appendChild(input); wrap.appendChild(el('span', 'vv-k-unit', 'k')); label.appendChild(wrap); edit.appendChild(label);
           });
-          var meter = el('span', 'vv-meter'); meter.setAttribute('aria-hidden', 'true'); meter.appendChild(el('span')); box.appendChild(meter);
-          list.appendChild(box);
+          var meter = el('span', 'vv-meter'); meter.setAttribute('aria-hidden', 'true'); meter.appendChild(el('span')); edit.appendChild(meter);
+          box.appendChild(edit); list.appendChild(box);
         }
         f.appendChild(list);
-        var a = foot(f); a.appendChild(button('Even split', 'fillMarches', { id: p.id })); submit(a, 'Save');
+        var a = foot(f); a.classList.add('vv-sends-foot');
+        var status = el('p', 'vv-send-status'); status.setAttribute('aria-live', 'polite'); a.appendChild(status);
+        a.appendChild(button('Even split', 'fillMarches', { id: p.id })); submit(a, 'Save');
         sends(f);
       });
     }
-    // Live totals while the leader types: each march against its size, and what stays home.
+    // Spread what is left after hand-set marches across the sent marches still on the split. Unsent marches carry nothing.
+    function balance(f) {
+      var p = state.roster.find(function (r) { return r.id === f.dataset.id; }); if (!p) return;
+      var left = {}, auto = []; TYPES.forEach(function (k) { left[k] = p[k]; });
+      f.querySelectorAll('.vv-send').forEach(function (box) {
+        var q = Number(box.dataset.queue);
+        if (!f.elements['destination-' + q].value) { TYPES.forEach(function (k) { f.elements[k + '-' + q].value = 0; }); box.dataset.auto = 'true'; return; }
+        if (box.dataset.auto === 'true') { auto.push(q); return; }
+        TYPES.forEach(function (k) { left[k] = Math.max(0, left[k] - fromK(f.elements[k + '-' + q].value || 0)); });
+      });
+      if (!auto.length) return;
+      var share = E.split(Object.assign({}, left, { marches: auto.length, marchCapacity: p.marchCapacity, capacities: auto.map(function (q) { return E.capacity(p, q); }) }));
+      share.rows.forEach(function (r, i) { TYPES.forEach(function (k) { f.elements[k + '-' + auto[i]].value = toK(r[k]); }); });
+    }
+    function toggleMarch(f, q, open) {
+      f.querySelectorAll('.vv-send').forEach(function (box) {
+        var mine = Number(box.dataset.queue) === q, show = mine && (open == null ? box.querySelector('.vv-send-edit').hidden : open);
+        box.querySelector('.vv-send-edit').hidden = !show; box.querySelector('.vv-send-row').setAttribute('aria-expanded', String(show)); box.dataset.open = String(show);
+      });
+    }
+    // Live totals while the leader types: each march against its size, and what stays home. Only sent marches count as out.
     function sends(f) {
       var p = state.roster.find(function (r) { return r.id === f.dataset.id; }); if (!p) return;
       var used = { infantry: 0, cavalry: 0, archers: 0 };
-      f.querySelectorAll('[data-queue]').forEach(function (box) {
-        var q = Number(box.dataset.queue), sum = 0, cap = E.capacity(p, q);
-        TYPES.forEach(function (k) { var v = f.elements[k + '-' + q].value, n = v === '' ? 0 : fromK(v); used[k] += n; sum += n; });
-        box.querySelector('.vv-send-cap').textContent = kfmt(sum) + ' / ' + kfmt(cap);
+      f.querySelectorAll('.vv-send').forEach(function (box) {
+        var q = Number(box.dataset.queue), sum = 0, cap = E.capacity(p, q), select = f.elements['destination-' + q], sent = !!select.value, row = {};
+        TYPES.forEach(function (k) { var v = f.elements[k + '-' + q].value, n = v === '' || !sent ? 0 : fromK(v); row[k] = n; used[k] += n; sum += n; });
+        box.dataset.sent = String(sent);
+        box.querySelector('.vv-send-name').textContent = sent ? name(select.value) : 'Not sent';
+        var mix = box.querySelector('.vv-send-mix'); mix.replaceChildren();
+        if (sent) TYPES.forEach(function (k, i) { if (i) mix.appendChild(document.createTextNode(' · ')); mix.appendChild(symbol(k)); mix.appendChild(document.createTextNode(' ' + toK(row[k]))); });
+        box.querySelector('.vv-send-cap').textContent = sent ? kfmt(sum) + ' / ' + kfmt(cap) : '+ Send';
         box.querySelector('.vv-meter span').style.width = (cap ? Math.min(100, sum / cap * 100) : 0) + '%';
         box.dataset.over = String(sum > cap);
       });
@@ -481,7 +515,7 @@
       }
       if (kind === 'assignments') {
         var rows = [];
-        f.querySelectorAll('[data-queue]').forEach(function (box) { var queue = Number(box.dataset.queue), row = { queue: queue, destination: f.elements['destination-' + queue].value || null }; TYPES.forEach(function (k) { row[k] = fromK(f.elements[k + '-' + queue].value); }); rows.push(row); });
+        f.querySelectorAll('[data-queue]').forEach(function (box) { var queue = Number(box.dataset.queue), row = { queue: queue, destination: f.elements['destination-' + queue].value || null }; TYPES.forEach(function (k) { row[k] = row.destination ? fromK(f.elements[k + '-' + queue].value) : 0; }); rows.push(row); });
         var check = E.validate(state.roster, { [f.dataset.id]: rows }, E.emptyHQ()); if (check.errors.length) throw new Error(check.errors[0]);
         if (state.example) { state.assignments[f.dataset.id] = rows; close(); render(); say('Saved.'); return; }
         await request('/v1/plans/' + state.plan.id + '/assignments/' + f.dataset.id, 'PUT', Object.assign(expected(), { marches: rows })); await load(); close(); say('Saved.'); return;
@@ -547,7 +581,7 @@
     }
     function home() { say(''); state = null; credential = null; selected = null; drop(SESSION, sessionStorage); close(); mode = 'my-plan'; render(); }
     async function attend(value) { var mine = me(); if (!mine) return; await savePlayer(mine, { attending: value }); say(value ? 'You’re in.' : 'Marked out.'); }
-    context.listen(one('dialog'), 'input', function (event) { var f = event.target.form; if (f && f.dataset.kind === 'room') localTime(f); if (f && f.dataset.kind === 'assignments') sends(f); });
+    context.listen(one('dialog'), 'input', function (event) { var f = event.target.form; if (f && f.dataset.kind === 'room') localTime(f); if (f && f.dataset.kind === 'assignments') { var box = event.target.closest('.vv-send'); if (event.target.tagName === 'SELECT') balance(f); else if (box) box.dataset.auto = 'false'; sends(f); } });
     context.listen(root, 'keydown', function (event) { var tabs = Array.from(root.querySelectorAll('[role=tab]')), at = tabs.indexOf(event.target); if (at < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return; event.preventDefault(); var to = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (at + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length; tabs[to].click(); tabs[to].focus(); });
     function schedule(delay) {
       clearTimeout(timer); timer = setTimeout(function () {
@@ -578,7 +612,8 @@
       imIn: action(function () { return attend(true); }),
       assign: action(function (node) { assignmentEditor(node.dataset.id); }),
       hq: action(hqEditor),
-      fillMarches: action(function (node) { var p = state.roster.find(function (r) { return r.id === node.dataset.id; }), f = one('dialogBody').querySelector('form'); E.split(p).rows.forEach(function (r) { TYPES.forEach(function (k) { f.elements[k + '-' + r.queue].value = toK(r[k]); }); }); sends(f); }),
+      fillMarches: action(function () { var f = one('dialogBody').querySelector('form'); f.querySelectorAll('.vv-send').forEach(function (box) { box.dataset.auto = 'true'; }); balance(f); sends(f); }),
+      toggleMarch: { run: function (node) { var f = node.form, q = Number(node.dataset.march); toggleMarch(f, q); var select = f.elements['destination-' + q]; if (!select.value && !select.closest('[hidden]')) { select.focus(); try { select.showPicker(); } catch (e) { /* not every browser opens a select from script */ } } } },
       selectPlayer: { run: function (node) { selected = node.dataset.id; personal(); tab('my-plan'); } },
       choosePlayer: { run: function () { selected = null; personal(); } },
       filter: { events: ['input'], run: function (node) { filter = node.value; pickList(one('pickList')); } },
