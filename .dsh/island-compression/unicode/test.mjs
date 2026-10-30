@@ -36,3 +36,9 @@ test('Reject invalid framing, unknown symbols, surrogates, malformed escaping an
   assert.throws(() => encodeTransport(new Uint8Array(MAX_BYTES + 1))); assert.throws(() => encodeTransport(new Uint8Array(), 'unknown'));
   assert.throws(() => decodeTransport('~' + '䯿'.repeat(MAX_UNITS)));
 });
+test('Compact IC/1 frames reconstruct exactly and reject every character mutation or truncation', () => {
+  const result = JSON.parse(fs.readFileSync(new URL('../results.json', import.meta.url))), fixture = result.reference.find(f => f.layout === 'kingshot-8902' && !f.nativeCompression), bytes = Uint8Array.from(Buffer.from(fixture.payload, 'base64url'));
+  const payload = encodeTransport(bytes, 'assigned-ic1'); assert.equal(payload[0], '='); assert.equal(payload.length + 14, 512); assert.deepEqual(decodeTransport(payload), bytes);
+  for (let i = 1; i < payload.length; i++) { const altered = payload.slice(0, i) + (payload[i] === '一' ? '丁' : '一') + payload.slice(i + 1); assert.throws(() => decodeTransport(altered)); assert.throws(() => decodeTransport(payload.slice(0, i))); }
+  const corrupt = bytes.slice(); corrupt[corrupt.length - 1] ^= 1; const fallback = encodeTransport(corrupt, 'assigned-ic1'); assert.equal(fallback[0], '$'); assert.deepEqual(decodeTransport(fallback), corrupt);
+});

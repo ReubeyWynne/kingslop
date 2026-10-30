@@ -1,0 +1,46 @@
+kingshot-8900 {
+  base64url: 118,
+  han14: 60,
+  east15: 57,
+  assigned: 55,
+  dense: 55,
+  'east15-ic1': 54,
+  'assigned-ic1': 53
+}
+kingshot-8901 {
+  base64url: 1334,
+  han14: 581,
+  east15: 544,
+  assigned: 522,
+  dense: 512,
+  'east15-ic1': 540,
+  'assigned-ic1': 519
+}
+kingshot-8902 {
+  base64url: 1316,
+  han14: 573,
+  east15: 536,
+  assigned: 515,
+  dense: 505,
+  'east15-ic1': 533,
+  'assigned-ic1': 512
+}
+kingshot-8903 {
+  base64url: 406,
+  han14: 184,
+  east15: 172,
+  assigned: 166,
+  dense: 163,
+  'east15-ic1': 169,
+  'assigned-ic1': 163
+}
+kingshot-8904 {
+  base64url: 436,
+  han14: 196,
+  east15: 184,
+  assigned: 177,
+  dense: 174,
+  'east15-ic1': 181,
+  'assigned-ic1': 174
+}
+Verified 147 transport/layout cases and their percent-encoded URL fragments.

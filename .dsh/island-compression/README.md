@@ -1,6 +1,6 @@
 # Island compression experiments
 
-[Read the report](../../docs/ISLAND-COMPRESSION.md), [complete measurements](COMPARISON.md) and [IC/1 format](FORMAT.md).
+[Unicode follow-up](../../docs/ISLAND-UNICODE-TRANSPORT.md) · [Read the original base64url report](../../docs/ISLAND-COMPRESSION.md), [complete measurements](COMPARISON.md) and [IC/1 format](FORMAT.md).
 
 This directory is isolated from the application and the research agent's files. It contains 18 structural encodings, seven compression choices, 21 benchmark layouts, a browser-native reference and automated tests. No npm install is needed. Comparative native compressors require Node 24 with Zstandard support.
 

@@ -1,0 +1,14 @@
+✔ All lengths, leading zero bytes and random bytes round trip (131.103756ms)
+✔ Frozen alphabets are unique BMP scalars and match their declared sizes (74.923944ms)
+✔ Every persisted layout survives transport and URL serialisation (793.392423ms)
+✔ Canonical decompositions can be repaired for the stable alphabets (2.471877ms)
+✔ Reject invalid framing, unknown symbols, surrogates, malformed escaping and oversized values (0.666792ms)
+✔ Compact IC/1 frames reconstruct exactly and reject every character mutation or truncation (245.320049ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1338.549885

@@ -7,10 +7,18 @@ const dir = new URL('.', import.meta.url), prior = JSON.parse(fs.readFileSync(ne
 const fixtures = prior.reference.filter(f => !f.nativeCompression && f.layout.startsWith('kingshot')).map(f => ({ name: f.layout, payload: f.payload, canonicalCrc: crc32(new TextEncoder().encode(JSON.stringify(decode(Buffer.from(f.payload, 'base64url'))))) }));
 const random = rng(940152), bytes = Uint8Array.from({ length: 931 }, () => Math.floor(random() * 256)); bytes.set([85, 84, 1]);
 const checksum = crc32(bytes.subarray(0, -4)); bytes.set([checksum >>> 24, checksum >>> 16 & 255, checksum >>> 8 & 255, checksum & 255], bytes.length - 4);
+const actual8901 = fixtures.find(f => f.name === 'kingshot-8901');
+const rootLink = 'dey.ci#' + encodeTransport(Uint8Array.from(Buffer.from(actual8901.payload, 'base64url')), 'assigned-ic1');
+if (rootLink.length !== 512) throw new Error('Expected exact-length root layout specimen');
+fs.writeFileSync(new URL('layout-8901-root.txt', dir), rootLink);
+const actual8902 = fixtures.find(f => f.name === 'kingshot-8902');
+const actualLink = 'dey.ci/island#' + encodeTransport(Uint8Array.from(Buffer.from(actual8902.payload, 'base64url')), 'assigned-ic1');
+if (actualLink.length !== 512) throw new Error('Expected exact-length complete layout specimen');
+fs.writeFileSync(new URL('layout-8902.txt', dir), actualLink);
 const sample = 'dey.ci/island#' + encodeTransport(bytes, 'east15');
 if (sample.length !== 512) throw new Error('Expected exact-length stress sample');
 fs.writeFileSync(new URL('paste-sample.txt', dir), sample);
-fs.writeFileSync(new URL('paste-samples.json', dir), JSON.stringify({ stress: { profile: 'east15', url: sample, utf16Units: sample.length, codePoints: [...sample].length, bytes: bytes.length, content: 'UT/1 diagnostic bytes with CRC-32, not an island layout', crc32: checksum.toString(16).padStart(8, '0') }, recovered: fixtures.flatMap(f => ['east15', 'assigned', 'dense'].map(profile => { const url = 'dey.ci/island#' + encodeTransport(Uint8Array.from(Buffer.from(f.payload, 'base64url')), profile); return { layout: f.name, profile, url, utf16Units: url.length }; })) }, null, 2) + '\n');
+fs.writeFileSync(new URL('paste-samples.json', dir), JSON.stringify({ stress: { profile: 'east15', url: sample, utf16Units: sample.length, codePoints: [...sample].length, bytes: bytes.length, content: 'UT/1 diagnostic bytes with CRC-32, not an island layout', crc32: checksum.toString(16).padStart(8, '0') }, recovered: fixtures.flatMap(f => ['east15', 'assigned', 'dense', 'east15-ic1', 'assigned-ic1'].map(profile => { const url = 'dey.ci/island#' + encodeTransport(Uint8Array.from(Buffer.from(f.payload, 'base64url')), profile); return { layout: f.name, profile, url, utf16Units: url.length }; })) }, null, 2) + '\n');
 const module = name => fs.readFileSync(new URL(name, dir), 'utf8').replace(/^import .+;\n/gm, '').replace(/^export /gm, '');
 const alphabet = fs.readFileSync(new URL('alphabets-v1.mjs', dir), 'utf8').replace(/^export default /, 'const catalogue = ');
 const bundle = ['../core.mjs', '../arithmetic.mjs', '../structural.mjs', '../lz.mjs', '../browser.mjs'].map(module).join('\n') + '\n' + alphabet + '\n' + module('transport.mjs');
@@ -37,7 +45,7 @@ document.querySelector('#run').addEventListener('click', async () => {
     report.stress = { units: sample.length, codePoints: [...sample].length, restored: decodeFragment(new URL('https://' + sample).hash).length === 931 };
   } catch (e) { report.failures.push(e.message); }
   document.querySelector('#result').textContent = JSON.stringify(report, null, 2);
-  document.querySelector('#status').textContent = report.failures.length ? 'FAIL' : 'PASS: 25 browser transport cases and five full binary re-encodes';
+  document.querySelector('#status').textContent = report.failures.length ? 'FAIL' : 'PASS: ' + report.rows.length + ' browser transport cases and five full binary re-encodes';
 });
 document.querySelector('#check').addEventListener('click', () => { const value = document.querySelector('#returned').value; document.querySelector('#comparison').textContent = value === sample ? 'Exact 512-unit match' : 'Mismatch: received ' + value.length + ' units'; });
 `;

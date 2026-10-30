@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-30",
+  "browser": "Chrome through the cloud browser connector",
+  "staticSpecimenCommit": "47bbe2ca896e566c31688c8399ecc2f57be381bb",
+  "staticSpecimensRead": 16,
+  "urlInspection": {
+    "scope": "URL constructor in the browser tool's read-only DOM scope, over text rendered from the static specimen JSON. Percent decoding and normalization comparisons ran in the control runtime. This does not claim full codec execution in a native browser page.",
+    "allFragmentTextRoundTrips": true,
+    "stressSerializedHttpsUrlUnits": 4496,
+    "layout8901DenseSerializedHttpsUrlUnits": 4466,
+    "layout8902DenseSerializedHttpsUrlUnits": 4391
+  },
+  "browserClipboard": {
+    "stressExact": true,
+    "utf16Units": 512,
+    "codePoints": 512,
+    "diagnosticCrc32": "eac6d773"
+  },
+  "standaloneProbeExecuted": false,
+  "standaloneProbeBlocker": "The browser URL policy disallowed data: navigation. No attempt was made to execute the blocked page through another surface. Testing continued with read-only static HTTPS specimens and the permitted clipboard API.",
+  "kingshotTested": false,
+  "pending": "Paste the supplied specimen into Kingshot, send it, copy the received message and verify the copied text with verify-paste.mjs."
+}
