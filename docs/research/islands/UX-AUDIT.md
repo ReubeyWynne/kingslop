@@ -2,6 +2,8 @@
 
 This is a research handoff, not a settled Kingslop design. Desktop interactions were inspected live at approximately 1363 × 936. Phone layout and touch gestures were not independently tested.
 
+The parallel [engineering proposal](../../ISLAND-EDITOR-ENGINEERING.md) now prioritises the spatial editor. Treat the task alternatives below as research context, not a request to reopen that decision or expand the first implementation into an upgrade planner.
+
 ## The first useful distinction
 
 The source answers several different questions in one workspace: how an island looks, where a piece fits, which decorative template to start from, and where community-mapped chests lie. It does not answer which island purchase or upgrade gives a player the most value. Decide which player task Kingslop should answer before choosing the default view.

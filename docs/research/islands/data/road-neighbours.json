@@ -1,0 +1,46 @@
+{
+  "source": "Public release bundle; aN6.bbs loops the eight offsets in this order and sets bit 1 << index.",
+  "verification": "Recovered source renderer convention; not independently compared with the game.",
+  "neighbours": [
+    {
+      "bit": 1,
+      "delta_row": 1,
+      "delta_col": -1
+    },
+    {
+      "bit": 2,
+      "delta_row": 1,
+      "delta_col": 0
+    },
+    {
+      "bit": 4,
+      "delta_row": 1,
+      "delta_col": 1
+    },
+    {
+      "bit": 8,
+      "delta_row": 0,
+      "delta_col": -1
+    },
+    {
+      "bit": 16,
+      "delta_row": 0,
+      "delta_col": 1
+    },
+    {
+      "bit": 32,
+      "delta_row": -1,
+      "delta_col": -1
+    },
+    {
+      "bit": 64,
+      "delta_row": -1,
+      "delta_col": 0
+    },
+    {
+      "bit": 128,
+      "delta_row": -1,
+      "delta_col": 1
+    }
+  ]
+}

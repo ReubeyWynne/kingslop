@@ -29,6 +29,13 @@ Updated 30 October 2026. Investigation in progress. This branch contains researc
 - Captured chest-route and generator screenshots, plus a contact sheet of 91 active catalogue entries with available icons.
 - Public share links require sign-in. Code sharing is offered without sign-in; a clipboard payload could not be recovered in this browser, so import/export interoperability is not verified.
 
+## Third checkpoint
+
+- Preserved the parallel editor engineering proposal while publishing the second checkpoint.
+- Recovered road neighbour bit offsets and source matching rules.
+- Important for the cactus-free editor: all five game-labelled maps use 3,600 cells of value 255 for an empty role-binding grid. This is not a legal-placement mask. No cactus-specific restriction was recovered.
+- The source importer discards effect limits, prosperity and gap flags from its live model. Do not assume the source enforces every field in its catalogue.
+
 ## Next work
 
 Finish supplementary-source checks, asset verification and retrieval helpers, Kingslop integration notes, and a concise handoff with the unresolved gameplay questions.
