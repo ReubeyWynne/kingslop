@@ -696,6 +696,7 @@
       "../css/heroes.css",
       "../css/masters.css",
       "../css/town.css",
+      "../css/governor-profile.css",
       "../css/next-step.css"
     ],
     "scripts": [
@@ -724,6 +725,7 @@
       "../js/master-directory.js",
       "../js/master-points.js",
       "../js/governor-view.js",
+      "../js/governor-profile.js",
       "../js/town-centre.js",
       "../js/upgrade-priority-data.js",
       "../js/upgrade-priority.js",
@@ -780,7 +782,7 @@
       "../css/styles.css",
       "../css/events.css",
       "../css/governor.css",
-      "../css/next-step.css"
+      "../css/governor-profile.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -792,13 +794,9 @@
       "../js/event-rules.js",
       "../js/governor-engine.js",
       "../js/governor-view.js",
-      "../js/governor-planner.js",
-      "../js/upgrade-priority-data.js",
-      "../js/building-data.js",
-      "../js/upgrade-priority.js",
-      "../js/upgrade-priority-words.js",
-      "../js/next-step.js",
-      "../js/empty-state.js"
+      "../js/governor-profile.js",
+      "../js/governor-sheet.js",
+      "../js/governor-planner.js"
     ],
     "footMainKey": "gov.kicker",
     "footMain": "the governor's wardrobe",

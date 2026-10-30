@@ -77,7 +77,7 @@ Every disclosure is addressable by its URL. A `#id` link opens the disclosure it
 | `<section data-collapse id="marches">` | `#marches` opens the section (common.js) |
 | `<div id="castle-combat" role="tabpanel">` with one `role="tab"` button controlling it | `#castle-combat` selects the tab |
 
-Two tools carry their state in the query string on purpose, because the address is the thing they share: Hero Gear's `?gear=` links and Building requirements' `?b=…&to=…` goal links (see `BUILDING-REQUIREMENTS.md`). Both read it once on load and rewrite it with `replaceState`, never `pushState`.
+Three tools carry their state in the query string on purpose, because the address is the thing they share: Hero Gear's `?gear=` links, Building requirements' `?b=…&to=…` goal links (see `BUILDING-REQUIREMENTS.md`) and the governor page's `?gov=` sheets (see `GOVERNOR-GEAR.md`). All three read it once on load and rewrite it with `replaceState`, never `pushState`.
 
 A panel controlled by several tabs has no link of its own; selecting one of its tabs clears a hash that still points into another panel of the same tablist, so a reload does not reopen the panel the reader left.
 
@@ -104,7 +104,7 @@ Interactions.configure({ ledger: function () { return selectedStore; } });
 
 Providers return the same store for every consumer. Configuration does not call the provider, and changing configuration while started throws to prevent mixed subscriptions. `destroy()` removes mounts but retains the page configuration; configure again before restarting if needed. Configuring `ledger: undefined` restores the default lookup.
 
-Hero Gear's `?guest` and shared `?gear=` links configure a memoized in-memory store before discovery. Its controller, ledger forms, save transfer and screenshot import use that store. Plain guest mode starts from a snapshot of saved facts when readable; a shared link starts with its own gear. Resource edits, confirmed imports, save-file imports and undo stay in that store. `PlayerLedger.shared()` is never replaced: consumers that deliberately need persistent kingdom facts can still access them independently.
+Hero Gear's `?guest` and shared `?gear=` links configure a memoized in-memory store before discovery. Its controller, ledger forms, save transfer and screenshot import use that store. Plain guest mode starts from a snapshot of saved facts when readable; a shared link starts with its own gear. Resource edits, confirmed imports, save-file imports and undo stay in that store. The governor page always runs on such a store, its sheet (`js/governor-sheet.js`); see `GOVERNOR-GEAR.md`. `PlayerLedger.shared()` is never replaced: consumers that deliberately need persistent kingdom facts can still access them independently.
 
 `BH.modules` exposes the same registry as `window.Interactions`. Register capabilities before boot or later:
 

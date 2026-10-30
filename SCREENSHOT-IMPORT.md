@@ -186,7 +186,8 @@ the current schema valid. Update PLAYER-LEDGER.md and
    whose proposals target the sheet's fields; switch the sim from fill-then-flag
    to review-before-apply.
 6. Later, not planned in detail: Backpack Gear tab (all hero gear in one
-   screen), Heroes roster (portrait matching and star counting), governor gear.
+   screen), Heroes roster (portrait matching and star counting).
+7. **Governor Profile** (`governor-profile`), done: see step 15.
 
 ## Steps
 
@@ -296,6 +297,38 @@ Each step lands as its own commit with its checks passing.
   `#screenshot-import` and `#screenshot-help` open the dock too. Checked by
   `.dsh/screen-import-recipe-check.cjs` (no OCR; records are seeded into the
   save).
+
+- [x] 15. `governor-profile` adapter (`js/import-adapters/governor.js`, reading
+  in `js/governor-ocr.js`). The profile shows levels as pictures, so nothing
+  is read as words. The reader trims the shot to the game (emulator frames,
+  status bars, crops), scales it to 720px wide and searches the fixed card
+  layout (three rows, mirrored sides) against the site's gear art
+  (`img/governor`). `probe` runs that search alone on the dock's 360px shot
+  (`GovernorOCR.find`, gear art only, so it answers with a promise and the
+  core's `probe` waits for it); `read` then takes each card's tier from the
+  whole card, its grade from the gold T badge, its stars by counting gold
+  star blobs, and each charm by troop hue, outline (as the game draws levels
+  1–6, `SEEN`, else the art), look and measured size; a grey socket is no
+  charm. Levels 1 and 5 share an outline at this size, so a close call
+  between them is always flagged. Confidence is calibrated so a right
+  reading lands at or above `DOUBT`. Proposals are `target: 'sheet'`,
+  `sheet: 'governor'`, ids `gov-cav-1` (gear, `unit: 'governor-gear'`, the
+  adapter's `note` names the level as the game does) and `gov-cav-1-2` (a
+  charm), each with its card or charm as the cut-out, in the `pieces`
+  layout (card then its three charms, a piece to a line). The governor
+  page's sheet (`js/governor-sheet.js`) answers `screen-import:sheet`, so a
+  profile never touches the save; elsewhere it waits
+  (`import.openGovernor`). The page also has its own upload area: any
+  `[data-screen-import-drop]` takes dropped files straight to the dock. The
+  dock loads `governor-data.js`, `governor-ocr.js` and the adapter lazily
+  with the rest. Checked by `.dsh/governor-ocr-check.cjs` (every fixture in
+  `.dsh/governor-fixtures/` against its `truth.json`: no confident misread,
+  95% or better right, the Governor Gear screen turned away),
+  `.dsh/governor-ui-check.cjs` (a drop through the dock onto the sheet) and
+  the contract in `.dsh/screen-import-check.cjs`. The fixtures are alliance
+  members' profiles, player panels blanked: purple, blue, gold T1/T2,
+  charms up to level 6, phones, an emulator and a cropped shot. Red cards
+  and charms above 6 still need screenshots.
 
 Resources are saved as both Items and In Stock (owner, 18 Oct).
 

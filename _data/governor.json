@@ -18,6 +18,12 @@
   {"id": "charm-design", "label": "Charm Design", "key": "gov.item.design"}
  ],
  "troops": ["inf", "cav", "arc"],
+ "profiles": {
+  "bear": {"inf": 0.33, "cav": 0.4, "arc": 1},
+  "defence": {"inf": 1, "cav": 0.5, "arc": 0.7},
+  "even": {"inf": 1, "cav": 1, "arc": 1}
+ },
+ "profilesNote": "Troop weights on each step's stat gain. bear: low and mid spenders, after the Bear Hunt page's 5 / 15 / 80 formation, softened to about three to one so infantry and cavalry still move. defence: turret and garrison holders. even: everything levelled. The score profile ranks by governor score instead and has no weights.",
  "gear": {
   "unlock": 22,
   "materials": ["satin", "gilded-threads", "artisans-vision"],

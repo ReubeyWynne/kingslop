@@ -54,16 +54,20 @@
 
   // Some screens are known by their pixels before any reading: an adapter
   // with probe(pixels) → 0..1 claims a shot outright, and the dock skips the
-  // whole-screen read (pixels: the shot at 360px wide, ImageData-like).
+  // whole-screen read (pixels: the shot at 360px wide, ImageData-like). A probe
+  // that needs art first may answer with a promise; then so does this.
   function probe(pixels) {
-    var best = null, score = 0.5;
-    adapters.forEach(function (a) {
-      if (typeof a.probe !== 'function') return;
-      var s = 0;
-      try { s = Number(a.probe(pixels)) || 0; } catch (e) { s = 0; }
-      if (s > score) { best = a; score = s; }
+    var scores = adapters.map(function (a) {
+      if (typeof a.probe !== 'function') return 0;
+      try { return a.probe(pixels); } catch (e) { return 0; }
     });
-    return best ? { adapter: best, score: score } : null;
+    function best(list) {
+      var top = null, score = 0.5;
+      list.forEach(function (s, i) { s = Number(s) || 0; if (s > score) { top = adapters[i]; score = s; } });
+      return top ? { adapter: top, score: score } : null;
+    }
+    if (!scores.some(function (s) { return s && typeof s.then === 'function'; })) return best(scores);
+    return Promise.all(scores.map(function (s) { return Promise.resolve(s).catch(function () { return 0; }); })).then(best);
   }
 
   // The bounds of a row's words, padded a little, as the cut-out for review.

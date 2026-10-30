@@ -13,7 +13,6 @@ const EmptyState = require('../js/empty-state.js');
 const TOOLS = {
   'town-centre': { needs: 'inventory', key: 'empty.town', line: "Count what's in your bag to see the event points it can score.", import: true, fill: '#town-bag', section: '#town-points' },
   'hero-gear': { needs: 'hero-gear', key: 'empty.heroGear', line: 'Add your hero gear to see your KvK points.', import: true, fill: '../town-centre/#town-hero-gear', section: '#gear-planner' },
-  'governor-gear': { needs: 'governor', key: 'empty.governor', line: 'Add your governor gear to see what to upgrade next.', import: false, fill: '../town-centre/#town-governor', section: '#governor-planner' },
   heroes: { needs: 'heroes', key: 'empty.heroes', line: 'Add your heroes to see your KvK points.', import: false, fill: '../town-centre/#town-heroes', section: '#kvk-points' },
   masters: { needs: 'masters', key: 'empty.masters', line: 'Add your masters to see your KvK points.', import: false, fill: '../town-centre/#town-masters', section: '#kvk-points' },
   pets: { needs: 'pets', key: 'empty.pets', line: 'Tame your pets to plan their Advances.', import: true, fill: '#cage', section: '#advances' }
@@ -95,7 +94,6 @@ withBrowser({ root }, async ({ browser, origin }) => {
       Object.keys(gear.pieces).forEach(k => { gear.pieces[k] = window.HeroGear.normalisePiece({ quality: 'mythic', level: 100, mastery: 10 }); });
       store.writeHeroGear(gear, window.HeroGear, { all: true });
     },
-    'governor-gear': () => window.PlayerLedger.shared().setGovernor('gear', { 'inf-1': 0 }),
     heroes: () => window.PlayerLedger.shared().setHero('jabel', { level: 60, stars: 10, widget: 2, skills: null }),
     masters: () => window.PlayerLedger.shared().setMaster('valora', { affinity: 29, ready: true, skills: [3, 2, 0, 0] }),
     pets: () => window.PlayerLedger.shared().setPet('lion', { level: 20, advanced: false })
@@ -110,11 +108,6 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.waitForTimeout(150);
     assert.equal(await note().isVisible(), false, dir + ' stays hidden once recorded');
   }
-  // Clearing the governor brings its note back.
-  await open('governor-gear');
-  await page.evaluate(() => window.PlayerLedger.shared().resetGovernor());
-  await page.waitForFunction(() => !document.querySelector('.empty-state').hidden);
-
   // Guest mode works on a copy of the save, so the note is not about it.
   await page.evaluate(() => localStorage.clear());
   await page.goto(origin + '/hero-gear/?guest&lang=en');
