@@ -124,9 +124,14 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     const names = ['Rowan', 'Ash'];
     for (let i = 0; i < 2; i++) {
       await L.locator('.vv-rows .vv-row', { hasText: names[i] }).first().click();
-      const d = dialog(L); await d.getByRole('button', { name: 'Even split' }).click();
-      assert.equal(await d.locator('[name=infantry-1]').inputValue(), '45');
-      await d.locator('[name=destination-1]').selectOption({ label: names[1 - i] });
+      const d = dialog(L), first = d.locator('[aria-controls=vv-send-1]');
+      assert.equal(await d.locator('[name=infantry-1]').inputValue(), '0', 'an unsent march carries no troops');
+      await first.click(); assert.equal(await first.getAttribute('aria-expanded'), 'true');
+      await d.locator('[name=destination-1]').selectOption({ value: await d.locator('[name=destination-1] option', { hasText: names[1 - i] }).getAttribute('value') });
+      assert.equal(await d.locator('[name=infantry-1]').inputValue(), '90', 'a sent march takes the split across sent marches');
+      await d.locator('[name=cavalry-1]').fill('30'); await d.getByRole('button', { name: 'Even split' }).click();
+      assert.equal(await d.locator('[name=cavalry-1]').inputValue(), '60', 'Even split resets a hand-set march');
+      assert.match(await d.locator('.vv-send-status').textContent(), /^150k out · 120k home/);
       await d.getByRole('button', { name: 'Save', exact: true }).click(); await d.waitFor({ state: 'hidden' });
     }
     await L.screenshot({ path: path.join(out, 'leader-390.png'), fullPage: true });
