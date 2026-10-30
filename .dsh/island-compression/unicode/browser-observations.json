@@ -19,5 +19,17 @@
   "standaloneProbeExecuted": false,
   "standaloneProbeBlocker": "The browser URL policy disallowed data: navigation. No attempt was made to execute the blocked page through another surface. Testing continued with read-only static HTTPS specimens and the permitted clipboard API.",
   "kingshotTested": false,
-  "pending": "Paste the supplied specimen into Kingshot, send it, copy the received message and verify the copied text with verify-paste.mjs."
+  "pending": "Paste the supplied specimen into Kingshot, send it, copy the received message and verify the copied text with verify-paste.mjs.",
+  "completeIslandClipboard": {
+    "layout": "kingshot-8901",
+    "sourceCommit": "af5238a76a7d328ce770b5324895c004fd53e9f1",
+    "exact": true,
+    "utf16Units": 512,
+    "codePoints": 512,
+    "nfcUnchanged": true,
+    "nfkcUnchanged": true,
+    "locallyVerifiedOriginalWireBytes": 990,
+    "pieces": 1237,
+    "surfaces": 1655
+  }
 }
