@@ -22,7 +22,10 @@
     ['import-adapters/pets.js', function () { return window.ScreenImport.get('pet-list'); }],
     ['hero-gear-ocr.js', function () { return window.HeroGearOCR; }],
     ['import-adapters/hero-gear.js', function () { return window.ScreenImport.get('hero-gear'); }],
-    ['import-adapters/battle-report.js', function () { return window.ScreenImport.get('battle-report'); }]
+    ['import-adapters/battle-report.js', function () { return window.ScreenImport.get('battle-report'); }],
+    ['governor-data.js', function () { return window.GovernorData; }],
+    ['governor-ocr.js', function () { return window.GovernorOCR; }],
+    ['import-adapters/governor.js', function () { return window.ScreenImport.get('governor-profile'); }]
   ];
   var here = document.currentScript && document.currentScript.src;
 
@@ -316,10 +319,13 @@
     }
 
     // ── review ─────────────────────────────────────────
-    var SCREENS = { 'overview-resources': ['import.screen.resources', 'Overview · Resources'], 'overview-speedups': ['import.screen.speedups', 'Overview · Speedups'], 'backpack-items': ['import.screen.backpack', 'Backpack items'], 'pet-list': ['import.screen.pets', 'Pet List'], 'hero-gear': ['import.screen.gear', 'Hero gear'], 'battle-report': ['import.screen.battle', 'Battle report'] };
+    var SCREENS = { 'overview-resources': ['import.screen.resources', 'Overview · Resources'], 'overview-speedups': ['import.screen.speedups', 'Overview · Speedups'], 'backpack-items': ['import.screen.backpack', 'Backpack items'], 'pet-list': ['import.screen.pets', 'Pet List'], 'hero-gear': ['import.screen.gear', 'Hero gear'], 'battle-report': ['import.screen.battle', 'Battle report'], 'governor-profile': ['import.screen.governor', 'Governor Profile'] };
     var QUALITY = { epic: ['import.quality.epic', 'epic'], mythic: ['import.quality.mythic', 'mythic'], red: ['import.quality.red', 'red'] };
 
-    function note(p, value) {
+    function note(p, value, entry) {
+      var S = window.ScreenImport, own = S && entry && S.get(entry.adapter);
+      var said = own && own.note ? own.note(p, value, function (key, fallback) { return tr(key, fallback); }) : null;
+      if (said !== null && said !== undefined) return said;
       if (p.unit === 'minutes') return tr('import.minutesNote', 'minutes{d}', { d: value === null || value === undefined ? '' : ' · ' + duration(value) });
       if (p.unit === 'level') return tr('import.levelNote', 'level');
       if (p.side) return (p.side === 'you' ? tr('import.side.you', 'you') : tr('import.side.foe', 'opponent')) + (p.unit === 'percent' ? ' · %' : '');
@@ -378,7 +384,7 @@
         input.inputMode = places(p.step) || p.min < 0 ? 'decimal' : 'numeric';
         if (document.activeElement !== input) input.value = shown(value, p.step);
         boxValue(input, tr('import.badNumber', 'Enter a number this box can take.'));
-        field(li, 'note').textContent = note(p, value);
+        field(li, 'note').textContent = note(p, value, entry);
         field(li, 'include').checked = included(entry, p);
         var later = newer(entry, p);
         if (later) field(li, 'note').textContent = tr('import.newer', 'a newer shot reads {v}', { v: shown(valueOf(later, later.proposals.filter(function (q) { return q.id === p.id; })[0]), p.step) });
@@ -505,15 +511,20 @@
       })[0] || null;
     }
 
-    // A page's own sheet (the battle simulator's Bonus Details) takes a shot's
-    // values when it is open: it marks itself [data-screen-import-sheet] and
+    // A page's own sheet (the battle simulator's Bonus Details, the governor
+    // page's sheet) takes a shot's values when it is open: it marks itself [data-screen-import-sheet] and
     // answers 'screen-import:sheet' { values, before } by writing the values
     // and filling `before` with what they replaced. Nothing reaches the
     // player save.
+    var OPEN = {
+      'battle-report': ['import.openSheet', 'Open the battle simulator to apply this report. It waits here until then.'],
+      governor: ['import.openGovernor', 'Open the governor gear page to apply this profile. It waits here until then.']
+    };
+    function openSheet(name) { var say = OPEN[name] || OPEN['battle-report']; status(tr(say[0], say[1])); }
     function sheetHost(name) { return document.querySelector('[data-screen-import-sheet~="' + name + '"]'); }
     function applySheet(entry) {
       var name = entry.proposals[0].sheet, host = sheetHost(name), values = {}, n = 0;
-      if (!host) { status(tr('import.openSheet', 'Open the battle simulator to apply this report. It waits here until then.')); return; }
+      if (!host) { openSheet(name); return; }
       entry.proposals.forEach(function (p) {
         var value = valueOf(entry, p);
         if (!included(entry, p) || value === null || !isFinite(value)) return;
@@ -597,7 +608,7 @@
     function undo() {
       if (lastApply && lastApply.sheet) {
         var host = sheetHost(lastApply.sheet);
-        if (!host) { status(tr('import.openSheet', 'Open the battle simulator to apply this report. It waits here until then.')); return; }
+        if (!host) { openSheet(lastApply.sheet); return; }
         host.dispatchEvent(new CustomEvent('screen-import:sheet', { bubbles: true, detail: { values: lastApply.before, before: {} } }));
         status(tr('import.undone', 'Undone. {name} can be applied again.', { name: lastApply.name }));
         lastApply = null;

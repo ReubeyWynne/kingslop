@@ -82,6 +82,24 @@
     return found;
   }
 
+  /* How much a screen looks like a Governor Profile, 0–1, from the cards alone: three rows,
+     the left and right card of a row mirror each other, the middle row sits further out,
+     all cards one size and the rows evenly spaced. Cheap enough to ask of every screenshot. */
+  function looks(image, found) {
+    found = found || cards(image);
+    var ids = LEFT.concat(RIGHT), W = image.width;
+    if (ids.some(function (id) { return !found[id]; })) return 0;
+    var seen = ids.filter(function (id) { return !found[id].guessed; }).length;
+    if (seen < 4) return 0;
+    var sizes = ids.map(function (id) { return found[id].x1 - found[id].x0; }), size = sizes.slice().sort(function (a, b) { return a - b; })[2];
+    if (sizes.some(function (n) { return Math.abs(n - size) > size * 0.15; })) return 0;
+    for (var r = 0; r < 3; r++) if (Math.abs(found[LEFT[r]].x0 - (W - found[RIGHT[r]].x1)) > W * 0.03) return 0;
+    if (!(found['inf-1'].x0 < found['cav-1'].x0 - size * 0.2 && found['inf-1'].x0 < found['arc-1'].x0 - size * 0.2)) return 0;
+    var gapA = found['inf-1'].y0 - found['cav-1'].y0, gapB = found['arc-1'].y0 - found['inf-1'].y0;
+    if (gapA < size || Math.abs(gapA - gapB) > size * 0.3) return 0;
+    return seen === 6 ? 0.95 : 0.9;
+  }
+
   // A region scaled to n×n RGB, averaging the pixels that fall in each cell.
   function sample(image, box, n, alpha) {
     var out = new Float32Array(n * n * 4), w = (box.x1 - box.x0) / n, h = (box.y1 - box.y0) / n;
@@ -171,6 +189,11 @@
     var h = hues[Math.floor(hues.length / 2)];
     return Object.keys(GEMS).find(function (t) { return h >= GEMS[t][0] && h <= GEMS[t][1]; }) || null;
   }
+  function grey(image, box) {
+    var sum = 0, n = 0;
+    for (var y = box.y0; y < box.y1; y++) for (var x = box.x0; x < box.x1; x++) { var p = px(image, x, y); sum += hsv(p[0], p[1], p[2]).s; n++; }
+    return n > 0 && sum / n < 0.15;
+  }
   /* The three charms under a card: the three biggest marks that are not backdrop, left to
      right. Each carries the backdrop just around it, which a glow or the screen's darker
      edges shift, for laying the templates over. */
@@ -206,9 +229,12 @@
     });
     return { prepared: true, gear: gear, charms: charms };
   }
-  /* A reading is sure (near 1) when its match is close and clearly ahead of the runner-up,
-     and doubtful near 0; a card placed opposite its partner counts for less. `found` is the
-     cards seen: under six means this is likely not a Governor Profile. */
+  /* A reading is sure when its match is close and clearly ahead of the runner-up. Raw margins
+     run 0–1 with right readings from about 0.45; they are scaled so that point lands on the
+     import dock's doubt line (0.75), and a card placed opposite its partner counts for less.
+     `found` is the cards seen rather than placed. */
+  var SURE = 0.45, DOUBT = 0.75;
+  function calibrate(raw) { return Math.round(Math.min(1, Math.max(0, raw) * DOUBT / SURE) * 100) / 100; }
   function read(image, templates) {
     var prepared = prepare(templates), found = cards(image), result = { gear: {}, charms: {}, found: Object.keys(found).filter(function (id) { return !found[id].guessed; }).length };
     LEFT.concat(RIGHT).forEach(function (id) {
@@ -225,20 +251,22 @@
       var gradeSure = grades[1] ? Math.min(1, (grades[1].d - grades[0].d) / 0.04) : 1;
       var confidence = Math.max(0, Math.min(tierSure, gradeSure)) * (card.guessed ? 0.8 : 1);
       if (level === null) confidence = 0;
-      result.gear[id] = { level: level, tier: tier, grade: grades[0].grade, stars: starCount, confidence: Math.round(confidence * 100) / 100, box: card };
+      result.gear[id] = { level: level, tier: tier, grade: grades[0].grade, stars: starCount, confidence: calibrate(confidence), box: card };
       var marks = gems(image, card);
       [1, 2, 3].forEach(function (c) {
         var mark = marks[c - 1], key = id + '-' + c;
         if (!mark) { result.charms[key] = { level: null, confidence: 0, box: null }; return; }
+        var colour = troopOf(image, mark);
+        // An empty socket is a grey triangle: no colour at all.
+        if (colour === null && grey(image, mark)) { result.charms[key] = { level: 0, confidence: 0.8, troop: null, box: mark }; return; }
         // Outline and look together: outlines alone repeat across levels, looks blur at this size.
-        var shape = shapeOf(image, mark, function (p) { return mark.test(p[0], p[1], p[2]); }), colour = troopOf(image, mark);
-        var seenLook = sample(image, mark, LOOK, false), scored = prepared.charms[troop].map(function (t) { var d = look(seenLook, t.art, mark.ground); return { level: t.level, d: d, score: overlap(shape, t.shape) - 2 * d }; }).sort(function (a, b) { return b.score - a.score; });
+        var shape = shapeOf(image, mark, function (p) { return mark.test(p[0], p[1], p[2]); }), seenLook = sample(image, mark, LOOK, false), scored = prepared.charms[troop].map(function (t) { var d = look(seenLook, t.art, mark.ground); return { level: t.level, d: d, score: overlap(shape, t.shape) - 2 * d }; }).sort(function (a, b) { return b.score - a.score; });
         var top = scored[0], second = scored[1], sure = Math.max(0, Math.min(1, (1 - top.d / 0.2) * Math.min(1, (top.score - second.score) / 0.08)));
         if (colour !== troop) sure = Math.min(sure, 0.3);
-        result.charms[key] = { level: top.level, confidence: Math.round(sure * 100) / 100, troop: colour, box: mark };
+        result.charms[key] = { level: top.level, confidence: calibrate(sure), troop: colour, box: mark };
       });
     });
     return result;
   }
-  return { read: read, prepare: prepare, cards: cards, LEFT: LEFT, RIGHT: RIGHT };
+  return { read: read, prepare: prepare, cards: cards, looks: looks, LEFT: LEFT, RIGHT: RIGHT };
 });

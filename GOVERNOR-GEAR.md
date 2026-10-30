@@ -37,11 +37,11 @@ Set bonuses appear in only one table and are not modelled.
 
 ## Sheet and links
 
-The page never edits the player's save. `js/governor-sheet.js` configures a memoized in-memory store before discovery, as Hero Gear's guest mode does, and every module on the page (planner, materials, screenshot import) uses it. The sheet starts from the link when there is one, else from a copy of the save.
+The page never edits the player's save. `js/governor-sheet.js` configures a memoized in-memory store before discovery, as Hero Gear's guest mode does, and every module on the page (profile, planner, materials, the import dock) uses it. The sheet starts from the link when there is one, else from a copy of the save.
 
 `Governor.encodeLink(sheet)` and `Governor.readLink(search)` carry a sheet in the address: `gov=` is 24 characters, one per gear piece then one per charm in table order (`0`–`9`, `a`–`z`, `A`–`Z` for the level, `.` for not set); `bag=` holds the five materials in table order joined by `.` (blank is not counted); `p`, `gt` and `ct` carry the troop profile and targets only when they differ from the defaults. A link that cannot be read falls back to the copy of the save and says so. In-game chat takes 512 UTF-16 units; the fullest possible sheet is 143 characters with `https://dey.ci`, and `governor-check` keeps it under 160 so later additions still leave room.
 
-Whenever the sheet differs from the save, every edit rewrites the address with `replaceState`, so the address is always the share link; when it matches, the address is clean. The strip above the materials says which it is (a shared sheet, your save, a blank sheet, or changed on this page only) and offers copy link, start blank, load mine and save as mine. Save as mine asks first, then replaces the governor levels and choices in the save; a material the sheet has not counted keeps the saved number. The page carries no next-step note and no empty state, since both are about the save.
+Whenever the sheet differs from the save, every edit rewrites the address with `replaceState`, so the address is always the share link; when it matches, the address is clean. The strip above the materials says which it is (a shared sheet, your save, a blank sheet, or changed on this page only) and offers copy link, start blank, load mine, save as mine and read a screenshot. Save as mine asks first, then replaces the governor levels and choices in the save; a material the sheet has not counted keeps the saved number. The page carries no next-step note and no empty state, since both are about the save.
 
 ## Page
 
@@ -49,6 +49,8 @@ One column on a phone, two on a wide screen, no tabs between the gear and the an
 
 - **The governor** is `_includes/governor/profile.html` with `js/governor-profile.js` and `css/governor-profile.css`, the same component the Town Centre's Governor shelf uses: the in-game arrangement (hat, armour and ring on the left; amulet, trousers and staff on the right; gear and charm score between), each piece as its card with stars, its level, and three charms drawn with the game's charm art, where shape is the level and colour the troop (green infantry, blue cavalry, yellow archer), the level number small beside each. Tapping a piece opens one editor for the piece and its charms. "All gear" and "All charms" sit right under the board and apply as soon as a level is picked. The module writes whatever store the page gives it: the sheet here, the save on the Town Centre.
 - **The answer** asks one of two questions. "With what I have" spends the bag by the chosen troop profile; "Cost to reach" prices a gear and a charm target for every piece or one troop. Either way it shows each piece once, gear from → to and each charm from → to (pieces that do not move are dimmed), then one bill: what it spends and leaves, or what it needs and what is still short, the governor score gained and roughly what that is worth on the best event day for gear and for charms. There is no step queue.
+
+- **Read a screenshot** opens the site's import dock. A Governor Profile screenshot (pasted anywhere, or picked) is known by its cards and read by matching this page's own art: each card's tier, grade badge and stars, and each charm's outline and look against its troop's 22 charms. The dock shows each card and charm cut out beside the level read, flags the unsure ones, and on apply writes the sheet, never the save; undo puts the sheet back. See step 15 of [SCREENSHOT-IMPORT.md](SCREENSHOT-IMPORT.md).
 
 Art is game artwork listed in [img/governor/SOURCES.md](img/governor/SOURCES.md); each gear card is the zero-star art for its tier and grade, and the stars are drawn on it.
 
@@ -59,6 +61,6 @@ Saved levels live in `governorGear.pieces` and `governorCharms.slots` of the sha
 ## Checks
 
 - `node .dsh/governor-check.cjs`: table shape and totals, plans and troop profiles, targets, event rates, sheet links, ledger validation, dictionaries and that every card and gem image exists.
-- `node .dsh/governor-ui-check.cjs` after a Jekyll build: the shared profile and its editor, charm art, set all, the answer under Bear first and Even, cost to reach for one troop, no inner scroll, the sheet in the address, a visitor opening the link, save as mine, start blank, load mine, an unreadable link, RTL and phone widths.
+- `node .dsh/governor-ui-check.cjs` after a Jekyll build: the shared profile and its editor, charm art, set all, the answer under Bear first and Even, cost to reach for one troop, no inner scroll, the sheet in the address, a visitor opening the link, save as mine, start blank, load mine, an unreadable link, a Governor Profile screenshot read through the dock onto the sheet and undone, RTL and phone widths.
 
 Page copy is English in every language, like hero gear; navigation, the home card and the deck cover are translated into all 17.

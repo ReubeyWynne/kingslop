@@ -1,7 +1,7 @@
 /* The governor page works on its own sheet, never on the player's save: an in-memory store
    that starts from the link when there is one, else from a copy of the save. The address
    carries the sheet whenever it differs from the save, so it can be shared as it stands, and
-   only "Save as mine" writes the save. */
+   only "Save as mine" writes the save. A screenshot read by the import dock lands here too. */
 (function () {
   'use strict';
   var G = window.Governor, Ledger = window.PlayerLedger;
@@ -74,6 +74,20 @@
     }
     context.cleanup(store.subscribe(render));
     try { context.cleanup(Ledger.shared().subscribe(render)); } catch (ignored) {}
+    /* A Governor Profile read by the import dock (js/import-adapters/governor.js) lands here,
+       on the sheet: values keyed 'gov-cav-1' (gear) and 'gov-cav-1-2' (a charm). `before`
+       gets what each held, so the dock can undo. */
+    context.listen(context.root, 'screen-import:sheet', function (event) {
+      var values = event.detail.values, before = event.detail.before, now = { gear: store.governor('gear'), charms: store.governor('charms') }, change = { gear: {}, charms: {} };
+      Object.keys(values).forEach(function (key) {
+        var m = /^gov-([a-z]+-\d)(?:-(\d))?$/.exec(key), value = values[key];
+        if (!m) return;
+        var kind = m[2] ? 'charms' : 'gear', id = m[2] ? m[1] + '-' + m[2] : m[1];
+        before[key] = now[kind][id];
+        change[kind][id] = value === null || value === '' ? null : Number(value);
+      });
+      ['gear', 'charms'].forEach(function (kind) { if (Object.keys(change[kind]).length) store.setGovernor(kind, change[kind]); });
+    });
     function copy(button) {
       var url = shareURL(sheetOf(store)), field = context.targets('link')[0], label = button.dataset.label || button.textContent;
       button.dataset.label = label;

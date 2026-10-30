@@ -176,6 +176,10 @@ jobs:
               - .dsh/governor-fixtures/**
               - governor-gear/**
               - js/governor-*
+              - js/screen-import*.js
+              - js/import-adapters/governor.js
+              - css/screen-import.css
+              - _includes/screen-import.html
               - js/event-data.liquid
               - _data/governor.json
               - _data/event_rules.json
@@ -348,6 +352,7 @@ jobs:
               - js/import-*.js
               - js/import-adapters/**
               - js/hero-gear-ocr.js
+              - js/governor-ocr.js
               - css/screen-import.css
               - img/screen-import/**
               - town-centre/**

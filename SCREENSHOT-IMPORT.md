@@ -186,7 +186,8 @@ the current schema valid. Update PLAYER-LEDGER.md and
    whose proposals target the sheet's fields; switch the sim from fill-then-flag
    to review-before-apply.
 6. Later, not planned in detail: Backpack Gear tab (all hero gear in one
-   screen), Heroes roster (portrait matching and star counting), governor gear.
+   screen), Heroes roster (portrait matching and star counting).
+7. **Governor Profile** (`governor-profile`), done: see step 15.
 
 ## Steps
 
@@ -296,6 +297,29 @@ Each step lands as its own commit with its checks passing.
   `#screenshot-import` and `#screenshot-help` open the dock too. Checked by
   `.dsh/screen-import-recipe-check.cjs` (no OCR; records are seeded into the
   save).
+
+- [x] 15. `governor-profile` adapter (`js/import-adapters/governor.js`, reading
+  in `js/governor-ocr.js`). The profile shows levels as pictures, so nothing
+  is read as words: `probe` claims a shot from its cards alone
+  (`GovernorOCR.looks`: three rows, mirrored sides, the middle row further
+  out, one card size, even spacing), and `read` matches the site's own art
+  (`img/governor`) at up to 1080px wide: each card's tier by the whole card,
+  its grade by the T1/T2 badge, its stars counted; each charm by outline and
+  look against the troop's 22 charms, a grey socket as no charm. A card that
+  merges with the governor's cape is placed opposite its partner. Confidence
+  is calibrated so a right reading lands at or above `DOUBT`. Proposals are
+  `target: 'sheet'`, `sheet: 'governor'`, ids `gov-cav-1` (gear, `unit:
+  'governor-gear'`, the adapter's `note` names the level as the game does)
+  and `gov-cav-1-2` (a charm), each with its card or charm as the cut-out,
+  in the `pieces` layout (card then its three charms, a piece to a line).
+  The governor page's sheet (`js/governor-sheet.js`) answers
+  `screen-import:sheet`, so a profile never touches the save; elsewhere it
+  waits (`import.openGovernor`). The dock loads `governor-data.js`,
+  `governor-ocr.js` and the adapter lazily with the rest. Checked by
+  `.dsh/governor-ui-check.cjs` against `.dsh/governor-fixtures/` (the owner's
+  alliance member's profile, player panel blanked) and the contract in
+  `.dsh/screen-import-check.cjs`. One fixture so far, all purple: gold and
+  red cards, higher charms and other phone shapes need screenshots.
 
 Resources are saved as both Items and In Stock (owner, 18 Oct).
 
