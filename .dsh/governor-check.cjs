@@ -42,12 +42,21 @@ for (const id of Object.keys(bag)) { assert.equal(plan.spent[id] + plan.left[id]
 assert.equal(plan.profile, 'bear');
 assert.deepEqual(plan.steps.map(s => s.id), ['arc-1', 'cav-1', 'cav-2', 'inf-1', 'inf-2', 'arc-1', 'arc-1']);
 assert.equal(plan.levels['arc-1'], 3); assert.equal(plan.levels['inf-1'], 1);
-const even = G.plan('gear', gear, bag, { profile: 'even' });
+const even = G.plan('gear', gear, bag, { profile: 'custom', weights: '1:1:1' });
 assert.deepEqual(even.steps.slice(0, 5).map(s => s.id), ['inf-1', 'inf-2', 'cav-1', 'cav-2', 'arc-1']);
+assert.deepEqual(G.plan('gear', gear, bag, { profile: 'even' }).steps, even.steps, 'an older save\'s even reads as a custom 1:1:1');
 assert.equal(G.plan('gear', gear, bag, { profile: 'defence' }).steps[0].troop, 'inf');
+assert.equal(G.plan('gear', gear, bag, { profile: 'offence' }).steps[0].troop, 'inf');
+// Ratios are the owner's: offence 50:20:30, defence 50:30:20; a custom troop at 0 never moves.
+assert.deepEqual(G.ratio({ profile: 'offence' }), { inf: 50, cav: 20, arc: 30 });
+assert.deepEqual(G.ratio({ profile: 'defence' }), { inf: 50, cav: 30, arc: 20 });
+assert.deepEqual(G.ratio({ profile: 'custom', weights: '60:40:0' }), { inf: 60, cav: 40, arc: 0 });
+assert.equal(G.ratio({ profile: 'score' }), null);
+const meta = G.plan('gear', gear, { satin: 1e6, 'gilded-threads': 1e4, 'artisans-vision': 1e3 }, { profile: 'custom', weights: '50:0:50', limit: 200 });
+assert.ok(meta.steps.length > 0 && meta.steps.every(s => s.troop !== 'cav'), 'a troop at 0 is left where it is');
 assert.equal(G.plan('gear', gear, bag, { goal: 'score' }).profile, 'score', 'an older goal of score reads as the score profile');
 assert.throws(() => G.plan('gear', gear, bag, { profile: 'whale' }));
-assert.deepEqual(G.profiles(), ['bear', 'defence', 'even', 'score']);
+assert.deepEqual(G.profiles(), ['bear', 'offence', 'defence', 'score', 'custom']);
 assert.equal(plan.score, plan.steps.reduce((sum, step) => sum + step.score, 0));
 assert.deepEqual(G.plan('gear', gear, bag, { focus: 'cav' }).steps.map(s => s.troop).filter(t => t !== 'cav'), []);
 assert.equal(G.plan('gear', gear, { satin: 0, 'gilded-threads': 0, 'artisans-vision': 0 }).steps.length, 0);
@@ -101,16 +110,20 @@ store.setGovernorPreference('goal', 'score');
 store.setGovernorPreference('gearTarget', 30);
 assert.throws(() => store.setGovernorPreference('goal', 'luck'));
 assert.throws(() => store.setGovernorPreference('charmTarget', 23));
+store.setGovernorPreference('weights', '60:40:0');
+for (const bad of ['60:40', '60:40:0:0', '1000:0:0', 60]) assert.throws(() => store.setGovernorPreference('weights', bad), String(bad));
 const saved = store.exportJSON(), copy = Ledger.create(storage());
 copy.importJSON(saved);
 assert.equal(copy.governor('gear')['inf-1'], 12);
 assert.equal(copy.snapshot().preferences.governor.goal, 'score');
+assert.equal(copy.snapshot().preferences.governor.weights, '60:40:0');
 for (const mutate of [
   d => { d.governorGear.pieces['inf-1'].level = 70; },
   d => { d.governorGear.pieces['inf-1'].extra = 1; },
   d => { delete d.governorGear.provenance['inf-1']; },
   d => { d.governorCharms.status = 'unsupported'; },
-  d => { d.preferences.governor.focus = 'mage'; }
+  d => { d.preferences.governor.focus = 'mage'; },
+  d => { d.preferences.governor.weights = '60:40'; }
 ]) { const bad = JSON.parse(saved); mutate(bad); assert.throws(() => copy.importJSON(bad)); }
 store.setBalance('satin', 500);
 store.resetGovernor();
@@ -128,13 +141,17 @@ assert.deepEqual(back.bag, { satin: 400000, 'gilded-threads': 0, 'artisans-visio
 assert.deepEqual(back.prefs, { profile: 'score', charmTarget: 8 });
 assert.equal(G.encodeLink({ gear: {}, charms: {}, prefs: { goal: 'score' } }).p, 'score', 'an older saved goal of score carries over');
 assert.equal(G.encodeLink({ gear: {}, charms: {}, prefs: { profile: 'bear' } }).p, undefined, 'the default profile stays out of the link');
+assert.deepEqual(G.encodeLink({ gear: {}, charms: {}, prefs: { profile: 'custom', weights: '60:40:0' } }), { gov: '.'.repeat(24), p: 'custom', w: '60.40.0' }, 'a custom ratio travels as w');
+assert.equal(G.encodeLink({ gear: {}, charms: {}, prefs: { profile: 'offence', weights: '60:40:0' } }).w, undefined, 'a preset leaves the custom ratio behind');
+assert.deepEqual(G.readLink('?gov=' + '.'.repeat(24) + '&p=custom&w=50.0.50').prefs, { profile: 'custom', weights: '50:0:50' });
+assert.deepEqual(G.readLink('?gov=' + '.'.repeat(24) + '&p=even').prefs, { profile: 'custom', weights: '1:1:1' }, 'an older even link still opens');
 assert.deepEqual(G.encodeLink(back), encoded, 'a link reads back to itself');
 assert.equal(G.readLink('?lang=en'), null);
-for (const bad of ['?gov=short', '?gov=' + 'X'.repeat(24), '?gov=' + '.'.repeat(6) + 'n' + '.'.repeat(17), '?gov=' + '.'.repeat(24) + '&bag=1.2', '?gov=' + '.'.repeat(24) + '&bag=1000000001....', '?gov=' + '.'.repeat(24) + '&p=whale', '?gov=' + '.'.repeat(24) + '&gt=59'])
+for (const bad of ['?gov=short', '?gov=' + 'X'.repeat(24), '?gov=' + '.'.repeat(6) + 'n' + '.'.repeat(17), '?gov=' + '.'.repeat(24) + '&bag=1.2', '?gov=' + '.'.repeat(24) + '&bag=1000000001....', '?gov=' + '.'.repeat(24) + '&p=whale', '?gov=' + '.'.repeat(24) + '&w=50.20', '?gov=' + '.'.repeat(24) + '&w=1000.0.0', '?gov=' + '.'.repeat(24) + '&gt=59'])
   assert.deepEqual(G.readLink(bad), { invalid: true }, bad);
 
 // In-game chat takes 512 UTF-16 units (measured by the owner), so a full sheet's link must fit with room to spare.
-const fullest = G.encodeLink({ gear: Object.fromEntries(G.items('gear').map(i => [i.id, 57])), charms: Object.fromEntries(G.items('charms').map(i => [i.id, 21])), bag: Object.fromEntries(G.data.materials.map(m => [m.id, 1e9])), prefs: { profile: 'defence', gearTarget: 57, charmTarget: 21 } });
+const fullest = G.encodeLink({ gear: Object.fromEntries(G.items('gear').map(i => [i.id, 57])), charms: Object.fromEntries(G.items('charms').map(i => [i.id, 21])), bag: Object.fromEntries(G.data.materials.map(m => [m.id, 1e9])), prefs: { profile: 'custom', weights: '100:100:100', gearTarget: 57, charmTarget: 21 } });
 const fullestURL = 'https://dey.ci/governor-gear/?' + new URLSearchParams(fullest).toString();
 assert.ok(fullestURL.length <= 160, 'a full sheet link stays short: ' + fullestURL.length);
 

@@ -49,7 +49,10 @@ self: governor
 
         <div class="gov-mode" data-target="governor-planner.spendPanel">
           <div class="gov-chips" role="group" aria-labelledby="gov-profile-label"><span id="gov-profile-label" data-i18n="gov.priority">Priority</span>
-            {% assign profiles = "bear,defence,even,score" | split: "," %}{% for name in profiles %}<button type="button" aria-pressed="false" data-action="governor-planner.profile" data-value="{{ name }}" data-i18n="gov.profile.{{ name }}">{% case name %}{% when "bear" %}Bear first{% when "defence" %}Defence{% when "even" %}Even{% else %}Event score{% endcase %}</button>{% endfor %}
+            {% assign profiles = "bear,offence,defence,score,custom" | split: "," %}{% for name in profiles %}<button type="button" aria-pressed="false" data-action="governor-planner.profile" data-value="{{ name }}" data-i18n="gov.profile.{{ name }}">{% case name %}{% when "bear" %}Bear first{% when "offence" %}Offence{% when "defence" %}Defence{% when "custom" %}Custom{% else %}Event score{% endcase %}</button>{% endfor %}
+          </div>
+          <div class="gov-ratio" role="group" aria-labelledby="gov-ratio-label" data-target="governor-planner.ratio"><span id="gov-ratio-label" data-i18n="gov.ratio">Troop ratio</span>
+            {% assign ratio = "inf,cav,arc" | split: "," %}{% for troop in ratio %}{% unless forloop.first %}<span aria-hidden="true">:</span>{% endunless %}<label><span data-i18n="gear.{{ troop }}">{% case troop %}{% when "inf" %}Infantry{% when "cav" %}Cavalry{% else %}Archer{% endcase %}</span><input type="number" min="0" max="100" step="1" inputmode="numeric" data-troop="{{ troop }}" data-action="governor-planner.ratio"></label>{% endfor %}
           </div>
           <p class="gov-gloss" data-target="governor-planner.profileNote"></p>
         </div>

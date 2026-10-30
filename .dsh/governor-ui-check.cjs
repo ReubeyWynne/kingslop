@@ -48,8 +48,21 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.match(await target('events').textContent(), /Gear on Alliance Brawl day 5: about [\d,]+ points/);
     assert.equal(await page.locator('[data-target="governor-planner.bill"] > div').count(), 5);
     assert.equal(await page.locator('.gov-result').evaluate(n => getComputedStyle(n).overflowY), 'visible', 'no box that scrolls');
-    await page.click('[data-action="governor-planner.profile"][data-value="even"]');
-    await page.waitForFunction(() => /[?&]p=even/.test(location.search));
+    // Every preset shows its ratio; typing one makes it the custom ratio, which travels in the link.
+    const ratio = () => page.locator('[data-action="governor-planner.ratio"]').evaluateAll(nodes => nodes.map(n => n.dataset.troop + ' ' + n.value));
+    assert.deepEqual(await ratio(), ['inf 19', 'cav 23', 'arc 58']);
+    await page.click('[data-action="governor-planner.profile"][data-value="offence"]');
+    await page.waitForFunction(() => /[?&]p=offence/.test(location.search));
+    assert.deepEqual(await ratio(), ['inf 50', 'cav 20', 'arc 30']);
+    await page.fill('[data-action="governor-planner.ratio"][data-troop="cav"]', '0');
+    await page.locator('[data-action="governor-planner.ratio"][data-troop="cav"]').dispatchEvent('change');
+    await page.waitForFunction(() => /[?&]p=custom&w=50\.0\.30/.test(location.search));
+    assert.equal(await page.locator('[data-action="governor-planner.profile"][data-value="custom"]').getAttribute('aria-pressed'), 'true');
+    assert.deepEqual(await page.locator('.gov-row[data-moved="true"]').evaluateAll(rows => rows.map(r => r.dataset.item).filter(id => /^cav/.test(id))), [], 'a troop at 0 stays where it is');
+    await page.click('[data-action="governor-planner.profile"][data-value="score"]');
+    assert.equal(await target('ratio').isHidden(), true, 'event score has no ratio');
+    await page.click('[data-action="governor-planner.profile"][data-value="custom"]');
+    assert.deepEqual(await ratio(), ['inf 50', 'cav 0', 'arc 30'], 'the custom ratio is kept');
     await page.click('[role="tab"][data-value="reach"]');
     await target('reachTroop').selectOption('arc');
     await target('gearTarget').selectOption('4');
@@ -64,7 +77,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await tile('inf-1').getAttribute('data-state'), 'empty');
     assert.equal(await tile('arc-2').getAttribute('data-state'), 'unset');
     assert.equal(await tile('cav-2').getAttribute('data-state'), 'empty');
-    assert.equal(await page.locator('[data-action="governor-planner.profile"][data-value="even"]').getAttribute('aria-pressed'), 'true');
+    assert.equal(await page.locator('[data-action="governor-planner.profile"][data-value="custom"]').getAttribute('aria-pressed'), 'true');
     assert.equal(await page.locator('[data-bind="inventory.satin"]').inputValue(), '20000');
     const other = await context.newPage(); await other.goto(origin + '/hero-gear/?lang=en');
     await other.locator('#gear-mithril').fill('7');
@@ -95,7 +108,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
     const visitor = await browser.newContext({ viewport: { width, height: 900 } }), guest = await visitor.newPage();
     await guest.goto(shared); await guest.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
     assert.equal(await guest.locator('.gov-piece[data-gov="cav-2"]').getAttribute('data-state'), 'empty');
-    assert.equal(await guest.locator('[data-action="governor-planner.profile"][data-value="even"]').getAttribute('aria-pressed'), 'true', 'the profile travels in the link');
+    assert.equal(await guest.locator('[data-action="governor-planner.profile"][data-value="custom"]').getAttribute('aria-pressed'), 'true', 'the profile travels in the link');
+    assert.equal(await guest.locator('[data-action="governor-planner.ratio"][data-troop="cav"]').inputValue(), '0', 'and its ratio');
     assert.equal(await guest.locator('[data-bind="inventory.satin"]').inputValue(), '20000');
     assert.equal(await guest.evaluate(() => PlayerLedger.shared().governor('gear')['cav-2']), null);
     await guest.goto(origin + '/governor-gear/?lang=en&gov=nonsense'); await guest.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
@@ -154,5 +168,5 @@ withBrowser({ root }, async ({ browser, origin }) => {
   assert.equal(await page.locator('a.event-card[href="governor-gear/"]').count(), 1);
   assert.deepEqual(errors, []);
   await context.close();
-  console.log('Governor gear UI: the shared profile and its editor, set all, the answer by troop profile and target, no inner scroll, the sheet and its link, save as mine, start blank, reading a dropped screenshot, RTL and widths pass.');
+  console.log('Governor gear UI: the shared profile and its editor, set all, the answer by troop ratio (presets and custom) and target, no inner scroll, the sheet and its link, save as mine, start blank, reading a dropped screenshot, RTL and widths pass.');
 }).catch(error => { console.error(error); process.exitCode = 1; });

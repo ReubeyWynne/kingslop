@@ -19,11 +19,11 @@
  ],
  "troops": ["inf", "cav", "arc"],
  "profiles": {
-  "bear": {"inf": 0.33, "cav": 0.4, "arc": 1},
-  "defence": {"inf": 1, "cav": 0.5, "arc": 0.7},
-  "even": {"inf": 1, "cav": 1, "arc": 1}
+  "bear": {"inf": 19, "cav": 23, "arc": 58},
+  "offence": {"inf": 50, "cav": 20, "arc": 30},
+  "defence": {"inf": 50, "cav": 30, "arc": 20}
  },
- "profilesNote": "Troop weights on each step's stat gain. bear: low and mid spenders, after the Bear Hunt page's 5 / 15 / 80 formation, softened to about three to one so infantry and cavalry still move. defence: turret and garrison holders. even: everything levelled. The score profile ranks by governor score instead and has no weights.",
+ "profilesNote": "Troop ratios, infantry : cavalry : archers, weighing each step's stat gain. offence and defence: the usual attacking and defending troop ratios (owner, 30 Oct). bear: archers first without leaving infantry and cavalry far behind (owner: fine as it is). A hero meta shifts these (60:40:0 defence, 50:0:50 attack), so the page also takes a custom ratio. The score profile ranks by governor score instead and has no ratio.",
  "gear": {
   "unlock": 22,
   "materials": ["satin", "gilded-threads", "artisans-vision"],

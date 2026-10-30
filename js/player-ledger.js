@@ -40,7 +40,7 @@
   /* Pets you have tamed: level (1–100, null for unread) and whether the Advance at that level is done
      (only at levels 10, 20 … 100, where the level cap breaks). The skill level is the number of Advances. */
   var PET = { fields: ['level', 'advanced'], level: 100 };
-  var GOVERNOR_PREFS = { goal: ['stats', 'score'], focus: ['all', 'inf', 'cav', 'arc'], profile: ['bear', 'defence', 'even', 'score'], gearTarget: 58, charmTarget: 22 };
+  var GOVERNOR_PREFS = { goal: ['stats', 'score'], focus: ['all', 'inf', 'cav', 'arc'], profile: ['bear', 'offence', 'defence', 'custom', 'score', 'even'], weights: /^\d{1,3}:\d{1,3}:\d{1,3}$/, gearTarget: 58, charmTarget: 22 };
   // Training facts: the Bonus Overview training speed (%) without temporary buffs, troops per batch in one camp, and the highest tier each camp trains.
   var TRAINING = ['speed', 'capacity', 'inf', 'cav', 'arc'];
   /* Training plans: the capacity buff, the castle position you hold (Noble Advisor or Chief
@@ -213,7 +213,7 @@
     if (value.preferences.governor !== undefined) {
       var gov = value.preferences.governor;
       valid(object(gov) && Object.keys(gov).every(function (key) { return Object.hasOwn(GOVERNOR_PREFS, key); }));
-      Object.keys(gov).forEach(function (key) { var rule = GOVERNOR_PREFS[key]; valid(Array.isArray(rule) ? rule.includes(gov[key]) : count(gov[key]) && gov[key] <= rule); });
+      Object.keys(gov).forEach(function (key) { var rule = GOVERNOR_PREFS[key]; valid(Array.isArray(rule) ? rule.includes(gov[key]) : rule instanceof RegExp ? typeof gov[key] === 'string' && rule.test(gov[key]) : count(gov[key]) && gov[key] <= rule); });
     }
     if (value.preferences.buildings !== undefined) {
       var order = value.preferences.buildings;

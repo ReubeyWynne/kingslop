@@ -20,16 +20,17 @@ Set bonuses appear in only one table and are not modelled.
 `js/governor-engine.js` is pure and runs under Node for checks. Levels are indices: 0 is not crafted (or no charm), and index n is the nth table row.
 
 - **plan:** one step at a time, the affordable next level with the most gain for the share of the starting bag it uses. Gain is the stat rise weighted by the troop profile, or the governor score rise for the score profile. Ties go to the heavier troop, then the lower level, then table order. Gear and charms use different materials, so they are planned separately. Unset pieces are left out, never treated as zero.
-- **Troop profiles** (`profiles` in `_data/governor.json`), Bear first by default:
+- **Troop profiles** (`profiles` in `_data/governor.json`) are troop ratios, infantry : cavalry : archers, that weigh each step's stat gain. Bear first by default:
 
-  | Profile | Infantry | Cavalry | Archer | For |
-  | --- | --- | --- | --- | --- |
-  | `bear` | 0.33 | 0.4 | 1 | low and mid spenders: Bear Hunt every two days pays back in hammers, and their defensive role is joining turrets |
-  | `defence` | 1 | 0.5 | 0.7 | turret and garrison holders |
-  | `even` | 1 | 1 | 1 | levelling everything |
-  | `score` | — | — | — | the most governor score, for an event day |
+  | Profile | Ratio | For |
+  | --- | --- | --- |
+  | `bear` | 19 : 23 : 58 | low and mid spenders: Bear Hunt every two days pays back in hammers. Archers first without leaving infantry and cavalry far behind (owner, 30 Oct: fine as it is) |
+  | `offence` | 50 : 20 : 30 | the usual attacking troop ratio (owner, 30 Oct) |
+  | `defence` | 50 : 30 : 20 | the usual defending troop ratio (owner, 30 Oct) |
+  | `custom` | the player's | a hero meta shifts the ratio (Margot and Alcar allow 60 : 40 : 0 on defence and down to 50 : 0 : 50 on attack); a troop at 0 never moves |
+  | `score` | — | the most governor score, for an event day |
 
-  The bear weights follow the Bear Hunt page's 5 / 15 / 80 formation, softened to about three to one so infantry and cavalry still move. An older save's `goal: 'score'` reads as the score profile; without one, the planner used no weights and infantry won every tie because it is first in the table.
+  The page shows the ratio of whichever preset is chosen, and typing into it makes it the custom ratio (preference `weights`, `"50:20:30"`; `w=50.20.30` in a link). An older save's `goal: 'score'` reads as the score profile, and an older `even` as a custom 1 : 1 : 1.
 - **toTarget:** materials to bring every set piece, or one troop's (`{ troop }`), to a level, the levels that reaches, and what is still missing from known balances.
 - **events:** event days in `_data/event_rules.json` that score "Governor Gear/Charm max score +1", with the score gain multiplied by that day's rate. These are estimates.
 
@@ -61,7 +62,7 @@ Saved levels live in `governorGear.pieces` and `governorCharms.slots` of the sha
 ## Checks
 
 - `node .dsh/governor-check.cjs`: table shape and totals, plans and troop profiles, targets, event rates, sheet links, ledger validation, dictionaries and that every card and gem image exists.
-- `node .dsh/governor-ui-check.cjs` after a Jekyll build: the shared profile and its editor, charm art, set all, the answer under Bear first and Even, cost to reach for one troop, no inner scroll, the sheet in the address, a visitor opening the link, save as mine, start blank, load mine, an unreadable link, the page's own upload area, a Governor Profile screenshot dropped there, read through the dock onto the sheet and undone, RTL and phone widths.
+- `node .dsh/governor-ui-check.cjs` after a Jekyll build: the shared profile and its editor, charm art, set all, the answer under Bear first, Offence and a custom ratio with a troop at 0, cost to reach for one troop, no inner scroll, the sheet in the address, a visitor opening the link, save as mine, start blank, load mine, an unreadable link, the page's own upload area, a Governor Profile screenshot dropped there, read through the dock onto the sheet and undone, RTL and phone widths.
 - `node .dsh/governor-ocr-check.cjs` after a Jekyll build: every screenshot in `.dsh/governor-fixtures/` read against its `truth.json` (no confident misread, 95% or better right) and the Governor Gear screen turned away. `--signatures` prints the charm outlines behind `SEEN` in `js/governor-ocr.js`.
 
 Page copy is English in every language, like hero gear; navigation, the home card and the deck cover are translated into all 17.

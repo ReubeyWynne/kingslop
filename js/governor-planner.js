@@ -7,9 +7,10 @@
   'use strict';
   var EN = {
     'slot.hat': 'Hat', 'slot.amulet': 'Amulet', 'slot.armour': 'Armour', 'slot.trousers': 'Trousers', 'slot.ring': 'Ring', 'slot.staff': 'Staff',
-    'profileNote.bear': 'Archers first. Bear Hunt runs every two days and pays back in hammers, so for most players it is the best return.',
-    'profileNote.defence': 'Infantry first, for players who hold turrets and garrisons.',
-    'profileNote.even': 'Every troop counts the same.',
+    'profileNote.bear': 'Archers first, without leaving infantry and cavalry far behind. Bear Hunt runs every two days and pays back in hammers.',
+    'profileNote.offence': 'The usual attacking troop ratio.',
+    'profileNote.defence': 'The usual defending troop ratio, for turrets and garrisons.',
+    'profileNote.custom': 'Your own ratio, for when a hero meta shifts it (60:40:0 on defence, 50:0:50 on attack). A troop at 0 stays where it is.',
     'profileNote.score': 'The most governor score for the materials, for an event day.',
     billSpend: 'Spends', billReach: 'Needs', spendLeft: '{n} left', needShort: '{n} short', needEnough: 'enough', needUnknown: 'not counted',
     stays: 'stays', notSet: 'not set', scoreGain: '+{n} governor score', scoreNone: 'No published score for one of these levels.',
@@ -34,7 +35,9 @@
     function piece(id) { return G.data.gear.pieces.find(function (p) { return p.id === id; }); }
     function prefs() {
       var saved = store.snapshot().preferences.governor || {};
-      return Object.assign(G.prefDefaults(), saved.goal === 'score' ? { profile: 'score' } : {}, saved);
+      var out = Object.assign(G.prefDefaults(), saved.goal === 'score' ? { profile: 'score' } : {}, saved);
+      if (out.profile === 'even') { out.profile = 'custom'; out.weights = out.weights || '1:1:1'; }
+      return out;
     }
     function bag() {
       var snapshot = store.snapshot(), out = {}, unknown = false;
@@ -78,7 +81,7 @@
       ['gear', 'charms'].forEach(function (kind) {
         var state = kind === 'gear' ? gear : charms;
         if (mode === 'spend') {
-          var plan = G.plan(kind, state, materials.amounts, { profile: options.profile, limit: 1000 });
+          var plan = G.plan(kind, state, materials.amounts, { profile: options.profile, weights: options.weights, limit: 1000 });
           result[kind] = { from: state, to: plan.levels, cost: plan.spent, score: plan.score, steps: plan.steps.length, unverified: plan.steps.some(function (s) { return !s.verified; }) };
         } else {
           var target = G.toTarget(kind, state, kind === 'gear' ? options.gearTarget : options.charmTarget, materials.amounts, { troop: reachTroop });
@@ -113,6 +116,10 @@
       context.targets('reachPanel').forEach(function (node) { node.hidden = mode !== 'reach'; });
       context.nodes('[data-action="governor-planner.profile"]').forEach(function (button) { button.setAttribute('aria-pressed', String(button.dataset.value === options.profile)); });
       put('profileNote', t('profileNote.' + options.profile));
+      // The ratio behind every preset is on show; typing one makes it the custom ratio.
+      var ratio = G.ratio(options);
+      context.targets('ratio').forEach(function (node) { node.hidden = !ratio; });
+      context.nodes('[data-action="governor-planner.ratio"]').forEach(function (input) { if (ratio && document.activeElement !== input) input.value = String(ratio[input.dataset.troop]); });
       ['gearTarget', 'charmTarget'].forEach(function (key) { context.targets(key).forEach(function (select) { select.value = String(options[key]); }); });
       context.targets('reachTroop').forEach(function (select) { select.value = reachTroop; });
       root.dataset.mode = mode;
@@ -127,7 +134,16 @@
     context.cleanup(store.subscribe(render));
     function write(fn) { try { fn(); } catch (cause) { render(); throw cause; } }
     return { refresh: function () { labelOptions(); render(); }, actions: {
-      profile: { run: function (button) { write(function () { store.setGovernorPreference('profile', button.dataset.value); }); } },
+      profile: { run: function (button) {
+        // Custom starts from the ratio on show, so a tweak is one number away.
+        var now = prefs(), seed = button.dataset.value === 'custom' && now.profile !== 'custom' && G.ratio(now);
+        write(function () { if (seed) store.setGovernorPreference('weights', [seed.inf, seed.cav, seed.arc].join(':')); store.setGovernorPreference('profile', button.dataset.value); });
+      } },
+      ratio: { events: ['change'], run: function (input) {
+        var ratio = G.ratio(prefs()) || { inf: 1, cav: 1, arc: 1 }, n = Math.round(Number(input.value));
+        ratio[input.dataset.troop] = Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : ratio[input.dataset.troop];
+        write(function () { store.setGovernorPreference('weights', [ratio.inf, ratio.cav, ratio.arc].join(':')); store.setGovernorPreference('profile', 'custom'); });
+      } },
       option: { events: ['change'], run: function (select) { write(function () { store.setGovernorPreference(select.dataset.option, Number(select.value)); }); } },
       reachTroop: { events: ['change'], run: function (select) { reachTroop = select.value; render(); } }
     } };
