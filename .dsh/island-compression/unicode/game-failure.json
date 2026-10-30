@@ -1,0 +1,325 @@
+{
+  "reportedContext": "User returned the supplied specimen and attributes changes to game chat. The exact transformation stage was not independently isolated.",
+  "profile": "assigned-ic1",
+  "originalLayout": "kingshot-8901",
+  "originalUtf16Units": 512,
+  "returnedUtf16Units": 506,
+  "exactTextRoundTrip": false,
+  "decodable": false,
+  "observedChanges": [
+    {
+      "kind": "replace",
+      "originalStart": 13,
+      "originalEnd": 15,
+      "returnedStart": 13,
+      "returnedEnd": 17,
+      "original": "邧濑",
+      "returned": "駧ase"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 16,
+      "originalEnd": 17,
+      "returnedStart": 18,
+      "returnedEnd": 22,
+      "original": "漲",
+      "returned": "rise"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 23,
+      "originalEnd": 25,
+      "returnedStart": 28,
+      "returnedEnd": 35,
+      "original": "欬没",
+      "returned": " cough无"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 31,
+      "originalEnd": 32,
+      "returnedStart": 41,
+      "returnedEnd": 42,
+      "original": "驦",
+      "returned": "馦"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 33,
+      "originalEnd": 35,
+      "returnedStart": 43,
+      "returnedEnd": 45,
+      "original": "皽罚",
+      "returned": "簽法"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 36,
+      "originalEnd": 37,
+      "returnedStart": 46,
+      "returnedEnd": 47,
+      "original": "䁽",
+      "returned": "佧"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 62,
+      "originalEnd": 63,
+      "returnedStart": 72,
+      "returnedEnd": 73,
+      "original": "鈄",
+      "returned": "钭"
+    },
+    {
+      "kind": "insert",
+      "originalStart": 64,
+      "originalEnd": 64,
+      "returnedStart": 74,
+      "returnedEnd": 75,
+      "original": "",
+      "returned": " "
+    },
+    {
+      "kind": "replace",
+      "originalStart": 70,
+      "originalEnd": 71,
+      "returnedStart": 81,
+      "returnedEnd": 82,
+      "original": "蛀",
+      "returned": "虫"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 149,
+      "originalEnd": 150,
+      "returnedStart": 160,
+      "returnedEnd": 161,
+      "original": "關",
+      "returned": "关"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 193,
+      "originalEnd": 194,
+      "returnedStart": 204,
+      "returnedEnd": 209,
+      "original": "秤",
+      "returned": "scale"
+    },
+    {
+      "kind": "delete",
+      "originalStart": 195,
+      "originalEnd": 196,
+      "returnedStart": 210,
+      "returnedEnd": 210,
+      "original": "⤈",
+      "returned": ""
+    },
+    {
+      "kind": "replace",
+      "originalStart": 205,
+      "originalEnd": 206,
+      "returnedStart": 219,
+      "returnedEnd": 220,
+      "original": "謫",
+      "returned": "谪"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 212,
+      "originalEnd": 213,
+      "returnedStart": 226,
+      "returnedEnd": 230,
+      "original": "胆",
+      "returned": "gall"
+    },
+    {
+      "kind": "delete",
+      "originalStart": 219,
+      "originalEnd": 220,
+      "returnedStart": 236,
+      "returnedEnd": 236,
+      "original": "摙",
+      "returned": ""
+    },
+    {
+      "kind": "insert",
+      "originalStart": 224,
+      "originalEnd": 224,
+      "returnedStart": 240,
+      "returnedEnd": 241,
+      "original": "",
+      "returned": " "
+    },
+    {
+      "kind": "replace",
+      "originalStart": 239,
+      "originalEnd": 240,
+      "returnedStart": 256,
+      "returnedEnd": 260,
+      "original": "墻",
+      "returned": "wall"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 241,
+      "originalEnd": 243,
+      "returnedStart": 261,
+      "returnedEnd": 263,
+      "original": "原蒂",
+      "returned": "元典"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 250,
+      "originalEnd": 251,
+      "returnedStart": 270,
+      "returnedEnd": 271,
+      "original": "駔",
+      "returned": "鵵"
+    },
+    {
+      "kind": "insert",
+      "originalStart": 256,
+      "originalEnd": 256,
+      "returnedStart": 276,
+      "returnedEnd": 277,
+      "original": "",
+      "returned": " "
+    },
+    {
+      "kind": "replace",
+      "originalStart": 257,
+      "originalEnd": 259,
+      "returnedStart": 278,
+      "returnedEnd": 286,
+      "original": "訝⬔",
+      "returned": "surprise"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 262,
+      "originalEnd": 263,
+      "returnedStart": 289,
+      "returnedEnd": 292,
+      "original": "排",
+      "returned": "Pai"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 272,
+      "originalEnd": 273,
+      "returnedStart": 301,
+      "returnedEnd": 302,
+      "original": "靆",
+      "returned": "叇"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 281,
+      "originalEnd": 282,
+      "returnedStart": 310,
+      "returnedEnd": 311,
+      "original": "隉",
+      "returned": "陧"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 284,
+      "originalEnd": 285,
+      "returnedStart": 313,
+      "returnedEnd": 314,
+      "original": "笼",
+      "returned": "草"
+    },
+    {
+      "kind": "insert",
+      "originalStart": 288,
+      "originalEnd": 288,
+      "returnedStart": 317,
+      "returnedEnd": 318,
+      "original": "",
+      "returned": " "
+    },
+    {
+      "kind": "replace",
+      "originalStart": 298,
+      "originalEnd": 300,
+      "returnedStart": 328,
+      "returnedEnd": 335,
+      "original": "彬蚤",
+      "returned": "binflea"
+    },
+    {
+      "kind": "replace",
+      "originalStart": 314,
+      "originalEnd": 316,
+      "returnedStart": 349,
+      "returnedEnd": 350,
+      "original": "⤅眘",
+      "returned": "神"
+    },
+    {
+      "kind": "delete",
+      "originalStart": 331,
+      "originalEnd": 332,
+      "returnedStart": 365,
+      "returnedEnd": 365,
+      "original": "❒",
+      "returned": ""
+    },
+    {
+      "kind": "replace",
+      "originalStart": 373,
+      "originalEnd": 374,
+      "returnedStart": 406,
+      "returnedEnd": 407,
+      "original": "確",
+      "returned": "确"
+    },
+    {
+      "kind": "delete",
+      "originalStart": 381,
+      "originalEnd": 382,
+      "returnedStart": 414,
+      "returnedEnd": 414,
+      "original": "⏼",
+      "returned": ""
+    },
+    {
+      "kind": "delete",
+      "originalStart": 421,
+      "originalEnd": 422,
+      "returnedStart": 453,
+      "returnedEnd": 453,
+      "original": "⌕",
+      "returned": ""
+    },
+    {
+      "kind": "insert",
+      "originalStart": 448,
+      "originalEnd": 448,
+      "returnedStart": 479,
+      "returnedEnd": 480,
+      "original": "",
+      "returned": " "
+    },
+    {
+      "kind": "delete",
+      "originalStart": 474,
+      "originalEnd": 512,
+      "returnedStart": 506,
+      "returnedEnd": 506,
+      "original": "ཐ燯뒿ꅒ갲㞚牃懂ค惫蜕庣㝪۷쨄ᛕ䋦චꌔ뇡䘇ꍣ쑾Ϻ釯Ꮳ홂滺ꐳ뽥꾔恃鞪敹곋璾肠췌",
+      "returned": ""
+    }
+  ],
+  "examples": {
+    "秤": "scale",
+    "胆": "gall",
+    "墻": "wall",
+    "關": "关",
+    "確": "确"
+  },
+  "conclusion": "Do not recommend this wide alphabet for lossless Kingshot sharing. Offline encoded sizes are not validated game-chat capacities."
+}

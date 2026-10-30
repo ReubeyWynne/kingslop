@@ -1,14 +1,15 @@
-✔ All lengths, leading zero bytes and random bytes round trip (131.103756ms)
-✔ Frozen alphabets are unique BMP scalars and match their declared sizes (74.923944ms)
-✔ Every persisted layout survives transport and URL serialisation (793.392423ms)
-✔ Canonical decompositions can be repaired for the stable alphabets (2.471877ms)
-✔ Reject invalid framing, unknown symbols, surrogates, malformed escaping and oversized values (0.666792ms)
-✔ Compact IC/1 frames reconstruct exactly and reject every character mutation or truncation (245.320049ms)
-ℹ tests 6
+✔ All lengths, leading zero bytes and random bytes round trip (153.863793ms)
+✔ Frozen alphabets are unique BMP scalars and match their declared sizes (68.497778ms)
+✔ Every persisted layout survives transport and URL serialisation (746.275902ms)
+✔ Canonical decompositions can be repaired for the stable alphabets (2.083003ms)
+✔ Reject invalid framing, unknown symbols, surrogates, malformed escaping and oversized values (0.651411ms)
+✔ Compact IC/1 frames reconstruct exactly and reject every character mutation or truncation (191.002876ms)
+✔ Reject the user-returned game-chat specimen rather than silently repairing it (0.588258ms)
+ℹ tests 7
 ℹ suites 0
-ℹ pass 6
+ℹ pass 7
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 1338.549885
+ℹ duration_ms 1263.952107

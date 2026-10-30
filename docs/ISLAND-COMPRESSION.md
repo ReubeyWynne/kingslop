@@ -2,7 +2,7 @@
 
 With base64url, three of the five recovered layouts fit the 512-unit chat budget losslessly. The best tested URLs are **118, 1,334, 1,316, 406 and 436 characters** for layouts 8900–8904. The same results are achievable with the dependency-free, deterministic JavaScript reference. Arbitrary complete islands cannot be guaranteed to fit 373 bytes. The editor must retain a full-fidelity export path for larger designs.
 
-The [Unicode follow-up](ISLAND-UNICODE-TRANSPORT.md) revises the transport assumption: four fit the original route with a normalisation-stable alphabet; all five fit the proposed short root route. Kingshot preservation of those characters still needs an in-game copy-back test.
+The [Unicode follow-up](ISLAND-UNICODE-TRANSPORT.md) revises the theoretical transport capacity, but its wide alphabet failed the supplied game-chat round trip. Do not treat its offline size results as validated share links. Smaller character sets remain unverified.
 
 This work implements compression experiments, a reference encoder/decoder, a worker module and tests. It changes no editor code and no files under `docs/research/islands/`. Published 30 October 2026 on `islands`.
 

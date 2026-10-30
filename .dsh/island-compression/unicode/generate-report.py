@@ -16,6 +16,8 @@ for profile in ['han14','east15','assigned','dense','assigned-ic1']:
  timings.append(f"| {profile} | {x['encodeMs']:.3f} | {x['decodeWithEqualityMs']:.3f} |")
 text=f'''# Unicode island transport experiments
 
+**Game-chat validation failed.** The user-returned specimen has 506 UTF-16 units instead of 512 and cannot decode. Changes include `秤 → scale`, `胆 → gall`, `墻 → wall`, traditional/simplified substitutions, removed symbols and a missing tail. The user attributes this to game chat; the exact input/send/display/copy stage is not independently isolated. The wide assigned alphabet is not recommended for lossless sharing. The size table below describes offline encoding only.
+
 Four recovered layouts fit the original `dey.ci/island#` format using assigned, normalisation-stable BMP characters and a generic compact IC/1 header. The fifth needs 519 UTF-16 units. With the shorter `dey.ci#` prefix, **all five fit**, at 46, 512, 505, 156 and 167 units. That shorter route would need a homepage fragment dispatcher in the future editor; no application route was changed here.
 
 The original 373-byte limit belongs to base64url, not to UTF-16 game chat. These experiments revise that transport assumption without discarding any placement or referencing a preset. All sizes below count actual encoded JavaScript string lengths, including the prefix and a one-unit transport marker. Every transport uses the same original binary codec output, or reconstructs that output byte for byte through the documented compact-header rule.
@@ -60,11 +62,11 @@ The browser connector loaded the static HTTPS specimens and preserved both the e
 
 The standalone executable browser probe is provided, but was not run in this cloud browser: the browser policy rejected `data:` navigation. Testing continued with static HTTPS content and the permitted clipboard API. No full native-browser codec or physical Android performance claim follows from those checks.
 
-Kingshot remains untested. The decisive test is **paste, send, copy the received message back, then compare bytes and decoded layout**. A message that merely looks intact is insufficient. Test the actual game after its filters and transport, not only the input field. No game message was sent by this session.
+The supplied user game-chat trial failed; other alphabets remain unverified. [Failure fixture](../.dsh/island-compression/unicode/game-failure.json) records the exact edits and [returned text](../.dsh/island-compression/unicode/returned-game-message.txt). The next step is a short labelled character-set probe, not another full-size payload. The decisive test is **paste, send, copy the received message back, then compare bytes and decoded layout**. A message that merely looks intact is insufficient. Test the actual game after its filters and transport, not only the input field. No game message was sent by this session.
 
 ## Tests and timings
 
-All **{len(rows)} transport/layout cases** across the existing 21-layout corpus reconstruct the original binary bytes exactly and decode to the original canonical layout. Original and shortened route fragments both survive URL serialisation tests. Six automated tests cover random bytes and lengths, leading zeros, complete alphabets, NFC/NFKC stability, canonical-decomposition repair, malformed input, size bounds, compact-header fallback, and every character mutation/truncation of the compact 8902 specimen.
+All **{len(rows)} transport/layout cases** across the existing 21-layout corpus reconstruct the original binary bytes exactly and decode to the original canonical layout. Original and shortened route fragments both survive URL serialisation tests. Seven automated tests cover random bytes and lengths, leading zeros, complete alphabets, NFC/NFKC stability, canonical-decomposition repair, malformed input, size bounds, compact-header fallback, and every character mutation/truncation of the compact 8902 specimen.
 
 Transport-only times for the largest recovered binary layout use medians of seven Node {r['environment']['node']} runs. Decode timings include the byte equality assertion. They exclude binary layout compression, alphabet module loading and rendering. BigInt radix conversion is slower than fixed-width packing, especially for large exports; no mobile timings were measured.
 
@@ -99,6 +101,6 @@ The earlier report's 373-byte limit and two-surface counting example were ASCII/
 
 A universal arbitrary-island guarantee is still impossible. Six surface families with 500 cells each and 600 empty cells have `3600! / ((500!)^6 * 600!)` arrangements, about **{bound:.2f} bits**, requiring at least **{math.ceil(bound/8)} bytes** for some arrangement. All six families have a recovered per-type cap of 500. This exceeds even the idealised 8,080 bits available after the seven-unit root prefix, before a real alphabet, marker or checksum. Exact terrain/availability constraints remain unresolved, so this is a counting result over the stated grid model.
 
-The useful next decision is whether the editor should support the short root fragment as a share alias. First verify these alphabets in Kingshot. Prefer the simple CJK/Hangul profile where it fits; use the assigned alphabet only after it survives the game round trip. Do not choose the dense diagnostic alphabet merely to make the table pass.
+The root alias saves seven units, but routing should not be chosen around an unvalidated transport. The wide assigned alphabet failed the supplied game round trip. First isolate whether smaller character sets survive with [character-probe.txt](../.dsh/island-compression/unicode/character-probe.txt). No remaining Unicode profile is validated; a short successful probe would still need wider coverage. Keep base64url as the conservative fallback candidate. Do not choose the dense diagnostic alphabet merely to make the table pass.
 '''
 (p.parents[2]/'docs/ISLAND-UNICODE-TRANSPORT.md').write_text(text)

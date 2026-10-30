@@ -18,8 +18,7 @@
   },
   "standaloneProbeExecuted": false,
   "standaloneProbeBlocker": "The browser URL policy disallowed data: navigation. No attempt was made to execute the blocked page through another surface. Testing continued with read-only static HTTPS specimens and the permitted clipboard API.",
-  "kingshotTested": false,
-  "pending": "Paste the supplied specimen into Kingshot, send it, copy the received message and verify the copied text with verify-paste.mjs.",
+  "pending": "Character-set probe and isolation of input/send/display/copy changes; no Unicode alphabet is validated for game chat.",
   "completeIslandClipboard": {
     "layout": "kingshot-8901",
     "sourceCommit": "af5238a76a7d328ce770b5324895c004fd53e9f1",
@@ -31,5 +30,14 @@
     "locallyVerifiedOriginalWireBytes": 990,
     "pieces": 1237,
     "surfaces": 1655
-  }
+  },
+  "userReportedGameTrial": {
+    "result": "failed",
+    "originalUtf16Units": 512,
+    "returnedUtf16Units": 506,
+    "decodable": false,
+    "exactGameStageConfirmed": false,
+    "details": "game-failure.json"
+  },
+  "kingshotTestedByAgent": false
 }

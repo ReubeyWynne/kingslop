@@ -42,3 +42,8 @@ test('Compact IC/1 frames reconstruct exactly and reject every character mutatio
   for (let i = 1; i < payload.length; i++) { const altered = payload.slice(0, i) + (payload[i] === '一' ? '丁' : '一') + payload.slice(i + 1); assert.throws(() => decodeTransport(altered)); assert.throws(() => decodeTransport(payload.slice(0, i))); }
   const corrupt = bytes.slice(); corrupt[corrupt.length - 1] ^= 1; const fallback = encodeTransport(corrupt, 'assigned-ic1'); assert.equal(fallback[0], '$'); assert.deepEqual(decodeTransport(fallback), corrupt);
 });
+test('Reject the user-returned game-chat specimen rather than silently repairing it', () => {
+  const returned = fs.readFileSync(new URL('returned-game-message.txt', import.meta.url), 'utf8'), original = fs.readFileSync(new URL('layout-8901-root.txt', import.meta.url), 'utf8');
+  assert.equal(original.length, 512); assert.equal(returned.length, 506); assert.notEqual(returned, original); assert.throws(() => decodeFragment(returned.slice(returned.indexOf('#'))));
+  assert(returned.includes('scale')); assert(returned.includes('gall')); assert(returned.includes('wall'));
+});
