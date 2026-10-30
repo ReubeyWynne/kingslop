@@ -36,9 +36,7 @@ Coordinate projection (adjust orientation to art): `px=(col-row)*tileWidth/2`; `
 
 ## Share links and compression
 
-A community-maintained Kingshot chat-art tool reports a **512-character message limit**, but the maximum *clickable URL* length and whether `#` fragments survive Kingshot chat have **not been independently tested**. Verify in-game on Android and iOS, including a pasted 512-character URL, auto-linking and truncation.
-
-For `https://dey.ci/island#`, the prefix is 22 ASCII characters; 490 characters remain for unpadded base64url. That fits at most `floor(490*3/4)=367` raw bytes (assuming a legal 490-character unpadded base64url string; actual valid encoded lengths constrain the exact byte count). Leave metadata and safety headroom, target ~300 bytes for routine shares. With `https://dey.ci/island#v1=` the prefix is longer and the capacity is correspondingly lower. Decode entirely client-side; hash fragments are not sent in HTTP requests.
+A user-supplied Kingshot chat maximum-length specimen contains 379 Unicode code points, 131 non-BMP emoji, 510 UTF-16 code units and 772 UTF-8 bytes. This is **consistent with** a 512 UTF-16-code-unit message cap (two units spare), but does not independently prove the cap, or whether URL auto-linking and fragment preservation have the same limit. All-ASCII base64url costs one UTF-16 unit per character. The compact prefix `dey.ci/island#` is 14 characters, leaving 498 payload characters and at most 373 encoded binary bytes; `https://dey.ci/island#` is 22 characters, leaving 490 and at most 367 bytes. Test both literal URL styles in-game, and reserve length for protocol version and metadata. The full URL is safer for automatic link detection until tested.
 
 Never compress raw JSON or thousands of empty cells. Instead encode only placed instances plus relevant road/surface cells, with a stable versioned catalogue ID dictionary. First candidate:
 
