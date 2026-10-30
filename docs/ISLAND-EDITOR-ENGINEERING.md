@@ -54,6 +54,8 @@ Import must preserve unknown future catalogue IDs where possible, or give a prec
 - If instances need 4 bytes, a 300-byte data budget carries only 75 instances.
 - A full 60 × 60 one-bit occupancy mask is 450 bytes before encoding, already too large for the chat budget; use sparsity and repeated patterns.
 
+**No preset-ID shortcuts:** the shared payload must independently reconstruct the complete island from the public, versioned catalogue and primitive codec rules, without relying on a known layout, map hash, named template, or server lookup. Benchmarks must exclude any scheme that references whole sample layouts. A reusable feature vocabulary is allowed only when features are generic shapes (e.g. line, rectangle, repeated row, mirrored group, perimeter, repeated motif), their parameters and positions are encoded in the payload, and they also work on previously unseen player layouts. Document the vocabulary's fixed decoder cost, compare feature encoding to raw cells, and include held-out/random layouts to catch benchmark overfitting. Built-in terrain rules may be fixed game rules, but placed objects and surfaces must be reconstructible without a preset.
+
 Create a representative corpus: empty island, a handful of buildings, dense decorative island, many roads, path-heavy layout, and a near-full island. Measure `encode -> decode` exact equality and final **URL character** count. Set the shared-chat threshold only after in-game verification.
 
 ## Test and delivery gates
