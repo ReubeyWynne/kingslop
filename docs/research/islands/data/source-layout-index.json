@@ -1,0 +1,246 @@
+[
+  {
+    "slug": "showcase-garden-court",
+    "name": "Garden Court",
+    "grid_width": 60,
+    "grid_height": 60,
+    "tags": [
+      "showcase",
+      "garden",
+      "starter"
+    ],
+    "settings": {
+      "source": "companion_authored_layout",
+      "world_origin_x": 45,
+      "world_origin_y": 45
+    }
+  },
+  {
+    "slug": "kingshot-8900",
+    "name": "Kingshot Default",
+    "grid_width": 60,
+    "grid_height": 60,
+    "tags": [
+      "official",
+      "kingshot",
+      "default"
+    ],
+    "settings": {
+      "source": "game_config_default_garden_layout",
+      "layout_id": 8900,
+      "world_origin_x": 45,
+      "world_origin_y": 45,
+      "world_grid_size": 150,
+      "world_min_x": 45,
+      "world_max_x": 104,
+      "world_min_y": 45,
+      "world_max_y": 104
+    }
+  },
+  {
+    "slug": "kingshot-8901",
+    "name": "Kingshot Layout 8901",
+    "grid_width": 60,
+    "grid_height": 60,
+    "tags": [
+      "official",
+      "kingshot",
+      "preset"
+    ],
+    "settings": {
+      "source": "game_config_default_garden_layout",
+      "layout_id": 8901,
+      "world_origin_x": 45,
+      "world_origin_y": 45,
+      "world_grid_size": 150,
+      "world_min_x": 45,
+      "world_max_x": 104,
+      "world_min_y": 45,
+      "world_max_y": 104
+    }
+  },
+  {
+    "slug": "kingshot-8902",
+    "name": "Kingshot Layout 8902",
+    "grid_width": 60,
+    "grid_height": 60,
+    "tags": [
+      "official",
+      "kingshot",
+      "preset"
+    ],
+    "settings": {
+      "source": "game_config_default_garden_layout",
+      "layout_id": 8902,
+      "world_origin_x": 45,
+      "world_origin_y": 45,
+      "world_grid_size": 150,
+      "world_min_x": 45,
+      "world_max_x": 104,
+      "world_min_y": 45,
+      "world_max_y": 104
+    }
+  },
+  {
+    "slug": "kingshot-8903",
+    "name": "Kingshot Layout 8903",
+    "grid_width": 60,
+    "grid_height": 60,
+    "tags": [
+      "official",
+      "kingshot",
+      "preset"
+    ],
+    "settings": {
+      "source": "game_config_default_garden_layout",
+      "layout_id": 8903,
+      "world_origin_x": 45,
+      "world_origin_y": 45,
+      "world_grid_size": 150,
+      "world_min_x": 45,
+      "world_max_x": 104,
+      "world_min_y": 45,
+      "world_max_y": 104
+    }
+  },
+  {
+    "slug": "kingshot-8904",
+    "name": "Kingshot Layout 8904",
+    "grid_width": 60,
+    "grid_height": 60,
+    "tags": [
+      "official",
+      "kingshot",
+      "preset"
+    ],
+    "settings": {
+      "source": "game_config_default_garden_layout",
+      "layout_id": 8904,
+      "world_origin_x": 45,
+      "world_origin_y": 45,
+      "world_grid_size": 150,
+      "world_min_x": 45,
+      "world_max_x": 104,
+      "world_min_y": 45,
+      "world_max_y": 104
+    }
+  },
+  {
+    "slug": "showcase-maze-quarters",
+    "name": "Maze Quarters",
+    "grid_width": 60,
+    "grid_height": 60,
+    "tags": [
+      "showcase",
+      "maze",
+      "full-build"
+    ],
+    "settings": {
+      "source": "showcase_layout",
+      "world_origin_x": 45,
+      "world_origin_y": 45,
+      "world_grid_size": 150
+    }
+  },
+  {
+    "slug": "showcase-forest-rings",
+    "name": "Forest Rings",
+    "grid_width": 60,
+    "grid_height": 60,
+    "tags": [
+      "showcase",
+      "natural",
+      "forest"
+    ],
+    "settings": {
+      "source": "showcase_layout",
+      "world_origin_x": 45,
+      "world_origin_y": 45,
+      "world_grid_size": 150
+    }
+  },
+  {
+    "slug": "showcase-banner",
+    "name": "Banner Lawn",
+    "grid_width": 60,
+    "grid_height": 60,
+    "tags": [
+      "showcase",
+      "lettering",
+      "editable"
+    ],
+    "settings": {
+      "source": "showcase_layout",
+      "world_origin_x": 45,
+      "world_origin_y": 45,
+      "world_grid_size": 150
+    }
+  },
+  {
+    "slug": "showcase-formal-garden",
+    "name": "Formal Garden",
+    "grid_width": 60,
+    "grid_height": 60,
+    "tags": [
+      "showcase",
+      "symmetric",
+      "parterre"
+    ],
+    "settings": {
+      "source": "showcase_layout",
+      "world_origin_x": 45,
+      "world_origin_y": 45,
+      "world_grid_size": 150
+    }
+  },
+  {
+    "slug": "showcase-mirror-palace",
+    "name": "Mirror Palace",
+    "grid_width": 60,
+    "grid_height": 60,
+    "tags": [
+      "showcase",
+      "symmetric",
+      "ornate"
+    ],
+    "settings": {
+      "source": "showcase_layout",
+      "world_origin_x": 45,
+      "world_origin_y": 45,
+      "world_grid_size": 150
+    }
+  },
+  {
+    "slug": "showcase-fountain-study",
+    "name": "Fountain Courtyard Study",
+    "grid_width": 60,
+    "grid_height": 60,
+    "tags": [
+      "showcase",
+      "study"
+    ],
+    "settings": {
+      "source": "reference_courtyard_hypothesis",
+      "review_editing_grid": true,
+      "world_origin_x": 45,
+      "world_origin_y": 45,
+      "calibration": "local spacing provisional; not recovered coordinates"
+    }
+  },
+  {
+    "slug": "showcase-fountain-quarters",
+    "name": "Fountain Courtyard \u00b7 Four Quarters",
+    "grid_width": 60,
+    "grid_height": 60,
+    "tags": [
+      "showcase"
+    ],
+    "settings": {
+      "source": "fountain_study_with_garden_court_districts",
+      "review_editing_grid": true,
+      "world_origin_x": 45,
+      "world_origin_y": 45,
+      "calibration": "Designed template, not recovered player coordinates"
+    }
+  }
+]

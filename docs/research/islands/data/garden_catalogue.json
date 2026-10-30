@@ -1,0 +1,7675 @@
+[
+ {
+  "slug": "build_7000",
+  "build_id": 7000,
+  "name_key": "garden_build_name_7000",
+  "category": "building",
+  "shape": "flat",
+  "width": 5,
+  "height": 5,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 1,
+  "build_class": 0,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    3,
+    0
+   ],
+   [
+    4,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    4,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    4,
+    4
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7000_00",
+  "icon": "",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7000.png",
+  "icon_url": "asset:assets/icons/7000.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#939575",
+  "has_artwork": true,
+  "sort_order": 7000,
+  "display_name": "Fountain of Life",
+  "rarity": "Common"
+ },
+ {
+  "slug": "build_7001",
+  "build_id": 7001,
+  "name_key": "garden_build_name_7001",
+  "category": "building",
+  "shape": "flat",
+  "width": 2,
+  "height": 2,
+  "build_limit": 0,
+  "effect_limit": 2,
+  "quality": 3,
+  "build_class": 2,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7001_01",
+  "icon": "garden_icon_7001_01",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7001.png",
+  "icon_url": "asset:assets/icons/7001.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#887461",
+  "has_artwork": true,
+  "sort_order": 7001,
+  "display_name": "Reservoir",
+  "rarity": "Rare"
+ },
+ {
+  "slug": "build_7002",
+  "build_id": 7002,
+  "name_key": "garden_build_name_7002",
+  "category": "building",
+  "shape": "flat",
+  "width": 4,
+  "height": 4,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    3,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    3
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.6,
+  "offset_y": -0.6,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7002_01",
+  "icon": "garden_icon_7002",
+  "prosper": 1200,
+  "sprite_url": "asset:assets/tiles/7002.png",
+  "icon_url": "asset:assets/icons/7002.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#938668",
+  "has_artwork": true,
+  "sort_order": 7002,
+  "display_name": "Braveshrine",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7003",
+  "build_id": 7003,
+  "name_key": "garden_build_name_7003",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.4,
+  "offset_y": -0.4,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7003_01",
+  "icon": "garden_icon_7003",
+  "prosper": 1000,
+  "sprite_url": null,
+  "icon_url": null,
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#b9b9b9",
+  "has_artwork": false,
+  "sort_order": 7003,
+  "retired": true
+ },
+ {
+  "slug": "build_7004",
+  "build_id": 7004,
+  "name_key": "garden_build_name_7004",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   0,
+   0,
+   1,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.1,
+  "offset_y": -0.1,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7004_01",
+  "icon": "garden_icon_7004",
+  "prosper": 1000,
+  "sprite_url": null,
+  "icon_url": null,
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#b9b9b9",
+  "has_artwork": false,
+  "sort_order": 7004,
+  "retired": true
+ },
+ {
+  "slug": "build_7005",
+  "build_id": 7005,
+  "name_key": "garden_build_name_7005",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7005_01",
+  "icon": "garden_icon_7005",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7005.png",
+  "icon_url": "asset:assets/icons/7005.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#85593b",
+  "has_artwork": true,
+  "sort_order": 7005,
+  "display_name": "Bustling Tavern",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7006",
+  "build_id": 7006,
+  "name_key": "garden_build_name_7006",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7006_01",
+  "icon": "garden_icon_7006",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7006.png",
+  "icon_url": "asset:assets/icons/7006.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7b796b",
+  "has_artwork": true,
+  "sort_order": 7006,
+  "display_name": "Observation Deck",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7007",
+  "build_id": 7007,
+  "name_key": "garden_build_name_7007",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7007_01",
+  "icon": "garden_icon_7007",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7007.png",
+  "icon_url": "asset:assets/icons/7007.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#93978b",
+  "has_artwork": true,
+  "sort_order": 7007,
+  "display_name": "Speaker Hall",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7008",
+  "build_id": 7008,
+  "name_key": "garden_build_name_7008",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 4,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7008_01",
+  "icon": "garden_icon_7008",
+  "prosper": 500,
+  "sprite_url": "asset:assets/tiles/7008.png",
+  "icon_url": "asset:assets/icons/7008.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7f634c",
+  "has_artwork": true,
+  "sort_order": 7008,
+  "display_name": "Windmill"
+ },
+ {
+  "slug": "build_7009",
+  "build_id": 7009,
+  "name_key": "garden_build_name_7009",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 4,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7009_01",
+  "icon": "garden_icon_7009",
+  "prosper": 500,
+  "sprite_url": "asset:assets/tiles/7009.png",
+  "icon_url": "asset:assets/icons/7009.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7e644e",
+  "has_artwork": true,
+  "sort_order": 7009,
+  "display_name": "Hearth Grill"
+ },
+ {
+  "slug": "build_7010",
+  "build_id": 7010,
+  "name_key": "garden_build_name_7010",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 4,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7010_01",
+  "icon": "garden_icon_7010",
+  "prosper": 500,
+  "sprite_url": "asset:assets/tiles/7010.png",
+  "icon_url": "asset:assets/icons/7010.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#8b8670",
+  "has_artwork": true,
+  "sort_order": 7010,
+  "display_name": "Gentle Grove"
+ },
+ {
+  "slug": "build_7011",
+  "build_id": 7011,
+  "name_key": "garden_build_name_7011",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 4,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7011_01",
+  "icon": "garden_icon_7011",
+  "prosper": 500,
+  "sprite_url": null,
+  "icon_url": null,
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#b9b9b9",
+  "has_artwork": false,
+  "sort_order": 7011,
+  "retired": true
+ },
+ {
+  "slug": "build_7012",
+  "build_id": 7012,
+  "name_key": "garden_build_name_7012",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 4,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7012_01",
+  "icon": "garden_icon_7012",
+  "prosper": 500,
+  "sprite_url": "asset:assets/tiles/7012.png",
+  "icon_url": "asset:assets/icons/7012.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#947f59",
+  "has_artwork": true,
+  "sort_order": 7012,
+  "display_name": "Dinosaur Fossils",
+  "rarity": "Epic"
+ },
+ {
+  "slug": "build_7013",
+  "build_id": 7013,
+  "name_key": "garden_build_name_7013",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 4,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -1,
+  "offset_y": -1,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 2,
+  "model": "garden_build_7013_01",
+  "icon": "garden_icon_7013_01",
+  "prosper": 500,
+  "sprite_url": "asset:assets/tiles/7013.png",
+  "icon_url": "asset:assets/icons/7013.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#6692b2",
+  "has_artwork": true,
+  "sort_order": 7013,
+  "display_name": "Treasure Icicle",
+  "rarity": "Epic"
+ },
+ {
+  "slug": "build_7014",
+  "build_id": 7014,
+  "name_key": "garden_build_name_7014",
+  "category": "building",
+  "shape": "flat",
+  "width": 5,
+  "height": 5,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 4,
+  "tile_type": 3,
+  "tile_type_name": "water",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    3,
+    0
+   ],
+   [
+    4,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    4,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    4,
+    4
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -1,
+  "offset_y": -1,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": false,
+  "build_type": 2,
+  "model": "garden_build_7014_01",
+  "icon": "garden_icon_7014",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7014.png",
+  "icon_url": "asset:assets/icons/7014.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7b7977",
+  "has_artwork": true,
+  "sort_order": 7014,
+  "display_name": "Floating Market",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7015",
+  "build_id": 7015,
+  "name_key": "garden_build_name_7015",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 4,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7015_01",
+  "icon": "garden_icon_7015",
+  "prosper": 500,
+  "sprite_url": "asset:assets/tiles/7015.png",
+  "icon_url": "asset:assets/icons/7015.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7c5c4b",
+  "has_artwork": true,
+  "sort_order": 7015,
+  "display_name": "Construction Hut",
+  "rarity": "Epic"
+ },
+ {
+  "slug": "build_7016",
+  "build_id": 7016,
+  "name_key": "garden_build_name_7016",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 4,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7016_01",
+  "icon": "garden_icon_7016",
+  "prosper": 500,
+  "sprite_url": "asset:assets/tiles/7016.png",
+  "icon_url": "asset:assets/icons/7016.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#8a6d46",
+  "has_artwork": true,
+  "sort_order": 7016,
+  "display_name": "Ranger Cabin",
+  "rarity": "Epic"
+ },
+ {
+  "slug": "build_7017",
+  "build_id": 7017,
+  "name_key": "garden_build_name_7017",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7017_01",
+  "icon": "garden_icon_7017",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7017.png",
+  "icon_url": "asset:assets/icons/7017.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#968051",
+  "has_artwork": true,
+  "sort_order": 7017,
+  "display_name": "Amphitheater",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7018",
+  "build_id": 7018,
+  "name_key": "garden_build_name_7018",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 3,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7018_01",
+  "icon": "garden_icon_7018",
+  "prosper": 200,
+  "sprite_url": "asset:assets/tiles/7018.png",
+  "icon_url": "asset:assets/icons/7018.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#88705b",
+  "has_artwork": true,
+  "sort_order": 7018,
+  "display_name": "Brewery",
+  "rarity": "Rare"
+ },
+ {
+  "slug": "build_7019",
+  "build_id": 7019,
+  "name_key": "garden_build_name_7019",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 3,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7019_01",
+  "icon": "garden_icon_7019",
+  "prosper": 200,
+  "sprite_url": "asset:assets/tiles/7019.png",
+  "icon_url": "asset:assets/icons/7019.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#818668",
+  "has_artwork": true,
+  "sort_order": 7019,
+  "display_name": "Bazaar Row",
+  "rarity": "Rare"
+ },
+ {
+  "slug": "build_7020",
+  "build_id": 7020,
+  "name_key": "garden_build_name_7020",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 3,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7020_01",
+  "icon": "garden_icon_7020",
+  "prosper": 200,
+  "sprite_url": "asset:assets/tiles/7020.png",
+  "icon_url": "asset:assets/icons/7020.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7b7774",
+  "has_artwork": true,
+  "sort_order": 7020,
+  "display_name": "Blacksmith",
+  "rarity": "Rare"
+ },
+ {
+  "slug": "build_7021",
+  "build_id": 7021,
+  "name_key": "garden_build_name_7021",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 3,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7021_01",
+  "icon": "garden_icon_7021",
+  "prosper": 200,
+  "sprite_url": "asset:assets/tiles/7021.png",
+  "icon_url": "asset:assets/icons/7021.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#8a7f67",
+  "has_artwork": true,
+  "sort_order": 7021,
+  "display_name": "Deluxe Restaurant",
+  "rarity": "Rare"
+ },
+ {
+  "slug": "build_7022",
+  "build_id": 7022,
+  "name_key": "garden_build_name_7022",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 4,
+  "build_class": 4,
+  "tile_type": 3,
+  "tile_type_name": "water",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": false,
+  "build_type": 2,
+  "model": "garden_build_7022_01",
+  "icon": "garden_icon_7022",
+  "prosper": 500,
+  "sprite_url": "asset:assets/tiles/7022.png",
+  "icon_url": "asset:assets/icons/7022.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#765741",
+  "has_artwork": true,
+  "sort_order": 7022,
+  "display_name": "Sailor's Cottage"
+ },
+ {
+  "slug": "build_7023",
+  "build_id": 7023,
+  "name_key": "garden_build_name_7023",
+  "category": "building",
+  "shape": "flat",
+  "width": 2,
+  "height": 2,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 3,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7023_01",
+  "icon": "garden_icon_7023",
+  "prosper": 200,
+  "sprite_url": "asset:assets/tiles/7023.png",
+  "icon_url": "asset:assets/icons/7023.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7a7c82",
+  "has_artwork": true,
+  "sort_order": 7023,
+  "display_name": "Lookout",
+  "rarity": "Rare"
+ },
+ {
+  "slug": "build_7024",
+  "build_id": 7024,
+  "name_key": "garden_build_name_7024",
+  "category": "building",
+  "shape": "flat",
+  "width": 2,
+  "height": 2,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 3,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7024_01",
+  "icon": "garden_icon_7024",
+  "prosper": 200,
+  "sprite_url": "asset:assets/tiles/7024.png",
+  "icon_url": "asset:assets/icons/7024.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#96705c",
+  "has_artwork": true,
+  "sort_order": 7024,
+  "display_name": "Ore Stow",
+  "rarity": "Rare"
+ },
+ {
+  "slug": "build_7025",
+  "build_id": 7025,
+  "name_key": "garden_build_name_7025",
+  "category": "building",
+  "shape": "flat",
+  "width": 2,
+  "height": 2,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 3,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7025_01",
+  "icon": "garden_icon_7025",
+  "prosper": 200,
+  "sprite_url": "asset:assets/tiles/7025.png",
+  "icon_url": "asset:assets/icons/7025.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7c5f4a",
+  "has_artwork": true,
+  "sort_order": 7025,
+  "display_name": "Halo of Valor",
+  "rarity": "Rare"
+ },
+ {
+  "slug": "build_7026",
+  "build_id": 7026,
+  "name_key": "garden_build_name_7026",
+  "category": "building",
+  "shape": "flat",
+  "width": 2,
+  "height": 2,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 3,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7026_01",
+  "icon": "garden_icon_7026",
+  "prosper": 200,
+  "sprite_url": "asset:assets/tiles/7026.png",
+  "icon_url": "asset:assets/icons/7026.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#916f37",
+  "has_artwork": true,
+  "sort_order": 7026,
+  "display_name": "Exquisite Crown",
+  "rarity": "Rare"
+ },
+ {
+  "slug": "build_7027",
+  "build_id": 7027,
+  "name_key": "garden_build_name_7027",
+  "category": "building",
+  "shape": "flat",
+  "width": 2,
+  "height": 2,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 3,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7027_01",
+  "icon": "garden_icon_7027",
+  "prosper": 200,
+  "sprite_url": "asset:assets/tiles/7027.png",
+  "icon_url": "asset:assets/icons/7027.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#879a9b",
+  "has_artwork": true,
+  "sort_order": 7027,
+  "display_name": "Oasis Spring",
+  "rarity": "Rare"
+ },
+ {
+  "slug": "build_7028",
+  "build_id": 7028,
+  "name_key": "garden_build_name_7028",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 4,
+  "build_class": 4,
+  "tile_type": 3,
+  "tile_type_name": "water",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": false,
+  "build_type": 2,
+  "model": "garden_build_7028_01",
+  "icon": "garden_icon_7028",
+  "prosper": 500,
+  "sprite_url": "asset:assets/tiles/7028.png",
+  "icon_url": "asset:assets/icons/7028.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#655a60",
+  "has_artwork": true,
+  "sort_order": 7028,
+  "display_name": "Fishing Hut",
+  "rarity": "Epic"
+ },
+ {
+  "slug": "build_7029",
+  "build_id": 7029,
+  "name_key": "garden_build_name_7029",
+  "category": "building",
+  "shape": "flat",
+  "width": 2,
+  "height": 2,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 3,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7029_01",
+  "icon": "garden_icon_7029",
+  "prosper": 200,
+  "sprite_url": "asset:assets/tiles/7029.png",
+  "icon_url": "asset:assets/icons/7029.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7e7d73",
+  "has_artwork": true,
+  "sort_order": 7029,
+  "display_name": "Conservatory",
+  "rarity": "Rare"
+ },
+ {
+  "slug": "build_7030",
+  "build_id": 7030,
+  "name_key": "garden_build_name_7030",
+  "category": "building",
+  "shape": "flat",
+  "width": 2,
+  "height": 2,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 3,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7030_01",
+  "icon": "garden_icon_7030",
+  "prosper": 200,
+  "sprite_url": "asset:assets/tiles/7030.png",
+  "icon_url": "asset:assets/icons/7030.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#889293",
+  "has_artwork": true,
+  "sort_order": 7030,
+  "display_name": "Picnic Mat",
+  "rarity": "Rare"
+ },
+ {
+  "slug": "build_7031",
+  "build_id": 7031,
+  "name_key": "garden_build_name_7031",
+  "category": "building",
+  "shape": "flat",
+  "width": 2,
+  "height": 2,
+  "build_limit": 0,
+  "effect_limit": 2,
+  "quality": 2,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7031_01",
+  "icon": "garden_icon_7031",
+  "prosper": 100,
+  "sprite_url": "asset:assets/tiles/7031.png",
+  "icon_url": "asset:assets/icons/7031.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7e6b47",
+  "has_artwork": true,
+  "sort_order": 7031,
+  "display_name": "Fine Cask",
+  "rarity": "Uncommon"
+ },
+ {
+  "slug": "build_7032",
+  "build_id": 7032,
+  "name_key": "garden_build_name_7032",
+  "category": "building",
+  "shape": "flat",
+  "width": 2,
+  "height": 2,
+  "build_limit": 0,
+  "effect_limit": 2,
+  "quality": 2,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7032_01",
+  "icon": "garden_icon_7032",
+  "prosper": 100,
+  "sprite_url": "asset:assets/tiles/7032.png",
+  "icon_url": "asset:assets/icons/7032.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#987653",
+  "has_artwork": true,
+  "sort_order": 7032,
+  "display_name": "Happy Slide",
+  "rarity": "Uncommon"
+ },
+ {
+  "slug": "build_7033",
+  "build_id": 7033,
+  "name_key": "garden_build_name_7033",
+  "category": "building",
+  "shape": "flat",
+  "width": 2,
+  "height": 2,
+  "build_limit": 0,
+  "effect_limit": 2,
+  "quality": 2,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7033_01",
+  "icon": "garden_icon_7033",
+  "prosper": 100,
+  "sprite_url": "asset:assets/tiles/7033.png",
+  "icon_url": "asset:assets/icons/7033.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#72625e",
+  "has_artwork": true,
+  "sort_order": 7033,
+  "display_name": "Wagon",
+  "rarity": "Uncommon"
+ },
+ {
+  "slug": "build_7034",
+  "build_id": 7034,
+  "name_key": "garden_build_name_7034",
+  "category": "building",
+  "shape": "flat",
+  "width": 2,
+  "height": 2,
+  "build_limit": 0,
+  "effect_limit": 4,
+  "quality": 2,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7034_01",
+  "icon": "garden_icon_7034",
+  "prosper": 100,
+  "sprite_url": "asset:assets/tiles/7034.png",
+  "icon_url": "asset:assets/icons/7034.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#a98b48",
+  "has_artwork": true,
+  "sort_order": 7034,
+  "display_name": "Shack",
+  "rarity": "Uncommon"
+ },
+ {
+  "slug": "build_7035",
+  "build_id": 7035,
+  "name_key": "garden_build_name_7035",
+  "category": "building",
+  "shape": "flat",
+  "width": 2,
+  "height": 2,
+  "build_limit": 0,
+  "effect_limit": 4,
+  "quality": 2,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7035_01",
+  "icon": "garden_icon_7035",
+  "prosper": 100,
+  "sprite_url": "asset:assets/tiles/7035.png",
+  "icon_url": "asset:assets/icons/7035.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7b90a3",
+  "has_artwork": true,
+  "sort_order": 7035,
+  "display_name": "Townhouse",
+  "rarity": "Uncommon"
+ },
+ {
+  "slug": "build_7036",
+  "build_id": 7036,
+  "name_key": "garden_build_name_7036",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 3,
+  "build_class": 4,
+  "tile_type": 3,
+  "tile_type_name": "water",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": false,
+  "build_type": 2,
+  "model": "garden_build_7036_01",
+  "icon": "garden_icon_7036",
+  "prosper": 200,
+  "sprite_url": "asset:assets/tiles/7036.png",
+  "icon_url": "asset:assets/icons/7036.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#9b6b41",
+  "has_artwork": true,
+  "sort_order": 7036,
+  "display_name": "Basic Dock",
+  "rarity": "Rare"
+ },
+ {
+  "slug": "build_7037",
+  "build_id": 7037,
+  "name_key": "garden_build_name_7037",
+  "category": "building",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 0,
+  "effect_limit": 5,
+  "quality": 2,
+  "build_class": 3,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7037_01",
+  "icon": "garden_icon_7037",
+  "prosper": 100,
+  "sprite_url": "asset:assets/tiles/7037.png",
+  "icon_url": "asset:assets/icons/7037.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#8a7e3b",
+  "has_artwork": true,
+  "sort_order": 7037,
+  "display_name": "Lush Shubberry"
+ },
+ {
+  "slug": "build_7038",
+  "build_id": 7038,
+  "name_key": "garden_build_name_7038",
+  "category": "building",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 0,
+  "effect_limit": 5,
+  "quality": 2,
+  "build_class": 3,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7038_01",
+  "icon": "garden_icon_7038",
+  "prosper": 100,
+  "sprite_url": "asset:assets/tiles/7038.png",
+  "icon_url": "asset:assets/icons/7038.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#4f7669",
+  "has_artwork": true,
+  "sort_order": 7038,
+  "display_name": "Exquisite Hedge"
+ },
+ {
+  "slug": "build_7039",
+  "build_id": 7039,
+  "name_key": "garden_build_name_7039",
+  "category": "building",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 0,
+  "effect_limit": 5,
+  "quality": 2,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7039_01",
+  "icon": "garden_icon_7039",
+  "prosper": 100,
+  "sprite_url": "asset:assets/tiles/7039.png",
+  "icon_url": "asset:assets/icons/7039.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#5e7e7c",
+  "has_artwork": true,
+  "sort_order": 7039,
+  "display_name": "Banner of Hope",
+  "rarity": "Uncommon"
+ },
+ {
+  "slug": "pond",
+  "build_id": 7040,
+  "name_key": "garden_build_name_7040",
+  "category": "water",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 2,
+  "build_class": 2,
+  "tile_type": 3,
+  "tile_type_name": "water",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": false,
+  "build_type": 2,
+  "model": "garden_build_7040_01",
+  "icon": "garden_icon_7040",
+  "prosper": 0,
+  "sprite_url": null,
+  "icon_url": "asset:assets/icons/7040.png",
+  "sprite_scale": 1.0,
+  "sprite_height": 1.0,
+  "swatch": "#44b9d3",
+  "has_artwork": false,
+  "sort_order": 7040
+ },
+ {
+  "slug": "build_7041",
+  "build_id": 7041,
+  "name_key": "garden_build_name_7041",
+  "category": "building",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 0,
+  "effect_limit": 2,
+  "quality": 1,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7041_01",
+  "icon": "garden_icon_7041",
+  "prosper": 50,
+  "sprite_url": "asset:assets/tiles/7041.png",
+  "icon_url": "asset:assets/icons/7041.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#866345",
+  "has_artwork": true,
+  "sort_order": 7041,
+  "display_name": "Goods Pile",
+  "rarity": "Common"
+ },
+ {
+  "slug": "build_7042",
+  "build_id": 7042,
+  "name_key": "garden_build_name_7042",
+  "category": "building",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 0,
+  "effect_limit": 2,
+  "quality": 1,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7042_01",
+  "icon": "garden_icon_7042",
+  "prosper": 50,
+  "sprite_url": "asset:assets/tiles/7042.png",
+  "icon_url": "asset:assets/icons/7042.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#6b563b",
+  "has_artwork": true,
+  "sort_order": 7042,
+  "display_name": "Cooking Stove",
+  "rarity": "Common"
+ },
+ {
+  "slug": "build_7043",
+  "build_id": 7043,
+  "name_key": "garden_build_name_7043",
+  "category": "building",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 0,
+  "effect_limit": 2,
+  "quality": 1,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7043_01",
+  "icon": "garden_icon_7043",
+  "prosper": 50,
+  "sprite_url": "asset:assets/tiles/7043.png",
+  "icon_url": "asset:assets/icons/7043.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#735135",
+  "has_artwork": true,
+  "sort_order": 7043,
+  "display_name": "Noticeboard",
+  "rarity": "Common"
+ },
+ {
+  "slug": "build_7044",
+  "build_id": 7044,
+  "name_key": "garden_build_name_7044",
+  "category": "building",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 0,
+  "effect_limit": 2,
+  "quality": 1,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7044_01",
+  "icon": "garden_icon_7044",
+  "prosper": 50,
+  "sprite_url": "asset:assets/tiles/7044.png",
+  "icon_url": "asset:assets/icons/7044.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#a19166",
+  "has_artwork": true,
+  "sort_order": 7044,
+  "display_name": "Sandcastle",
+  "rarity": "Common"
+ },
+ {
+  "slug": "build_7045",
+  "build_id": 7045,
+  "name_key": "garden_build_name_7045",
+  "category": "building",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 0,
+  "effect_limit": 2,
+  "quality": 1,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7045_01",
+  "icon": "garden_icon_7045",
+  "prosper": 50,
+  "sprite_url": "asset:assets/tiles/7045.png",
+  "icon_url": "asset:assets/icons/7045.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#73624d",
+  "has_artwork": true,
+  "sort_order": 7045,
+  "display_name": "Scarecrow",
+  "rarity": "Common"
+ },
+ {
+  "slug": "build_7046",
+  "build_id": 7046,
+  "name_key": "garden_build_name_7046",
+  "category": "building",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 0,
+  "effect_limit": 2,
+  "quality": 1,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7046_01",
+  "icon": "garden_icon_7046",
+  "prosper": 50,
+  "sprite_url": "asset:assets/tiles/7046.png",
+  "icon_url": "asset:assets/icons/7046.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#9a8865",
+  "has_artwork": true,
+  "sort_order": 7046,
+  "display_name": "Camping Tent",
+  "rarity": "Common"
+ },
+ {
+  "slug": "build_7047",
+  "build_id": 7047,
+  "name_key": "garden_build_name_7047",
+  "category": "building",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 0,
+  "effect_limit": 2,
+  "quality": 1,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7047_01",
+  "icon": "garden_icon_7047",
+  "prosper": 50,
+  "sprite_url": "asset:assets/tiles/7047.png",
+  "icon_url": "asset:assets/icons/7047.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7f716e",
+  "has_artwork": true,
+  "sort_order": 7047,
+  "display_name": "Bonfire",
+  "rarity": "Common"
+ },
+ {
+  "slug": "build_7048",
+  "build_id": 7048,
+  "name_key": "garden_build_name_7048",
+  "category": "building",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 0,
+  "effect_limit": 4,
+  "quality": 1,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7048_01",
+  "icon": "garden_icon_7048",
+  "prosper": 50,
+  "sprite_url": "asset:assets/tiles/7048.png",
+  "icon_url": "asset:assets/icons/7048.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#3c616a",
+  "has_artwork": true,
+  "sort_order": 7048,
+  "display_name": "Camping Chair",
+  "rarity": "Common"
+ },
+ {
+  "slug": "build_7049",
+  "build_id": 7049,
+  "name_key": "garden_build_name_7049",
+  "category": "building",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 0,
+  "effect_limit": 4,
+  "quality": 1,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7049_01",
+  "icon": "garden_icon_7049",
+  "prosper": 50,
+  "sprite_url": "asset:assets/tiles/7049.png",
+  "icon_url": "asset:assets/icons/7049.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#5c5330",
+  "has_artwork": true,
+  "sort_order": 7049,
+  "display_name": "Swing",
+  "rarity": "Common"
+ },
+ {
+  "slug": "build_7050",
+  "build_id": 7050,
+  "name_key": "garden_build_name_7050",
+  "category": "building",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 0,
+  "effect_limit": 4,
+  "quality": 1,
+  "build_class": 4,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7050_01",
+  "icon": "garden_icon_7050",
+  "prosper": 50,
+  "sprite_url": "asset:assets/tiles/7050.png",
+  "icon_url": "asset:assets/icons/7050.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#736357",
+  "has_artwork": true,
+  "sort_order": 7050,
+  "display_name": "Dining Table",
+  "rarity": "Common"
+ },
+ {
+  "slug": "streetlight",
+  "build_id": 7051,
+  "name_key": "garden_build_name_7051",
+  "category": "accent",
+  "shape": "lamp",
+  "width": 1,
+  "height": 1,
+  "build_limit": 200,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 2,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7051_01",
+  "icon": "garden_icon_7051",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7051.png",
+  "icon_url": "asset:assets/icons/7051.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#756359",
+  "has_artwork": true,
+  "sort_order": 7051
+ },
+ {
+  "slug": "tree_fir",
+  "build_id": 7052,
+  "name_key": "garden_build_name_7052",
+  "category": "tree",
+  "shape": "tree_fir",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 3,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7052_01",
+  "icon": "garden_icon_7052",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7052.png",
+  "icon_url": "asset:assets/icons/7052.png",
+  "sprite_scale": 1.15,
+  "sprite_height": 0.92,
+  "swatch": "#53863d",
+  "has_artwork": true,
+  "sort_order": 7052
+ },
+ {
+  "slug": "tree_pine",
+  "build_id": 7053,
+  "name_key": "garden_build_name_7052",
+  "category": "tree",
+  "shape": "tree_pine",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 3,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7053_01",
+  "icon": "garden_icon_7053",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7053.png",
+  "icon_url": "asset:assets/icons/7053.png",
+  "sprite_scale": 1.15,
+  "sprite_height": 0.92,
+  "swatch": "#839639",
+  "has_artwork": true,
+  "sort_order": 7053
+ },
+ {
+  "slug": "tree_pair",
+  "build_id": 7054,
+  "name_key": "garden_build_name_7052",
+  "category": "tree",
+  "shape": "tree_pair",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 3,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7054_01",
+  "icon": "garden_icon_7054",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7054.png",
+  "icon_url": "asset:assets/icons/7054.png",
+  "sprite_scale": 1.15,
+  "sprite_height": 0.92,
+  "swatch": "#7a8a3c",
+  "has_artwork": true,
+  "sort_order": 7054
+ },
+ {
+  "slug": "gravel_road",
+  "build_id": 7055,
+  "name_key": "garden_build_name_7055",
+  "category": "path",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 2,
+  "tile_type": 1,
+  "tile_type_name": "dirt_road",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": true,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 2,
+  "model": "garden_build_7055_01",
+  "icon": "garden_icon_7055",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7055.png",
+  "icon_url": "asset:assets/icons/7055.png",
+  "sprite_scale": 1.0,
+  "sprite_height": 1.0,
+  "swatch": "#d8b367",
+  "has_artwork": true,
+  "sort_order": 7055
+ },
+ {
+  "slug": "build_7056",
+  "build_id": 7056,
+  "name_key": "garden_build_name_7056",
+  "category": "building",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 0,
+  "effect_limit": 0,
+  "quality": 5,
+  "build_class": 0,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": false,
+  "build_type": 1,
+  "model": "garden_build_7056_01",
+  "icon": "",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7056.png",
+  "icon_url": null,
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#495d63",
+  "has_artwork": true,
+  "sort_order": 7056,
+  "display_name": "Chest"
+ },
+ {
+  "slug": "tree_bush",
+  "build_id": 7057,
+  "name_key": "garden_build_name_7052",
+  "category": "tree",
+  "shape": "tree_bush",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 3,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7057_01",
+  "icon": "garden_icon_7057",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7057.png",
+  "icon_url": "asset:assets/icons/7057.png",
+  "sprite_scale": 1.15,
+  "sprite_height": 0.92,
+  "swatch": "#5e832d",
+  "has_artwork": true,
+  "sort_order": 7057
+ },
+ {
+  "slug": "tree_round",
+  "build_id": 7058,
+  "name_key": "garden_build_name_7052",
+  "category": "tree",
+  "shape": "tree_round",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 3,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7058_01",
+  "icon": "garden_icon_7058",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7058.png",
+  "icon_url": "asset:assets/icons/7058.png",
+  "sprite_scale": 1.15,
+  "sprite_height": 0.92,
+  "swatch": "#6a8631",
+  "has_artwork": true,
+  "sort_order": 7058
+ },
+ {
+  "slug": "build_7059",
+  "build_id": 7059,
+  "name_key": "garden_build_name_7059",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7059_01",
+  "icon": "garden_icon_7059_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7059.png",
+  "icon_url": "asset:assets/icons/7059.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#9f8341",
+  "has_artwork": true,
+  "sort_order": 7059,
+  "display_name": "Merchant Caravan"
+ },
+ {
+  "slug": "build_7060",
+  "build_id": 7060,
+  "name_key": "garden_build_name_7060",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7060_01",
+  "icon": "garden_icon_7060_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7060.png",
+  "icon_url": "asset:assets/icons/7060.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#8d7857",
+  "has_artwork": true,
+  "sort_order": 7060,
+  "display_name": "Horn of Victory"
+ },
+ {
+  "slug": "whispering_path",
+  "build_id": 7061,
+  "name_key": "garden_build_name_7061",
+  "category": "path",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 2,
+  "tile_type": 4,
+  "tile_type_name": "brick_road",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": true,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 2,
+  "model": "garden_build_7055_01",
+  "icon": "garden_icon_7061",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7061.png",
+  "icon_url": "asset:assets/icons/7061.png",
+  "sprite_scale": 1.0,
+  "sprite_height": 1.0,
+  "swatch": "#93a3ab",
+  "has_artwork": true,
+  "sort_order": 7061
+ },
+ {
+  "slug": "paved_road",
+  "build_id": 7062,
+  "name_key": "garden_build_name_7062",
+  "category": "path",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 2,
+  "tile_type": 5,
+  "tile_type_name": "rock_road",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": true,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 2,
+  "model": "garden_build_7055_01",
+  "icon": "garden_icon_7062",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7062.png",
+  "icon_url": "asset:assets/icons/7062.png",
+  "sprite_scale": 1.0,
+  "sprite_height": 1.0,
+  "swatch": "#afb989",
+  "has_artwork": true,
+  "sort_order": 7062
+ },
+ {
+  "slug": "build_7063",
+  "build_id": 7063,
+  "name_key": "garden_build_name_7063",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0.5,
+  "offset_y": 0.5,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7063_01",
+  "icon": "garden_icon_7063_01",
+  "prosper": 5000,
+  "sprite_url": "asset:assets/tiles/7063.png",
+  "icon_url": "asset:assets/icons/7063.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#6f4329",
+  "has_artwork": true,
+  "sort_order": 7063,
+  "display_name": "Sleeping Drakethrone",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7064",
+  "build_id": 7064,
+  "name_key": "garden_build_name_7064",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7064_01",
+  "icon": "garden_icon_7064_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7064.png",
+  "icon_url": "asset:assets/icons/7064.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7a6340",
+  "has_artwork": true,
+  "sort_order": 7064,
+  "display_name": "Dragon Sculpture"
+ },
+ {
+  "slug": "lush_elegy",
+  "build_id": 7065,
+  "name_key": "garden_build_name_7065",
+  "category": "hedge",
+  "shape": "hedge",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 2,
+  "tile_type": 7,
+  "tile_type_name": "bush",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": false,
+  "build_type": 2,
+  "model": "garden_build_7066_01",
+  "icon": "garden_pic_7065",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7065_single.png",
+  "icon_url": "asset:assets/icons/7065.png",
+  "sprite_scale": 1.05,
+  "sprite_height": 1.0,
+  "swatch": "#699162",
+  "has_artwork": true,
+  "sort_order": 7065
+ },
+ {
+  "slug": "palisade",
+  "build_id": 7066,
+  "name_key": "garden_build_name_7066",
+  "category": "fence",
+  "shape": "fence",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 2,
+  "tile_type": 6,
+  "tile_type_name": "fence",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": false,
+  "build_type": 2,
+  "model": "garden_build_7066_01",
+  "icon": "garden_pic_7066",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7066.png",
+  "icon_url": "asset:assets/icons/7066.png",
+  "sprite_scale": 1.05,
+  "sprite_height": 1.0,
+  "swatch": "#8d623a",
+  "has_artwork": true,
+  "sort_order": 7066
+ },
+ {
+  "slug": "build_7067",
+  "build_id": 7067,
+  "name_key": "garden_build_name_7067",
+  "category": "building",
+  "shape": "flat",
+  "width": 5,
+  "height": 5,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 3,
+  "tile_type_name": "water",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    3,
+    0
+   ],
+   [
+    4,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    4,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    4,
+    4
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -1,
+  "offset_y": -1,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": false,
+  "build_type": 2,
+  "model": "garden_build_7067_01",
+  "icon": "garden_icon_7067_01",
+  "prosper": 1000,
+  "sprite_url": null,
+  "icon_url": null,
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#b9b9b9",
+  "has_artwork": false,
+  "sort_order": 7067,
+  "retired": true
+ },
+ {
+  "slug": "build_7068",
+  "build_id": 7068,
+  "name_key": "garden_build_name_7068",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7068_01",
+  "icon": "garden_icon_7068_01",
+  "prosper": 1000,
+  "sprite_url": null,
+  "icon_url": null,
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#b9b9b9",
+  "has_artwork": false,
+  "sort_order": 7068,
+  "retired": true
+ },
+ {
+  "slug": "build_7069",
+  "build_id": 7069,
+  "name_key": "garden_build_name_7069",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7069_01",
+  "icon": "garden_icon_7069_01",
+  "prosper": 1000,
+  "sprite_url": null,
+  "icon_url": null,
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#b9b9b9",
+  "has_artwork": false,
+  "sort_order": 7069,
+  "retired": true
+ },
+ {
+  "slug": "build_7070",
+  "build_id": 7070,
+  "name_key": "garden_build_name_7070",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   0,
+   0,
+   1,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7070_01",
+  "icon": "garden_icon_7070_01",
+  "prosper": 1000,
+  "sprite_url": null,
+  "icon_url": null,
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#b9b9b9",
+  "has_artwork": false,
+  "sort_order": 7070,
+  "retired": true
+ },
+ {
+  "slug": "build_7071",
+  "build_id": 7071,
+  "name_key": "garden_build_name_7071",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.3,
+  "offset_y": -0.3,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7071_01",
+  "icon": "garden_icon_7071_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7071.png",
+  "icon_url": "asset:assets/icons/7071.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#908052",
+  "has_artwork": true,
+  "sort_order": 7071,
+  "display_name": "New Year Greeting",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7072",
+  "build_id": 7072,
+  "name_key": "garden_build_name_7072",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   1,
+   0,
+   1,
+   0,
+   1,
+   0,
+   0,
+   1,
+   0,
+   1,
+   0,
+   1,
+   0,
+   1,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7072_01",
+  "icon": "garden_icon_7072_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7072.png",
+  "icon_url": "asset:assets/icons/7072.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#9d5037",
+  "has_artwork": true,
+  "sort_order": 7072,
+  "display_name": "Journey of the Heart",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7073",
+  "build_id": 7073,
+  "name_key": "garden_build_name_7073",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7073_01",
+  "icon": "garden_icon_7073_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7073.png",
+  "icon_url": "asset:assets/icons/7073.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#835f54",
+  "has_artwork": true,
+  "sort_order": 7073,
+  "display_name": "Starstation"
+ },
+ {
+  "slug": "build_7074",
+  "build_id": 7074,
+  "name_key": "garden_build_name_7074",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7074_01",
+  "icon": "garden_icon_7074_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7074.png",
+  "icon_url": "asset:assets/icons/7074.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#70794a",
+  "has_artwork": true,
+  "sort_order": 7074,
+  "display_name": "Eggchanted",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7075",
+  "build_id": 7075,
+  "name_key": "garden_build_name_7075",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7075_01",
+  "icon": "garden_icon_7075_01",
+  "prosper": 1000,
+  "sprite_url": null,
+  "icon_url": null,
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#b9b9b9",
+  "has_artwork": false,
+  "sort_order": 7075,
+  "retired": true
+ },
+ {
+  "slug": "garden_path",
+  "build_id": 7077,
+  "name_key": "garden_build_name_7077",
+  "category": "path",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 2,
+  "tile_type": 8,
+  "tile_type_name": "exquisite_road",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": true,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 2,
+  "model": "garden_build_7055_01",
+  "icon": "garden_icon_7077",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7077.png",
+  "icon_url": "asset:assets/icons/7077.png",
+  "sprite_scale": 1.0,
+  "sprite_height": 1.0,
+  "swatch": "#cac5b2",
+  "has_artwork": true,
+  "sort_order": 7077
+ },
+ {
+  "slug": "purple_fantasy",
+  "build_id": 7078,
+  "name_key": "garden_build_name_7078",
+  "category": "hedge",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 2,
+  "tile_type": 9,
+  "tile_type_name": "decoration_7078",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": false,
+  "build_type": 2,
+  "model": "garden_build_7066_01",
+  "icon": "garden_icon_7078",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7078_single.png",
+  "icon_url": "asset:assets/icons/7078.png",
+  "sprite_scale": 1.05,
+  "sprite_height": 1.0,
+  "swatch": "#4e8669",
+  "has_artwork": true,
+  "sort_order": 7078
+ },
+ {
+  "slug": "build_7079",
+  "build_id": 7079,
+  "name_key": "garden_build_name_7079",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7079_01",
+  "icon": "garden_icon_7079_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7079.png",
+  "icon_url": "asset:assets/icons/7079.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#976c2a",
+  "has_artwork": true,
+  "sort_order": 7079,
+  "display_name": "Jade Jubilation",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7080",
+  "build_id": 7080,
+  "name_key": "garden_build_name_7084",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7084_01",
+  "icon": "garden_icon_7084_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7080.png",
+  "icon_url": "asset:assets/icons/7080.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#8c6843",
+  "has_artwork": true,
+  "sort_order": 7080,
+  "display_name": "Court of Knowledge"
+ },
+ {
+  "slug": "build_7081",
+  "build_id": 7081,
+  "name_key": "garden_build_name_7085",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 4,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7085_01",
+  "icon": "garden_icon_7085_01",
+  "prosper": 500,
+  "sprite_url": "asset:assets/tiles/7081.png",
+  "icon_url": "asset:assets/icons/7081.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#897e6a",
+  "has_artwork": true,
+  "sort_order": 7081,
+  "retired": true
+ },
+ {
+  "slug": "build_7082",
+  "build_id": 7082,
+  "name_key": "garden_build_name_7082",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 4,
+  "build_class": 2,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7082_01",
+  "icon": "garden_icon_7082_01",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7082.png",
+  "icon_url": "asset:assets/icons/7082.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#786a4c",
+  "has_artwork": true,
+  "sort_order": 7082,
+  "display_name": "Purifier",
+  "rarity": "Epic"
+ },
+ {
+  "slug": "song_of_the_sun",
+  "build_id": 7083,
+  "name_key": "garden_build_name_7083",
+  "category": "hedge",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 2,
+  "tile_type": 10,
+  "tile_type_name": "decoration_7083",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": false,
+  "build_type": 2,
+  "model": "garden_build_7066_01",
+  "icon": "garden_icon_7083",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7083_single.png",
+  "icon_url": "asset:assets/icons/7083.png",
+  "sprite_scale": 1.05,
+  "sprite_height": 1.0,
+  "swatch": "#728749",
+  "has_artwork": true,
+  "sort_order": 7083
+ },
+ {
+  "slug": "build_7084",
+  "build_id": 7084,
+  "name_key": "garden_build_name_7080",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7080_01",
+  "icon": "garden_icon_7080_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7084.png",
+  "icon_url": null,
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#8195a9",
+  "has_artwork": true,
+  "sort_order": 7084
+ },
+ {
+  "slug": "build_7085",
+  "build_id": 7085,
+  "name_key": "garden_build_name_7081",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 4,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7081_01",
+  "icon": "garden_icon_7081_01",
+  "prosper": 500,
+  "sprite_url": "asset:assets/tiles/7085.png",
+  "icon_url": null,
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#8a7f6d",
+  "has_artwork": true,
+  "sort_order": 7085,
+  "display_name": "Small Collesium"
+ },
+ {
+  "slug": "meadow",
+  "build_id": 7088,
+  "name_key": "garden_build_name_7088",
+  "category": "path",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 2,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": true,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 2,
+  "model": "garden_build_7088_01",
+  "icon": "garden_icon_7088",
+  "prosper": 0,
+  "sprite_url": "asset:assets/tiles/7088.png",
+  "icon_url": "asset:assets/icons/7088.png",
+  "sprite_scale": 1.0,
+  "sprite_height": 1.0,
+  "swatch": "#70a032",
+  "has_artwork": true,
+  "sort_order": 7088
+ },
+ {
+  "slug": "build_7089",
+  "build_id": 7089,
+  "name_key": "garden_build_name_7089",
+  "category": "decor",
+  "shape": "flat",
+  "width": 1,
+  "height": 1,
+  "build_limit": 500,
+  "effect_limit": 0,
+  "quality": 1,
+  "build_class": 2,
+  "tile_type": 11,
+  "tile_type_name": "decoration_7089",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": 0,
+  "offset_y": 0,
+  "passable": false,
+  "enable_direct": false,
+  "tile_group": 0,
+  "needs_gap": false,
+  "build_type": 2,
+  "model": "garden_build_7066_01",
+  "icon": "garden_icon_7089",
+  "prosper": 0,
+  "sprite_url": null,
+  "icon_url": null,
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#b9b9b9",
+  "has_artwork": false,
+  "sort_order": 7089,
+  "retired": true
+ },
+ {
+  "slug": "build_7090",
+  "build_id": 7090,
+  "name_key": "garden_build_name_7090",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7090_01",
+  "icon": "garden_icon_7090_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7090.png",
+  "icon_url": "asset:assets/icons/7090.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#826c4b",
+  "has_artwork": true,
+  "sort_order": 7090,
+  "display_name": "Lion of Glory"
+ },
+ {
+  "slug": "build_7091",
+  "build_id": 7091,
+  "name_key": "garden_build_name_7091",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7091_01",
+  "icon": "garden_icon_7091_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7091.png",
+  "icon_url": "asset:assets/icons/7091.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#825931",
+  "has_artwork": true,
+  "sort_order": 7091,
+  "display_name": "Grizzly Statue",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7092",
+  "build_id": 7092,
+  "name_key": "garden_build_name_7092",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7092_01",
+  "icon": "garden_icon_7092_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7092.png",
+  "icon_url": "asset:assets/icons/7092.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#966f45",
+  "has_artwork": true,
+  "sort_order": 7092,
+  "display_name": "Cheesy Perfection",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7093",
+  "build_id": 7093,
+  "name_key": "garden_build_name_7093",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 3,
+  "tile_type_name": "water",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": false,
+  "build_type": 2,
+  "model": "garden_build_7093_01",
+  "icon": "garden_icon_7093_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7093.png",
+  "icon_url": "asset:assets/icons/7093.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#536762",
+  "has_artwork": true,
+  "sort_order": 7093,
+  "display_name": "Lantern Garden",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7094",
+  "build_id": 7094,
+  "name_key": "garden_build_name_7094",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7094_01",
+  "icon": "garden_icon_7094_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7094.png",
+  "icon_url": "asset:assets/icons/7094.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#4c495e",
+  "has_artwork": true,
+  "sort_order": 7094,
+  "display_name": "Wicked Hut",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7095",
+  "build_id": 7095,
+  "name_key": "garden_build_name_7095",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7095_01",
+  "icon": "garden_icon_7095_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7095.png",
+  "icon_url": "asset:assets/icons/7095.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#98693c",
+  "has_artwork": true,
+  "sort_order": 7095,
+  "display_name": "Autumn Canvas",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7096",
+  "build_id": 7096,
+  "name_key": "garden_build_name_7096",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "link_direction_count": 2,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7096_01",
+  "icon": "garden_icon_7096_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7096.png",
+  "icon_url": "asset:assets/icons/7096.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#6a6a3f",
+  "has_artwork": true,
+  "sort_order": 7096,
+  "display_name": "Winter Rollercoaster",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7098",
+  "build_id": 7098,
+  "name_key": "garden_build_name_7098",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 3,
+  "tile_type_name": "water",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 2,
+  "model": "garden_build_7098_01",
+  "icon": "garden_icon_7098_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7098.png",
+  "icon_url": "asset:assets/icons/7098.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#5c7c6c",
+  "has_artwork": true,
+  "sort_order": 7098,
+  "display_name": "Lakeside Dream",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7100",
+  "build_id": 7100,
+  "name_key": "garden_build_name_7100",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7100_01",
+  "icon": "garden_icon_7100_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7100.png",
+  "icon_url": "asset:assets/icons/7100.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#8e7648",
+  "has_artwork": true,
+  "sort_order": 7100,
+  "display_name": "Dragon Sculpture",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7101",
+  "build_id": 7101,
+  "name_key": "garden_build_name_7101",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7101_01",
+  "icon": "garden_icon_7101_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7101.png",
+  "icon_url": "asset:assets/icons/7101.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#476743",
+  "has_artwork": true,
+  "sort_order": 7101,
+  "display_name": "Dinosaur Fort",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7102",
+  "build_id": 7102,
+  "name_key": "garden_build_name_7102",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7102_01",
+  "icon": "garden_icon_7102_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7102.png",
+  "icon_url": "asset:assets/icons/7102.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#72763f",
+  "has_artwork": true,
+  "sort_order": 7102,
+  "display_name": "Pro Ball Trainer",
+  "rarity": "Legendary"
+ },
+ {
+  "slug": "build_7103",
+  "build_id": 7103,
+  "name_key": "garden_build_name_7103",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7103_01",
+  "icon": "garden_icon_7103_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7103.png",
+  "icon_url": "asset:assets/icons/7103.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#62636f",
+  "has_artwork": true,
+  "sort_order": 7103,
+  "display_name": "Mini Crucible"
+ },
+ {
+  "slug": "build_7104",
+  "build_id": 7104,
+  "name_key": "garden_build_name_7104",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7104_01",
+  "icon": "garden_icon_7104_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7104.png",
+  "icon_url": "asset:assets/icons/7104.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7e652c",
+  "has_artwork": true,
+  "sort_order": 7104,
+  "display_name": "Passing of the Sword"
+ },
+ {
+  "slug": "build_7105",
+  "build_id": 7105,
+  "name_key": "garden_build_name_7105",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7105_01",
+  "icon": "garden_icon_7105_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7105.png",
+  "icon_url": "asset:assets/icons/7105.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#876e4a",
+  "has_artwork": true,
+  "sort_order": 7105,
+  "display_name": "Godess of Glory"
+ },
+ {
+  "slug": "build_7107",
+  "build_id": 7107,
+  "name_key": "garden_build_name_7107",
+  "category": "building",
+  "shape": "flat",
+  "width": 4,
+  "height": 4,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 3,
+  "tile_type_name": "water",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    3,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    3
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 2,
+  "model": "garden_build_7107_01",
+  "icon": "garden_icon_7107_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7107.png",
+  "icon_url": "asset:assets/icons/7107.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#8e8060",
+  "has_artwork": true,
+  "sort_order": 7107,
+  "display_name": "Dream Sailing"
+ },
+ {
+  "slug": "build_7108",
+  "build_id": 7108,
+  "name_key": "garden_build_name_7108",
+  "category": "building",
+  "shape": "flat",
+  "width": 4,
+  "height": 4,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 3,
+  "tile_type_name": "water",
+  "tile_links": [],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    3,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    3
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 2,
+  "model": "garden_build_7108_01",
+  "icon": "garden_icon_7108_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7108.png",
+  "icon_url": "asset:assets/icons/7108.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#767e4b",
+  "has_artwork": true,
+  "sort_order": 7108
+ },
+ {
+  "slug": "build_7112",
+  "build_id": 7112,
+  "name_key": "garden_build_name_7112",
+  "category": "building",
+  "shape": "flat",
+  "width": 3,
+  "height": 3,
+  "build_limit": 0,
+  "effect_limit": 1,
+  "quality": 5,
+  "build_class": 1,
+  "tile_type": 0,
+  "tile_type_name": "none",
+  "tile_links": [
+   1,
+   4,
+   5,
+   8,
+   12
+  ],
+  "link_points": [],
+  "link_direction_count": 1,
+  "mask_cells": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "block_cells": [],
+  "offset_x": -0.2,
+  "offset_y": -0.2,
+  "passable": false,
+  "enable_direct": true,
+  "tile_group": 0,
+  "needs_gap": true,
+  "build_type": 1,
+  "model": "garden_build_7112_01",
+  "icon": "garden_icon_7112_01",
+  "prosper": 1000,
+  "sprite_url": "asset:assets/tiles/7112.png",
+  "icon_url": "asset:assets/icons/7112.png",
+  "sprite_scale": 1.1,
+  "sprite_height": 0.95,
+  "swatch": "#7c7e57",
+  "has_artwork": true,
+  "sort_order": 7112
+ }
+]
