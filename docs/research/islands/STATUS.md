@@ -20,9 +20,18 @@ Updated 30 October 2026. Investigation in progress. This branch contains researc
 - Chest-route progress is described by the live tutorial as session-only and separate from the saved layout.
 - Web search is returning errors in this session; independent mechanics verification remains open.
 
+## Second checkpoint
+
+- Added MECHANICS.md with coordinate conversions, route behaviour, confidence levels and missing game rules.
+- Added UX-AUDIT.md with observed workflows and questions for the Kingslop design.
+- Extracted 55 chest coordinate pairs and reconstructed one/two-Reservoir route fixtures.
+- Collected 186 static images (92 icons and 94 sprites), with original URLs and hashes. Review copies are WebP, bounded to 128px icons and 512px sprites.
+- Captured chest-route and generator screenshots, plus a contact sheet of 91 active catalogue entries with available icons.
+- Public share links require sign-in. Code sharing is offered without sign-in; a clipboard payload could not be recovered in this browser, so import/export interoperability is not verified.
+
 ## Next work
 
-Inspect roles, properties, chest routes, generation, templates and sharing; download static artwork; document UX and calculations; map Kingslop integration; publish verification gaps and handoff.
+Finish supplementary-source checks, asset verification and retrieval helpers, Kingslop integration notes, and a concise handoff with the unresolved gameplay questions.
 
 ## Collaboration
 

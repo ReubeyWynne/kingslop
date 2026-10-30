@@ -1,0 +1,3323 @@
+{
+  "captured_on": "2026-10-30",
+  "source_release": "67e43244b12e412f621eb42a",
+  "rights": "Game artwork retained for research; public availability does not establish redistribution rights.",
+  "assets": [
+    {
+      "path": "assets/icons/7000.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7000.png",
+      "status": "downloaded",
+      "source_sha256": "808a17c89af60180b40847d64d6daf1a9893aca59e873ef856b6fc6e2a5d5fe3",
+      "source_bytes": 334852,
+      "bytes": 8352,
+      "sha256": "77fe5af13c46205dfb8e0baae9cfbe0941cb079ad719d376310beeb540afd792",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        645,
+        645
+      ]
+    },
+    {
+      "path": "assets/icons/7001.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7001.png",
+      "status": "downloaded",
+      "source_sha256": "b450fb7643c71573ac6fd573dcafec5bea164d5bcfd23e51923eed0fd0deceff",
+      "source_bytes": 11690,
+      "bytes": 4114,
+      "sha256": "9bc9b4553c7b9bf73d4c522804db50e5f00c17aff68cc9134b0870195ff22267",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7002.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7002.png",
+      "status": "downloaded",
+      "source_sha256": "2843b2ccc338f81f58703fa43b5fb8a303b932bd3a9bf60b0b4d4bf1883b36dc",
+      "source_bytes": 284608,
+      "bytes": 10738,
+      "sha256": "f8c8f03dd6435964aa808e16dd495aab4dad89316c663cadcf49dc52cda9ebb5",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        502,
+        502
+      ]
+    },
+    {
+      "path": "assets/icons/7005.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7005.png",
+      "status": "downloaded",
+      "source_sha256": "45e72f0bb770996ff1cc8f157c691bc6f7d49a7982f7caf917e832418362a160",
+      "source_bytes": 154040,
+      "bytes": 10680,
+      "sha256": "2180ef14967827b4ece60dfe79e78f5deedf138b903ea7369592bfc0052e53f0",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        383,
+        383
+      ]
+    },
+    {
+      "path": "assets/icons/7006.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7006.png",
+      "status": "downloaded",
+      "source_sha256": "60810d02d95422ae674e392f05ebfc474c6e22fef0df75b0a7db5ee1542ea92f",
+      "source_bytes": 236986,
+      "bytes": 9330,
+      "sha256": "a6caf8d280fe8745e4300876ca733564a95d9b02e0a634cb19bb7937acdc031f",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        477,
+        477
+      ]
+    },
+    {
+      "path": "assets/icons/7007.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7007.png",
+      "status": "downloaded",
+      "source_sha256": "4b41eda1701ebe1292e821d1030accfc00f368b2604de83c6d293e38bee9a79f",
+      "source_bytes": 194192,
+      "bytes": 7914,
+      "sha256": "e4fbddf671d9abba50386184b6becae09430cd9bdf065d12dbaedbeff1384c58",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        459,
+        459
+      ]
+    },
+    {
+      "path": "assets/icons/7008.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7008.png",
+      "status": "downloaded",
+      "source_sha256": "14914173b8e3176c9396619990472697339ab6424ca6c3fdff0dd948868d625e",
+      "source_bytes": 245675,
+      "bytes": 8934,
+      "sha256": "1e7a43ffc5cfc1b702cfcdca14136e0985d506e7f72a0546358c1f5dbbd3ebdf",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        539,
+        539
+      ]
+    },
+    {
+      "path": "assets/icons/7009.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7009.png",
+      "status": "downloaded",
+      "source_sha256": "f58fa95c2fbca495647888e3da09e584042e714b9309c4e434498f75f946add5",
+      "source_bytes": 71099,
+      "bytes": 9352,
+      "sha256": "0472018a56704518223e92cc0406e5c7d954d2b4688456d112be83851910433e",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        228,
+        228
+      ]
+    },
+    {
+      "path": "assets/icons/7010.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7010.png",
+      "status": "downloaded",
+      "source_sha256": "d8acd753bbcd0ef9f2fbf20ee1c9db5081799411fa56dfacff8cd348d1168145",
+      "source_bytes": 75868,
+      "bytes": 6342,
+      "sha256": "41f09f9ba7cbd6459d7b87be755a49d6e77f207e3466d48e3a35c99aed6eb057",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        310,
+        310
+      ]
+    },
+    {
+      "path": "assets/icons/7012.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7012.png",
+      "status": "downloaded",
+      "source_sha256": "925ab6778f7edb7bf791145d12691054e8ed212df4cfcedef86b640d8c1e2502",
+      "source_bytes": 12691,
+      "bytes": 4454,
+      "sha256": "9ea87ce61dd794146534104b5fd5ae74bc42df9b181cf4886708e61014c6b1e1",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7013.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7013.png",
+      "status": "downloaded",
+      "source_sha256": "1a35907ce6e38c6374dbdd5b671341cf411716b39ff93c3ff9697ae5448b5d5d",
+      "source_bytes": 106692,
+      "bytes": 6418,
+      "sha256": "e29a38f224cbffa63184f0ee998414071d754646206601968040c727cc37c729",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        392,
+        392
+      ]
+    },
+    {
+      "path": "assets/icons/7014.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7014.png",
+      "status": "downloaded",
+      "source_sha256": "4e8e5c5430812038fbe007261d73fb17b48360b644d71be1cd3bfa4def446cfb",
+      "source_bytes": 321261,
+      "bytes": 11586,
+      "sha256": "9593c8059158734c1b8477ffb5abcdb5567adc933134ed48d75f1eb1e95aec41",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        532,
+        532
+      ]
+    },
+    {
+      "path": "assets/icons/7015.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7015.png",
+      "status": "downloaded",
+      "source_sha256": "1f54c03ce4586f5f87e80aff1926e3665b3cc034f998511ae96f89a886b12e44",
+      "source_bytes": 88333,
+      "bytes": 9426,
+      "sha256": "a75522ec7103e500bffa725beffa8af22dd4c35ae6eaf7ac07f8c801f43989c4",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        280,
+        280
+      ]
+    },
+    {
+      "path": "assets/icons/7016.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7016.png",
+      "status": "downloaded",
+      "source_sha256": "2814857cbed9bd699f6e23590b0fd9a0ec449386f68a27fe523ac8a70bad2225",
+      "source_bytes": 78456,
+      "bytes": 6560,
+      "sha256": "c534fbd0c9669bd1cfea6505606e2215234e0195e13c1ff241ea9daac508638b",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        327,
+        327
+      ]
+    },
+    {
+      "path": "assets/icons/7017.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7017.png",
+      "status": "downloaded",
+      "source_sha256": "cfcdc28ee9b4f3121307b6170f807e3024748df18c2a251efa8d5cdf7fe1878e",
+      "source_bytes": 308115,
+      "bytes": 9338,
+      "sha256": "1176cc43847d816338f032854931e8d6c43c83270069a7b03e51d64bfacdb803",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        594,
+        594
+      ]
+    },
+    {
+      "path": "assets/icons/7018.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7018.png",
+      "status": "downloaded",
+      "source_sha256": "2c3aacc86bd3e762301715526b877259bf896d82e9702b4716c577e09102049c",
+      "source_bytes": 343648,
+      "bytes": 8936,
+      "sha256": "33a1f11372ab518db6fd9e893eecefdbf5510eaf68cd9548c9387762e6d179ea",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        561,
+        561
+      ]
+    },
+    {
+      "path": "assets/icons/7019.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7019.png",
+      "status": "downloaded",
+      "source_sha256": "576e173bfbe17e24ac83d1e297cb116b27f0592fa8efcc74a2b5078b090a4895",
+      "source_bytes": 181152,
+      "bytes": 10424,
+      "sha256": "a59386a97338fb71803687662a7a7e1cfb59310d99dd6ab28531fe0ddd4b387a",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        379,
+        379
+      ]
+    },
+    {
+      "path": "assets/icons/7020.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7020.png",
+      "status": "downloaded",
+      "source_sha256": "d330aa2ddd1a31d5c4715cc620f4e8f0a3c0dcde4b8f049d51985ff9010abca3",
+      "source_bytes": 202188,
+      "bytes": 7412,
+      "sha256": "37ade3eb630f8c4711b7c4e99680e7e3002dfb945be7c7fcc5beb242a343386f",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        585,
+        585
+      ]
+    },
+    {
+      "path": "assets/icons/7021.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7021.png",
+      "status": "downloaded",
+      "source_sha256": "8889cdb071589c8b74521d430a4aed69cd33faac5848f3750210f67b5a2e9e4a",
+      "source_bytes": 275470,
+      "bytes": 8732,
+      "sha256": "427f37c4a98af3f46d5c02ebdc07ad3f41c136197b00d77160da32d53e242554",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        560,
+        560
+      ]
+    },
+    {
+      "path": "assets/icons/7022.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7022.png",
+      "status": "downloaded",
+      "source_sha256": "0d5ec9a61d1a1339538ecc7e4ae274291c52dec7e0539bb7be9475123008c042",
+      "source_bytes": 63047,
+      "bytes": 8928,
+      "sha256": "53551ccc574036c1de17d5ac7070ba4945b4d30ddc521db04f88b1ef5f728095",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        238,
+        238
+      ]
+    },
+    {
+      "path": "assets/icons/7023.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7023.png",
+      "status": "downloaded",
+      "source_sha256": "cdc93e21dd83197b458180f9399d18d9a4de62c8e536a6328d9afd494bfb545d",
+      "source_bytes": 33342,
+      "bytes": 6700,
+      "sha256": "4f93425052e90c5bd577412655187b1055084d6832803652f5f41b21083dd578",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        195,
+        195
+      ]
+    },
+    {
+      "path": "assets/icons/7024.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7024.png",
+      "status": "downloaded",
+      "source_sha256": "7df898c79fe511bbf6132b60f87c5a7e6070b5a68e644ea3e99b17edbf51b44c",
+      "source_bytes": 37900,
+      "bytes": 7460,
+      "sha256": "0f43668692bd4300a043afdfc92ed67914902968aed63d0aade39ff0f6d7aafb",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        187,
+        187
+      ]
+    },
+    {
+      "path": "assets/icons/7025.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7025.png",
+      "status": "downloaded",
+      "source_sha256": "1466f9f76029898a069d461cf09836d30c27bc0594b6443661948d111d133c87",
+      "source_bytes": 8726,
+      "bytes": 3390,
+      "sha256": "e7effcaf95ad52704f1f1c4a35fc6ee590aa74f6135e513fe33a2927a4eb4ce0",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7026.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7026.png",
+      "status": "downloaded",
+      "source_sha256": "08ee9a3e153b2005cefbcfa461b628d9a4aac5f8cd9eb4f1899d83b7baeaaeb7",
+      "source_bytes": 27587,
+      "bytes": 5080,
+      "sha256": "33167cabdefaffd00d03a50dc7aee69af7092b4886a27a80af10321d3c38b586",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        220,
+        220
+      ]
+    },
+    {
+      "path": "assets/icons/7027.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7027.png",
+      "status": "downloaded",
+      "source_sha256": "f1ce42572d4de97da40c682af5819899980531f74c96ef30f82c2966f08e5e8a",
+      "source_bytes": 8526,
+      "bytes": 3052,
+      "sha256": "017f8d139461f707a9bfd4a092043006a20290cbcddd81287553dec571b04694",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7028.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7028.png",
+      "status": "downloaded",
+      "source_sha256": "5147ae258f81ed8c8ce3a01df6345bb2a265991f8b04480bf5ffea0946db11cf",
+      "source_bytes": 66629,
+      "bytes": 8434,
+      "sha256": "9e4f6c6fd8cec3c5c394be400d0fed40b6c5fbd69f13ea3f9f9517208ed943a8",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        239,
+        239
+      ]
+    },
+    {
+      "path": "assets/icons/7029.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7029.png",
+      "status": "downloaded",
+      "source_sha256": "2173248b08c300e91bf7852816bc864193039365703ee50e4cd568ffc408f734",
+      "source_bytes": 74459,
+      "bytes": 7406,
+      "sha256": "66e567acd3d06e20ea2fae755b28babaa790c32a90ec10f603175b8014fb71a3",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        259,
+        259
+      ]
+    },
+    {
+      "path": "assets/icons/7030.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7030.png",
+      "status": "downloaded",
+      "source_sha256": "0bcdf9f7975996ba4e64f73d880f76ec409d057ecb3fc2cadc097fac03d514b5",
+      "source_bytes": 43865,
+      "bytes": 6136,
+      "sha256": "8a4bc4177375141cc8e40fc701b64693497120201518955d27a28971aa7c0bb7",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        236,
+        236
+      ]
+    },
+    {
+      "path": "assets/icons/7031.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7031.png",
+      "status": "downloaded",
+      "source_sha256": "d62555a8ee381adc772da8b2cace20aa5083f607019c5c0cbd808af6e08a37b2",
+      "source_bytes": 38200,
+      "bytes": 7902,
+      "sha256": "fa856ea73b59b7ba2b37e5bcae0ff74c6278ec883ea7e2bb9fe7779d676df517",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        167,
+        167
+      ]
+    },
+    {
+      "path": "assets/icons/7032.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7032.png",
+      "status": "downloaded",
+      "source_sha256": "5809202e58366cee05356a92ebc77d3a042153e2087d4fa751b9850b4d7bed14",
+      "source_bytes": 32506,
+      "bytes": 7306,
+      "sha256": "30d0d4109d53a3832f23b661cb8d56bd3db39418f61f0255bda99f7b4f4c8011",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        201,
+        201
+      ]
+    },
+    {
+      "path": "assets/icons/7033.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7033.png",
+      "status": "downloaded",
+      "source_sha256": "26590c950ed632197d0c9f097ba848bbe0d3cbdb89e535574f5e403e12fe6990",
+      "source_bytes": 8130,
+      "bytes": 2984,
+      "sha256": "0a1e8b3814b6566cf9df5c7118f01958442734003549e48e87db4c71a587940c",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7034.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7034.png",
+      "status": "downloaded",
+      "source_sha256": "301b151b7d25a735397dc31778ed2d0304d02d0a7f221fbd2d76ed7a1000d213",
+      "source_bytes": 23692,
+      "bytes": 6504,
+      "sha256": "92d13cbc3a20b7d3825f575c191ad95051ab90292161850ac95eaa93af0fe0d5",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        141,
+        141
+      ]
+    },
+    {
+      "path": "assets/icons/7035.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7035.png",
+      "status": "downloaded",
+      "source_sha256": "7e3bfbfdb80ec3f9591314426e544f5bcc29257cf0bc511b60273243ed11d2fc",
+      "source_bytes": 44891,
+      "bytes": 7736,
+      "sha256": "d2439f3f48a2462b7650b83cdf7ed87265bd4b45e2e76cfe4b9733be2b3dbb35",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        193,
+        193
+      ]
+    },
+    {
+      "path": "assets/icons/7036.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7036.png",
+      "status": "downloaded",
+      "source_sha256": "0aa854e63ddc5c78e3e1f46355ac11b1061fd2e0ecc154f6bb2e7c83b0a3d881",
+      "source_bytes": 52253,
+      "bytes": 8322,
+      "sha256": "e4b86c0679589e2e407418ca4719eece42c93047db1d2edd37c144272e1f27fd",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        213,
+        213
+      ]
+    },
+    {
+      "path": "assets/icons/7037.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7037.png",
+      "status": "downloaded",
+      "source_sha256": "6d4dff9a7206293f1fa4dbb1181ba97865078200ff82984aff6db0289b136b3e",
+      "source_bytes": 5076,
+      "bytes": 2194,
+      "sha256": "604e0bced099f22c55416cb6b7949aaae72f5bf8485836c085924cded44becdc",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7038.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7038.png",
+      "status": "downloaded",
+      "source_sha256": "49607cdd65c779a4284cf049f946e29fa56bd105ec7e96acaab6ae09b47ce03f",
+      "source_bytes": 6101,
+      "bytes": 2434,
+      "sha256": "4d0148648f256bd20bffb236c72be8dc5f0cc4fc2e6092b0eefdccd863ad20d7",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7039.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7039.png",
+      "status": "downloaded",
+      "source_sha256": "bf92583d921d813b80bea45350504e975e4d4857cc6ddbb43f970e1a5622d35d",
+      "source_bytes": 4385,
+      "bytes": 1918,
+      "sha256": "8bc7b08b711dc55d940f946eed35fc8aef8f11639f2247a07d22ad328b0c84b0",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7040.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7040.png",
+      "status": "downloaded",
+      "source_sha256": "d696933aff624f523f8a797a202bcd297d0e74a8c05814440999626d90199050",
+      "source_bytes": 5659,
+      "bytes": 2332,
+      "sha256": "a760a7fcaba0bc93c7f5d37348fb197613d49d829f6e35fe461cfc4a5cbc612d",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7041.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7041.png",
+      "status": "downloaded",
+      "source_sha256": "18d586a8d97d3004642f06185e7456633d19d8b1da81c76eef80ee2db01b81ff",
+      "source_bytes": 8618,
+      "bytes": 3148,
+      "sha256": "d7930ca69821f81331a6c39bc0ef8a94a596ef23b68335ba6c6f50c6b4e310ce",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7042.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7042.png",
+      "status": "downloaded",
+      "source_sha256": "238f165c15e33cde33e2a141e5c61be67fe86e72388a9adf4e8fb1943b8ff27b",
+      "source_bytes": 8112,
+      "bytes": 3292,
+      "sha256": "8a20d973f725b3c1e7ace22d85c5315d9ca63618030f7253f4f4f98d7ded51c1",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7043.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7043.png",
+      "status": "downloaded",
+      "source_sha256": "520fe68b121775aed6dfc32c704bfb6bf9d0f0a9994ac5acf36e391f1e272367",
+      "source_bytes": 5078,
+      "bytes": 2116,
+      "sha256": "8348993677bdab78ed12481296437702b158b2ed2c50ece886c9751ed73074bc",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7044.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7044.png",
+      "status": "downloaded",
+      "source_sha256": "a582cdf357c364d37a9e46c1a7e479cd5d6206bfd25444ec42be96af0e593837",
+      "source_bytes": 8235,
+      "bytes": 2974,
+      "sha256": "76ec5c9b04110b92e73968f4464e47e21df3c8bb5d2bd0b70c1aa7663ecd0ffa",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7045.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7045.png",
+      "status": "downloaded",
+      "source_sha256": "a8a4ab2868d899065d7242eed3a67b932ea846c3b31c303a7c105fbd7504b831",
+      "source_bytes": 5537,
+      "bytes": 2360,
+      "sha256": "b4d451efa0d13d1d94bce481bded13733a4a4fd5e9898ca3ff3240ace4693837",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7046.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7046.png",
+      "status": "downloaded",
+      "source_sha256": "2dd58543b004ab5c56827dbeb94cdccbbe100a3b25732cab1a787918e12a4954",
+      "source_bytes": 6594,
+      "bytes": 2648,
+      "sha256": "0e916150e4ca37f4be40de97e5a328d56aa6b15809fb5c1e56c4f49c813f82e6",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7047.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7047.png",
+      "status": "downloaded",
+      "source_sha256": "ea2fc002bf3782adaf01846dbd0e30f50081ce6b0db7984b383f81ddaf9183af",
+      "source_bytes": 5569,
+      "bytes": 2286,
+      "sha256": "b6a21862285d4815ff69b0ca3b2c8c81697abaaa5a7c401412318fa7d867a161",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7048.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7048.png",
+      "status": "downloaded",
+      "source_sha256": "ad9c9cd7ab000c600089e2e2f0690d5b220c317432e507ef69ab7d4374648f64",
+      "source_bytes": 4448,
+      "bytes": 2076,
+      "sha256": "d7b509a3635ad036e74313f1405724fc13bca88a56fbc9a7c8ddcb618b4b258c",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7049.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7049.png",
+      "status": "downloaded",
+      "source_sha256": "69e8da12c200a4bb7038074dd0e35ecf9bb8a9606fbc7a6e349d8e11b3afcff2",
+      "source_bytes": 6212,
+      "bytes": 2746,
+      "sha256": "c567567c9fbb9503ea828ce1008b6827c49255c75c77f99ed193fc3bb2bdcaa0",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7050.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7050.png",
+      "status": "downloaded",
+      "source_sha256": "5bb579b28c3ae565e71d6e5c1b2df73bda899a9d8a20bbd3eab73d788ff8449b",
+      "source_bytes": 5760,
+      "bytes": 2312,
+      "sha256": "3d09da74113c05f303486214fb3f421195d7bc0082e9caa4e171c90ebe5b3929",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7051.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7051.png",
+      "status": "downloaded",
+      "source_sha256": "33568c5f9e0659a088ccbd65660588fd2b7fd56ff598c9fb7e21e928b261ea85",
+      "source_bytes": 5426,
+      "bytes": 2168,
+      "sha256": "29481650195b0804a6ac702bc8425cbfe4f117420acfe57d05589aa88421dc57",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7052.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7052.png",
+      "status": "downloaded",
+      "source_sha256": "b4aa9a10c1c808d465a802a3cbe567c5a29f72ae46f7b43ae058ce1ae3f21536",
+      "source_bytes": 11057,
+      "bytes": 3116,
+      "sha256": "e73c93132c7d00de24df9358d047b981a56abdbcf30b482d183303863e8a94f0",
+      "width": 116,
+      "height": 116,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        116,
+        116
+      ]
+    },
+    {
+      "path": "assets/icons/7053.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7053.png",
+      "status": "downloaded",
+      "source_sha256": "29393868e57d8bfecfdae3001a4046001ac7e9367be36e9d7a341c1cb019ffc4",
+      "source_bytes": 14673,
+      "bytes": 5612,
+      "sha256": "786fb0a43926829c1fe49d28bf48aa13b5e9a04559c7930cbfe672979366d270",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        131,
+        131
+      ]
+    },
+    {
+      "path": "assets/icons/7054.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7054.png",
+      "status": "downloaded",
+      "source_sha256": "b0a0d7bada38572bbdbe2af3610a4991ae49e7e9a46c7d54fe99757b638d424c",
+      "source_bytes": 16872,
+      "bytes": 5692,
+      "sha256": "8c8647bceaff2a7cea53e11110bf74f0046668632d082bcc7e70547a732997e1",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        132,
+        132
+      ]
+    },
+    {
+      "path": "assets/icons/7055.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7055.png",
+      "status": "downloaded",
+      "source_sha256": "15a3fd784eecb6c6deff088f45542c3184ef2e344c567c6e491a2c53e95030ae",
+      "source_bytes": 5976,
+      "bytes": 2274,
+      "sha256": "1ad05ae1fcd61331a9c890e57022e7207f89aeef746fa10d24a9366b3a9ca984",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7057.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7057.png",
+      "status": "downloaded",
+      "source_sha256": "19dd8384387c0076cb3dbb1bae4f906157760a51faccc26ebbec4143f6ab77bd",
+      "source_bytes": 8638,
+      "bytes": 2622,
+      "sha256": "e4b693bc641bc183bf567e22ba5063a8a29e0f74339f57d1a9657478ed81faa0",
+      "width": 73,
+      "height": 101,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        73,
+        101
+      ]
+    },
+    {
+      "path": "assets/icons/7058.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7058.png",
+      "status": "downloaded",
+      "source_sha256": "e4b2a7123afbe7cd90c23c815a30e66dbea19a9262f3f6bafbd995c5bf0edabb",
+      "source_bytes": 16447,
+      "bytes": 5164,
+      "sha256": "7805d6858f178b353ec968b5086765b6b98516ac95abbadef12247402f3a2b7c",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        137,
+        137
+      ]
+    },
+    {
+      "path": "assets/icons/7059.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7059.png",
+      "status": "downloaded",
+      "source_sha256": "0a92cdd0bb8f394a17f4480dbe7028293605791038e469f56e6b3589f82e8161",
+      "source_bytes": 64622,
+      "bytes": 8514,
+      "sha256": "f543bb501a71988a165bfc335f8fb924858e3a13c87e0e34e9b9432f488fbaa2",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        234,
+        234
+      ]
+    },
+    {
+      "path": "assets/icons/7060.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7060.png",
+      "status": "downloaded",
+      "source_sha256": "ef9dc232d532edcf28f01088b652ed67a0ea149f608d3e3b6674fd1aac8ed764",
+      "source_bytes": 173985,
+      "bytes": 7892,
+      "sha256": "bd86ca00e2653b8212d86a3ea6697b8086e99fd1d1dc9e7c53b069e37961ba87",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        472,
+        472
+      ]
+    },
+    {
+      "path": "assets/icons/7061.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7061.png",
+      "status": "downloaded",
+      "source_sha256": "ad7472938b0de32826e4fec3fa317c69d40c43e0300d7e89867f006951232638",
+      "source_bytes": 6612,
+      "bytes": 2186,
+      "sha256": "cc6b389d32f546e3206ac10df1d5f80b473d062165ad25b9f5205f0561ad4d46",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7062.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7062.png",
+      "status": "downloaded",
+      "source_sha256": "cce39e16b6fe2797b96a8cc35dce79dafc2adbf994cdee5a7cc04d97943e6c2d",
+      "source_bytes": 6404,
+      "bytes": 2244,
+      "sha256": "e85e23d8ace59fd4f0de892b2a1640f365b7833274153ec3b392a1c85ce2fe09",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7063.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7063.png",
+      "status": "downloaded",
+      "source_sha256": "cb038696de5d3907386053668c447c8464f3a2028b0e5adeca5eb0fdefa04bee",
+      "source_bytes": 583233,
+      "bytes": 7714,
+      "sha256": "c4de339faca613adc1ce9577a07ee05519f315b751e59723c59e70cb129e59e4",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        955,
+        955
+      ]
+    },
+    {
+      "path": "assets/icons/7064.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7064.png",
+      "status": "downloaded",
+      "source_sha256": "13711cd4fd61d35015494928811751ad8dc278605d4efda97c7ba866f6ad7bdf",
+      "source_bytes": 255158,
+      "bytes": 8232,
+      "sha256": "41a431dc7ad61b1a1c90050e385fdec25362ce0daa09bbef013d6d259d7f97ec",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        584,
+        584
+      ]
+    },
+    {
+      "path": "assets/icons/7065.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7065.png",
+      "status": "downloaded",
+      "source_sha256": "84d3b3a0b6539ef1cc666e7781c43f8c5e7d309f76af29a71a8e4c12174f1a90",
+      "source_bytes": 5394,
+      "bytes": 2170,
+      "sha256": "7be6cdca903b6fc184979b2fbd25928881ab91372a18c380b6f71fe6d4bccacd",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7066.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7066.png",
+      "status": "downloaded",
+      "source_sha256": "95c04aa9f00fadbaf97b61fa23edd5ddbd2ccb080e64df71bec7e54b553b785e",
+      "source_bytes": 3277,
+      "bytes": 1590,
+      "sha256": "22891fb446986711f72e2f8f56ffa4ff826589e036236abd6494baad4dce8b2a",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7071.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7071.png",
+      "status": "downloaded",
+      "source_sha256": "91129cef05378c708a57ddd59471cf133a1198ef5f57cfa218887da55ea0b37f",
+      "source_bytes": 473010,
+      "bytes": 12284,
+      "sha256": "8a073014c7c56823818bb0c4489c303bfc2c71f485fd22cdaa0d671e5fb3fb96",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        753,
+        753
+      ]
+    },
+    {
+      "path": "assets/icons/7072.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7072.png",
+      "status": "downloaded",
+      "source_sha256": "857965eed9804217d044a9387b1de80ab843479534cbf34f0687380bcbc31885",
+      "source_bytes": 347203,
+      "bytes": 10092,
+      "sha256": "a8ff58531afe0fa548ea8fca0c425acf8345f570e1dd1ce25867cce3fa9b4baf",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        588,
+        588
+      ]
+    },
+    {
+      "path": "assets/icons/7073.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7073.png",
+      "status": "downloaded",
+      "source_sha256": "693dee259e69832e32b54fe931c2982e2dab483ef5005b1d7246243bf0f78f34",
+      "source_bytes": 340255,
+      "bytes": 11496,
+      "sha256": "8efd237f3242be481ebc36377273e42409d815188a1be42aa4bde08f1c14c61f",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        605,
+        605
+      ]
+    },
+    {
+      "path": "assets/icons/7074.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7074.png",
+      "status": "downloaded",
+      "source_sha256": "fd27ce8c47d3144e77a8a5c1289ad9b393112b314e61d3f3a2b1134d41d6691e",
+      "source_bytes": 295837,
+      "bytes": 10624,
+      "sha256": "0a3d6acc52d06ae89d7faa6c618cfe29779454cb29ebb7aa04e5b3e82c1b9ac0",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        593,
+        593
+      ]
+    },
+    {
+      "path": "assets/icons/7077.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7077.png",
+      "status": "downloaded",
+      "source_sha256": "038e089801f9dc509ad04455f87e191a3f1df3eacbeb7cac26b9299c464a2130",
+      "source_bytes": 6967,
+      "bytes": 2334,
+      "sha256": "e6290716c9b249bb984c967e0867b37f64fc6f40c86a4bd5561d62f7821c5531",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7078.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7078.png",
+      "status": "downloaded",
+      "source_sha256": "75a697126b6219695f9262a6881e42dd093e1fcaefc21c8075529736742fb3f9",
+      "source_bytes": 7026,
+      "bytes": 2416,
+      "sha256": "f1f78afcc2aa087ed73009361047e49c9b306c097c00634d28a680e4cf072689",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7079.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7079.png",
+      "status": "downloaded",
+      "source_sha256": "fdf19cf628202084acc0184ecd93e176bffcda0fa9a4f13015ca8e90b5d5c53c",
+      "source_bytes": 13355,
+      "bytes": 4576,
+      "sha256": "35036724eabb82ebb59197040d9c94bc3e6fdcb1f7a9895d819aebe6bd788311",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7080.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7080.png",
+      "status": "downloaded",
+      "source_sha256": "4d3cc7c54120ae58ef2b417322850cb6533520c4d58f47b02905aad95bc6244a",
+      "source_bytes": 351137,
+      "bytes": 10770,
+      "sha256": "9ce877d0193076b10ac20812e4ffa64a97145818b5fcbeb3e027fd67d0c44244",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        632,
+        632
+      ]
+    },
+    {
+      "path": "assets/icons/7081.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7081.png",
+      "status": "downloaded",
+      "source_sha256": "a9743aad45c4423e10748202be641783b879f88a83d2e9806dd8d1c68f1e3a0f",
+      "source_bytes": 13543,
+      "bytes": 4366,
+      "sha256": "80a85af67904a520269d0dcd23d8a8f9b2f9f696532e7e909d35492f08ab3c3b",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7082.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7082.png",
+      "status": "downloaded",
+      "source_sha256": "0dfec457859029313520b385fc3f21e20eb8ab91035b1d86f22f9849e9ed6810",
+      "source_bytes": 275778,
+      "bytes": 8684,
+      "sha256": "b5e66346b6843f2a276557b68787c1951c6d656c78174b8fd6c5c701ed6d9cb3",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        596,
+        596
+      ]
+    },
+    {
+      "path": "assets/icons/7083.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7083.png",
+      "status": "downloaded",
+      "source_sha256": "72e3dea32fcd5097abec6742686f0142b7b577eaefbcda8651778aa1c69e41c7",
+      "source_bytes": 6883,
+      "bytes": 2600,
+      "sha256": "3281f969c8005c26d7015f31e018a460f3656220d5374e1e577d781fe858d647",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7088.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7088.png",
+      "status": "downloaded",
+      "source_sha256": "d0ab30ffa3759c571299dd2acf94f9f6525ed17f9661d3b171252673624d4ebc",
+      "source_bytes": 5800,
+      "bytes": 2066,
+      "sha256": "a0fcd5c80e99407e1f78c39802a1e79dd14ce7f356c11d9d97d287ab682dc0f5",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7090.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7090.png",
+      "status": "downloaded",
+      "source_sha256": "dbfc2b260a71b5231ed8035422ea06d91d6d7b494d4787517136219938a86eae",
+      "source_bytes": 284745,
+      "bytes": 6800,
+      "sha256": "6c889b77f13f4454c4df632ace07782b1f59889cc990c66e3a5462084e343c7f",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        649,
+        649
+      ]
+    },
+    {
+      "path": "assets/icons/7091.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7091.png",
+      "status": "downloaded",
+      "source_sha256": "2a417b50c3fc39746e54dc63ea25568b71fc59c6f72efbf0f1e6841b22572b55",
+      "source_bytes": 216545,
+      "bytes": 7732,
+      "sha256": "c454cae2e7413d6747d8322799a06ba7b086a637165849fea0873b45eaf49c9d",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        532,
+        532
+      ]
+    },
+    {
+      "path": "assets/icons/7092.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7092.png",
+      "status": "downloaded",
+      "source_sha256": "fe856835bf675cedfc1e46ac7351fe917c355ba8f7270dc0f279744f9839ce80",
+      "source_bytes": 79561,
+      "bytes": 7802,
+      "sha256": "80ea8400c72f59082648c60b4dfc662dea6171303e1c4a010c7b1d52ae189070",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        326,
+        326
+      ]
+    },
+    {
+      "path": "assets/icons/7093.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7093.png",
+      "status": "downloaded",
+      "source_sha256": "e6914306de2d84baa72d7b5087bb844ec7c527e2e35e352ffe93cebd339086df",
+      "source_bytes": 260241,
+      "bytes": 9256,
+      "sha256": "04a1bf33e470ba6e03a74572b393979de7a4ea9b4d9d90b0830fa9679156399b",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        550,
+        550
+      ]
+    },
+    {
+      "path": "assets/icons/7094.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7094.png",
+      "status": "downloaded",
+      "source_sha256": "8b89df731176c565dac399cee4a89d0eef1f549faab0c722dd6ea0c52913dbc1",
+      "source_bytes": 284777,
+      "bytes": 8384,
+      "sha256": "30d153ca9b5f51fe631c558274460edb7d719b345a52fd5a3dee00f3da84af0a",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        607,
+        607
+      ]
+    },
+    {
+      "path": "assets/icons/7095.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7095.png",
+      "status": "downloaded",
+      "source_sha256": "93e57fa8751885bb9e475363072eab035fc9ffad860c8a114d7a5848a9eea8f7",
+      "source_bytes": 356376,
+      "bytes": 11754,
+      "sha256": "d7253a25397be898498d4dfdb13997299b7b11c540e097d1a3f23b168f7f1f7a",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        559,
+        559
+      ]
+    },
+    {
+      "path": "assets/icons/7096.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7096.png",
+      "status": "downloaded",
+      "source_sha256": "8ef69c18f44466f11ecb206817ae3edf7fb6aae4bdb3d753fc4ff461097a096c",
+      "source_bytes": 383533,
+      "bytes": 12590,
+      "sha256": "e98993499aa65fcb203eb91d249b3385eb02e34da4ed7c6c869e5304167f026b",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        635,
+        635
+      ]
+    },
+    {
+      "path": "assets/icons/7098.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7098.png",
+      "status": "downloaded",
+      "source_sha256": "f476a3b62cef91368a1e02a05735241efa14a9b53b06da5639767ea7e245c87b",
+      "source_bytes": 385035,
+      "bytes": 8820,
+      "sha256": "0813523a206d86db3e03597fb6dfcf2ae11474c3c255aff29caa9327394d4cea",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        688,
+        688
+      ]
+    },
+    {
+      "path": "assets/icons/7100.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7100.png",
+      "status": "downloaded",
+      "source_sha256": "b1dff7174bea1b9833b14c67adc489e4ce1fb6f1540face81b662276518796b2",
+      "source_bytes": 380947,
+      "bytes": 9382,
+      "sha256": "ab5b0c636eff2698c20fb4cdea46681f0ddf7eb89798bf21fd6de8ee42e18dd3",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        728,
+        728
+      ]
+    },
+    {
+      "path": "assets/icons/7101.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7101.png",
+      "status": "downloaded",
+      "source_sha256": "c1aa7c02f8e0b1895a8820e608fa8898d828b5d570de3ee0de4d614db0bdf4df",
+      "source_bytes": 371518,
+      "bytes": 10952,
+      "sha256": "7e97b45abd430f5afac6f84109c23d4e605e3baef7da8731d941a4ba98a87c24",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        587,
+        587
+      ]
+    },
+    {
+      "path": "assets/icons/7102.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7102.png",
+      "status": "downloaded",
+      "source_sha256": "96c9f34f2bf9769bed5f3999a998e4cc19d202aaec3a324046f31edc3430ecd8",
+      "source_bytes": 363548,
+      "bytes": 10750,
+      "sha256": "e8630ef9b3832ffb9265d9f4edeaa2d99cd28f250ce12017feba6e42e39c7223",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        592,
+        592
+      ]
+    },
+    {
+      "path": "assets/icons/7103.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7103.png",
+      "status": "downloaded",
+      "source_sha256": "fd4b9e914021b1e6c151a21c05dac77df76587975baa76133e98739e15428447",
+      "source_bytes": 10803,
+      "bytes": 3606,
+      "sha256": "63561848de74e7d9ac3cc6f222eb69aea629af9213572ef508083536ed19dd93",
+      "width": 96,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        96,
+        96
+      ]
+    },
+    {
+      "path": "assets/icons/7104.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7104.png",
+      "status": "downloaded",
+      "source_sha256": "33e73998758ecb02cc942619bfb739c3c17116126db6203e371f4adc53cd305e",
+      "source_bytes": 283606,
+      "bytes": 9380,
+      "sha256": "56be8694c51bbcb55b641b99b608a2289e7779fc6abdf2d0e84de613f9cfdfe2",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        655,
+        655
+      ]
+    },
+    {
+      "path": "assets/icons/7105.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7105.png",
+      "status": "downloaded",
+      "source_sha256": "13a4cb6ac78c322c16224ee7f6b401fbc30abf7c24ea16239365eb63fd21e310",
+      "source_bytes": 271504,
+      "bytes": 6640,
+      "sha256": "20dec59690f897163555c29afdd0d05290ee614589115170bbf4bfbfbb2994b4",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        706,
+        706
+      ]
+    },
+    {
+      "path": "assets/icons/7107.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7107.png",
+      "status": "downloaded",
+      "source_sha256": "e61978a1d1cdbf9939044fb9f118a939b08684f41af97f3fc9e9e4b05e9116a5",
+      "source_bytes": 439856,
+      "bytes": 6984,
+      "sha256": "2e4c1b7349c0f679dc440abcc220be5a0f14836db738168cd7e3f81d6be0c269",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        824,
+        824
+      ]
+    },
+    {
+      "path": "assets/icons/7108.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7108.png",
+      "status": "downloaded",
+      "source_sha256": "0887ed47d880205c25a3f313fdfa7d5ce4e550d038d3e1d07996f958ce76a3f5",
+      "source_bytes": 332598,
+      "bytes": 7838,
+      "sha256": "bf9d1b496931fff4ef150ecea8f0e7f858dc406724f249d5a4a4562ab474b2b6",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        712,
+        712
+      ]
+    },
+    {
+      "path": "assets/icons/7112.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/icons/7112.png",
+      "status": "downloaded",
+      "source_sha256": "0a395dfbfbbd7d2739d45c1e6e398ff30c918bb62bb76c6b1f0af7a809858347",
+      "source_bytes": 341170,
+      "bytes": 8516,
+      "sha256": "e4fd5c41945f5516caf364f5d2ce374db8c296d4b28c92e6743bda27ba77f475",
+      "width": 128,
+      "height": 128,
+      "conversion": "WebP quality 90, bounded to 128px; original PNG URL and hash retained",
+      "source_dimensions": [
+        633,
+        633
+      ]
+    },
+    {
+      "path": "assets/tiles/7000.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7000.png",
+      "status": "downloaded",
+      "source_sha256": "896afe41e685ce123a202f2ecc586db4132a5ee0894b21df0d7fdeb505ac043b",
+      "source_bytes": 334207,
+      "bytes": 43946,
+      "sha256": "ce1d865f1955d7b21edb1152ff221cd759f45ba5db450e68b6691b6163333f2f",
+      "width": 392,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        585,
+        765
+      ]
+    },
+    {
+      "path": "assets/tiles/7001.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7001.png",
+      "status": "downloaded",
+      "source_sha256": "a8a08c7da6f2e760bc956bc1eca0ca92d24977fe84332383a6b479bf693f795b",
+      "source_bytes": 28616,
+      "bytes": 7750,
+      "sha256": "f620618707dc785a50206ce68d4d9c969fa624e37cb5a312975cc3bee533e604",
+      "width": 165,
+      "height": 100,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        165,
+        100
+      ]
+    },
+    {
+      "path": "assets/tiles/7002.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7002.png",
+      "status": "downloaded",
+      "source_sha256": "5227ffa078aa4dc875cba58b00af1af58b986d7516390c57de55d2fbcb23046c",
+      "source_bytes": 284235,
+      "bytes": 52998,
+      "sha256": "0f8c98022098e8b41bbb42eb4539fd2773d51a92a045a4cf9ce549ac60351aa9",
+      "width": 491,
+      "height": 503,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        491,
+        503
+      ]
+    },
+    {
+      "path": "assets/tiles/7005.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7005.png",
+      "status": "downloaded",
+      "source_sha256": "cf9336f594fa3e6baeec492c2035cdd810314f9ac7afdcac3ff2eb5551b85a17",
+      "source_bytes": 155618,
+      "bytes": 36632,
+      "sha256": "be683604490f68d2fe30569714d609cc195893bf50f24e3fd7f7f5e6aa8b4419",
+      "width": 383,
+      "height": 347,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        383,
+        347
+      ]
+    },
+    {
+      "path": "assets/tiles/7006.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7006.png",
+      "status": "downloaded",
+      "source_sha256": "4e92fd32b5a649e3e56d339b1fbee9c0909c0348507b5b2a3311fa8190906e9e",
+      "source_bytes": 236212,
+      "bytes": 43094,
+      "sha256": "a937bef5254b2a0c2bc0ae4631847ff772c258b03a9eb9576d3442f939ed41d6",
+      "width": 445,
+      "height": 477,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        445,
+        477
+      ]
+    },
+    {
+      "path": "assets/tiles/7007.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7007.png",
+      "status": "downloaded",
+      "source_sha256": "053bbe54df558f11e2bde963c4c3f227d65b2a3f082450b96f58029aa1680a09",
+      "source_bytes": 203608,
+      "bytes": 42588,
+      "sha256": "8fdcb8fa8de866c43f435c0c88014c387e0470e8daa1b384ac5eba406a618858",
+      "width": 448,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        459,
+        524
+      ]
+    },
+    {
+      "path": "assets/tiles/7008.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7008.png",
+      "status": "downloaded",
+      "source_sha256": "2ecbc91aa742745e794508912c6382c29413f3d54140af92536758ffa879d8c0",
+      "source_bytes": 244906,
+      "bytes": 46496,
+      "sha256": "996a756b4dca02df094b6b767c10367c1043578ad83d6a13190f4621791501e2",
+      "width": 458,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        510,
+        570
+      ]
+    },
+    {
+      "path": "assets/tiles/7009.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7009.png",
+      "status": "downloaded",
+      "source_sha256": "eeb6bf7c1ada408789b83bcb7766cd96d3c856fe4fd8fe8f30c3f32269ce9d80",
+      "source_bytes": 71020,
+      "bytes": 16738,
+      "sha256": "0680fa0a89f7ef14f1c843ba9c96036af7d703025148d7a450777489366e60f5",
+      "width": 219,
+      "height": 230,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        219,
+        230
+      ]
+    },
+    {
+      "path": "assets/tiles/7010.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7010.png",
+      "status": "downloaded",
+      "source_sha256": "a75435f929266e7898f30dac71f6084e3af42260af4948f420f78054b7ec129b",
+      "source_bytes": 75349,
+      "bytes": 20062,
+      "sha256": "5e7c37c04793a67ae8aa8e4945916430fcb9844b3754857c705ae3c9f044f763",
+      "width": 310,
+      "height": 216,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        310,
+        216
+      ]
+    },
+    {
+      "path": "assets/tiles/7012.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7012.png",
+      "status": "downloaded",
+      "source_sha256": "8bb8a9614cf4b52601caac738d38c67c829574b982bca9d7b14ed13cf9a73535",
+      "source_bytes": 28775,
+      "bytes": 7872,
+      "sha256": "1e13fd23c08db9f25fda91e3af0b7c078a46a57cb3fd2e750e9fa00e418b18a1",
+      "width": 136,
+      "height": 120,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        136,
+        120
+      ]
+    },
+    {
+      "path": "assets/tiles/7013.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7013.png",
+      "status": "downloaded",
+      "source_sha256": "20b52d80585f61ada1e3892e68f5675435d54cadf3bca2cdf382197c025b082d",
+      "source_bytes": 106877,
+      "bytes": 24740,
+      "sha256": "7befe28c60c79ed8f375bfce261b6b498720e9cd0b6dcba87984395a05261824",
+      "width": 392,
+      "height": 410,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        392,
+        410
+      ]
+    },
+    {
+      "path": "assets/tiles/7014.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7014.png",
+      "status": "downloaded",
+      "source_sha256": "1fe7e6c24313e3b68c0ede1fb42cdac6abb20991649021c76b0459e1c8c83f87",
+      "source_bytes": 329931,
+      "bytes": 73314,
+      "sha256": "2d5d3d3eac9f03a737564b7b5df154d0018f4c4b089002a3b81dd32cf03c2579",
+      "width": 494,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        532,
+        551
+      ]
+    },
+    {
+      "path": "assets/tiles/7015.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7015.png",
+      "status": "downloaded",
+      "source_sha256": "a616ea8754fd069e1e10b9aa9bc511d8878ddaba79d225f262c867f43b3d97ed",
+      "source_bytes": 88300,
+      "bytes": 19944,
+      "sha256": "5d36ab47ba0abae841f1700b6230857da18c706505a476fd793e4bccaeeacb28",
+      "width": 280,
+      "height": 275,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        280,
+        275
+      ]
+    },
+    {
+      "path": "assets/tiles/7016.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7016.png",
+      "status": "downloaded",
+      "source_sha256": "f88d03ca85818c8bf33d34b6705b3eb1cc50af242c4a1901c2cfbdb3fb12ff9f",
+      "source_bytes": 76432,
+      "bytes": 16726,
+      "sha256": "9aca4e427eb5b21efbedaaa6e9128f0dd59dc5988522c28fddf15fcc5b8e288d",
+      "width": 194,
+      "height": 328,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        194,
+        328
+      ]
+    },
+    {
+      "path": "assets/tiles/7017.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7017.png",
+      "status": "downloaded",
+      "source_sha256": "36f67a0c1f780ec913597a345fb199a105e01e13459e53e5964bd47b42edf540",
+      "source_bytes": 305308,
+      "bytes": 58400,
+      "sha256": "0c3cebb40622e573c9f9378bd46e4bfd7bc74e3fd97e11b1f07868e6654af35c",
+      "width": 434,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        503,
+        594
+      ]
+    },
+    {
+      "path": "assets/tiles/7018.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7018.png",
+      "status": "downloaded",
+      "source_sha256": "9f474976538ed0c14a0c81e078cc382748482ebcb8260e83fe4ff52750129ed4",
+      "source_bytes": 343711,
+      "bytes": 55614,
+      "sha256": "4277b0d898ba8367e9c0d6107c27b397aafe407e2c11c7602de87238e8ed986f",
+      "width": 512,
+      "height": 497,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        567,
+        550
+      ]
+    },
+    {
+      "path": "assets/tiles/7019.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7019.png",
+      "status": "downloaded",
+      "source_sha256": "e2d2d03f65aa4502182db5e5b87a6b5e0cd66c5bcf68766e3377eebfcf38e21c",
+      "source_bytes": 184480,
+      "bytes": 38214,
+      "sha256": "4915f3b39308e8775444cc14d10378ab31531a76120d18d6f57bee04c5ded275",
+      "width": 377,
+      "height": 380,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        377,
+        380
+      ]
+    },
+    {
+      "path": "assets/tiles/7020.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7020.png",
+      "status": "downloaded",
+      "source_sha256": "f183b95154eaaf649899f13f3bcd88139e3cd8385e7a9858fc11b954c6c8c602",
+      "source_bytes": 202023,
+      "bytes": 35984,
+      "sha256": "b72c8013e8f2be75eab5c85a893679744c3ae63d402633b8a636ace6b7788c73",
+      "width": 512,
+      "height": 493,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        585,
+        563
+      ]
+    },
+    {
+      "path": "assets/tiles/7021.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7021.png",
+      "status": "downloaded",
+      "source_sha256": "5e30e28fd254fdf57d52af9be1d5d18962ff6b6a3ca23d8133aaed281ed256d6",
+      "source_bytes": 287169,
+      "bytes": 48464,
+      "sha256": "ee46c5d829fb8b3b90283797ffa672bd75a070a69167748a62649edcaecc358b",
+      "width": 484,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        560,
+        593
+      ]
+    },
+    {
+      "path": "assets/tiles/7022.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7022.png",
+      "status": "downloaded",
+      "source_sha256": "22a362ad987fe212ec4d8f12759c5c9e56a48be29761290d0245fe64f9a861c3",
+      "source_bytes": 63122,
+      "bytes": 15706,
+      "sha256": "e054fbb89c10daaf6ba0ba566dfa6d6529bade0a32e83b088837f87e6b8d164c",
+      "width": 245,
+      "height": 238,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        245,
+        238
+      ]
+    },
+    {
+      "path": "assets/tiles/7023.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7023.png",
+      "status": "downloaded",
+      "source_sha256": "c1141d57a05e99bf473fce45c350475991709cf11e8d0b095504c2c966b16cc2",
+      "source_bytes": 32987,
+      "bytes": 7612,
+      "sha256": "57ebaf44387b2a90b586079c015f404e25e6093b509f512ec4945cc6d326f635",
+      "width": 165,
+      "height": 195,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        165,
+        195
+      ]
+    },
+    {
+      "path": "assets/tiles/7024.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7024.png",
+      "status": "downloaded",
+      "source_sha256": "58b0ab6f1bd0a2a032862ad5b119c5000499a9fef732d6012e52802f24d4a58a",
+      "source_bytes": 37837,
+      "bytes": 9252,
+      "sha256": "f91e368e5f52b47c386ec99ecf94805e8b3303db87e546cc54099182a9f97017",
+      "width": 179,
+      "height": 187,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        179,
+        187
+      ]
+    },
+    {
+      "path": "assets/tiles/7025.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7025.png",
+      "status": "downloaded",
+      "source_sha256": "73695ec7b01e358032342528cd8dc54764f21ea8a59b41954fdf418f88a9ed19",
+      "source_bytes": 21541,
+      "bytes": 6436,
+      "sha256": "4d1d93b20551acf6e62465ab8ce5af0db79e31fb5861c1dc5a0134d1407600e8",
+      "width": 161,
+      "height": 118,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        161,
+        118
+      ]
+    },
+    {
+      "path": "assets/tiles/7026.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7026.png",
+      "status": "downloaded",
+      "source_sha256": "b503c91d8a3b079c8ba57f78cad8dcb85a3245a2d73da60ca525887ea8c32955",
+      "source_bytes": 27708,
+      "bytes": 7158,
+      "sha256": "65c0cdf2c4673401b91aea0d6ff5cccfaa5a3c74590bc1c78b2797639473d5f4",
+      "width": 186,
+      "height": 320,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        186,
+        320
+      ]
+    },
+    {
+      "path": "assets/tiles/7027.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7027.png",
+      "status": "downloaded",
+      "source_sha256": "2708ee49dd9bed6bf782e869c28895a1cb89435646ec5924d70c66e6c16cc3e8",
+      "source_bytes": 21613,
+      "bytes": 5994,
+      "sha256": "662b37b2f7efc72c7cca21adcf89a44969dc7a5c8889d0d8e36a9c0d8d6b59e4",
+      "width": 127,
+      "height": 111,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        127,
+        111
+      ]
+    },
+    {
+      "path": "assets/tiles/7028.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7028.png",
+      "status": "downloaded",
+      "source_sha256": "f8f8d25a9b59d986a37344564edd88abdc1000aa02149d1eacbde050beb65374",
+      "source_bytes": 67176,
+      "bytes": 15540,
+      "sha256": "f79b7a92f689dec69340464a78df7d23b42d525e03c486b11a452e077f74adb9",
+      "width": 214,
+      "height": 259,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        214,
+        259
+      ]
+    },
+    {
+      "path": "assets/tiles/7029.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7029.png",
+      "status": "downloaded",
+      "source_sha256": "70ca7dab17aa0246f326e982071354fa38796d6866fa356362760c9b5965ec55",
+      "source_bytes": 73711,
+      "bytes": 15972,
+      "sha256": "f8872d5dad240bc5ee0a640813b0549f1f0470bde6b7f51f7afd76a423c2b4bd",
+      "width": 200,
+      "height": 265,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        200,
+        265
+      ]
+    },
+    {
+      "path": "assets/tiles/7030.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7030.png",
+      "status": "downloaded",
+      "source_sha256": "72a4a0cc1561b43b044767d63b2191d968bdff2f0bb6d1acc72b0ef3dda3a5d8",
+      "source_bytes": 43827,
+      "bytes": 11300,
+      "sha256": "b9e8f796b36628b39de676455b16044ee530345c3e47d85018f35894d05a7684",
+      "width": 236,
+      "height": 229,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        236,
+        229
+      ]
+    },
+    {
+      "path": "assets/tiles/7031.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7031.png",
+      "status": "downloaded",
+      "source_sha256": "ce47eddbdd7394e52f648b40757928695857add5bc1377590f22a06c171b790b",
+      "source_bytes": 38096,
+      "bytes": 9466,
+      "sha256": "b8cba1a23bee04c3d5affb7ab59f218279ed5f47e525ef7c6963f39e8a0c5b5a",
+      "width": 167,
+      "height": 145,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        167,
+        145
+      ]
+    },
+    {
+      "path": "assets/tiles/7032.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7032.png",
+      "status": "downloaded",
+      "source_sha256": "bd584ee39bbd5a826bcfbe020bbc9bfe57fc35aaf1c75a9615b65df6661e0e12",
+      "source_bytes": 35205,
+      "bytes": 9782,
+      "sha256": "a7b44ae0ebfa4728851e19aa39c41457bd1a55a5b1342ee2b3d6cd54ef74ff6d",
+      "width": 201,
+      "height": 182,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        201,
+        182
+      ]
+    },
+    {
+      "path": "assets/tiles/7033.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7033.png",
+      "status": "downloaded",
+      "source_sha256": "0d48e72bcce7af12f4919be1c8b9e30a6cfb343798bc13c13d27aebb711a0c93",
+      "source_bytes": 20231,
+      "bytes": 5950,
+      "sha256": "aaa82e9d2261bb2a8ade67bb82bb66fb20bced27c16a991d210e84a81b5fb51b",
+      "width": 114,
+      "height": 107,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        114,
+        107
+      ]
+    },
+    {
+      "path": "assets/tiles/7034.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7034.png",
+      "status": "downloaded",
+      "source_sha256": "301b151b7d25a735397dc31778ed2d0304d02d0a7f221fbd2d76ed7a1000d213",
+      "source_bytes": 23692,
+      "bytes": 5946,
+      "sha256": "2ad4fbaab28929a5d70e0d50f0f026133e1f916edca8ca60134bc997a8d7f54c",
+      "width": 141,
+      "height": 141,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        141,
+        141
+      ]
+    },
+    {
+      "path": "assets/tiles/7035.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7035.png",
+      "status": "downloaded",
+      "source_sha256": "f4ca442bf5586dad771925c729ac08bc2bb2fa0d76ef805c1c71a2e342431d1c",
+      "source_bytes": 44831,
+      "bytes": 10102,
+      "sha256": "000341d7c1cfc6fde4d8b09068417aa3e6d92139df8f00fb62aa80296b07ebca",
+      "width": 189,
+      "height": 193,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        189,
+        193
+      ]
+    },
+    {
+      "path": "assets/tiles/7036.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7036.png",
+      "status": "downloaded",
+      "source_sha256": "b0ebfae1c0b169b32ea92555d5ce3d425b14161f4b9600c951d7e49bd65e4673",
+      "source_bytes": 52332,
+      "bytes": 13210,
+      "sha256": "9ffe38ee5bbf38bbae0dbe281263fb78c49eaf0e6f35949c6fc13058e0285279",
+      "width": 213,
+      "height": 189,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        213,
+        189
+      ]
+    },
+    {
+      "path": "assets/tiles/7037.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7037.png",
+      "status": "downloaded",
+      "source_sha256": "7748f4dc4fbc5978a185c0a970ddebc6a0ee3347429c2c08d5f31029abda0a18",
+      "source_bytes": 11013,
+      "bytes": 3760,
+      "sha256": "39b3f298b71eb71ea3c8c2b8a7c04f35ec3fe81402a1a71d67bb797dd5c565a7",
+      "width": 73,
+      "height": 85,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        73,
+        85
+      ]
+    },
+    {
+      "path": "assets/tiles/7038.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7038.png",
+      "status": "downloaded",
+      "source_sha256": "540f922ff7bfc95f4120c4916fae58585625d4779def13900b2c4b15352788ed",
+      "source_bytes": 13082,
+      "bytes": 3974,
+      "sha256": "70115055a4403e22b9194f34799fac8cc104371b9b01fe3276fec4a6b07f98fc",
+      "width": 94,
+      "height": 96,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        94,
+        96
+      ]
+    },
+    {
+      "path": "assets/tiles/7039.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7039.png",
+      "status": "downloaded",
+      "source_sha256": "89b2eb9f55448036caae73a257ef6a3e31220a9527d3f5eeb685dab34f040630",
+      "source_bytes": 7202,
+      "bytes": 2852,
+      "sha256": "497f5ca0afd0e1818210b95fc811bda20fcd94435f866f636ec107b0f754d34d",
+      "width": 49,
+      "height": 118,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        49,
+        118
+      ]
+    },
+    {
+      "path": "assets/tiles/7041.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7041.png",
+      "status": "downloaded",
+      "source_sha256": "8f1e7570a6f1f28b95bca20422badca8df49da383bd96f4361bd2a5dca163e03",
+      "source_bytes": 21072,
+      "bytes": 5848,
+      "sha256": "b924e82be8d027aee45ff8550b7c05f9847dc8810d911bf8cbcabfae214576e2",
+      "width": 131,
+      "height": 102,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        131,
+        102
+      ]
+    },
+    {
+      "path": "assets/tiles/7042.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7042.png",
+      "status": "downloaded",
+      "source_sha256": "9c465323a14137a154ce97858a3d1893aacaa7659135b83d5359756e38f26eab",
+      "source_bytes": 18728,
+      "bytes": 5892,
+      "sha256": "66d323896e41cf3bbf4f8bb4bbe76187e1bd6c3c72f67a11bd8479166a8b089d",
+      "width": 108,
+      "height": 116,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        108,
+        116
+      ]
+    },
+    {
+      "path": "assets/tiles/7043.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7043.png",
+      "status": "downloaded",
+      "source_sha256": "d4392ce259b0a7739edb4ba869045a35b4fe357f64aab39d1c36b360f8855c0c",
+      "source_bytes": 10514,
+      "bytes": 3322,
+      "sha256": "a48b2edb070a13561787bab91f3831b23033d2c64844bd4edd9b59417e9d8264",
+      "width": 87,
+      "height": 97,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        87,
+        97
+      ]
+    },
+    {
+      "path": "assets/tiles/7044.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7044.png",
+      "status": "downloaded",
+      "source_sha256": "d1477d3670a0293de12416ed14e610c9b3347469a613b28933ae0711ccd7e065",
+      "source_bytes": 20831,
+      "bytes": 5570,
+      "sha256": "556b3a478e5e37cf68104a2fd9349a3207f850c0ccaf5b16b6f75809e95e42fe",
+      "width": 117,
+      "height": 122,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        117,
+        122
+      ]
+    },
+    {
+      "path": "assets/tiles/7045.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7045.png",
+      "status": "downloaded",
+      "source_sha256": "343ee9b404e21f04610af81b372c8d2d511b586f4243957b338efa68282232f5",
+      "source_bytes": 12101,
+      "bytes": 4174,
+      "sha256": "d6dff6731515feb9b8f6d27ab2ef7c5756ec8392cb6ee9f58c589347d9623972",
+      "width": 74,
+      "height": 123,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        74,
+        123
+      ]
+    },
+    {
+      "path": "assets/tiles/7046.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7046.png",
+      "status": "downloaded",
+      "source_sha256": "223ae5b2096e4cc3fb8eec79c553f8f2bae2904d0784ebf8517568fcc1f95d6c",
+      "source_bytes": 16253,
+      "bytes": 5136,
+      "sha256": "46d3f97337c2c4e9da6429817abebb8d206eb6f5884befe4d2fc6b7d033a1e9e",
+      "width": 127,
+      "height": 124,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        127,
+        124
+      ]
+    },
+    {
+      "path": "assets/tiles/7047.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7047.png",
+      "status": "downloaded",
+      "source_sha256": "6f1bd14af8ebd5736190e3ef7c09b146b03cca13e54b4d1d07c3f044cb0897ec",
+      "source_bytes": 12481,
+      "bytes": 3770,
+      "sha256": "a0d69e1af5aca7ab7f4971f9f60a31e374deb4d8e65f29783af85aa5152e7808",
+      "width": 111,
+      "height": 73,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        111,
+        73
+      ]
+    },
+    {
+      "path": "assets/tiles/7048.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7048.png",
+      "status": "downloaded",
+      "source_sha256": "a505e63c62fd1d983291822859912a4bce399d756a72bc2999dca744d4392e10",
+      "source_bytes": 9325,
+      "bytes": 3208,
+      "sha256": "906a69739c96945d22c17b6387f30899051115468aac76863e31435ffc431279",
+      "width": 77,
+      "height": 91,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        77,
+        91
+      ]
+    },
+    {
+      "path": "assets/tiles/7049.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7049.png",
+      "status": "downloaded",
+      "source_sha256": "801dfc52ee64c93031a0d87bc8e3de189cdeada2d1e5d69bebd598629eb28a74",
+      "source_bytes": 42403,
+      "bytes": 12636,
+      "sha256": "7b4bd4649d18b17fadbd16f20e50e377c6c52d04528b97daf257edb425a6c211",
+      "width": 216,
+      "height": 215,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        216,
+        215
+      ]
+    },
+    {
+      "path": "assets/tiles/7050.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7050.png",
+      "status": "downloaded",
+      "source_sha256": "6b8a8662192551b7859f7433df663ba635fcf7eec3a551f727b847acf820bcce",
+      "source_bytes": 11995,
+      "bytes": 3706,
+      "sha256": "d829c5fbb51dfb009a4e794dc860ab47c992e1c0ca2e3a98704c2ba33422b8a9",
+      "width": 88,
+      "height": 91,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        88,
+        91
+      ]
+    },
+    {
+      "path": "assets/tiles/7051.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7051.png",
+      "status": "downloaded",
+      "source_sha256": "fac992cb0bad826a4e85ef8d7ae0fb10972c62e100667ef4d9d9b96731cd8af2",
+      "source_bytes": 11319,
+      "bytes": 3420,
+      "sha256": "32df0ea501af3d832682590fa6ad07822a29fa5b6867228bccf935d1f2009fb7",
+      "width": 74,
+      "height": 95,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        74,
+        95
+      ]
+    },
+    {
+      "path": "assets/tiles/7052.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7052.png",
+      "status": "downloaded",
+      "source_sha256": "c1c16612e5efa931d72f6a4258b737e21955291974f3f4f369cde517f4532a4f",
+      "source_bytes": 10919,
+      "bytes": 3198,
+      "sha256": "83cc3640b0bfc5bf337bd6e643a3966c627bd4febe47e06e1bcf59779e008f97",
+      "width": 87,
+      "height": 116,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        87,
+        116
+      ]
+    },
+    {
+      "path": "assets/tiles/7053.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7053.png",
+      "status": "downloaded",
+      "source_sha256": "61f873ba7d13c4b92e7c5aa31891953df21929496e27939f37e3971927780037",
+      "source_bytes": 14518,
+      "bytes": 4148,
+      "sha256": "fad47fc100282a4129be497abdaee3eb4514c6453413ae86bdcba97e579699c8",
+      "width": 110,
+      "height": 131,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        110,
+        131
+      ]
+    },
+    {
+      "path": "assets/tiles/7054.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7054.png",
+      "status": "downloaded",
+      "source_sha256": "1901aa3d406b8bc3f6f1d369fda04edd87613dfdc6a818d823bd1a5270ac19b0",
+      "source_bytes": 16802,
+      "bytes": 4242,
+      "sha256": "536db657b9385f16fb3c3863d34c726e8e80234a428aa1fc55b7ecb4d736f792",
+      "width": 124,
+      "height": 132,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        124,
+        132
+      ]
+    },
+    {
+      "path": "assets/tiles/7055.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7055.png",
+      "status": "downloaded",
+      "source_sha256": "6679c985bdcb3edea58243e86c7d5d1ac7521f7942e93e2a611be9986051b0eb",
+      "source_bytes": 10551,
+      "bytes": 3360,
+      "sha256": "638fd5c6c9a5489d0fd40d0ff04b9283625bb6af4af68622d482b72c2aa2b0be",
+      "width": 122,
+      "height": 73,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        122,
+        73
+      ]
+    },
+    {
+      "path": "assets/tiles/7056.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7056.png",
+      "status": "downloaded",
+      "source_sha256": "ad147324a1c3e149dac0d7d70d21c504e083888dc290ca2f6bcbd9a30d094e07",
+      "source_bytes": 10996,
+      "bytes": 3434,
+      "sha256": "467bbd03fb3f087455d3ad394ab741bf163cac1226ce0b800877961488b00aad",
+      "width": 93,
+      "height": 81,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        93,
+        81
+      ]
+    },
+    {
+      "path": "assets/tiles/7057.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7057.png",
+      "status": "downloaded",
+      "source_sha256": "19dd8384387c0076cb3dbb1bae4f906157760a51faccc26ebbec4143f6ab77bd",
+      "source_bytes": 8638,
+      "bytes": 2622,
+      "sha256": "e4b693bc641bc183bf567e22ba5063a8a29e0f74339f57d1a9657478ed81faa0",
+      "width": 73,
+      "height": 101,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        73,
+        101
+      ]
+    },
+    {
+      "path": "assets/tiles/7058.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7058.png",
+      "status": "downloaded",
+      "source_sha256": "371ad8c3ad67a77b4d1953a155d62aa88073c3e327aacd788522c1a4e395636c",
+      "source_bytes": 16337,
+      "bytes": 4130,
+      "sha256": "035d6afe334f0df0a653508b516edb0fe0959c38ec5404b3cbb1436fc05f9a68",
+      "width": 120,
+      "height": 137,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        120,
+        137
+      ]
+    },
+    {
+      "path": "assets/tiles/7059.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7059.png",
+      "status": "downloaded",
+      "source_sha256": "6b0702471a455b3a55b178c54b7375ac81db3db2b19ca0371e0680500b9ecefd",
+      "source_bytes": 66824,
+      "bytes": 16146,
+      "sha256": "3f7482918882402e74f4e2548ebaeea2e5ecacd8ec39956b927c5fc30581abbf",
+      "width": 234,
+      "height": 212,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        234,
+        212
+      ]
+    },
+    {
+      "path": "assets/tiles/7060.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7060.png",
+      "status": "downloaded",
+      "source_sha256": "a140ce285dcaa5d8938d0b8101801bdfb895f7f64d659cf414caf7abc8a7bdaa",
+      "source_bytes": 173436,
+      "bytes": 31804,
+      "sha256": "d4fc921d7817604c52802459a87af05c97b7ae5de73273efd4a63b20ac2c0af3",
+      "width": 472,
+      "height": 405,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        472,
+        405
+      ]
+    },
+    {
+      "path": "assets/tiles/7061.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7061.png",
+      "status": "downloaded",
+      "source_sha256": "4e6183ace5e035d9834a791e876828ca5d597fd1cb94d9a400dbc7b2e7bf7906",
+      "source_bytes": 12186,
+      "bytes": 3350,
+      "sha256": "d4fa9d993783b0dd34e2d2309b03ef2f1cfc2872d98919146e6a69f809052aca",
+      "width": 122,
+      "height": 73,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        122,
+        73
+      ]
+    },
+    {
+      "path": "assets/tiles/7062.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7062.png",
+      "status": "downloaded",
+      "source_sha256": "661ba861cb4f816e724b0ef58bb6ee5d01b8d91b5cb99f03702a57adc327d404",
+      "source_bytes": 11945,
+      "bytes": 3422,
+      "sha256": "6a4ee0720c8406b2eace30ef83dea6e67aa05e5f0962a226336a63ffc6d03a77",
+      "width": 122,
+      "height": 73,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        122,
+        73
+      ]
+    },
+    {
+      "path": "assets/tiles/7063.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7063.png",
+      "status": "downloaded",
+      "source_sha256": "d33ef68567c768d0f64f676d2e1c51c229ab3c51bc2971f7e8b246b9bf4f8bfb",
+      "source_bytes": 579459,
+      "bytes": 48944,
+      "sha256": "0b96b9b3241ec4cc023779a01298170601ef84e8ada0c30015de82fb31072d3c",
+      "width": 454,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        847,
+        955
+      ]
+    },
+    {
+      "path": "assets/tiles/7064.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7064.png",
+      "status": "downloaded",
+      "source_sha256": "4f41351629455b52c7413b895f0723e8a74e01727dd87afd952d1c9d614b6ca1",
+      "source_bytes": 252150,
+      "bytes": 45002,
+      "sha256": "9a434cfcb281e5e42037fc847aacd4390debd8b9d67a3bb868d58f51822164d6",
+      "width": 424,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        484,
+        584
+      ]
+    },
+    {
+      "path": "assets/tiles/7065_single.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7065_single.png",
+      "status": "downloaded",
+      "source_sha256": "36ea6ee619265589b25bee3f1b7e7e6e618dfec3e1ed9116f820a348821e683c",
+      "source_bytes": 10487,
+      "bytes": 3656,
+      "sha256": "77de8b88bc63c45cace5c5139558a96f2ae4f18c2de173fa36691e226f2b3002",
+      "width": 98,
+      "height": 89,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        98,
+        89
+      ]
+    },
+    {
+      "path": "assets/tiles/7066.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7066.png",
+      "status": "downloaded",
+      "source_sha256": "1cf48bc93893d4afd5b91efefd7838496702423aba622305c8f6ad7f97277752",
+      "source_bytes": 8834,
+      "bytes": 2950,
+      "sha256": "e33cefa05ef7f5d097524e830c1b4101522aaa7711cbf16776daec11caa7b9ac",
+      "width": 84,
+      "height": 81,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        84,
+        81
+      ]
+    },
+    {
+      "path": "assets/tiles/7071.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7071.png",
+      "status": "downloaded",
+      "source_sha256": "92cee7c7c917a9b6e1f2bef9876c506b8b91c7b3c46b6ef1afa21b44ee148d34",
+      "source_bytes": 468658,
+      "bytes": 73994,
+      "sha256": "1c7509ac9b74b3e551368e95c5d04d0928d6a51a2d4271507b6ccf4481146e04",
+      "width": 439,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        646,
+        753
+      ]
+    },
+    {
+      "path": "assets/tiles/7072.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7072.png",
+      "status": "downloaded",
+      "source_sha256": "8efff624b500e258bd889cc7b0f0fb9a8b3a06d233eb24ff86ad737a848039ed",
+      "source_bytes": 344692,
+      "bytes": 60712,
+      "sha256": "6fbe4d14a3b389a8635e3d53a5c628f8fdb4d9b7d74e4f537c3ced007a6ad60e",
+      "width": 426,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        510,
+        613
+      ]
+    },
+    {
+      "path": "assets/tiles/7073.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7073.png",
+      "status": "downloaded",
+      "source_sha256": "99541a15c9bbccb720656aea2f82ce034610dd824e6682067d1d69ae5b56a62a",
+      "source_bytes": 357028,
+      "bytes": 74214,
+      "sha256": "3acfd1b6253626eb48fa6fb5e16a32982504ada2a3202ae9c792eb1f94d37617",
+      "width": 468,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        555,
+        607
+      ]
+    },
+    {
+      "path": "assets/tiles/7074.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7074.png",
+      "status": "downloaded",
+      "source_sha256": "db27dcff7240f935cc13a1d59f3b731f294f91c93a73e4da2dffff78c36b253b",
+      "source_bytes": 350884,
+      "bytes": 56002,
+      "sha256": "7354118ecda6d717ae644ab994c1c75710e39b2f1625e480689cddbcf2403cd8",
+      "width": 422,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        566,
+        687
+      ]
+    },
+    {
+      "path": "assets/tiles/7077.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7077.png",
+      "status": "downloaded",
+      "source_sha256": "af5fbbcd0c24e051911cc62f3e27b91d69b2e4f2fa2e504e19b1ddb17f1f3bf0",
+      "source_bytes": 12952,
+      "bytes": 3692,
+      "sha256": "aeab107ddbde35cf3f751728832882e8f5fbc69d8e50a05079712a501fc23a63",
+      "width": 122,
+      "height": 73,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        122,
+        73
+      ]
+    },
+    {
+      "path": "assets/tiles/7078_single.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7078_single.png",
+      "status": "downloaded",
+      "source_sha256": "7c1e90f8d6352e994603ac9aad684db3f83719f60a553f76657d61b2dfafea60",
+      "source_bytes": 10566,
+      "bytes": 3604,
+      "sha256": "f6f8f1b82a4b932c177dfe506092b044945530da16967d37b402a6fbd2a3a32a",
+      "width": 92,
+      "height": 95,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        92,
+        95
+      ]
+    },
+    {
+      "path": "assets/tiles/7079.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7079.png",
+      "status": "downloaded",
+      "source_sha256": "c62a70e86994ac14bf9159a151c745e3ae16e37b18646c8b01590a8c4806e208",
+      "source_bytes": 38236,
+      "bytes": 10978,
+      "sha256": "0c1630e694c7d65a11672f4f7a54efe1abf3f9d4a4163e0fff98643a8c82fda6",
+      "width": 130,
+      "height": 150,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        130,
+        150
+      ]
+    },
+    {
+      "path": "assets/tiles/7080.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7080.png",
+      "status": "downloaded",
+      "source_sha256": "3ae8826babbb797bd890e89cbe3a8820b70093d23849debb0379134541b57483",
+      "source_bytes": 347437,
+      "bytes": 62556,
+      "sha256": "8d0e2dcbf6a1285b05615b36bae2aa8b9959af8d71eb76bda4254348672d4c82",
+      "width": 419,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        519,
+        634
+      ]
+    },
+    {
+      "path": "assets/tiles/7081.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7081.png",
+      "status": "downloaded",
+      "source_sha256": "89bf79df49caedf08809c1d4c99dbb7238594e6cfdada98a0e33c54513956d1e",
+      "source_bytes": 32204,
+      "bytes": 8206,
+      "sha256": "e9bcae6dd29d625be4b451912a5d8a1c03f73da33bc8583417e88d4c82c70155",
+      "width": 133,
+      "height": 130,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        133,
+        130
+      ]
+    },
+    {
+      "path": "assets/tiles/7082.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7082.png",
+      "status": "downloaded",
+      "source_sha256": "4dc08cbdfdaf7a3ce32a0ad5355c27f6f3e8774c80b154d6306719e26d4754a2",
+      "source_bytes": 291784,
+      "bytes": 52342,
+      "sha256": "1e0ef6622d701de88f5609f14cfc1d3842c16fd8f2d56e54223e5f1dc3548ce8",
+      "width": 464,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        547,
+        603
+      ]
+    },
+    {
+      "path": "assets/tiles/7083_single.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7083_single.png",
+      "status": "downloaded",
+      "source_sha256": "74c13bc4a726cc915782e9d31d188d13d7b6315179e5c5d7ba92b8ef20634e50",
+      "source_bytes": 10998,
+      "bytes": 4170,
+      "sha256": "2e4eb490ba37faf3faee06664b969b256a879921db7ddc61c9bf6d1d25459fe6",
+      "width": 108,
+      "height": 95,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        108,
+        95
+      ]
+    },
+    {
+      "path": "assets/tiles/7084.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7084.png",
+      "status": "downloaded",
+      "source_sha256": "813438594fc86f10a99acbd9ec3718934e6eaffb4e0f102af2c8f299d3cef940",
+      "source_bytes": 52000,
+      "bytes": 14850,
+      "sha256": "971a5f136011691ff9efe8e183c461ec268435e85be7872088a3fd492e5b3118",
+      "width": 220,
+      "height": 160,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        220,
+        160
+      ]
+    },
+    {
+      "path": "assets/tiles/7085.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7085.png",
+      "status": "downloaded",
+      "source_sha256": "362dd29eae404bee933c77bbd42efddd205afdb2b114b5a50184d7e3cb7f90f7",
+      "source_bytes": 324479,
+      "bytes": 42074,
+      "sha256": "1f0520d70fc2852ba2546bac00324a3799d134ba238c7098abf7a6660557d622",
+      "width": 512,
+      "height": 449,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        694,
+        609
+      ]
+    },
+    {
+      "path": "assets/tiles/7088.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7088.png",
+      "status": "downloaded",
+      "source_sha256": "e3564c93e395f54b71a3f0a0f028f154ba49999e94fb34d6b2780156948526ce",
+      "source_bytes": 11069,
+      "bytes": 3076,
+      "sha256": "31573cafcf408800030282ffa96b9fcc87a5c177c4ff296b95a38af58efca38c",
+      "width": 122,
+      "height": 73,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        122,
+        73
+      ]
+    },
+    {
+      "path": "assets/tiles/7090.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7090.png",
+      "status": "downloaded",
+      "source_sha256": "921d21e94fbcbc78d591fb6021dc73f8710f0cec60139617a846feea04088cd9",
+      "source_bytes": 279944,
+      "bytes": 38206,
+      "sha256": "cd3be7c3923f956818cbfcc3eef6b9288748bc605dca4ba66f898be2ff554517",
+      "width": 402,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        509,
+        649
+      ]
+    },
+    {
+      "path": "assets/tiles/7091.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7091.png",
+      "status": "downloaded",
+      "source_sha256": "e4cb304e1357b25a3bd6e0ce50dc3f98ec30436b9c9395a649ec8b5accae4086",
+      "source_bytes": 216347,
+      "bytes": 46668,
+      "sha256": "f352ee4fa519bdce7021ea4d8d06fb14441df3b4fbb8c5e26851133747bddf9e",
+      "width": 512,
+      "height": 488,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        532,
+        507
+      ]
+    },
+    {
+      "path": "assets/tiles/7092.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7092.png",
+      "status": "downloaded",
+      "source_sha256": "dc5237b95cb534ee6b42df76acfb0154a52ee008c27dff459598b349f6727b46",
+      "source_bytes": 79536,
+      "bytes": 19140,
+      "sha256": "92d03b3504e6627a3886dd518b68839e0c0c2382c990eca1b35a6e8a81adae8e",
+      "width": 326,
+      "height": 322,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        326,
+        322
+      ]
+    },
+    {
+      "path": "assets/tiles/7093.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7093.png",
+      "status": "downloaded",
+      "source_sha256": "bc398508b8e46a97b0e33a41d893dcb92f1b53caef4fe5c75013145a732cda01",
+      "source_bytes": 258615,
+      "bytes": 51612,
+      "sha256": "a6a66865ca92c451ba3075655af8a794fb4180e9200b1c821b27eb62710b2508",
+      "width": 471,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        506,
+        550
+      ]
+    },
+    {
+      "path": "assets/tiles/7094.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7094.png",
+      "status": "downloaded",
+      "source_sha256": "689b1449736606abdf95353737f491ac5bcc207c5f5376a2108bb67248dbff25",
+      "source_bytes": 283657,
+      "bytes": 46122,
+      "sha256": "79f98f7c9bfb297b113c3befce0a6d0822806a80ef9252e9915b92c63826724a",
+      "width": 482,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        572,
+        607
+      ]
+    },
+    {
+      "path": "assets/tiles/7095.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7095.png",
+      "status": "downloaded",
+      "source_sha256": "131690c4b9aa9993e1194c78d40083a3066e6840318afa6628874700991add70",
+      "source_bytes": 356344,
+      "bytes": 79520,
+      "sha256": "63c77bc81faca45e0fac9fe9b41556522eccdf270dc9c590a8e1396394dcad73",
+      "width": 512,
+      "height": 508,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        559,
+        555
+      ]
+    },
+    {
+      "path": "assets/tiles/7096.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7096.png",
+      "status": "downloaded",
+      "source_sha256": "0834bab5bf8f6862e58bcd1ec57a995cc18e70a6be2cb16b41479dd07f943e6e",
+      "source_bytes": 381836,
+      "bytes": 81300,
+      "sha256": "c765373c56b44ef72e869faf1ae5c330335cfcf85dec9bbcdf33ec8e5fb9cce1",
+      "width": 464,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        580,
+        640
+      ]
+    },
+    {
+      "path": "assets/tiles/7098.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7098.png",
+      "status": "downloaded",
+      "source_sha256": "6bd42e9b99ac6bd7171eeb61919dd78a0b8746e8e18c7bd323c355d27c2a42df",
+      "source_bytes": 380655,
+      "bytes": 55916,
+      "sha256": "3ab0412961a4e1c91c3a4a87491c7e240a79348ba809159cda9aec10a644531e",
+      "width": 409,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        550,
+        688
+      ]
+    },
+    {
+      "path": "assets/tiles/7100.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7100.png",
+      "status": "downloaded",
+      "source_sha256": "a87deebfd2ae3c221bb434afbaecbe66093235d062882c8b5c8f00658e79f748",
+      "source_bytes": 378434,
+      "bytes": 58400,
+      "sha256": "73280f4de637f8475c47a6e2e797426c2431c3f57a59628e0e76fb7c94dbaa89",
+      "width": 447,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        635,
+        728
+      ]
+    },
+    {
+      "path": "assets/tiles/7101.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7101.png",
+      "status": "downloaded",
+      "source_sha256": "78eb5291c9104ba792f450adaa774363e3e0cf7fc11b53adf7f21177c42fd536",
+      "source_bytes": 371578,
+      "bytes": 66596,
+      "sha256": "5710a224073ad525c4689b6abe09be4e974a7f66b43417fda659f871f08e3ee5",
+      "width": 512,
+      "height": 508,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        589,
+        584
+      ]
+    },
+    {
+      "path": "assets/tiles/7102.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7102.png",
+      "status": "downloaded",
+      "source_sha256": "d0d49381cf5b5a2b432cb401eeb56a01cfb56ea92298e69566c680f75df38cc6",
+      "source_bytes": 363550,
+      "bytes": 64658,
+      "sha256": "01eecde564d5bfb52350eefb3ec0d9ac0c5072d00ac35652cff8f6bd39c1997e",
+      "width": 512,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        592,
+        592
+      ]
+    },
+    {
+      "path": "assets/tiles/7103.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7103.png",
+      "status": "downloaded",
+      "source_sha256": "c898ddbe63a646b42e1c3c66d2461a191fcf5358406d1f4bdbd06386a8600ec5",
+      "source_bytes": 23817,
+      "bytes": 6150,
+      "sha256": "031fc0468ad052b0329bd995953a89296dec1240b9c0e1e402ca6d7cf2fea095",
+      "width": 111,
+      "height": 136,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        111,
+        136
+      ]
+    },
+    {
+      "path": "assets/tiles/7104.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7104.png",
+      "status": "downloaded",
+      "source_sha256": "a6ddbe07eddfc85c729dd02327529d8229a81e0b6d1a1bb09d690366cc66bd5f",
+      "source_bytes": 278648,
+      "bytes": 57836,
+      "sha256": "f4d2df3a3a40ef2e49edd296bfe3f656b7bdeea8afce603656bf744eaab3bc41",
+      "width": 357,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        457,
+        655
+      ]
+    },
+    {
+      "path": "assets/tiles/7105.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7105.png",
+      "status": "downloaded",
+      "source_sha256": "2c8707bbb0d8e675e1044f3a3c562a768bc8f9e6355e093d01a4877065acddf7",
+      "source_bytes": 264922,
+      "bytes": 34234,
+      "sha256": "523f1afb2d1dff9a6276b1410edcfc4e84090426a76bad2baea24397eda1afa3",
+      "width": 292,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        454,
+        795
+      ]
+    },
+    {
+      "path": "assets/tiles/7107.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7107.png",
+      "status": "downloaded",
+      "source_sha256": "26f0a6eba6a792a6d926db280dcf551ab26f83ce26a0c0283b543283b2f8fc2c",
+      "source_bytes": 439255,
+      "bytes": 50484,
+      "sha256": "04322329469c9ca2c2381f3667fc99df2148a9fafc87d0235a0bbd960ce95768",
+      "width": 512,
+      "height": 448,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        824,
+        721
+      ]
+    },
+    {
+      "path": "assets/tiles/7108.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7108.png",
+      "status": "downloaded",
+      "source_sha256": "4d08e9f47061305d1a2f31ada8e4722e813e6c8f87dd2b4a3295dcbca2209bf3",
+      "source_bytes": 329111,
+      "bytes": 46178,
+      "sha256": "e99985718f35e94f81e93dc11d41eee884093365a8e4f135e70012d67cec6474",
+      "width": 434,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        604,
+        712
+      ]
+    },
+    {
+      "path": "assets/tiles/7112.webp",
+      "source_url": "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/tiles/7112.png",
+      "status": "downloaded",
+      "source_sha256": "8cdace45797270c80c9789e97e3ccf7f20510c079b52fc502bef1471d4b1441d",
+      "source_bytes": 338527,
+      "bytes": 50388,
+      "sha256": "b336c555c486b4b48e9ca47af37f025edbc59f1c5da2f315be240a369c470c7c",
+      "width": 446,
+      "height": 512,
+      "conversion": "WebP quality 90, bounded to 512px; original PNG URL and hash retained",
+      "source_dimensions": [
+        551,
+        633
+      ]
+    }
+  ],
+  "animation_references": [
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7000.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7001.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7002.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7005.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7007.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7008.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7009.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7013.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7014.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7015.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7016.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7017.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7018.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7019.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7020.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7021.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7022.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7023.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7025.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7026.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7027.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7028.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7029.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7032.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7033.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7034.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7035.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7036.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7037.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7038.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7039.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7042.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7044.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7045.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7046.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7047.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7049.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7056.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7059.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7060.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7063.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7064.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7071.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7072.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7073.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7074.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7079.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7080.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7082.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7085.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7090.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7091.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7092.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7093.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7094.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7095.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7096.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7098.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7100.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7103.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7104.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7105.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7107.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7108.webp",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/animations/7112.webp"
+  ],
+  "autotile_references": [
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/dirt_road/dirt_road_07.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/dirt_road/dirt_road_07_square.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/dirt_road/dirt_road_08.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/dirt_road/dirt_road_08_square.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/dirt_road/dirt_road_09.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/dirt_road/dirt_road_09_square.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/dirt_road/dirt_road_10.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/dirt_road/dirt_road_10_square.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/dirt_road/fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/dirt_road/trim.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_01.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_02.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_03.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_04.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_05.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_05_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_06.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_06_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_07.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_08.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_09.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_10.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_11.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_12.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_13.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_14.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_15.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/brick_road_16.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_01.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_02.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_03.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_04.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_05.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_06.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_07.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_08.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_09.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_10.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_11.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_12.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_13.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_14.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_15.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/bush_16.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_01.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_02.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_03.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_04.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_05.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_06.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_07.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_08.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_09.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_10.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_11.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_12.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_13.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_14.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_15.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7078_16.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_01.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_02.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_03.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_04.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_05.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_06.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_07.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_08.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_09.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_10.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_11.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_12.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_13.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_14.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_15.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/decoration_7083_16.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_01.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_02.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_03.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_04.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_05.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_05_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_06.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_06_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_07.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_08.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_09.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_10.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_11.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_12.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_13.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_14.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_15.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/dirt_road_16.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_01.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_02.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_03.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_04.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_05.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_06.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_07.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_08.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_09.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_10.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_11.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_12.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_13.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_14.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_15.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/fence_16.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_01.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_02.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_03.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_04.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_05.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_05_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_06.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_06_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_07.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_08.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_09.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_10.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_11.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_12.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_13.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_14.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_15.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/garden_road_16.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/road_7088_00_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/road_7088_00_b.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/road_7088_00_c.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/road_7088_00_d.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/road_7088_01.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/road_7088_02.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/road_7088_03.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/road_7088_04.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/road_7088_05.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_01.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_02.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_03.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_04.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_05.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_05_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_06.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_06_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_07.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_08.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_09.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_10.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_11.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_12.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_13.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_14.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_15.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/rock_road_16.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_00.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_00_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_00_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_01.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_01_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_01_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_02.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_02_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_02_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_03.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_03_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_03_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_04.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_04_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_04_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_05.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_05_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_05_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_05_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_06.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_06_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_06_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_06_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_07.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_07_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_07_mask_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_07_mask_a_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_07_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_08.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_08_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_08_mask_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_08_mask_a_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_08_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_09.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_09_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_09_mask_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_09_mask_a_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_09_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_10.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_10_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_10_mask_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_10_mask_a_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_10_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_11.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_11_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_11_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_11_mask_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_11_mask_a_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_11_mask_b.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_11_mask_b_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_11_mask_c.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_11_mask_c_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_11_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_12.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_12_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_12_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_12_mask_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_12_mask_a_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_12_mask_b.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_12_mask_b_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_12_mask_c.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_12_mask_c_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_12_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_13.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_13_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_13_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_13_mask_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_13_mask_a_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_13_mask_b.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_13_mask_b_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_13_mask_c.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_13_mask_c_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_13_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_14.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_14_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_14_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_14_mask_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_14_mask_a_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_14_mask_b.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_14_mask_b_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_14_mask_c.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_14_mask_c_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_14_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_a.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_a_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_b.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_b_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_c.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_c_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_d.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_d_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_e.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_e_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_f.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_f_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_g.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_g_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_h.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_h_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_i.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_i_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_j.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_j_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_k.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_k_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_l.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_l_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_m.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_m_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_n.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_15_mask_n_fill.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_16.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_16_mask.png",
+    "https://ks-companion.com/app-releases/67e43244b12e412f621eb42a/assets/assets/autotiles/recovered/water_16_mask_fill.png"
+  ]
+}

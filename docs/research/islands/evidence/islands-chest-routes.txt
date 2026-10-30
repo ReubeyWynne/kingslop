@@ -1,0 +1,44 @@
+- iframe
+- img "Buy Me a Coffee"
+- generic: My island
+- generic: Island Planner
+- button "Back to layout" [active]
+- button "Featured islands"
+- button "Import island code"
+- button "Choose island template"
+- button "Generate layout"
+- button "Undo"
+- button "Share"
+- button "Language / Language"
+- button "Help · Island Planner tour"
+- button "Use Night theme"
+- 'button "Account menu: sign in"'
+- generic: Chest routes
+- generic: Chest reference map
+- button "Reset map view"
+- generic: 55 community-mapped chests. Preview a suggested order to reach them.
+- button "How chest routes work"
+- generic: "Opened: 0 / 55"
+- generic: Click or tap a chest to mark it opened; tap again to undo. Gold = closed; gray = marked opened. Progress is kept only while this page stays open. Play adds an illustrative shine; it is not the game’s opening animation.
+- generic "Play all available building animations":
+  - button "Play"
+- button "Animation speed 1×"
+- checkbox "One Reservoir" [checked]
+- checkbox "Two Reservoirs"
+- generic: Select a Reservoir, then drag it or edit its coordinates. Routes recalculate after each move.
+- checkbox "Reservoir 1" [checked]
+- textbox "X (1–59)"
+- textbox "Y (1–59)"
+- button "Move on map"
+- button "Route step 1 / 55"
+- button "Previous" [disabled]
+- button "Next"
+- generic: Pinch to zoom. Numbers identify Reservoirs; route steps preview targets without moving buildings.
+- generic: Reservoir 1
+- generic: "Chest target: (6, 9)"
+- generic: "Branch from: (1, 1)"
+- generic: "Grid distance: 13"
+- button "Mark opened"
+- generic: Routes start at your Reservoirs and visit nearby targets. Obstacles, clearing time and rewards are excluded; target points are not exact Reservoir placements.
+- generic: Community chest coordinates 1–60 map to grid cells 0–59. Chest locations and completeness remain unverified. Your saved layout is unchanged.
+- button "Feedback"
