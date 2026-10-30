@@ -147,7 +147,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('#screen-import .import-tile img:not([hidden])').count(), 24, 'every value shows its cut-out');
     await page.locator('#screen-import').screenshot({ path: path.join(output, 'read-390.png') });
     await page.click('#screen-import [data-action="screen-import.apply"]');
-    await page.waitForFunction(() => document.querySelector('.gov-piece[data-gov="cav-1"] [data-part="level"]').textContent === 'Purple 0★');
+    // Say what the dock and the sheet show if the reading never lands.
+    await page.waitForFunction(() => document.querySelector('.gov-piece[data-gov="cav-1"] [data-part="level"]').textContent === 'Purple 0★').catch(async error => {
+      const seen = await page.evaluate(() => ({ status: document.querySelector('#screen-import [data-target="screen-import.status"]').textContent, cav1: document.querySelector('.gov-piece[data-gov="cav-1"] [data-part="level"]').textContent, url: location.search }));
+      throw new Error('the reading never reached the sheet: ' + JSON.stringify(seen) + ' errors ' + JSON.stringify(errors) + '\n' + error.message);
+    });
     assert.equal(await page.locator('[data-charm="cav-1-1"] b').textContent(), '3');
     assert.equal(await page.locator('[data-charm="cav-2-1"] b').textContent(), '2');
     assert.equal(await page.locator('.gov-piece[data-gov="arc-1"] [data-part="level"]').textContent(), 'Purple 1★');
