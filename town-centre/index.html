@@ -224,21 +224,7 @@ self: town
         </button>
         {% endfor %}
       </div>
-      <div class="town-gov-profile">
-        {% assign rows = "cav,inf,arc" | split: "," %}
-        {% for troop in rows %}{% for piece in gov.gear.pieces %}{% if piece.troop == troop %}
-        <button type="button" class="town-gov-piece" data-gov="{{ piece.id }}" data-state="unset" data-action="town-inventory.edit" data-side="{% if piece.id contains '-1' %}left{% else %}right{% endif %}">
-          <span class="town-gov-card" data-state="unset"><img src="../img/governor/gear/{{ piece.id }}-green-0.webp" width="160" height="160" alt=""><span class="town-gov-stars" data-part="stars" aria-hidden="true"></span></span>
-          <span class="town-gov-gems" aria-hidden="true">{% for c in (1..3) %}<span class="town-gov-gem" data-charm="{{ piece.id }}-{{ c }}" data-state="unset"><img src="../img/governor/charms/{{ troop }}-1.webp" width="72" height="72" alt=""><b></b></span>{% endfor %}</span>
-          <span class="town-tile-name" data-i18n="gov.slot.{{ piece.slot }}">{{ piece.slot | capitalize }}</span>
-        </button>
-        {% endif %}{% endfor %}{% endfor %}
-        <div class="town-gov-crest">
-          <span class="town-gov-crest-mark" aria-hidden="true">❧</span>
-          <p><span data-i18n="gov.gearScore">gear score</span><output data-target="town-inventory.gearScore">—</output></p>
-          <p><span data-i18n="gov.charmScore">charm score</span><output data-target="town-inventory.charmScore">—</output></p>
-        </div>
-      </div>
+      {% include governor/profile.html %}
       <p class="town-note" data-target="town-inventory.gain"></p>
     </div>
 
@@ -262,13 +248,6 @@ self: town
         <div class="town-stepper-row"><span data-i18n="gear.level">Level</span><div class="town-stepper"><button type="button" data-action="town-inventory.step" data-field="level" data-step="-1" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><input type="number" min="0" max="200" step="1" inputmode="numeric" placeholder="?" data-field="level" data-action="town-inventory.piece"><button type="button" data-action="town-inventory.step" data-field="level" data-step="1" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
         <div class="town-stepper-row" data-target="town-inventory.masteryRow"><span data-i18n="gear.mastery">Mastery</span><div class="town-stepper"><button type="button" data-action="town-inventory.step" data-field="mastery" data-step="-1" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><input type="number" min="0" max="20" step="1" inputmode="numeric" placeholder="?" data-field="mastery" data-action="town-inventory.piece"><button type="button" data-action="town-inventory.step" data-field="mastery" data-step="1" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
         <p class="town-gloss" data-i18n="gear.levelHint">use total levels: red +20 is level 120.</p>
-      </div>
-      <div class="town-panel" data-panel="gov" hidden>
-        <div class="town-edit-art"><span class="town-gov-card" data-target="town-inventory.govArt" data-state="unset"><img src="../img/governor/gear/inf-1-green-0.webp" width="160" height="160" alt=""><span class="town-gov-stars" data-part="stars" aria-hidden="true"></span></span><p data-target="town-inventory.govLevel"></p></div>
-        <div class="town-stepper-row"><span data-i18n="gov.gear">Gear</span><div class="town-stepper"><button type="button" data-action="town-inventory.govStep" data-step="-1" aria-label="one step down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><select data-level="gear" data-action="town-inventory.govLevel" aria-label="Gear level" data-i18n-key="gov.gearLevel" data-i18n-attr="aria-label"><option value="" data-i18n="gov.notSet">not set</option><option value="0" data-i18n="gov.notCrafted">not crafted</option>{% for row in gov.gear.levels %}<option value="{{ forloop.index }}">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★</option>{% endfor %}</select><button type="button" data-action="town-inventory.govStep" data-step="1" aria-label="one step up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
-        {% for c in (1..3) %}
-        <div class="town-stepper-row"><span class="town-charm-label"><span class="town-gov-gem" data-charm-slot="{{ c }}" data-state="unset"><img src="../img/governor/charms/inf-1.webp" width="72" height="72" alt=""></span><span><span data-i18n="gov.charmLabel">Charm</span> {{ c }}</span></span><div class="town-stepper"><button type="button" data-action="town-inventory.govStep" data-step="-1" data-charm-slot="{{ c }}" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><select data-level="charms" data-charm-slot="{{ c }}" data-action="town-inventory.govLevel" aria-label="Charm {{ c }}"><option value="" data-i18n="gov.notSet">not set</option><option value="0" data-i18n="gov.noCharm">no charm</option>{% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}</select><button type="button" data-action="town-inventory.govStep" data-step="1" data-charm-slot="{{ c }}" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
-        {% endfor %}
       </div>
       <div class="town-panel" data-panel="training" hidden>
         <label class="town-big"><span data-target="town-inventory.trainingUnit"></span><input type="number" min="0" max="100000" step="any" inputmode="decimal" placeholder="?" data-field="training" data-action="town-inventory.training"></label>

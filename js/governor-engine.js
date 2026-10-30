@@ -28,28 +28,42 @@
   }
   function current(kind, state, id) { var value = state && Object.hasOwn(state, id) ? state[id] : null; return value === null ? null : level(kind, value); }
   // Totals to bring every known item up to `target`. Unknown items are listed, never assumed to be at zero.
-  function toTarget(kind, state, target, bag) {
+  function toTarget(kind, state, target, bag, options) {
     level(kind, target);
-    var total = zero(kind), unknown = [], unverified = false, steps = 0, scoreGain = 0, scoreKnown = true;
+    var troop = options && options.troop && options.troop !== 'all' ? options.troop : null;
+    var total = zero(kind), unknown = [], unverified = false, steps = 0, scoreGain = 0, scoreKnown = true, levels = {};
     items(kind).forEach(function (item) {
       var from = current(kind, state, item.id);
+      levels[item.id] = from;
+      if (troop && item.troop !== troop) return;
       if (from === null) { unknown.push(item.id); return; }
       if (from >= target) return;
+      levels[item.id] = target;
       add(total, cost(kind, from, target)); steps += target - from;
       for (var i = from + 1; i <= target; i++) if (!verified(kind, i)) unverified = true;
       if (score(kind, target) === null || (from && score(kind, from) === null)) scoreKnown = false; else scoreGain += score(kind, target) - score(kind, from);
     });
     var missing = zero(kind);
     Object.keys(total).forEach(function (id) { var have = bag && Number.isSafeInteger(bag[id]) ? bag[id] : null; missing[id] = have === null ? null : Math.max(0, total[id] - have); });
-    return { kind: kind, target: target, cost: total, missing: missing, steps: steps, unknown: unknown, unverified: unverified, score: scoreKnown ? scoreGain : null };
+    return { kind: kind, target: target, troop: troop || 'all', cost: total, missing: missing, steps: steps, levels: levels, unknown: unknown, unverified: unverified, score: scoreKnown ? scoreGain : null };
   }
   function affordable(price, bag) { return Object.keys(price).every(function (id) { return price[id] <= bag[id]; }); }
+  /* Troop profiles weigh each step's stat gain by its troop; "score" ranks by governor score.
+     An older save's goal of score reads as the score profile. */
+  var PROFILES = data.profiles;
+  function profileOf(options) {
+    var name = options.profile || (options.goal === 'score' ? 'score' : 'bear');
+    if (name !== 'score' && !Object.hasOwn(PROFILES, name)) throw new Error('Unsupported governor profile');
+    return name;
+  }
   /* Greedy, explainable plan: at each step take the affordable next level with the most
-     value for the share of the starting bag it uses. Value is the stat gain for the
-     focused troops, or the governor score gain when the goal is event score. */
+     value for the share of the starting bag it uses. Value is the stat gain weighted by the
+     profile's troop weights, or the governor score gain for the score profile. Ties go to
+     the heavier troop, then the lower level, then table order, never to table order alone. */
   function plan(kind, state, bag, options) {
     options = options || {};
-    var goal = options.goal === 'score' ? 'score' : 'stats', focus = options.focus || 'all', limit = options.limit || 60;
+    var profile = profileOf(options), goal = profile === 'score' ? 'score' : 'stats', weights = PROFILES[profile] || { inf: 1, cav: 1, arc: 1 };
+    var focus = options.focus || 'all', limit = options.limit || 60;
     var left = zero(kind), start = zero(kind), levels = {}, steps = [];
     Object.keys(left).forEach(function (id) {
       var have = bag && Number.isSafeInteger(bag[id]) && bag[id] >= 0 ? bag[id] : 0;
@@ -63,11 +77,11 @@
         if (from === null || from >= max(kind) || focus !== 'all' && item.troop !== focus) return;
         var next = row(kind, from + 1), price = next.cost;
         if (!affordable(price, left)) return;
-        var gain = goal === 'score' ? (next.score === null || (from && row(kind, from).score === null) ? null : next.score - score(kind, from)) : next.stat - stat(kind, from);
+        var gain = goal === 'score' ? (next.score === null || (from && row(kind, from).score === null) ? null : next.score - score(kind, from)) : (next.stat - stat(kind, from)) * weights[item.troop];
         if (gain === null || gain <= 0) return;
         var share = Object.keys(price).reduce(function (sum, id) { return sum + price[id] / start[id]; }, 0);
-        var value = gain / Math.max(share, 1e-9);
-        if (!best || value > best.value + 1e-12 || Math.abs(value - best.value) <= 1e-12 && (from < best.from || from === best.from && order < best.order)) best = { item: item, from: from, value: value, gain: gain, price: price, order: order };
+        var value = gain / Math.max(share, 1e-9), weight = weights[item.troop];
+        if (!best || value > best.value + 1e-12 || Math.abs(value - best.value) <= 1e-12 && (weight > best.weight || weight === best.weight && (from < best.from || from === best.from && order < best.order))) best = { item: item, from: from, value: value, gain: gain, price: price, order: order, weight: weight };
       });
       if (!best) break;
       Object.keys(best.price).forEach(function (id) { left[id] -= best.price[id]; });
@@ -77,7 +91,7 @@
     }
     var scoreTotal = steps.every(function (step) { return step.score !== null; }) ? steps.reduce(function (sum, step) { return sum + step.score; }, 0) : null;
     var spent = zero(kind); steps.forEach(function (step) { add(spent, step.cost); });
-    return { kind: kind, goal: goal, focus: focus, steps: steps, levels: levels, spent: spent, left: left, score: scoreTotal, truncated: steps.length >= limit };
+    return { kind: kind, goal: goal, profile: profile, focus: focus, steps: steps, levels: levels, spent: spent, left: left, score: scoreTotal, truncated: steps.length >= limit };
   }
   // Event days that score governor score gains, with the points a score gain would be worth.
   function events(kind, gain) {
@@ -102,19 +116,19 @@
   }
   /* A sheet in the address. gov= holds one character per gear piece, then one per charm
      (0-9, a-z, A-Z for the level, "." for not set); bag= the materials in table order joined
-     by "." (blank is not counted); g, f, gt and ct the planner choices that differ from the
-     defaults. A sheet is { gear, charms, bag, prefs }, each keyed by id. */
+     by "." (blank is not counted); p, gt and ct the troop profile and targets when they differ
+     from the defaults. A sheet is { gear, charms, bag, prefs }, each keyed by id. */
   var DIGITS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', BAG_MAX = 1e9;
-  var PREFS = { goal: ['g', ['stats', 'score']], focus: ['f', ['all', 'inf', 'cav', 'arc']], gearTarget: ['gt', 'gear'], charmTarget: ['ct', 'charms'] };
-  function prefDefaults() { return { goal: 'stats', focus: 'all', gearTarget: max('gear'), charmTarget: max('charms') }; }
+  var PREFS = { profile: ['p', Object.keys(PROFILES).concat('score')], gearTarget: ['gt', 'gear'], charmTarget: ['ct', 'charms'] };
+  function prefDefaults() { return { profile: 'bear', gearTarget: max('gear'), charmTarget: max('charms') }; }
   function encodeLink(sheet) {
     var out = { gov: ['gear', 'charms'].map(function (kind) {
       return items(kind).map(function (item) { var value = sheet[kind] && sheet[kind][item.id]; return Number.isInteger(value) ? DIGITS[level(kind, value)] : '.'; }).join('');
     }).join('') };
     var bag = data.materials.map(function (m) { var n = sheet.bag && sheet.bag[m.id]; return Number.isSafeInteger(n) && n >= 0 && n <= BAG_MAX ? String(n) : ''; });
     if (bag.some(Boolean)) out.bag = bag.join('.');
-    var prefs = Object.assign(prefDefaults(), sheet.prefs || {}), defaults = prefDefaults();
-    Object.keys(PREFS).forEach(function (key) { if (prefs[key] !== defaults[key]) out[PREFS[key][0]] = String(prefs[key]); });
+    var own = sheet.prefs || {}, prefs = Object.assign(prefDefaults(), own.goal === 'score' ? { profile: 'score' } : {}, own), defaults = prefDefaults();
+    Object.keys(PREFS).forEach(function (key) { if (prefs[key] !== undefined && prefs[key] !== defaults[key]) out[PREFS[key][0]] = String(prefs[key]); });
     return out;
   }
   // The sheet a query string carries: null without gov=, { invalid: true } when it cannot be read.
@@ -145,5 +159,5 @@
     }
     return sheet;
   }
-  return { data: data, max: max, items: items, stat: stat, score: score, verified: verified, cost: cost, toTarget: toTarget, plan: plan, events: events, describe: describe, prefDefaults: prefDefaults, encodeLink: encodeLink, readLink: readLink };
+  return { data: data, max: max, items: items, stat: stat, score: score, verified: verified, cost: cost, toTarget: toTarget, plan: plan, profiles: function () { return Object.keys(PROFILES).concat('score'); }, events: events, describe: describe, prefDefaults: prefDefaults, encodeLink: encodeLink, readLink: readLink };
 });

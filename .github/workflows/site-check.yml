@@ -178,7 +178,9 @@ jobs:
               - js/event-data.liquid
               - _data/governor.json
               - _data/event_rules.json
-              - css/governor.css
+              - css/governor*.css
+              - css/equipment.css
+              - _includes/governor/**
               - img/governor/**
             town:
               - *shared
@@ -192,6 +194,8 @@ jobs:
               - _data/event_rules.json
               - _data/governor.json
               - css/town.css
+              - css/governor-profile.css
+              - _includes/governor/**
               - _includes/heroes/**
               - js/hero-directory*.js
               - js/hero-spend.js

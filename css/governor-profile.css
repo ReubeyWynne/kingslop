@@ -1,0 +1,66 @@
+/* ─── The governor profile — shared by the governor page and the Town Centre ─── */
+/* _includes/governor/profile.html: the in-game arrangement, cavalry on top, archers below,
+   with the scores in the middle. Card and gem art rules live in equipment.css; colours come
+   from each page's own tokens. */
+
+.gov-profile { max-width: 32rem; margin-inline: auto; }
+.gov-profile button { font: inherit; cursor: pointer; }
+.gov-board { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1fr); grid-template-areas: "cav1 crest cav2" "inf1 crest inf2" "arc1 crest arc2"; gap: .9rem .6rem; align-items: start; padding-block: .6rem; background: radial-gradient(ellipse at 50% 50%, var(--signal-tint), transparent 65%); }
+.gov-piece[data-gov="cav-1"] { grid-area: cav1; } .gov-piece[data-gov="cav-2"] { grid-area: cav2; }
+.gov-piece[data-gov="inf-1"] { grid-area: inf1; } .gov-piece[data-gov="inf-2"] { grid-area: inf2; }
+.gov-piece[data-gov="arc-1"] { grid-area: arc1; } .gov-piece[data-gov="arc-2"] { grid-area: arc2; }
+.gov-profile .gov-piece { display: grid; justify-items: center; gap: .2rem; min-width: 0; min-height: 0; padding: 0; border: 0; background: transparent; color: var(--ink); }
+.gov-piece .gov-card { --equipment-card-size: 5.5rem; position: relative; }
+.gov-profile .gov-piece:hover .gov-card, .gov-profile .gov-piece:focus-visible .gov-card { outline: 1px solid var(--amber); outline-offset: 2px; }
+.gov-stars { position: absolute; inset-inline-start: .3rem; inset-block-end: .25rem; display: flex; flex-direction: column-reverse; color: #ffd75e; font-size: .8rem; line-height: .85; text-shadow: 0 0 2px #000, 0 0 2px #000; writing-mode: vertical-lr; letter-spacing: -.05em; }
+.gov-piece .gov-gems { display: flex; gap: .15rem; }
+.gov-profile .gov-gem, .gov-dialog .gov-gem { --equipment-gem-size: 100%; --equipment-empty-opacity: .3; position: relative; display: block; width: 1.55rem; height: 1.55rem; }
+.gov-profile .gov-gem b { position: absolute; inset-inline-end: -.2rem; inset-block-end: -.25rem; font: 700 .6rem/1 var(--display-2); color: var(--ink); text-shadow: 0 0 2px #000, 0 0 2px #000; }
+.gov-piece-name { font-size: .8rem; color: var(--ink-dim); }
+.gov-piece-level { font: .85rem/1.1 var(--display-2); color: var(--ink); text-align: center; font-variant-numeric: tabular-nums; }
+.gov-piece[data-state="unset"] .gov-piece-level { color: var(--ink-muted); }
+.gov-crest { grid-area: crest; align-self: center; display: grid; justify-items: center; gap: .6rem; padding: 1rem .3rem; border-block: 1px solid var(--signal-line); text-align: center; }
+.gov-crest-mark { font-size: 2.4rem; line-height: 1; color: var(--amber); }
+.gov-crest p { display: grid; margin: 0; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
+.gov-crest output { font: 1.25rem/1.2 var(--display-2); letter-spacing: 0; text-transform: none; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* Set every piece at once — right under the board, as plain as the pieces. */
+.gov-fill { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; padding-top: .6rem; border-top: 1px solid var(--signal-line); }
+.gov-fill label { display: grid; gap: .2rem; min-width: 0; font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--amber); }
+.gov-fill select { width: 100%; min-width: 0; min-height: 2.75rem; padding: .35rem; font: 1rem var(--body); letter-spacing: 0; text-transform: none; color: var(--ink); background: var(--void-2); border: 1px solid var(--signal-line); border-radius: 0; }
+.gov-fill option { background: var(--void); color: var(--ink); }
+
+/* One editor for a piece and its three charms. */
+.gov-dialog { position: fixed; inset: 0; margin: auto; width: min(26rem, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); overflow: auto; overscroll-behavior: contain; padding: 1.1rem; border: 1px solid var(--signal-line); border-radius: 2px; color: var(--ink); background: var(--void-2); font: 1rem/1.4 var(--body); }
+.gov-dialog::backdrop { background: rgba(0, 0, 0, .78); }
+.gov-dialog h2 { font-size: 1.25rem; margin: 0; }
+.gov-dialog h2::before { display: none; }
+.gov-dialog h3 { font-size: 1rem; margin: 1rem 0 .4rem; }
+.gov-dialog h3 small { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--ink-muted); font-size: .8rem; }
+.gov-dialog button { min-height: 2.75rem; padding: .35rem .2rem; border: 0; border-bottom: 1px solid transparent; background: transparent; color: var(--amber); font: inherit; cursor: pointer; }
+.gov-dialog button:hover { color: var(--ink); border-bottom-color: var(--signal-line); }
+.gov-dialog :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.gov-dialog select { min-width: 0; width: 100%; min-height: 2.75rem; font: inherit; color: var(--ink); background: var(--void); border: 1px solid var(--signal-line); border-radius: 0; padding: .35rem; }
+.gov-dialog option { background: var(--void); color: var(--ink); }
+.gov-dialog-head { display: flex; justify-content: space-between; align-items: center; gap: .75rem; }
+.gov-edit-gear { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 1rem; align-items: center; margin-top: .75rem; }
+.gov-edit-gear .gov-card { position: relative; max-width: 6.5rem; }
+.gov-edit-info { display: grid; gap: .3rem; min-width: 0; }
+.gov-edit-info p { margin: 0; }
+.gov-edit-level { font: 1.4rem/1.15 var(--display-2); }
+.gov-edit-stat { color: var(--amber); font-size: .9rem; }
+.gov-edit-next { display: flex; flex-wrap: wrap; gap: .2rem .6rem; align-items: center; color: var(--ink-muted); font-size: .8rem; }
+.gov-stepper { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem; align-items: center; }
+.gov-dialog .gov-stepper button { font: 1.4rem/1 var(--display-2); }
+.gov-edit-charm { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr); gap: .75rem; align-items: center; padding-block: .2rem; }
+.gov-dialog .gov-edit-charm .gov-gem { width: 2.2rem; height: 2.2rem; }
+.gov-costs { display: inline-flex; flex-wrap: wrap; gap: .1rem .5rem; }
+.gov-cost { display: inline-flex; align-items: center; gap: .15rem; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+.gov-icon { width: 1.1rem; height: 1.1rem; object-fit: contain; }
+.gov-dialog .gov-gloss { font-size: .85rem; color: var(--ink-muted); line-height: 1.35; margin: .6rem 0 0; }
+
+@media (max-width: 400px) {
+  .gov-piece .gov-card { max-width: 4.6rem; }
+  .gov-profile .gov-gem { width: 1.3rem; height: 1.3rem; }
+  .gov-crest output { font-size: 1.05rem; }
+}

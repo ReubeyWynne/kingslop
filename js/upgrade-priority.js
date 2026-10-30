@@ -137,12 +137,12 @@
     if (spend.steps) add('gear-spend', { steps: spend.steps, hammers: spend.spent.hammers, mithril: spend.spent.mithril }, 'hero-gear/#kvk-points', { scores: true });
   }
 
-  /* The governor page's planner (Governor.plan) with the saved goal and troop focus: the
-     affordable step with the most gain for the share of the bag it uses. Stats are weighted
-     per troop there, so infantry and archer pieces often run ahead of cavalry. */
+  /* The governor page's planner (Governor.plan) with the saved troop profile (Bear first
+     unless another is saved): the affordable step with the most weighted gain for the share
+     of the bag it uses. */
   function governorSteps(snapshot, at, add) {
     if (!governor) return;
-    var prefs = Object.assign({ goal: 'stats', focus: 'all' }, (snapshot.preferences && snapshot.preferences.governor) || {});
+    var prefs = Object.assign({}, (snapshot.preferences && snapshot.preferences.governor) || {});
     var kinds = at >= rank(rules.unlocks.governorCharms) ? ['gear', 'charms'] : ['gear'], recorded = false;
     kinds.forEach(function (kind) {
       var section = kind === 'gear' ? snapshot.governorGear : snapshot.governorCharms, field = kind === 'gear' ? 'pieces' : 'slots';
@@ -152,7 +152,7 @@
       var materials = {}, unknown = false;
       governor.data[kind].materials.forEach(function (id) { var n = confirmed(snapshot, id); if (n === null) unknown = true; materials[id] = n || 0; });
       if (unknown) { if (!recorded) add('record', { what: 'governor-materials' }, 'town-centre/#town-governor'); recorded = true; return; }
-      var plan = governor.plan(kind, state, materials, { goal: prefs.goal, focus: prefs.focus, limit: 60 });
+      var plan = governor.plan(kind, state, materials, { profile: prefs.profile, goal: prefs.goal, limit: 60 });
       if (!plan.steps.length) return;
       var first = plan.steps[0], item = governor.items(kind).find(function (i) { return i.id === first.id; });
       var piece = kind === 'gear' ? item : governorData.gear.pieces.find(function (p) { return p.id === item.piece; });

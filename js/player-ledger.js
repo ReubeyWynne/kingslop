@@ -40,7 +40,7 @@
   /* Pets you have tamed: level (1–100, null for unread) and whether the Advance at that level is done
      (only at levels 10, 20 … 100, where the level cap breaks). The skill level is the number of Advances. */
   var PET = { fields: ['level', 'advanced'], level: 100 };
-  var GOVERNOR_PREFS = { goal: ['stats', 'score'], focus: ['all', 'inf', 'cav', 'arc'], gearTarget: 58, charmTarget: 22 };
+  var GOVERNOR_PREFS = { goal: ['stats', 'score'], focus: ['all', 'inf', 'cav', 'arc'], profile: ['bear', 'defence', 'even', 'score'], gearTarget: 58, charmTarget: 22 };
   // Training facts: the Bonus Overview training speed (%) without temporary buffs, troops per batch in one camp, and the highest tier each camp trains.
   var TRAINING = ['speed', 'capacity', 'inf', 'cav', 'arc'];
   /* Training plans: the capacity buff, the castle position you hold (Noble Advisor or Chief
