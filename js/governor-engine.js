@@ -100,5 +100,50 @@
     var entry = row(kind, index);
     return kind === 'gear' ? { index: index, tier: entry.tier, grade: entry.grade, stars: entry.stars } : { index: index, level: entry.level };
   }
-  return { data: data, max: max, items: items, stat: stat, score: score, verified: verified, cost: cost, toTarget: toTarget, plan: plan, events: events, describe: describe };
+  /* A sheet in the address. gov= holds one character per gear piece, then one per charm
+     (0-9, a-z, A-Z for the level, "." for not set); bag= the materials in table order joined
+     by "." (blank is not counted); g, f, gt and ct the planner choices that differ from the
+     defaults. A sheet is { gear, charms, bag, prefs }, each keyed by id. */
+  var DIGITS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', BAG_MAX = 1e9;
+  var PREFS = { goal: ['g', ['stats', 'score']], focus: ['f', ['all', 'inf', 'cav', 'arc']], gearTarget: ['gt', 'gear'], charmTarget: ['ct', 'charms'] };
+  function prefDefaults() { return { goal: 'stats', focus: 'all', gearTarget: max('gear'), charmTarget: max('charms') }; }
+  function encodeLink(sheet) {
+    var out = { gov: ['gear', 'charms'].map(function (kind) {
+      return items(kind).map(function (item) { var value = sheet[kind] && sheet[kind][item.id]; return Number.isInteger(value) ? DIGITS[level(kind, value)] : '.'; }).join('');
+    }).join('') };
+    var bag = data.materials.map(function (m) { var n = sheet.bag && sheet.bag[m.id]; return Number.isSafeInteger(n) && n >= 0 && n <= BAG_MAX ? String(n) : ''; });
+    if (bag.some(Boolean)) out.bag = bag.join('.');
+    var prefs = Object.assign(prefDefaults(), sheet.prefs || {}), defaults = prefDefaults();
+    Object.keys(PREFS).forEach(function (key) { if (prefs[key] !== defaults[key]) out[PREFS[key][0]] = String(prefs[key]); });
+    return out;
+  }
+  // The sheet a query string carries: null without gov=, { invalid: true } when it cannot be read.
+  function readLink(search) {
+    var params = new URLSearchParams(search), gov = params.get('gov');
+    if (gov === null) return null;
+    var invalid = { invalid: true }, gearCount = items('gear').length, charmCount = items('charms').length;
+    if (gov.length !== gearCount + charmCount) return invalid;
+    var sheet = { gear: {}, charms: {}, bag: {}, prefs: {} };
+    for (var i = 0; i < gov.length; i++) {
+      var kind = i < gearCount ? 'gear' : 'charms', item = items(kind)[i < gearCount ? i : i - gearCount], ch = gov.charAt(i), value = DIGITS.indexOf(ch);
+      if (ch === '.') value = null; else if (value < 0 || value > max(kind)) return invalid;
+      sheet[kind][item.id] = value;
+    }
+    var bag = params.has('bag') ? params.get('bag').split('.') : [];
+    if (bag.length && bag.length !== data.materials.length) return invalid;
+    for (var b = 0; b < data.materials.length; b++) {
+      var text = bag[b] || '';
+      if (text && (!/^\d{1,10}$/.test(text) || Number(text) > BAG_MAX)) return invalid;
+      sheet.bag[data.materials[b].id] = text ? Number(text) : null;
+    }
+    var keys = Object.keys(PREFS);
+    for (var k = 0; k < keys.length; k++) {
+      var key = keys[k], rule = PREFS[key], raw = params.get(rule[0]);
+      if (raw === null) continue;
+      if (Array.isArray(rule[1])) { if (!rule[1].includes(raw)) return invalid; sheet.prefs[key] = raw; }
+      else { var n = Number(raw); if (!/^\d+$/.test(raw) || n < 1 || n > max(rule[1])) return invalid; sheet.prefs[key] = n; }
+    }
+    return sheet;
+  }
+  return { data: data, max: max, items: items, stat: stat, score: score, verified: verified, cost: cost, toTarget: toTarget, plan: plan, events: events, describe: describe, prefDefaults: prefDefaults, encodeLink: encodeLink, readLink: readLink };
 });

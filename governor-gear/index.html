@@ -9,15 +9,29 @@ self: governor
     <p class="lede" data-i18n="gov.lede">Tap a piece to set it as it is in game. The plan spends your materials where they add the most.</p>
     {% include ascii/motif.html kind="seal" %}
   </section>
-  {% include next-step.html kinds="governor-gear governor-charms record:governor record:governor-materials" %}
+
+  <section class="section gov-sheet" id="governor-sheet" data-module="governor-sheet" aria-label="This sheet" data-i18n-key="gov.sheet.label" data-i18n-attr="aria-label">
+    <p class="gov-sheet-source" aria-live="polite"><strong data-target="governor-sheet.source"></strong> <span data-target="governor-sheet.hint"></span></p>
+    <p class="gov-sheet-actions">
+      <button type="button" data-action="governor-sheet.copy" data-i18n="gov.sheet.copy">copy link</button>
+      <button type="button" data-action="governor-sheet.blank" data-target="governor-sheet.blank" data-i18n="gov.sheet.blank" hidden>start blank</button>
+      <button type="button" data-action="governor-sheet.loadMine" data-target="governor-sheet.loadMine" data-i18n="gov.sheet.loadMine" hidden>load mine</button>
+      <button type="button" data-action="governor-sheet.saveMine" data-target="governor-sheet.saveMine" data-i18n="gov.sheet.saveMine" hidden>save as mine</button>
+    </p>
+    <input class="gov-sheet-link" type="url" readonly hidden data-target="governor-sheet.link" aria-label="Link to this sheet" data-i18n-key="gov.sheet.linkLabel" data-i18n-attr="aria-label">
+    <dialog class="gov-dialog gov-confirm" data-target="governor-sheet.confirm" aria-labelledby="gov-confirm-title">
+      <h2 id="gov-confirm-title" data-i18n="gov.sheet.confirmTitle">Save this sheet as yours?</h2>
+      <p data-i18n="gov.sheet.confirmBody">It replaces the governor levels in your save. A material this sheet has not counted keeps your number.</p>
+      <p class="gov-confirm-actions"><button type="button" data-action="governor-sheet.cancel" data-i18n="gov.sheet.cancel">cancel</button> <button type="button" data-action="governor-sheet.confirm" data-i18n="gov.sheet.confirm">replace my levels</button></p>
+    </dialog>
+  </section>
 
   <section class="section gov-console" id="governor-planner" aria-label="Governor planner" data-i18n-key="gov.planner" data-i18n-attr="aria-label">
-    {% include empty-state.html needs="governor" key="empty.governor" text="Add your governor gear to see what to upgrade next." fill="../town-centre/#town-governor" %}
-    <div class="gov-bag" id="governor-bag" data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed">
+    <div class="gov-bag" id="governor-bag" data-module="ledger-form" data-saved-key="gov.sheet.bagSaved" data-save-failed-key="gear.saveFailed">
       {% for item in gov.materials %}{% if gov.gear.materials contains item.id %}{% assign group = "gear" %}{% else %}{% assign group = "charms" %}{% endif %}
       <label data-kind="{{ group }}"><img src="../img/governor/{{ item.id }}.webp" width="40" height="40" alt=""><span data-i18n="{{ item.key }}">{{ item.label | escape }}</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize" aria-label="{{ item.label | escape }}" data-i18n-key="{{ item.key }}" data-i18n-attr="aria-label"></label>
       {% endfor %}
-      <p class="gov-bag-caption"><span data-i18n="gov.bagShort">blank means not counted yet · shared with hero gear and events</span> <output data-target="ledger-form.save" role="status"></output></p>
+      <p class="gov-bag-caption"><span data-i18n="gov.bagSheet">blank means not counted yet</span> <output data-target="ledger-form.save" role="status"></output></p>
     </div>
 
     <div class="gov-rail gov-views" data-module="tabs" data-tabs-bind="governor-view" role="tablist" aria-label="View" data-i18n-key="gov.view" data-i18n-attr="aria-label">
@@ -154,17 +168,6 @@ self: governor
 
     <output class="gov-status" hidden aria-live="polite" data-module="result-panel" data-status-scope="governor" data-target="result-panel.message"></output>
     <noscript><p data-i18n="gov.noJS">Enable JavaScript to use the planner. The cost tables below remain available.</p></noscript>
-  </section>
-
-  <section class="section gov-notes" id="governor-save">
-    <details id="save-backups" data-module="save-transfer disclosure" data-status-scope="governor" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
-      <summary data-i18n="gear.manageSave">your save &amp; backups</summary>
-      <p class="gov-gloss" data-i18n="gov.saveHint">One save for your governor levels, hero gear and event inventory. Keep a backup before importing another.</p>
-      <button type="button" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
-      <button type="button" data-action="save-transfer.choose" data-i18n="gear.load">import backup</button>
-      <input type="file" accept="application/json,.json" hidden data-target="save-transfer.file" data-action="save-transfer.import">
-    </details>
-    <button type="button" class="gov-reset" data-action="governor-planner.reset" data-i18n="gov.reset">clear governor levels</button>
   </section>
 
   <section class="section gov-notes" id="governor-sources">

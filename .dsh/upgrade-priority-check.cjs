@@ -115,7 +115,7 @@ assert.ok(page.scripts.indexOf('../js/upgrade-priority-words.js') < page.scripts
 const engineSource = fs.readFileSync('js/upgrade-priority.js', 'utf8');
 const stepKinds = new Set([...engineSource.matchAll(/add\('([a-z-]+)'/g)].map(m => m[1]).concat(['governor-gear', 'governor-charms']));
 const recordWhats = new Set([...engineSource.matchAll(/add\('record', \{ what: '([a-z-]+)'/g)].map(m => m[1]).concat(['barracks', 'range', 'stable', 'command-center']));
-const hintPages = { town: 'town-centre', heroes: 'heroes', gear: 'hero-gear', governor: 'governor-gear', pets: 'pets', masters: 'masters' };
+const hintPages = { town: 'town-centre', heroes: 'heroes', gear: 'hero-gear', pets: 'pets', masters: 'masters' };
 Object.entries(hintPages).forEach(([token, dir]) => {
   const entry = pages[token], html = fs.readFileSync(dir + '/index.html', 'utf8');
   const needed = ['../js/upgrade-priority-data.js', '../js/building-data.js', '../js/upgrade-priority.js', '../js/upgrade-priority-words.js', '../js/next-step.js'];

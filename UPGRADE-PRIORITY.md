@@ -21,18 +21,17 @@ The weights only order the list. They are not game numbers, and changing one nev
 
 ## Next-step lines on the tool pages
 
-Town Centre, Heroes, Hero gear, Governor, Pets and Masters each carry a short "Your next step" note (`_includes/next-step.html`, `js/next-step.js`, `css/next-step.css`) with at most two steps from `evaluate`, filtered to the kinds that page handles and linking back to `upgrade-priority/#next`. The include names the kinds in `kinds`; `record:<what>` names a step that asks for a missing fact.
+Town Centre, Heroes, Hero gear, Pets and Masters each carry a short "Your next step" note (`_includes/next-step.html`, `js/next-step.js`, `css/next-step.css`) with at most two steps from `evaluate`, filtered to the kinds that page handles and linking back to `upgrade-priority/#next`. The include names the kinds in `kinds`; `record:<what>` names a step that asks for a missing fact.
 
 | Page | Kinds |
 | --- | --- |
 | Town Centre | `tc-blocker`, `tc-next`, `troop-lag`, `command-center`, `war-academy`, records for the Town Centre, troop buildings, Command Center and War Academy |
 | Heroes | `hero-stars`, `hero-widget`, `record:heroes`, `record:hero-stars` |
 | Hero gear | `gear-next`, `gear-spend`, `record:hero-gear` |
-| Governor | `governor-gear`, `governor-charms`, `record:governor`, `record:governor-materials` |
 | Pets | `pet-advance`, `pet-focus`, `record:pets` |
 | Masters | `master-class`, `master-skills` |
 
-Every page asks for an unknown Town Centre first, since the stage weighs every step. The note reads the player's own save, follows it live, and stays hidden when nothing on the page is due, under Hero Gear's guest or shared-link store, and without JavaScript. Each page loads the engine after its own engines; a system whose engine a page does not load (the governor planner on Heroes, say) simply adds no steps there.
+Every page asks for an unknown Town Centre first, since the stage weighs every step. The note reads the player's own save, follows it live, and stays hidden when nothing on the page is due, under Hero Gear's guest or shared-link store, and without JavaScript. The governor page has no note: it works on its own sheet, never the save (see `GOVERNOR-GEAR.md`), so governor steps show only on the priority page. Each page loads the engine after its own engines; a system whose engine a page does not load (the governor planner on Heroes, say) simply adds no steps there.
 
 ## Stages
 

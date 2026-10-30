@@ -25,6 +25,16 @@
 .gov-heading h2 { font-size: 1.3rem; margin: 0; }
 .gov-heading small { color: var(--ink-muted); font-size: .75rem; }
 
+/* The sheet — whose numbers these are, and the link that carries them. */
+.gov-main .gov-sheet { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .2rem 1rem; padding: .4rem 0; }
+.gov-sheet p { margin: 0; }
+.gov-sheet-source { font-size: .9rem; color: var(--ink-dim); }
+.gov-sheet-source strong { color: var(--ink); font-weight: 600; }
+.gov-sheet-actions { display: flex; flex-wrap: wrap; gap: 0 1rem; }
+.gov-sheet-link { flex: 1 1 100%; min-width: 0; padding: .4rem; font: .85rem var(--body); color: var(--ink); background: var(--void-2); border: 1px solid var(--signal-line); }
+.gov-confirm p { margin: .6rem 0 0; }
+.gov-confirm-actions { display: flex; justify-content: flex-end; gap: 1rem; }
+
 /* Materials — one strip of icons, gear's three then charms' two. */
 .gov-bag { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .8rem; border-block: 1px solid var(--signal-line); padding: .6rem 0 .3rem; }
 .gov-main .gov-bag label { grid-template-columns: 2.5rem minmax(0, 1fr); column-gap: .6rem; row-gap: 0; align-items: center; }

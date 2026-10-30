@@ -107,6 +107,19 @@ assert.equal(store.snapshot().governorGear.status, 'unsupported');
 assert.equal(store.snapshot().preferences.governor, undefined);
 assert.equal(store.balance('satin').amount, 500);
 
+// Sheet links: 24 characters for the levels, the bag in table order, only choices that differ.
+const sheet = { gear: { 'inf-1': 0, 'inf-2': 58, 'cav-1': null, 'cav-2': 9, 'arc-1': 35, 'arc-2': 1 }, charms: { 'inf-1-1': 22, 'cav-2-3': 0 }, bag: { satin: 400000, 'gilded-threads': 0, 'charm-design': 1e9 }, prefs: { goal: 'score', focus: 'all', charmTarget: 8 } };
+const encoded = G.encodeLink(sheet);
+assert.deepEqual(encoded, { gov: '0W.9z1' + 'm' + '.'.repeat(10) + '0' + '.'.repeat(6), bag: '400000.0...1000000000', g: 'score', ct: '8' });
+const query = '?' + new URLSearchParams(encoded).toString(), back = G.readLink(query);
+assert.equal(back.gear['inf-2'], 58); assert.equal(back.gear['cav-1'], null); assert.equal(back.charms['inf-1-1'], 22); assert.equal(back.charms['cav-2-3'], 0); assert.equal(back.charms['arc-2-3'], null);
+assert.deepEqual(back.bag, { satin: 400000, 'gilded-threads': 0, 'artisans-vision': null, 'charm-guide': null, 'charm-design': 1e9 });
+assert.deepEqual(back.prefs, { goal: 'score', charmTarget: 8 });
+assert.deepEqual(G.encodeLink(back), encoded, 'a link reads back to itself');
+assert.equal(G.readLink('?lang=en'), null);
+for (const bad of ['?gov=short', '?gov=' + 'X'.repeat(24), '?gov=' + '.'.repeat(6) + 'n' + '.'.repeat(17), '?gov=' + '.'.repeat(24) + '&bag=1.2', '?gov=' + '.'.repeat(24) + '&bag=1000000001....', '?gov=' + '.'.repeat(24) + '&f=mage', '?gov=' + '.'.repeat(24) + '&gt=59'])
+  assert.deepEqual(G.readLink(bad), { invalid: true }, bad);
+
 // Page integration: navigation, dictionaries and static fallback copy.
 const nav = require('../_data/nav.json'), pages = require('../_data/pages.json');
 assert.equal(nav.filter(n => n.self === 'governor').length, 1);

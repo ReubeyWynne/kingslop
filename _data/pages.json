@@ -779,8 +779,7 @@
       "../css/equipment.css",
       "../css/styles.css",
       "../css/events.css",
-      "../css/governor.css",
-      "../css/next-step.css"
+      "../css/governor.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -792,13 +791,8 @@
       "../js/event-rules.js",
       "../js/governor-engine.js",
       "../js/governor-view.js",
-      "../js/governor-planner.js",
-      "../js/upgrade-priority-data.js",
-      "../js/building-data.js",
-      "../js/upgrade-priority.js",
-      "../js/upgrade-priority-words.js",
-      "../js/next-step.js",
-      "../js/empty-state.js"
+      "../js/governor-sheet.js",
+      "../js/governor-planner.js"
     ],
     "footMainKey": "gov.kicker",
     "footMain": "the governor's wardrobe",

@@ -1,5 +1,5 @@
 /* Bounded DOM adapter for the governor planner. Arithmetic lives in governor-engine.js;
-   levels, preferences and materials live in the shared player ledger. The page lays the
+   levels, preferences and materials live in the page's own sheet (governor-sheet.js). The page lays the
    six pieces out as the in-game profile does; this module paints them and the plan. */
 (function () {
   'use strict';
@@ -14,8 +14,7 @@
     planLimit: 'Showing the first {n} upgrades.', bagUnknown: 'Materials you have not entered count as none.',
     eventRow: '{event}, day {day}: about {points} points', eventNone: 'No event day in the guide scores this yet.', eventUnknown: 'One step has no published score, so the points are not shown.',
     spentLeft: '{n} left', needMissing: '{n} still to find', needEnough: 'you have enough', needUnknown: 'count not entered',
-    targetUnknown: '{n} not set and left out of this total.', targetDone: 'Everything you have set is already there.', targetUnverified: 'Includes a step only one table lists (◇).',
-    resetDone: 'Governor levels cleared. Your materials stay in the bag.'
+    targetUnknown: '{n} not set and left out of this total.', targetDone: 'Everything you have set is already there.', targetUnverified: 'Includes a step only one table lists (◇).'
   };
   var EVENTS = { prep: ['ks.today.kickerPrep', 'KvK prep'], sg: ['ks.governor.title', 'Strongest Governor'], brawl: ['ks.brawl.title', 'Alliance Brawl'] };
   var TROOPS = { inf: 'Infantry', cav: 'Cavalry', arc: 'Archer' };
@@ -268,10 +267,6 @@
       option: { events: ['change'], run: function (node) {
         var key = node.dataset.option, value = key === 'goal' || key === 'focus' ? node.value : Number(node.value);
         write(function () { store.setGovernorPreference(key, value); });
-      } },
-      reset: { run: function () {
-        write(function () { store.resetGovernor(); });
-        context.emit('player-status', { scope: 'governor', key: 'gov.resetDone', fallback: EN.resetDone });
       } }
     } };
   });
