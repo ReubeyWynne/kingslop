@@ -279,7 +279,10 @@
       context.nodes('[data-count]').forEach(function (tile) {
         var amount = confirmed(snapshot, tile.dataset.count);
         tile.dataset.state = amount === null ? 'unknown' : 'confirmed';
-        tile.querySelector('[data-amount]').textContent = amount === null ? '?' : api.fmt(amount);
+        var out = tile.querySelector('[data-amount]'), short = amount === null ? '?' : api.compact(amount);
+        out.textContent = short;
+        // A shortened figure keeps the exact one a hover away.
+        if (amount !== null && short !== api.fmt(amount)) out.title = api.fmt(amount); else out.removeAttribute('title');
       });
       context.nodes('[data-duration]').forEach(function (tile) {
         var minutes = confirmed(snapshot, tile.dataset.duration);

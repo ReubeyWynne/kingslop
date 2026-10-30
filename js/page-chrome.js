@@ -159,6 +159,34 @@
     // render everywhere — Windows shows letter-pairs instead of flag emojis) and
     // the ledger (the ❧ directory drawer; its rows are links, so they navigate
     // on their own).
+    // Number format, beside the language: Automatic, then each culture named in
+    // the page's language with a sample of how it writes numbers.
+    var NUMBER_LOCALES = ['en-GB', 'en-US', 'en-IN', 'es-ES', 'es-MX', 'pt-BR', 'de-DE', 'fr-FR', 'it-IT', 'ru-RU', 'pl-PL', 'tr-TR', 'zh-Hans-CN', 'zh-Hant-TW', 'ko-KR', 'ja-JP', 'th-TH', 'id-ID', 'vi-VN', 'ar-u-nu-latn', 'ar-EG'];
+    function wireNumbers(select) {
+      var I = window.I18N;
+      if (!select || !I || typeof I.setNumbers !== 'function') return;
+      function sample(code) { try { return new Intl.NumberFormat(code).format(1234567.89); } catch (e) { return ''; } }
+      function named(code) {
+        try { return new Intl.DisplayNames([I.lang], { type: 'language' }).of(code.replace(/-u-.*$/, '')) || code; } catch (e) { return code; }
+      }
+      function fill() {
+        var list = NUMBER_LOCALES.slice(), browser = I.autoLocale();
+        if (list.indexOf(browser) === -1) list.unshift(browser);
+        var options = [['auto', I.tr('ui.numbers.auto', 'Automatic') + ' · ' + sample(browser)]].concat(list.map(function (code) { return [code, named(code) + ' · ' + sample(code)]; }));
+        select.textContent = '';
+        options.forEach(function (o) {
+          var option = document.createElement('option');
+          option.value = o[0]; option.textContent = o[1];
+          select.appendChild(option);
+        });
+        select.value = I.numbers;
+        if (select.value !== I.numbers) select.value = 'auto';
+      }
+      select.addEventListener('change', function () { I.setNumbers(select.value); });
+      document.addEventListener('i18n:change', fill);
+      fill();
+    }
+
     function wireTopbar() {
       var langBtn = document.getElementById('lang-btn');
       var langMenu = document.getElementById('lang-menu');
@@ -195,6 +223,7 @@
         });
         document.addEventListener('i18n:change', syncPicker);
         syncPicker();
+        wireNumbers(document.getElementById('number-format'));
       }
 
       var ledgerBtn = document.getElementById('ledger-btn');

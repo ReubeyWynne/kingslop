@@ -12,6 +12,8 @@ window.__BH_I18N_DATA["pl"] = {
   "skip": "Przejdź do wyliczeń",
   "brandNote": "tylko wyliczenia",
   "ui.lang": "Język",
+  "ui.numbers": "Format liczb",
+  "ui.numbers.auto": "Automatycznie",
 
   "nav.aria": "Sekcje",
   "nav.model": "Sedno",

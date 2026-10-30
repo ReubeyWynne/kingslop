@@ -15,6 +15,9 @@ These came from the owner in the project thread and are not open questions.
   screen it came from: one cut-out and one input per tile. Confident values are
   pre-ticked and quiet; a "Needs a look (n)" filter steps through only the
   unread or doubtful ones.
+- **Big counts said short, in the reader's language.** A count of a million or
+  more keeps its exact grouped box and gains a short form beside it from
+  `Intl.NumberFormat` compact notation (1.58B, 1,58 Mrd., 15.8億).
 - **Single inputs, clean DOM hooks.** Review markup comes from a `<template>`
   with `data-field` hooks, reconciled in place, the way `troop-roster` works
   (INTERACTIONS.md). No string-built HTML.
@@ -90,7 +93,7 @@ A proposal is one reviewable value:
 
 ```js
 { target: 'inventory', id: 'bread', value: 597910000, confidence: 0.9,
-  crop: { x, y, w, h }, label: 'Bread', note: '597.91M' }
+  crop: { x, y, w, h }, label: 'Bread', note: '' }
 ```
 
 `value: null` means unread (never a guess). The router reads a file once, asks

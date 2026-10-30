@@ -11,6 +11,8 @@ window.__BH_I18N_DATA["ar"] = {
   "skip": "تخطَّ إلى الرياضيات",
   "brandNote": "الرياضيات فقط",
   "ui.lang": "اللغة",
+  "ui.numbers": "تنسيق الأرقام",
+  "ui.numbers.auto": "تلقائي",
   "nav.aria": "الأقسام",
   "nav.model": "الخلاصة في سطر",
   "nav.sqrt": "الجذر التربيعي",

@@ -12,6 +12,8 @@ window.__BH_I18N_DATA["de"] = {
   "skip": "Direkt zur Rechnung",
   "brandNote": "nur die rechnung",
   "ui.lang": "Sprache",
+  "ui.numbers": "Zahlenformat",
+  "ui.numbers.auto": "Automatisch",
 
   "nav.aria": "Abschnitte",
   "nav.model": "Der eine Satz",

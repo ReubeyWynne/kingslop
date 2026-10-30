@@ -12,6 +12,8 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "skip": "直接看數學",
   "brandNote": "只有數學",
   "ui.lang": "語言",
+  "ui.numbers": "數字格式",
+  "ui.numbers.auto": "自動",
 
   "nav.aria": "章節",
   "nav.model": "一句話總結",

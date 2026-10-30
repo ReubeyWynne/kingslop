@@ -151,6 +151,8 @@
   // it: 805,510,000 · 805.510.000 · 805 510 000.
   function locale() { return (window.I18N && window.I18N.locale) || 'en-GB'; }
   function number(n, options) { return new Intl.NumberFormat(locale(), options).format(n); }
+  // A big count beside its exact box, the way the reader says it: 1.58B, 1,58 Mrd., 15.8億.
+  function compact(n) { return number(n, { notation: 'compact', maximumFractionDigits: 2 }); }
 
   function duration(minutes) {
     var d = Math.floor(minutes / 1440), h = Math.floor(minutes % 1440 / 60), m = minutes % 60;
@@ -325,6 +327,7 @@
         var q = QUALITY[p.quality], field = p.unit === 'gear-level' ? tr('import.gearLevel', 'enhancement') : tr('import.gearMastery', 'forge mastery');
         return q ? field + ' · ' + tr(q[0], q[1]) : field;
       }
+      if (p.unit === 'count' && typeof value === 'number' && value >= 1e6) return compact(value) + (p.note ? ' · ' + p.note : '');
       return p.note;
     }
 

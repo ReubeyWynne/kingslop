@@ -12,6 +12,8 @@ window.__BH_I18N_DATA["th"] = {
   "skip": "ข้ามไปที่คณิตศาสตร์",
   "brandNote": "แค่คณิตศาสตร์",
   "ui.lang": "ภาษา",
+  "ui.numbers": "รูปแบบตัวเลข",
+  "ui.numbers.auto": "อัตโนมัติ",
 
   "nav.aria": "หัวข้อ",
   "nav.model": "สรุปในหนึ่งประโยค",

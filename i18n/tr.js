@@ -12,6 +12,8 @@ window.__BH_I18N_DATA["tr"] = {
   "skip": "Matematiğe geç",
   "brandNote": "sadece matematik",
   "ui.lang": "Dil",
+  "ui.numbers": "Sayı biçimi",
+  "ui.numbers.auto": "Otomatik",
 
   "nav.aria": "Bölümler",
   "nav.model": "Tek cümlelik özet",

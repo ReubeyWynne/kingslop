@@ -12,6 +12,8 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "skip": "直接看数学",
   "brandNote": "只有数学",
   "ui.lang": "语言",
+  "ui.numbers": "数字格式",
+  "ui.numbers.auto": "自动",
 
   "nav.aria": "章节",
   "nav.model": "一句话总结",

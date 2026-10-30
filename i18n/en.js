@@ -16,6 +16,8 @@ window.__BH_I18N_DATA["en"] = {
   "skip": "Skip to the maths",
   "brandNote": "just the maths",
   "ui.lang": "Language",
+  "ui.numbers": "Number format",
+  "ui.numbers.auto": "Automatic",
 
   "nav.aria": "Sections",
   "nav.model": "The one-liner",

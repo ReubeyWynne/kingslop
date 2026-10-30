@@ -183,6 +183,7 @@ jobs:
             town:
               - *shared
               - .dsh/town-centre-ui-check.cjs
+              - .dsh/number-format-ui-check.cjs
               - town-centre/**
               - js/town-centre*.js
               - js/event-*
@@ -574,6 +575,9 @@ jobs:
       - name: Check Town Centre UI
         if: matrix.group == 'town'
         run: node .dsh/town-centre-ui-check.cjs
+      - name: Check number format
+        if: matrix.group == 'town'
+        run: node .dsh/number-format-ui-check.cjs
       - name: Check upgrade priority UI
         if: matrix.group == 'priority'
         run: node .dsh/upgrade-priority-ui-check.cjs
