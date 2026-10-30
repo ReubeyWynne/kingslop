@@ -6,7 +6,7 @@ Four recovered layouts fit the original `dey.ci/island#` format using assigned, 
 
 The original 373-byte limit belongs to base64url, not to UTF-16 game chat. These experiments revise that transport assumption without discarding any placement or referencing a preset. All sizes below count actual encoded JavaScript string lengths, including the prefix and a one-unit transport marker. Every transport uses the same original binary codec output, or reconstructs that output byte for byte through the documented compact-header rule.
 
-The [blacklist investigation](ISLAND-CHARACTER-BLACKLIST.md) analyses the failed return and tests a new candidate excluding its 35 observed changed characters. That candidate still fits the numerical root-route budget but is not validated through game chat.
+The [blacklist investigation](ISLAND-CHARACTER-BLACKLIST.md) records two failed game returns. Its candidate excluding the first 35 observed changed characters also failed. Empirical blacklist iteration is not a production validation strategy; the offline size results remain diagnostic only.
 
 ## Measured recovered layouts
 
@@ -95,4 +95,4 @@ The earlier report's 373-byte limit and two-surface counting example were ASCII/
 
 A universal arbitrary-island guarantee is still impossible. Six surface families with 500 cells each and 600 empty cells have `3600! / ((500!)^6 * 600!)` arrangements, about **10061.41 bits**, requiring at least **1258 bytes** for some arrangement. All six families have a recovered per-type cap of 500. This exceeds even the idealised 8,080 bits available after the seven-unit root prefix, before a real alphabet, marker or checksum. Exact terrain/availability constraints remain unresolved, so this is a counting result over the stated grid model.
 
-The root alias saves seven units, but routing should not be chosen around an unvalidated transport. The wide assigned alphabet failed the supplied game round trip. First isolate whether smaller character sets survive with [character-probe.txt](../.dsh/island-compression/unicode/character-probe.txt). No remaining Unicode profile is validated; a short successful probe would still need wider coverage. Keep base64url as the conservative fallback candidate. Do not choose the dense diagnostic alphabet merely to make the table pass.
+The root alias saves seven units, but routing should not be chosen around an unvalidated transport. The wide assigned alphabet failed the supplied game round trip. No further empirical blacklist trials are requested. A production profile needs actual game filtering rules or a bounded small-alphabet validation strategy; a short successful probe alone would not establish arbitrary-string safety. No remaining Unicode profile is validated. Keep base64url as the conservative fallback candidate. Do not choose the dense diagnostic alphabet merely to make the table pass.

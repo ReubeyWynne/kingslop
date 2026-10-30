@@ -30,3 +30,7 @@ test('New 512-unit specimen preserves the complete largest recovered layout', ()
   const bytes = decodeFragment(text.slice(text.indexOf('#'))), f = prior.reference.find(f => !f.nativeCompression && f.layout === 'kingshot-8901'); assert(Buffer.from(bytes).equals(Buffer.from(f.payload, 'base64url')));
   const p = text.slice(7); for (let i = 1; i < p.length; i += 13) { const altered = p.slice(0, i) + (p[i] === '一' ? '丁' : '一') + p.slice(i + 1); assert.throws(() => decodeTransport(altered)); }
 });
+test('The returned blacklist-v1 game specimen also fails closed', () => {
+  const original = fs.readFileSync(new URL('blacklist-layout-8901-root.txt', dir), 'utf8'), returned = fs.readFileSync(new URL('returned-blacklist-v1-game-message.txt', dir), 'utf8');
+  assert.equal(original.length, 512); assert.equal(returned.length, 505); assert.notEqual(returned, original); assert.throws(() => decodeFragment(returned.slice(returned.indexOf('#'))));
+});

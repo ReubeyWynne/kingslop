@@ -10,7 +10,9 @@ for item in a['scenarios']:
  scenarios.append(f"| {item['profile']} | {item['alphabetSize']:,} | {item['bitsPerUnit']:.4f} | {item['guaranteedCompactBytesWithRoot']} | {' / '.join(str(x['rootRouteUnits']) for x in cases)} |")
 text=f'''# Character blacklist investigation
 
-The failed game-chat specimen provides a useful seed blacklist: **35 distinct source characters occur in changed spans** before the truncated tail. Removing them leaves 50,829 of the original 50,864 alphabet symbols and keeps all five recovered layouts within the numerical 512-unit root-route budget. This candidate has not passed a game-chat test. Translation may depend on context, so a blacklist is worth testing but is not yet a safe transport rule.
+**Status: diagnostic only; not a proposed production transport.** The second user return also failed: 505 units instead of 512, with one ideograph replaced by an asterisk and seven symbols deleted. Both tested alphabets failed. No predictive rule for unseen characters or arbitrary strings has been identified. Further character-by-character blacklist iteration is not a useful validation plan, and no further user paste batches are requested.
+
+The failed game-chat specimen provides a useful seed blacklist: **35 distinct source characters occur in changed spans** before the truncated tail. Removing them leaves 50,829 of the original 50,864 alphabet symbols and keeps all five recovered layouts within the numerical 512-unit root-route budget. This candidate failed the second game-chat trial. The size advantage is retained here as a diagnostic result; it does not establish a predictive character filter.
 
 ## Observed pattern
 
@@ -52,13 +54,15 @@ These are actual encoded lengths after exact binary round trips, using `dey.ci#`
 
 The narrow blacklist costs effectively nothing at this size. For the current largest specimen, radix conversion needs at least 50,350 symbols to stay within 504 data units. That permits 514 removals from the original alphabet, or 479 further removals after these 35. This is exact for this specimen and framing, not a guarantee for arbitrary future islands. Removing all CJK ideographs and the six failed symbols reduces the alphabet to 23,262 symbols and makes the two largest layouts 551 and 544 units. Hangul alone reaches only 11,172 symbols; the largest layout becomes 594 units. Broader exclusions therefore trade confidence for capacity and would require further binary compression to recover the largest layouts.
 
-All **84 offline candidate/layout cases** across the 21-layout corpus reconstruct the exact original binary bytes. Four study tests check the generated implementation, exclusions, all round trips, URL serialisation, normalisation stability and corruption rejection. The generated encoder/decoder uses the same reference transport source with only the frozen alphabet import changed. No editor or production decoder was modified.
+All **84 offline candidate/layout cases** across the 21-layout corpus reconstruct the exact original binary bytes. Five study tests check the generated implementation, exclusions, all round trips, URL serialisation, normalisation stability and corruption rejection. The generated encoder/decoder uses the same reference transport source with only the frozen alphabet import changed. No editor or production decoder was modified.
 
-## Next test
+## Historical specimens and validation limit
 
-The [new 512-unit specimen](../.dsh/island-compression/unicode/blacklist-layout-8901-root.txt) encodes the same complete 8901 layout while using none of the 35 observed bad characters. Its marker is `^`; the original test specimen used `=`. It is the next useful game trial, not a validated replacement.
+The [new 512-unit specimen](../.dsh/island-compression/unicode/blacklist-layout-8901-root.txt) encodes the same complete 8901 layout while using none of the 35 observed bad characters. Its marker is `^`; the original test specimen used `=`. It was tested and failed. The [returned text](../.dsh/island-compression/unicode/returned-blacklist-v1-game-message.txt) and [analysis](../.dsh/island-compression/unicode/blacklist-v1-game-return-analysis.json) preserve that result.
 
-Paste it, send it and copy the received message back. Record new changed characters separately. If the remaining characters undergo new translations, expand the observations and run held-out contexts before promoting an alphabet. The [short character-set probe](../.dsh/island-compression/unicode/character-probe.txt) can also isolate ASCII, Hangul, Chinese and symbols without a length-limit confounder. Repeated isolated and neighbouring forms of the same character are needed to test context dependence.
+The second return preserved 504 source characters, replaced `㞗` with `*`, and deleted `⌞ ⍏ ⏣ ⥏ ♙ ⤸ ⌐`. Its tail survived. This narrows the observation but does not establish an allowed character class or bound future failures. Asterisk masking is consistent with content filtering, but the implementation is unknown.
+
+Per-character successes cannot prove an arbitrary string safe if the game also applies substring filters, language detection or translation. A larger blacklist would fit these samples numerically but would still overfit observed failures. A production Unicode format needs documented or recovered transformation/validation rules, or a substantially smaller alphabet with a bounded test and context model. Even a complete character sweep would not prove context-independent behaviour. Until then, retain the binary codecs, use base64url as the conservative transport candidate and offer larger exports rather than claiming a universal single-message format. The old short probes and v1 codecs remain for reproducibility, not as requests for more user testing.
 
 ```sh
 node .dsh/island-compression/unicode/blacklist-study.mjs

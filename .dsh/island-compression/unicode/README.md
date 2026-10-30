@@ -1,6 +1,6 @@
 # Unicode transport follow-up
 
-The supplied wide-alphabet game-chat trial failed. `game-failure.json` records 506 returned units instead of 512, semantic substitutions, deleted symbols and truncation. Its decoder rejects the result. Offline size tables do not establish a usable chat transport.
+Both supplied game-chat trials failed; no predictive transformation rule has been established. `game-failure.json` records 506 returned units instead of 512, semantic substitutions, deleted symbols and truncation. Its decoder rejects the result. Offline size tables do not establish a usable chat transport.
 
 [Measured report](../../../docs/ISLAND-UNICODE-TRANSPORT.md) · [CSV](results.csv) · [Format](FORMAT.md)
 
@@ -24,7 +24,7 @@ There are 147 measured cases: 21 layouts × seven transport profiles, with origi
 
 ## Blacklist study
 
-[Character analysis and measured trade-offs](../../../docs/ISLAND-CHARACTER-BLACKLIST.md) isolates the 35 changed code points before the truncated suffix. The generated v1 blacklist transport excludes them and preserves all 21 corpus layouts in 84 offline cases. It remains unverified through game chat.
+[Character analysis and measured trade-offs](../../../docs/ISLAND-CHARACTER-BLACKLIST.md) isolates the 35 changed code points before the truncated suffix. The generated v1 blacklist transport excludes them and preserves all 21 corpus layouts in 84 offline cases. Its game trial failed with eight further changed characters. No further user blacklist-testing batches are requested.
 
 ```sh
 node .dsh/island-compression/unicode/blacklist-study.mjs
