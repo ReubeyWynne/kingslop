@@ -330,7 +330,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
       }
       const unlevelled=await ledgerGear();
       for(const item of expected.slice(3).flat())assert.deepEqual(unlevelled.pieces[item.troop+'-'+item.slot],{quality:item.quality,level:0,mastery:0});
-      console.log('Production OCR: all 24 pieces in six supplied hero overviews matched rarity, troop, enhancement and mastery through the import panel; review, invalid values, apply, unlevelled pieces and undo passed.');
+      // The upgrade arrow hides the 5 of the red gloves' +35: the reading is flagged, never trusted.
+      await pick(['zoe-arrow']);
+      assert.deepEqual(await dock.locator('.import-tile[data-state="doubt"]').evaluateAll(t=>t.map(li=>li.dataset.key)),['gear-inf-gloves-level'],'only the clipped level asks for a look');
+      assert.deepEqual(await dock.locator('.import-tile').evaluateAll(t=>t.filter(li=>li.dataset.key!=='gear-inf-gloves-level').map(li=>li.querySelector('[data-field="value"]').value)),['61','3','11','100','7','65','3']);
+      console.log('Production OCR: all 24 pieces in six supplied hero overviews matched rarity, troop, enhancement and mastery through the import panel; a level clipped by the upgrade arrow was flagged; review, invalid values, apply, unlevelled pieces and undo passed.');
     } catch(error) { await overviewPage.screenshot({path:path.join(output,'overview-failure.png')});throw error; } finally { await mobileContext.close(); }
     const guestContext=await browser.newContext({viewport:{width:1280,height:900}});
     try {
