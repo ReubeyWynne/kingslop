@@ -11,7 +11,7 @@ self: vikings
   <p class="vv-next" data-target="vikings.next">Vikings opens every two weeks, on Tuesday and Thursday.</p>
   <section class="vv-event" data-target="vikings.event" aria-label="Open plan" hidden></section>
   <nav class="vv-tabs" role="tablist" aria-label="Vikings planner">
-    <button type="button" role="tab" id="vv-my-tab" aria-selected="true" aria-controls="my-plan" data-action="vikings.tab" data-tab="my-plan">My plan</button>
+    <button type="button" role="tab" id="vv-my-tab" aria-selected="true" aria-controls="my-plan" data-action="vikings.tab" data-tab="my-plan">My troops</button>
     <button type="button" role="tab" id="vv-alliance-tab" aria-selected="false" aria-controls="alliance-plan" data-action="vikings.tab" data-tab="alliance-plan">Alliance</button>
     <button type="button" role="tab" id="vv-guide-tab" aria-selected="false" aria-controls="vikings-guide" data-action="vikings.tab" data-tab="vikings-guide">Guide</button>
   </nav>
@@ -20,7 +20,6 @@ self: vikings
   <section class="vv-panel" id="my-plan" role="tabpanel" aria-labelledby="vv-my-tab">
     <div data-target="vikings.personal"></div>
     <div class="vv-start" data-target="vikings.start">
-      <div data-target="vikings.remembered"></div>
       <div class="vv-paths">
         <div class="vv-path"><p class="vv-label">Leading</p><h2>Your alliance</h2><p>Sign-ups every Vikings, marches and HQ.</p><button type="button" class="vv-primary" data-action="vikings.create">Set up your alliance</button></div>
         <div class="vv-path"><p class="vv-label">Joining</p><h2>Got a link?</h2><p>Paste it to sign up or see your marches.</p><button type="button" class="vv-primary" data-action="vikings.open">Paste a link</button></div>
@@ -58,7 +57,7 @@ self: vikings
     <details id="hq"><summary>HQ waves: 10 and 20</summary><p>Agree the participants, effective garrison cap and exact shares. Our starting preset is 75% infantry and 25% cavalry. Leaders can change it for their alliance.</p><p>After wave 9 or 19 resolves, recall the reserved queue and send its agreed HQ share. Return to city cover after the HQ hit. The planner checks capacity and troop availability; it does not predict survival.</p></details>
     <details id="scoring-maths"><summary>What earns points?</summary><p>A town has a finite wave points budget. Reinforcers earn their share through kills. More reinforcers change how that pool is split; they do not multiply it. Aim for full clears, then inspect the kill reports before adjusting cover.</p><p>The community scoring model is approximate. We do not turn assigned troop counts into a promised score.</p></details>
     <details id="heroes"><summary>Heroes, healing and reports</summary><p>Keep the heroes who lead your city in the guard station. Choose reinforcement leads from the skills your alliance needs and check their actual effects in reports. Vikings recommendations should follow Vikings evidence.</p><p>If you heal between waves, send those troops back out unless the city needs them to survive. If a city stops receiving attacks, redeploy its reinforcements to a city still taking waves.</p><a href="../heroes/">Open the hero directory</a></details>
-    <details id="vikings-sharing"><summary>Links</summary><p>The leader link runs it, the sign-up link adds players, and your own link edits your troops. There are no accounts, so keep your link.</p><p>It stays while your alliance uses it. Only your Vikings troops and name are sent; the rest of your save stays on this device.</p></details>
+    <details id="vikings-sharing"><summary>Links</summary><p>The viewing link shows who goes where. The sign-up link does that and lets you sign up. The leader link does both and runs the plan, so R4s can share it. This phone keeps one alliance; on a new phone, open the link again and re-enter your troops.</p><p>It stays while your alliance uses it. Only your Vikings troops and name are sent; the rest of your save stays on this device.</p></details>
   </section>
 
   <dialog class="vv-dialog" data-target="vikings.dialog" aria-labelledby="vv-dialog-title"><div class="vv-dialog-head"><h2 id="vv-dialog-title"></h2><button type="button" data-action="vikings.closeDialog" aria-label="Close editor">×</button></div><p class="vv-dialog-message" data-target="vikings.dialogMessage" role="alert"></p><div data-target="vikings.dialogBody"></div></dialog>

@@ -258,4 +258,7 @@
 .vv-k-unit { position:absolute; inset-inline-end:.45rem; top:0; bottom:0; display:flex; align-items:center; color:var(--ink-dim); pointer-events:none; }
 .vv-troop-inputs img { width:48px; height:48px; }
 .vv-faint .vv-row { opacity:.75; }
+/* Members and viewers see routes, not troops: rows that read, not buttons. */
+.vv-page .vv-route:hover { background:none; border-bottom-color:color-mix(in srgb,var(--ink-muted) 35%,transparent); }
+.vv-page .vv-route.vv-mine { border-inline-start:2px solid var(--amber-dim); padding-inline-start:.5rem; }
 .vv-tight { margin:.25rem 0; gap:.25rem 1rem; }

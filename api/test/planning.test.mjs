@@ -19,10 +19,12 @@ async function assign(s, index, destination) { const p = s.players[index].regist
 
 test('every role sees the live marches, and only management can change them', async () => {
   const s = await setup(); assert.equal((await assign(s, 0, s.players[1].registration.id)).status, 200);
-  const live = (await board(s)).assignments;
+  const live = (await board(s)).assignments, a = s.players[0].registration.id, routes = rows => rows.map(r => ({ queue: r.queue, destination: r.destination }));
   for (const code of [s.codes.view, s.codes.join, s.players[0].editCode]) {
-    const b = (await call(s, '/board', 'GET', undefined, code)).data;
-    assert.deepEqual(b.assignments, live); assert.equal(b.roster.length, 2);
+    const b = (await call(s, '/board', 'GET', undefined, code)).data, own = code === s.players[0].editCode;
+    assert.deepEqual(b.assignments[a], own ? live[a] : routes(live[a]), 'who goes where, with counts only for your own marches');
+    assert.equal(b.roster.length, 2); assert.equal(b.roster[1].infantry, null); assert.equal(b.roster[0].infantry, own ? 600 : null);
+    assert.equal((await call(s, '', 'GET', undefined, code)).data.registrations[1].archers, null);
     assert.equal((await call(s, '/assignments/' + s.players[0].registration.id, 'PUT', { ...revisions(b), marches: [] }, code)).status, 403);
   }
   s.env.sql.close();

@@ -35,8 +35,8 @@ const API = 'https://kingslop.reubeycw.workers.dev';
       assert.equal(await page.locator('dialog [data-queue]').count(), 3);
       assert(await page.evaluate(() => { const r = document.querySelector('dialog.vv-dialog').getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && Math.abs(r.left - (innerWidth - r.right)) < 2; }), 'dialog is centred');
       await page.getByRole('button', { name: 'Save', exact: true }).click();
-      await page.getByRole('tab', { name: 'My plan', exact: true }).click();
-      await page.locator('#my-plan').getByRole('heading', { name: 'Rowan', exact: true }).waitFor();
+      await page.getByRole('tab', { name: 'My troops', exact: true }).click();
+      await page.locator('#my-plan').getByRole('heading', { name: 'Your marches' }).waitFor();
       assert.equal(await page.locator('#my-plan .vv-march').count(), 4);
       assert(await page.locator('#my-plan .vv-march .vv-total').first().textContent().then(t => /k$/.test(t)));
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
@@ -69,16 +69,17 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     assert.equal(await L.locator('.vv-event h2').textContent(), 'Vikings');
     assert(await L.locator('.vv-when').getByText(/20:00 UTC/).isVisible());
     await dialog(L).locator('[data-action="vikings.closeDialog"]').click();
-    // The leader signs up on the leader link, not a second link.
-    await L.getByRole('tab', { name: 'My plan', exact: true }).click();
+    // The leader signs up on the same tab as everyone else.
+    await L.getByRole('tab', { name: 'My troops', exact: true }).click();
     const own = L.locator('[data-target="vikings.personal"] form');
     await own.locator('[name=nickname]').fill('Lead');
     for (const k of ['infantry', 'cavalry', 'archers']) await own.locator(`[name=${k}]`).fill('60');
     await own.locator('[name=marchCapacity]').fill('100'); await own.locator('[name=marches]').fill('2');
     await own.getByRole('button', { name: 'I’m in' }).click();
     await L.getByRole('heading', { name: 'Your marches' }).waitFor();
-    // The leader link names no player; the leader's own sign-up is a player link kept beside it.
-    assert(await L.evaluate(() => { const r = JSON.parse(localStorage.getItem('bh:vikings-links:v1')); return r.length === 2 && r.some(x => x.role === 'manage' && !x.id && !x.self) && r.some(x => x.role === 'registration' && x.id); }));
+    // One alliance on this phone: the leader key, with this phone's own sign-up beside it. The key names no player.
+    const alliance = page => page.evaluate(() => JSON.parse(localStorage.getItem('bh:vikings-alliance:v1')));
+    assert((a => a.role === 'manage' && a.player.id && a.player.code && a.code !== a.player.code)(await alliance(L)));
     await L.getByRole('tab', { name: 'Alliance', exact: true }).click();
     let again = await lead.newPage(); await again.goto(origin + '/vikings-vengeance/');
     await again.getByText('Marches set').waitFor(); await again.close();
@@ -103,8 +104,8 @@ const API = 'https://kingslop.reubeycw.workers.dev';
       for (const k of ['infantry', 'cavalry', 'archers']) await signup.locator(`[name=${k}]`).fill('90');
       await signup.locator('[name=marchCapacity]').fill('150'); await signup.locator('[name=marches]').fill('2');
       await signup.getByRole('button', { name: 'I’m in' }).click();
-      await dialog(page).getByRole('heading', { name: 'You’re in' }).waitFor();
-      assert(await page.evaluate(() => JSON.parse(localStorage.getItem('bh:vikings-links:v1')).some(r => r.role === 'registration' && /^[A-Za-z0-9_-]{22}$/.test(r.code))));
+      await page.getByRole('heading', { name: 'Your marches' }).waitFor();
+      assert((a => a.role === 'join' && /^[A-Za-z0-9_-]{22}$/.test(a.player.code))(await alliance(page)));
       players[nickname] = context;
     }
     const willowSave = await players.Willow.pages()[0].evaluate(() => window.PlayerLedger.shared().combat().troops[0].amount);
@@ -135,6 +136,10 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     again = await players.Rowan.newPage(); await again.goto(origin + '/vikings-vengeance/');
     await again.getByRole('heading', { name: 'Your marches' }).waitFor();
     assert.equal(await again.locator('#my-plan .vv-march').count(), 1);
+    // Members see who goes where, never anyone else's troops.
+    await again.getByRole('tab', { name: 'Alliance', exact: true }).click();
+    const routes = await again.locator('#alliance-plan').innerText();
+    assert.match(routes, /Sends to Ash/); assert.doesNotMatch(routes, /\d+(\.\d+)?[kM]\b/);
     await again.screenshot({ path: path.join(out, 'player-390.png'), fullPage: true });
 
     // After the event, sign-ups reset and last time's troops are waiting.
@@ -145,12 +150,18 @@ const API = 'https://kingslop.reubeycw.workers.dev';
       assert.equal(await raw(again.locator('[data-target="vikings.personal"] [name=infantry]')), '90000');
     } finally { Date.now = real; }
 
-    // A viewing link shows the room once and is not remembered.
+    // A viewer gets the alliance tab only, and keeps it. A sign-up link then adds signing up; a viewing link never takes it away.
     const viewer = await device(), V = await viewer.newPage();
-    await V.goto(local(view)); await V.getByRole('heading', { name: 'Whose marches?' }).waitFor();
-    again = await viewer.newPage(); await again.goto(origin + '/vikings-vengeance/'); await again.waitForTimeout(300);
-    assert(await again.getByRole('button', { name: 'Set up your alliance' }).first().isVisible());
-    assert.equal(await again.locator('.vv-event').isVisible(), false);
+    await V.goto(local(view)); await V.getByRole('heading', { name: /^In for / }).waitFor();
+    assert.equal(await V.getByRole('tab', { name: 'My troops' }).isVisible(), false);
+    assert.doesNotMatch(await V.locator('#alliance-plan').innerText(), /\d+(\.\d+)?[kM]\b/);
+    again = await viewer.newPage(); await again.goto(origin + '/vikings-vengeance/');
+    await again.locator('#alliance-plan').getByRole('heading', { name: /^In for / }).waitFor();
+    assert.equal((await alliance(again)).role, 'view');
+    await again.goto(local(join)); await again.locator('[data-target="vikings.personal"] form').waitFor();
+    assert.equal((await alliance(again)).role, 'join');
+    await again.goto(local(view)); await again.locator('[data-target="vikings.personal"] form').waitFor();
+    assert.equal((await alliance(again)).role, 'join', 'a lower link never downgrades');
 
     // A leader removes a player straight from the list.
     await L.bringToFront(); await L.reload(); await L.getByText('Marches set').waitFor();
@@ -159,10 +170,20 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await dialog(L).getByRole('button', { name: 'Remove', exact: true }).click(); await dialog(L).waitFor({ state: 'hidden' });
     await L.waitForFunction(n => document.querySelectorAll('#alliance-plan > div > .vv-rows .vv-row').length === n - 1, before);
 
-    // Switching keeps the room listed, and the next visit waits for a choice.
-    await L.getByRole('button', { name: 'Switch' }).click(); await L.reload();
-    await L.getByRole('heading', { name: 'Your alliances' }).waitFor();
-    await L.locator('.vv-rows .vv-row').first().click(); await L.getByText('Marches set').waitFor();
+    // A phone that saved links with the earlier version opens its leader link.
+    {
+      const lead = await alliance(L), context = await device(), page = await context.newPage(); await page.goto(origin + '/vikings-vengeance/');
+      await page.evaluate(l => localStorage.setItem('bh:vikings-links:v1', JSON.stringify([{ planId: l.planId, code: l.code, role: 'manage', codes: l.codes, name: 'Vikings' }])), lead);
+      await page.reload(); await page.getByText('Marches set').waitFor();
+      assert.equal((await alliance(page)).role, 'manage'); assert.equal(await page.evaluate(() => localStorage.getItem('bh:vikings-links:v1')), null);
+      await context.close();
+    }
+
+    // Leaving forgets the alliance on this phone.
+    await L.getByRole('button', { name: 'Leave', exact: true }).click();
+    await dialog(L).getByRole('button', { name: 'Leave', exact: true }).click();
+    await L.reload(); await L.getByRole('button', { name: 'Set up your alliance' }).first().waitFor();
+    assert.equal(await alliance(L), null);
     assert.deepEqual(errors, []);
 
     const context = await browser.newContext({ javaScriptEnabled: false }), page = await context.newPage();
