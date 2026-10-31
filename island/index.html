@@ -2,19 +2,22 @@
 layout: page
 self: island
 ---
-<main class="island-page" lang="en" dir="ltr" data-module="island" data-art="../img/island/" data-examples="../js/island-examples.js?v={{ site.time | date: '%s' }}">
+<main class="island-page" lang="en" dir="ltr" data-full data-module="island" data-art="../img/island/" data-examples="../js/island-examples.js?v={{ site.time | date: '%s' }}">
   <section class="island-intro" id="top">
     <h1>The Island</h1>
-    <p class="lede">Tap open ground to see what fits there. Pick a path, hedge or tree and drag to paint it. Press and hold a piece to move it.</p>
+    <p class="lede">Tap open sand to see what fits there. Pick a path, meadow, hedge or tree and drag to paint it. Tap a piece and press ✕ to remove it, or pick up the eraser and drag. Press and hold a piece to move it.</p>
   </section>
 
   <section class="island-work" id="plan" aria-label="Your island plan">
-    <div class="island-board" data-target="island.board">
+    <div class="island-board" data-target="island.board" data-swipe-ignore>
       <canvas tabindex="0" role="application" aria-roledescription="island board" aria-label="Island board. Arrow keys move the cursor, Enter acts on the cell, Delete removes, R turns, Escape cancels." aria-describedby="island-status"></canvas>
       <noscript><p class="island-noscript">Turn on JavaScript to plan your island.</p></noscript>
 
       <div class="island-chip island-owner" data-target="island.owner"><b>Your plan</b> · saved on this device</div>
-      <button type="button" class="island-fit" data-action="island.fit" aria-label="Show the whole island">⤢</button>
+      <div class="island-corner">
+        <button type="button" class="island-fit" data-action="island.fit" aria-label="Show the whole island">⤢</button>
+        <button type="button" class="island-full" data-action="island.full" data-target="island.fullBtn" aria-pressed="true">Page</button>
+      </div>
       <p class="island-hint" data-target="island.hint" hidden></p>
 
       <div class="island-pop" data-target="island.ground" role="dialog" aria-label="What fits here" hidden></div>
@@ -24,11 +27,14 @@ self: island
         <button type="button" class="is-quiet" data-action="island.reject" aria-label="Cancel">✕</button>
       </div>
 
+      <div class="island-quick" data-target="island.quick" hidden><button type="button" data-action="island.remove" aria-label="Remove this piece">✕</button></div>
+
       <div class="island-card" data-target="island.card" role="dialog" aria-label="Piece" hidden></div>
 
       <div class="island-strip" data-target="island.strip">
         <div class="island-strip-rest" data-target="island.rest">
           <button type="button" class="island-undo" data-action="island.undo" data-target="island.undo" aria-label="Undo" disabled>↶</button>
+          <button type="button" class="island-erase" data-action="island.load" data-slug="__clear" aria-label="Eraser: tap or drag over pieces and paths to clear them" title="Eraser">⌫</button>
           <ul class="island-recent" data-target="island.recent" aria-label="Recent pieces"></ul>
           <button type="button" class="island-all" data-action="island.catalogue">All…</button>
         </div>
@@ -58,11 +64,12 @@ self: island
   <section class="island-more" id="island-owned" aria-labelledby="owned-title">
     <h2 id="owned-title">What's yours</h2>
     <p>Many decorations only come from event packs. Mark the pieces you own (tap a piece, then set how many you have) and they come first wherever you pick one. Pieces you don't own stay in the plan, dimmed in the pickers, so you can plan ahead.</p>
+    <p>Each pond costs 200 gems, once: a pond you buy stays yours, so 100,000 gems buys all 500. The brush shows what the ponds on your plan cost.</p>
     <p class="note" data-target="island.ownedNote"></p>
   </section>
 
   <section class="island-more" id="island-sources" aria-labelledby="sources-title">
     <h2 id="sources-title">Sources &amp; confidence</h2>
-    <p class="note">Piece art, sizes and limits, and the five game layouts, come from the KS Companion island catalogue (October 2026) and are not yet checked in game. Crazy golf, Harbour market, Deep woods and Royal gardens are our own designs. Which ground is buildable is still unknown, so the board only stops pieces overlapping. Path types over 500 tiles are flagged, never trimmed.</p>
+    <p class="note">Piece art, sizes and limits, and the five game layouts, come from the KS Companion island catalogue (October 2026) and are not yet checked in game. Crazy golf, Harbour market, Deep woods and Royal gardens are our own designs. Which ground is buildable is still unknown, so the board only stops pieces overlapping. Limits: decorations (trees, hedges, fences and lamps) and ponds go up to 500 each, and event buildings are generally one each, or as many as their buff counts. Paths have no limit here, because the game's own layouts use up to 1,255 of one kind.</p>
   </section>
 </main>

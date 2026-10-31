@@ -40,8 +40,19 @@ html[data-page="island"] {
 .island-chip b { color: var(--ink); }
 .island-owner { inset-block-start: .6rem; inset-inline-start: .6rem; max-width: calc(100% - 4.5rem); }
 .island-owner button { margin-inline-start: .3rem; padding: 0; border: 0; background: none; color: var(--amber); font: inherit; text-decoration: underline 1px; text-underline-offset: .2em; cursor: pointer; }
-.island-fit { inset-block-start: .6rem; inset-inline-end: .6rem; width: var(--island-tap); height: var(--island-tap); border: 1px solid var(--ink-muted); border-radius: 2px; background: var(--chrome); color: var(--ink-dim); font: 1.3rem/1 var(--display-2); cursor: pointer; }
-.island-fit:hover, .island-fit:focus-visible { color: var(--amber); border-color: var(--amber-dim); }
+.island-corner { inset-block-start: .6rem; inset-inline-end: .6rem; display: flex; gap: .4rem; }
+.island-fit, .island-full { height: var(--island-tap); border: 1px solid var(--ink-muted); border-radius: 2px; background: var(--chrome); color: var(--ink-dim); cursor: pointer; }
+.island-fit { width: var(--island-tap); font: 1.3rem/1 var(--display-2); }
+.island-full { padding: 0 .7rem; font: 700 .76rem var(--body); letter-spacing: .12em; text-transform: uppercase; }
+.island-fit:hover, .island-fit:focus-visible, .island-full:hover, .island-full:focus-visible { color: var(--amber); border-color: var(--amber-dim); }
+.island-owner { max-width: calc(100% - 14rem); }
+.island-page[data-full] .island-owner { max-width: calc(100% - 10.5rem); }
+
+/* Full screen is the default: the board covers the page, its chrome and the page carousel. */
+html:has(.island-page[data-full]), html:has(.island-page[data-full]) body { overflow: hidden; overscroll-behavior: none; }
+.island-page[data-full] { z-index: 96; } /* main is its own stacking context; lift it over the topbar */
+.island-page[data-full] .island-board { position: fixed; inset: 0; z-index: 95; height: 100dvh; min-height: 0; max-height: none; border: 0; }
+.island-page[data-full] .island-owner, .island-page[data-full] .island-corner { inset-block-start: max(.6rem, env(safe-area-inset-top)); }
 .island-hint { inset-block-end: 5.2rem; left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100% - 1.5rem); text-align: center; font-style: italic; pointer-events: none; }
 
 /* Cards that float over the board: a hairline and a lift, as DESIGN.md's floats do. */
@@ -67,6 +78,11 @@ html[data-page="island"] {
 .island-link::before { content: "❧ "; }
 .island-link:hover, .island-link:focus-visible { color: var(--ink); }
 .island-empty { margin: 0 0 .2rem; font-size: .92rem; font-style: italic; color: var(--ink-dim); }
+
+/* ✕ on a tapped piece: one more tap removes it. */
+.island-quick { z-index: 2; }
+.island-quick button { width: 2.75rem; height: 2.75rem; border: 1px solid var(--island-warn); border-radius: 50%; background: var(--void); color: var(--island-warn); font: 1.25rem/1 var(--display-2); box-shadow: 0 8px 20px rgba(0, 0, 0, .55); cursor: pointer; }
+.island-quick button:hover, .island-quick button:focus-visible { background: rgba(224, 122, 106, .16); }
 
 /* ✓ ✕ beside a piece being placed. */
 .island-confirm { z-index: 2; display: flex; gap: .45rem; }
@@ -100,6 +116,8 @@ html[data-page="island"] {
 .island-strip > [hidden] { display: none; }
 .island-undo { flex: none; width: var(--island-tap); height: var(--island-tap); border: 1px solid var(--ink-muted); border-radius: 2px; background: none; color: var(--ink-dim); font: 1.3rem/1 var(--display-2); cursor: pointer; }
 .island-undo:disabled { opacity: .35; cursor: default; }
+.island-erase { flex: none; width: var(--island-tap); height: var(--island-tap); border: 1px solid rgba(224, 122, 106, .55); border-radius: 2px; background: none; color: var(--island-warn); font: 1.3rem/1 var(--display-2); cursor: pointer; }
+.island-erase:hover, .island-erase:focus-visible { background: rgba(224, 122, 106, .12); }
 .island-recent { display: flex; gap: .25rem; flex: 1; min-width: 0; margin: 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
 .island-recent .island-piece { width: 3rem; min-height: 0; padding: .1rem; }
 .island-recent .island-piece img, .island-recent .island-piece .island-swatch { width: 2.6rem; height: 2.6rem; }

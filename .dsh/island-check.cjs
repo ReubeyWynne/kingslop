@@ -69,7 +69,7 @@ test('surfaces sit under pieces; clearing takes the piece first', () => {
 
 test('a lifted piece moves only to free ground', () => {
   const m = fresh();
-  const a = m.place('build_7005', 10, 10), b = m.place('build_7005', 10, 20);
+  const a = m.place('build_7005', 10, 10), b = m.place('build_7006', 10, 20);
   assert.equal(m.move(a.id, 10, 19), false);
   assert.ok(m.move(a.id, 11, 11), 'overlapping its own old cells is fine');
   assert.equal(m.pieceAt(10, 10), null);
@@ -95,11 +95,50 @@ test('every preset loads whole, ours with the Fountain in the middle, and one is
     // Layout 8902 has no Fountain in the source data; ours always have one.
     if (ex.authored) assert.equal(m.pieceAt(29, 29)?.slug, 'build_7000', ex.slug);
     assert.ok(ex.pieces.filter(e => e[1] === 'build_7000').length <= 1, ex.slug);
+    assert.deepEqual(m.over(), {}, ex.slug + ' stays inside every limit');
   }
   const golf = EXAMPLES.find(e => e.slug === 'crazy-golf');
   assert.ok(golf && golf.authored);
   assert.ok(golf.pieces.some(e => e[1] === 'build_7008'), 'a windmill');
-  assert.equal(golf.pieces.filter(e => e[1] === 'build_7039').length, 8, 'a flag on every green');
+  const pins = golf.pieces.filter(e => e[1] === 'build_7039' || e[1] === 'streetlight').length;
+  assert.equal(golf.pieces.filter(e => e[1] === 'build_7039').length, 5, 'five banners, the most an island holds');
+  assert.ok(pins >= 8, 'a pin on every green');
+});
+
+test('limits: decorations and ponds 500, event buildings one or their buff count, paths open', () => {
+  const by = Object.fromEntries(DATA.pieces.map(p => [p.slug, p]));
+  assert.equal(by.tree_fir.limit, 500);
+  assert.equal(by.lush_elegy.limit, 500);
+  assert.equal(by.streetlight.limit, 500);
+  assert.equal(by.pond.limit, 500);
+  assert.equal(by.pond.gems * by.pond.limit, 100000);
+  assert.equal(by.garden_path.limit, 0);
+  assert.equal(by.meadow.limit, 0);
+  assert.equal(by.build_7008.limit, 1, 'Windmill');
+  assert.equal(by.build_7039.limit, 5, 'Banner of Hope counts five for its buff');
+  for (const p of DATA.pieces) if (p.kind === 'building' || p.kind === 'decor') assert.ok(p.limit >= 1, p.slug);
+});
+
+test('a full piece cannot be placed or painted, and undo gives the room back', () => {
+  const m = fresh();
+  assert.ok(m.edit(() => m.place('build_7008', 10, 10)));
+  assert.equal(m.room('build_7008'), 0);
+  assert.equal(m.place('build_7008', 40, 40), null, 'a second windmill');
+  m.undo();
+  assert.equal(m.room('build_7008'), 1);
+  m.begin();
+  for (let c = 0; c < 60; c++) for (let r = 0; r < 9; r++) m.paint('pond', r, c);
+  m.end();
+  assert.equal(m.count('pond'), 500, 'ponds stop at 500');
+  assert.equal(m.paint('pond', 50, 50), false);
+  assert.ok(m.clear(0, 0));
+  assert.equal(m.count('pond'), 499);
+  for (let c = 0; c < 60; c++) for (let r = 40; r < 60; r++) m.paint('garden_path', r, c);
+  assert.equal(m.count('garden_path'), 1200, 'paths have no cap');
+  // A loaded plan keeps what it has and reports the excess.
+  const old = Model.create(DATA.pieces, 60);
+  assert.equal(old.load({ pieces: [[0, 'build_7008', 0], [10 * 60, 'build_7008', 0]], surfaces: [] }), 0);
+  assert.deepEqual(old.over(), { build_7008: [2, 1] });
 });
 
 test('generated data has art for every piece but surfaces', () => {
