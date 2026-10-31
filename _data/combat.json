@@ -79,7 +79,7 @@
    "turret",
    "report"
   ],
-  "rule": "Each layer is its own factor (1 + (own − enemy down in the same layer) / 100); the layers multiply. An enemy debuff only cancels a buff in its own layer.",
+  "rule": "Each layer is its own factor (1 + (own − enemy down in the same layer) / 100); the layers multiply. An enemy debuff only cancels a buff in its own layer: +20% against −20% is ×1.00, not ×0.96 (kingshotsim.com/stat-bonuses, marked probable).",
   "city": {
    "levelsPct": [
     0,
@@ -138,6 +138,20 @@
     15.0,
     20.0
    ]
+  }
+ },
+ "appointments": {
+  "rule": "Added into the visible stat totals, not a separate layer (kingshotsim.com/stat-bonuses).",
+  "king": {
+   "allPct": 5.0
+  },
+  "marshal": {
+   "attackPct": 5.0
+  },
+  "fieldCommander": {
+   "lethalityPct": 10.0,
+   "afterKvkWinPct": 15.0,
+   "note": "+10% normally; +15% from a won KvK until Castle Battle (owner, 31 Oct). The helper only carries the 15."
   }
  },
  "troopSkills": {
@@ -1560,9 +1574,9 @@
   "tgStatMultiplier 6 to 8: TG1 to TG5 reproduce the sos.battle stats; TG6 to TG8 continue at about 5% a step with no stated source.",
   "troopSkills: the helper has no in-game skill text for its Truegold chances.",
   "turret: single source.",
-  "layers.rule: the helper nets an enemy debuff against a buff in the same layer, (1 + (own − down) / 100). The kingshotsimulator.com rule in KINGSHOT-SOURCES.md divides by (1 + down / 100) instead. Ask the testers which one reports show.",
+  "layers.rule is marked probable by its authors. For pets, turrets and consumables it replaces the divide-by rule in KINGSHOT-SOURCES.md (owner, 31 Oct).",
+  "codes are marked probable by their authors: a few were matched by testing, not read from the game, and 211 for Vivian is by symmetry.",
   "codes are the helper's KingShot numbering, read from its report peeling. They are not the State of Survival effect ids in KINGSHOT-SOURCES.md, which reuse some of the same numbers for other effects.",
-  "appointments are left out: the helper gives Field Commander +15% lethality, KINGSHOT-SOURCES.md gives +10% (+15% as a Kingdom of Power office).",
   "pet: the helper has no Ironclad War Bear (enemy defense down), so its layer is not placed."
  ]
 }

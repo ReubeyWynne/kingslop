@@ -143,7 +143,8 @@ Verbatim rule the game uses (also blog "how-special-bonuses-work"):
 
 - Same-stat specials add their percents first, then apply **once**.
 - **Enemy-down is a divisor, not a subtraction** (a 20% enemy Attack Down divides
-  the boosted value by 1.20).
+  the boosted value by 1.20). Superseded for pets, turrets and consumables, which cancel
+  by subtraction: see *KingShot Battle Helper* below.
 - Sources: exclusive widgets, battle-pet skills, city buffs/debuffs, appointments.
 - This generalises MATHS.md §6.4 (widgets are multiplicative); the enemy-down-as-
   divisor phrasing is the part to keep straight in any future copy.
@@ -360,10 +361,14 @@ site already carries from elsewhere disagrees:
   triggers (passive, per round, per attack, every N turns, pity) with durations and troop
   scope; all 22 widget names and max stats; widget skill 15% × level step; Truegold troop
   skills at TG3/TG5/TG8; TG6–TG8 stat multipliers; turret lethality by count; star shard costs.
-- **Conflicts and gaps (`unverified` in the JSON, ask the testers):** layered buffs net an enemy
-  debuff by subtraction in the helper, by division in the special-bonus rule above; Field
-  Commander +15% vs our +10%; TG6–TG8 stats and Truegold chances have no stated basis; the
-  helper's fatigue starts at round 0, `js/battle-engine.js` at round 1.
+- **Settled (owner, 31 Oct):** an active buff (pet skill, turret, consumable) and the enemy's
+  matching debuff cancel by subtraction, +20% against −20% is ×1.00
+  ([stat-bonuses](https://kingshotsim.com/stat-bonuses.html), marked probable there); this
+  replaces the divide-by reading of the special-bonus rule above for those sources. Field
+  Commander is +10% lethality, +15% after a won KvK until Castle Battle; the helper only has 15.
+- **Still open (`unverified` in the JSON):** TG6–TG8 stats and Truegold chances have no stated
+  basis; the op codes are marked probable by their authors; the helper's fatigue starts at
+  round 0, `js/battle-engine.js` at round 1.
 - **Regression case** (kingshotsim.com): 40,233 T10.1 infantry (attack 293.66%, lethality
   251.82%) in a 120,789 army against a 78,872 army, defender per-troop 2,557.9, SkillMod 1.26,
   round 0 → **189** deaths. Wire it into `.dsh/battle-engine-check.cjs` once heroes are modelled.
