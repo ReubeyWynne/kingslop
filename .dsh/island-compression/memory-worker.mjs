@@ -1,0 +1,12 @@
+import { corpus } from './corpus.mjs';
+import { encodePayload, decodePayload } from './browser.mjs';
+import { fromPayload } from './core.mjs';
+import { encode, decode } from './node-codec.mjs';
+import assert from 'node:assert/strict';
+const [format, compressor, name] = process.argv.slice(2), layout = corpus().find(f => f.name === name).layout;
+global.gc(); const before = process.memoryUsage(), baselinePeak = process.resourceUsage().maxRSS * 1024;
+const payload = format === 'production' ? await encodePayload(layout) : null;
+const wire = payload ? fromPayload(payload) : encode(layout, format, compressor), decoded = payload ? await decodePayload(payload) : decode(wire); assert.deepEqual(decoded, layout);
+const after = process.memoryUsage(), peak = process.resourceUsage().maxRSS * 1024;
+global.gc(); const retained = process.memoryUsage();
+console.log(JSON.stringify({ layout: name, format, compressor, baselineRssBytes: before.rss, peakRssBytes: peak, addedPeakRssBytes: Math.max(0, peak - baselinePeak), heapBeforeBytes: before.heapUsed, heapAfterBytes: after.heapUsed, retainedHeapDeltaBytes: retained.heapUsed - before.heapUsed, externalDeltaBytes: after.external - before.external, wireBytes: wire.length }));

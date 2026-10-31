@@ -1,0 +1,31 @@
+Verified 84 lossless offline candidate/layout cases.
+kingshot-8900 {
+  'observed-blacklist-ic1': 46,
+  'no-ideographs-ic1': 49,
+  'no-ideographs-symbols-ic1': 49,
+  'hangul-ic1': 52
+}
+kingshot-8901 {
+  'observed-blacklist-ic1': 512,
+  'no-ideographs-ic1': 551,
+  'no-ideographs-symbols-ic1': 559,
+  'hangul-ic1': 594
+}
+kingshot-8902 {
+  'observed-blacklist-ic1': 505,
+  'no-ideographs-ic1': 544,
+  'no-ideographs-symbols-ic1': 551,
+  'hangul-ic1': 586
+}
+kingshot-8903 {
+  'observed-blacklist-ic1': 156,
+  'no-ideographs-ic1': 167,
+  'no-ideographs-symbols-ic1': 170,
+  'hangul-ic1': 180
+}
+kingshot-8904 {
+  'observed-blacklist-ic1': 167,
+  'no-ideographs-ic1': 179,
+  'no-ideographs-symbols-ic1': 182,
+  'hangul-ic1': 193
+}

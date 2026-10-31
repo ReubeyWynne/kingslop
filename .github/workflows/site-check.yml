@@ -78,6 +78,8 @@ jobs:
               - '**/*.cjs'
               - '**/*.liquid'
               - '**/*.json'
+              - docs/research/islands/data/**
+              - docs/research/islands/assets/icons/**
               - .dsh/**
             ascii:
               - .github/workflows/site-check.yml
@@ -424,6 +426,12 @@ jobs:
       - name: Check player ledger and migration
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/player-ledger-check.cjs
+
+      - name: Check the island plan and its generated data
+        if: needs.changes.outputs.logic == 'true'
+        run: |
+          python3 .dsh/build-island.py --check
+          node --test .dsh/island-check.cjs
 
       - name: Seasonal event calculations and save compatibility
         if: needs.changes.outputs.logic == 'true'

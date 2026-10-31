@@ -1,0 +1,408 @@
+{
+  "basis": "SequenceMatcher alignment, excluding the final unmatched tail. Counts describe this sample only and are not independent estimates of character error rates.",
+  "originalUnits": 512,
+  "returnedUnits": 506,
+  "excludedTailStart": 474,
+  "excludedTailUnits": 38,
+  "byClass": {
+    "ASCII prefix": {
+      "total": 8,
+      "unchanged": 8
+    },
+    "Other scripts and punctuation": {
+      "total": 88,
+      "unchanged": 88
+    },
+    "CJK ideographs": {
+      "total": 250,
+      "unchanged": 221,
+      "changed": 29
+    },
+    "Hangul syllables": {
+      "total": 102,
+      "unchanged": 102
+    },
+    "Other symbols": {
+      "total": 26,
+      "unchanged": 20,
+      "changed": 6
+    }
+  },
+  "observedBlacklist": "⌕⏼❒⤅⤈⬔䁽原墻彬排摙欬没漲濑皽眘確秤笼罚胆蒂蚤蛀訝謫邧鈄關隉靆駔驦",
+  "blacklistCodePoints": [
+    {
+      "character": "⌕",
+      "codePoint": "U+2315",
+      "category": "So",
+      "name": "TELEPHONE RECORDER",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "⏼",
+      "codePoint": "U+23FC",
+      "category": "So",
+      "name": "POWER ON-OFF SYMBOL",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "❒",
+      "codePoint": "U+2752",
+      "category": "So",
+      "name": "UPPER RIGHT SHADOWED WHITE SQUARE",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "⤅",
+      "codePoint": "U+2905",
+      "category": "Sm",
+      "name": "RIGHTWARDS TWO-HEADED ARROW FROM BAR",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "⤈",
+      "codePoint": "U+2908",
+      "category": "Sm",
+      "name": "DOWNWARDS ARROW WITH HORIZONTAL STROKE",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "⬔",
+      "codePoint": "U+2B14",
+      "category": "So",
+      "name": "SQUARE WITH UPPER RIGHT DIAGONAL HALF BLACK",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "䁽",
+      "codePoint": "U+407D",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-407D",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "原",
+      "codePoint": "U+539F",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-539F",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "墻",
+      "codePoint": "U+58BB",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-58BB",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "彬",
+      "codePoint": "U+5F6C",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-5F6C",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "排",
+      "codePoint": "U+6392",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-6392",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "摙",
+      "codePoint": "U+6459",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-6459",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "欬",
+      "codePoint": "U+6B2C",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-6B2C",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "没",
+      "codePoint": "U+6CA1",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-6CA1",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "漲",
+      "codePoint": "U+6F32",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-6F32",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "濑",
+      "codePoint": "U+6FD1",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-6FD1",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "皽",
+      "codePoint": "U+76BD",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-76BD",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "眘",
+      "codePoint": "U+7718",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-7718",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "確",
+      "codePoint": "U+78BA",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-78BA",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "秤",
+      "codePoint": "U+79E4",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-79E4",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "笼",
+      "codePoint": "U+7B3C",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-7B3C",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "罚",
+      "codePoint": "U+7F5A",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-7F5A",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "胆",
+      "codePoint": "U+80C6",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-80C6",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "蒂",
+      "codePoint": "U+8482",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-8482",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "蚤",
+      "codePoint": "U+86A4",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-86A4",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "蛀",
+      "codePoint": "U+86C0",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-86C0",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "訝",
+      "codePoint": "U+8A1D",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-8A1D",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "謫",
+      "codePoint": "U+8B2B",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-8B2B",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "邧",
+      "codePoint": "U+90A7",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-90A7",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "鈄",
+      "codePoint": "U+9204",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-9204",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "關",
+      "codePoint": "U+95DC",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-95DC",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "隉",
+      "codePoint": "U+9689",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-9689",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "靆",
+      "codePoint": "U+9746",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-9746",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "駔",
+      "codePoint": "U+99D4",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-99D4",
+      "occurrencesBeforeTail": 1
+    },
+    {
+      "character": "驦",
+      "codePoint": "U+9A66",
+      "category": "Lo",
+      "name": "CJK UNIFIED IDEOGRAPH-9A66",
+      "occurrencesBeforeTail": 1
+    }
+  ],
+  "charactersBothChangedAndUnchanged": [],
+  "allChangedCharactersSeenOnlyOnce": true,
+  "patterns": {
+    "traditionalSimplifiedPairs": [
+      [
+        "鈄",
+        "钭"
+      ],
+      [
+        "關",
+        "关"
+      ],
+      [
+        "謫",
+        "谪"
+      ],
+      [
+        "靆",
+        "叇"
+      ],
+      [
+        "隉",
+        "陧"
+      ],
+      [
+        "確",
+        "确"
+      ]
+    ],
+    "semanticExamples": [
+      [
+        "秤",
+        "scale"
+      ],
+      [
+        "胆",
+        "gall"
+      ],
+      [
+        "墻",
+        "wall"
+      ],
+      [
+        "欬",
+        "cough"
+      ],
+      [
+        "漲",
+        "rise"
+      ]
+    ],
+    "removedSymbols": [
+      "⤈",
+      "⤅",
+      "⬔",
+      "❒",
+      "⏼",
+      "⌕"
+    ]
+  },
+  "chineseConversionReference": {
+    "url": "https://raw.githubusercontent.com/BYVoid/OpenCC/master/data/dictionary/TSCharacters.txt",
+    "accessed": "2026-10-30",
+    "result": "All six listed traditional/simplified pairs were checked against this dictionary. This is not evidence the game uses OpenCC."
+  },
+  "scenarios": [
+    {
+      "profile": "observed-blacklist-ic1",
+      "alphabetSize": 50829,
+      "bitsPerUnit": 15.633364227309396,
+      "guaranteedCompactBytesWithRoot": 984
+    },
+    {
+      "profile": "no-ideographs-ic1",
+      "alphabetSize": 23262,
+      "bitsPerUnit": 14.505687520472337,
+      "guaranteedCompactBytesWithRoot": 913
+    },
+    {
+      "profile": "no-ideographs-symbols-ic1",
+      "alphabetSize": 20271,
+      "bitsPerUnit": 14.307129640503009,
+      "guaranteedCompactBytesWithRoot": 901
+    },
+    {
+      "profile": "hangul-ic1",
+      "alphabetSize": 11172,
+      "bitsPerUnit": 13.44759985827995,
+      "guaranteedCompactBytesWithRoot": 847
+    }
+  ],
+  "alphabetHeadroomForCurrentSpecimens": [
+    {
+      "layout": "kingshot-8900",
+      "minimumAlphabetFor504Digits": 3,
+      "maximumRemovalsFrom50864": 50861,
+      "remainingRemovalsAfterObservedBlacklist": 50826
+    },
+    {
+      "layout": "kingshot-8901",
+      "minimumAlphabetFor504Digits": 50350,
+      "maximumRemovalsFrom50864": 514,
+      "remainingRemovalsAfterObservedBlacklist": 479
+    },
+    {
+      "layout": "kingshot-8902",
+      "minimumAlphabetFor504Digits": 43181,
+      "maximumRemovalsFrom50864": 7683,
+      "remainingRemovalsAfterObservedBlacklist": 7648
+    },
+    {
+      "layout": "kingshot-8903",
+      "minimumAlphabetFor504Digits": 24,
+      "maximumRemovalsFrom50864": 50840,
+      "remainingRemovalsAfterObservedBlacklist": 50805
+    },
+    {
+      "layout": "kingshot-8904",
+      "minimumAlphabetFor504Digits": 31,
+      "maximumRemovalsFrom50864": 50833,
+      "remainingRemovalsAfterObservedBlacklist": 50798
+    }
+  ],
+  "limits": [
+    "A single changed occurrence cannot prove a fixed character substitution.",
+    "Semantic conversion may depend on neighbouring characters, language detection and message context.",
+    "Loss of the tail is analysed separately and must not blacklist every character in that suffix.",
+    "Unchanged Hangul and other-script characters are promising observations, not an exhaustive safe alphabet."
+  ]
+}

@@ -1,0 +1,151 @@
+/* The Island: one isometric board with no toolbar. Controls appear where the player is
+   looking: a card on tapped ground, actions on a tapped piece, one strip at the foot that
+   holds undo and recent pieces, or the loaded brush, or the drop-to-remove target. */
+
+/* ─── Shallows — the island's signal ─────────────────── */
+html[data-page="island"] {
+  --void: #0A1018;        /* sea night                          */
+  --void-2: #111A26;      /* one step up (fields)              */
+  --amber: #7DBDF0;       /* shallows blue — the island signal  */
+  --amber-dim: #5A93C4;   /* deeper water — secondary          */
+  --ember: rgba(125, 189, 240, 0.14);
+  --ember-2: rgba(95, 150, 200, 0.09);
+  --ember-3: rgba(241, 227, 194, 0.07);
+  --chrome: rgba(10, 16, 24, .94);
+  --signal-line: rgba(125, 189, 240, .35);
+  --signal-tint: rgba(125, 189, 240, .08);
+  --signal-glow: rgba(125, 189, 240, .22);
+  --signal-halo: rgba(125, 189, 240, .28);
+  --island-sea: #0C1A2B;
+  --island-warn: #E07A6A;
+  --island-tap: 2.75rem;
+}
+
+.island-page .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.island-page .note { color: var(--ink-dim); font-style: italic; font-size: var(--step--1); }
+
+.island-intro { padding: var(--space-l) 0 var(--space-m); }
+.island-intro h1 { font-size: clamp(2.2rem, 1.2rem + 5vw, 4rem); line-height: 1.05; }
+
+/* The board runs edge to edge and fills the screen under the topbar. */
+.island-work { margin-inline: calc(50% - 50vw); }
+.island-board { position: relative; height: calc(100svh - var(--topbar-h)); min-height: 30rem; max-height: 64rem; overflow: hidden; background: var(--island-sea); border-block: 1px solid var(--signal-line); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.island-board canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
+.island-board canvas:focus-visible { box-shadow: inset 0 0 0 2px var(--amber); }
+.island-board > * { position: absolute; }
+.island-board [hidden], .island-page [hidden] { display: none !important; }
+.island-noscript { inset: 40% 1rem auto; text-align: center; color: var(--ink-dim); }
+
+.island-chip, .island-hint { padding: .2rem .6rem; background: var(--chrome); border: 1px solid var(--ink-muted); border-radius: 2px; font-size: .95rem; line-height: 1.35; color: var(--ink-dim); }
+.island-chip b { color: var(--ink); }
+.island-owner { inset-block-start: .6rem; inset-inline-start: .6rem; max-width: calc(100% - 4.5rem); }
+.island-owner button { margin-inline-start: .3rem; padding: 0; border: 0; background: none; color: var(--amber); font: inherit; text-decoration: underline 1px; text-underline-offset: .2em; cursor: pointer; }
+.island-fit { inset-block-start: .6rem; inset-inline-end: .6rem; width: var(--island-tap); height: var(--island-tap); border: 1px solid var(--ink-muted); border-radius: 2px; background: var(--chrome); color: var(--ink-dim); font: 1.3rem/1 var(--display-2); cursor: pointer; }
+.island-fit:hover, .island-fit:focus-visible { color: var(--amber); border-color: var(--amber-dim); }
+.island-hint { inset-block-end: 5.2rem; left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100% - 1.5rem); text-align: center; font-style: italic; pointer-events: none; }
+
+/* Cards that float over the board: a hairline and a lift, as DESIGN.md's floats do. */
+.island-pop, .island-card, .island-confirm button, .island-strip > * { background: var(--void); border: 1px solid var(--amber-dim); border-radius: 2px; box-shadow: 0 12px 28px rgba(0, 0, 0, .6); }
+
+/* Tapped ground: what fits there, anchored to the cell. */
+.island-pop { z-index: 3; width: min(22rem, calc(100% - 1rem)); padding: .55rem .65rem .6rem; }
+.island-pop::after { content: ""; position: absolute; left: var(--tip, 50%); width: .8rem; height: .8rem; background: var(--void); border: solid var(--amber-dim); border-width: 0 1px 1px 0; transform: translateX(-50%) rotate(45deg); bottom: -.45rem; }
+.island-pop[data-below]::after { bottom: auto; top: -.45rem; border-width: 1px 0 0 1px; }
+.island-label { margin: .1rem 0 .35rem; font: 700 .72rem/1.3 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); }
+.island-pieces { display: flex; gap: .3rem; margin: 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; }
+.island-pieces::-webkit-scrollbar { display: none; }
+.island-piece { display: grid; justify-items: center; align-content: start; gap: .1rem; width: 4.4rem; min-height: var(--island-tap); padding: .2rem .1rem .3rem; border: 1px solid transparent; border-radius: 2px; background: none; color: var(--ink-dim); font: .85rem/1.1 var(--body); text-align: center; cursor: pointer; }
+.island-piece img, .island-piece .island-swatch { width: 3.3rem; height: 3.3rem; object-fit: contain; }
+.island-swatch { display: block; transform: scale(.62, .36) rotate(45deg); border-radius: 2px; }
+.island-piece:hover, .island-piece:focus-visible { border-color: var(--amber-dim); color: var(--ink); }
+.island-piece[aria-pressed="true"] { border-color: var(--amber); background: var(--signal-tint); color: var(--ink); }
+.island-piece small { font-size: .72rem; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.island-piece[data-own="no"] img, .island-piece[data-own="no"] .island-swatch { opacity: .45; filter: grayscale(.6); }
+.island-piece[data-own="no"] small { color: var(--amber-dim); }
+.island-links { display: flex; flex-wrap: wrap; gap: .1rem 1rem; margin-top: .35rem; }
+.island-link { min-height: 2.2rem; padding: 0; border: 0; background: none; color: var(--amber); font: 700 .78rem/1 var(--body); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+.island-link::before { content: "❧ "; }
+.island-link:hover, .island-link:focus-visible { color: var(--ink); }
+.island-empty { margin: 0 0 .2rem; font-size: .92rem; font-style: italic; color: var(--ink-dim); }
+
+/* ✓ ✕ beside a piece being placed. */
+.island-confirm { z-index: 2; display: flex; gap: .45rem; }
+.island-confirm button { width: 3rem; height: 3rem; border-color: var(--amber); color: var(--amber); font: 1.5rem/1 var(--display-2); cursor: pointer; }
+.island-confirm .is-quiet { border-color: var(--ink-muted); color: var(--ink-dim); }
+
+/* A tapped piece: facts, ownership and its two actions. */
+.island-card { z-index: 3; inset-inline: .5rem; inset-block-end: .5rem; max-width: 26rem; margin-inline: auto; padding: .65rem .8rem .75rem; }
+.island-card-head { display: grid; grid-template-columns: 3.6rem 1fr; gap: .1rem .7rem; align-items: center; padding-inline-end: 2.2rem; }
+.island-card-head img, .island-card-head .island-swatch { grid-row: span 2; width: 3.6rem; height: 3.6rem; object-fit: contain; }
+.island-card-head h3 { margin: 0; font: 700 1.3rem/1.1 var(--display-2); }
+.island-card-head p { margin: 0; color: var(--ink-dim); font-size: .95rem; }
+.island-card-note { margin: .45rem 0 .5rem; font-size: .95rem; line-height: 1.35; font-style: italic; color: var(--ink-dim); }
+.island-card-note b { font-style: normal; color: var(--ink); }
+.island-card-note .is-warn { color: var(--island-warn); }
+.island-card-foot { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .9rem; }
+.island-own { display: inline-flex; align-items: center; gap: .5rem; font-size: .95rem; color: var(--ink-dim); }
+.island-step { display: inline-flex; border: 1px solid var(--ink-muted); border-radius: 2px; }
+.island-step button, .island-step output { display: grid; place-items: center; min-width: 2.4rem; height: 2.4rem; border: 0; background: none; color: var(--ink); font: 600 1rem var(--display-2); font-variant-numeric: tabular-nums; }
+.island-step button { cursor: pointer; color: var(--ink-dim); }
+.island-step output { border-inline: 1px solid var(--ink-muted); color: var(--amber); }
+.island-act { min-height: 2.4rem; padding: 0 .3rem; border: 0; background: none; color: var(--amber); font: 700 .78rem var(--body); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+.island-act.is-warn { color: var(--island-warn); }
+.island-act:disabled { color: var(--ink-muted); cursor: default; }
+.island-card .island-close { position: absolute; inset-block-start: .35rem; inset-inline-end: .35rem; }
+.island-close { width: var(--island-tap); height: var(--island-tap); border: 0; background: none; color: var(--ink-dim); font: 1.2rem/1 var(--display-2); cursor: pointer; }
+
+/* The strip: one of rest (undo, recent, all), brush, or drop target. */
+.island-strip { z-index: 2; inset-inline: .5rem; inset-block-end: calc(.5rem + env(safe-area-inset-bottom)); display: flex; justify-content: center; pointer-events: none; }
+.island-strip > * { pointer-events: auto; display: flex; align-items: center; gap: .4rem; min-height: 3.6rem; max-width: 30rem; width: 100%; padding: .3rem .45rem; }
+.island-strip > [hidden] { display: none; }
+.island-undo { flex: none; width: var(--island-tap); height: var(--island-tap); border: 1px solid var(--ink-muted); border-radius: 2px; background: none; color: var(--ink-dim); font: 1.3rem/1 var(--display-2); cursor: pointer; }
+.island-undo:disabled { opacity: .35; cursor: default; }
+.island-recent { display: flex; gap: .25rem; flex: 1; min-width: 0; margin: 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
+.island-recent .island-piece { width: 3rem; min-height: 0; padding: .1rem; }
+.island-recent .island-piece img, .island-recent .island-piece .island-swatch { width: 2.6rem; height: 2.6rem; }
+.island-eraser { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; color: var(--island-warn); font: 1.4rem/1 var(--display-2); }
+.island-brush .island-eraser { flex: none; width: 2.8rem; height: 2.8rem; }
+.island-all { flex: none; min-height: var(--island-tap); padding: 0 .4rem; border: 0; background: none; color: var(--amber); font: 700 .8rem var(--body); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+.island-brush { border-color: var(--amber); }
+.island-brush img, .island-brush .island-swatch { flex: none; width: 2.8rem; height: 2.8rem; object-fit: contain; }
+.island-brush div { flex: 1; min-width: 0; }
+.island-brush b { display: block; font: 600 1.05rem/1.15 var(--display-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.island-brush small { display: block; color: var(--ink-dim); font-size: .85rem; line-height: 1.25; }
+.island-brush .is-warn { color: var(--island-warn); }
+.island-drop { justify-content: center; border-color: var(--island-warn); color: var(--island-warn); font: 700 .85rem var(--body); letter-spacing: .12em; text-transform: uppercase; }
+.island-drop[data-over] { background: rgba(224, 122, 106, .16); }
+
+/* All pieces: a sheet from the foot of the screen. */
+.island-sheet { width: min(40rem, 100%); max-height: min(80svh, 44rem); margin: auto auto 0; padding: .8rem .9rem 1rem; border: 1px solid var(--amber-dim); border-bottom: 0; border-radius: 3px 3px 0 0; background: var(--void); color: var(--ink); box-shadow: 0 -12px 30px rgba(0, 0, 0, .55); }
+.island-sheet[open] { display: flex; flex-direction: column; gap: .5rem; }
+.island-sheet::backdrop { background: rgba(5, 8, 12, .6); }
+.island-sheet-head { display: flex; align-items: center; justify-content: space-between; }
+.island-sheet-head h2 { margin: 0; font: 700 1.35rem/1.1 var(--display-2); }
+.island-search input { width: 100%; height: 2.6rem; padding: 0 .1rem; border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; background: transparent; color: var(--ink); font: 1.05rem var(--body); }
+.island-search input:focus { outline: none; border-bottom-color: var(--amber); }
+.island-sheet-head, .island-search, .island-kinds { flex: none; }
+.island-kinds { display: flex; gap: .35rem; overflow-x: auto; scrollbar-width: none; }
+.island-kinds button { flex: none; height: 2.4rem; padding: 0 .7rem; border: 1px solid rgba(157, 149, 127, .45); border-radius: 2px; background: none; color: var(--ink-dim); font: 700 .78rem var(--body); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+.island-kinds [aria-selected="true"] { border-color: var(--amber); color: var(--amber); background: var(--signal-tint); }
+.island-sheet-body { overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
+.island-sheet-body .island-pieces { flex-wrap: wrap; overflow: visible; }
+.island-sheet-body .island-pieces > li { width: calc((100% - 3 * .3rem) / 4); }
+.island-sheet-body .island-piece { width: 100%; }
+
+/* Below the board. */
+.island-more { padding: var(--space-l) 0 0; }
+.island-more h2 { font-size: var(--step-2); margin-bottom: var(--space-s); }
+.island-more p + p { margin-top: .6rem; }
+.island-presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: var(--space-s); margin: var(--space-s) 0 0; padding: 0; list-style: none; }
+.island-preset { display: grid; gap: .3rem; width: 100%; padding: 0 0 .4rem; border: 0; background: none; color: var(--ink); font: inherit; text-align: start; cursor: pointer; }
+.island-preset canvas { width: 100%; aspect-ratio: 19 / 12; display: block; border: 1px solid var(--ink-muted); border-radius: 2px; background: var(--island-sea); }
+.island-preset:hover canvas, .island-preset:focus-visible canvas { border-color: var(--amber); }
+.island-preset b { font: 600 1.05rem/1.15 var(--display-2); }
+.island-preset small { color: var(--ink-muted); font-size: .92rem; line-height: 1.25; }
+.island-preset .island-tag { justify-self: start; padding: 0 .35rem; border: 1px solid var(--ink-muted); border-radius: 2px; font: 700 .66rem/1.5 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); }
+.island-preset .island-tag.is-ours { border-color: var(--amber-dim); color: var(--amber); }
+
+@media (min-width: 56rem) {
+  .island-sheet-body .island-pieces > li { width: calc((100% - 5 * .3rem) / 6); }
+  .island-hint { inset-block-end: 5.6rem; }
+}

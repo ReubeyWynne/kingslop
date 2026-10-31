@@ -1,0 +1,12 @@
+✔ The evidence pool excludes prefixes, unknown suffixes and all observed failures (3.42256ms)
+✔ The module reuses the reference grammar and raises its bound for smaller radices (4.021141ms)
+✔ All three alphabets preserve every corpus layout and both URL routes (884.052844ms)
+✔ Fixed-width framing preserves leading zeros and its full binary size bound (16.08938ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1014.141505

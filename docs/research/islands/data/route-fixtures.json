@@ -1,0 +1,1519 @@
+{
+  "status": "Numerical reconstruction of the source heuristic; the first two one-reservoir steps were also checked in the browser. Not a validated game route.",
+  "cases": [
+    {
+      "starts": [
+        [
+          1,
+          1
+        ]
+      ],
+      "round_count": 55,
+      "total_grid_distance": 629,
+      "rounds": [
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              1,
+              1
+            ],
+            "target": [
+              6,
+              9
+            ],
+            "distance": 13
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              6,
+              9
+            ],
+            "target": [
+              4,
+              12
+            ],
+            "distance": 5
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              4,
+              12
+            ],
+            "target": [
+              5,
+              16
+            ],
+            "distance": 5
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              5,
+              16
+            ],
+            "target": [
+              7,
+              14
+            ],
+            "distance": 4
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              7,
+              14
+            ],
+            "target": [
+              8,
+              18
+            ],
+            "distance": 5
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              8,
+              18
+            ],
+            "target": [
+              11,
+              23
+            ],
+            "distance": 8
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              11,
+              23
+            ],
+            "target": [
+              7,
+              28
+            ],
+            "distance": 9
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              7,
+              28
+            ],
+            "target": [
+              3,
+              25
+            ],
+            "distance": 7
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              3,
+              25
+            ],
+            "target": [
+              5,
+              33
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              5,
+              33
+            ],
+            "target": [
+              2,
+              36
+            ],
+            "distance": 6
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              2,
+              36
+            ],
+            "target": [
+              8,
+              39
+            ],
+            "distance": 9
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              8,
+              39
+            ],
+            "target": [
+              13,
+              42
+            ],
+            "distance": 8
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              13,
+              42
+            ],
+            "target": [
+              18,
+              39
+            ],
+            "distance": 8
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              18,
+              39
+            ],
+            "target": [
+              24,
+              43
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              24,
+              43
+            ],
+            "target": [
+              22,
+              48
+            ],
+            "distance": 7
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              22,
+              48
+            ],
+            "target": [
+              26,
+              54
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              26,
+              54
+            ],
+            "target": [
+              31,
+              59
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              31,
+              59
+            ],
+            "target": [
+              19,
+              59
+            ],
+            "distance": 12
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              19,
+              59
+            ],
+            "target": [
+              14,
+              53
+            ],
+            "distance": 11
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              14,
+              53
+            ],
+            "target": [
+              8,
+              57
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              8,
+              57
+            ],
+            "target": [
+              2,
+              59
+            ],
+            "distance": 8
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              2,
+              59
+            ],
+            "target": [
+              5,
+              48
+            ],
+            "distance": 14
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              5,
+              48
+            ],
+            "target": [
+              13,
+              30
+            ],
+            "distance": 26
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              13,
+              30
+            ],
+            "target": [
+              23,
+              30
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              23,
+              30
+            ],
+            "target": [
+              29,
+              32
+            ],
+            "distance": 8
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              29,
+              32
+            ],
+            "target": [
+              28,
+              24
+            ],
+            "distance": 9
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              28,
+              24
+            ],
+            "target": [
+              30,
+              18
+            ],
+            "distance": 8
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              30,
+              18
+            ],
+            "target": [
+              24,
+              14
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              24,
+              14
+            ],
+            "target": [
+              17,
+              12
+            ],
+            "distance": 9
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              17,
+              12
+            ],
+            "target": [
+              13,
+              14
+            ],
+            "distance": 6
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              13,
+              14
+            ],
+            "target": [
+              11,
+              11
+            ],
+            "distance": 5
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              11,
+              11
+            ],
+            "target": [
+              9,
+              6
+            ],
+            "distance": 7
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              9,
+              6
+            ],
+            "target": [
+              19,
+              2
+            ],
+            "distance": 14
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              19,
+              2
+            ],
+            "target": [
+              28,
+              3
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              28,
+              3
+            ],
+            "target": [
+              33,
+              9
+            ],
+            "distance": 11
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              33,
+              9
+            ],
+            "target": [
+              42,
+              12
+            ],
+            "distance": 12
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              42,
+              12
+            ],
+            "target": [
+              49,
+              15
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              49,
+              15
+            ],
+            "target": [
+              49,
+              26
+            ],
+            "distance": 11
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              49,
+              26
+            ],
+            "target": [
+              39,
+              22
+            ],
+            "distance": 14
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              39,
+              22
+            ],
+            "target": [
+              40,
+              32
+            ],
+            "distance": 11
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              40,
+              32
+            ],
+            "target": [
+              48,
+              41
+            ],
+            "distance": 17
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              48,
+              41
+            ],
+            "target": [
+              54,
+              37
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              54,
+              37
+            ],
+            "target": [
+              52,
+              50
+            ],
+            "distance": 15
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              52,
+              50
+            ],
+            "target": [
+              45,
+              51
+            ],
+            "distance": 8
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              45,
+              51
+            ],
+            "target": [
+              39,
+              51
+            ],
+            "distance": 6
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              39,
+              51
+            ],
+            "target": [
+              30,
+              45
+            ],
+            "distance": 15
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              30,
+              45
+            ],
+            "target": [
+              48,
+              58
+            ],
+            "distance": 31
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              48,
+              58
+            ],
+            "target": [
+              57,
+              56
+            ],
+            "distance": 11
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              57,
+              56
+            ],
+            "target": [
+              60,
+              60
+            ],
+            "distance": 7
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              60,
+              60
+            ],
+            "target": [
+              56,
+              19
+            ],
+            "distance": 45
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              56,
+              19
+            ],
+            "target": [
+              59,
+              11
+            ],
+            "distance": 11
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              59,
+              11
+            ],
+            "target": [
+              58,
+              2
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              58,
+              2
+            ],
+            "target": [
+              50,
+              5
+            ],
+            "distance": 11
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              50,
+              5
+            ],
+            "target": [
+              43,
+              2
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              43,
+              2
+            ],
+            "target": [
+              19,
+              20
+            ],
+            "distance": 42
+          }
+        ]
+      ]
+    },
+    {
+      "starts": [
+        [
+          1,
+          1
+        ],
+        [
+          59,
+          59
+        ]
+      ],
+      "round_count": 28,
+      "total_grid_distance": 576,
+      "rounds": [
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              1,
+              1
+            ],
+            "target": [
+              6,
+              9
+            ],
+            "distance": 13
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              59,
+              59
+            ],
+            "target": [
+              60,
+              60
+            ],
+            "distance": 2
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              6,
+              9
+            ],
+            "target": [
+              4,
+              12
+            ],
+            "distance": 5
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              60,
+              60
+            ],
+            "target": [
+              57,
+              56
+            ],
+            "distance": 7
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              4,
+              12
+            ],
+            "target": [
+              5,
+              16
+            ],
+            "distance": 5
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              57,
+              56
+            ],
+            "target": [
+              48,
+              58
+            ],
+            "distance": 11
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              5,
+              16
+            ],
+            "target": [
+              7,
+              14
+            ],
+            "distance": 4
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              48,
+              58
+            ],
+            "target": [
+              45,
+              51
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              7,
+              14
+            ],
+            "target": [
+              8,
+              18
+            ],
+            "distance": 5
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              45,
+              51
+            ],
+            "target": [
+              39,
+              51
+            ],
+            "distance": 6
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              8,
+              18
+            ],
+            "target": [
+              11,
+              23
+            ],
+            "distance": 8
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              39,
+              51
+            ],
+            "target": [
+              52,
+              50
+            ],
+            "distance": 14
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              11,
+              23
+            ],
+            "target": [
+              7,
+              28
+            ],
+            "distance": 9
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              52,
+              50
+            ],
+            "target": [
+              48,
+              41
+            ],
+            "distance": 13
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              7,
+              28
+            ],
+            "target": [
+              3,
+              25
+            ],
+            "distance": 7
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              48,
+              41
+            ],
+            "target": [
+              54,
+              37
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              3,
+              25
+            ],
+            "target": [
+              5,
+              33
+            ],
+            "distance": 10
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              54,
+              37
+            ],
+            "target": [
+              49,
+              26
+            ],
+            "distance": 16
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              5,
+              33
+            ],
+            "target": [
+              2,
+              36
+            ],
+            "distance": 6
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              49,
+              26
+            ],
+            "target": [
+              49,
+              15
+            ],
+            "distance": 11
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              2,
+              36
+            ],
+            "target": [
+              8,
+              39
+            ],
+            "distance": 9
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              49,
+              15
+            ],
+            "target": [
+              42,
+              12
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              8,
+              39
+            ],
+            "target": [
+              13,
+              42
+            ],
+            "distance": 8
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              42,
+              12
+            ],
+            "target": [
+              43,
+              2
+            ],
+            "distance": 11
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              13,
+              42
+            ],
+            "target": [
+              18,
+              39
+            ],
+            "distance": 8
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              43,
+              2
+            ],
+            "target": [
+              50,
+              5
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              18,
+              39
+            ],
+            "target": [
+              24,
+              43
+            ],
+            "distance": 10
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              50,
+              5
+            ],
+            "target": [
+              58,
+              2
+            ],
+            "distance": 11
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              24,
+              43
+            ],
+            "target": [
+              22,
+              48
+            ],
+            "distance": 7
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              58,
+              2
+            ],
+            "target": [
+              59,
+              11
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              22,
+              48
+            ],
+            "target": [
+              26,
+              54
+            ],
+            "distance": 10
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              59,
+              11
+            ],
+            "target": [
+              56,
+              19
+            ],
+            "distance": 11
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              26,
+              54
+            ],
+            "target": [
+              31,
+              59
+            ],
+            "distance": 10
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              56,
+              19
+            ],
+            "target": [
+              39,
+              22
+            ],
+            "distance": 20
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              31,
+              59
+            ],
+            "target": [
+              19,
+              59
+            ],
+            "distance": 12
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              39,
+              22
+            ],
+            "target": [
+              40,
+              32
+            ],
+            "distance": 11
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              19,
+              59
+            ],
+            "target": [
+              14,
+              53
+            ],
+            "distance": 11
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              40,
+              32
+            ],
+            "target": [
+              29,
+              32
+            ],
+            "distance": 11
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              14,
+              53
+            ],
+            "target": [
+              8,
+              57
+            ],
+            "distance": 10
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              29,
+              32
+            ],
+            "target": [
+              23,
+              30
+            ],
+            "distance": 8
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              8,
+              57
+            ],
+            "target": [
+              2,
+              59
+            ],
+            "distance": 8
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              23,
+              30
+            ],
+            "target": [
+              13,
+              30
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              2,
+              59
+            ],
+            "target": [
+              5,
+              48
+            ],
+            "distance": 14
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              13,
+              30
+            ],
+            "target": [
+              13,
+              14
+            ],
+            "distance": 16
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              5,
+              48
+            ],
+            "target": [
+              30,
+              45
+            ],
+            "distance": 28
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              13,
+              14
+            ],
+            "target": [
+              11,
+              11
+            ],
+            "distance": 5
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              30,
+              45
+            ],
+            "target": [
+              28,
+              24
+            ],
+            "distance": 23
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              11,
+              11
+            ],
+            "target": [
+              9,
+              6
+            ],
+            "distance": 7
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              28,
+              24
+            ],
+            "target": [
+              30,
+              18
+            ],
+            "distance": 8
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              9,
+              6
+            ],
+            "target": [
+              17,
+              12
+            ],
+            "distance": 14
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              30,
+              18
+            ],
+            "target": [
+              24,
+              14
+            ],
+            "distance": 10
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              17,
+              12
+            ],
+            "target": [
+              19,
+              20
+            ],
+            "distance": 10
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              24,
+              14
+            ],
+            "target": [
+              33,
+              9
+            ],
+            "distance": 14
+          },
+          {
+            "reservoir": 2,
+            "from": [
+              19,
+              20
+            ],
+            "target": [
+              19,
+              2
+            ],
+            "distance": 18
+          }
+        ],
+        [
+          {
+            "reservoir": 1,
+            "from": [
+              33,
+              9
+            ],
+            "target": [
+              28,
+              3
+            ],
+            "distance": 11
+          }
+        ]
+      ]
+    }
+  ]
+}

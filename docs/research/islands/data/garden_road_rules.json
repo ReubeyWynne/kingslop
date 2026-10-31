@@ -1,0 +1,6074 @@
+{
+  "version": 1,
+  "families": {
+    "4": {
+      "assetName": "tile_brick_road",
+      "rules": [
+        {
+          "required": 8,
+          "empty": 82,
+          "sprites": [
+            "brick_road_01"
+          ]
+        },
+        {
+          "required": 2,
+          "empty": 88,
+          "sprites": [
+            "brick_road_02"
+          ]
+        },
+        {
+          "required": 16,
+          "empty": 74,
+          "sprites": [
+            "brick_road_03"
+          ]
+        },
+        {
+          "required": 64,
+          "empty": 26,
+          "sprites": [
+            "brick_road_04"
+          ]
+        },
+        {
+          "required": 24,
+          "empty": 66,
+          "sprites": [
+            "brick_road_05",
+            "brick_road_05_a"
+          ]
+        },
+        {
+          "required": 66,
+          "empty": 24,
+          "sprites": [
+            "brick_road_06",
+            "brick_road_06_a"
+          ]
+        },
+        {
+          "required": 72,
+          "empty": 18,
+          "sprites": [
+            "brick_road_07"
+          ]
+        },
+        {
+          "required": 10,
+          "empty": 80,
+          "sprites": [
+            "brick_road_08"
+          ]
+        },
+        {
+          "required": 18,
+          "empty": 72,
+          "sprites": [
+            "brick_road_09"
+          ]
+        },
+        {
+          "required": 80,
+          "empty": 10,
+          "sprites": [
+            "brick_road_10"
+          ]
+        },
+        {
+          "required": 88,
+          "empty": 2,
+          "sprites": [
+            "brick_road_11"
+          ]
+        },
+        {
+          "required": 74,
+          "empty": 16,
+          "sprites": [
+            "brick_road_12"
+          ]
+        },
+        {
+          "required": 26,
+          "empty": 64,
+          "sprites": [
+            "brick_road_13"
+          ]
+        },
+        {
+          "required": 82,
+          "empty": 8,
+          "sprites": [
+            "brick_road_14"
+          ]
+        },
+        {
+          "required": 90,
+          "empty": 0,
+          "sprites": [
+            "brick_road_15"
+          ]
+        },
+        {
+          "required": 0,
+          "empty": 90,
+          "sprites": [
+            "brick_road_16"
+          ]
+        }
+      ],
+      "defaultSprite": "brick_road_16"
+    },
+    "8": {
+      "assetName": "tile_garden_road",
+      "rules": [
+        {
+          "required": 8,
+          "empty": 82,
+          "sprites": [
+            "garden_road_01"
+          ]
+        },
+        {
+          "required": 2,
+          "empty": 88,
+          "sprites": [
+            "garden_road_02"
+          ]
+        },
+        {
+          "required": 16,
+          "empty": 74,
+          "sprites": [
+            "garden_road_03"
+          ]
+        },
+        {
+          "required": 64,
+          "empty": 26,
+          "sprites": [
+            "garden_road_04"
+          ]
+        },
+        {
+          "required": 24,
+          "empty": 66,
+          "sprites": [
+            "garden_road_05",
+            "garden_road_05_a"
+          ]
+        },
+        {
+          "required": 66,
+          "empty": 24,
+          "sprites": [
+            "garden_road_06",
+            "garden_road_06_a"
+          ]
+        },
+        {
+          "required": 72,
+          "empty": 18,
+          "sprites": [
+            "garden_road_07"
+          ]
+        },
+        {
+          "required": 10,
+          "empty": 80,
+          "sprites": [
+            "garden_road_08"
+          ]
+        },
+        {
+          "required": 18,
+          "empty": 72,
+          "sprites": [
+            "garden_road_09"
+          ]
+        },
+        {
+          "required": 80,
+          "empty": 10,
+          "sprites": [
+            "garden_road_10"
+          ]
+        },
+        {
+          "required": 88,
+          "empty": 2,
+          "sprites": [
+            "garden_road_11"
+          ]
+        },
+        {
+          "required": 74,
+          "empty": 16,
+          "sprites": [
+            "garden_road_12"
+          ]
+        },
+        {
+          "required": 26,
+          "empty": 64,
+          "sprites": [
+            "garden_road_13"
+          ]
+        },
+        {
+          "required": 82,
+          "empty": 8,
+          "sprites": [
+            "garden_road_14"
+          ]
+        },
+        {
+          "required": 90,
+          "empty": 0,
+          "sprites": [
+            "garden_road_15"
+          ]
+        },
+        {
+          "required": 0,
+          "empty": 90,
+          "sprites": [
+            "garden_road_16"
+          ]
+        }
+      ],
+      "defaultSprite": "brick_road_16"
+    },
+    "1": {
+      "assetName": "tile_dirt_road2",
+      "rules": [
+        {
+          "required": 8,
+          "empty": 82,
+          "sprites": [
+            "dirt_road_01"
+          ]
+        },
+        {
+          "required": 2,
+          "empty": 88,
+          "sprites": [
+            "dirt_road_02"
+          ]
+        },
+        {
+          "required": 16,
+          "empty": 74,
+          "sprites": [
+            "dirt_road_03"
+          ]
+        },
+        {
+          "required": 64,
+          "empty": 26,
+          "sprites": [
+            "dirt_road_04"
+          ]
+        },
+        {
+          "required": 24,
+          "empty": 66,
+          "sprites": [
+            "dirt_road_05",
+            "dirt_road_05_a"
+          ]
+        },
+        {
+          "required": 66,
+          "empty": 24,
+          "sprites": [
+            "dirt_road_06",
+            "dirt_road_06_a"
+          ]
+        },
+        {
+          "required": 72,
+          "empty": 18,
+          "sprites": [
+            "dirt_road_07"
+          ]
+        },
+        {
+          "required": 10,
+          "empty": 80,
+          "sprites": [
+            "dirt_road_08"
+          ]
+        },
+        {
+          "required": 18,
+          "empty": 72,
+          "sprites": [
+            "dirt_road_09"
+          ]
+        },
+        {
+          "required": 80,
+          "empty": 10,
+          "sprites": [
+            "dirt_road_10"
+          ]
+        },
+        {
+          "required": 88,
+          "empty": 2,
+          "sprites": [
+            "dirt_road_11"
+          ]
+        },
+        {
+          "required": 74,
+          "empty": 16,
+          "sprites": [
+            "dirt_road_12"
+          ]
+        },
+        {
+          "required": 26,
+          "empty": 64,
+          "sprites": [
+            "dirt_road_13"
+          ]
+        },
+        {
+          "required": 82,
+          "empty": 8,
+          "sprites": [
+            "dirt_road_14"
+          ]
+        },
+        {
+          "required": 90,
+          "empty": 0,
+          "sprites": [
+            "dirt_road_15"
+          ]
+        },
+        {
+          "required": 0,
+          "empty": 90,
+          "sprites": [
+            "dirt_road_16"
+          ]
+        }
+      ],
+      "defaultSprite": "dirt_road_16"
+    },
+    "5": {
+      "assetName": "tile_rock_road",
+      "rules": [
+        {
+          "required": 8,
+          "empty": 82,
+          "sprites": [
+            "rock_road_01"
+          ]
+        },
+        {
+          "required": 2,
+          "empty": 88,
+          "sprites": [
+            "rock_road_02"
+          ]
+        },
+        {
+          "required": 16,
+          "empty": 74,
+          "sprites": [
+            "rock_road_03"
+          ]
+        },
+        {
+          "required": 64,
+          "empty": 26,
+          "sprites": [
+            "rock_road_04"
+          ]
+        },
+        {
+          "required": 24,
+          "empty": 66,
+          "sprites": [
+            "rock_road_05",
+            "rock_road_05_a"
+          ]
+        },
+        {
+          "required": 66,
+          "empty": 24,
+          "sprites": [
+            "rock_road_06",
+            "rock_road_06_a"
+          ]
+        },
+        {
+          "required": 72,
+          "empty": 18,
+          "sprites": [
+            "rock_road_07"
+          ]
+        },
+        {
+          "required": 10,
+          "empty": 80,
+          "sprites": [
+            "rock_road_08"
+          ]
+        },
+        {
+          "required": 18,
+          "empty": 72,
+          "sprites": [
+            "rock_road_09"
+          ]
+        },
+        {
+          "required": 80,
+          "empty": 10,
+          "sprites": [
+            "rock_road_10"
+          ]
+        },
+        {
+          "required": 88,
+          "empty": 2,
+          "sprites": [
+            "rock_road_11"
+          ]
+        },
+        {
+          "required": 74,
+          "empty": 16,
+          "sprites": [
+            "rock_road_12"
+          ]
+        },
+        {
+          "required": 26,
+          "empty": 64,
+          "sprites": [
+            "rock_road_13"
+          ]
+        },
+        {
+          "required": 82,
+          "empty": 8,
+          "sprites": [
+            "rock_road_14"
+          ]
+        },
+        {
+          "required": 90,
+          "empty": 0,
+          "sprites": [
+            "rock_road_15"
+          ]
+        },
+        {
+          "required": 0,
+          "empty": 90,
+          "sprites": [
+            "rock_road_16"
+          ]
+        }
+      ],
+      "defaultSprite": "rock_road_16"
+    },
+    "12": {
+      "assetName": "tile_road_7088",
+      "rules": [
+        {
+          "required": 8,
+          "empty": 82,
+          "sprites": [
+            "road_7088_00_a"
+          ]
+        },
+        {
+          "required": 2,
+          "empty": 88,
+          "sprites": [
+            "road_7088_00_a"
+          ]
+        },
+        {
+          "required": 16,
+          "empty": 74,
+          "sprites": [
+            "road_7088_00_a"
+          ]
+        },
+        {
+          "required": 64,
+          "empty": 26,
+          "sprites": [
+            "road_7088_00_d"
+          ]
+        },
+        {
+          "required": 24,
+          "empty": 66,
+          "sprites": [
+            "road_7088_00_b",
+            "road_7088_00_b",
+            "road_7088_00_c"
+          ]
+        },
+        {
+          "required": 66,
+          "empty": 24,
+          "sprites": [
+            "road_7088_00_c",
+            "road_7088_00_a",
+            "road_7088_00_b"
+          ]
+        },
+        {
+          "required": 72,
+          "empty": 18,
+          "sprites": [
+            "road_7088_02"
+          ]
+        },
+        {
+          "required": 10,
+          "empty": 80,
+          "sprites": [
+            "road_7088_03"
+          ]
+        },
+        {
+          "required": 18,
+          "empty": 72,
+          "sprites": [
+            "road_7088_04"
+          ]
+        },
+        {
+          "required": 80,
+          "empty": 10,
+          "sprites": [
+            "road_7088_01"
+          ]
+        },
+        {
+          "required": 88,
+          "empty": 2,
+          "sprites": [
+            "road_7088_00_a",
+            "road_7088_00_b",
+            "road_7088_00_c",
+            "road_7088_00_d"
+          ]
+        },
+        {
+          "required": 74,
+          "empty": 16,
+          "sprites": [
+            "road_7088_00_b",
+            "road_7088_00_c",
+            "road_7088_00_d",
+            "road_7088_00_a"
+          ]
+        },
+        {
+          "required": 26,
+          "empty": 64,
+          "sprites": [
+            "road_7088_00_c",
+            "road_7088_00_d",
+            "road_7088_00_a",
+            "road_7088_00_b"
+          ]
+        },
+        {
+          "required": 82,
+          "empty": 8,
+          "sprites": [
+            "road_7088_00_d",
+            "road_7088_00_a",
+            "road_7088_00_b",
+            "road_7088_00_c"
+          ]
+        },
+        {
+          "required": 0,
+          "empty": 90,
+          "sprites": [
+            "road_7088_05"
+          ]
+        },
+        {
+          "required": 90,
+          "empty": 165,
+          "sprites": [
+            "road_7088_00_a"
+          ]
+        },
+        {
+          "required": 90,
+          "empty": 0,
+          "sprites": [
+            "road_7088_00_a",
+            "road_7088_00_b",
+            "road_7088_00_c",
+            "road_7088_00_d"
+          ]
+        }
+      ],
+      "defaultSprite": "dirt_road_16"
+    },
+    "3": {
+      "assetName": "tile_water",
+      "rules": [
+        {
+          "required": 8,
+          "empty": 82,
+          "sprites": [
+            "water_01"
+          ],
+          "masks": [
+            "water_01_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_01_mask_fill"
+          ],
+          "waterFill": "water_01_mask_fill"
+        },
+        {
+          "required": 2,
+          "empty": 88,
+          "sprites": [
+            "water_02"
+          ],
+          "masks": [
+            "water_02_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_02_mask_fill"
+          ],
+          "waterFill": "water_02_mask_fill"
+        },
+        {
+          "required": 16,
+          "empty": 74,
+          "sprites": [
+            "water_03"
+          ],
+          "masks": [
+            "water_03_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_03_mask_fill"
+          ],
+          "waterFill": "water_03_mask_fill"
+        },
+        {
+          "required": 64,
+          "empty": 26,
+          "sprites": [
+            "water_04"
+          ],
+          "masks": [
+            "water_04_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_04_mask_fill"
+          ],
+          "waterFill": "water_04_mask_fill"
+        },
+        {
+          "required": 24,
+          "empty": 66,
+          "sprites": [
+            "water_05",
+            "water_05_a"
+          ],
+          "masks": [
+            "water_05_mask",
+            "water_05_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_05_mask_fill",
+            "water_05_mask_fill"
+          ],
+          "waterFill": "water_05_mask_fill"
+        },
+        {
+          "required": 66,
+          "empty": 24,
+          "sprites": [
+            "water_06",
+            "water_06_a"
+          ],
+          "masks": [
+            "water_06_mask",
+            "water_06_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_06_mask_fill",
+            "water_06_mask_fill"
+          ],
+          "waterFill": "water_06_mask_fill"
+        },
+        {
+          "required": 72,
+          "empty": 50,
+          "sprites": [
+            "water_07"
+          ],
+          "masks": [
+            "water_07_mask_a"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_07_mask_a_fill"
+          ],
+          "waterFill": "water_07_mask_a_fill"
+        },
+        {
+          "required": 72,
+          "empty": 18,
+          "sprites": [
+            "water_07"
+          ],
+          "masks": [
+            "water_07_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_07_mask_fill"
+          ],
+          "waterFill": "water_07_mask_fill"
+        },
+        {
+          "required": 10,
+          "empty": 81,
+          "sprites": [
+            "water_08"
+          ],
+          "masks": [
+            "water_08_mask_a"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_08_mask_a_fill"
+          ],
+          "waterFill": "water_08_mask_a_fill"
+        },
+        {
+          "required": 10,
+          "empty": 80,
+          "sprites": [
+            "water_08"
+          ],
+          "masks": [
+            "water_08_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_08_mask_fill"
+          ],
+          "waterFill": "water_08_mask_fill"
+        },
+        {
+          "required": 18,
+          "empty": 76,
+          "sprites": [
+            "water_09"
+          ],
+          "masks": [
+            "water_09_mask_a"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_09_mask_a_fill"
+          ],
+          "waterFill": "water_09_mask_a_fill"
+        },
+        {
+          "required": 18,
+          "empty": 72,
+          "sprites": [
+            "water_09"
+          ],
+          "masks": [
+            "water_09_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_09_mask_fill"
+          ],
+          "waterFill": "water_09_mask_fill"
+        },
+        {
+          "required": 80,
+          "empty": 138,
+          "sprites": [
+            "water_10"
+          ],
+          "masks": [
+            "water_10_mask_a"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_10_mask_a_fill"
+          ],
+          "waterFill": "water_10_mask_a_fill"
+        },
+        {
+          "required": 80,
+          "empty": 10,
+          "sprites": [
+            "water_10"
+          ],
+          "masks": [
+            "water_10_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_10_mask_fill"
+          ],
+          "waterFill": "water_10_mask_fill"
+        },
+        {
+          "required": 0,
+          "empty": 90,
+          "sprites": [
+            "water_16"
+          ],
+          "masks": [
+            "water_16_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_16_mask_fill"
+          ],
+          "waterFill": "water_16_mask_fill"
+        },
+        {
+          "required": 88,
+          "empty": 162,
+          "sprites": [
+            "water_11",
+            "water_11_a"
+          ],
+          "masks": [
+            "water_11_mask",
+            "water_11_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_11_mask_fill",
+            "water_11_mask_fill"
+          ],
+          "waterFill": "water_11_mask_fill"
+        },
+        {
+          "required": 120,
+          "empty": 130,
+          "sprites": [
+            "water_11",
+            "water_11_a"
+          ],
+          "masks": [
+            "water_11_mask_a",
+            "water_11_mask_a"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_11_mask_a_fill",
+            "water_11_mask_a_fill"
+          ],
+          "waterFill": "water_11_mask_a_fill"
+        },
+        {
+          "required": 216,
+          "empty": 34,
+          "sprites": [
+            "water_11",
+            "water_11_a"
+          ],
+          "masks": [
+            "water_11_mask_b",
+            "water_11_mask_b"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_11_mask_b_fill",
+            "water_11_mask_b_fill"
+          ],
+          "waterFill": "water_11_mask_b_fill"
+        },
+        {
+          "required": 248,
+          "empty": 2,
+          "sprites": [
+            "water_11",
+            "water_11_a"
+          ],
+          "masks": [
+            "water_11_mask_c",
+            "water_11_mask_c"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_11_mask_c_fill",
+            "water_11_mask_c_fill"
+          ],
+          "waterFill": "water_11_mask_c_fill"
+        },
+        {
+          "required": 74,
+          "empty": 49,
+          "sprites": [
+            "water_12",
+            "water_12_a"
+          ],
+          "masks": [
+            "water_12_mask",
+            "water_12_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_12_mask_fill",
+            "water_12_mask_fill"
+          ],
+          "waterFill": "water_12_mask_fill"
+        },
+        {
+          "required": 75,
+          "empty": 48,
+          "sprites": [
+            "water_12",
+            "water_12_a"
+          ],
+          "masks": [
+            "water_12_mask_a",
+            "water_12_mask_a"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_12_mask_a_fill",
+            "water_12_mask_a_fill"
+          ],
+          "waterFill": "water_12_mask_a_fill"
+        },
+        {
+          "required": 106,
+          "empty": 17,
+          "sprites": [
+            "water_12",
+            "water_12_a"
+          ],
+          "masks": [
+            "water_12_mask_b",
+            "water_12_mask_b"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_12_mask_b_fill",
+            "water_12_mask_b_fill"
+          ],
+          "waterFill": "water_12_mask_b_fill"
+        },
+        {
+          "required": 107,
+          "empty": 16,
+          "sprites": [
+            "water_12",
+            "water_12_a"
+          ],
+          "masks": [
+            "water_12_mask_c",
+            "water_12_mask_c"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_12_mask_c_fill",
+            "water_12_mask_c_fill"
+          ],
+          "waterFill": "water_12_mask_c_fill"
+        },
+        {
+          "required": 26,
+          "empty": 69,
+          "sprites": [
+            "water_13",
+            "water_13_a"
+          ],
+          "masks": [
+            "water_13_mask",
+            "water_13_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_13_mask_fill",
+            "water_13_mask_fill"
+          ],
+          "waterFill": "water_13_mask_fill"
+        },
+        {
+          "required": 30,
+          "empty": 65,
+          "sprites": [
+            "water_13",
+            "water_13_a"
+          ],
+          "masks": [
+            "water_13_mask_a",
+            "water_13_mask_a"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_13_mask_a_fill",
+            "water_13_mask_a_fill"
+          ],
+          "waterFill": "water_13_mask_a_fill"
+        },
+        {
+          "required": 27,
+          "empty": 68,
+          "sprites": [
+            "water_13",
+            "water_13_a"
+          ],
+          "masks": [
+            "water_13_mask_b",
+            "water_13_mask_b"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_13_mask_b_fill",
+            "water_13_mask_b_fill"
+          ],
+          "waterFill": "water_13_mask_b_fill"
+        },
+        {
+          "required": 31,
+          "empty": 64,
+          "sprites": [
+            "water_13",
+            "water_13_a"
+          ],
+          "masks": [
+            "water_13_mask_c",
+            "water_13_mask_c"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_13_mask_c_fill",
+            "water_13_mask_c_fill"
+          ],
+          "waterFill": "water_13_mask_c_fill"
+        },
+        {
+          "required": 82,
+          "empty": 140,
+          "sprites": [
+            "water_14",
+            "water_14_a"
+          ],
+          "masks": [
+            "water_14_mask",
+            "water_14_mask"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_14_mask_fill",
+            "water_14_mask_fill"
+          ],
+          "waterFill": "water_14_mask_fill"
+        },
+        {
+          "required": 210,
+          "empty": 12,
+          "sprites": [
+            "water_14",
+            "water_14_a"
+          ],
+          "masks": [
+            "water_14_mask_a",
+            "water_14_mask_a"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_14_mask_a_fill",
+            "water_14_mask_a_fill"
+          ],
+          "waterFill": "water_14_mask_a_fill"
+        },
+        {
+          "required": 86,
+          "empty": 136,
+          "sprites": [
+            "water_14",
+            "water_14_a"
+          ],
+          "masks": [
+            "water_14_mask_b",
+            "water_14_mask_b"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_14_mask_b_fill",
+            "water_14_mask_b_fill"
+          ],
+          "waterFill": "water_14_mask_b_fill"
+        },
+        {
+          "required": 214,
+          "empty": 8,
+          "sprites": [
+            "water_14",
+            "water_14_a"
+          ],
+          "masks": [
+            "water_14_mask_c",
+            "water_14_mask_c"
+          ],
+          "sourceNullSprite": false,
+          "fills": [
+            "water_14_mask_c_fill",
+            "water_14_mask_c_fill"
+          ],
+          "waterFill": "water_14_mask_c_fill"
+        },
+        {
+          "required": 255,
+          "empty": 0,
+          "sprites": [],
+          "masks": [
+            "water_00_mask"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_00_mask_fill"
+          ],
+          "waterFill": "water_00_mask_fill"
+        },
+        {
+          "required": 126,
+          "empty": 129,
+          "sprites": [],
+          "masks": [
+            "water_15_mask_a"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_a_fill"
+          ],
+          "waterFill": "water_15_mask_a_fill"
+        },
+        {
+          "required": 219,
+          "empty": 36,
+          "sprites": [],
+          "masks": [
+            "water_15_mask_b"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_b_fill"
+          ],
+          "waterFill": "water_15_mask_b_fill"
+        },
+        {
+          "required": 122,
+          "empty": 133,
+          "sprites": [],
+          "masks": [
+            "water_15_mask_c"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_c_fill"
+          ],
+          "waterFill": "water_15_mask_c_fill"
+        },
+        {
+          "required": 91,
+          "empty": 164,
+          "sprites": [],
+          "masks": [
+            "water_15_mask_d"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_d_fill"
+          ],
+          "waterFill": "water_15_mask_d_fill"
+        },
+        {
+          "required": 94,
+          "empty": 161,
+          "sprites": [],
+          "masks": [
+            "water_15_mask_e"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_e_fill"
+          ],
+          "waterFill": "water_15_mask_e_fill"
+        },
+        {
+          "required": 218,
+          "empty": 37,
+          "sprites": [],
+          "masks": [
+            "water_15_mask_f"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_f_fill"
+          ],
+          "waterFill": "water_15_mask_f_fill"
+        },
+        {
+          "required": 223,
+          "empty": 32,
+          "sprites": [],
+          "masks": [
+            "water_15_mask_g"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_g_fill"
+          ],
+          "waterFill": "water_15_mask_g_fill"
+        },
+        {
+          "required": 254,
+          "empty": 1,
+          "sprites": [],
+          "masks": [
+            "water_15_mask_h"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_h_fill"
+          ],
+          "waterFill": "water_15_mask_h_fill"
+        },
+        {
+          "required": 251,
+          "empty": 4,
+          "sprites": [],
+          "masks": [
+            "water_15_mask_i"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_i_fill"
+          ],
+          "waterFill": "water_15_mask_i_fill"
+        },
+        {
+          "required": 127,
+          "empty": 128,
+          "sprites": [],
+          "masks": [
+            "water_15_mask_j"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_j_fill"
+          ],
+          "waterFill": "water_15_mask_j_fill"
+        },
+        {
+          "required": 222,
+          "empty": 33,
+          "sprites": [],
+          "masks": [
+            "water_15_mask_k"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_k_fill"
+          ],
+          "waterFill": "water_15_mask_k_fill"
+        },
+        {
+          "required": 250,
+          "empty": 5,
+          "sprites": [],
+          "masks": [
+            "water_15_mask_l"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_l_fill"
+          ],
+          "waterFill": "water_15_mask_l_fill"
+        },
+        {
+          "required": 123,
+          "empty": 132,
+          "sprites": [],
+          "masks": [
+            "water_15_mask_m"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_m_fill"
+          ],
+          "waterFill": "water_15_mask_m_fill"
+        },
+        {
+          "required": 95,
+          "empty": 160,
+          "sprites": [],
+          "masks": [
+            "water_15_mask_n"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_n_fill"
+          ],
+          "waterFill": "water_15_mask_n_fill"
+        },
+        {
+          "required": 90,
+          "empty": 0,
+          "sprites": [],
+          "masks": [
+            "water_15_mask"
+          ],
+          "sourceNullSprite": true,
+          "fills": [
+            "water_15_mask_fill"
+          ],
+          "waterFill": "water_15_mask_fill"
+        }
+      ],
+      "defaultSprite": "water_16",
+      "maskChannel": "red",
+      "fillPolicy": "Static material deep/shallow/edge colors; no normal, lighting or animated fade simulation."
+    },
+    "7": {
+      "assetName": "tile_bush",
+      "rules": [
+        {
+          "required": 8,
+          "empty": 82,
+          "sprites": [
+            "bush_01"
+          ]
+        },
+        {
+          "required": 2,
+          "empty": 88,
+          "sprites": [
+            "bush_02"
+          ]
+        },
+        {
+          "required": 16,
+          "empty": 74,
+          "sprites": [
+            "bush_03"
+          ]
+        },
+        {
+          "required": 64,
+          "empty": 26,
+          "sprites": [
+            "bush_04"
+          ]
+        },
+        {
+          "required": 24,
+          "empty": 66,
+          "sprites": [
+            "bush_05"
+          ]
+        },
+        {
+          "required": 66,
+          "empty": 24,
+          "sprites": [
+            "bush_06"
+          ]
+        },
+        {
+          "required": 72,
+          "empty": 18,
+          "sprites": [
+            "bush_07"
+          ]
+        },
+        {
+          "required": 10,
+          "empty": 80,
+          "sprites": [
+            "bush_08"
+          ]
+        },
+        {
+          "required": 18,
+          "empty": 72,
+          "sprites": [
+            "bush_09"
+          ]
+        },
+        {
+          "required": 80,
+          "empty": 10,
+          "sprites": [
+            "bush_10"
+          ]
+        },
+        {
+          "required": 88,
+          "empty": 2,
+          "sprites": [
+            "bush_11"
+          ]
+        },
+        {
+          "required": 74,
+          "empty": 16,
+          "sprites": [
+            "bush_12"
+          ]
+        },
+        {
+          "required": 26,
+          "empty": 64,
+          "sprites": [
+            "bush_13"
+          ]
+        },
+        {
+          "required": 82,
+          "empty": 8,
+          "sprites": [
+            "bush_14"
+          ]
+        },
+        {
+          "required": 90,
+          "empty": 0,
+          "sprites": [
+            "bush_15"
+          ]
+        },
+        {
+          "required": 0,
+          "empty": 90,
+          "sprites": [
+            "bush_16"
+          ]
+        }
+      ],
+      "defaultSprite": null,
+      "presentation": "barrier",
+      "modelTransform": {
+        "position": [
+          0.4000000059604645,
+          0,
+          0.4000000059604645
+        ],
+        "quaternion": [
+          0.3535534143447876,
+          0.3535534143447876,
+          -0.14644663035869598,
+          0.8535533547401428
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    "6": {
+      "assetName": "tile_fence",
+      "rules": [
+        {
+          "required": 8,
+          "empty": 82,
+          "sprites": [
+            "fence_01"
+          ]
+        },
+        {
+          "required": 2,
+          "empty": 88,
+          "sprites": [
+            "fence_02"
+          ]
+        },
+        {
+          "required": 16,
+          "empty": 74,
+          "sprites": [
+            "fence_03"
+          ]
+        },
+        {
+          "required": 64,
+          "empty": 26,
+          "sprites": [
+            "fence_04"
+          ]
+        },
+        {
+          "required": 24,
+          "empty": 66,
+          "sprites": [
+            "fence_05"
+          ]
+        },
+        {
+          "required": 66,
+          "empty": 24,
+          "sprites": [
+            "fence_06"
+          ]
+        },
+        {
+          "required": 72,
+          "empty": 18,
+          "sprites": [
+            "fence_07"
+          ]
+        },
+        {
+          "required": 10,
+          "empty": 80,
+          "sprites": [
+            "fence_08"
+          ]
+        },
+        {
+          "required": 18,
+          "empty": 72,
+          "sprites": [
+            "fence_09"
+          ]
+        },
+        {
+          "required": 80,
+          "empty": 10,
+          "sprites": [
+            "fence_10"
+          ]
+        },
+        {
+          "required": 88,
+          "empty": 2,
+          "sprites": [
+            "fence_11"
+          ]
+        },
+        {
+          "required": 74,
+          "empty": 16,
+          "sprites": [
+            "fence_12"
+          ]
+        },
+        {
+          "required": 26,
+          "empty": 64,
+          "sprites": [
+            "fence_13"
+          ]
+        },
+        {
+          "required": 82,
+          "empty": 8,
+          "sprites": [
+            "fence_14"
+          ]
+        },
+        {
+          "required": 90,
+          "empty": 0,
+          "sprites": [
+            "fence_15"
+          ]
+        },
+        {
+          "required": 0,
+          "empty": 90,
+          "sprites": [
+            "fence_16"
+          ]
+        }
+      ],
+      "defaultSprite": null,
+      "presentation": "barrier",
+      "modelTransform": {
+        "position": [
+          0.4000000059604645,
+          0,
+          0.4000000059604645
+        ],
+        "quaternion": [
+          0.3535534143447876,
+          0.3535534143447876,
+          -0.14644663035869598,
+          0.8535533547401428
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    "10": {
+      "assetName": "tile_decoration_7083",
+      "rules": [
+        {
+          "required": 8,
+          "empty": 82,
+          "sprites": [
+            "decoration_7083_01"
+          ]
+        },
+        {
+          "required": 2,
+          "empty": 88,
+          "sprites": [
+            "decoration_7083_02"
+          ]
+        },
+        {
+          "required": 16,
+          "empty": 74,
+          "sprites": [
+            "decoration_7083_03"
+          ]
+        },
+        {
+          "required": 64,
+          "empty": 26,
+          "sprites": [
+            "decoration_7083_04"
+          ]
+        },
+        {
+          "required": 24,
+          "empty": 66,
+          "sprites": [
+            "decoration_7083_05"
+          ]
+        },
+        {
+          "required": 66,
+          "empty": 24,
+          "sprites": [
+            "decoration_7083_06"
+          ]
+        },
+        {
+          "required": 72,
+          "empty": 18,
+          "sprites": [
+            "decoration_7083_07"
+          ]
+        },
+        {
+          "required": 10,
+          "empty": 80,
+          "sprites": [
+            "decoration_7083_08"
+          ]
+        },
+        {
+          "required": 18,
+          "empty": 72,
+          "sprites": [
+            "decoration_7083_09"
+          ]
+        },
+        {
+          "required": 80,
+          "empty": 10,
+          "sprites": [
+            "decoration_7083_10"
+          ]
+        },
+        {
+          "required": 88,
+          "empty": 2,
+          "sprites": [
+            "decoration_7083_11"
+          ]
+        },
+        {
+          "required": 74,
+          "empty": 16,
+          "sprites": [
+            "decoration_7083_12"
+          ]
+        },
+        {
+          "required": 26,
+          "empty": 64,
+          "sprites": [
+            "decoration_7083_13"
+          ]
+        },
+        {
+          "required": 82,
+          "empty": 8,
+          "sprites": [
+            "decoration_7083_14"
+          ]
+        },
+        {
+          "required": 90,
+          "empty": 0,
+          "sprites": [
+            "decoration_7083_15"
+          ]
+        },
+        {
+          "required": 0,
+          "empty": 90,
+          "sprites": [
+            "decoration_7083_16"
+          ]
+        }
+      ],
+      "defaultSprite": null,
+      "presentation": "barrier",
+      "modelTransform": {
+        "position": [
+          0.4000000059604645,
+          0,
+          0.4000000059604645
+        ],
+        "quaternion": [
+          0.3535534143447876,
+          0.3535534143447876,
+          -0.14644663035869598,
+          0.8535533547401428
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    "9": {
+      "assetName": "tile_decoration_7078",
+      "rules": [
+        {
+          "required": 8,
+          "empty": 82,
+          "sprites": [
+            "decoration_7078_01"
+          ]
+        },
+        {
+          "required": 2,
+          "empty": 88,
+          "sprites": [
+            "decoration_7078_02"
+          ]
+        },
+        {
+          "required": 16,
+          "empty": 74,
+          "sprites": [
+            "decoration_7078_03"
+          ]
+        },
+        {
+          "required": 64,
+          "empty": 26,
+          "sprites": [
+            "decoration_7078_04"
+          ]
+        },
+        {
+          "required": 24,
+          "empty": 66,
+          "sprites": [
+            "decoration_7078_05"
+          ]
+        },
+        {
+          "required": 66,
+          "empty": 24,
+          "sprites": [
+            "decoration_7078_06"
+          ]
+        },
+        {
+          "required": 72,
+          "empty": 18,
+          "sprites": [
+            "decoration_7078_07"
+          ]
+        },
+        {
+          "required": 10,
+          "empty": 80,
+          "sprites": [
+            "decoration_7078_08"
+          ]
+        },
+        {
+          "required": 18,
+          "empty": 72,
+          "sprites": [
+            "decoration_7078_09"
+          ]
+        },
+        {
+          "required": 80,
+          "empty": 10,
+          "sprites": [
+            "decoration_7078_10"
+          ]
+        },
+        {
+          "required": 88,
+          "empty": 2,
+          "sprites": [
+            "decoration_7078_11"
+          ]
+        },
+        {
+          "required": 74,
+          "empty": 16,
+          "sprites": [
+            "decoration_7078_12"
+          ]
+        },
+        {
+          "required": 26,
+          "empty": 64,
+          "sprites": [
+            "decoration_7078_13"
+          ]
+        },
+        {
+          "required": 82,
+          "empty": 8,
+          "sprites": [
+            "decoration_7078_14"
+          ]
+        },
+        {
+          "required": 90,
+          "empty": 0,
+          "sprites": [
+            "decoration_7078_15"
+          ]
+        },
+        {
+          "required": 0,
+          "empty": 90,
+          "sprites": [
+            "decoration_7078_16"
+          ]
+        }
+      ],
+      "defaultSprite": null,
+      "presentation": "barrier",
+      "modelTransform": {
+        "position": [
+          0.4000000059604645,
+          0,
+          0.4000000059604645
+        ],
+        "quaternion": [
+          0.3535534143447876,
+          0.3535534143447876,
+          -0.14644663035869598,
+          0.8535533547401428
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    }
+  },
+  "sprites": {
+    "brick_road_01": {
+      "asset": "assets/autotiles/recovered/brick_road_01.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_02": {
+      "asset": "assets/autotiles/recovered/brick_road_02.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_03": {
+      "asset": "assets/autotiles/recovered/brick_road_03.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_04": {
+      "asset": "assets/autotiles/recovered/brick_road_04.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_05": {
+      "asset": "assets/autotiles/recovered/brick_road_05.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_05_a": {
+      "asset": "assets/autotiles/recovered/brick_road_05_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_06": {
+      "asset": "assets/autotiles/recovered/brick_road_06.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_06_a": {
+      "asset": "assets/autotiles/recovered/brick_road_06_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_07": {
+      "asset": "assets/autotiles/recovered/brick_road_07.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_08": {
+      "asset": "assets/autotiles/recovered/brick_road_08.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_09": {
+      "asset": "assets/autotiles/recovered/brick_road_09.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_10": {
+      "asset": "assets/autotiles/recovered/brick_road_10.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_11": {
+      "asset": "assets/autotiles/recovered/brick_road_11.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_12": {
+      "asset": "assets/autotiles/recovered/brick_road_12.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_13": {
+      "asset": "assets/autotiles/recovered/brick_road_13.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_14": {
+      "asset": "assets/autotiles/recovered/brick_road_14.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_15": {
+      "asset": "assets/autotiles/recovered/brick_road_15.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "brick_road_16": {
+      "asset": "assets/autotiles/recovered/brick_road_16.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_01": {
+      "asset": "assets/autotiles/recovered/dirt_road_01.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_02": {
+      "asset": "assets/autotiles/recovered/dirt_road_02.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_03": {
+      "asset": "assets/autotiles/recovered/dirt_road_03.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_04": {
+      "asset": "assets/autotiles/recovered/dirt_road_04.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_05": {
+      "asset": "assets/autotiles/recovered/dirt_road_05.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_05_a": {
+      "asset": "assets/autotiles/recovered/dirt_road_05_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_06": {
+      "asset": "assets/autotiles/recovered/dirt_road_06.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_06_a": {
+      "asset": "assets/autotiles/recovered/dirt_road_06_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_07": {
+      "asset": "assets/autotiles/recovered/dirt_road_07.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_08": {
+      "asset": "assets/autotiles/recovered/dirt_road_08.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_09": {
+      "asset": "assets/autotiles/recovered/dirt_road_09.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_10": {
+      "asset": "assets/autotiles/recovered/dirt_road_10.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_11": {
+      "asset": "assets/autotiles/recovered/dirt_road_11.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_12": {
+      "asset": "assets/autotiles/recovered/dirt_road_12.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_13": {
+      "asset": "assets/autotiles/recovered/dirt_road_13.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_14": {
+      "asset": "assets/autotiles/recovered/dirt_road_14.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_15": {
+      "asset": "assets/autotiles/recovered/dirt_road_15.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "dirt_road_16": {
+      "asset": "assets/autotiles/recovered/dirt_road_16.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_01": {
+      "asset": "assets/autotiles/recovered/garden_road_01.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_02": {
+      "asset": "assets/autotiles/recovered/garden_road_02.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_03": {
+      "asset": "assets/autotiles/recovered/garden_road_03.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_04": {
+      "asset": "assets/autotiles/recovered/garden_road_04.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 108,
+      "rasterPasteX": 0,
+      "rasterPasteY": 20
+    },
+    "garden_road_05": {
+      "asset": "assets/autotiles/recovered/garden_road_05.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_05_a": {
+      "asset": "assets/autotiles/recovered/garden_road_05_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_06": {
+      "asset": "assets/autotiles/recovered/garden_road_06.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_06_a": {
+      "asset": "assets/autotiles/recovered/garden_road_06_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_07": {
+      "asset": "assets/autotiles/recovered/garden_road_07.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_08": {
+      "asset": "assets/autotiles/recovered/garden_road_08.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_09": {
+      "asset": "assets/autotiles/recovered/garden_road_09.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_10": {
+      "asset": "assets/autotiles/recovered/garden_road_10.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_11": {
+      "asset": "assets/autotiles/recovered/garden_road_11.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_12": {
+      "asset": "assets/autotiles/recovered/garden_road_12.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_13": {
+      "asset": "assets/autotiles/recovered/garden_road_13.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_14": {
+      "asset": "assets/autotiles/recovered/garden_road_14.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_15": {
+      "asset": "assets/autotiles/recovered/garden_road_15.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "garden_road_16": {
+      "asset": "assets/autotiles/recovered/garden_road_16.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "road_7088_00_a": {
+      "asset": "assets/autotiles/recovered/road_7088_00_a.png",
+      "width": 224,
+      "height": 224,
+      "frameWidth": 224,
+      "frameHeight": 224,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 5.012912750244141,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 217,
+      "sourceRasterHeight": 219,
+      "rasterPasteX": 5,
+      "rasterPasteY": 5
+    },
+    "road_7088_00_b": {
+      "asset": "assets/autotiles/recovered/road_7088_00_b.png",
+      "width": 224,
+      "height": 224,
+      "frameWidth": 224,
+      "frameHeight": 224,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 5.036284923553467,
+      "textureOffsetY": 4.012912750244141,
+      "sourceRasterWidth": 215,
+      "sourceRasterHeight": 215,
+      "rasterPasteX": 5,
+      "rasterPasteY": 5
+    },
+    "road_7088_00_c": {
+      "asset": "assets/autotiles/recovered/road_7088_00_c.png",
+      "width": 224,
+      "height": 224,
+      "frameWidth": 224,
+      "frameHeight": 224,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 1.0267510414123535,
+      "textureOffsetY": 0.07612049579620361,
+      "sourceRasterWidth": 223,
+      "sourceRasterHeight": 224,
+      "rasterPasteX": 1,
+      "rasterPasteY": 0
+    },
+    "road_7088_00_d": {
+      "asset": "assets/autotiles/recovered/road_7088_00_d.png",
+      "width": 224,
+      "height": 224,
+      "frameWidth": 224,
+      "frameHeight": 224,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 7.076120376586914,
+      "textureOffsetY": 11.076120376586914,
+      "sourceRasterWidth": 203,
+      "sourceRasterHeight": 200,
+      "rasterPasteX": 7,
+      "rasterPasteY": 13
+    },
+    "road_7088_01": {
+      "asset": "assets/autotiles/recovered/road_7088_01.png",
+      "width": 224,
+      "height": 224,
+      "frameWidth": 224,
+      "frameHeight": 224,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 2.0335004329681396,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 221,
+      "sourceRasterHeight": 224,
+      "rasterPasteX": 2,
+      "rasterPasteY": 0
+    },
+    "road_7088_02": {
+      "asset": "assets/autotiles/recovered/road_7088_02.png",
+      "width": 224,
+      "height": 224,
+      "frameWidth": 224,
+      "frameHeight": 224,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 2.076120376586914,
+      "textureOffsetY": 1.051316738128662,
+      "sourceRasterWidth": 221,
+      "sourceRasterHeight": 220,
+      "rasterPasteX": 2,
+      "rasterPasteY": 3
+    },
+    "road_7088_03": {
+      "asset": "assets/autotiles/recovered/road_7088_03.png",
+      "width": 224,
+      "height": 224,
+      "frameWidth": 224,
+      "frameHeight": 224,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 2.076120376586914,
+      "textureOffsetY": 2.0267510414123535,
+      "sourceRasterWidth": 220,
+      "sourceRasterHeight": 220,
+      "rasterPasteX": 2,
+      "rasterPasteY": 2
+    },
+    "road_7088_04": {
+      "asset": "assets/autotiles/recovered/road_7088_04.png",
+      "width": 224,
+      "height": 224,
+      "frameWidth": 224,
+      "frameHeight": 224,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 2.0267510414123535,
+      "textureOffsetY": 2.0129125118255615,
+      "sourceRasterWidth": 218,
+      "sourceRasterHeight": 220,
+      "rasterPasteX": 2,
+      "rasterPasteY": 2
+    },
+    "road_7088_05": {
+      "asset": "assets/autotiles/recovered/road_7088_05.png",
+      "width": 224,
+      "height": 224,
+      "frameWidth": 224,
+      "frameHeight": 224,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 3.0129125118255615,
+      "sourceRasterWidth": 223,
+      "sourceRasterHeight": 215,
+      "rasterPasteX": 0,
+      "rasterPasteY": 6
+    },
+    "rock_road_01": {
+      "asset": "assets/autotiles/recovered/rock_road_01.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_02": {
+      "asset": "assets/autotiles/recovered/rock_road_02.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_03": {
+      "asset": "assets/autotiles/recovered/rock_road_03.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_04": {
+      "asset": "assets/autotiles/recovered/rock_road_04.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_05": {
+      "asset": "assets/autotiles/recovered/rock_road_05.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_05_a": {
+      "asset": "assets/autotiles/recovered/rock_road_05_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_06": {
+      "asset": "assets/autotiles/recovered/rock_road_06.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_06_a": {
+      "asset": "assets/autotiles/recovered/rock_road_06_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_07": {
+      "asset": "assets/autotiles/recovered/rock_road_07.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_08": {
+      "asset": "assets/autotiles/recovered/rock_road_08.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_09": {
+      "asset": "assets/autotiles/recovered/rock_road_09.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_10": {
+      "asset": "assets/autotiles/recovered/rock_road_10.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_11": {
+      "asset": "assets/autotiles/recovered/rock_road_11.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_12": {
+      "asset": "assets/autotiles/recovered/rock_road_12.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_13": {
+      "asset": "assets/autotiles/recovered/rock_road_13.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_14": {
+      "asset": "assets/autotiles/recovered/rock_road_14.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_15": {
+      "asset": "assets/autotiles/recovered/rock_road_15.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "rock_road_16": {
+      "asset": "assets/autotiles/recovered/rock_road_16.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_00_mask": {
+      "asset": "assets/autotiles/recovered/water_00_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_00_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_00_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_01": {
+      "asset": "assets/autotiles/recovered/water_01.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 8.076120376586914,
+      "textureOffsetY": 31.026750564575195,
+      "sourceRasterWidth": 160,
+      "sourceRasterHeight": 136,
+      "rasterPasteX": 8,
+      "rasterPasteY": 33
+    },
+    "water_01_mask": {
+      "asset": "assets/autotiles/recovered/water_01_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_01_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_01_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_02": {
+      "asset": "assets/autotiles/recovered/water_02.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 32.056373596191406,
+      "textureOffsetY": 31.076120376586914,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 152,
+      "rasterPasteX": 32,
+      "rasterPasteY": 17
+    },
+    "water_02_mask": {
+      "asset": "assets/autotiles/recovered/water_02_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_02_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_02_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_03": {
+      "asset": "assets/autotiles/recovered/water_03.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 32.07612228393555,
+      "textureOffsetY": 30.076120376586914,
+      "sourceRasterWidth": 150,
+      "sourceRasterHeight": 137,
+      "rasterPasteX": 32,
+      "rasterPasteY": 33
+    },
+    "water_03_mask": {
+      "asset": "assets/autotiles/recovered/water_03_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_03_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_03_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_04": {
+      "asset": "assets/autotiles/recovered/water_04.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 32.02675247192383,
+      "textureOffsetY": 7.076120376586914,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 160,
+      "rasterPasteX": 32,
+      "rasterPasteY": 33
+    },
+    "water_04_mask": {
+      "asset": "assets/autotiles/recovered/water_04_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_04_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_04_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_05": {
+      "asset": "assets/autotiles/recovered/water_05.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 8.076120376586914,
+      "textureOffsetY": 31.026750564575195,
+      "sourceRasterWidth": 174,
+      "sourceRasterHeight": 136,
+      "rasterPasteX": 8,
+      "rasterPasteY": 33
+    },
+    "water_05_a": {
+      "asset": "assets/autotiles/recovered/water_05_a.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 7.076120376586914,
+      "textureOffsetY": 31.076120376586914,
+      "sourceRasterWidth": 175,
+      "sourceRasterHeight": 136,
+      "rasterPasteX": 7,
+      "rasterPasteY": 33
+    },
+    "water_05_mask": {
+      "asset": "assets/autotiles/recovered/water_05_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_05_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_05_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_06": {
+      "asset": "assets/autotiles/recovered/water_06.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 32.01291275024414,
+      "textureOffsetY": 7.076120376586914,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 175,
+      "rasterPasteX": 32,
+      "rasterPasteY": 18
+    },
+    "water_06_a": {
+      "asset": "assets/autotiles/recovered/water_06_a.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 32.02675247192383,
+      "textureOffsetY": 8.076120376586914,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 175,
+      "rasterPasteX": 32,
+      "rasterPasteY": 17
+    },
+    "water_06_mask": {
+      "asset": "assets/autotiles/recovered/water_06_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_06_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_06_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_07": {
+      "asset": "assets/autotiles/recovered/water_07.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 8.076120376586914,
+      "textureOffsetY": 7.076120376586914,
+      "sourceRasterWidth": 160,
+      "sourceRasterHeight": 160,
+      "rasterPasteX": 8,
+      "rasterPasteY": 33
+    },
+    "water_07_mask": {
+      "asset": "assets/autotiles/recovered/water_07_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_07_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_07_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_07_mask_a": {
+      "asset": "assets/autotiles/recovered/water_07_mask_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_07_mask_a_fill": {
+      "asset": "assets/autotiles/recovered/water_07_mask_a_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_08": {
+      "asset": "assets/autotiles/recovered/water_08.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 15.076120376586914,
+      "textureOffsetY": 14.01291275024414,
+      "sourceRasterWidth": 153,
+      "sourceRasterHeight": 168,
+      "rasterPasteX": 15,
+      "rasterPasteY": 18
+    },
+    "water_08_mask": {
+      "asset": "assets/autotiles/recovered/water_08_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_08_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_08_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_08_mask_a": {
+      "asset": "assets/autotiles/recovered/water_08_mask_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_08_mask_a_fill": {
+      "asset": "assets/autotiles/recovered/water_08_mask_a_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_09": {
+      "asset": "assets/autotiles/recovered/water_09.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 32.02675247192383,
+      "textureOffsetY": 31.026750564575195,
+      "sourceRasterWidth": 150,
+      "sourceRasterHeight": 150,
+      "rasterPasteX": 32,
+      "rasterPasteY": 19
+    },
+    "water_09_mask": {
+      "asset": "assets/autotiles/recovered/water_09_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_09_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_09_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_09_mask_a": {
+      "asset": "assets/autotiles/recovered/water_09_mask_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_09_mask_a_fill": {
+      "asset": "assets/autotiles/recovered/water_09_mask_a_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_10": {
+      "asset": "assets/autotiles/recovered/water_10.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 32.04770278930664,
+      "textureOffsetY": 16.076120376586914,
+      "sourceRasterWidth": 149,
+      "sourceRasterHeight": 151,
+      "rasterPasteX": 32,
+      "rasterPasteY": 33
+    },
+    "water_10_mask": {
+      "asset": "assets/autotiles/recovered/water_10_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_10_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_10_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_10_mask_a": {
+      "asset": "assets/autotiles/recovered/water_10_mask_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_10_mask_a_fill": {
+      "asset": "assets/autotiles/recovered/water_10_mask_a_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_11": {
+      "asset": "assets/autotiles/recovered/water_11.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 8.076120376586914,
+      "textureOffsetY": 126.07611846923828,
+      "sourceRasterWidth": 173,
+      "sourceRasterHeight": 41,
+      "rasterPasteX": 8,
+      "rasterPasteY": 33
+    },
+    "water_11_a": {
+      "asset": "assets/autotiles/recovered/water_11_a.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 8.076120376586914,
+      "textureOffsetY": 122.02674865722656,
+      "sourceRasterWidth": 173,
+      "sourceRasterHeight": 46,
+      "rasterPasteX": 8,
+      "rasterPasteY": 32
+    },
+    "water_11_mask": {
+      "asset": "assets/autotiles/recovered/water_11_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_11_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_11_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_11_mask_a": {
+      "asset": "assets/autotiles/recovered/water_11_mask_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_11_mask_a_fill": {
+      "asset": "assets/autotiles/recovered/water_11_mask_a_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_11_mask_b": {
+      "asset": "assets/autotiles/recovered/water_11_mask_b.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_11_mask_b_fill": {
+      "asset": "assets/autotiles/recovered/water_11_mask_b_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_11_mask_c": {
+      "asset": "assets/autotiles/recovered/water_11_mask_c.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_11_mask_c_fill": {
+      "asset": "assets/autotiles/recovered/water_11_mask_c_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_12": {
+      "asset": "assets/autotiles/recovered/water_12.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 129.02674865722656,
+      "textureOffsetY": 7.076120376586914,
+      "sourceRasterWidth": 39,
+      "sourceRasterHeight": 175,
+      "rasterPasteX": 129,
+      "rasterPasteY": 18
+    },
+    "water_12_a": {
+      "asset": "assets/autotiles/recovered/water_12_a.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 127.07611846923828,
+      "textureOffsetY": 8.076120376586914,
+      "sourceRasterWidth": 41,
+      "sourceRasterHeight": 175,
+      "rasterPasteX": 127,
+      "rasterPasteY": 17
+    },
+    "water_12_mask": {
+      "asset": "assets/autotiles/recovered/water_12_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_12_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_12_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_12_mask_a": {
+      "asset": "assets/autotiles/recovered/water_12_mask_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_12_mask_a_fill": {
+      "asset": "assets/autotiles/recovered/water_12_mask_a_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_12_mask_b": {
+      "asset": "assets/autotiles/recovered/water_12_mask_b.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_12_mask_b_fill": {
+      "asset": "assets/autotiles/recovered/water_12_mask_b_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_12_mask_c": {
+      "asset": "assets/autotiles/recovered/water_12_mask_c.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_12_mask_c_fill": {
+      "asset": "assets/autotiles/recovered/water_12_mask_c_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_13": {
+      "asset": "assets/autotiles/recovered/water_13.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 14.076120376586914,
+      "textureOffsetY": 14.01291275024414,
+      "sourceRasterWidth": 168,
+      "sourceRasterHeight": 52,
+      "rasterPasteX": 14,
+      "rasterPasteY": 134
+    },
+    "water_13_a": {
+      "asset": "assets/autotiles/recovered/water_13_a.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 12.076120376586914,
+      "textureOffsetY": 15.01291275024414,
+      "sourceRasterWidth": 170,
+      "sourceRasterHeight": 54,
+      "rasterPasteX": 12,
+      "rasterPasteY": 131
+    },
+    "water_13_mask": {
+      "asset": "assets/autotiles/recovered/water_13_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_13_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_13_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_13_mask_a": {
+      "asset": "assets/autotiles/recovered/water_13_mask_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_13_mask_a_fill": {
+      "asset": "assets/autotiles/recovered/water_13_mask_a_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_13_mask_b": {
+      "asset": "assets/autotiles/recovered/water_13_mask_b.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_13_mask_b_fill": {
+      "asset": "assets/autotiles/recovered/water_13_mask_b_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_13_mask_c": {
+      "asset": "assets/autotiles/recovered/water_13_mask_c.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_13_mask_c_fill": {
+      "asset": "assets/autotiles/recovered/water_13_mask_c_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_14": {
+      "asset": "assets/autotiles/recovered/water_14.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 32.05972671508789,
+      "textureOffsetY": 16.076120376586914,
+      "sourceRasterWidth": 30,
+      "sourceRasterHeight": 166,
+      "rasterPasteX": 32,
+      "rasterPasteY": 18
+    },
+    "water_14_a": {
+      "asset": "assets/autotiles/recovered/water_14_a.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 32.00193405151367,
+      "textureOffsetY": 17.076120376586914,
+      "sourceRasterWidth": 27,
+      "sourceRasterHeight": 164,
+      "rasterPasteX": 32,
+      "rasterPasteY": 19
+    },
+    "water_14_mask": {
+      "asset": "assets/autotiles/recovered/water_14_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_14_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_14_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_14_mask_a": {
+      "asset": "assets/autotiles/recovered/water_14_mask_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_14_mask_a_fill": {
+      "asset": "assets/autotiles/recovered/water_14_mask_a_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_14_mask_b": {
+      "asset": "assets/autotiles/recovered/water_14_mask_b.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_14_mask_b_fill": {
+      "asset": "assets/autotiles/recovered/water_14_mask_b_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_14_mask_c": {
+      "asset": "assets/autotiles/recovered/water_14_mask_c.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_14_mask_c_fill": {
+      "asset": "assets/autotiles/recovered/water_14_mask_c_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask": {
+      "asset": "assets/autotiles/recovered/water_15_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_a": {
+      "asset": "assets/autotiles/recovered/water_15_mask_a.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_a_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_a_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_b": {
+      "asset": "assets/autotiles/recovered/water_15_mask_b.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_b_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_b_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_c": {
+      "asset": "assets/autotiles/recovered/water_15_mask_c.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_c_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_c_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_d": {
+      "asset": "assets/autotiles/recovered/water_15_mask_d.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_d_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_d_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_e": {
+      "asset": "assets/autotiles/recovered/water_15_mask_e.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_e_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_e_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_f": {
+      "asset": "assets/autotiles/recovered/water_15_mask_f.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_f_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_f_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_g": {
+      "asset": "assets/autotiles/recovered/water_15_mask_g.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_g_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_g_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_h": {
+      "asset": "assets/autotiles/recovered/water_15_mask_h.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_h_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_h_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_i": {
+      "asset": "assets/autotiles/recovered/water_15_mask_i.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_i_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_i_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_j": {
+      "asset": "assets/autotiles/recovered/water_15_mask_j.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_j_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_j_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_k": {
+      "asset": "assets/autotiles/recovered/water_15_mask_k.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_k_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_k_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_l": {
+      "asset": "assets/autotiles/recovered/water_15_mask_l.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_l_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_l_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_m": {
+      "asset": "assets/autotiles/recovered/water_15_mask_m.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_m_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_m_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_n": {
+      "asset": "assets/autotiles/recovered/water_15_mask_n.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_15_mask_n_fill": {
+      "asset": "assets/autotiles/recovered/water_15_mask_n_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_16": {
+      "asset": "assets/autotiles/recovered/water_16.png",
+      "width": 200,
+      "height": 200,
+      "frameWidth": 200,
+      "frameHeight": 200,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 31.01291275024414,
+      "textureOffsetY": 31.026750564575195,
+      "sourceRasterWidth": 137,
+      "sourceRasterHeight": 136,
+      "rasterPasteX": 31,
+      "rasterPasteY": 33
+    },
+    "water_16_mask": {
+      "asset": "assets/autotiles/recovered/water_16_mask.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "water_16_mask_fill": {
+      "asset": "assets/autotiles/recovered/water_16_mask_fill.png",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 128.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 0.0,
+      "sourceRasterWidth": 128,
+      "sourceRasterHeight": 128,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "bush_01": {
+      "asset": "assets/autotiles/recovered/bush_01.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 22.026750564575195,
+      "sourceRasterWidth": 114,
+      "sourceRasterHeight": 100,
+      "rasterPasteX": 0,
+      "rasterPasteY": 14
+    },
+    "bush_02": {
+      "asset": "assets/autotiles/recovered/bush_02.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 1.0761204957962036,
+      "textureOffsetY": 36.07612228393555,
+      "sourceRasterWidth": 113,
+      "sourceRasterHeight": 98,
+      "rasterPasteX": 1,
+      "rasterPasteY": 2
+    },
+    "bush_03": {
+      "asset": "assets/autotiles/recovered/bush_03.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 18.076120376586914,
+      "textureOffsetY": 36.07612228393555,
+      "sourceRasterWidth": 118,
+      "sourceRasterHeight": 99,
+      "rasterPasteX": 18,
+      "rasterPasteY": 1
+    },
+    "bush_04": {
+      "asset": "assets/autotiles/recovered/bush_04.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 18.076120376586914,
+      "textureOffsetY": 22.047704696655273,
+      "sourceRasterWidth": 118,
+      "sourceRasterHeight": 100,
+      "rasterPasteX": 18,
+      "rasterPasteY": 14
+    },
+    "bush_05": {
+      "asset": "assets/autotiles/recovered/bush_05.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 22.026750564575195,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 113,
+      "rasterPasteX": 0,
+      "rasterPasteY": 1
+    },
+    "bush_06": {
+      "asset": "assets/autotiles/recovered/bush_06.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 1.0267510414123535,
+      "textureOffsetY": 22.047704696655273,
+      "sourceRasterWidth": 135,
+      "sourceRasterHeight": 113,
+      "rasterPasteX": 1,
+      "rasterPasteY": 1
+    },
+    "bush_07": {
+      "asset": "assets/autotiles/recovered/bush_07.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 22.026750564575195,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 98,
+      "rasterPasteX": 0,
+      "rasterPasteY": 16
+    },
+    "bush_08": {
+      "asset": "assets/autotiles/recovered/bush_08.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 22.026750564575195,
+      "sourceRasterWidth": 114,
+      "sourceRasterHeight": 112,
+      "rasterPasteX": 0,
+      "rasterPasteY": 2
+    },
+    "bush_09": {
+      "asset": "assets/autotiles/recovered/bush_09.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 1.0761204957962036,
+      "textureOffsetY": 36.07612228393555,
+      "sourceRasterWidth": 135,
+      "sourceRasterHeight": 99,
+      "rasterPasteX": 1,
+      "rasterPasteY": 1
+    },
+    "bush_10": {
+      "asset": "assets/autotiles/recovered/bush_10.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 18.076120376586914,
+      "textureOffsetY": 22.047704696655273,
+      "sourceRasterWidth": 118,
+      "sourceRasterHeight": 113,
+      "rasterPasteX": 18,
+      "rasterPasteY": 1
+    },
+    "bush_11": {
+      "asset": "assets/autotiles/recovered/bush_11.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 22.026750564575195,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 113,
+      "rasterPasteX": 0,
+      "rasterPasteY": 1
+    },
+    "bush_12": {
+      "asset": "assets/autotiles/recovered/bush_12.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 22.026750564575195,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 112,
+      "rasterPasteX": 0,
+      "rasterPasteY": 2
+    },
+    "bush_13": {
+      "asset": "assets/autotiles/recovered/bush_13.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 22.026750564575195,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 113,
+      "rasterPasteX": 0,
+      "rasterPasteY": 1
+    },
+    "bush_14": {
+      "asset": "assets/autotiles/recovered/bush_14.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 1.0761204957962036,
+      "textureOffsetY": 22.047704696655273,
+      "sourceRasterWidth": 135,
+      "sourceRasterHeight": 113,
+      "rasterPasteX": 1,
+      "rasterPasteY": 1
+    },
+    "bush_15": {
+      "asset": "assets/autotiles/recovered/bush_15.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 22.026750564575195,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 113,
+      "rasterPasteX": 0,
+      "rasterPasteY": 1
+    },
+    "bush_16": {
+      "asset": "assets/autotiles/recovered/bush_16.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 18.076120376586914,
+      "textureOffsetY": 36.07612228393555,
+      "sourceRasterWidth": 96,
+      "sourceRasterHeight": 84,
+      "rasterPasteX": 18,
+      "rasterPasteY": 16
+    },
+    "decoration_7078_01": {
+      "asset": "assets/autotiles/recovered/decoration_7078_01.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 2.036285161972046,
+      "textureOffsetY": 18.026750564575195,
+      "sourceRasterWidth": 109,
+      "sourceRasterHeight": 104,
+      "rasterPasteX": 2,
+      "rasterPasteY": 14
+    },
+    "decoration_7078_02": {
+      "asset": "assets/autotiles/recovered/decoration_7078_02.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 2.051316738128662,
+      "textureOffsetY": 31.01291275024414,
+      "sourceRasterWidth": 109,
+      "sourceRasterHeight": 105,
+      "rasterPasteX": 2,
+      "rasterPasteY": 0
+    },
+    "decoration_7078_03": {
+      "asset": "assets/autotiles/recovered/decoration_7078_03.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 22.05131721496582,
+      "textureOffsetY": 31.01291275024414,
+      "sourceRasterWidth": 110,
+      "sourceRasterHeight": 105,
+      "rasterPasteX": 22,
+      "rasterPasteY": 0
+    },
+    "decoration_7078_04": {
+      "asset": "assets/autotiles/recovered/decoration_7078_04.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 22.05131721496582,
+      "textureOffsetY": 18.01291275024414,
+      "sourceRasterWidth": 109,
+      "sourceRasterHeight": 104,
+      "rasterPasteX": 22,
+      "rasterPasteY": 14
+    },
+    "decoration_7078_05": {
+      "asset": "assets/autotiles/recovered/decoration_7078_05.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 2.036285161972046,
+      "textureOffsetY": 18.026750564575195,
+      "sourceRasterWidth": 130,
+      "sourceRasterHeight": 118,
+      "rasterPasteX": 2,
+      "rasterPasteY": 0
+    },
+    "decoration_7078_06": {
+      "asset": "assets/autotiles/recovered/decoration_7078_06.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 2.051316738128662,
+      "textureOffsetY": 18.01291275024414,
+      "sourceRasterWidth": 129,
+      "sourceRasterHeight": 118,
+      "rasterPasteX": 2,
+      "rasterPasteY": 0
+    },
+    "decoration_7078_07": {
+      "asset": "assets/autotiles/recovered/decoration_7078_07.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 2.036285161972046,
+      "textureOffsetY": 18.026750564575195,
+      "sourceRasterWidth": 129,
+      "sourceRasterHeight": 104,
+      "rasterPasteX": 2,
+      "rasterPasteY": 14
+    },
+    "decoration_7078_08": {
+      "asset": "assets/autotiles/recovered/decoration_7078_08.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 2.036285161972046,
+      "textureOffsetY": 18.026750564575195,
+      "sourceRasterWidth": 109,
+      "sourceRasterHeight": 118,
+      "rasterPasteX": 2,
+      "rasterPasteY": 0
+    },
+    "decoration_7078_09": {
+      "asset": "assets/autotiles/recovered/decoration_7078_09.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 2.051316738128662,
+      "textureOffsetY": 31.01291275024414,
+      "sourceRasterWidth": 130,
+      "sourceRasterHeight": 105,
+      "rasterPasteX": 2,
+      "rasterPasteY": 0
+    },
+    "decoration_7078_10": {
+      "asset": "assets/autotiles/recovered/decoration_7078_10.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 22.05131721496582,
+      "textureOffsetY": 18.01291275024414,
+      "sourceRasterWidth": 110,
+      "sourceRasterHeight": 118,
+      "rasterPasteX": 22,
+      "rasterPasteY": 0
+    },
+    "decoration_7078_11": {
+      "asset": "assets/autotiles/recovered/decoration_7078_11.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 2.036285161972046,
+      "textureOffsetY": 18.026750564575195,
+      "sourceRasterWidth": 130,
+      "sourceRasterHeight": 118,
+      "rasterPasteX": 2,
+      "rasterPasteY": 0
+    },
+    "decoration_7078_12": {
+      "asset": "assets/autotiles/recovered/decoration_7078_12.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 2.036285161972046,
+      "textureOffsetY": 18.026750564575195,
+      "sourceRasterWidth": 129,
+      "sourceRasterHeight": 118,
+      "rasterPasteX": 2,
+      "rasterPasteY": 0
+    },
+    "decoration_7078_13": {
+      "asset": "assets/autotiles/recovered/decoration_7078_13.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 2.036285161972046,
+      "textureOffsetY": 18.026750564575195,
+      "sourceRasterWidth": 130,
+      "sourceRasterHeight": 118,
+      "rasterPasteX": 2,
+      "rasterPasteY": 0
+    },
+    "decoration_7078_14": {
+      "asset": "assets/autotiles/recovered/decoration_7078_14.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 2.051316738128662,
+      "textureOffsetY": 18.01291275024414,
+      "sourceRasterWidth": 130,
+      "sourceRasterHeight": 118,
+      "rasterPasteX": 2,
+      "rasterPasteY": 0
+    },
+    "decoration_7078_15": {
+      "asset": "assets/autotiles/recovered/decoration_7078_15.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 2.036285161972046,
+      "textureOffsetY": 18.026750564575195,
+      "sourceRasterWidth": 130,
+      "sourceRasterHeight": 118,
+      "rasterPasteX": 2,
+      "rasterPasteY": 0
+    },
+    "decoration_7078_16": {
+      "asset": "assets/autotiles/recovered/decoration_7078_16.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 22.05131721496582,
+      "textureOffsetY": 31.01291275024414,
+      "sourceRasterWidth": 89,
+      "sourceRasterHeight": 91,
+      "rasterPasteX": 22,
+      "rasterPasteY": 14
+    },
+    "decoration_7083_01": {
+      "asset": "assets/autotiles/recovered/decoration_7083_01.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 17.076120376586914,
+      "sourceRasterWidth": 115,
+      "sourceRasterHeight": 105,
+      "rasterPasteX": 0,
+      "rasterPasteY": 14
+    },
+    "decoration_7083_02": {
+      "asset": "assets/autotiles/recovered/decoration_7083_02.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 32.02675247192383,
+      "sourceRasterWidth": 115,
+      "sourceRasterHeight": 104,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "decoration_7083_03": {
+      "asset": "assets/autotiles/recovered/decoration_7083_03.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 11.076120376586914,
+      "textureOffsetY": 32.02675247192383,
+      "sourceRasterWidth": 125,
+      "sourceRasterHeight": 104,
+      "rasterPasteX": 11,
+      "rasterPasteY": 0
+    },
+    "decoration_7083_04": {
+      "asset": "assets/autotiles/recovered/decoration_7083_04.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 11.076120376586914,
+      "textureOffsetY": 18.026750564575195,
+      "sourceRasterWidth": 125,
+      "sourceRasterHeight": 104,
+      "rasterPasteX": 11,
+      "rasterPasteY": 14
+    },
+    "decoration_7083_05": {
+      "asset": "assets/autotiles/recovered/decoration_7083_05.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 17.076120376586914,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 119,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "decoration_7083_06": {
+      "asset": "assets/autotiles/recovered/decoration_7083_06.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 18.026750564575195,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 118,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "decoration_7083_07": {
+      "asset": "assets/autotiles/recovered/decoration_7083_07.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 17.076120376586914,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 105,
+      "rasterPasteX": 0,
+      "rasterPasteY": 14
+    },
+    "decoration_7083_08": {
+      "asset": "assets/autotiles/recovered/decoration_7083_08.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 17.076120376586914,
+      "sourceRasterWidth": 115,
+      "sourceRasterHeight": 119,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "decoration_7083_09": {
+      "asset": "assets/autotiles/recovered/decoration_7083_09.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 32.02675247192383,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 104,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "decoration_7083_10": {
+      "asset": "assets/autotiles/recovered/decoration_7083_10.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 11.076120376586914,
+      "textureOffsetY": 18.026750564575195,
+      "sourceRasterWidth": 125,
+      "sourceRasterHeight": 118,
+      "rasterPasteX": 11,
+      "rasterPasteY": 0
+    },
+    "decoration_7083_11": {
+      "asset": "assets/autotiles/recovered/decoration_7083_11.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 17.076120376586914,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 119,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "decoration_7083_12": {
+      "asset": "assets/autotiles/recovered/decoration_7083_12.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 17.011117935180664,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 119,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "decoration_7083_13": {
+      "asset": "assets/autotiles/recovered/decoration_7083_13.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 17.076120376586914,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 119,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "decoration_7083_14": {
+      "asset": "assets/autotiles/recovered/decoration_7083_14.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 18.026750564575195,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 118,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "decoration_7083_15": {
+      "asset": "assets/autotiles/recovered/decoration_7083_15.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 0.0,
+      "textureOffsetY": 17.076120376586914,
+      "sourceRasterWidth": 136,
+      "sourceRasterHeight": 119,
+      "rasterPasteX": 0,
+      "rasterPasteY": 0
+    },
+    "decoration_7083_16": {
+      "asset": "assets/autotiles/recovered/decoration_7083_16.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 11.076120376586914,
+      "textureOffsetY": 32.02675247192383,
+      "sourceRasterWidth": 104,
+      "sourceRasterHeight": 90,
+      "rasterPasteX": 11,
+      "rasterPasteY": 14
+    },
+    "fence_01": {
+      "asset": "assets/autotiles/recovered/fence_01.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 11.0,
+      "textureOffsetY": 26.026750564575195,
+      "sourceRasterWidth": 76,
+      "sourceRasterHeight": 91,
+      "rasterPasteX": 11,
+      "rasterPasteY": 19
+    },
+    "fence_02": {
+      "asset": "assets/autotiles/recovered/fence_02.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 9.026750564575195,
+      "textureOffsetY": 42.036285400390625,
+      "sourceRasterWidth": 78,
+      "sourceRasterHeight": 76,
+      "rasterPasteX": 9,
+      "rasterPasteY": 18
+    },
+    "fence_03": {
+      "asset": "assets/autotiles/recovered/fence_03.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 27.02118492126465,
+      "textureOffsetY": 42.036285400390625,
+      "sourceRasterWidth": 83,
+      "sourceRasterHeight": 77,
+      "rasterPasteX": 27,
+      "rasterPasteY": 17
+    },
+    "fence_04": {
+      "asset": "assets/autotiles/recovered/fence_04.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 27.02118492126465,
+      "textureOffsetY": 25.026750564575195,
+      "sourceRasterWidth": 83,
+      "sourceRasterHeight": 92,
+      "rasterPasteX": 27,
+      "rasterPasteY": 19
+    },
+    "fence_05": {
+      "asset": "assets/autotiles/recovered/fence_05.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 11.0,
+      "textureOffsetY": 26.026750564575195,
+      "sourceRasterWidth": 99,
+      "sourceRasterHeight": 93,
+      "rasterPasteX": 11,
+      "rasterPasteY": 17
+    },
+    "fence_06": {
+      "asset": "assets/autotiles/recovered/fence_06.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 9.026750564575195,
+      "textureOffsetY": 25.026750564575195,
+      "sourceRasterWidth": 101,
+      "sourceRasterHeight": 93,
+      "rasterPasteX": 9,
+      "rasterPasteY": 18
+    },
+    "fence_07": {
+      "asset": "assets/autotiles/recovered/fence_07.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 11.0,
+      "textureOffsetY": 25.026750564575195,
+      "sourceRasterWidth": 99,
+      "sourceRasterHeight": 92,
+      "rasterPasteX": 11,
+      "rasterPasteY": 19
+    },
+    "fence_08": {
+      "asset": "assets/autotiles/recovered/fence_08.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 9.026750564575195,
+      "textureOffsetY": 26.026750564575195,
+      "sourceRasterWidth": 78,
+      "sourceRasterHeight": 92,
+      "rasterPasteX": 9,
+      "rasterPasteY": 18
+    },
+    "fence_09": {
+      "asset": "assets/autotiles/recovered/fence_09.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 9.026750564575195,
+      "textureOffsetY": 42.036285400390625,
+      "sourceRasterWidth": 101,
+      "sourceRasterHeight": 77,
+      "rasterPasteX": 9,
+      "rasterPasteY": 17
+    },
+    "fence_10": {
+      "asset": "assets/autotiles/recovered/fence_10.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 27.02118492126465,
+      "textureOffsetY": 25.026750564575195,
+      "sourceRasterWidth": 83,
+      "sourceRasterHeight": 94,
+      "rasterPasteX": 27,
+      "rasterPasteY": 17
+    },
+    "fence_11": {
+      "asset": "assets/autotiles/recovered/fence_11.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 11.0,
+      "textureOffsetY": 25.026750564575195,
+      "sourceRasterWidth": 99,
+      "sourceRasterHeight": 94,
+      "rasterPasteX": 11,
+      "rasterPasteY": 17
+    },
+    "fence_12": {
+      "asset": "assets/autotiles/recovered/fence_12.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 9.026750564575195,
+      "textureOffsetY": 25.026750564575195,
+      "sourceRasterWidth": 101,
+      "sourceRasterHeight": 93,
+      "rasterPasteX": 9,
+      "rasterPasteY": 18
+    },
+    "fence_13": {
+      "asset": "assets/autotiles/recovered/fence_13.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 9.026750564575195,
+      "textureOffsetY": 26.026750564575195,
+      "sourceRasterWidth": 101,
+      "sourceRasterHeight": 93,
+      "rasterPasteX": 9,
+      "rasterPasteY": 17
+    },
+    "fence_14": {
+      "asset": "assets/autotiles/recovered/fence_14.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 9.026750564575195,
+      "textureOffsetY": 25.026750564575195,
+      "sourceRasterWidth": 101,
+      "sourceRasterHeight": 94,
+      "rasterPasteX": 9,
+      "rasterPasteY": 17
+    },
+    "fence_15": {
+      "asset": "assets/autotiles/recovered/fence_15.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 9.026750564575195,
+      "textureOffsetY": 25.026750564575195,
+      "sourceRasterWidth": 101,
+      "sourceRasterHeight": 94,
+      "rasterPasteX": 9,
+      "rasterPasteY": 17
+    },
+    "fence_16": {
+      "asset": "assets/autotiles/recovered/fence_16.png",
+      "width": 136,
+      "height": 136,
+      "frameWidth": 136,
+      "frameHeight": 136,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100.0,
+      "textureOffsetX": 9.026750564575195,
+      "textureOffsetY": 25.026750564575195,
+      "sourceRasterWidth": 101,
+      "sourceRasterHeight": 93,
+      "rasterPasteX": 9,
+      "rasterPasteY": 18
+    }
+  }
+}

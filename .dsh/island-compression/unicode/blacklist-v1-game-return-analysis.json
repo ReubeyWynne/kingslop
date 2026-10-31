@@ -1,0 +1,122 @@
+{
+  "testedProfile": "observed-blacklist-ic1",
+  "testedMarker": "^",
+  "originalUnits": 512,
+  "returnedUnits": 505,
+  "unchangedSourceUnits": 504,
+  "substitutions": 1,
+  "deletedSourceUnits": 7,
+  "tailPreserved": true,
+  "exactMatch": false,
+  "decodable": false,
+  "changes": [
+    {
+      "kind": "replace",
+      "originalStart": 26,
+      "originalEnd": 27,
+      "returnedStart": 26,
+      "returnedEnd": 27,
+      "original": "㞗",
+      "returned": "*",
+      "sourceNames": [
+        "CJK UNIFIED IDEOGRAPH-3797"
+      ]
+    },
+    {
+      "kind": "delete",
+      "originalStart": 229,
+      "originalEnd": 230,
+      "returnedStart": 229,
+      "returnedEnd": 229,
+      "original": "⌞",
+      "returned": "",
+      "sourceNames": [
+        "BOTTOM LEFT CORNER"
+      ]
+    },
+    {
+      "kind": "delete",
+      "originalStart": 276,
+      "originalEnd": 277,
+      "returnedStart": 275,
+      "returnedEnd": 275,
+      "original": "⍏",
+      "returned": "",
+      "sourceNames": [
+        "APL FUNCTIONAL SYMBOL UPWARDS VANE"
+      ]
+    },
+    {
+      "kind": "delete",
+      "originalStart": 384,
+      "originalEnd": 385,
+      "returnedStart": 382,
+      "returnedEnd": 382,
+      "original": "⏣",
+      "returned": "",
+      "sourceNames": [
+        "BENZENE RING WITH CIRCLE"
+      ]
+    },
+    {
+      "kind": "delete",
+      "originalStart": 421,
+      "originalEnd": 422,
+      "returnedStart": 418,
+      "returnedEnd": 418,
+      "original": "⥏",
+      "returned": "",
+      "sourceNames": [
+        "UP BARB RIGHT DOWN BARB RIGHT HARPOON"
+      ]
+    },
+    {
+      "kind": "delete",
+      "originalStart": 431,
+      "originalEnd": 432,
+      "returnedStart": 427,
+      "returnedEnd": 427,
+      "original": "♙",
+      "returned": "",
+      "sourceNames": [
+        "WHITE CHESS PAWN"
+      ]
+    },
+    {
+      "kind": "delete",
+      "originalStart": 442,
+      "originalEnd": 443,
+      "returnedStart": 437,
+      "returnedEnd": 437,
+      "original": "⤸",
+      "returned": "",
+      "sourceNames": [
+        "RIGHT-SIDE ARC CLOCKWISE ARROW"
+      ]
+    },
+    {
+      "kind": "delete",
+      "originalStart": 506,
+      "originalEnd": 507,
+      "returnedStart": 500,
+      "returnedEnd": 500,
+      "original": "⌐",
+      "returned": "",
+      "sourceNames": [
+        "REVERSED NOT SIGN"
+      ]
+    }
+  ],
+  "newBlacklist": "⌐⌞⍏⏣♙⤸⥏㞗",
+  "cumulativeBlacklist": "⌐⌕⌞⍏⏣⏼♙❒⤅⤈⤸⥏⬔㞗䁽原墻彬排摙欬没漲濑皽眘確秤笼罚胆蒂蚤蛀訝謫邧鈄關隉靆駔驦",
+  "cumulativeCount": 43,
+  "newAlphabetSize": 50821,
+  "interpretation": "One ideograph masked with an asterisk and seven symbol deletions. No semantic translations, other substitutions, insertions or tail truncation in this return. Profanity masking is a plausible inference, not an identified implementation.",
+  "definitionReference": {
+    "codePoint": "U+3797",
+    "source": "https://chromium.googlesource.com/external/github.com/unicode-org/unicodetools/+/refs/heads/main/unicodetools/data/ucd/13.0.0-Update/Unihan/kDefinition.txt",
+    "fact": "Unihan defines this ideograph as an obscene or vulgar expression.",
+    "accessed": "2026-10-30"
+  },
+  "status": "No further empirical blacklist iterations proposed. Both game trials failed; no predictive transform rule has been established."
+}

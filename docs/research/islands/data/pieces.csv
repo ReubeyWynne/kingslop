@@ -1,0 +1,105 @@
+slug,build_id,display_name,name_evidence,category,width,height,build_limit,effect_limit,prosper,rarity,retired,sprite_url,icon_url
+build_7000,7000,Fountain of Life,catalogue display_name,building,5,5,0,1,0,Common,,asset:assets/tiles/7000.png,asset:assets/icons/7000.png
+build_7001,7001,Reservoir,catalogue display_name,building,2,2,0,2,0,Rare,,asset:assets/tiles/7001.png,asset:assets/icons/7001.png
+build_7002,7002,Braveshrine,catalogue display_name,building,4,4,0,1,1200,Legendary,,asset:assets/tiles/7002.png,asset:assets/icons/7002.png
+build_7003,7003,Building #7003,unresolved,building,3,3,0,1,1000,,True,,
+build_7004,7004,Building #7004,unresolved,building,3,3,0,1,1000,,True,,
+build_7005,7005,Bustling Tavern,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7005.png,asset:assets/icons/7005.png
+build_7006,7006,Observation Deck,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7006.png,asset:assets/icons/7006.png
+build_7007,7007,Speaker Hall,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7007.png,asset:assets/icons/7007.png
+build_7008,7008,Windmill,compiled source name override,building,3,3,0,1,500,,,asset:assets/tiles/7008.png,asset:assets/icons/7008.png
+build_7009,7009,Hearth Grill,compiled source name override,building,3,3,0,1,500,,,asset:assets/tiles/7009.png,asset:assets/icons/7009.png
+build_7010,7010,Gentle Grove,compiled source name override,building,3,3,0,1,500,,,asset:assets/tiles/7010.png,asset:assets/icons/7010.png
+build_7011,7011,Building #7011,unresolved,building,3,3,0,1,500,,True,,
+build_7012,7012,Dinosaur Fossils,catalogue display_name,building,3,3,0,1,500,Epic,,asset:assets/tiles/7012.png,asset:assets/icons/7012.png
+build_7013,7013,Treasure Icicle,catalogue display_name,building,3,3,0,1,500,Epic,,asset:assets/tiles/7013.png,asset:assets/icons/7013.png
+build_7014,7014,Floating Market,catalogue display_name,building,5,5,0,1,1000,Legendary,,asset:assets/tiles/7014.png,asset:assets/icons/7014.png
+build_7015,7015,Construction Hut,catalogue display_name,building,3,3,0,1,500,Epic,,asset:assets/tiles/7015.png,asset:assets/icons/7015.png
+build_7016,7016,Ranger Cabin,catalogue display_name,building,3,3,0,1,500,Epic,,asset:assets/tiles/7016.png,asset:assets/icons/7016.png
+build_7017,7017,Amphitheater,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7017.png,asset:assets/icons/7017.png
+build_7018,7018,Brewery,catalogue display_name,building,3,3,0,1,200,Rare,,asset:assets/tiles/7018.png,asset:assets/icons/7018.png
+build_7019,7019,Bazaar Row,catalogue display_name,building,3,3,0,1,200,Rare,,asset:assets/tiles/7019.png,asset:assets/icons/7019.png
+build_7020,7020,Blacksmith,catalogue display_name,building,3,3,0,1,200,Rare,,asset:assets/tiles/7020.png,asset:assets/icons/7020.png
+build_7021,7021,Deluxe Restaurant,catalogue display_name,building,3,3,0,1,200,Rare,,asset:assets/tiles/7021.png,asset:assets/icons/7021.png
+build_7022,7022,Sailor's Cottage,compiled source name override,building,3,3,0,1,500,,,asset:assets/tiles/7022.png,asset:assets/icons/7022.png
+build_7023,7023,Lookout,catalogue display_name,building,2,2,0,1,200,Rare,,asset:assets/tiles/7023.png,asset:assets/icons/7023.png
+build_7024,7024,Ore Stow,catalogue display_name,building,2,2,0,1,200,Rare,,asset:assets/tiles/7024.png,asset:assets/icons/7024.png
+build_7025,7025,Halo of Valor,catalogue display_name,building,2,2,0,1,200,Rare,,asset:assets/tiles/7025.png,asset:assets/icons/7025.png
+build_7026,7026,Exquisite Crown,catalogue display_name,building,2,2,0,1,200,Rare,,asset:assets/tiles/7026.png,asset:assets/icons/7026.png
+build_7027,7027,Oasis Spring,catalogue display_name,building,2,2,0,1,200,Rare,,asset:assets/tiles/7027.png,asset:assets/icons/7027.png
+build_7028,7028,Fishing Hut,catalogue display_name,building,3,3,0,1,500,Epic,,asset:assets/tiles/7028.png,asset:assets/icons/7028.png
+build_7029,7029,Conservatory,catalogue display_name,building,2,2,0,1,200,Rare,,asset:assets/tiles/7029.png,asset:assets/icons/7029.png
+build_7030,7030,Picnic Mat,catalogue display_name,building,2,2,0,1,200,Rare,,asset:assets/tiles/7030.png,asset:assets/icons/7030.png
+build_7031,7031,Fine Cask,catalogue display_name,building,2,2,0,2,100,Uncommon,,asset:assets/tiles/7031.png,asset:assets/icons/7031.png
+build_7032,7032,Happy Slide,catalogue display_name,building,2,2,0,2,100,Uncommon,,asset:assets/tiles/7032.png,asset:assets/icons/7032.png
+build_7033,7033,Wagon,catalogue display_name,building,2,2,0,2,100,Uncommon,,asset:assets/tiles/7033.png,asset:assets/icons/7033.png
+build_7034,7034,Shack,catalogue display_name,building,2,2,0,4,100,Uncommon,,asset:assets/tiles/7034.png,asset:assets/icons/7034.png
+build_7035,7035,Townhouse,catalogue display_name,building,2,2,0,4,100,Uncommon,,asset:assets/tiles/7035.png,asset:assets/icons/7035.png
+build_7036,7036,Basic Dock,catalogue display_name,building,3,3,0,1,200,Rare,,asset:assets/tiles/7036.png,asset:assets/icons/7036.png
+build_7037,7037,Lush Shubberry,compiled source name override,building,1,1,0,5,100,,,asset:assets/tiles/7037.png,asset:assets/icons/7037.png
+build_7038,7038,Exquisite Hedge,compiled source name override,building,1,1,0,5,100,,,asset:assets/tiles/7038.png,asset:assets/icons/7038.png
+build_7039,7039,Banner of Hope,catalogue display_name,building,1,1,0,5,100,Uncommon,,asset:assets/tiles/7039.png,asset:assets/icons/7039.png
+pond,7040,Pond,observed live English UI,water,1,1,500,0,0,,,,asset:assets/icons/7040.png
+build_7041,7041,Goods Pile,catalogue display_name,building,1,1,0,2,50,Common,,asset:assets/tiles/7041.png,asset:assets/icons/7041.png
+build_7042,7042,Cooking Stove,catalogue display_name,building,1,1,0,2,50,Common,,asset:assets/tiles/7042.png,asset:assets/icons/7042.png
+build_7043,7043,Noticeboard,catalogue display_name,building,1,1,0,2,50,Common,,asset:assets/tiles/7043.png,asset:assets/icons/7043.png
+build_7044,7044,Sandcastle,catalogue display_name,building,1,1,0,2,50,Common,,asset:assets/tiles/7044.png,asset:assets/icons/7044.png
+build_7045,7045,Scarecrow,catalogue display_name,building,1,1,0,2,50,Common,,asset:assets/tiles/7045.png,asset:assets/icons/7045.png
+build_7046,7046,Camping Tent,catalogue display_name,building,1,1,0,2,50,Common,,asset:assets/tiles/7046.png,asset:assets/icons/7046.png
+build_7047,7047,Bonfire,catalogue display_name,building,1,1,0,2,50,Common,,asset:assets/tiles/7047.png,asset:assets/icons/7047.png
+build_7048,7048,Camping Chair,catalogue display_name,building,1,1,0,4,50,Common,,asset:assets/tiles/7048.png,asset:assets/icons/7048.png
+build_7049,7049,Swing,catalogue display_name,building,1,1,0,4,50,Common,,asset:assets/tiles/7049.png,asset:assets/icons/7049.png
+build_7050,7050,Dining Table,catalogue display_name,building,1,1,0,4,50,Common,,asset:assets/tiles/7050.png,asset:assets/icons/7050.png
+streetlight,7051,Streetlight,unresolved,accent,1,1,200,0,0,,,asset:assets/tiles/7051.png,asset:assets/icons/7051.png
+tree_fir,7052,"Evergreen, fir",observed live English UI,tree,1,1,500,0,0,,,asset:assets/tiles/7052.png,asset:assets/icons/7052.png
+tree_pine,7053,"Evergreen, pine",observed live English UI,tree,1,1,500,0,0,,,asset:assets/tiles/7053.png,asset:assets/icons/7053.png
+tree_pair,7054,"Evergreen, pair",observed live English UI,tree,1,1,500,0,0,,,asset:assets/tiles/7054.png,asset:assets/icons/7054.png
+gravel_road,7055,Gravel Road,observed live English UI,path,1,1,500,0,0,,,asset:assets/tiles/7055.png,asset:assets/icons/7055.png
+build_7056,7056,Chest,compiled source name override,building,1,1,0,0,0,,,asset:assets/tiles/7056.png,
+tree_bush,7057,"Evergreen, bush",observed live English UI,tree,1,1,500,0,0,,,asset:assets/tiles/7057.png,asset:assets/icons/7057.png
+tree_round,7058,"Evergreen, round",observed live English UI,tree,1,1,500,0,0,,,asset:assets/tiles/7058.png,asset:assets/icons/7058.png
+build_7059,7059,Merchant Caravan,compiled source name override,building,3,3,0,1,1000,,,asset:assets/tiles/7059.png,asset:assets/icons/7059.png
+build_7060,7060,Horn of Victory,compiled source name override,building,3,3,0,1,1000,,,asset:assets/tiles/7060.png,asset:assets/icons/7060.png
+whispering_path,7061,Whispering Path,observed live English UI,path,1,1,500,0,0,,,asset:assets/tiles/7061.png,asset:assets/icons/7061.png
+paved_road,7062,Paved Road,observed live English UI,path,1,1,500,0,0,,,asset:assets/tiles/7062.png,asset:assets/icons/7062.png
+build_7063,7063,Sleeping Drakethrone,catalogue display_name,building,3,3,0,1,5000,Legendary,,asset:assets/tiles/7063.png,asset:assets/icons/7063.png
+build_7064,7064,Dragon Sculpture,compiled source name override,building,3,3,0,1,1000,,,asset:assets/tiles/7064.png,asset:assets/icons/7064.png
+lush_elegy,7065,Lush Elegy,unresolved,hedge,1,1,500,0,0,,,asset:assets/tiles/7065_single.png,asset:assets/icons/7065.png
+palisade,7066,Palisade,unresolved,fence,1,1,500,0,0,,,asset:assets/tiles/7066.png,asset:assets/icons/7066.png
+build_7067,7067,Building #7067,unresolved,building,5,5,0,1,1000,,True,,
+build_7068,7068,Building #7068,unresolved,building,3,3,0,1,1000,,True,,
+build_7069,7069,Building #7069,unresolved,building,3,3,0,1,1000,,True,,
+build_7070,7070,Building #7070,unresolved,building,3,3,0,1,1000,,True,,
+build_7071,7071,New Year Greeting,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7071.png,asset:assets/icons/7071.png
+build_7072,7072,Journey of the Heart,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7072.png,asset:assets/icons/7072.png
+build_7073,7073,Starstation,compiled source name override,building,3,3,0,1,1000,,,asset:assets/tiles/7073.png,asset:assets/icons/7073.png
+build_7074,7074,Eggchanted,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7074.png,asset:assets/icons/7074.png
+build_7075,7075,Building #7075,unresolved,building,3,3,0,1,1000,,True,,
+garden_path,7077,Garden Path,observed live English UI,path,1,1,500,0,0,,,asset:assets/tiles/7077.png,asset:assets/icons/7077.png
+purple_fantasy,7078,Purple Fantasy,observed live English UI,hedge,1,1,500,0,0,,,asset:assets/tiles/7078_single.png,asset:assets/icons/7078.png
+build_7079,7079,Jade Jubilation,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7079.png,asset:assets/icons/7079.png
+build_7080,7080,Court of Knowledge,compiled source name override,building,3,3,0,1,1000,,,asset:assets/tiles/7080.png,asset:assets/icons/7080.png
+build_7081,7081,Building #7081,unresolved,building,3,3,0,1,500,,True,asset:assets/tiles/7081.png,asset:assets/icons/7081.png
+build_7082,7082,Purifier,catalogue display_name,building,3,3,0,1,0,Epic,,asset:assets/tiles/7082.png,asset:assets/icons/7082.png
+song_of_the_sun,7083,Song of the Sun,observed live English UI,hedge,1,1,500,0,0,,,asset:assets/tiles/7083_single.png,asset:assets/icons/7083.png
+build_7084,7084,Building #7084,unresolved,building,3,3,0,1,1000,,,asset:assets/tiles/7084.png,
+build_7085,7085,Small Collesium,compiled source name override,building,3,3,0,1,500,,,asset:assets/tiles/7085.png,
+meadow,7088,Meadow,observed live English UI,path,1,1,500,0,0,,,asset:assets/tiles/7088.png,asset:assets/icons/7088.png
+build_7089,7089,Building #7089,unresolved,decor,1,1,500,0,0,,True,,
+build_7090,7090,Lion of Glory,compiled source name override,building,3,3,0,1,1000,,,asset:assets/tiles/7090.png,asset:assets/icons/7090.png
+build_7091,7091,Grizzly Statue,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7091.png,asset:assets/icons/7091.png
+build_7092,7092,Cheesy Perfection,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7092.png,asset:assets/icons/7092.png
+build_7093,7093,Lantern Garden,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7093.png,asset:assets/icons/7093.png
+build_7094,7094,Wicked Hut,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7094.png,asset:assets/icons/7094.png
+build_7095,7095,Autumn Canvas,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7095.png,asset:assets/icons/7095.png
+build_7096,7096,Winter Rollercoaster,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7096.png,asset:assets/icons/7096.png
+build_7098,7098,Lakeside Dream,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7098.png,asset:assets/icons/7098.png
+build_7100,7100,Dragon Sculpture,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7100.png,asset:assets/icons/7100.png
+build_7101,7101,Dinosaur Fort,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7101.png,asset:assets/icons/7101.png
+build_7102,7102,Pro Ball Trainer,catalogue display_name,building,3,3,0,1,1000,Legendary,,asset:assets/tiles/7102.png,asset:assets/icons/7102.png
+build_7103,7103,Mini Crucible,compiled source name override,building,3,3,0,1,1000,,,asset:assets/tiles/7103.png,asset:assets/icons/7103.png
+build_7104,7104,Passing of the Sword,compiled source name override,building,3,3,0,1,1000,,,asset:assets/tiles/7104.png,asset:assets/icons/7104.png
+build_7105,7105,Godess of Glory,compiled source name override,building,3,3,0,1,1000,,,asset:assets/tiles/7105.png,asset:assets/icons/7105.png
+build_7107,7107,Dream Sailing,compiled source name override,building,4,4,0,1,1000,,,asset:assets/tiles/7107.png,asset:assets/icons/7107.png
+build_7108,7108,Building #7108,unresolved,building,4,4,0,1,1000,,,asset:assets/tiles/7108.png,asset:assets/icons/7108.png
+build_7112,7112,Building #7112,unresolved,building,3,3,0,1,1000,,,asset:assets/tiles/7112.png,asset:assets/icons/7112.png

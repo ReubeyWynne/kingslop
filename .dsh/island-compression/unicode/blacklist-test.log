@@ -1,0 +1,13 @@
+✔ Study reuses the reference implementation with only its alphabet import changed (1.877029ms)
+✔ Every candidate reconstructs every original binary layout exactly (1053.017029ms)
+✔ Generated alphabets exclude their declared character classes (25.784973ms)
+✔ New 512-unit specimen preserves the complete largest recovered layout (12.712782ms)
+✔ The returned blacklist-v1 game specimen also fails closed (0.818407ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1236.021208

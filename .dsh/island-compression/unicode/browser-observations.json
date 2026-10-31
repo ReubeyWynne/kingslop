@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-30",
+  "browser": "Chrome through the cloud browser connector",
+  "staticSpecimenCommit": "47bbe2ca896e566c31688c8399ecc2f57be381bb",
+  "staticSpecimensRead": 16,
+  "urlInspection": {
+    "scope": "URL constructor in the browser tool's read-only DOM scope, over text rendered from the static specimen JSON. Percent decoding and normalization comparisons ran in the control runtime. This does not claim full codec execution in a native browser page.",
+    "allFragmentTextRoundTrips": true,
+    "stressSerializedHttpsUrlUnits": 4496,
+    "layout8901DenseSerializedHttpsUrlUnits": 4466,
+    "layout8902DenseSerializedHttpsUrlUnits": 4391
+  },
+  "browserClipboard": {
+    "stressExact": true,
+    "utf16Units": 512,
+    "codePoints": 512,
+    "diagnosticCrc32": "eac6d773"
+  },
+  "standaloneProbeExecuted": false,
+  "standaloneProbeBlocker": "The browser URL policy disallowed data: navigation. No attempt was made to execute the blocked page through another surface. Testing continued with read-only static HTTPS specimens and the permitted clipboard API.",
+  "pending": "No further empirical blacklist testing requested. Unicode remains unvalidated without predictive game rules or a bounded small-alphabet validation strategy.",
+  "completeIslandClipboard": {
+    "layout": "kingshot-8901",
+    "sourceCommit": "af5238a76a7d328ce770b5324895c004fd53e9f1",
+    "exact": true,
+    "utf16Units": 512,
+    "codePoints": 512,
+    "nfcUnchanged": true,
+    "nfkcUnchanged": true,
+    "locallyVerifiedOriginalWireBytes": 990,
+    "pieces": 1237,
+    "surfaces": 1655
+  },
+  "userReportedGameTrial": {
+    "result": "failed",
+    "originalUtf16Units": 512,
+    "returnedUtf16Units": 506,
+    "decodable": false,
+    "exactGameStageConfirmed": false,
+    "details": "game-failure.json"
+  },
+  "kingshotTestedByAgent": false,
+  "secondUserReportedGameTrial": {
+    "profile": "observed-blacklist-ic1",
+    "originalUtf16Units": 512,
+    "returnedUtf16Units": 505,
+    "unchangedSourceUnits": 504,
+    "substitutions": 1,
+    "deletedUnits": 7,
+    "tailPreserved": true,
+    "decodable": false,
+    "details": "blacklist-v1-game-return-analysis.json"
+  }
+}

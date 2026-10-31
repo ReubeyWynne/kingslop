@@ -1,0 +1,153 @@
+Verified 63 offline survivor-alphabet layout round trips.
+[
+  {
+    layout: 'kingshot-8900',
+    profile: 'survivors512-ic1',
+    originalWireBytes: 78,
+    originalRouteUnits: 80,
+    rootRouteUnits: 73,
+    originalFits: true,
+    rootFits: true,
+    exactBinaryRoundTrip: true
+  },
+  {
+    layout: 'kingshot-8900',
+    profile: 'survivors867-ic1',
+    originalWireBytes: 78,
+    originalRouteUnits: 75,
+    rootRouteUnits: 68,
+    originalFits: true,
+    rootFits: true,
+    exactBinaryRoundTrip: true
+  },
+  {
+    layout: 'kingshot-8900',
+    profile: 'survivors919-ic1',
+    originalWireBytes: 78,
+    originalRouteUnits: 75,
+    rootRouteUnits: 68,
+    originalFits: true,
+    rootFits: true,
+    exactBinaryRoundTrip: true
+  },
+  {
+    layout: 'kingshot-8901',
+    profile: 'survivors512-ic1',
+    originalWireBytes: 990,
+    originalRouteUnits: 890,
+    rootRouteUnits: 883,
+    originalFits: false,
+    rootFits: false,
+    exactBinaryRoundTrip: true
+  },
+  {
+    layout: 'kingshot-8901',
+    profile: 'survivors867-ic1',
+    originalWireBytes: 990,
+    originalRouteUnits: 822,
+    rootRouteUnits: 815,
+    originalFits: false,
+    rootFits: false,
+    exactBinaryRoundTrip: true
+  },
+  {
+    layout: 'kingshot-8901',
+    profile: 'survivors919-ic1',
+    originalWireBytes: 990,
+    originalRouteUnits: 815,
+    rootRouteUnits: 808,
+    originalFits: false,
+    rootFits: false,
+    exactBinaryRoundTrip: true
+  },
+  {
+    layout: 'kingshot-8902',
+    profile: 'survivors512-ic1',
+    originalWireBytes: 976,
+    originalRouteUnits: 878,
+    rootRouteUnits: 871,
+    originalFits: false,
+    rootFits: false,
+    exactBinaryRoundTrip: true
+  },
+  {
+    layout: 'kingshot-8902',
+    profile: 'survivors867-ic1',
+    originalWireBytes: 976,
+    originalRouteUnits: 811,
+    rootRouteUnits: 804,
+    originalFits: false,
+    rootFits: false,
+    exactBinaryRoundTrip: true
+  },
+  {
+    layout: 'kingshot-8902',
+    profile: 'survivors919-ic1',
+    originalWireBytes: 976,
+    originalRouteUnits: 804,
+    rootRouteUnits: 797,
+    originalFits: false,
+    rootFits: false,
+    exactBinaryRoundTrip: true
+  },
+  {
+    layout: 'kingshot-8903',
+    profile: 'survivors512-ic1',
+    originalWireBytes: 294,
+    originalRouteUnits: 272,
+    rootRouteUnits: 265,
+    originalFits: true,
+    rootFits: true,
+    exactBinaryRoundTrip: true
+  },
+  {
+    layout: 'kingshot-8903',
+    profile: 'survivors867-ic1',
+    originalWireBytes: 294,
+    originalRouteUnits: 252,
+    rootRouteUnits: 245,
+    originalFits: true,
+    rootFits: true,
+    exactBinaryRoundTrip: true
+  },
+  {
+    layout: 'kingshot-8903',
+    profile: 'survivors919-ic1',
+    originalWireBytes: 294,
+    originalRouteUnits: 250,
+    rootRouteUnits: 243,
+    originalFits: true,
+    rootFits: true,
+    exactBinaryRoundTrip: true
+  },
+  {
+    layout: 'kingshot-8904',
+    profile: 'survivors512-ic1',
+    originalWireBytes: 316,
+    originalRouteUnits: 291,
+    rootRouteUnits: 284,
+    originalFits: true,
+    rootFits: true,
+    exactBinaryRoundTrip: true
+  },
+  {
+    layout: 'kingshot-8904',
+    profile: 'survivors867-ic1',
+    originalWireBytes: 316,
+    originalRouteUnits: 270,
+    rootRouteUnits: 263,
+    originalFits: true,
+    rootFits: true,
+    exactBinaryRoundTrip: true
+  },
+  {
+    layout: 'kingshot-8904',
+    profile: 'survivors919-ic1',
+    originalWireBytes: 316,
+    originalRouteUnits: 267,
+    rootRouteUnits: 260,
+    originalFits: true,
+    rootFits: true,
+    exactBinaryRoundTrip: true
+  }
+]

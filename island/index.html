@@ -1,0 +1,68 @@
+---
+layout: page
+self: island
+---
+<main class="island-page" lang="en" dir="ltr" data-module="island" data-art="../img/island/" data-examples="../js/island-examples.js?v={{ site.time | date: '%s' }}">
+  <section class="island-intro" id="top">
+    <h1>The Island</h1>
+    <p class="lede">Tap open ground to see what fits there. Pick a path, hedge or tree and drag to paint it. Press and hold a piece to move it.</p>
+  </section>
+
+  <section class="island-work" id="plan" aria-label="Your island plan">
+    <div class="island-board" data-target="island.board">
+      <canvas tabindex="0" role="application" aria-roledescription="island board" aria-label="Island board. Arrow keys move the cursor, Enter acts on the cell, Delete removes, R turns, Escape cancels." aria-describedby="island-status"></canvas>
+      <noscript><p class="island-noscript">Turn on JavaScript to plan your island.</p></noscript>
+
+      <div class="island-chip island-owner" data-target="island.owner"><b>Your plan</b> · saved on this device</div>
+      <button type="button" class="island-fit" data-action="island.fit" aria-label="Show the whole island">⤢</button>
+      <p class="island-hint" data-target="island.hint" hidden></p>
+
+      <div class="island-pop" data-target="island.ground" role="dialog" aria-label="What fits here" hidden></div>
+
+      <div class="island-confirm" data-target="island.confirm" hidden>
+        <button type="button" data-action="island.accept" aria-label="Place it">✓</button>
+        <button type="button" class="is-quiet" data-action="island.reject" aria-label="Cancel">✕</button>
+      </div>
+
+      <div class="island-card" data-target="island.card" role="dialog" aria-label="Piece" hidden></div>
+
+      <div class="island-strip" data-target="island.strip">
+        <div class="island-strip-rest" data-target="island.rest">
+          <button type="button" class="island-undo" data-action="island.undo" data-target="island.undo" aria-label="Undo" disabled>↶</button>
+          <ul class="island-recent" data-target="island.recent" aria-label="Recent pieces"></ul>
+          <button type="button" class="island-all" data-action="island.catalogue">All…</button>
+        </div>
+        <div class="island-brush" data-target="island.brush" hidden></div>
+        <div class="island-drop" data-target="island.drop" hidden><span aria-hidden="true">✕</span> Drop here to remove</div>
+      </div>
+    </div>
+    <p id="island-status" class="visually-hidden" role="status" data-target="island.status"></p>
+  </section>
+
+  <dialog class="island-sheet" data-target="island.sheet" aria-labelledby="island-sheet-title">
+    <div class="island-sheet-head">
+      <h2 id="island-sheet-title">All pieces</h2>
+      <button type="button" class="island-close" data-action="island.closeSheet" aria-label="Close">✕</button>
+    </div>
+    <label class="island-search"><span class="visually-hidden">Find a piece</span><input type="search" placeholder="Find a piece" autocomplete="off" data-action="island.search" data-target="island.search"></label>
+    <div class="island-kinds" role="tablist" aria-label="Kinds of piece" data-target="island.kinds"></div>
+    <div class="island-sheet-body" data-target="island.catalogue"></div>
+  </dialog>
+
+  <section class="island-more" id="presets" aria-labelledby="presets-title">
+    <h2 id="presets-title">Start from a preset</h2>
+    <p class="note">A preset opens as a copy. Your own plan stays saved until you keep the copy.</p>
+    <ul class="island-presets" data-target="island.presets"></ul>
+  </section>
+
+  <section class="island-more" id="island-owned" aria-labelledby="owned-title">
+    <h2 id="owned-title">What's yours</h2>
+    <p>Many decorations only come from event packs. Mark the pieces you own (tap a piece, then set how many you have) and they come first wherever you pick one. Pieces you don't own stay in the plan, dimmed in the pickers, so you can plan ahead.</p>
+    <p class="note" data-target="island.ownedNote"></p>
+  </section>
+
+  <section class="island-more" id="island-sources" aria-labelledby="sources-title">
+    <h2 id="sources-title">Sources &amp; confidence</h2>
+    <p class="note">Piece art, sizes and limits, and the five game layouts, come from the KS Companion island catalogue (October 2026) and are not yet checked in game. Crazy golf, Harbour market, Deep woods and Royal gardens are our own designs. Which ground is buildable is still unknown, so the board only stops pieces overlapping. Path types over 500 tiles are flagged, never trimmed.</p>
+  </section>
+</main>
