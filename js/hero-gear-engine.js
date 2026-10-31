@@ -351,6 +351,58 @@
       return result;
     });
   }
+  // How close the gear is to what its own investment could be. Every resource already put
+  // into the included pieces is the budget; with { bag: true } the materials in the bag join
+  // it, which is what the gear could be after this round of upgrades. The greedy search of
+  // Spend now gets the whole budget from four starts: every piece back at level 0, each troop's
+  // own exact best split, the gear as it is with its XP free to move (reforge), and the gear
+  // as it is. From each start it spends whatever that start left over, across all troops, and
+  // the best layout wins. Epic pieces stay epic. The current gear is a candidate too, so the
+  // share never passes 100%.
+  function optimal(input, options) {
+    var state = normaliseState(input), budget = emptyCost(), counted = function (id) { return state.included[id.split('-')[0]]; };
+    var bag = options && options.bag ? copy(state.resources) : emptyCost();
+    Object.keys(state.pieces).forEach(function (id) {
+      if (!counted(id)) return;
+      var spent = invested(state.pieces[id]);
+      RES.forEach(function (r) { budget[r] += spent[r]; });
+    });
+    RES.forEach(function (r) { budget[r] += bag[r]; });
+    var zero = copy(state.pieces), split = copy(state.pieces);
+    Object.keys(zero).forEach(function (id) { if (counted(id)) zero[id] = zeroPiece(state.pieces[id]); });
+    bestSplit(state).forEach(function (set) { set.pieces.forEach(function (p) { split[p.id] = copy(p.to); }); });
+    var free = copy(state); free.resources = bag; free.reforge = true;
+    var starts = [zero, split, optimise(free).pieces, copy(state.pieces)];
+    var current = total(state.pieces, state), best = { score: current, pieces: copy(state.pieces) };
+    starts.forEach(function (start) {
+      var left = copy(budget), fits = true;
+      Object.keys(start).forEach(function (id) {
+        if (!counted(id)) return;
+        var used = invested(start[id]);
+        RES.forEach(function (r) { left[r] -= used[r]; });
+      });
+      RES.forEach(function (r) { if (left[r] < 0) fits = false; });
+      if (!fits) return;
+      var fresh = copy(state); fresh.pieces = start; fresh.resources = left; fresh.reforge = false;
+      var search = optimise(fresh);
+      if (search.score > best.score + 1e-8) best = { score: search.score, pieces: search.pieces };
+    });
+    var pieces = best.pieces;
+    Object.keys(state.pieces).forEach(function (id) { if (!counted(id)) pieces[id] = copy(state.pieces[id]); });
+    return {
+      budget: budget, current: current, score: best.score, share: best.score > 0 ? Math.min(1, current / best.score) : 1, pieces: pieces,
+      changes: Object.keys(pieces).filter(function (id) { return JSON.stringify(pieces[id]) !== JSON.stringify(state.pieces[id]); })
+    };
+  }
+  // Which priority profile the gear already fits best: its share of optimal under each one.
+  function profileFit(input) {
+    var state = normaliseState(input), out = {};
+    Object.keys(PROFILES).forEach(function (name) {
+      var trial = copy(state); trial.weights = copy(PROFILES[name]);
+      out[name] = optimal(trial).share;
+    });
+    return out;
+  }
   // A share link carries the twelve pieces and the priorities, nothing from the bag:
   // gear=m100.10-r120.11-… in troop then slot order, and w=<profile> or six custom weights.
   var LINK_QUALITY = { e: 'epic', m: 'mythic', r: 'red' };
@@ -412,7 +464,7 @@
     }
     return { spent: spent, left: left, pieces: now, steps: steps, points: kvkPoints(spent) };
   }
-  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, spendable: spendable, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, total: total, redPlans: redPlans, nearbyMilestones: nearbyMilestones, optimise: optimise, strategyComparison: strategyComparison, encodeLink: encodeLink, readLink: readLink, invested: invested, bestSet: bestSet, bestSplit: bestSplit };
+  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, spendable: spendable, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, total: total, redPlans: redPlans, nearbyMilestones: nearbyMilestones, optimise: optimise, strategyComparison: strategyComparison, encodeLink: encodeLink, readLink: readLink, invested: invested, bestSet: bestSet, bestSplit: bestSplit, optimal: optimal, profileFit: profileFit };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.HeroGear = api;
 })(typeof window !== 'undefined' ? window : globalThis);

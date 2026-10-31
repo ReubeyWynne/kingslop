@@ -10,39 +10,20 @@ self: gear
     {% include ascii/motif.html kind="helm" %}
   </section>
 
-  <section class="section sheet-bar" id="gear-sheet" aria-label="This sheet" data-i18n-key="gov.sheet.label" data-i18n-attr="aria-label">
-    <div class="sheet-bar-state">
-      <span class="sheet-kicker" data-i18n="gov.sheet.kicker">This sheet</span>
-      <p class="sheet-source" aria-live="polite"><strong id="gear-sheet-source"></strong> <span id="gear-sheet-hint"></span></p>
-    </div>
-    <p class="sheet-actions">
-      <button type="button" id="gear-share" data-kind="primary" data-i18n="gov.sheet.copy">Copy share link</button><span id="gear-share-status" class="gear-sr" role="status"></span>
-      <button type="button" id="gear-save-mine" data-kind="secondary" data-i18n="gov.sheet.saveMine" hidden>Save as mine</button>
-      <button type="button" id="gear-load-mine" data-kind="quiet" data-i18n="gov.sheet.loadMine" hidden>Load mine</button>
-      <button type="button" id="gear-blank" data-kind="quiet" data-i18n="gov.sheet.blank">Start blank</button>
-    </p>
-    <input type="url" id="gear-link" class="sheet-link" readonly hidden aria-label="Link to this sheet" data-i18n-key="gov.sheet.linkLabel" data-i18n-attr="aria-label">
-  </section>
+  <p class="sheet-notice" id="gear-sheet" hidden><span aria-live="polite"><strong id="gear-sheet-source"></strong> <span id="gear-sheet-hint"></span></span>
+    <button type="button" id="gear-save-mine" data-i18n="gov.sheet.saveMine">Save as mine</button>
+    <button type="button" id="gear-load-mine" data-i18n="gov.sheet.loadMine">Load mine</button>
+  </p>
 
   <section class="section gear-console" id="gear-forge" data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed" aria-label="Hero gear planner" data-i18n-key="gear.planner" data-i18n-attr="aria-label">
-    <div class="gear-rail gear-views" id="gear-views" data-module="tabs" data-tabs-bind="view" role="tablist" aria-label="Page section" data-i18n-key="gear.pageSection" data-i18n-attr="aria-label">
-      <button type="button" id="gear-view-gear" role="tab" aria-controls="gear-planner" aria-selected="true" data-view="gear" data-value="gear" data-action="tabs.select" data-i18n="gear.gearView">Gear</button>
-      <button type="button" id="gear-view-plan" role="tab" aria-controls="gear-planner" aria-selected="false" tabindex="-1" data-view="plan" data-value="plan" data-action="tabs.select" data-i18n="gear.planView">Plan</button>
-    </div>
     <div id="gear-planner" class="sheet-workspace">
       <div class="gear-editor sheet-side">
         <h2 data-i18n="gear.yourGear">Your gear</h2>
         <button type="button" id="gear-import" class="sheet-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="gear.drop.title">Read a hero gear screenshot</strong> <span data-i18n="gear.drop.body">Pick, drop or paste a hero’s gear screen. You check each piece’s level and mastery before they fill your gear.</span></button>
-        <div class="gear-rail" id="gear-troops" data-module="tabs" data-tabs-bind="troop" role="tablist" aria-label="Troop type" data-i18n-key="gear.troopType" data-i18n-attr="aria-label">
-          <button type="button" id="gear-tab-inf" role="tab" aria-controls="gear-editor-panel" aria-selected="true" data-troop="inf" data-value="inf" data-action="tabs.select" data-i18n="gear.inf">Infantry</button>
-          <button type="button" id="gear-tab-cav" role="tab" aria-controls="gear-editor-panel" aria-selected="false" tabindex="-1" data-troop="cav" data-value="cav" data-action="tabs.select" data-i18n="gear.cav">Cavalry</button>
-          <button type="button" id="gear-tab-arc" role="tab" aria-controls="gear-editor-panel" aria-selected="false" tabindex="-1" data-troop="arc" data-value="arc" data-action="tabs.select" data-i18n="gear.arc">Archer</button>
-        </div>
-        <div id="gear-editor-panel" role="tabpanel" aria-labelledby="gear-tab-inf">
-          <label class="gear-include"><input type="checkbox" id="gear-include" checked><span data-i18n="gear.include">include this troop in recommendations</span></label>
-          <div id="gear-rows" class="gear-grid"></div>
-          <small class="gear-edit-hint" data-i18n="gear.tapToEdit">tap a slot to edit</small>
-        </div>
+        <div id="gear-optimal" class="gear-optimal" aria-live="polite"></div>
+        <div id="gear-cards" class="gear-cards"></div>
+        <div id="gear-detail" class="gear-detail" hidden></div>
+        <div id="gear-optimal-rows" class="gear-result-grid gear-optimal-rows"></div>
         <div class="gear-bag" id="gear-bag">
       <label><img src="../img/hero-gear/xp-part-10.webp" width="40" height="40" alt=""><span data-i18n="gear.greenParts">10 XP parts</span><input id="gear-parts10" data-resource-part="ten" data-bind="heroGear.parts.ten" data-action="ledger-form.set ledger-form.normalize" type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0" aria-label="10 XP parts" data-i18n-key="gear.greenParts" data-i18n-attr="aria-label"></label>
       <label><img src="../img/hero-gear/xp-part-100.webp" width="40" height="40" alt=""><span data-i18n="gear.purpleParts">100 XP parts</span><input id="gear-parts100" data-resource-part="hundred" data-bind="heroGear.parts.hundred" data-action="ledger-form.set ledger-form.normalize" type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0" aria-label="100 XP parts" data-i18n-key="gear.purpleParts" data-i18n-attr="aria-label"></label>
@@ -51,44 +32,38 @@ self: gear
       <label><img src="../img/hero-gear/mithril.webp" width="40" height="40" alt=""><span data-i18n="gear.mithril">Mithril</span><input id="gear-mithril" data-resource="mithril" data-bind="inventory.mithril" data-action="ledger-form.set ledger-form.normalize" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Mithril" data-i18n-key="gear.mithril" data-i18n-attr="aria-label"></label>
     </div>
         <div class="gear-budget-caption"><span><span data-i18n="gear.xpTotal">XP total</span> <output id="gear-xp-total" data-bind="inventory.hero-gear-xp" data-unknown="0">0</output></span><span id="gear-save" data-target="ledger-form.save" role="status" data-i18n="gear.saved">saved on this device</span></div>
-        <div id="gear-preview" class="gear-preview"></div>
+        <p class="sheet-tools"><button type="button" id="gear-share" data-i18n="gov.sheet.copy">Copy share link</button><span id="gear-share-status" class="gear-sr" role="status"></span> <button type="button" id="gear-blank" data-i18n="gov.sheet.blank">Start blank</button></p>
+        <input type="url" id="gear-link" class="sheet-link" readonly hidden aria-label="Link to this sheet" data-i18n-key="gov.sheet.linkLabel" data-i18n-attr="aria-label">
       </div>
 
       <div class="gear-answer sheet-answer">
         <h2 data-i18n="gov.theAnswer">The answer</h2>
-        <div class="sheet-modes" id="gear-modes" data-module="tabs" data-tabs-bind="mode" role="tablist" aria-label="Planner mode" data-i18n-key="gear.mode" data-i18n-attr="aria-label">
-          <button type="button" id="gear-mode-plan" role="tab" aria-controls="gear-answer-panel" aria-selected="true" data-mode="plan" data-value="plan" data-action="tabs.select" data-i18n="gear.saveForRed">Save for red</button>
-          <button type="button" id="gear-mode-optimise" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-mode="optimise" data-value="optimise" data-action="tabs.select" data-i18n="gear.spendNow">Spend now</button>
-          <button type="button" id="gear-mode-milestones" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-mode="milestones" data-value="milestones" data-action="tabs.select" data-i18n="gear.pieceCosts">Piece costs</button>
-          <button type="button" id="gear-mode-split" role="tab" aria-controls="gear-answer-panel" aria-selected="false" tabindex="-1" data-mode="split" data-value="split" data-action="tabs.select" data-i18n="gear.splitMode">Best split</button>
+        <div id="gear-plan-share" class="gear-optimal" aria-live="polite"></div>
+        <div class="gear-settings">
+          <label class="gear-profile"><span class="sheet-label" data-i18n="gov.priority">Priority</span><select id="gear-profile">
+            <option value="growth" data-i18n="gear.growth">Early growth</option>
+            <option value="combat" data-i18n="gear.combat">Early combat</option>
+            <option value="gen4" data-i18n="gear.gen4">Generation 4+</option>
+            <option value="rally" data-i18n="gear.rallyProfile">Archer rally lead</option>
+            <option value="garrison" data-i18n="gear.garrisonProfile">Garrison lead</option>
+            <option value="equal" data-i18n="gear.equal">Equal stats</option>
+            <option value="custom" data-i18n="gear.custom">Custom</option>
+          </select></label>
+          <p id="gear-fit" class="gear-gloss gear-fit" hidden></p>
+          <label class="gear-include gear-reforge-option"><input id="gear-reforge" type="checkbox" checked><span data-i18n="gear.reforge">allow XP reforge on epic &amp; mythic gear</span></label>
         </div>
-        <div id="gear-answer-panel" role="tabpanel" aria-labelledby="gear-mode-optimise">
-          <div class="gear-priority" id="weights">
-            <label class="gear-profile"><span class="sheet-label" data-i18n="gov.priority">Priority</span><select id="gear-profile">
-              <option value="growth" data-i18n="gear.growth">Early growth</option>
-              <option value="combat" data-i18n="gear.combat">Early combat</option>
-              <option value="gen4" data-i18n="gear.gen4">Generation 4+</option>
-              <option value="rally" data-i18n="gear.rallyProfile">Archer rally lead</option>
-              <option value="garrison" data-i18n="gear.garrisonProfile">Garrison lead</option>
-              <option value="equal" data-i18n="gear.equal">Equal stats</option>
-              <option value="custom" data-i18n="gear.custom">Custom</option>
-            </select></label>
-            <div id="gear-weights" class="gear-weights" role="group" aria-labelledby="gear-weights-label"></div>
-            <label class="gear-include gear-reforge-option"><input id="gear-reforge" type="checkbox" checked><span data-i18n="gear.reforge">allow XP reforge on epic &amp; mythic gear</span></label>
-          </div>
-          <div id="gear-piece-select" class="gear-piece-select"><label><span data-i18n="gear.piece">Gear piece</span><select id="gear-selected"></select></label></div>
-          <div id="gear-goals" class="gear-goals">
-            <button type="button" data-goal="red" aria-pressed="false" data-i18n="gear.ascend">Ascend to red</button>
-            <button type="button" data-goal="mithril" aria-pressed="true" data-i18n="gear.nextMithril">Next mithril use</button>
-          </div>
-          <div id="gear-milestone-out" aria-live="polite"></div>
-          <div id="gear-optimise-panel" hidden>
-            <output id="gear-search-status" class="gear-search-status" role="status" hidden></output>
-            <button type="button" id="gear-run" class="gear-primary gear-action" data-i18n="gear.retryCalculation" hidden>retry calculation</button>
-            <div id="gear-results" aria-live="polite" aria-busy="false"></div>
-            <div id="gear-opportunities" aria-live="polite"></div>
-          </div>
-        </div>
+        <section class="gear-spend">
+          <h3 class="gear-subhead" data-i18n="gear.spendNow">Spend now</h3>
+          <output id="gear-search-status" class="gear-search-status" role="status" hidden></output>
+          <button type="button" id="gear-run" class="gear-primary gear-action" data-i18n="gear.retryCalculation" hidden>retry calculation</button>
+          <div id="gear-results" aria-live="polite" aria-busy="false"></div>
+        </section>
+        <section id="gear-saving" class="gear-saving"></section>
+        <details id="weights" class="gear-advanced">
+          <summary data-i18n="gear.advancedWeights">Advanced: custom weights</summary>
+          <div id="gear-weights-grid" class="gear-weights" role="group" aria-labelledby="gear-weights-label"></div>
+          <p class="gear-gloss" data-i18n="gear.weightsHint">Weights set how much each stat matters to you. They are priorities, not a forecast of battle damage.</p>
+        </details>
       </div>
     </div>
     <output id="gear-status" data-module="result-panel" data-target="result-panel.message" data-status-scope="hero-gear" role="status" hidden></output>
@@ -99,7 +74,7 @@ self: gear
   <section class="section gear-notes sheet-notes" id="theory">
     <details id="how-it-works">
       <summary data-i18n="gear.searchMethod">How the planner works</summary>
-      <p class="gear-gloss" data-i18n="gear.optimiseHint">The planner compares upgrades using the resources you enter and your priority weights. Costs are exact game values. Spend now searches for a strong set of upgrades but can miss the very best one; Best split checks every combination.</p>
+      <p class="gear-gloss" data-i18n="gear.optimiseHint">The planner compares upgrades using the resources you enter and your priority weights. Costs are exact game values. Spend now searches for a strong set of upgrades but can miss the very best one.</p>
     </details>
     <details id="ranking">
       <summary data-i18n="gear.scoreCostExplained">How choices are ranked</summary>
@@ -114,8 +89,8 @@ self: gear
       <p class="gear-gloss" data-i18n="gear.includesMastery">Each cost includes any missing mastery, the ascension and every imbuement on the way. Every piece is priced against the same bag.</p><p class="gear-gloss" data-i18n="gear.applyHint">After you upgrade in the game, mark the upgrades done. That saves the new levels and takes the cost out of your bag.</p>
     </details>
     <details id="best-split-method">
-      <summary data-i18n="gear.splitMethodTitle">How the best split works</summary>
-      <p class="gear-gloss" data-i18n="gear.splitMethod">A piece’s quality, red milestone and mastery set its cost in hammers, spare mythic gear and mithril. Every combination the set’s total can pay for is checked, then leftover XP goes where it adds the most stat per XP. Mastery, ascension and milestone choices are exact; levels can land a level or two off the true best. The score uses your build profile weights and leaves out conquest bonuses.</p><p class="gear-gloss" data-i18n="gear.splitRefund">The game can’t refund hammers, mithril or spare mythic gear, so treat this as a guide to where the next ones should go. XP can be reforged, and Spend now covers that.</p>
+      <summary data-i18n="gear.optimalMethodTitle">How % of optimal works</summary>
+      <p class="gear-gloss" data-i18n="gear.optimalMethod">Everything already spent on the counted pieces (XP, Forgehammers, spare mythic gear and mithril, worked out from each piece’s level, mastery and milestones) is added up. The planner starts those pieces from nothing and spends that total with the same search as Spend now, using your weights. % of optimal is your gear’s weighted stats against that result. The search can miss the very best layout, so read it as a strong guide, not a ceiling. To find it, the search also starts from your gear with its XP free to move, and from each troop’s exact best split, then spends what is left; the best of these counts.</p><p class="gear-gloss" data-i18n="gear.splitRefund">The game can’t refund hammers, mithril or spare mythic gear, so treat this as a guide to where the next ones should go. XP can be reforged, and Spend now covers that.</p>
     </details>
     <details id="maths">
       <summary data-i18n="gear.maths">The maths and sources</summary> <span id="maths-sources"></span>

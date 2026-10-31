@@ -6,10 +6,9 @@ const E = require('../js/hero-gear-engine.js');
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/gear-preview');
 const key = 'bh:hero-gear:v1';
-const workerBody = "importScripts('hero-gear-engine.js' + self.location.search);self.onmessage=e=>setTimeout(()=>self.postMessage({ok:true,result:self.HeroGear.strategyComparison(e.data)}),400);";
+const workerBody = "importScripts('hero-gear-engine.js' + self.location.search);self.onmessage=e=>setTimeout(()=>self.postMessage({ok:true,result:{now:self.HeroGear.optimise(e.data),optimal:self.HeroGear.optimal(e.data),planned:self.HeroGear.optimal(e.data,{bag:true})}}),400);";
 function fixture() {
   const state = E.defaults();
-  state.mode = 'optimise'; state.view = 'plan';
   state.reforge = false;
   state.included = { inf:false, cav:false, arc:true };
   state.resources = { xp:0, hammers:30, mythic:0, mithril:0 };
@@ -41,7 +40,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     let requests = 0;
     await page.route('**/js/hero-gear-worker.js**', route => route.fulfill({ contentType:'text/javascript', body:options.failFirst && requests++ === 0 ? 'self.onmessage=()=>self.postMessage({ok:false});' : workerBody }));
     await page.goto(url);
-    await page.locator('#gear-rows .gear-row').first().waitFor({ state:'attached' });
+    await page.locator('.gear-card .gear-row').first().waitFor({ state:'attached' });
   }
   async function ready() { await page.locator('#gear-apply-result').waitFor(); }
   async function saved() { return page.evaluate(() => window.PlayerLedger.shared().heroGear(window.HeroGear)); }
@@ -51,16 +50,18 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.ok(['true', 'false'].includes(await page.locator('#gear-results').getAttribute('aria-busy')), 'worker may finish before busy-state assertion');
     assert.equal(await page.locator('#gear-run').isVisible(), false);
     await ready();
-    assert.equal(await page.locator('[data-result-troop="arc"]').getAttribute('aria-pressed'), 'true');
+    // % of optimal comes from the same search: everything invested in archers, spent again.
+    assert.match(await page.locator('#gear-optimal .gear-headline').textContent(), /^\d+(\.\d)?%of optimal for what you’ve put in$/);
+    // The answer counts the bag too: your gear now, then after Spend now.
+    assert.match(await page.locator('#gear-plan-share .gear-headline').textContent(), /^\d+(\.\d)?%→\d+(\.\d)?%$/);
     assert.equal(await page.locator('#gear-record-hint').isVisible(), true);
     assert.equal(await page.locator('#gear-apply-result').getAttribute('aria-describedby'), 'gear-record-hint');
     assert.equal(await page.locator('.gear-change[data-direction="same"][data-changed="true"]').first().evaluate(el => getComputedStyle(el).opacity), '1');
     assert.equal(await page.locator('.gear-change').count(), 1, 'unchanged pieces do not create comparison rows');
     assert.equal(await page.locator('.gear-change .gear-item').count(), 2);
-    assert.match(await page.locator('.gear-kept').textContent(), /unchanged/);
-    await page.locator('#gear-mode-plan').click(); await page.locator('#gear-mode-optimise').click();
+    await page.locator('[data-open="arc"]').click(); await page.locator('#gear-detail .gear-back').click();
     await page.waitForTimeout(350);
-    assert.equal(await page.evaluate(() => window.__searches.length), 1, 'valid results survive tab navigation');
+    assert.equal(await page.evaluate(() => window.__searches.length), 1, 'valid results survive opening a troop');
     await page.locator('#gear-parts100').fill('20');
     await page.waitForFunction(() => window.__searches.length === 2);
     assert.equal(await page.locator('#gear-apply-result').count(), 0, 'old recommendations disappear on edit');
@@ -79,24 +80,23 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.evaluate(() => window.__searches.length), 1, 'saved Spend now recalculates after reload');
     await page.context().close();
 
-    const mobile = fixture(); mobile.view = 'gear';
-    await open(mobile);
-    await page.waitForTimeout(350);
-    assert.equal(await page.evaluate(() => window.__searches.length), 0, 'hidden mobile Plan does not start a search');
-    await page.locator('#gear-view-plan').click();
+    // On a phone the answer sits under your gear and searches straight away; the weights are an Advanced fold.
+    await open(fixture());
     await page.waitForFunction(() => window.__searches.length === 1);
-    await page.locator('#gear-view-gear').click();
-    assert.equal(await page.evaluate(() => window.__terminated), 1, 'leaving mobile Plan cancels work');
-    await page.locator('#gear-view-plan').click();
     await page.screenshot({ path:path.join(output, 'mobile-calculating.png') });
     await ready();
-    assert.equal(await page.evaluate(() => window.__searches.length), 2);
-    await page.locator('#gear-view-gear').click(); await page.locator('#gear-view-plan').click();
-    await page.waitForTimeout(350);
-    assert.equal(await page.evaluate(() => window.__searches.length), 2, 'returning to mobile Plan uses current results');
+    assert.equal(await page.locator('#weights').evaluate(el => el.open), false, 'weights start folded away');
+    await page.locator('#weights > summary').click();
     await page.locator('#gear-profile').selectOption('custom');
-    assert.equal(await page.locator('#weights').isVisible(), true, 'custom shows the weights beside the answer');
-    assert.equal(await page.locator('#gear-weights input').first().evaluate(el => el === document.activeElement), true);
+    assert.equal(await page.locator('#weights').evaluate(el => el.open), true, 'custom weights stay in view');
+    // A piece's sheet carries its next steps; one the bag can pay for is marked done there.
+    await page.context().close();
+    const step = fixture(); step.resources = E.cost(step.pieces['arc-helm'], E.milestone(step.pieces['arc-helm'], 'red'));
+    await open(step); await ready();
+    await page.locator('.gear-card [data-select="arc-helm"]').click();
+    await page.locator('#gear-edit-dialog .gear-step[data-goal="red"] [data-apply-goal]').click();
+    assert.equal((await saved()).pieces['arc-helm'].quality, 'red');
+    assert.deepEqual((await saved()).resources, { xp:0, hammers:0, mythic:0, mithril:0 });
     await page.context().close();
 
     for (const options of [{ failFirst:true }, { failConstructor:true }]) {
@@ -105,7 +105,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
       assert.match(await page.locator('#gear-search-status').textContent(), /couldn’t be worked out/);
       assert.equal(await page.locator('#gear-results').getAttribute('aria-busy'), 'false');
       const before = await saved(); const count = await page.evaluate(() => window.__searches.length);
-      await page.locator('#gear-mode-plan').click(); await page.locator('#gear-mode-optimise').click();
+      await page.locator('[data-open="arc"]').click(); await page.locator('#gear-detail .gear-back').click();
       await page.waitForTimeout(350);
       assert.equal(await page.evaluate(() => window.__searches.length), count, 'failed calculations do not retry in a loop');
       if (options.failFirst) await page.screenshot({ path:path.join(output, 'mobile-retry.png') });
@@ -123,14 +123,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
       if (empty === 'budget') {
         assert.match(await page.locator('.gear-empty').textContent(), /Enter your materials/);
         await page.screenshot({ path:path.join(output, 'mobile-empty-budget.png') });
-        await page.locator('.gear-empty [data-mode="plan"]').click();
-        assert.equal(await page.locator('#gear-mode-plan').getAttribute('aria-selected'), 'true');
       } else if (empty === 'troops') {
-        await page.locator('.gear-empty [data-view="gear"]').click();
-        assert.equal(await page.locator('.gear-editor').isVisible(), true);
+        assert.match(await page.locator('.gear-empty').textContent(), /troop/, 'says no troop is counted');
       } else {
         await page.locator('.gear-empty [data-show-weights]').click();
-        assert.equal(await page.locator('#weights').isVisible(), true, 'custom shows the weights beside the answer');
+        assert.equal(await page.locator('#weights').evaluate(el => el.open), true, 'the empty answer opens the weights');
       }
       await page.context().close();
     }
@@ -157,12 +154,6 @@ withBrowser({ root }, async ({ browser, origin }) => {
       await page.screenshot({ path:path.join(output, 'mobile-red-' + kind + '.png') });
       await page.setViewportSize({ width:1280,height:900 });
       await page.screenshot({ path:path.join(output, 'desktop-red-' + kind + '.png') });
-      await page.locator('#gear-mode-plan').click();
-      if (kind !== 'mastery') {
-        assert.ok(await page.locator('.gear-route[data-checkpoint] .gear-item[data-quality="red"]').count() > 0);
-        await page.setViewportSize({ width:390,height:844 });
-        await page.screenshot({ path:path.join(output, 'mobile-saving-' + kind + '.png') });
-      }
       await page.context().close();
     }
     await open(fixture(), { desktop: true }); await ready();
@@ -173,7 +164,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.evaluate(key => localStorage.getItem(key), key), legacySave);
     const sibling = await page.context().newPage();
     await sibling.goto(url);
-    await sibling.locator('#gear-rows .gear-row').first().waitFor({ state: 'attached' });
+    await sibling.locator('.gear-card .gear-row').first().waitFor({ state: 'attached' });
     await sibling.evaluate(() => window.PlayerLedger.shared().setBalance('mithril', 17));
     await page.waitForFunction(() => document.getElementById('gear-mithril').value === '17');
     await page.locator('#save-backups summary').click();
@@ -193,10 +184,10 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.locator('#gear-undo').click();
     assert.equal(await page.locator('#gear-hammers').inputValue(), '5');
     await page.reload();
-    await page.locator('#gear-rows .gear-row').first().waitFor({ state: 'attached' });
+    await page.locator('.gear-card .gear-row').first().waitFor({ state: 'attached' });
     assert.equal(await page.locator('#gear-hammers').inputValue(), '5');
     await sibling.close(); await page.context().close();
-    console.log('Automatic Spend now, cached tab navigation, debounced edits, cancelled searches, latest-result recording, undo/reload, mobile visibility, worker failure/retry, empty states, custom weights and mastery-only highlighting passed. Shared before/after rarity frames, enhancement/mastery overlays, changed-only rows and ascension/mithril/mastery checkpoint treatments passed.');
+    console.log('Automatic Spend now, results kept across the troop view, debounced edits, cancelled searches, latest-result recording, undo/reload, a piece’s next step marked done, worker failure/retry, empty states, folded custom weights and mastery-only highlighting passed. Shared before/after rarity frames, enhancement/mastery overlays, changed-only rows and ascension/mithril/mastery checkpoint treatments passed.');
   } catch (error) {
     if (page && !page.isClosed()) await page.screenshot({ path:path.join(output, 'interaction-failure.png'), fullPage:true });
     fs.writeFileSync(path.join(output, 'interaction-failure.txt'), error.stack); throw error;

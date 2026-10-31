@@ -252,15 +252,17 @@ a ledger held in memory, seeded from the link or from a copy of the save.
 mount, so the bag fields, backups, screenshot import, reset and undo all act on
 the sheet, and nothing typed there reaches `localStorage` until Save as mine.
 
-The "This sheet" bar says which it is: your save ("Changes save as you go."), a
-shared sheet, a blank sheet or an unreadable link ("Your save is untouched.").
-**Copy share link** copies `?gear=…&w=…`. `gear` lists the twelve pieces in troop
+On your save there is no bar: edits save as you go. On a sheet one slim notice
+above the workspace says which it is (a shared sheet, a blank sheet or an
+unreadable link, "Your save is untouched.") with Save as mine and Load mine
+beside it. **Copy share link** and **Start blank** are small links under your
+gear. **Copy share link** copies `?gear=…&w=…`. `gear` lists the twelve pieces in troop
 then slot order as quality letter, total level and mastery (`m100.10`, `r120.11`,
 `e80.0`); `w` is a profile name or six custom weights. A link carries no
 resources, so a shared link never shows the sender's bag. On a sheet the address
 bar follows every edit, so it is always the shareable link. Malformed or
 impossible pieces reject the whole link, and the sheet starts blank with that
-said in the bar. **Load mine** goes back to your save, **Start blank** opens a
+said in the notice. **Load mine** goes back to your save, **Start blank** opens a
 link of blank gear, and **Save as mine** asks first, then writes the sheet's
 pieces, build profile and weights to your save; a material the sheet left at 0
 keeps your number. Governor gear works the same way.
@@ -304,3 +306,41 @@ sources, and your save and backups. The shipped ids still work: a link to
 `#best-split-method`, `#maths`, `#maths-sources` or `#save-backups` opens its
 fold, and `#weights` lands on the weights. Without JavaScript the folds open
 as usual.
+
+## Cards, one answer and % of optimal — 31 October 2026
+
+The modes and nested tabs are gone. **Your gear** is three troop cards, each a
+2×2 grid of its pieces; a card opens that troop laid out as the game does (helm
+and chest on the left, gloves and boots on the right, its share of optimal in
+the middle) with its "count in the answer" box. A piece opens one sheet: its
+quality, level and mastery, then what its next steps cost (ascend to red first,
+then the next mithril use), each with "mark this upgrade done" when the bag pays
+for it. That replaces the Piece costs mode.
+
+**% of optimal** (`HeroGear.optimal`) is shown twice:
+
+- Under your gear, without the bag: every resource already invested in the
+  counted pieces is the budget, and the gear is compared with the best layout of
+  that budget. "Show optimal gear" swaps the cards to that layout and lists each
+  moved piece as now → optimal.
+- At the top of the answer, with the bag added to the budget: your gear now →
+  after Spend now, so a player sees how far off they were and how close this
+  round of upgrades gets them.
+
+The best layout is found by the same greedy search as Spend now (`optimise`),
+which spends the budget from four starts: every piece at level 0, each troop's
+exact best split (`bestSplit`, which pools within a troop), the gear as it is
+with its XP free to move, and the gear as it is. From each start it spends what
+that start left, across all troops; the best result counts, and the gear itself
+is a candidate, so the share never passes 100%. Greedy from level 0 alone
+scored below some real gear (704 vs 745 on the supplied six-overview set), which
+is why the other starts are there. Shares are rounded down to a tenth so gear
+short of optimal never reads 100%.
+
+The priority (build profile) and XP reforge sit in the answer above Spend now.
+The worker also scores the gear's share of optimal under every profile
+(`profileFit`) and, when another profile fits better than the chosen one, offers
+it in one line with a "Use it" button. Custom weights are the Advanced fold
+(`#weights`). **Worth saving for** lists `redPlans` routes, red a little out of
+reach ranked by gain per cost, with what each is short; a route opens its
+piece's sheet. Old links to `#best-split-method` open "How % of optimal works".

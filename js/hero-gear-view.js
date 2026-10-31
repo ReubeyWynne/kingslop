@@ -245,6 +245,7 @@
       theoryLink: theoryLink,
       kvkNote: kvkNote,
       pieceInfo: pieceInfo,
+      beforeAfter: beforeAfter,
       comparison: comparison,
       fullLevel: fullLevel,
       levelLabel: levelLabel,

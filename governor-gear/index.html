@@ -10,26 +10,11 @@ self: governor
     {% include ascii/motif.html kind="seal" %}
   </section>
 
-  <section class="section sheet-bar" id="governor-sheet" data-module="governor-sheet" data-screen-import-sheet="governor" aria-label="This sheet" data-i18n-key="gov.sheet.label" data-i18n-attr="aria-label">
-    <div class="sheet-bar-state">
-      <span class="sheet-kicker" data-i18n="gov.sheet.kicker">This sheet</span>
-      <p class="sheet-source" aria-live="polite"><strong data-target="governor-sheet.source"></strong> <span data-target="governor-sheet.hint"></span></p>
-    </div>
-    <p class="sheet-actions">
-      <button type="button" data-kind="primary" data-action="governor-sheet.copy" data-i18n="gov.sheet.copy">Copy share link</button>
-      <button type="button" data-kind="secondary" data-action="governor-sheet.saveMine" data-target="governor-sheet.saveMine" data-i18n="gov.sheet.saveMine" hidden>Save as mine</button>
-      <button type="button" data-kind="quiet" data-action="governor-sheet.loadMine" data-target="governor-sheet.loadMine" data-i18n="gov.sheet.loadMine" hidden>Load mine</button>
-      <button type="button" data-kind="quiet" data-action="governor-sheet.blank" data-target="governor-sheet.blank" data-i18n="gov.sheet.blank" hidden>Start blank</button>
+  <section class="section gov-console" id="governor-planner" data-module="governor-sheet" data-screen-import-sheet="governor" aria-label="Governor planner" data-i18n-key="gov.planner" data-i18n-attr="aria-label">
+    <p class="sheet-notice" id="governor-sheet" data-target="governor-sheet.notice" hidden><span aria-live="polite"><strong data-target="governor-sheet.source"></strong> <span data-target="governor-sheet.hint"></span></span>
+      <button type="button" data-action="governor-sheet.saveMine" data-target="governor-sheet.saveMine" data-i18n="gov.sheet.saveMine" hidden>Save as mine</button>
+      <button type="button" data-action="governor-sheet.loadMine" data-target="governor-sheet.loadMine" data-i18n="gov.sheet.loadMine" hidden>Load mine</button>
     </p>
-    <input class="sheet-link" type="url" readonly hidden data-target="governor-sheet.link" aria-label="Link to this sheet" data-i18n-key="gov.sheet.linkLabel" data-i18n-attr="aria-label">
-    <dialog class="gov-dialog sheet-confirm" data-target="governor-sheet.confirm" aria-labelledby="gov-confirm-title">
-      <h2 id="gov-confirm-title" data-i18n="gov.sheet.confirmTitle">Save this sheet as yours?</h2>
-      <p data-i18n="gov.sheet.confirmBody">It replaces the governor levels in your save. A material this sheet has not counted keeps your number.</p>
-      <p class="sheet-confirm-actions"><button type="button" data-action="governor-sheet.cancel" data-i18n="gov.sheet.cancel">cancel</button> <button type="button" data-action="governor-sheet.confirm" data-i18n="gov.sheet.confirm">replace my levels</button></p>
-    </dialog>
-  </section>
-
-  <section class="section gov-console" id="governor-planner" aria-label="Governor planner" data-i18n-key="gov.planner" data-i18n-attr="aria-label">
     <div class="sheet-workspace">
       <div class="gov-left sheet-side">
         <h2 data-i18n="gov.theGovernor">The governor</h2>
@@ -41,6 +26,8 @@ self: governor
           {% endfor %}
           <p class="gov-bag-caption"><span data-i18n="gov.bagSheet">blank means not counted yet</span> <output data-target="ledger-form.save" role="status"></output></p>
         </div>
+        <p class="sheet-tools"><button type="button" data-action="governor-sheet.copy" data-i18n="gov.sheet.copy">Copy share link</button> <button type="button" data-action="governor-sheet.blank" data-target="governor-sheet.blank" data-i18n="gov.sheet.blank" hidden>Start blank</button></p>
+        <input class="sheet-link" type="url" readonly hidden data-target="governor-sheet.link" aria-label="Link to this sheet" data-i18n-key="gov.sheet.linkLabel" data-i18n-attr="aria-label">
       </div>
 
       <div class="gov-answer sheet-answer" data-module="governor-planner" data-art="../img/governor/" id="gov-answer">
@@ -79,6 +66,11 @@ self: governor
       </div>
     </div>
     <output class="gov-status" hidden aria-live="polite" data-module="result-panel" data-status-scope="governor" data-target="result-panel.message"></output>
+    <dialog class="gov-dialog sheet-confirm" data-target="governor-sheet.confirm" aria-labelledby="gov-confirm-title">
+      <h2 id="gov-confirm-title" data-i18n="gov.sheet.confirmTitle">Save this sheet as yours?</h2>
+      <p data-i18n="gov.sheet.confirmBody">It replaces the governor levels in your save. A material this sheet has not counted keeps your number.</p>
+      <p class="sheet-confirm-actions"><button type="button" data-action="governor-sheet.cancel" data-i18n="gov.sheet.cancel">cancel</button> <button type="button" data-action="governor-sheet.confirm" data-i18n="gov.sheet.confirm">replace my levels</button></p>
+    </dialog>
     <noscript><p data-i18n="gov.noJS">Enable JavaScript to use the planner. The cost tables below remain available.</p></noscript>
   </section>
 
