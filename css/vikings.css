@@ -93,6 +93,8 @@
 .vv-counts span { white-space:nowrap; }
 .vv-marches { border-top:1px solid color-mix(in srgb,var(--ink-muted) 35%,transparent); }
 .vv-march { display:grid; grid-template-columns:1.6rem 48px minmax(0,1fr); gap:.7rem; align-items:center; border-bottom:1px solid color-mix(in srgb,var(--ink-muted) 35%,transparent); padding:.6rem 0; }
+.vv-slot { width:48px; height:48px; border:1px dashed color-mix(in srgb,var(--ink-muted) 60%,transparent); border-radius:2px; }
+.vv-march-empty .vv-march-head strong { color:var(--ink-dim); font-weight:400; }
 .vv-march img { width:48px; height:48px; object-fit:contain; }
 .vv-march .vv-caption { margin:.35rem 0 0; }
 .vv-march-main { min-width:0; }

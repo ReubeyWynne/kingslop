@@ -318,11 +318,25 @@
       if (p) { var out = button('Not this time', 'notIn', {}, 'vv-secondary'); out.dataset.mutation = ''; a.appendChild(out); }
       f.appendChild(a);
     }
+    // Signed up, nothing set yet: show what you're bringing and the empty queues, so the tab has the same shape it will have.
+    function waiting(body, p) {
+      var lede = el('p', 'vv-lede', isManager() ? 'Not set yet.' : 'Not set yet. Your leader will fill these in before ' + when() + '.');
+      body.appendChild(lede);
+      if (isManager()) { var a = el('div', 'vv-actions'); a.appendChild(button('Set my marches', 'assign', { id: p.id }, 'vv-primary')); body.appendChild(a); }
+      var list = el('div', 'vv-marches');
+      for (var q = 1; q <= (p.marches || 0); q++) {
+        var n = el('div', 'vv-march vv-march-empty'), info = el('div', 'vv-march-main'), head = el('div', 'vv-march-head');
+        n.appendChild(el('span', 'vv-queue', q)); n.appendChild(el('span', 'vv-slot'));
+        head.appendChild(el('strong', '', 'Not set')); head.appendChild(el('span', 'vv-dim', 'up to ' + kfmt((p.capacities && p.capacities[q - 1]) || p.marchCapacity)));
+        info.appendChild(head); n.appendChild(info); list.appendChild(n);
+      }
+      body.appendChild(list);
+    }
     function marchesFor(body, p, mine) {
       var rows = (state.assignments[p.id] || []).filter(function (r) { return r.destination && total(r); });
       var used = { infantry: 0, cavalry: 0, archers: 0 }; rows.forEach(function (r) { TYPES.forEach(function (k) { used[k] += r[k]; }); });
       var home = {}; TYPES.forEach(function (k) { home[k] = Math.max(0, p[k] - used[k]); });
-      if (!rows.length) { body.appendChild(el('p', 'vv-lede', isManager() ? 'Set yours on the Alliance tab.' : 'Your leader hasn’t set your marches yet.')); return; }
+      if (!rows.length) { waiting(body, p); return; }
       body.appendChild(el('p', 'vv-lede', kfmt(total(used)) + ' out' + (total(home) ? ' · ' + kfmt(total(home)) + ' stay home' : '')));
       var list = el('div', 'vv-marches'); rows.forEach(function (r) { marchRow(r, name(r.destination), list); }); body.appendChild(list);
       var headquarters = E.hqRows(state.hq || E.emptyHQ()).find(function (r) { return r.playerId === p.id; });
@@ -355,8 +369,11 @@
       if (mine.attending === false) {
         body.appendChild(el('h2', '', 'You’re out for ' + when())); var a = el('div', 'vv-actions'), back = button('I’m in after all', 'imIn', {}, 'vv-primary'); back.dataset.mutation = ''; a.appendChild(back); body.appendChild(a); return;
       }
-      var head = el('div', 'vv-heading'); head.appendChild(el('h2', '', 'Your marches')); var tools = el('div', 'vv-actions vv-tight'); tools.appendChild(button('My troops', 'editMine', {}, 'vv-quiet')); var out = button('Can’t make it', 'notIn', {}, 'vv-quiet'); out.dataset.mutation = ''; tools.appendChild(out); head.appendChild(tools); body.appendChild(head);
+      body.appendChild(el('h2', '', 'Your marches'));
       marchesFor(body, mine, true);
+      var bring = el('div', 'vv-section'), top = el('div', 'vv-heading'); top.appendChild(el('h3', '', 'You’re bringing')); top.appendChild(button('Edit', 'editMine', {}, 'vv-quiet')); bring.appendChild(top);
+      bring.appendChild(counts(mine)); bring.appendChild(el('p', 'vv-caption', mine.marches + ' marches' + (mine.capacities && mine.capacities.length ? '' : ' · up to ' + kfmt(mine.marchCapacity) + ' each'))); body.appendChild(bring);
+      var leave = el('div', 'vv-actions'), out = button('Can’t make it', 'notIn', {}, 'vv-secondary'); out.dataset.mutation = ''; leave.appendChild(out); body.appendChild(leave);
     }
     function ago(iso) {
       var t = Date.parse(iso); if (!t) return '';
