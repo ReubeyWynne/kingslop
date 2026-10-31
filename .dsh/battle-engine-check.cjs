@@ -20,7 +20,7 @@ for (let tier = 1; tier <= E.TIERS; tier++) {
 }
 assert.deepEqual([E.baseAtk(0, 6, 0), E.baseHea(0, 6, 0)], [243, 730]);
 assert.deepEqual([E.baseAtk(2, 11, 5), E.baseHea(2, 11, 5)], [2865, 493]);
-assert.deepEqual([E.baseAtk(0, 99, 99), E.baseAtk(0, 0, -1)], [E.baseAtk(0, 11, 5), E.baseAtk(0, 1, 0)], 'tier and TG clamp to the table');
+assert.deepEqual([E.baseAtk(0, 99, 99), E.baseAtk(0, 0, -1)], [E.baseAtk(0, 11, 8), E.baseAtk(0, 1, 0)], 'tier and TG clamp to the table');
 
 // Second troop skills arrive with T7 (or TG3), the bear panel's line.
 assert.equal(E.hasSecondSkill(6, 0), false);

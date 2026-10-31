@@ -415,6 +415,9 @@ jobs:
       - name: Check battle engine
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/battle-engine-check.cjs
+      - name: Check hero skills in battle
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/combat-check.cjs
       - name: Check Castle Battle hero data
         if: needs.changes.outputs.logic == 'true'
         run: node --test .dsh/castle-battle-check.cjs

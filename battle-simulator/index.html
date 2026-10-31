@@ -12,6 +12,8 @@ self: sim
 {%- assign types = "inf|sim.calc.inf|Infantry|infantry,cav|sim.calc.cav|Cavalry|cavalry,arc|sim.calc.arc|Archery|archer" | split: "," -%}
 {%- assign sides = "you|sim-,foe|sim-foe-" | split: "," -%}
 {%- assign stats = "atk|sim.calc.atk|Attack %|attack|atk,let|sim.calc.let|Lethality %|lethality|leth,def|sim.load.def|Defense %|defense|def,hea|sim.load.hea|Health %|health|hp" | split: "," -%}
+{%- comment -%} The heroes that fight (_data/combat.json heroSkills), newest generation first. {%- endcomment -%}
+{%- assign fighters = site.data.heroes.heroes | sort: "generation" | reverse -%}
 
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
   <a href="#console" data-i18n="sim.nav.console">The console</a>
@@ -22,10 +24,8 @@ self: sim
   <section class="section hero" id="top">
     <h1 data-i18n-html="sim.hero.h1">BATTLE SIMULATOR,<br><span class="accent">DEMYSTIFIED</span></h1>
     <details id="community-model" class="sim-why sim-model">
-      <summary data-i18n="sim.review.model">Community model · heroes not included</summary>
-    <p class="draft-note" data-i18n-html="sim.hero.alpha">a <b>community model</b>, not the game's own code — the
-      battle engine is the one the Frakinator reverse-engineered and tested against real reports. heroes aren't in
-      it yet, so read a hero fight as a starting point.</p>
+      <summary data-i18n="sim.review.model">Community model · hero skills included</summary>
+    <p class="draft-note" data-i18n-html="sim.hero.alpha">a <b>community model</b>, not the game's own code — the battle engine is the one the Frakinator reverse-engineered and tested against real reports, and the hero skills are the KingShot Battle Helper's tested data. A few skill codes and the Truegold chances are still unconfirmed, so read a close fight as a starting point.</p>
     </details>
     <p class="lede" data-i18n-html="sim.hero.lede">The maths of your battles, in one place. Read a report once and
       the same numbers answer every fight: your lead's <b>bear ratio</b>, your own <b>bear march</b>, the
@@ -99,6 +99,10 @@ self: sim
               </button>
               {%- endfor %}
             </div>
+            <button type="button" class="army-heroes sim-for" data-for="fight" hidden data-action="sim-army.edit" data-dialog="sim-heroes-{{ sd[0] }}">
+              <span class="army-heroes-label" data-i18n="sim.heroes.title">Heroes</span>
+              <span class="army-heroes-sum" id="{{ sd[1] }}heroes-sum" data-i18n="sim.heroes.none">none yet — add them</span>
+            </button>
             {%- if sd[0] == 'you' %}
             <p class="calc-out sim-total sim-for" data-for="march" id="sim-total" hidden></p>
             <!-- Your stats and troops in the shared player save (js/sim-player.js, troop-roster) -->
@@ -315,9 +319,7 @@ self: sim
             <p class="note" data-i18n-html="sim.mystic.fixed"><b>Five of the six rooms fix your troops at Level 10</b> —
               training more won't clear them; upgrading the system they check will. Only the <b>Coliseum</b> and the
               <b>Radiant Spire</b> let you pick your heroes.</p>
-            <p class="note" data-i18n-html="sim.mystic.heroes">The engine has <b>no heroes</b>, so it is exact for the four
-              hero-less rooms. For the <b>Coliseum</b> and the <b>Radiant Spire</b>, try fewer enemy troops in the same
-              proportions — it points at a mix, it doesn't promise a clear.</p>
+            <p class="note" data-i18n-html="sim.mystic.heroes">Add your heroes under <b>Heroes</b> for the <b>Coliseum</b> and the <b>Radiant Spire</b>; the four hero-less rooms need none. The stage's own heroes aren't known, so leave theirs empty — it points at a mix, it doesn't promise a clear.</p>
             <p class="note" data-i18n-html="sim.mystic.attempts">Five attempts per room per day, refreshed at
               <b>00:00 UTC</b> — and an attempt is only spent on a <b>loss</b>. Clear <b>Stages 1–10</b> in a room and its
               <b>Raid</b> opens: <b>+10 Trial Crystals</b> a stage, every week.</p>
@@ -327,9 +329,7 @@ self: sim
               Wed–Thu window as the Forest of Life; older notes list the pets alone. The event screen is the tiebreaker.</p>
           </details>
           <div class="sim-for" data-for="battle" hidden>
-            <p class="note" data-i18n-html="sim.battle.heroes"><b>Heroes are not in it yet.</b> Their stats already sit in
-              a report's Bonus Details, so a beast or a scouted march reads close — but their skills don't, and a skill-heavy
-              lineup can swing the fight either way.</p>
+            <p class="note" data-i18n-html="sim.battle.heroes"><b>Pick each side's heroes</b> under its army. Only their skills are added — their stats are already in the report's Bonus Details. Joiners count in a rally or a garrison, four at most.</p>
           </div>
         </div>
       </div>
@@ -372,7 +372,7 @@ self: sim
           <label class="sim-field"><span data-i18n="sim.dmg.thTier">tier</span>
             <select id="{{ sd[1] }}tier-{{ tp[0] }}"{% if sd[0] == 'you' %} data-player-march="tier" data-troop="{{ tp[0] }}"{% endif %}>{% for i in (1..11) %}<option value="{{ i }}"{% if i == 10 %} selected{% endif %}>T{{ i }}</option>{% endfor %}</select></label>
           <label class="sim-field"><span data-i18n="sim.dmg.thTg">TG</span>
-            <select id="{{ sd[1] }}tg-{{ tp[0] }}"{% if sd[0] == 'you' %} data-player-march="tg" data-troop="{{ tp[0] }}"{% endif %}>{% for i in (0..5) %}<option value="{{ i }}">TG{{ i }}</option>{% endfor %}</select></label>
+            <select id="{{ sd[1] }}tg-{{ tp[0] }}"{% if sd[0] == 'you' %} data-player-march="tg" data-troop="{{ tp[0] }}"{% endif %}>{% for i in (0..8) %}<option value="{{ i }}">TG{{ i }}</option>{% endfor %}</select></label>
         </fieldset>
         <fieldset class="sim-troop-stats">
           <legend data-i18n="sim.army.stats">Bonus Details</legend>
@@ -387,6 +387,52 @@ self: sim
       <p class="note sim-for" data-for="bear" data-i18n-html="sim.army.bearNote"><b>Defense</b> and <b>health</b> never
         move a bear fight, so a bear report only needs attack and lethality here.</p>
       {%- endif %}
+    </dialog>
+    {%- endfor %}
+
+    {%- comment -%} A side's heroes: three leads and four joiners. js/sim.js reads them by id; only their skills enter the fight. {%- endcomment -%}
+    {%- for side in sides %}{% assign sd = side | split: "|" %}
+    <dialog class="sim-dialog sim-heroes" id="sim-heroes-{{ sd[0] }}" aria-labelledby="sim-heroes-{{ sd[0] }}-title">
+      <div class="sim-dialog-head">
+        <h2 id="sim-heroes-{{ sd[0] }}-title" data-i18n="sim.heroes.{{ sd[0] }}Title">{% if sd[0] == 'foe' %}Their heroes{% else %}Your heroes{% endif %}</h2>
+        <button type="button" data-action="sim-army.close" data-i18n="sim.army.done">done</button>
+      </div>
+      <p class="sim-gloss" data-i18n-html="sim.heroes.lede">Only their <b>skills</b> are added. A hero's stats and exclusive
+        gear stats are already in the report's Bonus Details.</p>
+      {%- if sd[0] == 'you' %}
+      <label class="sim-field sim-role"><span data-i18n="sim.heroes.role">The fight</span>
+        <select id="sim-fight-role">
+          <option value="solo" data-i18n="sim.heroes.roleSolo">Field fight — no joiners</option>
+          <option value="rally" data-i18n="sim.heroes.roleRally">You rally their garrison</option>
+          <option value="defender" data-i18n="sim.heroes.roleDefend">You hold against their rally</option>
+        </select></label>
+      {%- endif %}
+      <fieldset class="sim-hero-set">
+        <legend data-i18n="sim.heroes.leads">Leads</legend>
+        {%- for t in types %}{% assign tp = t | split: "|" %}
+        <div class="sim-hero-row">
+          <label class="sim-field sim-hero-pick"><span data-i18n="{{ tp[1] }}">{{ tp[2] }}</span>
+            <select id="{{ sd[1] }}hero-{{ tp[0] }}"><option value="" data-i18n="sim.heroes.empty">no hero</option>{% for h in fighters %}{% if h.type == tp[0] and site.data.combat.heroSkills[h.key] %}<option value="{{ h.key }}">{{ h.name }}</option>{% endif %}{% endfor %}</select></label>
+          <label class="sim-field"><span data-i18n="sim.heroes.level">skill level</span>
+            <select id="{{ sd[1] }}hero-lv-{{ tp[0] }}">{% for i in (1..5) %}<option value="{{ i }}"{% if i == 5 %} selected{% endif %}>{{ i }}</option>{% endfor %}</select></label>
+          <label class="sim-field"><span data-i18n="sim.heroes.gear">gear level</span>
+            <select id="{{ sd[1] }}hero-gear-{{ tp[0] }}">{% for i in (0..10) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}</select></label>
+        </div>
+        {%- endfor %}
+      </fieldset>
+      <fieldset class="sim-hero-set">
+        <legend data-i18n="sim.heroes.joiners">Joiners</legend>
+        <p class="sim-gloss" data-i18n-html="sim.heroes.joinLede">Their <b>first skill</b> only, and four at most: the
+          highest skill levels count. Joiners fight only in a rally or a garrison.</p>
+        {%- for i in (1..4) %}
+        <div class="sim-hero-row">
+          <label class="sim-field sim-hero-pick"><span data-i18n="sim.heroes.joiner">joiner</span>
+            <select id="{{ sd[1] }}join-{{ i }}"><option value="" data-i18n="sim.heroes.empty">no hero</option>{% for h in fighters %}{% if site.data.combat.heroSkills[h.key] %}<option value="{{ h.key }}">{{ h.name }}</option>{% endif %}{% endfor %}</select></label>
+          <label class="sim-field"><span data-i18n="sim.heroes.level">skill level</span>
+            <select id="{{ sd[1] }}join-lv-{{ i }}">{% for l in (1..5) %}<option value="{{ l }}"{% if l == 5 %} selected{% endif %}>{{ l }}</option>{% endfor %}</select></label>
+        </div>
+        {%- endfor %}
+      </fieldset>
     </dialog>
     {%- endfor %}
 
@@ -465,9 +511,7 @@ self: sim
     <p class="note" data-i18n-html="sim.maths.mystic">The Mystic Trial starting ratios are <b>community tables</b>
       (Kingshot Mastery), not extracted formulas — the sweep is what tests them against your stage. The battle
       engine and the bear maths are the Frakinator's.</p>
-    <p class="note" data-i18n-html="sim.maths.note">Hero skills are the piece still missing: an all-troop buff cancels
-      out of a bear split, a <b>type-specific</b> one moves it, and in a battle every skill counts. Until heroes land,
-      treat a hero fight's answer as a starting point.</p>
+    <p class="note" data-i18n-html="sim.maths.note">Hero skills ride on every hit as <b>SkillMod</b>: your damage up and their defence down, divided by their defence up and your damage down. Within one kind of effect the percentages add; across kinds they multiply. In a bear split an all-troop buff still cancels out, so the bear modes leave heroes out.</p>
       </div>
   </section>
 </main>
