@@ -216,3 +216,27 @@ ul.import-gloss li + li { margin-top: 0.15rem; }
 .import-grid[data-layout="table"] .import-include { padding: 0.2rem 0 0.2rem 0.1rem; }
 .import-gloss a { color: var(--amber); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
 .import-gloss a:hover, .import-gloss a:focus-visible { color: var(--ink); }
+
+/* A Governor Profile reviews as the game lays it out: each piece's card, then
+   its three charms, four to a line. */
+.import-grid[data-layout="pieces"] { grid-template-columns: 1.3fr repeat(3, minmax(0, 1fr)); gap: 0.3rem 0.5rem; }
+.import-grid[data-layout="pieces"] .import-tile { grid-template-columns: minmax(0, 1fr) auto; align-content: start; padding: 0.4rem 0 0.3rem; }
+.import-grid[data-layout="pieces"] .import-tile img { width: 100%; aspect-ratio: 1; object-fit: contain; }
+.import-grid[data-layout="pieces"] .import-field { flex-direction: column; align-items: stretch; gap: 0.15rem; }
+.import-grid[data-layout="pieces"] .import-name { font-size: 0.75rem; }
+.import-grid[data-layout="pieces"] .import-field input { width: 100%; flex: none; }
+.import-grid[data-layout="pieces"] .import-include { align-self: end; padding: 0.2rem 0 0.2rem 0.1rem; }
+
+/* Hero gear reviews a piece to a line: its tile once, enhancement and forge
+   mastery beside it. */
+.import-grid[data-layout="gear"] { grid-template-columns: 5.5rem repeat(2, minmax(0, 1fr)); gap: 0 0.7rem; align-items: center; }
+.import-grid[data-layout="gear"] .import-crop { grid-column: auto; display: grid; gap: 0.15rem; padding: 0.5rem 0 0.4rem; }
+.import-grid[data-layout="gear"] .import-crop img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+.import-crop-name { color: var(--ink-dim); font-size: 0.8rem; line-height: 1.2; }
+.import-crop-name:empty { display: none; }
+.import-grid[data-layout="gear"] .import-tile { grid-template-columns: minmax(0, 1fr) auto; align-content: end; padding: 0.5rem 0 0.4rem; border-top: 1px solid rgba(157, 149, 127, 0.25); }
+.import-grid[data-layout="gear"] .import-tile[data-state="doubt"] { border-top-color: var(--amber); }
+.import-grid[data-layout="gear"] .import-field { flex-direction: column; align-items: stretch; gap: 0.2rem; }
+.import-grid[data-layout="gear"] .import-note { font-size: 0.8rem; }
+.import-grid[data-layout="gear"] .import-field input { width: 100%; flex: none; font-size: 1.15rem; }
+.import-grid[data-layout="gear"] .import-include { align-self: end; padding: 0.2rem 0 0.2rem 0.2rem; }

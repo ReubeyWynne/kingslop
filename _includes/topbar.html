@@ -14,7 +14,8 @@
       <button type="button" id="lang-btn" class="lang-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Language" data-i18n-key="ui.lang" data-i18n-attr="aria-label">
         <svg class="flag" viewBox="0 0 50 30" aria-hidden="true"><clipPath id="t"><path d="M25,15h25v15zv15h-25zh-25v-15zv-15h25z"/></clipPath><path d="M0,0v30h50v-30z" fill="#012169"/><path d="M0,0 50,30M50,0 0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 50,30M50,0 0,30" clip-path="url(#t)" stroke="#C8102E" stroke-width="4"/><path d="M-1 11h22v-12h8v12h22v8h-22v12h-8v-12h-22z" fill="#C8102E" stroke="#FFF" stroke-width="2"/></svg>
       </button>
-      <ul id="lang-menu" class="lang-menu" role="listbox" aria-label="Language" data-i18n-key="ui.lang" data-i18n-attr="aria-label" hidden>
+      <div id="lang-menu" class="lang-menu" hidden>
+      <ul class="lang-list" role="listbox" aria-label="Language" data-i18n-key="ui.lang" data-i18n-attr="aria-label">
         <li role="option" tabindex="-1" data-lang="en" aria-selected="true"><svg class="flag" viewBox="0 0 50 30" aria-hidden="true"><clipPath id="t2"><path d="M25,15h25v15zv15h-25zh-25v-15zv-15h25z"/></clipPath><path d="M0,0v30h50v-30z" fill="#012169"/><path d="M0,0 50,30M50,0 0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 50,30M50,0 0,30" clip-path="url(#t2)" stroke="#C8102E" stroke-width="4"/><path d="M-1 11h22v-12h8v12h22v8h-22v12h-8v-12h-22z" fill="#C8102E" stroke="#FFF" stroke-width="2"/></svg><span>English</span></li>
         <li role="option" tabindex="-1" data-lang="es" aria-selected="false"><svg class="flag" viewBox="0 0 50 30" aria-hidden="true"><rect width="50" height="30" fill="#AA151B"/><rect y="7.5" width="50" height="15" fill="#F1BF00"/></svg><span>Español</span></li>
         <li role="option" tabindex="-1" data-lang="pt-BR" aria-selected="false"><svg class="flag" viewBox="0 0 50 30" aria-hidden="true"><rect width="50" height="30" fill="#009739"/><polygon points="25,1 48,15 25,29 2,15" fill="#FEDD00"/><circle cx="25" cy="15" r="10.8" fill="#012169"/></svg><span>Português</span></li>
@@ -33,6 +34,8 @@
         <li role="option" tabindex="-1" data-lang="vi" aria-selected="false"><svg class="flag" viewBox="0 0 50 30" aria-hidden="true"><rect width="50" height="30" fill="#DA251D"/><polygon points="25,6 27.1,12.1 33.6,12.2 28.4,16.1 30.3,22.3 25,18.6 19.7,22.3 21.6,16.1 16.4,12.2 22.9,12.1" fill="#FF0"/></svg><span>Tiếng Việt</span></li>
         <li role="option" tabindex="-1" data-lang="ar" aria-selected="false"><svg class="flag" viewBox="0 0 50 30" aria-hidden="true"><rect width="50" height="30" fill="#009A44"/><circle cx="24.4" cy="15" r="9.2" fill="#fff"/><circle cx="27.3" cy="15" r="8.5" fill="#009A44"/><circle cx="25" cy="15" r="12.7" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="3.1 1.9"/></svg><span>العربية</span></li>
       </ul>
+      <label class="lang-numbers"><span data-i18n="ui.numbers">Number format</span><select id="number-format"></select></label>
+      </div>
     </div>
   </div>
   <nav id="ledger" class="ledger" aria-label="the ledger — every page" data-i18n-key="ev.ledger.aria" data-i18n-attr="aria-label" hidden>

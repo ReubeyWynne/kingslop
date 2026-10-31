@@ -173,16 +173,25 @@ jobs:
             governor:
               - *shared
               - .dsh/governor-ui-check.cjs
+              - .dsh/governor-ocr-check.cjs
+              - .dsh/governor-fixtures/**
               - governor-gear/**
               - js/governor-*
+              - js/screen-import*.js
+              - js/import-adapters/governor.js
+              - css/screen-import.css
+              - _includes/screen-import.html
               - js/event-data.liquid
               - _data/governor.json
               - _data/event_rules.json
-              - css/governor.css
+              - css/governor*.css
+              - css/equipment.css
+              - _includes/governor/**
               - img/governor/**
             town:
               - *shared
               - .dsh/town-centre-ui-check.cjs
+              - .dsh/number-format-ui-check.cjs
               - town-centre/**
               - js/town-centre*.js
               - js/event-*
@@ -191,6 +200,8 @@ jobs:
               - _data/event_rules.json
               - _data/governor.json
               - css/town.css
+              - css/governor-profile.css
+              - _includes/governor/**
               - _includes/heroes/**
               - js/hero-directory*.js
               - js/hero-spend.js
@@ -342,6 +353,7 @@ jobs:
               - js/import-*.js
               - js/import-adapters/**
               - js/hero-gear-ocr.js
+              - js/governor-ocr.js
               - css/screen-import.css
               - img/screen-import/**
               - town-centre/**
@@ -403,6 +415,9 @@ jobs:
       - name: Check battle engine
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/battle-engine-check.cjs
+      - name: Check hero skills in battle
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/combat-check.cjs
       - name: Check Castle Battle hero data
         if: needs.changes.outputs.logic == 'true'
         run: node --test .dsh/castle-battle-check.cjs
@@ -571,9 +586,15 @@ jobs:
       - name: Check governor gear UI
         if: matrix.group == 'governor'
         run: node .dsh/governor-ui-check.cjs
+      - name: Check the Governor Profile reader
+        if: matrix.group == 'governor'
+        run: node .dsh/governor-ocr-check.cjs
       - name: Check Town Centre UI
         if: matrix.group == 'town'
         run: node .dsh/town-centre-ui-check.cjs
+      - name: Check number format
+        if: matrix.group == 'town'
+        run: node .dsh/number-format-ui-check.cjs
       - name: Check upgrade priority UI
         if: matrix.group == 'priority'
         run: node .dsh/upgrade-priority-ui-check.cjs

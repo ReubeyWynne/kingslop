@@ -34,6 +34,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.match(await dialog.locator('[data-target="town-inventory.rate"]').textContent(), /40,000/);
     await done();
     assert.equal(await page.locator('#town-bag [data-count="mithril"] [data-amount]').textContent(), '10');
+    // Resources run to billions: the tile says it short, the exact figure stays on hover.
+    await page.evaluate(() => PlayerLedger.shared().setBalance('bread', 1580000000));
+    await page.waitForFunction(() => document.querySelector('[data-count="bread"] [data-amount]').textContent !== '?');
+    assert.equal(await page.locator('[data-count="bread"] [data-amount]').textContent(), '1.58bn', 'British English says billions as bn');
+    assert.equal(await page.locator('[data-count="bread"] [data-amount]').getAttribute('title'), '1,580,000,000');
     // Mithril only scores when hero gear can take it, so with no gear saved it adds nothing yet.
     assert.equal(await prep(), 0);
     assert.ok(await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'prep').unknown.includes('hero-gear-pieces')), 'missing gear is listed, not zero');
@@ -106,17 +111,20 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('[data-piece="inf-helm"] [data-part="level"]').textContent(), '+21');
     assert.equal((await ledger()).heroGear.pieces['cav-helm'], undefined, 'other pieces stay unknown');
 
-    // Governor: one set of six laid out as the profile; levels and materials score through the governor planner.
+    // Governor: the shared governor profile (the governor page's own), writing this save; levels and materials score through the governor planner.
     await page.locator('[aria-controls="town-governor"]').click();
-    assert.equal(await page.locator('.town-gov-piece').count(), 6);
+    assert.equal(await page.locator('#town-governor .gov-piece').count(), 6);
     await edit('[data-count="charm-guide"]'); await dialog.locator('[data-field="count"]').fill('5'); await done();
     await edit('[data-count="charm-design"]'); await dialog.locator('[data-field="count"]').fill('5'); await done();
-    await edit('[data-gov="inf-1"]');
-    await dialog.locator('[data-action="town-inventory.govStep"][data-charm-slot="1"][data-step="-1"]').click();
+    const govDialog = page.locator('#town-governor .gov-dialog');
+    await page.locator('[data-gov="inf-1"]').click(); await govDialog.waitFor({ state: 'visible' });
+    await govDialog.locator('[data-charm-row="1"] [data-step="-1"]').click();
     assert.equal((await ledger()).governorCharms.slots['inf-1-1'].level, 0);
-    await dialog.locator('select[data-level="gear"]').selectOption('3');
+    await govDialog.locator('select[data-level="gear"]').selectOption('3');
     assert.equal((await ledger()).governorGear.pieces['inf-1'].level, 3);
-    await done();
+    await govDialog.locator('[data-action="governor-profile.close"]').click(); await govDialog.waitFor({ state: 'hidden' });
+    assert.equal(await page.locator('[data-gov="inf-1"] [data-part="level"]').textContent(), 'Blue 0★');
+    assert.match(await page.locator('[data-charm="inf-1-1"] img').getAttribute('src'), /charms\/inf-1\.webp$/);
     assert.equal(await page.locator('[data-gov="inf-1"]').getAttribute('data-state'), 'set');
     assert.match(await page.locator('[data-target="town-inventory.gain"]').textContent(), /625 charm score/);
     const sg = num(await page.locator('[data-event-total="sg"]').textContent());
@@ -228,14 +236,14 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await edit('#town-troops [data-training="capacity"]'); await dialog.locator('[data-action="town-inventory.clear"]').click(); await done();
     assert.equal(await page.locator('[data-training="capacity"]').getAttribute('data-state'), 'unknown');
 
-    // Persisted, and the governor page reads the same save.
+    // Persisted, and the governor page starts from a copy of the same save.
     await page.reload(); await page.waitForFunction(() => document.querySelector('.town-daybar'));
     assert.equal(await page.locator('#town-bag [data-count="mithril"] [data-amount]').textContent(), '10');
     assert.equal(await page.locator('[data-building="town-center"] [data-level]').textContent(), 'TG 2');
     const other = await context.newPage(); await other.goto(origin + '/governor-gear/?lang=en');
-    await other.waitForFunction(() => !document.querySelector('.gov-board').disabled);
+    await other.waitForFunction(() => document.querySelector('[data-target="governor-sheet.source"]').textContent);
     assert.equal(await other.locator('#governor-bag input[data-bind="inventory.charm-guide"]').inputValue(), '5');
-    assert.equal(await other.locator('.gov-tile[data-item="inf-1"]').getAttribute('data-state'), 'set');
+    assert.equal(await other.locator('.gov-piece[data-gov="inf-1"]').getAttribute('data-state'), 'set');
     await other.close();
     const roster = await context.newPage(); await roster.goto(origin + '/heroes/?lang=en');
     await roster.waitForFunction(() => document.querySelector('#hero-chenko').dataset.owned === 'true');

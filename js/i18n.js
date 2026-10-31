@@ -36,6 +36,31 @@
   var DIRS = { ar: 'rtl' };
 
   var lang = window.__BH_LANG || 'en';
+
+  // Numbers and dates can follow a culture other than the text's: a reader in
+  // Germany may want English copy with 1.580.000.000. English is the copy
+  // most readers fall back to, so under 'auto' English text takes the
+  // browser's culture when that isn't English; every other language keeps its
+  // own (choosing German is choosing German numbers). Any other value is a
+  // locale the reader picked.
+  var NUM_KEY = 'bh_numbers';
+  var numbers = 'auto';
+  try { numbers = localStorage.getItem(NUM_KEY) || 'auto'; } catch (e) { /* private mode */ }
+  function supported(code) {
+    try { return !!code && Intl.NumberFormat.supportedLocalesOf([code]).length > 0; } catch (e) { return false; }
+  }
+  function base(code) { return String(code || '').toLowerCase().split('-')[0]; }
+  function autoLocale() {
+    var browser = (navigator.languages && navigator.languages[0]) || navigator.language;
+    if (lang === 'en' && browser && base(browser) !== 'en' && supported(browser)) return browser;
+    return LOCALES[lang] || lang;
+  }
+  function numberLocale() { return numbers !== 'auto' && supported(numbers) ? numbers : autoLocale(); }
+  function setNumbers(code) {
+    numbers = code && code !== 'auto' && supported(code) ? code : 'auto';
+    try { if (numbers === 'auto') localStorage.removeItem(NUM_KEY); else localStorage.setItem(NUM_KEY, numbers); } catch (e) { /* private mode */ }
+    dispatch('i18n:change');
+  }
   var t = {};                 // active dictionary
   var ready = false;
   var pending = [];
@@ -202,7 +227,11 @@
   // Public API for app.js. Getters keep lang/locale/t live across switches.
   window.I18N = {
     get lang() { return lang; },
-    get locale() { return LOCALES[lang] || lang; },
+    // The culture numbers and dates are written in (see `numbers` above).
+    get locale() { return numberLocale(); },
+    get numbers() { return numbers; },
+    autoLocale: autoLocale,
+    setNumbers: setNumbers,
     get t() { return t; },
     tr: tr,
     switchTo: switchTo,

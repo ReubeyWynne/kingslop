@@ -1,8 +1,11 @@
 (function () {
   'use strict';
-  var E = window.HeroGear, BH, state, previous, result, running = false, revision = 0, planIndex = 0, resultTroop = 'inf', strategyResult = null;
-  var searchWorker, searchTimer, searchDelay, searchFailed = false;
-  var activePage = 'planner', splitResult = null, splitRevision = -1, splitWorker = null;
+  /* One page: your gear as three troop cards (a troop opens on its own, laid out as in the
+     game; a piece opens its editor and what its next steps cost), then one answer: how near
+     the gear is to optimal for what it holds, what the bag buys now, and the red upgrades
+     worth saving for. Profile and weights are an advanced fold. */
+  var E = window.HeroGear, BH, state, previous, result = null, optimum = null, planned = null, fit = null, running = false, revision = 0;
+  var searchWorker, searchTimer, searchDelay, searchFailed = false, showOptimal = false, detail = null;
   var ledger, ledgerRevision = 0, saving = false;
   var scriptURL = new URL(document.currentScript.src);
   var base = new URL('./', scriptURL);
@@ -14,7 +17,6 @@
   var parts = { ten: 0, hundred: 0, remainder: 0 };
   var params = new URLSearchParams(location.search), link = E.readLink(location.search);
   var guest = params.has('guest') || !!link, linkFailed = !!(link && link.invalid);
-  ['gear-settings', 'theory'].forEach(function (id) { document.getElementById(id).hidden = true; });
   if (guest) {
     var guestLedger;
     window.Interactions.configure({ ledger: function () {
@@ -52,12 +54,31 @@
     var kept = keptParams();
     try { history.replaceState(history.state, '', location.pathname + '?' + (kept ? kept + '&' : '') + linkQuery() + location.hash); } catch (ignored) {}
   }
-  function paintGuest() {
-    var kept = keptParams();
-    el('guest-banner').hidden = !guest;
-    el('guest-enter').hidden = guest;
-    el('guest-enter').href = location.pathname + '?' + (kept ? kept + '&' : '') + 'guest';
-    el('guest-leave').href = location.pathname + (kept ? '?' + kept : '');
+  /* Your own gear saves as you go, and the page says nothing about it. A link, ?guest or
+     Start blank opens a sheet of its own that only Save as mine writes back; a slim notice
+     above the workspace says so. Load mine and Start blank reload on the other kind. */
+  function sheetTr(key, fallback) { return BH.tr('gov.sheet.' + key, fallback); }
+  function blankSheet() { var d = E.defaults(); return Object.keys(d.pieces).every(function (id) { return JSON.stringify(state.pieces[id]) === JSON.stringify(d.pieces[id]); }); }
+  function paintSheet() {
+    var blank = guest && blankSheet();
+    el('sheet').hidden = !guest;
+    el('sheet-source').textContent = linkFailed ? tr('linkInvalid') : blank ? sheetTr('sourceBlank', 'A blank sheet.') : link ? sheetTr('sourceLink', 'A shared sheet.') : sheetTr('sourceChanged', 'Changed on this page only.');
+    el('sheet-hint').textContent = sheetTr('untouched', 'Your save is untouched.');
+    el('save-mine').hidden = !guest || blank;
+    el('blank').hidden = blank;
+  }
+  function go(query) { var kept = keptParams(), rest = [kept, query].filter(Boolean).join('&'); location.assign(location.pathname + (rest ? '?' + rest : '') + location.hash); }
+  function startBlank() { go('gear=' + E.encodeLink(E.defaults()).gear); }
+  function loadMine() { go(''); }
+  // Pieces and priority replace yours; a material this sheet left at 0 keeps your number.
+  function saveMine() {
+    try {
+      var own = window.PlayerLedger.shared(), mine = own.heroGear(E), next = Object.assign({}, mine, copy(state), { resources: copy(mine.resources), parts: mine.parts });
+      if (E.RES.some(function (r) { return state.resources[r] > 0; })) E.RES.forEach(function (r) { if (state.resources[r] > 0) next.resources[r] = state.resources[r]; });
+      if (state.resources.xp > 0) next.parts = copy(parts);
+      own.writeHeroGear(next, E, { source: 'manual' });
+    } catch (error) { note('saveFailed'); return; }
+    loadMine();
   }
   // A copied link is confirmed on the button itself for a moment, so no note lingers below the gear.
   var shareReset;
@@ -71,7 +92,7 @@
       clearTimeout(shareReset);
       button.textContent = tr('linkCopiedShort'); button.dataset.copied = 'true';
       el('share-status').textContent = tr('linkCopied');
-      shareReset = setTimeout(function () { button.textContent = tr('share'); delete button.dataset.copied; el('share-status').textContent = ''; }, 2500);
+      shareReset = setTimeout(function () { button.textContent = sheetTr('copy', 'Copy share link'); delete button.dataset.copied; el('share-status').textContent = ''; }, 2500);
     }, fallback);
   }
   function paintTheory() {
@@ -82,16 +103,15 @@
     el('kvk-bag').textContent = BH.fill(tr('kvkBag'), { hammers: fmt(spend.spent.hammers), mithril: fmt(spend.spent.mithril), points: fmt(spend.points) });
     el('roles').innerHTML = E.TYPES.map(function (type) { return '<li><strong>' + view.esc(tr(type)) + '</strong> ' + view.esc(view.roleText(type)) + '</li>'; }).join('');
   }
-  function paintPage() {
-    el('views').querySelectorAll('[role="tab"]').forEach(function (button) {
-      var value = button.dataset.value, active = activePage === 'planner' ? value === 'planner' || value === state.view : value === activePage;
-      button.setAttribute('aria-selected', String(active)); button.tabIndex = active ? 0 : -1;
-    });
-    ['planner', 'settings'].forEach(function (page) { el(page).hidden = page !== activePage; });
-    document.getElementById('theory').hidden = activePage !== 'theory';
+  // An old link to a note (#kvk-points, #weights, #save-backups) opens the fold it sits in.
+  function openHash() {
+    var id = decodeURIComponent(location.hash.slice(1)), node = id && document.getElementById(id), fold = node && node.closest('details');
+    if (!node) return;
+    if (fold) fold.open = true;
+    node.scrollIntoView({ block: 'start' });
   }
-  function showPage(page) { activePage = page; note(null); paintPage(); if (page === 'planner') scheduleSearch(0); else cancelSearch(); }
   function note(key) { document.dispatchEvent(new CustomEvent('player-status', { detail: { scope: 'hero-gear', key: key ? 'gear.' + key : null } })); }
+
   function persist(options) {
     try {
       saving = true;
@@ -109,202 +129,189 @@
   function changed(options) {
     cancelSearch();
     revision++;
-    planIndex = 0;
     searchFailed = false;
     result = null;
-    strategyResult = null;
-    el('results').textContent = '';
-    el('opportunities').textContent = '';
+    optimum = null; planned = null; fit = null;
     note(null);
     var saved = persist(options);
-    paintAnswer(); paintTheory();
+    paint();
     return saved;
   }
-  function paintView() {
-    el('forge').dataset.view = state.view;
-    paintPage();
-    scheduleSearch(0);
+
+  // ── Your gear ──────────────────────────────────────────────────────────
+  function shown() { return showOptimal && optimum ? optimum.pieces : state.pieces; }
+  function tile(id) {
+    var p = shown()[id], was = state.pieces[id], moved = showOptimal && optimum && JSON.stringify(p) !== JSON.stringify(was);
+    return '<button type="button" class="gear-row" data-select="' + id + '"' + (moved ? ' data-moved="true"' : '') + ' aria-label="' + view.esc(view.name(id) + ' · ' + view.pieceLabel(p)) + '">' +
+      view.gearItem(id, p) +
+      '<span class="gear-tile-name">' + view.esc(tr(id.split('-')[1])) + '</span>' +
+      (moved ? '<small class="gear-tile-was">' + view.esc(tr('splitNow')) + ' ' + view.levelLabel(was) + ' · ' + was.mastery + '</small>' : '') +
+      '</button>';
+  }
+  function include(type) {
+    return '<label class="gear-include"><input type="checkbox" data-include="' + type + '"' + (state.included[type] ? ' checked' : '') + '><span>' + view.esc(tr('counted')) + '</span></label>';
+  }
+  // A troop's share of optimal, from the same search as the whole.
+  function troopShare(type) {
+    if (!optimum) return null;
+    var now = 0, best = 0;
+    E.SLOTS.forEach(function (slot) { var id = type + '-' + slot; now += E.score(id, state.pieces[id], state.weights); best += E.score(id, optimum.pieces[id], state.weights); });
+    return best > 0 ? Math.min(1, now / best) : 1;
+  }
+  // Rounded down to a tenth, so gear short of optimal never reads as 100%.
+  function pct(share) { return share === null ? '…' : (Math.floor(share * 1000 + 1e-6) / 10).toFixed(1).replace(/\.0$/, '') + '%'; }
+  function paintGear() {
+    el('cards').hidden = !!detail;
+    el('detail').hidden = !detail;
+    if (!detail) {
+      el('cards').innerHTML = E.TYPES.map(function (type) {
+        return '<section class="gear-card" data-troop="' + type + '" data-included="' + state.included[type] + '">' +
+          '<div class="gear-card-head"><button type="button" class="gear-card-open" data-open="' + type + '">' + view.esc(tr(type)) + ' <span aria-hidden="true">›</span></button>' +
+          (state.included[type] ? '<small>' + pct(troopShare(type)) + ' ' + view.esc(tr('ofOptimal')) + '</small>' : '') + '</div>' +
+          '<div class="gear-card-grid">' + E.SLOTS.map(function (slot) { return tile(type + '-' + slot); }).join('') + '</div>' +
+          '</section>';
+      }).join('');
+      return;
+    }
+    // One troop as the game lays it out: helm and chest on the left, gloves and boots on the right.
+    var share = state.included[detail] ? troopShare(detail) : null;
+    el('detail').innerHTML = '<div class="gear-detail-head"><button type="button" class="gear-back" data-open="">‹ ' + view.esc(tr('allTroops')) + '</button><h3>' + view.esc(tr(detail)) + '</h3>' + include(detail) + '</div>' +
+      '<div class="gear-board" data-troop="' + detail + '">' +
+      '<div class="gear-board-side">' + tile(detail + '-helm') + tile(detail + '-chest') + '</div>' +
+      '<div class="gear-board-centre"><span class="sheet-label">' + view.esc(tr('ofOptimal')) + '</span><strong>' + (state.included[detail] ? pct(share) : '—') + '</strong><small>' + view.esc(view.roleText(detail)) + '</small></div>' +
+      '<div class="gear-board-side">' + tile(detail + '-gloves') + tile(detail + '-boots') + '</div>' +
+      '</div>';
+  }
+
+  // ── A piece: its levels, then what its next steps cost ──────────────────
+  function stepCost(id, goal) {
+    var from = state.pieces[id], to = E.milestone(from, goal);
+    if (!to) return '';
+    var costs = E.cost(from, to), ready = E.affordable(costs, state.resources);
+    return '<section class="gear-step" data-goal="' + goal + '">' +
+      '<h3>' + view.esc(tr(goal === 'red' ? 'ascend' : 'nextMithril')) + ' <span>' + view.levelLabel(from) + ' → ' + view.esc(view.fullLevel(to)) + '</span></h3>' +
+      view.costStrip(costs, E.gap(costs, state.resources)) + view.kvkScore(costs) +
+      (ready ? '<button type="button" class="gear-primary" data-apply-goal="' + goal + '">' + view.esc(tr('applyMilestone')) + '</button>' : '') +
+      '</section>';
+  }
+  function steps(id) {
+    var p = state.pieces[id], mithril = E.milestone(p, 'mithril'), red = E.milestone(p, 'red');
+    // Ascension comes first in game, so its bill does too; the mithril step goes past it.
+    return (red && (!mithril || JSON.stringify(red) !== JSON.stringify(mithril)) ? stepCost(id, 'red') : '') + stepCost(id, 'mithril') +
+      (!mithril && !red ? '<p class="gear-gloss">' + view.esc(tr(p.quality === 'epic' ? 'epicBlocked' : 'maxed')) + '</p>' : '');
   }
   function paintEdit() {
-    var id = state.selected, p = state.pieces[id];
+    var id = state.selected;
     el('edit-title').textContent = view.name(id);
-    el('edit-fields').innerHTML = view.editorFields(id, p);
+    el('edit-fields').innerHTML = view.editorFields(id, state.pieces[id]) + '<div class="gear-steps">' + steps(id) + '</div>' + view.theoryLink('cost-includes', 'costIncludes');
   }
-  function editPiece(id) { if (id) selectPiece(id); paintEdit(); el('edit-dialog').showModal(); }
-  function paintEditor() {
-    el('troops').querySelectorAll('[data-troop]').forEach(function (button) {
-      var active = button.dataset.troop === state.troop;
-      button.setAttribute('aria-selected', String(active));
-      button.tabIndex = active ? 0 : -1;
-    });
-    el('editor-panel').setAttribute('aria-labelledby', 'gear-tab-' + state.troop);
-    el('include').checked = state.included[state.troop];
-    el('rows').innerHTML = E.SLOTS.map(function (slot) {
-      var id = state.troop + '-' + slot, p = state.pieces[id];
-      return '<button type="button" class="gear-row" data-select="' + id + '" data-selected="' + (state.selected === id) + '" aria-pressed="' + (state.selected === id) + '" aria-label="' + view.esc(view.name(id) + ' · ' + view.pieceLabel(p)) + '">' + view.gearItem(id, p) + view.pieceInfo(slot, p) + '</button>';
-    }).join('');
-    el('selected').innerHTML = Object.keys(state.pieces).map(function (id) { return '<option value="' + id + '"' + (id === state.selected ? ' selected' : '') + '>' + view.esc(view.name(id)) + '</option>'; }).join('');
+  function editPiece(id) { state.selected = id; persist(); paintEdit(); el('edit-dialog').showModal(); }
+
+  // ── The answer ─────────────────────────────────────────────────────────
+  function paintAdvanced() {
     el('profile').value = state.profile;
     el('reforge').checked = state.reforge;
-    el('weights').innerHTML = '<div class="gear-weight-row gear-weight-head" aria-hidden="true">' +
-      '<span>' +
-      '</span>' +
-      '<span>' + view.esc(tr('lethality')) + '</span>' +
-      '<span>' + view.esc(tr('health')) + '</span>' +
-      '</div>' +
-      E.TYPES.map(function (type) {
-      return '<div class="gear-weight-row"><span>' + view.esc(tr(type)) + '</span>' + [0, 1].map(function (i) {
+    el('hammer-reforge').checked = state.hammerReforge;
+    el('weights-grid').innerHTML = '<span id="gear-weights-label" class="sheet-label">' + view.esc(BH.tr('gov.weights', 'Weights')) + '</span>' +
+      '<div class="gear-weight-grid"><span></span>' + E.TYPES.map(function (type) { return '<span>' + view.esc(tr(type)) + '</span>'; }).join('') +
+      [0, 1].map(function (i) {
         var label = tr(i ? 'health' : 'lethality');
-        return '<label>' +
-          '<input type="number" min="0" max="100" step="0.1" inputmode="decimal" data-weight="' + type + '" data-stat="' + i + '" value="' + state.weights[type][i] + '" aria-label="' + view.esc(tr(type) + ' · ' + label) + '">' +
-          '</label>';
+        return '<span class="gear-weight-stat">' + view.esc(label) + '</span>' + E.TYPES.map(function (type) {
+          return '<input type="number" min="0" max="100" step="0.1" inputmode="decimal" data-weight="' + type + '" data-stat="' + i + '" value="' + state.weights[type][i] + '" aria-label="' + view.esc(tr(type) + ' · ' + label) + '">';
+        }).join('');
       }).join('') + '</div>';
+  }
+  // Your gear: how close what is already in it is to its best layout. The bag is not counted.
+  function paintOptimal() {
+    var host = el('optimal');
+    if (!optimum) { host.innerHTML = ''; el('optimal-rows').innerHTML = ''; return; }
+    var rows = optimum.changes.filter(function (id) { return state.included[id.split('-')[0]]; }).map(function (id) {
+      var from = state.pieces[id], to = optimum.pieces[id], slot = id.split('-')[1], a = E.stats(from, slot), b = E.stats(to, slot);
+      return '<article class="gear-row gear-change" data-piece-id="' + id + '">' + view.beforeAfter(id, from, to, 'splitNow', 'optimalShort') +
+        '<div class="gear-change-info"><strong class="gear-change-name">' + view.esc(view.name(id)) + '</strong>' +
+        '<small class="gear-tile-impact">' + view.esc(view.statText({ core: b.core - a.core, attack: b.attack - a.attack, defense: b.defense - a.defense }).replace(tr('core'), tr(slot === 'helm' || slot === 'boots' ? 'lethality' : 'health'))) + '</small></div></article>';
     }).join('');
+    var gap = optimum.current > 0 ? (optimum.score - optimum.current) / optimum.current * 100 : 0;
+    host.innerHTML = '<div class="gear-headline"><strong>' + pct(optimum.share) + '</strong><span>' + view.esc(tr('ofOptimalInvested')) + '</span></div>' +
+      '<p class="gear-gloss">' + view.esc(optimum.changes.length ? BH.fill(tr('optimalGap'), { gain: gap.toFixed(1) }) : tr('optimalAlready')) + ' ' + view.theoryLink('best-split-method', 'optimalMethodTitle') + '</p>' +
+      (optimum.changes.length ? '<label class="gear-include gear-switch"><input type="checkbox" id="gear-show-optimal"' + (showOptimal ? ' checked' : '') + '><span>' + view.esc(tr('showOptimal')) + '</span></label>' : '');
+    el('optimal-rows').innerHTML = showOptimal ? rows : '';
   }
-  function paintPreview(from, to) {
-    el('preview').innerHTML = view.preview(state.selected, from, to);
+  // The answer: the same measure with the bag counted, before and after Spend now.
+  function paintPlanShare() {
+    var host = el('plan-share');
+    if (!planned || !result) { host.innerHTML = ''; return; }
+    var before = planned.score > 0 ? Math.min(1, planned.current / planned.score) : 1, after = planned.score > 0 ? Math.min(1, result.score / planned.score) : 1;
+    host.innerHTML = '<div class="gear-headline gear-before-after-share"><strong>' + pct(before) + '</strong><span aria-hidden="true">→</span><strong>' + pct(after) + '</strong></div>' +
+      '<p class="gear-gloss">' + view.esc(tr('planShare')) + '</p>';
   }
-  function nextTarget() {
-    var p = state.pieces[state.selected];
-    return E.milestone(p, state.goal);
+  // Which priority profile the gear already fits best; one tap uses it.
+  function paintFit() {
+    var node = el('fit'), names = fit ? Object.keys(fit) : [];
+    if (!names.length) { node.hidden = true; return; }
+    var best = names.reduce(function (a, b) { return fit[b] > fit[a] + 1e-9 ? b : a; });
+    if (best === state.profile) { node.hidden = true; return; }
+    var option = el('profile').querySelector('option[value="' + best + '"]');
+    node.hidden = false;
+    node.innerHTML = view.esc(BH.fill(tr('fitBest'), { profile: option ? option.textContent : best, share: pct(fit[best]) })) +
+      ' <button type="button" data-use-profile="' + best + '">' + view.esc(tr('useProfile')) + '</button>';
   }
-  function planOutput() {
-    var forecast = E.redPlans(state);
-    planIndex = Math.min(planIndex, Math.max(0, forecast.routes.length - 1));
-    return view.planOutput(state, forecast, planIndex);
-  }
-  function paintSplit() {
-    var out = el('milestone-out');
-    if (splitResult && splitRevision === revision) { out.innerHTML = view.splitOutput(splitResult); return; }
-    out.innerHTML = '<p class="gear-search-status" role="status">' + view.esc(tr('calculatingSplit')) + '</p>';
-    if (splitWorker) return;
-    var at = revision;
-    function done(sets) {
-      splitWorker = null;
-      if (at === revision) { splitResult = sets; splitRevision = at; }
-      if (state.mode === 'split') paintSplit();
+  function paintResults() {
+    el('results').setAttribute('aria-busy', 'false');
+    el('search-status').hidden = true;
+    el('run').hidden = true;
+    if (!result) { el('results').innerHTML = ''; return; }
+    if (!result.changes.length) {
+      var included = E.TYPES.filter(function (type) { return state.included[type]; });
+      var message = !included.length ? 'noTroopsSelected' : included.every(function (type) { return state.weights[type].every(function (w) { return w === 0; }); }) ? 'noWeightsSelected' : E.RES.every(function (r) { return !state.resources[r]; }) && !state.reforge ? 'addBudgetHint' : 'noSpendMoves';
+      el('results').innerHTML = '<div class="gear-empty"><p class="gear-gloss">' + view.esc(tr(message)) + '</p>' +
+        (message === 'noWeightsSelected' ? '<button type="button" class="gear-action" data-show-weights="true">' + view.esc(tr('editWeights')) + '</button>' : '') + '</div>';
+      return;
     }
-    try {
-      var worker = splitWorker = new Worker(workerURL('hero-gear-worker.js'));
-      worker.onmessage = function (event) { worker.terminate(); done(event.data && event.data.ok ? event.data.result : E.bestSplit(copy(state))); };
-      worker.onerror = function () { worker.terminate(); done(E.bestSplit(copy(state))); };
-      worker.postMessage({ kind: 'split', state: copy(state) });
-    } catch (error) { done(E.bestSplit(copy(state))); }
+    // Every changed piece in one list, troop by troop: milestones first, then by gain.
+    var order = E.TYPES.reduce(function (o, type, i) { o[type] = i; return o; }, {});
+    var tiles = result.details.slice().sort(function (a, b) {
+      function rank(d) { return d.refund ? 2 : view.checkpoint(d.from, d.to) ? 0 : 1; }
+      return order[a.id.split('-')[0]] - order[b.id.split('-')[0]] || rank(a) - rank(b) || b.gain - a.gain;
+    }).map(function (d) { return view.comparison(d.id, d.from, d.to, d); }).join('');
+    el('results').innerHTML = '<div class="gear-result-summary"><strong>' + view.gainPct(result.gain, result.baseline) + '</strong><span>' + view.esc(tr('weightedGain')) + '</span><small>' + result.changes.length + ' ' + view.esc(tr('piecesChanged')) + '</small></div>' +
+      view.kvkScore(result.spent, true) +
+      '<div class="gear-result-grid">' + tiles + '</div>' +
+      (result.refund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.refund) + ' XP ' + view.esc(tr('recoverXP')) + ' → ↑ ' + fmt(result.spent.xp) + ' XP ' + view.esc(tr('redistributeXP')) + '</p>' : '') +
+      (result.hammerRefund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.hammerRefund) + ' ' + view.esc(tr('recoverHammers')) + '</p>' : '') +
+      '<div class="gear-cost-title"><strong>' + view.esc(tr('spend')) + '</strong></div>' + view.costStrip(result.spent) + view.kvkNote() + view.cavalryNote(state, result.pieces) +
+      '<div class="gear-cost-title"><strong>' + view.esc(tr('remaining')) + '</strong></div>' + view.costStrip(result.remaining) +
+      '<div class="gear-record-action"><button type="button" id="gear-apply-result" class="gear-primary gear-action" aria-describedby="gear-record-hint">' + view.esc(tr('applyResult')) + '</button>' +
+      '<p id="gear-record-hint" class="gear-gloss">' + view.esc(tr('applyHint')) + '</p></div>';
   }
-  function paintAnswer() {
-    var isOptimise = state.mode === 'optimise', isPlan = state.mode === 'plan', isSplit = state.mode === 'split';
-    el('modes').querySelectorAll('[data-mode]').forEach(function (button) {
-      var active = button.dataset.mode === state.mode;
-      button.setAttribute('aria-selected', String(active)); button.tabIndex = active ? 0 : -1;
-    });
-    el('answer-panel').setAttribute('aria-labelledby', 'gear-mode-' + state.mode);
-    el('piece-select').hidden = isOptimise || isPlan || isSplit;
-    el('goals').hidden = isOptimise || isPlan || isSplit;
-    el('optimise-panel').hidden = !isOptimise;
-    el('milestone-out').hidden = isOptimise;
-    el('goals').querySelectorAll('[data-goal]').forEach(function (button) { button.setAttribute('aria-pressed', String(button.dataset.goal === state.goal)); });
-    if (isOptimise) { paintPreview(state.pieces[state.selected], null); scheduleSearch(250); return; }
-    cancelSearch();
-    if (isSplit) { paintPreview(state.pieces[state.selected], null); paintSplit(); return; }
-    if (isPlan) { paintPreview(state.pieces[state.selected], nextTarget()); el('milestone-out').innerHTML = planOutput(); return; }
-    var from = state.pieces[state.selected], to = nextTarget(), out = el('milestone-out');
-    paintPreview(from, to);
-    if (!to) { out.innerHTML = '<p class="gear-gloss">' + view.esc(tr(from.quality === 'epic' ? 'epicBlocked' : state.goal === 'red' ? 'alreadyRed' : 'maxed')) + '</p>' +
-      view.nearList(state); return; }
-    var costs = E.cost(from, to), ready = E.affordable(costs, state.resources);
-    out.innerHTML = '<h3>' + view.esc(view.name(state.selected)) + '</h3>' +
-      '<button type="button" class="gear-upgrade" data-edit-piece="' + state.selected + '" aria-label="' + view.esc(tr('editPiece')) + '">' + view.gearImage(state.selected, 'gear-upgrade-art') + '<span>' +
-      '<span class="gear-upgrade-levels">' + view.levelLabel(from) + ' <span>→</span> ' + view.levelLabel(to) + '</span>' +
-      '<small>' + view.esc(tr('mastery')) + ' ' + from.mastery + ' → ' + to.mastery + '</small>' +
-      '<small>' + view.esc(view.quality(from.quality)) + (from.quality !== to.quality ? ' → ' + view.esc(view.quality(to.quality)) : '') + '</small>' +
-      '</span>' +
-      '</button>' +
-      view.kvkScore(costs, true) + view.costTable(costs, state.resources) + view.kvkNote() +
-      (ready ? '<p class="gear-gloss">' + view.esc(tr('ready')) + '</p>' +
-        '<button type="button" id="gear-apply-milestone" class="gear-primary">' + view.esc(tr('applyMilestone')) + '</button>' : '') +
-      view.theoryLink('cost-includes', 'costIncludes') + (isPlan ? '' : view.nearList(state));
+  // Red upgrades ranked by stats per resource, with how far the bag is from each.
+  function paintSaving() {
+    var forecast = E.redPlans(state), baseline = forecast.baseline;
+    el('saving').innerHTML = forecast.routes.length ? '<h3 class="gear-subhead">' + view.esc(tr('worthSaving')) + '</h3><p class="gear-gloss">' + view.esc(tr('worthSavingHint')) + '</p>' +
+      forecast.routes.map(function (r) {
+        var missing = E.RES.filter(function (k) { return r.gap[k] > 0; }).map(function (k) { return fmt(r.gap[k]) + ' ' + tr(k + 'Unit'); }).join(' · ');
+        return '<button type="button" class="gear-route" data-edit-piece="' + r.id + '">' + view.gearItem(r.id, r.to) +
+          '<span class="gear-route-piece"><strong>' + view.esc(view.name(r.id)) + '</strong>' +
+          '<span class="gear-route-levels">' + view.levelLabel(r.from) + ' → <b class="gear-rarity-red">' + view.esc(view.fullLevel(r.to)) + '</b></span>' +
+          '<small>' + view.esc(missing ? BH.fill(tr('oppShort'), { missing: missing }) : tr('readyShort')) + '</small></span>' +
+          '<span class="gear-route-metrics"><span><b>' + view.gainPct(r.gain, baseline) + '</b><small>' + view.esc(tr('weightedGain')) + '</small></span>' +
+          '<span><b>' + r.efficiency.toFixed(1) + '</b><small>' + view.esc(tr('perCostUnit')) + '</small></span></span></button>';
+      }).join('') + view.theoryLink('ranking', 'scoreCostExplained') : '';
   }
   function paint() {
-    paintEditor(); paintAnswer(); paintView(); paintTheory();
-  }
-  function selectPiece(id) {
-    state.selected = id; state.troop = id.split('-')[0];
-    persist(); paintEditor(); paintAnswer();
+    paintGear(); paintAdvanced(); paintOptimal(); paintPlanShare(); paintFit(); paintResults(); paintSaving(); paintTheory(); paintSheet();
+    scheduleSearch(250);
   }
   function applyState(next, options) {
     previous = { state: copy(state), parts: copy(parts), ledger: ledger.snapshot() };
     state = E.normaliseState(next);
     readParts(next);
     syncXP();
-    var saved = changed(options); paint(); el('undo').hidden = !saved;
+    var saved = changed(options); el('undo').hidden = !saved;
     return saved;
   }
-  function paintOpportunities(comparison) {
-    var host = el('opportunities');
-    if (!host) return;
-    var alternatives = comparison && comparison.alternatives || [], baseline = comparison && comparison.now ? comparison.now.baseline : 0;
-    var cards = alternatives.filter(function (r) {
-      return E.RES.some(function (key) { return r.gap[key] > 0; }) || r.reforgeNow;
-    }).map(function (r) {
-      var missing = E.RES.filter(function (key) { return r.gap[key] > 0; })
-        .map(function (key) { return fmt(r.gap[key]) + ' ' + tr(key + 'Unit'); }).join(' · ');
-      var delayed = r.afterSpendGap && E.RES.some(function (key) { return r.afterSpendGap[key] > r.gap[key]; });
-      var note = tr(r.reforgeNow ? 'oppReforge' : r.optimalAtThreshold ? 'oppOptimal' : r.beatsCurrentPlan ? 'oppBeats' : 'oppBehind');
-      function shortBy(gap) { return E.RES.filter(function (key) { return gap[key] > 0; }).map(function (key) { return fmt(gap[key]) + ' ' + tr(key + 'Unit'); }).join(' · '); }
-      return '<article class="gear-opportunity">' +
-        '<div class="gear-opportunity-head">' + view.gearImage(r.id, 'gear-opportunity-art') +
-        '<div><strong>' + view.esc(view.name(r.id)) + ' · ' + view.esc(view.fullLevel(r.from)) + ' → ' + view.esc(view.fullLevel(r.to)) + '</strong>' +
-        '<small>' + view.esc(tr('mithrilCheckpoint')) + ' · ' + view.gainPct(r.milestoneGain, baseline) + ' ' + view.esc(tr('weightedGain')) + '</small></div></div>' +
-        '<p>' + view.esc(missing ? BH.fill(tr('oppShort'), { missing: missing }) : tr('oppAffordable')) + ' ' + view.esc(note) + '</p>' +
-        (delayed ? '<p>' + view.esc(BH.fill(tr('oppDelayed'), { missing: shortBy(r.afterSpendGap) })) + '</p>' : '') +
-        (r.futurePlan ? '<p>' + view.esc(BH.fill(tr('oppFuture'), { plan: view.gainPct(r.futurePlan.score - baseline, baseline), best: view.gainPct(r.futureBestScore - baseline, baseline) })) + '</p>' : '') +
-        (r.reforgeNow ? '<p>' + view.esc(BH.fill(tr('oppReforgePlan'), { gain: view.gainPct(r.reforgeNow.score - baseline, baseline) })) + '</p>' : '') +
-        '<button type="button" data-mode="plan">' + view.esc(tr('seeSavingCosts')) + ' →</button></article>';
-    }).join('');
-    host.innerHTML = cards ? '<section class="gear-saving-options"><h3 class="gear-subhead">' + view.esc(tr('budgetRoutes')) + '</h3>' + cards + '</section>' : '';
-  }
-  function paintResults() {
-    paintOpportunities(strategyResult);
-    if (!result) return;
-    el('results').setAttribute('aria-busy', 'false');
-    el('search-status').hidden = true;
-    el('run').hidden = true;
-    if (!result.changes.length) {
-      var included = E.TYPES.filter(function (type) { return state.included[type]; });
-      var message = !included.length ? 'noTroopsSelected' : included.every(function (type) { return state.weights[type].every(function (w) { return w === 0; }); }) ? 'noWeightsSelected' : E.RES.every(function (r) { return !state.resources[r]; }) && !state.reforge ? 'addBudgetHint' : 'noSpendMoves';
-      el('results').innerHTML = '<div class="gear-empty">' +
-        '<p class="gear-gloss">' + view.esc(tr(message)) + '</p>' +
-        (message === 'noTroopsSelected' ? '<button type="button" class="gear-action" data-view="gear">' + view.esc(tr('chooseTroops')) + '</button>' : message === 'noWeightsSelected' ? '<button type="button" class="gear-action" data-show-weights="true">' + view.esc(tr('editWeights')) + '</button>' : '<button type="button" class="gear-action" data-mode="plan">' + view.esc(tr('seeSavingCosts')) + '</button>') + '</div>'; return;
-    }
-    if (!state.included[resultTroop]) resultTroop = result.changes[0].split('-')[0];
-    var details = result.details, tabs = E.TYPES.filter(function (type) { return state.included[type]; }).map(function (type) { var count = details.filter(function (d) { return d.id.startsWith(type + '-'); }).length; return '<button type="button" data-result-troop="' + type + '" aria-pressed="' + (type === resultTroop) + '">' + view.esc(tr(type)) + ' <small>' + count + '</small>' +
-      '</button>'; }).join('');
-    var tiles = details.filter(function (d) { return d.id.startsWith(resultTroop + '-'); }).sort(function (a, b) {
-      function priority(d) { return d.refund ? 2 : view.checkpoint(d.from, d.to) ? 0 : 1; }
-      return priority(a) - priority(b) || b.gain - a.gain;
-    }).map(function (detail) {
-      return view.comparison(detail.id, detail.from, detail.to, detail);
-    }).join('');
-    var kept = E.SLOTS.filter(function (slot) { return !result.changes.includes(resultTroop + '-' + slot); });
-    el('results').innerHTML = '<div class="gear-result-summary">' +
-      '<strong>' + view.gainPct(result.gain, result.baseline) + '</strong>' +
-      '<span>' + view.esc(tr('weightedGain')) + '</span>' +
-      '<small>' + result.changes.length + ' ' + view.esc(tr('piecesChanged')) + '</small>' +
-      '</div>' +
-      view.kvkScore(result.spent, true) + '<div class="gear-rail gear-result-troops">' + tabs + '</div>' +
-      '<div class="gear-result-grid">' + tiles + '</div>' +
-      (kept.length ? '<p class="gear-kept">' + view.esc(tr('unchangedSlots')) + ': ' + kept.map(function (slot) { return view.esc(tr(slot)); }).join(' · ') + '</p>' : '') + (result.refund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.refund) + ' XP ' + view.esc(tr('recoverXP')) + ' → ↑ ' + fmt(result.spent.xp) + ' XP ' + view.esc(tr('redistributeXP')) + '</p>' : '') + '<div class="gear-cost-title">' +
-      '<strong>' + view.esc(tr('spend')) + '</strong>' +
-      '</div>' +
-      view.costStrip(result.spent) + view.kvkNote() + view.cavalryNote(state, result.pieces) + '<div class="gear-cost-title">' +
-      '<strong>' + view.esc(tr('remaining')) + '</strong>' +
-      '</div>' +
-      view.costStrip(result.remaining) + '<div class="gear-record-action">' +
-      '<button type="button" id="gear-apply-result" class="gear-primary gear-action" aria-describedby="gear-record-hint">' + view.esc(tr('applyResult')) + '</button>' +
-      '<p id="gear-record-hint" class="gear-gloss">' + view.esc(tr('applyHint')) + '</p>' +
-      '</div>';
-  }
-  function searchVisible() { return state.mode === 'optimise' && el('answer-panel').getClientRects().length > 0; }
+
+  // ── The search, in a worker: what the bag buys now, and the optimal set ──
   function cancelSearch() {
     clearTimeout(searchDelay); clearTimeout(searchTimer);
     if (searchWorker) searchWorker.terminate();
@@ -313,7 +320,6 @@
     el('search-status').hidden = true;
   }
   function scheduleSearch(delay) {
-    if (!searchVisible()) { cancelSearch(); return; }
     if (result) { paintResults(); return; }
     el('run').hidden = !searchFailed;
     el('search-status').hidden = false;
@@ -324,7 +330,7 @@
     searchDelay = setTimeout(run, delay);
   }
   function run() {
-    if (running || !searchVisible()) return;
+    if (running) return;
     clearTimeout(searchDelay);
     searchFailed = false;
     running = true;
@@ -342,26 +348,26 @@
       searchTimer = setTimeout(fail, 60000);
       worker.onmessage = function (event) {
         if (worker !== searchWorker || currentRevision !== revision) return;
-        if (!event.data || !event.data.ok || !event.data.result) { fail(); return; }
-        cancelSearch();
-        strategyResult = event.data.result;
-        result = strategyResult.now;
-        if (result.changes.length) {
-          resultTroop = E.TYPES.filter(function (type) { return state.included[type]; }).sort(function (a, b) {
-            function gain(type) { return result.details.reduce(function (sum, d) { return sum + (d.id.startsWith(type + '-') ? d.gain : 0); }, 0); }
-            return gain(b) - gain(a);
-          })[0];
-        }
-        paintResults();
+        if (event.data && event.data.ok && event.data.fit) { fit = event.data.fit; cancelSearch(); paintFit(); return; }
+        if (!event.data || !event.data.ok || !event.data.result || !event.data.result.now) { fail(); return; }
+        // The answer is in; the worker stays on to say which profile the gear fits best.
+        clearTimeout(searchTimer); running = false;
+        el('results').setAttribute('aria-busy', 'false');
+        el('search-status').hidden = true;
+        result = event.data.result.now;
+        optimum = event.data.result.optimal || null;
+        planned = event.data.result.planned || null;
+        paintGear(); paintOptimal(); paintPlanShare(); paintResults();
       };
       worker.onerror = fail;
       worker.postMessage(copy(state));
     } catch (error) { fail(); }
   }
   function editWeights() {
-    showPage('settings');
-    el('weights').scrollIntoView({ block: 'nearest' });
-    el('weights').querySelector('input').focus({ preventScroll: true });
+    var fold = document.getElementById('weights');
+    fold.open = true;
+    fold.scrollIntoView({ block: 'nearest' });
+    el('weights-grid').querySelector('input').focus({ preventScroll: true });
   }
   function boot(api) {
     BH = api; state = E.defaults();
@@ -373,17 +379,16 @@
     } catch (error) { note('loadFailed'); el('save').textContent = tr('saveFailed'); }
     syncXP();
     paint();
-    paintGuest();
     syncAddress();
-    if (linkFailed) note('linkInvalid');
+    openHash();
+    window.addEventListener('hashchange', openHash);
     if (ledger) ledger.subscribe(function (saved) {
       if (saving) return;
       ledgerRevision = saved.revision;
       var input = ledger.heroGear(E);
       state = E.normaliseState(input); readParts(input);
       previous = null; el('undo').hidden = true;
-      cancelSearch(); revision++; result = null; strategyResult = null;
-      el('results').textContent = ''; el('opportunities').textContent = '';
+      cancelSearch(); revision++; result = null; optimum = null; planned = null; fit = null;
       paint();
     });
     window.addEventListener('player-ledger:error', function () { note('loadFailed'); cancelSearch(); });
@@ -391,7 +396,7 @@
       var node = event.target;
       if (node.dataset.piece && node.dataset.field !== 'quality') {
         state.pieces[node.dataset.piece] = E.normalisePiece(Object.assign({}, state.pieces[node.dataset.piece], { [node.dataset.field]: Number(node.value) }));
-        paintEditor();
+        paintGear();
         el('edit-fields').querySelector('.gear-edit-art').innerHTML = view.gearItem(node.dataset.piece, state.pieces[node.dataset.piece]) + '<span>' + view.esc(view.pieceLabel(state.pieces[node.dataset.piece])) + '</span>';
       } else if (node.dataset.weight) {
         state.profile = 'custom'; el('profile').value = 'custom';
@@ -403,59 +408,57 @@
       var node = event.target;
       if (node.dataset.piece) {
         if (node.dataset.field === 'quality') state.pieces[node.dataset.piece] = E.normalisePiece(Object.assign({}, state.pieces[node.dataset.piece], { quality: node.value }));
-        changed({ piece: node.dataset.piece }); paintEditor();
+        changed({ piece: node.dataset.piece });
         if (node.dataset.field === 'quality') paintEdit();
-        else node.value = state.pieces[node.dataset.piece][node.dataset.field];
-      } else if (node.id === 'gear-include') { state.included[state.troop] = node.checked; changed(); }
+        else { node.value = state.pieces[node.dataset.piece][node.dataset.field]; var list = el('edit-fields').querySelector('.gear-steps'); if (list) list.innerHTML = steps(node.dataset.piece); }
+      } else if (node.dataset.include) { state.included[node.dataset.include] = node.checked; changed(); }
+      else if (node.id === 'gear-show-optimal') { showOptimal = node.checked; paintGear(); paintOptimal(); }
       else if (node.id === 'gear-reforge') { state.reforge = node.checked; changed(); }
+      else if (node.id === 'gear-hammer-reforge') { state.hammerReforge = node.checked; changed(); }
       else if (node.id === 'gear-profile') {
         state.profile = node.value;
         if (E.PROFILES[node.value]) state.weights = copy(E.PROFILES[node.value]);
-        changed(); paintEditor();
+        changed();
         if (node.value === 'custom') editWeights();
-      } else if (node.id === 'gear-selected') selectPiece(node.value);
+      }
     });
     el('forge').addEventListener('click', function (event) {
       var button = event.target.closest('button'); if (!button) return;
       if (button.dataset.showWeights) editWeights();
-      else if (button.dataset.resultTroop) { resultTroop = button.dataset.resultTroop; paintResults(); }
-      else if (button.dataset.route) { planIndex = Number(button.dataset.route); paintAnswer(); }
-      else if (button.dataset.select && button.classList.contains('gear-row')) editPiece(button.dataset.select);
-      else if (button.dataset.select) selectPiece(button.dataset.select);
+      else if (button.dataset.useProfile) { state.profile = button.dataset.useProfile; state.weights = copy(E.PROFILES[state.profile]); changed(); el('profile').focus(); }
+      else if (button.dataset.open !== undefined) {
+        detail = button.dataset.open || null; paintGear();
+        var focus = detail ? el('detail').querySelector('.gear-back') : el('cards').querySelector('[data-open="' + button.dataset.open + '"]');
+        if (focus) focus.focus();
+      }
+      else if (button.dataset.select) editPiece(button.dataset.select);
       else if (button.dataset.editPiece) editPiece(button.dataset.editPiece);
-      else if (button.dataset.view && !button.dataset.action) { state.view = button.dataset.view; activePage = 'planner'; persist(); paintView(); }
-      else if (button.dataset.mode && !button.dataset.action) { state.mode = button.dataset.mode; persist(); paintAnswer(); scheduleSearch(0); }
-      else if (button.dataset.goal) { state.goal = button.dataset.goal; persist(); paintAnswer(); }
       else if (button.id === 'gear-apply-result' && result) {
         var next = copy(state); next.pieces = result.pieces; next.resources = result.remaining;
         if (applyState(next, { source: 'plan' })) note('applied');
-      } else if (button.id === 'gear-apply-milestone') {
-        var target = nextTarget(); if (!target) return;
-        var costs = E.cost(state.pieces[state.selected], target); if (!E.affordable(costs, state.resources)) return;
-        var updated = copy(state); updated.pieces[state.selected] = target;
-        E.RES.forEach(function (r) { updated.resources[r] -= costs[r]; });
-        if (applyState(updated, { source: 'plan' })) note('applied');
       }
     });
-    document.addEventListener('tabs:select', function (event) {
-      if (![el('troops'), el('modes'), el('views')].includes(event.target)) return;
-      var detail = event.detail;
-      if (detail.binding === 'view' && (detail.value === 'gear' || detail.value === 'plan')) activePage = 'planner';
-      else if (detail.binding === 'view') { showPage(detail.value); return; }
-      if (detail.binding === 'troop') selectPiece(detail.value + '-' + state.selected.split('-')[1]);
-      else if (detail.binding === 'view') { state.view = detail.value; persist(); paintView(); }
-      else if (detail.binding === 'mode') { state.mode = detail.value; persist(); paintAnswer(); scheduleSearch(0); }
+    el('edit-dialog').addEventListener('click', function (event) {
+      var button = event.target.closest('[data-apply-goal]'); if (!button) return;
+      var from = state.pieces[state.selected], target = E.milestone(from, button.dataset.applyGoal); if (!target) return;
+      var costs = E.cost(from, target); if (!E.affordable(costs, state.resources)) return;
+      var updated = copy(state); updated.pieces[state.selected] = target;
+      E.RES.forEach(function (r) { updated.resources[r] -= costs[r]; });
+      if (applyState(updated, { source: 'plan' })) { note('applied'); paintEdit(); }
     });
     el('share').addEventListener('click', shareLink);
+    el('blank').addEventListener('click', startBlank);
+    el('load-mine').addEventListener('click', loadMine);
+    el('save-mine').addEventListener('click', function () { el('save-dialog').showModal(); });
+    el('cancel-save').addEventListener('click', function () { el('save-dialog').close(); });
+    el('confirm-save').addEventListener('click', saveMine);
     el('close-edit').addEventListener('click', function () { el('edit-dialog').close(); });
     el('edit-dialog').addEventListener('close', function () {
-      paintEditor(); paintAnswer();
+      paintGear();
       var button = document.querySelector('.gear-row[data-select="' + state.selected + '"]');
       if (button && button.getClientRects().length) button.focus();
-      else { button = document.querySelector('.gear-upgrade'); if (button) button.focus(); }
     });
     el('run').addEventListener('click', run);
-    window.addEventListener('resize', function () { scheduleSearch(250); });
     el('undo').addEventListener('click', function () {
       if (!previous) return;
       try {
@@ -463,7 +466,7 @@
         var restored = ledger.importJSON(previous.ledger, E, ledgerRevision);
         ledgerRevision = restored.revision;
         var input = ledger.heroGear(E); state = E.normaliseState(input); readParts(input);
-        previous = null; changed(); paint(); el('undo').hidden = true; note('undone');
+        previous = null; changed(); el('undo').hidden = true; note('undone');
       } catch (error) { note('loadFailed'); } finally { saving = false; }
     });
     document.addEventListener('player-save:imported', function (event) {
@@ -474,6 +477,5 @@
     el('cancel-reset').addEventListener('click', function () { el('reset-dialog').close(); });
     el('confirm-reset').addEventListener('click', function () { if (applyState(Object.assign(E.defaults(), { parts: { ten: 0, hundred: 0, remainder: 0 } }), { all: true, source: 'reset' })) { el('reset-dialog').close(); note('resetDone'); } });
   }
-  window.BH.registerPage({ boot: boot, onChange: function () { if (!state) return; paint(); persist(); paintResults(); } });
+  window.BH.registerPage({ boot: boot, onChange: function () { if (!state) return; paint(); persist(); } });
 })();
-

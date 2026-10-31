@@ -243,20 +243,29 @@ This avoids charging for a full reset/rebuild when the final level is the same.
 Item saves retain sub-10 XP remainders, and the resource ledger is authoritative
 when migrating older saves whose item counts disagree with the XP total.
 
-## Guest mode and gear links — 16 October 2026
+## Your save, sheets and links — 16 and 31 October 2026
 
-`?guest` opens the planner on a ledger held in memory, seeded from a copy of the
-saved player ledger. `hero-gear.js` swaps it in for `PlayerLedger.shared()` before
-the shared modules mount, so the bag fields, backups, screenshot import, reset and
-undo all act on the copy. Nothing typed in guest mode reaches `localStorage`.
+Without a link the planner works on the saved player ledger and every edit saves
+as it goes. A link (`?gear=…`), `?guest` or Start blank opens a sheet of its own:
+a ledger held in memory, seeded from the link or from a copy of the save.
+`hero-gear.js` swaps it in for `PlayerLedger.shared()` before the shared modules
+mount, so the bag fields, backups, screenshot import, reset and undo all act on
+the sheet, and nothing typed there reaches `localStorage` until Save as mine.
 
-**copy gear link** copies `?gear=…&w=…`. `gear` lists the twelve pieces in troop
+On your save there is no bar: edits save as you go. On a sheet one slim notice
+above the workspace says which it is (a shared sheet, a blank sheet or an
+unreadable link, "Your save is untouched.") with Save as mine and Load mine
+beside it. **Copy share link** and **Start blank** are small links under your
+gear. **Copy share link** copies `?gear=…&w=…`. `gear` lists the twelve pieces in troop
 then slot order as quality letter, total level and mastery (`m100.10`, `r120.11`,
-`e80.0`); `w` is a profile name or six custom weights. A link carries no resources,
-so a shared link never shows the sender's bag. A gear link always opens in guest
-mode, starting from blank resources. In guest mode the address bar follows every
-edit, so it is always the shareable link. Malformed or impossible pieces reject the
-whole link and guest mode starts from blank gear with a notice.
+`e80.0`); `w` is a profile name or six custom weights. A link carries no
+resources, so a shared link never shows the sender's bag. On a sheet the address
+bar follows every edit, so it is always the shareable link. Malformed or
+impossible pieces reject the whole link, and the sheet starts blank with that
+said in the notice. **Load mine** goes back to your save, **Start blank** opens a
+link of blank gear, and **Save as mine** asks first, then writes the sheet's
+pieces, build profile and weights to your save; a material the sheet left at 0
+keeps your number. Governor gear works the same way.
 
 ## Best split — 16 October 2026
 
@@ -279,13 +288,79 @@ hammers or mithril over the best split. Those resources cannot be refunded in ga
 the view guides future spending. The score uses the profile weights and excludes
 conquest bonuses, so a deliberate conquest build will read as over-invested.
 
-## Planner, Settings and Theory tabs — 16 October 2026
+## One page, as on Governor gear — 31 October 2026
 
-The page has one top rail: Planner, Settings and Theory (Gear, Plan, Settings and
-Theory on phones, where Planner splits into its two views). Weights, reforge and
-the save tools live on Settings; every explanation lives on Theory under its own
-heading, and results link to the section that explains them. The page has no
-folds. The shipped ids still work: `#how-it-works`, `#maths`, `#maths-sources`,
-`#save-backups` and `#gear-settings` open their tab, and the Theory sections add
-`#ranking`, `#kvk-points`, `#cost-includes` and `#best-split-method`. Without
-JavaScript every panel stays visible.
+The page shares its frame with Governor gear through `css/sheet.css`: the title
+and lede, the "This sheet" bar, then your gear on the left and the answer on the
+right, then folds. The left column is "Read a hero gear screenshot" (a
+`data-screen-import="pick"` box that also takes a drop), the troop tabs, the four
+pieces and the materials strip. The right column is "The answer": the four modes
+as one boxed row of tabs, then the priority (build profile), the six weights and
+reforge in place (hidden under Piece costs, which does not weigh), then the
+result. On phones the Gear and Plan tabs still split the two columns.
+
+What used to be the Settings and Theory tabs are folds under the workspace: how
+the planner works, ranking, KvK points, cost includes, best split, the maths and
+sources, and your save and backups. The shipped ids still work: a link to
+`#how-it-works`, `#ranking`, `#kvk-points`, `#cost-includes`,
+`#best-split-method`, `#maths`, `#maths-sources` or `#save-backups` opens its
+fold, and `#weights` lands on the weights. Without JavaScript the folds open
+as usual.
+
+## Cards, one answer and % of optimal — 31 October 2026
+
+The modes and nested tabs are gone. **Your gear** is three troop cards, each a
+2×2 grid of its pieces; a card opens that troop laid out as the game does (helm
+and chest on the left, gloves and boots on the right, its share of optimal in
+the middle) with its "count in the answer" box. A piece opens one sheet: its
+quality, level and mastery, then what its next steps cost (ascend to red first,
+then the next mithril use), each with "mark this upgrade done" when the bag pays
+for it. That replaces the Piece costs mode.
+
+**% of optimal** (`HeroGear.optimal`) is shown twice:
+
+- Under your gear, without the bag: every resource already invested in the
+  counted pieces is the budget, and the gear is compared with the best layout of
+  that budget. "Show optimal gear" swaps the cards to that layout and lists each
+  moved piece as now → optimal.
+- At the top of the answer, with the bag added to the budget: your gear now →
+  after Spend now, so a player sees how far off they were and how close this
+  round of upgrades gets them.
+
+The best layout is found by the same greedy search as Spend now (`optimise`),
+which spends the budget from four starts: every piece at level 0, each troop's
+exact best split (`bestSplit`, which pools within a troop), the gear as it is
+with its XP free to move, and the gear as it is. From each start it spends what
+that start left, across all troops; the best result counts, and the gear itself
+is a candidate, so the share never passes 100%. Greedy from level 0 alone
+scored below some real gear (704 vs 745 on the supplied six-overview set), which
+is why the other starts are there. Shares are rounded down to a tenth so gear
+short of optimal never reads 100%.
+
+The priority (build profile) and XP reforge sit in the answer above Spend now.
+The worker also scores the gear's share of optimal under every profile
+(`profileFit`) and, when another profile fits better than the chosen one, offers
+it in one line with a "Use it" button. Custom weights are the Advanced fold
+(`#weights`). **Worth saving for** lists `redPlans` routes, red a little out of
+reach ranked by gain per cost, with what each is short; a route opens its
+piece's sheet. Old links to `#best-split-method` open "How % of optimal works".
+
+**Hammer reforge** (Advanced, off by default; from the site owner, 31 October
+2026): reforging a piece's mastery gives back half the Forgehammers it took,
+rounded down, and none of the spare mythic gear. Red gear can't be reforged for
+XP or hammers. Spend now then also tries resetting the mastery of each single
+piece, each troop and every piece before its greedy search, and keeps a reset
+only where it scores better; the result shows "↓ N hammers back" on the piece.
+% of optimal is unchanged: it already treats everything invested as free to
+place.
+
+**Look-ahead** (31 October 2026): greedy takes the best gain per cost one step
+at a time, so it can spend spare mythic gear on mastery a step at a time and have
+none left for an ascension. After the greedy runs, `optimise` reads the winner as
+one class per piece (quality, mastery, red tier: these fix hammers, spare mythic
+gear and mithril), fills levels from the XP by stat per XP (exact for the linear
+score), and hill-climbs: every other class for each piece, and every pair of
+small changes on two pieces (mastery ±2, tier ±1), keeping the best improvement
+until none is left. Nothing goes below where the run started. On the test sets it
+added up to 2.8% to Spend now and 8% to the optimum, in under half a second.
+`profileFit` skips it to keep six searches quick.

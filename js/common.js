@@ -32,6 +32,15 @@
     if (loc !== nfLocale) { nf = new Intl.NumberFormat(loc); nfLocale = loc; }
     return nf.format(Math.round(n));
   }
+  // A big amount in the reader's own short form: 1.58B, 1,58 Mrd., 15.8億, 15.8亿.
+  // Below a million the full figure is short enough and stays exact.
+  var cf = null, cfLocale = '';
+  function compact(n) {
+    if (!isFinite(n) || Math.abs(n) < 1e6) return fmt(n);
+    var loc = getLocale();
+    if (loc !== cfLocale) { cf = new Intl.NumberFormat(loc, { notation: 'compact', maximumFractionDigits: 2 }); cfLocale = loc; }
+    return cf.format(n);
+  }
   function mult(n) {
     return n.toLocaleString(getLocale(), { maximumFractionDigits: 1, minimumFractionDigits: 0 }) + '\u00D7';
   }
@@ -117,6 +126,7 @@
   var BH = {
     get page() { return page; },
     fmt: fmt,
+    compact: compact,
     mult: mult,
     tr: tr,
     trCount: trCount,

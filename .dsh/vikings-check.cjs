@@ -55,3 +55,10 @@ test('troops given in thousands split into whole thousands and still conserve', 
   const rows = E.hqRows({ capacity: 300000, infantryPercent: 75, cavalryPercent: 25, participants: Array.from({ length: 7 }, (_, i) => ({ playerId: 'p' + i, queue: 1 })) });
   assert.equal(rows.reduce((n, r) => n + E.sum(r), 0), 300000); rows.forEach(r => E.types.forEach(k => assert.equal(r[k] % 1000, 0)));
 });
+test('a player sends at most one march to each city', () => {
+  const roster = [{ id: 'a', nickname: 'A', infantry: 100, cavalry: 0, archers: 0, marchCapacity: 50, marches: 2 }, { id: 'b', nickname: 'B', infantry: 0, cavalry: 0, archers: 0, marchCapacity: 50, marches: 1 }, { id: 'c', nickname: 'C', infantry: 0, cavalry: 0, archers: 0, marchCapacity: 50, marches: 1 }];
+  const twice = [{ queue: 1, destination: 'b', infantry: 50, cavalry: 0, archers: 0 }, { queue: 2, destination: 'b', infantry: 50, cavalry: 0, archers: 0 }];
+  assert(E.validate(roster, { a: twice }, E.emptyHQ()).errors.some(x => /different city/.test(x)));
+  twice[1].destination = 'c';
+  assert.deepEqual(E.validate(roster, { a: twice }, E.emptyHQ()).errors, []);
+});

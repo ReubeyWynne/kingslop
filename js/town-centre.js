@@ -141,22 +141,18 @@
   });
 
   /* Every shelf: tiles paint the ledger, and one dialog edits whatever was tapped.
-     Hero gear is a set of four per troop type; governor gear is one set of six
-     with three charms each, laid out as the in-game governor profile. */
+     Hero gear is a set of four per troop type. Governor gear has its own module, the
+     shared governor profile (js/governor-profile.js). */
   window.Interactions.register('town-inventory', function (context) {
-    var H = window.HeroGear, G = window.Governor, T = window.TownCentre, B = window.BuildingSpend, R = window.TroopSpend, store = context.ledger, api = context.api, root = context.root;
-    var dialog = context.targets('dialog')[0], editing = null, art = '../img/governor/';
+    var H = window.HeroGear, T = window.TownCentre, B = window.BuildingSpend, R = window.TroopSpend, store = context.ledger, api = context.api, root = context.root;
+    var dialog = context.targets('dialog')[0], editing = null;
     var calculator = T.forLedger(store);
-    var governorView = window.GovernorView.create(G, api, art, { emptyGemLabel: '', stars: '[data-part="stars"]', tierFallback: 'id' });
     var TROOPS = { inf: 'Infantry', cav: 'Cavalry', arc: 'Archer' };
     function target(key) { return context.targets(key)[0]; }
     function put(key, value) { context.targets(key).forEach(function (node) { node.textContent = value; }); }
     function part(node, key) { return node.querySelector('[data-part="' + key + '"]'); }
     function setSrc(img, src) { if (img && img.getAttribute('src') !== src) img.setAttribute('src', src); }
     function quality(q) { return api.tr(q === 'mythic' ? 'gear.mythicQuality' : 'gear.' + q, q.charAt(0).toUpperCase() + q.slice(1)); }
-    var govState = governorView.state, paintCard = governorView.paintCard, paintGem = governorView.paintGem;
-    function govLevelName(index) { return governorView.levelName('gear', index); }
-    function tileName(node) { var label = node.querySelector('.town-tile-name'); return label ? label.textContent : ''; }
     function paintHero(node, piece) {
       node.dataset.quality = piece ? piece.quality : '';
       part(node, 'level').textContent = piece ? '+' + api.fmt(piece.quality === 'red' ? piece.level - 100 : piece.level) : '';
@@ -164,11 +160,7 @@
       part(node, 'mastery-wrap').hidden = !piece || piece.quality === 'epic';
       part(node, 'band').textContent = piece ? quality(piece.quality) : api.tr('gov.notSet', 'not set');
     }
-    function score(kind, levels) {
-      var sum = 0, partial = false, any = false;
-      Object.keys(levels).forEach(function (id) { if (levels[id] === null) return; any = true; var s = G.score(kind, levels[id]); if (s === null) partial = true; else sum += s; });
-      return !any ? '—' : partial ? fill(api, 'partialScore', { n: api.fmt(sum) }) : api.fmt(sum);
-    }
+    function tileName(node) { var label = node.querySelector('.town-tile-name'); return label ? label.textContent : ''; }
     function levelName(level) { return level === '0' ? t(api, 'notBuilt') : level; }
     function renderBuildings(snapshot, plan, most) {
       var levels = (snapshot.buildings && snapshot.buildings.levels) || {};
@@ -275,11 +267,13 @@
       var snapshot = calculator.snapshot(), shared = calculator.context(), pieces = snapshot.heroGear.pieces, set = 0, plan = shared.buildings;
       renderBuildings(snapshot, plan, shared.buildingsMax);
       renderTroops(snapshot);
-      var gear = store.governor('gear', snapshot), charms = store.governor('charms', snapshot);
       context.nodes('[data-count]').forEach(function (tile) {
         var amount = confirmed(snapshot, tile.dataset.count);
         tile.dataset.state = amount === null ? 'unknown' : 'confirmed';
-        tile.querySelector('[data-amount]').textContent = amount === null ? '?' : api.fmt(amount);
+        var out = tile.querySelector('[data-amount]'), short = amount === null ? '?' : api.compact(amount);
+        out.textContent = short;
+        // A shortened figure keeps the exact one a hover away.
+        if (amount !== null && short !== api.fmt(amount)) out.title = api.fmt(amount); else out.removeAttribute('title');
       });
       context.nodes('[data-duration]').forEach(function (tile) {
         var minutes = confirmed(snapshot, tile.dataset.duration);
@@ -293,17 +287,9 @@
         paintHero(tile.querySelector('.town-gear-item'), piece);
       });
       put('pieces', fill(api, 'pieces', { n: api.fmt(set) }));
-      context.nodes('[data-gov]').forEach(function (tile) {
-        var id = tile.dataset.gov;
-        tile.dataset.state = govState(gear[id]);
-        paintCard(tile.querySelector('.town-gov-card'), id, gear[id]);
-        tile.querySelectorAll('[data-charm]').forEach(function (gem) { paintGem(gem, id.split('-')[0], charms[gem.dataset.charm]); });
-        tile.setAttribute('aria-label', tileName(tile) + ': ' + govLevelName(gear[id]));
-      });
-      put('gearScore', score('gear', gear)); put('charmScore', score('charms', charms));
       var gearGain = shared.score.gear.score, charmGain = shared.score.charms.score;
       put('gain', gearGain === null && charmGain === null ? t(api, 'gainUnknown') : fill(api, 'gainBoth', { gear: gearGain === null ? '—' : api.fmt(gearGain), charms: charmGain === null ? '—' : api.fmt(charmGain) }));
-      renderDialog(snapshot, gear, charms, plan);
+      renderDialog(snapshot, plan);
     }
     function value(input, next) { if (input !== document.activeElement) input.value = next === null || next === undefined ? '' : next; }
     function rateText(id) {
@@ -311,7 +297,7 @@
       if (!top) return t(api, 'noRate');
       return fill(api, /^speedup-/.test(id) ? 'topRateMinute' : 'topRate', { rate: api.fmt(top.rate), event: eventName(api, top.event), day: api.fmt(top.day) });
     }
-    function renderDialog(snapshot, gear, charms, plan) {
+    function renderDialog(snapshot, plan) {
       if (!dialog || !editing) return;
       dialog.querySelectorAll('[data-panel]').forEach(function (panel) { panel.hidden = panel.dataset.panel !== editing.type; });
       target('clear').hidden = editing.type === 'hero';
@@ -355,13 +341,6 @@
         select.value = level;
         var step = plan.buildings[editing.id];
         put('buildingPlan', !step ? '' : step.steps ? fill(api, 'buildingPlan', { level: step.to, steps: api.fmt(step.steps), gold: api.fmt(step.truegold), tempered: api.fmt(step.tempered) }) : t(api, 'buildingPlanNone'));
-      } else if (editing.type === 'gov') {
-        var id = editing.id, index = gear[id];
-        paintCard(target('govArt'), id, index);
-        put('govLevel', govLevelName(index));
-        dialog.querySelector('select[data-level="gear"]').value = index === null ? '' : String(index);
-        dialog.querySelectorAll('select[data-charm-slot]').forEach(function (select) { var level = charms[id + '-' + select.dataset.charmSlot]; select.value = level === null ? '' : String(level); });
-        dialog.querySelectorAll('.town-gov-gem[data-charm-slot]').forEach(function (gem) { paintGem(gem, id.split('-')[0], charms[id + '-' + gem.dataset.charmSlot]); });
       }
     }
     function labelOptions() {
@@ -372,8 +351,6 @@
         B.options('town-center').forEach(function (id) { var option = element('option', '', id); option.value = id; all.appendChild(option); });
         if (keep) all.value = keep;
       }
-      if (!dialog) return;
-      Array.from(dialog.querySelector('select[data-level="gear"]').options).forEach(function (option) { if (Number(option.value) > 0) option.textContent = govLevelName(Number(option.value)); });
     }
     function write(fn) { try { fn(); } catch (cause) { render(); throw cause; } }
     function writePiece(change) {
@@ -382,7 +359,6 @@
       state.pieces[editing.id] = H.normalisePiece(next);
       write(function () { store.writeHeroGear(state, H, { piece: editing.id }); });
     }
-    function writeGov(kind, id, level) { var change = {}; change[id] = level; write(function () { store.setGovernor(kind, change); }); }
     context.listen(root, 'tabs:select', function (e) {
       if (e.detail.binding === 'town-shelf') context.nodes('[data-shelf]').forEach(function (panel) { panel.hidden = panel.dataset.shelf !== e.detail.value; });
       else if (e.detail.binding === 'town-troop') context.nodes('[data-troop-board]').forEach(function (board) { board.hidden = board.dataset.troopBoard !== e.detail.value; });
@@ -395,7 +371,7 @@
     return { refresh: function () { labelOptions(); render(); }, actions: {
       edit: { run: function (tile) {
         if (!dialog) return;
-        editing = tile.dataset.count ? { type: 'count', id: tile.dataset.count } : tile.dataset.duration ? { type: 'duration', id: tile.dataset.duration } : tile.dataset.piece ? { type: 'hero', id: tile.dataset.piece } : tile.dataset.building ? { type: 'building', id: tile.dataset.building } : tile.dataset.training ? { type: tile.dataset.training === 'position' ? 'position' : /^(speed|capacity)$/.test(tile.dataset.training) ? 'training' : 'tier', id: tile.dataset.training } : { type: 'gov', id: tile.dataset.gov };
+        editing = tile.dataset.count ? { type: 'count', id: tile.dataset.count } : tile.dataset.duration ? { type: 'duration', id: tile.dataset.duration } : tile.dataset.piece ? { type: 'hero', id: tile.dataset.piece } : tile.dataset.building ? { type: 'building', id: tile.dataset.building } : { type: tile.dataset.training === 'position' ? 'position' : /^(speed|capacity)$/.test(tile.dataset.training) ? 'training' : 'tier', id: tile.dataset.training };
         var name = tileName(tile);
         if (editing.type === 'hero') name = api.tr('gear.' + editing.id.split('-')[0], TROOPS[editing.id.split('-')[0]]) + ' · ' + name;
         put('title', name);
@@ -467,21 +443,9 @@
         var again = root.querySelector('[data-move-for="' + button.dataset.moveFor + '"][data-step="' + button.dataset.step + '"]');
         if (again && !again.disabled) again.focus();
       } },
-      govLevel: { events: ['change'], run: function (select) {
-        if (!editing) return;
-        writeGov(select.dataset.level, select.dataset.charmSlot ? editing.id + '-' + select.dataset.charmSlot : editing.id, select.value === '' ? null : Number(select.value));
-      } },
-      govStep: { run: function (button) {
-        if (!editing) return;
-        var slot = button.dataset.charmSlot, kind = slot ? 'charms' : 'gear', id = slot ? editing.id + '-' + slot : editing.id;
-        var now = store.governor(kind)[id], next = Math.min(G.max(kind), Math.max(0, (now || 0) + Number(button.dataset.step)));
-        if (now !== null && next === now) return;
-        writeGov(kind, id, next);
-      } },
       clear: { run: function () {
         if (!editing) return;
-        if (editing.type === 'gov') { var change = {}; change[editing.id] = null; var charms = {}; [1, 2, 3].forEach(function (c) { charms[editing.id + '-' + c] = null; }); write(function () { store.setGovernor('gear', change); store.setGovernor('charms', charms); }); }
-        else if (editing.type === 'building') write(function () { store.setBuilding(editing.id, null); });
+        if (editing.type === 'building') write(function () { store.setBuilding(editing.id, null); });
         else if (editing.type === 'position') write(function () { store.setTrainingPlan('position', null); });
         else if (editing.type === 'training' || editing.type === 'tier') write(function () { store.setTraining(editing.id, null); });
         else if (editing.type !== 'hero') write(function () { store.setBalance(editing.id, null); });

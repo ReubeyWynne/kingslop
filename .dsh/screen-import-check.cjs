@@ -9,15 +9,16 @@ require('../js/import-adapters/backpack.js');
 const pets = require('../js/import-adapters/pets.js');
 require('../js/import-adapters/hero-gear.js');
 const report = require('../js/import-adapters/battle-report.js');
+const governor = require('../js/import-adapters/governor.js');
 const load = name => S.page(JSON.parse(fs.readFileSync('.dsh/import-fixtures/' + name + '.items.json', 'utf8')));
 const values = proposals => Object.fromEntries(proposals.map(p => [p.id, p.value]));
 
 const res = load('overview-resources');
 assert.equal(S.route(res).adapter.id, 'overview-resources');
 const resRead = S.route(res).adapter.read(res);
-assert.deepEqual(values(resRead), { bread: 805510000, wood: 766260000, stone: 112750000, iron: 126170000 });
+assert.deepEqual(values(resRead), { bread: 597910000, wood: 557270000, stone: 104680000, iron: 74320000 });
 assert.ok(resRead.every(p => p.confidence >= S.DOUBT && p.crop && p.crop.h > 0 && p.crop.y < res.height));
-assert.equal(resRead[0].note, '207.60M + 597.91M');
+assert.equal(resRead[0].note, '', 'the dock writes the short form in the reader\'s language');
 
 const spd = load('overview-speedups');
 assert.equal(S.route(spd).adapter.id, 'overview-speedups');
@@ -56,4 +57,10 @@ const totals = S.page({ width: 500, height: 100, items: [
   { text: '50,000', poly: poly(5, 70) }, { text: 'Troops', poly: poly(150, 70, 200) }, { text: '60,000', poly: poly(400, 70) }
 ] });
 assert.deepEqual(values(report.read(totals)), { 'sim-def-cav': 10, 'sim-foe-def-cav': 20, 'sim-hea-cav': 11, 'sim-foe-hea-cav': 21, 'sim-n-total': 50000, 'sim-foe-n-total': 60000 });
-console.log('Screen import: routing (Overview, Pet List, battle reports), Overview resource totals, speedup minutes and pet levels from recorded production reads, and a real battle report’s cells, counts and totals passed.');
+// A Governor Profile is known by its pixels alone, never by words; its gear levels read as the game names them.
+assert.equal(S.get('governor-profile'), governor);
+assert.equal(governor.detect(res), 0);
+assert.equal(governor.note({ unit: 'governor-gear' }, 8, (key, fallback) => fallback), 'Purple 1★');
+assert.equal(governor.note({ unit: 'governor-gear' }, 0, (key, fallback) => fallback), 'not crafted');
+assert.equal(governor.note({ unit: 'level' }, 3, (key, fallback) => fallback), null);
+console.log('Screen import: routing (Overview, Pet List, battle reports), Overview resource totals, speedup minutes and pet levels from recorded production reads, a real battle report’s cells, counts and totals, and the Governor Profile adapter’s contract passed.');

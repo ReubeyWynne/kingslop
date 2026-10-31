@@ -43,20 +43,17 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   const errors = []; page.on('pageerror', e => errors.push(e.message));
   for (const lang of langs) {
     await page.goto(origin + '/hero-gear/?lang=' + lang + '&' + gear);
-    await page.waitForFunction(() => document.querySelectorAll('#gear-rows .gear-row').length === 4);
-    await check(page, lang + ' gear');
-    await page.locator('#gear-view-plan').click();
-    for (const mode of ['plan', 'optimise', 'milestones', 'split']) {
-      await page.locator('#gear-mode-' + mode).click();
-      if (mode === 'optimise') await page.locator('.gear-result-troops button').first().waitFor();
-      if (mode === 'split') await page.locator('.gear-split').first().waitFor();
-      await check(page, lang + ' ' + mode);
-    }
-    for (const tab of ['settings', 'theory']) {
-      await page.locator('#gear-page-' + tab).click();
-      await page.evaluate(() => document.querySelectorAll('.gear-main details').forEach(d => { d.open = true; }));
-      await check(page, lang + ' ' + tab);
-    }
+    await page.waitForFunction(() => document.querySelectorAll('.gear-card .gear-row').length === 12 && document.querySelector('#gear-optimal .gear-headline') && document.querySelector('#gear-results > *'), null, { timeout: 90000 });
+    await check(page, lang + ' cards and answer');
+    if (await page.locator('#gear-show-optimal').count()) { await page.locator('#gear-show-optimal').check(); await check(page, lang + ' optimal'); await page.locator('#gear-show-optimal').uncheck(); }
+    await page.locator('[data-open="cav"]').click();
+    await check(page, lang + ' troop view');
+    await page.locator('#gear-detail [data-select="cav-helm"]').click();
+    await check(page, lang + ' piece sheet');
+    await page.keyboard.press('Escape');
+    // Settings and notes are folds under the workspace.
+    await page.evaluate(() => document.querySelectorAll('.gear-main details').forEach(d => { d.open = true; }));
+    await check(page, lang + ' notes');
   }
   assert.deepEqual(errors, []);
   console.log('Hero gear strings checked in ' + langs.length + ' languages at 320px');

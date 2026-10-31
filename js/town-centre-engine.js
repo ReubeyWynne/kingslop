@@ -181,7 +181,7 @@
         refresh();
         var key = JSON.stringify([event, number, Object.keys(held || {}).sort().map(function (id) { return [id, held[id]]; })]);
         if (!Object.hasOwn(availability, key)) availability[key] = available(saved, event, number, held, null, { original: selected(event, number) });
-        if (target !== null && target !== undefined && (!Number.isSafeInteger(target) || target < 0 || target > 1e9)) throw new Error('Invalid point target');
+        if (target !== null && target !== undefined && (!Number.isSafeInteger(target) || target < 0 || target > 1e15)) throw new Error('Invalid point target');
         return Object.assign({}, availability[key], { shortfall: target === null || target === undefined ? null : Math.max(0, target - availability[key].total) });
       },
       all: function () {
@@ -198,12 +198,12 @@
     var inventory = Object.assign({}, snapshot.inventory), reserved = Object.create(null);
     Object.keys(held).forEach(function (id) {
       var count = held[id];
-      if (!Number.isSafeInteger(count) || count < 0 || count > 1e9) throw new Error('Invalid reservation');
+      if (!Number.isSafeInteger(count) || count < 0 || count > 1e15) throw new Error('Invalid reservation');
       var amount = confirmed(snapshot, id);
       reserved[id] = amount === null ? 0 : Math.min(count, amount);
       if (amount !== null) inventory[id] = Object.assign({}, inventory[id], { amount: amount - reserved[id] });
     });
-    if (target !== null && target !== undefined && (!Number.isSafeInteger(target) || target < 0 || target > 1e9)) throw new Error('Invalid point target');
+    if (target !== null && target !== undefined && (!Number.isSafeInteger(target) || target < 0 || target > 1e15)) throw new Error('Invalid point target');
     var original = known && known.original || day(snapshot, event, number);
     var remaining = Object.values(reserved).some(function (n) { return n > 0; }) ? day(Object.assign({}, snapshot, { inventory: inventory }), event, number) : original;
     var rates = Object.create(null), lines = Object.create(null);

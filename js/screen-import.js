@@ -22,7 +22,10 @@
     ['import-adapters/pets.js', function () { return window.ScreenImport.get('pet-list'); }],
     ['hero-gear-ocr.js', function () { return window.HeroGearOCR; }],
     ['import-adapters/hero-gear.js', function () { return window.ScreenImport.get('hero-gear'); }],
-    ['import-adapters/battle-report.js', function () { return window.ScreenImport.get('battle-report'); }]
+    ['import-adapters/battle-report.js', function () { return window.ScreenImport.get('battle-report'); }],
+    ['governor-data.js', function () { return window.GovernorData; }],
+    ['governor-ocr.js', function () { return window.GovernorOCR; }],
+    ['import-adapters/governor.js', function () { return window.ScreenImport.get('governor-profile'); }]
   ];
   var here = document.currentScript && document.currentScript.src;
 
@@ -151,6 +154,8 @@
   // it: 805,510,000 · 805.510.000 · 805 510 000.
   function locale() { return (window.I18N && window.I18N.locale) || 'en-GB'; }
   function number(n, options) { return new Intl.NumberFormat(locale(), options).format(n); }
+  // A big count beside its exact box, the way the reader says it: 1.58B, 1,58 Mrd., 15.8億.
+  function compact(n) { return number(n, { notation: 'compact', maximumFractionDigits: 2 }); }
 
   function duration(minutes) {
     var d = Math.floor(minutes / 1440), h = Math.floor(minutes % 1440 / 60), m = minutes % 60;
@@ -267,7 +272,8 @@
         // A screen known by its pixels skips the whole-screen read.
         // An image the page can't decode still goes to the reader.
         return kit.load().catch(function () { return null; }).then(function () {
-          var known = kit.pixels && S.probe(kit.pixels);
+          return Promise.resolve(kit.pixels ? S.probe(kit.pixels) : null);
+        }).then(function (known) {
           if (known) return { claim: known, page: S.page({ items: [] }) };
           return reader().read(next.blob, { useful: function (res) { return !!S.route(S.page({ items: res.items })); } }).then(function (res) {
             bitmap = res.preview;
@@ -287,7 +293,7 @@
               // Review follows the screen top to bottom; values never found go last.
               next.proposals = proposals.map(function (p, i) {
                 var item = { target: p.target || 'inventory', id: p.id, label: p.label, value: p.value, confidence: p.confidence, note: p.note || '', unit: p.unit || (/^speedup-/.test(p.id) ? 'minutes' : 'count'), crop: crops[i], y: typeof p.y === 'number' ? p.y : p.crop && typeof p.crop.y === 'number' ? p.crop.y : Infinity };
-                ['max', 'min', 'step', 'side', 'sheet', 'group', 'cols', 'named'].forEach(function (k) { if (p[k] !== undefined) item[k] = p[k]; });
+                ['max', 'min', 'step', 'side', 'sheet', 'group', 'groupLabel', 'cols', 'named'].forEach(function (k) { if (p[k] !== undefined) item[k] = p[k]; });
                 if (p.target === 'gear') { item.piece = p.piece; item.field = p.field; item.quality = p.quality; }
                 return item;
               }).sort(function (a, b) { return a.y - b.y; });
@@ -314,17 +320,21 @@
     }
 
     // ── review ─────────────────────────────────────────
-    var SCREENS = { 'overview-resources': ['import.screen.resources', 'Overview · Resources'], 'overview-speedups': ['import.screen.speedups', 'Overview · Speedups'], 'backpack-items': ['import.screen.backpack', 'Backpack items'], 'pet-list': ['import.screen.pets', 'Pet List'], 'hero-gear': ['import.screen.gear', 'Hero gear'], 'battle-report': ['import.screen.battle', 'Battle report'] };
+    var SCREENS = { 'overview-resources': ['import.screen.resources', 'Overview · Resources'], 'overview-speedups': ['import.screen.speedups', 'Overview · Speedups'], 'backpack-items': ['import.screen.backpack', 'Backpack items'], 'pet-list': ['import.screen.pets', 'Pet List'], 'hero-gear': ['import.screen.gear', 'Hero gear'], 'battle-report': ['import.screen.battle', 'Battle report'], 'governor-profile': ['import.screen.governor', 'Governor Profile'] };
     var QUALITY = { epic: ['import.quality.epic', 'epic'], mythic: ['import.quality.mythic', 'mythic'], red: ['import.quality.red', 'red'] };
 
-    function note(p, value) {
+    function note(p, value, entry) {
+      var S = window.ScreenImport, own = S && entry && S.get(entry.adapter);
+      var said = own && own.note ? own.note(p, value, function (key, fallback) { return tr(key, fallback); }) : null;
+      if (said !== null && said !== undefined) return said;
       if (p.unit === 'minutes') return tr('import.minutesNote', 'minutes{d}', { d: value === null || value === undefined ? '' : ' · ' + duration(value) });
       if (p.unit === 'level') return tr('import.levelNote', 'level');
       if (p.side) return (p.side === 'you' ? tr('import.side.you', 'you') : tr('import.side.foe', 'opponent')) + (p.unit === 'percent' ? ' · %' : '');
       if (p.unit === 'gear-level' || p.unit === 'gear-mastery') {
         var q = QUALITY[p.quality], field = p.unit === 'gear-level' ? tr('import.gearLevel', 'enhancement') : tr('import.gearMastery', 'forge mastery');
-        return q ? field + ' · ' + tr(q[0], q[1]) : field;
+        return q && !p.group ? field + ' · ' + tr(q[0], q[1]) : field;
       }
+      if (p.unit === 'count' && typeof value === 'number' && value >= 1e6) return compact(value) + (p.note ? ' · ' + p.note : '');
       return p.note;
     }
 
@@ -351,9 +361,11 @@
         var prev = entry.proposals[i - 1], follows = !!(p.group && prev && prev.group === p.group);
         if (p.group && !follows) {
           var row = list.querySelector('[data-key="crop:' + p.group + '"]');
-          if (!row) { row = document.createElement('li'); row.className = 'import-crop'; row.dataset.key = 'crop:' + p.group; row.appendChild(document.createElement('img')).alt = ''; }
+          if (!row) { row = document.createElement('li'); row.className = 'import-crop'; row.dataset.key = 'crop:' + p.group; row.appendChild(document.createElement('img')).alt = ''; row.appendChild(document.createElement('span')).className = 'import-crop-name'; }
           show(row.firstChild, p.crop);
-          row.hidden = !p.crop;
+          // A piece read as a whole names itself once, under its picture.
+          row.lastChild.textContent = p.groupLabel || '';
+          row.hidden = !p.crop && !p.groupLabel;
           row.dataset.state = entry.proposals.some(function (q) { return q.group === p.group && doubts.indexOf(q) !== -1; }) ? 'doubt' : 'sure';
           place(row);
         }
@@ -375,7 +387,7 @@
         input.inputMode = places(p.step) || p.min < 0 ? 'decimal' : 'numeric';
         if (document.activeElement !== input) input.value = shown(value, p.step);
         boxValue(input, tr('import.badNumber', 'Enter a number this box can take.'));
-        field(li, 'note').textContent = note(p, value);
+        field(li, 'note').textContent = note(p, value, entry);
         field(li, 'include').checked = included(entry, p);
         var later = newer(entry, p);
         if (later) field(li, 'note').textContent = tr('import.newer', 'a newer shot reads {v}', { v: shown(valueOf(later, later.proposals.filter(function (q) { return q.id === p.id; })[0]), p.step) });
@@ -502,15 +514,20 @@
       })[0] || null;
     }
 
-    // A page's own sheet (the battle simulator's Bonus Details) takes a shot's
-    // values when it is open: it marks itself [data-screen-import-sheet] and
+    // A page's own sheet (the battle simulator's Bonus Details, the governor
+    // page's sheet) takes a shot's values when it is open: it marks itself [data-screen-import-sheet] and
     // answers 'screen-import:sheet' { values, before } by writing the values
     // and filling `before` with what they replaced. Nothing reaches the
     // player save.
+    var OPEN = {
+      'battle-report': ['import.openSheet', 'Open the battle simulator to apply this report. It waits here until then.'],
+      governor: ['import.openGovernor', 'Open the governor gear page to apply this profile. It waits here until then.']
+    };
+    function openSheet(name) { var say = OPEN[name] || OPEN['battle-report']; status(tr(say[0], say[1])); }
     function sheetHost(name) { return document.querySelector('[data-screen-import-sheet~="' + name + '"]'); }
     function applySheet(entry) {
       var name = entry.proposals[0].sheet, host = sheetHost(name), values = {}, n = 0;
-      if (!host) { status(tr('import.openSheet', 'Open the battle simulator to apply this report. It waits here until then.')); return; }
+      if (!host) { openSheet(name); return; }
       entry.proposals.forEach(function (p) {
         var value = valueOf(entry, p);
         if (!included(entry, p) || value === null || !isFinite(value)) return;
@@ -594,7 +611,7 @@
     function undo() {
       if (lastApply && lastApply.sheet) {
         var host = sheetHost(lastApply.sheet);
-        if (!host) { status(tr('import.openSheet', 'Open the battle simulator to apply this report. It waits here until then.')); return; }
+        if (!host) { openSheet(lastApply.sheet); return; }
         host.dispatchEvent(new CustomEvent('screen-import:sheet', { bubbles: true, detail: { values: lastApply.before, before: {} } }));
         status(tr('import.undone', 'Undone. {name} can be applied again.', { name: lastApply.name }));
         lastApply = null;
@@ -615,6 +632,28 @@
       event.preventDefault();
       open(true); render();
       if (opener.dataset.screenImport === 'pick') target('files').click();
+    });
+    // A page's own upload area ([data-screen-import] with -drop) takes dropped
+    // screenshots straight to the dock.
+    function dropZone(event) { return event.target && event.target.closest && event.target.closest('[data-screen-import-drop]'); }
+    function hasFiles(event) { return event.dataTransfer && Array.from(event.dataTransfer.types || []).indexOf('Files') >= 0; }
+    context.listen(document, 'dragover', function (event) {
+      var zone = dropZone(event);
+      if (!zone || !hasFiles(event)) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'copy';
+      zone.dataset.dragging = 'true';
+    });
+    context.listen(document, 'dragleave', function (event) {
+      var zone = dropZone(event);
+      if (zone && !zone.contains(event.relatedTarget)) delete zone.dataset.dragging;
+    });
+    context.listen(document, 'drop', function (event) {
+      var zone = dropZone(event);
+      if (!zone) return;
+      event.preventDefault();
+      delete zone.dataset.dragging;
+      add(event.dataTransfer && event.dataTransfer.files);
     });
     // A screenshot pasted anywhere on the site goes to the dock, unless the
     // reader is pasting into a text field.

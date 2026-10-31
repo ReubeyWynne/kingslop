@@ -21,7 +21,7 @@
      be read or written never blocks a save. */
   var HISTORY = 'bh:player-history:v1', FULL_DAYS = 28, MAX_ENTRIES = 8000;
   var ITEMS = { xp: 'hero-gear-xp', hammers: 'forgehammer', mythic: 'spare-mythic-gear', mithril: 'mithril' };
-  var PREFS = ['included', 'weights', 'profile', 'reforge', 'troop', 'mode', 'view', 'selected', 'goal', 'target', 'targetMastery'];
+  var PREFS = ['included', 'weights', 'profile', 'reforge', 'hammerReforge', 'troop', 'mode', 'view', 'selected', 'goal', 'target', 'targetMastery'];
   var TYPES = ['inf', 'cav', 'arc'], STATS = ['attack', 'lethality', 'defense', 'health'];
   var PIECES = ['inf', 'cav', 'arc'].flatMap(function (troop) { return ['helm', 'gloves', 'chest', 'boots'].map(function (slot) { return troop + '-' + slot; }); });
   // Governor equipment is tracked by level index: 0 is not crafted (or no charm), then one step per tier star or charm level.
@@ -40,7 +40,7 @@
   /* Pets you have tamed: level (1–100, null for unread) and whether the Advance at that level is done
      (only at levels 10, 20 … 100, where the level cap breaks). The skill level is the number of Advances. */
   var PET = { fields: ['level', 'advanced'], level: 100 };
-  var GOVERNOR_PREFS = { goal: ['stats', 'score'], focus: ['all', 'inf', 'cav', 'arc'], gearTarget: 58, charmTarget: 22 };
+  var GOVERNOR_PREFS = { goal: ['stats', 'score'], focus: ['all', 'inf', 'cav', 'arc'], profile: ['bear', 'custom', 'score', 'even', 'defence'], weights: /^(?:10|\d(?:\.\d)?):(?:10|\d(?:\.\d)?):(?:10|\d(?:\.\d)?)$/, gearTarget: 58, charmTarget: 22 };
   // Training facts: the Bonus Overview training speed (%) without temporary buffs, troops per batch in one camp, and the highest tier each camp trains.
   var TRAINING = ['speed', 'capacity', 'inf', 'cav', 'arc'];
   /* Training plans: the capacity buff, the castle position you hold (Noble Advisor or Chief
@@ -68,7 +68,8 @@
   function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
   function valid(ok) { if (!ok) throw new Error('Invalid player ledger'); }
   function object(value) { return value && typeof value === 'object' && !Array.isArray(value); }
-  function count(value) { return Number.isSafeInteger(value) && value >= 0 && value <= 1e9; }
+  // Resources run to hundreds of billions and beyond; specific fields cap themselves lower.
+  function count(value) { return Number.isSafeInteger(value) && value >= 0 && value <= 1e15; }
   function timestamp(value) { return typeof value === 'string' && Number.isFinite(Date.parse(value)); }
   function id(value) { return typeof value === 'string' && /^[a-z][a-z0-9-]{0,79}$/.test(value); }
   function percent(value) { return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 100000; }
@@ -212,7 +213,7 @@
     if (value.preferences.governor !== undefined) {
       var gov = value.preferences.governor;
       valid(object(gov) && Object.keys(gov).every(function (key) { return Object.hasOwn(GOVERNOR_PREFS, key); }));
-      Object.keys(gov).forEach(function (key) { var rule = GOVERNOR_PREFS[key]; valid(Array.isArray(rule) ? rule.includes(gov[key]) : count(gov[key]) && gov[key] <= rule); });
+      Object.keys(gov).forEach(function (key) { var rule = GOVERNOR_PREFS[key]; valid(Array.isArray(rule) ? rule.includes(gov[key]) : rule instanceof RegExp ? typeof gov[key] === 'string' && rule.test(gov[key]) : count(gov[key]) && gov[key] <= rule); });
     }
     if (value.preferences.buildings !== undefined) {
       var order = value.preferences.buildings;
@@ -231,6 +232,7 @@
     if (prefs.weights !== undefined) valid(object(prefs.weights) && ['inf', 'cav', 'arc'].every(function (key) { return Array.isArray(prefs.weights[key]) && prefs.weights[key].length === 2 && prefs.weights[key].every(function (n) { return Number.isFinite(n) && n >= 0 && n <= 100; }); }));
     ['profile', 'troop', 'mode', 'view', 'selected', 'goal'].forEach(function (key) { if (prefs[key] !== undefined) valid(typeof prefs[key] === 'string' && prefs[key].length <= 80); });
     if (prefs.reforge !== undefined) valid(typeof prefs.reforge === 'boolean');
+    if (prefs.hammerReforge !== undefined) valid(typeof prefs.hammerReforge === 'boolean');
     if (prefs.target !== undefined) valid(count(prefs.target) && prefs.target <= 200);
     if (prefs.targetMastery !== undefined) valid(count(prefs.targetMastery) && prefs.targetMastery <= 20);
     valid(Array.isArray(value.imports) && value.imports.length <= 1000);
@@ -347,7 +349,7 @@
         var parts = next.heroGear.parts || { ten: Math.floor(xp % 100 / 10), hundred: Math.floor(xp / 100), remainder: xp % 10 };
         parts[key] = amount;
         xp = parts.ten * 10 + parts.hundred * 100 + parts.remainder;
-        valid(count(xp));
+        valid(count(xp) && xp <= 1e9);
         next.heroGear.parts = parts;
         next.inventory[ITEMS.xp] = { amount: xp, status: 'confirmed', provenance: { source: 'manual', at: new Date().toISOString() } };
       });

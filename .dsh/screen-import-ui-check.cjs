@@ -49,18 +49,19 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     if (!resources) await page.locator('[data-action~="screen-import.next"]').click();
     const res = Object.fromEntries((await tiles()).map(t => [t.key, t]));
     assert.deepEqual(Object.keys(res), ['bread', 'wood', 'stone', 'iron']);
-    assert.equal(res.bread.value, '805,510,000', 'values are grouped the way the page language writes them');
+    assert.equal(res.bread.value, '597,910,000', 'values are grouped the way the page language writes them');
+    assert.equal(await page.locator('.import-tile[data-key="bread"] [data-field="note"]').textContent(), '597.91m', 'a big count is also said short, the British English way');
     assert.ok(Object.values(res).every(t => t.state === 'sure' && t.crop), 'every value carries its cut-out');
 
     // Correct one value, untick another, apply.
-    await page.locator('.import-tile[data-key="wood"] [data-field="value"]').fill('766,000,000');
+    await page.locator('.import-tile[data-key="wood"] [data-field="value"]').fill('557,000,000');
     await page.locator('.import-tile[data-key="wood"] [data-field="value"]').press('Enter');
-    assert.equal(await page.locator('.import-tile[data-key="wood"] [data-field="value"]').inputValue(), '766,000,000', 'a typed number is read with its separators');
+    assert.equal(await page.locator('.import-tile[data-key="wood"] [data-field="value"]').inputValue(), '557,000,000', 'a typed number is read with its separators');
     await page.locator('.import-tile[data-key="iron"] [data-field="include"]').uncheck();
     await page.locator('[data-action~="screen-import.apply"]').click();
     await page.locator('[data-target~="screen-import.status"]', { hasText: 'Saved 3 values' }).waitFor();
     const balances = await page.evaluate(() => { const s = PlayerLedger.shared(); return ['bread', 'wood', 'stone', 'iron'].map(id => s.balance(id)); });
-    assert.deepEqual(balances.map(b => b.amount), [805510000, 766000000, 112750000, null]);
+    assert.deepEqual(balances.map(b => b.amount), [597910000, 557000000, 104680000, null]);
     assert.equal(balances[0].provenance.source, 'screenshot');
 
     // The speedups shot waits on the next page, review and all.

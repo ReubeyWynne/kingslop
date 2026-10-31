@@ -60,7 +60,7 @@
     roster.forEach(function (p) { byId[p.id] = p; incoming[p.id] = []; });
     function fail(message) { errors.push(message); }
     Object.keys(assignments).forEach(function (id) {
-      var p = byId[id], used = new Set(), totals = { infantry: 0, cavalry: 0, archers: 0 };
+      var p = byId[id], used = new Set(), targets = new Set(), totals = { infantry: 0, cavalry: 0, archers: 0 };
       if (!p) { fail('Remove assignments for a player who has left.'); return; }
       var rows = assignments[id];
       if (!Array.isArray(rows) || rows.length > 6) { fail(p.nickname + ': invalid march list.'); return; }
@@ -70,6 +70,9 @@
         TYPES.forEach(function (k) { if (!Number.isSafeInteger(r[k]) || r[k] < 0 || r[k] > 100000000) fail(p.nickname + ': invalid troop count.'); else totals[k] += r[k]; });
         if (sum(r) > capacity(p, r.queue)) fail(p.nickname + ': march ' + r.queue + ' exceeds its capacity.');
         if (r.destination) {
+          // A city's garrison takes one march from each player.
+          if (targets.has(r.destination)) fail(p.nickname + ': send each march to a different city.');
+          targets.add(r.destination);
           if (!byId[r.destination] || r.destination === id) fail(p.nickname + ': choose another registered city.');
           else if (sum(r) > 0) incoming[r.destination].push({ playerId: id, queue: r.queue, troops: sum(r) });
         }

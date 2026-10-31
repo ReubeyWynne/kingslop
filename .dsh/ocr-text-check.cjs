@@ -26,6 +26,7 @@ assert.equal(T.parseShort('6.47K'), 6470);
 assert.equal(T.parseShort('104.68 M'), 104680000);
 assert.equal(T.parseShort('1,084'), 1084);
 assert.equal(T.parseShort('1.2B'), 1200000000);
+assert.equal(T.parseShort('1.05T'), 1050000000000);
 assert.equal(T.parseShort('M'), null);
 
 assert.equal(T.parseDuration('17 day(s)20 hr(s)1 min(s)'), 17 * 1440 + 20 * 60 + 1);

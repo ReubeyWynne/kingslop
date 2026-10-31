@@ -18,6 +18,10 @@
   {"id": "charm-design", "label": "Charm Design", "key": "gov.item.design"}
  ],
  "troops": ["inf", "cav", "arc"],
+ "profiles": {
+  "bear": {"inf": 1, "cav": 1, "arc": 3}
+ },
+ "profilesNote": "Troop weights, infantry : cavalry : archers, multiplying each step's stat gain. bear: archers first at about three times, infantry level with cavalry because it still carries Vikings, Alliance Championship and more (owner, 30 Oct). Players set their own weights for a hero meta. The score profile ranks by governor score instead and has no weights.",
  "gear": {
   "unlock": 22,
   "materials": ["satin", "gilded-threads", "artisans-vision"],

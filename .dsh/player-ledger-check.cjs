@@ -92,6 +92,7 @@ const unsubscribe = store.subscribe(() => notifications++);
 store.setBalance('mithril', 30);
 unsubscribe(); store.setBalance('mithril', 31);
 assert.equal(notifications, 1);
+store.setBalance('bread', 391970000000); assert.equal(store.balance('bread').amount, 391970000000, 'resources save past a billion');
 const screenshot = store.heroGear(E), snapshot = store.snapshot();
 screenshot.pieces['inf-helm'] = { quality: 'mythic', level: 42, mastery: 2 };
 const record = { id: 'gear-' + 'a'.repeat(64), sourceType: 'hero-gear', at: new Date().toISOString(), contentHash: 'a'.repeat(64), confirmation: 'confirmed', itemDelta: { 'inf-helm': { before: snapshot.heroGear.pieces['inf-helm'], after: screenshot.pieces['inf-helm'] } } };

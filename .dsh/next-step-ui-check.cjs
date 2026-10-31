@@ -5,7 +5,8 @@
 const assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path');
 const { withBrowser } = require('./lib/browser-harness.cjs');
 const root = path.resolve('_site'), output = path.resolve('.dsh/next-step-preview');
-const PAGES = ['town-centre', 'heroes', 'hero-gear', 'governor-gear', 'pets', 'masters'];
+// The governor page works on its own sheet, not the save, so it carries no line.
+const PAGES = ['town-centre', 'heroes', 'hero-gear', 'pets', 'masters'];
 withBrowser({ root }, async ({ browser, origin }) => {
   fs.mkdirSync(output, { recursive: true });
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } }), page = await context.newPage(), errors = [];
@@ -26,7 +27,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
 
   // An empty save asks for the Town Centre first on every page, since the stage depends on it,
   // then for the page's own facts.
-  const empty = { 'town-centre': [], heroes: ['Record your heroes'], 'hero-gear': [], 'governor-gear': [], pets: ['Record your pets'], masters: [] };
+  const empty = { 'town-centre': [], heroes: ['Record your heroes'], 'hero-gear': [], pets: ['Record your pets'], masters: [] };
   for (const dir of PAGES) {
     await open(dir);
     assert.ok(await hint().isVisible(), dir + ' shows a line on an empty save');
@@ -53,7 +54,6 @@ withBrowser({ root }, async ({ browser, origin }) => {
     'town-centre': [/^Raise the Embassy from 23 to 24$/, /^Raise the Barracks from 22 to 24$/],
     heroes: [/^Ascend Jabel from /],
     'hero-gear': [/^Record your hero gear$/],
-    'governor-gear': [/^Record your governor materials$/],
     pets: [/^Advance Lion$/],
     masters: [/^Unlock Valora's next class: /]
   };
@@ -68,11 +68,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.screenshot({ path: path.join(output, dir + '-390.png') });
   }
 
-  // The line follows the save without a reload: governor materials, then hero gear.
-  await open('governor-gear');
-  await page.evaluate(() => { const store = window.PlayerLedger.shared(); Object.entries({ satin: 800000, 'gilded-threads': 8000, 'artisans-vision': 2000 }).forEach(([id, n]) => store.setBalance(id, n)); });
-  await page.waitForFunction(() => /^Raise the /.test(document.querySelector('.next-step-list li b').textContent));
-  assert.deepEqual(await titles(), await expected());
+  // The line follows the save without a reload.
   await open('hero-gear');
   await page.evaluate(() => {
     const store = window.PlayerLedger.shared(), gear = store.heroGear(window.HeroGear);
@@ -87,9 +83,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.evaluate(() => window.PlayerLedger.shared().setPet('lion', { level: 20, advanced: true }));
   await page.waitForFunction(() => document.querySelector('.next-step').hidden);
 
-  // Guest mode works on a copy of the save, so the line is not about it.
+  // A sheet of its own (?guest, a link, Start blank) works on a copy of the save, so the line is not about it.
   await page.goto(origin + '/hero-gear/?guest&lang=en');
-  await page.waitForFunction(() => window.UpgradePriority && document.querySelector('#gear-guest-banner') && !document.querySelector('#gear-guest-banner').hidden);
+  await page.waitForFunction(() => window.UpgradePriority && document.querySelector('#gear-load-mine') && !document.querySelector('#gear-load-mine').hidden);
   await page.waitForTimeout(150);
   assert.equal(await hint().isVisible(), false, 'hidden in guest mode');
 

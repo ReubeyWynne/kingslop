@@ -27,8 +27,8 @@ const scenes = [
   ['aurora', '/bear-hunt/', '.ascii-mini--aurora', 1 / 6, 178],
   ['sky', '/bear-hunt/', '.ascii-march-band', 1 / 8, 288],
   ['forge', '/bear-hunt/', '.ascii-rewards-intro .ascii-forge', 0.1, 24],
-  ['charm', '/vikings-vengeance/', '.ascii-mini--charm', 0.2, 32],
-  ['march', '/vikings-vengeance/', '.ascii-march-band', 1 / 8, 96],
+  ['charm', '/vikings-vengeance/guide/', '.ascii-mini--charm', 0.2, 32],
+  ['march', '/vikings-vengeance/guide/', '.ascii-march-band', 1 / 8, 96],
   ['banner', '/swordland-showdown/', '.ascii-mini--banner', 0.15, 24],
   ['castle', '/castle-battle/', '.castle-heading .ascii-mini--castle', 1 / 12, 733],
   ['castle-card', '/castle-battle/', '.deck-card.is-selected .ascii-mini--castle', 1 / 12, 733],
@@ -64,9 +64,6 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
         await page.waitForFunction(token => document.querySelector('.deck-card.is-selected')?.dataset.page === token, name === 'castle-card' ? 'castle' : 'kvksg');
       }
       await page.addStyleTag({ content: '.topbar, .toc { visibility: hidden !important; }' });
-      if (url === '/vikings-vengeance/') {
-        await page.getByRole('tab', { name: 'Guide', exact: true }).click();
-      }
       // Open the collapsed section the scene sits in.
       await page.evaluate(selector => {
         document.querySelector(selector)?.closest('section')?.querySelector('.section-toggle[aria-expanded="false"]')?.click();

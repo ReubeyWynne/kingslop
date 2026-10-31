@@ -15,6 +15,9 @@ These came from the owner in the project thread and are not open questions.
   screen it came from: one cut-out and one input per tile. Confident values are
   pre-ticked and quiet; a "Needs a look (n)" filter steps through only the
   unread or doubtful ones.
+- **Big counts said short, in the reader's language.** A count of a million or
+  more keeps its exact grouped box and gains a short form beside it from
+  `Intl.NumberFormat` compact notation (1.58B, 1,58 Mrd., 15.8億).
 - **Single inputs, clean DOM hooks.** Review markup comes from a `<template>`
   with `data-field` hooks, reconciled in place, the way `troop-roster` works
   (INTERACTIONS.md). No string-built HTML.
@@ -90,7 +93,7 @@ A proposal is one reviewable value:
 
 ```js
 { target: 'inventory', id: 'bread', value: 597910000, confidence: 0.9,
-  crop: { x, y, w, h }, label: 'Bread', note: 'Items 207.60M · In stock 597.91M' }
+  crop: { x, y, w, h }, label: 'Bread', note: '' }
 ```
 
 `value: null` means unread (never a guess). The router reads a file once, asks
@@ -156,8 +159,8 @@ the current schema valid. Update PLAYER-LEDGER.md and
 1. **Overview: Resources** (`overview-resources`). Text rows "Bread 207.60M
    597.91M". Detect by the title "Overview: Resources & Speedups" plus the
    "In Stock" header. Writes `bread`, `wood`, `stone`, `iron`. Default value:
-   **In Stock + Items**, matching the Town Centre note "Record your bag and
-   warehouse totals"; the review note shows both figures. Rounding: the
+   **In Stock**, the right-hand column, which already counts the bag's Items
+   (owner, 29 Oct); Items are never added on top. Rounding: the
    popup's M/K precision is accepted as is. Gold and Governor Stamina rows are
    ignored for now.
 2. **Overview: Speedups** (`overview-speedups`). Rows "General Speedup 17
@@ -183,7 +186,8 @@ the current schema valid. Update PLAYER-LEDGER.md and
    whose proposals target the sheet's fields; switch the sim from fill-then-flag
    to review-before-apply.
 6. Later, not planned in detail: Backpack Gear tab (all hero gear in one
-   screen), Heroes roster (portrait matching and star counting), governor gear.
+   screen), Heroes roster (portrait matching and star counting).
+7. **Governor Profile** (`governor-profile`), done: see step 15.
 
 ## Steps
 
@@ -231,7 +235,10 @@ Each step lands as its own commit with its checks passing.
   on the WASM engine (`tools.readWasm`), crops may be Blobs, and `tools.selected`
   (the gear page's last piece) stands in for an unread troop badge, flagged.
   Each piece gives two proposals (`target: 'gear'`, `piece`, `field`,
-  `quality`; red levels shown as +N; `max` sets the input's limit); apply
+  `quality`; red levels shown as +N; `max` sets the input's limit), grouped
+  under the piece (`group`, `groupLabel`, layout `gear`) so the review shows
+  each piece once, its picture named with its quality, with enhancement and
+  forge mastery side by side; apply
   groups them into one `itemDelta` per piece, keeping unticked fields, and a
   refused input or invalid piece blocks the apply (`import.invalid`).
   `.dsh/hero-gear-visual-check.cjs` reads all 24 fixture pieces through the
@@ -293,6 +300,38 @@ Each step lands as its own commit with its checks passing.
   `#screenshot-import` and `#screenshot-help` open the dock too. Checked by
   `.dsh/screen-import-recipe-check.cjs` (no OCR; records are seeded into the
   save).
+
+- [x] 15. `governor-profile` adapter (`js/import-adapters/governor.js`, reading
+  in `js/governor-ocr.js`). The profile shows levels as pictures, so nothing
+  is read as words. The reader trims the shot to the game (emulator frames,
+  status bars, crops), scales it to 720px wide and searches the fixed card
+  layout (three rows, mirrored sides) against the site's gear art
+  (`img/governor`). `probe` runs that search alone on the dock's 360px shot
+  (`GovernorOCR.find`, gear art only, so it answers with a promise and the
+  core's `probe` waits for it); `read` then takes each card's tier from the
+  whole card, its grade from the gold T badge, its stars by counting gold
+  star blobs, and each charm by troop hue, outline (as the game draws levels
+  1–6, `SEEN`, else the art), look and measured size; a grey socket is no
+  charm. Levels 1 and 5 share an outline at this size, so a close call
+  between them is always flagged. Confidence is calibrated so a right
+  reading lands at or above `DOUBT`. Proposals are `target: 'sheet'`,
+  `sheet: 'governor'`, ids `gov-cav-1` (gear, `unit: 'governor-gear'`, the
+  adapter's `note` names the level as the game does) and `gov-cav-1-2` (a
+  charm), each with its card or charm as the cut-out, in the `pieces`
+  layout (card then its three charms, a piece to a line). The governor
+  page's sheet (`js/governor-sheet.js`) answers `screen-import:sheet`, so a
+  profile never touches the save; elsewhere it waits
+  (`import.openGovernor`). The page also has its own upload area: any
+  `[data-screen-import-drop]` takes dropped files straight to the dock. The
+  dock loads `governor-data.js`, `governor-ocr.js` and the adapter lazily
+  with the rest. Checked by `.dsh/governor-ocr-check.cjs` (every fixture in
+  `.dsh/governor-fixtures/` against its `truth.json`: no confident misread,
+  95% or better right, the Governor Gear screen turned away),
+  `.dsh/governor-ui-check.cjs` (a drop through the dock onto the sheet) and
+  the contract in `.dsh/screen-import-check.cjs`. The fixtures are alliance
+  members' profiles, player panels blanked: purple, blue, gold T1/T2,
+  charms up to level 6, phones, an emulator and a cropped shot. Red cards
+  and charms above 6 still need screenshots.
 
 Resources are saved as both Items and In Stock (owner, 18 Oct).
 

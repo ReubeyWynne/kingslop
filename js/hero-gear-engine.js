@@ -38,7 +38,7 @@
   function defaults() {
     var pieces = {};
     TYPES.forEach(function (type) { SLOTS.forEach(function (slot) { pieces[type + '-' + slot] = normalisePiece(); }); });
-    return { version: 1, pieces: pieces, resources: emptyCost(), included: { inf: true, cav: true, arc: true }, weights: copy(PROFILES.growth), profile: 'growth', reforge: true, troop: 'inf', mode: 'optimise', view: 'gear', selected: 'inf-helm', goal: 'mithril', target: 120, targetMastery: 11 };
+    return { version: 1, pieces: pieces, resources: emptyCost(), included: { inf: true, cav: true, arc: true }, weights: copy(PROFILES.growth), profile: 'growth', reforge: true, hammerReforge: false, troop: 'inf', mode: 'optimise', view: 'gear', selected: 'inf-helm', goal: 'mithril', target: 120, targetMastery: 11 };
   }
   function normaliseState(input) {
     var s = defaults();
@@ -56,6 +56,7 @@
     if (s.pieces[input.selected]) s.selected = input.selected;
     if (['red', 'mithril', 'level'].indexOf(input.goal) >= 0) s.goal = input.goal;
     s.reforge = !!input.reforge;
+    s.hammerReforge = !!input.hammerReforge;
     s.target = number(input.target, 200);
     s.targetMastery = number(input.targetMastery, 20);
     return s;
@@ -182,25 +183,115 @@
       return aMissing - bMissing || a.gap.xp - b.gap.xp || b.gain - a.gain;
     }).slice(0, 3);
   }
+  // Look-ahead after the greedy search. A layout is read as one class per piece (quality, mastery
+  // and red tier, which fix its hammers, spare mythic gear and mithril) plus a level; given the
+  // classes, levels are filled from the XP by stat per XP, which is exact for a linear score.
+  // Starting from the greedy answer, it tries every other class for each piece and every pair
+  // of small changes on two pieces (one gives up hammers or mythic, the other takes them), keeps
+  // the best improvement and repeats until none is left. Nothing goes below where `start` is.
+  function tierOf(p) { return p.quality === 'red' ? Math.min(5, Math.floor((p.level - 100) / 20)) : 0; }
+  function polish(ids, start, bag, init, weights) {
+    var opts = ids.map(function (id) {
+      var from = start[id], tier = tierOf(from), own = splitClasses(from.quality === 'epic').filter(function (c) { return c.quality === from.quality && c.mastery === from.mastery && c.tier === tier; })[0];
+      return splitClasses(from.quality === 'epic').filter(function (c) {
+        if (c.mastery < from.mastery || c.hi < from.level) return false;
+        if (from.quality === 'red') return c.quality === 'red' && c.tier >= tier;
+        return true;
+      }).map(function (c) {
+        c.low = score(id, { quality: c.quality, level: c.lo, mastery: c.mastery }, weights);
+        c.high = score(id, { quality: c.quality, level: c.hi, mastery: c.mastery }, weights);
+        c.slope = c.hi > c.lo ? (c.high - c.low) / (c.hi - c.lo) : 0;
+        c.start = Math.max(c.lo, from.level);
+        c.xp = CUM[c.start] - CUM[from.level];
+        c.dh = c.hammers - (own ? own.hammers : 0); c.dm = c.mythic - (own ? own.mythic : 0); c.dt = c.mithril - (own ? own.mithril : 0);
+        return c;
+      }).filter(function (c) { return c.dh >= 0 && c.dm >= 0 && c.dt >= 0; });
+    });
+    function evaluate(pick) {
+      var h = 0, m = 0, t = 0, left = bag.xp;
+      for (var i = 0; i < pick.length; i++) { var c = pick[i]; h += c.dh; m += c.dm; t += c.dt; left -= c.xp; }
+      if (h > bag.hammers || m > bag.mythic || t > bag.mithril || left < 0) return null;
+      var levels = pick.map(function (c) { return c.start; });
+      for (;;) {
+        var best = -1, ratio = -1;
+        for (var j = 0; j < pick.length; j++) {
+          var need = XP[levels[j] + 1];
+          if (levels[j] >= pick[j].hi || need > left) continue;
+          var r = need ? pick[j].slope / need : Infinity;
+          if (r > ratio) { ratio = r; best = j; }
+        }
+        if (best < 0 || ratio <= 0) break;
+        left -= XP[levels[best] + 1]; levels[best]++;
+      }
+      var value = 0;
+      pick.forEach(function (c, k) { value += c.low + c.slope * (levels[k] - c.lo); });
+      return { value: value, levels: levels };
+    }
+    var pick = ids.map(function (id, i) {
+      var p = init[id], tier = tierOf(p);
+      return opts[i].filter(function (c) { return c.quality === p.quality && c.mastery === p.mastery && c.tier === tier; })[0] || opts[i][0];
+    });
+    if (pick.some(function (c) { return !c; })) return null;
+    var now = evaluate(pick);
+    if (!now) return null;
+    function near(i) { return opts[i].filter(function (c) { return Math.abs(c.mastery - pick[i].mastery) <= 2 && Math.abs(c.tier - pick[i].tier) <= 1 && c !== pick[i]; }); }
+    for (var sweep = 0; sweep < 30; sweep++) {
+      var move = null;
+      ids.forEach(function (id, i) {
+        opts[i].forEach(function (c) {
+          if (c === pick[i]) return;
+          var trial = pick.slice(); trial[i] = c;
+          var got = evaluate(trial);
+          if (got && got.value > (move ? move.got.value : now.value) + 1e-9) move = { trial: trial, got: got };
+        });
+      });
+      for (var a = 0; a < ids.length; a++) {
+        var na = near(a);
+        for (var b = a + 1; b < ids.length; b++) {
+          var nb = near(b);
+          for (var x = 0; x < na.length; x++) for (var y = 0; y < nb.length; y++) {
+            var trial = pick.slice(); trial[a] = na[x]; trial[b] = nb[y];
+            var got = evaluate(trial);
+            if (got && got.value > (move ? move.got.value : now.value) + 1e-9) move = { trial: trial, got: got };
+          }
+        }
+      }
+      if (!move) break;
+      pick = move.trial; now = move.got;
+    }
+    var out = {};
+    ids.forEach(function (id, i) { out[id] = { quality: pick[i].quality, level: now.levels[i], mastery: pick[i].mastery }; });
+    return out;
+  }
+  // Reforging mastery gives back half the Forgehammers it took (rounded down), never the spare
+  // mythic gear; red gear cannot be reforged at all, for XP or hammers.
+  function masteryHammers(m) { return 5 * m * (m + 1); }
+  function hammerBack(p) { return Math.floor(masteryHammers(p.mastery) / 2); }
   function optimise(input, required) {
     var state = normaliseState(input), original = copy(state.pieces), baseline = total(original, state), best;
-    var modes = state.reforge ? [false, true] : [false];
-    modes.forEach(function (reforge) {
+    // Each run frees some resources first. XP reforge frees every non-red piece's XP. With hammer
+    // reforge allowed, runs also reset the mastery of one piece, one troop, or every piece; a reset
+    // that doesn't pay is simply beaten by a run without it.
+    var resettable = Object.keys(original).filter(function (id) { return state.included[id.split('-')[0]] && original[id].quality !== 'red' && original[id].mastery > 0; });
+    var resets = [[]];
+    if (state.hammerReforge && resettable.length) {
+      resettable.forEach(function (id) { resets.push([id]); });
+      TYPES.forEach(function (type) { var some = resettable.filter(function (id) { return id.split('-')[0] === type; }); if (some.length > 1) resets.push(some); });
+      if (resettable.length > 1) resets.push(resettable);
+    }
+    var modes = [];
+    (state.reforge ? [false, true] : [false]).forEach(function (reforge) { resets.forEach(function (reset) { modes.push({ reforge: reforge, reset: reset }); }); });
+    modes.forEach(function (mode) {
+      var reforge = mode.reforge;
       [1, 0.5, 2].forEach(function (power) {
-        var pieces = copy(original), bag = copy(state.resources), refund = 0;
+        var pieces = copy(original), bag = copy(state.resources), refund = 0, reset = {};
         if (reforge) Object.keys(pieces).forEach(function (id) {
           var p = pieces[id];
           if (state.included[id.split('-')[0]] && p.quality !== 'red') { refund += CUM[p.level]; p.level = 0; }
         });
+        mode.reset.forEach(function (id) { bag.hammers += hammerBack(pieces[id]); pieces[id].mastery = 0; reset[id] = true; });
         bag.xp += refund;
-        if (required) {
-          var current = pieces[required.id], forced = target(current, required.to.level, required.to.mastery, required.to.quality === 'red');
-          if (!forced) return;
-          var forcedCost = cost(current, forced);
-          if (!affordable(forcedCost, bag)) return;
-          pieces[required.id] = forced;
-          RES.forEach(function (r) { bag[r] -= forcedCost[r]; });
-        }
+        var startPieces = copy(pieces), startBag = copy(bag);
         var budget = copy(bag);
         for (var iteration = 0; iteration < 2700; iteration++) {
           var winner = null;
@@ -223,25 +314,49 @@
         }
         var value = total(pieces, state);
         if (value < baseline - 1e-8) return;
-        if (!best || value > best.score + 1e-8) best = { pieces: pieces, remaining: bag, refund: refund, score: value };
+        if (!best || value > best.score + 1e-8) best = { pieces: pieces, remaining: bag, refund: refund, reset: reset, score: value, startPieces: startPieces, startBag: startBag };
       });
     });
+    // Look ahead from the greedy winner, within what that run started from.
+    if (best && !required && !(input && input.greedyOnly)) {
+      var ids = Object.keys(original).filter(function (id) { return state.included[id.split('-')[0]]; });
+      var better = polish(ids, best.startPieces, best.startBag, best.pieces, state.weights);
+      if (better) {
+        var tried = copy(best.pieces); Object.keys(better).forEach(function (id) { tried[id] = better[id]; });
+        var triedScore = total(tried, state);
+        if (triedScore > best.score + 1e-8) {
+          var left = copy(best.startBag);
+          ids.forEach(function (id) { var c = cost(best.startPieces[id], tried[id]); RES.forEach(function (r) { left[r] -= c[r]; }); });
+          best.pieces = tried; best.score = triedScore; best.remaining = left;
+        }
+      }
+    }
     if (!best && required) return null;
-    if (!best) best = { pieces: original, remaining: copy(state.resources), refund: 0, score: baseline };
+    if (!best) best = { pieces: original, remaining: copy(state.resources), refund: 0, reset: {}, score: baseline };
     best.baseline = baseline;
     best.gain = best.score - baseline;
+    // A reset piece rebuilt to where it was changes nothing, so it is put back as it was.
+    Object.keys(best.reset).forEach(function (id) {
+      var p = best.pieces[id];
+      if (p.mastery !== original[id].mastery || p.level < original[id].level) return;
+      var rebuilt = cost({ quality: original[id].quality, level: 0, mastery: 0 }, { quality: original[id].quality, level: 0, mastery: original[id].mastery });
+      delete best.reset[id];
+      RES.forEach(function (r) { best.remaining[r] += rebuilt[r]; });
+      best.remaining.hammers -= hammerBack(original[id]);
+    });
     best.changes = Object.keys(original).filter(function (id) { return JSON.stringify(original[id]) !== JSON.stringify(best.pieces[id]); });
-    best.refund = 0;
+    best.refund = 0; best.hammerRefund = 0;
     best.spent = emptyCost();
     best.details = best.changes.map(function (id) {
       var slot = id.split('-')[1], before = stats(original[id], slot), after = stats(best.pieces[id], slot), reforged = best.pieces[id].level < original[id].level;
-      var refund = reforged ? CUM[original[id].level] - CUM[best.pieces[id].level] : 0;
+      var refund = reforged ? CUM[original[id].level] - CUM[best.pieces[id].level] : 0, hammerRefund = best.reset[id] ? hammerBack(original[id]) : 0;
       var start = copy(original[id]);
       if (reforged) start.level = best.pieces[id].level;
+      if (hammerRefund || best.reset[id]) start.mastery = 0;
       var costs = cost(start, best.pieces[id]);
-      best.refund += refund;
+      best.refund += refund; best.hammerRefund += hammerRefund;
       RES.forEach(function (r) { best.spent[r] += costs[r]; });
-      return { id: id, from: original[id], to: best.pieces[id], costs: costs, refund: refund, reforged: reforged, before: before, after: after, delta: { core: after.core - before.core, attack: after.attack - before.attack, defense: after.defense - before.defense }, gain: score(id, best.pieces[id], state.weights) - score(id, original[id], state.weights) };
+      return { id: id, from: original[id], to: best.pieces[id], costs: costs, refund: refund, hammerRefund: hammerRefund, reforged: reforged, before: before, after: after, delta: { core: after.core - before.core, attack: after.attack - before.attack, defense: after.defense - before.defense }, gain: score(id, best.pieces[id], state.weights) - score(id, original[id], state.weights) };
     });
     return best;
   }
@@ -351,6 +466,60 @@
       return result;
     });
   }
+  // How close the gear is to what its own investment could be. Every resource already put
+  // into the included pieces is the budget; with { bag: true } the materials in the bag join
+  // it, which is what the gear could be after this round of upgrades. The greedy search of
+  // Spend now gets the whole budget from four starts: every piece back at level 0, each troop's
+  // own exact best split, the gear as it is with its XP free to move (reforge), and the gear
+  // as it is. From each start it spends whatever that start left over, across all troops, and
+  // the best layout wins. Epic pieces stay epic. The current gear is a candidate too, so the
+  // share never passes 100%.
+  function optimal(input, options) {
+    var state = normaliseState(input), budget = emptyCost(), counted = function (id) { return state.included[id.split('-')[0]]; };
+    var bag = options && options.bag ? copy(state.resources) : emptyCost();
+    Object.keys(state.pieces).forEach(function (id) {
+      if (!counted(id)) return;
+      var spent = invested(state.pieces[id]);
+      RES.forEach(function (r) { budget[r] += spent[r]; });
+    });
+    RES.forEach(function (r) { budget[r] += bag[r]; });
+    var zero = copy(state.pieces), split = copy(state.pieces);
+    Object.keys(zero).forEach(function (id) { if (counted(id)) zero[id] = zeroPiece(state.pieces[id]); });
+    bestSplit(state).forEach(function (set) { set.pieces.forEach(function (p) { split[p.id] = copy(p.to); }); });
+    var quick = !!(options && options.quick);
+    var free = copy(state); free.resources = bag; free.reforge = true; free.hammerReforge = false; free.greedyOnly = quick;
+    var starts = [zero, split, optimise(free).pieces, copy(state.pieces)];
+    var current = total(state.pieces, state), best = { score: current, pieces: copy(state.pieces) };
+    starts.forEach(function (start) {
+      var left = copy(budget), fits = true;
+      Object.keys(start).forEach(function (id) {
+        if (!counted(id)) return;
+        var used = invested(start[id]);
+        RES.forEach(function (r) { left[r] -= used[r]; });
+      });
+      RES.forEach(function (r) { if (left[r] < 0) fits = false; });
+      if (!fits) return;
+      var fresh = copy(state); fresh.pieces = start; fresh.resources = left; fresh.reforge = false; fresh.hammerReforge = false; fresh.greedyOnly = quick;
+      var search = optimise(fresh);
+      if (search.score > best.score + 1e-8) best = { score: search.score, pieces: search.pieces };
+    });
+    var pieces = best.pieces;
+    Object.keys(state.pieces).forEach(function (id) { if (!counted(id)) pieces[id] = copy(state.pieces[id]); });
+    return {
+      budget: budget, current: current, score: best.score, share: best.score > 0 ? Math.min(1, current / best.score) : 1, pieces: pieces,
+      changes: Object.keys(pieces).filter(function (id) { return JSON.stringify(pieces[id]) !== JSON.stringify(state.pieces[id]); })
+    };
+  }
+  // Which priority profile the gear already fits best: its share of optimal under each one
+  // (greedy only, without the look-ahead, to keep six searches quick).
+  function profileFit(input) {
+    var state = normaliseState(input), out = {};
+    Object.keys(PROFILES).forEach(function (name) {
+      var trial = copy(state); trial.weights = copy(PROFILES[name]);
+      out[name] = optimal(trial, { quick: true }).share;
+    });
+    return out;
+  }
   // A share link carries the twelve pieces and the priorities, nothing from the bag:
   // gear=m100.10-r120.11-… in troop then slot order, and w=<profile> or six custom weights.
   var LINK_QUALITY = { e: 'epic', m: 'mythic', r: 'red' };
@@ -412,7 +581,7 @@
     }
     return { spent: spent, left: left, pieces: now, steps: steps, points: kvkPoints(spent) };
   }
-  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, spendable: spendable, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, total: total, redPlans: redPlans, nearbyMilestones: nearbyMilestones, optimise: optimise, strategyComparison: strategyComparison, encodeLink: encodeLink, readLink: readLink, invested: invested, bestSet: bestSet, bestSplit: bestSplit };
+  var api = { XP: XP, CUM: CUM, TYPES: TYPES, SLOTS: SLOTS, RES: RES, KVK_RATES: KVK_RATES, kvkPoints: kvkPoints, spendable: spendable, MILESTONES: MILESTONES, PROFILES: PROFILES, defaults: defaults, normaliseState: normaliseState, normalisePiece: normalisePiece, cap: cap, cost: cost, target: target, milestone: milestone, gap: gap, affordable: affordable, stats: stats, score: score, total: total, redPlans: redPlans, nearbyMilestones: nearbyMilestones, optimise: optimise, strategyComparison: strategyComparison, encodeLink: encodeLink, readLink: readLink, invested: invested, bestSet: bestSet, bestSplit: bestSplit, optimal: optimal, profileFit: profileFit };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.HeroGear = api;
 })(typeof window !== 'undefined' ? window : globalThis);

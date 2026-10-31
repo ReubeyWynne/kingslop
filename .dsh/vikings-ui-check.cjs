@@ -33,6 +33,8 @@ const API = 'https://kingslop.reubeycw.workers.dev';
       await page.locator('.vv-rows .vv-row', { hasText: 'Rowan' }).click();
       await dialog(page).waitFor();
       assert.equal(await page.locator('dialog [data-queue]').count(), 3);
+      const first = await page.locator('dialog [name=destination-1]').inputValue();
+      assert(await page.locator(`dialog [name=destination-2] option[value="${first}"]`).isDisabled(), 'a player sends one march to each city');
       assert(await page.evaluate(() => { const r = document.querySelector('dialog.vv-dialog').getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && Math.abs(r.left - (innerWidth - r.right)) < 2; }), 'dialog is centred');
       await page.getByRole('button', { name: 'Save', exact: true }).click();
       await page.getByRole('tab', { name: 'My troops', exact: true }).click();
@@ -117,7 +119,8 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     assert.deepEqual({ ...stored }, { infantry: 90000, march_capacity: 150000, attending: 1 });
     again = await players.Willow.newPage(); await again.goto(origin + '/vikings-vengeance/');
     await again.getByRole('heading', { name: 'Your marches' }).waitFor();
-    await again.getByRole('button', { name: 'Can’t make it' }).click();
+    await again.getByRole('button', { name: 'Withdraw sign-up' }).click();
+    await dialog(again).getByRole('button', { name: 'Withdraw', exact: true }).click();
     await again.getByRole('heading', { name: /^You’re out for/ }).waitFor(); await again.close();
 
     await L.reload(); await L.getByText('Marches set').waitFor();
@@ -125,9 +128,14 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     const names = ['Rowan', 'Ash'];
     for (let i = 0; i < 2; i++) {
       await L.locator('.vv-rows .vv-row', { hasText: names[i] }).first().click();
-      const d = dialog(L); await d.getByRole('button', { name: 'Even split' }).click();
-      assert.equal(await d.locator('[name=infantry-1]').inputValue(), '45');
-      await d.locator('[name=destination-1]').selectOption({ label: names[1 - i] });
+      const d = dialog(L), first = d.locator('[aria-controls=vv-send-1]');
+      assert.equal(await d.locator('[name=infantry-1]').inputValue(), '0', 'an unsent march carries no troops');
+      await first.click(); assert.equal(await first.getAttribute('aria-expanded'), 'true');
+      await d.locator('[name=destination-1]').selectOption({ value: await d.locator('[name=destination-1] option', { hasText: names[1 - i] }).getAttribute('value') });
+      assert.equal(await d.locator('[name=infantry-1]').inputValue(), '90', 'a sent march takes the split across sent marches');
+      await d.locator('[name=cavalry-1]').fill('30'); await d.getByRole('button', { name: 'Even split' }).click();
+      assert.equal(await d.locator('[name=cavalry-1]').inputValue(), '60', 'Even split resets a hand-set march');
+      assert.match(await d.locator('.vv-send-status').textContent(), /^150k out · 120k home/);
       await d.getByRole('button', { name: 'Save', exact: true }).click(); await d.waitFor({ state: 'hidden' });
     }
     await L.screenshot({ path: path.join(out, 'leader-390.png'), fullPage: true });
@@ -186,10 +194,19 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     assert.equal(await alliance(L), null);
     assert.deepEqual(errors, []);
 
+    // The guide is the other side of the card; old guide links on the planner follow it there.
+    const G = await (await device()).newPage();
+    await G.goto(origin + '/vikings-vengeance/#online'); await G.waitForURL(/\/vikings-vengeance\/guide\/#online$/);
+    assert.equal(await G.locator('.vv-waves [data-kind=online]').count(), 3);
+    await G.locator('.vv-waves button', { hasText: '14' }).click();
+    assert.match(await G.locator('.vv-wave-detail').textContent(), /online cities only/);
+    await G.screenshot({ path: path.join(out, 'guide-390.png'), fullPage: true });
+
     const context = await browser.newContext({ javaScriptEnabled: false }), page = await context.newPage();
-    await page.goto(origin + '/vikings-vengeance/', { waitUntil: 'load' });
+    await page.goto(origin + '/vikings-vengeance/guide/', { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
     assert(await page.locator('#vikings-guide').isVisible());
+    assert.equal(await page.locator('.vv-flip').getAttribute('href'), '../');
     await page.locator('#online summary').click();
     assert(await page.locator('#online p').first().isVisible());
     await context.close();

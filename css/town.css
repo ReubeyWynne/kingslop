@@ -123,22 +123,6 @@
 
 /* Governor — the in-game profile: three pieces down each side, charms as gems beneath,
    and the governor's scores where the figure stands. */
-.town-gov-profile { max-width: 32rem; margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1fr); grid-template-areas: "cav1 crest cav2" "inf1 crest inf2" "arc1 crest arc2"; gap: .9rem .6rem; align-items: start; padding-block: .6rem; background: radial-gradient(ellipse at 50% 50%, var(--signal-tint), transparent 65%); }
-.town-gov-piece[data-gov="cav-1"] { grid-area: cav1; } .town-gov-piece[data-gov="cav-2"] { grid-area: cav2; }
-.town-gov-piece[data-gov="inf-1"] { grid-area: inf1; } .town-gov-piece[data-gov="inf-2"] { grid-area: inf2; }
-.town-gov-piece[data-gov="arc-1"] { grid-area: arc1; } .town-gov-piece[data-gov="arc-2"] { grid-area: arc2; }
-.town-main .town-gov-piece { display: grid; justify-items: center; gap: .25rem; min-width: 0; padding: 0; color: var(--ink); }
-.town-gov-card { --equipment-card-size: 5.5rem; position: relative; }
-.town-gov-stars { position: absolute; inset-inline-start: .3rem; inset-block-end: .25rem; display: flex; flex-direction: column-reverse; color: #ffd75e; font-size: .8rem; line-height: .85; text-shadow: 0 0 2px #000, 0 0 2px #000; writing-mode: vertical-lr; letter-spacing: -.05em; }
-.town-gov-gems { display: flex; gap: .15rem; }
-.town-gov-gem { --equipment-gem-size: 100%; --equipment-empty-opacity: .3; position: relative; display: block; width: 1.55rem; height: 1.55rem; }
-.town-gov-gem b { position: absolute; inset-inline-end: -.2rem; inset-block-end: -.25rem; font: 700 .6rem/1 var(--display-2); color: var(--ink); text-shadow: 0 0 2px #000, 0 0 2px #000; }
-.town-gov-piece .town-tile-name { font-size: .8rem; margin: 0; }
-.town-main .town-gov-piece:hover .town-gov-card, .town-main .town-gov-piece:focus-visible .town-gov-card { outline: 1px solid var(--amber); outline-offset: 2px; }
-.town-gov-crest { grid-area: crest; align-self: center; display: grid; justify-items: center; gap: .6rem; padding: 1rem .3rem; border-block: 1px solid var(--signal-line); text-align: center; }
-.town-gov-crest-mark { font-size: 2.4rem; line-height: 1; color: var(--amber); }
-.town-gov-crest p { display: grid; margin: 0; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
-.town-gov-crest output { font: 1.25rem/1.2 var(--display-2); letter-spacing: 0; text-transform: none; color: var(--ink); font-variant-numeric: tabular-nums; }
 
 /* The edit dialog — one at a time, with steppers rather than bare fields. */
 .town-dialog { position: fixed; inset: 0; margin: auto; width: min(24rem, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); overflow: auto; overscroll-behavior: contain; padding: 1.1rem; border: 1px solid var(--signal-line); border-radius: 2px; color: var(--ink); background: var(--void-2); font: 1rem/1.4 var(--body); }
@@ -161,7 +145,6 @@
 .town-big:has(.unit-select) > span { grid-column: 1 / -1; }
 .town-dialog .unit-select { width: auto; min-width: 4.5rem; }
 .town-edit-art { display: flex; align-items: center; gap: 1rem; margin-bottom: .6rem; }
-.town-edit-art .town-gear-item, .town-edit-art .town-gov-card { flex: 0 0 6rem; width: 6rem; }
 .town-edit-art p { font: 1.2rem var(--display-2); margin: 0; }
 .town-chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--signal-line); margin-bottom: .6rem; }
 .town-dialog .town-chips button { color: var(--ink-muted); font-weight: 700; }
@@ -171,8 +154,6 @@
 .town-stepper { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem; align-items: center; }
 .town-dialog .town-stepper button { font: 1.4rem/1 var(--display-2); }
 .town-dialog .town-stepper input[type="number"] { font-size: 1.25rem; }
-.town-charm-label { display: flex; align-items: center; gap: .4rem; }
-.town-charm-label .town-gov-gem { width: 1.8rem; height: 1.8rem; }
 .town-dialog .town-clear { display: block; margin-top: .8rem; color: var(--ink-muted); font-size: .85rem; }
 
 .town-status { display: block; color: var(--amber); font-size: .9rem; margin-top: .5rem; }
@@ -198,9 +179,6 @@
   .town-hero-board .town-gear-item { max-width: 6rem; }
   .town-bag { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .town-tile-art { width: 4rem; }
-  .town-gov-card { max-width: 4.6rem; }
-  .town-gov-gem { width: 1.3rem; height: 1.3rem; }
-  .town-gov-crest output { font-size: 1.05rem; }
 }
 
 /* Buildings — one level for every building, and the upgrade priorities the points follow. */

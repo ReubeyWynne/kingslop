@@ -124,7 +124,7 @@
       var viewer = !!state && state.access === 'view'; document.getElementById('vv-my-tab').hidden = viewer; if (viewer && next === 'my-plan') next = 'alliance-plan';
       mode = next;
       root.querySelectorAll('[role=tab]').forEach(function (n) { n.setAttribute('aria-selected', String(n.dataset.tab === next)); });
-      ['my-plan', 'alliance-plan', 'vikings-guide'].forEach(function (key) { document.getElementById(key).hidden = key !== next; });
+      ['my-plan', 'alliance-plan'].forEach(function (key) { document.getElementById(key).hidden = key !== next; });
     }
     function modal(title, build) {
       var dialog = one('dialog'), body = one('dialogBody'); body.replaceChildren(); document.getElementById('vv-dialog-title').textContent = title; one('dialogMessage').textContent = '';
@@ -162,15 +162,15 @@
     }
     function art(kind, size) { var img = el('img'); img.src = '../img/buildings/' + kind + '.webp'; img.alt = ''; img.width = img.height = size || 64; img.loading = 'lazy'; return img; }
     function hqMark() { var n = el('span', 'vv-hq-mark', 'HQ'); n.setAttribute('aria-hidden', 'true'); return n; }
-    function marchRow(row, destination, container, note) {
+    function marchRow(row, destination, container, note, plain) {
       var n = el('div', 'vv-march'); n.appendChild(el('span', 'vv-queue', row.queue)); n.appendChild(row.destination === 'hq' ? hqMark() : art('town-center', 48));
-      var info = el('div', 'vv-march-main'), head = el('div', 'vv-march-head'); head.appendChild(el('strong', '', destination)); head.appendChild(el('span', 'vv-total', kfmt(total(row)))); info.appendChild(head); info.appendChild(counts(row));
+      var info = el('div', 'vv-march-main'), head = el('div', 'vv-march-head'); head.appendChild(el('strong', '', destination)); if (!plain) head.appendChild(el('span', 'vv-total', kfmt(total(row)))); info.appendChild(head); if (!plain) info.appendChild(counts(row));
       if (note) info.appendChild(el('p', 'vv-caption', note));
       n.appendChild(info); container.appendChild(n); return n;
     }
     function expected() { return { revision: state.revision, rosterRevision: state.rosterRevision, planRevision: state.planRevision }; }
     function when() { return state.plan.eventAt ? dayLabel(Date.parse(state.plan.eventAt)) : 'the next Vikings'; }
-    var ONLINE = [['unknown', 'Not sure'], ['online', 'Yes'], ['offline', 'No']];
+    var ONLINE = [['unknown', 'Not sure'], ['online', 'Online'], ['offline', 'Offline']], PRESENCE = { online: 'Online', offline: 'Offline', unknown: 'Online?' };
 
     /* Troops, march size and marches, all quick to change. */
     function playerFields(form, p, withName, own) {
@@ -178,21 +178,25 @@
       var grid = el('div', 'vv-form-grid'); form.appendChild(grid);
       if (withName) { var nick = field(grid, 'In-game name', 'nickname', p.nickname || ''); nick.required = true; nick.maxLength = 40; nick.autocomplete = 'nickname'; }
       else { var hidden = el('input'); hidden.type = 'hidden'; hidden.name = 'nickname'; hidden.value = p.nickname; form.appendChild(hidden); }
-      field(grid, 'Online for it?', 'availability', p.availability || 'unknown', 'select', ONLINE);
+      field(grid, 'During Vikings', 'availability', p.availability || 'unknown', 'select', ONLINE);
+      grid.appendChild(el('p', 'vv-caption vv-wide', 'Offline players still send their marches before logging off and still get covered. Only waves 7, 14 and 17 skip offline cities.'));
       var troops = el('div', 'vv-troop-inputs'); form.appendChild(troops);
       TYPES.forEach(function (k) { kField(troops, LABELS[k], k, p[k], art(ART[k], 48)).required = true; });
       var row = el('div', 'vv-form-grid'); form.appendChild(row);
       kField(row, 'March size', 'marchCapacity', p.marchCapacity).required = true;
       var q = field(row, 'Marches', 'marches', p.marches || 5, 'number'); q.min = '1'; q.max = '6'; q.required = true;
+      // Optional: the leader gives the HQ to the largest garrison.
+      kField(row, 'Garrison capacity', 'garrisonCapacity', p.garrisonCapacity).closest('label').classList.add('vv-wide');
       if (own) { var tools = el('div', 'vv-troop-tools'); syncNote(tools); form.appendChild(tools); }
     }
     function fromForm(form) {
       var data = Object.fromEntries(new FormData(form));
       TYPES.concat('marchCapacity').forEach(function (k) { data[k] = count(form, k); });
       data.marches = Number(data.marches);
+      var garrison = count(form, 'garrisonCapacity'); data.garrisonCapacity = isNaN(garrison) ? null : garrison;
       return data;
     }
-    function fullPlayer(p, data) { return Object.assign({ nickname: p.nickname, availability: p.availability, infantry: p.infantry, cavalry: p.cavalry, archers: p.archers, marchCapacity: p.marchCapacity, marches: p.marches, notes: p.notes || '', capacities: p.capacities || null }, data); }
+    function fullPlayer(p, data) { return Object.assign({ nickname: p.nickname, availability: p.availability, infantry: p.infantry, cavalry: p.cavalry, archers: p.archers, marchCapacity: p.marchCapacity, marches: p.marches, notes: p.notes || '', capacities: p.capacities || null, garrisonCapacity: p.garrisonCapacity ?? null }, data); }
     async function savePlayer(p, data) {
       if (state.example) { Object.assign(p, data); render(); return; }
       var token = !isManager() && credential.player && p.id === state.registrationId ? credential.player.code : undefined;
@@ -224,55 +228,93 @@
       });
     }
     function localTime(f) { var out = f.querySelector('.vv-local-time'), time = f.elements.time && f.elements.time.value; if (out) out.textContent = time ? localWhen('2026-01-01T' + time + ':00Z') + ' your time' : ''; }
+    // March editor: who each march goes to comes first; troops follow the split, and a tapped march opens to change its own.
     function assignmentEditor(playerId) {
       var p = state.roster.find(function (r) { return r.id === playerId; }); if (!p) return;
       modal(p.nickname, function (body) {
-        var top = el('div', 'vv-editor-top'); top.appendChild(counts(p)); var tools = el('span', 'vv-actions vv-tight'); tools.appendChild(button('Edit', 'editPlayer', { id: p.id }, 'vv-quiet')); tools.appendChild(button('Remove', 'removePlayer', { id: p.id }, 'vv-danger')); top.appendChild(tools); body.appendChild(top);
+        var top = el('div', 'vv-editor-top'); top.appendChild(counts(p)); var presence = el('span', 'vv-avail', PRESENCE[p.availability] || PRESENCE.unknown); presence.dataset.presence = p.availability || 'unknown'; top.appendChild(presence); top.appendChild(button('Edit', 'editPlayer', { id: p.id }, 'vv-quiet')); body.appendChild(top);
         var check = E.validate(state.roster, state.assignments, state.hq), incoming = check.incoming[p.id] || [];
         var cover = el('div', 'vv-cover-in'); cover.appendChild(el('span', 'vv-label', 'Covered by'));
         if (!incoming.length) cover.appendChild(el('span', 'vv-dim', 'nobody yet'));
         incoming.forEach(function (r) { cover.appendChild(button(name(r.playerId) + ' ' + kfmt(r.troops), 'assign', { id: r.playerId }, 'vv-quiet')); });
         body.appendChild(cover);
         var f = form(body, 'assignments'); f.dataset.id = p.id;
-        var rows = state.assignments[p.id] || E.split(p).rows, hq = E.hqRows(state.hq).find(function (r) { return r.playerId === p.id; });
-        var bar = el('div', 'vv-send-bar'), status = el('p', 'vv-send-status'); status.setAttribute('aria-live', 'polite'); bar.appendChild(status); f.appendChild(bar);
-        var targets = [['', 'Not sent']].concat(state.roster.filter(function (r) { return r.id !== p.id && r.attending !== false; }).map(function (r) { return [r.id, r.nickname + (r.attending ? '' : ' (not answered)')]; }));
+        var saved = state.assignments[p.id] || [], hq = E.hqRows(state.hq).find(function (r) { return r.playerId === p.id; });
+        // Each ally with the cover they already have from others, so the leader sends where it is missing.
+        var targets = [['', 'Not sent']].concat(state.roster.filter(function (r) { return r.id !== p.id && r.attending !== false; }).map(function (r) {
+          var cover = (check.incoming[r.id] || []).filter(function (c) { return c.playerId !== p.id; }).reduce(function (n, c) { return n + c.troops; }, 0);
+          return [r.id, r.nickname + (r.attending ? '' : ' (not answered)') + (r.availability === 'unknown' || !r.availability ? '' : ' · ' + r.availability) + ' · ' + (cover ? kfmt(cover) + ' in' : 'no cover')];
+        }));
+        f.appendChild(el('p', 'vv-label vv-sends-label', 'Sends ' + p.marches + ' march' + (p.marches === 1 ? '' : 'es')));
         var list = el('div', 'vv-sends');
         for (var q = 1; q <= p.marches; q++) {
-          var row = rows.find(function (r) { return r.queue === q; }) || { queue: q, destination: null, infantry: 0, cavalry: 0, archers: 0 };
-          var box = el('div', 'vv-send'); box.dataset.queue = q;
-          var head = el('div', 'vv-send-head'), title = el('strong', '', 'March ' + q); head.appendChild(title);
-          if (hq && hq.queue === q) head.appendChild(el('span', 'vv-avail', 'HQ'));
-          head.appendChild(el('span', 'vv-send-cap')); box.appendChild(head);
+          var row = saved.find(function (r) { return r.queue === q; }) || { queue: q, destination: null }, sent = !!row.destination;
+          var box = el('div', 'vv-send'); box.dataset.queue = q; box.dataset.auto = String(!sent);
+          var toggle = button('', 'toggleMarch', { march: q }, 'vv-send-row'); toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-controls', 'vv-send-' + q);
+          var who = el('span', 'vv-send-who'); who.appendChild(el('span', 'vv-send-name')); who.appendChild(el('small', 'vv-send-mix'));
+          if (hq && hq.queue === q) who.appendChild(el('small', 'vv-send-hq', 'HQ in waves 10 and 20'));
+          toggle.append(el('span', 'vv-send-n', String(q)), who, el('span', 'vv-send-cap'));
+          box.appendChild(toggle);
+          var edit = el('div', 'vv-send-edit'); edit.id = 'vv-send-' + q; edit.hidden = true;
           var select = el('select'); select.name = 'destination-' + q; select.setAttribute('aria-label', 'March ' + q + ' goes to'); targets.forEach(function (o) { var opt = el('option', '', o[1]); opt.value = o[0]; select.appendChild(opt); });
           if (row.destination && !targets.some(function (t) { return t[0] === row.destination; })) { var gone = el('option', '', name(row.destination) + ' (out)'); gone.value = row.destination; select.appendChild(gone); }
-          select.value = row.destination || ''; box.appendChild(select);
+          select.value = row.destination || ''; edit.appendChild(select);
           TYPES.forEach(function (k) {
-            var label = el('label', 'vv-send-troop'), wrap = el('span', 'vv-k-input'), input = scaled(el('input'), row[k]); input.name = k + '-' + q; input.required = true; input.setAttribute('aria-label', 'March ' + q + ' ' + LABELS[k]);
-            label.appendChild(symbol(k)); wrap.appendChild(input); wrap.appendChild(el('span', 'vv-k-unit', 'k')); label.appendChild(wrap); box.appendChild(label);
+            var label = el('label', 'vv-send-troop'), wrap = el('span', 'vv-k-input'), input = scaled(el('input'), sent ? row[k] : 0); input.name = k + '-' + q; input.setAttribute('aria-label', 'March ' + q + ' ' + LABELS[k]);
+            label.appendChild(symbol(k)); wrap.appendChild(input); wrap.appendChild(el('span', 'vv-k-unit', 'k')); label.appendChild(wrap); edit.appendChild(label);
           });
-          var meter = el('span', 'vv-meter'); meter.setAttribute('aria-hidden', 'true'); meter.appendChild(el('span')); box.appendChild(meter);
-          list.appendChild(box);
+          var meter = el('span', 'vv-meter'); meter.setAttribute('aria-hidden', 'true'); meter.appendChild(el('span')); edit.appendChild(meter);
+          box.appendChild(edit); list.appendChild(box);
         }
         f.appendChild(list);
-        var a = foot(f); a.appendChild(button('Even split', 'fillMarches', { id: p.id })); submit(a, 'Save');
+        var a = foot(f); a.classList.add('vv-sends-foot');
+        var status = el('p', 'vv-send-status'); status.setAttribute('aria-live', 'polite'); a.appendChild(status);
+        a.appendChild(button('Even split', 'fillMarches', { id: p.id })); submit(a, 'Save');
         sends(f);
       });
     }
-    // Live totals while the leader types: each march against its size, and what stays home.
+    // Spread what is left after hand-set marches across the sent marches still on the split. Unsent marches carry nothing.
+    function balance(f) {
+      var p = state.roster.find(function (r) { return r.id === f.dataset.id; }); if (!p) return;
+      var left = {}, auto = []; TYPES.forEach(function (k) { left[k] = p[k]; });
+      f.querySelectorAll('.vv-send').forEach(function (box) {
+        var q = Number(box.dataset.queue);
+        if (!f.elements['destination-' + q].value) { TYPES.forEach(function (k) { f.elements[k + '-' + q].value = 0; }); box.dataset.auto = 'true'; return; }
+        if (box.dataset.auto === 'true') { auto.push(q); return; }
+        TYPES.forEach(function (k) { left[k] = Math.max(0, left[k] - fromK(f.elements[k + '-' + q].value || 0)); });
+      });
+      if (!auto.length) return;
+      var share = E.split(Object.assign({}, left, { marches: auto.length, marchCapacity: p.marchCapacity, capacities: auto.map(function (q) { return E.capacity(p, q); }) }));
+      share.rows.forEach(function (r, i) { TYPES.forEach(function (k) { f.elements[k + '-' + auto[i]].value = toK(r[k]); }); });
+    }
+    function toggleMarch(f, q, open) {
+      f.querySelectorAll('.vv-send').forEach(function (box) {
+        var mine = Number(box.dataset.queue) === q, show = mine && (open == null ? box.querySelector('.vv-send-edit').hidden : open);
+        box.querySelector('.vv-send-edit').hidden = !show; box.querySelector('.vv-send-row').setAttribute('aria-expanded', String(show)); box.dataset.open = String(show);
+      });
+    }
+    // Live totals while the leader types: each march against its size, and what stays home. Only sent marches count as out.
     function sends(f) {
       var p = state.roster.find(function (r) { return r.id === f.dataset.id; }); if (!p) return;
       var used = { infantry: 0, cavalry: 0, archers: 0 };
-      f.querySelectorAll('[data-queue]').forEach(function (box) {
-        var q = Number(box.dataset.queue), sum = 0, cap = E.capacity(p, q);
-        TYPES.forEach(function (k) { var v = f.elements[k + '-' + q].value, n = v === '' ? 0 : fromK(v); used[k] += n; sum += n; });
-        box.querySelector('.vv-send-cap').textContent = kfmt(sum) + ' / ' + kfmt(cap);
+      f.querySelectorAll('.vv-send').forEach(function (box) {
+        var q = Number(box.dataset.queue), sum = 0, cap = E.capacity(p, q), select = f.elements['destination-' + q], sent = !!select.value, row = {};
+        TYPES.forEach(function (k) { var v = f.elements[k + '-' + q].value, n = v === '' || !sent ? 0 : fromK(v); row[k] = n; used[k] += n; sum += n; });
+        box.dataset.sent = String(sent);
+        box.querySelector('.vv-send-name').textContent = sent ? name(select.value) : 'Not sent';
+        var mix = box.querySelector('.vv-send-mix'); mix.replaceChildren();
+        if (sent) TYPES.forEach(function (k, i) { if (i) mix.appendChild(document.createTextNode(' · ')); mix.appendChild(symbol(k)); mix.appendChild(document.createTextNode(' ' + toK(row[k]))); });
+        box.querySelector('.vv-send-cap').textContent = sent ? kfmt(sum) + ' / ' + kfmt(cap) : '+ Send';
         box.querySelector('.vv-meter span').style.width = (cap ? Math.min(100, sum / cap * 100) : 0) + '%';
         box.dataset.over = String(sum > cap);
       });
+      // One march per city: a player another march already goes to can't be picked again.
+      var chosen = Array.from(f.querySelectorAll('.vv-send select')).map(function (s) { return s.value; }), twice = chosen.filter(function (v, i) { return v && chosen.indexOf(v) !== i; });
+      f.querySelectorAll('.vv-send select').forEach(function (s, i) { Array.from(s.options).forEach(function (o) { o.disabled = !!o.value && o.value !== s.value && chosen.some(function (v, j) { return j !== i && v === o.value; }); }); });
       var short = TYPES.filter(function (k) { return used[k] > p[k]; }), home = TYPES.reduce(function (n, k) { return n + Math.max(0, p[k] - used[k]); }, 0);
       var line = f.querySelector('.vv-send-status'); line.textContent = kfmt(total(used)) + ' out · ' + kfmt(home) + ' home';
-      line.dataset.error = String(!!short.length); if (short.length) line.textContent += ' · more ' + short.map(function (k) { return LABELS[k].toLowerCase(); }).join(' and ') + ' than they have';
+      line.dataset.error = String(!!(short.length || twice.length)); if (short.length) line.textContent += ' · more ' + short.map(function (k) { return LABELS[k].toLowerCase(); }).join(' and ') + ' than they have';
+      if (twice.length) line.textContent += ' · two marches to ' + name(twice[0]);
     }
     function hqEditor() {
       modal('HQ · waves 10 and 20', function (body) {
@@ -281,9 +323,11 @@
         var inf = field(grid, 'Infantry %', 'infantryPercent', state.hq.infantryPercent, 'number'); inf.max = '100'; inf.required = true;
         var cav = field(grid, 'Cavalry %', 'cavalryPercent', state.hq.cavalryPercent, 'number'); cav.max = '100'; cav.required = true;
         f.appendChild(el('p', 'vv-label', 'Who sends, and which march'));
-        state.roster.filter(function (p) { return p.attending !== false; }).forEach(function (p) {
+        // Largest garrison first: that player captains the HQ.
+        var people = state.roster.filter(function (p) { return p.attending !== false; }).sort(function (a, b) { return (b.garrisonCapacity || 0) - (a.garrisonCapacity || 0); }), largest = people[0] && people[0].garrisonCapacity ? people[0].id : null;
+        people.forEach(function (p) {
           var entry = state.hq.participants.find(function (e) { return e.playerId === p.id; }), row = el('div', 'vv-hq-pick'), label = el('label'), check = el('input');
-          check.type = 'checkbox'; check.name = 'participant'; check.value = p.id; check.checked = !!entry; label.append(check, el('span', '', p.nickname)); row.appendChild(label);
+          check.type = 'checkbox'; check.name = 'participant'; check.value = p.id; check.checked = !!entry; var who = el('span', 'vv-hq-who'); who.appendChild(el('span', '', p.nickname)); who.appendChild(el('small', 'vv-dim', p.garrisonCapacity ? 'Garrison ' + kfmt(p.garrisonCapacity) + (p.id === largest ? ' · largest' : '') : 'Garrison not given')); label.append(check, who); row.appendChild(label);
           var queues = Array.from({ length: p.marches }, function (_, i) { return [String(i + 1), 'March ' + (i + 1)]; }); var s = field(row, '', 'queue-' + p.id, entry ? entry.queue : 1, 'select', queues); s.setAttribute('aria-label', p.nickname + ' HQ march'); f.appendChild(row);
         });
         submit(foot(f), 'Save');
@@ -327,7 +371,7 @@
       for (var q = 1; q <= (p.marches || 0); q++) {
         var n = el('div', 'vv-march vv-march-empty'), info = el('div', 'vv-march-main'), head = el('div', 'vv-march-head');
         n.appendChild(el('span', 'vv-queue', q)); n.appendChild(el('span', 'vv-slot'));
-        head.appendChild(el('strong', '', 'Not set')); head.appendChild(el('span', 'vv-dim', 'up to ' + kfmt((p.capacities && p.capacities[q - 1]) || p.marchCapacity)));
+        head.appendChild(el('strong', '', 'Not set')); head.appendChild(el('span', 'vv-dim', kfmt(E.capacity(p, q)) + ' march'));
         info.appendChild(head); n.appendChild(info); list.appendChild(n);
       }
       body.appendChild(list);
@@ -337,8 +381,10 @@
       var used = { infantry: 0, cavalry: 0, archers: 0 }; rows.forEach(function (r) { TYPES.forEach(function (k) { used[k] += r[k]; }); });
       var home = {}; TYPES.forEach(function (k) { home[k] = Math.max(0, p[k] - used[k]); });
       if (!rows.length) { waiting(body, p); return; }
-      body.appendChild(el('p', 'vv-lede', kfmt(total(used)) + ' out' + (total(home) ? ' · ' + kfmt(total(home)) + ' stay home' : '')));
-      var list = el('div', 'vv-marches'); rows.forEach(function (r) { marchRow(r, name(r.destination), list); }); body.appendChild(list);
+      // Exact counts matter when troops stay home; otherwise even marches with everything in them are the plan.
+      var even = !total(home) && TYPES.every(function (k) { var v = rows.map(function (r) { return r[k]; }); return Math.max.apply(null, v) - Math.min.apply(null, v) <= K; });
+      body.appendChild(el('p', 'vv-lede', even ? 'Send everything, split evenly across ' + rows.length + ' march' + (rows.length === 1 ? '' : 'es') + '.' : kfmt(total(used)) + ' out' + (total(home) ? ' · ' + kfmt(total(home)) + ' stay home' : '') + '. Send these exact numbers.'));
+      var list = el('div', 'vv-marches'); rows.forEach(function (r) { marchRow(r, name(r.destination), list, null, even); }); body.appendChild(list);
       var headquarters = E.hqRows(state.hq || E.emptyHQ()).find(function (r) { return r.playerId === p.id; });
       if (headquarters) {
         var hq = el('div', 'vv-hq'); hq.appendChild(el('p', 'vv-label', 'HQ · waves 10 & 20'));
@@ -367,13 +413,13 @@
       }
       if (mine.attending === null) { body.appendChild(el('h2', '', 'In for ' + when() + '?')); body.appendChild(el('p', 'vv-lede', 'Your troops from last time. Change anything that’s moved.')); answer(body, mine); return; }
       if (mine.attending === false) {
-        body.appendChild(el('h2', '', 'You’re out for ' + when())); var a = el('div', 'vv-actions'), back = button('I’m in after all', 'imIn', {}, 'vv-primary'); back.dataset.mutation = ''; a.appendChild(back); body.appendChild(a); return;
+        body.appendChild(el('h2', '', 'You’re out for ' + when())); body.appendChild(el('p', 'vv-lede', 'Your leader plans without you. Changed your mind? Sign up again before it starts.')); var a = el('div', 'vv-actions'), back = button('Sign up again', 'imIn', {}, 'vv-primary'); back.dataset.mutation = ''; a.appendChild(back); body.appendChild(a); return;
       }
       body.appendChild(el('h2', '', 'Your marches'));
       marchesFor(body, mine, true);
       var bring = el('div', 'vv-section'), top = el('div', 'vv-heading'); top.appendChild(el('h3', '', 'You’re bringing')); top.appendChild(button('Edit', 'editMine', {}, 'vv-quiet')); bring.appendChild(top);
-      bring.appendChild(counts(mine)); bring.appendChild(el('p', 'vv-caption', mine.marches + ' marches' + (mine.capacities && mine.capacities.length ? '' : ' · up to ' + kfmt(mine.marchCapacity) + ' each'))); body.appendChild(bring);
-      var leave = el('div', 'vv-actions'), out = button('Can’t make it', 'notIn', {}, 'vv-secondary'); out.dataset.mutation = ''; leave.appendChild(out); body.appendChild(leave);
+      bring.appendChild(counts(mine)); bring.appendChild(el('p', 'vv-caption', mine.marches + ' marches' + (mine.capacities && mine.capacities.length ? '' : ' of ' + kfmt(mine.marchCapacity)))); body.appendChild(bring);
+      var leave = el('div', 'vv-actions'); leave.appendChild(button('Withdraw sign-up', 'withdraw', {}, 'vv-secondary')); body.appendChild(leave);
     }
     function ago(iso) {
       var t = Date.parse(iso); if (!t) return '';
@@ -385,7 +431,7 @@
     function routeRow(p) {
       var line = el('div', 'vv-row vv-route' + (p.id === state.registrationId ? ' vv-mine' : '')), main = el('span', 'vv-row-main'), top = el('span', 'vv-row-top');
       line.appendChild(art('town-center', 40));
-      top.appendChild(el('strong', '', p.nickname)); if (p.availability === 'offline') top.appendChild(el('span', 'vv-avail', 'Offline')); main.appendChild(top);
+      top.appendChild(el('strong', '', p.nickname)); var presence = el('span', 'vv-avail', PRESENCE[p.availability] || PRESENCE.unknown); presence.dataset.presence = p.availability || 'unknown'; top.appendChild(presence); main.appendChild(top);
       var to = routes(p).map(function (r) { return name(r.destination); }), from = state.roster.filter(function (o) { return o.id !== p.id && routes(o).some(function (r) { return r.destination === p.id; }); }).map(function (o) { return o.nickname; });
       main.appendChild(el('span', 'vv-dim', (to.length ? 'Sends to ' + to.join(', ') : 'No marches yet') + (from.length ? ' · covered by ' + from.join(', ') : '')));
       line.appendChild(main); return line;
@@ -393,7 +439,7 @@
     function playerRow(p, check, manage) {
       var sent = (state.assignments[p.id] || []).filter(function (r) { return r.destination && total(r); }).length, incoming = check.incoming[p.id] || [];
       var b = button('', 'assign', { id: p.id }, 'vv-row'); b.appendChild(art('town-center', 40));
-      var main = el('span', 'vv-row-main'), top = el('span', 'vv-row-top'); top.appendChild(el('strong', '', p.nickname)); if (p.availability === 'offline') top.appendChild(el('span', 'vv-avail', 'Offline'));
+      var main = el('span', 'vv-row-main'), top = el('span', 'vv-row-top'); top.appendChild(el('strong', '', p.nickname)); var presence = el('span', 'vv-avail', PRESENCE[p.availability] || PRESENCE.unknown); presence.dataset.presence = p.availability || 'unknown'; top.appendChild(presence);
       // Two players can share a name; when each last saved tells a leader which entry is which.
       if (p.updatedAt) { var stamp = el('span', 'vv-avail', ago(p.updatedAt)); stamp.title = 'Signed up ' + new Date(p.createdAt).toLocaleString() + ', last saved ' + new Date(p.updatedAt).toLocaleString(); top.appendChild(stamp); }
       main.appendChild(top);
@@ -492,7 +538,7 @@
       }
       if (kind === 'assignments') {
         var rows = [];
-        f.querySelectorAll('[data-queue]').forEach(function (box) { var queue = Number(box.dataset.queue), row = { queue: queue, destination: f.elements['destination-' + queue].value || null }; TYPES.forEach(function (k) { row[k] = fromK(f.elements[k + '-' + queue].value); }); rows.push(row); });
+        f.querySelectorAll('[data-queue]').forEach(function (box) { var queue = Number(box.dataset.queue), row = { queue: queue, destination: f.elements['destination-' + queue].value || null }; TYPES.forEach(function (k) { row[k] = row.destination ? fromK(f.elements[k + '-' + queue].value) : 0; }); rows.push(row); });
         var check = E.validate(state.roster, { [f.dataset.id]: rows }, E.emptyHQ()); if (check.errors.length) throw new Error(check.errors[0]);
         if (state.example) { state.assignments[f.dataset.id] = rows; close(); render(); say('Saved.'); return; }
         await request('/v1/plans/' + state.plan.id + '/assignments/' + f.dataset.id, 'PUT', Object.assign(expected(), { marches: rows })); await load(); close(); say('Saved.'); return;
@@ -546,19 +592,15 @@
       var plan = { id: id(), name: 'Vikings', eventDay: 'tue', eventTime: '20:00', closed: false };
       plan.eventAt = new Date(E.nextEvent('tue', '20:00', Date.now())).toISOString();
       state = { plan: plan, roster: [], assignments: {}, hq: E.emptyHQ(), access: 'manage', example: true };
-      [['Rowan', true], ['Ash', true], ['Fern', true], ['Willow', true], ['Hazel', null], ['Birch', false]].forEach(function (r, i) { state.roster.push({ id: id(), nickname: r[0], attending: r[1], availability: i === 3 ? 'offline' : 'online', infantry: 240000, cavalry: 160000, archers: 120000, marchCapacity: 180000, marches: 3, capacities: null, notes: '', revision: 1 }); });
+      [['Rowan', true], ['Ash', true], ['Fern', true], ['Willow', true], ['Hazel', null], ['Birch', false]].forEach(function (r, i) { state.roster.push({ id: id(), nickname: r[0], attending: r[1], availability: i === 3 ? 'offline' : i === 4 ? 'unknown' : 'online', infantry: 240000, cavalry: 160000, archers: 120000, marchCapacity: 180000, marches: 3, capacities: null, garrisonCapacity: [820000, 960000, 750000, 1100000, null, 700000][i], notes: '', revision: 1 }); });
       var inn = state.roster.slice(0, 4);
       inn.forEach(function (p, i) { state.assignments[p.id] = E.split(p).rows.map(function (r, q) { return Object.assign({}, r, { destination: inn[(i + q + 1) % 4].id }); }); });
       state.hq = { capacity: 300000, infantryPercent: 75, cavalryPercent: 25, participants: inn.slice(0, 3).map(function (p) { return { playerId: p.id, queue: 1 }; }) };
       state.registrationId = state.roster[0].id; mode = 'alliance-plan'; render(); say('Example. You’re Rowan. Nothing is saved.');
     }
-    function waves() {
-      var body = one('waves');
-      for (var w = 1; w <= 20; w++) { var kind = [10, 20].includes(w) ? 'hq' : [7, 14, 17].includes(w) ? 'online' : 'city'; var b = button(String(w), 'wave', { wave: w, kind: kind }); b.setAttribute('aria-pressed', w === 1 ? 'true' : 'false'); b.appendChild(el('small', '', kind === 'online' ? 'On' : kind === 'hq' ? 'HQ' : 'City')); body.appendChild(b); }
-    }
     function home() { say(''); state = null; credential = null; pending = null; close(); mode = 'my-plan'; render(); }
-    async function attend(value) { var mine = me(); if (!mine) return; await savePlayer(mine, { attending: value }); say(value ? 'You’re in.' : 'Marked out.'); }
-    context.listen(one('dialog'), 'input', function (event) { var f = event.target.form; if (f && f.dataset.kind === 'room') localTime(f); if (f && f.dataset.kind === 'assignments') sends(f); });
+    async function attend(value) { var mine = me(); if (!mine) return; await savePlayer(mine, { attending: value }); say(value ? 'You’re in.' : 'Withdrawn.'); }
+    context.listen(one('dialog'), 'input', function (event) { var f = event.target.form; if (f && f.dataset.kind === 'room') localTime(f); if (f && f.dataset.kind === 'assignments') { var box = event.target.closest('.vv-send'); if (event.target.tagName === 'SELECT') balance(f); else if (box) box.dataset.auto = 'false'; sends(f); } });
     context.listen(root, 'keydown', function (event) { var tabs = Array.from(root.querySelectorAll('[role=tab]')), at = tabs.indexOf(event.target); if (at < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return; event.preventDefault(); var to = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (at + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length; tabs[to].click(); tabs[to].focus(); });
     function schedule(delay) {
       clearTimeout(timer); timer = setTimeout(function () {
@@ -586,10 +628,13 @@
       editPlayer: action(function (node) { playerEditor(node.dataset.id); }),
       editMine: action(function () { playerEditor(state.registrationId, 'My troops', true); }),
       notIn: action(function () { return attend(false); }),
+      withdraw: action(function () { modal('Withdraw from ' + when() + '?', function (body) { ask(body, 'Your leader will see you as out and plan without you. You can sign up again before it starts.', 'Withdraw', 'confirmWithdraw', {}, 'vv-primary'); }); }),
+      confirmWithdraw: action(async function () { close(); await attend(false); }),
       imIn: action(function () { return attend(true); }),
       assign: action(function (node) { assignmentEditor(node.dataset.id); }),
       hq: action(hqEditor),
-      fillMarches: action(function (node) { var p = state.roster.find(function (r) { return r.id === node.dataset.id; }), f = one('dialogBody').querySelector('form'); E.split(p).rows.forEach(function (r) { TYPES.forEach(function (k) { f.elements[k + '-' + r.queue].value = toK(r[k]); }); }); sends(f); }),
+      fillMarches: action(function () { var f = one('dialogBody').querySelector('form'); f.querySelectorAll('.vv-send').forEach(function (box) { box.dataset.auto = 'true'; }); balance(f); sends(f); }),
+      toggleMarch: { run: function (node) { var f = node.form, q = Number(node.dataset.march); toggleMarch(f, q); var select = f.elements['destination-' + q]; if (!select.value && !select.closest('[hidden]')) { select.focus(); try { select.showPicker(); } catch (e) { /* not every browser opens a select from script */ } } } },
       share: action(share),
       copy: action(function (node) { return copy(node.dataset.value, 'Copied.'); }),
       copyInstructions: action(function () { return copy(E.instructions(state, state.registrationId), 'Copied.'); }),
@@ -605,12 +650,10 @@
       // Leaving forgets the alliance on this phone only; any sign-up stays on the alliance's list.
       leave: action(function () { if (state && state.example) { home(); return; } modal('Leave ' + state.plan.name + '?', function (body) { ask(body, 'It’s forgotten on this phone. Your sign-up stays on the list.', 'Leave', 'confirmLeave', {}, 'vv-primary'); }); }),
       confirmLeave: action(function () { drop(ALLIANCE); home(); }),
-      wave: { run: function (node) { one('waves').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b === node)); }); one('waveDetail').textContent = node.dataset.kind === 'hq' ? 'HQ wave ' + node.dataset.wave + ': send the agreed share after the wave before it. Return after the hit.' : node.dataset.kind === 'online' ? 'Wave ' + node.dataset.wave + ': online cities only.' : 'Wave ' + node.dataset.wave + ': every city.'; } }
     };
     one('calculatorForm').querySelector('[type=submit]').disabled = false;
     syncNote(one('calcUnits')); fillCalculator();
     try { context.cleanup(context.ledger.subscribe(function () { fillCalculator(); })); } catch (_) { /* no save on this page */ }
-    waves();
     /* A link just followed wins; otherwise the alliance this phone keeps. */
     var initial = window.VikingsAccess, mine = stored();
     render();

@@ -1,7 +1,5 @@
-.gov-card, .town-gov-card { display: block; width: 100%; max-width: var(--equipment-card-size, 4.5rem); aspect-ratio: 1; }
-.gov-card > img, .town-gov-card > img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.gov-card[data-state="unset"] > img, .gov-card[data-state="empty"] > img,
-.town-gov-card[data-state="unset"] > img, .town-gov-card[data-state="empty"] > img { filter: grayscale(1); opacity: .35; }
-.gov-gem img, .town-gov-gem img { width: var(--equipment-gem-size, 2.4rem); height: var(--equipment-gem-size, 2.4rem); object-fit: contain; }
-.gov-gem[data-state="unset"] img, .gov-gem[data-state="empty"] img,
-.town-gov-gem[data-state="unset"] img, .town-gov-gem[data-state="empty"] img { filter: grayscale(1); opacity: var(--equipment-empty-opacity, .35); }
+.gov-card { display: block; width: 100%; max-width: var(--equipment-card-size, 4.5rem); aspect-ratio: 1; }
+.gov-card > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.gov-card[data-state="unset"] > img, .gov-card[data-state="empty"] > img { filter: grayscale(1); opacity: .35; }
+.gov-gem img { width: var(--equipment-gem-size, 2.4rem); height: var(--equipment-gem-size, 2.4rem); object-fit: contain; }
+.gov-gem[data-state="unset"] img, .gov-gem[data-state="empty"] img { filter: grayscale(1); opacity: var(--equipment-empty-opacity, .35); }
