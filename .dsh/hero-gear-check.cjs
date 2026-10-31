@@ -376,4 +376,17 @@ for (let t = 0; t < 6; t++) {
   assert.equal(on.remaining.hammers, sheet.resources.hammers + on.hammerRefund - on.spent.hammers, 'every hammer is accounted for');
   assert.equal(on.remaining.mythic, sheet.resources.mythic - on.spent.mythic, 'reforging never returns spare mythic gear');
 }
-console.log('Guest ledger isolation, gear costs, milestones, 40 optimiser conservation cases, OCR parsing, share links, best split, hammer reforge, % of optimal with and without the bag, profile fit and copy checks passed.');
+// The look-ahead after the greedy search never does worse, stays within the bag, and on this
+// set finds a better layout than greedy alone (1076 → 1106 under Early growth).
+{
+  const sheet = Object.assign(E.defaults(), E.readLink('?gear=r140.12-r120.11-m100.10-m100.12-m100.10-m95.9-m100.11-m90.10-m80.6-m70.5-m60.4-m100.10&w=growth'));
+  sheet.resources = { xp: 52650, hammers: 300, mythic: 6, mithril: 10 };
+  const greedy = E.optimise(Object.assign({}, sheet, { greedyOnly: true })), ahead = E.optimise(sheet);
+  assert.ok(ahead.score > greedy.score * 1.01, 'the look-ahead beats greedy alone here');
+  for (const r of E.RES) assert.ok(ahead.remaining[r] >= 0 && ahead.spent[r] - (r === 'xp' ? ahead.refund : r === 'hammers' ? ahead.hammerRefund : 0) <= sheet.resources[r], r + ' stays within the bag');
+  for (const id of Object.keys(sheet.pieces)) {
+    const from = E.normalisePiece(sheet.pieces[id]), to = ahead.pieces[id];
+    assert.ok(to.mastery >= from.mastery && (from.quality !== 'red' || (to.quality === 'red' && to.level >= from.level)), id + ' never goes backwards');
+  }
+}
+console.log('Guest ledger isolation, gear costs, milestones, 40 optimiser conservation cases, OCR parsing, share links, best split, hammer reforge, look-ahead, % of optimal with and without the bag, profile fit and copy checks passed.');

@@ -353,3 +353,14 @@ piece, each troop and every piece before its greedy search, and keeps a reset
 only where it scores better; the result shows "↓ N hammers back" on the piece.
 % of optimal is unchanged: it already treats everything invested as free to
 place.
+
+**Look-ahead** (31 October 2026): greedy takes the best gain per cost one step
+at a time, so it can spend spare mythic gear on mastery a step at a time and have
+none left for an ascension. After the greedy runs, `optimise` reads the winner as
+one class per piece (quality, mastery, red tier: these fix hammers, spare mythic
+gear and mithril), fills levels from the XP by stat per XP (exact for the linear
+score), and hill-climbs: every other class for each piece, and every pair of
+small changes on two pieces (mastery ±2, tier ±1), keeping the best improvement
+until none is left. Nothing goes below where the run started. On the test sets it
+added up to 2.8% to Spend now and 8% to the optimum, in under half a second.
+`profileFit` skips it to keep six searches quick.
