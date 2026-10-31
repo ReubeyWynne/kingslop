@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Island — sketch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400..900&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="island.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#top">The Island</a>
+  <div class="cluster topbar-controls">
+    <button type="button" class="fleuron-btn" aria-label="Open the ledger">❧</button>
+    <span class="flag" aria-hidden="true">EN</span>
+  </div>
+  <i class="topbar-progress" aria-hidden="true"></i>
+</header>
+
+<main data-module="island">
+  <section class="hero wrapper stack" id="top">
+    <h1>The Island</h1>
+    <p class="lede">Lay out your island with your thumb: pick a piece, tap the ground. When it looks right, send it to your alliance as one line of chat.</p>
+<pre class="ascii-island" aria-hidden="true">    .            *            .
+                 /\
+             .-'`||`'-.
+         .-'` ^  ::  ^ `'-.
+     .-'` ^^   .-=-.  ^ ^  `'-.
+~~ &lt;  ^ ^  ::: ( o ) :::  ^^    &gt;~~~
+     `'-. ^    '-=-'  ^^   .-'`
+         `'-. ^^ :: ^  .-'`
+             `'-.::.-'`
+                 \/
+ ~  ~~~      ~~    ~~~      ~~  ~</pre>
+  </section>
+
+  <section class="wrapper stack" id="start" aria-labelledby="start-title">
+    <div class="section-head cluster">
+      <h2 id="start-title">Start from</h2>
+      <p class="note">An example opens as a copy. Your island is never replaced without asking.</p>
+    </div>
+    <ul class="starts reel" role="list" data-target="island.starts"></ul>
+  </section>
+
+  <section class="workspace" id="build" aria-labelledby="build-title" data-tool="look">
+    <h2 id="build-title" class="visually-hidden">Build</h2>
+
+    <div class="board" data-target="island.board">
+      <canvas aria-label="Island board. Use the piece list to choose, then tap the board to place." role="img"></canvas>
+
+      <div class="board-status cluster">
+        <span class="pill" data-target="island.owner"><b>Your island</b> · saved on this phone</span>
+      </div>
+      <div class="board-zoom stack">
+        <button type="button" class="icon-btn" data-action="island.zoom" data-step="1" aria-label="Zoom in">+</button>
+        <button type="button" class="icon-btn" data-action="island.zoom" data-step="-1" aria-label="Zoom out">−</button>
+        <button type="button" class="icon-btn" data-action="island.fit" aria-label="Fit the island">⤢</button>
+      </div>
+      <p class="board-hint" data-target="island.hint">Drag to look around · pinch to zoom</p>
+
+      <div class="selection-bar cluster" data-target="island.selection" hidden>
+        <button type="button" data-action="island.rotate"><span aria-hidden="true">⟳</span>Turn</button>
+        <button type="button" data-action="island.move"><span aria-hidden="true">✥</span>Move</button>
+        <button type="button" data-action="island.copy"><span aria-hidden="true">⧉</span>Copy</button>
+        <button type="button" data-action="island.remove" class="is-danger"><span aria-hidden="true">✕</span>Remove</button>
+      </div>
+    </div>
+
+    <div class="tray stack" data-target="island.tray">
+      <div class="tools cluster" role="toolbar" aria-label="Tools">
+        <button type="button" class="tool" data-action="island.tool" data-tool="look" aria-pressed="true"><span aria-hidden="true">☚</span>Look</button>
+        <button type="button" class="tool" data-action="island.tool" data-tool="place" aria-pressed="false"><span aria-hidden="true">⌂</span>Place</button>
+        <button type="button" class="tool" data-action="island.tool" data-tool="paint" aria-pressed="false"><span aria-hidden="true">≋</span>Paint</button>
+        <button type="button" class="tool" data-action="island.tool" data-tool="clear" aria-pressed="false"><span aria-hidden="true">⌫</span>Clear</button>
+        <span class="tools-gap" aria-hidden="true"></span>
+        <button type="button" class="tool tool-sm" data-action="island.undo" aria-label="Undo"><span aria-hidden="true">↶</span></button>
+        <button type="button" class="tool tool-sm" data-action="island.redo" aria-label="Redo"><span aria-hidden="true">↷</span></button>
+      </div>
+
+      <div class="palette stack" data-target="island.palette">
+        <div class="palette-search cluster">
+          <label class="visually-hidden" for="piece-search">Find a piece</label>
+          <input id="piece-search" type="search" placeholder="Find a piece" data-action="island.search" autocomplete="off">
+          <div class="cats reel" role="tablist" aria-label="Kinds of piece" data-target="island.cats"></div>
+        </div>
+        <ul class="shelf reel" role="list" data-target="island.shelf"></ul>
+      </div>
+
+      <div class="inspector stack" data-target="island.inspector" hidden></div>
+    </div>
+  </section>
+
+  <section class="wrapper stack" id="glance" aria-labelledby="glance-title">
+    <h2 id="glance-title">At a glance</h2>
+    <dl class="ledger" data-target="island.glance"></dl>
+    <p class="note" data-target="island.limits"></p>
+  </section>
+
+  <section class="wrapper stack" id="share" aria-labelledby="share-title">
+    <h2 id="share-title">Share</h2>
+    <p>Kingshot chat holds about 500 characters and doesn't make links clickable, so the chat line is a short <b>dey.ci/island#…</b> address your alliance copies into a browser.</p>
+    <div class="budget stack">
+      <div class="cluster budget-head"><span class="label">Chat line</span><span class="budget-num" data-target="island.budgetNum"></span></div>
+      <div class="budget-rail" aria-hidden="true"><i data-target="island.budgetFill"></i><b class="budget-cap"></b></div>
+      <p class="note" data-target="island.budgetNote"></p>
+    </div>
+    <div class="cluster share-actions">
+      <button type="button" class="prompt" data-action="island.copyChat">❧ Copy for Kingshot chat</button>
+      <button type="button" class="prompt" data-action="island.copyLink">❧ Copy link</button>
+      <button type="button" class="prompt" data-action="island.download">❧ Download file</button>
+    </div>
+  </section>
+
+  <section class="wrapper stack" id="sources">
+    <h2>Sources &amp; confidence</h2>
+    <p class="note">Piece art, sizes, limits and the example layouts come from the KS Companion island catalogue (October 2026), not yet checked in game. Which ground is buildable is still unknown, so nothing here stops you placing a piece. Path counts above 500 are flagged, not trimmed.</p>
+  </section>
+</main>
+
+<footer class="sketch-foot wrapper"><p class="note">Sketch only: interactive, but not wired into the site yet.</p></footer>
+
+<script src="layouts.js"></script>
+<script src="island.js"></script>
+</body>
+</html>
