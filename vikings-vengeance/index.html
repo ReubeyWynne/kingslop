@@ -5,7 +5,7 @@ self: vikings
 {% include vikings-troops.html %}
 <main class="vv-page" data-module="vikings">
   <header class="vv-header" id="top">
-    <div><p class="vv-eyebrow">Vikings Vengeance</p><h1>Vikings planner</h1></div>
+    <div><p class="vv-eyebrow">Vikings Vengeance</p><h1>Vikings planner</h1><a class="vv-flip" href="guide/">Flip to the guide <span aria-hidden="true">↻</span></a></div>
     <img src="../img/buildings/town-center.webp" width="128" height="128" alt="" decoding="async">
   </header>
   <p class="vv-next" data-target="vikings.next">Vikings opens every two weeks, on Tuesday and Thursday.</p>
@@ -13,7 +13,6 @@ self: vikings
   <nav class="vv-tabs" role="tablist" aria-label="Vikings planner">
     <button type="button" role="tab" id="vv-my-tab" aria-selected="true" aria-controls="my-plan" data-action="vikings.tab" data-tab="my-plan">My plan</button>
     <button type="button" role="tab" id="vv-alliance-tab" aria-selected="false" aria-controls="alliance-plan" data-action="vikings.tab" data-tab="alliance-plan">Alliance</button>
-    <button type="button" role="tab" id="vv-guide-tab" aria-selected="false" aria-controls="vikings-guide" data-action="vikings.tab" data-tab="vikings-guide">Guide</button>
   </nav>
   <p class="vv-message" data-target="vikings.message" role="status" aria-live="polite"></p>
 
@@ -43,24 +42,6 @@ self: vikings
     <div data-target="vikings.alliance"></div>
   </section>
 
-  <section class="vv-panel vv-guide" id="vikings-guide" role="tabpanel" aria-labelledby="vv-guide-tab">
-    {% include ascii/motif.html kind="charm" %}
-    <h2 id="waves">The twenty waves</h2>
-    <p>Choose a wave to check its instructions. Set your place manually as the event runs.</p>
-    <div class="vv-waves" data-target="vikings.waves" role="group" aria-label="Wave"></div>
-    <p class="vv-wave-detail" data-target="vikings.waveDetail" aria-live="polite">City waves: reinforce your assigned towns before the hit.</p>
-    {% include ascii/march.html %}
-    <noscript><p>Waves 7, 14 and 17 hit online cities only. Waves 10 and 20 hit HQ. The other waves hit cities.</p></noscript>
-    <div class="vv-prep"><img src="../img/buildings/guard-station.webp" width="96" height="96" alt=""><div id="routine"><h3>Before the first wave</h3><p>Set your guard station, check your march capacities, and agree who covers your city. HQ participants should know which queue to recall.</p></div></div>
-    <details id="stand"><summary>Troops out, city covered</summary><p>Use every available queue and send all troop types while space remains. Your limit is the sum of your march capacities. If troops cannot all fit, the baseline leaves surplus archers home first, then cavalry if necessary. Arrange incoming cover before emptying your city.</p><p>Troop counts alone cannot tell us whether a city will clear a wave. Difficulty, troop tiers, garrison stats and skills matter.</p></details>
-    <details id="composition"><summary>What goes in each march?</summary><p>Split your deployable troops evenly across city marches, with the same composition where capacities allow. This does not require equal numbers of infantry, cavalry and archers. Keep the HQ preset separate.</p></details>
-    <details id="online"><summary>Online waves: 7, 14 and 17</summary><p>Only cities whose players are online when these waves fire receive an attack. Offline players can still send troops before logging off. Rotate cover only when the alliance has planned the travel time and the return to offline towns.</p><p>The availability on this page is what players said they expect. Check the game’s Members tab for current presence and garrison space.</p></details>
-    <details id="hq"><summary>HQ waves: 10 and 20</summary><p>Agree the participants, effective garrison cap and exact shares. Our starting preset is 75% infantry and 25% cavalry. Leaders can change it for their alliance.</p><p>After wave 9 or 19 resolves, recall the reserved queue and send its agreed HQ share. Return to city cover after the HQ hit. The planner checks capacity and troop availability; it does not predict survival.</p></details>
-    <details id="scoring-maths"><summary>What earns points?</summary><p>A town has a finite wave points budget. Reinforcers earn their share through kills. More reinforcers change how that pool is split; they do not multiply it. Aim for full clears, then inspect the kill reports before adjusting cover.</p><p>The community scoring model is approximate. We do not turn assigned troop counts into a promised score.</p></details>
-    <details id="heroes"><summary>Heroes, healing and reports</summary><p>Keep the heroes who lead your city in the guard station. Choose reinforcement leads from the skills your alliance needs and check their actual effects in reports. Vikings recommendations should follow Vikings evidence.</p><p>If you heal between waves, send those troops back out unless the city needs them to survive. If a city stops receiving attacks, redeploy its reinforcements to a city still taking waves.</p><a href="../heroes/">Open the hero directory</a></details>
-    <details id="vikings-sharing"><summary>Links</summary><p>The leader link runs it, the sign-up link adds players, and your own link edits your troops. There are no accounts, so keep your link.</p><p>It stays while your alliance uses it. Only your Vikings troops and name are sent; the rest of your save stays on this device.</p></details>
-  </section>
-
   <dialog class="vv-dialog" data-target="vikings.dialog" aria-labelledby="vv-dialog-title"><div class="vv-dialog-head"><h2 id="vv-dialog-title"></h2><button type="button" data-action="vikings.closeDialog" aria-label="Close editor">×</button></div><p class="vv-dialog-message" data-target="vikings.dialogMessage" role="alert"></p><div data-target="vikings.dialogBody"></div></dialog>
-  <noscript><p class="vv-caption">The planner needs JavaScript. The guide above remains available.</p></noscript>
+  <noscript><p class="vv-caption">The planner needs JavaScript. <a href="guide/">The guide</a> works without it.</p></noscript>
 </main>
