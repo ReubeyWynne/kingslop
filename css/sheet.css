@@ -1,0 +1,69 @@
+/* ─── Planner sheets — the frame Governor gear and Hero gear share ─────────── */
+/* Title and lede, the "This sheet" bar, a screenshot box, your things on the left and the
+   answer on the right, then fold-outs. Colours come from each page's own theme. */
+
+.sheet-page .sheet-hero { padding-bottom: .5rem; }
+.sheet-page .sheet-hero .lede { max-width: 36rem; }
+
+/* The bar — whose numbers these are, then sharing and saving, the main action first. */
+.sheet-page .sheet-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem 1.5rem; margin-top: .5rem; padding: .6rem .9rem; border: 1px solid var(--signal-line); background: var(--signal-tint); }
+.sheet-bar p { margin: 0; }
+.sheet-bar-state { display: grid; gap: .1rem; min-width: 0; flex: 1 1 16rem; }
+.sheet-kicker { font: 700 .7rem var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); }
+.sheet-source { font-size: .9rem; color: var(--ink-dim); }
+.sheet-source strong { color: var(--ink); font-weight: 600; }
+.sheet-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .6rem; }
+.sheet-page .sheet-actions button { min-height: 2.5rem; padding: .3rem .9rem; font-size: .95rem; border: 1px solid var(--signal-line); }
+.sheet-page .sheet-actions button[data-kind="primary"] { color: var(--void); background: var(--amber); border-color: var(--amber); font-weight: 700; }
+.sheet-page .sheet-actions button[data-kind="primary"]:hover { color: var(--void); background: var(--ink); border-color: var(--ink); }
+.sheet-page .sheet-actions button[data-kind="secondary"] { border-color: var(--amber); }
+.sheet-page .sheet-actions button[data-kind="quiet"] { padding-inline: .3rem; border-color: transparent; color: var(--ink-muted); font-size: .85rem; }
+.sheet-page .sheet-actions button[data-kind="quiet"]:hover { color: var(--ink); border-color: transparent; border-bottom-color: var(--signal-line); }
+.sheet-page .sheet-link { flex: 1 1 100%; width: auto; min-width: 0; margin: 0; padding: .4rem; font: .85rem var(--body); color: var(--ink); background: var(--void-2); border: 1px solid var(--signal-line); }
+.sheet-confirm p { margin: .6rem 0 0; }
+.sheet-confirm-actions { display: flex; justify-content: flex-end; gap: 1rem; }
+
+/* The page's own way in for a screenshot; the shared import dock does the reading. */
+.sheet-page .sheet-drop { display: grid; gap: .15rem; width: 100%; margin: 0 0 .7rem; padding: .6rem .8rem; text-align: start; color: var(--ink-dim); border: 1px dashed var(--signal-line); background: transparent; }
+.sheet-drop strong { color: var(--amber); font-weight: 600; }
+.sheet-drop span { font-size: .85rem; }
+.sheet-page .sheet-drop:hover, .sheet-page .sheet-drop[data-dragging="true"] { color: var(--ink); border-color: var(--amber); border-bottom-color: var(--amber); background: var(--signal-tint); }
+
+/* Workspace — yours beside the answer, both at full length so one screenshot holds them. */
+.sheet-workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2.5rem; align-items: start; margin-top: .75rem; }
+.sheet-side, .sheet-answer { min-width: 0; }
+.sheet-page .sheet-side > h2, .sheet-page .sheet-answer > h2 { font-size: 1.3rem; line-height: 1.25; margin: 0 0 .4rem; }
+.sheet-page .sheet-side > h2::before, .sheet-page .sheet-answer > h2::before { display: none; }
+.sheet-answer { border-inline-start: 1px solid var(--signal-line); padding-inline-start: 1.5rem; }
+
+/* The answer's questions, boxed as one row of tabs. */
+.sheet-modes { display: grid; grid-auto-columns: minmax(0, 1fr); grid-auto-flow: column; border: 1px solid var(--signal-line); margin: 0 0 .5rem; }
+.sheet-page .sheet-modes button { min-width: 0; padding-inline: .3rem; color: var(--ink-muted); font-weight: 700; line-height: 1.15; border-bottom: 2px solid transparent; }
+.sheet-page .sheet-modes button + button { border-inline-start: 1px solid var(--signal-line); }
+.sheet-page .sheet-modes [aria-selected="true"] { color: var(--amber); background: var(--signal-tint); border-bottom-color: var(--amber); }
+
+/* A small uppercase label at the head of a row of choices. */
+.sheet-label { font: 700 .75rem var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); }
+
+/* A bill — one icon, number and caption per material. */
+.sheet-strip { display: grid; grid-auto-columns: minmax(0, 1fr); grid-auto-flow: column; gap: .4rem; padding: .4rem 0; border-block: 1px solid var(--signal-line); }
+.sheet-strip > div { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
+.sheet-strip img { width: 2rem; height: 2rem; object-fit: contain; }
+.sheet-strip strong { font: 1.05rem/1.3 var(--display-2); color: var(--ink); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.sheet-strip small { font-size: .72rem; line-height: 1.1; color: var(--ink-muted); }
+
+/* Fold-outs under the workspace: settings, method, sources and tables. */
+.sheet-notes { max-width: 46rem; }
+.sheet-page .sheet-notes details { margin: .45rem 0; }
+.sheet-page .sheet-notes summary { font-size: .85rem; padding: .25rem 0; cursor: pointer; }
+.sheet-notes details > :not(summary) { max-width: 46rem; }
+
+@media (max-width: 780px) {
+  .sheet-page .sheet-hero { padding-top: var(--space-m); }
+  .sheet-page .sheet-hero h1 { font-size: 2.25rem; }
+  .sheet-page .sheet-hero .lede { font-size: 1rem; }
+  .sheet-workspace { display: block; margin-top: .25rem; }
+  .sheet-answer { border-inline-start: 0; padding-inline-start: 0; margin-top: 1.5rem; padding-top: .75rem; border-top: 1px solid var(--signal-line); }
+  .sheet-page .sheet-modes button { font-size: .85rem; }
+  .sheet-strip strong { font-size: .95rem; }
+}

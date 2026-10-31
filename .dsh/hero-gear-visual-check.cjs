@@ -24,8 +24,12 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('h1').textContent(),'Hero gear');
     assert.equal(await page.locator('h1').count(),1);
     assert.equal(await page.locator('.topbar .brand').count(),1);
-    assert.equal(await page.locator('.gear-hero').count(),0);
-    assert.equal(await page.locator('.gear-editor #gear-import').count(),1);
+    // The same frame as Governor gear: title, the sheet bar, the upload box above your gear, the answer beside it.
+    assert.equal(await page.locator('.sheet-hero h1').count(),1);
+    assert.match(await page.locator('#gear-sheet .sheet-source').textContent(),/Your save\. Changes save as you go\./);
+    assert.equal(await page.locator('#gear-save-mine').isHidden(),true,'your own gear needs no Save as mine');
+    assert.equal(await page.locator('.gear-editor #gear-import.sheet-drop[data-screen-import-drop]').count(),1);
+    assert.equal(await page.locator('.sheet-answer .sheet-modes [role="tab"]').count(),4);
     assert.equal(await page.locator('.gear-answer #gear-profile').count(),1);
     await page.locator('.gear-row[data-select="inf-helm"]').click();
     await page.locator('[data-piece="inf-helm"][data-field="level"]').fill('100');
@@ -97,11 +101,10 @@ withBrowser({ root }, async ({ browser, origin }) => {
     fixture.pieces['cav-chest']={quality:'mythic',level:40,mastery:1};
     fixture.pieces['cav-boots']={quality:'mythic',level:63,mastery:1};
     fixture.selected='inf-gloves';fixture.resources={xp:52650,hammers:110,mythic:6,mithril:10};
-    await page.locator('#gear-page-settings').click();
+    await page.locator('#save-backups summary').click();
     await page.locator('#gear-load').click();
     await page.locator('#gear-save-file').setInputFiles({name:'gear.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(fixture))});
     await page.waitForFunction(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-gloves'].level===120);
-    await page.locator('#gear-page-planner').click();
     await page.locator('#gear-mode-milestones').click();
     assert.match(await page.locator('[data-cost-resource="xp"]').textContent(),/74,100/);
     assert.match(await page.locator('[data-cost-resource="mithril"]').textContent(),/10 missing/);
@@ -143,6 +146,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
           await page.evaluate(()=>scrollTo(0,0));
           assert.equal(await page.locator('#gear-profile').isVisible(),true);
           assert.equal(await page.locator('.gear-route').count(),3);
+          // Measured from the Gear/Plan tabs: the title and sheet bar sit above, as on Governor gear.
+          await page.locator('#gear-views').evaluate(el=>el.scrollIntoView({block:'start'}));
           const costs=await page.locator('.gear-route-detail .gear-cost-strip').boundingBox();
           assert.ok(costs.y+costs.height<=height,'three recommendations and costs fit the mobile viewport');
           await page.screenshot({path:path.join(output,'mobile-plan.png')});
@@ -159,10 +164,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
     }
     await page.setViewportSize({width:390,height:844});
     await page.locator('#gear-view-plan').click();
-    await page.locator('#gear-page-settings').click();
     await page.locator('#gear-reforge').check();
-    await page.locator('#gear-view-plan').click();
+    // On a phone the materials sit with the gear, under the Gear tab.
+    await page.locator('#gear-view-gear').click();
     for(const [id,value]of [['parts10','2299'],['parts100','1'],['hammers','501'],['mythic','10'],['mithril','10']])await page.locator('#gear-'+id).fill(value);
+    await page.locator('#gear-view-plan').click();
     await page.locator('#gear-mode-optimise').click();
     await page.locator('#gear-apply-result').waitFor();
     assert.equal(await page.locator('#gear-results > .gear-kvk-summary').getAttribute('data-kvk-points'),'2400000');
@@ -183,7 +189,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.setViewportSize({width:390,height:844});
     await page.locator('#gear-mode-plan').click();
     await page.screenshot({path:path.join(output,'mobile-red-overview-saving.png')});
+    await page.locator('#gear-view-gear').click();
     for(const [id,value]of [['parts10','0'],['parts100','120'],['hammers','180'],['mythic','4'],['mithril','0']])await page.locator('#gear-'+id).fill(value);
+    await page.locator('#gear-view-plan').click();
     await page.locator('#gear-mode-optimise').click();
     await page.locator('#gear-apply-result').waitFor();
     assert.ok(await page.locator('.gear-result-grid .gear-row').count() > 0);
@@ -329,39 +337,54 @@ withBrowser({ root }, async ({ browser, origin }) => {
       await guestContext.grantPermissions(['clipboard-read','clipboard-write'],{origin});
       const owner=await guestContext.newPage();owner.on('pageerror',e=>errors.push(e.message));
       await owner.goto(origin+'/hero-gear/?lang=en');await owner.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
-      assert.equal(await owner.locator('#gear-guest-banner').isHidden(),true);
+      assert.equal(await owner.locator('#gear-load-mine').isHidden(),true,'your own gear is no separate sheet');
       await owner.locator('#gear-hammers').fill('500');
       await owner.locator('.gear-row[data-select="inf-helm"]').click();
       await owner.locator('[data-piece="inf-helm"][data-field="level"]').fill('90');await owner.locator('[data-piece="inf-helm"][data-field="level"]').press('Tab');
       await owner.locator('#gear-close-edit').click();
       await owner.locator('#gear-share').click();
       await owner.locator('#gear-share[data-copied]').waitFor();
-      assert.equal(await owner.locator('#gear-share').textContent(),'link copied','the button confirms the copy');
+      assert.equal(await owner.locator('#gear-share').textContent(),'Link copied','the button confirms the copy');
       assert.equal(await owner.locator('#gear-status').isHidden(),true,'no note lingers below the gear');
       await owner.locator('#gear-share:not([data-copied])').waitFor();
-      assert.equal(await owner.locator('#gear-share').textContent(),'copy gear link');
+      assert.equal(await owner.locator('#gear-share').textContent(),'Copy share link');
       const shared=await owner.evaluate(()=>navigator.clipboard.readText());
       assert.match(shared,/\/hero-gear\/\?gear=m90\.0(-m0\.0){11}&w=growth$/);
       const visitor=await guestContext.newPage();visitor.on('pageerror',e=>errors.push(e.message));
       await visitor.goto(shared);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
-      assert.equal(await visitor.locator('#gear-guest-banner').isVisible(),true);
+      assert.match(await visitor.locator('#gear-sheet .sheet-source').textContent(),/A shared sheet\. Your save is untouched\./);
+      assert.equal(await visitor.locator('#gear-save-mine').isVisible(),true);
+      assert.equal(await visitor.locator('#gear-load-mine').isVisible(),true);
       assert.equal(await visitor.locator('#gear-hammers').inputValue(),'','a link carries gear, not the sender\'s bag');
       assert.match(await visitor.locator('.gear-row[data-select="inf-helm"]').textContent(),/\+90/);
       await visitor.locator('#gear-hammers').fill('999');
       await visitor.locator('.gear-row[data-select="inf-boots"]').click();
       await visitor.locator('[data-piece="inf-boots"][data-field="level"]').fill('50');await visitor.locator('[data-piece="inf-boots"][data-field="level"]').press('Tab');
       await visitor.locator('#gear-close-edit').click();
-      assert.match(visitor.url(),/gear=m90\.0-m0\.0-m0\.0-m50\.0/,'the address bar follows guest edits');
-      assert.equal(await visitor.locator('#gear-save').textContent(),'guest mode, not saved');
+      assert.match(visitor.url(),/gear=m90\.0-m0\.0-m0\.0-m50\.0/,'the address bar follows edits to a sheet');
+      assert.equal(await visitor.locator('#gear-save').textContent(),'on this sheet only');
       const saved=await owner.evaluate(()=>JSON.parse(localStorage.getItem('bh:player-ledger:v1')));
       assert.equal(saved.inventory.forgehammer.amount,500,'guest edits never reach the saved inventory');
       assert.equal(saved.heroGear.pieces['inf-boots'],undefined,'guest edits never reach the saved gear');
       await visitor.goto(origin+'/hero-gear/?lang=en&guest');await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
       assert.equal(await visitor.locator('#gear-hammers').inputValue(),'500','plain guest mode starts from a copy of your save');
       assert.match(visitor.url(),/\?lang=en&gear=/);
-      assert.match(await visitor.locator('#gear-guest-leave').getAttribute('href'),/\/hero-gear\/\?lang=en$/);
+      // Load mine goes back to your own gear; Start blank opens an empty sheet; Save as mine writes a sheet back.
+      await Promise.all([visitor.waitForNavigation(),visitor.locator('#gear-load-mine').click()]);
+      assert.match(visitor.url(),/\/hero-gear\/\?lang=en$/);
+      await Promise.all([visitor.waitForNavigation(),visitor.locator('#gear-blank').click()]);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+      assert.match(await visitor.locator('#gear-sheet .sheet-source').textContent(),/A blank sheet\./);
+      assert.equal(await visitor.locator('#gear-blank').isHidden(),true);
+      assert.equal(await visitor.locator('#gear-save-mine').isHidden(),true,'nothing to save from a blank sheet');
+      await visitor.goto(shared.replace('m90.0','m95.3'));await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+      await visitor.locator('#gear-save-mine').click();
+      await Promise.all([visitor.waitForNavigation(),visitor.locator('#gear-confirm-save').click()]);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
+      const mine=await visitor.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear));
+      assert.deepEqual(mine.pieces['inf-helm'],{quality:'mythic',level:95,mastery:3},'Save as mine writes the sheet\'s gear');
+      assert.equal(mine.resources.hammers,500,'a material the sheet left at 0 keeps your number');
+      assert.match(await visitor.locator('#gear-sheet .sheet-source').textContent(),/Your save\./);
       await visitor.goto(origin+'/hero-gear/?gear=broken');await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
-      assert.match(await visitor.locator('#gear-status').textContent(),/couldn’t be read/);
+      assert.match(await visitor.locator('#gear-sheet .sheet-source').textContent(),/That link could not be read, so this is a blank sheet\./);
       await visitor.goto(origin+'/hero-gear/?lang=en&gear=m69.2-r120.11-m100.6-m72.3-m20.20-m100.0-r160.13-e80.0-r200.20-r200.20-r200.20-r200.20&w=growth');
       await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
       await visitor.locator('#gear-mode-split').click();
@@ -374,22 +397,22 @@ withBrowser({ root }, async ({ browser, origin }) => {
       await visitor.locator('.gear-split[data-split-troop="inf"]').waitFor({state:'detached'});
       await visitor.locator('.gear-split[data-split-troop="cav"]').waitFor();
       assert.equal(await visitor.locator('.gear-split').count(),2,'excluded troops leave the best split');
-      for(const [hash,tab,visible] of [['#kvk-points','#gear-page-theory','#kvk-points'],['#maths-sources','#gear-page-theory','#maths'],['#how-it-works','#gear-page-theory','#how-it-works'],['#save-backups','#gear-page-settings','#gear-export']]){
+      // Old links to Settings and Theory open the fold they now sit in.
+      for(const [hash,fold] of [['#kvk-points','#kvk-points'],['#maths-sources','#maths'],['#how-it-works','#how-it-works'],['#save-backups','#save-backups'],['#weights',null]]){
         await visitor.goto(origin+'/hero-gear/?lang=en'+hash);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-row').length===4);
-        await visitor.locator(visible).waitFor();
-        assert.equal(await visitor.locator(tab).getAttribute('aria-selected'),'true',hash+' opens its tab');
-        assert.equal(await visitor.locator('#gear-planner').isHidden(),true);
+        if(fold)assert.equal(await visitor.locator(fold).evaluate(d=>d.open),true,hash+' opens its fold');
+        assert.equal(await visitor.locator('#gear-planner').isVisible(),true,'the planner stays in view');
       }
-      await visitor.locator('#gear-page-planner').click();
-      assert.equal(new URL(visitor.url()).hash,'','leaving Settings clears its hash, so a reload stays on the planner');
+      await visitor.locator('#kvk-points').evaluate(d=>{d.open=false;});
       await visitor.locator('#gear-mode-plan').click();
       await visitor.locator('#gear-milestone-out .gear-theory-link[href="#kvk-points"]').click();
       await visitor.locator('#kvk-points').waitFor();
       assert.match(await visitor.locator('#gear-kvk-formula').textContent(),/each Forgehammer you spend scores 4,000 points/);
-      assert.equal(await visitor.locator('.gear-main details').count(),0,'the page uses tabs and headings, not folds');
+      // A link to a note opens its fold.
+      await visitor.waitForFunction(()=>document.getElementById('kvk-points').open);
     } finally { await guestContext.close(); }
     assert.deepEqual(errors,[]);
-    console.log('Visual gear, original assets, edit dialogs, resource bars, persistence, exclusions, keyboard tabs, worker search, milestone/search apply and undo, screenshot review, JSON import, guest mode, share links, best split, Settings and Theory tabs and their old links, mobile Gear/Plan, 5 widths and 17 language layouts passed. OCR delivery was stubbed; parser fixtures use real worker item shapes.');
+    console.log('Visual gear, original assets, edit dialogs, resource bars, persistence, exclusions, keyboard tabs, worker search, milestone/search apply and undo, screenshot review, JSON import, sheets and share links, best split, Save as mine, Load mine, Start blank, the notes as folds and their old links, mobile Gear/Plan, 5 widths and 17 language layouts passed. OCR delivery was stubbed; parser fixtures use real worker item shapes.');
   }catch(error){
     if(page){await page.screenshot({path:path.join(output,'failure.png'),fullPage:true});fs.writeFileSync(path.join(output,'failure.txt'),page.url()+'\n'+error.stack);}
     throw error;

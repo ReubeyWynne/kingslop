@@ -95,7 +95,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.waitForTimeout(350);
     assert.equal(await page.evaluate(() => window.__searches.length), 2, 'returning to mobile Plan uses current results');
     await page.locator('#gear-profile').selectOption('custom');
-    assert.equal(await page.locator('#gear-settings').isVisible(), true);
+    assert.equal(await page.locator('#weights').isVisible(), true, 'custom shows the weights beside the answer');
     assert.equal(await page.locator('#gear-weights input').first().evaluate(el => el === document.activeElement), true);
     await page.context().close();
 
@@ -121,7 +121,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
       if (empty === 'weights') state.weights.arc = [0,0];
       await open(state); await page.locator('.gear-empty').waitFor();
       if (empty === 'budget') {
-        assert.match(await page.locator('.gear-empty').textContent(), /Enter your resources/);
+        assert.match(await page.locator('.gear-empty').textContent(), /Enter your materials/);
         await page.screenshot({ path:path.join(output, 'mobile-empty-budget.png') });
         await page.locator('.gear-empty [data-mode="plan"]').click();
         assert.equal(await page.locator('#gear-mode-plan').getAttribute('aria-selected'), 'true');
@@ -130,7 +130,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
         assert.equal(await page.locator('.gear-editor').isVisible(), true);
       } else {
         await page.locator('.gear-empty [data-show-weights]').click();
-        assert.equal(await page.locator('#gear-settings').isVisible(), true);
+        assert.equal(await page.locator('#weights').isVisible(), true, 'custom shows the weights beside the answer');
       }
       await page.context().close();
     }
@@ -176,7 +176,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await sibling.locator('#gear-rows .gear-row').first().waitFor({ state: 'attached' });
     await sibling.evaluate(() => window.PlayerLedger.shared().setBalance('mithril', 17));
     await page.waitForFunction(() => document.getElementById('gear-mithril').value === '17');
-    await page.locator('#gear-page-settings').click();
+    await page.locator('#save-backups summary').click();
     const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#gear-export').click()]);
     assert.equal(download.suggestedFilename(), 'kingshot-player.json');
     const backup = JSON.parse(fs.readFileSync(await download.path(), 'utf8'));
