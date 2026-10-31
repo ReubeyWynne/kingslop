@@ -293,6 +293,15 @@
           pick.lastChild.classList.add('reqs-lv-goal');
         } else pick.appendChild(el('span', 'reqs-arrow', li.dataset.state === 'done' ? '✓' : arrow().trim() + ' ' + levelName(k, to)));
         body.appendChild(pick);
+        // Why a prerequisite goes this high, and which prerequisites a goal pulls in, so a goal
+        // whose total jumps (Command Center TG 4 needs Embassy TG 4) says where the jump is.
+        var why = result.why || {}, reason = '';
+        if (goalAt < 0 && why[k]) reason = t('neededFor', 'for {list}', { list: why[k].map(function (b) { return name(b.building) + ' ' + levelName(b.building, b.level); }).join(', ') });
+        else if (goalAt >= 0) {
+          var pulled = Object.keys(why).filter(function (p) { return why[p].some(function (b) { return b.building === k; }); });
+          if (pulled.length) reason = t('pullsIn', 'needs {list}', { list: pulled.map(function (p) { return name(p) + ' ' + levelName(p, want[p]); }).join(', ') });
+        }
+        if (reason) body.appendChild(el('p', 'reqs-run-why', reason));
         if (part.length) {
           var sub = E.total(part), costs = el('ul', 'reqs-cost reqs-cost-small');
           costList(costs, sub, true);

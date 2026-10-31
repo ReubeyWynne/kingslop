@@ -1795,6 +1795,8 @@ window.__BH_I18N_DATA["ja"] = {
   "reqs.path": "必要なもの",
   "reqs.tapLevel": "？付きのレベルは推定です：あなたの街の最低限のレベル。レベルをタップして自分の値を入れると、本当に残っている分だけに計画が絞られます。",
   "reqs.goalTag": "目標",
+  "reqs.neededFor": "{list} に必要",
+  "reqs.pullsIn": "必要: {list}",
   "reqs.goalLevel": "{building}の目標レベル",
   "reqs.removeFromGoal": "目標から外す",
   "reqs.unsureShort": "不明",

@@ -116,7 +116,23 @@
       at[pick] = step.id;
     }
     order.forEach(function (k) { queue[k].forEach(function (step) { blocked.push({ building: k, level: step.id, step: step }); }); });
-    return { state: blocked.length ? 'blocked' : 'plan', goals: list, current: current, assumed: assumed, want: want, steps: out, runs: runs(out), blocked: blocked, total: total(out) };
+    return { state: blocked.length ? 'blocked' : 'plan', goals: list, current: current, assumed: assumed, want: want, why: why(out.concat(blocked), want, mine), steps: out, runs: runs(out), blocked: blocked, total: total(out) };
+  }
+
+  // Why each prerequisite goes as high as it does: the first step of each other building that
+  // needs its top level (Embassy TG 4 for Command Center TG3-1), so a goal that pulls in a
+  // prerequisite's extra upgrades says so on that prerequisite's card.
+  function why(list, want, mine) {
+    var out = {};
+    list.forEach(function (s) {
+      (s.step.needs || []).forEach(function (need) {
+        var k = key(need);
+        if (mine[k] || want[k] === undefined || rank(need[1] || '1') !== rank(want[k])) return;
+        var by = out[k] || (out[k] = []);
+        if (!by.some(function (b) { return b.building === s.building; })) by.push({ building: s.building, level: s.level });
+      });
+    });
+    return out;
   }
 
   // Consecutive steps on one building read as one line: Embassy 10 → 14.

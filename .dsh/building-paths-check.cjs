@@ -95,6 +95,19 @@ assert.deepEqual(p.runs.map(r => r.building), ['town-center']);
 assert.equal(E.plan(D, [{ building: 'academy', level: '5' }, { building: 'embassy', level: '3' }], { academy: '9', embassy: '8' }).state, 'met');
 
 // Page wiring and dictionaries.
+// A goal that pulls a prerequisite higher says so: Command Center TG 4 needs Embassy TG 4 (its
+// TG3-1 step), which is where its total's extra upgrades come from.
+{
+  const city = { barracks: 'TG 3', 'command-center': 'TG 2', embassy: 'TG2-2', range: 'TG 3', stable: 'TG 3', 'town-center': 'TG 3' };
+  const goals = cc => ['town-center', 'barracks', 'range', 'stable'].map(b => ({ building: b, level: 'TG 4' })).concat({ building: 'command-center', level: cc });
+  const three = E.plan(D, goals('TG 3'), city), four = E.plan(D, goals('TG 4'), city);
+  assert.equal(three.want.embassy, 'TG 3');
+  assert.equal(four.want.embassy, 'TG 4');
+  assert.deepEqual(four.why.embassy, [{ building: 'command-center', level: 'TG3-1' }]);
+  assert.equal(four.total.steps - three.total.steps, 10);
+  assert.equal(four.total.cost.truegold - three.total.cost.truegold, 630);
+}
+
 const page = fs.readFileSync(path.join(root, 'buildings/index.html'), 'utf8');
 const script = fs.readFileSync(path.join(root, 'js/building-paths-page.js'), 'utf8');
 const pages = JSON.parse(fs.readFileSync(path.join(root, '_data/pages.json'), 'utf8'));

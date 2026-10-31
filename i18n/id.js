@@ -1806,6 +1806,8 @@ window.__BH_I18N_DATA["id"] = {
   "reqs.path": "Yang dibutuhkan",
   "reqs.tapLevel": "Level bertanda ? adalah perkiraan: paling rendah yang bisa dimiliki kotamu. Ketuk level mana pun untuk mengisi milikmu, dan rencana menyusut ke yang benar-benar tersisa.",
   "reqs.goalTag": "target",
+  "reqs.neededFor": "untuk {list}",
+  "reqs.pullsIn": "butuh {list}",
   "reqs.goalLevel": "Level target {building}",
   "reqs.removeFromGoal": "Hapus dari target",
   "reqs.unsureShort": "tidak yakin",

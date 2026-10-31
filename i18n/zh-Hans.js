@@ -1795,6 +1795,8 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "reqs.path": "所需内容",
   "reqs.tapLevel": "带 ? 的等级是推定值：你的城市至少应有的等级。点任意等级填入你的实际等级，计划会缩减到真正剩下的部分。",
   "reqs.goalTag": "目标",
+  "reqs.neededFor": "{list} 所需",
+  "reqs.pullsIn": "需要 {list}",
   "reqs.goalLevel": "{building}目标等级",
   "reqs.removeFromGoal": "从目标中移除",
   "reqs.unsureShort": "不确定",

@@ -1797,6 +1797,8 @@ window.__BH_I18N_DATA["it"] = {
   "reqs.path": "Cosa serve",
   "reqs.tapLevel": "Un livello con ? è presunto: il minimo che la tua città può avere. Tocca un livello per inserire il tuo e il piano si riduce a ciò che manca davvero.",
   "reqs.goalTag": "obiettivo",
+  "reqs.neededFor": "per {list}",
+  "reqs.pullsIn": "richiede {list}",
   "reqs.goalLevel": "Livello obiettivo di {building}",
   "reqs.removeFromGoal": "Togli dall'obiettivo",
   "reqs.unsureShort": "non so",
