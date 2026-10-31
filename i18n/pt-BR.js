@@ -1797,6 +1797,8 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "reqs.path": "O que é preciso",
   "reqs.tapLevel": "Um nível com ? é estimado: o mínimo que sua cidade pode ter. Toque em qualquer nível para informar o seu, e o plano encolhe para o que realmente falta.",
   "reqs.goalTag": "meta",
+  "reqs.neededFor": "para {list}",
+  "reqs.pullsIn": "requer {list}",
   "reqs.goalLevel": "Nível-meta de {building}",
   "reqs.removeFromGoal": "Tirar da meta",
   "reqs.unsureShort": "não sei",

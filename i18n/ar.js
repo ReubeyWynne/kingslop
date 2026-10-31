@@ -1792,6 +1792,8 @@ window.__BH_I18N_DATA["ar"] = {
   "reqs.path": "ما يتطلبه الأمر",
   "reqs.tapLevel": "المستوى المعلّم بـ ? مفترض: أقل ما يمكن أن تملكه مدينتك. اضغط أي مستوى لتحدد مستواك، فتتقلص الخطة إلى ما تبقى فعلًا.",
   "reqs.goalTag": "الهدف",
+  "reqs.neededFor": "لأجل {list}",
+  "reqs.pullsIn": "يتطلب {list}",
   "reqs.goalLevel": "المستوى المستهدف لـ{building}",
   "reqs.removeFromGoal": "إزالة من الهدف",
   "reqs.unsureShort": "غير متأكد",

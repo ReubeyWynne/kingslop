@@ -57,6 +57,7 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 .reqs-cost-small { gap: 0.2rem 0.8rem; font-size: var(--step--1); }
 .reqs-cost-small .reqs-res { display: none; }
 .reqs-run-time { color: var(--ink-muted); }
+.reqs-run-why { flex-basis: 100%; margin: 0; color: var(--ink-dim); font-size: var(--step--1); }
 .reqs-time, .reqs-flag { margin: .35rem 0 0; color: var(--ink-dim); font-size: var(--step--1); }
 .reqs-more { margin-block: var(--space-s); }
 .reqs-more summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--amber); }

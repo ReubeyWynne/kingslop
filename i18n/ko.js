@@ -1795,6 +1795,8 @@ window.__BH_I18N_DATA["ko"] = {
   "reqs.path": "필요한 것",
   "reqs.tapLevel": "? 표시 레벨은 추정치입니다: 도시가 가질 수 있는 최소 레벨. 레벨을 탭해 내 레벨을 입력하면 계획이 실제로 남은 만큼으로 줄어듭니다.",
   "reqs.goalTag": "목표",
+  "reqs.neededFor": "{list}에 필요",
+  "reqs.pullsIn": "필요: {list}",
   "reqs.goalLevel": "{building} 목표 레벨",
   "reqs.removeFromGoal": "목표에서 빼기",
   "reqs.unsureShort": "모름",

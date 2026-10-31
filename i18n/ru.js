@@ -1795,6 +1795,8 @@ window.__BH_I18N_DATA["ru"] = {
   "reqs.path": "Что потребуется",
   "reqs.tapLevel": "Уровень с ? предполагаемый: минимум, который может быть в вашем городе. Нажмите на уровень, чтобы указать свой, и план сократится до того, что действительно осталось.",
   "reqs.goalTag": "цель",
+  "reqs.neededFor": "для {list}",
+  "reqs.pullsIn": "требует {list}",
   "reqs.goalLevel": "Целевой уровень: {building}",
   "reqs.removeFromGoal": "Убрать из цели",
   "reqs.unsureShort": "не знаю",
