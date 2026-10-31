@@ -48,8 +48,21 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.match(await target('events').textContent(), /Gear on Alliance Brawl day 5: about [\d,]+ points/);
     assert.equal(await page.locator('[data-target="governor-planner.bill"] > div').count(), 5);
     assert.equal(await page.locator('.gov-result').evaluate(n => getComputedStyle(n).overflowY), 'visible', 'no box that scrolls');
-    await page.click('[data-action="governor-planner.profile"][data-value="even"]');
-    await page.waitForFunction(() => /[?&]p=even/.test(location.search));
+    // Bear first shows its weights; typing one makes them custom weights, which travel in the link.
+    const weights = () => page.locator('[data-action="governor-planner.weight"]').evaluateAll(nodes => nodes.map(n => n.dataset.troop + ' ' + n.value));
+    assert.deepEqual(await weights(), ['inf 1', 'cav 1', 'arc 3']);
+    await page.fill('[data-action="governor-planner.weight"][data-troop="cav"]', '0');
+    await page.locator('[data-action="governor-planner.weight"][data-troop="cav"]').dispatchEvent('change');
+    await page.waitForFunction(() => /[?&]p=custom&w=1_0_3/.test(location.search));
+    assert.equal(await page.locator('[data-action="governor-planner.profile"][data-value="custom"]').getAttribute('aria-pressed'), 'true');
+    assert.deepEqual(await page.locator('.gov-row[data-moved="true"]').evaluateAll(rows => rows.map(r => r.dataset.item).filter(id => /^cav/.test(id))), [], 'a troop at 0 stays where it is');
+    await page.fill('[data-action="governor-planner.weight"][data-troop="inf"]', '1.5');
+    await page.locator('[data-action="governor-planner.weight"][data-troop="inf"]').dispatchEvent('change');
+    await page.waitForFunction(() => /[?&]w=1\.5_0_3/.test(location.search));
+    await page.click('[data-action="governor-planner.profile"][data-value="score"]');
+    assert.equal(await target('weights').isHidden(), true, 'event score has no weights');
+    await page.click('[data-action="governor-planner.profile"][data-value="custom"]');
+    assert.deepEqual(await weights(), ['inf 1.5', 'cav 0', 'arc 3'], 'custom weights are kept');
     await page.click('[role="tab"][data-value="reach"]');
     await target('reachTroop').selectOption('arc');
     await target('gearTarget').selectOption('4');
@@ -64,7 +77,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await tile('inf-1').getAttribute('data-state'), 'empty');
     assert.equal(await tile('arc-2').getAttribute('data-state'), 'unset');
     assert.equal(await tile('cav-2').getAttribute('data-state'), 'empty');
-    assert.equal(await page.locator('[data-action="governor-planner.profile"][data-value="even"]').getAttribute('aria-pressed'), 'true');
+    assert.equal(await page.locator('[data-action="governor-planner.profile"][data-value="custom"]').getAttribute('aria-pressed'), 'true');
     assert.equal(await page.locator('[data-bind="inventory.satin"]').inputValue(), '20000');
     const other = await context.newPage(); await other.goto(origin + '/hero-gear/?lang=en');
     await other.locator('#gear-mithril').fill('7');
@@ -95,7 +108,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
     const visitor = await browser.newContext({ viewport: { width, height: 900 } }), guest = await visitor.newPage();
     await guest.goto(shared); await guest.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
     assert.equal(await guest.locator('.gov-piece[data-gov="cav-2"]').getAttribute('data-state'), 'empty');
-    assert.equal(await guest.locator('[data-action="governor-planner.profile"][data-value="even"]').getAttribute('aria-pressed'), 'true', 'the profile travels in the link');
+    assert.equal(await guest.locator('[data-action="governor-planner.profile"][data-value="custom"]').getAttribute('aria-pressed'), 'true', 'the profile travels in the link');
+    assert.equal(await guest.locator('[data-action="governor-planner.weight"][data-troop="cav"]').inputValue(), '0', 'and its weights');
     assert.equal(await guest.locator('[data-bind="inventory.satin"]').inputValue(), '20000');
     assert.equal(await guest.evaluate(() => PlayerLedger.shared().governor('gear')['cav-2']), null);
     await guest.goto(origin + '/governor-gear/?lang=en&gov=nonsense'); await guest.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
@@ -133,7 +147,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('#screen-import .import-tile img:not([hidden])').count(), 24, 'every value shows its cut-out');
     await page.locator('#screen-import').screenshot({ path: path.join(output, 'read-390.png') });
     await page.click('#screen-import [data-action="screen-import.apply"]');
-    await page.waitForFunction(() => document.querySelector('.gov-piece[data-gov="cav-1"] [data-part="level"]').textContent === 'Purple 0★');
+    // Say what the dock and the sheet show if the reading never lands.
+    await page.waitForFunction(() => document.querySelector('.gov-piece[data-gov="cav-1"] [data-part="level"]').textContent === 'Purple 0★').catch(async error => {
+      const seen = await page.evaluate(() => ({ status: document.querySelector('#screen-import [data-target="screen-import.status"]').textContent, cav1: document.querySelector('.gov-piece[data-gov="cav-1"] [data-part="level"]').textContent, url: location.search }));
+      throw new Error('the reading never reached the sheet: ' + JSON.stringify(seen) + ' errors ' + JSON.stringify(errors) + '\n' + error.message);
+    });
     assert.equal(await page.locator('[data-charm="cav-1-1"] b').textContent(), '3');
     assert.equal(await page.locator('[data-charm="cav-2-1"] b').textContent(), '2');
     assert.equal(await page.locator('.gov-piece[data-gov="arc-1"] [data-part="level"]').textContent(), 'Purple 1★');
@@ -154,5 +172,5 @@ withBrowser({ root }, async ({ browser, origin }) => {
   assert.equal(await page.locator('a.event-card[href="governor-gear/"]').count(), 1);
   assert.deepEqual(errors, []);
   await context.close();
-  console.log('Governor gear UI: the shared profile and its editor, set all, the answer by troop profile and target, no inner scroll, the sheet and its link, save as mine, start blank, reading a dropped screenshot, RTL and widths pass.');
+  console.log('Governor gear UI: the shared profile and its editor, set all, the answer under Bear first and custom weights and by target, no inner scroll, the sheet and its link, save as mine, start blank, reading a dropped screenshot, RTL and widths pass.');
 }).catch(error => { console.error(error); process.exitCode = 1; });

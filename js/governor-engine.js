@@ -48,13 +48,31 @@
     return { kind: kind, target: target, troop: troop || 'all', cost: total, missing: missing, steps: steps, levels: levels, unknown: unknown, unverified: unverified, score: scoreKnown ? scoreGain : null };
   }
   function affordable(price, bag) { return Object.keys(price).every(function (id) { return price[id] <= bag[id]; }); }
-  /* Troop profiles weigh each step's stat gain by its troop; "score" ranks by governor score.
-     An older save's goal of score reads as the score profile. */
-  var PROFILES = data.profiles;
+  /* Troop weights multiply each step's stat gain by its troop: "bear" is the preset,
+     "custom" the player's own weights ("1:1:3", infantry : cavalry : archers, 0 to 10 in
+     tenths) and "score" ranks by governor score instead. A troop at 0 never moves. Older
+     saves and links keep working: a goal of score reads as the score profile, and the
+     retired "even" and "defence" as custom weights they used to mean. */
+  var PROFILES = data.profiles, RETIRED = { even: '1:1:1', defence: '1:0.5:0.7' }, WEIGHT = '(?:10|\\d(?:\\.\\d)?)';
+  var WEIGHTS = new RegExp('^' + WEIGHT + ':' + WEIGHT + ':' + WEIGHT + '$');
   function profileOf(options) {
     var name = options.profile || (options.goal === 'score' ? 'score' : 'bear');
-    if (name !== 'score' && !Object.hasOwn(PROFILES, name)) throw new Error('Unsupported governor profile');
+    if (Object.hasOwn(RETIRED, name)) return 'custom';
+    if (name !== 'score' && name !== 'custom' && !Object.hasOwn(PROFILES, name)) throw new Error('Unsupported governor profile');
     return name;
+  }
+  function parseWeights(text) {
+    if (typeof text !== 'string' || !WEIGHTS.test(text)) return null;
+    var parts = text.split(':').map(Number);
+    return { inf: parts[0], cav: parts[1], arc: parts[2] };
+  }
+  // The weights a profile plays by: the preset's own, or the custom ones (1:1:1 until set).
+  function weightsOf(options) {
+    options = options || {};
+    var profile = profileOf(options);
+    if (profile === 'score') return null;
+    if (profile === 'custom') return parseWeights(options.weights) || parseWeights(RETIRED[options.profile] || RETIRED.even);
+    return Object.assign({}, PROFILES[profile]);
   }
   /* Greedy, explainable plan: at each step take the affordable next level with the most
      value for the share of the starting bag it uses. Value is the stat gain weighted by the
@@ -62,7 +80,7 @@
      the heavier troop, then the lower level, then table order, never to table order alone. */
   function plan(kind, state, bag, options) {
     options = options || {};
-    var profile = profileOf(options), goal = profile === 'score' ? 'score' : 'stats', weights = PROFILES[profile] || { inf: 1, cav: 1, arc: 1 };
+    var profile = profileOf(options), goal = profile === 'score' ? 'score' : 'stats', weights = weightsOf(options) || { inf: 1, cav: 1, arc: 1 };
     var focus = options.focus || 'all', limit = options.limit || 60;
     var left = zero(kind), start = zero(kind), levels = {}, steps = [];
     Object.keys(left).forEach(function (id) {
@@ -117,9 +135,10 @@
   /* A sheet in the address. gov= holds one character per gear piece, then one per charm
      (0-9, a-z, A-Z for the level, "." for not set); bag= the materials in table order joined
      by "." (blank is not counted); p, gt and ct the troop profile and targets when they differ
-     from the defaults. A sheet is { gear, charms, bag, prefs }, each keyed by id. */
+     from the defaults, and w the custom weights as 1_1_3. A sheet is { gear, charms, bag, prefs }, each keyed by id. */
   var DIGITS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', BAG_MAX = 1e9;
-  var PREFS = { profile: ['p', Object.keys(PROFILES).concat('score')], gearTarget: ['gt', 'gear'], charmTarget: ['ct', 'charms'] };
+  var NAMES = Object.keys(PROFILES).concat('score', 'custom');
+  var PREFS = { profile: ['p', NAMES.concat(Object.keys(RETIRED))], weights: ['w', 'weights'], gearTarget: ['gt', 'gear'], charmTarget: ['ct', 'charms'] };
   function prefDefaults() { return { profile: 'bear', gearTarget: max('gear'), charmTarget: max('charms') }; }
   function encodeLink(sheet) {
     var out = { gov: ['gear', 'charms'].map(function (kind) {
@@ -128,7 +147,8 @@
     var bag = data.materials.map(function (m) { var n = sheet.bag && sheet.bag[m.id]; return Number.isSafeInteger(n) && n >= 0 && n <= BAG_MAX ? String(n) : ''; });
     if (bag.some(Boolean)) out.bag = bag.join('.');
     var own = sheet.prefs || {}, prefs = Object.assign(prefDefaults(), own.goal === 'score' ? { profile: 'score' } : {}, own), defaults = prefDefaults();
-    Object.keys(PREFS).forEach(function (key) { if (prefs[key] !== undefined && prefs[key] !== defaults[key]) out[PREFS[key][0]] = String(prefs[key]); });
+    if (prefs.profile !== 'custom') delete prefs.weights;
+    Object.keys(PREFS).forEach(function (key) { if (prefs[key] !== undefined && prefs[key] !== defaults[key]) out[PREFS[key][0]] = key === 'weights' ? prefs[key].replace(/:/g, '_') : String(prefs[key]); });
     return out;
   }
   // The sheet a query string carries: null without gov=, { invalid: true } when it cannot be read.
@@ -155,9 +175,11 @@
       var key = keys[k], rule = PREFS[key], raw = params.get(rule[0]);
       if (raw === null) continue;
       if (Array.isArray(rule[1])) { if (!rule[1].includes(raw)) return invalid; sheet.prefs[key] = raw; }
+      else if (rule[1] === 'weights') { if (!parseWeights(raw.replace(/_/g, ':'))) return invalid; sheet.prefs[key] = raw.replace(/_/g, ':'); }
       else { var n = Number(raw); if (!/^\d+$/.test(raw) || n < 1 || n > max(rule[1])) return invalid; sheet.prefs[key] = n; }
     }
+    if (Object.hasOwn(RETIRED, sheet.prefs.profile)) { if (!sheet.prefs.weights) sheet.prefs.weights = RETIRED[sheet.prefs.profile]; sheet.prefs.profile = 'custom'; }
     return sheet;
   }
-  return { data: data, max: max, items: items, stat: stat, score: score, verified: verified, cost: cost, toTarget: toTarget, plan: plan, profiles: function () { return Object.keys(PROFILES).concat('score'); }, events: events, describe: describe, prefDefaults: prefDefaults, encodeLink: encodeLink, readLink: readLink };
+  return { data: data, max: max, items: items, stat: stat, score: score, verified: verified, cost: cost, toTarget: toTarget, plan: plan, profiles: function () { return NAMES.slice(); }, weights: weightsOf, parseWeights: parseWeights, WEIGHTS: WEIGHTS, events: events, describe: describe, prefDefaults: prefDefaults, encodeLink: encodeLink, readLink: readLink };
 });

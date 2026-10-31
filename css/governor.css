@@ -26,11 +26,20 @@
 .gov-heading small { color: var(--ink-muted); font-size: .75rem; }
 
 /* The sheet — whose numbers these are, and the link that carries them. */
-.gov-main .gov-sheet { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .2rem 1rem; padding: .4rem 0; }
+/* One bar: what this sheet is, then sharing and saving, the main action first. */
+.gov-main .gov-sheet { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem 1.5rem; margin-top: .5rem; padding: .6rem .9rem; border: 1px solid var(--signal-line); background: var(--signal-tint); }
 .gov-sheet p { margin: 0; }
+.gov-sheet-state { display: grid; gap: .1rem; min-width: 0; flex: 1 1 16rem; }
+.gov-sheet-kicker { font: 700 .7rem var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); }
 .gov-sheet-source { font-size: .9rem; color: var(--ink-dim); }
 .gov-sheet-source strong { color: var(--ink); font-weight: 600; }
-.gov-sheet-actions { display: flex; flex-wrap: wrap; gap: 0 1rem; }
+.gov-sheet-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .6rem; }
+.gov-main .gov-sheet-actions button { min-height: 2.5rem; padding: .3rem .9rem; font-size: .95rem; border: 1px solid var(--signal-line); }
+.gov-main .gov-sheet-actions [data-kind="primary"] { color: var(--void); background: var(--amber); border-color: var(--amber); font-weight: 700; }
+.gov-main .gov-sheet-actions [data-kind="primary"]:hover { color: var(--void); background: var(--ink); border-color: var(--ink); }
+.gov-main .gov-sheet-actions [data-kind="secondary"] { border-color: var(--amber); }
+.gov-main .gov-sheet-actions [data-kind="quiet"] { padding-inline: .3rem; border-color: transparent; color: var(--ink-muted); font-size: .85rem; }
+.gov-main .gov-sheet-actions [data-kind="quiet"]:hover { color: var(--ink); border-color: transparent; border-bottom-color: var(--signal-line); }
 .gov-sheet-link { flex: 1 1 100%; min-width: 0; padding: .4rem; font: .85rem var(--body); color: var(--ink); background: var(--void-2); border: 1px solid var(--signal-line); }
 .gov-confirm p { margin: .6rem 0 0; }
 .gov-confirm-actions { display: flex; justify-content: flex-end; gap: 1rem; }
@@ -67,6 +76,11 @@
 .gov-main .gov-chips button { color: var(--ink-muted); font-size: .95rem; }
 .gov-main .gov-chips [aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--amber); }
 .gov-chips + .gov-gloss { margin-top: 0; }
+.gov-weights { display: flex; flex-wrap: wrap; align-items: end; gap: .2rem .9rem; margin: .3rem 0 0; }
+.gov-weights > span:first-child { align-self: center; font: 700 .75rem var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); margin-inline-end: .3rem; }
+.gov-main .gov-weights label { gap: 0; font-size: .75rem; }
+.gov-main .gov-weights input[type="number"] { width: 3.2rem; text-align: center; border-bottom-color: var(--signal-line); }
+.gov-weights + .gov-gloss { margin-top: .3rem; }
 .gov-targets { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr) minmax(0, .7fr); gap: .5rem; }
 .gov-targets label > span { font: 700 .75rem var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); }
 .gov-result { list-style: none; margin: .4rem 0 0; padding: 0; border-top: 1px solid var(--signal-line); }
