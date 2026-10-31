@@ -143,7 +143,8 @@ Verbatim rule the game uses (also blog "how-special-bonuses-work"):
 
 - Same-stat specials add their percents first, then apply **once**.
 - **Enemy-down is a divisor, not a subtraction** (a 20% enemy Attack Down divides
-  the boosted value by 1.20).
+  the boosted value by 1.20). Superseded for pets, turrets and consumables, which cancel
+  by subtraction: see *KingShot Battle Helper* below.
 - Sources: exclusive widgets, battle-pet skills, city buffs/debuffs, appointments.
 - This generalises MATHS.md §6.4 (widgets are multiplicative); the enemy-down-as-
   divisor phrasing is the part to keep straight in any future copy.
@@ -337,6 +338,41 @@ The directory uses the supported effect and links the alternate listing.
 - Screenshot OCR parser: `https://stats-parser.srv.kingshotsimulator.com/api/v1/
   read_battle_report` and `read_bonus_overview` — they solve the same problem
   dey.ci solves client-side (see OCR note); both endpoints are private services.
+
+---
+
+### KingShot Battle Helper (Absy) — mined 2026-10-31
+
+[Absyyyyyyy/ksbattlehelp_public](https://github.com/Absyyyyyyy/ksbattlehelp_public) (MIT,
+commit `463dba7`) is the Python engine behind [absy-simulator.streamlit.app](https://absy-simulator.streamlit.app/)
+and the explainers on [kingshotsim.com](https://kingshotsim.com/damage-formula) (same author,
+Absy Labs, so not a second source for each other). Its testers check values against battle
+reports where they can. Its combat engine is derived from `sos.battle`, so it is **not** an
+independent check on the unit table or the kill law; its hero data credits kingshotdata.com.
+`_data/combat.json` is built from it by `.dsh/build-combat.py`, which stops if any value the
+site already carries from elsewhere disagrees:
+
+- **Agrees with us:** every hero ceiling and level ladder, every scaling skill value against
+  `heroes.json` (kingshot.net), the six battle-pet ladders in `pets.json`, each widget's role
+  and stat, TG1–TG5 troop stats, the hero-gear formulas, ambush 20% / volley 10% / counter 10% /
+  fatigue 0.01%.
+- **New to us:** skill codes in four families (same code adds, codes multiply; a hit is
+  damage-up × enemy-defense-down ÷ (defense-up × enemy-damage-down)); how every hero skill
+  triggers (passive, per round, per attack, every N turns, pity) with durations and troop
+  scope; all 22 widget names and max stats; widget skill 15% × level step; Truegold troop
+  skills at TG3/TG5/TG8; TG6–TG8 stat multipliers; turret lethality by count; star shard costs.
+- **Settled (owner, 31 Oct):** an active buff (pet skill, turret, consumable) and the enemy's
+  matching debuff cancel by subtraction, +20% against −20% is ×1.00
+  ([stat-bonuses](https://kingshotsim.com/stat-bonuses.html), marked probable there); this
+  replaces the divide-by reading of the special-bonus rule above for those sources. Field
+  Commander is +10% lethality, +15% after a won KvK until Castle Battle; the helper only has 15.
+- **Still open (`unverified` in the JSON):** TG6–TG8 stats and Truegold chances have no stated
+  basis; the op codes are marked probable by their authors; the helper's fatigue starts at
+  round 0, `js/battle-engine.js` at round 1.
+- **Regression case** (kingshotsim.com): 40,233 T10.1 infantry (attack 293.66%, lethality
+  251.82%) in a 120,789 army against a 78,872 army, defender per-troop 2,557.9, SkillMod 1.26,
+  round 0 → **189** deaths. Wire it into `.dsh/battle-engine-check.cjs` once heroes are modelled.
+- Game art in the repo (portraits, gear icons) is the game's, not covered by the MIT licence.
 
 ---
 
