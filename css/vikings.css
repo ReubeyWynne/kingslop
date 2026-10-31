@@ -276,3 +276,20 @@
 .vv-troop-inputs img { width:48px; height:48px; }
 .vv-faint .vv-row { opacity:.75; }
 .vv-tight { margin:.25rem 0; gap:.25rem 1rem; }
+/* Who is online for Vikings: offline players still send and get covered, but waves 7, 14 and 17 skip their cities. */
+.vv-avail[data-presence] { border:1px solid color-mix(in srgb,var(--ink-muted) 50%,transparent); padding:0 .35rem; border-radius:2px; white-space:nowrap; }
+.vv-avail[data-presence=online] { color:var(--amber); border-color:var(--signal-line, var(--amber-dim)); }
+.vv-avail[data-presence=unknown] { color:var(--ink-muted); border-style:dashed; }
+.vv-hq-who { display:flex; flex-direction:column; line-height:1.2; }
+.vv-hq-who small { font-size:.85rem; }
+/* Online-only waves stand apart on the map: offline cities are skipped. */
+.vv-waves [data-kind=online] { color:var(--ink); box-shadow:inset 0 0 0 1px var(--signal-line, var(--amber-dim)); background:var(--signal-tint, transparent); }
+.vv-waves [data-kind=online] small { color:var(--amber); }
+.vv-wave-key { display:flex; flex-wrap:wrap; gap:.3rem 1rem; margin:-.4rem 0 .6rem; font-size:.9rem; color:var(--ink-dim); }
+.vv-wave-key span::before { content:''; display:inline-block; width:.8rem; height:.8rem; margin-inline-end:.35rem; vertical-align:-.1rem; border-bottom:1px solid var(--ink-muted); }
+.vv-wave-key [data-kind=online]::before { box-shadow:inset 0 0 0 1px var(--signal-line, var(--amber-dim)); background:var(--signal-tint, transparent); border:0; }
+.vv-wave-key [data-kind=hq]::before { background:var(--void-2); border:0; }
+/* The guide and the planner are two sides of one card. */
+.vv-page .vv-flip { display:inline-flex; align-items:center; gap:.35rem; min-height:44px; font-size:var(--step--1); color:var(--amber); text-decoration:none; border-bottom:1px solid transparent; }
+.vv-active .vv-flip { min-height:0; }
+.vv-page .vv-flip:hover { color:var(--ink); border-bottom-color:var(--amber-dim); }

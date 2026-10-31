@@ -108,7 +108,7 @@
     function tab(next) {
       mode = next;
       root.querySelectorAll('[role=tab]').forEach(function (n) { n.setAttribute('aria-selected', String(n.dataset.tab === next)); });
-      ['my-plan', 'alliance-plan', 'vikings-guide'].forEach(function (key) { document.getElementById(key).hidden = key !== next; });
+      ['my-plan', 'alliance-plan'].forEach(function (key) { document.getElementById(key).hidden = key !== next; });
     }
     function modal(title, build) {
       var dialog = one('dialog'), body = one('dialogBody'); body.replaceChildren(); document.getElementById('vv-dialog-title').textContent = title; one('dialogMessage').textContent = '';
@@ -154,7 +154,7 @@
     }
     function expected() { return { revision: state.revision, rosterRevision: state.rosterRevision, planRevision: state.planRevision }; }
     function when() { return state.plan.eventAt ? dayLabel(Date.parse(state.plan.eventAt)) : 'the next Vikings'; }
-    var ONLINE = [['unknown', 'Not sure'], ['online', 'Yes'], ['offline', 'No']];
+    var ONLINE = [['unknown', 'Not sure'], ['online', 'Online'], ['offline', 'Offline']], PRESENCE = { online: 'Online', offline: 'Offline', unknown: 'Online?' };
 
     /* Troops, march size and marches, all quick to change. */
     function playerFields(form, p, withName, own) {
@@ -162,21 +162,25 @@
       var grid = el('div', 'vv-form-grid'); form.appendChild(grid);
       if (withName) { var nick = field(grid, 'In-game name', 'nickname', p.nickname || ''); nick.required = true; nick.maxLength = 40; nick.autocomplete = 'nickname'; }
       else { var hidden = el('input'); hidden.type = 'hidden'; hidden.name = 'nickname'; hidden.value = p.nickname; form.appendChild(hidden); }
-      field(grid, 'Online for it?', 'availability', p.availability || 'unknown', 'select', ONLINE);
+      field(grid, 'During Vikings', 'availability', p.availability || 'unknown', 'select', ONLINE);
+      grid.appendChild(el('p', 'vv-caption vv-wide', 'Offline players still send their marches before logging off and still get covered. Only waves 7, 14 and 17 skip offline cities.'));
       var troops = el('div', 'vv-troop-inputs'); form.appendChild(troops);
       TYPES.forEach(function (k) { kField(troops, LABELS[k], k, p[k], art(ART[k], 48)).required = true; });
       var row = el('div', 'vv-form-grid'); form.appendChild(row);
       kField(row, 'March size', 'marchCapacity', p.marchCapacity).required = true;
       var q = field(row, 'Marches', 'marches', p.marches || 5, 'number'); q.min = '1'; q.max = '6'; q.required = true;
+      // Optional: the leader gives the HQ to the largest garrison.
+      kField(row, 'Garrison capacity', 'garrisonCapacity', p.garrisonCapacity).closest('label').classList.add('vv-wide');
       if (own) { var tools = el('div', 'vv-troop-tools'); syncNote(tools); form.appendChild(tools); }
     }
     function fromForm(form) {
       var data = Object.fromEntries(new FormData(form));
       TYPES.concat('marchCapacity').forEach(function (k) { data[k] = count(form, k); });
       data.marches = Number(data.marches);
+      var garrison = count(form, 'garrisonCapacity'); data.garrisonCapacity = isNaN(garrison) ? null : garrison;
       return data;
     }
-    function fullPlayer(p, data) { return Object.assign({ nickname: p.nickname, availability: p.availability, infantry: p.infantry, cavalry: p.cavalry, archers: p.archers, marchCapacity: p.marchCapacity, marches: p.marches, notes: p.notes || '', capacities: p.capacities || null }, data); }
+    function fullPlayer(p, data) { return Object.assign({ nickname: p.nickname, availability: p.availability, infantry: p.infantry, cavalry: p.cavalry, archers: p.archers, marchCapacity: p.marchCapacity, marches: p.marches, notes: p.notes || '', capacities: p.capacities || null, garrisonCapacity: p.garrisonCapacity ?? null }, data); }
     async function savePlayer(p, data) {
       if (state.example) { Object.assign(p, data); render(); return; }
       await request('/v1/plans/' + state.plan.id + '/registrations/' + p.id, 'PUT', Object.assign(fullPlayer(p, data), { revision: p.revision }));
@@ -211,7 +215,7 @@
     function assignmentEditor(playerId) {
       var p = state.roster.find(function (r) { return r.id === playerId; }); if (!p) return;
       modal(p.nickname, function (body) {
-        var top = el('div', 'vv-editor-top'); top.appendChild(counts(p)); top.appendChild(button('Edit', 'editPlayer', { id: p.id }, 'vv-quiet')); body.appendChild(top);
+        var top = el('div', 'vv-editor-top'); top.appendChild(counts(p)); var presence = el('span', 'vv-avail', PRESENCE[p.availability] || PRESENCE.unknown); presence.dataset.presence = p.availability || 'unknown'; top.appendChild(presence); top.appendChild(button('Edit', 'editPlayer', { id: p.id }, 'vv-quiet')); body.appendChild(top);
         var check = E.validate(state.roster, state.assignments, state.hq), incoming = check.incoming[p.id] || [];
         var cover = el('div', 'vv-cover-in'); cover.appendChild(el('span', 'vv-label', 'Covered by'));
         if (!incoming.length) cover.appendChild(el('span', 'vv-dim', 'nobody yet'));
@@ -222,7 +226,7 @@
         // Each ally with the cover they already have from others, so the leader sends where it is missing.
         var targets = [['', 'Not sent']].concat(state.roster.filter(function (r) { return r.id !== p.id && r.attending !== false; }).map(function (r) {
           var cover = (check.incoming[r.id] || []).filter(function (c) { return c.playerId !== p.id; }).reduce(function (n, c) { return n + c.troops; }, 0);
-          return [r.id, r.nickname + (r.attending ? '' : ' (not answered)') + ' · ' + (cover ? kfmt(cover) + ' in' : 'no cover')];
+          return [r.id, r.nickname + (r.attending ? '' : ' (not answered)') + (r.availability === 'unknown' || !r.availability ? '' : ' · ' + r.availability) + ' · ' + (cover ? kfmt(cover) + ' in' : 'no cover')];
         }));
         f.appendChild(el('p', 'vv-label vv-sends-label', 'Sends ' + p.marches + ' march' + (p.marches === 1 ? '' : 'es')));
         var list = el('div', 'vv-sends');
@@ -287,9 +291,13 @@
         box.querySelector('.vv-meter span').style.width = (cap ? Math.min(100, sum / cap * 100) : 0) + '%';
         box.dataset.over = String(sum > cap);
       });
+      // One march per city: a player another march already goes to can't be picked again.
+      var chosen = Array.from(f.querySelectorAll('.vv-send select')).map(function (s) { return s.value; }), twice = chosen.filter(function (v, i) { return v && chosen.indexOf(v) !== i; });
+      f.querySelectorAll('.vv-send select').forEach(function (s, i) { Array.from(s.options).forEach(function (o) { o.disabled = !!o.value && o.value !== s.value && chosen.some(function (v, j) { return j !== i && v === o.value; }); }); });
       var short = TYPES.filter(function (k) { return used[k] > p[k]; }), home = TYPES.reduce(function (n, k) { return n + Math.max(0, p[k] - used[k]); }, 0);
       var line = f.querySelector('.vv-send-status'); line.textContent = kfmt(total(used)) + ' out · ' + kfmt(home) + ' home';
-      line.dataset.error = String(!!short.length); if (short.length) line.textContent += ' · more ' + short.map(function (k) { return LABELS[k].toLowerCase(); }).join(' and ') + ' than they have';
+      line.dataset.error = String(!!(short.length || twice.length)); if (short.length) line.textContent += ' · more ' + short.map(function (k) { return LABELS[k].toLowerCase(); }).join(' and ') + ' than they have';
+      if (twice.length) line.textContent += ' · two marches to ' + name(twice[0]);
     }
     function hqEditor() {
       modal('HQ · waves 10 and 20', function (body) {
@@ -298,9 +306,11 @@
         var inf = field(grid, 'Infantry %', 'infantryPercent', state.hq.infantryPercent, 'number'); inf.max = '100'; inf.required = true;
         var cav = field(grid, 'Cavalry %', 'cavalryPercent', state.hq.cavalryPercent, 'number'); cav.max = '100'; cav.required = true;
         f.appendChild(el('p', 'vv-label', 'Who sends, and which march'));
-        state.roster.filter(function (p) { return p.attending !== false; }).forEach(function (p) {
+        // Largest garrison first: that player captains the HQ.
+        var people = state.roster.filter(function (p) { return p.attending !== false; }).sort(function (a, b) { return (b.garrisonCapacity || 0) - (a.garrisonCapacity || 0); }), largest = people[0] && people[0].garrisonCapacity ? people[0].id : null;
+        people.forEach(function (p) {
           var entry = state.hq.participants.find(function (e) { return e.playerId === p.id; }), row = el('div', 'vv-hq-pick'), label = el('label'), check = el('input');
-          check.type = 'checkbox'; check.name = 'participant'; check.value = p.id; check.checked = !!entry; label.append(check, el('span', '', p.nickname)); row.appendChild(label);
+          check.type = 'checkbox'; check.name = 'participant'; check.value = p.id; check.checked = !!entry; var who = el('span', 'vv-hq-who'); who.appendChild(el('span', '', p.nickname)); who.appendChild(el('small', 'vv-dim', p.garrisonCapacity ? 'Garrison ' + kfmt(p.garrisonCapacity) + (p.id === largest ? ' · largest' : '') : 'Garrison not given')); label.append(check, who); row.appendChild(label);
           var queues = Array.from({ length: p.marches }, function (_, i) { return [String(i + 1), 'March ' + (i + 1)]; }); var s = field(row, '', 'queue-' + p.id, entry ? entry.queue : 1, 'select', queues); s.setAttribute('aria-label', p.nickname + ' HQ march'); f.appendChild(row);
         });
         submit(foot(f), 'Save');
@@ -384,10 +394,10 @@
       if (!mine && isManager() && !state.example) { body.appendChild(el('h2', '', 'In for ' + when() + '?')); answer(body, null); return; }
       if (mine && mine.attending === null) { body.appendChild(el('h2', '', 'In for ' + when() + '?')); body.appendChild(el('p', 'vv-lede', 'Your troops from last time. Change anything that’s moved.')); answer(body, mine); return; }
       if (mine && mine.attending === false) {
-        body.appendChild(el('h2', '', 'You’re out for ' + when())); var a = el('div', 'vv-actions'), back = button('I’m in after all', 'imIn', {}, 'vv-primary'); back.dataset.mutation = ''; a.appendChild(back); body.appendChild(a); return;
+        body.appendChild(el('h2', '', 'You’re out for ' + when())); body.appendChild(el('p', 'vv-lede', 'Your leader plans without you. Changed your mind? Sign up again before it starts.')); var a = el('div', 'vv-actions'), back = button('Sign up again', 'imIn', {}, 'vv-primary'); back.dataset.mutation = ''; a.appendChild(back); body.appendChild(a); return;
       }
       if (mine) {
-        var head = el('div', 'vv-heading'); head.appendChild(el('h2', '', 'Your marches')); var tools = el('div', 'vv-actions vv-tight'); tools.appendChild(button('My troops', 'editMine', {}, 'vv-quiet')); var out = button('Can’t make it', 'notIn', {}, 'vv-quiet'); out.dataset.mutation = ''; tools.appendChild(out); head.appendChild(tools); body.appendChild(head);
+        var head = el('div', 'vv-heading'); head.appendChild(el('h2', '', 'Your marches')); var tools = el('div', 'vv-actions vv-tight'); tools.appendChild(button('My troops', 'editMine', {}, 'vv-quiet')); tools.appendChild(button('Withdraw sign-up', 'withdraw', {}, 'vv-quiet')); head.appendChild(tools); body.appendChild(head);
         marchesFor(body, mine, true); return;
       }
       selected = null; picker(body);
@@ -395,7 +405,7 @@
     function playerRow(p, check, manage) {
       var sent = (state.assignments[p.id] || []).filter(function (r) { return r.destination && total(r); }).length, incoming = check.incoming[p.id] || [];
       var b = button('', manage ? 'assign' : 'selectPlayer', { id: p.id }, 'vv-row'); b.appendChild(art('town-center', 40));
-      var main = el('span', 'vv-row-main'), top = el('span', 'vv-row-top'); top.appendChild(el('strong', '', p.nickname)); if (p.availability === 'offline') top.appendChild(el('span', 'vv-avail', 'Offline')); main.appendChild(top);
+      var main = el('span', 'vv-row-main'), top = el('span', 'vv-row-top'); top.appendChild(el('strong', '', p.nickname)); var presence = el('span', 'vv-avail', PRESENCE[p.availability] || PRESENCE.unknown); presence.dataset.presence = p.availability || 'unknown'; top.appendChild(presence); main.appendChild(top);
       main.appendChild(el('span', 'vv-dim', kfmt(total(p)) + ' · sends ' + sent + '/' + p.marches + ' · covered by ' + incoming.length));
       if (manage && p.attending) { var gaps = []; if (!incoming.length) gaps.push('no cover'); if (sent < p.marches) gaps.push(p.marches - sent + ' free'); if (gaps.length) main.appendChild(el('span', 'vv-gap', gaps.join(' · '))); }
       b.appendChild(main); b.appendChild(el('span', 'vv-chevron', '›'));
@@ -569,18 +579,14 @@
       var plan = { id: id(), name: 'Vikings', eventDay: 'tue', eventTime: '20:00', closed: false };
       plan.eventAt = new Date(E.nextEvent('tue', '20:00', Date.now())).toISOString();
       state = { plan: plan, roster: [], assignments: {}, hq: E.emptyHQ(), access: 'manage', example: true };
-      [['Rowan', true], ['Ash', true], ['Fern', true], ['Willow', true], ['Hazel', null], ['Birch', false]].forEach(function (r, i) { state.roster.push({ id: id(), nickname: r[0], attending: r[1], availability: i === 3 ? 'offline' : 'online', infantry: 240000, cavalry: 160000, archers: 120000, marchCapacity: 180000, marches: 3, capacities: null, notes: '', revision: 1 }); });
+      [['Rowan', true], ['Ash', true], ['Fern', true], ['Willow', true], ['Hazel', null], ['Birch', false]].forEach(function (r, i) { state.roster.push({ id: id(), nickname: r[0], attending: r[1], availability: i === 3 ? 'offline' : i === 4 ? 'unknown' : 'online', infantry: 240000, cavalry: 160000, archers: 120000, marchCapacity: 180000, marches: 3, capacities: null, garrisonCapacity: [820000, 960000, 750000, 1100000, null, 700000][i], notes: '', revision: 1 }); });
       var inn = state.roster.slice(0, 4);
       inn.forEach(function (p, i) { state.assignments[p.id] = E.split(p).rows.map(function (r, q) { return Object.assign({}, r, { destination: inn[(i + q + 1) % 4].id }); }); });
       state.hq = { capacity: 300000, infantryPercent: 75, cavalryPercent: 25, participants: inn.slice(0, 3).map(function (p) { return { playerId: p.id, queue: 1 }; }) };
       selected = state.roster[0].id; mode = 'alliance-plan'; render(); say('Example. Nothing is saved.');
     }
-    function waves() {
-      var body = one('waves');
-      for (var w = 1; w <= 20; w++) { var kind = [10, 20].includes(w) ? 'hq' : [7, 14, 17].includes(w) ? 'online' : 'city'; var b = button(String(w), 'wave', { wave: w, kind: kind }); b.setAttribute('aria-pressed', w === 1 ? 'true' : 'false'); b.appendChild(el('small', '', kind === 'online' ? 'On' : kind === 'hq' ? 'HQ' : 'City')); body.appendChild(b); }
-    }
     function home() { say(''); state = null; credential = null; selected = null; drop(SESSION, sessionStorage); close(); mode = 'my-plan'; render(); }
-    async function attend(value) { var mine = me(); if (!mine) return; await savePlayer(mine, { attending: value }); say(value ? 'You’re in.' : 'Marked out.'); }
+    async function attend(value) { var mine = me(); if (!mine) return; await savePlayer(mine, { attending: value }); say(value ? 'You’re in.' : 'Withdrawn.'); }
     context.listen(one('dialog'), 'input', function (event) { var f = event.target.form; if (f && f.dataset.kind === 'room') localTime(f); if (f && f.dataset.kind === 'assignments') { var box = event.target.closest('.vv-send'); if (event.target.tagName === 'SELECT') balance(f); else if (box) box.dataset.auto = 'false'; sends(f); } });
     context.listen(root, 'keydown', function (event) { var tabs = Array.from(root.querySelectorAll('[role=tab]')), at = tabs.indexOf(event.target); if (at < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return; event.preventDefault(); var to = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (at + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length; tabs[to].click(); tabs[to].focus(); });
     function schedule(delay) {
@@ -609,6 +615,8 @@
       editPlayer: action(function (node) { playerEditor(node.dataset.id); }),
       editMine: action(function () { playerEditor(state.registrationId, 'My troops', true); }),
       notIn: action(function () { return attend(false); }),
+      withdraw: action(function () { modal('Withdraw from ' + when() + '?', function (body) { ask(body, 'Your leader will see you as out and plan without you. You can sign up again before it starts.', 'Withdraw', 'confirmWithdraw', {}, 'vv-primary'); }); }),
+      confirmWithdraw: action(async function () { close(); await attend(false); }),
       imIn: action(function () { return attend(true); }),
       assign: action(function (node) { assignmentEditor(node.dataset.id); }),
       hq: action(hqEditor),
@@ -633,12 +641,10 @@
       refresh: action(load),
       // Leaving shows this device's rooms; it forgets nothing. The next visit opens the list until one is chosen.
       leave: action(function () { write(LAST, 'none'); home(); }),
-      wave: { run: function (node) { one('waves').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b === node)); }); one('waveDetail').textContent = node.dataset.kind === 'hq' ? 'HQ wave ' + node.dataset.wave + ': send the agreed share after the wave before it. Return after the hit.' : node.dataset.kind === 'online' ? 'Wave ' + node.dataset.wave + ': online cities only.' : 'Wave ' + node.dataset.wave + ': every city.'; } }
     };
     one('calculatorForm').querySelector('[type=submit]').disabled = false;
     syncNote(one('calcUnits')); fillCalculator();
     try { context.cleanup(context.ledger.subscribe(function () { fillCalculator(); })); } catch (_) { /* no save on this page */ }
-    waves();
     /* Which room to open: a link just followed, this tab's last room, then the room this device last led or joined. */
     var initial = window.VikingsAccess || read(SESSION, sessionStorage), last = read(LAST), saved = links();
     var mine = last === 'none' ? null : (typeof last === 'string' && ownFor(last)) || (last === null || last === 'local' ? saved[0] && ownFor(saved[0].planId) : null);

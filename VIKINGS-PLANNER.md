@@ -6,7 +6,7 @@ The Vikings page has a personal march calculator and alliance rooms. A room belo
 
 A room stores `eventDay` (`tue` or `thu`) and `eventTime` (UTC `HH:MM`). Its current event, `eventAt`, is worked out on every read by `VikingsEngine.nextEvent`: the next matching event day of the fortnight, held until three hours after the start. After that the room has rolled on to the next event by itself.
 
-Each registration remembers which event its player last answered (`signed_for`) and whether they are in (`attending`). Answers for an earlier event read as `null`, not answered, so sign-ups reset after every Vikings while the troops stay. A player opening their link sees last time's numbers, changes anything that moved and taps **I'm in**, or **Not this time**. A registration update that leaves `attending` out keeps the current answer.
+Each registration remembers which event its player last answered (`signed_for`) and whether they are in (`attending`). Answers for an earlier event read as `null`, not answered, so sign-ups reset after every Vikings while the troops stay. A player opening their link sees last time's numbers, changes anything that moved and taps **I'm in**, or **Not this time**. Once in, **Withdraw sign-up** asks before marking them out. A registration update that leaves `attending` out keeps the current answer.
 
 Marches are live. Every role reads the leader's current assignments and HQ plan from `/board`; there is no publishing step. Saving marches or HQ checks only the board revision, because sign-ups keep arriving while a leader assigns, and the engine validates against the roster as it is now. The publish endpoint remains for older clients.
 
@@ -22,6 +22,10 @@ Access links are short enough for game chat: `https://dey.ci/vv/#join-<code>` (a
 
 Creating a room or joining one saves that leader or player link on the device (`bh:vikings-links:v1`, outside the player ledger), and the next visit reopens the room the device last led or joined (`bh:vikings-last:v1`). Opening a sign-up or viewing link never saves it; a viewer's next visit starts at the room list. A sign-up or viewing link for a room this device already leads or joined opens that role instead. **Switch** keeps the list and waits for a choice on the next visit. The leader signs up on the leader link: the sign-up's id is kept with it as `self`, and a sign-up made earlier on the same device with the sign-up link is taken over. A player can tell the device to forget the room; a saved room that has been deleted is removed with a message.
 
+## Guide
+
+The guide is its own page, `/vikings-vengeance/guide/`, the other side of the Vikings card: it shares the Vikings deck cover (no extra card), and each page has a link to flip to the other. Its wave map marks the online-only waves. Old planner links to a guide section (`#online`, `#hq` and the rest) are sent on to the guide page.
+
 ## Event days
 
 Vikings opens every fourteen days on Tuesday and Thursday, server time (UTC); R4/R5 choose the hour. It runs in the Strongest Governor and KvK prep weeks of the 28-day wheel. `VikingsEngine.eventDays` counts from the Strongest Governor Tuesday of the wheel's first cycle, 25 August 2026 (`SCHEDULE.anchor` in `js/vikings-engine.js`). The page shows the next window; a new room picks Tuesday or Thursday and a start time in UTC, remembering the last time used on the device.
@@ -31,6 +35,8 @@ Vikings opens every fourteen days on Tuesday and Thursday, server time (UTC); R4
 `js/vikings-engine.js` is the pure allocation and validation engine used by the browser and Worker. City splits fill available capacity with infantry, then cavalry, then archers when overflow requires prioritisation. With enough room, they send all troop types. Each type is distributed proportionally across the remaining queue capacities, with deterministic integer rounding.
 
 Each player has up to six draft march rows. Every row names a queue, destination registration and three troop amounts. The Worker checks player membership, queue uniqueness, capacity, troop availability and self-reinforcement. The engine does not infer combat safety or points from troop counts.
+
+A player sends at most one march to each city: the engine (and so the Worker) rejects two of a player's marches with the same destination, and the editor greys out a player another march already goes to. Players say whether they expect to be online (`availability`); the roster, the march editor and its destination list show it. Offline players still send their marches before logging off and are still covered; only waves 7, 14 and 17 skip offline cities. Players can also give their garrison capacity (`garrisonCapacity`, migration `0004_garrison.sql`, optional; an update that leaves it out keeps it), and the HQ editor lists players largest garrison first so the leader can pick the HQ captain.
 
 The leader's march editor lists one line per march: who it goes to, its troop mix and its size. A march with no destination carries no troops and stays home, so the out and home totals count only sent marches. Choosing a destination fills that march from a split of the player's troops across their sent marches, after any march the leader has set by hand; tapping a march opens its destination and troop inputs, and typing into a march keeps it as set. **Even split** puts every sent march back on the split. Each destination in the list shows the cover that ally already has from others, and the totals with **Save** stay pinned to the bottom of the dialog.
 

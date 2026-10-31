@@ -275,9 +275,66 @@
       }
     ],
     "headScripts": [
+      "(function () { if (/^#(?:vikings-guide|waves|routine|stand|composition|online|hq|scoring-maths|heroes|vikings-sharing)$/.test(location.hash)) location.replace('guide/' + location.hash); })();",
       "(function () { var h = location.hash, short = /^#(?:lead|join|view|me)-([A-Za-z0-9_-]{22}|[A-Za-z0-9_-]{43})$/.exec(h), long = /^#access=([a-f0-9-]{36})\\.([A-Za-z0-9_-]{43})$/.exec(h); if (!short && !long) return; window.VikingsAccess = short ? { planId: null, code: short[1], fromLink: true } : { planId: long[1], code: long[2], fromLink: true }; history.replaceState(history.state, '', location.pathname + location.search); })();",
       "(function () { try { var open = !!window.VikingsAccess || !!sessionStorage.getItem('bh:vikings-session:v1'); if (!open) { var last = JSON.parse(localStorage.getItem('bh:vikings-last:v1')), links = JSON.parse(localStorage.getItem('bh:vikings-links:v1')); open = last !== 'none' && Array.isArray(links) && links.length > 0; } if (open) document.documentElement.classList.add('vv-opening'); } catch (e) {} })();"
     ],
+    "skipGuide": true
+  },
+  "vikingsGuide": {
+    "token": "vikings",
+    "depth": "../../",
+    "canonicalPath": "/vikings-vengeance/guide/",
+    "themeColor": "#150D08",
+    "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23150D08'/%3E%3Ctext x='16' y='24' font-size='22' text-anchor='middle' fill='%23E08A3C'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E\">",
+    "titleKey": "",
+    "titleText": "Vikings Vengeance guide",
+    "metaDescKey": "",
+    "metaDesc": "How the twenty Vikings waves run: city, online-only and HQ waves, what to send and when.",
+    "ogTitleKey": "",
+    "ogTitle": "Vikings Vengeance guide",
+    "ogDescKey": "",
+    "ogDesc": "How the twenty Vikings waves run: city, online-only and HQ waves, what to send and when.",
+    "skipHref": "#waves",
+    "skipKey": "",
+    "skipText": "Skip to the waves",
+    "dust": "<i></i><i></i><i></i>",
+    "brand": "VIKINGS VENGEANCE",
+    "brandNoteKey": "",
+    "brandNote": "guide",
+    "swipePrev": {
+      "url": "../../bear-hunt/",
+      "page": "bearhunt",
+      "title": "Bear Hunt",
+      "lede": "the lead's stats × your troops — with a square root on your count."
+    },
+    "swipeNext": {
+      "url": "../../swordland-showdown/",
+      "page": "swordland",
+      "title": "Swordland Showdown",
+      "lede": "two scoreboards, one 180,000, and winning is only one lever."
+    },
+    "css": [
+      "../../css/styles.css",
+      "../../css/events.css",
+      "../../css/vikings.css"
+    ],
+    "scripts": [
+      "../../js/i18n.js",
+      "../../js/page-deck.js",
+      "../../js/page-chrome.js",
+      "../../js/common.js",
+      "../../js/vikings-guide.js"
+    ],
+    "footMainKey": "",
+    "footMain": "VIKINGS VENGEANCE",
+    "footSubs": [
+      {
+        "key": "",
+        "html": "Plans describe agreed assignments. Check city cover and troop availability in game before each wave."
+      }
+    ],
+    "headScripts": [],
     "skipGuide": true
   },
   "swordland": {

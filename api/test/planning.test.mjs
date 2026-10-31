@@ -10,19 +10,20 @@ async function call(s, suffix = '', method = 'GET', value, code = s.codes?.manag
 async function setup() {
   const s = { env: environment() }, r = await call(s, '', 'POST', { name: 'Vikings' });
   s.path = '/' + r.data.plan.id; s.codes = r.data.codes; s.players = [];
-  for (const nickname of ['A', 'B']) s.players.push((await call(s, '/registrations', 'POST', { nickname, infantry: 600, cavalry: 300, archers: 100, marchCapacity: 500, marches: 2 })).data);
+  for (const nickname of ['A', 'B', 'C']) s.players.push((await call(s, '/registrations', 'POST', { nickname, infantry: 600, cavalry: 300, archers: 100, marchCapacity: 500, marches: 2 })).data);
   return s;
 }
 async function board(s) { return (await call(s, '/board')).data; }
 function revisions(b) { return { revision: b.revision, rosterRevision: b.rosterRevision, planRevision: b.planRevision }; }
-async function assign(s, index, destination) { const p = s.players[index].registration; return call(s, '/assignments/' + p.id, 'PUT', { ...revisions(await board(s)), marches: E.split(p).rows.map(r => ({ ...r, destination })) }); }
+// The first march goes to destination and the second to C: a player sends one march to each city.
+async function assign(s, index, destination) { const p = s.players[index].registration; return call(s, '/assignments/' + p.id, 'PUT', { ...revisions(await board(s)), marches: E.split(p).rows.map((r, i) => ({ ...r, destination: i ? s.players[2].registration.id : destination })) }); }
 
 test('every role sees the live marches, and only management can change them', async () => {
   const s = await setup(); assert.equal((await assign(s, 0, s.players[1].registration.id)).status, 200);
   const live = (await board(s)).assignments;
   for (const code of [s.codes.view, s.codes.join, s.players[0].editCode]) {
     const b = (await call(s, '/board', 'GET', undefined, code)).data;
-    assert.deepEqual(b.assignments, live); assert.equal(b.roster.length, 2);
+    assert.deepEqual(b.assignments, live); assert.equal(b.roster.length, 3);
     assert.equal((await call(s, '/assignments/' + s.players[0].registration.id, 'PUT', { ...revisions(b), marches: [] }, code)).status, 403);
   }
   s.env.sql.close();
@@ -48,12 +49,12 @@ test('a room rolls on to its next event, resetting sign-ups but keeping troops',
     const p = s.players[0], q = s.players[1];
     assert.equal((await call(s, '/registrations/' + p.registration.id, 'PUT', { nickname: 'A', infantry: 640, cavalry: 300, archers: 100, marchCapacity: 500, marches: 2, attending: true, revision: 1 }, p.editCode)).status, 200);
     assert.equal((await call(s, '/registrations/' + q.registration.id, 'PUT', { nickname: 'B', infantry: 600, cavalry: 300, archers: 100, marchCapacity: 500, marches: 2, attending: false, revision: 1 }, q.editCode)).status, 200);
-    b = await board(s); assert.deepEqual(b.roster.map(r => r.attending), [true, false]);
+    b = await board(s); assert.deepEqual(b.roster.map(r => r.attending), [true, false, null]);
     const edited = await call(s, '/registrations/' + p.registration.id, 'PUT', { nickname: 'A', infantry: 650, cavalry: 300, archers: 100, marchCapacity: 500, marches: 2, revision: 2 }, p.editCode);
     assert.equal(edited.data.registration.attending, true, 'leaving attending out keeps the answer');
     Date.now = () => Date.parse('2026-11-03T23:30:00Z');
     b = await board(s); assert.equal(b.plan.eventAt, '2026-11-17T20:00:00.000Z');
-    assert.deepEqual(b.roster.map(r => r.attending), [null, null]); assert.equal(b.roster[0].infantry, 650);
+    assert.deepEqual(b.roster.map(r => r.attending), [null, null, null]); assert.equal(b.roster[0].infantry, 650);
   } finally { Date.now = real; }
   s.env.sql.close();
 });
@@ -116,4 +117,12 @@ test('the lightweight signature changes with roster and march revisions for ever
   assert.equal((await assign(s, 0, s.players[1].registration.id)).status, 200);
   assert.notEqual((await call(s, '/status', 'GET', undefined, s.codes.view)).data.signature, viewer);
   s.env.sql.close();
+});
+
+test('a garrison capacity is optional and survives edits that leave it out', async () => {
+  const s = await setup(), p = s.players[0].registration;
+  assert.equal((await board(s)).roster.find(player => player.id === p.id).garrisonCapacity, null);
+  await call(s, '/registrations/' + p.id, 'PUT', { nickname: 'A', infantry: 600, cavalry: 300, archers: 100, marchCapacity: 500, marches: 2, garrisonCapacity: 900000, revision: 1 }, s.players[0].editCode);
+  await call(s, '/registrations/' + p.id, 'PUT', { nickname: 'A', infantry: 640, cavalry: 300, archers: 100, marchCapacity: 500, marches: 2, revision: 2 }, s.players[0].editCode);
+  assert.equal((await board(s)).roster.find(player => player.id === p.id).garrisonCapacity, 900000);
 });
