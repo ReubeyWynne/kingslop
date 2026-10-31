@@ -340,6 +340,37 @@ The directory uses the supported effect and links the alternate listing.
 
 ---
 
+### KingShot Battle Helper (Absy) — mined 2026-10-31
+
+[Absyyyyyyy/ksbattlehelp_public](https://github.com/Absyyyyyyy/ksbattlehelp_public) (MIT,
+commit `463dba7`) is the Python engine behind [absy-simulator.streamlit.app](https://absy-simulator.streamlit.app/)
+and the explainers on [kingshotsim.com](https://kingshotsim.com/damage-formula) (same author,
+Absy Labs, so not a second source for each other). Its testers check values against battle
+reports where they can. Its combat engine is derived from `sos.battle`, so it is **not** an
+independent check on the unit table or the kill law; its hero data credits kingshotdata.com.
+`_data/combat.json` is built from it by `.dsh/build-combat.py`, which stops if any value the
+site already carries from elsewhere disagrees:
+
+- **Agrees with us:** every hero ceiling and level ladder, every scaling skill value against
+  `heroes.json` (kingshot.net), the six battle-pet ladders in `pets.json`, each widget's role
+  and stat, TG1–TG5 troop stats, the hero-gear formulas, ambush 20% / volley 10% / counter 10% /
+  fatigue 0.01%.
+- **New to us:** skill codes in four families (same code adds, codes multiply; a hit is
+  damage-up × enemy-defense-down ÷ (defense-up × enemy-damage-down)); how every hero skill
+  triggers (passive, per round, per attack, every N turns, pity) with durations and troop
+  scope; all 22 widget names and max stats; widget skill 15% × level step; Truegold troop
+  skills at TG3/TG5/TG8; TG6–TG8 stat multipliers; turret lethality by count; star shard costs.
+- **Conflicts and gaps (`unverified` in the JSON, ask the testers):** layered buffs net an enemy
+  debuff by subtraction in the helper, by division in the special-bonus rule above; Field
+  Commander +15% vs our +10%; TG6–TG8 stats and Truegold chances have no stated basis; the
+  helper's fatigue starts at round 0, `js/battle-engine.js` at round 1.
+- **Regression case** (kingshotsim.com): 40,233 T10.1 infantry (attack 293.66%, lethality
+  251.82%) in a 120,789 army against a 78,872 army, defender per-troop 2,557.9, SkillMod 1.26,
+  round 0 → **189** deaths. Wire it into `.dsh/battle-engine-check.cjs` once heroes are modelled.
+- Game art in the repo (portraits, gear icons) is the game's, not covered by the MIT licence.
+
+---
+
 ## 3 · Relevance per page
 
 ### Bear Hunt page
