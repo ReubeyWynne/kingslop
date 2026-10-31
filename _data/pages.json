@@ -1196,5 +1196,63 @@
       }
     ],
     "headScripts": []
+  },
+  "island": {
+    "token": "island",
+    "depth": "../",
+    "canonicalPath": "/island/",
+    "themeColor": "#0A1018",
+    "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230A1018'/%3E%3Ctext x='16' y='24' font-size='22' text-anchor='middle' fill='%237DBDF0'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E\">",
+    "titleKey": "",
+    "titleText": "The Island — dey.ci",
+    "metaDescKey": "",
+    "metaDesc": "Plan your Kingshot island on your phone: tap open ground to see what fits, paint paths and hedges, and start from a preset, crazy golf included.",
+    "ogTitleKey": "",
+    "ogTitle": "The Island",
+    "ogDescKey": "",
+    "ogDesc": "Plan your Kingshot island on your phone.",
+    "skipHref": "#plan",
+    "skipKey": "",
+    "skipText": "Skip to the board",
+    "dust": "<i></i><i></i><i></i>",
+    "brand": "The Island",
+    "brandNoteKey": "",
+    "brandNote": "plan it with your thumb",
+    "css": [
+      "../css/styles.css",
+      "../css/events.css",
+      "../css/island.css"
+    ],
+    "scripts": [
+      "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
+      "../js/common.js",
+      "../js/island-data.js",
+      "../js/island-model.js",
+      "../js/island.js"
+    ],
+    "footMainKey": "",
+    "footMain": "THE ISLAND",
+    "footSubs": [
+      {
+        "key": "",
+        "html": "Piece data and art from the <a href=\"https://ks-companion.com/island\">KS Companion</a> island catalogue, October 2026. Not yet checked in game."
+      }
+    ],
+    "headScripts": [],
+    "swipePrev": {
+      "url": "../buildings/",
+      "page": "buildings",
+      "title": "Building requirements",
+      "lede": "what each level needs, every step to your goal."
+    },
+    "swipeNext": {
+      "url": "../",
+      "page": "home",
+      "title": "The events",
+      "lede": "the alliance events in plain words — how each one scores, what to do about it."
+    },
+    "skipGuide": true
   }
 }
