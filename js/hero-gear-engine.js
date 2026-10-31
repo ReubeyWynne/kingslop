@@ -14,10 +14,15 @@
     growth: { inf: [0.7, 1.5], cav: [0.4, 0.2], arc: [1.4, 0.7] },
     combat: { inf: [0.7, 1.5], cav: [1.2, 0.4], arc: [1.3, 0.6] },
     gen4: { inf: [1.1, 1.5], cav: [1.2, 0.4], arc: [1.2, 0.6] },
-    rally: { inf: [0.7, 1.2], cav: [0.6, 0.4], arc: [1.8, 0.8] },
+    // Bear first, as on Governor gear: troops 1:1:3, and lethality only, because defence and
+    // health never move a bear fight (see sim.army.bearNote). Health pieces still count through
+    // their red milestones' attack.
+    bear: { inf: [1, 0], cav: [1, 0], arc: [3, 0] },
     garrison: { inf: [1, 1.8], cav: [0.6, 0.5], arc: [1.1, 0.8] },
     equal: { inf: [1, 1], cav: [1, 1], arc: [1, 1] }
   };
+  // Saves and links from before Bear first replaced Archer rally lead.
+  var RENAMED = { rally: 'bear' };
 
   function number(n, max) { return Math.min(max, Math.max(0, Math.floor(Number(n) || 0))); }
   function emptyCost() { return { xp: 0, hammers: 0, mythic: 0, mithril: 0 }; }
@@ -49,7 +54,9 @@
       s.included[type] = !input.included || input.included[type] !== false;
       if (input.weights && Array.isArray(input.weights[type])) s.weights[type] = [0, 1].map(function (i) { var w = Number(input.weights[type][i]); return Number.isFinite(w) ? Math.min(100, Math.max(0, w)) : s.weights[type][i]; });
     });
-    if (input.profile === 'custom' || PROFILES[input.profile]) s.profile = input.profile;
+    var profile = RENAMED[input.profile] || input.profile;
+    if (profile === 'custom' || PROFILES[profile]) s.profile = profile;
+    if (RENAMED[input.profile]) s.weights = copy(PROFILES[profile]);
     if (TYPES.indexOf(input.troop) >= 0) s.troop = input.troop;
     if (['milestones', 'plan', 'optimise', 'split'].indexOf(input.mode) >= 0) s.mode = input.mode;
     if (input.view === 'plan') s.view = 'plan';
@@ -542,6 +549,7 @@
       pieces[ids[i]] = p;
     }
     var out = { pieces: pieces }, w = params.get('w');
+    if (w && RENAMED[w]) w = RENAMED[w];
     if (w && PROFILES[w]) { out.profile = w; out.weights = copy(PROFILES[w]); }
     else if (w && /^[\d.]+(,[\d.]+){5}$/.test(w)) {
       var values = w.split(',').map(Number);

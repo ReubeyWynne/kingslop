@@ -59,7 +59,9 @@
 @media (max-width: 780px) {
   .sheet-page .sheet-hero { padding-top: var(--space-m); }
   .sheet-page .sheet-hero h1 { font-size: 2.25rem; }
-  .sheet-page .sheet-hero .lede { font-size: 1rem; }
+  .sheet-page .sheet-hero .lede { font-size: .95rem; margin-bottom: 0; }
+  /* On a phone the planner comes first: the motif stays for wider screens. */
+  .sheet-page .sheet-hero .ascii-motif-rail { display: none; }
   .sheet-workspace { display: block; margin-top: .25rem; }
   .sheet-answer { border-inline-start: 0; padding-inline-start: 0; margin-top: 1.5rem; padding-top: .75rem; border-top: 1px solid var(--signal-line); }
   .sheet-page .sheet-modes button { font-size: .85rem; }

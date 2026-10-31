@@ -293,7 +293,8 @@
 .gear-cards { display: grid; gap: .8rem; }
 .gear-card { border: 1px solid var(--signal-line); padding: .45rem .6rem .6rem; }
 .gear-card[data-included="false"] { opacity: .6; }
-.gear-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: .6rem; }
+.gear-card-head { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
+.gear-card-head > small { margin-top: -.35rem; }
 .gear-main .gear-card-open { min-height: 2.5rem; padding-inline: 0; font: 700 1.05rem var(--body); color: var(--ink); }
 .gear-card-open > span { color: var(--amber); }
 .gear-card-head > small { color: var(--ink-muted); font-size: .8rem; font-variant-numeric: tabular-nums; }
@@ -343,6 +344,7 @@
   .gear-main .gear-saving .gear-route { grid-template-columns: 3rem minmax(0, 1fr) 6.5rem; }
 }
 @media (min-width: 1100px) { .gear-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 781px) and (max-width: 1099px) { .gear-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } .gear-card-grid .gear-tile-name { display: none; } }
 /* Before → after with the bag counted; the priority and XP reforge sit just above Spend now. */
 .gear-before-after-share { gap: .5rem; }
 .gear-before-after-share > span { color: var(--ink-muted); font-size: 1.6rem; }
@@ -352,3 +354,60 @@
 .gear-main .gear-fit button { min-height: 2.25rem; padding: 0 .2rem; font-size: .88rem; }
 .gear-main .gear-optimal-rows:not(:empty) { margin-block: .6rem; }
 .gear-editor .gear-optimal .gear-headline strong { font-size: 2.4rem; }
+
+/* Spend now as numbered steps: reforges first, then upgrades, troop by troop. */
+.gear-step-head { margin: .7rem 0 .2rem; font: 700 .75rem var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); }
+.gear-main .gear-row.gear-step-row { grid-template-columns: 1.1rem 6.2rem minmax(0, 1fr); gap: .55rem; align-items: center; padding: .4rem 0; }
+.gear-step-num { font: 700 .85rem var(--display-2); color: var(--amber); text-align: center; }
+.gear-step-art { display: grid; grid-template-columns: minmax(0, 1fr) .8rem minmax(0, 1fr); align-items: center; gap: .1rem; }
+.gear-step-art .gear-item { max-width: 2.9rem; }
+.gear-step-art .gear-item-level { font-size: .72rem; }
+.gear-step-art .gear-item-mastery, .gear-step-art .gear-item-rarity { display: none; }
+.gear-step-art .gear-change-arrow { padding: 0; text-align: center; font-size: .8rem; }
+.gear-step-row .gear-change-info { gap: .1rem; }
+.gear-step-row .gear-change-name { font-size: .95rem; }
+.gear-step-levels { font-size: .8rem; color: var(--ink-dim); }
+.gear-step-levels .gear-tile-impact { color: var(--ink-muted); white-space: nowrap; }
+.gear-step-row .gear-row-costs { gap: .1rem .6rem; }
+.gear-step-row .gear-xp-flow { width: auto; }
+.gear-step-row .gear-kvk-points { font-size: .7rem; }
+.gear-step-row .gear-row-costs > .gear-kvk-points { width: auto; }
+.gear-main .gear-step-row[data-checkpoint="ascension"], .gear-main .gear-step-row[data-checkpoint="mithril"], .gear-main .gear-step-row[data-checkpoint="mastery"] { padding-inline: .3rem; }
+.gear-cost-title .gear-kvk-summary { border: 0; padding: 0; font-size: .75rem; margin-inline-start: auto; }
+.gear-cost-title { gap: .6rem; }
+.gear-spend-strip .gear-left { color: var(--ink-dim); font-size: .68rem; }
+
+/* Two tabs on a phone: Your gear, The answer. On wider screens both columns show. */
+.gear-main .gear-views { display: none; scroll-margin-top: 4.5rem; }
+@media (max-width: 780px) {
+  .gear-main .gear-views { display: grid; grid-template-columns: 1fr 1fr; margin: 0 0 .6rem; border: 1px solid var(--signal-line); background: var(--void); }
+  .gear-main .gear-views button { min-height: 2.6rem; color: var(--ink-muted); font-weight: 700; border-bottom: 2px solid transparent; }
+  .gear-main .gear-views button + button { border-inline-start: 1px solid var(--signal-line); }
+  .gear-main .gear-views [aria-selected="true"] { color: var(--amber); background: var(--signal-tint); border-bottom-color: var(--amber); }
+  #gear-forge[data-view="gear"] .gear-answer, #gear-forge[data-view="plan"] .gear-editor { display: none; }
+  #gear-forge .sheet-answer { margin-top: 0; padding-top: 0; border-top: 0; }
+  .gear-main .sheet-side > h2, .gear-main .sheet-answer > h2 { display: none; }
+  .gear-main .gear-editor .sheet-drop { padding: .4rem .6rem; margin-bottom: .5rem; }
+  .gear-main .gear-editor .sheet-drop span { display: none; }
+  .gear-editor .gear-optimal .gear-headline strong, .gear-headline strong { font-size: 2rem; }
+  .gear-optimal .gear-gloss { margin: .2rem 0; font-size: .8rem; }
+  .gear-main .gear-switch { margin: .1rem 0 .3rem; }
+  /* The three troops side by side, each still a 2×2 grid, so all twelve pieces fit one screen. */
+  .gear-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem; }
+  .gear-card { padding: .15rem .25rem .3rem; }
+  .gear-card-head { flex-direction: column; align-items: flex-start; gap: 0; }
+  .gear-main .gear-card-open { min-height: 2rem; font-size: .9rem; }
+  .gear-card-head > small { font-size: .68rem; margin-top: -.3rem; }
+  .gear-card-grid { gap: .15rem; }
+  .gear-card-grid .gear-item { max-width: 3.4rem; }
+  .gear-main .gear-card-grid .gear-row { padding: .05rem; gap: 0; }
+  .gear-card-grid .gear-tile-name { display: none; }
+  .gear-card-grid .gear-item-level { font-size: .75rem; }
+  .gear-card-grid .gear-item-mastery { font-size: .58rem; inset-block-end: .7rem; }
+  .gear-card-grid .gear-item-rarity { font-size: .5rem; }
+  .gear-card-grid .gear-tile-was { font-size: .58rem; }
+  .gear-main .gear-row.gear-step-row { grid-template-columns: 1rem 5.4rem minmax(0, 1fr); gap: .4rem; padding: .3rem 0; }
+  .gear-step-art .gear-item { max-width: 2.5rem; }
+  .gear-settings { margin-top: .4rem; padding-top: .3rem; }
+  .gear-spend { margin-top: .6rem; }
+}

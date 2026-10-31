@@ -114,6 +114,32 @@
         '<small>' + esc(tr(r + 'Unit')) + '</small>' +
         (remaining ? '<span>' + (remaining[r] ? fmt(remaining[r]) + ' ' + esc(tr('missingShort')) : esc(tr('readyShort'))) + '</span>' : '') + '</div>'; }).join('') + '</div>';
     }
+    // What the bag spends, with what is left of each under it.
+    function spendStrip(spent, left) {
+      return '<div class="gear-cost-strip gear-spend-strip">' + E.RES.map(function (r) { return '<div data-cost-resource="' + r + '">' + image(resourceArt[r], 'gear-resource-art') + '<strong>' + fmt(spent[r]) + '</strong>' +
+        '<small>' + esc(tr(r + 'Unit')) + '</small><small class="gear-left">' + esc(fill(tr('leftShort'), { n: fmt(left[r]) })) + '</small></div>'; }).join('') + '</div>';
+    }
+    // One step of Spend now: which troop's piece, from what to what, and what it takes or gives back.
+    function stepRow(d, n) {
+      var slot = d.id.split('-')[1], mark = checkpoint(d.from, d.to), direction = d.refund ? 'down' : d.costs.xp ? 'up' : 'same';
+      var flows = [];
+      if (d.refund) flows.push('<span class="gear-xp-flow">↓ ' + esc(fill(tr('xpBack'), { n: fmt(d.refund) })) + '</span>');
+      else if (d.costs.xp) flows.push('<span class="gear-xp-flow">' + fmt(d.costs.xp) + ' XP</span>');
+      if (d.hammerRefund) flows.push('<span class="gear-xp-flow" data-hammer-refund="' + d.hammerRefund + '">↓ ' + fmt(d.hammerRefund) + ' ' + esc(tr('recoverHammers')) + '</span>');
+      E.RES.filter(function (r) { return r !== 'xp' && d.costs[r]; }).forEach(function (r) {
+        flows.push('<span class="gear-row-cost" role="img" aria-label="' + esc(fmt(d.costs[r]) + ' ' + tr(r)) + '" title="' + esc(tr(r)) + '">' + image(resourceArt[r], 'gear-resource-art') + '<span aria-hidden="true">' + fmt(d.costs[r]) + '</span></span>');
+      });
+      var points = E.kvkPoints(d.costs);
+      if (points) flows.push(kvkScore(d.costs));
+      var stat = statText(d.delta).replace(tr('core'), tr(slot === 'helm' || slot === 'boots' ? 'lethality' : 'health'));
+      var mastery = d.to.mastery !== d.from.mastery ? ' · ' + esc(tr('mastery')) + ' ' + d.from.mastery + ' → ' + d.to.mastery : '';
+      return '<article class="gear-row gear-change gear-step-row" data-direction="' + direction + '" data-changed="true" data-checkpoint="' + (mark ? mark.kind : '') + '" data-piece-id="' + d.id + '">' +
+        '<span class="gear-step-num" aria-hidden="true">' + n + '</span>' +
+        '<span class="gear-step-art">' + gearItem(d.id, d.from) + '<span class="gear-change-arrow" aria-hidden="true">→</span>' + gearItem(d.id, d.to) + '</span>' +
+        '<div class="gear-change-info"><strong class="gear-change-name">' + esc(name(d.id)) + '</strong>' + checkpointLabel(mark) +
+        '<span class="gear-step-levels">' + esc(fullLevel(d.from)) + ' → ' + esc(fullLevel(d.to)) + mastery + ' <span class="gear-tile-impact">' + esc(stat) + '</span></span>' +
+        '<div class="gear-row-costs">' + flows.join('') + '</div></div></article>';
+    }
     function splitChip(r, from, to) {
       if (!from && !to) return '';
       var over = from - to;
@@ -258,6 +284,8 @@
       gainPct: gainPct,
       roleText: roleText,
       costStrip: costStrip,
+      spendStrip: spendStrip,
+      stepRow: stepRow,
       splitChip: splitChip,
       splitSet: splitSet,
       splitOutput: splitOutput,

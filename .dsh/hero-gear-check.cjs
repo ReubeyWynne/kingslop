@@ -162,8 +162,12 @@ for (let i = 0; i < forecast.routes.length; i++) {
 }
 planning.profile = 'garrison';planning.weights = E.PROFILES.garrison;
 assert.ok(E.redPlans(planning).routes.every(route=>route.id.startsWith('inf-')));
-planning.profile = 'rally';planning.weights = E.PROFILES.rally;
+planning.profile = 'bear';planning.weights = E.PROFILES.bear;
 assert.ok(E.redPlans(planning).routes.every(route=>route.id.startsWith('arc-')));
+// Archer rally lead became Bear first: old saves and links land on it with its weights.
+assert.equal(E.normaliseState({ version: 1, profile: 'rally', weights: { inf: [9, 9], cav: [9, 9], arc: [9, 9] } }).profile, 'bear');
+assert.deepEqual(E.normaliseState({ version: 1, profile: 'rally' }).weights, E.PROFILES.bear);
+assert.equal(E.readLink('?gear=' + Array(12).fill('m0.0').join('-') + '&w=rally').profile, 'bear');
 planning.included.arc = false;
 assert.ok(E.redPlans(planning).routes.every(route=>!route.id.startsWith('arc-')));
 planning.weights = {inf:[0,0],cav:[0,0],arc:[0,0]};

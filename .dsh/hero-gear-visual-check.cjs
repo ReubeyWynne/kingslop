@@ -36,7 +36,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
     // Three troop cards, four pieces each; one answer with no tabs; custom weights fold away under Advanced.
     assert.equal(await page.locator('.gear-card').count(),3);
     assert.equal(await page.locator('.gear-card .gear-card-grid .gear-row').count(),12);
-    assert.equal(await page.locator('.gear-main [role="tab"]').count(),0,'no tabs');
+    assert.equal(await page.locator('.gear-main [role="tab"]').count(),2,'only the phone tabs, Your gear and The answer');
+    assert.equal(await page.locator('.gear-views').isVisible(),false,'no tabs on a wide screen');
     assert.equal(await page.locator('#weights').evaluate(d=>d.open),false);
     assert.equal(await page.locator('#gear-profile').isVisible(),true,'the priority stays in view');
     assert.equal(await page.locator('#gear-reforge').isVisible(),true,'XP reforge is a normal setting');
@@ -137,7 +138,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('#gear-edit-dialog').evaluate(d=>d.open),true);
     await page.locator('#gear-close-edit').click();
     await page.locator('#weights > summary').click();
-    await page.locator('#gear-profile').selectOption('rally');
+    await page.locator('#gear-profile').selectOption('bear');
     assert.match(await page.locator('#gear-saving .gear-route').first().textContent(),/Archer/);
     await page.locator('#gear-profile').selectOption('growth');
     await page.locator('#weights > summary').click();
@@ -165,20 +166,34 @@ withBrowser({ root }, async ({ browser, origin }) => {
       if(width===390)await page.screenshot({path:path.join(output,'mobile-piece.png')});
       await page.locator('#gear-close-edit').click();
       await page.locator('#gear-detail .gear-back').click();
+      if(width<=768){
+        // On a phone, two tabs: your gear, and the answer.
+        assert.equal(await page.locator('.gear-answer').isVisible(),false);
+        await page.locator('#gear-view-plan').click();
+        assert.equal(await page.locator('.gear-editor').isVisible(),false);
+        assert.equal(await page.locator('#gear-profile').isVisible(),true);
+        await fits(page,'answer tab '+width);
+        if(width===390)await page.screenshot({path:path.join(output,'mobile-answer.png')});
+        await page.locator('#gear-view-gear').click();
+        assert.equal(await page.locator('.gear-editor').isVisible(),true);
+      }
       if(width===390){
-        // On a phone the three cards fit in about one and a half screens, and the answer follows.
+        // All twelve pieces and the materials fit one screen under the tabs.
+        await page.locator('.gear-views').evaluate(el=>el.scrollIntoView({block:'start'}));
+        const bag=await page.locator('#gear-bag').boundingBox();
+        assert.ok(bag.y+bag.height<=height,'your gear and materials fit one phone screen');
         await page.evaluate(()=>scrollTo(0,0));
-        const cards=await page.locator('#gear-cards').boundingBox();
-        assert.ok(cards.height<=height*1.6,'troop cards stay compact on a phone');
-        await page.screenshot({path:path.join(output,'mobile.png'),fullPage:true});
+        await page.screenshot({path:path.join(output,'mobile.png')});
       }
     }
     await page.setViewportSize({width:390,height:844});
-    await page.locator('#weights > summary').click();
+    await page.locator('#gear-view-plan').click();
     await page.locator('#gear-reforge').check();
+    await page.locator('#gear-view-gear').click();
     for(const [id,value]of [['parts10','2299'],['parts100','1'],['hammers','501'],['mythic','10'],['mithril','10']])await page.locator('#gear-'+id).fill(value);
+    await page.locator('#gear-view-plan').click();
     await page.locator('#gear-apply-result').waitFor();
-    assert.equal(await page.locator('#gear-results > .gear-kvk-summary').getAttribute('data-kvk-points'),'2400000');
+    assert.equal(await page.locator('#gear-results .gear-kvk-summary').getAttribute('data-kvk-points'),'2400000');
     const piecePoints=await page.locator('#gear-results .gear-change .gear-kvk-points').evaluateAll(items=>items.reduce((sum,item)=>sum+Number(item.dataset.kvkPoints),0));
     assert.equal(piecePoints,2400000,'per-piece scores sum to the batch total');
     assert.ok(await page.locator('#gear-results .gear-change[data-checkpoint="ascension"] .gear-item[data-quality="red"]').count()>0);
@@ -187,19 +202,23 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.setViewportSize({width:1280,height:900});
     await page.screenshot({path:path.join(output,'desktop-red-overview-spend.png'),fullPage:true});
     await page.setViewportSize({width:390,height:844});
+    await page.locator('#gear-view-gear').click();
     for(const [id,value]of [['parts10','0'],['parts100','120'],['hammers','180'],['mythic','4'],['mithril','0']])await page.locator('#gear-'+id).fill(value);
+    await page.locator('#gear-view-plan').click();
     await page.locator('#gear-apply-result').waitFor();
     const resultRows=page.locator('#gear-results .gear-result-grid .gear-row');
     assert.ok(await resultRows.count() > 0);
     assert.equal(await page.locator('#gear-results .gear-result-grid .gear-item').count(),2 * await resultRows.count());
-    assert.match(await page.locator('#gear-results .gear-result-grid').textContent(),/before.*after/s);
+    // Steps say which troop's piece, reforges first, then upgrades.
+    assert.match(await page.locator('#gear-results .gear-step-head').first().textContent(),/First, reforge/i);
+    assert.match(await resultRows.first().locator('.gear-change-name').textContent(),/^(Infantry|Cavalry|Archer) · /);
     assert.ok(await page.locator('#gear-results .gear-change[data-direction="down"]').count()>0);
     for(const row of await page.locator('#gear-results .gear-change[data-direction="down"]').all()){
       const [from,to]=(await row.locator('.gear-item-mastery').allTextContents()).map(Number);
       const hammerPoints=(to*(to+1)-from*(from+1))*5*4000;
-      assert.equal(await row.locator('.gear-kvk-points').getAttribute('data-kvk-points'),String(hammerPoints),'reforge scores only any new mastery materials, never recovered XP');
+      assert.equal(await row.locator('.gear-kvk-points').count()?await row.locator('.gear-kvk-points').getAttribute('data-kvk-points'):'0',String(hammerPoints),'reforge scores only any new mastery materials, never recovered XP');
     }
-    assert.match(await page.locator('#gear-results .gear-change[data-direction="down"]').first().textContent(),/↓.*recover/);
+    assert.match(await page.locator('#gear-results .gear-change[data-direction="down"]').first().textContent(),/↓.*XP back/);
     await fits(page,'mobile spend now');
     assert.ok(await resultRows.evaluateAll(rows=>rows.every(row=>{const box=row.getBoundingClientRect();return box.left>=-1&&box.right<=window.innerWidth+1;})),'changed-piece rows do not overflow the mobile viewport horizontally');
     await page.locator('#gear-results .gear-result-grid').scrollIntoViewIfNeeded();
@@ -215,8 +234,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
     for(const lang of langs){
       await page.goto(origin+'/hero-gear/?lang='+lang);await page.waitForFunction(loaded);await fits(page,'language '+lang);
       await page.setViewportSize({width:320,height:900});await fits(page,'narrow '+lang);
+      await page.locator('#gear-view-gear').click();
       await page.locator('[data-open="arc"]').click();await fits(page,'narrow troop view '+lang);
-      await page.locator('#gear-detail .gear-back').click();await page.setViewportSize({width:1440,height:900});
+      await page.locator('#gear-detail .gear-back').click();
+      await page.locator('#gear-view-plan').click();await fits(page,'narrow answer '+lang);
+      await page.locator('#gear-view-gear').click();await page.setViewportSize({width:1440,height:900});
     }
     const mobileContext=await browser.newContext({...devices['Pixel 7'], viewport:{width:390,height:844}, reducedMotion:'reduce'});
     const overviewPage=await mobileContext.newPage();

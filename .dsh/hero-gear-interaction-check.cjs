@@ -9,7 +9,7 @@ const key = 'bh:hero-gear:v1';
 const workerBody = "importScripts('hero-gear-engine.js' + self.location.search);self.onmessage=e=>setTimeout(()=>self.postMessage({ok:true,result:{now:self.HeroGear.optimise(e.data),optimal:self.HeroGear.optimal(e.data),planned:self.HeroGear.optimal(e.data,{bag:true})}}),400);";
 function fixture() {
   const state = E.defaults();
-  state.reforge = false;
+  state.reforge = false; state.view = 'plan';
   state.included = { inf:false, cav:false, arc:true };
   state.resources = { xp:0, hammers:30, mythic:0, mithril:0 };
   for (const slot of E.SLOTS) state.pieces['arc-' + slot] = { quality:'mythic', level:69, mastery:2 };
@@ -93,6 +93,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.context().close();
     const step = fixture(); step.resources = E.cost(step.pieces['arc-helm'], E.milestone(step.pieces['arc-helm'], 'red'));
     await open(step); await ready();
+    await page.locator('#gear-view-gear').click();
     await page.locator('.gear-card [data-select="arc-helm"]').click();
     await page.locator('#gear-edit-dialog .gear-step[data-goal="red"] [data-apply-goal]').click();
     assert.equal((await saved()).pieces['arc-helm'].quality, 'red');
@@ -105,7 +106,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
       assert.match(await page.locator('#gear-search-status').textContent(), /couldn’t be worked out/);
       assert.equal(await page.locator('#gear-results').getAttribute('aria-busy'), 'false');
       const before = await saved(); const count = await page.evaluate(() => window.__searches.length);
+      await page.locator('#gear-view-gear').click();
       await page.locator('[data-open="arc"]').click(); await page.locator('#gear-detail .gear-back').click();
+      await page.locator('#gear-view-plan').click();
       await page.waitForTimeout(350);
       assert.equal(await page.evaluate(() => window.__searches.length), count, 'failed calculations do not retry in a loop');
       if (options.failFirst) await page.screenshot({ path:path.join(output, 'mobile-retry.png') });
@@ -150,7 +153,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
       assert.equal(await page.locator('.gear-change').count(), 1);
       const points=state.resources.hammers*4000+state.resources.mithril*40000;
       assert.equal(await row.locator('.gear-kvk-points').getAttribute('data-kvk-points'),String(points));
-      assert.equal(await page.locator('#gear-results > .gear-kvk-summary').getAttribute('data-kvk-points'),String(points));
+      assert.equal(await page.locator('#gear-results .gear-kvk-summary').getAttribute('data-kvk-points'),String(points));
       await page.screenshot({ path:path.join(output, 'mobile-red-' + kind + '.png') });
       await page.setViewportSize({ width:1280,height:900 });
       await page.screenshot({ path:path.join(output, 'desktop-red-' + kind + '.png') });
