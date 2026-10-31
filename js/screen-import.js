@@ -293,7 +293,7 @@
               // Review follows the screen top to bottom; values never found go last.
               next.proposals = proposals.map(function (p, i) {
                 var item = { target: p.target || 'inventory', id: p.id, label: p.label, value: p.value, confidence: p.confidence, note: p.note || '', unit: p.unit || (/^speedup-/.test(p.id) ? 'minutes' : 'count'), crop: crops[i], y: typeof p.y === 'number' ? p.y : p.crop && typeof p.crop.y === 'number' ? p.crop.y : Infinity };
-                ['max', 'min', 'step', 'side', 'sheet', 'group', 'cols', 'named'].forEach(function (k) { if (p[k] !== undefined) item[k] = p[k]; });
+                ['max', 'min', 'step', 'side', 'sheet', 'group', 'groupLabel', 'cols', 'named'].forEach(function (k) { if (p[k] !== undefined) item[k] = p[k]; });
                 if (p.target === 'gear') { item.piece = p.piece; item.field = p.field; item.quality = p.quality; }
                 return item;
               }).sort(function (a, b) { return a.y - b.y; });
@@ -332,7 +332,7 @@
       if (p.side) return (p.side === 'you' ? tr('import.side.you', 'you') : tr('import.side.foe', 'opponent')) + (p.unit === 'percent' ? ' · %' : '');
       if (p.unit === 'gear-level' || p.unit === 'gear-mastery') {
         var q = QUALITY[p.quality], field = p.unit === 'gear-level' ? tr('import.gearLevel', 'enhancement') : tr('import.gearMastery', 'forge mastery');
-        return q ? field + ' · ' + tr(q[0], q[1]) : field;
+        return q && !p.group ? field + ' · ' + tr(q[0], q[1]) : field;
       }
       if (p.unit === 'count' && typeof value === 'number' && value >= 1e6) return compact(value) + (p.note ? ' · ' + p.note : '');
       return p.note;
@@ -361,9 +361,11 @@
         var prev = entry.proposals[i - 1], follows = !!(p.group && prev && prev.group === p.group);
         if (p.group && !follows) {
           var row = list.querySelector('[data-key="crop:' + p.group + '"]');
-          if (!row) { row = document.createElement('li'); row.className = 'import-crop'; row.dataset.key = 'crop:' + p.group; row.appendChild(document.createElement('img')).alt = ''; }
+          if (!row) { row = document.createElement('li'); row.className = 'import-crop'; row.dataset.key = 'crop:' + p.group; row.appendChild(document.createElement('img')).alt = ''; row.appendChild(document.createElement('span')).className = 'import-crop-name'; }
           show(row.firstChild, p.crop);
-          row.hidden = !p.crop;
+          // A piece read as a whole names itself once, under its picture.
+          row.lastChild.textContent = p.groupLabel || '';
+          row.hidden = !p.crop && !p.groupLabel;
           row.dataset.state = entry.proposals.some(function (q) { return q.group === p.group && doubts.indexOf(q) !== -1; }) ? 'doubt' : 'sure';
           place(row);
         }

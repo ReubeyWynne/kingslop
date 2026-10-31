@@ -68,7 +68,10 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await detailLevel.waitFor();
     assert.equal(await detailLevel.inputValue(),'19','a red level reviews as its +N');
     assert.equal(await page.locator('#screen-import [data-key="gear-inf-helm-mastery"] [data-field="value"]').inputValue(),'10');
-    assert.match(await page.locator('#screen-import [data-key="gear-inf-helm-level"] [data-field="note"]').textContent(),/enhancement · red/);
+    assert.match(await page.locator('#screen-import [data-key="gear-inf-helm-level"] [data-field="note"]').textContent(),/^enhancement$/);
+    // The piece is named once, above its two values, with its quality.
+    assert.equal(await page.locator('#screen-import [data-key="crop:inf-helm"] .import-crop-name').textContent(),'Infantry Helm · red');
+    assert.equal(await page.locator('#screen-import .import-crop').count(),1,'one piece, one heading');
     await page.locator('#screen-import [data-action="screen-import.apply"]').click();
     await page.waitForFunction(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level===119);
     assert.deepEqual(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm']),{quality:'red',level:119,mastery:10});
@@ -247,7 +250,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
         const out={};
         for(let i=0;i<n;i++){
           const name=(await dock.locator('[data-target="screen-import.name"]').textContent()).replace(/\.jpg$/,'');
-          out[name]=await dock.locator('.import-tile').evaluateAll(tiles=>tiles.map(li=>({key:li.dataset.key,value:li.querySelector('[data-field="value"]').value,note:li.querySelector('[data-field="note"]').textContent,crop:!li.querySelector('[data-field="crop"]').hidden})));
+          const heads=await dock.locator('.import-crop').evaluateAll(rows=>Object.fromEntries(rows.map(li=>[li.dataset.key.slice(5),{name:li.querySelector('.import-crop-name').textContent,crop:!li.querySelector('img').hidden}])));
+          out[name]=await dock.locator('.import-tile').evaluateAll(tiles=>tiles.map(li=>({key:li.dataset.key,value:li.querySelector('[data-field="value"]').value})));
+          out[name].forEach(t=>{t.head=heads[/^gear-(\w+-\w+)-/.exec(t.key)[1]];});
           await dock.locator('[data-action="screen-import.next"]').click();
         }
         return out;
@@ -257,8 +262,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
         for(const t of tiles){
           const [,troop,slot,field]=/^gear-(inf|cav|arc)-(\w+)-(level|mastery)$/.exec(t.key);
           const p=by[troop+'-'+slot]||(by[troop+'-'+slot]={troop,slot});
-          if(field==='level'){p.quality=/· (\w+)$/.exec(t.note)[1];p.level=t.value;}else p.mastery=t.value;
-          assert.ok(t.crop,'each value shows its tile');
+          if(field==='level'){p.quality=/· (\w+)$/.exec(t.head.name)[1];p.level=t.value;}else p.mastery=t.value;
+          assert.ok(t.head.crop,'each piece shows its tile');
         }
         return Object.values(by).map(p=>({...p,level:p.quality==='red'&&p.level!==''?String(Number(p.level)+100):p.level}));
       }
