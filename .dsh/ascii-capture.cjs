@@ -20,7 +20,9 @@ const writeFrames = process.argv.includes('--frames');
 // --only=march,hearth steps just the scenes whose names start with those words.
 const only = (process.argv.find(arg => arg.startsWith('--only=')) || '').slice(7).split(',').filter(Boolean);
 
-// [name, page, selector, seconds per authored frame, frames in one loop]
+// [name, page, selector, seconds per authored frame, frames in one loop, widths]
+// Widths default to the two phone widths. A scene the page hides on a phone
+// (the sheet pages put the planner first there) is stepped where it shows.
 const scenes = [
   ['campfire', '/', '.ascii-home-hero .ascii-campfire', 1 / 12, 72],
   ['hearth', '/bear-hunt/', '.ascii-hearth', 1 / 6, 36],
@@ -37,7 +39,7 @@ const scenes = [
   ['moon', '/events/', '.ascii-mini--moon', 19.6 / 112, 112],
   ['moon-card', '/events/', '.deck-card.is-selected .ascii-mini--moon', 19.6 / 112, 112],
   ['helm', '/heroes/', '.ascii-mini--helm', 0.25, 32],
-  ['seal', '/governor-gear/', '.ascii-mini--seal', 0.25, 32],
+  ['seal', '/governor-gear/', '.ascii-mini--seal', 0.25, 32, [1024]],
   ['tome', '/masters/', '.ascii-mini--tome', 1 / 6, 48],
   ['keep', '/buildings/', '.ascii-mini--keep', 0.15, 40],
   ['pet', '/pets/', '.ascii-motif-rail .ascii-mini--pet', 1.2 / 16, 16],
@@ -47,11 +49,13 @@ const scenes = [
 withBrowser({ root }, async ({ browser, origin: base }) => {
   const failures = [];
 
-  for (const width of [320, 390]) {
+  const phones = [320, 390];
+  for (const width of [...new Set(scenes.flatMap(scene => scene[5] || phones))]) {
     const context = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 2 });
     for (const [name, url, selector, period, count] of scenes.filter(scene =>
       (!process.argv.includes('--moon') || scene[0].startsWith('moon')) &&
       (!process.argv.includes('--castle') || scene[0].startsWith('castle')) &&
+      (scene[5] || phones).includes(width) &&
       (!only.length || only.some(prefix => scene[0].startsWith(prefix))))) {
       const page = await context.newPage();
       // These are the baked frames: the live pet (js/pet-live.js) is kept off so they show.
@@ -128,6 +132,6 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     process.exitCode = 1;
     return;
   }
-  console.log(`ASCII scenes: ${scenes.length} scenes stepped at 320px and 390px` + (writeFrames ? `; frames in ${path.relative(process.cwd(), output)}` : ''));
+  console.log(`ASCII scenes: ${scenes.length} scenes stepped at 320px and 390px (or where the page shows them)` + (writeFrames ? `; frames in ${path.relative(process.cwd(), output)}` : ''));
 }).catch(error => { console.error(error); process.exitCode = 1; });
 

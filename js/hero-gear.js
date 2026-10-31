@@ -250,7 +250,8 @@
     var node = el('fit'), names = fit ? Object.keys(fit) : [];
     if (!names.length) { node.hidden = true; return; }
     var best = names.reduce(function (a, b) { return fit[b] > fit[a] + 1e-9 ? b : a; });
-    if (best === state.profile) { node.hidden = true; return; }
+    // Only worth a line when it fits clearly better: two points or more over the chosen profile.
+    if (best === state.profile || (fit[state.profile] !== undefined && fit[best] - fit[state.profile] < 0.02)) { node.hidden = true; return; }
     var option = el('profile').querySelector('option[value="' + best + '"]');
     node.hidden = false;
     node.innerHTML = view.esc(BH.fill(tr('fitBest'), { profile: option ? option.textContent : best, share: pct(fit[best]) })) +
@@ -268,19 +269,15 @@
         (message === 'noWeightsSelected' ? '<button type="button" class="gear-action" data-show-weights="true">' + view.esc(tr('editWeights')) + '</button>' : '') + '</div>';
       return;
     }
-    // Every changed piece in one list, troop by troop: milestones first, then by gain.
-    var order = E.TYPES.reduce(function (o, type, i) { o[type] = i; return o; }, {});
-    var tiles = result.details.slice().sort(function (a, b) {
-      function rank(d) { return d.refund ? 2 : view.checkpoint(d.from, d.to) ? 0 : 1; }
-      return order[a.id.split('-')[0]] - order[b.id.split('-')[0]] || rank(a) - rank(b) || b.gain - a.gain;
-    }).map(function (d) { return view.comparison(d.id, d.from, d.to, d); }).join('');
+    // Steps in the order to do them in game: reforges first (they free the XP and hammers),
+    // then upgrades, each troop in turn, helm to boots.
+    var order = {}; E.TYPES.forEach(function (type, i) { E.SLOTS.forEach(function (slot, j) { order[type + '-' + slot] = i * 4 + j; }); });
+    var sorted = result.details.slice().sort(function (a, b) { return order[a.id] - order[b.id]; });
+    var back = sorted.filter(function (d) { return d.refund || d.hammerRefund; }), up = sorted.filter(function (d) { return !d.refund && !d.hammerRefund; }), n = 0;
+    function group(list, key) { return list.length ? '<h4 class="gear-step-head">' + view.esc(tr(key)) + '</h4>' + list.map(function (d) { return view.stepRow(d, ++n); }).join('') : ''; }
     el('results').innerHTML = '<div class="gear-result-summary"><strong>' + view.gainPct(result.gain, result.baseline) + '</strong><span>' + view.esc(tr('weightedGain')) + '</span><small>' + result.changes.length + ' ' + view.esc(tr('piecesChanged')) + '</small></div>' +
-      view.kvkScore(result.spent, true) +
-      '<div class="gear-result-grid">' + tiles + '</div>' +
-      (result.refund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.refund) + ' XP ' + view.esc(tr('recoverXP')) + ' → ↑ ' + fmt(result.spent.xp) + ' XP ' + view.esc(tr('redistributeXP')) + '</p>' : '') +
-      (result.hammerRefund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.hammerRefund) + ' ' + view.esc(tr('recoverHammers')) + '</p>' : '') +
-      '<div class="gear-cost-title"><strong>' + view.esc(tr('spend')) + '</strong></div>' + view.costStrip(result.spent) + view.kvkNote() + view.cavalryNote(state, result.pieces) +
-      '<div class="gear-cost-title"><strong>' + view.esc(tr('remaining')) + '</strong></div>' + view.costStrip(result.remaining) +
+      '<div class="gear-result-grid">' + group(back, 'stepsReforge') + group(up, back.length ? 'stepsUpgrade' : 'stepsUpgradeOnly') + '</div>' +
+      '<div class="gear-cost-title"><strong>' + view.esc(tr('spend')) + '</strong>' + view.kvkScore(result.spent, true) + '</div>' + view.spendStrip(result.spent, result.remaining) + view.kvkNote() + view.cavalryNote(state, result.pieces) +
       '<div class="gear-record-action"><button type="button" id="gear-apply-result" class="gear-primary gear-action" aria-describedby="gear-record-hint">' + view.esc(tr('applyResult')) + '</button>' +
       '<p id="gear-record-hint" class="gear-gloss">' + view.esc(tr('applyHint')) + '</p></div>';
   }
@@ -298,7 +295,20 @@
           '<span><b>' + r.efficiency.toFixed(1) + '</b><small>' + view.esc(tr('perCostUnit')) + '</small></span></span></button>';
       }).join('') + view.theoryLink('ranking', 'scoreCostExplained') : '';
   }
+  // On a phone the two columns are two tabs, Your gear and The answer; the choice is kept.
+  function paintView() {
+    var plan = state.view === 'plan';
+    el('forge').dataset.view = plan ? 'plan' : 'gear';
+    [['gear', !plan], ['plan', plan]].forEach(function (pair) { var tab = el('view-' + pair[0]); tab.setAttribute('aria-selected', String(pair[1])); tab.tabIndex = pair[1] ? 0 : -1; });
+  }
+  function setView(view) {
+    if (state.view === view) return;
+    state.view = view; persist(); paintView();
+    var tabs = el('forge').querySelector('.gear-views');
+    if (tabs.getBoundingClientRect().top < 0) tabs.scrollIntoView({ block: 'start' });
+  }
   function paint() {
+    paintView();
     paintGear(); paintAdvanced(); paintOptimal(); paintPlanShare(); paintFit(); paintResults(); paintSaving(); paintTheory(); paintSheet();
     scheduleSearch(250);
   }
@@ -422,8 +432,13 @@
         if (node.value === 'custom') editWeights();
       }
     });
+    el('forge').querySelector('.gear-views').addEventListener('keydown', function (event) {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      var next = state.view === 'plan' ? 'gear' : 'plan'; setView(next); el('view-' + next).focus(); event.preventDefault();
+    });
     el('forge').addEventListener('click', function (event) {
       var button = event.target.closest('button'); if (!button) return;
+      if (button.closest('.gear-views')) { setView(button.dataset.view); button.focus(); return; }
       if (button.dataset.showWeights) editWeights();
       else if (button.dataset.useProfile) { state.profile = button.dataset.useProfile; state.weights = copy(E.PROFILES[state.profile]); changed(); el('profile').focus(); }
       else if (button.dataset.open !== undefined) {

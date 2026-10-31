@@ -51,6 +51,10 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
     await page.locator('#gear-detail [data-select="cav-helm"]').click();
     await check(page, lang + ' piece sheet');
     await page.keyboard.press('Escape');
+    await page.locator('#gear-detail .gear-back').click();
+    await page.locator('#gear-view-plan').click();
+    await check(page, lang + ' answer tab');
+    await page.locator('#gear-view-gear').click();
     // Settings and notes are folds under the workspace.
     await page.evaluate(() => document.querySelectorAll('.gear-main details').forEach(d => { d.open = true; }));
     await check(page, lang + ' notes');

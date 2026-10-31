@@ -80,6 +80,7 @@ They express user priorities, not predicted damage percentages.
 | Early growth | 0.7, 1.5 | 0.4, 0.2 | 1.4, 0.7 |
 | Early combat | 0.7, 1.5 | 1.2, 0.4 | 1.3, 0.6 |
 | Generation 4+ | 1.1, 1.5 | 1.2, 0.4 | 1.2, 0.6 |
+| Bear first | 1, 0 | 1, 0 | 3, 0 |
 | Equal stats | 1, 1 | 1, 1 | 1, 1 |
 
 The reference optimiser is server-backed: the browser posts heroes, resource
@@ -364,3 +365,25 @@ small changes on two pieces (mastery ±2, tier ±1), keeping the best improvemen
 until none is left. Nothing goes below where the run started. On the test sets it
 added up to 2.8% to Spend now and 8% to the optimum, in under half a second.
 `profileFit` skips it to keep six searches quick.
+
+## Bear first, steps and phone tabs — 31 October 2026
+
+**Bear first** replaces "Archer rally lead", whose weights had no source. It
+follows Governor gear's Bear first: troops 1:1:3, lethality only, because
+defence and health never move a bear fight (the simulator's bear note). Health
+pieces still count through their red milestones' attack. A save or link with
+the old `rally` profile opens on Bear first with its weights. Garrison lead
+stays for now; its weights are not in the sourced table either.
+
+**Spend now as steps.** The answer lists numbered steps in the order to do them
+in game: reforges first (they free the XP and hammers), then upgrades, each
+troop in turn from helm to boots. Each step names the troop and slot, shows the
+two pieces small, the levels and mastery change, the stat change, the XP or
+hammers it takes or gives back, and KvK points only when there are some. The
+bill is one strip: what the steps spend, with what is left under each.
+
+**Phone tabs.** At 780px and below the two columns are two tabs, Your gear and
+The answer (kept in the save as `view`), with no tabs inside them. The three
+troop cards sit side by side, each still 2×2, so all twelve pieces and the
+materials fit one 390×844 screen under the tabs; the visual check measures it.
+The hero motif is hidden on phones on both planners.

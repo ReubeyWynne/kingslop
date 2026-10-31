@@ -16,6 +16,10 @@ self: gear
   </p>
 
   <section class="section gear-console" id="gear-forge" data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed" aria-label="Hero gear planner" data-i18n-key="gear.planner" data-i18n-attr="aria-label">
+    <div class="gear-views" role="tablist" aria-label="Hero gear planner" data-i18n-key="gear.planner" data-i18n-attr="aria-label">
+      <button type="button" role="tab" id="gear-view-gear" aria-controls="gear-planner" aria-selected="true" data-view="gear" data-i18n="gear.yourGear">Your gear</button>
+      <button type="button" role="tab" id="gear-view-plan" aria-controls="gear-planner" aria-selected="false" tabindex="-1" data-view="plan" data-i18n="gov.theAnswer">The answer</button>
+    </div>
     <div id="gear-planner" class="sheet-workspace">
       <div class="gear-editor sheet-side">
         <h2 data-i18n="gear.yourGear">Your gear</h2>
@@ -44,7 +48,7 @@ self: gear
             <option value="growth" data-i18n="gear.growth">Early growth</option>
             <option value="combat" data-i18n="gear.combat">Early combat</option>
             <option value="gen4" data-i18n="gear.gen4">Generation 4+</option>
-            <option value="rally" data-i18n="gear.rallyProfile">Archer rally lead</option>
+            <option value="bear" data-i18n="gear.bearProfile">Bear first</option>
             <option value="garrison" data-i18n="gear.garrisonProfile">Garrison lead</option>
             <option value="equal" data-i18n="gear.equal">Equal stats</option>
             <option value="custom" data-i18n="gear.custom">Custom</option>
