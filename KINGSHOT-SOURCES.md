@@ -371,7 +371,7 @@ site already carries from elsewhere disagrees:
   round 0, `js/battle-engine.js` at round 1.
 - **Regression case** (kingshotsim.com): 40,233 T10.1 infantry (attack 293.66%, lethality
   251.82%) in a 120,789 army against a 78,872 army, defender per-troop 2,557.9, SkillMod 1.26,
-  round 0 → **189** deaths. Wire it into `.dsh/battle-engine-check.cjs` once heroes are modelled.
+  round 0 → **189** deaths. Pinned in `.dsh/combat-check.cjs`.
 - Game art in the repo (portraits, gear icons) is the game's, not covered by the MIT licence.
 
 ---

@@ -11,11 +11,11 @@
    the page re-paints on i18n:change, so a language switch mid-session shows
    the new language and locale-formatted numbers.
 
-   Heroes are the deliberate omission. In a bear split an ALL-TROOP skill
-   cancels out, a TYPE-SPECIFIC one does not (SIM-PROPOSAL.md §10); in a
-   battle every skill counts. The engine fights troops and stats only — the
-   Frakinator's own scope for the hero-less Mystic Trial rooms — and the copy
-   says so wherever heroes would change the answer. */
+   Heroes join the fights (Mystic Trial and Battle): each side picks three
+   leads and up to four joiners, and js/combat.js turns their skills into the
+   engine's effects. Only skills are added — a hero's stats and gear are
+   already in the report's Bonus Details. The bear modes stay hero-less: an
+   ALL-TROOP skill cancels out of a bear split (SIM-PROPOSAL.md §10). */
 (function () {
   'use strict';
 
@@ -141,7 +141,60 @@
       side.tg[i] = pick(prefix + 'tg-' + t.key, 0);
       STATS.forEach(function (s) { side[s.key][i] = Math.max(0, num(prefix + s.key + '-' + t.key)); });
     });
+    side.skills = heroSkills(prefix);
     return side;
+  }
+
+  // ── Heroes ────────────────────────────────────────────
+  // The fight picks the roles: in a field fight both sides march alone; in a
+  // rally one side rallies and the other holds a garrison. Joiners only count
+  // in those two, and exclusive gear only in its own role.
+  var JOINERS = 4;
+  var FOE_ROLE = { solo: 'solo', rally: 'defender', defender: 'rally' };
+
+  function role(prefix) {
+    var e = el('sim-fight-role');
+    var mine = e && FOE_ROLE[e.value] ? e.value : 'solo';
+    return prefix === 'sim-foe-' ? FOE_ROLE[mine] : mine;
+  }
+
+  function lineup(prefix) {
+    var heroes = TYPES.map(function (t) {
+      var e = el(prefix + 'hero-' + t.key);
+      return e && e.value ? { key: e.value, levels: [0, 1, 2].map(function () { return pick(prefix + 'hero-lv-' + t.key, 5); }), widget: pick(prefix + 'hero-gear-' + t.key, 0) } : null;
+    }).filter(Boolean);
+    var joiners = [];
+    for (var i = 1; i <= JOINERS; i++) {
+      var j = el(prefix + 'join-' + i);
+      if (j && j.value) joiners.push({ key: j.value, level: pick(prefix + 'join-lv-' + i, 5) });
+    }
+    return { role: role(prefix), heroes: heroes, joiners: joiners };
+  }
+
+  function heroSkills(prefix) {
+    if (!window.CombatSkills || !window.CombatData) return [];
+    return window.CombatSkills.side(window.CombatData, lineup(prefix));
+  }
+
+  // The card's line: the leads by name, and how many joiners count.
+  function paintHeroes(BH) {
+    ['sim-', 'sim-foe-'].forEach(function (prefix) {
+      var out = el(prefix + 'heroes-sum');
+      if (!out) return;
+      var l = lineup(prefix), names = [];
+      TYPES.forEach(function (t) {
+        var sel = el(prefix + 'hero-' + t.key);
+        if (sel && sel.value) names.push(sel.options[sel.selectedIndex].text);
+      });
+      var joined = l.role === 'solo' ? 0 : Math.min(window.CombatSkills ? window.CombatSkills.MAX_JOINERS : JOINERS, l.joiners.length);
+      if (!names.length && !joined) {
+        out.textContent = BH.tr('sim.heroes.none', 'none yet — add them');
+        return;
+      }
+      var parts = names.slice();
+      if (joined) parts.push(BH.tpl('sim.heroes.joined', '{n} joiners', { n: numFmt(joined, 0) }));
+      out.textContent = parts.join(' · ');
+    });
   }
 
   function total(n) { return n[0] + n[1] + n[2]; }
@@ -561,7 +614,7 @@
     }
     sweepStatus(BH);
     var key = sweepKey(you, foe, o);
-    o.seed = E.seedOf([you.tier, you.tg, you.atk, you.let, you.def, you.hea, foe, o.total]);
+    o.seed = E.seedOf([you.tier, you.tg, you.atk, you.let, you.def, you.hea, you.skills, foe, o.total]);
     sweepBusy = true;
     sweepAgain = false;
     var started = performance.now(), mixes = E.grid(o).cells.length;
@@ -742,6 +795,7 @@
     paintMarch(BH);
     paintTotal(BH);
     paintMystic(BH);
+    paintHeroes(BH);
     paintFight(BH);
     paintSweepSize(BH);
     paintSweep(BH);

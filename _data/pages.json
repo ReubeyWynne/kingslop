@@ -499,6 +499,8 @@
       "../js/page-chrome.js",
       "../js/common.js",
       "../js/battle-engine.js",
+      "../js/combat-data.js",
+      "../js/combat.js",
       "../js/sim-player.js",
       "../js/sim-army.js",
       "../js/sim-run.js",
