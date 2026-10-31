@@ -117,7 +117,8 @@
       cam.x = w[0] - (sx - vw / 2) / cam.s; cam.y = w[1] - (sy - vh / 2) / cam.s;
       invalidate();
     }
-    function invalidate() { if (!queued) { queued = true; requestAnimationFrame(draw); } }
+    // Redraws are batched per task, not per frame: the site keeps scripts free of frame loops.
+    function invalidate() { if (!queued) { queued = true; queueMicrotask(draw); } }
 
     function draw() {
       queued = false;
