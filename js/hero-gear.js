@@ -211,6 +211,7 @@
   function paintAdvanced() {
     el('profile').value = state.profile;
     el('reforge').checked = state.reforge;
+    el('hammer-reforge').checked = state.hammerReforge;
     el('weights-grid').innerHTML = '<span id="gear-weights-label" class="sheet-label">' + view.esc(BH.tr('gov.weights', 'Weights')) + '</span>' +
       '<div class="gear-weight-grid"><span></span>' + E.TYPES.map(function (type) { return '<span>' + view.esc(tr(type)) + '</span>'; }).join('') +
       [0, 1].map(function (i) {
@@ -277,6 +278,7 @@
       view.kvkScore(result.spent, true) +
       '<div class="gear-result-grid">' + tiles + '</div>' +
       (result.refund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.refund) + ' XP ' + view.esc(tr('recoverXP')) + ' → ↑ ' + fmt(result.spent.xp) + ' XP ' + view.esc(tr('redistributeXP')) + '</p>' : '') +
+      (result.hammerRefund ? '<p class="gear-reforge-flow">↓ ' + fmt(result.hammerRefund) + ' ' + view.esc(tr('recoverHammers')) + '</p>' : '') +
       '<div class="gear-cost-title"><strong>' + view.esc(tr('spend')) + '</strong></div>' + view.costStrip(result.spent) + view.kvkNote() + view.cavalryNote(state, result.pieces) +
       '<div class="gear-cost-title"><strong>' + view.esc(tr('remaining')) + '</strong></div>' + view.costStrip(result.remaining) +
       '<div class="gear-record-action"><button type="button" id="gear-apply-result" class="gear-primary gear-action" aria-describedby="gear-record-hint">' + view.esc(tr('applyResult')) + '</button>' +
@@ -412,6 +414,7 @@
       } else if (node.dataset.include) { state.included[node.dataset.include] = node.checked; changed(); }
       else if (node.id === 'gear-show-optimal') { showOptimal = node.checked; paintGear(); paintOptimal(); }
       else if (node.id === 'gear-reforge') { state.reforge = node.checked; changed(); }
+      else if (node.id === 'gear-hammer-reforge') { state.hammerReforge = node.checked; changed(); }
       else if (node.id === 'gear-profile') {
         state.profile = node.value;
         if (E.PROFILES[node.value]) state.weights = copy(E.PROFILES[node.value]);

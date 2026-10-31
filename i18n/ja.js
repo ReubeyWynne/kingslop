@@ -1373,6 +1373,8 @@ window.__BH_I18N_DATA["ja"] = {
   "gear.oppReforge": "ほかの装備からXPを再錬成すれば今日届きます。適用する前にプラン全体を確認してください。",
   "gear.oppAffordable": "今すぐ手が届きます。",
   "gear.oppShort": "{missing}不足。",
+  "gear.hammerReforge": "叙事・神話装備のハンマー再鍛造を許可（鍛造ハンマーの半分が戻る）",
+  "gear.recoverHammers": "熟練度の再鍛造で戻るハンマー",
   "gear.ofOptimalInvested": "（投資分に対する最適比）",
   "gear.planShare": "バッグも含めた最適比：今の装備と、今すぐ使う後。",
   "gear.fitBest": "あなたの装備は{profile}に最も合っています（最適比{share}）。",

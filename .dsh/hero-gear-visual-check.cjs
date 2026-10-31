@@ -386,6 +386,13 @@ withBrowser({ root }, async ({ browser, origin }) => {
       const linked=E.optimal(Object.assign(E.defaults(),E.readLink('?gear=m69.2-r120.11-m100.6-m72.3-m20.20-m100.0-r160.13-e80.0-r200.20-r200.20-r200.20-r200.20&w=growth')));
       assert.equal(await visitor.locator('#gear-optimal .gear-headline strong').textContent(),pctOf(linked.share));
       assert.ok(linked.share<1&&linked.changes.length>0,'this sheet is short of optimal');
+      // Hammer reforge is an Advanced option: mastery 20 on a level 20 helm comes back as half its hammers.
+      await visitor.locator('#weights > summary').click();
+      await visitor.locator('#gear-hammer-reforge').check();
+      await visitor.locator('#gear-results [data-piece-id="cav-helm"] [data-hammer-refund="1050"]').waitFor({timeout:90000});
+      assert.equal(await visitor.locator('#gear-results [data-hammer-refund]').count(),1,'only the piece worth reforging is reset');
+      await visitor.locator('#gear-hammer-reforge').uncheck();
+      await visitor.locator('#weights > summary').click();
       // Old links to Settings and Theory open the fold they now sit in.
       for(const [hash,fold] of [['#kvk-points','#kvk-points'],['#maths-sources','#maths'],['#how-it-works','#how-it-works'],['#save-backups','#save-backups'],['#best-split-method','#best-split-method'],['#weights','#weights']]){
         await visitor.goto(origin+'/hero-gear/?lang=en'+hash);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-card .gear-row').length===12);

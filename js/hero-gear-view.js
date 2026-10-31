@@ -63,6 +63,7 @@
           '</span>';
       }).join('');
       var xp = direction === 'same' ? '' : '<span class="gear-xp-flow">' + (direction === 'down' ? '↓ ' + fmt(detail.refund) + ' XP · ' + esc(tr('recoverXP')) : '↑ ' + fmt(detail.costs.xp) + ' XP · ' + esc(tr('redistributeXP'))) + '</span>';
+      if (detail.hammerRefund) xp += '<span class="gear-xp-flow" data-hammer-refund="' + detail.hammerRefund + '">↓ ' + fmt(detail.hammerRefund) + ' ' + esc(tr('recoverHammers')) + '</span>';
       return '<article class="gear-row gear-change" data-direction="' + direction + '" data-changed="true" data-checkpoint="' + (mark ? mark.kind : '') + '" data-piece-id="' + id + '">' +
         beforeAfter(id, from, to, 'before', 'after') +
         '<div class="gear-change-info">' +

@@ -1370,6 +1370,8 @@ window.__BH_I18N_DATA["ar"] = {
   "gear.oppReforge": "إعادة صهر XP من قطع أخرى تبلغها اليوم. راجع الخطة كاملة قبل تطبيقها.",
   "gear.oppAffordable": "يمكنك تحمّل هذا الآن.",
   "gear.oppShort": "ينقصك {missing}.",
+  "gear.hammerReforge": "اسمح بإعادة صهر المطارق في العتاد الملحمي والأسطوري (يعود نصف مطارق الحدادة)",
+  "gear.recoverHammers": "مطارق مستعادة من إعادة صهر الإتقان",
   "gear.ofOptimalInvested": "من الأمثل لما استثمرته",
   "gear.planShare": "من الأمثل مع حساب حقيبتك: عتادك الآن، ثم بعد أنفق الآن.",
   "gear.fitBest": "عتادك يناسب {profile} أكثر ({share} من الأمثل).",

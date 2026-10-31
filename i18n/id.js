@@ -1384,6 +1384,8 @@ window.__BH_I18N_DATA["id"] = {
   "gear.oppReforge": "Reforge XP dari gear lain bisa mencapainya hari ini. Periksa seluruh rencana sebelum menerapkannya.",
   "gear.oppAffordable": "Kamu sanggup membelinya sekarang.",
   "gear.oppShort": "Kurang {missing}.",
+  "gear.hammerReforge": "izinkan reforge hammer pada gear epik & mitos (setengah Forgehammer kembali)",
+  "gear.recoverHammers": "hammer kembali dari reforge mastery",
   "gear.ofOptimalInvested": "dari optimal untuk yang sudah kamu tanam",
   "gear.planShare": "Dari optimal dengan tas ikut dihitung: gear-mu sekarang, lalu setelah Belanja sekarang.",
   "gear.fitBest": "Gear-mu paling cocok dengan {profile} ({share} dari optimal).",

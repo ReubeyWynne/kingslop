@@ -1373,6 +1373,8 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "gear.oppReforge": "Reforjar XP de outras peças alcança este marco hoje. Confira o plano completo antes de aplicar.",
   "gear.oppAffordable": "Você já pode pagar por isto.",
   "gear.oppShort": "Faltam {missing}.",
+  "gear.hammerReforge": "permitir reforja de martelos em equipamento épico e mítico (metade dos martelos de forja de volta)",
+  "gear.recoverHammers": "martelos de volta pela reforja da maestria",
   "gear.ofOptimalInvested": "do ideal para o que você investiu",
   "gear.planShare": "Do ideal contando também sua bolsa: seu equipamento agora e depois de “Investir agora”.",
   "gear.fitBest": "Seu equipamento combina melhor com {profile} ({share} do ideal).",

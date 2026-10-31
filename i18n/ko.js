@@ -1373,6 +1373,8 @@ window.__BH_I18N_DATA["ko"] = {
   "gear.oppReforge": "다른 장비의 XP를 재련하면 오늘 도달할 수 있어요. 적용하기 전에 전체 계획을 확인하세요.",
   "gear.oppAffordable": "지금 바로 감당할 수 있어요.",
   "gear.oppShort": "{missing} 부족.",
+  "gear.hammerReforge": "에픽·신화 장비의 망치 재련 허용(단조 망치 절반 반환)",
+  "gear.recoverHammers": "숙련 재련으로 돌려받는 망치",
   "gear.ofOptimalInvested": "투자한 것 대비 최적",
   "gear.planShare": "가방까지 포함한 최적 대비: 지금 장비, 그리고 지금 쓰기 후.",
   "gear.fitBest": "장비가 {profile}에 가장 잘 맞아요(최적 대비 {share}).",

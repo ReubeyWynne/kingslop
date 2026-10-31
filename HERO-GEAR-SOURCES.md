@@ -344,3 +344,12 @@ it in one line with a "Use it" button. Custom weights are the Advanced fold
 (`#weights`). **Worth saving for** lists `redPlans` routes, red a little out of
 reach ranked by gain per cost, with what each is short; a route opens its
 piece's sheet. Old links to `#best-split-method` open "How % of optimal works".
+
+**Hammer reforge** (Advanced, off by default; from the site owner, 31 October
+2026): reforging a piece's mastery gives back half the Forgehammers it took,
+rounded down, and none of the spare mythic gear. Red gear can't be reforged for
+XP or hammers. Spend now then also tries resetting the mastery of each single
+piece, each troop and every piece before its greedy search, and keeps a reset
+only where it scores better; the result shows "↓ N hammers back" on the piece.
+% of optimal is unchanged: it already treats everything invested as free to
+place.

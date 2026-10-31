@@ -1372,6 +1372,8 @@ window.__BH_I18N_DATA["tr"] = {
   "gear.oppReforge": "Diğer parçalardan XP yeniden dövülerek bugün ulaşılabilir. Uygulamadan önce planın tamamını kontrol et.",
   "gear.oppAffordable": "Bunu şimdi karşılayabilirsin.",
   "gear.oppShort": "{missing} eksik.",
+  "gear.hammerReforge": "epik ve mitik ekipmanda çekiç yeniden dövmeye izin ver (dövme çekiçlerinin yarısı geri döner)",
+  "gear.recoverHammers": "ustalık yeniden dövmesinden geri gelen çekiç",
   "gear.ofOptimalInvested": "yatırdığın için optimumun",
   "gear.planShare": "Çantan da sayılınca optimumun: ekipmanın şimdi, sonra Şimdi harca sonrası.",
   "gear.fitBest": "Ekipmanın en çok {profile} profiline uyuyor (optimumun {share}).",

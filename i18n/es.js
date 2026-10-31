@@ -1376,6 +1376,8 @@ window.__BH_I18N_DATA["es"] = {
   "gear.oppReforge": "Reforjando XP de otras piezas llegas hoy. Revisa el plan completo antes de aplicarlo.",
   "gear.oppAffordable": "Ya te lo puedes permitir.",
   "gear.oppShort": "Faltan {missing}.",
+  "gear.hammerReforge": "permitir reforja de martillos en equipo épico y mítico (vuelve la mitad de los martillos de forja)",
+  "gear.recoverHammers": "martillos recuperados al reforjar la maestría",
   "gear.ofOptimalInvested": "del óptimo para lo que has invertido",
   "gear.planShare": "Del óptimo contando también tu bolsa: tu equipo ahora y después de Gastar ya.",
   "gear.fitBest": "Tu equipo encaja mejor con {profile} ({share} del óptimo).",

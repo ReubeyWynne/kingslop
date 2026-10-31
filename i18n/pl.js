@@ -1373,6 +1373,8 @@ window.__BH_I18N_DATA["pl"] = {
   "gear.oppReforge": "Przekuwając XP z innych części, osiągniesz go dziś. Sprawdź cały plan przed zastosowaniem.",
   "gear.oppAffordable": "Stać cię na to teraz.",
   "gear.oppShort": "Brakuje {missing}.",
+  "gear.hammerReforge": "zezwól na przekucie młotów w ekwipunku epickim i mitycznym (połowa młotów kuźniczych wraca)",
+  "gear.recoverHammers": "młoty odzyskane z przekucia mistrzostwa",
   "gear.ofOptimalInvested": "optimum dla tego, co włożyłeś",
   "gear.planShare": "Optimum z plecakiem: twój ekwipunek teraz, potem po Wydaj teraz.",
   "gear.fitBest": "Twój ekwipunek najlepiej pasuje do {profile} ({share} optimum).",

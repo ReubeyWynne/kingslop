@@ -1494,6 +1494,8 @@ window.__BH_I18N_DATA["en"] = {
   "gear.oppReforge": "Reforging XP from other pieces reaches it today. Check the whole plan before you apply it.",
   "gear.oppAffordable": "You can afford this now.",
   "gear.oppShort": "Short {missing}.",
+  "gear.hammerReforge": "allow hammer reforge on epic & mythic gear (half the Forgehammers back)",
+  "gear.recoverHammers": "hammers back from mastery reforge",
   "gear.ofOptimalInvested": "of optimal for what you’ve put in",
   "gear.planShare": "Of optimal counting your bag too: your gear now, then after Spend now.",
   "gear.fitBest": "Your gear fits {profile} best ({share} of optimal).",

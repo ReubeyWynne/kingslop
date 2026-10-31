@@ -1374,6 +1374,8 @@ window.__BH_I18N_DATA["fr"] = {
   "gear.oppReforge": "En reforgeant l’XP d’autres pièces, tu l’atteins aujourd’hui. Vérifie le plan complet avant de l’appliquer.",
   "gear.oppAffordable": "Tu peux te le permettre maintenant.",
   "gear.oppShort": "Il manque {missing}.",
+  "gear.hammerReforge": "autoriser la reforge des marteaux sur l’équipement épique et mythique (la moitié des marteaux de forge rendue)",
+  "gear.recoverHammers": "marteaux rendus par la reforge de maîtrise",
   "gear.ofOptimalInvested": "de l’optimum pour ce que vous avez investi",
   "gear.planShare": "De l’optimum en comptant aussi votre sac : votre équipement maintenant, puis après Dépenser.",
   "gear.fitBest": "Votre équipement correspond le mieux à {profile} ({share} de l’optimum).",

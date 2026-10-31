@@ -359,4 +359,21 @@ for (let t = 0; t < 6; t++) {
   assert.deepEqual(Object.keys(fit).sort(), Object.keys(E.PROFILES).sort());
   Object.values(fit).forEach(share => assert.ok(share > 0 && share <= 1));
 }
-console.log('Guest ledger isolation, gear costs, milestones, 40 optimiser conservation cases, OCR parsing, share links, best split, % of optimal with and without the bag, profile fit and copy checks passed.');
+// Hammer reforge: a reset mastery gives back half its hammers, never mythic; red is never reset;
+// every hammer is accounted for; and it only runs when allowed.
+{
+  const sheet = Object.assign(E.defaults(), E.readLink('?gear=m69.2-r120.11-m100.6-m72.3-m20.20-m100.0-r160.13-e80.0-r200.20-r200.20-r200.20-r200.20&w=growth'));
+  const off = E.optimise(sheet);
+  assert.equal(off.hammerRefund, 0, 'no hammer reforge unless allowed');
+  sheet.hammerReforge = true;
+  const on = E.optimise(sheet);
+  assert.ok(on.score >= off.score - 1e-9, 'allowing hammer reforge never makes the answer worse');
+  assert.ok(on.hammerRefund > 0, 'mastery 20 on a level 20 piece is worth reforging');
+  for (const d of on.details) {
+    if (d.from.quality === 'red') assert.equal(d.hammerRefund, 0, 'red gear is never reforged');
+    if (d.hammerRefund) assert.equal(d.hammerRefund, Math.floor(5 * d.from.mastery * (d.from.mastery + 1) / 2), 'half the hammers back, rounded down');
+  }
+  assert.equal(on.remaining.hammers, sheet.resources.hammers + on.hammerRefund - on.spent.hammers, 'every hammer is accounted for');
+  assert.equal(on.remaining.mythic, sheet.resources.mythic - on.spent.mythic, 'reforging never returns spare mythic gear');
+}
+console.log('Guest ledger isolation, gear costs, milestones, 40 optimiser conservation cases, OCR parsing, share links, best split, hammer reforge, % of optimal with and without the bag, profile fit and copy checks passed.');

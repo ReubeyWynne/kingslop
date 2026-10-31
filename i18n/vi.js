@@ -1384,6 +1384,8 @@ window.__BH_I18N_DATA["vi"] = {
   "gear.oppReforge": "Rèn lại XP từ các món khác thì đạt được ngay hôm nay. Kiểm tra toàn bộ kế hoạch trước khi áp dụng.",
   "gear.oppAffordable": "Bạn đã đủ sức ngay bây giờ.",
   "gear.oppShort": "Thiếu {missing}.",
+  "gear.hammerReforge": "cho phép rèn lại búa trên trang bị sử thi và thần thoại (nhận lại một nửa búa rèn)",
+  "gear.recoverHammers": "búa nhận lại từ rèn lại thành thạo",
   "gear.ofOptimalInvested": "so với tối ưu cho những gì đã đầu tư",
   "gear.planShare": "So với tối ưu khi tính cả túi: trang bị bây giờ, rồi sau Tiêu ngay.",
   "gear.fitBest": "Trang bị của bạn hợp nhất với {profile} ({share} so với tối ưu).",

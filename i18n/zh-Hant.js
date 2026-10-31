@@ -1373,6 +1373,8 @@ window.__BH_I18N_DATA["zh-Hant"] = {
   "gear.oppReforge": "從其他裝備重鑄 XP 今天就能達到。套用前請檢查整個方案。",
   "gear.oppAffordable": "你現在就負擔得起。",
   "gear.oppShort": "還缺 {missing}。",
+  "gear.hammerReforge": "允許史詩和神話裝備重鑄鍛造錘（返還一半鍛造錘）",
+  "gear.recoverHammers": "精通重鑄返還的鍛造錘",
   "gear.ofOptimalInvested": "（按已投入計的最佳佔比）",
   "gear.planShare": "把背包也算上的最佳佔比：現在的裝備，以及立即花費之後。",
   "gear.fitBest": "你的裝備最符合{profile}（最佳佔比{share}）。",

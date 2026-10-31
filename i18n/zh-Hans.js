@@ -1373,6 +1373,8 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "gear.oppReforge": "从其他装备重铸 XP 今天就能达到。应用前请检查整个方案。",
   "gear.oppAffordable": "你现在就负担得起。",
   "gear.oppShort": "还缺 {missing}。",
+  "gear.hammerReforge": "允许史诗和神话装备重铸锻造锤（返还一半锻造锤）",
+  "gear.recoverHammers": "精通重铸返还的锻造锤",
   "gear.ofOptimalInvested": "（按已投入计的最优占比）",
   "gear.planShare": "把背包也算上的最优占比：现在的装备，以及立即花费之后。",
   "gear.fitBest": "你的装备最符合{profile}（最优占比{share}）。",

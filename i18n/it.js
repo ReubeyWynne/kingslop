@@ -1375,6 +1375,8 @@ window.__BH_I18N_DATA["it"] = {
   "gear.oppReforge": "Riforgiando XP da altri pezzi ci arrivi oggi. Controlla l’intero piano prima di applicarlo.",
   "gear.oppAffordable": "Puoi permettertelo ora.",
   "gear.oppShort": "Mancano {missing}.",
+  "gear.hammerReforge": "consenti la riforgia dei martelli su equipaggiamento epico e mitico (metà dei martelli da forgia restituiti)",
+  "gear.recoverHammers": "martelli restituiti dalla riforgia della maestria",
   "gear.ofOptimalInvested": "dell’ottimo per quanto hai investito",
   "gear.planShare": "Dell’ottimo contando anche la borsa: il tuo equipaggiamento ora, poi dopo Spendi ora.",
   "gear.fitBest": "Il tuo equipaggiamento si adatta meglio a {profile} ({share} dell’ottimo).",

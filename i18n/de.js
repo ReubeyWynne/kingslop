@@ -1373,6 +1373,8 @@ window.__BH_I18N_DATA["de"] = {
   "gear.oppReforge": "Mit umgeschmiedeten XP aus anderen Teilen erreichst du ihn heute. Prüfe den ganzen Plan, bevor du ihn übernimmst.",
   "gear.oppAffordable": "Das kannst du dir jetzt leisten.",
   "gear.oppShort": "Es fehlen {missing}.",
+  "gear.hammerReforge": "Hammer-Umschmieden bei epischer & mythischer Ausrüstung erlauben (die Hälfte der Schmiedehämmer zurück)",
+  "gear.recoverHammers": "Hämmer zurück durch Meisterschafts-Umschmieden",
   "gear.ofOptimalInvested": "des Optimums für das Investierte",
   "gear.planShare": "Des Optimums inklusive deiner Tasche: deine Ausrüstung jetzt, dann nach Jetzt ausgeben.",
   "gear.fitBest": "Deine Ausrüstung passt am besten zu {profile} ({share} des Optimums).",
