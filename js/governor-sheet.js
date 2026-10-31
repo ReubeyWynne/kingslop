@@ -64,6 +64,8 @@
       location.assign(location.pathname + (search ? '?' + search : '') + location.hash);
     }
     function render() {
+      // On your own save there is nothing to say: edits save as they go. The notice is for a sheet.
+      context.targets('notice').forEach(function (node) { node.hidden = live; });
       if (live) {
         put('source', t('sourceSame'));
         put('hint', api.tr('gear.sheet.liveHint', EN.liveHint));

@@ -21,7 +21,7 @@
      be read or written never blocks a save. */
   var HISTORY = 'bh:player-history:v1', FULL_DAYS = 28, MAX_ENTRIES = 8000;
   var ITEMS = { xp: 'hero-gear-xp', hammers: 'forgehammer', mythic: 'spare-mythic-gear', mithril: 'mithril' };
-  var PREFS = ['included', 'weights', 'profile', 'reforge', 'troop', 'mode', 'view', 'selected', 'goal', 'target', 'targetMastery'];
+  var PREFS = ['included', 'weights', 'profile', 'reforge', 'hammerReforge', 'troop', 'mode', 'view', 'selected', 'goal', 'target', 'targetMastery'];
   var TYPES = ['inf', 'cav', 'arc'], STATS = ['attack', 'lethality', 'defense', 'health'];
   var PIECES = ['inf', 'cav', 'arc'].flatMap(function (troop) { return ['helm', 'gloves', 'chest', 'boots'].map(function (slot) { return troop + '-' + slot; }); });
   // Governor equipment is tracked by level index: 0 is not crafted (or no charm), then one step per tier star or charm level.
@@ -232,6 +232,7 @@
     if (prefs.weights !== undefined) valid(object(prefs.weights) && ['inf', 'cav', 'arc'].every(function (key) { return Array.isArray(prefs.weights[key]) && prefs.weights[key].length === 2 && prefs.weights[key].every(function (n) { return Number.isFinite(n) && n >= 0 && n <= 100; }); }));
     ['profile', 'troop', 'mode', 'view', 'selected', 'goal'].forEach(function (key) { if (prefs[key] !== undefined) valid(typeof prefs[key] === 'string' && prefs[key].length <= 80); });
     if (prefs.reforge !== undefined) valid(typeof prefs.reforge === 'boolean');
+    if (prefs.hammerReforge !== undefined) valid(typeof prefs.hammerReforge === 'boolean');
     if (prefs.target !== undefined) valid(count(prefs.target) && prefs.target <= 200);
     if (prefs.targetMastery !== undefined) valid(count(prefs.targetMastery) && prefs.targetMastery <= 20);
     valid(Array.isArray(value.imports) && value.imports.length <= 1000);

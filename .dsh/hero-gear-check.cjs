@@ -334,4 +334,59 @@ for (let t = 0; t < 6; t++) {
   assert.ok(set.score <= brute + 1e-9 && set.score >= brute * 0.997, 'best split within 0.3% of brute force: ' + set.score + ' vs ' + brute);
 }
 
-console.log('Guest ledger isolation, gear costs, milestones, 40 optimiser conservation cases, OCR parsing, share links, best split and copy checks passed.');
+// % of optimal: the best layout never spends more than the gear already holds (plus the bag,
+// when counted), never scores below the gear, leaves excluded troops alone, and the bag only helps.
+{
+  const sheet = Object.assign(E.defaults(), E.readLink('?gear=m69.2-r120.11-m100.6-m72.3-m20.20-m100.0-r160.13-e80.0-r200.20-r200.20-r200.20-r200.20&w=growth'));
+  sheet.resources = { xp: 52650, hammers: 110, mythic: 6, mithril: 10 };
+  sheet.included.arc = false;
+  const now = E.optimal(sheet), plan = E.optimal(sheet, { bag: true }), state = E.normaliseState(sheet);
+  for (const [result, bag] of [[now, false], [plan, true]]) {
+    assert.ok(result.share > 0 && result.share <= 1, 'share is a fraction');
+    assert.ok(result.score >= result.current - 1e-9, 'never below the gear itself');
+    const used = { xp: 0, hammers: 0, mythic: 0, mithril: 0 }, held = { xp: 0, hammers: 0, mythic: 0, mithril: 0 };
+    for (const id of Object.keys(state.pieces)) {
+      if (id.startsWith('arc-')) { assert.deepEqual(result.pieces[id], state.pieces[id], 'an excluded troop is left alone'); continue; }
+      const a = E.invested(result.pieces[id]), b = E.invested(state.pieces[id]);
+      for (const r of E.RES) { used[r] += a[r]; held[r] += b[r]; }
+    }
+    for (const r of E.RES) assert.ok(used[r] <= held[r] + (bag ? sheet.resources[r] : 0), r + ' stays within what is invested' + (bag ? ' and in the bag' : ''));
+  }
+  assert.ok(now.share < 1 && now.changes.length > 0, 'a sheet with wasted mastery is short of optimal');
+  assert.ok(plan.score >= now.score - 1e-9, 'counting the bag never lowers the optimum');
+  assert.ok(plan.score >= E.optimise(sheet).score - 1e-9, 'Spend now never beats the optimum with the bag');
+  const fit = E.profileFit(sheet);
+  assert.deepEqual(Object.keys(fit).sort(), Object.keys(E.PROFILES).sort());
+  Object.values(fit).forEach(share => assert.ok(share > 0 && share <= 1));
+}
+// Hammer reforge: a reset mastery gives back half its hammers, never mythic; red is never reset;
+// every hammer is accounted for; and it only runs when allowed.
+{
+  const sheet = Object.assign(E.defaults(), E.readLink('?gear=m69.2-r120.11-m100.6-m72.3-m20.20-m100.0-r160.13-e80.0-r200.20-r200.20-r200.20-r200.20&w=growth'));
+  const off = E.optimise(sheet);
+  assert.equal(off.hammerRefund, 0, 'no hammer reforge unless allowed');
+  sheet.hammerReforge = true;
+  const on = E.optimise(sheet);
+  assert.ok(on.score >= off.score - 1e-9, 'allowing hammer reforge never makes the answer worse');
+  assert.ok(on.hammerRefund > 0, 'mastery 20 on a level 20 piece is worth reforging');
+  for (const d of on.details) {
+    if (d.from.quality === 'red') assert.equal(d.hammerRefund, 0, 'red gear is never reforged');
+    if (d.hammerRefund) assert.equal(d.hammerRefund, Math.floor(5 * d.from.mastery * (d.from.mastery + 1) / 2), 'half the hammers back, rounded down');
+  }
+  assert.equal(on.remaining.hammers, sheet.resources.hammers + on.hammerRefund - on.spent.hammers, 'every hammer is accounted for');
+  assert.equal(on.remaining.mythic, sheet.resources.mythic - on.spent.mythic, 'reforging never returns spare mythic gear');
+}
+// The look-ahead after the greedy search never does worse, stays within the bag, and on this
+// set finds a better layout than greedy alone (1076 → 1106 under Early growth).
+{
+  const sheet = Object.assign(E.defaults(), E.readLink('?gear=r140.12-r120.11-m100.10-m100.12-m100.10-m95.9-m100.11-m90.10-m80.6-m70.5-m60.4-m100.10&w=growth'));
+  sheet.resources = { xp: 52650, hammers: 300, mythic: 6, mithril: 10 };
+  const greedy = E.optimise(Object.assign({}, sheet, { greedyOnly: true })), ahead = E.optimise(sheet);
+  assert.ok(ahead.score > greedy.score * 1.01, 'the look-ahead beats greedy alone here');
+  for (const r of E.RES) assert.ok(ahead.remaining[r] >= 0 && ahead.spent[r] - (r === 'xp' ? ahead.refund : r === 'hammers' ? ahead.hammerRefund : 0) <= sheet.resources[r], r + ' stays within the bag');
+  for (const id of Object.keys(sheet.pieces)) {
+    const from = E.normalisePiece(sheet.pieces[id]), to = ahead.pieces[id];
+    assert.ok(to.mastery >= from.mastery && (from.quality !== 'red' || (to.quality === 'red' && to.level >= from.level)), id + ' never goes backwards');
+  }
+}
+console.log('Guest ledger isolation, gear costs, milestones, 40 optimiser conservation cases, OCR parsing, share links, best split, hammer reforge, look-ahead, % of optimal with and without the bag, profile fit and copy checks passed.');

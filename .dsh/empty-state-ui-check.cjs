@@ -101,10 +101,10 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.waitForTimeout(150);
     assert.equal(await note().isVisible(), false, dir + ' stays hidden once recorded');
   }
-  // Hero gear, like Governor gear, has its own screenshot box and sheet bar instead of a note.
+  // Hero gear, like Governor gear, has its own screenshot box instead of a note.
   await page.evaluate(() => localStorage.clear());
   await page.goto(origin + '/hero-gear/?lang=en');
-  await page.waitForFunction(() => document.querySelectorAll('.gear-row').length === 4);
+  await page.waitForFunction(() => document.querySelectorAll('.gear-card .gear-row').length === 12);
   assert.equal(await note().count(), 0, 'hero gear carries no empty state');
 
   // Every language: the words come from the dictionary and no key leaks; Arabic rules on the right.
