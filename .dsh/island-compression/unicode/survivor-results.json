@@ -1,0 +1,636 @@
+{
+  "observedAlphabetSize": 919,
+  "newlyEncodedGameValidation": false,
+  "measurements": [
+    {
+      "layout": "kingshot-8900",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 78,
+      "originalRouteUnits": 80,
+      "rootRouteUnits": 73,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "kingshot-8900",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 78,
+      "originalRouteUnits": 75,
+      "rootRouteUnits": 68,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "kingshot-8900",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 78,
+      "originalRouteUnits": 75,
+      "rootRouteUnits": 68,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "kingshot-8901",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 990,
+      "originalRouteUnits": 890,
+      "rootRouteUnits": 883,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "kingshot-8901",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 990,
+      "originalRouteUnits": 822,
+      "rootRouteUnits": 815,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "kingshot-8901",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 990,
+      "originalRouteUnits": 815,
+      "rootRouteUnits": 808,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "kingshot-8902",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 976,
+      "originalRouteUnits": 878,
+      "rootRouteUnits": 871,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "kingshot-8902",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 976,
+      "originalRouteUnits": 811,
+      "rootRouteUnits": 804,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "kingshot-8902",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 976,
+      "originalRouteUnits": 804,
+      "rootRouteUnits": 797,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "kingshot-8903",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 294,
+      "originalRouteUnits": 272,
+      "rootRouteUnits": 265,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "kingshot-8903",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 294,
+      "originalRouteUnits": 252,
+      "rootRouteUnits": 245,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "kingshot-8903",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 294,
+      "originalRouteUnits": 250,
+      "rootRouteUnits": 243,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "kingshot-8904",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 316,
+      "originalRouteUnits": 291,
+      "rootRouteUnits": 284,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "kingshot-8904",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 316,
+      "originalRouteUnits": 270,
+      "rootRouteUnits": 263,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "kingshot-8904",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 316,
+      "originalRouteUnits": 267,
+      "rootRouteUnits": 260,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "empty",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 15,
+      "originalRouteUnits": 24,
+      "rootRouteUnits": 17,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "empty",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 15,
+      "originalRouteUnits": 24,
+      "rootRouteUnits": 17,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "empty",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 15,
+      "originalRouteUnits": 24,
+      "rootRouteUnits": 17,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "sparse-25",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 79,
+      "originalRouteUnits": 81,
+      "rootRouteUnits": 74,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "sparse-25",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 79,
+      "originalRouteUnits": 76,
+      "rootRouteUnits": 69,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "sparse-25",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 79,
+      "originalRouteUnits": 76,
+      "rootRouteUnits": 69,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "independent-100",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 350,
+      "originalRouteUnits": 321,
+      "rootRouteUnits": 314,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "independent-100",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 350,
+      "originalRouteUnits": 298,
+      "rootRouteUnits": 291,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "independent-100",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 350,
+      "originalRouteUnits": 295,
+      "rootRouteUnits": 288,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "dense-decorations",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 57,
+      "originalRouteUnits": 66,
+      "rootRouteUnits": 59,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "dense-decorations",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 57,
+      "originalRouteUnits": 62,
+      "rootRouteUnits": 55,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "dense-decorations",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 57,
+      "originalRouteUnits": 62,
+      "rootRouteUnits": 55,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "paths-grid",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 38,
+      "originalRouteUnits": 49,
+      "rootRouteUnits": 42,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "paths-grid",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 38,
+      "originalRouteUnits": 47,
+      "rootRouteUnits": 40,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "paths-grid",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 38,
+      "originalRouteUnits": 46,
+      "rootRouteUnits": 39,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "borders-diagonals",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 41,
+      "originalRouteUnits": 48,
+      "rootRouteUnits": 41,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "borders-diagonals",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 41,
+      "originalRouteUnits": 45,
+      "rootRouteUnits": 38,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "borders-diagonals",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 41,
+      "originalRouteUnits": 45,
+      "rootRouteUnits": 38,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "symmetric-garden",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 93,
+      "originalRouteUnits": 94,
+      "rootRouteUnits": 87,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "symmetric-garden",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 93,
+      "originalRouteUnits": 88,
+      "rootRouteUnits": 81,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "symmetric-garden",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 93,
+      "originalRouteUnits": 87,
+      "rootRouteUnits": 80,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "repeated-rows",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 50,
+      "originalRouteUnits": 56,
+      "rootRouteUnits": 49,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "repeated-rows",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 50,
+      "originalRouteUnits": 52,
+      "rootRouteUnits": 45,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "repeated-rows",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 50,
+      "originalRouteUnits": 52,
+      "rootRouteUnits": 45,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "random-binary-surface",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 467,
+      "originalRouteUnits": 425,
+      "rootRouteUnits": 418,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "random-binary-surface",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 467,
+      "originalRouteUnits": 393,
+      "rootRouteUnits": 386,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "random-binary-surface",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 467,
+      "originalRouteUnits": 390,
+      "rootRouteUnits": 383,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "random-six-surfaces",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 1236,
+      "originalRouteUnits": 1109,
+      "rootRouteUnits": 1102,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "random-six-surfaces",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 1236,
+      "originalRouteUnits": 1024,
+      "rootRouteUnits": 1017,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "random-six-surfaces",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 1236,
+      "originalRouteUnits": 1015,
+      "rootRouteUnits": 1008,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "random-dual-layers",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 20281,
+      "originalRouteUnits": 18043,
+      "rootRouteUnits": 18036,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "random-dual-layers",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 20281,
+      "originalRouteUnits": 16639,
+      "rootRouteUnits": 16632,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "random-dual-layers",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 20281,
+      "originalRouteUnits": 16498,
+      "rootRouteUnits": 16491,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-meandering-paths",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 134,
+      "originalRouteUnits": 130,
+      "rootRouteUnits": 123,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-meandering-paths",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 134,
+      "originalRouteUnits": 121,
+      "rootRouteUnits": 114,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-meandering-paths",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 134,
+      "originalRouteUnits": 120,
+      "rootRouteUnits": 113,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-offset-motifs",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 111,
+      "originalRouteUnits": 114,
+      "rootRouteUnits": 107,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-offset-motifs",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 111,
+      "originalRouteUnits": 107,
+      "rootRouteUnits": 100,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-offset-motifs",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 111,
+      "originalRouteUnits": 106,
+      "rootRouteUnits": 99,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-irregular-districts",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 659,
+      "originalRouteUnits": 596,
+      "rootRouteUnits": 589,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-irregular-districts",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 659,
+      "originalRouteUnits": 551,
+      "rootRouteUnits": 544,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-irregular-districts",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 659,
+      "originalRouteUnits": 546,
+      "rootRouteUnits": 539,
+      "originalFits": false,
+      "rootFits": false,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-rotated-variants",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 367,
+      "originalRouteUnits": 342,
+      "rootRouteUnits": 335,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-rotated-variants",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 367,
+      "originalRouteUnits": 316,
+      "rootRouteUnits": 309,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-rotated-variants",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 367,
+      "originalRouteUnits": 314,
+      "rootRouteUnits": 307,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-cap-surfaces",
+      "profile": "survivors512-ic1",
+      "originalWireBytes": 539,
+      "originalRouteUnits": 489,
+      "rootRouteUnits": 482,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-cap-surfaces",
+      "profile": "survivors867-ic1",
+      "originalWireBytes": 539,
+      "originalRouteUnits": 452,
+      "rootRouteUnits": 445,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    },
+    {
+      "layout": "heldout-cap-surfaces",
+      "profile": "survivors919-ic1",
+      "originalWireBytes": 539,
+      "originalRouteUnits": 449,
+      "rootRouteUnits": 442,
+      "originalFits": true,
+      "rootFits": true,
+      "exactBinaryRoundTrip": true
+    }
+  ]
+}

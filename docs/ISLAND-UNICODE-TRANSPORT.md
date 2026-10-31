@@ -8,6 +8,8 @@ The original 373-byte limit belongs to base64url, not to UTF-16 game chat. These
 
 The [blacklist investigation](ISLAND-CHARACTER-BLACKLIST.md) records two failed game returns. Its candidate excluding the first 35 observed changed characters also failed. Empirical blacklist iteration is not a production validation strategy; the offline size results remain diagnostic only.
 
+The [observed-survivor study](ISLAND-SURVIVOR-ALPHABETS.md) pools 919 distinct payload characters that returned unchanged across those two trials, with no observed failures for those characters. It implements 512-, 867- and 919-symbol candidates from that finite evidence; the smaller-alphabet path does not require a fresh Unicode census.
+
 ## Measured recovered layouts
 
 | Layout | Base64url, original route | CJK/Hangul 15-bit, original route | Assigned BMP + compact IC/1, original route | Assigned BMP + compact IC/1, root route | Dense BMP diagnostic, original route |

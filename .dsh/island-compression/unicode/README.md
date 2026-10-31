@@ -34,3 +34,13 @@ node .dsh/island-compression/unicode/blacklist-study.mjs --verify copied-message
 ```
 
 Do not overwrite the original failure fixture or remap the v1 alphabet after later trials; create a new revision. `blacklist-transport-v1.mjs` is generated from the existing transport implementation with only its alphabet import changed. No production decoder or editor route is modified.
+
+## Observed survivors
+
+[Survivor-alphabet report](../../../docs/ISLAND-SURVIVOR-ALPHABETS.md) counts 919 distinct unchanged payload code points from the existing two returns. It implements a 512-symbol control, an 867-symbol letters/numbers subset and all 919 survivors. All 63 offline corpus cases reconstruct the original binary bytes. The alphabet is frozen separately from earlier profiles; new encoded combinations remain game-unverified. No further user paste batch is requested.
+
+```sh
+node .dsh/island-compression/unicode/survivor-study.mjs
+node --test .dsh/island-compression/unicode/survivor-test.mjs
+python3 .dsh/island-compression/unicode/write-survivor-report.py
+```
