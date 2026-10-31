@@ -3,37 +3,37 @@ layout: page
 self: governor
 ---
 {% assign gov = site.data.governor %}{% assign rows = "cav,inf,arc" | split: "," %}
-<main class="gov-main">
-  <section class="section hero gov-hero" id="top">
+<main class="gov-main sheet-page">
+  <section class="section hero gov-hero sheet-hero" id="top">
     <h1 data-i18n="gov.title">Governor gear</h1>
     <p class="lede" data-i18n="gov.lede2">Set the gear as it is in game, or read it from a profile screenshot. The answer shows where the materials take it and what the rest costs.</p>
     {% include ascii/motif.html kind="seal" %}
   </section>
 
-  <section class="section gov-sheet" id="governor-sheet" data-module="governor-sheet" data-screen-import-sheet="governor" aria-label="This sheet" data-i18n-key="gov.sheet.label" data-i18n-attr="aria-label">
-    <div class="gov-sheet-state">
-      <span class="gov-sheet-kicker" data-i18n="gov.sheet.kicker">This sheet</span>
-      <p class="gov-sheet-source" aria-live="polite"><strong data-target="governor-sheet.source"></strong> <span data-target="governor-sheet.hint"></span></p>
+  <section class="section sheet-bar" id="governor-sheet" data-module="governor-sheet" data-screen-import-sheet="governor" aria-label="This sheet" data-i18n-key="gov.sheet.label" data-i18n-attr="aria-label">
+    <div class="sheet-bar-state">
+      <span class="sheet-kicker" data-i18n="gov.sheet.kicker">This sheet</span>
+      <p class="sheet-source" aria-live="polite"><strong data-target="governor-sheet.source"></strong> <span data-target="governor-sheet.hint"></span></p>
     </div>
-    <p class="gov-sheet-actions">
+    <p class="sheet-actions">
       <button type="button" data-kind="primary" data-action="governor-sheet.copy" data-i18n="gov.sheet.copy">Copy share link</button>
       <button type="button" data-kind="secondary" data-action="governor-sheet.saveMine" data-target="governor-sheet.saveMine" data-i18n="gov.sheet.saveMine" hidden>Save as mine</button>
       <button type="button" data-kind="quiet" data-action="governor-sheet.loadMine" data-target="governor-sheet.loadMine" data-i18n="gov.sheet.loadMine" hidden>Load mine</button>
       <button type="button" data-kind="quiet" data-action="governor-sheet.blank" data-target="governor-sheet.blank" data-i18n="gov.sheet.blank" hidden>Start blank</button>
     </p>
-    <input class="gov-sheet-link" type="url" readonly hidden data-target="governor-sheet.link" aria-label="Link to this sheet" data-i18n-key="gov.sheet.linkLabel" data-i18n-attr="aria-label">
-    <dialog class="gov-dialog gov-confirm" data-target="governor-sheet.confirm" aria-labelledby="gov-confirm-title">
+    <input class="sheet-link" type="url" readonly hidden data-target="governor-sheet.link" aria-label="Link to this sheet" data-i18n-key="gov.sheet.linkLabel" data-i18n-attr="aria-label">
+    <dialog class="gov-dialog sheet-confirm" data-target="governor-sheet.confirm" aria-labelledby="gov-confirm-title">
       <h2 id="gov-confirm-title" data-i18n="gov.sheet.confirmTitle">Save this sheet as yours?</h2>
       <p data-i18n="gov.sheet.confirmBody">It replaces the governor levels in your save. A material this sheet has not counted keeps your number.</p>
-      <p class="gov-confirm-actions"><button type="button" data-action="governor-sheet.cancel" data-i18n="gov.sheet.cancel">cancel</button> <button type="button" data-action="governor-sheet.confirm" data-i18n="gov.sheet.confirm">replace my levels</button></p>
+      <p class="sheet-confirm-actions"><button type="button" data-action="governor-sheet.cancel" data-i18n="gov.sheet.cancel">cancel</button> <button type="button" data-action="governor-sheet.confirm" data-i18n="gov.sheet.confirm">replace my levels</button></p>
     </dialog>
   </section>
 
   <section class="section gov-console" id="governor-planner" aria-label="Governor planner" data-i18n-key="gov.planner" data-i18n-attr="aria-label">
-    <div class="gov-workspace">
-      <div class="gov-left">
+    <div class="sheet-workspace">
+      <div class="gov-left sheet-side">
         <h2 data-i18n="gov.theGovernor">The governor</h2>
-        <button type="button" class="gov-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="gov.drop.title">Read a Governor Profile screenshot</strong> <span data-i18n="gov.drop.body">Pick, drop or paste one. You check the levels before they fill this sheet, and your save stays as it is.</span></button>
+        <button type="button" class="gov-drop sheet-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="gov.drop.title">Read a Governor Profile screenshot</strong> <span data-i18n="gov.drop.body">Pick, drop or paste one. You check the levels before they fill the governor.</span></button>
         {% include governor/profile.html %}
         <div class="gov-bag" id="governor-bag" data-module="ledger-form" data-saved-key="gov.sheet.bagSaved" data-save-failed-key="gear.saveFailed">
           {% for item in gov.materials %}{% if gov.gear.materials contains item.id %}{% assign group = "gear" %}{% else %}{% assign group = "charms" %}{% endif %}
@@ -43,18 +43,18 @@ self: governor
         </div>
       </div>
 
-      <div class="gov-answer" data-module="governor-planner" data-art="../img/governor/" id="gov-answer">
+      <div class="gov-answer sheet-answer" data-module="governor-planner" data-art="../img/governor/" id="gov-answer">
         <h2 data-i18n="gov.theAnswer">The answer</h2>
-        <div class="gov-modes" data-module="tabs" data-tabs-bind="governor-mode" role="tablist" aria-label="Question" data-i18n-key="gov.mode" data-i18n-attr="aria-label">
+        <div class="sheet-modes" data-module="tabs" data-tabs-bind="governor-mode" role="tablist" aria-label="Question" data-i18n-key="gov.mode" data-i18n-attr="aria-label">
           <button type="button" role="tab" aria-selected="true" data-value="spend" data-action="tabs.select" data-i18n="gov.withWhatIHave">With what I have</button>
           <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="reach" data-action="tabs.select" data-i18n="gov.costToReach">Cost to reach</button>
         </div>
 
         <div class="gov-mode" data-target="governor-planner.spendPanel">
-          <div class="gov-chips" role="group" aria-labelledby="gov-profile-label"><span id="gov-profile-label" data-i18n="gov.priority">Priority</span>
+          <div class="gov-chips" role="group" aria-labelledby="gov-profile-label"><span id="gov-profile-label" class="sheet-label" data-i18n="gov.priority">Priority</span>
             {% assign profiles = "bear,score,custom" | split: "," %}{% for name in profiles %}<button type="button" aria-pressed="false" data-action="governor-planner.profile" data-value="{{ name }}" data-i18n="gov.profile.{{ name }}">{% case name %}{% when "bear" %}Bear first{% when "custom" %}Custom weights{% else %}Event score{% endcase %}</button>{% endfor %}
           </div>
-          <div class="gov-weights" role="group" aria-labelledby="gov-weights-label" data-target="governor-planner.weights"><span id="gov-weights-label" data-i18n="gov.weights">Weights</span>
+          <div class="gov-weights" role="group" aria-labelledby="gov-weights-label" data-target="governor-planner.weights"><span id="gov-weights-label" class="sheet-label" data-i18n="gov.weights">Weights</span>
             {% assign weighted = "inf,cav,arc" | split: "," %}{% for troop in weighted %}<label><span data-i18n="gear.{{ troop }}">{% case troop %}{% when "inf" %}Infantry{% when "cav" %}Cavalry{% else %}Archer{% endcase %}</span><input type="number" min="0" max="10" step="0.1" inputmode="decimal" data-troop="{{ troop }}" data-action="governor-planner.weight"></label>{% endfor %}
           </div>
           <p class="gov-gloss" data-target="governor-planner.profileNote"></p>
@@ -70,7 +70,7 @@ self: governor
         <ol class="gov-result" data-target="governor-planner.rows" aria-live="polite"></ol>
         <div class="gov-bill">
           <h3 data-target="governor-planner.billTitle"></h3>
-          <div class="gov-strip" data-target="governor-planner.bill"></div>
+          <div class="gov-strip sheet-strip" data-target="governor-planner.bill"></div>
           <p class="gov-score" data-target="governor-planner.score"></p>
           <ul class="gov-events" data-target="governor-planner.events"></ul>
         </div>
@@ -82,7 +82,7 @@ self: governor
     <noscript><p data-i18n="gov.noJS">Enable JavaScript to use the planner. The cost tables below remain available.</p></noscript>
   </section>
 
-  <section class="section gov-notes" id="governor-sources">
+  <section class="section gov-notes sheet-notes" id="governor-sources">
     <details id="maths-sources">
       <summary data-i18n="gov.maths">The maths &amp; sources</summary>
       <p data-i18n="gov.mathsBody">Each row is what one more star or charm level costs. The planner takes one step at a time: the affordable upgrade with the most gain for the share of your bag it uses. It is a guide, not a guaranteed best order. Gear and charms use different materials, so they never compete.</p>

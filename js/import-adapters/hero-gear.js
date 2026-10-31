@@ -6,10 +6,11 @@
    tiny crops, where the GPU path gains nothing and fails most. A detail
    screen is read as words (HeroGearOCR.parse).
 
-   Each piece gives two proposals, enhancement and forge mastery, with the
-   tile as the cut-out. A red piece's level is shown as its +N. A troop the
-   badge didn't settle falls back to the piece last chosen on the hero gear
-   page, flagged for a look.
+   Each piece gives two proposals, enhancement and forge mastery, grouped
+   under its tile so the review shows the piece once with both values. A red
+   piece's level is shown as its +N; one whose last digit hides under the upgrade arrow
+   is flagged for a look. A troop the badge didn't settle falls
+   back to the piece last chosen on the hero gear page, flagged for a look.
 
    Needs the dock's tools: tools.pixels, tools.blob, tools.readWasm(blob) and
    tools.selected ('inf-helm' or null). */
@@ -24,6 +25,7 @@
 
   var TROOPS = { inf: 'Infantry', cav: 'Cavalry', arc: 'Archer' };
   var SLOTS = { helm: 'Helm', gloves: 'Gloves', chest: 'Chest', boots: 'Boots' };
+  var QUALITY = { epic: 'epic', mythic: 'mythic', red: 'red' };
 
   // Hero overviews are portrait shots; detect() finds the four framed tiles.
   function overview(px) { return !!px && px.height >= px.width * 1.2 && px.height <= px.width * 3.5 && !!G.detect(px); }
@@ -34,9 +36,9 @@
     var sure = piece.failed || guessed ? 0.5 : 0.95;
     var level = piece.level === null || piece.level === undefined ? null : piece.level - (red ? 100 : 0);
     var mastery = piece.mastery === null || piece.mastery === undefined ? null : piece.mastery;
-    var common = { target: 'gear', piece: id, quality: piece.quality || null, label: label, crop: piece.preview || null };
+    var common = { target: 'gear', piece: id, quality: piece.quality || null, label: label, named: true, crop: piece.preview || null, group: id, groupLabel: label + (QUALITY[piece.quality] ? ' · ' + QUALITY[piece.quality] : '') };
     return [
-      Object.assign({ id: 'gear-' + id + '-level', field: 'level', value: level, max: piece.quality === 'epic' ? 80 : 100, unit: 'gear-level', confidence: level === null ? 0 : sure, y: i * 2 }, common),
+      Object.assign({ id: 'gear-' + id + '-level', field: 'level', value: level, max: piece.quality === 'epic' ? 80 : 100, unit: 'gear-level', confidence: level === null ? 0 : piece.levelClipped ? 0.5 : sure, y: i * 2 }, common),
       Object.assign({ id: 'gear-' + id + '-mastery', field: 'mastery', value: mastery, max: 20, unit: 'gear-mastery', confidence: mastery === null ? 0 : sure, y: i * 2 + 1 }, common)
     ];
   }
@@ -44,7 +46,7 @@
   var adapter = {
     id: 'hero-gear',
     sourceType: 'hero-gear',
-    layout: 'grid',
+    layout: 'gear',
     probe: function (px) { return overview(px) ? 0.9 : 0; },
     // A detail screen names its slot and prints a level.
     detect: function (p) { var g = G.parse(p.items); return g.slot && g.level !== null ? 0.7 : 0; },

@@ -83,9 +83,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.evaluate(() => window.PlayerLedger.shared().setPet('lion', { level: 20, advanced: true }));
   await page.waitForFunction(() => document.querySelector('.next-step').hidden);
 
-  // Guest mode works on a copy of the save, so the line is not about it.
+  // A sheet of its own (?guest, a link, Start blank) works on a copy of the save, so the line is not about it.
   await page.goto(origin + '/hero-gear/?guest&lang=en');
-  await page.waitForFunction(() => window.UpgradePriority && document.querySelector('#gear-guest-banner') && !document.querySelector('#gear-guest-banner').hidden);
+  await page.waitForFunction(() => window.UpgradePriority && document.querySelector('#gear-load-mine') && !document.querySelector('#gear-load-mine').hidden);
   await page.waitForTimeout(150);
   assert.equal(await hint().isVisible(), false, 'hidden in guest mode');
 

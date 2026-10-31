@@ -180,8 +180,12 @@ function signature(image,tile,dx,dy){
     if (anchors.length) components.forEach(function (c) { if (Math.abs(c.y - anchors[0].y) < size * .09) c.pixels.forEach(function (p) { clean[p] = 1; }); });
     for (var p = 0; p < clean.length; p++) { data[p * 4] = data[p * 4 + 1] = data[p * 4 + 2] = clean[p] ? 255 : 0; data[p * 4 + 3] = 255; }
     ctx.putImageData(image, 0, 0);
-    var digits = raw;
+    var digits = raw, clipped = false;
     if (!mastery && anchors.length) {
+      /* The green upgrade arrow can sit over the last digit and leave only its lower half
+         (+35 shows as +3 and a hook). A short shape on the digits' baseline, right of the
+         last whole digit, means a digit is hidden, so the reading is flagged for a look. */
+      clipped = components.some(function (c) { return c.h <= size * .1 && c.left > anchors[0].right - 2 && c.left - anchors[0].right < size * .08 && Math.abs(c.bottom - anchors[0].bottom) < size * .025; });
       var glyphs = components.filter(function (c) { return c.h > size * .1 && c.right > anchors[0].right - size * .42 && Math.abs(c.y - anchors[0].y) < size * .045; });
       var left = Math.min.apply(null, glyphs.map(function (c) { return c.left; })) - 4;
       var top = Math.min.apply(null, glyphs.map(function (c) { return c.top; })) - 4;
@@ -190,7 +194,7 @@ function signature(image,tile,dx,dy){
       digits = canvas(right - left, bottom - top);
       digits.getContext('2d').drawImage(raw, left, top, right - left, bottom - top, 0, 0, digits.width, digits.height);
     }
-    return { canvas: band, raw: raw, digits: digits, present: anchors.length > 0 };
+    return { canvas: band, raw: raw, digits: digits, present: anchors.length > 0, clipped: clipped };
   }
   async function overview(file, recognise) {
     var bitmap = await createImageBitmap(file);
@@ -224,7 +228,7 @@ function signature(image,tile,dx,dy){
           if (!mastery.present) values.mastery = 0;
         }
         catch (error) { values = values || { level: null, mastery: null }; failed = true; }
-        result.push(Object.assign({ troop: type, slot: tile.slot, quality: tile.quality, overview: true, failed: failed, preview: await blob(preview) }, values));
+        result.push(Object.assign({ troop: type, slot: tile.slot, quality: tile.quality, overview: true, failed: failed, levelClipped: enhancement.clipped, preview: await blob(preview) }, values));
       }
       return result;
     } finally { bitmap.close(); }

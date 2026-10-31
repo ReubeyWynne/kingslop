@@ -52,11 +52,9 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
       if (mode === 'split') await page.locator('.gear-split').first().waitFor();
       await check(page, lang + ' ' + mode);
     }
-    for (const tab of ['settings', 'theory']) {
-      await page.locator('#gear-page-' + tab).click();
-      await page.evaluate(() => document.querySelectorAll('.gear-main details').forEach(d => { d.open = true; }));
-      await check(page, lang + ' ' + tab);
-    }
+    // Settings and notes are folds under the workspace.
+    await page.evaluate(() => document.querySelectorAll('.gear-main details').forEach(d => { d.open = true; }));
+    await check(page, lang + ' notes');
   }
   assert.deepEqual(errors, []);
   console.log('Hero gear strings checked in ' + langs.length + ' languages at 320px');

@@ -2,7 +2,7 @@
   'use strict';
   var E = window.HeroGear, BH, state, previous, result, running = false, revision = 0, planIndex = 0, resultTroop = 'inf', strategyResult = null;
   var searchWorker, searchTimer, searchDelay, searchFailed = false;
-  var activePage = 'planner', splitResult = null, splitRevision = -1, splitWorker = null;
+  var splitResult = null, splitRevision = -1, splitWorker = null;
   var ledger, ledgerRevision = 0, saving = false;
   var scriptURL = new URL(document.currentScript.src);
   var base = new URL('./', scriptURL);
@@ -14,7 +14,6 @@
   var parts = { ten: 0, hundred: 0, remainder: 0 };
   var params = new URLSearchParams(location.search), link = E.readLink(location.search);
   var guest = params.has('guest') || !!link, linkFailed = !!(link && link.invalid);
-  ['gear-settings', 'theory'].forEach(function (id) { document.getElementById(id).hidden = true; });
   if (guest) {
     var guestLedger;
     window.Interactions.configure({ ledger: function () {
@@ -52,12 +51,31 @@
     var kept = keptParams();
     try { history.replaceState(history.state, '', location.pathname + '?' + (kept ? kept + '&' : '') + linkQuery() + location.hash); } catch (ignored) {}
   }
-  function paintGuest() {
-    var kept = keptParams();
-    el('guest-banner').hidden = !guest;
-    el('guest-enter').hidden = guest;
-    el('guest-enter').href = location.pathname + '?' + (kept ? kept + '&' : '') + 'guest';
-    el('guest-leave').href = location.pathname + (kept ? '?' + kept : '');
+  /* The bar above the workspace says whose gear this is. Your own gear saves as you go; a
+     link, ?guest or Start blank opens a sheet of its own that only Save as mine writes back.
+     Load mine and Start blank reload the page on the other kind of sheet. */
+  function sheetTr(key, fallback) { return BH.tr('gov.sheet.' + key, fallback); }
+  function blankSheet() { var d = E.defaults(); return Object.keys(d.pieces).every(function (id) { return JSON.stringify(state.pieces[id]) === JSON.stringify(d.pieces[id]); }); }
+  function paintSheet() {
+    var blank = guest && blankSheet();
+    el('sheet-source').textContent = linkFailed ? tr('linkInvalid') : !guest ? sheetTr('sourceSame', 'Your save.') : blank ? sheetTr('sourceBlank', 'A blank sheet.') : link ? sheetTr('sourceLink', 'A shared sheet.') : sheetTr('sourceChanged', 'Changed on this page only.');
+    el('sheet-hint').textContent = guest ? sheetTr('untouched', 'Your save is untouched.') : tr('sheet.liveHint');
+    el('save-mine').hidden = !guest || blank;
+    el('load-mine').hidden = !guest;
+    el('blank').hidden = blank;
+  }
+  function go(query) { var kept = keptParams(), rest = [kept, query].filter(Boolean).join('&'); location.assign(location.pathname + (rest ? '?' + rest : '') + location.hash); }
+  function startBlank() { go('gear=' + E.encodeLink(E.defaults()).gear); }
+  function loadMine() { go(''); }
+  // Pieces and priority replace yours; a material this sheet left at 0 keeps your number.
+  function saveMine() {
+    try {
+      var own = window.PlayerLedger.shared(), mine = own.heroGear(E), next = Object.assign({}, mine, copy(state), { resources: copy(mine.resources), parts: mine.parts });
+      if (E.RES.some(function (r) { return state.resources[r] > 0; })) E.RES.forEach(function (r) { if (state.resources[r] > 0) next.resources[r] = state.resources[r]; });
+      if (state.resources.xp > 0) next.parts = copy(parts);
+      own.writeHeroGear(next, E, { source: 'manual' });
+    } catch (error) { note('saveFailed'); return; }
+    loadMine();
   }
   // A copied link is confirmed on the button itself for a moment, so no note lingers below the gear.
   var shareReset;
@@ -71,7 +89,7 @@
       clearTimeout(shareReset);
       button.textContent = tr('linkCopiedShort'); button.dataset.copied = 'true';
       el('share-status').textContent = tr('linkCopied');
-      shareReset = setTimeout(function () { button.textContent = tr('share'); delete button.dataset.copied; el('share-status').textContent = ''; }, 2500);
+      shareReset = setTimeout(function () { button.textContent = sheetTr('copy', 'Copy share link'); delete button.dataset.copied; el('share-status').textContent = ''; }, 2500);
     }, fallback);
   }
   function paintTheory() {
@@ -84,13 +102,17 @@
   }
   function paintPage() {
     el('views').querySelectorAll('[role="tab"]').forEach(function (button) {
-      var value = button.dataset.value, active = activePage === 'planner' ? value === 'planner' || value === state.view : value === activePage;
+      var active = button.dataset.value === state.view;
       button.setAttribute('aria-selected', String(active)); button.tabIndex = active ? 0 : -1;
     });
-    ['planner', 'settings'].forEach(function (page) { el(page).hidden = page !== activePage; });
-    document.getElementById('theory').hidden = activePage !== 'theory';
   }
-  function showPage(page) { activePage = page; note(null); paintPage(); if (page === 'planner') scheduleSearch(0); else cancelSearch(); }
+  // An old link to a note (#kvk-points, #weights, #save-backups) opens the fold it sits in.
+  function openHash() {
+    var id = decodeURIComponent(location.hash.slice(1)), node = id && document.getElementById(id), fold = node && node.closest('details');
+    if (!node) return;
+    if (fold) fold.open = true;
+    node.scrollIntoView({ block: 'start' });
+  }
   function note(key) { document.dispatchEvent(new CustomEvent('player-status', { detail: { scope: 'hero-gear', key: key ? 'gear.' + key : null } })); }
   function persist(options) {
     try {
@@ -117,7 +139,7 @@
     el('opportunities').textContent = '';
     note(null);
     var saved = persist(options);
-    paintAnswer(); paintTheory();
+    paintAnswer(); paintTheory(); paintSheet();
     return saved;
   }
   function paintView() {
@@ -146,20 +168,15 @@
     el('selected').innerHTML = Object.keys(state.pieces).map(function (id) { return '<option value="' + id + '"' + (id === state.selected ? ' selected' : '') + '>' + view.esc(view.name(id)) + '</option>'; }).join('');
     el('profile').value = state.profile;
     el('reforge').checked = state.reforge;
-    el('weights').innerHTML = '<div class="gear-weight-row gear-weight-head" aria-hidden="true">' +
-      '<span>' +
-      '</span>' +
-      '<span>' + view.esc(tr('lethality')) + '</span>' +
-      '<span>' + view.esc(tr('health')) + '</span>' +
-      '</div>' +
-      E.TYPES.map(function (type) {
-      return '<div class="gear-weight-row"><span>' + view.esc(tr(type)) + '</span>' + [0, 1].map(function (i) {
+    var weightTypes = E.TYPES;
+    el('weights').innerHTML = '<span id="gear-weights-label" class="sheet-label">' + view.esc(BH.tr('gov.weights', 'Weights')) + '</span>' +
+      '<div class="gear-weight-grid"><span></span>' + weightTypes.map(function (type) { return '<span>' + view.esc(tr(type)) + '</span>'; }).join('') +
+      [0, 1].map(function (i) {
         var label = tr(i ? 'health' : 'lethality');
-        return '<label>' +
-          '<input type="number" min="0" max="100" step="0.1" inputmode="decimal" data-weight="' + type + '" data-stat="' + i + '" value="' + state.weights[type][i] + '" aria-label="' + view.esc(tr(type) + ' · ' + label) + '">' +
-          '</label>';
+        return '<span class="gear-weight-stat">' + view.esc(label) + '</span>' + weightTypes.map(function (type) {
+          return '<input type="number" min="0" max="100" step="0.1" inputmode="decimal" data-weight="' + type + '" data-stat="' + i + '" value="' + state.weights[type][i] + '" aria-label="' + view.esc(tr(type) + ' · ' + label) + '">';
+        }).join('');
       }).join('') + '</div>';
-    }).join('');
   }
   function paintPreview(from, to) {
     el('preview').innerHTML = view.preview(state.selected, from, to);
@@ -199,6 +216,7 @@
     });
     el('answer-panel').setAttribute('aria-labelledby', 'gear-mode-' + state.mode);
     el('piece-select').hidden = isOptimise || isPlan || isSplit;
+    document.getElementById('weights').hidden = !(isOptimise || isPlan || isSplit);
     el('goals').hidden = isOptimise || isPlan || isSplit;
     el('optimise-panel').hidden = !isOptimise;
     el('milestone-out').hidden = isOptimise;
@@ -359,7 +377,7 @@
     } catch (error) { fail(); }
   }
   function editWeights() {
-    showPage('settings');
+    if (state.view !== 'plan') { state.view = 'plan'; persist(); paintView(); }
     el('weights').scrollIntoView({ block: 'nearest' });
     el('weights').querySelector('input').focus({ preventScroll: true });
   }
@@ -373,9 +391,10 @@
     } catch (error) { note('loadFailed'); el('save').textContent = tr('saveFailed'); }
     syncXP();
     paint();
-    paintGuest();
+    paintSheet();
     syncAddress();
-    if (linkFailed) note('linkInvalid');
+    openHash();
+    window.addEventListener('hashchange', openHash);
     if (ledger) ledger.subscribe(function (saved) {
       if (saving) return;
       ledgerRevision = saved.revision;
@@ -423,7 +442,7 @@
       else if (button.dataset.select && button.classList.contains('gear-row')) editPiece(button.dataset.select);
       else if (button.dataset.select) selectPiece(button.dataset.select);
       else if (button.dataset.editPiece) editPiece(button.dataset.editPiece);
-      else if (button.dataset.view && !button.dataset.action) { state.view = button.dataset.view; activePage = 'planner'; persist(); paintView(); }
+      else if (button.dataset.view && !button.dataset.action) { state.view = button.dataset.view; persist(); paintView(); }
       else if (button.dataset.mode && !button.dataset.action) { state.mode = button.dataset.mode; persist(); paintAnswer(); scheduleSearch(0); }
       else if (button.dataset.goal) { state.goal = button.dataset.goal; persist(); paintAnswer(); }
       else if (button.id === 'gear-apply-result' && result) {
@@ -440,13 +459,16 @@
     document.addEventListener('tabs:select', function (event) {
       if (![el('troops'), el('modes'), el('views')].includes(event.target)) return;
       var detail = event.detail;
-      if (detail.binding === 'view' && (detail.value === 'gear' || detail.value === 'plan')) activePage = 'planner';
-      else if (detail.binding === 'view') { showPage(detail.value); return; }
       if (detail.binding === 'troop') selectPiece(detail.value + '-' + state.selected.split('-')[1]);
       else if (detail.binding === 'view') { state.view = detail.value; persist(); paintView(); }
       else if (detail.binding === 'mode') { state.mode = detail.value; persist(); paintAnswer(); scheduleSearch(0); }
     });
     el('share').addEventListener('click', shareLink);
+    el('blank').addEventListener('click', startBlank);
+    el('load-mine').addEventListener('click', loadMine);
+    el('save-mine').addEventListener('click', function () { el('save-dialog').showModal(); });
+    el('cancel-save').addEventListener('click', function () { el('save-dialog').close(); });
+    el('confirm-save').addEventListener('click', saveMine);
     el('close-edit').addEventListener('click', function () { el('edit-dialog').close(); });
     el('edit-dialog').addEventListener('close', function () {
       paintEditor(); paintAnswer();

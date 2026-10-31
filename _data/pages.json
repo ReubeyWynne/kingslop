@@ -540,7 +540,6 @@
     "skipText": "Skip to the forge",
     "dust": "<i></i><i></i><i></i>",
     "brand": "Hero gear",
-    "brandHeadingKey": "gear.title",
     "brandNoteKey": "gear.kicker",
     "brandNote": "the forge ledger",
     "swipePrev": {
@@ -559,6 +558,7 @@
       "../css/styles.css",
       "../css/events.css",
       "../css/hero-gear.css",
+      "../css/sheet.css",
       "../css/next-step.css"
     ],
     "scripts": [
@@ -821,7 +821,6 @@
     "skipText": "Skip to the planner",
     "dust": "<i></i><i></i><i></i>",
     "brand": "Governor gear",
-    "brandHeadingKey": "gov.title",
     "brandNoteKey": "gov.kicker",
     "brandNote": "the governor's wardrobe",
     "swipePrev": {
@@ -841,6 +840,7 @@
       "../css/styles.css",
       "../css/events.css",
       "../css/governor.css",
+      "../css/sheet.css",
       "../css/governor-profile.css"
     ],
     "scripts": [

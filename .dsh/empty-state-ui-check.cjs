@@ -1,8 +1,7 @@
 // Teaching empty states on the tool pages (js/empty-state.js), after a Jekyll build: each tool with
 // nothing to work from shows one line naming the missing part of the save, a screenshot reader only
 // where an import adapter fills that part, and a link to where it is filled in by hand. It treats a
-// confirmed zero as recorded, follows the save live, hides under hero gear guest mode and without
-// JavaScript, and reads in every language and at 320px. Screenshots in .dsh/empty-state-preview/.
+// confirmed zero as recorded, follows the save live, hides without JavaScript, and reads in every language and at 320px. Screenshots in .dsh/empty-state-preview/.
 const assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
 const { withBrowser } = require('./lib/browser-harness.cjs');
 const root = path.resolve('_site'), output = path.resolve('.dsh/empty-state-preview');
@@ -12,7 +11,6 @@ const EmptyState = require('../js/empty-state.js');
 // and how a player records that part.
 const TOOLS = {
   'town-centre': { needs: 'inventory', key: 'empty.town', line: "Count what's in your bag to see the event points it can score.", import: true, fill: '#town-bag', section: '#town-points' },
-  'hero-gear': { needs: 'hero-gear', key: 'empty.heroGear', line: 'Add your hero gear to see your KvK points.', import: true, fill: '../town-centre/#town-hero-gear', section: '#gear-planner' },
   heroes: { needs: 'heroes', key: 'empty.heroes', line: 'Add your heroes to see your KvK points.', import: false, fill: '../town-centre/#town-heroes', section: '#kvk-points' },
   masters: { needs: 'masters', key: 'empty.masters', line: 'Add your masters to see your KvK points.', import: false, fill: '../town-centre/#town-masters', section: '#kvk-points' },
   pets: { needs: 'pets', key: 'empty.pets', line: 'Tame your pets to plan their Advances.', import: true, fill: '#cage', section: '#advances' }
@@ -89,11 +87,6 @@ withBrowser({ root }, async ({ browser, origin }) => {
   // Recording the part hides the note without a reload; a confirmed zero counts.
   const record = {
     'town-centre': () => window.PlayerLedger.shared().setBalance('forgehammer', 0),
-    'hero-gear': () => {
-      const store = window.PlayerLedger.shared(), gear = store.heroGear(window.HeroGear);
-      Object.keys(gear.pieces).forEach(k => { gear.pieces[k] = window.HeroGear.normalisePiece({ quality: 'mythic', level: 100, mastery: 10 }); });
-      store.writeHeroGear(gear, window.HeroGear, { all: true });
-    },
     heroes: () => window.PlayerLedger.shared().setHero('jabel', { level: 60, stars: 10, widget: 2, skills: null }),
     masters: () => window.PlayerLedger.shared().setMaster('valora', { affinity: 29, ready: true, skills: [3, 2, 0, 0] }),
     pets: () => window.PlayerLedger.shared().setPet('lion', { level: 20, advanced: false })
@@ -108,12 +101,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.waitForTimeout(150);
     assert.equal(await note().isVisible(), false, dir + ' stays hidden once recorded');
   }
-  // Guest mode works on a copy of the save, so the note is not about it.
+  // Hero gear, like Governor gear, has its own screenshot box and sheet bar instead of a note.
   await page.evaluate(() => localStorage.clear());
-  await page.goto(origin + '/hero-gear/?guest&lang=en');
-  await page.waitForFunction(() => window.EmptyState && document.querySelector('#gear-guest-banner') && !document.querySelector('#gear-guest-banner').hidden);
-  await page.waitForTimeout(150);
-  assert.equal(await note().isVisible(), false, 'hidden in guest mode');
+  await page.goto(origin + '/hero-gear/?lang=en');
+  await page.waitForFunction(() => document.querySelectorAll('.gear-row').length === 4);
+  assert.equal(await note().count(), 0, 'hero gear carries no empty state');
 
   // Every language: the words come from the dictionary and no key leaks; Arabic rules on the right.
   const langs = fs.readdirSync('i18n').filter(f => f.endsWith('.js')).map(f => f.slice(0, -3));

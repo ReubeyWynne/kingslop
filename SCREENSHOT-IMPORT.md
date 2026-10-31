@@ -235,7 +235,10 @@ Each step lands as its own commit with its checks passing.
   on the WASM engine (`tools.readWasm`), crops may be Blobs, and `tools.selected`
   (the gear page's last piece) stands in for an unread troop badge, flagged.
   Each piece gives two proposals (`target: 'gear'`, `piece`, `field`,
-  `quality`; red levels shown as +N; `max` sets the input's limit); apply
+  `quality`; red levels shown as +N; `max` sets the input's limit), grouped
+  under the piece (`group`, `groupLabel`, layout `gear`) so the review shows
+  each piece once, its picture named with its quality, with enhancement and
+  forge mastery side by side; apply
   groups them into one `itemDelta` per piece, keeping unticked fields, and a
   refused input or invalid piece blocks the apply (`import.invalid`).
   `.dsh/hero-gear-visual-check.cjs` reads all 24 fixture pieces through the

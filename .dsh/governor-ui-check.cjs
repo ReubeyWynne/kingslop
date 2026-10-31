@@ -53,12 +53,13 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.deepEqual(await weights(), ['inf 1', 'cav 1', 'arc 3']);
     await page.fill('[data-action="governor-planner.weight"][data-troop="cav"]', '0');
     await page.locator('[data-action="governor-planner.weight"][data-troop="cav"]').dispatchEvent('change');
-    await page.waitForFunction(() => /[?&]p=custom&w=1_0_3/.test(location.search));
+    // On your own save the weights are kept there; a share link carries them as w=.
+    await page.waitForFunction(() => window.Governor.encodeLink({ gear: {}, charms: {}, bag: {}, prefs: window.PlayerLedger.shared().snapshot().preferences.governor || {} }).w === '1_0_3');
     assert.equal(await page.locator('[data-action="governor-planner.profile"][data-value="custom"]').getAttribute('aria-pressed'), 'true');
     assert.deepEqual(await page.locator('.gov-row[data-moved="true"]').evaluateAll(rows => rows.map(r => r.dataset.item).filter(id => /^cav/.test(id))), [], 'a troop at 0 stays where it is');
     await page.fill('[data-action="governor-planner.weight"][data-troop="inf"]', '1.5');
     await page.locator('[data-action="governor-planner.weight"][data-troop="inf"]').dispatchEvent('change');
-    await page.waitForFunction(() => /[?&]w=1\.5_0_3/.test(location.search));
+    await page.waitForFunction(() => window.Governor.encodeLink({ gear: {}, charms: {}, bag: {}, prefs: window.PlayerLedger.shared().snapshot().preferences.governor || {} }).w === '1.5_0_3');
     await page.click('[data-action="governor-planner.profile"][data-value="score"]');
     assert.equal(await target('weights').isHidden(), true, 'event score has no weights');
     await page.click('[data-action="governor-planner.profile"][data-value="custom"]');
@@ -79,39 +80,49 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await tile('cav-2').getAttribute('data-state'), 'empty');
     assert.equal(await page.locator('[data-action="governor-planner.profile"][data-value="custom"]').getAttribute('aria-pressed'), 'true');
     assert.equal(await page.locator('[data-bind="inventory.satin"]').inputValue(), '20000');
-    const other = await context.newPage(); await other.goto(origin + '/hero-gear/?lang=en');
-    await other.locator('#gear-mithril').fill('7');
-    // The page works on its own sheet: the address carries it, the save stays untouched.
+    // Without a link the page works on your save: edits save as you go and the address stays clean.
     const sheet = key => page.locator('[data-target="governor-sheet.' + key + '"]');
-    assert.match(page.url(), /[?&]gov=[^&]{24}/);
-    assert.match(page.url(), /[?&]bag=20000\.200\.0\.\.(&|$)/);
-    assert.equal(await page.evaluate(() => PlayerLedger.shared().governor('gear')['inf-1']), null);
-    assert.equal(await page.evaluate(() => PlayerLedger.shared().balance('satin').status), 'unknown');
-    assert.equal(await sheet('source').textContent(), 'A shared sheet.');
-    const shared = page.url();
-    await sheet('saveMine').click();
-    await sheet('confirm').locator('[data-action="governor-sheet.confirm"]').click();
-    await page.waitForFunction(() => PlayerLedger.shared().governor('gear')['inf-1'] === 0);
-    assert.equal(await page.evaluate(() => PlayerLedger.shared().balance('satin').amount), 20000);
-    assert.equal(await page.evaluate(() => PlayerLedger.shared().balance('mithril').amount), 7, 'other facts in the save stay');
-    assert.equal(await sheet('source').textContent(), 'Your save.');
     assert.doesNotMatch(page.url(), /gov=/);
-    assert.ok(await sheet('saveMine').isHidden());
-    await sheet('blank').click();
-    await page.waitForFunction(() => document.querySelector('.gov-piece[data-gov="inf-1"]').dataset.state === 'unset');
+    assert.equal(await page.evaluate(() => PlayerLedger.shared().governor('gear')['inf-1']), 0);
+    assert.equal(await page.evaluate(() => PlayerLedger.shared().balance('satin').amount), 20000);
+    assert.equal(await sheet('source').textContent(), 'Your save.');
+    assert.equal(await sheet('hint').textContent(), 'Changes save as you go.');
+    assert.ok(await sheet('saveMine').isHidden()); assert.ok(await sheet('loadMine').isHidden());
+    // Copy share link carries the governor, bag and priority.
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin });
+    await page.locator('[data-action="governor-sheet.copy"]').click();
+    await page.waitForFunction(() => document.querySelector('[data-action="governor-sheet.copy"]').textContent === 'Link copied');
+    const shared = await page.evaluate(() => navigator.clipboard.readText());
+    assert.match(shared, /[?&]gov=[^&]{24}/); assert.match(shared, /[?&]bag=20000\.200\.0\.\.(&|$)/);
+    // Start blank opens a sheet of its own; Load mine goes back to your save.
+    await Promise.all([page.waitForNavigation(), sheet('blank').click()]); await ready();
+    assert.equal(await tile('inf-1').getAttribute('data-state'), 'unset');
     assert.equal(await sheet('source').textContent(), 'A blank sheet.');
     assert.match(page.url(), /gov=\.{24}(&|#|$)/); assert.doesNotMatch(page.url(), /bag=/);
-    assert.equal(await page.evaluate(() => PlayerLedger.shared().governor('gear')['inf-1']), 0, 'start blank leaves the save');
-    await sheet('loadMine').click();
-    await page.waitForFunction(() => document.querySelector('.gov-piece[data-gov="inf-1"]').dataset.state === 'empty');
-    // Someone else opening the link sees the sheet, not their own save.
+    await tile('inf-1').click(); await dialog.locator('.gov-edit-gear [data-step="1"]').click(); await dialog.locator('[data-action="governor-profile.close"]').click();
+    assert.equal(await page.evaluate(() => PlayerLedger.shared().governor('gear')['inf-1']), 0, 'a sheet leaves the save');
+    assert.equal(await sheet('source').textContent(), 'A shared sheet.');
+    await Promise.all([page.waitForNavigation(), sheet('loadMine').click()]); await ready();
+    assert.equal(await tile('inf-1').getAttribute('data-state'), 'empty');
+    assert.doesNotMatch(page.url(), /gov=/);
+    // Someone else opening the link sees the sheet, not their own save, and can keep it.
     const visitor = await browser.newContext({ viewport: { width, height: 900 } }), guest = await visitor.newPage();
+    await guest.goto(origin + '/hero-gear/?lang=en'); await guest.locator('#gear-mithril').fill('7');
     await guest.goto(shared); await guest.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
+    assert.equal(await guest.locator('[data-target="governor-sheet.source"]').textContent(), 'A shared sheet.');
     assert.equal(await guest.locator('.gov-piece[data-gov="cav-2"]').getAttribute('data-state'), 'empty');
     assert.equal(await guest.locator('[data-action="governor-planner.profile"][data-value="custom"]').getAttribute('aria-pressed'), 'true', 'the profile travels in the link');
     assert.equal(await guest.locator('[data-action="governor-planner.weight"][data-troop="cav"]').inputValue(), '0', 'and its weights');
     assert.equal(await guest.locator('[data-bind="inventory.satin"]').inputValue(), '20000');
     assert.equal(await guest.evaluate(() => PlayerLedger.shared().governor('gear')['cav-2']), null);
+    await guest.locator('[data-action="governor-sheet.saveMine"]').click();
+    await Promise.all([guest.waitForNavigation(), guest.locator('[data-action="governor-sheet.confirm"]').click()]);
+    await guest.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
+    assert.equal(await guest.evaluate(() => PlayerLedger.shared().governor('gear')['inf-1']), 0, 'save as mine writes the sheet');
+    assert.equal(await guest.evaluate(() => PlayerLedger.shared().balance('satin').amount), 20000);
+    assert.equal(await guest.evaluate(() => PlayerLedger.shared().balance('mithril').amount), 7, 'other facts in the save stay');
+    assert.equal(await guest.locator('[data-target="governor-sheet.source"]').textContent(), 'Your save.');
+    assert.doesNotMatch(guest.url(), /gov=/);
     await guest.goto(origin + '/governor-gear/?lang=en&gov=nonsense'); await guest.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
     assert.match(await guest.locator('[data-target="governor-sheet.source"]').textContent(), /could not be read/);
     await visitor.close();
@@ -119,7 +130,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await context.close();
   }
   {
-    // A Governor Profile screenshot goes through the site's import dock and lands on the sheet only.
+    // A Governor Profile screenshot goes through the site's import dock and lands on the governor.
     const context = await browser.newContext({ viewport: { width: 390, height: 900 } }), page = await context.newPage(), errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(origin + '/governor-gear/?lang=en'); await page.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
@@ -155,11 +166,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('[data-charm="cav-1-1"] b').textContent(), '3');
     assert.equal(await page.locator('[data-charm="cav-2-1"] b').textContent(), '2');
     assert.equal(await page.locator('.gov-piece[data-gov="arc-1"] [data-part="level"]').textContent(), 'Purple 1★');
-    assert.equal(await page.evaluate(() => PlayerLedger.shared().governor('gear')['cav-1']), null, 'the save stays untouched');
-    assert.match(page.url(), /[?&]gov=[^&.]{24}/, 'the reading travels in the link');
-    // Undo puts the sheet back.
+    assert.notEqual(await page.evaluate(() => PlayerLedger.shared().governor('gear')['cav-1']), null, 'on your own governor the reading is saved');
+    // Undo puts it back.
     await page.click('#screen-import [data-action="screen-import.undo"]');
     await page.waitForFunction(() => document.querySelector('.gov-piece[data-gov="cav-1"]').dataset.state === 'unset');
+    assert.equal(await page.evaluate(() => PlayerLedger.shared().governor('gear')['cav-1']), null);
     assert.deepEqual(errors, []);
     await context.close();
   }
@@ -172,5 +183,5 @@ withBrowser({ root }, async ({ browser, origin }) => {
   assert.equal(await page.locator('a.event-card[href="governor-gear/"]').count(), 1);
   assert.deepEqual(errors, []);
   await context.close();
-  console.log('Governor gear UI: the shared profile and its editor, set all, the answer under Bear first and custom weights and by target, no inner scroll, the sheet and its link, save as mine, start blank, reading a dropped screenshot, RTL and widths pass.');
+  console.log('Governor gear UI: the shared profile and its editor, set all, the answer under Bear first and custom weights and by target, no inner scroll, saving as you go, the share link, start blank, load mine, save as mine from a link, reading a dropped screenshot, RTL and widths pass.');
 }).catch(error => { console.error(error); process.exitCode = 1; });

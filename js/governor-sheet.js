@@ -1,22 +1,26 @@
-/* The governor page works on its own sheet, never on the player's save: an in-memory store
-   that starts from the link when there is one, else from a copy of the save. The address
-   carries the sheet whenever it differs from the save, so it can be shared as it stands, and
-   only "Save as mine" writes the save. A screenshot read by the import dock lands here too. */
+/* Without a link the governor page works on the player's save, and edits save as they go, as on
+   Hero gear. A link (or Start blank, which opens a blank one) puts the page on a sheet of its
+   own: an in-memory store that starts from the link, which the address keeps carrying, and that
+   only "Save as mine" writes back. A screenshot read by the import dock lands on whichever the
+   page is working on. */
 (function () {
   'use strict';
   var G = window.Governor, Ledger = window.PlayerLedger;
-  var link = G.readLink(location.search), sheetStore = null;
+  var link = G.readLink(location.search), sheetStore = null, live = !link;
   var MATERIALS = G.data.materials.map(function (m) { return m.id; });
   var KEPT_OUT = ['gov', 'bag', 'p', 'w', 'g', 'f', 'gt', 'ct'];
   var EN = {
     sourceLink: 'A shared sheet.', sourceSame: 'Your save.', sourceBlank: 'A blank sheet.', sourceChanged: 'Changed on this page only.',
     untouched: 'Your save is untouched.', saveHint: 'Edits here stay on this page until you save them.',
     linkInvalid: 'That link could not be read, so this is a copy of your save.',
-    copied: 'Link copied', saved: 'Saved as yours.'
+    copied: 'Link copied', saved: 'Saved as yours.', liveHint: 'Changes save as you go.'
   };
+  // On your own save the materials say they are saved, not that they stay on the sheet.
+  if (live) { var bagForm = document.getElementById('governor-bag'); if (bagForm) bagForm.dataset.savedKey = 'gear.saved'; }
   function mine() { try { return Ledger.shared().snapshot(); } catch (ignored) { return null; } }
 
   window.Interactions.configure({ ledger: function () {
+    if (live) return Ledger.shared();
     if (sheetStore) return sheetStore;
     var memory = {}, saved = link && !link.invalid ? null : mine();
     if (saved) memory[Ledger.KEY] = JSON.stringify(saved);
@@ -55,7 +59,19 @@
     function t(key) { return api.tr('gov.sheet.' + key, EN[key]); }
     function put(key, text) { context.targets(key).forEach(function (node) { node.textContent = text; }); }
     function shareURL(sheet) { return new URL(location.pathname + '?' + query(G.encodeLink(sheet)), location.href).href; }
+    function go(sheet) {
+      var search = [kept(), sheet ? query(G.encodeLink(sheet)) : ''].filter(Boolean).join('&');
+      location.assign(location.pathname + (search ? '?' + search : '') + location.hash);
+    }
     function render() {
+      if (live) {
+        put('source', t('sourceSame'));
+        put('hint', api.tr('gear.sheet.liveHint', EN.liveHint));
+        context.targets('loadMine').forEach(function (node) { node.hidden = true; });
+        context.targets('saveMine').forEach(function (node) { node.hidden = true; });
+        context.targets('blank').forEach(function (node) { node.hidden = false; });
+        return;
+      }
       var sheet = sheetOf(store), saved = mine(), own = saved ? sheetOf(store, saved) : null, blank = empty(sheet);
       // A material the sheet has not counted would keep the saved number, so it does not count as a change.
       var compared = own ? Object.assign({}, sheet, { bag: Object.assign({}, sheet.bag) }) : sheet;
@@ -64,7 +80,7 @@
       var source = link && link.invalid ? t('linkInvalid') : matches && hasOwn ? t('sourceSame') : blank ? t('sourceBlank') : link && !link.invalid ? t('sourceLink') : t('sourceChanged');
       put('source', source);
       put('hint', matches ? t('saveHint') : t('untouched'));
-      context.targets('loadMine').forEach(function (node) { node.hidden = !hasOwn || matches; });
+      context.targets('loadMine').forEach(function (node) { node.hidden = false; });
       context.targets('saveMine').forEach(function (node) { node.hidden = matches || blank; });
       context.targets('blank').forEach(function (node) { node.hidden = blank; });
       var rest = kept(), address = location.pathname + '?' + (rest ? rest + '&' : '');
@@ -99,15 +115,15 @@
     }
     return { refresh: render, actions: {
       copy: { run: copy },
-      blank: { run: function () { load(store, { gear: {}, charms: {}, bag: {}, prefs: {} }); } },
-      loadMine: { run: function () { var saved = mine(); if (saved) load(store, sheetOf(store, saved)); } },
+      blank: { run: function () { go({ gear: {}, charms: {}, bag: {}, prefs: {} }); } },
+      loadMine: { run: function () { go(null); } },
       saveMine: { run: function () { var dialog = context.targets('confirm')[0]; if (dialog && !dialog.open) dialog.showModal(); } },
       cancel: { run: function () { var dialog = context.targets('confirm')[0]; if (dialog) dialog.close(); } },
       confirm: { run: function () {
         var dialog = context.targets('confirm')[0], own = Ledger.shared(), sheet = sheetOf(store);
         load(own, sheet, true);
         if (dialog) dialog.close();
-        context.emit('player-status', { scope: 'governor', key: 'gov.sheet.saved', fallback: EN.saved });
+        go(null);
       } }
     } };
   });
