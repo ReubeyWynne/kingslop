@@ -93,6 +93,8 @@
 .vv-counts span { white-space:nowrap; }
 .vv-marches { border-top:1px solid color-mix(in srgb,var(--ink-muted) 35%,transparent); }
 .vv-march { display:grid; grid-template-columns:1.6rem 48px minmax(0,1fr); gap:.7rem; align-items:center; border-bottom:1px solid color-mix(in srgb,var(--ink-muted) 35%,transparent); padding:.6rem 0; }
+.vv-slot { width:48px; height:48px; border:1px dashed color-mix(in srgb,var(--ink-muted) 60%,transparent); border-radius:2px; }
+.vv-march-empty .vv-march-head strong { color:var(--ink-dim); font-weight:400; }
 .vv-march img { width:48px; height:48px; object-fit:contain; }
 .vv-march .vv-caption { margin:.35rem 0 0; }
 .vv-march-main { min-width:0; }
@@ -275,6 +277,9 @@
 .vv-k-unit { position:absolute; inset-inline-end:.45rem; top:0; bottom:0; display:flex; align-items:center; color:var(--ink-dim); pointer-events:none; }
 .vv-troop-inputs img { width:48px; height:48px; }
 .vv-faint .vv-row { opacity:.75; }
+/* Members and viewers see routes, not troops: rows that read, not buttons. */
+.vv-page .vv-route:hover { background:none; border-bottom-color:color-mix(in srgb,var(--ink-muted) 35%,transparent); }
+.vv-page .vv-route.vv-mine { border-inline-start:2px solid var(--amber-dim); padding-inline-start:.5rem; }
 .vv-tight { margin:.25rem 0; gap:.25rem 1rem; }
 /* Who is online for Vikings: offline players still send and get covered, but waves 7, 14 and 17 skip their cities. */
 .vv-avail[data-presence] { border:1px solid color-mix(in srgb,var(--ink-muted) 50%,transparent); padding:0 .35rem; border-radius:2px; white-space:nowrap; }

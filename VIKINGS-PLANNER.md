@@ -14,13 +14,17 @@ Rooms stay while they are used. Creation sets expiry 60 days ahead and any acces
 
 Troops are entered and shown in thousands. The engine works in whole thousands whenever a player's counts and capacities are all multiples of 1,000, so splits and HQ shares never ask for 53,334 troops.
 
-The calculator and sign-up form can read confirmed troop counts from the shared player ledger. They do not write troop counts back or upload the ledger. Registration sends only nickname, availability, troop totals, march size, march count and the answer for this event.
+The calculator and sign-up form read troop counts from the shared player ledger and write edits back to it, unless the page is opened with `?guest`. The ledger itself is never uploaded. Registration sends only nickname, availability, troop totals, march size, march count and the answer for this event.
 
 Access links are short enough for game chat: `https://dey.ci/vv/#join-<code>` (also `lead`, `view` and `me`). `/vv/` forwards to the planner with the fragment intact. Codes are 16 random bytes (22 base64url characters); the prefix only tells people which link is which, and the server decides the role from the code through `GET /v1/access`. Older `#access=<plan UUID>.<code>` links and 43-character codes still work. The early page script consumes either form before the shared deep-link code starts. Requests carry the credential in the Authorization header. JSON plan exports do not contain credentials. The management view can replace invitation/view links and delete the shared event.
 
-## Returning to a room
+## Keys and the device
 
-Creating a room or joining one saves that leader or player link on the device (`bh:vikings-links:v1`, outside the player ledger), and the next visit reopens the room the device last led or joined (`bh:vikings-last:v1`). Opening a sign-up or viewing link never saves it; a viewer's next visit starts at the room list. A sign-up or viewing link for a room this device already leads or joined opens that role instead. **Switch** keeps the list and waits for a choice on the next visit. The leader signs up on the leader link: the sign-up's id is kept with it as `self`, and a sign-up made earlier on the same device with the sign-up link is taken over. A player can tell the device to forget the room; a saved room that has been deleted is removed with a message.
+Each alliance has three keys, each including the ones below it: **manage** (leader, for R4s), **sign-up** (for alliance chat) and **view** (who goes where). Keys name no player, so a leader link can be shared between R4s. Signing up returns a private player code, which the device keeps beside the key; it is never shown as a link.
+
+A device holds one alliance (`bh:vikings-alliance:v1`: plan, key, role, name and the player's id and code). Opening a link for the same alliance only ever upgrades the key. A link for another alliance asks before replacing it. **Leave** forgets the alliance on this device. Older saved link lists (`bh:vikings-links:v1`) are migrated to the strongest key on first visit.
+
+Everyone who can sign up gets the same **My troops** tab. Viewers get the Alliance tab only. The Worker redacts troop counts, capacities and notes of other players for every key but manage: viewers and members see who sends to whom and who covers them, and counts only for their own marches. Duplicate names are kept, and the leader sees when each sign-up was made and last saved.
 
 ## Guide
 

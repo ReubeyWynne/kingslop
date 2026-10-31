@@ -142,6 +142,16 @@ async function access(request, env, planId) {
   return { token, plan };
 }
 
+// Only leaders see other players' troops. Everyone else sees who sends where, and a player sees their own counts in full.
+const TROOP_FIELDS = ['infantry', 'cavalry', 'archers', 'marchCapacity', 'capacities', 'garrisonCapacity', 'notes'];
+function visibleRoster(token, roster) {
+  if (token.role === 'manage') return roster;
+  return roster.map(p => p.id === token.registration_id ? p : { ...p, ...Object.fromEntries(TROOP_FIELDS.map(k => [k, null])) });
+}
+function visibleAssignments(token, assignments) {
+  if (token.role === 'manage') return assignments;
+  return Object.fromEntries(Object.entries(assignments).map(([id, rows]) => [id, id === token.registration_id ? rows : rows.map(row => ({ queue: row.queue, destination: row.destination }))]));
+}
 function manager(token) { requireValue(token.role === 'manage', 'A management code is required.', 403); }
 
 async function limit(binding, key) {
@@ -191,7 +201,7 @@ async function route(request, env) {
     const rows = await env.DB.prepare('SELECT * FROM registrations WHERE plan_id = ? ORDER BY created_at, id').bind(planId).all();
     const board = await env.DB.prepare('SELECT * FROM planning_boards WHERE plan_id = ?').bind(planId).first();
     const eventAt = currentEvent(plan);
-    return json({ plan: planView(plan), registrations: rows.results.map(row => playerView(row, eventAt)), access: token.role, registrationId: token.registration_id, publicationRevision: board?.publication_revision || 0 });
+    return json({ plan: planView(plan), registrations: visibleRoster(token, rows.results.map(row => playerView(row, eventAt))), access: token.role, registrationId: token.registration_id, publicationRevision: board?.publication_revision || 0 });
   }
   if (!registrations && request.method === 'PATCH') {
     manager(token);
@@ -281,9 +291,9 @@ async function planningRoute(request, env, match) {
   }
   if (action === 'board' && request.method === 'GET' && !playerId) {
     const state = await boardState(env, planId);
-    const common = { publicationRevision: state.board.publication_revision, publishedAt: state.board.published_at, published: state.board.published ? JSON.parse(state.board.published) : null };
-    // Marches are live: every role sees the leader's current assignments.
-    return json({ ...common, plan: state.plan, roster: state.roster, revision: state.board.revision, rosterRevision: state.plan.rosterRevision, planRevision: state.plan.revision, assignments: state.assignments, hq: state.hq });
+    const common = { publicationRevision: state.board.publication_revision, publishedAt: state.board.published_at, published: state.board.published && token.role === 'manage' ? JSON.parse(state.board.published) : null };
+    // Marches are live: every role sees where the leader's current marches go.
+    return json({ ...common, plan: state.plan, roster: visibleRoster(token, state.roster), revision: state.board.revision, rosterRevision: state.plan.rosterRevision, planRevision: state.plan.revision, assignments: visibleAssignments(token, state.assignments), hq: state.hq });
   }
   manager(token);
   if (action === 'rotate' && request.method === 'POST' && !playerId) {
