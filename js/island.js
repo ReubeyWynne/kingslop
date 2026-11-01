@@ -82,6 +82,7 @@
     var board = node('board'), canvas = board.querySelector('canvas'), ctx = canvas.getContext('2d');
     var cam = { x: 0, y: N * TH / 2, s: 1 }, vw = 0, vh = 0, dpr = 1, queued = false;
     var brush = null, pending = null, lifted = null, cardId = null, ground = null, cursor = null;
+    var deck = node('deck'), deckOpen = false;
 
     function gx(r, c) { return (c - r) * TW / 2; }
     function gy(r, c) { return (c + r) * TH / 2; }
@@ -109,9 +110,11 @@
     }
     // The whole island, or on a tall phone a closer view on the Fountain.
     function fit(whole) {
-      cam.x = 0; cam.y = N * TH / 2;
-      var w = vw / (N * TW * 1.3), h = (vh - 80) / (N * TH * 1.4); // the plot and the beach round it
+      // With the preset carousel open, fit the island into the space above it.
+      var below = deck && !deck.hidden ? deck.offsetHeight + 8 : 0;
+      var w = vw / (N * TW * 1.3), h = (vh - 80 - below) / (N * TH * 1.4); // the plot and the beach round it
       cam.s = whole || vw >= vh ? Math.min(w, h) : Math.min(h, w * 3);
+      cam.x = 0; cam.y = N * TH / 2 + below / 2 / cam.s;
       invalidate();
     }
     function zoomAt(sx, sy, k) {
@@ -594,6 +597,7 @@
     }
 
     function tap(r, c) {
+      if (deckOpen) { closeDeck(); return; }
       if (ground || (cardId != null && !model.pieceAt(r, c))) { closeAll(); return; }
       if (pending) {
         if (model.inside(r, c)) { var d = def(pending.slug), a = model.anchorFor(d.w, d.h, r, c, -1); pending.r = a ? a.r : r - Math.floor(d.h / 2); pending.c = a ? a.c : c - Math.floor(d.w / 2); pending.ok = !!a; invalidate(); }
@@ -717,7 +721,7 @@
         invalidate(); return;
       }
       if (k === 'Enter' || k === ' ') { if (cursor) { e.preventDefault(); if (pending) accept(); else tap(cursor.r, cursor.c); } return; }
-      if (k === 'Escape') { if (pending) reject(); else if (brush) unloadBrush(); else if (ground || cardId != null) closeAll(); else if (isFull()) setFull(false); return; }
+      if (k === 'Escape') { if (deckOpen) closeDeck(); else if (pending) reject(); else if (brush) unloadBrush(); else if (ground || cardId != null) closeAll(); else if (isFull()) setFull(false); return; }
       if (k === '+' || k === '=') { zoomAt(vw / 2, vh / 2, 1.3); return; }
       if (k === '-') { zoomAt(vw / 2, vh / 2, 1 / 1.3); return; }
       if ((k === 'Delete' || k === 'Backspace') && cardId != null && !cursor) { e.preventDefault(); removeSelected(); return; }
@@ -736,13 +740,15 @@
       document.body.appendChild(s);
     }
     function thumb(cv, ex) {
-      var x = cv.getContext('2d'), w = cv.width / (N * 2 + 4), h = w / 2, ox = cv.width / 2, oy = (cv.height - N * 2 * h) / 2;
+      var x = cv.getContext("2d"), w = cv.width / (N * 2 + 16), h = w / 2, ox = cv.width / 2, oy = (cv.height - N * 2 * h) / 2;
       function cell(r, c, col) { var px = ox + (c - r) * w, py = oy + (c + r) * h; x.fillStyle = col; x.beginPath(); x.moveTo(px, py); x.lineTo(px + w, py + h); x.lineTo(px, py + 2 * h); x.lineTo(px - w, py + h); x.fill(); }
+      function diamond(m, col) { x.fillStyle = col; x.beginPath(); x.moveTo(ox + 0 * w, oy - 2 * m * h); x.lineTo(ox + (N + 2 * m) * w, oy + N * h); x.lineTo(ox, oy + (2 * N + 2 * m) * h); x.lineTo(ox - (N + 2 * m) * w, oy + N * h); x.fill(); }
       x.fillStyle = SEA_MID; x.fillRect(0, 0, cv.width, cv.height);
-      for (var r = 0; r < N; r++) for (var c = 0; c < N; c++) cell(r, c, SAND);
-      ex.surfaces.forEach(function (e) { cell(Math.floor(e[0] / N), e[0] % N, def(e[1]).swatch); });
-      ex.pieces.forEach(function (e) {
-        var d = def(e[1]), r0 = Math.floor(e[0] / N), c0 = e[0] % N;
+      diamond(6, LAGOON); diamond(3, SAND);
+      (ex.surfaces || []).forEach(function (e) { if (!def(e[1])) return; cell(Math.floor(e[0] / N), e[0] % N, def(e[1]).swatch); });
+      (ex.pieces || []).forEach(function (e) {
+        var d = def(e[1]); if (!d) return;
+        var r0 = Math.floor(e[0] / N), c0 = e[0] % N;
         for (var r = r0; r < r0 + d.h; r++) for (var c = c0; c < c0 + d.w; c++) cell(r, c, e[1] === 'build_7000' ? '#F1E3C2' : shade(d.swatch, d.kind === 'tree' ? 0.8 : 1));
       });
     }
@@ -759,16 +765,64 @@
       if (!ex) return;
       if (owner.mine) save();
       closeAll(); unloadBrush(); reject();
-      owner = { mine: false, name: ex.name };
+      owner = { mine: false, name: ex.name, slug: ex.slug };
       model.load({ pieces: ex.pieces.map(function (e) { return [e[0], e[1], 0]; }), surfaces: ex.surfaces });
       syncOwner(); committed();
       setFull(true);
       fit(true);
       overLimits();
+      if (deckOpen) markDeck();
+    }
+    function backToMine() {
+      owner = { mine: true };
+      model.load(read(PLAN_KEY, { pieces: [[27 * N + 27, 'build_7000', 0]], surfaces: [] }));
+      closeAll(); syncOwner(); committed(); fit(false);
+      if (deckOpen) markDeck();
     }
     function syncOwner() {
-      node('owner').innerHTML = owner.mine ? '<b>Your plan</b> · saved on this device'
-        : '<b>' + esc(owner.name) + '</b> · a copy, not saved <button type="button" data-action="island.keep">Keep it</button> <button type="button" data-action="island.mine">Back to mine</button>';
+      var name = '<button type="button" class="island-owner-name" data-action="island.browse" aria-expanded="' + deckOpen + '" aria-controls="island-deck" title="Switch preset">' + (owner.mine ? 'Your plan' : esc(owner.name)) + ' <span aria-hidden="true">▾</span></button>';
+      node('owner').innerHTML = owner.mine ? name + ' · saved on this device'
+        : name + ' · a copy, not saved <button type="button" data-action="island.keep">Keep it</button> <button type="button" data-action="island.mine">Back to mine</button>';
+    }
+
+    /* ─── The preset carousel inside the board ──────────────────
+       Your own plan first, then every preset. A tap swaps the board to it straight away (a copy,
+       until kept), so flicking through is a swipe and a tap, never a trip down the page. */
+    function openDeck() {
+      loadExamples(function () {
+        closeAll(); unloadBrush(); reject();
+        deckOpen = true;
+        var list = [{ slug: '', name: 'Your plan', note: 'saved on this device', mine: true }].concat(examples.slice().sort(function (a, b) { return (b.authored ? 1 : 0) - (a.authored ? 1 : 0); }));
+        node('deckList').innerHTML = list.map(function (ex) {
+          return '<li><button type="button" class="island-deck-card" data-action="island.pickPreset" data-slug="' + esc(ex.slug) + '">'
+            + '<canvas width="240" height="150" data-deck-thumb="' + esc(ex.slug) + '"></canvas>'
+            + '<b>' + esc(ex.name) + '</b><small>' + (ex.mine ? 'Yours' : ex.authored ? 'Ours' : 'Game layout') + '</small></button></li>';
+        }).join('');
+        context.nodes('[data-deck-thumb]').forEach(function (cv) {
+          var slug = cv.dataset.deckThumb;
+          thumb(cv, slug ? examples.filter(function (e) { return e.slug === slug; })[0] : read(PLAN_KEY, { pieces: [[27 * N + 27, 'build_7000', 0]], surfaces: [] }));
+        });
+        deck.hidden = false; node('strip').hidden = true;
+        guard(deck);
+        fit(true);
+        markDeck(true);
+        syncOwner();
+      });
+    }
+    function closeDeck() {
+      if (!deckOpen) return;
+      deckOpen = false; deck.hidden = true; node('strip').hidden = false;
+      syncOwner(); syncStrip();
+    }
+    function markDeck(jump) {
+      var current = owner.mine ? '' : owner.slug, hit = null;
+      context.nodes('.island-deck-card').forEach(function (b) {
+        var on = b.dataset.slug === current;
+        b.setAttribute('aria-current', on ? 'true' : 'false');
+        if (on) hit = b;
+      });
+      node('deckKeep').hidden = owner.mine;
+      if (hit && hit.scrollIntoView) hit.scrollIntoView({ inline: 'center', block: 'nearest', behavior: jump || matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     }
     function ownedNote() {
       var n = Object.keys(owns).filter(function (s) { return owns[s] > 0; }).length;
@@ -837,12 +891,16 @@
           try { store.setBalance(ownKey(d), next, 'manual'); } catch (e) { say('Your save could not be updated'); }
           readOwns(); refreshOpen(); ownedNote();
         } },
-        preset: { run: function (b) { loadExamples(function () { openPreset(b.dataset.slug); }); } },
+        preset: { run: function (b) { loadExamples(function () { openPreset(b.dataset.slug); openDeck(); }); } },
+        browse: { run: function () { if (deckOpen) closeDeck(); else openDeck(); } },
+        closeDeck: { run: closeDeck },
+        pickPreset: { run: function (b) { if (b.dataset.slug) openPreset(b.dataset.slug); else if (!owner.mine) backToMine(); } },
         keep: { run: function () {
           if (!window.confirm('Replace your saved plan with this copy?')) return;
           owner = { mine: true }; save(); syncOwner(); say('Kept as your plan');
+          if (deckOpen) closeDeck();
         } },
-        mine: { run: function () { owner = { mine: true }; model.load(read(PLAN_KEY, { pieces: [[27 * N + 27, 'build_7000', 0]], surfaces: [] })); closeAll(); syncOwner(); committed(); fit(false); } }
+        mine: { run: backToMine }
       }
     };
   });

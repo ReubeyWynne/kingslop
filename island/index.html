@@ -31,6 +31,16 @@ self: island
 
       <div class="island-card" data-target="island.card" role="dialog" aria-label="Piece" hidden></div>
 
+      <div class="island-deck" id="island-deck" data-target="island.deck" role="region" aria-label="Presets" hidden>
+        <div class="island-deck-head">
+          <b>Presets</b>
+          <small>Tap one to try it. Your plan stays saved.</small>
+          <button type="button" class="island-act" data-action="island.keep" data-target="island.deckKeep" hidden>Keep this one</button>
+          <button type="button" class="island-close" data-action="island.closeDeck" aria-label="Close presets">✕</button>
+        </div>
+        <ul class="island-deck-list" data-target="island.deckList"></ul>
+      </div>
+
       <div class="island-strip" data-target="island.strip">
         <div class="island-strip-rest" data-target="island.rest">
           <button type="button" class="island-undo" data-action="island.undo" data-target="island.undo" aria-label="Undo" disabled>↶</button>
@@ -57,7 +67,7 @@ self: island
 
   <section class="island-more" id="presets" aria-labelledby="presets-title">
     <h2 id="presets-title">Start from a preset</h2>
-    <p class="note">A preset opens as a copy. Your own plan stays saved until you keep the copy.</p>
+    <p class="note">A preset opens as a copy. Your own plan stays saved until you keep the copy. On the board, tap your plan's name at the top to flick through them.</p>
     <ul class="island-presets" data-target="island.presets"></ul>
   </section>
 

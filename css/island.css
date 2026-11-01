@@ -30,8 +30,8 @@ html[data-page="island"] {
 /* The board runs edge to edge and fills the screen under the topbar. */
 .island-work { margin-inline: calc(50% - 50vw); }
 .island-board { position: relative; height: calc(100svh - var(--topbar-h)); min-height: 30rem; max-height: 64rem; overflow: hidden; background: var(--island-sea); border-block: 1px solid var(--signal-line); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-.island-board canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
-.island-board canvas:focus-visible { box-shadow: inset 0 0 0 2px var(--amber); }
+.island-board > canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
+.island-board > canvas:focus-visible { box-shadow: inset 0 0 0 2px var(--amber); }
 .island-board > * { position: absolute; }
 .island-board [hidden], .island-page [hidden] { display: none !important; }
 .island-noscript { inset: 40% 1rem auto; text-align: center; color: var(--ink-dim); }
@@ -78,6 +78,28 @@ html:has(.island-page[data-full]), html:has(.island-page[data-full]) body { over
 .island-link::before { content: "❧ "; }
 .island-link:hover, .island-link:focus-visible { color: var(--ink); }
 .island-empty { margin: 0 0 .2rem; font-size: .92rem; font-style: italic; color: var(--ink-dim); }
+
+/* The owner chip's name opens the preset carousel. */
+.island-owner-name { padding: 0; border: 0; background: none; color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
+.island-owner-name span { color: var(--amber); }
+.island-owner-name:hover, .island-owner-name:focus-visible { color: var(--amber); }
+
+/* Presets, as a carousel along the foot of the board. */
+.island-deck { z-index: 3; inset-inline: .5rem; inset-block-end: calc(.5rem + env(safe-area-inset-bottom)); max-width: 52rem; margin-inline: auto; padding: .45rem .5rem .55rem; background: var(--void); border: 1px solid var(--amber-dim); border-radius: 2px; box-shadow: 0 12px 28px rgba(0, 0, 0, .6); }
+.island-deck-head { display: flex; align-items: center; gap: .3rem .7rem; flex-wrap: wrap; padding-inline-start: .2rem; }
+.island-deck-head b { font: 700 1.05rem/1.1 var(--display-2); }
+.island-deck-head small { flex: 1; min-width: 10rem; color: var(--ink-muted); font-size: .85rem; font-style: italic; }
+.island-deck-head .island-close { width: 2.4rem; height: 2.4rem; }
+.island-deck-list { display: flex; gap: .5rem; margin: .3rem 0 0; padding: .15rem .1rem .2rem; list-style: none; overflow-x: auto; scroll-snap-type: x proximity; overscroll-behavior-x: contain; scrollbar-width: none; }
+.island-deck-list::-webkit-scrollbar { display: none; }
+.island-deck-list > li { flex: none; width: 9rem; scroll-snap-align: center; }
+.island-deck-card { display: grid; grid-template-columns: 8.5rem; gap: .15rem; width: 9rem; padding: .25rem .25rem .35rem; border: 1px solid transparent; border-radius: 2px; background: none; color: var(--ink-dim); font: inherit; text-align: start; cursor: pointer; }
+.island-deck-card canvas { width: 8.5rem; height: 5.3rem; display: block; border: 1px solid var(--ink-muted); border-radius: 2px; }
+.island-deck-card b { font: 600 .98rem/1.15 var(--display-2); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.island-deck-card small { font: 700 .62rem/1.3 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); }
+.island-deck-card:hover canvas, .island-deck-card:focus-visible canvas { border-color: var(--amber-dim); }
+.island-deck-card[aria-current="true"] { border-color: var(--amber); background: var(--signal-tint); }
+.island-deck-card[aria-current="true"] small { color: var(--amber); }
 
 /* ✕ on a tapped piece: one more tap removes it. */
 .island-quick { z-index: 2; }
