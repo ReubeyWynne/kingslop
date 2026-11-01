@@ -14,13 +14,19 @@
     var pieces = new Map();   // id -> { id, slug, r, c, w, h }
     var surfaces = new Map(); // r * N + c -> slug
     var occ = new Int32Array(N * N).fill(-1);
-    var nextId = 1;
+    var tally = new Map();    // slug -> how many are on the plan, pieces and surfaces alike
+    var nextId = 1, loading = false;
     var undo = [], redo = [];
     var open = null;          // the snapshot taken when the current gesture began
 
     function def(slug) { return bySlug[slug]; }
     function isSurface(slug) { return !!bySlug[slug] && bySlug[slug].kind === 'surface'; }
     function inside(r, c) { return r >= 0 && c >= 0 && r < N && c < N; }
+    function bump(slug, k) { var n = (tally.get(slug) || 0) + k; if (n) tally.set(slug, n); else tally.delete(slug); }
+    // How many more of a piece the island can hold; Infinity when the catalogue sets no limit.
+    function room(slug) { var d = bySlug[slug]; return d && d.limit ? d.limit - (tally.get(slug) || 0) : Infinity; }
+    function setSurface(cell, slug) { var was = surfaces.get(cell); if (was) bump(was, -1); surfaces.set(cell, slug); bump(slug, 1); }
+    function dropSurface(cell) { var was = surfaces.get(cell); if (!was) return false; surfaces.delete(cell); bump(was, -1); return true; }
     function mark(p, id) { for (var y = p.r; y < p.r + p.h; y++) for (var x = p.c; x < p.c + p.w; x++) occ[y * N + x] = id; }
 
     function fits(w, h, r, c, ignore) {
@@ -47,10 +53,11 @@
       return { pieces: Array.from(pieces.values(), function (p) { return [p.r * N + p.c, p.slug, p.w, p.h]; }), surfaces: Array.from(surfaces) };
     }
     function restore(s) {
-      pieces = new Map(); surfaces = new Map(s.surfaces); occ.fill(-1); nextId = 1;
+      pieces = new Map(); surfaces = new Map(); tally = new Map(); occ.fill(-1); nextId = 1;
+      s.surfaces.forEach(function (e) { setSurface(e[0], e[1]); });
       s.pieces.forEach(function (e) {
         var p = { id: nextId++, slug: e[1], r: Math.floor(e[0] / N), c: e[0] % N, w: e[2], h: e[3] };
-        pieces.set(p.id, p); mark(p, p.id);
+        pieces.set(p.id, p); mark(p, p.id); bump(p.slug, 1);
       });
     }
 
@@ -70,15 +77,15 @@
       var d = def(slug);
       if (!d || isSurface(slug)) return null;
       w = w || d.w; h = h || d.h;
-      if (!fits(w, h, r, c, -1)) return null;
+      if (!fits(w, h, r, c, -1) || (!loading && room(slug) <= 0)) return null;
       var p = { id: nextId++, slug: slug, r: r, c: c, w: w, h: h };
-      pieces.set(p.id, p); mark(p, p.id);
+      pieces.set(p.id, p); mark(p, p.id); bump(slug, 1);
       return p;
     }
     function removePiece(id) {
       var p = pieces.get(id);
       if (!p) return false;
-      mark(p, -1); pieces.delete(id);
+      mark(p, -1); pieces.delete(id); bump(p.slug, -1);
       return true;
     }
     function movePiece(id, r, c) {
@@ -95,11 +102,12 @@
       return true;
     }
     // A one-cell brush: a surface goes under whatever is there, a piece only onto free ground.
+    // Neither goes past the piece's limit.
     function paint(slug, r, c) {
       if (!inside(r, c)) return false;
       if (isSurface(slug)) {
-        if (surfaces.get(r * N + c) === slug) return false;
-        surfaces.set(r * N + c, slug); return true;
+        if (surfaces.get(r * N + c) === slug || room(slug) <= 0) return false;
+        setSurface(r * N + c, slug); return true;
       }
       var d = def(slug);
       if (!d || d.w !== 1 || d.h !== 1) return false;
@@ -110,14 +118,16 @@
       if (!inside(r, c)) return false;
       var hit = occ[r * N + c];
       if (hit !== -1) return removePiece(hit);
-      return surfaces.delete(r * N + c);
+      return dropSurface(r * N + c);
     }
 
-    function counts() {
-      var n = {};
-      pieces.forEach(function (p) { n[p.slug] = (n[p.slug] || 0) + 1; });
-      surfaces.forEach(function (s) { n[s] = (n[s] || 0) + 1; });
-      return n;
+    function counts() { var n = {}; tally.forEach(function (v, k) { n[k] = v; }); return n; }
+    function count(slug) { return tally.get(slug) || 0; }
+    // Pieces past their limit, as { slug: [count, limit] }. Only a loaded plan can hold any.
+    function over() {
+      var out = {};
+      tally.forEach(function (v, k) { var d = bySlug[k]; if (d && d.limit && v > d.limit) out[k] = [v, d.limit]; });
+      return out;
     }
 
     // Saved form: version, pieces as [cell, slug, turned], surfaces as [cell, slug].
@@ -129,12 +139,13 @@
       };
     }
     // Loads a plan or an example. Unknown slugs and pieces that don't fit are dropped and counted.
+    // Limits are not applied here, so an older plan keeps everything; over() reports the excess.
     function load(data) {
-      pieces = new Map(); surfaces = new Map(); occ.fill(-1); nextId = 1;
-      undo.length = 0; redo.length = 0; open = null;
+      pieces = new Map(); surfaces = new Map(); tally = new Map(); occ.fill(-1); nextId = 1;
+      undo.length = 0; redo.length = 0; open = null; loading = true;
       var dropped = 0;
       (data && data.surfaces || []).forEach(function (e) {
-        if (isSurface(e[1]) && e[0] >= 0 && e[0] < N * N) surfaces.set(e[0], e[1]); else dropped++;
+        if (isSurface(e[1]) && e[0] >= 0 && e[0] < N * N) setSurface(e[0], e[1]); else dropped++;
       });
       (data && data.pieces || []).forEach(function (e) {
         var d = def(e[1]);
@@ -142,6 +153,7 @@
         var turned = e[2] === 1;
         if (!addPiece(e[1], Math.floor(e[0] / N), e[0] % N, turned ? d.h : d.w, turned ? d.w : d.h)) dropped++;
       });
+      loading = false;
       return dropped;
     }
 
@@ -158,7 +170,7 @@
       redo: function () { if (!redo.length) return false; undo.push(snapshot()); restore(redo.pop()); return true; },
       get canUndo() { return undo.length > 0; },
       get canRedo() { return redo.length > 0; },
-      counts: counts, toJSON: toJSON, load: load
+      counts: counts, count: count, room: room, over: over, toJSON: toJSON, load: load
     };
   }
 

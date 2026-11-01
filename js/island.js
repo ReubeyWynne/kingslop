@@ -7,13 +7,16 @@
   var DATA = window.ISLAND_DATA, N = DATA.size, TW = 32, TH = 16;
   var PLAN_KEY = 'bh:island-plan:v1', RECENT_KEY = 'bh:island-recent:v1', TAUGHT_KEY = 'bh:island-taught:v1';
   var CLEAR = '__clear', FOUNTAIN = 'build_7000'; // every island has exactly one Fountain
-  var KINDS = [['building', 'Buildings'], ['decor', 'Décor'], ['hedge', 'Hedges'], ['surface', 'Paths & water'], ['tree', 'Trees']];
+  var KINDS = [['building', 'Buildings'], ['decor', 'Small buildings'], ['hedge', 'Hedges & lamps'], ['surface', 'Paths & water'], ['tree', 'Trees']];
   var LONG_PRESS = 420, SLOP_TOUCH = 9, SLOP_MOUSE = 4;
+  // Bare ground is beach sand; grass is only ever painted meadow.
+  var SAND = '#DCC38C', WET_SAND = '#C4A770', SEA = '#0D4E86', SEA_MID = '#1772B0', SHALLOWS = '#2FA4CF', LAGOON = '#55CBDA';
 
   function read(key, fallback) { try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } }
   function write(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch (e) { return false; } }
   function esc(value) { return String(value).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function fmt(n) { return new Intl.NumberFormat('en-GB').format(n); }
+  function capText(d) { return !d.limit ? '' : d.limit === 1 ? 'One per island.' : 'Up to ' + fmt(d.limit) + ' per island.'; }
   function shade(hex, k) {
     var n = parseInt(hex.slice(1), 16);
     function f(v) { return Math.max(0, Math.min(255, Math.round(v * k))); }
@@ -107,7 +110,7 @@
     // The whole island, or on a tall phone a closer view on the Fountain.
     function fit(whole) {
       cam.x = 0; cam.y = N * TH / 2;
-      var w = vw / (N * TW * 1.08), h = (vh - 80) / (N * TH * 1.15);
+      var w = vw / (N * TW * 1.3), h = (vh - 80) / (N * TH * 1.4); // the plot and the beach round it
       cam.s = whole || vw >= vh ? Math.min(w, h) : Math.min(h, w * 3);
       invalidate();
     }
@@ -124,20 +127,10 @@
       queued = false;
       if (!vw) return;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.fillStyle = '#0C1A2B';
+      ctx.fillStyle = SEA;
       ctx.fillRect(0, 0, vw, vh);
       ctx.setTransform(dpr * cam.s, 0, 0, dpr * cam.s, dpr * (vw / 2 - cam.x * cam.s), dpr * (vh / 2 - cam.y * cam.s));
-
-      // Shallows, cliff and sand rim, then the meadow.
-      var m = 2.2;
-      ctx.fillStyle = 'rgba(125,189,240,0.07)';
-      poly(corners(-m * 2.4, -m * 2.4, N + m * 4.8, N + m * 4.8)); ctx.fill();
-      ctx.fillStyle = '#3D3423';
-      poly(corners(-m, -m, N + 2 * m, N + 2 * m).map(function (p, i) { return [p[0], p[1] + (i ? 10 : 0)]; })); ctx.fill();
-      ctx.fillStyle = '#B8A27A';
-      poly(corners(-m, -m, N + 2 * m, N + 2 * m)); ctx.fill();
-      ctx.fillStyle = '#5D7A3C';
-      poly(corners(0, 0, N, N)); ctx.fill();
+      drawSea();
 
       var tl = toWorld(-TW * cam.s, -TH * 8 * cam.s), br = toWorld(vw + TW * cam.s, vh + TH * 2 * cam.s);
       function visible(r, c) { var x = gx(r, c + 0.5), y = gy(r, c + 0.5); return x > tl[0] - TW && x < br[0] + TW && y > tl[1] - TH * 8 && y < br[1] + TH; }
@@ -160,12 +153,14 @@
         ctx.stroke();
       }
 
+      drawShore(false);
       var list = Array.from(model.pieces.values()).sort(function (a, b) { return (a.r + a.h + a.c + a.w) - (b.r + b.h + b.c + b.w) || a.c - b.c; });
       list.forEach(function (p) {
         if (!visible(p.r + p.h - 1, p.c + p.w - 1) && !visible(p.r, p.c)) return;
         drawPiece(p, lifted && lifted.id === p.id ? 0.25 : 1);
       });
 
+      drawShore(true);
       if (cardId != null && model.pieces.has(cardId)) {
         var sp = model.pieces.get(cardId);
         outline(sp.r, sp.c, sp.h, sp.w, 'rgba(125,189,240,0.22)', '#7DBDF0');
@@ -178,6 +173,129 @@
       if (cursor) outline(cursor.r, cursor.c, 1, 1, null, '#F1E3C2');
       place();
     }
+    /* ─── The island round the plot ─────────────────────────────
+       The 60×60 plot sits inside a larger beach, as it does in the game. Nothing outside the plot
+       can be built on, so the coast, palms, rocks, islets and jetty are scenery: a fixed,
+       seeded drawing, the same on every visit. */
+    var shore = (function () {
+      var seed = 7;
+      function rand() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+      var mid = N / 2;
+      // How far the beach reaches past the plot, by direction: wide bays and points, a little ripple.
+      function reach(t) { return 8.5 + 3.2 * Math.sin(2 * t + 0.9) + 2.1 * Math.sin(3 * t + 2.4) + 1.1 * Math.sin(5 * t + 0.3) + 0.5 * Math.sin(11 * t + 1.7); }
+      // A rounded square (p = 5) wrapping the plot, pushed out by reach() and then by `out` more.
+      function ring(out) {
+        var pts = [];
+        for (var i = 0; i < 240; i++) {
+          var t = i / 240 * Math.PI * 2, dr = Math.sin(t), dc = Math.cos(t);
+          var k = Math.pow(Math.pow(Math.abs(dr), 5) + Math.pow(Math.abs(dc), 5), -1 / 5);
+          var rad = mid * k + reach(t) + out;
+          var r = mid + dr * rad, c = mid + dc * rad;
+          pts.push([gx(r, c), gy(r, c)]);
+        }
+        return pts;
+      }
+      function onBeach(r, c, pad) {
+        var t = Math.atan2(r - mid, c - mid), dr = Math.sin(t), dc = Math.cos(t);
+        var k = Math.pow(Math.pow(Math.abs(dr), 5) + Math.pow(Math.abs(dc), 5), -1 / 5);
+        var d = Math.hypot(r - mid, c - mid), coast = mid * k + reach(t);
+        var outside = r < -1 || c < -1 || r > N + 1 || c > N + 1;
+        return outside && d < coast - pad;
+      }
+      var things = [];
+      for (var n = 0; n < 900 && things.length < 120; n++) {
+        var r = -16 + rand() * (N + 32), c = -16 + rand() * (N + 32);
+        if (!onBeach(r, c, 1.6)) continue;
+        if (things.some(function (o) { return Math.hypot(o.r - r, o.c - c) < 2.2; })) continue;
+        var roll = rand();
+        things.push({ r: r, c: c, kind: roll < 0.68 ? 'palm' : roll < 0.9 ? 'rock' : 'shell', size: 0.8 + rand() * 0.5, lean: rand() * 2 - 1, turn: rand() * Math.PI * 2 });
+      }
+      things.sort(function (a, b) { return (a.r + a.c) - (b.r + b.c); });
+      var islets = [[-24, -2, 3.4], [-6, 78, 2.6], [70, -14, 2.2], [84, 52, 1.6]].map(function (e) {
+        var pts = [];
+        for (var i = 0; i < 36; i++) {
+          var t = i / 36 * Math.PI * 2, rad = e[2] * (1 + 0.18 * Math.sin(3 * t + e[0]) + 0.1 * Math.sin(5 * t + e[1]));
+          pts.push([e[0] + Math.sin(t) * rad, e[1] + Math.cos(t) * rad]);
+        }
+        return { r: e[0], c: e[1], size: e[2], pts: pts };
+      });
+      return {
+        sea: ring(30), mid: ring(16), shallows: ring(7), lagoon: ring(2.2), foam: ring(0.7), wet: ring(0), beach: ring(-1.1),
+        front: things.filter(function (o) { return o.r > N || o.c > N; }),
+        back: things.filter(function (o) { return !(o.r > N || o.c > N); }),
+        islets: islets,
+        jetty: (function () { var t = 1.75, k = Math.pow(Math.pow(Math.abs(Math.sin(t)), 5) + Math.pow(Math.abs(Math.cos(t)), 5), -1 / 5), rad = mid * k + reach(t); return { r: mid + Math.sin(t) * (rad - 2), c: mid + Math.cos(t) * (rad - 2) }; })()
+      };
+    })();
+
+    function fillPts(pts, style) { ctx.fillStyle = style; poly(pts); ctx.fill(); }
+    function drawSea() {
+      fillPts(shore.sea, SEA_MID);
+      fillPts(shore.mid, SHALLOWS);
+      fillPts(shore.shallows, LAGOON);
+      ctx.globalAlpha = 0.55; fillPts(shore.lagoon, '#9FE3E6'); ctx.globalAlpha = 1;
+      fillPts(shore.foam, 'rgba(255,255,255,0.85)');
+      fillPts(shore.wet, WET_SAND);
+      fillPts(shore.beach, SAND);
+      shore.islets.forEach(function (o) {
+        var lift = function (k) { return o.pts.map(function (q) { var r = o.r + (q[0] - o.r) * k, c = o.c + (q[1] - o.c) * k; return [gx(r, c), gy(r, c)]; }); };
+        ctx.globalAlpha = 0.6; fillPts(lift(1.9), '#9FE3E6'); ctx.globalAlpha = 1;
+        fillPts(lift(1.15), 'rgba(255,255,255,0.8)');
+        fillPts(lift(1), SAND);
+        if (o.size > 2) {
+          var top = lift(0.62).map(function (q) { return [q[0], q[1] - 7]; });
+          fillPts(lift(0.62), '#8A6F4E'); fillPts(top, '#6FA63A');
+        }
+      });
+      // The plot's edge: building stops here, the beach goes on.
+      ctx.save();
+      ctx.setLineDash([6 / cam.s, 5 / cam.s]);
+      ctx.lineWidth = 1.5 / cam.s; ctx.strokeStyle = 'rgba(110,84,44,0.45)';
+      poly(corners(0, 0, N, N)); ctx.stroke();
+      ctx.restore();
+      var j = shore.jetty;
+      // A plank jetty running straight out to sea.
+      for (var i = 0; i < 9; i++) {
+        ctx.fillStyle = i % 2 ? '#8B6440' : '#9C7349';
+        poly(corners(j.r + i * 0.7, j.c - 0.75, 0.62, 1.5)); ctx.fill();
+      }
+      ctx.fillStyle = '#5E4128';
+      [0, 3, 6].forEach(function (i) { poly(corners(j.r + i * 0.7 + 0.2, j.c + 0.75, 0.25, 0.25)); ctx.fill(); });
+    }
+    function drawShore(front) {
+      (front ? shore.front : shore.back).forEach(function (o) {
+        var x = gx(o.r, o.c), y = gy(o.r, o.c), u = TW * o.size;
+        if (o.kind === 'rock') {
+          ctx.fillStyle = '#7D6E62';
+          ctx.beginPath(); ctx.ellipse(x, y - u * 0.08, u * 0.36, u * 0.2, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#9A8B7E';
+          ctx.beginPath(); ctx.ellipse(x - u * 0.05, y - u * 0.15, u * 0.26, u * 0.13, 0, 0, Math.PI * 2); ctx.fill();
+          return;
+        }
+        if (o.kind === 'shell') {
+          ctx.fillStyle = o.lean > 0 ? '#E98A5B' : '#F2E6D2';
+          ctx.beginPath(); ctx.ellipse(x, y, u * 0.09, u * 0.06, o.turn, 0, Math.PI * 2); ctx.fill();
+          return;
+        }
+        // A palm: a shadow, a leaning trunk, and a crown of fronds.
+        var h = u * 1.25, tx = x + o.lean * u * 0.3, ty = y - h;
+        ctx.fillStyle = 'rgba(60,40,10,0.18)';
+        ctx.beginPath(); ctx.ellipse(x + u * 0.3, y, u * 0.5, u * 0.16, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#7A5634'; ctx.lineWidth = u * 0.11; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + o.lean * u * 0.05, y - h * 0.55, tx, ty); ctx.stroke();
+        for (var f = 0; f < 6; f++) {
+          var a = o.turn + f * Math.PI / 3, fx = tx + Math.cos(a) * u * 0.55, fy = ty + Math.sin(a) * u * 0.28 + u * 0.12;
+          ctx.fillStyle = f % 2 ? '#3E8A3A' : '#4FA444';
+          ctx.beginPath(); ctx.moveTo(tx, ty);
+          ctx.quadraticCurveTo((tx + fx) / 2 - Math.sin(a) * u * 0.12, (ty + fy) / 2 - u * 0.22, fx, fy);
+          ctx.quadraticCurveTo((tx + fx) / 2 + Math.sin(a) * u * 0.1, (ty + fy) / 2 - u * 0.02, tx, ty);
+          ctx.fill();
+        }
+        ctx.fillStyle = '#5C3F22';
+        ctx.beginPath(); ctx.arc(tx, ty + u * 0.02, u * 0.07, 0, Math.PI * 2); ctx.fill();
+      });
+    }
+
     function outline(r, c, h, w, fill, stroke) {
       ctx.lineWidth = 2 / cam.s; poly(corners(r, c, h, w));
       if (fill) { ctx.fillStyle = fill; ctx.fill(); }
@@ -211,7 +329,7 @@
     }
 
     /* ─── Floating HTML placed against the board ────────────── */
-    var pop = node('ground'), confirmBox = node('confirm'), card = node('card');
+    var pop = node('ground'), confirmBox = node('confirm'), card = node('card'), quick = node('quick');
     function place() {
       if (ground && !pop.hidden) {
         var s = toScreen(gx(ground.r + 0.5, ground.c + 0.5), gy(ground.r + 0.5, ground.c + 0.5));
@@ -221,6 +339,15 @@
         pop.style.top = (below ? s[1] + 18 : s[1] - ph - 14) + 'px';
         pop.style.setProperty('--tip', Math.max(14, Math.min(pw - 14, s[0] - x)) + 'px');
         pop.toggleAttribute('data-below', below);
+      }
+      if (cardId != null && !quick.hidden) {
+        var q = model.pieces.get(cardId);
+        if (q) {
+          // Beside the piece's right-hand corner, raised to clear its art.
+          var rc = toScreen(gx(q.r, q.c + q.w), gy(q.r, q.c + q.w)), qs = quick.offsetWidth;
+          quick.style.left = Math.max(8, Math.min(vw - qs - 8, rc[0] + 4)) + 'px';
+          quick.style.top = Math.max(56, Math.min(vh - qs - 8, rc[1] - (q.w + q.h) * TW / 2 * cam.s * 0.6 - qs / 2)) + 'px';
+        }
       }
       if (pending && !confirmBox.hidden) {
         var e = toScreen(gx(pending.r + pending.h, pending.c + pending.w), gy(pending.r + pending.h, pending.c + pending.w));
@@ -255,7 +382,7 @@
     function openGround(r, c) {
       closeAll();
       ground = { r: r, c: c };
-      var fitting = DATA.pieces.filter(function (d) { return d.kind !== 'surface' && d.slug !== FOUNTAIN && model.anchorFor(d.w, d.h, r, c, -1); }).sort(rankRecent);
+      var fitting = DATA.pieces.filter(function (d) { return d.kind !== 'surface' && d.slug !== FOUNTAIN && model.room(d.slug) > 0 && model.anchorFor(d.w, d.h, r, c, -1); }).sort(rankRecent);
       var yours = fitting.filter(function (d) { return isYours(d.slug); }), others = fitting.filter(function (d) { return !isYours(d.slug); });
       var html = '';
       if (yours.length) html += '<p class="island-label">Yours · fits here</p><ul class="island-pieces">' + yours.map(function (d) { return pieceButton(d, 'island.pick', d.w + '×' + d.h); }).join('') + '</ul>';
@@ -275,6 +402,7 @@
     function guard(el) { el.style.pointerEvents = 'none'; setTimeout(function () { el.style.pointerEvents = ''; }, 380); }
 
     function stage(slug, r, c) {
+      if (model.room(slug) <= 0) { full(slug); return; }
       var d = def(slug), a = model.anchorFor(d.w, d.h, r, c, -1);
       pending = { slug: slug, r: a ? a.r : r - Math.floor(d.h / 2), c: a ? a.c : c - Math.floor(d.w / 2), w: d.w, h: d.h, ok: !!a };
       confirmBox.hidden = false;
@@ -298,7 +426,8 @@
       cardId = id;
       renderCard();
       card.hidden = false;
-      guard(card);
+      quick.hidden = model.pieces.get(id).slug === FOUNTAIN;
+      guard(card); guard(quick);
       node('strip').hidden = true;
       invalidate();
     }
@@ -309,6 +438,7 @@
       var notes = [];
       if (p.slug === FOUNTAIN) notes.push('Every island has one Fountain, in the middle.');
       else if (d.effect) notes.push(placedN > d.effect ? '<span class="is-warn">' + placedN + ' on this plan, and only ' + (d.effect === 1 ? 'the first adds' : 'the first ' + d.effect + ' add') + ' its buff.</span>' : 'The first ' + (d.effect === 1 ? 'copy adds' : d.effect + ' copies add') + ' its buff; more are decoration.');
+      if (p.slug !== FOUNTAIN && d.limit) notes.push(placedN > d.limit ? '<span class="is-warn">' + capText(d) + ' This plan has ' + fmt(placedN) + '.</span>' : capText(d));
       if (own !== null && placedN > own) notes.push('<span class="is-warn">You own ' + own + '; this plan uses ' + placedN + '.</span>');
       card.innerHTML = '<button type="button" class="island-close" data-action="island.closeCard" aria-label="Close">✕</button>'
         + '<div class="island-card-head">' + art(d) + '<h3>' + esc(d.name) + '</h3><p>' + d.w + '×' + d.h + (d.prosper ? ' · +' + fmt(d.prosper) + ' prosperity' : '') + ' · ' + (p.c + 45) + ', ' + (p.r + 45) + '</p></div>'
@@ -316,13 +446,31 @@
         + '<div class="island-card-foot">'
         + (store && p.slug !== FOUNTAIN ? '<span class="island-own">You own <span class="island-step"><button type="button" data-action="island.own" data-step="-1" aria-label="One fewer">−</button><output aria-live="polite">' + (own === null ? '?' : own) + '</output><button type="button" data-action="island.own" data-step="1" aria-label="One more">+</button></span></span>' : '')
         + '<button type="button" class="island-act" data-action="island.turn"' + (p.w === p.h ? ' disabled title="Square pieces keep their footprint"' : '') + '>⟳ Turn</button>'
-        + (p.slug === FOUNTAIN ? '' : '<button type="button" class="island-act" data-action="island.more">Place more</button>'
+        + (p.slug === FOUNTAIN ? '' : (model.room(p.slug) > 0 ? '<button type="button" class="island-act" data-action="island.more">Place more</button>' : '')
         + '<button type="button" class="island-act is-warn" data-action="island.remove">Remove</button>')
         + '</div>';
     }
-    function closeCard() { cardId = null; card.hidden = true; node('strip').hidden = false; invalidate(); }
+    function closeCard() { cardId = null; card.hidden = true; quick.hidden = true; node('strip').hidden = false; invalidate(); }
+    function removeSelected() {
+      var p = model.pieces.get(cardId);
+      if (!p || p.slug === FOUNTAIN) return;
+      model.edit(function () { model.remove(p.id); });
+      closeCard(); say(def(p.slug).name + ' removed · ↶ brings it back'); committed();
+    }
+    // A piece the island has no more room for: show the one already placed, or say so.
+    function full(slug) {
+      var d = def(slug), n = model.count(slug);
+      if (d.limit === 1 && d.kind !== 'surface') {
+        var have = null;
+        model.pieces.forEach(function (p) { if (!have && p.slug === slug) have = p; });
+        if (have) { look(have); openCard(have.id); say(d.name + ' is one per island, and yours is here'); return; }
+      }
+      say('The island holds ' + fmt(d.limit) + ' ' + d.name + (d.limit === 1 ? '' : 's') + ', and this plan has ' + fmt(n));
+    }
+    function look(p) { cam.x = gx(p.r + p.h / 2, p.c + p.w / 2); cam.y = gy(p.r + p.h / 2, p.c + p.w / 2); cam.s = Math.max(cam.s, 1); invalidate(); }
 
     function loadBrush(slug) {
+      if (slug !== CLEAR && model.room(slug) <= 0 && !paintable(slug)) { closeAll(); full(slug); return; }
       closeAll();
       brush = slug;
       if (slug !== CLEAR) remember(slug);
@@ -347,16 +495,17 @@
           if (s === CLEAR) return '';
           var d = def(s);
           return '<li><button type="button" class="island-piece" data-action="island.load" data-slug="' + esc(s) + '" aria-label="' + esc(d.name) + '" data-own="' + (isYours(s) || !anyOwned() ? 'yes' : 'no') + '">' + art(d) + '</button></li>';
-        }).join('') + '<li><button type="button" class="island-piece" data-action="island.load" data-slug="' + CLEAR + '" aria-label="Clear" title="Clear"><span class="island-eraser" aria-hidden="true">⌫</span></button></li>';
+        }).join('');
         return;
       }
       var line, name, pic;
-      if (brush === CLEAR) { name = 'Clear'; pic = '<span class="island-eraser" aria-hidden="true">⌫</span>'; line = 'drag over pieces and paths'; }
+      if (brush === CLEAR) { name = 'Eraser'; pic = '<span class="island-eraser" aria-hidden="true">⌫</span>'; line = 'tap or drag over pieces and paths'; }
       else {
-        var d = def(brush), n = model.counts()[brush] || 0;
+        var d = def(brush), n = model.count(brush);
         name = d.name; pic = art(d);
-        line = d.kind === 'surface' ? '<span class="' + (n > d.limit ? 'is-warn' : '') + '">' + fmt(n) + ' / ' + fmt(d.limit) + '</span> · drag to paint'
-          : (paintable(brush) ? fmt(n) + ' placed · tap or drag' : fmt(n) + ' placed · tap open ground');
+        var tally = '<span class="' + (d.limit && n >= d.limit ? 'is-warn' : '') + '">' + fmt(n) + (d.limit ? ' / ' + fmt(d.limit) : '') + '</span>';
+        if (d.gems) tally += ' · ' + fmt(n * d.gems) + ' gems';
+        line = tally + (d.kind === 'surface' ? ' · drag to paint' : paintable(brush) ? ' placed · tap or drag' : ' placed · tap open sand');
         var own = owned(brush);
         if (own !== null && n > own) line += ' · <span class="is-warn">you own ' + own + '</span>';
       }
@@ -375,7 +524,10 @@
       var q = node('search').value.trim().toLowerCase();
       var list = DATA.pieces.filter(function (d) { return d.slug !== FOUNTAIN; }).filter(function (d) { return q ? d.name.toLowerCase().indexOf(q) >= 0 : d.kind === sheetKind; });
       var counts = model.counts();
-      function row(d) { var n = counts[d.slug] || 0, own = owned(d.slug); return pieceButton(d, 'island.load', (own > 0 ? 'yours ×' + own : own === 0 ? 'not owned' : '') + (n ? (own !== null ? ' · ' : '') + n + ' placed' : '')); }
+      function row(d) {
+        var n = counts[d.slug] || 0, own = owned(d.slug), placed = n ? (d.limit ? n + '/' + d.limit : n) + ' placed' : (d.limit === 1 ? 'one only' : '');
+        return pieceButton(d, 'island.load', (own > 0 ? 'yours ×' + own : own === 0 ? 'not owned' : '') + (placed ? (own !== null ? ' · ' : '') + placed : ''));
+      }
       var yours = list.filter(function (d) { return isYours(d.slug); }), others = list.filter(function (d) { return !isYours(d.slug); });
       node('catalogue').innerHTML = (yours.length ? '<p class="island-label">Yours</p><ul class="island-pieces">' + yours.map(row).join('') + '</ul>' : '')
         + (others.length ? '<p class="island-label">' + (yours.length || anyOwned() ? 'Not yours yet' : 'Every piece') + '</p><ul class="island-pieces">' + others.map(row).join('') + '</ul>' : '')
@@ -436,7 +588,8 @@
         if (brush === CLEAR) clearCell(rr, cc); else model.paint(brush, rr, cc);
       }
       g.last = [r, c];
-      hover = { slug: brush, r: r, c: c, w: 1, h: 1, ok: brush !== CLEAR };
+      if (brush !== CLEAR && model.room(brush) <= 0 && !g.told) { g.told = true; full(brush); }
+      hover = { slug: brush, r: r, c: c, w: 1, h: 1, ok: brush !== CLEAR && model.room(brush) > 0 };
       syncStrip(); invalidate();
     }
 
@@ -447,8 +600,11 @@
         return;
       }
       if (brush) {
+        if (brush !== CLEAR && model.room(brush) <= 0) { full(brush); return; }
         if (paintable(brush)) {
+          var gone = brush === CLEAR && model.pieceAt(r, c);
           model.edit(function () { if (brush === CLEAR) clearCell(r, c); else model.paint(brush, r, c); });
+          if (gone && gone.slug !== FOUNTAIN) say(def(gone.slug).name + ' removed');
         } else {
           var b = def(brush), at = model.anchorFor(b.w, b.h, r, c, -1);
           if (!at) { say('No room for ' + b.name + ' here'); return; }
@@ -561,9 +717,10 @@
         invalidate(); return;
       }
       if (k === 'Enter' || k === ' ') { if (cursor) { e.preventDefault(); if (pending) accept(); else tap(cursor.r, cursor.c); } return; }
-      if (k === 'Escape') { if (pending) reject(); else if (brush) unloadBrush(); else closeAll(); return; }
+      if (k === 'Escape') { if (pending) reject(); else if (brush) unloadBrush(); else if (ground || cardId != null) closeAll(); else if (isFull()) setFull(false); return; }
       if (k === '+' || k === '=') { zoomAt(vw / 2, vh / 2, 1.3); return; }
       if (k === '-') { zoomAt(vw / 2, vh / 2, 1 / 1.3); return; }
+      if ((k === 'Delete' || k === 'Backspace') && cardId != null && !cursor) { e.preventDefault(); removeSelected(); return; }
       var at = cursor && model.pieceAt(cursor.r, cursor.c);
       if ((k === 'Delete' || k === 'Backspace') && at && at.slug !== FOUNTAIN) { model.edit(function () { model.remove(at.id); }); closeAll(); committed(); say(def(at.slug).name + ' removed'); }
       if (k.toLowerCase() === 'r' && at) { if (!model.edit(function () { return model.turn(at.id); })) say('No room to turn it'); committed(); }
@@ -581,8 +738,8 @@
     function thumb(cv, ex) {
       var x = cv.getContext('2d'), w = cv.width / (N * 2 + 4), h = w / 2, ox = cv.width / 2, oy = (cv.height - N * 2 * h) / 2;
       function cell(r, c, col) { var px = ox + (c - r) * w, py = oy + (c + r) * h; x.fillStyle = col; x.beginPath(); x.moveTo(px, py); x.lineTo(px + w, py + h); x.lineTo(px, py + 2 * h); x.lineTo(px - w, py + h); x.fill(); }
-      x.fillStyle = '#0C1A2B'; x.fillRect(0, 0, cv.width, cv.height);
-      for (var r = 0; r < N; r++) for (var c = 0; c < N; c++) cell(r, c, '#5D7A3C');
+      x.fillStyle = SEA_MID; x.fillRect(0, 0, cv.width, cv.height);
+      for (var r = 0; r < N; r++) for (var c = 0; c < N; c++) cell(r, c, SAND);
       ex.surfaces.forEach(function (e) { cell(Math.floor(e[0] / N), e[0] % N, def(e[1]).swatch); });
       ex.pieces.forEach(function (e) {
         var d = def(e[1]), r0 = Math.floor(e[0] / N), c0 = e[0] % N;
@@ -605,8 +762,9 @@
       owner = { mine: false, name: ex.name };
       model.load({ pieces: ex.pieces.map(function (e) { return [e[0], e[1], 0]; }), surfaces: ex.surfaces });
       syncOwner(); committed();
+      setFull(true);
       fit(true);
-      board.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'end' });
+      overLimits();
     }
     function syncOwner() {
       node('owner').innerHTML = owner.mine ? '<b>Your plan</b> · saved on this device'
@@ -617,11 +775,38 @@
       node('ownedNote').textContent = store ? (n ? 'You have marked ' + n + ' kind' + (n === 1 ? '' : 's') + ' of piece as yours. It is kept with the rest of your save.' : 'Nothing marked yet.') : 'Your save cannot be read in this browser, so ownership is not kept.';
     }
 
+    /* ─── Full screen: the default. The board covers the page, so the carousel can't open. ─ */
+    function isFull() { return root.hasAttribute('data-full'); }
+    function setFull(on) {
+      root.toggleAttribute('data-full', on);
+      var btn = node('fullBtn');
+      btn.textContent = on ? 'Page' : 'Full screen';
+      btn.setAttribute('aria-pressed', String(on));
+      btn.setAttribute('aria-label', on ? 'Leave full screen and show the page' : 'Fill the screen with the board');
+      if (!on) window.scrollTo(0, 0);
+      resize();
+    }
+    // The page carousel also answers ← and →; in full screen those keys stay with the board.
+    function holdArrows(e) {
+      if (!isFull() || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+      if (e.target && e.target.closest && e.target.closest('input, textarea, select, dialog')) return;
+      e.preventDefault();
+    }
+    window.addEventListener('keydown', holdArrows, true);
+    context.cleanup(function () { window.removeEventListener('keydown', holdArrows, true); });
+
+    function overLimits() {
+      var over = model.over(), names = Object.keys(over);
+      if (names.length) say(names.length === 1 ? def(names[0]).name + ' is over its limit: ' + over[names[0]][0] + ' of ' + over[names[0]][1] : names.length + ' kinds of piece are over their limit on this plan', false);
+    }
+
     /* ─── Boot ──────────────────────────────────────────────── */
     if (window.ResizeObserver) { var ro = new ResizeObserver(resize); ro.observe(board); context.cleanup(function () { ro.disconnect(); }); }
     else context.listen(window, 'resize', resize);
     resize();
+    setFull(isFull());
     syncOwner(); syncStrip(); ownedNote();
+    if (read(TAUGHT_KEY, false)) overLimits();
     if (store && store.subscribe) context.cleanup(store.subscribe(ownedNote));
     var later = window.requestIdleCallback || function (fn) { return setTimeout(fn, 400); };
     later(function () { loadExamples(renderPresets); });
@@ -643,7 +828,8 @@
         closeCard: { run: closeCard },
         turn: { run: function () { var id = cardId; if (!model.edit(function () { return model.turn(id); })) say('No room to turn it here'); committed(); renderCard(); } },
         more: { run: function () { var p = model.pieces.get(cardId); if (p) loadBrush(p.slug); } },
-        remove: { run: function () { var p = model.pieces.get(cardId); if (!p) return; model.edit(function () { model.remove(p.id); }); closeCard(); say(def(p.slug).name + ' removed · ↶ brings it back'); committed(); } },
+        remove: { run: removeSelected },
+        full: { run: function () { setFull(!isFull()); } },
         own: { run: function (b) {
           var p = model.pieces.get(cardId); if (!p || !store) return;
           var d = def(p.slug), now = owned(p.slug), next = Math.max(0, (now === null ? 0 : now) + Number(b.dataset.step));
