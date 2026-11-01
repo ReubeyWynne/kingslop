@@ -204,8 +204,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await selected(page, tokens.at(-2));
   assert.equal(await page.locator('.deck-rail').evaluate(el => el === document.activeElement && el.getAttribute('aria-valuenow')), String(tokens.length - 1));
   await page.keyboard.press('Escape');
-  // The page you came from opens beside this one, out of ledger order, and
-  // the rail and the count still say where it lives in the ledger.
+  // The deck keeps ledger order whichever page you came from; that page is
+  // only marked on the rail.
   const vip = nav.findIndex(entry => pages[entry.self].token === 'vip');
   await page.goto(origin + '/' + nav[vip].tail + '?lang=en');
   await page.goto(origin + '/?lang=en');
@@ -213,14 +213,20 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.locator('#ledger-btn').click();
   await selected(page, 'home');
   assert.equal(await page.locator('.deck-pip.is-last').getAttribute('data-page'), 'vip');
-  await page.locator('.deck-next').click();
-  await selected(page, 'vip');
-  assert.match(await page.locator('.deck-position').textContent(), new RegExp(' ' + (vip + 1) + ' / ' + tokens.length + '$'));
+  assert.deepEqual(await page.locator('.deck-viewport > .deck-card:not(.deck-copy)').evaluateAll(els => els.map(el => el.dataset.page)), tokens);
   await page.locator('.deck-next').click();
   await selected(page, tokens[1]);
+  assert.match(await page.locator('.deck-position').textContent(), new RegExp(' 2 / ' + tokens.length + '$'));
   await page.locator('[data-deck-group="tools"]').click();
-  await selected(page, 'vip');
+  await selected(page, tokens[nav.findIndex(entry => entry.group === 'tools')]);
   await page.keyboard.press('Escape');
+  // Picking a language writes it into the address, keeping the rest of it.
+  await page.goto(origin + '/' + nav[vip].tail + '?lang=en&keep=1#top');
+  await page.waitForFunction(() => window.I18N && window.I18N.lang === 'en');
+  await page.evaluate(() => window.I18N.switchTo('de'));
+  await page.waitForFunction(() => document.documentElement.lang === 'de' && location.search === '?keep=1&lang=de' && location.hash === '#top');
+  await page.goto(origin + '/?lang=fr');
+  await page.waitForFunction(() => window.I18N && window.I18N.lang === 'fr' && location.search === '?lang=fr');
   await page.evaluate(() => sessionStorage.clear());
   for (const lang of ['de', 'ar']) {
     await page.goto(origin + '/?lang=' + lang);
@@ -235,6 +241,6 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await selected(page, 'home');
   await fits(page, true);
   await page.close();
-  console.log('Deck geometry, native scrolling, keyboard, rail, last page, colour interpolation, translations and reduced motion passed.');
+  console.log('Deck geometry, native scrolling, keyboard, rail, fixed order, language links, colour interpolation, translations and reduced motion passed.');
 }).catch(error => { console.error(error); process.exitCode = 1; });
 

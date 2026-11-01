@@ -27,9 +27,6 @@
     var viewport = deck ? deck.querySelector('.deck-viewport') : null;
     var rail = deck ? deck.querySelector('.deck-rail') : null;
     var pips = rail ? Array.prototype.slice.call(rail.querySelectorAll('.deck-pip')) : [];
-    // The covers in ledger order. `cards` is the order on the strip, which
-    // differs from it only when the page you came from is brought alongside.
-    var ledgerCards = cards.slice();
     var position = 0;
     var targetPosition = null;
     var suppressUntil = 0;
@@ -41,8 +38,7 @@
 
     function wrap(n) { return (n % cards.length + cards.length) % cards.length; }
 
-    // The page this tab came from, remembered per tab: the deck puts its cover
-    // beside this one, so the commonest hop, straight back, is a single swipe.
+    // The page this tab came from, remembered per tab and marked on the rail.
     // A reload is not a visit, so it keeps the page from before.
     var lastPage = '';
     function rememberVisit() {
@@ -75,33 +71,13 @@
       after = cards.map(function (card) { return viewport.appendChild(copyCard(card)); });
       before = cards.map(function (card) { return viewport.insertBefore(copyCard(card), cards[0]); });
     }
-    // On opening, the cover of the page you came from moves to just after this
-    // page's (with its copies), unless it is already a neighbour. The rail and
-    // the position count keep ledger order, so they still say where it lives.
-    function arrangeDeck() {
-      if (!after.length) return;
-      var here = ledgerCards.findIndex(function (card) { return card.hasAttribute('aria-current'); });
-      var last = ledgerCards.findIndex(function (card) { return card.getAttribute('data-page') === lastPage; });
-      var gap = Math.abs(last - here);
-      var order = ledgerCards.slice();
-      if (here >= 0 && last >= 0 && gap > 1 && gap < ledgerCards.length - 1) {
-        var moved = order.splice(last, 1)[0];
-        order.splice(order.indexOf(ledgerCards[here]) + 1, 0, moved);
-      }
+    // The deck keeps one fixed order, the ledger's, every time it opens. The
+    // page you came from is only marked on the rail, never moved.
+    function markLastPage() {
+      var here = cards.findIndex(function (card) { return card.hasAttribute('aria-current'); });
+      var last = cards.findIndex(function (card) { return card.getAttribute('data-page') === lastPage; });
       pips.forEach(function (pip, i) { pip.classList.toggle('is-last', i === last && i !== here); });
-      if (order.every(function (card, i) { return card === cards[i]; })) return;
-      var nextBefore = order.map(function (card) { return before[cards.indexOf(card)]; });
-      var nextAfter = order.map(function (card) { return after[cards.indexOf(card)]; });
-      nextBefore.concat(order, nextAfter).forEach(function (el) { viewport.appendChild(el); });
-      cards = order;
-      before = nextBefore;
-      after = nextAfter;
-      running.forEach(function (el) { el.classList.remove('is-running'); });
-      running = [];
-      measureDeck();
     }
-    function ledgerIndex(index) { return ledgerCards.indexOf(cards[index]); }
-    function jumpDeck(at, focusCard, instant) { browseDeck(cards.indexOf(ledgerCards[at]), focusCard, instant); }
 
     // Cover centres are measured once per layout, not on every scroll event:
     // reading them right after a selection change forced a style and layout
@@ -162,7 +138,7 @@
         card.tabIndex = i === index ? 0 : -1;
       });
       runScene(index, anchor);
-      var at = ledgerIndex(index);
+      var at = index;
       pips.forEach(function (pip, i) { pip.classList.toggle('is-selected', i === at); });
       if (rail) rail.setAttribute('aria-valuenow', String(at + 1));
       groups.forEach(function (button) {
@@ -174,7 +150,7 @@
       var card = cards[position];
       var label = deck.querySelector('.deck-position');
       var title = card.querySelector('.deck-card-title').textContent;
-      var text = title + ' · ' + fmt(ledgerIndex(position) + 1) + ' / ' + fmt(cards.length);
+      var text = title + ' · ' + fmt(position + 1) + ' / ' + fmt(cards.length);
       if (rail) rail.setAttribute('aria-valuetext', title);
       // Rewrite the label's text in place: inserting a new text node re-checks
       // every :has() rule above it (the home page's hover themes sit on
@@ -253,7 +229,7 @@
       document.addEventListener('touchmove', trackTouch, { passive: true });
       deck.showModal();
       document.documentElement.classList.add('deck-open');
-      arrangeDeck();
+      markLastPage();
       measureDeck();
       browseDeck(Math.max(0, cards.findIndex(function (card) { return card.hasAttribute('aria-current'); })), false, true);
       document.dispatchEvent(new CustomEvent('deck:open'));
@@ -362,14 +338,14 @@
         if (delta) { e.preventDefault(); browseDeck((targetPosition === null ? position : targetPosition) + delta, true); }
         else if (e.key === 'Home' || e.key === 'End') {
           e.preventDefault();
-          jumpDeck(e.key === 'Home' ? 0 : ledgerCards.length - 1, true);
+          browseDeck(e.key === 'Home' ? 0 : cards.length - 1, true);
         }
       });
       deck.querySelector('.deck-prev').addEventListener('click', function () { browseDeck((targetPosition === null ? position : targetPosition) - 1); });
       deck.querySelector('.deck-next').addEventListener('click', function () { browseDeck((targetPosition === null ? position : targetPosition) + 1); });
       groups.forEach(function (button) {
         button.addEventListener('click', function () {
-          jumpDeck(ledgerCards.findIndex(function (card) { return card.getAttribute('data-group') === button.getAttribute('data-deck-group'); }));
+          browseDeck(cards.findIndex(function (card) { return card.getAttribute('data-group') === button.getAttribute('data-deck-group'); }));
         });
       });
       if (rail) wireRail();
@@ -402,7 +378,7 @@
           if (d < best) { best = d; at = i; }
         });
         var current = targetPosition === null ? position : targetPosition;
-        if (ledgerIndex(current) !== at) jumpDeck(at, false, true);
+        if (current !== at) browseDeck(at, false, true);
       }
       function stop() { scrubbing = null; rail.classList.remove('is-scrubbing'); }
       rail.addEventListener('pointerdown', function (e) {
@@ -419,14 +395,14 @@
       rail.addEventListener('lostpointercapture', stop);
       rail.addEventListener('keydown', function (e) {
         if (e.altKey || e.metaKey || e.ctrlKey) return;
-        var at = ledgerIndex(targetPosition === null ? position : targetPosition);
-        var to = { ArrowLeft: at - 1, ArrowDown: at - 1, ArrowRight: at + 1, ArrowUp: at + 1, PageDown: at - 3, PageUp: at + 3, Home: 0, End: ledgerCards.length - 1 }[e.key];
+        var at = targetPosition === null ? position : targetPosition;
+        var to = { ArrowLeft: at - 1, ArrowDown: at - 1, ArrowRight: at + 1, ArrowUp: at + 1, PageDown: at - 3, PageUp: at + 3, Home: 0, End: cards.length - 1 }[e.key];
         if (to === undefined) return;
         e.preventDefault();
         e.stopPropagation();
-        to = Math.max(0, Math.min(ledgerCards.length - 1, to));
+        to = Math.max(0, Math.min(cards.length - 1, to));
         rail.dispatchEvent(new CustomEvent('deck:scrub', { bubbles: true }));
-        if (to !== at) jumpDeck(to);
+        if (to !== at) browseDeck(to);
       });
     }
 

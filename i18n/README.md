@@ -12,7 +12,9 @@ no local server, no CORS errors.
    bear-hunt, vikings-vengeance, swordland-showdown) picks the language **before
    first paint** in this order: `?lang=` URL param → saved choice (`localStorage
    "bh_lang"`) → browser language → English. It sets `<html lang>` (and `dir` for RTL
-   languages) immediately.
+   languages) immediately. A `?lang=` link is how to send someone the site in a
+   given language: `https://dey.ci/bear-hunt/?lang=de` opens in German, and the
+   choice is saved, so pages reached from it stay in German.
 2. **`i18n.js`** loads `i18n/<lang>.js` by appending a `<script>` tag, then applies it.
    The dictionary path resolves from `i18n.js`'s own URL (not the document), so it
    finds `/i18n/<lang>.js` from any page depth — a document-relative path would 404
@@ -27,8 +29,9 @@ no local server, no CORS errors.
    with the active locale (page scripts use `BH.fmt`), and re-paints on the
    `i18n:change` event. Page toys (calculators, page eggs) register through
    `window.BH.registerPage(...)` from `bear-hunt.js` / `vikings.js` / `swordland.js`.
-4. The topbar flag dropdown (`#lang-btn` + `#lang-menu`) switches live and remembers
-   the choice. It is a custom listbox with inline SVG flags (flag emojis render as
+4. The topbar flag dropdown (`#lang-btn` + `#lang-menu`) switches live, remembers
+   the choice, and writes it into the address bar as `?lang=<code>` (keeping every
+   other parameter and the `#hash`), so a copied link opens in that language. It is a custom listbox with inline SVG flags (flag emojis render as
    letter-pairs on Windows, so the flags are real SVG).
 
 ## Files
