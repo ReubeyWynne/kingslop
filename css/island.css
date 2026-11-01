@@ -16,7 +16,7 @@ html[data-page="island"] {
   --signal-tint: rgba(125, 189, 240, .08);
   --signal-glow: rgba(125, 189, 240, .22);
   --signal-halo: rgba(125, 189, 240, .28);
-  --island-sea: #0C1A2B;
+  --island-sea: #1772B0;
   --island-warn: #E07A6A;
   --island-tap: 2.75rem;
 }
