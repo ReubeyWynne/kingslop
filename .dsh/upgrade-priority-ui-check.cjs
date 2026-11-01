@@ -5,6 +5,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
   fs.mkdirSync(output, { recursive: true });
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } }), page = await context.newPage(), errors = [];
   page.on('pageerror', e => errors.push(e.message));
+  // The savings projection counts days to the next KvK prep or Strongest
+  // Governor, so pin the clock: 13 days before prep opens on 2 Nov 2026.
+  await context.clock.setFixedTime(new Date('2026-10-20T12:00:00Z'));
   await context.addInitScript(() => { window.moduleErrors = []; document.addEventListener('module:error', e => moduleErrors.push(e.detail)); });
   const steps = () => page.locator('[data-target="upgrade-priority.list"] li h3').allTextContents();
 

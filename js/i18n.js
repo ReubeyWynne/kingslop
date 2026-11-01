@@ -199,6 +199,21 @@
     dispatch('i18n:change');
   }
 
+  // A language the reader picks goes into the address bar as ?lang=…, so the
+  // link they copy opens in that language for whoever they send it to. Every
+  // other parameter and the #hash stay as they are. A page opened without
+  // ?lang= keeps a clean address until the reader picks a language.
+  function linkLanguage() {
+    try {
+      // Edit the query as text: re-serialising it would re-encode the
+      // planners' own parameters.
+      var keep = location.search.replace(/^\?/, '').split('&').filter(function (kv) { return kv && !/^lang=/.test(kv); });
+      keep.push('lang=' + lang);
+      var address = location.pathname + '?' + keep.join('&') + location.hash;
+      if (address !== location.pathname + location.search + location.hash) history.replaceState(history.state, '', address);
+    } catch (e) { /* file:// or an old browser: the saved choice still holds */ }
+  }
+
   function switchTo(code) {
     if (!code || (code === lang && ready)) return;
     var wasLang = lang;
@@ -219,6 +234,7 @@
         return;
       }
       try { localStorage.setItem(KEY, lang); } catch (e) { /* private mode */ }
+      linkLanguage();
       apply();
       dispatch('i18n:change');
     });
