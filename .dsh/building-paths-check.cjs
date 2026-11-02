@@ -57,7 +57,7 @@ const query = E.encode(state);
 assert.equal(query, 'goal=town-center:TG2,barracks:TG2&have=embassy:TG1-2,house-1:2&speed=42.5');
 const back = E.decode(D, '?' + query);
 assert.deepEqual({ goals: back.goals, have: back.have, speed: back.speed }, state);
-assert.deepEqual(E.decode(D, '?goal=nope:3,town-center:99,embassy:5&have=embassy:99,house-1:2&speed=-4&pan=9'), { goals: [{ building: 'embassy', level: '5' }], have: { 'house-1': '2' }, speed: null, doubleTime: false, pan: null });
+assert.deepEqual(E.decode(D, '?goal=nope:3,town-center:99,embassy:5&have=embassy:99,house-1:2&speed=-4&pan=9'), { goals: [{ building: 'embassy', level: '5' }], have: { 'house-1': '2' }, speed: null, doubleTime: false, pan: null, saul: null });
 // Double Time and Pan's Master Architect ride in the link too.
 assert.equal(E.encode({ goals: [{ building: 'academy', level: '5' }], speed: 30, doubleTime: true, pan: 5 }), 'goal=academy:5&speed=30&dt=1&pan=5');
 assert.deepEqual((({ speed, doubleTime, pan }) => ({ speed, doubleTime, pan }))(E.decode(D, '?goal=academy:5&speed=30&dt=1&pan=5')), { speed: 30, doubleTime: true, pan: 5 });
@@ -70,6 +70,14 @@ assert.equal(E.stepSeconds(100000, { speed: 100 }), 50000);
 assert.equal(E.stepSeconds(100000, { speed: 100, doubleTime: true }), 40000);
 assert.equal(E.stepSeconds(100000, { speed: 100, doubleTime: true, pan: 8 }), 40000 - 8 * 3600);
 assert.equal(E.stepSeconds(3600, { pan: 2 }), 0);
+// Saul's Resourceful takes its share off bread, wood, stone and iron, rounded up per upgrade,
+// and never off Truegold; level 0 leaves the steps as they are. Its level rides in the link.
+assert.deepEqual(E.discount([{ cost: { bread: 1001, iron: 200, truegold: 50, 'tempered-truegold': 4 }, time: 60 }], 5), [{ cost: { bread: 851, iron: 170, truegold: 50, 'tempered-truegold': 4 }, time: 60 }]);
+const plain = [{ cost: { wood: 10 } }];
+assert.equal(E.discount(plain, 0), plain);
+assert.equal(E.encode({ goals: [{ building: 'academy', level: '5' }], saul: 3 }), 'goal=academy:5&saul=3');
+assert.equal(E.decode(D, '?goal=academy:5&saul=3').saul, 3);
+assert.equal(E.decode(D, '?goal=academy:5&saul=6').saul, null);
 assert.deepEqual(E.timed([{ time: 7200 }, { time: 36000 }, { time: null }], { pan: 2 }), { time: 28800, known: false });
 assert.equal(E.decode(D, '?goal=town-center:3').have, null);
 // The first links carried one goal as b and to; they still open.

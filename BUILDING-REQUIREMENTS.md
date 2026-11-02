@@ -24,13 +24,13 @@
 
 The goal is a row of building tiles (all 20, art from `img/buildings/`, see its `SOURCES.md`): a tap opens that building's goal level grid (adding it to the goal first if it was not in it), the grid has **Remove from goal** once there are two goals, and the tile badge shows the goal level. The answer (headline, totals, time) is pinned to the foot of the screen while the cards scroll under it.
 
-Totals add every step's cost; times are per step (each step is its own upgrade) with the construction speed settings below. Saul's resource discount is not applied.
+Totals add every step's cost; times are per step (each step is its own upgrade) with the construction speed settings below. Saul's Resourceful skill (set under Construction speed, levels 1–5: 3, 6, 9, 12, 15%) takes that share off each step's bread, wood, stone and iron, rounded up per step, never off Truegold or Tempered Truegold; the level rides in the link as `saul=`.
 
 ## Construction speed
 
 The **Construction speed** fold builds the time an upgrade really takes, in `BuildingPathsEngine.boost` and `stepSeconds`:
 
-- **The base figure**, either the Construction Speed in the game's Bonus Overview (read with no temporary boost running), or **Add it up** from its parts: VIP (none, VIP 4–8 +10%, VIP 9+ +20%), Saul's construction skill (levels 1–5: +3, 6, 9, 12, 15%) and research with alliance tech as one figure (Tooling Up, Adaptive Tools).
+- **The base figure**, either the Construction Speed in the game's Bonus Overview (read with no temporary boost running), or **Add it up** from its parts: VIP (none, VIP 4–8 +10%, VIP 9+ +20%), Saul's construction skill (levels 1–5: +3, 6, 9, 12, 15%; the Saul row shows in both modes because its cost discount always applies, but its speed is only added here) and research with alliance tech as one figure (Tooling Up, Adaptive Tools).
 - **Boosts when each upgrade starts** (an upgrade's time is fixed when it starts): the Gray Wolf's Construction Aide (levels 1–5: +5, 7, 9, 12, 15%, `_data/pets.json`), the Chief Minister (+10%, +15%† while the kingdom holds the High King, `_data/troops.json`), the Ground Works decree (+10%), KvK (+5%) and the Double Time decree (−20% time).
 - **Pan's Master Architect** (levels 1–5: 2, 3, 4, 6, 8 hours off every new upgrade, after speed bonuses, `_data/masters.json`). Its level comes from the save's Masters (`masters.roster.pan.skills[2]`) until it is set here.
 

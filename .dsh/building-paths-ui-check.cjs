@@ -122,6 +122,25 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await open('?lang=en&b=town-center&to=20&speed=100');
   assert.match(await page.locator('.reqs-time').innerText(), /with \+100%$/);
 
+  // Saul's Resourceful cuts the basic resources (rounded up per upgrade), never Truegold, in
+  // either speed mode, and rides in the link.
+  await open('?lang=en&goal=town-center:TG1');
+  const saulTotals = () => page.locator('.reqs-answer .reqs-cost li').evaluateAll(list => Object.fromEntries(list.map(li => [li.querySelector('.reqs-res').textContent, li.title])));
+  const unsauled = await saulTotals();
+  assert.equal(await page.locator('.reqs-saul').isVisible(), false);
+  await page.locator('#reqs-speed summary').click();
+  await page.locator('[data-key="saul"][data-value="5"]').click();
+  await page.waitForFunction(() => /saul=5/.test(location.search));
+  const sauled = await saulTotals();
+  assert.match(await page.locator('.reqs-saul').innerText(), /^Saul −15% on bread, wood, stone and iron$/);
+  assert.equal(sauled.Truegold, unsauled.Truegold, 'Truegold is not discounted');
+  const n = s => Number(s.replace(/[^0-9]/g, ''));
+  assert(n(sauled.Bread) < n(unsauled.Bread) && n(sauled.Bread) >= Math.floor(n(unsauled.Bread) * 0.85), 'bread is 15% less');
+  assert.doesNotMatch(await page.locator('.reqs-time').innerText(), /with/, 'in Bonus Overview mode Saul adds no speed');
+  await open('?lang=en&goal=town-center:TG1&saul=5');
+  assert.equal((await saulTotals()).Bread, sauled.Bread);
+  await page.evaluate(() => localStorage.removeItem('bh:construction'));
+
   // The goals and the construction speed settings are kept for the next visit.
   await open('?lang=en&goal=town-center:TG2,barracks:TG2');
   await page.locator('#reqs-speed summary').click();

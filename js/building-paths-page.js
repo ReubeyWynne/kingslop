@@ -41,7 +41,7 @@
     // Construction speed: the Bonus Overview figure or its parts, the boosts running when an upgrade
     // starts, and Pan's Master Architect level (from the save's Masters when it is not set here).
     var cs = { mode: 'overview', overview: null, vip: 0, saul: 0, research: null, wolf: 0, position: '', groundWorks: false, kvk: false, doubleTime: false, pan: null };
-    if (link.speed !== null || link.doubleTime || link.pan !== null) Object.assign(cs, { overview: link.speed, doubleTime: link.doubleTime, pan: link.pan });
+    if (link.speed !== null || link.doubleTime || link.pan !== null || link.saul !== null) Object.assign(cs, { overview: link.speed, doubleTime: link.doubleTime, pan: link.pan, saul: link.saul || 0 });
     else {
       var savedSpeed = stored('bh:construction');
       if (savedSpeed && typeof savedSpeed === 'object') Object.keys(cs).forEach(function (k) { if (k in savedSpeed) cs[k] = savedSpeed[k]; });
@@ -101,6 +101,8 @@
         list.appendChild(li);
       });
     }
+    // Steps at the costs the reader pays: Saul's Resourceful off the basic resources.
+    function paid(list) { return E.discount(list, cs.saul); }
     function boosts() {
       var b = E.boost(cs), out = [];
       if (b.speed) out.push('+' + api.fmt(b.speed) + '%');
@@ -193,7 +195,7 @@
       var research = one('parts').querySelector('[data-field="research"]');
       if (document.activeElement !== research) research.value = cs.research === null ? '' : String(cs.research);
       group('vip', [chip('vip', 0, '—', !cs.vip, none), chip('vip', 4, 'VIP 4–8 · +10%', cs.vip === 4), chip('vip', 9, 'VIP 9+ · +20%', cs.vip === 9)]);
-      group('saul', E.BOOST.saul.map(function (p, i) { return chip('saul', i, i ? '+' + api.fmt(p) + '%' : '—', (cs.saul || 0) === i, i ? t('skillLevel', 'level {n}', { n: i }) + ', +' + p + '%' : none); }));
+      group('saul', E.BOOST.saul.map(function (p, i) { return chip('saul', i, i ? api.fmt(p) + '%' : '—', (cs.saul || 0) === i, i ? t('skillLevel', 'level {n}', { n: i }) + ', ' + api.fmt(p) + '%' : none); }));
       group('wolf', E.BOOST.wolf.map(function (p, i) { return chip('wolf', i, i ? '+' + api.fmt(p) + '%' : '—', (cs.wolf || 0) === i, i ? t('skillLevel', 'level {n}', { n: i }) + ', +' + p + '%' : none); }));
       var minister = api.tr('town.training.minister', 'Chief Minister');
       group('position', [chip('position', '', '—', !cs.position, none), chip('position', 'minister', minister + ' · +10%', cs.position === 'minister'),
@@ -271,13 +273,13 @@
     }
 
     function address(withLevels) {
-      var b = E.boost(cs), state = { goals: goals, speed: b.speed, doubleTime: b.doubleTime, pan: cs.pan || 0 };
+      var b = E.boost(cs), state = { goals: goals, speed: b.speed, doubleTime: b.doubleTime, pan: cs.pan || 0, saul: cs.saul || 0 };
       if (withLevels) { var h = have(), named = E.involved(D, goals); state.have = {}; named.forEach(function (k) { if (h[k] !== undefined) state.have[k] = h[k]; }); }
       return E.encode(state);
     }
     function syncAddress() {
       var kept = new URLSearchParams(location.search);
-      ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan'].forEach(function (k) { kept.delete(k); });
+      ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan', 'saul'].forEach(function (k) { kept.delete(k); });
       var rest = kept.toString().replace(/(^|&)guest=(&|$)/, '$1guest$2');
       try { history.replaceState(history.state, '', location.pathname + '?' + (rest ? rest + '&' : '') + address(guest) + location.hash); } catch (ignored) {}
     }
@@ -293,9 +295,10 @@
         pointsList(one('points'), {}, null);
       } else {
         head.textContent = t('headline', '{goal} · upgrades: {n}', { goal: goalName, n: api.fmt(result.total.steps) });
-        costList(one('total'), result.total);
+        var paidTotal = E.total(paid(result.steps.map(function (x) { return x.step; })));
+        costList(one('total'), paidTotal);
         one('time').textContent = timeText(result.total, result.steps.map(function (x) { return x.step; }));
-        pointsList(one('points'), result.total.cost, result.steps.map(function (x) { return x.step; }));
+        pointsList(one('points'), paidTotal.cost, result.steps.map(function (x) { return x.step; }));
       }
       // One row per building the plan raises, plus any level the reader gave that the goal's
       // path names, so a level set too high can be set back. Prerequisites first, the goal last.
@@ -330,7 +333,7 @@
         }
         if (reason) body.appendChild(el('p', 'reqs-run-why', reason));
         if (part.length) {
-          var sub = E.total(part), costs = el('ul', 'reqs-cost reqs-cost-small');
+          var sub = E.total(paid(part)), costs = el('ul', 'reqs-cost reqs-cost-small');
           costList(costs, sub, true);
           if (sub.time) costs.appendChild(el('li', 'reqs-run-time', stepTime(part) + (sub.unverified.time ? '†' : '')));
           body.appendChild(costs);
@@ -344,6 +347,9 @@
         steps.appendChild(li);
       });
       (result.blocked || []).forEach(function (b) { steps.appendChild(el('li', 'reqs-blocked', name(b.building) + ' ' + b.level + ' · ' + t('blocked', 'no source lists what this step needs'))); });
+      var saulP = E.BOOST.saul[cs.saul || 0] || 0;
+      one('saulCost').hidden = !saulP || result.state === 'met';
+      one('saulCost').textContent = saulP ? t('saulCost', 'Saul −{p}% on bread, wood, stone and iron', { p: api.fmt(saulP) }) : '';
       var flag = one('flag'), any = Object.keys(result.total.unverified || {}).length;
       flag.hidden = !any;
       flag.textContent = any ? t('oneSource', '† Only one source gives this figure.') : '';
@@ -401,7 +407,7 @@
           // Guest mode is chosen before the page's modules mount, so the switch reloads the
           // page into or out of it with the same goals; leaving drops the link's levels.
           var kept = new URLSearchParams(location.search);
-          ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan', 'guest'].forEach(function (k) { kept.delete(k); });
+          ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan', 'saul', 'guest'].forEach(function (k) { kept.delete(k); });
           var rest = kept.toString();
           location.assign(location.pathname + '?' + (rest ? rest + '&' : '') + address(false) + (guest ? '' : '&guest') + location.hash);
         } },

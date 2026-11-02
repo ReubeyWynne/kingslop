@@ -33,6 +33,7 @@ self: buildings
   <div class="reqs-answer" aria-live="polite">
     <p class="reqs-headline" data-target="building-paths.headline"></p>
     <ul class="reqs-cost" data-target="building-paths.total"></ul>
+    <p class="reqs-saul" data-target="building-paths.saulCost" hidden></p>
     <p class="reqs-time" data-target="building-paths.time"></p>
     <table class="reqs-points" data-target="building-paths.points" hidden></table>
     <p class="reqs-flag" data-target="building-paths.flag" hidden></p>
@@ -55,9 +56,9 @@ self: buildings
       </div>
       <div data-target="building-paths.parts" hidden>
         <div class="reqs-boost"><span class="reqs-boost-name">VIP</span><div class="reqs-chips" role="group" aria-label="VIP" data-boost="vip"></div></div>
-        <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.saulSkill">Saul's construction skill</span><div class="reqs-chips" role="group" data-boost="saul"></div></div>
         <div class="reqs-boost"><label><span data-i18n="reqs.research">Research and alliance tech (%)</span><input type="number" inputmode="decimal" min="0" max="500" step="0.1" data-field="research" data-action="building-paths.number"></label><p class="note" data-i18n="reqs.researchNote">Tooling Up in the Academy and Adaptive Tools in alliance tech.</p></div>
       </div>
+      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.saulSkill">Saul's construction skill</span><div class="reqs-chips" role="group" data-boost="saul"></div><p class="note" data-i18n="reqs.saulNote">Resourceful: the same share off construction time and off bread, wood, stone and iron (not Truegold). Its speed is already in your Bonus Overview figure; with Add it up it is counted here.</p></div>
       <h3 class="reqs-boost-head" data-i18n="reqs.whileBuilding">Boosts when you start each upgrade</h3>
       <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.wolfSkill">Gray Wolf's skill</span><div class="reqs-chips" role="group" data-boost="wolf"></div></div>
       <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.position">Kingdom position</span><div class="reqs-chips" role="group" data-boost="position"></div></div>
@@ -87,7 +88,7 @@ self: buildings
   </dialog>
   <section class="section reqs-sources" id="reqs-sources">
     <h2 data-i18n="directory.sources">Sources &amp; confidence</h2>
-    <p data-i18n="reqs.sourceNote">Prerequisites, costs and base times from Kingshot Optimizer, checked against Kingshot Data and KS h5joy. A figure marked † has only one source: Houses, the Clinic, resource buildings and every level past TG 8 are Kingshot Optimizer only. Saul's resource discount is not applied. Check a long upgrade in game before you start it.</p>
+    <p data-i18n="reqs.sourceNote">Prerequisites, costs and base times from Kingshot Optimizer, checked against Kingshot Data and KS h5joy. A figure marked † has only one source: Houses, the Clinic, resource buildings and every level past TG 8 are Kingshot Optimizer only. Check a long upgrade in game before you start it.</p>
     <ul>{% for s in data.sources %}<li><a href="{{ s[1].url }}">{{ s[1].label | escape }}</a></li>{% endfor %}</ul>
   </section>
 </main>
