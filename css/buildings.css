@@ -59,6 +59,12 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 .reqs-run-time { color: var(--ink-muted); }
 .reqs-run-why { flex-basis: 100%; margin: 0; color: var(--ink-dim); font-size: var(--step--1); }
 .reqs-time, .reqs-flag { margin: .35rem 0 0; color: var(--ink-dim); font-size: var(--step--1); }
+.reqs-points { list-style: none; padding: 0; margin: .35rem 0 0; display: grid; gap: .15rem; font-size: var(--step--1); }
+.reqs-points li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 .6rem; }
+.reqs-points b { color: var(--amber); font-weight: normal; }
+.reqs-sped, .reqs-when { color: var(--ink-dim); }
+.reqs-when { flex-basis: 100%; }
+.reqs-points[hidden] { display: none; }
 .reqs-more { margin-block: var(--space-s); }
 .reqs-more summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--amber); }
 .reqs-more label { display: grid; gap: 0.4rem; max-width: 20rem; }

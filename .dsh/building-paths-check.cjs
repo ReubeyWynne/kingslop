@@ -127,4 +127,13 @@ for (const file of fs.readdirSync(path.join(root, 'i18n')).filter(f => f.endsWit
     for (const token of (en[key] || dict[key]).match(/\{\w+\}/g) || []) assert.ok(dict[key].includes(token), file + ' ' + key + ' ' + token);
   }
 }
+// Event points: Truegold and Tempered Truegold at each event's best days, speedups per minute
+// of the plan's time; days that pay the same are listed together.
+const R = JSON.parse(fs.readFileSync(path.join(root, '_data/event_rules.json'), 'utf8'));
+assert.deepEqual(E.points(R.events, { truegold: 100, 'tempered-truegold': 2, wood: 9 }, 10 * 60 + 59), [
+  { event: 'prep', days: [1, 2, 5], items: 260000, speedups: 300 },
+  { event: 'sg', days: [1], items: 260000, speedups: 300 },
+  { event: 'brawl', days: [1, 2, 5, 6], items: 125000, speedups: 180 }]);
+assert.deepEqual(E.points(R.events, {}, 0), [], 'nothing spent scores nothing');
+assert.ok(fs.readFileSync(path.join(root, 'js/building-paths-data.liquid'), 'utf8').includes('event_rules.events'), 'the page carries the event rates');
 console.log('building paths ok:', D.buildings.reduce((n, b) => n + b.levels.length, 0), 'levels,', keys.size, 'keys');

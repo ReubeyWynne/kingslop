@@ -166,6 +166,17 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await open('?lang=en&goal=town-center:TG2,barracks:TG2');
   await page.screenshot({ path: path.join(output, 'en-1280.png'), fullPage: true });
+
+  // A Truegold goal says what it scores in each event, as spent and with all its time sped up;
+  // events that pay the same share a line.
+  await page.setViewportSize({ width: 390, height: 900 });
+  await open('?lang=en&goal=town-center:TG4,barracks:TG4,range:TG4,command-center:TG4,stable:TG4&have=barracks:TG3,command-center:TG2,embassy:TG2-2,range:TG3,stable:TG3,town-center:TG3&speed=117.2&dt=1&pan=2');
+  assert.deepEqual(await page.locator('.reqs-points li').allInnerTexts(), [
+    '8.66m event points\n11.04m with speedups\nKvK prep days 1, 2, 5 · Strongest Governor days 1, 2, 5, 7',
+    '5.42m event points\n6.84m with speedups\nAlliance Brawl days 1, 2, 5, 6']);
+  await page.screenshot({ path: path.join(output, 'en-390-points.png') });
+  await open('?lang=en&goal=town-center:TG3&have=town-center:TG3');
+  assert(await page.locator('.reqs-points').isHidden(), 'a goal already met scores nothing');
   assert.deepEqual(errors, []);
   console.log('building requirements UI ok');
 });
