@@ -38,7 +38,7 @@ Speed bonuses add up and divide each step's base time; Double Time then multipli
 
 ## Event points
 
-The pinned answer also says what the plan scores in events, from `BuildingPathsEngine.points` over `_data/event_rules.json` (only its event days reach the page, through `js/building-paths-data.liquid`). For KvK prep, Strongest Governor and Alliance Brawl it takes the days that pay most for the plan's Truegold and Tempered Truegold (2,000 and 30,000 a piece in prep and Strongest Governor, 1,250 Truegold in the Brawl), and adds the construction speedups that would finish the plan's time at the construction speed set above (30 a minute, 18 in the Brawl). The first figure is what spending the Truegold scores; the second assumes every upgrade is finished with speedups. Events that pay the same share one line.
+The pinned answer also says what the plan scores in events, from `BuildingPathsEngine.points` over `_data/event_rules.json` (only its event days reach the page, through `js/building-paths-data.liquid`). For KvK prep, Strongest Governor and Alliance Brawl it takes the days that pay most for the plan's Truegold and Tempered Truegold (2,000 and 30,000 a piece in prep and Strongest Governor, 1,250 Truegold in the Brawl), and adds the construction speedups that would finish the plan's time at the construction speed set above (30 a minute, 18 in the Brawl). The first figure is what spending the Truegold scores; the second assumes every upgrade is finished with speedups. The answer shows them as a small table, one row per event: Spent, then Sped up. Truegold and Tempered Truegold counts under 100,000 read exactly (4,332, not 4.3k).
 
 ## Save, guest mode and links
 

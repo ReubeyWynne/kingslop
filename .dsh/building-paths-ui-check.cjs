@@ -171,9 +171,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
   // events that pay the same share a line.
   await page.setViewportSize({ width: 390, height: 900 });
   await open('?lang=en&goal=town-center:TG4,barracks:TG4,range:TG4,command-center:TG4,stable:TG4&have=barracks:TG3,command-center:TG2,embassy:TG2-2,range:TG3,stable:TG3,town-center:TG3&speed=117.2&dt=1&pan=2');
-  assert.deepEqual(await page.locator('.reqs-points li').allInnerTexts(), [
-    '8.66m event points\n11.04m with speedups\nKvK prep days 1, 2, 5 · Strongest Governor days 1, 2, 5, 7',
-    '5.42m event points\n6.84m with speedups\nAlliance Brawl days 1, 2, 5, 6']);
+  const cells = await page.locator('.reqs-points tr').evaluateAll(rows => rows.map(r => [...r.cells].map(c => c.textContent)));
+  assert.deepEqual(cells, [['Event points', 'Spent', 'Sped up'],
+    ['KvK prep days 1, 2, 5', '8.66m', '11.04m'], ['Strongest Governor days 1, 2, 5, 7', '8.66m', '11.04m'], ['Alliance Brawl days 1, 2, 5, 6', '5.42m', '6.84m']]);
+  assert.match(await page.locator('.reqs-answer .reqs-cost').innerText(), /4,332/, 'Truegold reads exactly');
+  assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'the points table fits a phone');
   await page.screenshot({ path: path.join(output, 'en-390-points.png') });
   await open('?lang=en&goal=town-center:TG3&have=town-center:TG3');
   assert(await page.locator('.reqs-points').isHidden(), 'a goal already met scores nothing');
