@@ -56,7 +56,23 @@ const meta = G.plan('gear', gear, { satin: 1e6, 'gilded-threads': 1e4, 'artisans
 assert.ok(meta.steps.length > 0 && meta.steps.every(s => s.troop !== 'cav'), 'a troop at 0 is left where it is');
 assert.equal(G.plan('gear', gear, bag, { goal: 'score' }).profile, 'score', 'an older goal of score reads as the score profile');
 assert.throws(() => G.plan('gear', gear, bag, { profile: 'whale' }));
-assert.deepEqual(G.profiles(), ['bear', 'score', 'custom']);
+assert.deepEqual(G.profiles(), ['bear', 'growth', 'combat', 'gen4', 'garrison', 'equal', 'score', 'custom']);
+// One set of priority profiles: Governor gear's are Hero gear's, same names, order and weights.
+{
+  const hero = require('../js/hero-gear-engine.js').PROFILES;
+  assert.deepEqual(JSON.parse(JSON.stringify(hero)), data.profiles, 'Hero gear and Governor gear share their profiles');
+  assert.deepEqual(Object.keys(hero), G.profiles().slice(0, 6));
+  assert.deepEqual(G.weights({ profile: 'growth' }), { inf: 2.2, cav: 0.6, arc: 2.1 }, 'a troop weight is lethality plus health');
+}
+// Event points per kind, from the event rules: gear has no published KvK prep rate.
+{
+  const P = require('../js/event-points.js'), cells = P.forGovernor('gear', 1000);
+  assert.deepEqual(cells.prep, { day: 5, points: null, unpublished: true });
+  assert.equal(cells.sg, null);
+  assert.deepEqual(cells.brawl, { day: 5, points: 22000, unpublished: false });
+  assert.deepEqual(P.forGovernor('charms', 1000).prep, { day: 1, points: 70000, unpublished: false });
+  assert.deepEqual(P.forItems({ forgehammer: 10, mithril: 1 }), { prep: { day: 4, points: 80000 }, sg: { day: 2, points: 80000 }, brawl: { day: 4, points: 37500 } });
+}
 assert.equal(plan.score, plan.steps.reduce((sum, step) => sum + step.score, 0));
 assert.deepEqual(G.plan('gear', gear, bag, { focus: 'cav' }).steps.map(s => s.troop).filter(t => t !== 'cav'), []);
 assert.equal(G.plan('gear', gear, { satin: 0, 'gilded-threads': 0, 'artisans-vision': 0 }).steps.length, 0);

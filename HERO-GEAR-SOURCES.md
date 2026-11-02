@@ -387,3 +387,10 @@ The answer (kept in the save as `view`), with no tabs inside them. The three
 troop cards sit side by side, each still 2×2, so all twelve pieces and the
 materials fit one 390×844 screen under the tabs; the visual check measures it.
 The hero motif is hidden on phones on both planners.
+
+## Profiles and event points, as on Governor gear — 2 November 2026
+
+The owner asked for consistency between the gear pages: "profiles should be consistent across hero gear and gov gear. all appropriate pages should show kvk/event points, for governor charms and gear separate".
+
+- **Profiles.** Hero gear and Governor gear offer the same priority profiles in one order, from one select (`_includes/priority-options.html`): Bear first, Early growth, Early combat, Generation 4+, Garrison lead, Equal stats, then Custom (Governor gear adds Event score before Custom). Both start on Bear first; a save or link that already names a profile keeps it. `_data/governor.json` carries the same table as `PROFILES` here and `governor-check` asserts they match. Custom weights sit in the "Advanced: custom weights" fold on both pages.
+- **Event points.** Spend now's bill ends with the event points table that Governor gear uses (`js/event-points.js`): the Forgehammers and mithril it spends, scored on the best day of KvK prep, Strongest Governor and Alliance Brawl, every rate from `_data/event_rules.json` (4,000 and 40,000 points in KvK prep and Strongest Governor, 1,875 and 18,750 in Brawl). It replaces the single KvK total beside the Spend title; each step row keeps its own KvK prep points.

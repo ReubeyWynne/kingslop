@@ -12,13 +12,12 @@
     'profileNote.score': 'The most governor score for the materials, for an event day.',
     billSpend: 'Spends', billReach: 'Needs', spendLeft: '{n} left', needShort: '{n} short', needEnough: 'enough', needUnknown: 'not counted',
     stays: 'stays', notSet: 'not set', scoreGain: '+{n} governor score', scoreNone: 'No published score for one of these levels.',
-    eventRow: '{kind} on {event} day {day}: about {points} points', kindGear: 'Gear', kindCharms: 'Charms',
+    kindGear: 'Gear', kindCharms: 'Charms',
     nothing: 'Nothing the materials can pay for yet. Count them, or set the level of each piece.',
     unset: '{n} not set and left out. Tap a piece to set it.', bagUnknown: 'Materials not counted count as none.',
     reached: 'Everything set is already there.', unverified: 'Includes a step only one table lists (◇).',
     pieceTroop: '{slot} · {troop}'
   };
-  var EVENTS = { prep: ['ks.today.kickerPrep', 'KvK prep'], sg: ['ks.governor.title', 'Strongest Governor'], brawl: ['ks.brawl.title', 'Alliance Brawl'] };
   var TROOPS = { inf: 'Infantry', cav: 'Cavalry', arc: 'Archer' };
   var ORDER = ['cav-1', 'cav-2', 'inf-1', 'inf-2', 'arc-1', 'arc-2'];
   window.Interactions.register('governor-planner', function (context) {
@@ -94,15 +93,14 @@
       context.targets('bill').forEach(function (strip) { strip.replaceChildren.apply(strip, bill(cost, materials.amounts, mode === 'reach')); });
       var steps = result.gear.steps + result.charms.steps;
       put('score', steps && scoreKnown ? fill('scoreGain', { n: api.fmt(scoreTotal) }) : '');
-      context.targets('events').forEach(function (list) {
-        list.replaceChildren();
-        if (!steps || !scoreKnown) return;
-        ['gear', 'charms'].forEach(function (kind) {
-          if (!result[kind].score) return;
-          var best = {};
-          G.events(kind, result[kind].score).forEach(function (r) { if (!best[r.event] || r.rate > best[r.event].rate) best[r.event] = r; });
-          Object.keys(best).forEach(function (event) { var r = best[event]; list.appendChild(el('li', fill('eventRow', { kind: t(kind === 'gear' ? 'kindGear' : 'kindCharms'), event: api.tr(EVENTS[event][0], EVENTS[event][1]), day: api.fmt(r.day), points: api.fmt(Math.round(r.points)) }))); });
+      // Gear and charms score on different days, so each has its own row.
+      context.targets('events').forEach(function (node) {
+        node.replaceChildren();
+        if (!steps || !window.EventPoints) return;
+        var rows = ['gear', 'charms'].map(function (kind) {
+          return { label: t(kind === 'gear' ? 'kindGear' : 'kindCharms'), cells: window.EventPoints.forGovernor(kind, result[kind].score) };
         });
+        node.appendChild(window.EventPoints.table(api, rows, 'gov-event-points'));
       });
       var unset = ORDER.filter(function (id) { return gear[id] === null && (mode === 'spend' || reachTroop === 'all' || piece(id).troop === reachTroop); }).length;
       if (!steps) notes.push(t(mode === 'spend' ? 'nothing' : 'reached'));
@@ -113,11 +111,12 @@
       context.targets('notes').forEach(function (node) { node.hidden = !notes.length; node.textContent = notes.join(' '); });
       context.targets('spendPanel').forEach(function (node) { node.hidden = mode !== 'spend'; });
       context.targets('reachPanel').forEach(function (node) { node.hidden = mode !== 'reach'; });
-      context.nodes('[data-action="governor-planner.profile"]').forEach(function (button) { button.setAttribute('aria-pressed', String(button.dataset.value === options.profile)); });
-      put('profileNote', t('profileNote.' + options.profile));
-      // The weights behind the preset are on show; typing one makes them custom weights.
+      context.targets('profile').forEach(function (select) { if (document.activeElement !== select) select.value = options.profile; });
+      var note = Object.hasOwn(EN, 'profileNote.' + options.profile) ? t('profileNote.' + options.profile) : '';
+      context.targets('profileNote').forEach(function (node) { node.textContent = note; node.hidden = !note; });
+      // The weights behind the preset are in the Advanced fold; typing one makes them custom weights.
       var weights = G.weights(options);
-      context.targets('weights').forEach(function (node) { node.hidden = !weights; });
+      context.targets('weightsFold').forEach(function (node) { node.hidden = !weights || mode !== 'spend'; });
       context.nodes('[data-action="governor-planner.weight"]').forEach(function (input) { if (weights && document.activeElement !== input) input.value = String(weights[input.dataset.troop]); });
       ['gearTarget', 'charmTarget'].forEach(function (key) { context.targets(key).forEach(function (select) { select.value = String(options[key]); }); });
       context.targets('reachTroop').forEach(function (select) { select.value = reachTroop; });
@@ -133,13 +132,18 @@
     context.cleanup(store.subscribe(render));
     function write(fn) { try { fn(); } catch (cause) { render(); throw cause; } }
     return { refresh: function () { labelOptions(); render(); }, actions: {
-      profile: { run: function (button) {
+      profile: { events: ['change'], run: function (select) {
         // Custom starts from the weights on show, so a tweak is one number away.
-        var now = prefs(), seed = button.dataset.value === 'custom' && now.profile !== 'custom' && G.weights(now);
-        write(function () { if (seed) store.setGovernorPreference('weights', [seed.inf, seed.cav, seed.arc].join(':')); store.setGovernorPreference('profile', button.dataset.value); });
+        var now = prefs(), seed = select.value === 'custom' && now.profile !== 'custom' && G.weights(now);
+        write(function () { if (seed) store.setGovernorPreference('weights', [seed.inf, seed.cav, seed.arc].join(':')); store.setGovernorPreference('profile', select.value); });
+        // As on Hero gear: choosing Custom opens the weights.
+        if (select.value === 'custom') context.targets('weightsFold').forEach(function (fold) { fold.open = true; fold.scrollIntoView({ block: 'nearest' }); var input = fold.querySelector('input'); if (input) input.focus({ preventScroll: true }); });
       } },
       weight: { events: ['change'], run: function (input) {
-        var weights = G.weights(prefs()) || { inf: 1, cav: 1, arc: 1 }, n = Math.round(Number(input.value) * 10) / 10;
+        // A change that lands after another profile was picked (the field losing focus) is not an edit.
+        var shown = G.weights(prefs()), n = Math.round(Number(input.value) * 10) / 10;
+        if (!shown || shown[input.dataset.troop] === n) return;
+        var weights = shown;
         if (input.value !== '' && Number.isFinite(n)) weights[input.dataset.troop] = Math.min(10, Math.max(0, n));
         write(function () { store.setGovernorPreference('weights', [weights.inf, weights.cav, weights.arc].join(':')); store.setGovernorPreference('profile', 'custom'); });
       } },

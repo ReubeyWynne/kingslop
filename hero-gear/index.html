@@ -44,15 +44,7 @@ self: gear
         <h2 data-i18n="gov.theAnswer">The answer</h2>
         <div id="gear-plan-share" class="gear-optimal" aria-live="polite"></div>
         <div class="gear-settings">
-          <label class="gear-profile"><span class="sheet-label" data-i18n="gov.priority">Priority</span><select id="gear-profile">
-            <option value="growth" data-i18n="gear.growth">Early growth</option>
-            <option value="combat" data-i18n="gear.combat">Early combat</option>
-            <option value="gen4" data-i18n="gear.gen4">Generation 4+</option>
-            <option value="bear" data-i18n="gear.bearProfile">Bear first</option>
-            <option value="garrison" data-i18n="gear.garrisonProfile">Garrison lead</option>
-            <option value="equal" data-i18n="gear.equal">Equal stats</option>
-            <option value="custom" data-i18n="gear.custom">Custom</option>
-          </select></label>
+          <label class="gear-profile"><span class="sheet-label" data-i18n="gov.priority">Priority</span><select id="gear-profile">{% include priority-options.html %}</select></label>
           <p id="gear-fit" class="gear-gloss gear-fit" hidden></p>
           <label class="gear-include gear-reforge-option"><input id="gear-reforge" type="checkbox" checked><span data-i18n="gear.reforge">allow XP reforge on epic &amp; mythic gear</span></label>
         </div>

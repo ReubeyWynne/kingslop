@@ -5,6 +5,11 @@ const E = require('../js/hero-gear-engine.js');
 const OCR = require('../js/hero-gear-ocr.js');
 const View = require('../js/hero-gear-view.js');
 const Ledger = require('../js/player-ledger.js');
+// A fresh sheet starts on Bear first, as on Governor gear. The worked cases below were written
+// for Early growth (lethality and health both count), so their blank sheets start there.
+{ const fresh = E.defaults(); assert.equal(fresh.profile, 'bear'); assert.deepEqual(fresh.weights, E.PROFILES.bear); }
+const blankSheet = E.defaults;
+E.defaults = () => Object.assign(blankSheet(), { profile: 'growth', weights: JSON.parse(JSON.stringify(E.PROFILES.growth)) });
 
 function checkGuestLedger() {
   const memory = new Map();
@@ -82,7 +87,7 @@ assert.equal(E.stats(first, 'helm').attack, 20);
 assert.equal(E.stats(first, 'gloves').defense, 20);
 assert.equal(E.stats({ quality: 'red', level: 200, mastery: 20 }, 'chest').attack, 70);
 assert.deepEqual(E.gap({ xp: 10, hammers: 20, mythic: 5, mithril: 10 }, { xp: 20, hammers: 2, mythic: 3, mithril: 0 }), { xp: 0, hammers: 18, mythic: 2, mithril: 10 });
-assert.deepEqual(E.normaliseState({ version: 1, weights: { inf: [2] } }).weights.inf, [2, 1.5]);
+assert.deepEqual(E.normaliseState({ version: 1, weights: { inf: [2] } }).weights.inf, [2, 0]);
 const ascensionOnly = E.defaults();
 ascensionOnly.reforge = false;
 ascensionOnly.pieces['inf-helm'] = mythic;

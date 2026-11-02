@@ -277,9 +277,16 @@
     function group(list, key) { return list.length ? '<h4 class="gear-step-head">' + view.esc(tr(key)) + '</h4>' + list.map(function (d) { return view.stepRow(d, ++n); }).join('') : ''; }
     el('results').innerHTML = '<div class="gear-result-summary"><strong>' + view.gainPct(result.gain, result.baseline) + '</strong><span>' + view.esc(tr('weightedGain')) + '</span><small>' + result.changes.length + ' ' + view.esc(tr('piecesChanged')) + '</small></div>' +
       '<div class="gear-result-grid">' + group(back, 'stepsReforge') + group(up, back.length ? 'stepsUpgrade' : 'stepsUpgradeOnly') + '</div>' +
-      '<div class="gear-cost-title"><strong>' + view.esc(tr('spend')) + '</strong>' + view.kvkScore(result.spent, true) + '</div>' + view.spendStrip(result.spent, result.remaining) + view.kvkNote() + view.cavalryNote(state, result.pieces) +
+      '<div class="gear-cost-title"><strong>' + view.esc(tr('spend')) + '</strong></div>' + view.spendStrip(result.spent, result.remaining) + eventPoints(result.spent) + view.kvkNote() + view.cavalryNote(state, result.pieces) +
       '<div class="gear-record-action"><button type="button" id="gear-apply-result" class="gear-primary gear-action" aria-describedby="gear-record-hint">' + view.esc(tr('applyResult')) + '</button>' +
       '<p id="gear-record-hint" class="gear-gloss">' + view.esc(tr('applyHint')) + '</p></div>';
+  }
+  // The same event points table as Governor gear: what Spend now's hammers and mithril score.
+  function eventPoints(spent) {
+    var P = window.EventPoints;
+    if (!P) return '';
+    var cells = P.forItems({ forgehammer: spent.hammers || 0, mithril: spent.mithril || 0 });
+    return P.table(BH, [{ label: tr('spendNow'), cells: cells }], 'gear-event-points').outerHTML;
   }
   // Red upgrades ranked by stats per resource, with how far the bag is from each.
   function paintSaving() {

@@ -193,7 +193,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     for(const [id,value]of [['parts10','2299'],['parts100','1'],['hammers','501'],['mythic','10'],['mithril','10']])await page.locator('#gear-'+id).fill(value);
     await page.locator('#gear-view-plan').click();
     await page.locator('#gear-apply-result').waitFor();
-    assert.equal(await page.locator('#gear-results .gear-kvk-summary').getAttribute('data-kvk-points'),'2400000');
+    assert.equal(await page.locator('#gear-results .gear-event-points tbody td').first().getAttribute('data-points'),'2400000');
     const piecePoints=await page.locator('#gear-results .gear-change .gear-kvk-points').evaluateAll(items=>items.reduce((sum,item)=>sum+Number(item.dataset.kvkPoints),0));
     assert.equal(piecePoints,2400000,'per-piece scores sum to the batch total');
     assert.ok(await page.locator('#gear-results .gear-change[data-checkpoint="ascension"] .gear-item[data-quality="red"]').count()>0);
@@ -366,7 +366,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
       await owner.locator('#gear-share:not([data-copied])').waitFor();
       assert.equal(await owner.locator('#gear-share').textContent(),'Copy share link');
       const shared=await owner.evaluate(()=>navigator.clipboard.readText());
-      assert.match(shared,/\/hero-gear\/\?gear=m90\.0(-m0\.0){11}&w=growth$/);
+      assert.match(shared,/\/hero-gear\/\?gear=m90\.0(-m0\.0){11}&w=bear$/);
       const visitor=await guestContext.newPage();visitor.on('pageerror',e=>errors.push(e.message));
       await visitor.goto(shared);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-card .gear-row').length===12);
       assert.match(await visitor.locator('#gear-sheet > span').textContent(),/A shared sheet\. Your save is untouched\./);

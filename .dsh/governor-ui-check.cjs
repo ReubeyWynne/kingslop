@@ -43,26 +43,36 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.waitForFunction(() => document.querySelector('.gov-row[data-item="arc-1"]').dataset.moved === 'true');
     assert.match(await row('arc-1').locator('.gov-row-gear').textContent(), /^not crafted → /);
     assert.equal(await row('arc-2').locator('.gov-row-gear').textContent(), 'not set');
-    assert.equal(await page.locator('[data-action="governor-planner.profile"][data-value="bear"]').getAttribute('aria-pressed'), 'true');
+    assert.equal(await page.locator('select[data-action=\"governor-planner.profile\"]').inputValue(), 'bear');
     assert.match(await target('score').textContent(), /^\+[\d,]+ governor score$/);
-    assert.match(await target('events').textContent(), /Gear on Alliance Brawl day 5: about [\d,]+ points/);
+    // Event points: gear and charms on their own rows, one column per event, as on Hero gear.
+    assert.deepEqual(await target('events').locator('tbody th').allTextContents(), ['Gear', 'Charms']);
+    assert.deepEqual(await target('events').locator('thead th').allTextContents(), ['KvK prep', 'Strongest Governor', 'Alliance Brawl']);
+    const gearPoints = target('events').locator('tbody tr').first().locator('td');
+    assert.equal(await gearPoints.nth(0).getAttribute('data-points'), 'unknown', 'KvK prep scores gear without a published rate');
+    assert.equal(await gearPoints.nth(1).getAttribute('data-points'), 'none', 'Strongest Governor does not score gear');
+    assert.match(await gearPoints.nth(2).textContent(), /^[\d,]+day 5$/);
+    // The profiles are Hero gear's, in its order, plus Event score.
+    assert.deepEqual(await page.locator('select[data-action="governor-planner.profile"] option').evaluateAll(o => o.map(n => n.value)), ['bear', 'growth', 'combat', 'gen4', 'garrison', 'equal', 'score', 'custom']);
     assert.equal(await page.locator('[data-target="governor-planner.bill"] > div').count(), 5);
     assert.equal(await page.locator('.gov-result').evaluate(n => getComputedStyle(n).overflowY), 'visible', 'no box that scrolls');
-    // Bear first shows its weights; typing one makes them custom weights, which travel in the link.
+    // Bear first shows its weights in the Advanced fold; typing one makes them custom weights, which travel in the link.
+    await target('weightsFold').locator('summary').click();
     const weights = () => page.locator('[data-action="governor-planner.weight"]').evaluateAll(nodes => nodes.map(n => n.dataset.troop + ' ' + n.value));
     assert.deepEqual(await weights(), ['inf 1', 'cav 1', 'arc 3']);
     await page.fill('[data-action="governor-planner.weight"][data-troop="cav"]', '0');
     await page.locator('[data-action="governor-planner.weight"][data-troop="cav"]').dispatchEvent('change');
     // On your own save the weights are kept there; a share link carries them as w=.
     await page.waitForFunction(() => window.Governor.encodeLink({ gear: {}, charms: {}, bag: {}, prefs: window.PlayerLedger.shared().snapshot().preferences.governor || {} }).w === '1_0_3');
-    assert.equal(await page.locator('[data-action="governor-planner.profile"][data-value="custom"]').getAttribute('aria-pressed'), 'true');
+    assert.equal(await page.locator('select[data-action=\"governor-planner.profile\"]').inputValue(), 'custom');
     assert.deepEqual(await page.locator('.gov-row[data-moved="true"]').evaluateAll(rows => rows.map(r => r.dataset.item).filter(id => /^cav/.test(id))), [], 'a troop at 0 stays where it is');
     await page.fill('[data-action="governor-planner.weight"][data-troop="inf"]', '1.5');
     await page.locator('[data-action="governor-planner.weight"][data-troop="inf"]').dispatchEvent('change');
     await page.waitForFunction(() => window.Governor.encodeLink({ gear: {}, charms: {}, bag: {}, prefs: window.PlayerLedger.shared().snapshot().preferences.governor || {} }).w === '1.5_0_3');
-    await page.click('[data-action="governor-planner.profile"][data-value="score"]');
-    assert.equal(await target('weights').isHidden(), true, 'event score has no weights');
-    await page.click('[data-action="governor-planner.profile"][data-value="custom"]');
+    await page.selectOption('select[data-action="governor-planner.profile"]', 'score');
+    assert.equal(await target('weightsFold').isHidden(), true, 'event score has no weights');
+    await page.selectOption('select[data-action="governor-planner.profile"]', 'custom');
+    assert.equal(await target('weightsFold').evaluate(node => node.open), true, 'choosing Custom opens the weights, as on Hero gear');
     assert.deepEqual(await weights(), ['inf 1.5', 'cav 0', 'arc 3'], 'custom weights are kept');
     await page.click('[role="tab"][data-value="reach"]');
     await target('reachTroop').selectOption('arc');
@@ -78,7 +88,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await tile('inf-1').getAttribute('data-state'), 'empty');
     assert.equal(await tile('arc-2').getAttribute('data-state'), 'unset');
     assert.equal(await tile('cav-2').getAttribute('data-state'), 'empty');
-    assert.equal(await page.locator('[data-action="governor-planner.profile"][data-value="custom"]').getAttribute('aria-pressed'), 'true');
+    assert.equal(await page.locator('select[data-action=\"governor-planner.profile\"]').inputValue(), 'custom');
     assert.equal(await page.locator('[data-bind="inventory.satin"]').inputValue(), '20000');
     // Without a link the page works on your save: edits save as you go and the address stays clean.
     const sheet = key => page.locator('[data-target="governor-sheet.' + key + '"]');
@@ -111,7 +121,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await guest.goto(shared); await guest.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
     assert.equal(await guest.locator('[data-target="governor-sheet.source"]').textContent(), 'A shared sheet.');
     assert.equal(await guest.locator('.gov-piece[data-gov="cav-2"]').getAttribute('data-state'), 'empty');
-    assert.equal(await guest.locator('[data-action="governor-planner.profile"][data-value="custom"]').getAttribute('aria-pressed'), 'true', 'the profile travels in the link');
+    assert.equal(await guest.locator('select[data-action=\"governor-planner.profile\"]').inputValue(), 'custom', 'the profile travels in the link');
     assert.equal(await guest.locator('[data-action="governor-planner.weight"][data-troop="cav"]').inputValue(), '0', 'and its weights');
     assert.equal(await guest.locator('[data-bind="inventory.satin"]').inputValue(), '20000');
     assert.equal(await guest.evaluate(() => PlayerLedger.shared().governor('gear')['cav-2']), null);
