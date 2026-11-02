@@ -110,6 +110,28 @@
       var text = duration(E.timed(steps, E.boost(cs)).time) + (total.unverified.time ? '†' : ''), list = boosts();
       return list ? t('timeWith', '{time} with {boosts}', { time: text, boosts: list }) : t('timeBase', '{time} base time, before construction speed', { time: text });
     }
+    // Event points the plan scores: one line per event (events paying the same share a line), the
+    // Truegold it spends and, beside it, what speeding up its whole time would add.
+    function eventName(e) { return e === 'prep' ? t('eventPrep', 'KvK prep') : e === 'sg' ? t('eventSg', 'Strongest Governor') : t('eventBrawl', 'Alliance Brawl'); }
+    function pointsList(list, cost, steps) {
+      list.textContent = '';
+      var lines = [];
+      E.points(D.events, cost, steps ? E.timed(steps, E.boost(cs)).time : 0).forEach(function (p) {
+        var vars = { event: eventName(p.event), days: p.days.map(function (d) { return api.fmt(d); }).join(', ') };
+        var when = p.days.length > 1 ? t('eventDays', '{event} days {days}', vars) : t('eventDay', '{event} day {days}', vars);
+        var line = lines.find(function (l) { return l.items === p.items && l.speedups === p.speedups; });
+        if (line) line.when.push(when); else lines.push({ items: p.items, speedups: p.speedups, when: [when] });
+      });
+      lines.forEach(function (l) {
+        var li = el('li');
+        li.appendChild(el('b', '', t('pointsSpend', '{n} event points', { n: compact(l.items) })));
+        if (l.speedups) li.appendChild(el('span', 'reqs-sped', t('pointsSped', '{n} with speedups', { n: compact(l.items + l.speedups) })));
+        li.appendChild(el('span', 'reqs-when', l.when.join(' · ')));
+        li.title = api.fmt(l.items) + (l.speedups ? ' + ' + api.fmt(l.speedups) : '');
+        list.appendChild(li);
+      });
+      list.hidden = !lines.length;
+    }
     function stepTime(steps) { return duration(E.timed(steps, E.boost(cs)).time); }
     function arrow() { return document.documentElement.dir === 'rtl' ? ' ← ' : ' → '; }
     function say(text) { one('copied').textContent = text; }
@@ -265,10 +287,12 @@
       if (result.state === 'met') {
         head.textContent = t('met', 'Your {goal} is already done.', { goal: goalName });
         costList(one('total'), result.total); one('time').textContent = '';
+        pointsList(one('points'), {}, null);
       } else {
         head.textContent = t('headline', '{goal} · upgrades: {n}', { goal: goalName, n: api.fmt(result.total.steps) });
         costList(one('total'), result.total);
         one('time').textContent = timeText(result.total, result.steps.map(function (x) { return x.step; }));
+        pointsList(one('points'), result.total.cost, result.steps.map(function (x) { return x.step; }));
       }
       // One row per building the plan raises, plus any level the reader gave that the goal's
       // path names, so a level set too high can be set back. Prerequisites first, the goal last.

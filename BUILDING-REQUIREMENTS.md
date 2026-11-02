@@ -36,6 +36,10 @@ The **Construction speed** fold builds the time an upgrade really takes, in `Bui
 
 Speed bonuses add up and divide each step's base time; Double Time then multiplies it by 0.8 (Kingshot Optimizer: "applied multiplicatively … on top of the additive modifiers"); Pan's hours come off each step last, never below zero. Pan after Double Time is our reading of "after speed bonuses"; † the High King's construction value is one alliance's report. VIP, Gray Wolf, Ground Works and KvK values match Kingshot Optimizer's building calculator and Kingshot Mastery's VIP table.
 
+## Event points
+
+The pinned answer also says what the plan scores in events, from `BuildingPathsEngine.points` over `_data/event_rules.json` (only its event days reach the page, through `js/building-paths-data.liquid`). For KvK prep, Strongest Governor and Alliance Brawl it takes the days that pay most for the plan's Truegold and Tempered Truegold (2,000 and 30,000 a piece in prep and Strongest Governor, 1,250 Truegold in the Brawl), and adds the construction speedups that would finish the plan's time at the construction speed set above (30 a minute, 18 in the Brawl). The first figure is what spending the Truegold scores; the second assumes every upgrade is finished with speedups. Events that pay the same share one line.
+
 ## Save, guest mode and links
 
 Levels set here are the shared save's `buildings.levels` (see `PLAYER-LEDGER.md`), so the Town Centre and Upgrade priority read them. A goal on one of the nine planner buildings can be added to Upgrade priority's goals.
