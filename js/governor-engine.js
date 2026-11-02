@@ -48,12 +48,22 @@
     return { kind: kind, target: target, troop: troop || 'all', cost: total, missing: missing, steps: steps, levels: levels, unknown: unknown, unverified: unverified, score: scoreKnown ? scoreGain : null };
   }
   function affordable(price, bag) { return Object.keys(price).every(function (id) { return price[id] <= bag[id]; }); }
-  /* Troop weights multiply each step's stat gain by its troop: "bear" is the preset,
-     "custom" the player's own weights ("1:1:3", infantry : cavalry : archers, 0 to 10 in
-     tenths) and "score" ranks by governor score instead. A troop at 0 never moves. Older
-     saves and links keep working: a goal of score reads as the score profile, and the
-     retired "even" and "defence" as custom weights they used to mean. */
-  var PROFILES = data.profiles, RETIRED = { even: '1:1:1', defence: '1:0.5:0.7' }, WEIGHT = '(?:10|\\d(?:\\.\\d)?)';
+  /* Troop weights multiply each step's stat gain by its troop. The presets are Hero gear's
+     priority profiles, in its order: each gives a troop [lethality, health], and since every
+     governor piece and charm gives its two stats at the same percentage, the troop's weight
+     here is their sum (Bear first is still 1:1:3). "custom" is the player's own weights
+     ("1:1:3", infantry : cavalry : archers, 0 to 10 in tenths) and "score" ranks by governor
+     score instead. A troop at 0 never moves. Older saves and links keep working: a goal of
+     score reads as the score profile, and the retired "even" and "defence" as custom weights
+     they used to mean. */
+  var ORDER = ['bear', 'growth', 'combat', 'gen4', 'garrison', 'equal'];
+  var PROFILES = {};
+  ORDER.forEach(function (name) {
+    var pair = data.profiles[name];
+    PROFILES[name] = {};
+    ['inf', 'cav', 'arc'].forEach(function (troop) { PROFILES[name][troop] = Math.round((pair[troop][0] + pair[troop][1]) * 10) / 10; });
+  });
+  var RETIRED = { even: '1:1:1', defence: '1:0.5:0.7' }, WEIGHT = '(?:10|\\d(?:\\.\\d)?)';
   var WEIGHTS = new RegExp('^' + WEIGHT + ':' + WEIGHT + ':' + WEIGHT + '$');
   function profileOf(options) {
     var name = options.profile || (options.goal === 'score' ? 'score' : 'bear');
@@ -137,7 +147,7 @@
      by "." (blank is not counted); p, gt and ct the troop profile and targets when they differ
      from the defaults, and w the custom weights as 1_1_3. A sheet is { gear, charms, bag, prefs }, each keyed by id. */
   var DIGITS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', BAG_MAX = 1e9;
-  var NAMES = Object.keys(PROFILES).concat('score', 'custom');
+  var NAMES = ORDER.concat('score', 'custom');
   var PREFS = { profile: ['p', NAMES.concat(Object.keys(RETIRED))], weights: ['w', 'weights'], gearTarget: ['gt', 'gear'], charmTarget: ['ct', 'charms'] };
   function prefDefaults() { return { profile: 'bear', gearTarget: max('gear'), charmTarget: max('charms') }; }
   function encodeLink(sheet) {

@@ -37,10 +37,13 @@
 
 
 /* The answer — question, priority, then where each piece ends up and one bill. */
-.gov-chips { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 .8rem; }
-.gov-main .gov-chips button { color: var(--ink-muted); font-size: .95rem; }
-.gov-main .gov-chips [aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--amber); }
-.gov-chips + .gov-gloss { margin-top: 0; }
+/* Priority is the same select as on Hero gear, with custom weights in an Advanced fold. */
+.gov-main .gov-priority { display: flex; flex-direction: row; align-items: center; gap: .8rem; margin: 0; }
+.gov-main .gov-priority select { width: auto; max-width: 18rem; }
+.gov-priority + .gov-gloss { margin-top: .3rem; }
+.gov-main .gov-advanced { margin-top: 1.2rem; padding-top: .4rem; border-top: 1px solid var(--signal-line); }
+.gov-main .gov-advanced > summary { font-size: .95rem; font-weight: 700; color: var(--ink-dim); }
+.gov-advanced > :not(summary) { margin-top: .6rem; }
 .gov-weights { display: flex; flex-wrap: wrap; align-items: end; gap: .2rem .9rem; margin: .3rem 0 0; }
 .gov-main .gov-weights label { gap: 0; font-size: .75rem; }
 .gov-main .gov-weights input[type="number"] { width: 3.2rem; text-align: center; border-bottom-color: var(--signal-line); }
@@ -62,7 +65,7 @@
 .gov-bill h3 { font-size: 1.05rem; margin: .9rem 0 .3rem; }
 .gov-score { margin: .5rem 0 .2rem; font: 1.15rem var(--display-2); color: var(--amber); }
 .gov-score:empty { display: none; }
-.gov-events { margin: 0; padding-inline-start: 1.1rem; font-size: .85rem; color: var(--ink-dim); }
+.gov-events { margin: .2rem 0 0; }
 .gov-bag { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .4rem; }
 .gov-main .gov-bag label { display: flex; flex-direction: column; gap: .1rem; align-items: center; text-align: center; }
 .gov-main .gov-bag label[data-kind="charms"] { padding-inline-start: .4rem; }
@@ -90,8 +93,9 @@
   .gov-bag img { width: 1.8rem; height: 1.8rem; }
   .gov-main .gov-bag input[type="number"] { font-size: max(1rem, 16px); text-align: center; border-bottom-color: var(--signal-line); }
   .gov-main select, .gov-fill select, .gov-dialog select { font-size: max(1rem, 16px); }
+  .gov-main .gov-priority select { flex: 1; max-width: none; }
 }
 .gov-left .gov-bag { margin-top: .9rem; }
 .gov-strip .gov-short { color: var(--amber); }
-.gov-chips > span, .gov-weights > span:first-child { margin-inline-end: .3rem; }
+.gov-weights > span:first-child { margin-inline-end: .3rem; }
 .gov-weights > span:first-child { align-self: center; }
