@@ -29,10 +29,11 @@ assert.throws(()=>rules.calculate(store.snapshot(),'constructor',1,{},0));
 assert.throws(()=>rules.calculate(store.snapshot(),'prep',0,{},0));assert.throws(()=>rules.calculate(store.snapshot(),'prep',6,{},0));
 assert.throws(()=>rules.calculate(store.snapshot(),'prep',4,{mithril:-1},0));assert.throws(()=>rules.calculate(store.snapshot(),'prep',4,{},NaN));
 assert.throws(()=>rules.calculate({inventory:{mithril:{status:'confirmed',amount:1.5}}},'prep',4,{},0));
-// Golden digest of the original guide arrays at 313fbb2; preserves guide/copy output.
-assert.equal(digest(rules.data.legacy),'0835875489704a03a5592ba0dc89e7cca4e512722bcb0b045b0a01c0295b0e2c');
+// Golden digest of the original guide arrays at 313fbb2; preserves guide/copy output. Updated 2 Nov 2026 for one
+// sourced change: Governor gear on KvK prep day 5 (Power Boost) scores 36 a point (in-game event list, owner).
+assert.equal(digest(rules.data.legacy),'0c8241020a3223692312e8308d26ba9be29b95f8ead939771ff9aacdc89893aa');
 const originalEvents=Object.fromEntries(Object.entries(rules.data.events).map(([event,days])=>[event,days.map(day=>({day:day.day,rows:day.rows.map(({label,points,items})=>items?{label,points,items}:{label,points})}))]));
-assert.equal(digest(originalEvents),'8721a4c4609901f237be1ac1bea4b89025e354023113c84038558cb28c26e500');
+assert.equal(digest(originalEvents),'6b75353838dbe58098bbc9cb972a71abccd161a4a99f4dc4b27856d40191640f');
 for(const [event,key] of [['sg','SG_TASKS'],['armament','ARM_TASKS'],['officer','OFF_TASKS']]){
  const groups=rules.data.legacy[key];
  for(const group of Object.keys(groups)){
@@ -72,7 +73,8 @@ assert.equal(rules.governorKind({label:'Governor Charm max score +1',points:'70'
 assert.equal(rules.rate({points:'30'}),null);
 assert.equal(Troops.rates([{label:'T10 troop',points:'999'}],'sg'),null);
 assert.equal(rules.governorKind(rules.rules('prep',5).rows[0]),'gear');
-assert.equal(rules.rate(rules.rules('prep',5).rows[0]),null,'unpriced governor gear remains unquantified');
+assert.equal(rules.rate(rules.rules('prep',5).rows[0]),36,'governor gear on Power Boost: 36 a point (in-game list, 2 Nov)');
+assert.equal(rules.rate({scoring:{type:'governor',kind:'gear',rate:null}}),null,'an unpriced governor row stays unquantified');
 const sgTroops=rules.rules('sg',4).rows.filter(row=>row.scoring?.type==='troops');
 assert.equal(Troops.rates(sgTroops,'brawl').rates[10],39,'rate sets belong to rows');
 assert.equal(Troops.rates([{scoring:{type:'troops',rates:{10:41},rateSet:'sg'}}],'sg').rates[10],41,'explicit rates override a verified rate set');

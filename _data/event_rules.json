@@ -177,7 +177,7 @@
       "Intel missions": "6,000",
       "Pets advance": "15,000",
       "Gov charm": "70",
-      "Gov gear": "—",
+      "Gov gear": "36",
       "Widget gear": "8,000",
       "Mithril": "40,000",
       "Forgehammer": "4,000"
@@ -1063,14 +1063,14 @@
         "day": 5,
         "rows": [
           {
-            "label": "Governor gear",
-            "points": "·",
+            "label": "Governor Gear max score +1",
+            "points": "36",
             "id": "governor-gear",
             "category": "Gov gear",
             "scoring": {
               "type": "governor",
               "kind": "gear",
-              "rate": null
+              "rate": 36
             }
           },
           {

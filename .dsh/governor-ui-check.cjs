@@ -49,7 +49,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.deepEqual(await target('events').locator('tbody th').allTextContents(), ['Gear', 'Charms']);
     assert.deepEqual(await target('events').locator('thead th').allTextContents(), ['KvK prep', 'Strongest Governor', 'Alliance Brawl']);
     const gearPoints = target('events').locator('tbody tr').first().locator('td');
-    assert.equal(await gearPoints.nth(0).getAttribute('data-points'), 'unknown', 'KvK prep scores gear without a published rate');
+    assert.match(await gearPoints.nth(0).textContent(), /^[\d,]+day 5$/, 'KvK prep day 5 scores gear at 36 a point');
     assert.equal(await gearPoints.nth(1).getAttribute('data-points'), 'none', 'Strongest Governor does not score gear');
     assert.match(await gearPoints.nth(2).textContent(), /^[\d,]+day 5$/);
     // The profiles are Hero gear's, in its order, plus Event score.
