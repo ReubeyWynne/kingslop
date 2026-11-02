@@ -64,10 +64,11 @@ assert.deepEqual(G.profiles(), ['bear', 'growth', 'combat', 'gen4', 'garrison', 
   assert.deepEqual(Object.keys(hero), G.profiles().slice(0, 6));
   assert.deepEqual(G.weights({ profile: 'growth' }), { inf: 2.2, cav: 0.6, arc: 2.1 }, 'a troop weight is lethality plus health');
 }
-// Event points per kind, from the event rules: gear has no published KvK prep rate.
+// Event points per kind, from the event rules. KvK prep day 5 (Power Boost) pays 36 per gear
+// score (in-game event list, owner, 2 Nov).
 {
   const P = require('../js/event-points.js'), cells = P.forGovernor('gear', 1000);
-  assert.deepEqual(cells.prep, { day: 5, points: null, unpublished: true });
+  assert.deepEqual(cells.prep, { day: 5, points: 36000, unpublished: false });
   assert.equal(cells.sg, null);
   assert.deepEqual(cells.brawl, { day: 5, points: 22000, unpublished: false });
   assert.deepEqual(P.forGovernor('charms', 1000).prep, { day: 1, points: 70000, unpublished: false });
@@ -94,7 +95,7 @@ const archers = G.toTarget('gear', gear, 4, {}, { troop: 'arc' });
 assert.deepEqual(archers.unknown, ['arc-2']); assert.equal(archers.steps, 4); assert.equal(archers.levels['arc-1'], 4); assert.equal(archers.levels['inf-1'], 0);
 
 // Events: score rows from the shared rules; Brawl gear 22 per score, charm 70 in prep.
-assert.deepEqual(G.events('gear', 100).map(e => [e.event, e.day, e.rate]), [['brawl', 5, 22], ['brawl', 6, 22]]);
+assert.deepEqual(G.events('gear', 100).map(e => [e.event, e.day, e.rate]), [['prep', 5, 36], ['brawl', 5, 22], ['brawl', 6, 22]]);
 assert.equal(G.events('charms', 1).length, 11);
 assert.ok(G.events('charms', 625).some(e => e.event === 'prep' && e.points === 43750));
 assert.throws(() => G.events('unknown', 100));
