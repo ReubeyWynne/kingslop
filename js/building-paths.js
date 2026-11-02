@@ -159,8 +159,9 @@
   // Every building the goal's whole path can name, from scratch.
   function involved(data, goal) { var t = {}; goals(data, goal).forEach(function (g) { t[g.building] = g.level; }); return Object.keys(close(data, t, {})); }
 
-  // A link: ?goal=town-center:TG3,barracks:TG3[&have=house-1:2,embassy:TG1-2][&speed=42.5][&dt=1][&pan=5]
-  // (speed is the whole construction speed bonus, dt Double Time, pan Pan's Master Architect level).
+  // A link: ?goal=town-center:TG3,barracks:TG3[&have=house-1:2,embassy:TG1-2][&speed=42.5][&dt=1][&pan=5][&saul=5]
+  // (speed is the whole construction speed bonus, dt Double Time, pan Pan's Master Architect level,
+  // saul Saul's Resourceful level, for its cost discount: its speed is already inside speed).
   // Without have the reader's own levels fill in the plan; with it the link opens as the sender
   // left it. The first links carried one goal as ?b=town-center&to=3; those still open.
   function pairs(list) { return list.map(function (x) { return x[0] + ':' + short(x[1]); }).join(','); }
@@ -171,6 +172,7 @@
     if (state.speed > 0) out.push('speed=' + state.speed);
     if (state.doubleTime) out.push('dt=1');
     if (state.pan > 0) out.push('pan=' + state.pan);
+    if (state.saul > 0) out.push('saul=' + state.saul);
     return out.join('&');
   }
   function read(text) {
@@ -188,6 +190,8 @@
     if (q.has('speed') && isFinite(speed) && speed > 0 && speed <= 1000) out.speed = speed;
     var pan = Number(q.get('pan'));
     if (Number.isInteger(pan) && pan >= 1 && pan < BOOST.pan.length) out.pan = pan;
+    var saul = Number(q.get('saul'));
+    out.saul = Number.isInteger(saul) && saul >= 1 && saul < BOOST.saul.length ? saul : null;
     return out;
   }
 
@@ -204,6 +208,19 @@
     position: { '': 0, minister: 10, highKing: 15 }, groundWorks: 10, kvk: 5, doubleTime: 0.8, pan: [0, 2, 3, 4, 6, 8]
   };
   function pick(list, i) { return list[i] || 0; }
+  // Saul's Resourceful also takes the same share off a construction's bread, wood, stone and iron
+  // (never Truegold or Tempered Truegold). Each upgrade pays its own discounted cost, rounded up,
+  // so the plan never understates what an upgrade asks for.
+  var DISCOUNTED = ['bread', 'wood', 'stone', 'iron'];
+  function discount(list, level) {
+    var p = pick(BOOST.saul, level);
+    if (!p) return list;
+    return list.map(function (step) {
+      var cost = {};
+      Object.keys(step.cost || {}).forEach(function (r) { cost[r] = DISCOUNTED.indexOf(r) >= 0 ? Math.ceil(step.cost[r] * (100 - p) / 100) : step.cost[r]; });
+      return Object.assign({}, step, { cost: cost });
+    });
+  }
   // settings: { mode: 'overview' | 'parts', overview, vip, saul, research, wolf, position, groundWorks, kvk, doubleTime, pan }
   function boost(settings) {
     var b = settings || {}, base = b.mode === 'parts' ? pick(BOOST.vip, b.vip) + pick(BOOST.saul, b.saul) + (Number(b.research) || 0) : Number(b.overview) || 0;
@@ -248,5 +265,5 @@
     return out;
   }
 
-  return { RESOURCES: RESOURCES, points: points, rank: rank, level: level, short: short, key: key, split: split, building: building, levels: levels, before: before, steps: steps, total: function (steps) { return total(steps.map(function (step) { return { step: step }; })); }, goals: goals, plan: plan, involved: involved, encode: encode, decode: decode, atSpeed: atSpeed, BOOST: BOOST, boost: boost, stepSeconds: stepSeconds, timed: timed };
+  return { RESOURCES: RESOURCES, points: points, rank: rank, level: level, short: short, key: key, split: split, building: building, levels: levels, before: before, steps: steps, total: function (steps) { return total(steps.map(function (step) { return { step: step }; })); }, goals: goals, plan: plan, involved: involved, encode: encode, decode: decode, atSpeed: atSpeed, BOOST: BOOST, DISCOUNTED: DISCOUNTED, discount: discount, boost: boost, stepSeconds: stepSeconds, timed: timed };
 }));
