@@ -33,7 +33,9 @@ assert.throws(()=>rules.calculate({inventory:{mithril:{status:'confirmed',amount
 // sourced change: Governor gear on KvK prep day 5 (Power Boost) scores 36 a point (in-game event list, owner).
 assert.equal(digest(rules.data.legacy),'0c8241020a3223692312e8308d26ba9be29b95f8ead939771ff9aacdc89893aa');
 const originalEvents=Object.fromEntries(Object.entries(rules.data.events).map(([event,days])=>[event,days.map(day=>({day:day.day,rows:day.rows.map(({label,points,items})=>items?{label,points,items}:{label,points})}))]));
-assert.equal(digest(originalEvents),'6b75353838dbe58098bbc9cb972a71abccd161a4a99f4dc4b27856d40191640f');
+// Updated 2 Nov 2026 from the owner's full in-game prep lists: day 4 adds T1-T3 and gathering, day 5 adds
+// master skill speedups and taming marks.
+assert.equal(digest(originalEvents),'72abb3773816959ff3830c5b68579a52eab467ea1fd015f6668f6c199f9da817');
 for(const [event,key] of [['sg','SG_TASKS'],['armament','ARM_TASKS'],['officer','OFF_TASKS']]){
  const groups=rules.data.legacy[key];
  for(const group of Object.keys(groups)){
