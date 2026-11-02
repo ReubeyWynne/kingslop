@@ -78,6 +78,8 @@
     function compact(n) {
       try { return new Intl.NumberFormat((window.I18N && window.I18N.locale) || 'en-GB', { notation: 'compact', maximumFractionDigits: n >= 1e6 ? 2 : 1 }).format(n); } catch (ignored) { return api.fmt(n); }
     }
+    // Counts under 100,000 (Truegold, Tempered Truegold) read exactly: 4,332, not 4.3k.
+    function amount(n) { return n < 1e5 ? api.fmt(n) : compact(n); }
     function duration(s) {
       var d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), parts = [];
       if (d) parts.push(t('days', '{n}d', { n: api.fmt(d) }));
@@ -93,7 +95,7 @@
         var li = el('li'), img = el('img');
         img.src = '../' + ICONS[r]; img.alt = ''; img.width = small ? 18 : 28; img.height = small ? 18 : 28; img.loading = 'lazy';
         li.appendChild(img);
-        li.appendChild(el('b', '', compact(total.cost[r]) + (total.unverified[r] ? '†' : '')));
+        li.appendChild(el('b', '', amount(total.cost[r]) + (total.unverified[r] ? '†' : '')));
         li.appendChild(el('span', 'reqs-res', item(r)));
         li.title = api.fmt(total.cost[r]) + ' ' + item(r);
         list.appendChild(li);
@@ -110,27 +112,28 @@
       var text = duration(E.timed(steps, E.boost(cs)).time) + (total.unverified.time ? '†' : ''), list = boosts();
       return list ? t('timeWith', '{time} with {boosts}', { time: text, boosts: list }) : t('timeBase', '{time} base time, before construction speed', { time: text });
     }
-    // Event points the plan scores: one line per event (events paying the same share a line), the
-    // Truegold it spends and, beside it, what speeding up its whole time would add.
+    // Event points the plan scores, as a small table: one row per event with the days that pay
+    // most, what spending its Truegold scores, and that plus speeding up its whole time.
     function eventName(e) { return e === 'prep' ? t('eventPrep', 'KvK prep') : e === 'sg' ? t('eventSg', 'Strongest Governor') : t('eventBrawl', 'Alliance Brawl'); }
-    function pointsList(list, cost, steps) {
-      list.textContent = '';
-      var lines = [];
-      E.points(D.events, cost, steps ? E.timed(steps, E.boost(cs)).time : 0).forEach(function (p) {
-        var vars = { event: eventName(p.event), days: p.days.map(function (d) { return api.fmt(d); }).join(', ') };
-        var when = p.days.length > 1 ? t('eventDays', '{event} days {days}', vars) : t('eventDay', '{event} day {days}', vars);
-        var line = lines.find(function (l) { return l.items === p.items && l.speedups === p.speedups; });
-        if (line) line.when.push(when); else lines.push({ items: p.items, speedups: p.speedups, when: [when] });
+    function pointsList(table, cost, steps) {
+      table.textContent = '';
+      var rows = E.points(D.events, cost, steps ? E.timed(steps, E.boost(cs)).time : 0);
+      table.hidden = !rows.length;
+      if (!rows.length) return;
+      var head = el('tr');
+      [t('pointsTitle', 'Event points'), t('pointsSpent', 'Spent'), t('pointsSpedUp', 'Sped up')].forEach(function (text) { var th = el('th', '', text); th.scope = 'col'; head.appendChild(th); });
+      table.appendChild(el('thead')).appendChild(head);
+      var body = table.appendChild(el('tbody'));
+      rows.forEach(function (p) {
+        var tr = el('tr'), th = el('th', '', eventName(p.event) + ' ');
+        th.scope = 'row';
+        th.appendChild(el('small', '', t('pointsDays', 'days {days}', { days: p.days.map(function (d) { return api.fmt(d); }).join(', ') })));
+        tr.appendChild(th);
+        var spent = el('td', '', compact(p.items)), sped = el('td', '', p.speedups ? compact(p.items + p.speedups) : '–');
+        spent.title = api.fmt(p.items); sped.title = p.speedups ? api.fmt(p.items + p.speedups) : '';
+        tr.appendChild(spent); tr.appendChild(sped);
+        body.appendChild(tr);
       });
-      lines.forEach(function (l) {
-        var li = el('li');
-        li.appendChild(el('b', '', t('pointsSpend', '{n} event points', { n: compact(l.items) })));
-        if (l.speedups) li.appendChild(el('span', 'reqs-sped', t('pointsSped', '{n} with speedups', { n: compact(l.items + l.speedups) })));
-        li.appendChild(el('span', 'reqs-when', l.when.join(' · ')));
-        li.title = api.fmt(l.items) + (l.speedups ? ' + ' + api.fmt(l.speedups) : '');
-        list.appendChild(li);
-      });
-      list.hidden = !lines.length;
     }
     function stepTime(steps) { return duration(E.timed(steps, E.boost(cs)).time); }
     function arrow() { return document.documentElement.dir === 'rtl' ? ' ← ' : ' → '; }
