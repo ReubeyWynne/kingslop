@@ -10,8 +10,13 @@
     partial: 'Your Bonus Overview is missing {types}; those use a typical {pct}%.',
     ready: 'Ranked from your {n} heroes that have stars.',
     working: 'Fighting {done} of {total} lineups…',
-    best: 'best', ofBest: '{n}% of your best', mix: 'Ideal mix {inf} / {cav} / {arc}',
-    wins: 'Wins against {n} of {total}', win: '{n}%', empty: 'empty seat',
+    best: 'best', no: 'No.', ofBest: '{n}% of your best', mix: 'Ideal mix {inf} / {cav} / {arc}',
+    wins: 'Wins against {n} of {total}', kept: '{n}% of your troops left',
+    'bestTitle.bear': 'Your best Bear lead', 'bestTitle.rally': 'Your best rally lead', 'bestTitle.garrison': 'Your best garrison lead',
+    ahead: '{n}% more Bear damage than your next lineup', tie: 'Level with your next lineup', only: 'Your only lineup',
+    beats: 'Beats {n} of {total} opponents', mixTitle: 'Send this troop mix',
+    mixNote: 'The split that gets the most damage out of these three heroes and your stats.',
+    railTitle: 'Against each opponent', railNote: 'Win chance over repeated fights, and how much of your army is still standing.', win: '{n}%', empty: 'empty seat',
     foesNote: 'Generation {n} accounts, both sides at {total} troops. Win chance per opponent:',
     saved: 'Saved', saveFailed: 'Could not save',
     joinersFor: 'Joiners for the {job}', noPets: 'No pets in your save yet. Add them on the Pets page.', petsOff: 'Pets are left out.',
@@ -144,48 +149,125 @@
     function foeName(id) { var foe = data.megafauna.foes.filter(function (f) { return f.id === id; })[0]; return foe ? foe.name : id; }
     function heroName(copy) { return copy ? data.heroes[copy.key].name : t('empty'); }
     function stars(copy) { var s = Math.floor(copy.stars / 6), tier = copy.stars % 6; return api.fmt(s) + '★' + (tier ? ' ' + api.fmt(tier) + '/6' : '') + (copy.widget ? ' · W' + api.fmt(copy.widget) : ''); }
-    // A lineup as three portraits, infantry → cavalry → archers; an empty seat stays dashed.
-    function lineupNode(lineup) {
-      var names = el('span', 'lead-heroes');
+    var SVG = 'http://www.w3.org/2000/svg';
+    function mark(symbol, className) {
+      var svg = document.createElementNS(SVG, 'svg'), use = document.createElementNS(SVG, 'use');
+      if (className) svg.setAttribute('class', className);
+      svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false');
+      use.setAttribute('href', '#' + symbol); svg.appendChild(use);
+      return svg;
+    }
+    // The roster's own portrait: troop mark top left, widget top right, five stars
+    // with the tier as six notches along the foot.
+    function portrait(copy, type) {
+      var frame = el('span', 'directory-portrait lead-portrait');
+      if (copy) {
+        var img = el('img'); img.src = '../img/heroes/' + copy.key + '.webp'; img.alt = ''; img.width = 70; img.height = 70; img.loading = 'lazy'; img.decoding = 'async';
+        frame.appendChild(img);
+      } else frame.appendChild(el('span', 'lead-seat'));
+      frame.appendChild(mark('troop-' + type, 'hero-troop-mark'));
+      if (copy && copy.widget) {
+        var widget = el('span', 'hero-portrait-widget'); widget.setAttribute('aria-hidden', 'true');
+        widget.append(mark('hero-widget-mark'), el('b', '', api.fmt(copy.widget)));
+        frame.appendChild(widget);
+      }
+      if (copy) {
+        var foot = el('span', 'hero-portrait-stars'), row = el('span', 'hero-star-row'), notches = el('span', 'hero-star-tier'), s = Math.floor(copy.stars / 6), tier = copy.stars % 6;
+        foot.setAttribute('aria-hidden', 'true');
+        for (var i = 0; i < 5; i++) { var star = el('i', '', '★'); if (i < s) star.dataset.on = ''; row.appendChild(star); }
+        for (var n = 0; n < 6; n++) { var step = el('i'); if (n < tier) step.dataset.on = ''; notches.appendChild(step); }
+        foot.append(row, notches); frame.appendChild(foot);
+      }
+      return frame;
+    }
+    // A lineup as three roster tiles, infantry → cavalry → archers; an empty seat stays dashed.
+    function lineupNode(lineup, className) {
+      var names = el('span', 'lead-heroes' + (className ? ' ' + className : ''));
       lineup.forEach(function (copy, i) {
         var part = el('span', 'lead-hero' + (copy ? '' : ' lead-hero-empty'));
         part.dataset.troop = TYPES[i];
-        if (copy) {
-          var img = el('img'); img.src = '../img/heroes/' + copy.key + '.webp'; img.alt = ''; img.width = 42; img.height = 42; img.loading = 'lazy'; img.decoding = 'async';
-          part.appendChild(img);
-        } else part.appendChild(el('span', 'lead-seat'));
-        part.appendChild(el('b', '', heroName(copy)));
-        part.appendChild(el('small', '', copy ? stars(copy) : api.tr('sim.calc.' + TYPES[i], TYPES[i])));
+        part.appendChild(portrait(copy, TYPES[i]));
+        var label = el('span', 'lead-hero-name');
+        label.append(el('b', '', heroName(copy)), el('small', '', copy ? stars(copy) : api.tr('sim.calc.' + TYPES[i], TYPES[i])));
+        part.appendChild(label);
         names.appendChild(part);
       });
       return names;
     }
+    function sign(x) { var r = Math.round(x * 10) / 10; return (r < 0 ? '−' : '+') + api.fmt(Math.abs(r)) + '%'; }
+    function rail(r, big) {
+      var node = el('span', 'lead-rail' + (big ? ' lead-rail-big' : ''));
+      r.foes.forEach(function (f) {
+        var cell = el('span', 'lead-cell');
+        cell.dataset.win = f.win >= 0.5 ? 'yes' : 'no';
+        cell.style.setProperty('--win', String(f.win));
+        cell.append(el('span', '', api.tr('leads.foe.' + f.id, foeName(f.id))), el('b', '', fill('win', { n: pct(f.win) })));
+        if (big) cell.appendChild(el('small', '', fill('kept', { n: pct(f.left) })));
+        node.appendChild(cell);
+      });
+      return node;
+    }
+    function wonOf(r) { return r.foes.filter(function (f) { return f.win >= 0.5; }).length; }
 
-    function paint(results, gen) {
+    // The best lineup gets the dossier treatment; the next four follow as a ranked list.
+    function paintBest(r, next, you) {
+      var best = context.targets('best')[0];
+      best.hidden = false;
+      best.dataset.job = job;
+      put('bestTitle', t('bestTitle.' + job));
+      if (job === 'bear') {
+        var lead = next ? r.score / next.score - 1 : 0;
+        put('verdict', !next ? t('only') : lead < 0.005 ? t('tie') : fill('ahead', { n: api.fmt(Math.round(lead * 1000) / 10) }));
+      } else put('verdict', fill('beats', { n: api.fmt(wonOf(r)), total: api.fmt(r.foes.length) }));
+      context.targets('trio')[0].replaceChildren(lineupNode(r.lineup, 'lead-heroes-big'));
+      var answer = context.targets('answer')[0];
+      answer.replaceChildren();
+      if (job === 'bear') {
+        answer.appendChild(el('p', 'lead-kicker', t('mixTitle')));
+        var bar = el('span', 'lead-mix'), legend = el('span', 'lead-mix-legend');
+        TYPES.forEach(function (type, i) {
+          var part = el('span', 'lead-mix-part'); part.dataset.troop = type; part.style.setProperty('--part', String(r.mix[i]));
+          bar.appendChild(part);
+          var key = el('span', 'lead-mix-key'); key.dataset.troop = type;
+          key.append(mark('troop-' + type), el('b', '', api.fmt(Math.round(r.mix[i] * 100)) + '%'), el('span', '', api.tr('sim.calc.' + type, type)));
+          legend.appendChild(key);
+        });
+        answer.append(bar, legend, el('p', 'lead-answer-note', t('mixNote')));
+      } else {
+        answer.appendChild(el('p', 'lead-kicker', t('railTitle')));
+        answer.append(rail(r, true), el('p', 'lead-answer-note', t('railNote')));
+      }
+      var p = L.layered(L.panel(you.overview, r.lineup, data), { city: you.city, pet: you.pets }, { city: L.blank(), pet: L.blank() });
+      var body = context.targets('panel')[0];
+      body.replaceChildren();
+      TYPES.forEach(function (type, i) {
+        var tr = el('tr'), th = el('th', '', api.tr('sim.calc.' + type, type)); th.scope = 'row';
+        tr.appendChild(th);
+        ['atk', 'let', 'def', 'hea'].forEach(function (field) { tr.appendChild(el('td', '', sign(p[field][i]))); });
+        body.appendChild(tr);
+      });
+    }
+
+    function paint(results, gen, you) {
       var list = context.targets('list')[0];
       list.replaceChildren();
       var top = results[0];
-      results.slice(0, TOP).forEach(function (r, at) {
+      paintBest(top, results[1], you);
+      context.targets('nextTitle').forEach(function (node) { node.hidden = results.length < 2; });
+      results.slice(1, TOP).forEach(function (r, at) {
         var li = el('li', 'lead-row');
-        li.appendChild(el('span', 'lead-rank', api.fmt(at + 1)));
+        var rank = el('span', 'lead-rank'); rank.append(el('small', '', t('no')), el('b', '', api.fmt(at + 2)));
+        li.appendChild(rank);
         li.appendChild(lineupNode(r.lineup));
         var detail = el('span', 'lead-detail'), score = el('span', 'lead-score');
         if (job === 'bear') {
           var share = r.score / top.score, bar = el('span', 'lead-bar');
           bar.style.setProperty('--share', String(share));
-          score.append(el('b', '', at ? fill('ofBest', { n: pct(share) }) : t('best')), el('small', '', fill('mix', { inf: pct(r.mix[0]), cav: pct(r.mix[1]), arc: pct(r.mix[2]) })));
+          score.append(el('b', '', fill('ofBest', { n: pct(share) })), el('small', '', fill('mix', { inf: pct(r.mix[0]), cav: pct(r.mix[1]), arc: pct(r.mix[2]) })));
           detail.append(score, bar);
         } else {
-          var won = r.foes.filter(function (f) { return f.win >= 0.5; }).length, rail = el('span', 'lead-rail');
-          r.foes.forEach(function (f) {
-            var cell = el('span', 'lead-cell');
-            cell.dataset.win = f.win >= 0.5 ? 'yes' : 'no';
-            cell.style.setProperty('--win', String(f.win));
-            cell.append(el('span', '', api.tr('leads.foe.' + f.id, foeName(f.id))), el('b', '', fill('win', { n: pct(f.win) })));
-            rail.appendChild(cell);
-          });
-          score.appendChild(el('b', '', fill('wins', { n: api.fmt(won), total: api.fmt(r.foes.length) })));
-          detail.append(score, rail);
+          score.appendChild(el('b', '', fill('wins', { n: api.fmt(wonOf(r)), total: api.fmt(r.foes.length) })));
+          detail.append(score, rail(r));
         }
         li.appendChild(detail);
         list.appendChild(li);
@@ -193,13 +275,17 @@
       context.targets('foes').forEach(function (node) { node.hidden = job === 'bear' || !results.length; });
       put('foesNote', fill('foesNote', { n: api.fmt(gen), total: api.fmt(data.megafauna.total) }));
     }
+    function clear() {
+      context.targets('list')[0].replaceChildren();
+      context.targets('best').concat(context.targets('nextTitle'), context.targets('foes')).forEach(function (n) { n.hidden = true; });
+    }
 
     function run() {
       var mine = ticket += 1, owned = roster(), gen = generation(owned);
       job = (context.targets('job').filter(function (n) { return n.checked; })[0] || {}).value || 'bear';
       troopsDefault(gen);
       var ov = overview(gen), by = L.candidates(owned, data), list = L.lineups(by);
-      if (!list.length) { paintExtras(gen); context.targets('list')[0].replaceChildren(); context.targets('foes').forEach(function (n) { n.hidden = true; }); put('status', t('noHeroes')); return; }
+      if (!list.length) { paintExtras(gen); clear(); put('status', t('noHeroes')); return; }
       var note = ov.missing.length === 3 ? fill('noOverview', { n: api.fmt(gen), pct: api.fmt(ov.typical) })
         : ov.missing.length ? fill('partial', { types: ov.missing.map(function (type) { return api.tr('sim.calc.' + type, type); }).join(', '), pct: api.fmt(ov.typical) }) : '';
       var ready = fill('ready', { n: api.fmt(Object.keys(owned).filter(function (k) { return L.copyOf(k, owned[k], data); }).length) });
@@ -209,7 +295,7 @@
         var scored = list.map(function (lineup) { var r = L.bear(you, lineup, data); r.lineup = lineup; return r; });
         scored.sort(function (a, b) { return b.score - a.score; });
         put('status', (note ? note + ' ' : '') + ready);
-        paint(scored, gen);
+        paint(scored, gen, you);
         return;
       }
       // A fight takes a few milliseconds per lineup, so they run a few at a time.
@@ -222,7 +308,7 @@
         if (at < list.length) { put('status', fill('working', { done: api.fmt(at), total: api.fmt(list.length) })); setTimeout(step, 0); return; }
         done.sort(function (a, b) { return b.score - a.score; });
         put('status', (note ? note + ' ' : '') + ready);
-        paint(done, gen);
+        paint(done, gen, you);
       })();
     }
 

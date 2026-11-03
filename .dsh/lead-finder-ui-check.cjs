@@ -11,14 +11,19 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   await page.waitForFunction(() => !document.querySelector('.lead-jobs').disabled);
   assert.match(await status(), /Mark the heroes you own/);
   assert.equal(await rows(), 0);
+  assert.equal(await page.locator('.lead-best').isHidden(), true, 'no best lineup before the roster');
   await page.evaluate(() => {
     const s = PlayerLedger.shared();
     for (const [key, stars, widget] of [['amadeus', 30, 10], ['petra', 30, 10], ['marlin', 30, 10], ['rosa', 24, 6], ['jabel', 24, 0]]) s.setHero(key, { level: null, stars, widget, skills: null });
     KS_SERVER_AGE.setGeneration(4);
   });
-  await page.waitForFunction(() => document.querySelectorAll('.lead-row').length === 4);
+  await page.waitForFunction(() => document.querySelectorAll('.lead-row').length === 3);
   assert.match(await status(), /typical generation 4 Bonus Overview \(250% everywhere\)/);
-  assert.equal(await page.locator('.lead-row').first().locator('.lead-hero b').allTextContents().then(t => t.join('/')), 'Amadeus/Petra/Marlin');
+  assert.equal(await page.locator('.lead-best .lead-hero-name b').allTextContents().then(t => t.join('/')), 'Amadeus/Petra/Marlin', 'the best lineup leads the dossier');
+  assert.equal(await page.locator('.lead-best .hero-star-row').first().locator('[data-on]').count(), 5, 'roster stars on the portrait');
+  assert.match(await page.locator('[data-target="lead-finder.verdict"]').textContent(), /more Bear damage|Level with/);
+  assert.equal(await page.locator('[data-target="lead-finder.panel"] tr').count(), 3, 'report panel per troop type');
+  assert.match(await page.locator('[data-target="lead-finder.panel"] tr').first().locator('td').first().textContent(), /^\+\d/);
   assert.equal(await page.locator('.lead-foes').isHidden(), true, 'no opponents for the Bear');
 
   // Typing a whole troop row saves it as the Bonus Overview, not as report stats.
@@ -30,9 +35,9 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
 
   // A rally ranks against the four stock opponents.
   await page.locator('label:has(input[value="rally"])').click();
-  await page.waitForFunction(() => /Ranked from/.test(document.querySelector('[data-target="lead-finder.status"]').textContent) && document.querySelectorAll('.lead-row .lead-cell').length === 16);
+  await page.waitForFunction(() => /Ranked from/.test(document.querySelector('[data-target="lead-finder.status"]').textContent) && document.querySelectorAll('#leads .lead-cell').length === 16);
   assert.equal(await page.locator('.lead-foes').isVisible(), true);
-  assert.deepEqual(await page.locator('.lead-row').first().locator('.lead-cell > span').allTextContents(), ['Manta ray', 'Great white', 'Orca', 'Blue whale']);
+  assert.deepEqual(await page.locator('.lead-best .lead-cell > span').allTextContents(), ['Manta ray', 'Great white', 'Orca', 'Blue whale']);
 
   // Joiners start from the job's usual list; city buffs and pets move the ranking's numbers.
   await page.locator('#lead-extras summary').click();
@@ -40,9 +45,9 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.match(await page.locator('[data-target="lead-finder.joinersTitle"]').textContent(), /Rally lead/);
   assert.match(await page.locator('[data-target="lead-finder.pets"]').textContent(), /No pets in your save/);
   await page.locator('label:has(input[value="bear"])').click();
-  await page.waitForFunction(() => document.querySelectorAll('.lead-row').length === 4);
+  await page.waitForFunction(() => document.querySelectorAll('.lead-row').length === 3 && document.querySelector('.lead-mix'));
   assert.deepEqual(await page.locator('[data-joiner][data-field="key"]').evaluateAll(s => s.map(x => x.value)), ['chenko', 'yeonwoo', 'amane', 'margot'], 'the Bear keeps its own joiners');
-  const mixOf = () => page.locator('.lead-row').first().locator('small').last().textContent();
+  const mixOf = () => page.locator('.lead-mix-legend').textContent();
   const before = await mixOf();
   await page.locator('[data-joiner="3"][data-field="key"]').selectOption('');
   await page.locator('[data-city="attack"]').selectOption('20');

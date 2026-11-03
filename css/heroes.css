@@ -224,18 +224,64 @@
 .lead-pets .hero-own span { font-size: var(--step--1); color: var(--ink); }
 .lead-extras .hero-mine-note, .lead-stats .hero-mine-note { margin: .6rem 0 0; font-size: .75rem; font-style: italic; color: var(--ink-muted); }
 
-/* The ranking: a square numeral, three portraits, then the answer. */
-.lead-list { list-style: none; margin: var(--space-s) 0 0; padding: 0; border-top: 1px solid var(--signal-line); }
-.lead-row { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr); gap: .45rem .9rem; align-items: start; padding: .8rem 0; border-bottom: 1px solid var(--signal-tint); }
-.lead-rank { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; grid-row: span 2; font-family: var(--display-2); font-size: var(--step-0); color: var(--amber-dim); border: 1px solid var(--signal-line); font-variant-numeric: tabular-nums; }
-.lead-row:first-child .lead-rank { color: var(--void); background: var(--amber); border-color: var(--amber); }
+/* The best lineup takes the open dossier's field: void-2 between signal rules,
+   roster portraits at full size, then the answer beside what your report should read. */
+.lead-kicker { margin: 0; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); }
+.lead-best { margin-top: var(--space-s); padding: 1rem var(--space-s) var(--space-s); background: var(--void-2); border-block: 1px solid var(--signal-line); }
+.lead-best[hidden], .lead-next-title[hidden] { display: none; }
+.lead-best-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .2rem 1rem; }
+.lead-verdict { margin: 0; font: 600 var(--step-0)/1.25 var(--display-2); letter-spacing: .03em; color: var(--ink); }
+.lead-best-trio { margin-top: 1rem; }
+.lead-best-body { display: grid; gap: 1.2rem 2rem; margin-top: 1rem; padding-top: .9rem; border-top: 1px solid var(--signal-line); }
+@media (min-width: 48rem) { .lead-best-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.lead-answer-note, .lead-panel-note { margin: .5rem 0 0; font-size: .75rem; font-style: italic; color: var(--ink-muted); }
+
+/* Lineups wear the roster's portraits: troop mark, widget, stars and tier notches. */
 .lead-heroes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; }
-.lead-hero { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); gap: 0 .5rem; align-items: center; min-width: 0; }
-.lead-hero img, .lead-hero .lead-seat { grid-row: span 2; width: 2.6rem; height: 2.6rem; object-fit: cover; border: 1px solid var(--amber-dim); border-radius: 2px; background: var(--void-2); box-shadow: inset 0 0 0 1px var(--signal-glow); }
-.lead-hero .lead-seat { border-style: dashed; border-color: var(--signal-line); box-shadow: none; }
-.lead-hero b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; color: var(--ink); line-height: 1.15; }
-.lead-hero small { font-size: .72rem; color: var(--ink-muted); font-variant-numeric: tabular-nums; line-height: 1.2; }
-.lead-hero-empty b { font-weight: 400; font-style: italic; color: var(--ink-muted); }
+.lead-hero { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); gap: 0 .6rem; align-items: center; min-width: 0; }
+.lead-portrait { max-width: none; }
+.lead-portrait img, .lead-portrait .lead-seat { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border: 1px solid var(--amber); border-radius: 2px; background: var(--void-2); box-shadow: inset 0 0 0 1px var(--signal-glow), 0 6px 18px rgba(0, 0, 0, .45); }
+.lead-portrait .lead-seat { border: 1px dashed var(--signal-line); box-shadow: none; }
+.lead-hero-name { display: grid; gap: .1rem; min-width: 0; }
+.lead-hero-name b { min-width: 0; font: 600 .74rem/1.2 var(--display-2); letter-spacing: .03em; text-transform: uppercase; color: var(--ink); overflow-wrap: anywhere; }
+.lead-hero-name small { font-size: .68rem; line-height: 1.25; color: var(--amber); font-variant-numeric: tabular-nums; }
+.lead-hero-empty .lead-hero-name b { font-family: var(--body); font-style: italic; text-transform: none; color: var(--ink-muted); }
+.lead-hero-empty .lead-hero-name small { color: var(--ink-muted); }
+.lead-heroes-big { gap: 1rem; }
+.lead-heroes-big .lead-hero { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: .45rem; text-align: center; }
+.lead-heroes-big .lead-portrait { width: 100%; max-width: 6.5rem; }
+.lead-heroes-big .lead-portrait img { box-shadow: inset 0 0 0 1px var(--signal-glow), 0 0 0 1px var(--amber-dim), 0 0 22px var(--signal-halo); }
+.lead-heroes-big .lead-hero-name b { font-size: var(--step-0); letter-spacing: .06em; }
+.lead-heroes-big .lead-hero-name small { font-size: .74rem; }
+.lead-heroes-big .hero-star-row { font-size: .74rem; }
+.lead-heroes-big .hero-star-tier i { width: .4rem; }
+
+/* Bear: the troop mix as one ruled bar, one signal hue at three strengths. */
+.lead-mix { display: flex; gap: 2px; height: .6rem; margin-top: .6rem; }
+.lead-mix-part { flex: var(--part, 0) 1 0; min-width: 0; background: var(--amber); }
+.lead-mix-part[data-troop="cav"] { background: color-mix(in srgb, var(--amber) 62%, var(--void-2)); }
+.lead-mix-part[data-troop="arc"] { background: color-mix(in srgb, var(--amber) 32%, var(--void-2)); }
+.lead-mix-legend { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; margin-top: .6rem; }
+.lead-mix-key { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 0 .35rem; padding-top: .35rem; border-top: 1px solid var(--signal-tint); }
+.lead-mix-key svg { width: 1rem; height: 1rem; fill: none; stroke: var(--ink-dim); stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round; }
+.lead-mix-key b { font: 600 var(--step-2)/1 var(--display-2); color: var(--amber); font-variant-numeric: tabular-nums; }
+.lead-mix-key span { grid-column: 1 / -1; font-size: .66rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); }
+
+/* What the battle report's Bonus Details should show with this lineup out. */
+.lead-panel-table { width: 100%; margin-top: .5rem; border-collapse: collapse; table-layout: fixed; font-variant-numeric: tabular-nums; }
+.lead-panel-table thead th { padding: 0 0 .3rem; font-size: .62rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); text-align: end; }
+.lead-panel-table tbody th { width: 5.2rem; padding: .35rem .5rem .35rem 0; font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-dim); text-align: start; }
+.lead-panel-table tbody tr { border-top: 1px solid var(--signal-tint); }
+.lead-panel-table td { padding: .35rem 0; font-size: .9rem; color: var(--ink); text-align: end; }
+
+/* The next four: the band label's numeral, small portraits, the answer beneath. */
+.lead-next-title { margin-top: var(--space-m); }
+.lead-list { list-style: none; margin: .4rem 0 0; padding: 0; border-top: 1px solid var(--signal-line); }
+.lead-list:empty { display: none; }
+.lead-row { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); gap: .5rem .9rem; align-items: start; padding: .9rem 0; border-bottom: 1px solid var(--signal-tint); }
+.lead-rank { display: grid; justify-items: center; grid-row: span 2; line-height: 1; color: var(--ink-muted); }
+.lead-rank small { font-size: .58rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.lead-rank b { font: 600 var(--step-2)/1 var(--display-2); color: var(--amber); font-variant-numeric: tabular-nums; }
 .lead-detail { display: grid; gap: .3rem; font-variant-numeric: tabular-nums; }
 .lead-score { display: flex; flex-wrap: wrap; align-items: baseline; gap: .1rem .8rem; }
 .lead-score b { color: var(--amber); font-weight: 700; font-size: .9rem; }
@@ -248,6 +294,10 @@
 .lead-cell span { font-size: .66rem; line-height: 1.15; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-muted); overflow-wrap: anywhere; }
 .lead-cell b { font-size: .9rem; color: var(--ink-dim); font-weight: 700; }
 .lead-cell[data-win="yes"] b { color: var(--amber); }
+.lead-rail-big { gap: 4px; margin-top: .6rem; }
+.lead-rail-big .lead-cell { gap: .2rem; padding: .5rem .55rem .55rem; }
+.lead-rail-big .lead-cell b { font: 600 var(--step-2)/1 var(--display-2); }
+.lead-rail-big .lead-cell small { font-size: .68rem; line-height: 1.2; color: var(--ink-muted); }
 
 /* The opponents, ruled like the roster's role notes. */
 .lead-foes { margin-top: var(--space-m); }
@@ -260,10 +310,15 @@
   .lead-jobs label { font-size: .82rem; letter-spacing: .03em; }
   .lead-stats-table tbody th { width: 4.2rem; font-size: .62rem; letter-spacing: .04em; }
   .lead-stats-table thead th { font-size: .6rem; letter-spacing: .04em; }
-  .lead-row { grid-template-columns: 2rem minmax(0, 1fr); gap: .45rem .6rem; }
-  .lead-rank { width: 2rem; height: 2rem; font-size: var(--step--1); }
-  .lead-heroes { gap: .4rem; }
-  .lead-hero { grid-template-columns: minmax(0, 1fr); gap: .15rem; align-items: start; }
-  .lead-hero img, .lead-hero .lead-seat { grid-row: auto; width: 2.4rem; height: 2.4rem; }
+  .lead-row { grid-template-columns: 2rem minmax(0, 1fr); gap: .5rem .6rem; }
+  .lead-heroes { gap: .5rem; }
+  .lead-heroes-big { gap: .7rem; }
+  .lead-hero { grid-template-columns: minmax(0, 1fr); gap: .3rem; align-items: start; }
+  .lead-list .lead-portrait { width: 3.4rem; }
+  .lead-heroes-big .lead-hero-name b { font-size: .8rem; letter-spacing: .03em; }
+  .lead-rail-big { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lead-mix-key b { font-size: var(--step-1); }
+  .lead-panel-table tbody th { width: 4.2rem; font-size: .6rem; letter-spacing: .04em; }
+  .lead-panel-table td { font-size: .82rem; }
   .lead-foe-list li { grid-template-columns: minmax(0, 1fr); }
 }
