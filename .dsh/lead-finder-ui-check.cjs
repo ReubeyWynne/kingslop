@@ -29,17 +29,17 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.match(await status(), /missing Infantry, Cavalry/);
 
   // A rally ranks against the four stock opponents.
-  await page.locator('input[value="rally"]').check();
-  await page.waitForFunction(() => /Ranked from/.test(document.querySelector('[data-target="lead-finder.status"]').textContent) && document.querySelectorAll('.lead-row .lead-chip').length === 16);
+  await page.locator('label:has(input[value="rally"])').click();
+  await page.waitForFunction(() => /Ranked from/.test(document.querySelector('[data-target="lead-finder.status"]').textContent) && document.querySelectorAll('.lead-row .lead-cell').length === 16);
   assert.equal(await page.locator('.lead-foes').isVisible(), true);
-  assert.deepEqual(await page.locator('.lead-row').first().locator('.lead-chip').allTextContents().then(t => t.map(x => x.replace(/ \d+%$/, ''))), ['Manta ray', 'Great white', 'Orca', 'Blue whale']);
+  assert.deepEqual(await page.locator('.lead-row').first().locator('.lead-cell > span').allTextContents(), ['Manta ray', 'Great white', 'Orca', 'Blue whale']);
 
   // Joiners start from the job's usual list; city buffs and pets move the ranking's numbers.
   await page.locator('#lead-extras summary').click();
   assert.deepEqual(await page.locator('[data-joiner][data-field="key"]').evaluateAll(s => s.map(x => x.value)), ['chenko', 'yeonwoo', 'amane', 'amadeus']);
   assert.match(await page.locator('[data-target="lead-finder.joinersTitle"]').textContent(), /Rally lead/);
   assert.match(await page.locator('[data-target="lead-finder.pets"]').textContent(), /No pets in your save/);
-  await page.locator('input[value="bear"]').check();
+  await page.locator('label:has(input[value="bear"])').click();
   await page.waitForFunction(() => document.querySelectorAll('.lead-row').length === 4);
   assert.deepEqual(await page.locator('[data-joiner][data-field="key"]').evaluateAll(s => s.map(x => x.value)), ['chenko', 'yeonwoo', 'amane', 'margot'], 'the Bear keeps its own joiners');
   const mixOf = () => page.locator('.lead-row').first().locator('small').last().textContent();

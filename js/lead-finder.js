@@ -144,13 +144,18 @@
     function foeName(id) { var foe = data.megafauna.foes.filter(function (f) { return f.id === id; })[0]; return foe ? foe.name : id; }
     function heroName(copy) { return copy ? data.heroes[copy.key].name : t('empty'); }
     function stars(copy) { var s = Math.floor(copy.stars / 6), tier = copy.stars % 6; return api.fmt(s) + '★' + (tier ? ' ' + api.fmt(tier) + '/6' : '') + (copy.widget ? ' · W' + api.fmt(copy.widget) : ''); }
+    // A lineup as three portraits, infantry → cavalry → archers; an empty seat stays dashed.
     function lineupNode(lineup) {
       var names = el('span', 'lead-heroes');
       lineup.forEach(function (copy, i) {
         var part = el('span', 'lead-hero' + (copy ? '' : ' lead-hero-empty'));
         part.dataset.troop = TYPES[i];
+        if (copy) {
+          var img = el('img'); img.src = '../img/heroes/' + copy.key + '.webp'; img.alt = ''; img.width = 42; img.height = 42; img.loading = 'lazy'; img.decoding = 'async';
+          part.appendChild(img);
+        } else part.appendChild(el('span', 'lead-seat'));
         part.appendChild(el('b', '', heroName(copy)));
-        if (copy) part.appendChild(el('small', '', stars(copy)));
+        part.appendChild(el('small', '', copy ? stars(copy) : api.tr('sim.calc.' + TYPES[i], TYPES[i])));
         names.appendChild(part);
       });
       return names;
@@ -162,20 +167,25 @@
       var top = results[0];
       results.slice(0, TOP).forEach(function (r, at) {
         var li = el('li', 'lead-row');
+        li.appendChild(el('span', 'lead-rank', api.fmt(at + 1)));
         li.appendChild(lineupNode(r.lineup));
-        var detail = el('span', 'lead-detail');
+        var detail = el('span', 'lead-detail'), score = el('span', 'lead-score');
         if (job === 'bear') {
           var share = r.score / top.score, bar = el('span', 'lead-bar');
           bar.style.setProperty('--share', String(share));
-          detail.append(bar, el('b', '', at ? fill('ofBest', { n: pct(share) }) : t('best')), el('small', '', fill('mix', { inf: pct(r.mix[0]), cav: pct(r.mix[1]), arc: pct(r.mix[2]) })));
+          score.append(el('b', '', at ? fill('ofBest', { n: pct(share) }) : t('best')), el('small', '', fill('mix', { inf: pct(r.mix[0]), cav: pct(r.mix[1]), arc: pct(r.mix[2]) })));
+          detail.append(score, bar);
         } else {
-          var won = r.foes.filter(function (f) { return f.win >= 0.5; }).length, chips = el('span', 'lead-chips');
+          var won = r.foes.filter(function (f) { return f.win >= 0.5; }).length, rail = el('span', 'lead-rail');
           r.foes.forEach(function (f) {
-            var chip = el('span', 'lead-chip', api.tr('leads.foe.' + f.id, foeName(f.id)) + ' ' + fill('win', { n: pct(f.win) }));
-            chip.dataset.win = f.win >= 0.5 ? 'yes' : 'no';
-            chips.appendChild(chip);
+            var cell = el('span', 'lead-cell');
+            cell.dataset.win = f.win >= 0.5 ? 'yes' : 'no';
+            cell.style.setProperty('--win', String(f.win));
+            cell.append(el('span', '', api.tr('leads.foe.' + f.id, foeName(f.id))), el('b', '', fill('win', { n: pct(f.win) })));
+            rail.appendChild(cell);
           });
-          detail.append(el('b', '', fill('wins', { n: api.fmt(won), total: api.fmt(r.foes.length) })), chips);
+          score.appendChild(el('b', '', fill('wins', { n: api.fmt(won), total: api.fmt(r.foes.length) })));
+          detail.append(score, rail);
         }
         li.appendChild(detail);
         list.appendChild(li);
