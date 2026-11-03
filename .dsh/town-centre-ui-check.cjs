@@ -241,7 +241,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('#town-bag [data-count="mithril"] [data-amount]').textContent(), '10');
     assert.equal(await page.locator('[data-building="town-center"] [data-level]').textContent(), 'TG 2');
     const other = await context.newPage(); await other.goto(origin + '/governor-gear/?lang=en');
-    await other.waitForFunction(() => document.querySelector('[data-target="governor-sheet.source"]').textContent);
+    await other.waitForFunction(() => document.querySelector('[data-target="page-sheet.source"]').textContent);
     assert.equal(await other.locator('#governor-bag input[data-bind="inventory.charm-guide"]').inputValue(), '5');
     assert.equal(await other.locator('.gov-piece[data-gov="inf-1"]').getAttribute('data-state'), 'set');
     await other.close();

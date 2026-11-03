@@ -1,0 +1,23 @@
+{%- comment -%}
+The guest-mode and share-link controls every calculator shares (js/page-sheet.js). Place each
+part inside a root whose data-module lists page-sheet:
+  part="notice"  the slim line shown on a shared or guest sheet, with Save as mine and Load mine
+  part="tools"   Copy share link and Start blank, with the fallback link field
+  part="confirm" the dialog that asks before a sheet replaces your save; pass class (the page's dialog style), title, body and
+                 confirm as i18n keys with English text in title_en, body_en, confirm_en
+{%- endcomment -%}
+{%- if include.part == "notice" -%}
+<p class="sheet-notice" data-target="page-sheet.notice" hidden><span aria-live="polite"><strong data-target="page-sheet.source"></strong> <span data-target="page-sheet.hint"></span></span>
+  <button type="button" data-action="page-sheet.saveMine" data-target="page-sheet.saveMine" data-i18n="gov.sheet.saveMine" hidden>Save as mine</button>
+  <button type="button" data-action="page-sheet.loadMine" data-target="page-sheet.loadMine" data-i18n="gov.sheet.loadMine" hidden>Load mine</button>
+</p>
+{%- elsif include.part == "tools" -%}
+<p class="sheet-tools"><button type="button" data-action="page-sheet.copy" data-i18n="gov.sheet.copy">Copy share link</button><span class="sheet-sr" data-target="page-sheet.status" role="status"></span> <button type="button" data-action="page-sheet.blank" data-target="page-sheet.blank" data-i18n="gov.sheet.blank" hidden>Start blank</button></p>
+<input class="sheet-link" type="url" readonly hidden data-target="page-sheet.link" aria-label="Link to this sheet" data-i18n-key="gov.sheet.linkLabel" data-i18n-attr="aria-label">
+{%- elsif include.part == "confirm" -%}
+<dialog class="{{ include.class }} sheet-confirm" data-target="page-sheet.confirm" aria-labelledby="page-sheet-confirm-title">
+  <h2 id="page-sheet-confirm-title" data-i18n="{{ include.title }}">{{ include.title_en }}</h2>
+  <p data-i18n="{{ include.body }}">{{ include.body_en }}</p>
+  <p class="sheet-confirm-actions"><button type="button" data-action="page-sheet.cancel" data-i18n="gov.sheet.cancel">cancel</button> <button type="button" data-action="page-sheet.confirm" data-i18n="{{ include.confirm }}">{{ include.confirm_en }}</button></p>
+</dialog>
+{%- endif -%}

@@ -559,6 +559,7 @@
       "../css/events.css",
       "../css/hero-gear.css",
       "../css/sheet.css",
+      "../css/page-sheet.css",
       "../css/event-points.css",
       "../css/next-step.css"
     ],
@@ -572,6 +573,7 @@
       "../js/event-points.js",
       "../js/hero-gear-engine.js",
       "../js/hero-gear-view.js",
+      "../js/page-sheet.js",
       "../js/hero-gear.js",
       "../js/upgrade-priority-data.js",
       "../js/building-data.js",
@@ -845,6 +847,7 @@
       "../css/events.css",
       "../css/governor.css",
       "../css/sheet.css",
+      "../css/page-sheet.css",
       "../css/event-points.css",
       "../css/governor-profile.css"
     ],
@@ -860,6 +863,7 @@
       "../js/event-points.js",
       "../js/governor-view.js",
       "../js/governor-profile.js",
+      "../js/page-sheet.js",
       "../js/governor-sheet.js",
       "../js/governor-planner.js"
     ],

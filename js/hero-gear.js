@@ -15,19 +15,31 @@
     fill: function (text, values) { return BH.fill(text, values); }
   });
   var parts = { ten: 0, hundred: 0, remainder: 0 };
-  var params = new URLSearchParams(location.search), link = E.readLink(location.search);
-  var guest = params.has('guest') || !!link, linkFailed = !!(link && link.invalid);
+  /* The link (?gear=…&w=…) carries the twelve pieces and the priorities; the shared guest sheet
+     (js/page-sheet.js) does the rest: ?guest, a link or Start blank work on a copy of the ledger
+     that only Save as mine writes back. Pieces and priority replace yours there; a material the
+     sheet left at 0 keeps your number, since a link never carries the bag. */
+  var sheet = window.PageSheet.define({
+    keys: ['gear', 'w'],
+    read: E.readLink,
+    write: E.encodeLink,
+    blank: E.defaults,
+    of: function (store) { return store.heroGear(E); },
+    load: function (store, value, mine) {
+      if (!mine) { store.writeHeroGear(Object.assign(E.defaults(), value), E, { source: 'manual' }); return; }
+      var own = store.heroGear(E), next = Object.assign({}, own, copy(value), { resources: copy(own.resources), parts: own.parts });
+      E.RES.forEach(function (r) { if (value.resources[r] > 0) next.resources[r] = value.resources[r]; });
+      if (value.resources.xp > 0) next.parts = copy(value.parts);
+      store.writeHeroGear(next, E, { source: 'manual' });
+    },
+    // The same gear and priority, and no material that saving would change.
+    same: function (value, own) {
+      var a = E.encodeLink(value), b = E.encodeLink(own);
+      return a.gear === b.gear && a.w === b.w && E.RES.every(function (r) { return !(value.resources[r] > 0) || value.resources[r] === own.resources[r]; });
+    }
+  });
+  var guest = sheet.guest;
   if (guest) {
-    var guestLedger;
-    window.Interactions.configure({ ledger: function () {
-      if (guestLedger) return guestLedger;
-      var Ledger = window.PlayerLedger, memory = {};
-      if (!link) try { memory[Ledger.KEY] = JSON.stringify(Ledger.shared().snapshot()); } catch (ignored) {}
-      var store = Ledger.create({ getItem: function (key) { return key in memory ? memory[key] : null; }, setItem: function (key, value) { memory[key] = String(value); } }, null);
-      if (link && !link.invalid) store.writeHeroGear(Object.assign(E.defaults(), link), E, { source: 'manual' });
-      guestLedger = store;
-      return store;
-    } });
     var forge = document.getElementById('gear-forge');
     forge.dataset.guest = 'true';
     forge.dataset.savedKey = 'gear.guestSaved';
@@ -46,55 +58,6 @@
   function tr(key) { return BH.tr('gear.' + key, key); }
   function fmt(n) { return BH.fmt(n); }
   function copy(s) { return JSON.parse(JSON.stringify(s)); }
-  function keptParams() { var kept = new URLSearchParams(location.search); ['guest', 'gear', 'w'].forEach(function (key) { kept.delete(key); }); return kept.toString(); }
-  function linkQuery() { var l = E.encodeLink(state); return 'gear=' + l.gear + '&w=' + l.w; }
-  function shareURL() { return new URL(location.pathname + '?' + linkQuery(), location.href).href; }
-  function syncAddress() {
-    if (!guest) return;
-    var kept = keptParams();
-    try { history.replaceState(history.state, '', location.pathname + '?' + (kept ? kept + '&' : '') + linkQuery() + location.hash); } catch (ignored) {}
-  }
-  /* Your own gear saves as you go, and the page says nothing about it. A link, ?guest or
-     Start blank opens a sheet of its own that only Save as mine writes back; a slim notice
-     above the workspace says so. Load mine and Start blank reload on the other kind. */
-  function sheetTr(key, fallback) { return BH.tr('gov.sheet.' + key, fallback); }
-  function blankSheet() { var d = E.defaults(); return Object.keys(d.pieces).every(function (id) { return JSON.stringify(state.pieces[id]) === JSON.stringify(d.pieces[id]); }); }
-  function paintSheet() {
-    var blank = guest && blankSheet();
-    el('sheet').hidden = !guest;
-    el('sheet-source').textContent = linkFailed ? tr('linkInvalid') : blank ? sheetTr('sourceBlank', 'A blank sheet.') : link ? sheetTr('sourceLink', 'A shared sheet.') : sheetTr('sourceChanged', 'Changed on this page only.');
-    el('sheet-hint').textContent = sheetTr('untouched', 'Your save is untouched.');
-    el('save-mine').hidden = !guest || blank;
-    el('blank').hidden = blank;
-  }
-  function go(query) { var kept = keptParams(), rest = [kept, query].filter(Boolean).join('&'); location.assign(location.pathname + (rest ? '?' + rest : '') + location.hash); }
-  function startBlank() { go('gear=' + E.encodeLink(E.defaults()).gear); }
-  function loadMine() { go(''); }
-  // Pieces and priority replace yours; a material this sheet left at 0 keeps your number.
-  function saveMine() {
-    try {
-      var own = window.PlayerLedger.shared(), mine = own.heroGear(E), next = Object.assign({}, mine, copy(state), { resources: copy(mine.resources), parts: mine.parts });
-      if (E.RES.some(function (r) { return state.resources[r] > 0; })) E.RES.forEach(function (r) { if (state.resources[r] > 0) next.resources[r] = state.resources[r]; });
-      if (state.resources.xp > 0) next.parts = copy(parts);
-      own.writeHeroGear(next, E, { source: 'manual' });
-    } catch (error) { note('saveFailed'); return; }
-    loadMine();
-  }
-  // A copied link is confirmed on the button itself for a moment, so no note lingers below the gear.
-  var shareReset;
-  function shareLink() {
-    var url = shareURL(), field = el('link'), button = el('share');
-    function fallback() { field.hidden = false; field.value = url; field.focus(); field.select(); note('linkSelect'); }
-    field.hidden = true;
-    if (!navigator.clipboard || !navigator.clipboard.writeText) { fallback(); return; }
-    navigator.clipboard.writeText(url).then(function () {
-      note(null);
-      clearTimeout(shareReset);
-      button.textContent = tr('linkCopiedShort'); button.dataset.copied = 'true';
-      el('share-status').textContent = tr('linkCopied');
-      shareReset = setTimeout(function () { button.textContent = sheetTr('copy', 'Copy share link'); delete button.dataset.copied; el('share-status').textContent = ''; }, 2500);
-    }, fallback);
-  }
   function paintTheory() {
     el('cost-units').textContent = view.costText(E.redPlans(state).scale);
     el('kvk-formula').textContent = BH.fill(tr('kvkFormula'), { hammers: fmt(E.KVK_RATES.hammers), mithril: fmt(E.KVK_RATES.mithril) });
@@ -118,7 +81,6 @@
       var saved = ledger.writeHeroGear(Object.assign({}, state, { parts: parts }), E, Object.assign({ expectedRevision: ledgerRevision }, options));
       ledgerRevision = saved.revision;
       el('save').textContent = tr(guest ? 'guestSaved' : 'saved');
-      syncAddress();
       return true;
     } catch (error) {
       el('save').textContent = tr('saveFailed');
@@ -316,7 +278,7 @@
   }
   function paint() {
     paintView();
-    paintGear(); paintAdvanced(); paintOptimal(); paintPlanShare(); paintFit(); paintResults(); paintSaving(); paintTheory(); paintSheet();
+    paintGear(); paintAdvanced(); paintOptimal(); paintPlanShare(); paintFit(); paintResults(); paintSaving(); paintTheory();
     scheduleSearch(250);
   }
   function applyState(next, options) {
@@ -396,7 +358,6 @@
     } catch (error) { note('loadFailed'); el('save').textContent = tr('saveFailed'); }
     syncXP();
     paint();
-    syncAddress();
     openHash();
     window.addEventListener('hashchange', openHash);
     if (ledger) ledger.subscribe(function (saved) {
@@ -468,12 +429,6 @@
       E.RES.forEach(function (r) { updated.resources[r] -= costs[r]; });
       if (applyState(updated, { source: 'plan' })) { note('applied'); paintEdit(); }
     });
-    el('share').addEventListener('click', shareLink);
-    el('blank').addEventListener('click', startBlank);
-    el('load-mine').addEventListener('click', loadMine);
-    el('save-mine').addEventListener('click', function () { el('save-dialog').showModal(); });
-    el('cancel-save').addEventListener('click', function () { el('save-dialog').close(); });
-    el('confirm-save').addEventListener('click', saveMine);
     el('close-edit').addEventListener('click', function () { el('edit-dialog').close(); });
     el('edit-dialog').addEventListener('close', function () {
       paintGear();
