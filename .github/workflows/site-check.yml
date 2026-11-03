@@ -60,6 +60,13 @@ jobs:
               - js/player-modules.js
               - js/unit-input.js
               - js/deep-link.js
+              # Shared by every calculator: guest sheets, share links and event points.
+              - js/page-sheet.js
+              - css/page-sheet.css
+              - js/event-points.js
+              - css/event-points.css
+              - js/event-rules.js
+              - _data/event_rules.json
               - js/server-age.js
               - js/kingdom-progression.js
               - js/kingdom-data.liquid
@@ -445,6 +452,9 @@ jobs:
       - name: Check event rules and availability arithmetic
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/event-rules-check.cjs
+      - name: Check the shared event points table
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/event-points-check.cjs
       - name: Check hero gear costs and search
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/hero-gear-check.cjs

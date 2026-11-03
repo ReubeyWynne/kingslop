@@ -1,6 +1,7 @@
 /* One event points table for every calculator: what a plan scores on its best day of KvK prep,
-   Strongest Governor and Alliance Brawl. Hero gear counts the Forgehammers and mithril it
-   spends; Governor gear its gear and charm score gains, on separate rows. Every rate comes
+   Strongest Governor and Alliance Brawl. Items spent (Forgehammers, shards, emblems, Truegold)
+   and speedup minutes go through forItems; governor gear and charm score gains through
+   forGovernor; Pet Advancement score through forPets. Every rate comes
    from the event rules (_data/event_rules.json), so these match the Event Cycle page. */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory(require('./event-rules.js'));
@@ -48,13 +49,16 @@
      scores the kind without a published rate shows as { day, points: null } only when no day
      of that event has a rate; a gain of null (a level without a published score) gives null
      points on every day that scores. */
-  function forGovernor(kind, gain) {
+  function forGovernor(kind, gain) { return forScore(function (row) { return rules.governorKind(row) === kind; }, gain); }
+  // A Pet Advancement score gain (the sum of the Advances' scores): each event's best day.
+  function forPets(gain) { return forScore(function (row) { return !!row.scoring && row.scoring.type === 'pet'; }, gain); }
+  function forScore(match, gain) {
     var out = {};
     EVENTS.forEach(function (event) {
       var best = null;
       rules.days(event).forEach(function (day) {
         day.rows.forEach(function (row) {
-          if (rules.governorKind(row) !== kind) return;
+          if (!match(row)) return;
           var rate = rules.rate(row), cell = { day: day.day, points: rate === null || gain === null || gain === undefined ? null : gain * rate, unpublished: rate === null };
           best = keep(best, cell);
         });
@@ -103,5 +107,5 @@
     if (unpublished) wrap.appendChild(el('p', '? ' + t('unpublished'), 'event-points-note'));
     return wrap;
   }
-  return { EVENTS: EVENTS, forItems: forItems, forGovernor: forGovernor, most: most, table: table };
+  return { EVENTS: EVENTS, forItems: forItems, forGovernor: forGovernor, forPets: forPets, most: most, table: table };
 });

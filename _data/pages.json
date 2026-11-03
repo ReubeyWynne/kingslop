@@ -629,6 +629,7 @@
       "../css/styles.css",
       "../css/events.css",
       "../css/heroes.css",
+      "../css/event-points.css",
       "../css/next-step.css"
     ],
     "scripts": [
@@ -643,6 +644,7 @@
       "../js/hero-directory-engine.js",
       "../js/roster-editor.js",
       "../js/hero-directory.js",
+      "../js/event-points.js",
       "../js/hero-points.js",
       "../js/upgrade-priority-data.js",
       "../js/building-data.js",
@@ -699,6 +701,7 @@
       "../css/events.css",
       "../css/heroes.css",
       "../css/masters.css",
+      "../css/event-points.css",
       "../css/next-step.css"
     ],
     "scripts": [
@@ -714,6 +717,7 @@
       "../js/master-spend.js",
       "../js/roster-editor.js",
       "../js/master-directory.js",
+      "../js/event-points.js",
       "../js/master-points.js",
       "../js/upgrade-priority-data.js",
       "../js/building-data.js",
@@ -915,6 +919,7 @@
       "../css/events.css",
       "../css/heroes.css",
       "../css/pets.css",
+      "../css/event-points.css",
       "../css/next-step.css"
     ],
     "scripts": [
@@ -926,6 +931,9 @@
       "../js/pet-plan.js",
       "../js/pet-care.js",
       "../js/roster-editor.js",
+      "../js/event-data.js",
+      "../js/event-rules.js",
+      "../js/event-points.js",
       "../js/pet-den.js",
       "../js/pet-live.js",
       "../js/upgrade-priority-data.js",
