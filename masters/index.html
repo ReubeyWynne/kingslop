@@ -14,6 +14,7 @@ self: masters
     <p class="lede" data-i18n="masters.intro">Eight masters, each with an affinity ladder, a talent and four skills. Record yours to see what comes next and what your emblems and manuscripts can score.</p>
     {% include ascii/motif.html kind="tome" %}
   </section>
+  {% include page-sheet.html part="bar" class="sheet-dialog" title="sheet.masters.confirmTitle" title_en="Save these masters as yours?" body="sheet.masters.confirmBody" body_en="It replaces the masters in your save. An emblem or manuscript count this sheet has not counted keeps your number." confirm="sheet.masters.confirm" confirm_en="replace my masters" %}
   {% include next-step.html kinds="master-class master-skills" %}
   <section class="section" id="roster" data-module="master-directory">
     <h2 data-i18n="masters.browse">Browse masters</h2>

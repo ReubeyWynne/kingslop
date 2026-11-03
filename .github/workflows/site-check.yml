@@ -140,6 +140,10 @@ jobs:
             pets:
               - *shared
               - .dsh/pets-ui-check.cjs
+              - .dsh/roster-sheets-ui-check.cjs
+              - js/roster-sheets.js
+              - heroes/**
+              - masters/**
               - pets/**
               - js/pet-*
               - _data/pets.json
@@ -595,6 +599,9 @@ jobs:
       - name: Check pets UI
         if: matrix.group == 'pets'
         run: node .dsh/pets-ui-check.cjs
+      - name: Check share links and guest sheets on Heroes, Masters and Pets
+        if: matrix.group == 'pets'
+        run: node .dsh/roster-sheets-ui-check.cjs
       - name: Check Castle Battle UI
         if: matrix.group == 'castle'
         run: node .dsh/castle-battle-ui-check.cjs

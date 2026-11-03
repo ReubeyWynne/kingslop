@@ -3,6 +3,8 @@ The guest-mode and share-link controls every calculator shares (js/page-sheet.js
 part inside a root whose data-module lists page-sheet:
   part="notice"  the slim line shown on a shared or guest sheet, with Save as mine and Load mine
   part="tools"   Copy share link and Start blank, with the fallback link field
+  part="bar"     all three in a root of their own, for a page with no planner to put them in
+                 (takes the confirm part's parameters)
   part="confirm" the dialog that asks before a sheet replaces your save; pass class (the page's dialog style), title, body and
                  confirm as i18n keys with English text in title_en, body_en, confirm_en
 {%- endcomment -%}
@@ -20,4 +22,11 @@ part inside a root whose data-module lists page-sheet:
   <p data-i18n="{{ include.body }}">{{ include.body_en }}</p>
   <p class="sheet-confirm-actions"><button type="button" data-action="page-sheet.cancel" data-i18n="gov.sheet.cancel">cancel</button> <button type="button" data-action="page-sheet.confirm" data-i18n="{{ include.confirm }}">{{ include.confirm_en }}</button></p>
 </dialog>
+{%- elsif include.part == "bar" -%}
+{%- assign sheet_class = include.class -%}{%- assign sheet_title = include.title -%}{%- assign sheet_title_en = include.title_en -%}{%- assign sheet_body = include.body -%}{%- assign sheet_body_en = include.body_en -%}{%- assign sheet_confirm = include.confirm -%}{%- assign sheet_confirm_en = include.confirm_en -%}
+<div class="sheet-bar" data-module="page-sheet">
+  {% include page-sheet.html part="confirm" class=sheet_class title=sheet_title title_en=sheet_title_en body=sheet_body body_en=sheet_body_en confirm=sheet_confirm confirm_en=sheet_confirm_en %}
+  {% include page-sheet.html part="notice" %}
+  {% include page-sheet.html part="tools" %}
+</div>
 {%- endif -%}

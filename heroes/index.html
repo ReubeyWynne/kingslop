@@ -14,6 +14,7 @@ self: heroes
     <p class="lede" data-i18n="directory.intro">Choose the job first. Then find the hero whose skills fit it.</p>
     {% include ascii/motif.html kind="helm" %}
   </section>
+  {% include page-sheet.html part="bar" class="sheet-dialog" title="sheet.heroes.confirmTitle" title_en="Save these heroes as yours?" body="sheet.heroes.confirmBody" body_en="It replaces the heroes in your save. A shard or widget count this sheet has not counted keeps your number." confirm="sheet.heroes.confirm" confirm_en="replace my heroes" %}
   {% include next-step.html kinds="hero-stars hero-widget record:heroes record:hero-stars" %}
   <section class="section" id="directory" data-module="hero-directory">
     <h2 data-i18n="directory.browse">Browse heroes</h2>
