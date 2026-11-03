@@ -295,11 +295,12 @@
       var mine = {}, goalName = result.goals.map(function (g) { mine[g.building] = true; return name(g.building) + ' ' + levelName(g.building, g.level); }).join(' + ');
       rows.textContent = ''; steps.textContent = '';
       if (result.state === 'met') {
-        head.textContent = t('met', 'Your {goal} is already done.', { goal: goalName });
+        head.textContent = t('met', 'Your {goal} is already done.', { goal: goalName }); head.title = head.textContent;
         costList(one('total'), result.total); one('time').textContent = '';
         pointsList(one('points'), {}, null);
       } else {
         head.textContent = t('headline', '{goal} · upgrades: {n}', { goal: goalName, n: api.fmt(result.total.steps) });
+        head.title = head.textContent;   // a phone clamps the headline to two lines
         var paidTotal = E.total(paid(result.steps.map(function (x) { return x.step; })));
         costList(one('total'), paidTotal);
         one('time').textContent = timeText(result.total, result.steps.map(function (x) { return x.step; }));
@@ -327,6 +328,14 @@
           pick.appendChild(levelButton('goal', k, levelName(k, goals[goalAt].level), t('goalLevel', '{building} goal level', { building: name(k) }) + ': ' + levelName(k, goals[goalAt].level), { value: goals[goalAt].level, index: String(goalAt) }));
           pick.lastChild.classList.add('reqs-lv-goal');
         } else pick.appendChild(el('span', 'reqs-arrow', li.dataset.state === 'done' ? '✓' : arrow().trim() + ' ' + levelName(k, to)));
+        if (li.dataset.state !== 'done') {
+          var tick = el('button', 'reqs-done', '✓');
+          tick.type = 'button'; tick.dataset.building = k; tick.dataset.level = to;
+          tick.setAttribute('data-action', 'building-paths.done');
+          tick.setAttribute('aria-label', t('markDone', 'Mark {building} {level} done', { building: name(k), level: levelName(k, to) }));
+          tick.title = tick.getAttribute('aria-label');
+          pick.appendChild(tick);
+        }
         body.appendChild(pick);
         // Why a prerequisite goes this high, and which prerequisites a goal pulls in, so a goal
         // whose total jumps (Command Center TG 4 needs Embassy TG 4) says where the jump is.
@@ -358,34 +367,19 @@
       var flag = one('flag'), any = Object.keys(result.total.unverified || {}).length;
       flag.hidden = !any;
       flag.textContent = any ? t('oneSource', '† Only one source gives this figure.') : '';
-      // The plan's accept: outside guest mode it adds the goal to Upgrade priority (and says so
-      // once it is there); in guest mode it takes the link's levels and goal as the reader's own.
-      var add = one('addGoal'), planned = plannedGoals();
-      add.hidden = !planned.length || result.state === 'met' || (guest ? !shared() : !store);
-      if (!add.hidden) {
-        var inGoals = !guest && planned.every(function (g) { return store.priority().goals.some(function (p) { return p.kind === 'building' && p.target === g.building && p.level === g.level; }); });
-        add.textContent = guest ? t('adoptPlan', 'Make this my plan') : inGoals ? t('inGoals', 'In your goals ✓') : t('addGoal', 'Add to my goals');
-        add.dataset.done = inGoals ? 'true' : 'false';
-      }
+      var add = one('addGoal');
+      add.hidden = guest || !store || !plannedGoals().length || result.state === 'met';
       one('guestBanner').hidden = !guest;
       one('saveNote').textContent = guest ? t('guestNote', 'Guest mode: levels stay on this page.') : store ? t('savedNote', 'Levels you set are saved on this device, and the Town Centre and Upgrade priority use them.') : '';
       syncAddress();
     }
 
     function plannedGoals() { return E.goals(D, goals).filter(function (g) { return PLANNED.indexOf(g.building) >= 0; }); }
-    // The device's own save, outside guest mode's copy.
-    function shared() { try { var s = window.PlayerLedger.shared(); s.snapshot(); return s; } catch (ignored) { return null; } }
     function addGoals(target) {
       var mineNow = plannedGoals();
       var list = target.priority().goals.filter(function (g) { return !(g.kind === 'building' && mineNow.some(function (m) { return m.building === g.target; })); });
       mineNow.forEach(function (g) { list.push({ kind: 'building', target: g.building, level: g.level }); });
       target.setPriorityGoals(list);
-    }
-    function leaveGuest() {
-      var kept = new URLSearchParams(location.search);
-      ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan', 'saul', 'guest'].forEach(function (k) { kept.delete(k); });
-      var rest = kept.toString();
-      location.assign(location.pathname + '?' + (rest ? rest + '&' : '') + address(false) + (guest ? '' : '&guest') + location.hash);
     }
 
     function copy(text) {
@@ -434,7 +428,10 @@
         guest: { run: function () {
           // Guest mode is chosen before the page's modules mount, so the switch reloads the
           // page into or out of it with the same goals; leaving drops the link's levels.
-          leaveGuest();
+          var kept = new URLSearchParams(location.search);
+          ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan', 'saul', 'guest'].forEach(function (k) { kept.delete(k); });
+          var rest = kept.toString();
+          location.assign(location.pathname + '?' + (rest ? rest + '&' : '') + address(false) + (guest ? '' : '&guest') + location.hash);
         } },
         set: { run: function (node) {
           var k = node.dataset.key, v = node.dataset.value;
@@ -449,18 +446,12 @@
         } },
         copy: { run: function () { copy(address(false)); } },
         copyLevels: { run: function () { copy(address(true)); } },
-        // Accepting the plan. In guest mode the levels on this page (the link's, with any edits)
-        // and the goal go into the device's save, and the page leaves guest mode to show it.
         addGoal: { run: function () {
-          if (guest) {
-            var own = shared();
-            if (!own) return say(t('saveFailed', 'Could not save that.'));
-            try { own.setBuildings(have(), 'manual'); addGoals(own); } catch (cause) { return say(t('saveFailed', 'Could not save that.')); }
-            return leaveGuest();
-          }
           try { addGoals(store); say(t('goalAdded', 'Added to your goals on Upgrade priority.')); } catch (cause) { say(t('saveFailed', 'Could not save that.')); }
-          if (!store.subscribe) render();
-        } }
+        } },
+        // A card's tick accepts that upgrade as done: the building's level becomes the one the plan
+        // needs, and the plan shrinks by it.
+        done: { run: function (node) { setLevel(node.dataset.building, node.dataset.level); } }
       }
     };
   });

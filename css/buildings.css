@@ -46,9 +46,13 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 .reqs-lv-goal { border-color: var(--amber); color: var(--amber); background: var(--signal-tint); }
 .reqs-lv:hover, .reqs-lv:focus-visible { border-color: var(--amber); outline: none; box-shadow: 0 0 0 1px var(--amber); }
 .reqs-arrow { flex: none; color: var(--amber); white-space: nowrap; }
+/* A card's tick: accept that upgrade as done. */
+.reqs-done { flex: none; width: 44px; height: 44px; padding: 0; border: 1px solid var(--amber-dim); border-radius: 2px; background: none; color: var(--ink-dim); font: 1.1rem/1 var(--body); cursor: pointer; }
+.reqs-done:hover, .reqs-done:focus-visible { border-color: var(--amber); color: var(--amber); outline: none; }
 
 /* The answer stays pinned to the foot of the screen while the cards scroll under it. */
-.reqs-answer { position: sticky; inset-block-end: 0; z-index: 2; margin-block: var(--space-s); padding: .6rem var(--space-s) .7rem; border-top: 1px solid var(--amber-dim); background: var(--void-2); box-shadow: 0 -.6rem 1rem -.4rem var(--void); }
+/* It never takes more than a third of the screen: what does not fit scrolls inside it. */
+.reqs-answer { position: sticky; inset-block-end: 0; z-index: 2; max-height: 33.3vh; max-height: 33.3dvh; overflow-y: auto; overscroll-behavior: contain; margin-block: var(--space-s); padding: .6rem var(--space-s) .7rem; border-top: 1px solid var(--amber-dim); background: var(--void-2); box-shadow: 0 -.6rem 1rem -.4rem var(--void); }
 .reqs-headline { margin: 0 0 .35rem; font-size: var(--step-1, 1.25rem); line-height: 1.25; color: var(--amber); }
 .reqs-cost { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; }
 .reqs-cost li { display: inline-flex; align-items: center; gap: 0.35rem; min-width: 0; }
@@ -60,16 +64,10 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 .reqs-run-why { flex-basis: 100%; margin: 0; color: var(--ink-dim); font-size: var(--step--1); }
 .reqs-time, .reqs-saul, .reqs-flag { margin: .35rem 0 0; color: var(--ink-dim); font-size: var(--step--1); }
 /* Event points fold away under one line, so the pinned answer keeps its height on a phone. */
-.reqs-answer-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .1rem .8rem; margin-top: .2rem; }
-.reqs-points-box { flex: 1 1 auto; margin: 0; }
-.reqs-points-box[open] { flex-basis: 100%; }
+.reqs-points-box { margin: .1rem 0 0; }
 .reqs-points-box[hidden] { display: none; }
 .reqs-points-box summary { min-height: 40px; padding-block: 0; letter-spacing: .06em; white-space: nowrap; }
 .reqs-points-sum { color: var(--ink); font-weight: normal; letter-spacing: 0; text-transform: none; font-variant-numeric: tabular-nums; }
-.reqs-accept { flex: none; min-height: 44px; margin-inline-start: auto; padding: .3rem .8rem; border: 1px solid var(--amber); border-radius: 2px; background: var(--signal-tint); color: var(--amber); font: inherit; white-space: nowrap; cursor: pointer; }
-.reqs-accept[data-done="true"] { border-color: var(--amber-dim); background: none; color: var(--ink-dim); }
-.reqs-accept:hover, .reqs-accept:focus-visible { outline: none; box-shadow: 0 0 0 1px var(--amber); }
-.reqs-accept[hidden] { display: none; }
 .reqs-points { width: 100%; margin: 0 0 .3rem; border-collapse: collapse; font-size: var(--step--1); font-variant-numeric: tabular-nums; }
 .reqs-points[hidden] { display: none; }
 .reqs-points th, .reqs-points td { padding: .1rem 0; text-align: end; font-weight: normal; white-space: nowrap; }
@@ -127,10 +125,13 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 .reqs-tail { padding-block: var(--space-s) var(--space-m); }
 /* On a phone the pinned answer stays short: amounts with their icons, names on hover only. */
 @media (max-width: 40rem) {
-  .reqs-headline { font-size: 1.05rem; }
-  .reqs-answer .reqs-cost { gap: .2rem .9rem; }
+  .reqs-answer { padding-block: .45rem .5rem; }
+  .reqs-headline { margin-bottom: .2rem; font-size: .95rem; line-height: 1.2; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  .reqs-answer .reqs-cost { gap: 0 .75rem; font-size: var(--step--1); }
   .reqs-answer .reqs-res { display: none; }
-  .reqs-answer .reqs-cost img { width: 20px; height: 20px; }
+  .reqs-answer .reqs-cost img { width: 18px; height: 18px; }
+  .reqs-answer .reqs-time, .reqs-answer .reqs-saul { margin-top: .15rem; }
+  .reqs-points-box summary { min-height: 36px; }
 }
 .reqs-picker .reqs-drop { color: var(--ink-dim); }
 
