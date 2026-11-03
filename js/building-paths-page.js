@@ -443,7 +443,6 @@
           keep('bh:construction', cs); render(); fillSpeedSum();
         } },
         copy: { run: function () { copy(address(false)); } },
-        copyLevels: { run: function () { copy(address(true)); } },
         addGoal: { run: function () {
           try { addGoals(store); say(t('goalAdded', 'Added to your goals on Upgrade priority.')); } catch (cause) { say(t('saveFailed', 'Could not save that.')); }
         } },

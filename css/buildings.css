@@ -23,12 +23,6 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 .reqs-goal-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 1rem; }
 .reqs-goal-tools .note { margin: 0; }
 /* Guest mode is a switch: a track with a knob that moves a whole cell, no sliding. */
-.reqs-switch { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink-dim); font: inherit; cursor: pointer; }
-.reqs-switch::after { content: ''; width: 2.6rem; height: 1.3rem; border: 1px solid var(--ink-muted); border-radius: 2px; background: linear-gradient(90deg, var(--ink-muted) 0 50%, transparent 50%); }
-.reqs-switch[aria-checked="true"] { color: var(--amber); }
-.reqs-switch[aria-checked="true"]::after { border-color: var(--amber); background: linear-gradient(90deg, transparent 50%, var(--amber) 50%); }
-.reqs-switch:focus-visible { outline: 1px solid var(--amber); outline-offset: 2px; }
-.reqs-switch:disabled { opacity: 0.5; cursor: default; }
 .reqs-guest { padding: var(--space-s); border-inline-start: 3px solid var(--amber); background: var(--signal-tint); }
 
 /* One card per building: art, name, your level → the level it must reach, and what that costs. */

@@ -9,8 +9,18 @@
 .sheet-notice > span { flex: 1 1 14rem; min-width: 0; }
 [data-module~="page-sheet"] .sheet-notice button, [data-module~="page-sheet"] .sheet-tools button { min-height: 2.5rem; padding: .2rem .1rem; border: 0; border-bottom: 1px solid transparent; background: transparent; color: var(--amber); font: inherit; font-size: .9rem; cursor: pointer; }
 [data-module~="page-sheet"] .sheet-notice button:hover, [data-module~="page-sheet"] .sheet-tools button:hover { color: var(--ink); border-bottom-color: var(--signal-line); }
+/* Guest mode, on every calculator: the page works on a copy, and your save stays as it was. */
+/* One row at the top of every planner: the switch on the start side, sharing on the end side. */
+.sheet-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 1.2rem; margin: 0 0 .4rem; }
+[data-module~="page-sheet"] .sheet-switch { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink-dim); font: inherit; font-size: .9rem; cursor: pointer; }
+[data-module~="page-sheet"] .sheet-switch::after { content: ''; width: 2.6rem; height: 1.3rem; border: 1px solid var(--ink-muted); border-radius: 2px; background: linear-gradient(90deg, var(--ink-muted) 0 50%, transparent 50%); }
+[data-module~="page-sheet"] .sheet-switch[aria-checked="true"] { color: var(--amber); }
+[data-module~="page-sheet"] .sheet-switch[aria-checked="true"]::after { border-color: var(--amber); background: linear-gradient(90deg, transparent 50%, var(--amber) 50%); }
+[data-module~="page-sheet"] .sheet-switch:focus-visible { outline: 1px solid var(--amber); outline-offset: 2px; }
+[data-module~="page-sheet"] .sheet-switch:disabled { opacity: 0.5; cursor: default; }
+
 /* Sharing and starting over: small links under your things. */
-[data-module~="page-sheet"] .sheet-tools { display: flex; flex-wrap: wrap; gap: 0 1.2rem; margin: .3rem 0 0; }
+[data-module~="page-sheet"] .sheet-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1.2rem; margin: 0; }
 [data-module~="page-sheet"] .sheet-tools button { font-size: .85rem; color: var(--ink-muted); }
 [data-module~="page-sheet"] .sheet-tools button[data-copied] { color: var(--amber); }
 [data-module~="page-sheet"] .sheet-link { display: block; width: 100%; min-width: 0; margin: 0; padding: .4rem; font: .85rem var(--body); color: var(--ink); background: var(--void-2); border: 1px solid var(--signal-line); }
