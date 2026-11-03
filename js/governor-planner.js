@@ -39,7 +39,7 @@
     }
     function bag() {
       var snapshot = store.snapshot(), out = {}, unknown = false;
-      G.data.materials.forEach(function (m) { var entry = snapshot.inventory[m.id]; if (entry && entry.status === 'confirmed') out[m.id] = entry.amount; else { out[m.id] = null; unknown = true; } });
+      G.data.materials.forEach(function (m) { out[m.id] = window.PlayerLedger.confirmed(snapshot, m.id); if (out[m.id] === null) unknown = true; });
       return { amounts: out, unknown: unknown };
     }
     // One row per piece: the card it ends on, gear from → to, and each charm from → to.

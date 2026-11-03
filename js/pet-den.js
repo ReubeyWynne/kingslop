@@ -17,7 +17,7 @@
     tomax: 'To level {max} with every Advance: {cost}, {n} Advances, {points} KvK prep points.', unread: 'Enter its level to see what comes next.',
     'm.petFood': '{n} Pet Food', 'm.growthManual': '{n} Growth Manuals', 'm.nutrientPotion': '{n} Nutrient Potions', 'm.promotionMedallion': '{n} Promotion Medallions', free: 'nothing more',
     skillNow: 'skill level {n}', total: '{points} KvK prep points from your next Advances', none: 'Tame a pet and enter its level to count its Advances.',
-    unknownPets: 'Unread levels: {names}.', allRead: 'Every tamed pet counted.',
+    eventNext: 'Next Advances', eventMax: 'Every Advance', unknownPets: 'Unread levels: {names}.', allRead: 'Every tamed pet counted.',
     'bond.new': 'Getting acquainted', 'bond.familiar': 'Familiar', 'bond.close': 'Close companion', 'bond.trusted': 'Trusted friend',
     bondDays: 'Care days: {n}', bondHint: 'Grows with care on different days. Never lost when you are away.',
     'spot.head': 'Head', 'spot.cheeks': 'Cheeks', 'spot.chin': 'Chin', favourite: 'Favourite spot: {spot}',
@@ -279,6 +279,12 @@
         });
       }
       context.targets('table').forEach(function (node) { node.hidden = !rows.length; });
+      // The same three-event table as every calculator: the next Advances, and every Advance to the cap.
+      var nextScore = 0, maxScore = 0, events = [];
+      rows.forEach(function (row) { if (row.next) nextScore += row.next.cost.score; if (row.max) maxScore += row.max.score; });
+      if (nextScore) events.push({ label: t(api, 'eventNext'), cells: window.EventPoints.forPets(nextScore) });
+      if (maxScore) events.push({ label: t(api, 'eventMax'), cells: window.EventPoints.forPets(maxScore) });
+      context.targets('events').forEach(function (node) { node.replaceChildren(); if (events.length) node.appendChild(window.EventPoints.table(api, events, 'hero-event-points')); });
       context.targets('total').forEach(function (node) { node.textContent = rows.length ? api.fill(t(api, 'total'), { points: api.fmt(total) }) : '—'; });
       context.targets('coverage').forEach(function (node) {
         node.textContent = !rows.length && !unread.length ? t(api, 'none') : unread.length ? api.fill(t(api, 'unknownPets'), { names: unread.join(', ') }) : t(api, 'allRead');

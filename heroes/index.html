@@ -14,6 +14,7 @@ self: heroes
     <p class="lede" data-i18n="directory.intro">Choose the job first. Then find the hero whose skills fit it.</p>
     {% include ascii/motif.html kind="helm" %}
   </section>
+  {% include page-sheet.html part="bar" class="sheet-dialog" title="sheet.heroes.confirmTitle" title_en="Save these heroes as yours?" body="sheet.heroes.confirmBody" body_en="It replaces the heroes in your save. A shard or widget count this sheet has not counted keeps your number." confirm="sheet.heroes.confirm" confirm_en="replace my heroes" %}
   {% include next-step.html kinds="hero-stars hero-widget record:heroes record:hero-stars" %}
   <section class="section" id="directory" data-module="hero-directory">
     <h2 data-i18n="directory.browse">Browse heroes</h2>
@@ -27,6 +28,7 @@ self: heroes
     <p data-i18n="spend.intro">A shard or widget only scores when it is spent. This counts what the heroes you own can actually use: whole star steps up to 5★ and widget levels up to 10, paid with each hero’s own shards first, then general shards of the same rarity where they finish the most steps. Amadeus and Helga take only their own shards.</p>
     <p class="hero-points-total"><output data-target="hero-points.total">—</output></p>
     <p class="note" data-target="hero-points.coverage" aria-live="polite"></p>
+    <div data-target="hero-points.events"></div>
     <div class="hero-points-scroll" data-target="hero-points.table" hidden><table class="hero-points-table">
       <thead><tr><th scope="col" data-i18n="spend.col.hero">hero</th><th scope="col" data-i18n="spend.col.points">KvK prep points</th><th scope="col" data-i18n="spend.col.stars">stars</th><th scope="col" data-i18n="spend.col.shards">shards used</th><th scope="col" data-i18n="spend.col.widgets">widgets used</th></tr></thead>
       <tbody data-target="hero-points.rows"></tbody>

@@ -77,7 +77,7 @@
   // Training time from seconds, rounded up to the minute so a batch is never started too late.
   function seconds(api, secs) { return duration(api, Math.ceil(secs / 60)); }
   function amount(api, line) { return line.kind === 'speedup' ? duration(api, line.amount) : line.kind === 'governor' ? fill(api, 'scoreGain', { n: api.fmt(line.amount) }) : line.kind === 'usable' ? fill(api, 'heroAmount', { n: api.fmt(line.amount) }) : api.fmt(line.amount); }
-  function confirmed(snapshot, id) { var entry = snapshot.inventory[id]; return entry && entry.status === 'confirmed' ? entry.amount : null; }
+  var confirmed = window.PlayerLedger.confirmed;
   function element(tag, className, text) { var node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; }
 
   window.Interactions.register('town-centre', function (context) {

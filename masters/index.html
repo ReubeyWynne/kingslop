@@ -14,6 +14,7 @@ self: masters
     <p class="lede" data-i18n="masters.intro">Eight masters, each with an affinity ladder, a talent and four skills. Record yours to see what comes next and what your emblems and manuscripts can score.</p>
     {% include ascii/motif.html kind="tome" %}
   </section>
+  {% include page-sheet.html part="bar" class="sheet-dialog" title="sheet.masters.confirmTitle" title_en="Save these masters as yours?" body="sheet.masters.confirmBody" body_en="It replaces the masters in your save. An emblem or manuscript count this sheet has not counted keeps your number." confirm="sheet.masters.confirm" confirm_en="replace my masters" %}
   {% include next-step.html kinds="master-class master-skills" %}
   <section class="section" id="roster" data-module="master-directory">
     <h2 data-i18n="masters.browse">Browse masters</h2>
@@ -26,6 +27,7 @@ self: masters
     <p data-i18n="masterPoints.intro">An emblem or manuscript only scores when it is spent. This counts what your masters can actually take: the next class for each master whose affinity bar is full, paid with its own emblems first and then general ones, and whole skill levels, cheapest first, once each level's requirement is met.</p>
     <p class="hero-points-total"><output data-target="master-points.total">—</output></p>
     <p class="note" data-target="master-points.coverage" aria-live="polite"></p>
+    <div data-target="master-points.events"></div>
     <div class="hero-points-scroll" data-target="master-points.table" hidden><table class="hero-points-table">
       <thead><tr><th scope="col" data-i18n="masterPoints.col.master">master</th><th scope="col" data-i18n="spend.col.points">KvK prep points</th><th scope="col" data-i18n="masterPoints.col.emblems">emblems used</th><th scope="col" data-i18n="masterPoints.col.manuscripts">manuscripts used</th></tr></thead>
       <tbody data-target="master-points.rows"></tbody>

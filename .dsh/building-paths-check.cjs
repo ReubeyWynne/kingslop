@@ -135,13 +135,14 @@ for (const file of fs.readdirSync(path.join(root, 'i18n')).filter(f => f.endsWit
     for (const token of (en[key] || dict[key]).match(/\{\w+\}/g) || []) assert.ok(dict[key].includes(token), file + ' ' + key + ' ' + token);
   }
 }
-// Event points: Truegold and Tempered Truegold at each event's best days, speedups per minute
-// of the plan's time; days that pay the same are listed together.
-const R = JSON.parse(fs.readFileSync(path.join(root, '_data/event_rules.json'), 'utf8'));
-assert.deepEqual(E.points(R.events, { truegold: 100, 'tempered-truegold': 2, wood: 9 }, 10 * 60 + 59), [
-  { event: 'prep', days: [1, 2, 5], items: 260000, speedups: 300 },
-  { event: 'sg', days: [1], items: 260000, speedups: 300 },
-  { event: 'brawl', days: [1, 2, 5, 6], items: 125000, speedups: 180 }]);
-assert.deepEqual(E.points(R.events, {}, 0), [], 'nothing spent scores nothing');
-assert.ok(fs.readFileSync(path.join(root, 'js/building-paths-data.liquid'), 'utf8').includes('event_rules.events'), 'the page carries the event rates');
+// Event points: the page scores its plan through the shared table (js/event-points.js), so it
+// carries no copy of the event rules of its own.
+const P = require(path.join(root, 'js/event-points.js'));
+const spent = P.forItems({ truegold: 100, 'tempered-truegold': 2 }), sped = P.forItems({ truegold: 100, 'tempered-truegold': 2 }, { construction: 10 });
+assert.deepEqual(['prep', 'sg', 'brawl'].map(e => [spent[e].points, spent[e].days]), [[260000, [1, 2, 5]], [260000, [1]], [125000, [1, 2, 5, 6]]]);
+assert.deepEqual(['prep', 'sg', 'brawl'].map(e => [sped[e].points, sped[e].days]), [[260300, [1, 2, 5]], [260300, [1]], [125180, [1, 2, 5, 6]]]);
+assert.equal(P.most([{ cells: spent }, { cells: sped }]), 260300);
+assert.equal(P.most([{ cells: P.forItems({}) }]), null, 'nothing spent scores nothing');
+assert.ok(!fs.readFileSync(path.join(root, 'js/building-paths-data.liquid'), 'utf8').includes('event_rules'), 'no second copy of the event rules');
+assert.ok(pages.buildings.scripts.includes('../js/event-points.js'), 'the page loads the shared points table');
 console.log('building paths ok:', D.buildings.reduce((n, b) => n + b.levels.length, 0), 'levels,', keys.size, 'keys');

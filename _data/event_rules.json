@@ -899,7 +899,11 @@
             "label": "Pet Advancement score +1",
             "points": "50",
             "id": "pet-advancement",
-            "category": "Pets advance"
+            "category": "Pets advance",
+            "scoring": {
+              "type": "pet",
+              "rate": 50
+            }
           }
         ]
       },
@@ -1187,7 +1191,11 @@
             "label": "Pets advance",
             "points": "50",
             "id": "pet-advancement",
-            "category": "Pets advance"
+            "category": "Pets advance",
+            "scoring": {
+              "type": "pet",
+              "rate": 50
+            }
           },
           {
             "label": "Advanced Taming Mark (pet refinement)",
@@ -1482,7 +1490,11 @@
             "label": "Pet Advancement score +1",
             "points": "50",
             "id": "pet-advancement",
-            "category": "Pets advance"
+            "category": "Pets advance",
+            "scoring": {
+              "type": "pet",
+              "rate": 50
+            }
           }
         ]
       },
@@ -1724,7 +1736,11 @@
             "label": "Pet Advancement score +1",
             "points": "50",
             "id": "pet-advancement",
-            "category": "Pets advance"
+            "category": "Pets advance",
+            "scoring": {
+              "type": "pet",
+              "rate": 50
+            }
           },
           {
             "label": "Governor Charm max score +1",
@@ -2033,7 +2049,11 @@
             "label": "Pet Advancement score +1",
             "points": "30",
             "id": "pet-advancement",
-            "category": "Pets advance"
+            "category": "Pets advance",
+            "scoring": {
+              "type": "pet",
+              "rate": 30
+            }
           },
           {
             "label": "Gather in the wilderness (bread / wood / stone / iron)",
@@ -2539,7 +2559,11 @@
             "label": "Pet Advancement score +1",
             "points": "30",
             "id": "pet-advancement",
-            "category": "Pets advance"
+            "category": "Pets advance",
+            "scoring": {
+              "type": "pet",
+              "rate": 30
+            }
           },
           {
             "label": "Governor Gear max score +1",

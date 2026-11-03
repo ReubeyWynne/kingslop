@@ -34,6 +34,7 @@ function checkGuestLedger() {
       window: { HeroGear: E, HeroGearView: View, PlayerLedger: { ...Ledger, shared }, BH: { registerPage() {} } }
     };
     vm.runInNewContext(fs.readFileSync('js/interactions.js', 'utf8'), scope);
+    vm.runInNewContext(fs.readFileSync('js/page-sheet.js', 'utf8'), scope);
     vm.runInNewContext(fs.readFileSync('js/hero-gear.js', 'utf8'), scope);
     assert.equal(reads, 0, 'guest configuration does not read storage before module mount');
     const selected = scope.window.Interactions.ledger();

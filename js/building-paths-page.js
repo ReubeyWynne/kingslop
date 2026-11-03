@@ -5,9 +5,10 @@
    one small grid of levels (no long select), so the answer sharpens one building at a time.
 
    Levels are the shared save's buildings.levels (any building, numbered copies as house-1), so the
-   Town Centre and Upgrade priority see them. ?guest, or a link carrying levels (have=), runs on a
-   copy held in memory instead: the address bar then follows every edit and nothing reaches the
-   save. The guest switch beside the goal reloads the page into or out of it. The goals and the
+   Town Centre and Upgrade priority see them. ?guest, or a link carrying levels (have=), runs on the
+   shared guest sheet (js/page-sheet.js) instead: the address bar then follows every edit and
+   nothing reaches the save until Save as mine. The guest switch beside the goal reloads the page
+   into or out of it. The goals and the
    construction speed settings ride in the address and, outside guest mode, are kept on this
    device (bh:building-goals, bh:construction) so the page opens as it was left. */
 (function () {
@@ -16,19 +17,22 @@
   var PLANNED = ['town-center', 'embassy', 'barracks', 'range', 'stable', 'command-center', 'infirmary', 'war-academy', 'academy'];
   var NAMES = { 'hero-hall': 'Hero Hall', watchtower: 'Watchtower' };
   var ICONS = { bread: 'img/items/bread.webp', wood: 'img/items/wood.webp', stone: 'img/items/stone.webp', iron: 'img/items/iron.webp', truegold: 'img/kingshot/truegold.png', 'tempered-truegold': 'img/items/tempered-truegold.webp' };
-  var link = E.decode(D, location.search), params = new URLSearchParams(location.search);
-  var guest = params.has('guest') || link.have !== null, guestLedger = null;
-
-  if (guest) {
-    window.Interactions.configure({ ledger: function () {
-      if (guestLedger) return guestLedger;
-      var Ledger = window.PlayerLedger, memory = {};
-      if (link.have === null) try { memory[Ledger.KEY] = JSON.stringify(Ledger.shared().snapshot()); } catch (ignored) {}
-      guestLedger = Ledger.create({ getItem: function (key) { return key in memory ? memory[key] : null; }, setItem: function (key, value) { memory[key] = String(value); } }, null);
-      if (link.have && Object.keys(link.have).length) guestLedger.setBuildings(link.have, 'manual');
-      return guestLedger;
-    } });
-  }
+  var link = E.decode(D, location.search);
+  /* Levels go through the shared guest sheet (js/page-sheet.js): a link carrying levels (have=)
+     or ?guest runs on a copy held in memory, the address carries the levels of the buildings the
+     goal involves, and Save as mine writes them to your save. The goal and construction speed
+     are this page's own and ride in the address either way. */
+  var currentGoals = link.goals;
+  function haveOf(levels) { var out = {}; E.involved(D, currentGoals).forEach(function (k) { if (levels[k] !== undefined) out[k] = levels[k]; }); return out; }
+  var sheet = window.PageSheet.define({
+    keys: ['have'],
+    read: function (search) { var have = E.decode(D, search).have; return have === null ? null : { levels: have }; },
+    write: function (value) { var text = E.encode({ have: haveOf(value.levels) }).replace(/^goal=[^&]*&?/, ''); return text ? { have: text.slice('have='.length) } : {}; },
+    blank: function () { return { levels: {} }; },
+    of: function (store) { return { levels: Object.assign({}, (store.snapshot().buildings || {}).levels) }; },
+    load: function (store, value) { if (Object.keys(value.levels).length) store.setBuildings(value.levels, 'manual'); }
+  });
+  var guest = sheet.guest;
 
   window.Interactions.register('building-paths', function (context) {
     var api = context.api, store = null;
@@ -89,17 +93,32 @@
       return parts.join(' ');
     }
     function item(r) { return api.tr('priority.item.' + r, r); }
-    function costList(list, total, small) {
+    // What the save holds of an item, by the ledger's one rule: a confirmed amount or null.
+    function held(id) { if (!store) return null; try { return window.PlayerLedger.confirmed(store.snapshot(), id); } catch (ignored) { return null; } }
+    // withHave puts what you hold under each cost, and marks a cost you cannot cover yet.
+    function costList(list, total, small, withHave) {
       list.textContent = '';
       total.resources.forEach(function (r) {
-        var li = el('li'), img = el('img');
+        var li = el('li'), img = el('img'), have = withHave ? held(r) : null;
         img.src = '../' + ICONS[r]; img.alt = ''; img.width = small ? 18 : 28; img.height = small ? 18 : 28; img.loading = 'lazy';
         li.appendChild(img);
         li.appendChild(el('b', '', amount(total.cost[r]) + (total.unverified[r] ? '†' : '')));
         li.appendChild(el('span', 'reqs-res', item(r)));
         li.title = api.fmt(total.cost[r]) + ' ' + item(r);
+        if (have !== null) {
+          li.dataset.short = String(have < total.cost[r]);
+          li.appendChild(el('small', 'reqs-have', t(have < total.cost[r] ? 'haveShort' : 'haveEnough', have < total.cost[r] ? 'have {n}' : 'have {n} ✓', { n: amount(have) })));
+          li.title += ' · ' + t('haveTitle', 'you have {n}', { n: api.fmt(have) });
+        }
         list.appendChild(li);
       });
+    }
+    // Construction and general speedups the save holds, in minutes, beside the plan's time.
+    function speedupsText(seconds) {
+      var building = held('speedup-construction'), general = held('speedup-general');
+      if (building === null && general === null) return '';
+      var minutes = (building || 0) + (general || 0), need = Math.ceil(seconds / 60);
+      return t(minutes >= need ? 'speedupsEnough' : 'speedupsShort', minutes >= need ? 'Your construction and general speedups ({time}) cover it.' : 'Your construction and general speedups: {time}.', { time: duration(minutes * 60) });
     }
     // Steps at the costs the reader pays: Saul's Resourceful off the basic resources.
     function paid(list) { return E.discount(list, cs.saul); }
@@ -114,33 +133,19 @@
       var text = duration(E.timed(steps, E.boost(cs)).time) + (total.unverified.time ? '†' : ''), list = boosts();
       return list ? t('timeWith', '{time} with {boosts}', { time: text, boosts: list }) : t('timeBase', '{time} base time, before construction speed', { time: text });
     }
-    // Event points the plan scores, as a small table: one row per event with the days that pay
-    // most, what spending its Truegold scores, and that plus speeding up its whole time. The table
-    // sits in a closed disclosure so the pinned answer stays short on a phone; its summary carries
-    // the most any one event pays.
-    function eventName(e) { return e === 'prep' ? t('eventPrep', 'KvK prep') : e === 'sg' ? t('eventSg', 'Strongest Governor') : t('eventBrawl', 'Alliance Brawl'); }
-    function pointsList(table, cost, steps) {
-      table.textContent = '';
-      var rows = E.points(D.events, cost, steps ? E.timed(steps, E.boost(cs)).time : 0);
-      one('pointsBox').hidden = !rows.length;
-      one('pointsSum').textContent = '';
-      if (!rows.length) return;
-      var most = Math.max.apply(null, rows.map(function (p) { return p.items + p.speedups; }));
-      one('pointsSum').textContent = t('pointsUpTo', 'up to {n}', { n: compact(most) });
-      var head = el('tr');
-      [t('pointsEvent', 'Event'), t('pointsSpent', 'Spent'), t('pointsSpedUp', 'Sped up')].forEach(function (text) { var th = el('th', '', text); th.scope = 'col'; head.appendChild(th); });
-      table.appendChild(el('thead')).appendChild(head);
-      var body = table.appendChild(el('tbody'));
-      rows.forEach(function (p) {
-        var tr = el('tr'), th = el('th', '', eventName(p.event) + ' ');
-        th.scope = 'row';
-        th.appendChild(el('small', '', t('pointsDays', 'days {days}', { days: p.days.map(function (d) { return api.fmt(d); }).join(', ') })));
-        tr.appendChild(th);
-        var spent = el('td', '', compact(p.items)), sped = el('td', '', p.speedups ? compact(p.items + p.speedups) : '–');
-        spent.title = api.fmt(p.items); sped.title = p.speedups ? api.fmt(p.items + p.speedups) : '';
-        tr.appendChild(spent); tr.appendChild(sped);
-        body.appendChild(tr);
-      });
+    // Event points the plan scores, in the shared table (js/event-points.js): what spending its
+    // Truegold scores, and that plus speeding up its whole time, at each event's best days. The
+    // table sits in a closed disclosure so the pinned answer stays short on a phone; its summary
+    // carries the most any one event pays.
+    function pointsList(box, cost, steps) {
+      var P = window.EventPoints, minutes = steps ? Math.floor(E.timed(steps, E.boost(cs)).time / 60) : 0, rows = [], top;
+      box.textContent = '';
+      rows.push({ label: t('pointsSpent', 'Spent'), cells: P.forItems(cost) });
+      if (minutes) rows.push({ label: t('pointsSpedUp', 'Sped up'), cells: P.forItems(cost, { construction: minutes }) });
+      top = P.most(rows);
+      one('pointsBox').hidden = !top;
+      one('pointsSum').textContent = top ? t('pointsUpTo', 'up to {n}', { n: compact(top) }) : '';
+      if (top) box.appendChild(P.table(api, rows, 'reqs-points', { compact: true }));
     }
     function stepTime(steps) { return duration(E.timed(steps, E.boost(cs)).time); }
     function arrow() { return document.documentElement.dir === 'rtl' ? ' ← ' : ' → '; }
@@ -176,7 +181,6 @@
         tile.setAttribute('aria-pressed', String(!!g));
         tile.querySelector('.reqs-badge').textContent = g ? E.short(g.level) : '';
       });
-      one('guest').setAttribute('aria-checked', String(guest));
       keep('bh:building-goals', goals.map(function (g) { return [g.building, g.level]; }));
     }
 
@@ -283,10 +287,12 @@
       return E.encode(state);
     }
     function syncAddress() {
-      var kept = new URLSearchParams(location.search);
+      // The goal and speed only: the shared sheet keeps the levels (have=) in step.
+      var kept = new URLSearchParams(location.search), was = kept.getAll('have')[0];
       ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan', 'saul'].forEach(function (k) { kept.delete(k); });
-      var rest = kept.toString().replace(/(^|&)guest=(&|$)/, '$1guest$2');
-      try { history.replaceState(history.state, '', location.pathname + '?' + (rest ? rest + '&' : '') + address(guest) + location.hash); } catch (ignored) {}
+      var rest = kept.toString().replace(/(^|&)guest=(&|$)/, '$1guest$2'), levels = was === undefined ? '' : '&have=' + was;
+      try { history.replaceState(history.state, '', location.pathname + '?' + (rest ? rest + '&' : '') + address(false) + levels + location.hash); } catch (ignored) {}
+      currentGoals = goals; sheet.sync();
     }
 
     function render() {
@@ -302,8 +308,9 @@
         head.textContent = t('headline', '{goal} · upgrades: {n}', { goal: goalName, n: api.fmt(result.total.steps) });
         head.title = head.textContent;   // a phone clamps the headline to two lines
         var paidTotal = E.total(paid(result.steps.map(function (x) { return x.step; })));
-        costList(one('total'), paidTotal);
-        one('time').textContent = timeText(result.total, result.steps.map(function (x) { return x.step; }));
+        costList(one('total'), paidTotal, false, true);
+        var allSteps = result.steps.map(function (x) { return x.step; }), cover = speedupsText(E.timed(allSteps, E.boost(cs)).time);
+        one('time').textContent = timeText(result.total, allSteps) + (cover ? ' ' + cover : '');
         pointsList(one('points'), paidTotal.cost, result.steps.map(function (x) { return x.step; }));
       }
       // One row per building the plan raises, plus any level the reader gave that the goal's
@@ -369,7 +376,6 @@
       flag.textContent = any ? t('oneSource', '† Only one source gives this figure.') : '';
       var add = one('addGoal');
       add.hidden = guest || !store || !plannedGoals().length || result.state === 'met';
-      one('guestBanner').hidden = !guest;
       one('saveNote').textContent = guest ? t('guestNote', 'Guest mode: levels stay on this page.') : store ? t('savedNote', 'Levels you set are saved on this device, and the Town Centre and Upgrade priority use them.') : '';
       syncAddress();
     }
@@ -392,7 +398,7 @@
     one('picker').addEventListener('close', function () { picking = null; });
     // A tap on the backdrop (the dialog box itself, outside its content) closes the grid.
     one('picker').addEventListener('click', function (event) { if (event.target === event.currentTarget) closePicker(); });
-    ['speed', 'guest'].forEach(function (k) { one(k).disabled = false; });
+    one('speed').disabled = false;
     fillGoals();
     fillSpeed();
 
@@ -425,14 +431,6 @@
         } },
         choose: { run: function (node) { choose(node.dataset.level); } },
         close: { run: closePicker },
-        guest: { run: function () {
-          // Guest mode is chosen before the page's modules mount, so the switch reloads the
-          // page into or out of it with the same goals; leaving drops the link's levels.
-          var kept = new URLSearchParams(location.search);
-          ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan', 'saul', 'guest'].forEach(function (k) { kept.delete(k); });
-          var rest = kept.toString();
-          location.assign(location.pathname + '?' + (rest ? rest + '&' : '') + address(false) + (guest ? '' : '&guest') + location.hash);
-        } },
         set: { run: function (node) {
           var k = node.dataset.key, v = node.dataset.value;
           cs[k] = k === 'mode' || k === 'position' ? v : Number(v);

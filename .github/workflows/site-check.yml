@@ -60,6 +60,13 @@ jobs:
               - js/player-modules.js
               - js/unit-input.js
               - js/deep-link.js
+              # Shared by every calculator: guest sheets, share links and event points.
+              - js/page-sheet.js
+              - css/page-sheet.css
+              - js/event-points.js
+              - css/event-points.css
+              - js/event-rules.js
+              - _data/event_rules.json
               - js/server-age.js
               - js/kingdom-progression.js
               - js/kingdom-data.liquid
@@ -133,6 +140,10 @@ jobs:
             pets:
               - *shared
               - .dsh/pets-ui-check.cjs
+              - .dsh/roster-sheets-ui-check.cjs
+              - js/roster-sheets.js
+              - heroes/**
+              - masters/**
               - pets/**
               - js/pet-*
               - _data/pets.json
@@ -445,6 +456,9 @@ jobs:
       - name: Check event rules and availability arithmetic
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/event-rules-check.cjs
+      - name: Check the shared event points table
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/event-points-check.cjs
       - name: Check hero gear costs and search
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/hero-gear-check.cjs
@@ -585,6 +599,9 @@ jobs:
       - name: Check pets UI
         if: matrix.group == 'pets'
         run: node .dsh/pets-ui-check.cjs
+      - name: Check share links and guest sheets on Heroes, Masters and Pets
+        if: matrix.group == 'pets'
+        run: node .dsh/roster-sheets-ui-check.cjs
       - name: Check Castle Battle UI
         if: matrix.group == 'castle'
         run: node .dsh/castle-battle-ui-check.cjs

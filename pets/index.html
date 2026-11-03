@@ -13,6 +13,7 @@ self: pets
     <p class="lede" data-i18n="pets.intro">Fourteen pets, one skill each. Tame yours to plan its Advances.</p>
     {% include ascii/motif.html kind="pet" %}
   </section>
+  {% include page-sheet.html part="bar" class="sheet-dialog" title="sheet.pets.confirmTitle" title_en="Save these pets as yours?" body="sheet.pets.confirmBody" body_en="It replaces the pets in your save." confirm="sheet.pets.confirm" confirm_en="replace my pets" %}
   {% include next-step.html kinds="pet-advance pet-focus record:pets" %}
   {% comment %}Pets drawn from a model: one span per ink of .dsh/pet-portraits/<id>.json.{% endcomment %}{% assign portraits = 'alpha-black-panther,bison,cheetah,giant-rhino,gray-wolf,great-moose,grizzly-bear,ironclad-war-bear,ironclad-war-elephant,lion,lynx,mighty-bison,moose,regal-white-lion' | split: ',' %}
   {% assign pets = site.data.pets.pets %}{% assign generations = pets | map: 'generation' | uniq %}
@@ -74,6 +75,7 @@ self: pets
     <p data-i18n="pets.advancesIntro">Each Advance scores Pet Advancement points: 50 KvK prep or Strongest Governor points per score, 30 in Brawl.</p>
     <p class="hero-points-total"><output data-target="pet-advances.total">—</output></p>
     <p class="note" data-target="pet-advances.coverage" aria-live="polite"></p>
+    <div data-target="pet-advances.events"></div>
     <div class="hero-points-scroll" data-target="pet-advances.table" hidden><table class="hero-points-table">
       <thead><tr><th scope="col" data-i18n="pets.col.pet">pet</th><th scope="col" data-i18n="pets.col.next">next Advance</th><th scope="col" data-i18n="spend.col.points">KvK prep points</th><th scope="col" data-i18n="pets.col.left">Advances left</th></tr></thead>
       <tbody data-target="pet-advances.rows"></tbody>

@@ -23,16 +23,16 @@
    has (all of T11) is listed as unverified and does not limit the plan. Unknown facts or
    balances count as nothing and are listed, so a total is never inflated. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/troops.json'));
-  else root.TroopSpend = factory(root.TroopData);
-})(typeof window === 'object' ? window : globalThis, function (data) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/troops.json'), require('./player-ledger.js'));
+  else root.TroopSpend = factory(root.TroopData, root.PlayerLedger);
+})(typeof window === 'object' ? window : globalThis, function (data, ledger) {
   'use strict';
   var RESOURCES = ['bread', 'wood', 'stone', 'iron'], SPEEDUPS = ['training', 'general'], BUFF = 3, BUFF_GEMS = 3000;
   var BUFFS = (data && data.buffs) || { mobilize: 0, kvk: 0, positions: [] };
   var TYPES = ((data && data.types) || []).map(function (type) { return { id: type.id, name: type.name, camp: type.camp }; });
   var TIERS = {};
   ((data && data.tiers) || []).forEach(function (row) { TIERS[row.tier] = row; });
-  function confirmed(snapshot, id) { var entry = snapshot.inventory && Object.hasOwn(snapshot.inventory, id) ? snapshot.inventory[id] : null; return entry && entry.status === 'confirmed' ? entry.amount : null; }
+  var confirmed = ledger.confirmed;
   // Seconds one troop takes at this training speed (Bonus Overview %, so 100 halves the time).
   function seconds(tier, speed) { return TIERS[tier].seconds * 100 / (100 + speed); }
   // Whole troops a number of seconds pays for, without floating-point drift.

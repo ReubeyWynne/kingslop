@@ -85,7 +85,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
 
   // A sheet of its own (?guest, a link, Start blank) works on a copy of the save, so the line is not about it.
   await page.goto(origin + '/hero-gear/?guest&lang=en');
-  await page.waitForFunction(() => window.UpgradePriority && document.querySelector('#gear-load-mine') && !document.querySelector('#gear-load-mine').hidden);
+  await page.waitForFunction(() => window.UpgradePriority && document.querySelector('[data-action="page-sheet.loadMine"]') && !document.querySelector('[data-action="page-sheet.loadMine"]').hidden);
   await page.waitForTimeout(150);
   assert.equal(await hint().isVisible(), false, 'hidden in guest mode');
 

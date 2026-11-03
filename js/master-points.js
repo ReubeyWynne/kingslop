@@ -8,7 +8,7 @@
     total: '{n} KvK prep points', complete: 'Every master count this uses is entered.', partial: 'Partial: {names} not entered yet, so the total leaves them out.', more: '{n} more',
     empty: 'Mark the masters you have unlocked, with their affinity and skill levels, to see what their emblems and manuscripts can score.',
     none: '—', classStep: '→ {name}', emblemPieces: '{own} own + {general} general', skillSteps: '{n} skill levels', learning: '{n} learning XP',
-    left: 'Unused: {general} general emblems, {manuscripts} manuscripts.', unknownCount: '?'
+    eventEmblems: 'Emblems', eventManuscripts: 'Manuscripts', left: 'Unused: {general} general emblems, {manuscripts} manuscripts.', unknownCount: '?'
   };
   function t(api, key) { return api.tr('masterPoints.' + key, EN[key]); }
   function fill(api, key, values) { return api.fill(t(api, key), values); }
@@ -49,6 +49,12 @@
       context.targets('empty').forEach(function (node) { node.hidden = rows.length > 0; node.textContent = t(api, 'empty'); });
       put('total', fill(api, 'total', { n: api.fmt(total) }));
       put('coverage', plan.unknown.length ? fill(api, 'partial', { names: names(api, plan.unknown) }) : t(api, 'complete'));
+      // The same three-event table as every calculator: emblems and manuscripts each on their best days.
+      var emblems = 0, books = 0, events = [];
+      rows.forEach(function (row) { if (row.entry.emblems) emblems += row.entry.emblems.spend || 0; if (row.entry.manuscripts) books += row.entry.manuscripts.spend || 0; });
+      if (emblems) events.push({ label: t(api, 'eventEmblems'), cells: window.EventPoints.forItems({ 'master-emblem': emblems }) });
+      if (books) events.push({ label: t(api, 'eventManuscripts'), cells: window.EventPoints.forItems({ 'masters-manuscript': books }) });
+      context.targets('events').forEach(function (node) { node.replaceChildren(); if (events.length) node.appendChild(window.EventPoints.table(api, events, 'hero-event-points')); });
       var left = function (value) { return value === null ? t(api, 'unknownCount') : api.fmt(value); };
       put('left', rows.length ? fill(api, 'left', { general: left(plan.items[S.EMBLEM].left), manuscripts: left(plan.items[S.MANUSCRIPT].left) }) : '');
     }

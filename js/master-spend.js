@@ -26,7 +26,7 @@
   var EMBLEM = 'master-emblem', GENERAL = 'general-master-emblem', MANUSCRIPT = 'masters-manuscript', ITEMS = [EMBLEM, MANUSCRIPT];
   var MASTERS = ((data && data.masters) || []).map(function (master) { return { id: master.id, name: master.name, unlockDay: master.unlockDay, verified: master.verified, classes: master.affinity.classes, skills: master.skills }; });
   var emblemId = ledger.masterEmblemId;
-  function confirmed(snapshot, id) { var entry = snapshot.inventory && Object.hasOwn(snapshot.inventory, id) ? snapshot.inventory[id] : null; return entry && entry.status === 'confirmed' ? entry.amount : null; }
+  var confirmed = ledger.confirmed;
   function find(id) { return MASTERS.find(function (master) { return master.id === id; }) || null; }
   // The class a master stands in at an affinity level, 0 before level 1 and 11 (Kindred Soul) at 100. The talent level is the same number.
   function classAt(master, affinity) { return affinity === null ? null : master.classes.filter(function (entry) { return entry.level <= affinity; }).length; }

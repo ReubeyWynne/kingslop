@@ -5,22 +5,6 @@
 .sheet-page .sheet-hero { padding-bottom: .5rem; }
 .sheet-page .sheet-hero .lede { max-width: 36rem; }
 
-/* Your own save needs no bar: edits save as they go. On someone's link (or a blank sheet) one
-   slim line says whose numbers these are, with Save as mine and Load mine beside it. */
-.sheet-page .sheet-notice { display: flex; flex-wrap: wrap; align-items: center; gap: .2rem 1rem; margin: 0 0 .5rem; padding: .35rem 0 .35rem .7rem; border-inline-start: 2px solid var(--amber); font-size: .9rem; color: var(--ink-dim); }
-.sheet-page .sheet-notice[hidden] { display: none; }
-.sheet-notice strong { color: var(--ink); font-weight: 600; }
-.sheet-notice > span { flex: 1 1 14rem; min-width: 0; }
-.sheet-page .sheet-notice button, .sheet-page .sheet-tools button { min-height: 2.5rem; padding: .2rem .1rem; border: 0; border-bottom: 1px solid transparent; background: transparent; color: var(--amber); font: inherit; font-size: .9rem; cursor: pointer; }
-.sheet-page .sheet-notice button:hover, .sheet-page .sheet-tools button:hover { color: var(--ink); border-bottom-color: var(--signal-line); }
-/* Sharing and starting over: small links under your things. */
-.sheet-page .sheet-tools { display: flex; flex-wrap: wrap; gap: 0 1.2rem; margin: .3rem 0 0; }
-.sheet-page .sheet-tools button { font-size: .85rem; color: var(--ink-muted); }
-.sheet-page .sheet-tools button[data-copied] { color: var(--amber); }
-.sheet-page .sheet-link { display: block; width: 100%; min-width: 0; margin: 0; padding: .4rem; font: .85rem var(--body); color: var(--ink); background: var(--void-2); border: 1px solid var(--signal-line); }
-.sheet-confirm p { margin: .6rem 0 0; }
-.sheet-confirm-actions { display: flex; justify-content: flex-end; gap: 1rem; }
-
 /* The page's own way in for a screenshot; the shared import dock does the reading. */
 .sheet-page .sheet-drop { display: grid; gap: .15rem; width: 100%; margin: 0 0 .7rem; padding: .6rem .8rem; text-align: start; color: var(--ink-dim); border: 1px dashed var(--signal-line); background: transparent; }
 .sheet-drop strong { color: var(--amber); font-weight: 600; }
@@ -67,16 +51,3 @@
   .sheet-page .sheet-modes button { font-size: .85rem; }
   .sheet-strip strong { font-size: .95rem; }
 }
-
-/* Event points (js/event-points.js), the same table on Hero gear and Governor gear: one
-   column per event, its best day's points with the day under them. */
-.event-points-wrap { margin: .5rem 0 .2rem; }
-.event-points { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: .82rem; }
-.event-points th, .event-points td { padding: .25rem .3rem; text-align: end; vertical-align: top; border-bottom: 1px solid var(--signal-line); overflow-wrap: anywhere; hyphens: auto; }
-.event-points thead th { font: 700 .68rem var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); line-height: 1.2; }
-.event-points tbody th { text-align: start; font-weight: 400; color: var(--ink-dim); }
-.event-points td b { display: block; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
-.event-points td small { display: block; color: var(--ink-muted); font-size: .72rem; }
-.event-points td[data-points="none"] { color: var(--ink-muted); }
-.event-points thead td, .event-points th:first-child { width: 25%; }
-.event-points-note { margin: .2rem 0 0; color: var(--ink-muted); font-size: .75rem; }

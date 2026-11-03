@@ -3,7 +3,7 @@ layout: page
 self: buildings
 ---
 {% assign data = site.data.building_paths %}{% assign tc = data.buildings | first %}
-<main data-module="building-paths">
+<main data-module="building-paths page-sheet">
   <section class="section hero" id="top">
     <h1 data-i18n="reqs.title">Building requirements</h1>
     <p class="lede" data-i18n="reqs.intro">Pick a goal and see every upgrade it takes, in order, with the resources and time. Then set your real levels to sharpen it, and send the link.</p>
@@ -14,12 +14,12 @@ self: buildings
     <h2 id="goal-title" data-i18n="reqs.goal">Your goal</h2>
     <div class="reqs-goal-tools">
       <p class="note" data-i18n="reqs.pickGoal">Tap the buildings you want to upgrade.</p>
-      <button type="button" class="reqs-switch" role="switch" aria-checked="false" data-target="building-paths.guest" data-action="building-paths.guest" disabled><span data-i18n="reqs.guestSwitch">Guest mode</span></button>
+      <button type="button" class="reqs-switch" role="switch" aria-checked="false" data-target="page-sheet.guest" data-action="page-sheet.guest" disabled><span data-i18n="reqs.guestSwitch">Guest mode</span></button>
     </div>
     <ul class="reqs-picks" data-target="building-paths.picks">{% for b in data.buildings %}
       <li><button type="button" class="reqs-pick" data-building="{{ b.id }}" data-action="building-paths.pick" aria-pressed="{% if b.id == 'town-center' %}true{% else %}false{% endif %}" disabled><span class="reqs-art"><img src="../img/buildings/{{ b.id }}.webp" width="128" height="128" alt="" loading="lazy" decoding="async"><b class="reqs-badge">{% if b.id == 'town-center' %}3{% endif %}</b></span><span class="reqs-pick-name" data-i18n="town.building.{{ b.id }}">{{ b.name }}</span></button></li>{% endfor %}
     </ul>
-    <p class="reqs-guest" data-target="building-paths.guestBanner" hidden><span data-i18n-html="reqs.guestBanner"><b>Guest mode.</b> Levels you set stay on this page. Your save is untouched.</span></p>
+    {% include page-sheet.html part="notice" %}
     <noscript><p data-i18n="reqs.noJS">Turn on JavaScript to work out a plan.</p></noscript>
   </section>
 
@@ -75,7 +75,7 @@ self: buildings
     </details>
     <details class="reqs-more" id="reqs-points-note">
       <summary data-i18n="reqs.aboutPoints">About event points</summary>
-      <p class="note" data-i18n="reqs.pointsHow">Truegold and Tempered Truegold score when you spend them on these upgrades. Speedups score per minute used, so the Sped up column assumes you finish every upgrade with construction or general speedups, at the construction speed above. Each event lists the days that pay most; the rates are the ones on the Events page.</p>
+      <p class="note" data-i18n="reqs.pointsHow">Truegold and Tempered Truegold score when you spend them on these upgrades. Speedups score per minute used, so the Sped up row assumes you finish every upgrade with construction or general speedups, at the construction speed above. Each event lists the days that pay most; the rates are the ones on the Events page.</p>
     </details>
     <details class="reqs-more" id="reqs-share-note">
       <summary data-i18n="reqs.aboutLinks">About links</summary>
@@ -94,4 +94,5 @@ self: buildings
     <p data-i18n="reqs.sourceNote">Prerequisites, costs and base times from Kingshot Optimizer, checked against Kingshot Data and KS h5joy. A figure marked † has only one source: Houses, the Clinic, resource buildings and every level past TG 8 are Kingshot Optimizer only. Check a long upgrade in game before you start it.</p>
     <ul>{% for s in data.sources %}<li><a href="{{ s[1].url }}">{{ s[1].label | escape }}</a></li>{% endfor %}</ul>
   </section>
+  {% include page-sheet.html part="confirm" class="reqs-picker" title="reqs.sheet.confirmTitle" title_en="Save these levels as yours?" body="reqs.sheet.confirmBody" body_en="It sets these building levels in your save. Buildings this sheet has not set keep your levels." confirm="reqs.sheet.confirm" confirm_en="save my levels" %}
 </main>

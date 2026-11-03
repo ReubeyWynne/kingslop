@@ -4,4 +4,3 @@ permalink: /js/building-paths-data.js
 ---
 window.BuildingPaths = {{ site.data.building_paths | jsonify }};
 {%- comment -%} Only what scores a building plan: each event day's item rates and speedup rates. {%- endcomment %}
-window.BuildingPaths.events = { {% for e in site.data.event_rules.events %}{{ e[0] | jsonify }}: [{% for d in e[1] %}{ "day": {{ d.day }}, "rows": [{% for r in d.rows %}{% if r.items or r.scoring.type == 'speedup' %}{ "items": {{ r.items | jsonify }}, "scoring": {{ r.scoring | jsonify }} }, {% endif %}{% endfor %}] }, {% endfor %}], {% endfor %}};

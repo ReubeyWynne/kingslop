@@ -62,7 +62,7 @@ for(const [event,days] of Object.entries(rules.data.events))for(const day of day
   assert(row.id&&!ids.has(row.id));ids.add(row.id);
   assert(row.category===null||row.category==='free'||rules.data.legacy.VITEMS.includes(row.category));
   if(row.scoring){
-   const s=row.scoring;assert(['speedup','governor','troops'].includes(s.type));
+   const s=row.scoring;assert(['speedup','governor','troops','pet'].includes(s.type));
    if(s.type==='speedup'){assert.deepEqual(rules.speedupKinds(row),s.kinds);assert(s.kinds.includes('general'));assert.equal(new Set(s.kinds).size,s.kinds.length);assert(s.kinds.every(kind=>['general','construction','research','training','learning','healing'].includes(kind)));}
    if(s.type==='governor')assert(['gear','charms'].includes(s.kind));
    if(s.type!=='troops'){if(s.rate===null)assert.equal(rules.rate(row),null);else assert.equal(rules.rate(row),Number(row.points.replace(/,/g,'')));}
