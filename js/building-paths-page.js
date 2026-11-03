@@ -288,9 +288,9 @@
     }
     function syncAddress() {
       // The goal and speed only: the shared sheet keeps the levels (have=) in step.
-      var kept = new URLSearchParams(location.search), was = kept.get('have');
+      var kept = new URLSearchParams(location.search), was = kept.getAll('have')[0];
       ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan', 'saul'].forEach(function (k) { kept.delete(k); });
-      var rest = kept.toString().replace(/(^|&)guest=(&|$)/, '$1guest$2'), levels = was === null ? '' : '&have=' + was;
+      var rest = kept.toString().replace(/(^|&)guest=(&|$)/, '$1guest$2'), levels = was === undefined ? '' : '&have=' + was;
       try { history.replaceState(history.state, '', location.pathname + '?' + (rest ? rest + '&' : '') + address(false) + levels + location.hash); } catch (ignored) {}
       currentGoals = goals; sheet.sync();
     }
