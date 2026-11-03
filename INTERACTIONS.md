@@ -77,7 +77,7 @@ Every disclosure is addressable by its URL. A `#id` link opens the disclosure it
 | `<section data-collapse id="marches">` | `#marches` opens the section (common.js) |
 | `<div id="castle-combat" role="tabpanel">` with one `role="tab"` button controlling it | `#castle-combat` selects the tab |
 
-Three tools carry their state in the query string on purpose, because the address is the thing they share: Hero Gear's `?gear=` links, Building requirements' `?b=…&to=…` goal links (see `BUILDING-REQUIREMENTS.md`) and the governor page's `?gov=` sheets (see `GOVERNOR-GEAR.md`). All three read it once on load and rewrite it with `replaceState`, never `pushState`.
+Calculators carry their state in the query string on purpose, because the address is the thing they share: Hero Gear's `?gear=`, the governor page's `?gov=` (see `GOVERNOR-GEAR.md`), Building requirements' `?goal=…&have=…` (see `BUILDING-REQUIREMENTS.md`), and the roster pages' `?h=`, `?m=` and `?pets=`. Each goes through the shared guest sheet (see [Sheets](#sheets)), reads its link once on load and rewrites it with `replaceState`, never `pushState`.
 
 A panel controlled by several tabs has no link of its own; selecting one of its tabs clears a hash that still points into another panel of the same tablist, so a reload does not reopen the panel the reader left.
 
@@ -104,7 +104,13 @@ Interactions.configure({ ledger: function () { return selectedStore; } });
 
 Providers return the same store for every consumer. Configuration does not call the provider, and changing configuration while started throws to prevent mixed subscriptions. `destroy()` removes mounts but retains the page configuration; configure again before restarting if needed. Configuring `ledger: undefined` restores the default lookup.
 
-Hero Gear's `?guest` and shared `?gear=` links configure a memoized in-memory store before discovery. Its controller, ledger forms, save transfer and screenshot import use that store. Plain guest mode starts from a snapshot of saved facts when readable; a shared link starts with its own gear. Resource edits, confirmed imports, save-file imports and undo stay in that store. The governor page always runs on such a store, its sheet (`js/governor-sheet.js`); see `GOVERNOR-GEAR.md`. `PlayerLedger.shared()` is never replaced: consumers that deliberately need persistent kingdom facts can still access them independently.
+## Sheets
+
+Every calculator with a link shares one guest mode, `js/page-sheet.js`. A page calls `PageSheet.define({ keys, read, write, blank, of, load, same? })` before discovery: the query keys its link owns, how to read and write that link, an empty sheet, the sheet a store holds, and how to put a sheet into a store (`mine` is true when it is your save). `?guest` or a readable link then configures a memoized in-memory store, which every module on the page uses: controllers, ledger forms, save transfer, screenshot import and undo. Plain `?guest` and an unreadable link start from a copy of the save; a readable link starts with only what it carries. `PlayerLedger.shared()` is never replaced, so consumers that need persistent kingdom facts can still read it.
+
+The `page-sheet` module paints the controls from `_includes/page-sheet.html`: `part="notice"` (a shared, blank or changed sheet, or an unreadable link, with Save as mine and Load mine), `part="tools"` (Copy share link and Start blank), `part="confirm"` (the dialog before a sheet replaces your save) and `part="bar"` (all three in a root of their own). A `page-sheet.guest` switch reloads into or out of guest mode. On a sheet the address carries the link unless the sheet still matches your save; on your save the address stays clean. Save as mine keeps any balance the sheet has not counted. Styles are `css/page-sheet.css`. Users: Hero gear, Governor gear, Building requirements' levels, and Heroes, Masters and Pets through `js/roster-sheets.js`. Vikings is separate: its links are server-backed alliance plans.
+
+Event points use one scorer and table, `js/event-points.js` (`forItems` for items and speedup minutes, `forGovernor`, `forPets`, `table`, `most`), styled by `css/event-points.css`: a column per event, each cell the best day's points with every tied day under them. Inventory is read by one rule, `PlayerLedger.confirmed(snapshot, id)`.
 
 `BH.modules` exposes the same registry as `window.Interactions`. Register capabilities before boot or later:
 
