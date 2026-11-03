@@ -1758,7 +1758,7 @@ window.__BH_I18N_DATA["ko"] = {
   "reqs.pointsEvent": "이벤트",
   "reqs.pointsSpent": "소비",
   "reqs.pointsSpedUp": "가속 포함",
-  "reqs.pointsDays": "{days}일차",
+  "gear.pointsDays": "{days}일차",
   "reqs.aboutPoints": "이벤트 포인트 안내",
   "reqs.pointsHow": "Truegold와 단련된 Truegold는 이 업그레이드에 사용할 때 포인트가 됩니다. 가속은 사용한 분마다 포인트가 되므로, 가속 사용 수치는 모든 업그레이드를 위의 건설 속도에서 건설 또는 일반 가속으로 끝낸다고 가정합니다. 각 이벤트는 가장 많이 주는 날을 보여 주며, 점수는 이벤트 페이지와 같습니다.",
   "reqs.guestBanner": "<b>게스트 모드.</b> 입력한 레벨은 이 페이지에만 남고 저장 데이터는 바뀌지 않습니다.",

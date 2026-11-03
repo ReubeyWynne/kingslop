@@ -1769,7 +1769,7 @@ window.__BH_I18N_DATA["id"] = {
   "reqs.pointsEvent": "Event",
   "reqs.pointsSpent": "Dipakai",
   "reqs.pointsSpedUp": "Dipercepat",
-  "reqs.pointsDays": "hari {days}",
+  "gear.pointsDays": "hari {days}",
   "reqs.aboutPoints": "Tentang poin event",
   "reqs.pointsHow": "Truegold dan Truegold Tempered memberi poin saat kamu memakainya untuk peningkatan ini. Percepatan memberi poin per menit yang dipakai, jadi angka dengan percepatan menganggap kamu menyelesaikan setiap peningkatan dengan percepatan konstruksi atau umum, pada kecepatan konstruksi di atas. Setiap event mencantumkan hari yang paling menguntungkan; tarifnya sama dengan di halaman Event.",
   "reqs.guestBanner": "<b>Mode tamu.</b> Level yang kamu isi tetap di halaman ini. Simpananmu tidak berubah.",

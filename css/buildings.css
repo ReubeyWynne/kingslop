@@ -68,18 +68,6 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 .reqs-points-box[hidden] { display: none; }
 .reqs-points-box summary { min-height: 40px; padding-block: 0; letter-spacing: .06em; white-space: nowrap; }
 .reqs-points-sum { color: var(--ink); font-weight: normal; letter-spacing: 0; text-transform: none; font-variant-numeric: tabular-nums; }
-.reqs-points { width: 100%; margin: 0 0 .3rem; border-collapse: collapse; font-size: var(--step--1); font-variant-numeric: tabular-nums; }
-.reqs-points[hidden] { display: none; }
-.reqs-points th, .reqs-points td { padding: .1rem 0; text-align: end; font-weight: normal; white-space: nowrap; }
-.reqs-points th:first-child { text-align: start; white-space: normal; padding-inline-end: .6rem; }
-.reqs-points td + td, .reqs-points th + th { padding-inline-start: .9rem; }
-@media (max-width: 22rem) { .reqs-points td + td, .reqs-points th + th { padding-inline-start: .5rem; } .reqs-points th:first-child { padding-inline-end: .3rem; } }
-.reqs-points thead th { white-space: normal; hyphens: auto; vertical-align: bottom; color: var(--ink-muted); font-size: .9em; border-bottom: 1px solid var(--amber-dim); padding-bottom: .2rem; }
-.reqs-points tbody th { color: var(--ink); }
-.reqs-points tbody th small { display: block; color: var(--ink-muted); font-size: .85em; line-height: 1.1; }
-.reqs-points tbody th, .reqs-points tbody td { vertical-align: top; padding-block: .15rem; }
-.reqs-points td { color: var(--amber); }
-.reqs-points td + td { color: var(--ink-dim); }
 .reqs-more { margin-block: var(--space-s); }
 .reqs-more summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--amber); }
 .reqs-more label { display: grid; gap: 0.4rem; max-width: 20rem; }

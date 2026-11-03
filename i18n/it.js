@@ -1760,7 +1760,7 @@ window.__BH_I18N_DATA["it"] = {
   "reqs.pointsEvent": "Evento",
   "reqs.pointsSpent": "Spesi",
   "reqs.pointsSpedUp": "Accelerato",
-  "reqs.pointsDays": "giorni {days}",
+  "gear.pointsDays": "giorni {days}",
   "reqs.aboutPoints": "Sui punti evento",
   "reqs.pointsHow": "Truegold e Truegold temprato danno punti quando li spendi in questi potenziamenti. Gli acceleratori danno punti per minuto usato, quindi il valore con acceleratori presume che tu finisca ogni potenziamento con acceleratori di costruzione o generici, alla velocità di costruzione indicata sopra. Ogni evento elenca i giorni che rendono di più; i valori sono quelli della pagina Eventi.",
   "reqs.guestBanner": "<b>Modalità ospite.</b> I livelli inseriti restano su questa pagina. Il tuo salvataggio non cambia.",

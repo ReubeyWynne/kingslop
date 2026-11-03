@@ -240,30 +240,5 @@
     return { time: time, known: known };
   }
 
-  // Event points for a plan: for each event, the days that pay most for the Truegold and Tempered
-  // Truegold it spends and for the construction speedups that would finish its time (seconds).
-  // events is _data/event_rules.json's events ({ prep: [{ day, rows: [{ items, scoring }] }] }).
-  var EVENTS = ['prep', 'sg', 'brawl'];
-  function points(events, cost, seconds) {
-    var minutes = Math.floor((seconds || 0) / 60), out = [];
-    EVENTS.forEach(function (event) {
-      var best = null;
-      ((events || {})[event] || []).forEach(function (day) {
-        var items = 0, rate = 0;
-        (day.rows || []).forEach(function (row) {
-          (row.items || []).forEach(function (it) { if (cost[it.id]) items += cost[it.id] * it.rate; });
-          var s = row.scoring;
-          if (s && s.type === 'speedup' && s.kinds.indexOf('construction') >= 0) rate = Math.max(rate, s.rate);
-        });
-        var entry = { items: items, speedups: minutes * rate }, sum = entry.items + entry.speedups;
-        if (!sum) return;
-        if (!best || sum > best.items + best.speedups) best = { event: event, days: [day.day], items: entry.items, speedups: entry.speedups };
-        else if (sum === best.items + best.speedups && entry.items === best.items) best.days.push(day.day);
-      });
-      if (best) out.push(best);
-    });
-    return out;
-  }
-
-  return { RESOURCES: RESOURCES, points: points, rank: rank, level: level, short: short, key: key, split: split, building: building, levels: levels, before: before, steps: steps, total: function (steps) { return total(steps.map(function (step) { return { step: step }; })); }, goals: goals, plan: plan, involved: involved, encode: encode, decode: decode, atSpeed: atSpeed, BOOST: BOOST, DISCOUNTED: DISCOUNTED, discount: discount, boost: boost, stepSeconds: stepSeconds, timed: timed };
+  return { RESOURCES: RESOURCES, rank: rank, level: level, short: short, key: key, split: split, building: building, levels: levels, before: before, steps: steps, total: function (steps) { return total(steps.map(function (step) { return { step: step }; })); }, goals: goals, plan: plan, involved: involved, encode: encode, decode: decode, atSpeed: atSpeed, BOOST: BOOST, DISCOUNTED: DISCOUNTED, discount: discount, boost: boost, stepSeconds: stepSeconds, timed: timed };
 }));

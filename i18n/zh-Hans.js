@@ -1758,7 +1758,7 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "reqs.pointsEvent": "活动",
   "reqs.pointsSpent": "消耗",
   "reqs.pointsSpedUp": "含加速",
-  "reqs.pointsDays": "第 {days} 天",
+  "gear.pointsDays": "第 {days} 天",
   "reqs.aboutPoints": "关于活动积分",
   "reqs.pointsHow": "Truegold和淬炼Truegold用于这些升级时计分。加速按使用的分钟计分,所以使用加速的数值假设你以上方的建造速度,用建造加速或通用加速完成每次升级。每个活动列出得分最高的日子;分值与活动页面一致。",
   "reqs.guestBanner": "<b>访客模式。</b>你填的等级只留在这个页面，你的存档不受影响。",

@@ -114,33 +114,19 @@
       var text = duration(E.timed(steps, E.boost(cs)).time) + (total.unverified.time ? '†' : ''), list = boosts();
       return list ? t('timeWith', '{time} with {boosts}', { time: text, boosts: list }) : t('timeBase', '{time} base time, before construction speed', { time: text });
     }
-    // Event points the plan scores, as a small table: one row per event with the days that pay
-    // most, what spending its Truegold scores, and that plus speeding up its whole time. The table
-    // sits in a closed disclosure so the pinned answer stays short on a phone; its summary carries
-    // the most any one event pays.
-    function eventName(e) { return e === 'prep' ? t('eventPrep', 'KvK prep') : e === 'sg' ? t('eventSg', 'Strongest Governor') : t('eventBrawl', 'Alliance Brawl'); }
-    function pointsList(table, cost, steps) {
-      table.textContent = '';
-      var rows = E.points(D.events, cost, steps ? E.timed(steps, E.boost(cs)).time : 0);
-      one('pointsBox').hidden = !rows.length;
-      one('pointsSum').textContent = '';
-      if (!rows.length) return;
-      var most = Math.max.apply(null, rows.map(function (p) { return p.items + p.speedups; }));
-      one('pointsSum').textContent = t('pointsUpTo', 'up to {n}', { n: compact(most) });
-      var head = el('tr');
-      [t('pointsEvent', 'Event'), t('pointsSpent', 'Spent'), t('pointsSpedUp', 'Sped up')].forEach(function (text) { var th = el('th', '', text); th.scope = 'col'; head.appendChild(th); });
-      table.appendChild(el('thead')).appendChild(head);
-      var body = table.appendChild(el('tbody'));
-      rows.forEach(function (p) {
-        var tr = el('tr'), th = el('th', '', eventName(p.event) + ' ');
-        th.scope = 'row';
-        th.appendChild(el('small', '', t('pointsDays', 'days {days}', { days: p.days.map(function (d) { return api.fmt(d); }).join(', ') })));
-        tr.appendChild(th);
-        var spent = el('td', '', compact(p.items)), sped = el('td', '', p.speedups ? compact(p.items + p.speedups) : '–');
-        spent.title = api.fmt(p.items); sped.title = p.speedups ? api.fmt(p.items + p.speedups) : '';
-        tr.appendChild(spent); tr.appendChild(sped);
-        body.appendChild(tr);
-      });
+    // Event points the plan scores, in the shared table (js/event-points.js): what spending its
+    // Truegold scores, and that plus speeding up its whole time, at each event's best days. The
+    // table sits in a closed disclosure so the pinned answer stays short on a phone; its summary
+    // carries the most any one event pays.
+    function pointsList(box, cost, steps) {
+      var P = window.EventPoints, minutes = steps ? Math.floor(E.timed(steps, E.boost(cs)).time / 60) : 0, rows = [], top;
+      box.textContent = '';
+      rows.push({ label: t('pointsSpent', 'Spent'), cells: P.forItems(cost) });
+      if (minutes) rows.push({ label: t('pointsSpedUp', 'Sped up'), cells: P.forItems(cost, { construction: minutes }) });
+      top = P.most(rows);
+      one('pointsBox').hidden = !top;
+      one('pointsSum').textContent = top ? t('pointsUpTo', 'up to {n}', { n: compact(top) }) : '';
+      if (top) box.appendChild(P.table(api, rows, 'reqs-points', { compact: true }));
     }
     function stepTime(steps) { return duration(E.timed(steps, E.boost(cs)).time); }
     function arrow() { return document.documentElement.dir === 'rtl' ? ' ← ' : ' → '; }

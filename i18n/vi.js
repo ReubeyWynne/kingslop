@@ -1769,7 +1769,7 @@ window.__BH_I18N_DATA["vi"] = {
   "reqs.pointsEvent": "Sự kiện",
   "reqs.pointsSpent": "Đã tiêu",
   "reqs.pointsSpedUp": "Tăng tốc",
-  "reqs.pointsDays": "ngày {days}",
+  "gear.pointsDays": "ngày {days}",
   "reqs.aboutPoints": "Về điểm sự kiện",
   "reqs.pointsHow": "Truegold và Truegold tôi luyện được tính điểm khi bạn dùng chúng cho các lần nâng cấp này. Tăng tốc được tính điểm theo mỗi phút sử dụng, nên con số khi dùng tăng tốc giả định bạn hoàn thành mọi lần nâng cấp bằng tăng tốc xây dựng hoặc tăng tốc chung, với tốc độ xây dựng ở trên. Mỗi sự kiện liệt kê những ngày được nhiều điểm nhất; mức điểm lấy từ trang Sự kiện.",
   "reqs.guestBanner": "<b>Chế độ khách.</b> Cấp bạn nhập chỉ ở lại trang này. Dữ liệu lưu của bạn không đổi.",

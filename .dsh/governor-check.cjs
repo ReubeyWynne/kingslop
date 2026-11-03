@@ -68,11 +68,11 @@ assert.deepEqual(G.profiles(), ['bear', 'growth', 'combat', 'gen4', 'garrison', 
 // score (in-game event list, owner, 2 Nov).
 {
   const P = require('../js/event-points.js'), cells = P.forGovernor('gear', 1000);
-  assert.deepEqual(cells.prep, { day: 5, points: 36000, unpublished: false });
+  assert.deepEqual(cells.prep, { day: 5, days: [5], points: 36000, unpublished: false });
   assert.equal(cells.sg, null);
-  assert.deepEqual(cells.brawl, { day: 5, points: 22000, unpublished: false });
-  assert.deepEqual(P.forGovernor('charms', 1000).prep, { day: 1, points: 70000, unpublished: false });
-  assert.deepEqual(P.forItems({ forgehammer: 10, mithril: 1 }), { prep: { day: 4, points: 80000 }, sg: { day: 2, points: 80000 }, brawl: { day: 4, points: 37500 } });
+  assert.deepEqual(cells.brawl, { day: 5, days: [5, 6], points: 22000, unpublished: false });
+  assert.deepEqual(P.forGovernor('charms', 1000).prep, { day: 1, days: [1, 3, 4], points: 70000, unpublished: false });
+  assert.deepEqual(P.forItems({ forgehammer: 10, mithril: 1 }), { prep: { day: 4, days: [4, 5], points: 80000 }, sg: { day: 2, days: [2, 4, 5], points: 80000 }, brawl: { day: 4, days: [4, 6], points: 37500 } });
 }
 assert.equal(plan.score, plan.steps.reduce((sum, step) => sum + step.score, 0));
 assert.deepEqual(G.plan('gear', gear, bag, { focus: 'cav' }).steps.map(s => s.troop).filter(t => t !== 'cav'), []);

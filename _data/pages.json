@@ -559,6 +559,7 @@
       "../css/events.css",
       "../css/hero-gear.css",
       "../css/sheet.css",
+      "../css/event-points.css",
       "../css/next-step.css"
     ],
     "scripts": [
@@ -844,6 +845,7 @@
       "../css/events.css",
       "../css/governor.css",
       "../css/sheet.css",
+      "../css/event-points.css",
       "../css/governor-profile.css"
     ],
     "scripts": [
@@ -1116,13 +1118,17 @@
     "css": [
       "../css/styles.css",
       "../css/events.css",
-      "../css/buildings.css"
+      "../css/buildings.css",
+      "../css/event-points.css"
     ],
     "scripts": [
       "../js/i18n.js",
       "../js/page-deck.js",
       "../js/page-chrome.js",
       "../js/common.js",
+      "../js/event-data.js",
+      "../js/event-rules.js",
+      "../js/event-points.js",
       "../js/building-paths-data.js",
       "../js/building-paths.js",
       "../js/building-paths-page.js"

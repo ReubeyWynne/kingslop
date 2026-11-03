@@ -51,7 +51,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     const gearPoints = target('events').locator('tbody tr').first().locator('td');
     assert.match(await gearPoints.nth(0).textContent(), /^[\d,]+day 5$/, 'KvK prep day 5 scores gear at 36 a point');
     assert.equal(await gearPoints.nth(1).getAttribute('data-points'), 'none', 'Strongest Governor does not score gear');
-    assert.match(await gearPoints.nth(2).textContent(), /^[\d,]+day 5$/);
+    assert.match(await gearPoints.nth(2).textContent(), /^[\d,]+days 5, 6$/);
     // The profiles are Hero gear's, in its order, plus Event score.
     assert.deepEqual(await page.locator('select[data-action="governor-planner.profile"] option').evaluateAll(o => o.map(n => n.value)), ['bear', 'growth', 'combat', 'gen4', 'garrison', 'equal', 'score', 'custom']);
     assert.equal(await page.locator('[data-target="governor-planner.bill"] > div').count(), 5);

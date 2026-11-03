@@ -208,9 +208,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
   }
   await page.setViewportSize({ width: 390, height: 900 });
   await page.locator('#reqs-points summary').click();
+  // The shared event points table (js/event-points.js): a column per event, a row for spending and for speeding up.
   const cells = await page.locator('.reqs-points tr').evaluateAll(rows => rows.map(r => [...r.cells].map(c => c.textContent)));
-  assert.deepEqual(cells, [['Event', 'Spent', 'Sped up'],
-    ['KvK prep days 1, 2, 5', '8.66m', '11.04m'], ['Strongest Governor days 1, 2, 5, 7', '8.66m', '11.04m'], ['Alliance Brawl days 1, 2, 5, 6', '5.42m', '6.84m']]);
+  assert.deepEqual(cells, [['', 'KvK prep', 'Strongest Governor', 'Alliance Brawl'],
+    ['Spent', '8.66mdays 1, 2, 5', '8.66mdays 1, 2, 5, 7', '5.42mdays 1, 2, 5, 6'],
+    ['Sped up', '11.04mdays 1, 2, 5', '11.04mdays 1, 2, 5, 7', '6.84mdays 1, 2, 5, 6']]);
   assert.match(await page.locator('.reqs-answer .reqs-cost').innerText(), /4,332/, 'Truegold reads exactly');
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'the points table fits a phone');
   await page.screenshot({ path: path.join(output, 'en-390-points.png') });

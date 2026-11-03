@@ -1758,7 +1758,7 @@ window.__BH_I18N_DATA["pl"] = {
   "reqs.pointsEvent": "Wydarzenie",
   "reqs.pointsSpent": "Wydane",
   "reqs.pointsSpedUp": "Z przysp.",
-  "reqs.pointsDays": "dni {days}",
+  "gear.pointsDays": "dni {days}",
   "reqs.aboutPoints": "O punktach wydarzeń",
   "reqs.pointsHow": "Truegold i Hartowane Truegold dają punkty, gdy wydasz je na te ulepszenia. Przyspieszenia dają punkty za każdą użytą minutę, więc wartość z przyspieszeniami zakłada, że kończysz każde ulepszenie przyspieszeniami budowy lub ogólnymi, przy prędkości budowy podanej wyżej. Każde wydarzenie podaje dni, które dają najwięcej; stawki pochodzą ze strony Wydarzenia.",
   "reqs.guestBanner": "<b>Tryb gościa.</b> Podane poziomy zostają na tej stronie. Twój zapis się nie zmienia.",

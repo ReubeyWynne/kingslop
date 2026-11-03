@@ -1758,7 +1758,7 @@ window.__BH_I18N_DATA["de"] = {
   "reqs.pointsEvent": "Event",
   "reqs.pointsSpent": "Ausgegeben",
   "reqs.pointsSpedUp": "Beschleunigt",
-  "reqs.pointsDays": "Tage {days}",
+  "gear.pointsDays": "Tage {days}",
   "reqs.aboutPoints": "Über Eventpunkte",
   "reqs.pointsHow": "Truegold und Gehärtetes Truegold zählen, wenn du sie für diese Ausbauten ausgibst. Beschleuniger zählen pro genutzter Minute, daher setzt der Wert mit Beschleunigern voraus, dass du jeden Ausbau mit Bau- oder allgemeinen Beschleunigern abschließt, bei der Baugeschwindigkeit oben. Jedes Event nennt die Tage, die am meisten bringen; die Werte stammen von der Event-Seite.",
   "reqs.guestBanner": "<b>Gastmodus.</b> Eingetragene Stufen bleiben auf dieser Seite. Dein Spielstand bleibt unberührt.",

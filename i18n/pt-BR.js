@@ -1760,7 +1760,7 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "reqs.pointsEvent": "Evento",
   "reqs.pointsSpent": "Gasto",
   "reqs.pointsSpedUp": "Acelerado",
-  "reqs.pointsDays": "dias {days}",
+  "gear.pointsDays": "dias {days}",
   "reqs.aboutPoints": "Sobre os pontos de evento",
   "reqs.pointsHow": "Truegold e Truegold temperado pontuam quando você os gasta nestas melhorias. Aceleradores pontuam por minuto usado, então o valor com aceleradores supõe que você termine cada melhoria com aceleradores de construção ou gerais, na velocidade de construção acima. Cada evento lista os dias que mais pagam; as taxas são as da página de Eventos.",
   "reqs.guestBanner": "<b>Modo convidado.</b> Os níveis que você define ficam nesta página. Seu save não é alterado.",

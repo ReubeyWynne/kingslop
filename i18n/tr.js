@@ -1757,7 +1757,7 @@ window.__BH_I18N_DATA["tr"] = {
   "reqs.pointsEvent": "Etkinlik",
   "reqs.pointsSpent": "Harcanan",
   "reqs.pointsSpedUp": "Hızlandırılmış",
-  "reqs.pointsDays": "{days}. günler",
+  "gear.pointsDays": "{days}. günler",
   "reqs.aboutPoints": "Etkinlik puanları hakkında",
   "reqs.pointsHow": "Truegold ve Temperlenmiş Truegold bu yükseltmelere harcandığında puan kazandırır. Hızlandırıcılar kullanılan dakika başına puan verir; hızlandırıcılı değer, her yükseltmeyi yukarıdaki inşaat hızında inşaat veya genel hızlandırıcılarla bitirdiğini varsayar. Her etkinlik en çok kazandıran günleri listeler; oranlar Etkinlikler sayfasındakilerdir.",
   "reqs.guestBanner": "<b>Misafir modu.</b> Girdiğin seviyeler bu sayfada kalır. Kaydın değişmez.",

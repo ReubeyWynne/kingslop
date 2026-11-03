@@ -1758,7 +1758,7 @@ window.__BH_I18N_DATA["ja"] = {
   "reqs.pointsEvent": "イベント",
   "reqs.pointsSpent": "消費",
   "reqs.pointsSpedUp": "加速込み",
-  "reqs.pointsDays": "{days}日目",
+  "gear.pointsDays": "{days}日目",
   "reqs.aboutPoints": "イベントポイントについて",
   "reqs.pointsHow": "Truegoldと鍛錬Truegoldは、これらの強化に使うとポイントになります。加速は使った分数ごとにポイントになるため、加速使用の値は、すべての強化を上の建設速度で建設加速または汎用加速で完了した場合です。各イベントは最もポイントの高い日を示し、レートはイベントページと同じです。",
   "reqs.guestBanner": "<b>ゲストモード。</b>入力したレベルはこのページだけに残り、セーブは変わりません。",
