@@ -1,0 +1,5 @@
+---
+layout: null
+permalink: /js/lead-data.js
+---
+window.LeadData = { "curve": {{ site.data.heroes.curve | jsonify }}, "heroes": { {% for hero in site.data.heroes.heroes %}{{ hero.key | jsonify }}: { "name": {{ hero.name | jsonify }}, "type": {{ hero.type | jsonify }}, "generation": {{ hero.generation }}, "ceiling": {{ hero.ceiling }} }{% unless forloop.last %}, {% endunless %}{% endfor %} }, "heroSkills": {{ site.data.combat.heroSkills | jsonify }}, "widgets": {{ site.data.combat.widgets | jsonify }}, "widgetSkill": {{ site.data.combat.widgetSkill | jsonify }}, "pets": [{% for layer in site.data.combat.layers.pet %}{% assign pet = site.data.pets.pets | where: "id", layer.pet | first %}{ "id": {{ layer.pet | jsonify }}, "name": {{ pet.name | jsonify }}, "stat": {{ layer.stat | jsonify }}, "side": {{ layer.side | jsonify }}, "generation": {{ pet.generation }}, "maxLevel": {{ pet.maxLevel }}, "values": [{% for v in pet.skill.ladder.last.values %}{{ v | remove: "%" | plus: 0 }}{% unless forloop.last %}, {% endunless %}{% endfor %}] }{% unless forloop.last %}, {% endunless %}{% endfor %}], "megafauna": {{ site.data.megafauna | jsonify }} };

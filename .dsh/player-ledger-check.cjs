@@ -127,7 +127,7 @@ assert.throws(() => partStore.setHeroGearPart('hundred', 10000000));
 assert.equal(partStore.exportJSON(), unchangedParts);
 
 const combatDisk = storage(), combatStore = Ledger.create(combatDisk);
-assert.deepEqual(combatStore.combat(), { stats: {}, provenance: {}, troops: [] });
+assert.deepEqual(combatStore.combat(), { stats: {}, provenance: {}, overview: {}, overviewProvenance: {}, troops: [] });
 const legacyV1 = Ledger.empty(); delete legacyV1.combat;
 assert.doesNotThrow(() => Ledger.validate(legacyV1));
 combatStore.setBalance('forgehammer', 12);
@@ -143,6 +143,13 @@ combatStore.setCombat({ troops: [{ type: 'arc', tier: 9, tg: 0, amount: null }] 
 assert.equal(combatStore.combat().troops.length, 2);
 assert.equal(Object.hasOwn(combatStore.snapshot().inventory, Ledger.troopId('arc', 9, 0)), false);
 assert.equal(combatStore.combat().stats.inf.health, 163);
+// The Bonus Overview is kept apart from the report's Bonus Details.
+combatStore.setCombat({ overview: { arc: { attack: 310, lethality: 280, defense: 300, health: 270 } } }, 'manual');
+assert.equal(combatStore.combat().overview.arc.lethality, 280);
+assert.equal(combatStore.combat().overviewProvenance.arc.source, 'manual');
+assert.equal(combatStore.combat().stats.arc, undefined);
+assert.doesNotThrow(() => Ledger.validate(combatStore.snapshot()));
+assert.throws(() => combatStore.setCombat({ overview: { arc: { attack: 1, lethality: 0, defense: 0 } } }));
 const combatBefore = combatStore.exportJSON();
 assert.throws(() => combatStore.setCombat({ stats: { inf: { attack: -1, lethality: 0, defense: 0, health: 0 } } }));
 assert.throws(() => combatStore.setCombat({ stats: { foe: { attack: 1, lethality: 0, defense: 0, health: 0 } } }));

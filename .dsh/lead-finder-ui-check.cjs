@@ -1,0 +1,74 @@
+// Lead finder UI — the Heroes page's "Your best leads": roster and Bonus
+// Overview in, ranked lineups out, the overview kept in the shared save.
+const assert = require('node:assert/strict'), path = require('node:path');
+const { withBrowser } = require('./lib/browser-harness.cjs');
+withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' }), page = await context.newPage(), errors = [];
+  page.on('pageerror', e => errors.push(e.message));
+  const status = () => page.locator('[data-target="lead-finder.status"]').textContent();
+  const rows = () => page.locator('.lead-row').count();
+  await page.goto(origin + '/heroes/?lang=en#leads');
+  await page.waitForFunction(() => !document.querySelector('.lead-jobs').disabled);
+  assert.match(await status(), /Mark the heroes you own/);
+  assert.equal(await rows(), 0);
+  assert.equal(await page.locator('.lead-best').isHidden(), true, 'no best lineup before the roster');
+  await page.evaluate(() => {
+    const s = PlayerLedger.shared();
+    for (const [key, stars, widget] of [['amadeus', 30, 10], ['petra', 30, 10], ['marlin', 30, 10], ['rosa', 24, 6], ['jabel', 24, 0]]) s.setHero(key, { level: null, stars, widget, skills: null });
+    KS_SERVER_AGE.setGeneration(4);
+  });
+  await page.waitForFunction(() => document.querySelectorAll('.lead-row').length === 3);
+  assert.match(await status(), /typical generation 4 Bonus Overview \(250% everywhere\)/);
+  assert.equal(await page.locator('.lead-best .lead-hero-name b').allTextContents().then(t => t.join('/')), 'Amadeus/Petra/Marlin', 'the best lineup leads the dossier');
+  assert.equal(await page.locator('.lead-best .hero-star-row').first().locator('[data-on]').count(), 5, 'roster stars on the portrait');
+  assert.match(await page.locator('[data-target="lead-finder.verdict"]').textContent(), /more Bear damage|Level with/);
+  assert.equal(await page.locator('[data-target="lead-finder.panel"] tr').count(), 3, 'report panel per troop type');
+  assert.match(await page.locator('[data-target="lead-finder.panel"] tr').first().locator('td').first().textContent(), /^\+\d/);
+  assert.equal(await page.locator('.lead-foes').isHidden(), true, 'no opponents for the Bear');
+
+  // Typing a whole troop row saves it as the Bonus Overview, not as report stats.
+  await page.locator('#bonus-overview summary').click();
+  for (const [stat, value] of [['attack', 300], ['lethality', 280], ['defense', 300], ['health', 270]]) await page.locator(`[data-stat="arc.${stat}"]`).fill(String(value));
+  await page.waitForFunction(() => (PlayerLedger.shared().combat().overview.arc || {}).health === 270);
+  assert.deepEqual(await page.evaluate(() => PlayerLedger.shared().combat().stats), {});
+  assert.match(await status(), /missing Infantry, Cavalry/);
+
+  // A rally ranks against the four stock opponents.
+  await page.locator('label:has(input[value="rally"])').click();
+  await page.waitForFunction(() => /Ranked from/.test(document.querySelector('[data-target="lead-finder.status"]').textContent) && document.querySelectorAll('#leads .lead-cell').length === 16);
+  assert.equal(await page.locator('.lead-foes').isVisible(), true);
+  assert.deepEqual(await page.locator('.lead-best .lead-cell > span').allTextContents(), ['Manta ray', 'Great white', 'Orca', 'Blue whale']);
+
+  // Joiners start from the job's usual list; city buffs and pets move the ranking's numbers.
+  await page.locator('#lead-extras summary').click();
+  assert.deepEqual(await page.locator('[data-joiner][data-field="key"]').evaluateAll(s => s.map(x => x.value)), ['chenko', 'yeonwoo', 'amane', 'amadeus']);
+  assert.match(await page.locator('[data-target="lead-finder.joinersTitle"]').textContent(), /Rally lead/);
+  assert.match(await page.locator('[data-target="lead-finder.pets"]').textContent(), /No pets in your save/);
+  await page.locator('label:has(input[value="bear"])').click();
+  await page.waitForFunction(() => document.querySelectorAll('.lead-row').length === 3 && document.querySelector('.lead-mix'));
+  assert.deepEqual(await page.locator('[data-joiner][data-field="key"]').evaluateAll(s => s.map(x => x.value)), ['chenko', 'yeonwoo', 'amane', 'margot'], 'the Bear keeps its own joiners');
+  const mixOf = () => page.locator('.lead-mix-legend').textContent();
+  const before = await mixOf();
+  await page.locator('[data-joiner="3"][data-field="key"]').selectOption('');
+  await page.locator('[data-city="attack"]').selectOption('20');
+  await page.evaluate(() => PlayerLedger.shared().setPet('giant-rhino', { level: 60, advanced: false }));
+  await page.waitForFunction(() => /Giant Rhino 60: attack \+6%/.test(document.querySelector('[data-target="lead-finder.pets"]').textContent));
+  assert.equal(typeof before, 'string');
+  const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem('ks.lead-finder.v1')));
+  assert.deepEqual(prefs.joiners.bear.map(j => j.key), ['chenko', 'yeonwoo', 'amane']);
+  assert.equal(prefs.city.attack, 20);
+  await page.locator('[data-action="lead-finder.resetJoiners"]').click();
+  await page.waitForFunction(() => document.querySelector('[data-joiner="3"][data-field="key"]').value === 'margot');
+
+  await page.reload();
+  await page.waitForFunction(() => document.querySelector('[data-stat="arc.health"]').value === '270');
+  assert.equal(await page.locator('[data-city="attack"]').inputValue(), '20', 'city buffs come back');
+  for (const width of [320, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    const wide = await page.evaluate(() => [...document.querySelectorAll('#leads, #leads *')].filter(el => el.getBoundingClientRect().right > document.documentElement.clientWidth + 1).map(el => el.className || el.tagName));
+    assert.deepEqual(wide, [], `nothing overflows at ${width}px`);
+  }
+  assert.deepEqual(errors, []);
+  await context.close();
+  console.log('Lead finder UI: empty state, roster ranking, Bonus Overview save, rally opponents, joiners, city buffs, pets, reload and widths pass.');
+});

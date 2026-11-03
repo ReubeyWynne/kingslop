@@ -4,6 +4,7 @@ self: heroes
 ---
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
   <a href="#directory" data-i18n="directory.browse">Browse heroes</a>
+  <a href="#leads" data-i18n="leads.nav">Best leads</a>
   <a href="#kvk-points" data-i18n="spend.nav">KvK points</a>
   <a href="#roles" data-i18n="directory.roles">Choose a role</a>
   <a href="#hero-sources" data-i18n="directory.sources">Sources &amp; confidence</a>
@@ -21,6 +22,84 @@ self: heroes
     {% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}
     {% assign troops = 'inf,cav,arc' | split: ',' %}
     {% include heroes/roster.html %}
+  </section>
+  <section class="section lead-finder" id="leads" data-module="lead-finder" aria-labelledby="leads-title">
+    <h2 id="leads-title" data-i18n="leads.title">Your best leads</h2>
+    <p data-i18n="leads.intro">Your own heroes, ranked by job. Give each hero you own its stars and widget level in the roster above, then enter your Bonus Overview.</p>
+    <fieldset class="lead-jobs" disabled data-target="lead-finder.controls">
+      <legend data-i18n="leads.job">Job</legend>
+      <label><input type="radio" name="lead-job" value="bear" checked data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.bear">Bear lead</span></label>
+      <label><input type="radio" name="lead-job" value="rally" data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.rally">Rally lead</span></label>
+      <label><input type="radio" name="lead-job" value="garrison" data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.garrison">Garrison lead</span></label>
+    </fieldset>
+    <details class="lead-overview" id="bonus-overview">
+      <summary data-i18n="leads.overview">Your Bonus Overview</summary>
+      <p class="note" data-i18n="leads.overviewNote">Type the troop stats from your Bonus Overview, not from a battle report. A report already includes the heroes you sent, so it cannot compare one lineup with another.</p>
+      <fieldset class="lead-stats" disabled data-target="lead-finder.controls">
+        <table class="lead-stats-table">
+          <thead><tr><td></td>{% assign stat_ids = 'attack,lethality,defense,health' | split: ',' %}{% for stat in stat_ids %}<th scope="col" data-i18n="leads.stat.{{ stat }}">{{ stat }}</th>{% endfor %}</tr></thead>
+          <tbody>{% for troop in troops %}<tr><th scope="row" data-i18n="sim.calc.{{ troop }}">{{ troop }}</th>{% for stat in stat_ids %}<td><input type="number" min="0" max="100000" step="0.1" inputmode="decimal" placeholder="?" aria-label="{{ troop }} {{ stat }} %" data-stat="{{ troop }}.{{ stat }}" data-target="lead-finder.stat" data-action="lead-finder.edit"></td>{% endfor %}</tr>{% endfor %}</tbody>
+        </table>
+        <div class="lead-troops">
+          <label><span data-i18n="leads.tier">Troop tier</span><select data-target="lead-finder.tier" data-action="lead-finder.run">{% for tier in (1..11) %}<option value="{{ tier }}">T{{ tier }}</option>{% endfor %}</select></label>
+          <label><span data-i18n="leads.tg">Truegold</span><select data-target="lead-finder.tg" data-action="lead-finder.run">{% for tg in (0..8) %}<option value="{{ tg }}">{% if tg == 0 %}—{% else %}TG{{ tg }}{% endif %}</option>{% endfor %}</select></label>
+        </div>
+        <p class="hero-mine-note"><span data-i18n="leads.saveNote">Saved on this device with the rest of your save. A troop type saves once all four of its stats are in.</span> <output data-target="lead-finder.saved" role="status"></output></p>
+      </fieldset>
+    </details>
+    <details class="lead-extras" id="lead-extras">
+      <summary data-i18n="leads.extras">Joiners, pets and city buffs</summary>
+      <fieldset class="lead-joiners" disabled data-target="lead-finder.controls">
+        <legend data-target="lead-finder.joinersTitle">Joiners</legend>
+        <p class="note" data-i18n="leads.joinersNote">The first skills of up to four joiners, highest skill level first. Each job keeps its own list; it starts from the usual joiners for your generation.</p>
+        {% assign joiner_heroes = site.data.heroes.heroes | sort: 'name' %}{% for slot in (0..3) %}<div class="lead-joiner">
+          <label><span data-i18n="leads.joiner" data-i18n-n="{{ forloop.index }}">Joiner {{ forloop.index }}</span><select data-joiner="{{ slot }}" data-field="key" data-target="lead-finder.joiner" data-action="lead-finder.extras"><option value="">—</option>{% for hero in joiner_heroes %}<option value="{{ hero.key }}">{{ hero.name | escape }}</option>{% endfor %}</select></label>
+          <label><span data-i18n="leads.joinerLevel">Skill level</span><select data-joiner="{{ slot }}" data-field="level" data-target="lead-finder.joiner" data-action="lead-finder.extras">{% for level in (1..5) %}<option value="{{ level }}"{% if level == 5 %} selected{% endif %}>{{ level }}</option>{% endfor %}</select></label>
+        </div>{% endfor %}
+        <button type="button" class="directory-reset" data-action="lead-finder.resetJoiners" data-i18n="leads.joinersReset">Use the usual joiners</button>
+      </fieldset>
+      <fieldset class="lead-city" disabled data-target="lead-finder.controls">
+        <legend data-i18n="leads.city">City buffs</legend>
+        {% assign city_ids = 'attack,lethality,defense,health,enemyAttack,enemyDefense' | split: ',' %}{% for buff in city_ids %}<label><span data-i18n="leads.city.{{ buff }}">{{ buff }}</span><select data-city="{{ buff }}" data-target="lead-finder.city" data-action="lead-finder.extras"><option value="0">—</option><option value="10">I · 10%</option><option value="20">II · 20%</option></select></label>{% endfor %}
+      </fieldset>
+      <fieldset class="lead-pets" disabled data-target="lead-finder.controls">
+        <legend data-i18n="leads.pets">Pets</legend>
+        <label class="hero-own"><input type="checkbox" checked data-target="lead-finder.usePets" data-action="lead-finder.extras"><span data-i18n="leads.usePets">Use my pets’ skills</span></label>
+        <p class="note" data-target="lead-finder.pets"></p>
+      </fieldset>
+      <p class="hero-mine-note" data-i18n="leads.extrasNote">Joiners and city buffs are remembered in this browser. Pets come from your save on the Pets page.</p>
+    </details>
+    <p class="note" data-target="lead-finder.status" aria-live="polite"></p>
+    <article class="lead-best" data-target="lead-finder.best" hidden aria-labelledby="lead-best-title">
+      <header class="lead-best-head"><p class="lead-kicker" id="lead-best-title" data-target="lead-finder.bestTitle">Your best lead</p><p class="lead-verdict" data-target="lead-finder.verdict"></p></header>
+      <div class="lead-best-trio" data-target="lead-finder.trio"></div>
+      <div class="lead-best-body">
+        <div class="lead-best-answer" data-target="lead-finder.answer"></div>
+        <div class="lead-best-panel">
+          <p class="lead-kicker" data-i18n="leads.panelTitle">Your report should read about</p>
+          <table class="lead-panel-table"><thead><tr><td></td>{% for stat in stat_ids %}<th scope="col" data-i18n="leads.stat.{{ stat }}">{{ stat }}</th>{% endfor %}</tr></thead><tbody data-target="lead-finder.panel"></tbody></table>
+          <p class="lead-panel-note" data-i18n="leads.panelNote">Bonus Details for this lineup before joiners: your overview plus hero stars and widgets, city buffs and pets.</p>
+        </div>
+      </div>
+    </article>
+    <p class="lead-kicker lead-next-title" data-target="lead-finder.nextTitle" hidden data-i18n="leads.nextTitle">The next four</p>
+    <ol class="lead-list" data-target="lead-finder.list"></ol>
+    <div class="lead-foes" data-target="lead-finder.foes" hidden>
+      <h3 data-i18n="leads.foes">The opponents</h3>
+      <p class="note" data-target="lead-finder.foesNote"></p>
+      <ul class="lead-foe-list">{% for foe in site.data.megafauna.foes %}
+        <li data-foe="{{ foe.id }}"><b data-i18n="leads.foe.{{ foe.id }}">{{ foe.name | escape }}</b> <span data-i18n="leads.foe.{{ foe.id }}.note">{{ foe.note | escape }}</span></li>{% endfor %}
+      </ul>
+    </div>
+    <details class="lead-method" id="lead-method">
+      <summary data-i18n="leads.method">How the ranking works</summary>
+      <p data-i18n="leads.method.stats">Each hero adds its star stats to attack and defence for its own troop type, its widget adds lethality and health for that type, and every Expedition skill counts at its level (the stars cap it). The widget skill counts only in its own role: a rally widget in a rally, a defender widget in a garrison.</p>
+      <p data-i18n="leads.method.bear">Bear: the expected damage of the lineup at its own ideal troop mix, with every chance skill at its average. The bar is each lineup against your best one.</p>
+      <p data-i18n="leads.method.fight">Rally and garrison: your lineup fights each stock opponent of your kingdom’s generation, both sides at 100,000 troops in the usual mixes, 24 battles a fight. Lineups are sorted by how many more troops they keep than the opponent, on average.</p>
+      <p data-i18n="leads.method.layers">Joiners add their first skills by the joiner rule. City buffs and pets are each their own layer that multiplies the stat, and an enemy debuff only cancels a buff in the same layer. Against the Bear only your attack and lethality buffs count.</p>
+      <p data-i18n="leads.method.limits">Not counted: appointments, turrets and lineups with two heroes of one troop type. The stock opponents, with their joiners, pets and city buffs, are estimates around the KingShot Battle Helper’s benchmark accounts, not measured players.</p>
+    </details>
+    <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
   </section>
   <section class="section hero-points" id="kvk-points" data-module="hero-points" aria-labelledby="kvk-points-title">
     <h2 id="kvk-points-title" data-i18n="spend.title">KvK points from your heroes</h2>
