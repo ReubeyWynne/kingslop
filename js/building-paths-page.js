@@ -93,17 +93,32 @@
       return parts.join(' ');
     }
     function item(r) { return api.tr('priority.item.' + r, r); }
-    function costList(list, total, small) {
+    // What the save holds of an item, by the ledger's one rule: a confirmed amount or null.
+    function held(id) { if (!store) return null; try { return window.PlayerLedger.confirmed(store.snapshot(), id); } catch (ignored) { return null; } }
+    // withHave puts what you hold under each cost, and marks a cost you cannot cover yet.
+    function costList(list, total, small, withHave) {
       list.textContent = '';
       total.resources.forEach(function (r) {
-        var li = el('li'), img = el('img');
+        var li = el('li'), img = el('img'), have = withHave ? held(r) : null;
         img.src = '../' + ICONS[r]; img.alt = ''; img.width = small ? 18 : 28; img.height = small ? 18 : 28; img.loading = 'lazy';
         li.appendChild(img);
         li.appendChild(el('b', '', amount(total.cost[r]) + (total.unverified[r] ? '†' : '')));
         li.appendChild(el('span', 'reqs-res', item(r)));
         li.title = api.fmt(total.cost[r]) + ' ' + item(r);
+        if (have !== null) {
+          li.dataset.short = String(have < total.cost[r]);
+          li.appendChild(el('small', 'reqs-have', t(have < total.cost[r] ? 'haveShort' : 'haveEnough', have < total.cost[r] ? 'have {n}' : 'have {n} ✓', { n: amount(have) })));
+          li.title += ' · ' + t('haveTitle', 'you have {n}', { n: api.fmt(have) });
+        }
         list.appendChild(li);
       });
+    }
+    // Construction and general speedups the save holds, in minutes, beside the plan's time.
+    function speedupsText(seconds) {
+      var building = held('speedup-construction'), general = held('speedup-general');
+      if (building === null && general === null) return '';
+      var minutes = (building || 0) + (general || 0), need = Math.ceil(seconds / 60);
+      return t(minutes >= need ? 'speedupsEnough' : 'speedupsShort', minutes >= need ? 'Your construction and general speedups ({time}) cover it.' : 'Your construction and general speedups: {time}.', { time: duration(minutes * 60) });
     }
     // Steps at the costs the reader pays: Saul's Resourceful off the basic resources.
     function paid(list) { return E.discount(list, cs.saul); }
@@ -293,8 +308,9 @@
         head.textContent = t('headline', '{goal} · upgrades: {n}', { goal: goalName, n: api.fmt(result.total.steps) });
         head.title = head.textContent;   // a phone clamps the headline to two lines
         var paidTotal = E.total(paid(result.steps.map(function (x) { return x.step; })));
-        costList(one('total'), paidTotal);
-        one('time').textContent = timeText(result.total, result.steps.map(function (x) { return x.step; }));
+        costList(one('total'), paidTotal, false, true);
+        var allSteps = result.steps.map(function (x) { return x.step; }), cover = speedupsText(E.timed(allSteps, E.boost(cs)).time);
+        one('time').textContent = timeText(result.total, allSteps) + (cover ? ' ' + cover : '');
         pointsList(one('points'), paidTotal.cost, result.steps.map(function (x) { return x.step; }));
       }
       // One row per building the plan raises, plus any level the reader gave that the goal's
