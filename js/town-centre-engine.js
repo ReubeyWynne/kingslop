@@ -9,15 +9,15 @@
    emblems and manuscripts only what your masters can take (MasterSpend). Inventory
    is spent once, so an event's best total puts each holding on the day it scores most. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/event_rules.json'), require('./event-rules.js'), require('./governor-engine.js'), require('./hero-spend.js'), require('./hero-gear-engine.js'), require('./building-spend.js'), require('./troop-spend.js'), require('./master-spend.js'));
-  else root.TownCentre = factory(root.EventRuleData, root.EventRules, root.Governor, root.HeroSpend, root.HeroGear, root.BuildingSpend, root.TroopSpend, root.MasterSpend);
-})(typeof window === 'object' ? window : globalThis, function (data, rules, governor, heroes, gearEngine, buildingSpend, troopSpend, masterSpend) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/event_rules.json'), require('./event-rules.js'), require('./governor-engine.js'), require('./hero-spend.js'), require('./hero-gear-engine.js'), require('./building-spend.js'), require('./troop-spend.js'), require('./master-spend.js'), require('./player-ledger.js'));
+  else root.TownCentre = factory(root.EventRuleData, root.EventRules, root.Governor, root.HeroSpend, root.HeroGear, root.BuildingSpend, root.TroopSpend, root.MasterSpend, root.PlayerLedger);
+})(typeof window === 'object' ? window : globalThis, function (data, rules, governor, heroes, gearEngine, buildingSpend, troopSpend, masterSpend, ledger) {
   'use strict';
   // Speedup balances are minutes. General speedups can pay for any timer, so they score wherever a speedup row does.
   var SPEEDUPS = ['general', 'construction', 'research', 'training', 'learning', 'healing'].map(function (kind) { return { id: 'speedup-' + kind, kind: kind }; });
   var RESOURCES = ['bread', 'wood', 'stone', 'iron'];
   var rate = rules.rate, speedupKinds = rules.speedupKinds, governorKind = rules.governorKind;
-  function confirmed(snapshot, id) { var entry = snapshot.inventory && Object.hasOwn(snapshot.inventory, id) ? snapshot.inventory[id] : null; return entry && entry.status === 'confirmed' ? entry.amount : null; }
+  var confirmed = ledger.confirmed;
   // Score the bag's governor materials could add, spending them for score. Unknown levels or materials make it unknown.
   function governorGain(snapshot, kind) {
     var section = kind === 'gear' ? snapshot.governorGear : snapshot.governorCharms, field = kind === 'gear' ? 'pieces' : 'slots';

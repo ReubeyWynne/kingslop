@@ -24,7 +24,7 @@
   var ITEMS = [SHARD_ITEM.legendary, SHARD_ITEM.epic, SHARD_ITEM.rare, WIDGET_ITEM];
   var HEROES = (catalogue || []).map(function (hero) { return { key: hero.key, name: hero.name, rarity: hero.rarity, generation: hero.generation, widget: Boolean(hero.widget) }; });
   var shardId = ledger.heroShardId, widgetId = ledger.heroWidgetId, chestId = ledger.widgetChestId;
-  function confirmed(snapshot, id) { var entry = snapshot.inventory && Object.hasOwn(snapshot.inventory, id) ? snapshot.inventory[id] : null; return entry && entry.status === 'confirmed' ? entry.amount : null; }
+  var confirmed = ledger.confirmed;
   // Cumulative cost of the steps still ahead: totals[j] is the price of the next j steps.
   function ahead(steps, from) { var totals = [0]; for (var i = from; i < steps.length; i++) totals.push(totals[totals.length - 1] + steps[i]); return totals; }
   // Whole steps a hero's own pieces pay for alone.

@@ -379,4 +379,12 @@ const unreadDisk = storage(), unread = Ledger.create(unreadDisk);
 unread.setBalance('truegold', 1);
 unreadDisk.setItem('bh:player-history:v1', '{not json');
 assert.deepEqual(JSON.parse(unread.exportJSON()).history, { schemaVersion: 1, entries: [] });
+// The shared inventory rule: a confirmed amount (zero included), or null for unknown or missing.
+const ruled = Ledger.create(storage());
+ruled.setBalance('truegold', 0); ruled.setBalance('stone', null);
+assert.equal(Ledger.confirmed(ruled.snapshot(), 'truegold'), 0);
+assert.equal(Ledger.confirmed(ruled.snapshot(), 'stone'), null);
+assert.equal(Ledger.confirmed(ruled.snapshot(), 'iron'), null);
+assert.equal(Ledger.confirmed({}, 'iron'), null);
+assert.equal(Ledger.confirmed({ inventory: { toString: { amount: 4, status: 'confirmed' } } }, 'hasOwnProperty'), null);
 console.log('Player ledger migration, persistence, import validation, provenance, duplicate screenshots, backpack and pet imports, undo, revision, combat stat, troop, hero roster, building level, training, inventory history and history export checks passed.');

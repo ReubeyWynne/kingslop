@@ -18,9 +18,9 @@
    take: the maximum points. Unknown levels or balances count as nothing and are listed, so
    a total is never inflated. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/buildings.json'));
-  else root.BuildingSpend = factory(root.BuildingData);
-})(typeof window === 'object' ? window : globalThis, function (data) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/buildings.json'), require('./player-ledger.js'));
+  else root.BuildingSpend = factory(root.BuildingData, root.PlayerLedger);
+})(typeof window === 'object' ? window : globalThis, function (data, ledger) {
   'use strict';
   var ITEMS = ['truegold', 'tempered-truegold'], RESOURCES = ['bread', 'wood', 'stone', 'iron'], COSTS = RESOURCES.concat(ITEMS);
   var BUILDINGS = ((data && data.buildings) || []).map(function (building) { return { id: building.id, name: building.name, rows: building.levels }; });
@@ -29,7 +29,7 @@
   var DEFAULT_TIERS = { 'town-center': 1, embassy: 1, barracks: 1, range: 1, stable: 1, 'command-center': 2, 'war-academy': 2, infirmary: 3, academy: 3 };
   var AT = {};
   BUILDINGS.forEach(function (building) { AT[building.id] = {}; building.rows.forEach(function (row, at) { AT[building.id][row.id] = at; }); });
-  function confirmed(snapshot, id) { var entry = snapshot.inventory && Object.hasOwn(snapshot.inventory, id) ? snapshot.inventory[id] : null; return entry && entry.status === 'confirmed' ? entry.amount : null; }
+  var confirmed = ledger.confirmed;
   // A ledger level as an index into the building's rows; -1 is not built, undefined is not a level of this building.
   function index(id, level) { return level === '0' ? -1 : Object.hasOwn(AT[id] || {}, level) ? AT[id][level] : undefined; }
   function level(id, at) { return at < 0 ? '0' : BUILDINGS.find(function (b) { return b.id === id; }).rows[at].id; }

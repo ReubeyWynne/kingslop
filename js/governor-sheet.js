@@ -33,7 +33,7 @@
   function sheetOf(store, snapshot) {
     snapshot = snapshot || store.snapshot();
     var bag = {};
-    MATERIALS.forEach(function (id) { var entry = snapshot.inventory[id]; bag[id] = entry && entry.status === 'confirmed' ? entry.amount : null; });
+    MATERIALS.forEach(function (id) { bag[id] = Ledger.confirmed(snapshot, id); });
     return { gear: store.governor('gear', snapshot), charms: store.governor('charms', snapshot), bag: bag, prefs: Object.assign({}, snapshot.preferences.governor || {}) };
   }
   function known(levels) { var out = {}; Object.keys(levels).forEach(function (id) { if (levels[id] !== null && levels[id] !== undefined) out[id] = levels[id]; }); return out; }

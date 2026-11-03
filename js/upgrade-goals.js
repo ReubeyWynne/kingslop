@@ -23,7 +23,7 @@
   var BUILDING_COSTS = ['bread', 'wood', 'stone', 'iron', 'truegold', 'tempered-truegold'];
   var GEAR_ITEMS = ledger.ITEMS;
   var PET_ITEMS = { petFood: 'pet-food', growthManual: 'growth-manual', nutrientPotion: 'nutrient-potion', promotionMedallion: 'promotion-medallion' };
-  function confirmed(snapshot, id) { var entry = snapshot.inventory && Object.hasOwn(snapshot.inventory, id) ? snapshot.inventory[id] : null; return entry && entry.status === 'confirmed' ? entry.amount : null; }
+  var confirmed = ledger.confirmed;
   // One shortfall line. `unknown` lists the balances to record before the line can be counted.
   function line(snapshot, id, need) {
     var have = confirmed(snapshot, id);
