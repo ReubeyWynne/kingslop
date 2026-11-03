@@ -1,0 +1,5 @@
+---
+layout: null
+permalink: /js/lead-data.js
+---
+window.LeadData = { "curve": {{ site.data.heroes.curve | jsonify }}, "heroes": { {% for hero in site.data.heroes.heroes %}{{ hero.key | jsonify }}: { "name": {{ hero.name | jsonify }}, "type": {{ hero.type | jsonify }}, "generation": {{ hero.generation }}, "ceiling": {{ hero.ceiling }} }{% unless forloop.last %}, {% endunless %}{% endfor %} }, "heroSkills": {{ site.data.combat.heroSkills | jsonify }}, "widgets": {{ site.data.combat.widgets | jsonify }}, "widgetSkill": {{ site.data.combat.widgetSkill | jsonify }}, "megafauna": {{ site.data.megafauna | jsonify }} };

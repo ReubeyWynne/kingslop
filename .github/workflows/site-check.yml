@@ -104,12 +104,18 @@ jobs:
             heroes:
               - *shared
               - .dsh/hero-directory-ui-check.cjs
+              - .dsh/lead-finder-ui-check.cjs
               - heroes/**
               - _includes/heroes/**
               - js/hero-directory*.js
               - js/hero-spend.js
               - js/hero-points.js
               - js/hero-data.liquid
+              - js/lead-*
+              - js/battle-engine.js
+              - js/combat.js
+              - _data/combat.json
+              - _data/megafauna.json
               - js/event-rules.js
               - _data/event_rules.json
               - _data/heroes.json
@@ -420,6 +426,9 @@ jobs:
       - name: Check hero skills in battle
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/combat-check.cjs
+      - name: Check the lead finder's engine and stock opponents
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/lead-engine-check.cjs
       - name: Check Castle Battle hero data
         if: needs.changes.outputs.logic == 'true'
         run: node --test .dsh/castle-battle-check.cjs
@@ -579,6 +588,9 @@ jobs:
       - name: Check hero directory UI
         if: matrix.group == 'heroes'
         run: node .dsh/hero-directory-ui-check.cjs
+      - name: Check the lead finder UI
+        if: matrix.group == 'heroes'
+        run: node .dsh/lead-finder-ui-check.cjs
       - name: Check masters UI
         if: matrix.group == 'masters'
         run: node .dsh/masters-ui-check.cjs

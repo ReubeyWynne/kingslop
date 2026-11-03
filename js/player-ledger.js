@@ -181,6 +181,14 @@
         valid(TYPES.includes(type) && object(row) && Object.keys(row).length === STATS.length && STATS.every(function (key) { return percent(row[key]); }) && provenance(value.combat.provenance[type]));
       });
       Object.keys(value.combat.provenance).forEach(function (type) { valid(Object.hasOwn(value.combat.stats, type)); });
+      // The Bonus Overview (stats before any hero is seated) sits beside the report's Bonus Details.
+      if (value.combat.overview !== undefined || value.combat.overviewProvenance !== undefined) {
+        valid(object(value.combat.overview) && object(value.combat.overviewProvenance) && same(Object.keys(value.combat.overview).sort(), Object.keys(value.combat.overviewProvenance).sort()));
+        Object.keys(value.combat.overview).forEach(function (type) {
+          var row = value.combat.overview[type];
+          valid(TYPES.includes(type) && object(row) && Object.keys(row).length === STATS.length && STATS.every(function (key) { return percent(row[key]); }) && provenance(value.combat.overviewProvenance[type]));
+        });
+      }
     }
     if (value.heroes !== undefined) {
       valid(object(value.heroes) && object(value.heroes.roster) && object(value.heroes.provenance) && same(Object.keys(value.heroes.roster).sort(), Object.keys(value.heroes.provenance).sort()));
@@ -361,12 +369,12 @@
         if (at && entry.status === 'confirmed') troops.push({ type: at.type, tier: at.tier, tg: at.tg, amount: entry.amount, provenance: copy(entry.provenance) });
       });
       troops.sort(function (a, b) { return TYPES.indexOf(a.type) - TYPES.indexOf(b.type) || b.tier - a.tier || b.tg - a.tg; });
-      return { stats: copy(section.stats), provenance: copy(section.provenance), troops: troops };
+      return { stats: copy(section.stats), provenance: copy(section.provenance), overview: copy(section.overview || {}), overviewProvenance: copy(section.overviewProvenance || {}), troops: troops };
     }
     function setCombat(input, source, expected) {
       input = input || {};
-      var stats = input.stats || {}, troops = input.troops || [];
-      Object.keys(stats).forEach(function (type) { valid(TYPES.includes(type) && object(stats[type]) && STATS.every(function (key) { return percent(stats[type][key]); })); });
+      var stats = input.stats || {}, overview = input.overview || {}, troops = input.troops || [];
+      [stats, overview].forEach(function (rows) { Object.keys(rows).forEach(function (type) { valid(TYPES.includes(type) && object(rows[type]) && STATS.every(function (key) { return percent(rows[type][key]); })); }); });
       troops.forEach(function (row) { valid(object(row) && troopKey(troopId(row.type, row.tier, row.tg)) && (row.amount === null || count(row.amount))); });
       return transaction(function (next) {
         var facts = { source: source || 'manual', at: new Date().toISOString() };
@@ -374,6 +382,11 @@
         Object.keys(stats).forEach(function (type) {
           next.combat.stats[type] = {}; STATS.forEach(function (key) { next.combat.stats[type][key] = stats[type][key]; });
           next.combat.provenance[type] = copy(facts);
+        });
+        Object.keys(overview).forEach(function (type) {
+          if (!next.combat.overview) { next.combat.overview = {}; next.combat.overviewProvenance = {}; }
+          next.combat.overview[type] = {}; STATS.forEach(function (key) { next.combat.overview[type][key] = overview[type][key]; });
+          next.combat.overviewProvenance[type] = copy(facts);
         });
         troops.forEach(function (row) {
           // A cleared row is forgotten, not stored as unknown: a missing troop key already means unknown.

@@ -185,3 +185,41 @@
 .hero-points-table td small { display: block; font-size: .72rem; color: var(--ink-muted); }
 .hero-points-table td:nth-child(2) { color: var(--amber); }
 @media (max-width: 30rem) { .hero-points-table { font-size: .82rem; } .hero-points-table th, .hero-points-table td { padding-inline: .25rem; } }
+
+/* Lead finder: your heroes ranked by job (js/lead-finder.js). */
+.lead-jobs { display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; border: 0; border-block: 1px solid var(--signal-line); padding: .35rem 0; margin: var(--space-s) 0 0; min-width: 0; }
+.lead-jobs legend { float: left; margin-inline-end: .8rem; font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); line-height: 2; }
+.lead-jobs label { display: inline-flex; align-items: center; gap: .35rem; cursor: pointer; }
+.lead-jobs input { accent-color: var(--amber); }
+.lead-jobs label:has(input:checked) { color: var(--amber); }
+.lead-overview { margin-top: var(--space-s); }
+.lead-stats { border: 0; padding: 0; margin: 0; min-width: 0; }
+.lead-stats-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.lead-stats-table th { font-size: .72rem; font-weight: 700; color: var(--ink-muted); letter-spacing: .08em; text-transform: uppercase; text-align: start; padding: .3rem .3rem .3rem 0; }
+.lead-stats-table td { padding: .2rem .3rem; }
+.lead-stats-table input { width: 100%; min-width: 0; }
+.lead-troops { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; margin-top: .5rem; }
+.lead-troops label { display: grid; gap: .1rem; font-size: .8rem; color: var(--ink-muted); }
+.lead-list { list-style: none; counter-reset: lead; margin: var(--space-s) 0 0; padding: 0; }
+.lead-row { counter-increment: lead; display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: .2rem .6rem; padding: .55rem 0; border-bottom: 1px solid var(--signal-tint); }
+.lead-row::before { content: counter(lead); grid-row: span 2; font-family: var(--display-2); font-size: var(--step-1); color: var(--amber-dim); line-height: 1; }
+.lead-row:first-child::before { color: var(--amber); }
+.lead-heroes { display: flex; flex-wrap: wrap; gap: .1rem 1rem; }
+.lead-hero { display: grid; }
+.lead-hero b { font-weight: 700; color: var(--ink); }
+.lead-hero small { font-size: .72rem; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.lead-hero-empty b { font-weight: 400; color: var(--ink-muted); font-style: italic; }
+.lead-detail { display: flex; flex-wrap: wrap; align-items: center; gap: .2rem .8rem; font-size: .88rem; font-variant-numeric: tabular-nums; }
+.lead-detail b { color: var(--amber); font-weight: 700; }
+.lead-detail small { color: var(--ink-muted); font-size: .78rem; }
+.lead-bar { flex: 0 0 8rem; height: .35rem; background: var(--signal-tint); position: relative; }
+.lead-bar::after { content: ''; position: absolute; inset: 0 auto 0 0; width: calc(var(--share, 1) * 100%); background: var(--amber); }
+.lead-chips { display: flex; flex-wrap: wrap; gap: .2rem .7rem; }
+.lead-chip { font-size: .8rem; color: var(--ink-muted); }
+.lead-chip[data-win="yes"] { color: var(--ink); }
+.lead-foes { margin-top: var(--space-s); }
+.lead-foes h3 { margin: 0; font-size: var(--step-0); }
+.lead-foe-list { margin: .3rem 0 0; padding-inline-start: 1.1rem; font-size: .9rem; }
+.lead-foe-list b { color: var(--ink); }
+.lead-method { margin-top: var(--space-s); }
+@media (max-width: 30rem) { .lead-stats-table th { font-size: .62rem; letter-spacing: .03em; } .lead-stats-table td { padding-inline: .15rem; } .lead-bar { flex-basis: 5rem; } }
