@@ -91,29 +91,29 @@ withBrowser({ root }, async ({ browser, origin }) => {
   assert.match(page.url(), /goal=town-center:15$/);
 
   // The guest switch reloads into guest mode with the same goal, and back out.
-  await page.locator('[data-action="building-paths.guest"]').click();
+  await page.locator('[data-action="page-sheet.guest"]').click();
   await page.waitForURL(/guest/);
   await open(page.url().slice(page.url().indexOf('/buildings/') + '/buildings/'.length));
-  assert.equal(await page.locator('[data-action="building-paths.guest"]').getAttribute('aria-checked'), 'true');
-  assert.ok(await page.locator('[data-target="building-paths.guestBanner"]').isVisible());
+  assert.equal(await page.locator('[data-action="page-sheet.guest"]').getAttribute('aria-checked'), 'true');
+  assert.ok(await page.locator('[data-target="page-sheet.notice"]').isVisible());
   await choose('have', 'embassy', '20');
   await page.waitForFunction(() => location.search.includes('embassy:20'));
   assert.equal((await saved()).embassy, '14', 'guest edits stay off the save');
-  await page.locator('[data-action="building-paths.guest"]').click();
+  await page.locator('[data-action="page-sheet.guest"]').click();
   await page.waitForURL(url => !/guest/.test(url.search));
-  await page.waitForFunction(() => document.querySelector('[data-action="building-paths.guest"]').getAttribute('aria-checked') === 'false');
+  await page.waitForFunction(() => document.querySelector('[data-action="page-sheet.guest"]').getAttribute('aria-checked') === 'false');
 
   // A link with levels opens in guest mode and never touches the save.
   const before = await saved();
   await open('?lang=en&goal=barracks:TG3&have=town-center:TG1,barracks:TG1');
-  assert.ok(await page.locator('[data-target="building-paths.guestBanner"]').isVisible());
+  assert.ok(await page.locator('[data-target="page-sheet.notice"]').isVisible());
   assert.ok(await page.locator('[data-target="building-paths.addGoal"]').isHidden());
   await choose('have', 'embassy', 'TG 2');
   await page.waitForFunction(() => location.search.includes('embassy:TG2'));
   assert.deepEqual(await saved(), before);
   // A plain link uses the reader's own levels.
   await open('?lang=en&goal=town-center:15');
-  assert.ok(await page.locator('[data-target="building-paths.guestBanner"]').isHidden());
+  assert.ok(await page.locator('[data-target="page-sheet.notice"]').isHidden());
   assert.equal(await headline(), 'Town Center 15 · upgrades: 5', 'the stable forgotten above is assumed again');
   await choose('have', 'town-center', '15');
   await page.waitForFunction(() => document.querySelector('.reqs-headline').textContent === 'Your Town Center 15 is already done.');
@@ -229,6 +229,15 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.locator('.reqs-done[data-building="barracks"]').click();
   await page.locator('.reqs-done[data-building="town-center"]').click();
   await page.waitForFunction(() => document.querySelector('.reqs-headline').textContent === 'Your Town Center TG 3 is already done.');
+  // The shared guest sheet: a link's levels can be saved as yours, then the page is on your save.
+  assert.match(await page.locator('[data-target="page-sheet.source"]').textContent(), /A shared sheet\./);
+  await page.locator('[data-action="page-sheet.saveMine"]').click();
+  await Promise.all([page.waitForNavigation(), page.locator('[data-action="page-sheet.confirm"]').click()]);
+  await page.waitForFunction(() => document.querySelector('[data-action="page-sheet.guest"]').getAttribute('aria-checked') === 'false');
+  assert.equal((await saved())['town-center'], 'TG 3', 'Save as mine writes the sheet\'s levels');
+  assert.doesNotMatch(page.url(), /have=|guest/);
+  assert.match(page.url(), /goal=town-center:TG3/, 'the goal stays when the sheet is saved');
+  assert.ok(await page.locator('[data-target="page-sheet.notice"]').isHidden());
   assert.deepEqual(errors, []);
   console.log('building requirements UI ok');
 });

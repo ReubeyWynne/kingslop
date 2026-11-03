@@ -5,9 +5,10 @@
    one small grid of levels (no long select), so the answer sharpens one building at a time.
 
    Levels are the shared save's buildings.levels (any building, numbered copies as house-1), so the
-   Town Centre and Upgrade priority see them. ?guest, or a link carrying levels (have=), runs on a
-   copy held in memory instead: the address bar then follows every edit and nothing reaches the
-   save. The guest switch beside the goal reloads the page into or out of it. The goals and the
+   Town Centre and Upgrade priority see them. ?guest, or a link carrying levels (have=), runs on the
+   shared guest sheet (js/page-sheet.js) instead: the address bar then follows every edit and
+   nothing reaches the save until Save as mine. The guest switch beside the goal reloads the page
+   into or out of it. The goals and the
    construction speed settings ride in the address and, outside guest mode, are kept on this
    device (bh:building-goals, bh:construction) so the page opens as it was left. */
 (function () {
@@ -16,19 +17,22 @@
   var PLANNED = ['town-center', 'embassy', 'barracks', 'range', 'stable', 'command-center', 'infirmary', 'war-academy', 'academy'];
   var NAMES = { 'hero-hall': 'Hero Hall', watchtower: 'Watchtower' };
   var ICONS = { bread: 'img/items/bread.webp', wood: 'img/items/wood.webp', stone: 'img/items/stone.webp', iron: 'img/items/iron.webp', truegold: 'img/kingshot/truegold.png', 'tempered-truegold': 'img/items/tempered-truegold.webp' };
-  var link = E.decode(D, location.search), params = new URLSearchParams(location.search);
-  var guest = params.has('guest') || link.have !== null, guestLedger = null;
-
-  if (guest) {
-    window.Interactions.configure({ ledger: function () {
-      if (guestLedger) return guestLedger;
-      var Ledger = window.PlayerLedger, memory = {};
-      if (link.have === null) try { memory[Ledger.KEY] = JSON.stringify(Ledger.shared().snapshot()); } catch (ignored) {}
-      guestLedger = Ledger.create({ getItem: function (key) { return key in memory ? memory[key] : null; }, setItem: function (key, value) { memory[key] = String(value); } }, null);
-      if (link.have && Object.keys(link.have).length) guestLedger.setBuildings(link.have, 'manual');
-      return guestLedger;
-    } });
-  }
+  var link = E.decode(D, location.search);
+  /* Levels go through the shared guest sheet (js/page-sheet.js): a link carrying levels (have=)
+     or ?guest runs on a copy held in memory, the address carries the levels of the buildings the
+     goal involves, and Save as mine writes them to your save. The goal and construction speed
+     are this page's own and ride in the address either way. */
+  var currentGoals = link.goals;
+  function haveOf(levels) { var out = {}; E.involved(D, currentGoals).forEach(function (k) { if (levels[k] !== undefined) out[k] = levels[k]; }); return out; }
+  var sheet = window.PageSheet.define({
+    keys: ['have'],
+    read: function (search) { var have = E.decode(D, search).have; return have === null ? null : { levels: have }; },
+    write: function (value) { var text = E.encode({ have: haveOf(value.levels) }).replace(/^goal=[^&]*&?/, ''); return text ? { have: text.slice('have='.length) } : {}; },
+    blank: function () { return { levels: {} }; },
+    of: function (store) { return { levels: Object.assign({}, (store.snapshot().buildings || {}).levels) }; },
+    load: function (store, value) { if (Object.keys(value.levels).length) store.setBuildings(value.levels, 'manual'); }
+  });
+  var guest = sheet.guest;
 
   window.Interactions.register('building-paths', function (context) {
     var api = context.api, store = null;
@@ -162,7 +166,6 @@
         tile.setAttribute('aria-pressed', String(!!g));
         tile.querySelector('.reqs-badge').textContent = g ? E.short(g.level) : '';
       });
-      one('guest').setAttribute('aria-checked', String(guest));
       keep('bh:building-goals', goals.map(function (g) { return [g.building, g.level]; }));
     }
 
@@ -269,10 +272,12 @@
       return E.encode(state);
     }
     function syncAddress() {
-      var kept = new URLSearchParams(location.search);
+      // The goal and speed only: the shared sheet keeps the levels (have=) in step.
+      var kept = new URLSearchParams(location.search), was = kept.get('have');
       ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan', 'saul'].forEach(function (k) { kept.delete(k); });
-      var rest = kept.toString().replace(/(^|&)guest=(&|$)/, '$1guest$2');
-      try { history.replaceState(history.state, '', location.pathname + '?' + (rest ? rest + '&' : '') + address(guest) + location.hash); } catch (ignored) {}
+      var rest = kept.toString().replace(/(^|&)guest=(&|$)/, '$1guest$2'), levels = was === null ? '' : '&have=' + was;
+      try { history.replaceState(history.state, '', location.pathname + '?' + (rest ? rest + '&' : '') + address(false) + levels + location.hash); } catch (ignored) {}
+      currentGoals = goals; sheet.sync();
     }
 
     function render() {
@@ -355,7 +360,6 @@
       flag.textContent = any ? t('oneSource', '† Only one source gives this figure.') : '';
       var add = one('addGoal');
       add.hidden = guest || !store || !plannedGoals().length || result.state === 'met';
-      one('guestBanner').hidden = !guest;
       one('saveNote').textContent = guest ? t('guestNote', 'Guest mode: levels stay on this page.') : store ? t('savedNote', 'Levels you set are saved on this device, and the Town Centre and Upgrade priority use them.') : '';
       syncAddress();
     }
@@ -378,7 +382,7 @@
     one('picker').addEventListener('close', function () { picking = null; });
     // A tap on the backdrop (the dialog box itself, outside its content) closes the grid.
     one('picker').addEventListener('click', function (event) { if (event.target === event.currentTarget) closePicker(); });
-    ['speed', 'guest'].forEach(function (k) { one(k).disabled = false; });
+    one('speed').disabled = false;
     fillGoals();
     fillSpeed();
 
@@ -411,14 +415,6 @@
         } },
         choose: { run: function (node) { choose(node.dataset.level); } },
         close: { run: closePicker },
-        guest: { run: function () {
-          // Guest mode is chosen before the page's modules mount, so the switch reloads the
-          // page into or out of it with the same goals; leaving drops the link's levels.
-          var kept = new URLSearchParams(location.search);
-          ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan', 'saul', 'guest'].forEach(function (k) { kept.delete(k); });
-          var rest = kept.toString();
-          location.assign(location.pathname + '?' + (rest ? rest + '&' : '') + address(false) + (guest ? '' : '&guest') + location.hash);
-        } },
         set: { run: function (node) {
           var k = node.dataset.key, v = node.dataset.value;
           cs[k] = k === 'mode' || k === 'position' ? v : Number(v);

@@ -1123,7 +1123,8 @@
       "../css/styles.css",
       "../css/events.css",
       "../css/buildings.css",
-      "../css/event-points.css"
+      "../css/event-points.css",
+      "../css/page-sheet.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -1135,6 +1136,7 @@
       "../js/event-points.js",
       "../js/building-paths-data.js",
       "../js/building-paths.js",
+      "../js/page-sheet.js",
       "../js/building-paths-page.js"
     ],
     "footMainKey": "reqs.kicker",

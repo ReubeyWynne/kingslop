@@ -20,7 +20,7 @@
    the address in step, copies the link, and saves, loads or blanks the sheet. */
 (function (root) {
   'use strict';
-  var Ledger = root.PlayerLedger, config = null, sheet = null, memo = null;
+  var Ledger = root.PlayerLedger, config = null, sheet = null, memo = null, repaint = [];
   var EN = {
     sourceLink: 'A shared sheet.', sourceSame: 'Your save.', sourceBlank: 'A blank sheet.', sourceChanged: 'Changed on this page only.',
     untouched: 'Your save is untouched.', saveHint: 'Edits here stay on this page until you save them.',
@@ -51,7 +51,9 @@
       // The store the page works on: your save, or the sheet's own copy.
       store: function () { return sheet.guest ? guestStore() : Ledger.shared(); },
       shareURL: function (value) { return new URL(location.pathname + '?' + encoded(value), location.href).href; },
-      go: go
+      go: go,
+      // Repaint after the page changed something its link depends on outside the store.
+      sync: function () { repaint.forEach(function (fn) { fn(); }); }
     };
     if (sheet.guest) root.Interactions.configure({ ledger: guestStore });
     api.current = sheet;
@@ -72,6 +74,8 @@
     var search = [kept(true), value ? encoded(value) : ''].filter(Boolean).join('&');
     location.assign(location.pathname + (search ? '?' + search : '') + location.hash);
   }
+  // Reload as a guest on a copy of your save.
+  function enter() { location.assign(location.pathname + '?' + [kept(true), 'guest'].filter(Boolean).join('&') + location.hash); }
 
   if (root.Interactions) root.Interactions.register('page-sheet', function (context) {
     if (!config) return {};
@@ -80,6 +84,8 @@
     function put(key, text) { context.targets(key).forEach(function (node) { node.textContent = text; }); }
     function show(key, on) { context.targets(key).forEach(function (node) { node.hidden = !on; }); }
     function render() {
+      // A guest switch, where the page has one, says which store the page is on.
+      context.targets('guest').forEach(function (node) { node.disabled = false; node.setAttribute('aria-checked', String(sheet.guest)); });
       // On your own save there is nothing to say: edits save as they go. The notice is for a sheet.
       show('notice', sheet.guest);
       if (!sheet.guest) {
@@ -98,6 +104,7 @@
       try { if (address !== location.pathname + location.search + location.hash) history.replaceState(history.state, '', address); } catch (ignored) {}
     }
     context.cleanup(store.subscribe(render));
+    repaint.push(render); context.cleanup(function () { repaint = repaint.filter(function (fn) { return fn !== render; }); });
     if (sheet.guest) { var own = mineStore(); if (own) context.cleanup(own.subscribe(render)); }
     // The button says it copied for a moment, so no note lingers; without a clipboard the link
     // shows in a field, selected.
@@ -117,6 +124,7 @@
     context.cleanup(function () { clearTimeout(copiedTimer); });
     return { refresh: render, actions: {
       copy: { run: copy },
+      guest: { run: function () { if (sheet.guest) go(null); else enter(); } },
       blank: { run: function () { go(config.blank()); } },
       loadMine: { run: function () { go(null); } },
       saveMine: { run: function () { var dialog = context.targets('confirm')[0]; if (dialog && !dialog.open) dialog.showModal(); } },
