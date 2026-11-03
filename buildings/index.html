@@ -35,7 +35,13 @@ self: buildings
     <ul class="reqs-cost" data-target="building-paths.total"></ul>
     <p class="reqs-saul" data-target="building-paths.saulCost" hidden></p>
     <p class="reqs-time" data-target="building-paths.time"></p>
-    <table class="reqs-points" data-target="building-paths.points" hidden></table>
+    <div class="reqs-answer-foot">
+      <details class="reqs-points-box" id="reqs-points" data-target="building-paths.pointsBox" hidden>
+        <summary><span data-i18n="reqs.pointsTitle">Event points</span> <span class="reqs-points-sum" data-target="building-paths.pointsSum"></span></summary>
+        <table class="reqs-points" data-target="building-paths.points"></table>
+      </details>
+      <button type="button" class="reqs-accept" data-target="building-paths.addGoal" data-action="building-paths.addGoal" hidden>Add to my goals</button>
+    </div>
     <p class="reqs-flag" data-target="building-paths.flag" hidden></p>
   </div>
 
@@ -44,7 +50,6 @@ self: buildings
     <div class="reqs-share">
       <button type="button" data-action="building-paths.copy" data-i18n="reqs.copy">Copy link</button>
       <button type="button" data-action="building-paths.copyLevels" data-i18n="reqs.copyLevels">Copy link with these levels</button>
-      <button type="button" data-target="building-paths.addGoal" data-action="building-paths.addGoal" data-i18n="reqs.addGoal" hidden>Add to my goals</button>
       <output role="status" data-target="building-paths.copied"></output>
     </div>
     <details class="reqs-more reqs-speed" id="reqs-speed">
