@@ -27,11 +27,13 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('h1').count(),1);
     assert.equal(await page.locator('.topbar .brand').count(),1);
     // The same frame as Governor gear: title, the upload box above your gear, the answer beside it.
-    // Your own save needs no bar; sharing and starting over are small links under your gear.
+    // Your own save needs no notice; the guest switch, sharing and starting over sit in the one
+    // sheet row every calculator shows at the top of its planner.
     assert.equal(await page.locator('.sheet-hero h1').count(),1);
     assert.equal(await page.locator('[data-target="page-sheet.notice"]').isHidden(),true,'your own save shows no sheet notice');
     assert.equal(await page.locator('.sheet-bar').count(),0);
-    assert.equal(await page.locator('.gear-editor .sheet-tools [data-action="page-sheet.copy"]').isVisible(),true);
+    assert.equal(await page.locator('#gear-forge > .sheet-row .sheet-tools [data-action="page-sheet.copy"]').isVisible(),true);
+    assert.equal(await page.locator('#gear-forge > .sheet-row [data-target="page-sheet.guest"]').isVisible(),true);
     assert.equal(await page.locator('.gear-editor #gear-import.sheet-drop[data-screen-import-drop]').count(),1);
     // Three troop cards, four pieces each; one answer with no tabs; custom weights fold away under Advanced.
     assert.equal(await page.locator('.gear-card').count(),3);

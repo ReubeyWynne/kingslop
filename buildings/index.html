@@ -12,14 +12,13 @@ self: buildings
 
   <section class="section reqs-goal" id="goal" aria-labelledby="goal-title">
     <h2 id="goal-title" data-i18n="reqs.goal">Your goal</h2>
+    {% include page-sheet.html part="notice" %}
     <div class="reqs-goal-tools">
       <p class="note" data-i18n="reqs.pickGoal">Tap the buildings you want to upgrade.</p>
-      <button type="button" class="reqs-switch" role="switch" aria-checked="false" data-target="page-sheet.guest" data-action="page-sheet.guest" disabled><span data-i18n="reqs.guestSwitch">Guest mode</span></button>
     </div>
     <ul class="reqs-picks" data-target="building-paths.picks">{% for b in data.buildings %}
       <li><button type="button" class="reqs-pick" data-building="{{ b.id }}" data-action="building-paths.pick" aria-pressed="{% if b.id == 'town-center' %}true{% else %}false{% endif %}" disabled><span class="reqs-art"><img src="../img/buildings/{{ b.id }}.webp" width="128" height="128" alt="" loading="lazy" decoding="async"><b class="reqs-badge">{% if b.id == 'town-center' %}3{% endif %}</b></span><span class="reqs-pick-name" data-i18n="town.building.{{ b.id }}">{{ b.name }}</span></button></li>{% endfor %}
     </ul>
-    {% include page-sheet.html part="notice" %}
     <noscript><p data-i18n="reqs.noJS">Turn on JavaScript to work out a plan.</p></noscript>
   </section>
 
@@ -46,7 +45,6 @@ self: buildings
     <p class="note"><span data-target="building-paths.saveNote"></span></p>
     <div class="reqs-share">
       <button type="button" data-action="building-paths.copy" data-i18n="reqs.copy">Copy link</button>
-      <button type="button" data-action="building-paths.copyLevels" data-i18n="reqs.copyLevels">Copy link with these levels</button>
       <button type="button" data-target="building-paths.addGoal" data-action="building-paths.addGoal" data-i18n="reqs.addGoal" hidden>Add to my goals</button>
       <output role="status" data-target="building-paths.copied"></output>
     </div>

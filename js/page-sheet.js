@@ -50,7 +50,12 @@
       invalid: !!(link && link.invalid),
       // The store the page works on: your save, or the sheet's own copy.
       store: function () { return sheet.guest ? guestStore() : Ledger.shared(); },
-      shareURL: function (value) { return new URL(location.pathname + '?' + encoded(value), location.href).href; },
+      // The link carries the sheet and whatever else the address holds for the page (a goal, a
+      // speed), but not your language or guest mode: the reader opens it in their own.
+      shareURL: function (value) {
+        var rest = new URLSearchParams(kept(true)); rest.delete('lang');
+        return new URL(location.pathname + '?' + [rest.toString(), encoded(value)].filter(Boolean).join('&'), location.href).href;
+      },
       go: go,
       // Repaint after the page changed something its link depends on outside the store.
       sync: function () { repaint.forEach(function (fn) { fn(); }); }

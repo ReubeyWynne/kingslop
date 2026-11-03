@@ -32,7 +32,6 @@ self: gear
       <label><img src="../img/hero-gear/mithril.webp" width="40" height="40" alt=""><span data-i18n="gear.mithril">Mithril</span><input id="gear-mithril" data-resource="mithril" data-bind="inventory.mithril" data-action="ledger-form.set ledger-form.normalize" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Mithril" data-i18n-key="gear.mithril" data-i18n-attr="aria-label"></label>
     </div>
         <div class="gear-budget-caption"><span><span data-i18n="gear.xpTotal">XP total</span> <output id="gear-xp-total" data-bind="inventory.hero-gear-xp" data-unknown="0">0</output></span><span id="gear-save" data-target="ledger-form.save" role="status" data-i18n="gear.saved">saved on this device</span></div>
-        {% include page-sheet.html part="tools" %}
       </div>
 
       <div class="gear-answer sheet-answer">
