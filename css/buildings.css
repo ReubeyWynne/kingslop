@@ -59,7 +59,18 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 .reqs-run-time { color: var(--ink-muted); }
 .reqs-run-why { flex-basis: 100%; margin: 0; color: var(--ink-dim); font-size: var(--step--1); }
 .reqs-time, .reqs-saul, .reqs-flag { margin: .35rem 0 0; color: var(--ink-dim); font-size: var(--step--1); }
-.reqs-points { width: 100%; margin: .45rem 0 0; border-collapse: collapse; font-size: var(--step--1); font-variant-numeric: tabular-nums; }
+/* Event points fold away under one line, so the pinned answer keeps its height on a phone. */
+.reqs-answer-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .1rem .8rem; margin-top: .2rem; }
+.reqs-points-box { flex: 1 1 auto; margin: 0; }
+.reqs-points-box[open] { flex-basis: 100%; }
+.reqs-points-box[hidden] { display: none; }
+.reqs-points-box summary { min-height: 40px; padding-block: 0; letter-spacing: .06em; white-space: nowrap; }
+.reqs-points-sum { color: var(--ink); font-weight: normal; letter-spacing: 0; text-transform: none; font-variant-numeric: tabular-nums; }
+.reqs-accept { flex: none; min-height: 44px; margin-inline-start: auto; padding: .3rem .8rem; border: 1px solid var(--amber); border-radius: 2px; background: var(--signal-tint); color: var(--amber); font: inherit; white-space: nowrap; cursor: pointer; }
+.reqs-accept[data-done="true"] { border-color: var(--amber-dim); background: none; color: var(--ink-dim); }
+.reqs-accept:hover, .reqs-accept:focus-visible { outline: none; box-shadow: 0 0 0 1px var(--amber); }
+.reqs-accept[hidden] { display: none; }
+.reqs-points { width: 100%; margin: 0 0 .3rem; border-collapse: collapse; font-size: var(--step--1); font-variant-numeric: tabular-nums; }
 .reqs-points[hidden] { display: none; }
 .reqs-points th, .reqs-points td { padding: .1rem 0; text-align: end; font-weight: normal; white-space: nowrap; }
 .reqs-points th:first-child { text-align: start; white-space: normal; padding-inline-end: .6rem; }

@@ -115,15 +115,20 @@
       return list ? t('timeWith', '{time} with {boosts}', { time: text, boosts: list }) : t('timeBase', '{time} base time, before construction speed', { time: text });
     }
     // Event points the plan scores, as a small table: one row per event with the days that pay
-    // most, what spending its Truegold scores, and that plus speeding up its whole time.
+    // most, what spending its Truegold scores, and that plus speeding up its whole time. The table
+    // sits in a closed disclosure so the pinned answer stays short on a phone; its summary carries
+    // the most any one event pays.
     function eventName(e) { return e === 'prep' ? t('eventPrep', 'KvK prep') : e === 'sg' ? t('eventSg', 'Strongest Governor') : t('eventBrawl', 'Alliance Brawl'); }
     function pointsList(table, cost, steps) {
       table.textContent = '';
       var rows = E.points(D.events, cost, steps ? E.timed(steps, E.boost(cs)).time : 0);
-      table.hidden = !rows.length;
+      one('pointsBox').hidden = !rows.length;
+      one('pointsSum').textContent = '';
       if (!rows.length) return;
+      var most = Math.max.apply(null, rows.map(function (p) { return p.items + p.speedups; }));
+      one('pointsSum').textContent = t('pointsUpTo', 'up to {n}', { n: compact(most) });
       var head = el('tr');
-      [t('pointsTitle', 'Event points'), t('pointsSpent', 'Spent'), t('pointsSpedUp', 'Sped up')].forEach(function (text) { var th = el('th', '', text); th.scope = 'col'; head.appendChild(th); });
+      [t('pointsEvent', 'Event'), t('pointsSpent', 'Spent'), t('pointsSpedUp', 'Sped up')].forEach(function (text) { var th = el('th', '', text); th.scope = 'col'; head.appendChild(th); });
       table.appendChild(el('thead')).appendChild(head);
       var body = table.appendChild(el('tbody'));
       rows.forEach(function (p) {
@@ -353,11 +358,34 @@
       var flag = one('flag'), any = Object.keys(result.total.unverified || {}).length;
       flag.hidden = !any;
       flag.textContent = any ? t('oneSource', '† Only one source gives this figure.') : '';
-      var add = one('addGoal');
-      add.hidden = guest || !store || !result.goals.some(function (g) { return PLANNED.indexOf(g.building) >= 0; }) || result.state === 'met';
+      // The plan's accept: outside guest mode it adds the goal to Upgrade priority (and says so
+      // once it is there); in guest mode it takes the link's levels and goal as the reader's own.
+      var add = one('addGoal'), planned = plannedGoals();
+      add.hidden = !planned.length || result.state === 'met' || (guest ? !shared() : !store);
+      if (!add.hidden) {
+        var inGoals = !guest && planned.every(function (g) { return store.priority().goals.some(function (p) { return p.kind === 'building' && p.target === g.building && p.level === g.level; }); });
+        add.textContent = guest ? t('adoptPlan', 'Make this my plan') : inGoals ? t('inGoals', 'In your goals ✓') : t('addGoal', 'Add to my goals');
+        add.dataset.done = inGoals ? 'true' : 'false';
+      }
       one('guestBanner').hidden = !guest;
       one('saveNote').textContent = guest ? t('guestNote', 'Guest mode: levels stay on this page.') : store ? t('savedNote', 'Levels you set are saved on this device, and the Town Centre and Upgrade priority use them.') : '';
       syncAddress();
+    }
+
+    function plannedGoals() { return E.goals(D, goals).filter(function (g) { return PLANNED.indexOf(g.building) >= 0; }); }
+    // The device's own save, outside guest mode's copy.
+    function shared() { try { var s = window.PlayerLedger.shared(); s.snapshot(); return s; } catch (ignored) { return null; } }
+    function addGoals(target) {
+      var mineNow = plannedGoals();
+      var list = target.priority().goals.filter(function (g) { return !(g.kind === 'building' && mineNow.some(function (m) { return m.building === g.target; })); });
+      mineNow.forEach(function (g) { list.push({ kind: 'building', target: g.building, level: g.level }); });
+      target.setPriorityGoals(list);
+    }
+    function leaveGuest() {
+      var kept = new URLSearchParams(location.search);
+      ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan', 'saul', 'guest'].forEach(function (k) { kept.delete(k); });
+      var rest = kept.toString();
+      location.assign(location.pathname + '?' + (rest ? rest + '&' : '') + address(false) + (guest ? '' : '&guest') + location.hash);
     }
 
     function copy(text) {
@@ -406,10 +434,7 @@
         guest: { run: function () {
           // Guest mode is chosen before the page's modules mount, so the switch reloads the
           // page into or out of it with the same goals; leaving drops the link's levels.
-          var kept = new URLSearchParams(location.search);
-          ['b', 'to', 'goal', 'have', 'speed', 'dt', 'pan', 'saul', 'guest'].forEach(function (k) { kept.delete(k); });
-          var rest = kept.toString();
-          location.assign(location.pathname + '?' + (rest ? rest + '&' : '') + address(false) + (guest ? '' : '&guest') + location.hash);
+          leaveGuest();
         } },
         set: { run: function (node) {
           var k = node.dataset.key, v = node.dataset.value;
@@ -424,11 +449,17 @@
         } },
         copy: { run: function () { copy(address(false)); } },
         copyLevels: { run: function () { copy(address(true)); } },
+        // Accepting the plan. In guest mode the levels on this page (the link's, with any edits)
+        // and the goal go into the device's save, and the page leaves guest mode to show it.
         addGoal: { run: function () {
-          var mineNow = E.goals(D, goals).filter(function (g) { return PLANNED.indexOf(g.building) >= 0; });
-          var list = store.priority().goals.filter(function (g) { return !(g.kind === 'building' && mineNow.some(function (m) { return m.building === g.target; })); });
-          mineNow.forEach(function (g) { list.push({ kind: 'building', target: g.building, level: g.level }); });
-          try { store.setPriorityGoals(list); say(t('goalAdded', 'Added to your goals on Upgrade priority.')); } catch (cause) { say(t('saveFailed', 'Could not save that.')); }
+          if (guest) {
+            var own = shared();
+            if (!own) return say(t('saveFailed', 'Could not save that.'));
+            try { own.setBuildings(have(), 'manual'); addGoals(own); } catch (cause) { return say(t('saveFailed', 'Could not save that.')); }
+            return leaveGuest();
+          }
+          try { addGoals(store); say(t('goalAdded', 'Added to your goals on Upgrade priority.')); } catch (cause) { say(t('saveFailed', 'Could not save that.')); }
+          if (!store.subscribe) render();
         } }
       }
     };

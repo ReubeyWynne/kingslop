@@ -62,8 +62,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await choose('have', 'embassy', '14');
   await choose('have', 'stable', '14');
   await page.waitForFunction(() => document.querySelector('.reqs-headline').textContent === 'Town Center 15 · upgrades: 1');
+  // The plan's accept sits in the pinned answer and says when the goal is already taken.
+  assert.equal(await page.locator('.reqs-answer [data-action="building-paths.addGoal"]').innerText(), 'Add to my goals');
   await page.locator('[data-action="building-paths.addGoal"]').click();
   assert.deepEqual(await page.evaluate(() => PlayerLedger.shared().priority().goals), [{ kind: 'building', target: 'town-center', level: '15' }]);
+  await page.waitForFunction(() => document.querySelector('[data-action="building-paths.addGoal"]').textContent === 'In your goals ✓');
   await choose('have', 'stable', '');
   assert.equal((await saved()).stable, undefined);
 
@@ -107,7 +110,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   const before = await saved();
   await open('?lang=en&goal=barracks:TG3&have=town-center:TG1,barracks:TG1');
   assert.ok(await page.locator('[data-target="building-paths.guestBanner"]').isVisible());
-  assert.ok(await page.locator('[data-target="building-paths.addGoal"]').isHidden());
+  assert.equal(await page.locator('[data-target="building-paths.addGoal"]').innerText(), 'Make this my plan');
   await choose('have', 'embassy', 'TG 2');
   await page.waitForFunction(() => location.search.includes('embassy:TG2'));
   assert.deepEqual(await saved(), before);
@@ -190,14 +193,38 @@ withBrowser({ root }, async ({ browser, origin }) => {
   // events that pay the same share a line.
   await page.setViewportSize({ width: 390, height: 900 });
   await open('?lang=en&goal=town-center:TG4,barracks:TG4,range:TG4,command-center:TG4,stable:TG4&have=barracks:TG3,command-center:TG2,embassy:TG2-2,range:TG3,stable:TG3,town-center:TG3&speed=117.2&dt=1&pan=2');
+  // The points fold under one closed line that carries the most any event pays.
+  assert.equal(await page.locator('#reqs-points').evaluate(d => d.open), false, 'event points start closed');
+  assert.equal((await page.locator('#reqs-points summary').textContent()).replace(/\s+/g, ' '), 'Event points up to 11.04m');
+  assert.ok(await page.locator('[data-target="building-paths.addGoal"]').isVisible(), 'the accept button is in view');
+  await page.screenshot({ path: path.join(output, 'en-390-points-closed.png') });
+  for (const width of [390, 320]) {
+    await page.setViewportSize({ width, height: 800 });
+    const box = await page.locator('.reqs-answer').boundingBox();
+    assert(box.height < 800 * 0.45, `the pinned answer stays short at ${width}px (${box.height}px)`);
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `nothing overflows at ${width}px`);
+    await page.screenshot({ path: path.join(output, `en-${width}-pinned.png`) });
+  }
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.locator('#reqs-points summary').click();
   const cells = await page.locator('.reqs-points tr').evaluateAll(rows => rows.map(r => [...r.cells].map(c => c.textContent)));
-  assert.deepEqual(cells, [['Event points', 'Spent', 'Sped up'],
+  assert.deepEqual(cells, [['Event', 'Spent', 'Sped up'],
     ['KvK prep days 1, 2, 5', '8.66m', '11.04m'], ['Strongest Governor days 1, 2, 5, 7', '8.66m', '11.04m'], ['Alliance Brawl days 1, 2, 5, 6', '5.42m', '6.84m']]);
   assert.match(await page.locator('.reqs-answer .reqs-cost').innerText(), /4,332/, 'Truegold reads exactly');
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'the points table fits a phone');
   await page.screenshot({ path: path.join(output, 'en-390-points.png') });
   await open('?lang=en&goal=town-center:TG3&have=town-center:TG3');
-  assert(await page.locator('.reqs-points').isHidden(), 'a goal already met scores nothing');
+  assert(await page.locator('#reqs-points').isHidden(), 'a goal already met scores nothing');
+  // Accepting a guest link's plan takes its levels and goal into the save and leaves guest mode.
+  await open('?lang=en&goal=barracks:TG3&have=town-center:TG2,barracks:TG1,embassy:TG1');
+  await page.locator('[data-action="building-paths.addGoal"]').click();
+  await page.waitForURL(url => !/guest|have=/.test(url.search));
+  await page.waitForFunction(() => document.querySelector('.reqs-headline').textContent);
+  assert.equal(await page.locator('[data-action="building-paths.guest"]').getAttribute('aria-checked'), 'false');
+  assert.equal((await saved()).barracks, 'TG 1');
+  assert.equal((await saved())['town-center'], 'TG 2');
+  assert.ok((await page.evaluate(() => PlayerLedger.shared().priority().goals)).some(g => g.target === 'barracks' && g.level === 'TG 3'));
+  await page.waitForFunction(() => document.querySelector('[data-action="building-paths.addGoal"]').textContent === 'In your goals ✓');
   assert.deepEqual(errors, []);
   console.log('building requirements UI ok');
 });
