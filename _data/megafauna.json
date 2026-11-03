@@ -1,5 +1,5 @@
 {
-  "_note": "Stock opponents for the Heroes page's lead finder (js/lead-engine.js). One ladder of account investment, scaled to each kingdom generation. The per-generation Bonus Overview, troop tier, march size, troop mixes and meta lineups are the KingShot Battle Helper's benchmark references (kingshot_sim/benchmark/reference.py at commit 463dba72, MIT): GEN_BONUS_PCT, GEN_TROOP_TIER, GEN_TROOP_COUNT, scenario_formations and GEN_LINEUPS rally_atk / defense. The four investment levels around them are this site's own estimates, not measured accounts: change them here.",
+  "_note": "Stock opponents for the Heroes page's lead finder (js/lead-engine.js). One ladder of account investment, scaled to each kingdom generation. The per-generation Bonus Overview, troop tier, march size, troop mixes and meta lineups are the KingShot Battle Helper's benchmark references (kingshot_sim/benchmark/reference.py at commit 463dba72, MIT): GEN_BONUS_PCT, GEN_TROOP_TIER, GEN_TROOP_COUNT, scenario_formations and GEN_LINEUPS rally_atk / defense. The four investment levels around them are this site's own estimates, not measured accounts: change them here. Joiners, pets and city buffs per opponent are this site's estimates too; the default joiner lists follow the Bear Hunt page and the hero directory's joiner roles.",
   "source": {
     "label": "KingShot Battle Helper benchmark",
     "url": "https://github.com/Absyyyyyyy/ksbattlehelp_public/blob/463dba72409ac57b9a71c331584074725f5b5b1b/kingshot_sim/benchmark/reference.py",
@@ -174,7 +174,17 @@
       "stars": 18,
       "widget": 0,
       "tg": -1,
-      "note": "Light account: 3★ meta heroes, no widgets, one Truegold step behind."
+      "note": "Light account: 3★ meta heroes, no widgets, one Truegold step behind, level 3 joiners, no pets or city buffs.",
+      "joinerLevel": 3,
+      "petLevel": 0,
+      "city": {
+        "attack": 0,
+        "defense": 0,
+        "lethality": 0,
+        "health": 0,
+        "enemyAttack": 0,
+        "enemyDefense": 0
+      }
     },
     {
       "id": "shark",
@@ -183,7 +193,17 @@
       "stars": 24,
       "widget": 4,
       "tg": 0,
-      "note": "Steady account: 4★ meta heroes, widgets at 4, the generation's usual stats."
+      "note": "Steady account: 4★ meta heroes, widgets at 4, the generation's usual stats, level 4 joiners, pets at 50, attack and defence I.",
+      "joinerLevel": 4,
+      "petLevel": 50,
+      "city": {
+        "attack": 10,
+        "defense": 10,
+        "lethality": 0,
+        "health": 0,
+        "enemyAttack": 0,
+        "enemyDefense": 0
+      }
     },
     {
       "id": "orca",
@@ -192,7 +212,17 @@
       "stars": 30,
       "widget": 8,
       "tg": 0,
-      "note": "Heavy account: 5★ meta heroes, widgets at 8, a fifth above the usual stats."
+      "note": "Heavy account: 5★ meta heroes, widgets at 8, a fifth above the usual stats, level 5 joiners, pets at 80, every city buff at I.",
+      "joinerLevel": 5,
+      "petLevel": 80,
+      "city": {
+        "attack": 10,
+        "defense": 10,
+        "lethality": 10,
+        "health": 10,
+        "enemyAttack": 10,
+        "enemyDefense": 10
+      }
     },
     {
       "id": "whale",
@@ -201,7 +231,151 @@
       "stars": 30,
       "widget": 10,
       "tg": 0,
-      "note": "Top spender: 5★ meta heroes, full widgets, half again the usual stats."
+      "note": "Top spender: 5★ meta heroes, full widgets, half again the usual stats, level 5 joiners, maxed pets, every city buff at II.",
+      "joinerLevel": 5,
+      "petLevel": 100,
+      "city": {
+        "attack": 20,
+        "defense": 20,
+        "lethality": 20,
+        "health": 20,
+        "enemyAttack": 20,
+        "enemyDefense": 20
+      }
     }
-  ]
+  ],
+  "joiners": {
+    "bear": {
+      "1": [
+        "chenko",
+        "yeonwoo",
+        "amane",
+        "amadeus"
+      ],
+      "2": [
+        "chenko",
+        "yeonwoo",
+        "amane",
+        "amadeus"
+      ],
+      "3": [
+        "chenko",
+        "yeonwoo",
+        "amane",
+        "amadeus"
+      ],
+      "4": [
+        "chenko",
+        "yeonwoo",
+        "amane",
+        "margot"
+      ],
+      "5": [
+        "chenko",
+        "yeonwoo",
+        "amane",
+        "margot"
+      ],
+      "6": [
+        "chenko",
+        "yeonwoo",
+        "amane",
+        "margot"
+      ],
+      "7": [
+        "ava",
+        "weewoo",
+        "amane",
+        "chenko"
+      ]
+    },
+    "rally": {
+      "1": [
+        "chenko",
+        "yeonwoo",
+        "amane",
+        "amadeus"
+      ],
+      "2": [
+        "chenko",
+        "yeonwoo",
+        "amane",
+        "amadeus"
+      ],
+      "3": [
+        "chenko",
+        "yeonwoo",
+        "amane",
+        "amadeus"
+      ],
+      "4": [
+        "chenko",
+        "yeonwoo",
+        "amane",
+        "amadeus"
+      ],
+      "5": [
+        "chenko",
+        "yeonwoo",
+        "amane",
+        "amadeus"
+      ],
+      "6": [
+        "chenko",
+        "yeonwoo",
+        "amane",
+        "amadeus"
+      ],
+      "7": [
+        "chenko",
+        "yeonwoo",
+        "amane",
+        "amadeus"
+      ]
+    },
+    "garrison": {
+      "1": [
+        "saul",
+        "howard",
+        "gordon",
+        "fahd"
+      ],
+      "2": [
+        "saul",
+        "howard",
+        "gordon",
+        "fahd"
+      ],
+      "3": [
+        "saul",
+        "howard",
+        "gordon",
+        "fahd"
+      ],
+      "4": [
+        "saul",
+        "howard",
+        "gordon",
+        "fahd"
+      ],
+      "5": [
+        "saul",
+        "howard",
+        "gordon",
+        "fahd"
+      ],
+      "6": [
+        "saul",
+        "howard",
+        "gordon",
+        "fahd"
+      ],
+      "7": [
+        "saul",
+        "howard",
+        "gordon",
+        "fahd"
+      ]
+    }
+  }
 }

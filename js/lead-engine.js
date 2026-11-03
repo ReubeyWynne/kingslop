@@ -26,8 +26,19 @@
      Both fights are js/battle-engine.js battles, scored by the edge
      (your share of troops left − theirs), averaged over the opponents.
 
+   Around the lineup, three more things a march carries:
+
+     joiners           up to four first skills, js/combat.js's joiner rule
+     city buffs        their own layer, (1 + (own − enemy down) / 100)
+     pets              another layer, the same way (_data/combat.json layers)
+
+   Each layer multiplies the stat's (1 + % / 100); an enemy debuff only
+   cancels a buff in its own layer. Against the Bear only your own attack
+   and lethality layers count: its defence is fixed and no debuff lands.
+
    The stock opponents live in _data/megafauna.json, one ladder of account
-   investment per kingdom generation. */
+   investment per kingdom generation, each with its joiners, pets and city
+   buffs. */
 (function (root) {
   'use strict';
 
@@ -78,9 +89,63 @@
     return out;
   }
 
-  function skillsOf(lineup, role, data) {
-    return root.CombatSkills.side(data, { role: role, heroes: lineup.filter(Boolean).map(function (c) { return { key: c.key, levels: c.levels, widget: c.widget }; }) });
+  // The lineup's skills plus the joiners' first skills, for one role.
+  function skillsOf(lineup, role, data, joiners) {
+    return root.CombatSkills.side(data, {
+      role: role,
+      heroes: lineup.filter(Boolean).map(function (c) { return { key: c.key, levels: c.levels, widget: c.widget }; }),
+      joiners: (joiners || []).filter(function (j) { return j && j.key; })
+    });
   }
+
+  // Your pets' skills as layer percentages. pets is { id: level }; a pet's
+  // skill steps every ten levels along its ladder. Only pets the kingdom has
+  // reached by `gen` count when gen is given.
+  var LAYER_KEYS = ['attack', 'defense', 'lethality', 'health', 'enemyAttack', 'enemyDefense', 'enemyLethality', 'enemyHealth'];
+  function blank() { var out = {}; LAYER_KEYS.forEach(function (k) { out[k] = 0; }); return out; }
+  function petLevelPct(pet, level) {
+    level = num(level);
+    if (level <= 0 || !pet.values.length) return 0;
+    return pet.values[clamp(Math.ceil(level / 10) - 1, 0, pet.values.length - 1)];
+  }
+  function petLayer(pets, data, gen) {
+    var out = blank();
+    (data.pets || []).forEach(function (pet) {
+      if (gen && pet.generation > gen) return;
+      var pct = petLevelPct(pet, pets && pets[pet.id]);
+      if (!pct) return;
+      var key = pet.side === 'enemy' ? 'enemy' + pet.stat.charAt(0).toUpperCase() + pet.stat.slice(1) : pet.stat;
+      out[key] = Math.max(out[key], pct);
+    });
+    return out;
+  }
+  function cityLayer(city) {
+    var out = blank();
+    Object.keys(city || {}).forEach(function (k) { if (Object.hasOwn(out, k)) out[k] = num(city[k]); });
+    return out;
+  }
+
+  // The panel with the city and pet layers of both sides. foe is null for
+  // the Bear, where only your attack and lethality layers count.
+  var LAYER_STAT = { atk: 'attack', let: 'lethality', def: 'defense', hea: 'health' };
+  var LAYER_DOWN = { atk: 'enemyAttack', let: 'enemyLethality', def: 'enemyDefense', hea: 'enemyHealth' };
+  function layered(p, own, foe) {
+    var out = { atk: p.atk.slice(), let: p.let.slice(), def: p.def.slice(), hea: p.hea.slice() };
+    Object.keys(LAYER_STAT).forEach(function (field) {
+      if (!foe && (field === 'def' || field === 'hea')) return;
+      var factor = 1;
+      ['city', 'pet'].forEach(function (layer) {
+        var mine = own[layer] || blank(), theirs = foe ? foe[layer] || blank() : blank();
+        factor *= 1 + (num(mine[LAYER_STAT[field]]) - num(theirs[LAYER_DOWN[field]])) / 100;
+      });
+      for (var t = 0; t < 3; t++) out[field][t] = (100 + out[field][t]) * factor - 100;
+    });
+    return out;
+  }
+
+  // You, as the page holds you: { overview, troops, joiners, city, pets }
+  // with city and pets already turned into layers.
+  function layersOf(you) { return { city: you.city || blank(), pet: you.pets || blank() }; }
 
   // How often a skill is up across the Bear's ten rounds.
   function uptime(skill) {
@@ -118,8 +183,10 @@
   }
 
   // Expected Bear damage of a lineup at the lead's ideal mix, and that mix.
-  function bear(overview, lineup, troops, data) {
-    var E = root.BattleEngine, p = panel(overview, lineup, data), mod = bearMod(skillsOf(lineup, 'rally', data));
+  function bear(you, lineup, data) {
+    var E = root.BattleEngine, troops = you.troops;
+    var p = layered(panel(you.overview, lineup, data), layersOf(you), null);
+    var mod = bearMod(skillsOf(lineup, 'rally', data, you.joiners));
     var terms = TYPES.map(function (type, t) {
       var tier = troops.tier[t], tg = troops.tg[t];
       // Archers deal +10% to the all-infantry Bear, and again from T7 / TG3.
@@ -130,16 +197,30 @@
     return { score: Math.sqrt(sq) / 1000, mix: terms.map(function (x) { return x * x / sq; }), panel: p };
   }
 
-  // A stock opponent at one generation, as a battle side.
+  // A stock opponent at one generation: its lineup, stats, joiners, pets and city.
   function opponent(foe, gen, job, data) {
     var stock = data.megafauna, at = String(clamp(gen | 0, 1, stock.generations.length));
-    var lineup = stock.lineups[at][job === 'rally' ? 'garrison' : 'rally'].map(function (key) {
+    var theirJob = job === 'rally' ? 'garrison' : 'rally';
+    var lineup = stock.lineups[at][theirJob].map(function (key) {
       return copyOf(key, { stars: foe.stars, widget: foe.widget }, data);
     });
     var pct = stock.overview[at] * foe.overview, row = { attack: pct, lethality: pct, defense: pct, health: pct };
-    var p = panel({ inf: row, cav: row, arc: row }, lineup, data);
     var troop = stock.troops[at], tg = clamp(troop.tg + foe.tg, 0, 8);
-    return { side: { atk: p.atk, let: p.let, def: p.def, hea: p.hea, tier: [troop.tier, troop.tier, troop.tier], tg: [tg, tg, tg], skills: skillsOf(lineup, job === 'rally' ? 'defender' : 'rally', data) }, lineup: lineup };
+    var joiners = (stock.joiners[theirJob][at] || []).map(function (key) { return { key: key, level: foe.joinerLevel }; });
+    var pets = {};
+    (data.pets || []).forEach(function (pet) { pets[pet.id] = Math.min(foe.petLevel || 0, pet.maxLevel); });
+    return {
+      overview: { inf: row, cav: row, arc: row }, lineup: lineup, joiners: joiners,
+      troops: { tier: [troop.tier, troop.tier, troop.tier], tg: [tg, tg, tg] },
+      city: cityLayer(foe.city), pets: petLayer(pets, data, +at),
+      role: theirJob === 'rally' ? 'rally' : 'defender'
+    };
+  }
+
+  // One side ready for the battle engine, its layers set against the other.
+  function battleSide(who, lineup, role, against, data) {
+    var p = layered(panel(who.overview, lineup, data), layersOf(who), layersOf(against));
+    return { atk: p.atk, let: p.let, def: p.def, hea: p.hea, tier: who.troops.tier, tg: who.troops.tg, skills: skillsOf(lineup, role, data, who.joiners) };
   }
 
   function split(total, mix) {
@@ -149,21 +230,21 @@
   }
 
   // Your lineup against every stock opponent of your generation.
-  function fight(overview, lineup, troops, job, gen, data, opts) {
-    var E = root.BattleEngine, stock = data.megafauna, p = panel(overview, lineup, data);
+  function fight(you, lineup, job, gen, data, opts) {
+    var E = root.BattleEngine, stock = data.megafauna;
     var role = job === 'rally' ? 'rally' : 'defender';
     var mixes = stock.mix[job], total = Math.max(1, num(opts && opts.total) || stock.total);
-    var you = { atk: p.atk, let: p.let, def: p.def, hea: p.hea, tier: troops.tier, tg: troops.tg, skills: skillsOf(lineup, role, data), n: split(total, mixes.you) };
     var battles = (opts && opts.battles) || 24, edge = 0;
     var rows = stock.foes.map(function (foe) {
-      var them = opponent(foe, gen, job, data).side;
-      them.n = split(total, mixes.them);
-      var r = E.run(you, them, battles, E.seedOf([foe.id, gen, job]));
+      var them = opponent(foe, gen, job, data);
+      var a = battleSide(you, lineup, role, them, data), b = battleSide(them, them.lineup, them.role, you, data);
+      a.n = split(total, mixes.you); b.n = split(total, mixes.them);
+      var r = E.run(a, b, battles, E.seedOf([foe.id, gen, job]));
       var mine = (r.a[0] + r.a[1] + r.a[2]) / total, theirs = (r.b[0] + r.b[1] + r.b[2]) / total;
       edge += mine - theirs;
       return { id: foe.id, win: r.win, left: mine, foeLeft: theirs };
     });
-    return { score: edge / rows.length, foes: rows, panel: p };
+    return { score: edge / rows.length, foes: rows };
   }
 
   // Your owned heroes that can lead, the strongest few of each troop type
@@ -189,12 +270,12 @@
     return out;
   }
 
-  // The whole ranking for one job. opts: { overview, roster, troops, gen,
-  // total, battles, perType }. Returns lineups best first.
-  function rank(job, opts, data) {
+  // The whole ranking for one job. you: { overview, troops, joiners, city,
+  // pets }; opts: { roster, gen, total, battles, perType }. Best first.
+  function rank(job, you, data, opts) {
     var list = lineups(candidates(opts.roster, data, opts.perType));
     var scored = list.map(function (lineup) {
-      var r = job === 'bear' ? bear(opts.overview, lineup, opts.troops, data) : fight(opts.overview, lineup, opts.troops, job, opts.gen, data, opts);
+      var r = job === 'bear' ? bear(you, lineup, data) : fight(you, lineup, job, opts.gen, data, opts);
       r.lineup = lineup;
       return r;
     });
@@ -204,7 +285,8 @@
 
   var api = {
     TYPES: TYPES, STAR_SKILLS: STAR_SKILLS, copyOf: copyOf, statLine: statLine, widgetStat: widgetStat, panel: panel,
-    uptime: uptime, bearMod: bearMod, bear: bear, opponent: opponent, fight: fight, candidates: candidates, lineups: lineups, rank: rank
+    uptime: uptime, bearMod: bearMod, bear: bear, opponent: opponent, fight: fight, candidates: candidates, lineups: lineups, rank: rank,
+    LAYER_KEYS: LAYER_KEYS, blank: blank, petLevelPct: petLevelPct, petLayer: petLayer, cityLayer: cityLayer, layered: layered, battleSide: battleSide
   };
   if (typeof module !== 'undefined' && module.exports) {
     root.BattleEngine = root.BattleEngine || require('./battle-engine.js');

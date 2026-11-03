@@ -1,6 +1,7 @@
 /* The Heroes page's lead finder: your owned heroes ranked as a Bear, rally or
    garrison lead. LeadEngine does the maths (js/lead-engine.js); this file reads
-   the roster and Bonus Overview from the save and paints the ranking. */
+   the roster, Bonus Overview and pets from the save, keeps joiners and city
+   buffs in this browser, and paints the ranking. */
 (function () {
   'use strict';
   var EN = {
@@ -12,8 +13,12 @@
     best: 'best', ofBest: '{n}% of your best', mix: 'Ideal mix {inf} / {cav} / {arc}',
     wins: 'Wins against {n} of {total}', win: '{n}%', empty: 'empty seat',
     foesNote: 'Generation {n} accounts, both sides at {total} troops. Win chance per opponent:',
-    saved: 'Saved', saveFailed: 'Could not save'
+    saved: 'Saved', saveFailed: 'Could not save',
+    joinersFor: 'Joiners for the {job}', noPets: 'No pets in your save yet. Add them on the Pets page.', petsOff: 'Pets are left out.',
+    pet: '{name} {level}: {stat}{pct}%', 'petStat.attack': 'attack +', 'petStat.defense': 'defence +', 'petStat.lethality': 'lethality +', 'petStat.health': 'health +',
+    'petStat.enemyLethality': 'enemy lethality −', 'petStat.enemyHealth': 'enemy health −'
   };
+  var PREFS = 'ks.lead-finder.v1';
   var STATS = ['attack', 'lethality', 'defense', 'health'], TYPES = ['inf', 'cav', 'arc'], TOP = 5, CHUNK = 4;
 
   window.Interactions.register('lead-finder', function (context) {
@@ -25,6 +30,53 @@
     function put(key, text) { context.targets(key).forEach(function (node) { node.textContent = text; }); }
     function pct(x) { return api.fmt(Math.round(x * 100)); }
     context.targets('controls').forEach(function (node) { node.disabled = false; });
+
+    // Joiners, city buffs and the pets switch: choices, not game facts, so
+    // they stay in this browser. Storage can be blocked; the page still works.
+    function readPrefs() { try { var v = JSON.parse(localStorage.getItem(PREFS) || '{}'); return v && typeof v === 'object' ? v : {}; } catch (cause) { return {}; } }
+    function writePrefs(v) { try { localStorage.setItem(PREFS, JSON.stringify(v)); } catch (cause) { /* kept for this visit */ } }
+    var prefs = readPrefs();
+    if (!prefs.joiners || typeof prefs.joiners !== 'object') prefs.joiners = {};
+    function usualJoiners(gen) { return (data.megafauna.joiners[job][String(gen)] || []).map(function (key) { return { key: key, level: 5 }; }); }
+    function joinersOf(gen) {
+      var saved = prefs.joiners[job];
+      return Array.isArray(saved) ? saved.filter(function (j) { return j && data.heroes[j.key]; }).map(function (j) { return { key: j.key, level: Math.max(1, Math.min(5, j.level | 0)) }; }) : usualJoiners(gen);
+    }
+    function cityOf() { var out = {}; Object.keys(prefs.city || {}).forEach(function (k) { out[k] = Number(prefs.city[k]) || 0; }); return out; }
+    function petsOf() {
+      if (prefs.usePets === false) return L.blank();
+      var levels = {};
+      try { var roster = store ? store.pets().roster : {}; Object.keys(roster).forEach(function (id) { levels[id] = roster[id].level; }); } catch (cause) { /* no pets */ }
+      return L.petLayer(levels, data);
+    }
+    function paintExtras(gen) {
+      var list = joinersOf(gen), jobLabel = api.tr('leads.job.' + job, job);
+      put('joinersTitle', api.fill(t('joinersFor'), { job: jobLabel }));
+      context.targets('joiner').forEach(function (select) {
+        var slot = list[Number(select.dataset.joiner)];
+        if (select.dataset.field === 'key') select.value = slot ? slot.key : '';
+        else select.value = String(slot ? slot.level : 5);
+      });
+      var city = cityOf();
+      context.targets('city').forEach(function (select) { select.value = String(city[select.dataset.city] || 0); });
+      context.targets('usePets').forEach(function (box) { box.checked = prefs.usePets !== false; });
+      var levels = {};
+      try { var roster = store ? store.pets().roster : {}; Object.keys(roster).forEach(function (id) { levels[id] = roster[id].level; }); } catch (cause) { /* no pets */ }
+      var lines = data.pets.filter(function (pet) { return L.petLevelPct(pet, levels[pet.id]) > 0; }).map(function (pet) {
+        var key = pet.side === 'enemy' ? 'enemy' + pet.stat.charAt(0).toUpperCase() + pet.stat.slice(1) : pet.stat;
+        return api.fill(t('pet'), { name: api.tr('pets.name.' + pet.id, pet.name), level: api.fmt(levels[pet.id]), stat: t('petStat.' + key), pct: api.fmt(L.petLevelPct(pet, levels[pet.id])) });
+      });
+      put('pets', prefs.usePets === false ? t('petsOff') : lines.length ? lines.join(' · ') : t('noPets'));
+    }
+    function readExtras() {
+      var list = [0, 1, 2, 3].map(function () { return { key: '', level: 5 }; });
+      context.targets('joiner').forEach(function (select) { var slot = list[Number(select.dataset.joiner)]; if (select.dataset.field === 'key') slot.key = select.value; else slot.level = Number(select.value) || 5; });
+      prefs.joiners[job] = list.filter(function (j) { return j.key; });
+      prefs.city = {};
+      context.targets('city').forEach(function (select) { if (Number(select.value)) prefs.city[select.dataset.city] = Number(select.value); });
+      prefs.usePets = context.targets('usePets').every(function (box) { return box.checked; });
+      writePrefs(prefs);
+    }
 
     function roster() { try { return store ? store.heroes().roster : {}; } catch (cause) { return {}; } }
     function combat() { try { return store ? store.combat() : { overview: {}, troops: [] }; } catch (cause) { return { overview: {}, troops: [] }; } }
@@ -136,15 +188,15 @@
       var mine = ticket += 1, owned = roster(), gen = generation(owned);
       job = (context.targets('job').filter(function (n) { return n.checked; })[0] || {}).value || 'bear';
       troopsDefault(gen);
-      var ov = overview(gen), by = L.candidates(owned, data), list = L.lineups(by), count = 0;
-      TYPES.forEach(function (type) { count += by[type].filter(Boolean).length; });
-      if (!list.length) { context.targets('list')[0].replaceChildren(); context.targets('foes').forEach(function (n) { n.hidden = true; }); put('status', t('noHeroes')); return; }
+      var ov = overview(gen), by = L.candidates(owned, data), list = L.lineups(by);
+      if (!list.length) { paintExtras(gen); context.targets('list')[0].replaceChildren(); context.targets('foes').forEach(function (n) { n.hidden = true; }); put('status', t('noHeroes')); return; }
       var note = ov.missing.length === 3 ? fill('noOverview', { n: api.fmt(gen), pct: api.fmt(ov.typical) })
         : ov.missing.length ? fill('partial', { types: ov.missing.map(function (type) { return api.tr('sim.calc.' + type, type); }).join(', '), pct: api.fmt(ov.typical) }) : '';
       var ready = fill('ready', { n: api.fmt(Object.keys(owned).filter(function (k) { return L.copyOf(k, owned[k], data); }).length) });
-      var tr = troops(), opts = { overview: ov.rows, troops: tr, gen: gen };
+      paintExtras(gen);
+      var you = { overview: ov.rows, troops: troops(), joiners: joinersOf(gen), city: L.cityLayer(cityOf()), pets: petsOf() }, opts = { gen: gen };
       if (job === 'bear') {
-        var scored = list.map(function (lineup) { var r = L.bear(ov.rows, lineup, tr, data); r.lineup = lineup; return r; });
+        var scored = list.map(function (lineup) { var r = L.bear(you, lineup, data); r.lineup = lineup; return r; });
         scored.sort(function (a, b) { return b.score - a.score; });
         put('status', (note ? note + ' ' : '') + ready);
         paint(scored, gen);
@@ -155,7 +207,7 @@
       (function step() {
         if (mine !== ticket) return;
         for (var i = 0; i < CHUNK && at < list.length; i++, at++) {
-          var r = L.fight(ov.rows, list[at], tr, job, gen, data, opts); r.lineup = list[at]; done.push(r);
+          var r = L.fight(you, list[at], job, gen, data, opts); r.lineup = list[at]; done.push(r);
         }
         if (at < list.length) { put('status', fill('working', { done: api.fmt(at), total: api.fmt(list.length) })); setTimeout(step, 0); return; }
         done.sort(function (a, b) { return b.score - a.score; });
@@ -170,7 +222,9 @@
     return {
       refresh: function () { load(); run(); },
       actions: {
-        run: { events: ['change'], run: function (event) { if (event && event.target && event.target.matches('select')) tierPicked = true; run(); } },
+        run: { events: ['change'], run: function (node) { if (node && node.matches && node.matches('select')) tierPicked = true; run(); } },
+        extras: { events: ['change'], run: function () { readExtras(); run(); } },
+        resetJoiners: { run: function () { delete prefs.joiners[job]; writePrefs(prefs); run(); } },
         edit: { events: ['input'], run: function () { clearTimeout(saveTimer); saveTimer = setTimeout(save, 400); run(); } }
       }
     };

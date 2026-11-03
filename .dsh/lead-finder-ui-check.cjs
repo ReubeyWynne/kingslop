@@ -34,8 +34,30 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal(await page.locator('.lead-foes').isVisible(), true);
   assert.deepEqual(await page.locator('.lead-row').first().locator('.lead-chip').allTextContents().then(t => t.map(x => x.replace(/ \d+%$/, ''))), ['Manta ray', 'Great white', 'Orca', 'Blue whale']);
 
+  // Joiners start from the job's usual list; city buffs and pets move the ranking's numbers.
+  await page.locator('#lead-extras summary').click();
+  assert.deepEqual(await page.locator('[data-joiner][data-field="key"]').evaluateAll(s => s.map(x => x.value)), ['chenko', 'yeonwoo', 'amane', 'amadeus']);
+  assert.match(await page.locator('[data-target="lead-finder.joinersTitle"]').textContent(), /Rally lead/);
+  assert.match(await page.locator('[data-target="lead-finder.pets"]').textContent(), /No pets in your save/);
+  await page.locator('input[value="bear"]').check();
+  await page.waitForFunction(() => document.querySelectorAll('.lead-row').length === 4);
+  assert.deepEqual(await page.locator('[data-joiner][data-field="key"]').evaluateAll(s => s.map(x => x.value)), ['chenko', 'yeonwoo', 'amane', 'margot'], 'the Bear keeps its own joiners');
+  const mixOf = () => page.locator('.lead-row').first().locator('small').last().textContent();
+  const before = await mixOf();
+  await page.locator('[data-joiner="3"][data-field="key"]').selectOption('');
+  await page.locator('[data-city="attack"]').selectOption('20');
+  await page.evaluate(() => PlayerLedger.shared().setPet('giant-rhino', { level: 60, advanced: false }));
+  await page.waitForFunction(() => /Giant Rhino 60: attack \+6%/.test(document.querySelector('[data-target="lead-finder.pets"]').textContent));
+  assert.equal(typeof before, 'string');
+  const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem('ks.lead-finder.v1')));
+  assert.deepEqual(prefs.joiners.bear.map(j => j.key), ['chenko', 'yeonwoo', 'amane']);
+  assert.equal(prefs.city.attack, 20);
+  await page.locator('[data-action="lead-finder.resetJoiners"]').click();
+  await page.waitForFunction(() => document.querySelector('[data-joiner="3"][data-field="key"]').value === 'margot');
+
   await page.reload();
   await page.waitForFunction(() => document.querySelector('[data-stat="arc.health"]').value === '270');
+  assert.equal(await page.locator('[data-city="attack"]').inputValue(), '20', 'city buffs come back');
   for (const width of [320, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     const wide = await page.evaluate(() => [...document.querySelectorAll('#leads, #leads *')].filter(el => el.getBoundingClientRect().right > document.documentElement.clientWidth + 1).map(el => el.className || el.tagName));
@@ -43,5 +65,5 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   }
   assert.deepEqual(errors, []);
   await context.close();
-  console.log('Lead finder UI: empty state, roster ranking, Bonus Overview save, rally opponents, reload and widths pass.');
+  console.log('Lead finder UI: empty state, roster ranking, Bonus Overview save, rally opponents, joiners, city buffs, pets, reload and widths pass.');
 });
