@@ -582,6 +582,7 @@
    {
     "slot": "sk1",
     "name": "Sundering Wound",
+    "bear": false,
     "trigger": {
      "kind": "perAttack",
      "chance": 0.2,

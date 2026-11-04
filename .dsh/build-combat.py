@@ -179,6 +179,9 @@ for fn in (n for n in catalog_tree.body if isinstance(n, ast.FunctionDef) and n.
             hero_skills[key_of[name]] = rows
 check(set(hero_skills) | {'diana'} >= {key_of[n] for n in ref['HERO_CLASS']}, 'hero skill list')
 
+# Skills that do nothing against the Bear (player-confirmed in game).
+DEAD_ON_BEAR = {('zoe', 'sk1')}  # Sundering Wound
+
 # Every value that scales with skill level must be the in-game top level heroes.json
 # carries for that slot. The skill keeps the site's name; the helper's has typos.
 for key, rows in hero_skills.items():
@@ -191,6 +194,8 @@ for key, rows in hero_skills.items():
             scaled.append(round(row['trigger']['chance'] * 100, 2))
         check(all(v in top for v in scaled), '%s %s value' % (key, row['slot']))
         row['name'] = skill['name']
+        if (key, row['slot']) in DEAD_ON_BEAR:
+            row['bear'] = False
 
 tg = {
     'tg3': {'inf': {'chance': skills['_TG3_INF_PROC'], 'damageTakenDownPct': skills['_TG3_INF_RED'] * 100},

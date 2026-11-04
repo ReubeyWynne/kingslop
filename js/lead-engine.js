@@ -226,11 +226,13 @@
   // attacker's families count: damage up and enemy defence down. Within a code,
   // fixed effects (passive or scheduled) add; chance effects never stack with each
   // other, so the code takes the largest one that procs: the expected maximum.
+  // Skills flagged bear: false (Zoe's Sundering Wound) do nothing here.
   function bearMod(skills) {
     var mod = [1, 1, 1];
     TYPES.forEach(function (type, t) {
       var fixed = {}, chances = {};
       skills.forEach(function (s) {
+        if (s.bear === false) return;
         var up = uptime(s), chance = s.kind === 'perRound' || s.kind === 'perAttack';
         s.effects.forEach(function (e) {
           var fam = (e.code >= 200 ? 2 : 0) + (e.code % 100 >= 10 ? 1 : 0);
