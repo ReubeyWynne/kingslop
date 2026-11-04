@@ -224,8 +224,8 @@
 
   // The expected SkillMod per troop type against the Bear. Only the
   // attacker's families count: damage up and enemy defence down. Within a code,
-  // fixed effects (passive or scheduled) add; chance effects never stack with each
-  // other, so the code takes the largest one that procs: the expected maximum.
+  // fixed effects (passive or scheduled) add; of the chance effects only one is
+  // ever active and the duplicates are dead, so the code takes the strongest.
   // Skills flagged bear: false (Zoe's Sundering Wound) do nothing here.
   function bearMod(skills) {
     var mod = [1, 1, 1];
@@ -246,8 +246,8 @@
       var codes = {};
       Object.keys(fixed).concat(Object.keys(chances)).forEach(function (c) { codes[c] = true; });
       Object.keys(codes).forEach(function (code) {
-        var miss = 1, best = 0;
-        (chances[code] || []).sort(function (a, b) { return b.pct - a.pct; }).forEach(function (c) { best += c.pct * c.up * miss; miss *= 1 - c.up; });
+        var best = 0;
+        (chances[code] || []).forEach(function (c) { best = Math.max(best, c.pct * c.up); });
         mod[t] *= 1 + ((fixed[code] || 0) + best) / 100;
       });
     });

@@ -144,8 +144,8 @@
     list.forEach(function (i) { m[i] = true; });
     return m;
   }
-  function compile(list) {
-    return (list || []).map(function (sk) {
+  function compile(raw) {
+    var list = (raw || []).map(function (sk) {
       var vsTerror = sk.special === 'vsTerror';
       var fx = (sk.effects || []).map(function (e) {
         return { code: e.code, fam: family(e.code), pct: +e.pct || 0, troops: mask(e.troops) || [true, true, true], vs: mask(e.vs), vsTerror: vsTerror, chance: sk.kind === 'perRound' || sk.kind === 'perAttack' };
@@ -155,11 +155,26 @@
         turns: Math.max(0, sk.turns | 0), special: sk.special || '', dodgePct: sk.dodgePct, fx: fx,
         on: [0, 1, 2].map(function (t) { return fx.some(function (e) { return e.troops[t]; }); })
       };
-    }).filter(function (sk) { return sk.fx.length || sk.special === 'dodge'; });
+    });
+    // Chance skills sharing a code don't stack: only one of them is ever
+    // active and the duplicates are dead. Keep the strongest (pct × chance).
+    var keep = {};
+    list.forEach(function (sk) {
+      sk.fx.forEach(function (e) {
+        if (!e.chance) return;
+        var v = e.pct * sk.chance;
+        if (!keep[e.code] || v > keep[e.code].v) keep[e.code] = { v: v, e: e };
+      });
+    });
+    list.forEach(function (sk) {
+      sk.fx = sk.fx.filter(function (e) { return !e.chance || keep[e.code].e === e; });
+      sk.on = [0, 1, 2].map(function (t) { return sk.fx.some(function (e) { return e.troops[t]; }); });
+    });
+    return list.filter(function (sk) { return sk.fx.length || sk.special === 'dodge'; });
   }
 
-  // One code's live effects: fixed (passive or scheduled) ones add, chance ones
-  // never stack with each other (the largest live one counts), and the two add.
+  // One code's live effects: fixed (passive or scheduled) ones add, and the
+  // one chance effect per code left after compile adds to them.
   function add(sums, e) {
     var s = sums[e.code] || (sums[e.code] = { fixed: 0, chance: 0 });
     if (e.chance) s.chance = Math.max(s.chance, e.pct); else s.fixed += e.pct;
