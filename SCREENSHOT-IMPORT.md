@@ -188,6 +188,7 @@ the current schema valid. Update PLAYER-LEDGER.md and
 6. Later, not planned in detail: Backpack Gear tab (all hero gear in one
    screen), Heroes roster (portrait matching and star counting).
 7. **Governor Profile** (`governor-profile`), done: see step 15.
+8. **Bonus Overview** (`bonus-overview`), done: see step 16.
 
 ## Steps
 
@@ -360,3 +361,15 @@ The full set (heroes roster, gear tab, resources and speedups tiles, a
 tooltip) is in the project's shared files under `ocr-import/screenshots/`.
 One resources shot with a video overlay was left out because it shows a
 person.
+
+- [x] 16. `bonus-overview` adapter (`js/import-adapters/bonus-overview.js`). The
+  city's Bonus Overview popup, Military section: text rows such as
+  "Squads' Attack 162.4%" and "Archer Lethality 244.8%", read at 800px. The
+  popup scrolls, so each shot offers only the rows it shows; the march, capacity
+  and speed rows are ignored. Proposals target the Heroes page's lead finder
+  (`sheet: 'bonus-overview'`, ids `ov-{squads|inf|cav|arc}-{stat}`), which fills
+  its table and saves whole rows to `combat.overview`. It scores 0.95 on the
+  popup's title (0.9 on a Squads' row alone), above the battle report's 0.85,
+  since both show "Infantry Attack 218.5%". Fixtures:
+  `.dsh/import-fixtures/bonus-overview-{1,2}`, checked by
+  `.dsh/screen-import-check.cjs`.

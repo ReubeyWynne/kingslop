@@ -10,6 +10,7 @@ const pets = require('../js/import-adapters/pets.js');
 require('../js/import-adapters/hero-gear.js');
 const report = require('../js/import-adapters/battle-report.js');
 const governor = require('../js/import-adapters/governor.js');
+require('../js/import-adapters/bonus-overview.js');
 const load = name => S.page(JSON.parse(fs.readFileSync('.dsh/import-fixtures/' + name + '.items.json', 'utf8')));
 const values = proposals => Object.fromEntries(proposals.map(p => [p.id, p.value]));
 
@@ -30,6 +31,18 @@ assert.deepEqual(values(S.route(spd).adapter.read(spd)), {
   'speedup-learning': 12 * 60,
   'speedup-general': 17 * 1440 + 20 * 60 + 1
 });
+
+// Bonus Overview, Military section: the popup scrolls, so each shot offers only its own rows,
+// and the battle report's adapter, which also knows "Infantry Attack 218.5%", does not take it.
+const ov1 = load('bonus-overview-1'), ov2 = load('bonus-overview-2');
+assert.equal(S.route(ov1).adapter.id, 'bonus-overview');
+assert.equal(S.route(ov2).adapter.id, 'bonus-overview');
+assert.deepEqual(values(S.route(ov1).adapter.read(ov1)), { 'ov-squads-attack': 162.4, 'ov-squads-defense': 173, 'ov-squads-lethality': 58.9, 'ov-squads-health': 50.9, 'ov-inf-attack': 218.5, 'ov-inf-defense': 200.2, 'ov-inf-health': 205.9 });
+const ov2Read = S.route(ov2).adapter.read(ov2);
+assert.equal(ov2Read.length, 14, 'the second shot holds two Squads\' rows and all twelve troop rows');
+assert.deepEqual(values(ov2Read.filter(p => /^ov-arc-/.test(p.id))), { 'ov-arc-attack': 174.9, 'ov-arc-defense': 175.9, 'ov-arc-health': 245.6, 'ov-arc-lethality': 244.8 });
+assert.ok(ov2Read.every(p => p.target === 'sheet' && p.sheet === 'bonus-overview' && p.crop && p.crop.h > 0));
+assert.equal(S.route(load('battle-report')).adapter.id, 'battle-report', 'a battle report stays a battle report');
 
 assert.equal(S.route(S.page({ items: [{ text: 'Infantry Attack +12%', poly: [[0, 0], [99, 0], [99, 20], [0, 20]] }] })), null, 'an unknown screen is not claimed');
 // The Pet List's labels fold "l" to "i" like every row; routing must still find it.

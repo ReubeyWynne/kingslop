@@ -208,6 +208,13 @@
 :is(.lead-joiner, .lead-city, .lead-troops) label > span { font-size: .72rem; line-height: 1.2; color: var(--ink-muted); }
 :is(.lead-joiner, .lead-city, .lead-troops) label { display: grid; min-width: 0; }
 
+.lead-drop { display: grid; gap: .15rem; width: 100%; margin: .2rem 0 .6rem; padding: .6rem .8rem; font: inherit; text-align: start; color: var(--ink-dim); border: 1px dashed var(--signal-line); border-radius: 2px; background: transparent; cursor: pointer; }
+.lead-drop strong { color: var(--amber); font-weight: 600; }
+.lead-drop span { font-size: .85rem; }
+.lead-drop:hover, .lead-drop[data-dragging="true"] { color: var(--ink); border-color: var(--amber); background: var(--signal-tint); }
+.lead-drop:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.lead-stats-table .lead-squads th { color: var(--amber); }
+.lead-stats-table .lead-squads td { padding-bottom: .5rem; }
 .lead-stats-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .lead-stats-table thead th { padding: 0 .4rem .1rem 0; font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); text-align: start; }
 .lead-stats-table tbody th { width: 5.5rem; padding-inline-end: .6rem; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-dim); text-align: start; }

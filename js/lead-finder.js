@@ -8,6 +8,7 @@
     noHeroes: 'Mark the heroes you own, with their stars, in the roster above.',
     noOverview: 'Using a typical generation {n} Bonus Overview ({pct}% everywhere) until you enter yours.',
     partial: 'Your Bonus Overview is missing {types}; those use a typical {pct}%.',
+    noSquads: 'Add your Squads\' row too: it adds to every troop type, so the lineups are counted low until it is in.',
     ready: 'Ranked from your {n} heroes that have stars.',
     working: 'Fighting {done} of {total} lineups…',
     best: 'best', no: 'No.', ofBest: '{n}% of your best', mix: 'Ideal mix {inf} / {cav} / {arc}',
@@ -104,22 +105,27 @@
       });
       return rows;
     }
+    // The Squads' row adds to every troop type; a type not typed in full takes the
+    // generation's typical total instead.
     function overview(gen) {
       var rows = typed(), typical = data.megafauna.overview[String(gen)], out = {}, missing = [];
+      function whole(row) { return row && STATS.every(function (k) { return row[k] !== null && row[k] !== undefined; }); }
+      var squads = whole(rows.squads) ? rows.squads : null;
       TYPES.forEach(function (type) {
-        var row = rows[type] || {}, whole = STATS.every(function (k) { return row[k] !== null && row[k] !== undefined; });
-        if (whole) out[type] = row;
+        var row = rows[type];
+        if (whole(row)) { out[type] = {}; STATS.forEach(function (k) { out[type][k] = row[k] + (squads ? squads[k] : 0); }); }
         else { missing.push(type); out[type] = { attack: typical, lethality: typical, defense: typical, health: typical }; }
       });
-      return { rows: out, missing: missing, typical: typical };
+      return { rows: out, missing: missing, typical: typical, noSquads: !squads && missing.length < 3 };
     }
 
     function load() {
       var saved = combat().overview || {};
       context.targets('stat').forEach(function (input) {
         if (input === document.activeElement) return;
+        // A row not saved yet keeps what is typed (or read from a screenshot) so far.
         var at = input.dataset.stat.split('.'), row = saved[at[0]];
-        input.value = row && row[at[1]] !== undefined ? row[at[1]] : '';
+        if (row && row[at[1]] !== undefined) input.value = row[at[1]];
       });
     }
     // Troop tier and Truegold: the best you have saved, else the generation's usual.
@@ -140,7 +146,7 @@
     function save() {
       if (!store) return;
       var rows = typed(), whole = {};
-      TYPES.forEach(function (type) { var row = rows[type] || {}; if (STATS.every(function (k) { return row[k] !== null && row[k] !== undefined; })) whole[type] = row; });
+      ['squads'].concat(TYPES).forEach(function (type) { var row = rows[type] || {}; if (STATS.every(function (k) { return row[k] !== null && row[k] !== undefined; })) whole[type] = row; });
       if (!Object.keys(whole).length) return;
       try { store.setCombat({ overview: whole }, 'manual'); put('saved', t('saved')); }
       catch (cause) { put('saved', t('saveFailed')); }
@@ -288,6 +294,7 @@
       if (!list.length) { paintExtras(gen); clear(); put('status', t('noHeroes')); return; }
       var note = ov.missing.length === 3 ? fill('noOverview', { n: api.fmt(gen), pct: api.fmt(ov.typical) })
         : ov.missing.length ? fill('partial', { types: ov.missing.map(function (type) { return api.tr('sim.calc.' + type, type); }).join(', '), pct: api.fmt(ov.typical) }) : '';
+      if (ov.noSquads) note = (note ? note + ' ' : '') + t('noSquads');
       var ready = fill('ready', { n: api.fmt(Object.keys(owned).filter(function (k) { return L.copyOf(k, owned[k], data); }).length) });
       paintExtras(gen);
       var you = { overview: ov.rows, troops: troops(), joiners: joinersOf(gen), city: L.cityLayer(cityOf()), pets: petsOf() }, opts = { gen: gen };
@@ -312,6 +319,20 @@
       })();
     }
 
+    // Bonus Overview screenshots read by the import dock (js/import-adapters/bonus-overview.js)
+    // arrive as 'ov-{row}-{stat}'; `before` gets what each box held, so the dock can undo.
+    context.listen(context.root, 'screen-import:sheet', function (event) {
+      var values = event.detail.values, before = event.detail.before, boxes = {};
+      context.targets('stat').forEach(function (input) { boxes['ov-' + input.dataset.stat.replace('.', '-')] = input; });
+      Object.keys(values).forEach(function (key) {
+        var input = boxes[key];
+        if (!input) return;
+        before[key] = input.value === '' ? null : Number(input.value);
+        input.value = values[key] === null || values[key] === undefined ? '' : String(values[key]);
+      });
+      var details = document.getElementById('bonus-overview'); if (details) details.open = true;
+      save(); run();
+    });
     if (store) context.cleanup(store.subscribe(function () { load(); run(); }));
     context.listen(document, 'ks:server-age-change', run);
     load(); run();

@@ -23,6 +23,8 @@
   var ITEMS = { xp: 'hero-gear-xp', hammers: 'forgehammer', mythic: 'spare-mythic-gear', mithril: 'mithril' };
   var PREFS = ['included', 'weights', 'profile', 'reforge', 'hammerReforge', 'troop', 'mode', 'view', 'selected', 'goal', 'target', 'targetMastery'];
   var TYPES = ['inf', 'cav', 'arc'], STATS = ['attack', 'lethality', 'defense', 'health'];
+  // The Bonus Overview also has a Squads' row that adds to every troop type.
+  var OVERVIEW_ROWS = ['squads'].concat(TYPES);
   var PIECES = ['inf', 'cav', 'arc'].flatMap(function (troop) { return ['helm', 'gloves', 'chest', 'boots'].map(function (slot) { return troop + '-' + slot; }); });
   // Governor equipment is tracked by level index: 0 is not crafted (or no charm), then one step per tier star or charm level.
   var GOVERNOR = {
@@ -178,7 +180,7 @@
       valid(object(value.combat) && object(value.combat.stats) && object(value.combat.provenance));
       Object.keys(value.combat.stats).forEach(function (type) {
         var row = value.combat.stats[type];
-        valid(TYPES.includes(type) && object(row) && Object.keys(row).length === STATS.length && STATS.every(function (key) { return percent(row[key]); }) && provenance(value.combat.provenance[type]));
+        valid(OVERVIEW_ROWS.includes(type) && object(row) && Object.keys(row).length === STATS.length && STATS.every(function (key) { return percent(row[key]); }) && provenance(value.combat.provenance[type]));
       });
       Object.keys(value.combat.provenance).forEach(function (type) { valid(Object.hasOwn(value.combat.stats, type)); });
       // The Bonus Overview (stats before any hero is seated) sits beside the report's Bonus Details.
@@ -186,7 +188,7 @@
         valid(object(value.combat.overview) && object(value.combat.overviewProvenance) && same(Object.keys(value.combat.overview).sort(), Object.keys(value.combat.overviewProvenance).sort()));
         Object.keys(value.combat.overview).forEach(function (type) {
           var row = value.combat.overview[type];
-          valid(TYPES.includes(type) && object(row) && Object.keys(row).length === STATS.length && STATS.every(function (key) { return percent(row[key]); }) && provenance(value.combat.overviewProvenance[type]));
+          valid(OVERVIEW_ROWS.includes(type) && object(row) && Object.keys(row).length === STATS.length && STATS.every(function (key) { return percent(row[key]); }) && provenance(value.combat.overviewProvenance[type]));
         });
       }
     }
@@ -374,7 +376,7 @@
     function setCombat(input, source, expected) {
       input = input || {};
       var stats = input.stats || {}, overview = input.overview || {}, troops = input.troops || [];
-      [stats, overview].forEach(function (rows) { Object.keys(rows).forEach(function (type) { valid(TYPES.includes(type) && object(rows[type]) && STATS.every(function (key) { return percent(rows[type][key]); })); }); });
+      [stats, overview].forEach(function (rows, at) { Object.keys(rows).forEach(function (type) { valid((at ? OVERVIEW_ROWS : TYPES).includes(type) && object(rows[type]) && STATS.every(function (key) { return percent(rows[type][key]); })); }); });
       troops.forEach(function (row) { valid(object(row) && troopKey(troopId(row.type, row.tier, row.tg)) && (row.amount === null || count(row.amount))); });
       return transaction(function (next) {
         var facts = { source: source || 'manual', at: new Date().toISOString() };
