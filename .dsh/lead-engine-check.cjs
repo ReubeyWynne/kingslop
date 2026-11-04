@@ -9,7 +9,9 @@ const data = {
   heroes: Object.fromEntries(catalogue.heroes.map(h => [h.key, { name: h.name, type: h.type, generation: h.generation, ceiling: h.ceiling }])),
   heroSkills: combat.heroSkills, widgets: combat.widgets, widgetSkill: combat.widgetSkill, megafauna,
   // js/lead-data.liquid's pets: the combat layer's stat and side, the pet's last ladder row.
-  pets: combat.layers.pet.map(layer => { const pet = petData.pets.find(p => p.id === layer.pet); return { id: layer.pet, name: pet.name, stat: layer.stat, side: layer.side, generation: pet.generation, maxLevel: pet.maxLevel, values: pet.skill.ladder.at(-1).values.map(parseFloat) }; })
+  pets: combat.layers.pet.map(layer => { const pet = petData.pets.find(p => p.id === layer.pet); return { id: layer.pet, name: pet.name, stat: layer.stat, side: layer.side, generation: pet.generation, maxLevel: pet.maxLevel, values: pet.skill.ladder.at(-1).values.map(parseFloat) }; }),
+  // js/lead-data.liquid's Cassia: her affinity ladder and her two stat skills.
+  cassia: (c => ({ affinity: c.affinity.percent, attackDefense: c.skills[1].levels.map(l => l.effects[0].value), lethalityHealth: c.skills[2].levels.map(l => l.effects[0].value) }))(require('../_data/masters.json').masters.find(m => m.id === 'cassia'))
 };
 const near = (a, b, what, eps = 1e-6) => assert.ok(Math.abs(a - b) < eps, `${what}: ${a} vs ${b}`);
 const flat = pct => { const row = { attack: pct, lethality: pct, defense: pct, health: pct }; return { inf: row, cav: row, arc: row }; };
@@ -45,16 +47,21 @@ const you = (overview, extra = {}) => ({ overview, troops: tg5, joiners: [], cit
   const p = L.panel(flat(0), [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)], data, gear);
   const game = { atk: [156.92, 240.48, 260.19], def: [176.92, 240.48, 240.19], let: [121.33, 95.40, 277.55], hea: [249.65, 80.18, 148.08] };
   for (const f of Object.keys(game)) game[f].forEach((want, t) => assert.ok(Math.abs(p[f][t] - want) < 0.02, `${f} ${t}: ${p[f][t]} vs the game's ${want}`));
-  // The battle report sent with that lineup (no buffs running) against the Bonus Overview,
-  // Squads' added: Bonus Details = (100 + overview + Hero Stats + c) × (1 + widget skills) − 100,
+  // The battle report sent with that lineup (no buffs running, Cassia at affinity 40 in the
+  // march) against the Bonus Overview, Squads' added:
+  //   Bonus Details = (100 + overview + Hero Stats + Cassia + c) × (1 + widget skills) − 100,
   // where the rally widget skills are attack ×1.125 (Aegis of Fate 4 + Fate's Writ 3, code 102)
-  // and lethality ×1.15 (Mistweaver 10, code 101), and c is a constant the save does not
-  // hold: +4.4 attack and defence, +9.1 lethality and health on every troop type.
+  // and lethality ×1.15 (Mistweaver 10, code 101), Cassia's affinity 40 adds 9.2 lethality and
+  // health, and c is +4.4 attack and defence from a source not yet identified.
   const ov = { inf: { attack: 380.9, defense: 373.2, lethality: 264.1, health: 256.8 }, cav: { attack: 318.1, defense: 329.7, lethality: 243.9, health: 218.0 }, arc: { attack: 337.3, defense: 348.9, lethality: 303.7, health: 296.5 } };
   const lineup = [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)];
-  const c = { atk: 4.4, def: 4.4, let: 9.1, hea: 9.1 }, shifted = {};
-  for (const type of ['inf', 'cav', 'arc']) shifted[type] = { attack: ov[type].attack + c.atk, defense: ov[type].defense + c.def, lethality: ov[type].lethality + c.let, health: ov[type].health + c.hea };
-  const r = L.reportPanel(L.panel(shifted, lineup, data, gear), lineup, 'rally', data);
+  const cassia = L.masterLayer({ cassia: { affinity: 40, ready: false, skills: [null, null, null, null] } }, data);
+  assert.deepEqual(cassia, { atk: 0, def: 0, let: 9.2, hea: 9.2 }, 'Cassia at affinity 40');
+  assert.deepEqual(L.masterLayer({ cassia: { affinity: 40, ready: false, skills: [4, 4, 2, null] } }, data), { atk: 2, def: 2, let: 10.2, hea: 10.2 }, 'Firepower to Win 4, Commando 2');
+  assert.deepEqual(L.masterLayer({}, data), { atk: 0, def: 0, let: 0, hea: 0 }, 'no Cassia, nothing');
+  const shifted = {};
+  for (const type of ['inf', 'cav', 'arc']) shifted[type] = { ...ov[type], attack: ov[type].attack + 4.4, defense: ov[type].defense + 4.4 };
+  const r = L.reportPanel(L.panel(shifted, lineup, data, gear, cassia), lineup, 'rally', data);
   const report = { atk: [622.5, 645.9, 689.6], def: [554.5, 574.5, 593.4], let: [468.7, 415.7, 693.9], hea: [515.7, 307.2, 453.7] };
   for (const f of Object.keys(report)) report[f].forEach((want, t) => assert.ok(Math.abs(r[f][t] - want) < 0.6, `report ${f} ${t}: ${r[f][t].toFixed(2)} vs ${want}`));
   assert.deepEqual(L.reportPanel(r, lineup, 'defender', data), r, 'rally widgets do nothing in a garrison');

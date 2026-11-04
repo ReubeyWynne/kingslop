@@ -53,6 +53,10 @@
     function gearOf() {
       try { return L.gearLayer(store ? store.snapshot().heroGear.pieces : {}); } catch (cause) { return L.gearLayer({}); }
     }
+    // Cassia from the Masters page, the one master whose bonuses apply in every fight.
+    function masterOf() {
+      try { return L.masterLayer(store ? store.masters().roster : {}, data); } catch (cause) { return L.masterLayer({}, data); }
+    }
     function petsOf() {
       if (prefs.usePets === false) return L.blank();
       var levels = {};
@@ -247,7 +251,7 @@
         answer.appendChild(el('p', 'lead-kicker', t('railTitle')));
         answer.append(rail(r, true), el('p', 'lead-answer-note', t('railNote')));
       }
-      var p = L.reportPanel(L.layered(L.panel(you.overview, r.lineup, data, you.gear), { city: you.city, pet: you.pets }, { city: L.blank(), pet: L.blank() }), r.lineup, job === 'garrison' ? 'defender' : 'rally', data);
+      var p = L.reportPanel(L.layered(L.panel(you.overview, r.lineup, data, you.gear, you.master), { city: you.city, pet: you.pets }, { city: L.blank(), pet: L.blank() }), r.lineup, job === 'garrison' ? 'defender' : 'rally', data);
       var body = context.targets('panel')[0];
       body.replaceChildren();
       TYPES.forEach(function (type, i) {
@@ -301,7 +305,7 @@
       if (ov.noSquads) note = (note ? note + ' ' : '') + t('noSquads');
       var ready = fill('ready', { n: api.fmt(Object.keys(owned).filter(function (k) { return L.copyOf(k, owned[k], data); }).length) });
       paintExtras(gen);
-      var you = { overview: ov.rows, troops: troops(), joiners: joinersOf(gen), city: L.cityLayer(cityOf()), pets: petsOf(), gear: gearOf() }, opts = { gen: gen };
+      var you = { overview: ov.rows, troops: troops(), joiners: joinersOf(gen), city: L.cityLayer(cityOf()), pets: petsOf(), gear: gearOf(), master: masterOf() }, opts = { gen: gen };
       if (job === 'bear') {
         var scored = list.map(function (lineup) { var r = L.bear(you, lineup, data); r.lineup = lineup; return r; });
         scored.sort(function (a, b) { return b.score - a.score; });

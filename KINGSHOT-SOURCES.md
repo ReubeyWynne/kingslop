@@ -257,7 +257,10 @@ Stats + c) × (1 + widget skills / 100) − 100, every one of the twelve rows wi
 No buffs were running. Rally widget skills: attack ×1.125 (Aegis of Fate 4 + Fate's Writ
 3, code 102), lethality ×1.15 (Mistweaver 10, code 101); defence and health untouched.
 c is +4.4 on attack and defence and +9.1 on lethality and health, the same on every
-type, from something the Bonus Overview does not show (not yet identified). So the
+type, from something the Bonus Overview does not show. The lethality and health part is
+Cassia, who marched with it: her affinity 40 adds 9.2 Squads' lethality and health
+(`_data/masters.json`). The +4.4 attack and defence is not yet identified (her Firepower
+to Win adds attack and defence, 0.5 a level, but the report's skill levels don't give 4.4). So the
 block is not misleading, the Squads' row adds to each troop type's row, and a widget
 has an additive stat (in Hero Stats) and a multiplicative skill (its role only).
 
