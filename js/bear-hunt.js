@@ -45,6 +45,30 @@
     var ratios = Array.prototype.slice.call(ratio.querySelectorAll('input'));
     var personalized = false;
     var result;
+    /* The troops you enter are kept on this device, like the simulator's sheet (bh:sim:v1),
+       so a reload or a later visit opens on your own marches. ?guest never writes. */
+    var KEY = 'bh:bear-allocator:v1';
+    var guest = /(?:^|[?&])guest(?:=|&|$)/.test(location.search);
+    var fields = Array.prototype.slice.call(root.querySelectorAll('input[id]'));
+
+    function restore() {
+      var saved = null;
+      try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (ignored) { saved = null; }
+      if (!saved || typeof saved !== 'object') return false;
+      fields.forEach(function (field) {
+        var value = saved[field.id];
+        if (field.type === 'checkbox') { if (typeof value === 'boolean') field.checked = value; }
+        else if (typeof value === 'string' && value !== '' && isFinite(Number(value))) field.value = value;
+      });
+      return true;
+    }
+
+    function save() {
+      if (guest) return;
+      var out = {};
+      fields.forEach(function (field) { out[field.id] = field.type === 'checkbox' ? field.checked : field.value; });
+      try { localStorage.setItem(KEY, JSON.stringify(out)); } catch (ignored) { /* private mode, full storage */ }
+    }
 
     function label(key, fallback) {
       return window.I18N && window.I18N.tr ? window.I18N.tr(key, fallback) : fallback;
@@ -140,6 +164,8 @@
     button.addEventListener('click', function () { open(root.hidden); });
     priority.addEventListener('change', showRatio);
     ratios.forEach(function (input) { input.addEventListener('input', function () { ratios.forEach(function (field) { field.setCustomValidity(''); }); }); });
+    root.addEventListener('input', save);
+    root.addEventListener('change', save);
     root.addEventListener('submit', function (event) {
       event.preventDefault();
       var options = read();
@@ -153,8 +179,14 @@
       open(false);
       button.focus();
     });
+    var restored = restore();
     showRatio();
-    result = window.BH_BEAR_ALLOCATOR.allocate(read());
+    personalized = restored;
+    try { result = window.BH_BEAR_ALLOCATOR.allocate(read()); }
+    catch (ignored) {
+      // A saved ratio that does not add up to 100: show the equal split until it is fixed.
+      result = window.BH_BEAR_ALLOCATOR.allocate(Object.assign(read(), { priority: false }));
+    }
     render();
     document.addEventListener('i18n:change', render);
   }
