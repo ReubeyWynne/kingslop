@@ -144,34 +144,58 @@
     list.forEach(function (i) { m[i] = true; });
     return m;
   }
-  function compile(list) {
-    return (list || []).map(function (sk) {
+  function compile(raw) {
+    var list = (raw || []).map(function (sk) {
       var vsTerror = sk.special === 'vsTerror';
       var fx = (sk.effects || []).map(function (e) {
-        return { code: e.code, fam: family(e.code), pct: +e.pct || 0, troops: mask(e.troops) || [true, true, true], vs: mask(e.vs), vsTerror: vsTerror };
+        return { code: e.code, fam: family(e.code), pct: +e.pct || 0, troops: mask(e.troops) || [true, true, true], vs: mask(e.vs), vsTerror: vsTerror, chance: sk.kind === 'perRound' || sk.kind === 'perAttack' };
       });
       return {
         kind: sk.kind || 'passive', chance: pos(sk.chance), every: Math.max(1, sk.every | 0), offset: sk.offset | 0,
         turns: Math.max(0, sk.turns | 0), special: sk.special || '', dodgePct: sk.dodgePct, fx: fx,
         on: [0, 1, 2].map(function (t) { return fx.some(function (e) { return e.troops[t]; }); })
       };
-    }).filter(function (sk) { return sk.fx.length || sk.special === 'dodge'; });
+    });
+    // Chance skills sharing a code don't stack: only one of them is ever
+    // active and the duplicates are dead. Keep the strongest (pct × chance).
+    var keep = {};
+    list.forEach(function (sk) {
+      sk.fx.forEach(function (e) {
+        if (!e.chance) return;
+        var v = e.pct * sk.chance;
+        if (!keep[e.code] || v > keep[e.code].v) keep[e.code] = { v: v, e: e };
+      });
+    });
+    list.forEach(function (sk) {
+      sk.fx = sk.fx.filter(function (e) { return !e.chance || keep[e.code].e === e; });
+      sk.on = [0, 1, 2].map(function (t) { return sk.fx.some(function (e) { return e.troops[t]; }); });
+    });
+    return list.filter(function (sk) { return sk.fx.length || sk.special === 'dodge'; });
   }
 
-  // One family's factor for a hit: (1 + summed % / 100) per code, multiplied
+  // One code's live effects: fixed (passive or scheduled) ones add, and the
+  // one chance effect per code left after compile adds to them.
+  function add(sums, e) {
+    var s = sums[e.code] || (sums[e.code] = { fixed: 0, chance: 0 });
+    if (e.chance) s.chance = Math.max(s.chance, e.pct); else s.fixed += e.pct;
+  }
+  function product(sums) {
+    var f = 1;
+    for (var code in sums) f *= 1 + (sums[code].fixed + sums[code].chance) / 100;
+    return f;
+  }
+
+  // One family's factor for a hit: (1 + one code's % / 100) per code, multiplied
   // across codes. `own` is the troop type the effect must cover, `enemy` the
   // type it must be aimed at when it names one.
   function factor(fx, fam, own, enemy, terror) {
-    var sums = null;
+    var sums = {};
     for (var i = 0; i < fx.length; i++) {
       var e = fx[i];
       if (e.fam !== fam || !e.troops[own] || (e.vs && !e.vs[enemy]) || (e.vsTerror && !terror)) continue;
-      sums = sums || {};
-      sums[e.code] = (sums[e.code] || 0) + e.pct;
+      add(sums, e);
     }
-    var f = 1;
-    for (var code in sums) f *= 1 + sums[code] / 100;
-    return f;
+    return product(sums);
   }
 
   // A side's state for one round: the effects live this round, the Truegold
@@ -260,15 +284,13 @@
         if (sk.special === 'debuffTargetOnHit') { if (e.fam === 3) foe.hurt[g] += e.pct; continue; }
         if (e.fam === 0 && e.troops[t] && (!e.vs || e.vs[g])) {
           sums = sums || {};
-          sums[e.code] = (sums[e.code] || 0) + e.pct;
+          add(sums, e);
         } else if (e.fam !== 0) {
           st.timed.push({ id: i + '.' + j, fx: [e], from: round + 1, until: round + Math.max(1, sk.turns) });
         }
       }
     }
-    var x = 1;
-    for (var code in sums) x *= 1 + sums[code] / 100;
-    return x;
+    return sums ? product(sums) : 1;
   }
 
   // SkillMod for type t striking type g, with the Truegold rolls folded in.

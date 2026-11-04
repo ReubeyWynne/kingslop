@@ -8,10 +8,22 @@
    heroes, so they cannot be used to compare one lineup with another. The
    four layers a hero adds on top (KINGSHOT-SOURCES.md, Hero layer):
 
-     attack, defence   overview + ceiling × curve[star index], own type only
-     lethality, health (100 + overview) × (1 + widget stat / 100) − 100,
-                       widget stat = level / 10 × the widget's top value,
-                       own type only, in every role
+     attack, defence   overview + ceiling × curve[star index] + red gear
+                       milestones, own type only
+     lethality, health overview + widget stat + hero gear, own type only,
+                       widget stat = level / 10 × the widget's top value
+                       (added, not multiplied), in every role
+     hero gear         the saved set for the hero's troop type
+                       (js/hero-gear-engine.js HeroGear.stats): helm and boots
+                       add lethality, gloves and chest health
+
+   Checked against the game's own Hero Stats block (Expedition) for three
+   heroes, to the hundredth, and against battle reports from three accounts:
+   Bonus Details = (100 + overview + Squads' + Hero Stats + Town Centre TG)
+   × (1 + the lead's widget skills in their role) − 100, every row within 0.2.
+     town centre       a flat bonus by Truegold level, every type, every march
+                       (TG2 +4 attack/defence; TG4 +4, +9 lethality/health;
+                       TG5 +8, +12); masters are already in the overview
      skills            js/combat.js: every Expedition skill at its level and
                        the widget's skill in its own role (rally or defender)
 
@@ -70,22 +82,71 @@
   function statLine(copy, data) { return data.heroes[copy.key].ceiling * data.curve[copy.stars] / 100; }
   function widgetStat(copy, data) { var w = data.widgets[copy.key]; return w && copy.widget ? w.maxPct * copy.widget / 10 : 0; }
 
+  // Hero gear by troop type from the save's pieces ('inf-helm' …): what a hero of
+  // that type wears. Pieces not recorded add nothing.
+  function gearLayer(pieces) {
+    var G = root.HeroGear, out = {};
+    TYPES.forEach(function (type) {
+      var sum = { atk: 0, def: 0, let: 0, hea: 0 };
+      if (G && pieces) ['helm', 'gloves', 'chest', 'boots'].forEach(function (slot) {
+        var piece = pieces[type + '-' + slot];
+        if (!piece) return;
+        var s = G.stats(piece, slot);
+        sum[slot === 'helm' || slot === 'boots' ? 'let' : 'hea'] += s.core;
+        sum.atk += s.attack; sum.def += s.defense;
+      });
+      out[type] = sum;
+    });
+    return out;
+  }
+
+  // The Town Centre's Truegold level adds attack, defence, lethality and health to every troop
+  // type in every march, and the Bonus Overview leaves it out. Read off three accounts' reports
+  // against their Bonus Overviews (KINGSHOT-SOURCES.md, 2026-11-04): only these levels are
+  // known, so any other level adds nothing and says so (known: false).
+  var TOWN_TG = { 2: [4, 0], 4: [4, 9], 5: [8, 12] };
+  function townLevel(level) { var m = /^TG ?(\d+)/.exec(String(level || '')); return m ? Number(m[1]) : 0; }
+  function townLayer(level) {
+    var tg = townLevel(level), row = TOWN_TG[tg];
+    return { atk: row ? row[0] : 0, def: row ? row[0] : 0, let: row ? row[1] : 0, hea: row ? row[1] : 0, tg: tg, known: tg === 0 || Boolean(row) };
+  }
+
   // Bonus Overview plus a lineup → the four Bonus Details rows the battle
-  // engine fights with. overview is { inf: { attack, lethality, defense, health }, … }.
-  function panel(overview, lineup, data) {
+  // engine fights with. overview is { inf: { attack, lethality, defense, health }, … }
+  // with the Squads' row already added; gear is gearLayer's, worn by the seated hero;
+  // town is townLayer's, on every type whoever is seated.
+  function panel(overview, lineup, data, gear, town) {
     var out = { atk: [0, 0, 0], let: [0, 0, 0], def: [0, 0, 0], hea: [0, 0, 0] };
     TYPES.forEach(function (type, t) {
       var row = (overview && overview[type]) || {};
-      var atk = num(row.attack), def = num(row.defense), leth = num(row.lethality), hea = num(row.health), g = 0;
+      var M = town || {};
+      var atk = num(row.attack) + num(M.atk), def = num(row.defense) + num(M.def), leth = num(row.lethality) + num(M.let), hea = num(row.health) + num(M.hea);
       lineup.forEach(function (copy) {
         if (!copy || copy.type !== type) return;
-        var line = statLine(copy, data);
-        atk += line; def += line; g += widgetStat(copy, data);
+        var line = statLine(copy, data), w = widgetStat(copy, data), g = (gear && gear[type]) || {};
+        atk += line + num(g.atk); def += line + num(g.def);
+        leth += w + num(g.let); hea += w + num(g.hea);
       });
-      out.atk[t] = atk; out.def[t] = def;
-      out.let[t] = (100 + leth) * (1 + g / 100) - 100;
-      out.hea[t] = (100 + hea) * (1 + g / 100) - 100;
+      out.atk[t] = atk; out.def[t] = def; out.let[t] = leth; out.hea[t] = hea;
     });
+    return out;
+  }
+
+  // The widget skills seated in a role, as the battle report's Bonus Details show them:
+  // code 102 (attack up) and 101 (lethality up) multiply their row,
+  // (100 + row) × (1 + Σ / 100) − 100. The battle engine already counts them as
+  // skills, so this is for showing a report's numbers, not for scoring.
+  function reportPanel(p, lineup, role, data) {
+    var sums = { 101: 0, 102: 0 }, out = { atk: p.atk.slice(), let: p.let.slice(), def: p.def.slice(), hea: p.hea.slice() };
+    lineup.forEach(function (copy) {
+      var w = copy && data.widgets[copy.key], lvl = copy ? copy.widget : 0;
+      if (!w || !lvl || w.skill.role !== role || !Object.hasOwn(sums, w.skill.code)) return;
+      sums[w.skill.code] += data.widgetSkill.maxPct * data.widgetSkill.byLevel[lvl];
+    });
+    for (var t = 0; t < 3; t++) {
+      out.atk[t] = (100 + out.atk[t]) * (1 + sums[102] / 100) - 100;
+      out.let[t] = (100 + out.let[t]) * (1 + sums[101] / 100) - 100;
+    }
     return out;
   }
 
@@ -162,22 +223,33 @@
   }
 
   // The expected SkillMod per troop type against the Bear. Only the
-  // attacker's families count: damage up and enemy defence down.
+  // attacker's families count: damage up and enemy defence down. Within a code,
+  // fixed effects (passive or scheduled) add; of the chance effects only one is
+  // ever active and the duplicates are dead, so the code takes the strongest.
+  // Skills flagged bear: false (Zoe's Sundering Wound) do nothing here.
   function bearMod(skills) {
     var mod = [1, 1, 1];
     TYPES.forEach(function (type, t) {
-      var sums = {};
+      var fixed = {}, chances = {};
       skills.forEach(function (s) {
-        var up = uptime(s);
+        if (s.bear === false) return;
+        var up = uptime(s), chance = s.kind === 'perRound' || s.kind === 'perAttack';
         s.effects.forEach(function (e) {
           var fam = (e.code >= 200 ? 2 : 0) + (e.code % 100 >= 10 ? 1 : 0);
           if (fam !== 0 && fam !== 3) return;
           if (e.troops && e.troops.indexOf(t) < 0) return;
           if (e.vs && e.vs.indexOf(0) < 0) return;
-          sums[e.code] = (sums[e.code] || 0) + e.pct * up;
+          if (chance) (chances[e.code] = chances[e.code] || []).push({ pct: e.pct, up: up });
+          else fixed[e.code] = (fixed[e.code] || 0) + e.pct * up;
         });
       });
-      Object.keys(sums).forEach(function (code) { mod[t] *= 1 + sums[code] / 100; });
+      var codes = {};
+      Object.keys(fixed).concat(Object.keys(chances)).forEach(function (c) { codes[c] = true; });
+      Object.keys(codes).forEach(function (code) {
+        var best = 0;
+        (chances[code] || []).forEach(function (c) { best = Math.max(best, c.pct * c.up); });
+        mod[t] *= 1 + ((fixed[code] || 0) + best) / 100;
+      });
     });
     return mod;
   }
@@ -185,7 +257,7 @@
   // Expected Bear damage of a lineup at the lead's ideal mix, and that mix.
   function bear(you, lineup, data) {
     var E = root.BattleEngine, troops = you.troops;
-    var p = layered(panel(you.overview, lineup, data), layersOf(you), null);
+    var p = layered(panel(you.overview, lineup, data, you.gear, you.town), layersOf(you), null);
     var mod = bearMod(skillsOf(lineup, 'rally', data, you.joiners));
     var terms = TYPES.map(function (type, t) {
       var tier = troops.tier[t], tg = troops.tg[t];
@@ -219,7 +291,7 @@
 
   // One side ready for the battle engine, its layers set against the other.
   function battleSide(who, lineup, role, against, data) {
-    var p = layered(panel(who.overview, lineup, data), layersOf(who), layersOf(against));
+    var p = layered(panel(who.overview, lineup, data, who.gear, who.town), layersOf(who), layersOf(against));
     return { atk: p.atk, let: p.let, def: p.def, hea: p.hea, tier: who.troops.tier, tg: who.troops.tg, skills: skillsOf(lineup, role, data, who.joiners) };
   }
 
@@ -284,13 +356,14 @@
   }
 
   var api = {
-    TYPES: TYPES, STAR_SKILLS: STAR_SKILLS, copyOf: copyOf, statLine: statLine, widgetStat: widgetStat, panel: panel,
+    TYPES: TYPES, STAR_SKILLS: STAR_SKILLS, copyOf: copyOf, statLine: statLine, widgetStat: widgetStat, gearLayer: gearLayer, townLayer: townLayer, TOWN_TG: TOWN_TG, panel: panel, reportPanel: reportPanel,
     uptime: uptime, bearMod: bearMod, bear: bear, opponent: opponent, fight: fight, candidates: candidates, lineups: lineups, rank: rank,
     LAYER_KEYS: LAYER_KEYS, blank: blank, petLevelPct: petLevelPct, petLayer: petLayer, cityLayer: cityLayer, layered: layered, battleSide: battleSide
   };
   if (typeof module !== 'undefined' && module.exports) {
     root.BattleEngine = root.BattleEngine || require('./battle-engine.js');
     root.CombatSkills = root.CombatSkills || require('./combat.js');
+    root.HeroGear = root.HeroGear || require('./hero-gear-engine.js');
     module.exports = api;
   }
   root.LeadEngine = api;

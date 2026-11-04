@@ -37,7 +37,7 @@
     var k = lvl / 5, tr = row.trigger || {};
     var out = {
       kind: tr.kind || 'passive', chance: tr.chance == null ? undefined : tr.chance * (tr.chanceScales ? k : 1),
-      every: tr.every, offset: tr.offset, turns: tr.turns, special: row.special,
+      every: tr.every, offset: tr.offset, turns: tr.turns, special: row.special, bear: row.bear,
       effects: (row.effects || []).map(function (e) {
         return { code: e.code, pct: e.pct * (e.fixed ? 1 : k), troops: index(e.troops), vs: index(e.vs) };
       })

@@ -78,7 +78,7 @@ The order follows community guides checked on 23 October 2026, listed in `_data/
 | Goal | Cost from | Pays with |
 | --- | --- | --- |
 | Building | `_data/buildings.json` through `BuildingSpend.index`: every step to the target and, recursively, every prerequisite step those rows name | Bread, wood, stone, iron, Truegold, Tempered Truegold |
-| Hero stars | `HeroSpend.STAR_STEPS` | The hero's own shards, then general shards of its rarity (never for Amadeus and Helga) |
+| Hero stars | `HeroSpend.STAR_STEPS` | The hero's own shards, then general shards of its rarity (never for Amadeus and Helga). Guidance leaves mythic general shards banked for the next new hero |
 | Hero gear | `HeroGear.target` and `HeroGear.cost`, including the mastery a red level needs | Gear XP, Forgehammers, spare mythic gear, mithril |
 | Governor gear, charms | `Governor.cost` | Satin, Gilded Threads, Artisan's Vision; Charm Guides and Designs |
 | Pet | `PetPlan.cost`, with the Advance at the target done | Pet Food, Growth Manuals, Nutrient Potions, Promotion Medallions |

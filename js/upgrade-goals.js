@@ -133,7 +133,8 @@
     var copy = snapshot.masters && snapshot.masters.roster && snapshot.masters.roster[goal.target];
     if (!copy || copy.affinity === null) return result(goal, 'record', { record: [goal.target] });
     if (copy.affinity >= goal.level) return result(goal, 'met', { from: copy.affinity });
-    var classes = entry.classes.filter(function (c) { return c.level > copy.affinity && c.level <= goal.level; });
+    // Reaching a level needs every class below it: the one pending at the current level, then each gate on the way.
+    var classes = entry.classes.filter(function (c) { return c.level < goal.level && (c.level > copy.affinity || c.level === copy.affinity && copy.ready); });
     var need = classes.reduce(function (sum, c) { return sum + c.emblems; }, 0);
     return settle(goal, copy.affinity, [pooled(snapshot, masterSpend.emblemId(goal.target), masterSpend.GENERAL, need, { kind: 'emblems', master: entry.name, general: true })], { classes: classes.length });
   }

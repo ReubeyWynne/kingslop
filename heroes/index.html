@@ -24,7 +24,7 @@ self: heroes
     {% assign troops = 'inf,cav,arc' | split: ',' %}
     {% include heroes/roster.html %}
   </section>
-  <section class="section lead-finder" id="leads" data-module="lead-finder" aria-labelledby="leads-title">
+  <section class="section lead-finder" id="leads" data-module="lead-finder" data-screen-import-sheet="bonus-overview" aria-labelledby="leads-title">
     <h2 id="leads-title" data-i18n="leads.title">Your best leads</h2>
     <p data-i18n="leads.intro">Your own heroes, ranked by job. Give each hero you own its stars and widget level in the roster above, then enter your Bonus Overview.</p>
     <fieldset class="lead-jobs" disabled data-target="lead-finder.controls">
@@ -35,11 +35,12 @@ self: heroes
     </fieldset>
     <details class="lead-overview" id="bonus-overview">
       <summary data-i18n="leads.overview">Your Bonus Overview</summary>
-      <p class="note" data-i18n="leads.overviewNote">Type the troop stats from your Bonus Overview, not from a battle report. A report already includes the heroes you sent, so it cannot compare one lineup with another.</p>
+      <p class="note" data-i18n="leads.overviewNote">Use the Military rows of your Bonus Overview, not a battle report. A report already includes the heroes you sent, so it cannot compare one lineup with another. The Squads' row adds to every troop type.</p>
+      <button type="button" class="lead-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="leads.drop.title">Read Bonus Overview screenshots</strong> <span data-i18n="leads.drop.body">Pick, drop or paste them. The popup scrolls, so two shots cover all sixteen rows. You check each value before it fills the table.</span></button>
       <fieldset class="lead-stats" disabled data-target="lead-finder.controls">
         <table class="lead-stats-table">
           <thead><tr><td></td>{% assign stat_ids = 'attack,lethality,defense,health' | split: ',' %}{% for stat in stat_ids %}<th scope="col" data-i18n="leads.stat.{{ stat }}">{{ stat }}</th>{% endfor %}</tr></thead>
-          <tbody>{% for troop in troops %}<tr><th scope="row" data-i18n="sim.calc.{{ troop }}">{{ troop }}</th>{% for stat in stat_ids %}<td><input type="number" min="0" max="100000" step="0.1" inputmode="decimal" placeholder="?" aria-label="{{ troop }} {{ stat }} %" data-stat="{{ troop }}.{{ stat }}" data-target="lead-finder.stat" data-action="lead-finder.edit"></td>{% endfor %}</tr>{% endfor %}</tbody>
+          {% assign overview_rows = 'squads,inf,cav,arc' | split: ',' %}<tbody>{% for troop in overview_rows %}<tr{% if troop == 'squads' %} class="lead-squads"{% endif %}><th scope="row" {% if troop == 'squads' %}data-i18n="leads.squads">Squads'{% else %}data-i18n="sim.calc.{{ troop }}">{{ troop }}{% endif %}</th>{% for stat in stat_ids %}<td><input type="number" min="0" max="100000" step="0.1" inputmode="decimal" placeholder="?" aria-label="{{ troop }} {{ stat }} %" data-stat="{{ troop }}.{{ stat }}" data-target="lead-finder.stat" data-action="lead-finder.edit"></td>{% endfor %}</tr>{% endfor %}</tbody>
         </table>
         <div class="lead-troops">
           <label><span data-i18n="leads.tier">Troop tier</span><select data-target="lead-finder.tier" data-action="lead-finder.run">{% for tier in (1..11) %}<option value="{{ tier }}">T{{ tier }}</option>{% endfor %}</select></label>
@@ -94,7 +95,7 @@ self: heroes
     </div>
     <details class="lead-method" id="lead-method">
       <summary data-i18n="leads.method">How the ranking works</summary>
-      <p data-i18n="leads.method.stats">Each hero adds its star stats to attack and defence for its own troop type, its widget adds lethality and health for that type, and every Expedition skill counts at its level (the stars cap it). The widget skill counts only in its own role: a rally widget in a rally, a defender widget in a garrison.</p>
+      <p data-i18n="leads.method.stats">Each hero adds its star stats to attack and defence for its own troop type, its widget and the hero gear you saved on the Hero Gear page add lethality and health for that type (the same sums as the hero’s Hero Stats, Expedition block), and every Expedition skill counts at its level (the stars cap it). Your Town Centre’s Truegold level, saved on the Buildings page, adds the attack, defence, lethality and health it gives every march, which the Bonus Overview leaves out (known so far for TG2, TG4 and TG5). The widget skill counts only in its own role: a rally widget in a rally, a defender widget in a garrison.</p>
       <p data-i18n="leads.method.bear">Bear: the expected damage of the lineup at its own ideal troop mix, with every chance skill at its average. The bar is each lineup against your best one.</p>
       <p data-i18n="leads.method.fight">Rally and garrison: your lineup fights each stock opponent of your kingdom’s generation, both sides at 100,000 troops in the usual mixes, 24 battles a fight. Lineups are sorted by how many more troops they keep than the opponent, on average.</p>
       <p data-i18n="leads.method.layers">Joiners add their first skills by the joiner rule. City buffs and pets are each their own layer that multiplies the stat, and an enemy debuff only cancels a buff in the same layer. Against the Bear only your attack and lethality buffs count.</p>

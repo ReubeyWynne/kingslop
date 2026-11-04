@@ -23,6 +23,7 @@
     ['hero-gear-ocr.js', function () { return window.HeroGearOCR; }],
     ['import-adapters/hero-gear.js', function () { return window.ScreenImport.get('hero-gear'); }],
     ['import-adapters/battle-report.js', function () { return window.ScreenImport.get('battle-report'); }],
+    ['import-adapters/bonus-overview.js', function () { return window.ScreenImport.get('bonus-overview'); }],
     ['governor-data.js', function () { return window.GovernorData; }],
     ['governor-ocr.js', function () { return window.GovernorOCR; }],
     ['import-adapters/governor.js', function () { return window.ScreenImport.get('governor-profile'); }]
@@ -521,7 +522,8 @@
     // player save.
     var OPEN = {
       'battle-report': ['import.openSheet', 'Open the battle simulator to apply this report. It waits here until then.'],
-      governor: ['import.openGovernor', 'Open the governor gear page to apply this profile. It waits here until then.']
+      governor: ['import.openGovernor', 'Open the governor gear page to apply this profile. It waits here until then.'],
+      'bonus-overview': ['import.openOverview', 'Open the Heroes page to apply this Bonus Overview. It waits here until then.']
     };
     function openSheet(name) { var say = OPEN[name] || OPEN['battle-report']; status(tr(say[0], say[1])); }
     function sheetHost(name) { return document.querySelector('[data-screen-import-sheet~="' + name + '"]'); }

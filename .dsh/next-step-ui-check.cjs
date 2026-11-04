@@ -43,6 +43,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     store.setBuildings({ 'town-center': '24', embassy: '23', barracks: '22' });
     store.setHero('jabel', { level: 60, stars: 10, widget: 2, skills: null });
     store.setBalance('mythic-hero-shard', 200);
+    store.setBalance('hero-shards-jabel', 200);
     store.setGovernor('gear', { 'inf-1': 30, 'inf-2': 30, 'cav-1': 30, 'cav-2': 30, 'arc-1': 30, 'arc-2': 30 });
     store.setPet('lion', { level: 20, advanced: false });
     store.setMaster('valora', { affinity: 29, ready: true, skills: [3, 2, 0, 0] });

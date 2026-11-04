@@ -22,7 +22,7 @@ assert.equal(Town.available(store.snapshot(), 'prep', 3).items.find(item => item
 const partialStore = Ledger.create(storage());
 partialStore.setHero('jabel', { stars: 24 });
 partialStore.setHero('amadeus', {});
-partialStore.setBalance('hero-shards-jabel', 60);
+partialStore.setBalance('hero-shards-jabel', 100);
 partialStore.setBalance('mythic-hero-shard', 200);
 const partial = Town.available(partialStore.snapshot(), 'prep', 2);
 assert.ok(partial.items.find(item => item.id === 'mythic-hero-shard').points > 0);

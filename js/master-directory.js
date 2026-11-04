@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   var EN = {
-    count: '{n} masters', owned: '{n} yours', level: 'Lv {n}', next: 'Next class: {name} at affinity {level}, {cost} emblems.', waiting: 'Next class: {name} at affinity {level}, {cost} emblems. Waiting on emblems now.',
+    count: '{n} masters', owned: '{n} yours', level: 'Lv {n}', next: 'Next class: {name} at affinity {level}, {cost} emblems.', waiting: 'Next class: {name} at affinity {level}, {cost} emblems. Relationship Advancement is waiting on emblems now.',
     soul: 'Kindred Soul reached. Special Research takes emblems from here.', locked: 'Not unlocked yet.', talentNow: 'Yours now, level {n} of 11: {effects}', talentNone: 'Starts at affinity 1.'
   };
   function t(api, key) { return api.tr('masters.' + key, EN[key]); }
@@ -23,25 +23,25 @@
     function paint(record) {
       var copy = mine.roster[record.id] || null, affinity = copy ? copy.affinity : null, data = record.data;
       record.node.dataset.owned = String(Boolean(copy));
-      var talent = Spend.classAt(record.master, affinity), parts = [];
+      var talent = Spend.classAt(record.master, affinity, copy && copy.ready), parts = [];
       if (copy && affinity !== null) parts.push(api.fill(t(api, 'level'), { n: api.fmt(affinity) }));
       if (copy && talent) parts.push(data.affinity.classes[talent - 1].name);
       if (record.badge) record.badge.textContent = parts.join('\n');
       var level = part(record, 'affinity'), soul = part(record, 'soul');
       if (level) { level.hidden = !copy || affinity === null; level.textContent = copy && affinity !== null ? api.fmt(affinity) : ''; }
-      if (soul) soul.hidden = !copy || affinity !== 100;
+      if (soul) soul.hidden = !copy || affinity !== 100 || copy.ready;
       target(record, 'talent').forEach(function (node) {
         node.textContent = !copy || affinity === null ? '' : talent ? api.fill(t(api, 'talentNow'), { n: api.fmt(talent), effects: effects(data.talent.levels[talent - 1]) }) : t(api, 'talentNone');
       });
-      record.node.querySelectorAll('.master-classes li').forEach(function (li) { li.toggleAttribute('data-reached', Boolean(copy) && affinity !== null && Number(li.dataset.level) <= affinity); });
+      record.node.querySelectorAll('.master-classes li').forEach(function (li) { li.toggleAttribute('data-reached', Boolean(copy) && affinity !== null && Number(li.dataset.level) <= affinity && !(copy.ready && Number(li.dataset.level) === affinity)); });
       target(record, 'next').forEach(function (node) {
         if (!copy) { node.textContent = t(api, 'locked'); return; }
         if (affinity === null) { node.textContent = ''; return; }
-        if (affinity >= 100) { node.textContent = t(api, 'soul'); return; }
-        var next = data.affinity.classes.find(function (entry) { return entry.level > affinity; });
+        if (affinity >= 100 && !copy.ready) { node.textContent = t(api, 'soul'); return; }
+        var next = data.affinity.classes.find(function (entry) { return copy.ready ? entry.level >= affinity : entry.level > affinity; });
         node.textContent = api.fill(t(api, copy.ready ? 'waiting' : 'next'), { name: next.name, level: api.fmt(next.level), cost: api.fmt(next.emblems) });
       });
-      target(record, 'ready').forEach(function (node) { node.hidden = !copy || affinity === null || affinity % 10 !== 9; });
+      target(record, 'ready').forEach(function (node) { node.hidden = !copy || affinity === null || affinity < 10 || affinity % 10 !== 0; });
       target(record, 'skillLevel').forEach(function (node) {
         var at = Number(node.dataset.skill), value = copy ? copy.skills[at] : null;
         node.textContent = !value ? '' : api.fill(t(api, 'level'), { n: api.fmt(value) });

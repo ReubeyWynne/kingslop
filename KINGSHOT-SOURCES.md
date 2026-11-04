@@ -142,6 +142,13 @@ Verbatim rule the game uses (also blog "how-special-bonuses-work"):
 ```
 
 - Same-stat specials add their percents first, then apply **once**.
+- **Chance effects of one skill code don't stack** (player-confirmed, 2026-11): of the
+  per-round or per-attack chance skills sharing a code, only one is ever active and the
+  duplicates are dead skills (we keep the strongest, pct × chance). Fixed percentages
+  (passives, every-N-turn buffs) of one code still add, and the two totals add before
+  codes multiply. This is why Yeonwoo, Amane and Chenko are the usual Bear joiners:
+  their skills are fixed, so duplicates are safe. The battle engine drops the dead
+  duplicates at compile; the lead finder's Bear score takes the strongest chance per code.
 - **Enemy-down is a divisor, not a subtraction** (a 20% enemy Attack Down divides
   the boosted value by 1.20). Superseded for pets, turrets and consumables, which cancel
   by subtraction: see *KingShot Battle Helper* below.
@@ -240,9 +247,52 @@ chance of 120→200% damage, *Trial by Fire* 8→40% chance of −50% damage tak
 Marlin *Dynamo* 50% chance of +50% damage.
 
 **4 · Gear, charms, research** — the "common" every hero sits on. Fitted from
-real panels: `panel_type = common_type + curve[index] × ceiling` holds exactly,
-and exclusive-gear stats enter through the special-bonus form
-`(100 + entered) × (1 + g/100) − 100`.
+real panels: `panel_type = common_type + curve[index] × ceiling` holds exactly.
+Exclusive-gear (widget) stats were first fitted as `(100 + entered) × (1 + g/100) − 100`;
+that is superseded by the check below: they **add**.
+
+**Hero Stats block, verified in-game 2026-11-04.** A hero's Stats → Expedition block
+is exactly, to the hundredth: attack = `ceiling × curve[index]` + red gear attack
+milestones; defence the same with the defence milestones; lethality = helm + boots
+gear core + widget stat; health = gloves + chest gear core + widget stat, where
+widget stat = `maxPct × level / 10` (Marlin 5★, Mistweaver 10, helm red 131 M11,
+gloves 62 M2, chest 62 M2, boots 100 M6 → 260.19 / 240.19 / 277.55 / 148.08; Amadeus
+and Petra matched as well, see `.dsh/lead-engine-check.cjs`). A battle report sent
+with those three heroes reads Bonus Overview (Squads' + type) + Hero Stats + a small
+constant, then the widgets' skills multiply: Bonus Details = (100 + overview + Hero
+Stats + c) × (1 + widget skills / 100) − 100, every one of the twelve rows within 0.6.
+No buffs were running. Rally widget skills: attack ×1.125 (Aegis of Fate 4 + Fate's Writ
+3, code 102), lethality ×1.15 (Mistweaver 10, code 101); defence and health untouched.
+c is a flat amount on every type that the Bonus Overview does not show. Reports
+from three accounts, each against its own Bonus Overview, with Hero Stats worked out
+from the hero level, stars, widget and gear the report shows (a red piece's "+N" is
+level 100 + N), put c on the **Town Centre's Truegold level**:
+
+| Town Centre | attack, defence | lethality, health |
+|---|---|---|
+| TG2 | +4.0 | 0 |
+| TG4 | +4.0 | +9.0 |
+| TG5 | +8.0 | +12.0 |
+
+Every row of all three reports fits within 0.25 (`.dsh/lead-engine-check.cjs`). TG1 and
+TG3 are not read yet. Masters are already in the overview: the TG2 account has Cassia at
+affinity 20 and gets no lethality or health on top, and the owner's Roman, Pan and Valora
+sum exactly to the Master Stat Bonuses panel. Not alliance tech (maxed, in the overview),
+not pets, not cosmetics (their totals do not match the shape). A first reading of the
+owner's +9.0 as Cassia's affinity (8.40 at 40) plus Commando was a coincidence. The
+widget-skill multipliers matched on the other accounts too (attack ×1.10 at Aegis of Fate
+3 + Fate's Writ 3; lethality ×1.10 at Mistweaver 6, ×1.075 at Mistweaver 4).
+
+**Master affinity at class gates (2026-11-04).** The game lets affinity reach 10, 20 …
+100 and then holds that level's class until Relationship Advancement is paid. Kingshot
+Optimizer's ladder already includes the class's jump at that level; the game adds it only
+after advancement. Four masters at a pending gate matched one ordinary step past the
+level below: Cassia 40 = 8.40 (ladder 9.20), Roman 60 = 9.00 (9.60), Pan 70 = 10.35
+(10.95), Valora 90 = 13.05 (13.65). The ledger's `ready` now marks that pending class.
+Joiners' skills never appear in Bonus Details: two rallies with different joiners give
+the same multipliers. So the
+block is not misleading, the Squads' row adds to each troop type's row, and a widget
+has an additive stat (in Hero Stats) and a multiplicative skill (its role only).
 
 **Validation (2026-09-11).** Three independent checks against one account's real
 Bonus-Details panels: (a) Amadeus 2★ → `260.20 × 31.78%` = 82.7 vs 82.6 derived
@@ -356,7 +406,7 @@ site already carries from elsewhere disagrees:
   `heroes.json` (kingshot.net), the six battle-pet ladders in `pets.json`, each widget's role
   and stat, TG1–TG5 troop stats, the hero-gear formulas, ambush 20% / volley 10% / counter 10% /
   fatigue 0.01%.
-- **New to us:** skill codes in four families (same code adds, codes multiply; a hit is
+- **New to us:** skill codes in four families (same code adds, but a duplicate chance effect of one code is dead; codes multiply; a hit is
   damage-up × enemy-defense-down ÷ (defense-up × enemy-damage-down)); how every hero skill
   triggers (passive, per round, per attack, every N turns, pity) with durations and troop
   scope; all 22 widget names and max stats; widget skill 15% × level step; Truegold troop

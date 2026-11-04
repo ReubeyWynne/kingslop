@@ -33,7 +33,7 @@
                   <label><span data-i18n="masters.affinity">Affinity level</span><input type="number" min="0" max="100" step="1" inputmode="numeric" placeholder="?" data-field="affinity"></label>
                   <label><span><span lang="en">{{ master.name | escape }}</span> <span data-i18n="masters.emblemsShort">emblems</span></span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="emblems"></label>
                   {% for skill in master.skills %}<label><span lang="en">{{ skill.name | escape }}</span><select data-field="skill" data-skill="{{ forloop.index0 }}"><option value="">?</option>{% for level in (0..skill.max) %}<option value="{{ level }}">{% if level == 0 %}—{% else %}{{ level }}{% endif %}</option>{% endfor %}</select></label>{% endfor %}
-                  <label class="master-own master-ready" data-target="master-directory.ready" hidden><input type="checkbox" data-field="ready"><span data-i18n="masters.ready">The affinity bar is full: the next class is waiting on emblems</span></label>
+                  <label class="master-own master-ready" data-target="master-directory.ready" hidden><input type="checkbox" data-field="ready"><span data-i18n="masters.ready">Relationship Advancement not done yet: this level's class is waiting on emblems</span></label>
                   <p class="master-mine-note"><span data-i18n="masters.mineNote">Saved on this device with your inventory. A skill you have not learned yet is —.</span> <output data-target="master-directory.saved" role="status"></output></p>
                 </fieldset>
                 <div class="master-brief">

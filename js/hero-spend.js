@@ -9,6 +9,9 @@
    - widget level n costs 5n widgets; 0 to 10 is 275.
    A step is paid whole: a part-filled step consumes nothing. General shards turn into any
    hero's shards of the same rarity, except Amadeus and Helga, who take only their own.
+   Mythic general shards are the exception by habit: players bank them to unlock the next
+   Hall of Heroes or event hero, so the plan leaves them in the bag (KEPT) unless the
+   caller passes { spendKept: true }. Epic and rare general shards are spent as usual.
    Widgets belong to one hero (`hero-widgets-{hero}`); a generation's choose-a-hero widget
    chest (`hero-widget-chest-gen{n}`) goes to any owned widget hero of that generation.
    `hero-widget` is only the event item that carries the widget rate. */
@@ -21,6 +24,7 @@
   var WIDGET_STEPS = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
   var EXCLUSIVE = ['amadeus', 'helga'];
   var SHARD_ITEM = { legendary: 'mythic-hero-shard', epic: 'epic-hero-shard', rare: 'rare-hero-shard' }, WIDGET_ITEM = 'hero-widget';
+  var KEPT = [SHARD_ITEM.legendary];
   var ITEMS = [SHARD_ITEM.legendary, SHARD_ITEM.epic, SHARD_ITEM.rare, WIDGET_ITEM];
   var HEROES = (catalogue || []).map(function (hero) { return { key: hero.key, name: hero.name, rarity: hero.rarity, generation: hero.generation, widget: Boolean(hero.widget) }; });
   var shardId = ledger.heroShardId, widgetId = ledger.heroWidgetId, chestId = ledger.widgetChestId;
@@ -71,13 +75,15 @@
   /* The whole plan: every owned hero's spendable shards and widgets, the general pieces each
      takes, and per event item the pieces that would be consumed. Unknown stars, widget levels
      or counts are listed and counted as nothing, so a total is never inflated. */
-  function plan(snapshot) {
+  function plan(snapshot, options) {
+    var spendKept = Boolean(options && options.spendKept);
     var section = snapshot.heroes || { roster: {} }, roster = section.roster || {}, unknown = [], heroes = {}, items = {};
     var owned = HEROES.filter(function (hero) { return Object.hasOwn(roster, hero.key); });
     function note(id) { if (!unknown.includes(id)) unknown.push(id); }
     // With no heroes recorded nothing can be spent yet, which is unknown rather than zero.
     // pool: the general pieces counted; left: those no owned hero can use (null while unknown).
-    ITEMS.forEach(function (id) { items[id] = { amount: 0, pool: 0, used: 0, left: 0, unknown: owned.length ? [] : ['heroes'] }; });
+    // kept: general pieces deliberately left in the bag (mythic shards banked for a new hero).
+    ITEMS.forEach(function (id) { items[id] = { amount: 0, pool: 0, used: 0, left: 0, kept: 0, unknown: owned.length ? [] : ['heroes'] }; });
     if (!owned.length) note('heroes');
     function spend(item, pool, steps, list, pieces) {
       var groups = list.map(function (entry) { return { totals: ahead(steps, pieces.from(entry)), own: pieces.own(entry), shared: pieces.shared(entry) }; });
@@ -101,7 +107,7 @@
       if (confirmed(snapshot, widgetId(hero.key)) === null) { note(widgetId(hero.key)); items[WIDGET_ITEM].unknown.push(widgetId(hero.key)); }
     });
     Object.keys(SHARD_ITEM).forEach(function (rarity) {
-      var item = SHARD_ITEM[rarity], pool = confirmed(snapshot, item), list = owned.filter(function (hero) { return hero.rarity === rarity && roster[hero.key].stars !== null && roster[hero.key].stars !== undefined; });
+      var item = SHARD_ITEM[rarity], bank = confirmed(snapshot, item), keep = !spendKept && KEPT.includes(item), pool = keep ? 0 : bank, list = owned.filter(function (hero) { return hero.rarity === rarity && roster[hero.key].stars !== null && roster[hero.key].stars !== undefined; });
       if (pool === null && list.some(function (hero) { return !EXCLUSIVE.includes(hero.key); })) { note(item); items[item].unknown.push(item); }
       spend(item, pool, STAR_STEPS, list, {
         from: function (hero) { return roster[hero.key].stars; },
@@ -109,6 +115,8 @@
         shared: function (hero) { return !EXCLUSIVE.includes(hero.key); },
         write: function (hero, result) { heroes[hero.key].shards = result; }
       });
+      // Banked shards are still unused: they count in left, and an unread bank leaves it unknown.
+      if (keep) { items[item].kept = bank; items[item].left = bank === null || items[item].left === null ? null : items[item].left + bank; }
     });
     // Widgets belong to one hero; a generation's choose-a-hero chest goes to any widget hero of that generation.
     var widgets = owned.filter(function (hero) { return hero.widget && roster[hero.key].widget !== null && roster[hero.key].widget !== undefined; });
@@ -126,8 +134,8 @@
   }
   /* The snapshot an event calculator should score: each hero item's balance becomes the
      pieces the plan can consume, so rates and days stay with the event rules. */
-  function budget(snapshot, known) {
-    var result = known || plan(snapshot), inventory = Object.assign({}, snapshot.inventory);
+  function budget(snapshot, known, options) {
+    var result = known || plan(snapshot, options), inventory = Object.assign({}, snapshot.inventory);
     ITEMS.forEach(function (id) { inventory[id] = { amount: result.items[id].amount, status: 'confirmed', provenance: null }; });
     return Object.assign({}, snapshot, { inventory: inventory });
   }
@@ -152,5 +160,5 @@
     var m = /^hero-(stars|shards|widget-level|widgets)-([a-z][a-z0-9]*)$/.exec(id), hero = m && HEROES.find(function (entry) { return entry.key === m[2]; });
     return hero ? { kind: MISSING[m[1]], hero: hero } : null;
   }
-  return { STAR_STEPS: STAR_STEPS.slice(), WIDGET_STEPS: WIDGET_STEPS.slice(), EXCLUSIVE: EXCLUSIVE.slice(), SHARD_ITEM: Object.assign({}, SHARD_ITEM), WIDGET_ITEM: WIDGET_ITEM, ITEMS: ITEMS.slice(), HEROES: HEROES, shardId: shardId, widgetId: widgetId, chestId: chestId, allocate: allocate, plan: plan, budget: budget, rate: rate, points: points, missing: missing };
+  return { STAR_STEPS: STAR_STEPS.slice(), WIDGET_STEPS: WIDGET_STEPS.slice(), EXCLUSIVE: EXCLUSIVE.slice(), KEPT: KEPT.slice(), SHARD_ITEM: Object.assign({}, SHARD_ITEM), WIDGET_ITEM: WIDGET_ITEM, ITEMS: ITEMS.slice(), HEROES: HEROES, shardId: shardId, widgetId: widgetId, chestId: chestId, allocate: allocate, plan: plan, budget: budget, rate: rate, points: points, missing: missing };
 });

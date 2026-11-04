@@ -14,7 +14,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal(await page.locator('.lead-best').isHidden(), true, 'no best lineup before the roster');
   await page.evaluate(() => {
     const s = PlayerLedger.shared();
-    for (const [key, stars, widget] of [['amadeus', 30, 10], ['petra', 30, 10], ['marlin', 30, 10], ['rosa', 24, 6], ['jabel', 24, 0]]) s.setHero(key, { level: null, stars, widget, skills: null });
+    for (const [key, stars, widget] of [['amadeus', 30, 10], ['petra', 30, 10], ['marlin', 30, 10], ['rosa', 24, 4], ['jabel', 24, 0]]) s.setHero(key, { level: null, stars, widget, skills: null });
     KS_SERVER_AGE.setGeneration(4);
   });
   await page.waitForFunction(() => document.querySelectorAll('.lead-row').length === 3);
@@ -32,6 +32,18 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   await page.waitForFunction(() => (PlayerLedger.shared().combat().overview.arc || {}).health === 270);
   assert.deepEqual(await page.evaluate(() => PlayerLedger.shared().combat().stats), {});
   assert.match(await status(), /missing Infantry, Cavalry/);
+  assert.match(await status(), /Add your Squads' row/);
+
+  // A Bonus Overview screenshot from the import dock fills the table, Squads' row included.
+  const held = await page.evaluate(() => {
+    const detail = { values: { 'ov-squads-attack': 162.4, 'ov-squads-defense': 173, 'ov-squads-lethality': 58.9, 'ov-squads-health': 50.9, 'ov-inf-attack': 218.5 }, before: {} };
+    document.querySelector('[data-screen-import-sheet~="bonus-overview"]').dispatchEvent(new CustomEvent('screen-import:sheet', { bubbles: true, detail }));
+    return detail.before;
+  });
+  assert.equal(held['ov-squads-attack'], null, 'the dock learns what each box held');
+  await page.waitForFunction(() => (PlayerLedger.shared().combat().overview.squads || {}).health === 50.9);
+  assert.equal(await page.locator('[data-stat="inf.attack"]').inputValue(), '218.5', 'a part-read row stays in its boxes');
+  assert.doesNotMatch(await status(), /Add your Squads' row/);
 
   // A rally ranks against the four stock opponents.
   await page.locator('label:has(input[value="rally"])').click();

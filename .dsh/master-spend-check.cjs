@@ -37,10 +37,13 @@ assert(!JSON.stringify(data).includes('specialResearch'), 'Special Research stay
 
 // Ledger: a typed masters section; ready only at a class gate.
 const store = Ledger.create(storage());
-store.setMaster('valora', { affinity: 29, ready: true, skills: [3, 2, 0, null] });
-assert.deepEqual(store.masters().roster.valora, { affinity: 29, ready: true, skills: [3, 2, 0, null] });
 store.setMaster('valora', { affinity: 30, ready: true, skills: [3, 2, 0, null] });
-assert.equal(store.masters().roster.valora.ready, false);
+assert.deepEqual(store.masters().roster.valora, { affinity: 30, ready: true, skills: [3, 2, 0, null] });
+store.setMaster('valora', { affinity: 29, ready: true, skills: [3, 2, 0, null] });
+assert.equal(store.masters().roster.valora.ready, false, 'no class is pending below a gate');
+// Saves from before the gate moved (a full bar at 29) now stand at 30 with the class pending.
+const oldSave = Object.assign(Ledger.empty(), { masters: { roster: { valora: { affinity: 29, ready: true, skills: [0, 0, 0, 0] } }, provenance: { valora: { source: 'manual', at: new Date().toISOString() } } } });
+assert.deepEqual(Ledger.validate(oldSave).masters.roster.valora, { affinity: 30, ready: true, skills: [0, 0, 0, 0] });
 store.setMaster('pan', {});
 assert.deepEqual(store.masters().roster.pan, { affinity: null, ready: false, skills: [null, null, null, null] });
 for (const bad of [{ affinity: 101 }, { affinity: 2.5 }, { skills: [1, 2, 3] }, { skills: [21, 0, 0, 0] }, { ready: 'yes' }, { power: 1 }]) assert.throws(() => store.setMaster('roman', bad), JSON.stringify(bad));
@@ -55,23 +58,23 @@ function snapshot(roster, bag) { const s = Ledger.empty(); s.masters = { roster,
 let plan = S.plan(Ledger.empty());
 assert.deepEqual(plan.unknown, ['masters']); assert.equal(plan.items[S.EMBLEM].amount, 0); assert.equal(plan.items[S.MANUSCRIPT].amount, 0);
 
-// Emblems pay one class per full bar: own emblems first, then general ones.
-plan = S.plan(snapshot({ valora: { affinity: 29, ready: true, skills: [0, 0, 0, 0] } }, { 'master-emblems-valora': 10, 'general-master-emblem': 10, 'masters-manuscript': 0 }));
-assert.deepEqual(plan.masters.valora.emblems, { from: 29, to: 30, className: 'Acquaintance 3', cost: 15, spend: 15, own: 10, ownUsed: 10, general: 5 });
+// Emblems pay one pending class: own emblems first, then general ones.
+plan = S.plan(snapshot({ valora: { affinity: 30, ready: true, skills: [0, 0, 0, 0] } }, { 'master-emblems-valora': 10, 'general-master-emblem': 10, 'masters-manuscript': 0 }));
+assert.deepEqual(plan.masters.valora.emblems, { from: 30, to: 30, paid: true, className: 'Acquaintance 3', cost: 15, spend: 15, own: 10, ownUsed: 10, general: 5 });
 assert.equal(plan.items[S.EMBLEM].amount, 15); assert.equal(plan.items[S.EMBLEM].left, 5); assert.deepEqual(plan.unknown, []);
 // Too few emblems for the whole class: nothing scores, nothing is used.
-plan = S.plan(snapshot({ valora: { affinity: 29, ready: true, skills: [0, 0, 0, 0] } }, { 'master-emblems-valora': 4, 'general-master-emblem': 10, 'masters-manuscript': 0 }));
+plan = S.plan(snapshot({ valora: { affinity: 30, ready: true, skills: [0, 0, 0, 0] } }, { 'master-emblems-valora': 4, 'general-master-emblem': 10, 'masters-manuscript': 0 }));
 assert.equal(plan.masters.valora.emblems.spend, 0); assert.equal(plan.items[S.EMBLEM].left, 10);
-// A bar that is not full takes no emblems, so they do not score.
+// No class pending takes no emblems, so they do not score.
 plan = S.plan(snapshot({ valora: { affinity: 25, ready: false, skills: [0, 0, 0, 0] } }, { 'master-emblems-valora': 500, 'general-master-emblem': 500, 'masters-manuscript': 0 }));
 assert.equal(plan.masters.valora.emblems, null); assert.equal(plan.items[S.EMBLEM].amount, 0);
 // Two waiting masters share the general emblems; the plan never spends more than it has.
-plan = S.plan(snapshot({ valora: { affinity: 99, ready: true, skills: [0, 0, 0, 0] }, cassia: { affinity: 49, ready: true, skills: [0, 0, 0, 0] } }, { 'master-emblems-valora': 0, 'master-emblems-cassia': 0, 'general-master-emblem': 200, 'masters-manuscript': 0 }));
+plan = S.plan(snapshot({ valora: { affinity: 100, ready: true, skills: [0, 0, 0, 0] }, cassia: { affinity: 50, ready: true, skills: [0, 0, 0, 0] } }, { 'master-emblems-valora': 0, 'master-emblems-cassia': 0, 'general-master-emblem': 200, 'masters-manuscript': 0 }));
 assert.equal(plan.masters.valora.emblems.spend + plan.masters.cassia.emblems.spend, plan.items[S.EMBLEM].amount);
 assert(plan.items[S.EMBLEM].used <= 200); assert.equal(plan.items[S.EMBLEM].left, 200 - plan.items[S.EMBLEM].used);
 assert.equal(plan.items[S.EMBLEM].amount, 160, 'cassia 160 fits, valora 50 alone would score less');
 // Unknown own emblems and general emblems are listed.
-plan = S.plan(snapshot({ valora: { affinity: 9, ready: true, skills: [0, 0, 0, 0] } }, { 'masters-manuscript': 0 }));
+plan = S.plan(snapshot({ valora: { affinity: 10, ready: true, skills: [0, 0, 0, 0] } }, { 'masters-manuscript': 0 }));
 assert.deepEqual(plan.unknown.sort(), ['general-master-emblem', 'master-emblems-valora']);
 
 // Manuscripts: whole steps, cheapest first, gated by affinity and skill totals.
@@ -85,9 +88,10 @@ valora.skills.forEach((skill, at) => {
 });
 assert.equal(opened[2], 0, 'Weapon Obsession opens at affinity 30');
 assert.equal(plan.masters.valora.manuscripts.spend, sum(valora.skills.map((skill, at) => sum(skill.levels.slice(0, opened[at]).map(l => l.manuscripts)))));
-// The class the emblems pay opens the next skill in the same plan.
-plan = S.plan(snapshot({ valora: { affinity: 29, ready: true, skills: [0, 0, 0, 0] } }, { 'master-emblems-valora': 15, 'general-master-emblem': 0, 'masters-manuscript': 1e6 }));
+// Skill gates read the affinity level: at 30, with the class still pending, Weapon Obsession opens.
+plan = S.plan(snapshot({ valora: { affinity: 30, ready: true, skills: [0, 0, 0, 0] } }, { 'master-emblems-valora': 0, 'general-master-emblem': 0, 'masters-manuscript': 1e6 }));
 assert(plan.masters.valora.manuscripts.to[2] > 0);
+assert.equal(S.classAt(S.find('valora'), 30, true), 3); assert.equal(S.classAt(S.find('valora'), 30, false), 4);
 // A small pool buys only whole steps.
 plan = S.plan(snapshot({ valora: { affinity: 29, ready: false, skills: [0, 0, 0, 0] } }, { 'masters-manuscript': 7 }));
 assert(plan.items[S.MANUSCRIPT].amount <= 7); assert.equal(plan.items[S.MANUSCRIPT].left, 7 - plan.items[S.MANUSCRIPT].amount);
@@ -99,7 +103,7 @@ assert.deepEqual(S.missing('masters'), { kind: 'masters', master: null });
 assert.equal(S.missing('hero-shards-amadeus'), null);
 
 // Points use the event rules' best day; the Town Centre scores the same spendable pieces.
-const ready = snapshot({ valora: { affinity: 29, ready: true, skills: [3, 2, 0, 0] } }, { 'master-emblems-valora': 10, 'general-master-emblem': 100, 'masters-manuscript': 1000 });
+const ready = snapshot({ valora: { affinity: 30, ready: true, skills: [3, 2, 0, 0] } }, { 'master-emblems-valora': 10, 'general-master-emblem': 100, 'masters-manuscript': 1000 });
 plan = S.plan(ready);
 const points = S.points(rules, 'prep', plan.masters.valora);
 assert.equal(points.emblems, 15 * 6000); assert.equal(points.manuscripts, plan.masters.valora.manuscripts.spend * 60);

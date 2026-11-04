@@ -83,12 +83,12 @@ store.setHero('jabel', { stars: 24 }); store.setBalance(Ledger.heroShardId('jabe
 store.setHero('amadeus', { stars: 12, widget: 3 }); store.setBalance(Ledger.heroShardId('amadeus'), 200); store.setBalance(Ledger.heroWidgetId('amadeus'), 30); store.setBalance(Ledger.widgetChestId(1), 0);
 const heroDay = T.day(store.snapshot(), 'prep', 2), shardLine = heroDay.lines.find(l => l.id === 'mythic-hero-shard');
 assert.equal(shardLine.kind, 'usable');
-assert.equal(shardLine.amount, 695, 'Amadeus 195 of his own (2★ to 3★ 2/6), Jabel 60 own + 440 general (4★ to 4★ 5/6)');
-assert.equal(shardLine.points, 695 * 3040);
+assert.equal(shardLine.amount, 195, 'Amadeus 195 of his own (2★ to 3★ 2/6); Jabel cannot pay 100 with 60, and the 500 mythic general shards stay banked');
+assert.equal(shardLine.points, 195 * 3040);
 assert.equal(T.best(store.snapshot(), 'prep').lines.find(l => l.id === 'hero-widget').points, 20 * 8000, 'widget 3 to 4 costs 20 of Amadeus’s 30');
 const plan = T.best(store.snapshot(), 'prep').heroes;
-assert.equal(plan.items['mythic-hero-shard'].left, 60);
-assert.equal(Spend.points(rules, 'prep', plan.heroes.jabel).total, 500 * 3040, 'the Heroes page scores each hero from the same plan');
+assert.deepEqual([plan.items['mythic-hero-shard'].kept, plan.items['mythic-hero-shard'].left], [500, 500], 'mythic general shards are banked for the next new hero');
+assert.equal(Spend.points(rules, 'prep', plan.heroes.amadeus).total, 195 * 3040 + 20 * 8000, 'the Heroes page scores each hero from the same plan');
 
 // Truegold and Tempered Truegold: only what the recorded buildings can take, in whole steps
 // paid with every resource they list, once their prerequisites are met. No buildings, nothing.
