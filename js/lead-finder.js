@@ -19,6 +19,9 @@
     mixNote: 'The split that gets the most damage out of these three heroes and your stats.',
     railTitle: 'Against each opponent', railNote: 'Win chance over repeated fights, and how much of your army is still standing.', win: '{n}%', empty: 'empty seat',
     foesNote: 'Generation {n} accounts, both sides at {total} troops. Win chance per opponent:',
+    kit: 'At generation {gen}: {stars}★ heroes, widgets at {widget}, {pct}% Bonus Overview, TG{tg}, {gear} hero gear, level {joiners} joiners, pets at {pets}, {city}.',
+    'gear.epic': 'epic {n}', 'gear.mythic': 'mythic {n}', 'gear.red': 'red {n}',
+    'city.0': 'no city buffs', 'city.ad': 'attack and defence city buffs at I', 'city.10': 'every city buff at I', 'city.20': 'every city buff at II',
     saved: 'Saved', saveFailed: 'Could not save',
     joinersFor: 'Joiners for the {job}', noPets: 'No pets in your save yet. Add them on the Pets page.', petsOff: 'Pets are left out.',
     pet: '{name} {level}: {stat}{pct}%', 'petStat.attack': 'attack +', 'petStat.defense': 'defence +', 'petStat.lethality': 'lethality +', 'petStat.health': 'health +',
@@ -160,6 +163,21 @@
       catch (cause) { put('saved', t('saveFailed')); }
     }
 
+    // Each tier's loadout at your generation, under its summary.
+    function cityKey(c) { return !c.attack ? 'city.0' : !c.lethality ? 'city.ad' : c.attack >= 20 ? 'city.20' : 'city.10'; }
+    function paintKits(gen) {
+      data.megafauna.foes.forEach(function (foe) {
+        var kit = L.loadout(foe, gen, data), at = String(Math.max(1, Math.min(gen | 0, data.megafauna.generations.length)));
+        var stars = Math.floor(kit.stars / 6) + (kit.stars % 6 ? ' ' + (kit.stars % 6) + '/6' : '');
+        document.querySelectorAll('[data-foe-kit="' + foe.id + '"]').forEach(function (node) {
+          node.textContent = fill('kit', {
+            gen: api.fmt(+at), stars: stars, widget: api.fmt(kit.widget), pct: api.fmt(Math.round(data.megafauna.overview[at] * kit.overview)),
+            tg: api.fmt(kit.tg), gear: fill('gear.' + kit.gear.quality, { n: api.fmt(kit.gear.level) }), joiners: api.fmt(kit.joinerLevel),
+            pets: api.fmt(kit.petLevel), city: t(cityKey(kit.city))
+          });
+        });
+      });
+    }
     function foeName(id) { var foe = data.megafauna.foes.filter(function (f) { return f.id === id; })[0]; return foe ? foe.name : id; }
     function heroName(copy) { return copy ? data.heroes[copy.key].name : t('empty'); }
     function stars(copy) { var s = Math.floor(copy.stars / 6), tier = copy.stars % 6; return api.fmt(s) + '★' + (tier ? ' ' + api.fmt(tier) + '/6' : '') + (copy.widget ? ' · W' + api.fmt(copy.widget) : ''); }
@@ -288,6 +306,7 @@
       });
       context.targets('foes').forEach(function (node) { node.hidden = job === 'bear' || !results.length; });
       put('foesNote', fill('foesNote', { n: api.fmt(gen), total: api.fmt(data.megafauna.total) }));
+      paintKits(gen);
     }
     function clear() {
       context.targets('list')[0].replaceChildren();

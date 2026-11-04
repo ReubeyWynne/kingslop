@@ -48,9 +48,9 @@
    cancels a buff in its own layer. Against the Bear only your own attack
    and lethality layers count: its defence is fixed and no debuff lands.
 
-   The stock opponents live in _data/megafauna.json, one ladder of account
-   investment per kingdom generation, each with its joiners, pets and city
-   buffs. */
+   The stock opponents live in _data/megafauna.json: four spender tiers (F2P,
+   Dolphin, Whale, Kraken), each with its own loadout per kingdom generation:
+   heroes, stats, Truegold, hero gear, joiners, pets and city buffs. */
 (function (root) {
   'use strict';
 
@@ -269,22 +269,30 @@
     return { score: Math.sqrt(sq) / 1000, mix: terms.map(function (x) { return x * x / sq; }), panel: p };
   }
 
-  // A stock opponent at one generation: its lineup, stats, joiners, pets and city.
-  function opponent(foe, gen, job, data) {
+  // A stock opponent at one generation: the tier's loadout for that generation
+  // gives its lineup, stats, Truegold, hero gear, joiners, pets and city.
+  var SLOTS = ['helm', 'gloves', 'chest', 'boots'];
+  function loadout(foe, gen, data) {
     var stock = data.megafauna, at = String(clamp(gen | 0, 1, stock.generations.length));
+    return foe.loadouts[at];
+  }
+  function opponent(foe, gen, job, data) {
+    var stock = data.megafauna, at = String(clamp(gen | 0, 1, stock.generations.length)), kit = loadout(foe, gen, data);
     var theirJob = job === 'rally' ? 'garrison' : 'rally';
-    var lineup = stock.lineups[at][theirJob].map(function (key) {
-      return copyOf(key, { stars: foe.stars, widget: foe.widget }, data);
+    var lineup = stock.lineups[String(kit.lineupGen || at)][theirJob].map(function (key) {
+      return copyOf(key, { stars: kit.stars, widget: kit.widget }, data);
     });
-    var pct = stock.overview[at] * foe.overview, row = { attack: pct, lethality: pct, defense: pct, health: pct };
-    var troop = stock.troops[at], tg = clamp(troop.tg + foe.tg, 0, 8);
-    var joiners = (stock.joiners[theirJob][at] || []).map(function (key) { return { key: key, level: foe.joinerLevel }; });
-    var pets = {};
-    (data.pets || []).forEach(function (pet) { pets[pet.id] = Math.min(foe.petLevel || 0, pet.maxLevel); });
+    var pct = stock.overview[at] * kit.overview, row = { attack: pct, lethality: pct, defense: pct, health: pct };
+    var troop = stock.troops[at], tg = clamp(kit.tg, 0, 8);
+    var joiners = (stock.joiners[theirJob][at] || []).map(function (key) { return { key: key, level: kit.joinerLevel }; });
+    var pets = {}, pieces = {};
+    (data.pets || []).forEach(function (pet) { pets[pet.id] = Math.min(kit.petLevel || 0, pet.maxLevel); });
+    if (kit.gear) TYPES.forEach(function (type) { SLOTS.forEach(function (slot) { pieces[type + '-' + slot] = kit.gear; }); });
     return {
       overview: { inf: row, cav: row, arc: row }, lineup: lineup, joiners: joiners,
       troops: { tier: [troop.tier, troop.tier, troop.tier], tg: [tg, tg, tg] },
-      city: cityLayer(foe.city), pets: petLayer(pets, data, +at),
+      gear: gearLayer(pieces), town: townLayer('TG ' + tg),
+      city: cityLayer(kit.city), pets: petLayer(pets, data, +at),
       role: theirJob === 'rally' ? 'rally' : 'defender'
     };
   }
@@ -357,7 +365,7 @@
 
   var api = {
     TYPES: TYPES, STAR_SKILLS: STAR_SKILLS, copyOf: copyOf, statLine: statLine, widgetStat: widgetStat, gearLayer: gearLayer, townLayer: townLayer, TOWN_TG: TOWN_TG, panel: panel, reportPanel: reportPanel,
-    uptime: uptime, bearMod: bearMod, bear: bear, opponent: opponent, fight: fight, candidates: candidates, lineups: lineups, rank: rank,
+    uptime: uptime, bearMod: bearMod, bear: bear, opponent: opponent, loadout: loadout, fight: fight, candidates: candidates, lineups: lineups, rank: rank,
     LAYER_KEYS: LAYER_KEYS, blank: blank, petLevelPct: petLevelPct, petLayer: petLayer, cityLayer: cityLayer, layered: layered, battleSide: battleSide
   };
   if (typeof module !== 'undefined' && module.exports) {

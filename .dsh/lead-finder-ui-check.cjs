@@ -49,7 +49,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   await page.locator('label:has(input[value="rally"])').click();
   await page.waitForFunction(() => /Ranked from/.test(document.querySelector('[data-target="lead-finder.status"]').textContent) && document.querySelectorAll('#leads .lead-cell').length === 16);
   assert.equal(await page.locator('.lead-foes').isVisible(), true);
-  assert.deepEqual(await page.locator('.lead-best .lead-cell > span').allTextContents(), ['Manta ray', 'Great white', 'Orca', 'Blue whale']);
+  assert.deepEqual(await page.locator('.lead-best .lead-cell > span').allTextContents(), ['F2P', 'Dolphin', 'Whale', 'Kraken']);
 
   // Joiners start from the job's usual list; city buffs and pets move the ranking's numbers.
   await page.locator('#lead-extras summary').click();
