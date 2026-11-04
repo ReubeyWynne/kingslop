@@ -135,9 +135,22 @@
     }
   }
 
+  // A checked-on date (_includes/page-notes.html) reads in the reader's language.
+  function localDates() {
+    var nodes = document.querySelectorAll('time[data-local-date][datetime]'), format;
+    try { format = new Intl.DateTimeFormat(lang === 'en' ? 'en-GB' : lang, { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }); } catch (e) { return; }
+    for (var i = 0; i < nodes.length; i++) {
+      var when = new Date(nodes[i].getAttribute('datetime') + 'T00:00:00Z');
+      if (isNaN(when)) continue;
+      var text = format.format(when);
+      if (nodes[i].textContent !== text) nodes[i].textContent = text;
+    }
+  }
+
   function apply() {
     var nodes = document.querySelectorAll(KEYSEL);
     for (var i = 0; i < nodes.length; i++) applyNode(nodes[i]);
+    localDates();
     document.documentElement.lang = lang;
     document.documentElement.dir = DIRS[lang] || 'ltr';
   }

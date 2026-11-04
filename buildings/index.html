@@ -65,20 +65,13 @@ self: buildings
       <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.position">Kingdom position</span><div class="reqs-chips" role="group" data-boost="position"></div></div>
       <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.decrees">Decrees and events</span><div class="reqs-chips" role="group" data-boost="toggles"></div></div>
       <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.pan">Pan's Master Architect: hours off every upgrade</span><div class="reqs-chips" role="group" data-boost="pan"></div></div>
-      <p class="note" data-i18n="reqs.speedHow">Speed bonuses add up and divide each upgrade's base time. Double Time then takes 20% off, and Pan's hours come off last, from every upgrade. † The High King's construction value comes from one alliance's report.</p>
+      <p class="note" data-i18n="reqs.speedHow">Speed bonuses add up and divide each upgrade's base time. Double Time then takes 20% off, and Pan's hours come off last, from every upgrade. ◇ The High King's construction value comes from one alliance's report.</p>
     </details>
     <details class="reqs-more" id="reqs-order">
       <summary data-i18n="reqs.inOrder">Every step, in order</summary>
       <ol class="reqs-steps" data-target="building-paths.steps"></ol>
     </details>
-    <details class="reqs-more" id="reqs-points-note">
-      <summary data-i18n="reqs.aboutPoints">About event points</summary>
-      <p class="note" data-i18n="reqs.pointsHow">Truegold and Tempered Truegold score when you spend them on these upgrades. Speedups score per minute used, so the Sped up row assumes you finish every upgrade with construction or general speedups, at the construction speed above. Each event lists the days that pay most; the rates are the ones on the Events page.</p>
-    </details>
-    <details class="reqs-more" id="reqs-share-note">
-      <summary data-i18n="reqs.aboutLinks">About links</summary>
-      <p class="note" data-i18n="reqs.shareNote">A plain link opens the goal with each reader's own levels. A link with levels opens exactly this plan, in guest mode.</p>
-    </details>
+    {% include page-notes.html part="pointer" checked="2026-10-17" %}
   </div>
 
   <dialog class="reqs-picker" data-target="building-paths.picker" aria-labelledby="reqs-picker-title">
@@ -87,10 +80,9 @@ self: buildings
     <div class="reqs-tiers" data-target="building-paths.tiers"></div>
     <div class="reqs-grid" data-target="building-paths.grid"></div>
   </dialog>
-  <section class="section reqs-sources" id="reqs-sources">
-    <h2 data-i18n="directory.sources">Sources &amp; confidence</h2>
-    <p data-i18n="reqs.sourceNote">Prerequisites, costs and base times from Kingshot Optimizer, checked against Kingshot Data and KS h5joy. A figure marked † has only one source: Houses, the Clinic, resource buildings and every level past TG 8 are Kingshot Optimizer only. Check a long upgrade in game before you start it.</p>
-    <ul>{% for s in data.sources %}<li><a href="{{ s[1].url }}">{{ s[1].label | escape }}</a></li>{% endfor %}</ul>
-  </section>
+  {% capture points_extra %}<p data-i18n="reqs.pointsHow">Truegold and Tempered Truegold score when you spend them on these upgrades. Speedups score per minute used, so the Sped up row assumes you finish every upgrade with construction or general speedups, at the construction speed above. Each event lists the days that pay most; the rates are the ones on the Events page.</p>{% endcapture %}{% capture links_extra %}<p data-i18n="reqs.shareNote">A plain link opens the goal with each reader's own levels. A link with levels opens exactly this plan, in guest mode.</p>{% endcapture %}
+  {% include page-notes.html part="how" points_id="reqs-points-note" points_extra=points_extra links_extra=links_extra %}
+  {% capture extra %}<span id="reqs-sources"></span>{% endcapture %}
+  {% include page-notes.html part="sources" sources=data.sources checked="2026-10-17" note="reqs.sourceNote" note_en="Prerequisites, costs and base times from Kingshot Optimizer, checked against Kingshot Data and KS h5joy. A figure marked ◇ has only one source: Houses, the Clinic, resource buildings and every level past TG 8 are Kingshot Optimizer only. Check a long upgrade in game before you start it." art="notes.art" art_en="Art: Kingshot game artwork by Century Games." extra=extra %}
   {% include page-sheet.html part="confirm" class="reqs-picker" title="reqs.sheet.confirmTitle" title_en="Save these levels as yours?" body="reqs.sheet.confirmBody" body_en="It sets these building levels in your save. Buildings this sheet has not set keep your levels." confirm="reqs.sheet.confirm" confirm_en="save my levels" %}
 </main>

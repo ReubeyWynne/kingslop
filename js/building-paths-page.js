@@ -102,7 +102,7 @@
         var li = el('li'), img = el('img'), have = withHave ? held(r) : null;
         img.src = '../' + ICONS[r]; img.alt = ''; img.width = small ? 18 : 28; img.height = small ? 18 : 28; img.loading = 'lazy';
         li.appendChild(img);
-        li.appendChild(el('b', '', amount(total.cost[r]) + (total.unverified[r] ? '†' : '')));
+        li.appendChild(el('b', '', amount(total.cost[r]) + (total.unverified[r] ? '◇' : '')));
         li.appendChild(el('span', 'reqs-res', item(r)));
         li.title = api.fmt(total.cost[r]) + ' ' + item(r);
         if (have !== null) {
@@ -130,7 +130,7 @@
       return out.join(' · ');
     }
     function timeText(total, steps) {
-      var text = duration(E.timed(steps, E.boost(cs)).time) + (total.unverified.time ? '†' : ''), list = boosts();
+      var text = duration(E.timed(steps, E.boost(cs)).time) + (total.unverified.time ? '◇' : ''), list = boosts();
       return list ? t('timeWith', '{time} with {boosts}', { time: text, boosts: list }) : t('timeBase', '{time} base time, before construction speed', { time: text });
     }
     // Event points the plan scores, in the shared table (js/event-points.js): what spending its
@@ -208,7 +208,7 @@
       group('wolf', E.BOOST.wolf.map(function (p, i) { return chip('wolf', i, i ? '+' + api.fmt(p) + '%' : '—', (cs.wolf || 0) === i, i ? t('skillLevel', 'level {n}', { n: i }) + ', +' + p + '%' : none); }));
       var minister = api.tr('town.training.minister', 'Chief Minister');
       group('position', [chip('position', '', '—', !cs.position, none), chip('position', 'minister', minister + ' · +10%', cs.position === 'minister'),
-        chip('position', 'highKing', minister + ' + ' + api.tr('town.training.highKing', 'High King') + ' · +15%†', cs.position === 'highKing')]);
+        chip('position', 'highKing', minister + ' + ' + api.tr('town.training.highKing', 'High King') + ' · +15%◇', cs.position === 'highKing')]);
       group('toggles', [['groundWorks', t('groundWorks', 'Ground Works') + ' · +10%'], ['kvk', 'KvK · +5%'], ['doubleTime', t('doubleTime', 'Double Time') + ' · −20%']].map(function (x) {
         var b = chip(x[0], '', x[1], !!cs[x[0]]); b.setAttribute('data-action', 'building-paths.toggle'); return b;
       }));
@@ -356,7 +356,7 @@
         if (part.length) {
           var sub = E.total(paid(part)), costs = el('ul', 'reqs-cost reqs-cost-small');
           costList(costs, sub, true);
-          if (sub.time) costs.appendChild(el('li', 'reqs-run-time', stepTime(part) + (sub.unverified.time ? '†' : '')));
+          if (sub.time) costs.appendChild(el('li', 'reqs-run-time', stepTime(part) + (sub.unverified.time ? '◇' : '')));
           body.appendChild(costs);
         }
         li.appendChild(body);
@@ -373,7 +373,7 @@
       one('saulCost').textContent = saulP ? t('saulCost', 'Saul −{p}% on bread, wood, stone and iron', { p: api.fmt(saulP) }) : '';
       var flag = one('flag'), any = Object.keys(result.total.unverified || {}).length;
       flag.hidden = !any;
-      flag.textContent = any ? t('oneSource', '† Only one source gives this figure.') : '';
+      flag.textContent = any ? t('oneSource', '◇ Only one source gives this figure.') : '';
       var add = one('addGoal');
       add.hidden = guest || !store || !plannedGoals().length || result.state === 'met';
       one('saveNote').textContent = guest ? t('guestNote', 'Guest mode: levels stay on this page.') : store ? t('savedNote', 'Levels you set are saved on this device, and the Town Centre and Upgrade priority use them.') : '';

@@ -5,7 +5,8 @@ self: pets
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
   <a href="#cage" data-i18n="pets.cage">The Beast Cage</a>
   <a href="#advances" data-i18n="pets.advancesNav">Advances</a>
-  <a href="#pet-sources" data-i18n="directory.sources">Sources &amp; confidence</a>
+  <a href="#how" data-i18n="notes.how">How it works</a>
+  <a href="#sources" data-i18n="directory.sources">Sources &amp; confidence</a>
 </nav>
 <main>
   <section class="section hero" id="top">
@@ -85,11 +86,10 @@ self: pets
       <tbody><tr><th scope="row" data-i18n="pets.col.kvk">KvK prep · SG</th>{% for row in site.data.pets.points %}<td data-number="{{ row[1].kvk }}">{{ row[1].kvk }}</td>{% endfor %}</tr>
       <tr><th scope="row" data-i18n="pets.col.brawl">Brawl</th>{% for row in site.data.pets.points %}<td data-number="{{ row[1].brawl }}">{{ row[1].brawl }}</td>{% endfor %}</tr></tbody>
     </table></div>
+    {% include page-notes.html part="pointer" checked="2026-10-17" %}
   </section>
-  <section class="section" id="pet-sources">
-    <h2 data-i18n="directory.sources">Sources &amp; confidence</h2>
-    <p data-i18n="pets.sourceNote">Compared across three community databases on 17 October 2026; where they differ, the two that agree are used. Passive bonuses and refinement are left out until they are checked in game.</p>
-    <ul>{% for entry in site.data.pets.sources %}<li><a href="{{ entry[1].url }}">{{ entry[1].label | escape }}</a></li>{% endfor %}</ul>
+  {% include page-notes.html part="how" %}
+  {% capture extra %}<span id="pet-sources"></span>
     {% comment %}Models the pens draw from that ask for credit (pets/models; sources in the project files).{% endcomment %}
     <ul class="pet-credits" lang="en">
       <li><a href="https://sketchfab.com/3d-models/cheetah-rigged-6ac8e66b1b6d4cc7845e5e0572fe4ef1">Cheetah Rigged</a> · jurassicdinomax123 · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></li>
@@ -97,5 +97,6 @@ self: pets
       <li><a href="https://sketchfab.com/3d-models/low-poly-elephant-84fd98c561464b1ba5d3dd48ab161b9c">Low poly elephant</a> · MrEliptik · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></li>
       <li><a href="https://sketchfab.com/3d-models/lowpoly-rhino-62771a21b17646648a588b223afd6692">Lowpoly rhino</a> · mrkdji · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></li>
     </ul>
-  </section>
+{% endcapture %}
+  {% include page-notes.html part="sources" sources=site.data.pets.sources checked="2026-10-17" note="pets.sourceNote" note_en="Compared across three community databases on 17 October 2026; where they differ, the two that agree are used. Passive bonuses and refinement are left out until they are checked in game." art="notes.art" art_en="Art: Kingshot game artwork by Century Games." extra=extra %}
 </main>
