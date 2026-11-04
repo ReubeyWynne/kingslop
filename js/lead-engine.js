@@ -18,9 +18,12 @@
                        add lethality, gloves and chest health
 
    Checked against the game's own Hero Stats block (Expedition) for three
-   heroes, to the hundredth, and against a battle report: overview + Squads'
-   + Hero Stats matches its defence and health rows to within a few points
-   (the rest are buffs running at the time).
+   heroes, to the hundredth, and against battle reports from three accounts:
+   Bonus Details = (100 + overview + Squads' + Hero Stats + Town Centre TG)
+   × (1 + the lead's widget skills in their role) − 100, every row within 0.2.
+     town centre       a flat bonus by Truegold level, every type, every march
+                       (TG2 +4 attack/defence; TG4 +4, +9 lethality/health;
+                       TG5 +8, +12); masters are already in the overview
      skills            js/combat.js: every Expedition skill at its level and
                        the widget's skill in its own role (rally or defender)
 
@@ -97,33 +100,26 @@
     return out;
   }
 
-  // Cassia, the all-combat master, from the save's masters roster: her affinity adds
-  // Squads' lethality and health, Firepower to Win (her second skill) attack and defence,
-  // Commando (her third) lethality and health, to every troop type. She is the only
-  // master whose bonuses apply in every fight (_data/masters.json, scope "All combat").
-  function masterLayer(roster, data) {
-    var out = { atk: 0, def: 0, let: 0, hea: 0 }, c = data.cassia, m = roster && roster.cassia;
-    if (!c || !m) return out;
-    var lvl = m.affinity == null ? 0 : clamp(m.affinity | 0, 0, c.affinity.length - 1), aff = num(c.affinity[lvl]);
-    // At 10, 20 … 100 the ladder already holds the class's jump, which the game adds only after
-    // Relationship Advancement. Pending, the level is worth one ordinary step past the level below.
-    if (m.ready && lvl >= 10 && lvl % 10 === 0) aff = Math.round((num(c.affinity[lvl - 1]) * 2 - num(c.affinity[lvl - 2])) * 100) / 100;
-    var skills = m.skills || [];
-    function at(list, lvl) { lvl = lvl | 0; return lvl > 0 ? num(list[clamp(lvl, 1, list.length) - 1]) : 0; }
-    var ad = at(c.attackDefense, skills[1]), lh = at(c.lethalityHealth, skills[2]);
-    out.atk = ad; out.def = ad; out.let = aff + lh; out.hea = aff + lh;
-    return out;
+  // The Town Centre's Truegold level adds attack, defence, lethality and health to every troop
+  // type in every march, and the Bonus Overview leaves it out. Read off three accounts' reports
+  // against their Bonus Overviews (KINGSHOT-SOURCES.md, 2026-11-04): only these levels are
+  // known, so any other level adds nothing and says so (known: false).
+  var TOWN_TG = { 2: [4, 0], 4: [4, 9], 5: [8, 12] };
+  function townLevel(level) { var m = /^TG ?(\d+)/.exec(String(level || '')); return m ? Number(m[1]) : 0; }
+  function townLayer(level) {
+    var tg = townLevel(level), row = TOWN_TG[tg];
+    return { atk: row ? row[0] : 0, def: row ? row[0] : 0, let: row ? row[1] : 0, hea: row ? row[1] : 0, tg: tg, known: tg === 0 || Boolean(row) };
   }
 
   // Bonus Overview plus a lineup → the four Bonus Details rows the battle
   // engine fights with. overview is { inf: { attack, lethality, defense, health }, … }
   // with the Squads' row already added; gear is gearLayer's, worn by the seated hero;
-  // master is masterLayer's, on every type whoever is seated.
-  function panel(overview, lineup, data, gear, master) {
+  // town is townLayer's, on every type whoever is seated.
+  function panel(overview, lineup, data, gear, town) {
     var out = { atk: [0, 0, 0], let: [0, 0, 0], def: [0, 0, 0], hea: [0, 0, 0] };
     TYPES.forEach(function (type, t) {
       var row = (overview && overview[type]) || {};
-      var M = master || {};
+      var M = town || {};
       var atk = num(row.attack) + num(M.atk), def = num(row.defense) + num(M.def), leth = num(row.lethality) + num(M.let), hea = num(row.health) + num(M.hea);
       lineup.forEach(function (copy) {
         if (!copy || copy.type !== type) return;
@@ -250,7 +246,7 @@
   // Expected Bear damage of a lineup at the lead's ideal mix, and that mix.
   function bear(you, lineup, data) {
     var E = root.BattleEngine, troops = you.troops;
-    var p = layered(panel(you.overview, lineup, data, you.gear, you.master), layersOf(you), null);
+    var p = layered(panel(you.overview, lineup, data, you.gear, you.town), layersOf(you), null);
     var mod = bearMod(skillsOf(lineup, 'rally', data, you.joiners));
     var terms = TYPES.map(function (type, t) {
       var tier = troops.tier[t], tg = troops.tg[t];
@@ -284,7 +280,7 @@
 
   // One side ready for the battle engine, its layers set against the other.
   function battleSide(who, lineup, role, against, data) {
-    var p = layered(panel(who.overview, lineup, data, who.gear, who.master), layersOf(who), layersOf(against));
+    var p = layered(panel(who.overview, lineup, data, who.gear, who.town), layersOf(who), layersOf(against));
     return { atk: p.atk, let: p.let, def: p.def, hea: p.hea, tier: who.troops.tier, tg: who.troops.tg, skills: skillsOf(lineup, role, data, who.joiners) };
   }
 
@@ -349,7 +345,7 @@
   }
 
   var api = {
-    TYPES: TYPES, STAR_SKILLS: STAR_SKILLS, copyOf: copyOf, statLine: statLine, widgetStat: widgetStat, gearLayer: gearLayer, masterLayer: masterLayer, panel: panel, reportPanel: reportPanel,
+    TYPES: TYPES, STAR_SKILLS: STAR_SKILLS, copyOf: copyOf, statLine: statLine, widgetStat: widgetStat, gearLayer: gearLayer, townLayer: townLayer, TOWN_TG: TOWN_TG, panel: panel, reportPanel: reportPanel,
     uptime: uptime, bearMod: bearMod, bear: bear, opponent: opponent, fight: fight, candidates: candidates, lineups: lineups, rank: rank,
     LAYER_KEYS: LAYER_KEYS, blank: blank, petLevelPct: petLevelPct, petLayer: petLayer, cityLayer: cityLayer, layered: layered, battleSide: battleSide
   };

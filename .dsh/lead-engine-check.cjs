@@ -9,9 +9,7 @@ const data = {
   heroes: Object.fromEntries(catalogue.heroes.map(h => [h.key, { name: h.name, type: h.type, generation: h.generation, ceiling: h.ceiling }])),
   heroSkills: combat.heroSkills, widgets: combat.widgets, widgetSkill: combat.widgetSkill, megafauna,
   // js/lead-data.liquid's pets: the combat layer's stat and side, the pet's last ladder row.
-  pets: combat.layers.pet.map(layer => { const pet = petData.pets.find(p => p.id === layer.pet); return { id: layer.pet, name: pet.name, stat: layer.stat, side: layer.side, generation: pet.generation, maxLevel: pet.maxLevel, values: pet.skill.ladder.at(-1).values.map(parseFloat) }; }),
-  // js/lead-data.liquid's Cassia: her affinity ladder and her two stat skills.
-  cassia: (c => ({ affinity: c.affinity.percent, attackDefense: c.skills[1].levels.map(l => l.effects[0].value), lethalityHealth: c.skills[2].levels.map(l => l.effects[0].value) }))(require('../_data/masters.json').masters.find(m => m.id === 'cassia'))
+  pets: combat.layers.pet.map(layer => { const pet = petData.pets.find(p => p.id === layer.pet); return { id: layer.pet, name: pet.name, stat: layer.stat, side: layer.side, generation: pet.generation, maxLevel: pet.maxLevel, values: pet.skill.ladder.at(-1).values.map(parseFloat) }; })
 };
 const near = (a, b, what, eps = 1e-6) => assert.ok(Math.abs(a - b) < eps, `${what}: ${a} vs ${b}`);
 const flat = pct => { const row = { attack: pct, lethality: pct, defense: pct, health: pct }; return { inf: row, cav: row, arc: row }; };
@@ -47,38 +45,40 @@ const you = (overview, extra = {}) => ({ overview, troops: tg5, joiners: [], cit
   const p = L.panel(flat(0), [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)], data, gear);
   const game = { atk: [156.92, 240.48, 260.19], def: [176.92, 240.48, 240.19], let: [121.33, 95.40, 277.55], hea: [249.65, 80.18, 148.08] };
   for (const f of Object.keys(game)) game[f].forEach((want, t) => assert.ok(Math.abs(p[f][t] - want) < 0.02, `${f} ${t}: ${p[f][t]} vs the game's ${want}`));
-  // The battle report sent with that lineup (no buffs running, Cassia at affinity 40 in the
-  // march) against the Bonus Overview, Squads' added:
-  //   Bonus Details = (100 + overview + Hero Stats + Cassia + c) × (1 + widget skills) − 100,
-  // where the rally widget skills are attack ×1.125 (Aegis of Fate 4 + Fate's Writ 3, code 102)
-  // and lethality ×1.15 (Mistweaver 10, code 101), Cassia's affinity 40 adds 9.2 lethality and
-  // health, and c is +4.4 attack and defence from a source not yet identified.
-  const ov = { inf: { attack: 380.9, defense: 373.2, lethality: 264.1, health: 256.8 }, cav: { attack: 318.1, defense: 329.7, lethality: 243.9, health: 218.0 }, arc: { attack: 337.3, defense: 348.9, lethality: 303.7, health: 296.5 } };
+  // Battle reports against Bonus Overviews read just before them, on three accounts (no buffs
+  // running): Bonus Details = (100 + overview + Squads' + Hero Stats + Town Centre TG)
+  //   × (1 + the lead's widget skills in their role) − 100.
+  // Masters (Cassia's affinity and skills included) are already in the overview; the Town
+  // Centre's Truegold bonus is not. Joiners' skills never show in Bonus Details.
   const lineup = [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)];
-  const cassia = L.masterLayer({ cassia: { affinity: 40, ready: false, skills: [null, null, null, null] } }, data);
-  assert.deepEqual(cassia, { atk: 0, def: 0, let: 9.2, hea: 9.2 }, 'Cassia at affinity 40');
-  assert.deepEqual(L.masterLayer({ cassia: { affinity: 40, ready: false, skills: [4, 4, 2, null] } }, data), { atk: 2, def: 2, let: 10.2, hea: 10.2 }, 'Firepower to Win 4, Commando 2');
-  assert.deepEqual(L.masterLayer({}, data), { atk: 0, def: 0, let: 0, hea: 0 }, 'no Cassia, nothing');
-  const shifted = {};
-  for (const type of ['inf', 'cav', 'arc']) shifted[type] = { ...ov[type], attack: ov[type].attack + 4.4, defense: ov[type].defense + 4.4 };
-  const r = L.reportPanel(L.panel(shifted, lineup, data, gear, cassia), lineup, 'rally', data);
-  const report = { atk: [622.5, 645.9, 689.6], def: [554.5, 574.5, 593.4], let: [468.7, 415.7, 693.9], hea: [515.7, 307.2, 453.7] };
-  for (const f of Object.keys(report)) report[f].forEach((want, t) => assert.ok(Math.abs(r[f][t] - want) < 0.6, `report ${f} ${t}: ${r[f][t].toFixed(2)} vs ${want}`));
+  assert.deepEqual(L.townLayer('TG 4'), { atk: 4, def: 4, let: 9, hea: 9, tg: 4, known: true });
+  assert.deepEqual(L.townLayer('TG4-2'), L.townLayer('TG 4'), 'sub-levels read as their TG level');
+  assert.deepEqual(L.townLayer('TG 3'), { atk: 0, def: 0, let: 0, hea: 0, tg: 3, known: false }, 'an unread level adds nothing and says so');
+  assert.deepEqual(L.townLayer('25'), { atk: 0, def: 0, let: 0, hea: 0, tg: 0, known: true }, 'before Truegold, nothing');
+  const sum = (ov) => Object.fromEntries(['inf', 'cav', 'arc'].map(t => [t, Object.fromEntries(['attack', 'defense', 'lethality', 'health'].map((s, i) => [s, ov.sq[i] + ov[t][i]]))]));
+  const fits = (what, ov, line, set, tg, want) => {
+    const r = L.reportPanel(L.panel(sum(ov), line, data, set.inf ? set : L.gearLayer(set), L.townLayer(tg)), line, 'rally', data);
+    for (const f of Object.keys(want)) want[f].forEach((v, t) => assert.ok(Math.abs(r[f][t] - v) < 0.25, `${what} ${f} ${t}: ${r[f][t].toFixed(2)} vs ${v}`));
+  };
+  // The owner's Bonus Overview with the Squads' row already added to each type.
+  const owner = { sq: [0, 0, 0, 0], inf: [389.3, 373.6, 264.2, 257.0], cav: [326.5, 330.1, 244.0, 218.0], arc: [345.7, 349.3, 303.8, 296.6] };
+  // The owner, TG4, rally on Titan Roc 2026-11-04 16:21 (a second report later the same day was identical).
+  fits('owner TG4', owner, lineup, gear, 'TG 4',
+    { atk: [631.5, 654.9, 698.6], def: [554.5, 574.5, 593.4], let: [468.7, 415.7, 693.9], hea: [515.7, 307.2, 453.7] });
+  const piece = (q, l, ma) => ({ quality: q, level: l, mastery: ma });
+  const four = (t, [h, g, c, b]) => ({ [t + '-helm']: h, [t + '-gloves']: g, [t + '-chest']: c, [t + '-boots']: b });
+  // An alliance member at TG5: the same three heroes, read off the report (a red piece's "+N" is level 100 + N).
+  fits('TG5', { sq: [180.2, 159.7, 51.1, 39.0], inf: [211.8, 194.3, 203.5, 206.4], cav: [216.6, 209.1, 176.0, 176.0], arc: [234.9, 213.2, 187.5, 190.7] },
+    [copy('amadeus', 24, 3), copy('petra', 29, 3), copy('marlin', 26, 6)],
+    { ...four('inf', [piece('red', 106, 10), piece('red', 103, 11), piece('red', 103, 10), piece('mythic', 93, 7)]), ...four('cav', [piece('mythic', 90, 2), piece('red', 103, 10), piece('mythic', 100, 2), piece('mythic', 83, 2)]), ...four('arc', [piece('mythic', 82, 7), piece('red', 101, 10), piece('red', 101, 10), piece('red', 101, 10)]) },
+    'TG 5', { atk: [648.5, 748.6, 682.4], def: [542.4, 643.4, 569.0], let: [529.4, 415.7, 518.1], hea: [487.3, 411.1, 479.7] });
+  // And one at TG2: Zoe, Chenko and Marlin.
+  fits('TG2', { sq: [142.5, 136.0, 44.5, 34.3], inf: [151.8, 141.6, 176.4, 164.0], cav: [131.6, 123.1, 166.6, 164.7], arc: [132.6, 123.1, 197.5, 188.5] },
+    [copy('zoe', 30, 3), copy('chenko', 30, 0), copy('marlin', 24, 4)],
+    { ...four('inf', [piece('mythic', 50, 2), piece('mythic', 60, 3), piece('mythic', 51, 3), piece('mythic', 50, 2)]), ...four('cav', [piece('mythic', 100, 3), piece('mythic', 50, 2), piece('mythic', 50, 2), piece('mythic', 61, 3)]), ...four('arc', [piece('red', 121, 11), piece('mythic', 61, 3), piece('mythic', 60, 2), piece('mythic', 90, 4)]) },
+    'TG 2', { atk: [538.5, 418.3, 465.7], def: [521.8, 403.3, 429.7], let: [348.3, 355.2, 500.0], hea: [305.8, 277.0, 337.2] });
+  const r = L.reportPanel(L.panel(sum(owner), lineup, data, gear, L.townLayer('TG 4')), lineup, 'rally', data);
   assert.deepEqual(L.reportPanel(r, lineup, 'defender', data), r, 'rally widgets do nothing in a garrison');
-  // A second rally (2026-11-04 16:21, other joiners) with a fresh overview taken just before
-  // it: the same formula, the unknown constant now +4.0 attack and defence. The first
-  // report's +4.4 came from an overview read before a +0.4 pet upgrade. Joiners' skills never
-  // show in Bonus Details: two rallies with different joiners give the same multipliers.
-  const ov2 = { inf: { attack: 389.3, defense: 373.6, lethality: 264.2, health: 257.0 }, cav: { attack: 326.5, defense: 330.1, lethality: 244.0, health: 218.0 }, arc: { attack: 345.7, defense: 349.3, lethality: 303.8, health: 296.6 } };
-  for (const type of ['inf', 'cav', 'arc']) { ov2[type].attack += 3.5; ov2[type].defense += 3.5; }
-  // Cassia as the game shows her: affinity 40 with Casual 1 still pending (+8.40), Firepower to
-  // Win 1 (+0.5 attack and defence) and Commando 1 (+0.5 lethality and health). The +3.5 left on
-  // attack and defence is the one source still unidentified.
-  const cassiaNow = L.masterLayer({ cassia: { affinity: 40, ready: true, skills: [4, 1, 1, null] } }, data);
-  assert.deepEqual(cassiaNow, { atk: 0.5, def: 0.5, let: 8.9, hea: 8.9 }, 'Cassia 40 with the class pending');
-  const r2 = L.reportPanel(L.panel(ov2, lineup, data, gear, cassiaNow), lineup, 'rally', data);
-  const report2 = { atk: [631.5, 654.9, 698.6], def: [554.5, 574.5, 593.4], let: [468.7, 415.7, 693.9], hea: [515.7, 307.2, 453.7] };
-  for (const f of Object.keys(report2)) report2[f].forEach((want, t) => assert.ok(Math.abs(r2[f][t] - want) < 0.6, `second report ${f} ${t}: ${r2[f][t].toFixed(2)} vs ${want}`));
   // No gear saved adds nothing; a widget alone adds its stat.
   near(L.panel(flat(250), [copy('marlin', 30, 10)], data).let[2], 310, 'Marlin widget 10 lethality, no gear');
   near(L.panel(flat(250), [copy('rosa', 24, 6)], data).hea[2], 250 + 0.6 * 92.5, 'Rosa widget 6');
