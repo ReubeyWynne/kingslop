@@ -60,6 +60,7 @@ self: governor
           </div>
           <p class="gov-gloss" data-i18n="gov.weightsHint">Each troop's gains count that many times. A preset's weight is its lethality plus health from Hero gear, since every governor piece and charm gives both at once. Typing one makes them custom.</p>
         </details>
+        {% include page-notes.html part="pointer" checked="2026-10-09" %}
       </div>
     </div>
     <output class="gov-status" hidden aria-live="polite" data-module="result-panel" data-status-scope="governor" data-target="result-panel.message"></output>
@@ -67,14 +68,10 @@ self: governor
     <noscript><p data-i18n="gov.noJS">Enable JavaScript to use the planner. The cost tables below remain available.</p></noscript>
   </section>
 
-  <section class="section gov-notes sheet-notes" id="governor-sources">
-    <details id="maths-sources">
-      <summary data-i18n="gov.maths">The maths &amp; sources</summary>
+  {% capture own %}<details id="maths">
+      <summary data-i18n="notes.maths">The maths</summary>
       <p data-i18n="gov.mathsBody">Each row is what one more star or charm level costs. The planner takes one step at a time: the affordable upgrade with the most gain for the share of your bag it uses. It is a guide, not a guaranteed best order. Gear and charms use different materials, so they never compete.</p>
       <p data-i18n="gov.setBonus">Gear set bonuses are left out until a second table confirms them.</p>
-      <p class="gov-gloss" data-i18n="gov.sourceNote">Values checked on 9 October 2026. Every row agrees across at least two of the tables linked below; a row marked ◇ appears in only one.</p>
-      <p class="gov-sources">{% for pair in gov.sources %}{% assign source = pair[1] %}{% if source.gear %}<a href="{{ source.gear }}">{{ source.label | escape }} · <span data-i18n="gov.gear">Gear</span></a> {% endif %}{% if source.charms %}<a href="{{ source.charms }}">{{ source.label | escape }} · <span data-i18n="gov.charms">Charms</span></a> {% endif %}{% endfor %}</p>
-      <p class="gov-gloss" data-i18n="gov.artNote">Piece, charm and material art is Kingshot game artwork by Century Games.</p>
     </details>
     <details id="gear-costs">
       <summary data-i18n="gov.tableGear">gear costs, step by step</summary>
@@ -89,6 +86,8 @@ self: governor
         <thead><tr><th scope="col" data-i18n="gov.col.level">level</th>{% for id in gov.charms.materials %}{% assign item = gov.materials | where: "id", id | first %}<th scope="col" data-i18n="{{ item.key }}">{{ item.label | escape }}</th>{% endfor %}<th scope="col" data-i18n="gov.col.stat">total %</th><th scope="col" data-i18n="gov.col.score">score</th></tr></thead>
         <tbody>{% for row in gov.charms.levels %}<tr><th scope="row">{{ row.level }}{% if row.sources.size < 2 %} ◇{% endif %}</th>{% for id in gov.charms.materials %}<td>{{ row.cost[id] }}</td>{% endfor %}<td>{{ row.stat }}</td><td>{% if row.score %}{{ row.score }}{% else %}—{% endif %}</td></tr>{% endfor %}</tbody>
       </table></div>
-    </details>
-  </section>
+    </details>{% endcapture %}
+  {% include page-notes.html part="how" own=own %}
+  {% capture extra %}<span id="maths-sources"></span><span id="governor-sources"></span>{% endcapture %}
+  {% include page-notes.html part="sources" sources=gov.sources checked="2026-10-09" note="gov.sourceNote" note_en="Values checked on 9 October 2026. Every row agrees across at least two of the tables linked below; a row marked ◇ appears in only one." art="gov.artNote" art_en="Piece, charm and material art is Kingshot game artwork by Century Games." extra=extra %}
 </main>

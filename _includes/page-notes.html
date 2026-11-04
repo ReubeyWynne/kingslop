@@ -1,0 +1,74 @@
+{%- comment -%}
+The closing sections every calculator shares, in one look and one order (css/page-notes.css):
+How it works, then Sources & confidence. See INTERACTIONS.md, "Page notes".
+
+  part="how"      the How it works section. own= the page's own folds (captured <details>), placed
+                  first; then the shared folds:
+                    points       How event points score (points_extra= the page's own lines after the
+                                 shared one, points_id= an anchor to keep; points=false leaves it out)
+                    links        Links and guest mode (links_extra=)
+                    save         Your save and backups (reset= a captured button for the page's own reset,
+                                 scope= the status scope its messages go to, prefix= its controls' ids)
+  part="sources"  the Sources & confidence section. sources= the page's data map of
+                  { label, url, links: [{ url, key, en }] | gear + charms, checked }, checked= the page's last check (YYYY-MM-DD,
+                  a source without its own date shows it), note=/note_en= the page's confidence note,
+                  art=/art_en= the art credit, extra= anything else the page must credit.
+  part="pointer"  one quiet line for the end of an answer: when it was checked, and a way down to how.
+  part="date"     a date the reader's language formats (date=).
+A source checked more than 30 days before the page is marked so a stale one stands out.
+{%- endcomment -%}
+{%- if include.part == "date" -%}
+<time datetime="{{ include.date }}" data-local-date>{{ include.date | date: "%-d %b %Y" }}</time>
+{%- elsif include.part == "pointer" -%}
+<p class="notes-pointer"><a href="#sources"><span data-i18n="notes.checked">Checked</span> {% include page-notes.html part="date" date=include.checked %}</a> · <a href="#how" data-i18n="notes.howDown">How it works ↓</a></p>
+{%- elsif include.part == "how" -%}
+<section class="section page-notes" id="how" aria-labelledby="how-title">
+  <h2 id="how-title" data-i18n="notes.how">How it works</h2>
+  <div class="notes-folds">
+    {{ include.own }}
+    {%- unless include.points == false %}
+    <details id="{{ include.points_id | default: 'how-points' }}">
+      <summary data-i18n="notes.pointsTitle">How event points score</summary>
+      <p data-i18n="notes.pointsBody">Items score when you spend them, not while you hold them. Each event lists the days that pay most, at the rates on the Events page.</p>
+      {{ include.points_extra }}
+    </details>
+    {%- endunless %}
+    <details id="how-links">
+      <summary data-i18n="notes.linksTitle">Links and guest mode</summary>
+      <p data-i18n="notes.linksBody">Copy share link sends exactly what you see. Guest mode works on a copy, so nothing you change touches your save until you press Save as mine, which asks first.</p>
+      {{ include.links_extra }}
+    </details>
+    {%- assign save_scope = include.scope | default: "player-save" -%}{%- assign save_id = include.prefix | default: "save" %}
+    <details id="save-backups" data-module="save-transfer" data-status-scope="{{ save_scope }}" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
+      <summary data-i18n="gear.manageSave">Your save and backups</summary>
+      <p data-i18n="notes.saveBody">One save on this device holds what every calculator uses. Keep a backup before importing someone else’s.</p>
+      <p class="notes-tools">
+        <button type="button" id="{{ save_id }}-export" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
+        <button type="button" id="{{ save_id }}-load" data-action="save-transfer.choose" data-i18n="gear.load">import backup</button>
+        {{ include.reset }}
+        <input type="file" id="{{ save_id }}-save-file" data-action="save-transfer.import" data-target="save-transfer.file" accept="application/json,.json" hidden aria-label="Backup file" data-i18n-key="gear.load" data-i18n-attr="aria-label">
+      </p>
+      {%- unless include.scope %}
+      <output class="notes-status" data-module="result-panel" data-target="result-panel.message" data-status-scope="player-save" role="status" hidden></output>{% endunless %}
+    </details>
+  </div>
+</section>
+{%- elsif include.part == "sources" -%}
+{%- assign page_checked = include.checked | date: "%s" | plus: 0 -%}
+<section class="section page-notes" id="sources" aria-labelledby="sources-title">
+  <h2 id="sources-title" data-i18n="directory.sources">Sources &amp; confidence</h2>
+  <p class="notes-chips"><span><span data-i18n="notes.checked">Checked</span> {% include page-notes.html part="date" date=include.checked %}</span></p>
+  {%- if include.note %}
+  <p class="note notes-note" data-i18n="{{ include.note }}">{{ include.note_en }}</p>{% endif %}
+  <ul class="notes-sources">
+    {%- for entry in include.sources %}{% assign source = entry[1] %}{% assign when = source.checked | default: include.checked %}{% assign age = when | date: "%s" | plus: 0 %}{% assign gap = page_checked | minus: age %}
+    <li><span class="notes-source">{% if source.url %}<a href="{{ source.url }}">{{ source.label | escape }}</a>{% else %}{{ source.label | escape }}{% endif %}{% if source.links %} <span class="notes-links">{% for link in source.links %}{% unless forloop.first %} · {% endunless %}<a href="{{ link.url }}" data-i18n="{{ link.key }}">{{ link.en | escape }}</a>{% endfor %}</span>{% endif %}{% if source.gear or source.charms %} <span class="notes-links">{% if source.gear %}<a href="{{ source.gear }}" data-i18n="gov.gear">Gear</a>{% endif %}{% if source.gear and source.charms %} · {% endif %}{% if source.charms %}<a href="{{ source.charms }}" data-i18n="gov.charms">Charms</a>{% endif %}</span>{% endif %}</span>
+      <span class="notes-when{% if gap > 2592000 %} notes-stale{% endif %}">{% include page-notes.html part="date" date=when %}</span>{% if source.covers %}
+      <small>{{ source.covers | escape }}</small>{% endif %}</li>
+    {%- endfor %}
+  </ul>
+  {{ include.extra }}
+  {%- if include.art %}
+  <p class="note notes-art" data-i18n="{{ include.art }}">{{ include.art_en }}</p>{% endif %}
+</section>
+{%- endif -%}

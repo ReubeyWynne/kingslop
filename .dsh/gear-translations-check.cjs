@@ -40,6 +40,8 @@ async function check(page, label) {
 }
 withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   const page = await browser.newPage({ viewport: { width: 320, height: 900 }, reducedMotion: 'reduce' });
+  // The site guide's first-visit door card covers the page; this check is about the gear page's words.
+  await page.addInitScript(() => { localStorage.setItem('bh:guide', JSON.stringify({ swipe: 'done', rail: 'done', door: 'done' })); });
   const errors = []; page.on('pageerror', e => errors.push(e.message));
   for (const lang of langs) {
     await page.goto(origin + '/hero-gear/?lang=' + lang + '&' + gear);

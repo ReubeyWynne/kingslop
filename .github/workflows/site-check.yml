@@ -65,6 +65,8 @@ jobs:
               - css/page-sheet.css
               - js/event-points.js
               - css/event-points.css
+              - _includes/page-notes.html
+              - css/page-notes.css
               - js/event-rules.js
               - _data/event_rules.json
               - js/server-age.js

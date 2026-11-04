@@ -55,6 +55,7 @@ self: gear
           <label class="gear-include gear-reforge-option"><input id="gear-hammer-reforge" type="checkbox"><span data-i18n="gear.hammerReforge">allow hammer reforge on epic &amp; mythic gear (half the Forgehammers back)</span></label>
           <p class="gear-gloss" data-i18n="gear.weightsHint">Weights set how much each stat matters to you. They are priorities, not a forecast of battle damage.</p>
         </details>
+        {% include page-notes.html part="pointer" checked="2026-10-06" %}
       </div>
     </div>
     <output id="gear-status" data-module="result-panel" data-target="result-panel.message" data-status-scope="hero-gear" role="status" hidden></output>
@@ -63,18 +64,14 @@ self: gear
     {% include page-sheet.html part="confirm" class="gear-dialog" title="gear.sheet.confirmTitle" title_en="Save this sheet as yours?" body="gear.sheet.confirmBody" body_en="It replaces the hero gear and priority in your save. A material this sheet left at 0 keeps your number." confirm="gear.sheet.confirm" confirm_en="replace my gear" %}
   </section>
 
-  <section class="section gear-notes sheet-notes" id="theory">
-    <details id="how-it-works">
+  {% include next-step.html kinds="gear-next gear-spend record:hero-gear" %}
+  {% capture own %}<details id="how-it-works">
       <summary data-i18n="gear.searchMethod">How the planner works</summary>
       <p class="gear-gloss" data-i18n="gear.optimiseHint">The planner compares upgrades using the resources you enter and your priority weights. Costs are exact game values. Spend now searches for a strong set of upgrades but can miss the very best one.</p>
     </details>
     <details id="ranking">
       <summary data-i18n="gear.scoreCostExplained">How choices are ranked</summary>
       <p class="gear-gloss" data-i18n="gear.budgetMethod">For each bigger budget, Save for red picks the red milestone that adds the most weighted score, and a tie goes to the better gain per cost. The three picks are alternatives, not a queue. Only the expedition bonus milestones (+20, +60 and +100) are compared, and the upgrades in between are counted in the cost.</p><p class="gear-gloss" data-i18n="gear.scoreFormula">Weighted gain is the added health or lethality times its profile weight, plus added attack times the lethality weight, plus added defence times the health weight. It is a priority score, not a damage percentage. The percentage shown is that gain divided by the weighted score of your current gear for the included troops.</p><p class="gear-gloss"><span data-i18n="gear.costUnitFormula">Gain per cost divides the weighted gain by the total cost, with each resource measured against a reference amount: your budget, or 52,650 XP, 550 hammers, 6 spare mythic gear and 10 mithril, whichever is larger. These are scales for comparison, not exchange rates. Current reference amounts</span>: <span id="gear-cost-units"></span>.</p><p class="gear-gloss" data-i18n="gear.budgetGrowthFormula">Each bigger budget adds the same share of every reference amount. That gives evenly spaced saving steps; it isn’t a forecast of how fast you’ll collect resources. Change your bag to rerank. Build profiles are preferences you can edit, and the cavalry reminder at 65% doesn’t change the score.</p><ul class="gear-roles" id="gear-roles"></ul>
-    </details>
-    <details id="kvk-points">
-      <summary data-i18n="gear.kvkScoring">How KvK points score</summary>
-      <p class="gear-gloss" id="gear-kvk-formula"></p><p class="gear-gloss" id="gear-kvk-bag"></p><p class="gear-gloss" data-i18n="gear.kvkOnlySpend">XP, XP reforge and sacrificed mythic gear score nothing. Each saving choice shows the points for its full cost, and the spend total covers every changed piece across all three troops. Points count once, on the day you use the materials.</p><a href="../events/#days" data-i18n="gear.kvkGuide">KvK scoring and timing</a>
     </details>
     <details id="cost-includes">
       <summary data-i18n="gear.costIncludes">What the costs include</summary>
@@ -85,24 +82,13 @@ self: gear
       <p class="gear-gloss" data-i18n="gear.optimalMethod">Everything already spent on the counted pieces (XP, Forgehammers, spare mythic gear and mithril, worked out from each piece’s level, mastery and milestones) is added up. The planner starts those pieces from nothing and spends that total with the same search as Spend now, using your weights. % of optimal is your gear’s weighted stats against that result. The search can miss the very best layout, so read it as a strong guide, not a ceiling. To find it, the search also starts from your gear with its XP free to move, and from each troop’s exact best split, then spends what is left; the best of these counts.</p><p class="gear-gloss" data-i18n="gear.splitRefund">The game can’t refund hammers, mithril or spare mythic gear, so treat this as a guide to where the next ones should go. XP can be reforged, and Spend now covers that.</p>
     </details>
     <details id="maths">
-      <summary data-i18n="gear.maths">The maths and sources</summary> <span id="maths-sources"></span>
+      <summary data-i18n="notes.maths">The maths</summary>
       <p data-i18n="gear.mathsBody">XP, Forgehammers, spare mythic gear and mithril are counted separately. A milestone’s cost includes any missing mastery and the spare mythic gear it uses, the ascension, and every imbuement on the way. Costs start from the level you saved, so XP already partway into the next level isn’t counted.</p>
         <p data-i18n="gear.method">Spend now tries XP, mastery and whole milestones over several passes and keeps the highest score it finds. With reforge on, it also compares against keeping your gear as it is. The score covers expedition health, lethality, attack and defence; conquest bonuses aren’t included.</p>
-        <p><a href="https://kingshotoptimizer.com/hero-gear/references/xp-costs/" data-i18n="gear.sourceXP">XP costs</a> · <a href="https://kingshotoptimizer.com/hero-gear/references/forgehammer-costs/" data-i18n="gear.sourceMastery">mastery costs</a> · <a href="https://kingshotoptimizer.com/hero-gear/references/imbuement-costs/" data-i18n="gear.sourceMithril">imbuement costs</a></p>
-        <p class="gear-gloss" data-i18n="gear.sourceNote">Game values were checked against Kingshot Optimizer’s public tables and browser modules on 6 October 2026. This planner and its interface were built independently.</p>
-    </details>
-    <details id="save-backups" data-module="save-transfer" data-status-scope="hero-gear" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
-        <summary data-i18n="gear.manageSave">Your save and backups</summary>
-        <p class="gear-gloss" data-i18n="gear.sharedSaveHint">One save for your gear and event inventory. Keep a backup before importing another.</p>
-        <div class="gear-tools">
-          <button type="button" id="gear-export" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
-          <button type="button" id="gear-load" data-action="save-transfer.choose" data-i18n="gear.load">import backup</button>
-          <button type="button" id="gear-reset" data-i18n="gear.reset">reset hero gear</button>
-          <input type="file" id="gear-save-file" data-action="save-transfer.import" data-target="save-transfer.file" accept="application/json,.json" hidden>
-        </div>
-      </details>
-  </section>
-  {% include next-step.html kinds="gear-next gear-spend record:hero-gear" %}
+    </details>{% endcapture %}{% capture points_extra %}<p class="gear-gloss" id="gear-kvk-formula"></p><p class="gear-gloss" id="gear-kvk-bag"></p><p class="gear-gloss" data-i18n="gear.kvkOnlySpend">XP, XP reforge and sacrificed mythic gear score nothing. Each saving choice shows the points for its full cost, and the spend total covers every changed piece across all three troops. Points count once, on the day you use the materials.</p><a href="../events/#days" data-i18n="gear.kvkGuide">KvK scoring and timing</a>{% endcapture %}{% capture reset %}<button type="button" id="gear-reset" data-i18n="gear.reset">reset hero gear</button>{% endcapture %}
+  {% include page-notes.html part="how" own=own points_id="kvk-points" points_extra=points_extra prefix="gear" scope="hero-gear" reset=reset %}
+  {% capture extra %}<span id="maths-sources"></span>{% endcapture %}
+  {% include page-notes.html part="sources" sources=site.data.hero_gear_sources checked="2026-10-06" note="gear.sourceNote" note_en="Game values were checked against Kingshot Optimizer’s public tables and browser modules on 6 October 2026. This planner and its interface were built independently." art="notes.art" art_en="Art: Kingshot game artwork by Century Games." extra=extra %}
 
 </main>
 

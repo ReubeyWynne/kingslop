@@ -1,0 +1,24 @@
+{
+  "optimizer": {
+    "label": "Kingshot Optimizer",
+    "url": "https://kingshotoptimizer.com/",
+    "checked": "2026-10-06",
+    "links": [
+      {
+        "url": "https://kingshotoptimizer.com/hero-gear/references/xp-costs/",
+        "key": "gear.sourceXP",
+        "en": "XP costs"
+      },
+      {
+        "url": "https://kingshotoptimizer.com/hero-gear/references/forgehammer-costs/",
+        "key": "gear.sourceMastery",
+        "en": "mastery costs"
+      },
+      {
+        "url": "https://kingshotoptimizer.com/hero-gear/references/imbuement-costs/",
+        "key": "gear.sourceMithril",
+        "en": "imbuement costs"
+      }
+    ]
+  }
+}

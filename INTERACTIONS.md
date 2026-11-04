@@ -112,6 +112,8 @@ The `page-sheet` module paints the controls from `_includes/page-sheet.html`: `p
 
 Event points use one scorer and table, `js/event-points.js` (`forItems` for items and speedup minutes, `forGovernor`, `forPets`, `table`, `most`), styled by `css/event-points.css`: a column per event, each cell the best day's points with every tied day under them. Inventory is read by one rule, `PlayerLedger.confirmed(snapshot, id)`.
 
+Every calculator ends with the same two sections, from `_includes/page-notes.html` and styled by `css/page-notes.css`: **How it works** (`part="how"`: the page's own folds first, captured into `own`, then the shared folds How event points score, Links and guest mode, and Your save and backups) and **Sources & confidence** (`part="sources"`: a Checked chip, the page's confidence note, one row per source from the page's data with the day it was checked, marked when it is more than 30 days older than the page, then any extra credits and the art line). The answer ends with `part="pointer"`, one quiet line linking down to both. One mark, ◇, flags a figure with a single source on every page. Dates are `<time datetime data-local-date>`, which `js/i18n.js` formats in the reader's language. Users: Governor gear, Hero gear, Building requirements, Heroes, Masters and Pets.
+
 `BH.modules` exposes the same registry as `window.Interactions`. Register capabilities before boot or later:
 
 ```js

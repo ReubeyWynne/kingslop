@@ -560,6 +560,7 @@
       "../css/hero-gear.css",
       "../css/sheet.css",
       "../css/page-sheet.css",
+      "../css/page-notes.css",
       "../css/event-points.css",
       "../css/next-step.css"
     ],
@@ -630,6 +631,7 @@
       "../css/events.css",
       "../css/heroes.css",
       "../css/page-sheet.css",
+      "../css/page-notes.css",
       "../css/event-points.css",
       "../css/next-step.css"
     ],
@@ -710,6 +712,7 @@
       "../css/heroes.css",
       "../css/masters.css",
       "../css/page-sheet.css",
+      "../css/page-notes.css",
       "../css/event-points.css",
       "../css/next-step.css"
     ],
@@ -863,6 +866,7 @@
       "../css/governor.css",
       "../css/sheet.css",
       "../css/page-sheet.css",
+      "../css/page-notes.css",
       "../css/event-points.css",
       "../css/governor-profile.css"
     ],
@@ -931,6 +935,7 @@
       "../css/heroes.css",
       "../css/pets.css",
       "../css/page-sheet.css",
+      "../css/page-notes.css",
       "../css/event-points.css",
       "../css/next-step.css"
     ],
@@ -1146,7 +1151,8 @@
       "../css/events.css",
       "../css/buildings.css",
       "../css/event-points.css",
-      "../css/page-sheet.css"
+      "../css/page-sheet.css",
+      "../css/page-notes.css"
     ],
     "scripts": [
       "../js/i18n.js",

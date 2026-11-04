@@ -7,7 +7,8 @@ self: heroes
   <a href="#leads" data-i18n="leads.nav">Best leads</a>
   <a href="#kvk-points" data-i18n="spend.nav">KvK points</a>
   <a href="#roles" data-i18n="directory.roles">Choose a role</a>
-  <a href="#hero-sources" data-i18n="directory.sources">Sources &amp; confidence</a>
+  <a href="#how" data-i18n="notes.how">How it works</a>
+  <a href="#sources" data-i18n="directory.sources">Sources &amp; confidence</a>
 </nav>
 <main>
   <section class="section hero" id="top">
@@ -116,6 +117,7 @@ self: heroes
     <p class="note" data-target="hero-points.left"></p>
     <p class="note" data-i18n="spend.rates">Each kind counts on the KvK prep day that pays most for it. The Town Centre adds these to the rest of your bag.</p>
     <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
+    {% include page-notes.html part="pointer" checked="2026-10-08" %}
   </section>
   <section class="section" id="roles">
     <h2 data-i18n="directory.roles">Choose a role</h2>
@@ -127,10 +129,7 @@ self: heroes
     </div><div><h3 data-i18n="directory.bearTitle">Bear Hunt</h3><p data-i18n="directory.explain.bear">The Bear rewards damage. A caller uses the full kit; a joiner brings troops and a useful first skill. Defensive bonuses do not add Bear damage. Follow your alliance’s joiner list and duplicate rules.</p>
     </div></div><a class="directory-more" href="../bear-hunt/#heroes" data-i18n="directory.bearGuide">read the Bear Hunt lineup rules</a>
   </section>
-  <section class="section" id="hero-sources">
-    <h2 data-i18n="directory.sources">Sources &amp; confidence</h2>
-    <p data-i18n="directory.sourceNote">Portraits and skill notes were checked against the official hero wiki on 8 October 2026. Role advice also draws on community guides and our Bear Hunt rules. “Skill fit” is an inference from the kit, not an official recommendation.</p>
-    <ul>{% for entry in site.data.hero_roles.sources %}<li><a href="{{ entry[1].url }}">{{ entry[1].label | escape }}</a></li>{% endfor %}</ul>
-    <p class="note" data-i18n="directory.anomaly">Generation-2 values at 4★ tier 3 are corrected to 199.02% using Kingshot Data and the shared curve. The original comparison source still differs; these values do not rank the heroes.</p>
-  </section>
+  {% include page-notes.html part="how" %}
+  {% capture extra %}<span id="hero-sources"></span><p class="note" data-i18n="directory.anomaly">Generation-2 values at 4★ tier 3 are corrected to 199.02% using Kingshot Data and the shared curve. The original comparison source still differs; these values do not rank the heroes.</p>{% endcapture %}
+  {% include page-notes.html part="sources" sources=site.data.hero_roles.sources checked="2026-10-08" note="directory.sourceNote" note_en="Portraits and skill notes were checked against the official hero wiki on 8 October 2026. Role advice also draws on community guides and our Bear Hunt rules. “Skill fit” is an inference from the kit, not an official recommendation." art="notes.art" art_en="Art: Kingshot game artwork by Century Games." extra=extra %}
 </main>

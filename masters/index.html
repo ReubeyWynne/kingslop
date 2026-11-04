@@ -6,7 +6,8 @@ self: masters
   <a href="#roster" data-i18n="masters.browse">Browse masters</a>
   <a href="#kvk-points" data-i18n="masterPoints.nav">KvK points</a>
   <a href="#where" data-i18n="masters.where">Where they matter</a>
-  <a href="#master-sources" data-i18n="directory.sources">Sources &amp; confidence</a>
+  <a href="#how" data-i18n="notes.how">How it works</a>
+  <a href="#sources" data-i18n="directory.sources">Sources &amp; confidence</a>
 </nav>
 <main>
   <section class="section hero" id="top">
@@ -37,6 +38,7 @@ self: masters
     <p class="note" data-i18n="masterPoints.research">Special Research is not counted yet. It takes emblems from affinity 100, but the two sources disagree on its cost per research (25,000 or 14,000 emblems a master), so emblems kept for it are left out until one is confirmed in game.</p>
     <p class="note" data-i18n="masterPoints.rates">Each kind counts on the KvK prep day that pays most for it. The Town Centre adds these to the rest of your bag.</p>
     <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
+    {% include page-notes.html part="pointer" checked="2026-10-17" %}
   </section>
   <section class="section" id="where">
     <h2 data-i18n="masters.where">Where they matter</h2>
@@ -49,10 +51,7 @@ self: masters
     </ul>
     <p class="note" data-i18n="masters.whereNote">Effects are each skill at its top level.</p>
   </section>
-  <section class="section" id="master-sources">
-    <h2 data-i18n="directory.sources">Sources &amp; confidence</h2>
-    <p data-i18n="masters.sourceNote">Affinity ladders, talents and skills were compared row by row between two community databases on 17 October 2026. They agree exactly for the six masters both list. Aena and Isnor are on Kingshot Optimizer only.</p>
-    <ul>{% for entry in site.data.masters.sources %}<li><a href="{{ entry[1].url }}">{{ entry[1].label | escape }}</a></li>{% endfor %}</ul>
-    <p class="note" data-i18n="masters.artNote">Portraits, emblems and skill icons are Kingshot game art, published by Century Games.</p>
-  </section>
+  {% include page-notes.html part="how" %}
+  {% capture extra %}<span id="master-sources"></span>{% endcapture %}
+  {% include page-notes.html part="sources" sources=site.data.masters.sources checked="2026-10-17" note="masters.sourceNote" note_en="Affinity ladders, talents and skills were compared row by row between two community databases on 17 October 2026. They agree exactly for the six masters both list. Aena and Isnor are on Kingshot Optimizer only." art="masters.artNote" art_en="Portraits, emblems and skill icons are Kingshot game art, published by Century Games." extra=extra %}
 </main>
