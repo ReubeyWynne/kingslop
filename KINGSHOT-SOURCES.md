@@ -149,6 +149,11 @@ Verbatim rule the game uses (also blog "how-special-bonuses-work"):
   codes multiply. This is why Yeonwoo, Amane and Chenko are the usual Bear joiners:
   their skills are fixed, so duplicates are safe. The battle engine drops the dead
   duplicates at compile; the lead finder's Bear score takes the strongest chance per code.
+- **Attack up and damage dealt up are separate codes** (player-confirmed, 2026-11): the
+  helper files both under 102, but Petra's The Favor ("Squads' Attack") is distinct from
+  Marlin's Wild Card and Amadeus's Unrighteous Strike ("damage dealt"). We keep 102 for
+  skills whose in-game scale reads Attack Up and move the other 102 effects to our own
+  104, damage dealt up (same family, so the two multiply). build-combat.py does the split.
 - **Enemy-down is a divisor, not a subtraction** (a 20% enemy Attack Down divides
   the boosted value by 1.20). Superseded for pets, turrets and consumables, which cancel
   by subtraction: see *KingShot Battle Helper* below.
