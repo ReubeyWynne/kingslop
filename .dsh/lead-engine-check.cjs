@@ -70,8 +70,13 @@ const you = (overview, extra = {}) => ({ overview, troops: tg5, joiners: [], cit
   // report's +4.4 came from an overview read before a +0.4 pet upgrade. Joiners' skills never
   // show in Bonus Details: two rallies with different joiners give the same multipliers.
   const ov2 = { inf: { attack: 389.3, defense: 373.6, lethality: 264.2, health: 257.0 }, cav: { attack: 326.5, defense: 330.1, lethality: 244.0, health: 218.0 }, arc: { attack: 345.7, defense: 349.3, lethality: 303.8, health: 296.6 } };
-  for (const type of ['inf', 'cav', 'arc']) { ov2[type].attack += 4.0; ov2[type].defense += 4.0; }
-  const r2 = L.reportPanel(L.panel(ov2, lineup, data, gear, cassia), lineup, 'rally', data);
+  for (const type of ['inf', 'cav', 'arc']) { ov2[type].attack += 3.5; ov2[type].defense += 3.5; }
+  // Cassia as the game shows her: affinity 40 with Casual 1 still pending (+8.40), Firepower to
+  // Win 1 (+0.5 attack and defence) and Commando 1 (+0.5 lethality and health). The +3.5 left on
+  // attack and defence is the one source still unidentified.
+  const cassiaNow = L.masterLayer({ cassia: { affinity: 40, ready: true, skills: [4, 1, 1, null] } }, data);
+  assert.deepEqual(cassiaNow, { atk: 0.5, def: 0.5, let: 8.9, hea: 8.9 }, 'Cassia 40 with the class pending');
+  const r2 = L.reportPanel(L.panel(ov2, lineup, data, gear, cassiaNow), lineup, 'rally', data);
   const report2 = { atk: [631.5, 654.9, 698.6], def: [554.5, 574.5, 593.4], let: [468.7, 415.7, 693.9], hea: [515.7, 307.2, 453.7] };
   for (const f of Object.keys(report2)) report2[f].forEach((want, t) => assert.ok(Math.abs(r2[f][t] - want) < 0.6, `second report ${f} ${t}: ${r2[f][t].toFixed(2)} vs ${want}`));
   // No gear saved adds nothing; a widget alone adds its stat.

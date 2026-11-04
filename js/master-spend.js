@@ -4,9 +4,10 @@
    Masters page, so both count the same spendable pieces.
 
    Costs come from _data/masters.json (.dsh/build-masters.py):
-   - Emblems: a master's next affinity class (levels 10, 20 … 100) costs its own emblems.
-     It is only payable once the affinity bar is full at level 9, 19 … 99, which the
-     player marks (`ready`), because affinity points are not tracked. General Master
+   - Emblems: a master's affinity class (levels 10, 20 … 100) costs its own emblems.
+     The game lets affinity reach level 40 first, then holds the class (and its jump in
+     the affinity stat) until Relationship Advancement is paid. The player marks that
+     pending class (`ready`) at a level ending in 0, because the game shows it, not us. General Master
      Emblems turn into any master's emblems; converting scores nothing, spending does.
      Own emblems pay first and general ones are shared by HeroSpend.allocate, the same
      grouped knapsack that shares general hero shards.
@@ -28,10 +29,15 @@
   var emblemId = ledger.masterEmblemId;
   var confirmed = ledger.confirmed;
   function find(id) { return MASTERS.find(function (master) { return master.id === id; }) || null; }
-  // The class a master stands in at an affinity level, 0 before level 1 and 11 (Kindred Soul) at 100. The talent level is the same number.
-  function classAt(master, affinity) { return affinity === null ? null : master.classes.filter(function (entry) { return entry.level <= affinity; }).length; }
-  // The class waiting at the next gate: level 9 waits on level 10's class, and so on.
-  function gate(master, affinity) { return affinity !== null && affinity % 10 === 9 ? master.classes.find(function (entry) { return entry.level === affinity + 1; }) || null : null; }
+  // The class a master stands in at an affinity level, 0 before level 1 and 11 (Kindred Soul) at 100, one less while
+  // that level's class is still pending. The talent level is the same number.
+  function classAt(master, affinity, pending) {
+    if (affinity === null) return null;
+    var n = master.classes.filter(function (entry) { return entry.level <= affinity; }).length;
+    return pending && gate(master, affinity) ? n - 1 : n;
+  }
+  // The class at a gate: levels 10, 20 … 100 each hold their class until it is paid.
+  function gate(master, affinity) { return affinity !== null && affinity >= 10 && affinity % 10 === 0 ? master.classes.find(function (entry) { return entry.level === affinity; }) || null : null; }
   function total(levels) { return levels.reduce(function (sum, level) { return sum + level; }, 0); }
   // Can the skill take its next level? Needs the affinity or total skill level that level names.
   function open(master, affinity, levels, at) {
@@ -49,11 +55,11 @@
     if (!owned.length) ITEMS.forEach(function (id) { note('masters', id); });
     owned.forEach(function (master) {
       var copy = roster[master.id];
-      masters[master.id] = { id: master.id, name: master.name, affinity: copy.affinity, talent: classAt(master, copy.affinity), emblems: null, manuscripts: null };
+      masters[master.id] = { id: master.id, name: master.name, affinity: copy.affinity, talent: classAt(master, copy.affinity, copy.ready), emblems: null, manuscripts: null };
       if (copy.affinity === null) { note('master-affinity-' + master.id, EMBLEM); note('master-affinity-' + master.id, MANUSCRIPT); }
     });
 
-    // Emblems: one class advancement per master whose bar is full, own emblems first, then general ones shared.
+    // Emblems: one class advancement per master with a class pending, own emblems first, then general ones shared.
     var waiting = owned.filter(function (master) { var copy = roster[master.id]; return copy.ready && gate(master, copy.affinity); });
     var general = confirmed(snapshot, GENERAL);
     if (general === null && waiting.length) note(GENERAL, EMBLEM);
@@ -65,7 +71,7 @@
     var picks = heroSpend.allocate(general || 0, groups), used = 0;
     waiting.forEach(function (master, at) {
       var cost = groups[at].totals[1], step = picks[at].steps, next = gate(master, roster[master.id].affinity);
-      masters[master.id].emblems = { from: roster[master.id].affinity, to: roster[master.id].affinity + step, className: next.name, cost: cost, spend: step ? cost : 0, own: groups[at].own, ownUsed: step ? cost - picks[at].general : 0, general: picks[at].general };
+      masters[master.id].emblems = { from: roster[master.id].affinity, to: roster[master.id].affinity, paid: Boolean(step), className: next.name, cost: cost, spend: step ? cost : 0, own: groups[at].own, ownUsed: step ? cost - picks[at].general : 0, general: picks[at].general };
       items[EMBLEM].amount += step ? cost : 0; used += picks[at].general;
     });
     items[EMBLEM].used = used;
@@ -80,9 +86,8 @@
       if (copy.affinity === null) return;
       if (copy.skills.some(function (level) { return level === null; })) { note('master-skills-' + master.id, MANUSCRIPT); return; }
       var levels = copy.skills.map(function (level, at) { return Math.min(level, master.skills[at].max); });
-      // A class the emblems pay for raises affinity first, so its skill gates open in the same plan.
-      var reached = masters[master.id].emblems ? masters[master.id].emblems.to : copy.affinity;
-      state.push({ master: master, affinity: reached, from: levels.slice(), levels: levels, spend: 0, learningXp: 0 });
+      // Skill gates read the affinity level, which a class payment does not change.
+      state.push({ master: master, affinity: copy.affinity, from: levels.slice(), levels: levels, spend: 0, learningXp: 0 });
     });
     for (;;) {
       var best = null;

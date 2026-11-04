@@ -258,12 +258,23 @@ No buffs were running. Rally widget skills: attack ×1.125 (Aegis of Fate 4 + Fa
 3, code 102), lethality ×1.15 (Mistweaver 10, code 101); defence and health untouched.
 c is +4.4 on attack and defence and +9.1 on lethality and health, the same on every
 type, from something the Bonus Overview does not show. The lethality and health part is
-Cassia, who marched with it: her affinity 40 adds 9.2 Squads' lethality and health
-(`_data/masters.json`). A second rally the same day, with a Bonus Overview read just
-before it, gives the same formula with +4.0 attack and defence (the first report's 4.4
-came from an overview read before a +0.4 pet upgrade). That +4.0 is not yet identified:
-not pets (their passive shows in Squads' Attack and Defense), not Cassia's Firepower to
-Win (level 1, 0.5). Both reports are rallies, so a rally-only bonus is the next suspect.
+Cassia, who marches with every army: in-game she reads +8.40 at affinity 40 with her
+Casual 1 class still pending, plus Commando 1 (+0.5) = 8.9. A second rally the same day,
+with a Bonus Overview read just before it, gives the same formula with +4.0 attack and
+defence (the first report's 4.4 came from an overview read before a +0.4 pet upgrade),
+and a third identical report and a solo Grizzly Bear attack (no widget skills, no
+multiplier) leave the same +4.0. Firepower to Win 1 (+0.5) is part of it; **+3.5 attack
+and defence on every type, in every march, is still unidentified**. Not pets (their
+passive shows in Squads' Attack and Defense), not alliance tech (maxed, and in the
+overview), not other masters (Roman, Pan and Valora sum exactly to the Master Stat
+Bonuses panel, and nothing there leaves 3.5).
+
+**Master affinity at class gates (2026-11-04).** The game lets affinity reach 10, 20 …
+100 and then holds that level's class until Relationship Advancement is paid. Kingshot
+Optimizer's ladder already includes the class's jump at that level; the game adds it only
+after advancement. Four masters at a pending gate matched one ordinary step past the
+level below: Cassia 40 = 8.40 (ladder 9.20), Roman 60 = 9.00 (9.60), Pan 70 = 10.35
+(10.95), Valora 90 = 13.05 (13.65). The ledger's `ready` now marks that pending class.
 Joiners' skills never appear in Bonus Details: two rallies with different joiners give
 the same multipliers. So the
 block is not misleading, the Squads' row adds to each troop type's row, and a widget

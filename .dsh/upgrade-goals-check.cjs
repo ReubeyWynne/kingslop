@@ -119,10 +119,11 @@ assert.equal(one({ kind: 'pet', target: 'gray-wolf', level: 20 }).state, 'met');
 assert.equal(one({ kind: 'pet', target: 'gray-wolf', level: wolf.maxLevel + 10 }).state, 'cap');
 
 // Masters: the emblems every class on the way costs; own first, then general.
-store.setMaster('valora', { affinity: 29, ready: true, skills: [0, 0, 0, null] });
-const valora = MS.find('valora'), emblems = valora.classes.filter(c => c.level > 29 && c.level <= 40).reduce((a, c) => a + c.emblems, 0);
+// Level 30 with its class pending needs that class and nothing more to reach 40 (40's own class comes after).
+store.setMaster('valora', { affinity: 30, ready: true, skills: [0, 0, 0, null] });
+const valora = MS.find('valora'), emblems = valora.classes.filter(c => c.level >= 30 && c.level < 40).reduce((a, c) => a + c.emblems, 0);
 r = one(goals[6]);
-assert.deepEqual([r.lines[0].need, r.lines[0].pool, r.classes], [emblems, 'general-master-emblem', 2]);
+assert.deepEqual([r.lines[0].need, r.lines[0].pool, r.classes], [emblems, 'general-master-emblem', 1]);
 store.setBalance('master-emblems-valora', 5); store.setBalance('general-master-emblem', 100);
 assert.equal(one(goals[6]).state, 'ready');
 

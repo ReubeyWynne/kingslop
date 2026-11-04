@@ -37,7 +37,7 @@ store.setHero('amadeus', { level: 80, stars: 27, widget: 6, skills: [5, 4, 5] })
 store.setBalance(PlayerLedger.heroShardId('amadeus'), 34);
 ```
 
-Master facts serve the Masters page and the Town Centre's Masters shelf. `masters.roster` holds the masters you have unlocked, keyed by ID (`_data/masters.json`), each with `affinity` (0–100 or null), `ready` (true only at affinity 9, 19 … 99, when the affinity bar is full and the next class waits on emblems; any other level clears it) and `skills` (four levels, each 0–20 or null until read), with its own entry in `masters.provenance`. Per-master emblems are inventory entries keyed `master-emblems-{master}` (`PlayerLedger.masterEmblemId`); General Master Emblems are `general-master-emblem` and manuscripts `masters-manuscript`. Saves without a `masters` key stay valid.
+Master facts serve the Masters page and the Town Centre's Masters shelf. `masters.roster` holds the masters you have unlocked, keyed by ID (`_data/masters.json`), each with `affinity` (0–100 or null), `ready` (true only at affinity 10, 20 … 100, while that level's class is still waiting on Relationship Advancement; any other level clears it. Saves from before 2026-11-04 marked a full bar at 9, 19 … 99, and read as the next level with the class pending) and `skills` (four levels, each 0–20 or null until read), with its own entry in `masters.provenance`. Per-master emblems are inventory entries keyed `master-emblems-{master}` (`PlayerLedger.masterEmblemId`); General Master Emblems are `general-master-emblem` and manuscripts `masters-manuscript`. Saves without a `masters` key stay valid.
 
 ```js
 store.setMaster('valora', { affinity: 29, ready: true, skills: [3, 2, 0, null] });

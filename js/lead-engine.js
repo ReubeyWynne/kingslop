@@ -104,7 +104,10 @@
   function masterLayer(roster, data) {
     var out = { atk: 0, def: 0, let: 0, hea: 0 }, c = data.cassia, m = roster && roster.cassia;
     if (!c || !m) return out;
-    var aff = m.affinity == null ? 0 : num(c.affinity[clamp(m.affinity | 0, 0, c.affinity.length - 1)]);
+    var lvl = m.affinity == null ? 0 : clamp(m.affinity | 0, 0, c.affinity.length - 1), aff = num(c.affinity[lvl]);
+    // At 10, 20 … 100 the ladder already holds the class's jump, which the game adds only after
+    // Relationship Advancement. Pending, the level is worth one ordinary step past the level below.
+    if (m.ready && lvl >= 10 && lvl % 10 === 0) aff = Math.round((num(c.affinity[lvl - 1]) * 2 - num(c.affinity[lvl - 2])) * 100) / 100;
     var skills = m.skills || [];
     function at(list, lvl) { lvl = lvl | 0; return lvl > 0 ? num(list[clamp(lvl, 1, list.length) - 1]) : 0; }
     var ad = at(c.attackDefense, skills[1]), lh = at(c.lethalityHealth, skills[2]);

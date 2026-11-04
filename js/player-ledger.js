@@ -89,9 +89,21 @@
     return object(value) && same(Object.keys(value).sort(), HERO.fields.slice().sort()) && upTo(value.level, HERO.level, 1) && upTo(value.stars, HERO.stars) && upTo(value.widget, HERO.widget) &&
       (value.skills === null || Array.isArray(value.skills) && value.skills.length >= 1 && value.skills.length <= HERO.skills && value.skills.every(function (level) { return upTo(level, HERO.skill, 1); }));
   }
+  function gateLevel(affinity) { return affinity !== null && affinity >= 10 && affinity % 10 === 0; }
+  // Saves from before the class gate moved marked a full bar at 9, 19 … 99. The game lets the level
+  // reach 10, 20 … 100 with the class still pending, so that is where those records now stand.
+  function upgradeMasters(value) {
+    var roster = object(value) && object(value.masters) && object(value.masters.roster) ? value.masters.roster : null;
+    if (!roster) return value;
+    var stale = Object.keys(roster).filter(function (key) { var r = roster[key]; return object(r) && r.ready === true && count(r.affinity) && r.affinity % 10 === 9 && r.affinity < 100; });
+    if (!stale.length) return value;
+    value = copy(value);
+    stale.forEach(function (key) { value.masters.roster[key].affinity += 1; });
+    return value;
+  }
   function masterRecord(value) {
     return object(value) && same(Object.keys(value).sort(), MASTER.fields.slice().sort()) && upTo(value.affinity, MASTER.affinity) && typeof value.ready === 'boolean' &&
-      (!value.ready || value.affinity !== null && value.affinity % 10 === 9) &&
+      (!value.ready || value.affinity !== null && value.affinity >= 10 && value.affinity % 10 === 0) &&
       Array.isArray(value.skills) && value.skills.length === MASTER.skills && value.skills.every(function (level) { return upTo(level, MASTER.skill); });
   }
   function petRecord(value) {
@@ -156,6 +168,7 @@
       (entry.source === null || ['manual', 'legacy', 'screenshot', 'plan', 'reset', 'file'].includes(entry.source));
   }
   function validate(value) {
+    value = upgradeMasters(value);
     valid(object(value) && value.format === 'kingshot-player' && value.schemaVersion === 1 && Number.isSafeInteger(value.revision) && value.revision >= 0 && timestamp(value.updatedAt));
     valid(object(value.inventory) && Object.keys(value.inventory).length <= 500);
     Object.keys(value.inventory).forEach(function (key) {
@@ -438,9 +451,9 @@
         valid(object(record) && Object.keys(record).every(function (field) { return MASTER.fields.includes(field); }));
         next = { affinity: null, ready: false, skills: [null, null, null, null] };
         MASTER.fields.forEach(function (field) { if (record[field] !== undefined) next[field] = copy(record[field]); });
-        // The bar can only be full and waiting at a class gate, so any other level clears it.
+        // A class can only be pending at a gate (10, 20 … 100), so any other level clears it.
         valid(typeof next.ready === 'boolean');
-        if (next.ready && (next.affinity === null || next.affinity % 10 !== 9)) next.ready = false;
+        if (next.ready && !gateLevel(next.affinity)) next.ready = false;
         valid(masterRecord(next));
       }
       return transaction(function (value) {

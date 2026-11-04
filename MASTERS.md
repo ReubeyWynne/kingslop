@@ -22,7 +22,7 @@ Art in `img/masters/` is Kingshot game art; `img/masters/SOURCES.md` lists where
 
 `js/master-spend.js` (`MasterSpend`) decides what the bag can be spent on, because event points are paid per piece consumed:
 
-- **Emblems.** A class costs that master's emblems and can only be paid once the affinity bar is full at level 9, 19 … 99. Affinity points are not tracked, so the player marks the full bar (`ready`). Own emblems pay first; General Master Emblems are shared between waiting masters with `HeroSpend.allocate`, the grouped knapsack that shares general hero shards. A class is paid whole or not at all. Converting a general emblem scores nothing; spending it does.
+- **Emblems.** A class costs that master's emblems. The game lets affinity reach 10, 20 … 100 first, then holds that level's class (and its jump in the affinity stat) until Relationship Advancement is paid. The player marks the pending class (`ready`). Own emblems pay first; General Master Emblems are shared between waiting masters with `HeroSpend.allocate`, the grouped knapsack that shares general hero shards. A class is paid whole or not at all. Converting a general emblem scores nothing; spending it does.
 - **Manuscripts.** Whole skill levels, cheapest first across every master, each once its requirement is met. A class the emblems pay counts first, so a skill it opens can take manuscripts in the same plan.
 - **Unknowns.** No masters recorded, an unread affinity or skill level, or an uncounted balance count as nothing and are listed, so a total never runs high.
 
