@@ -105,9 +105,10 @@ near(L.uptime({ kind: 'everyN', every: 4, offset: 3, turns: 1 }), 0.2, 'every fo
   const ratio = (s, w) => lead('rosa', s, w).score / marlin;
   // Marlin's chance skills do not stack with Amadeus's and Petra's of the same code;
   // they are dead duplicates. Rosa's fixed ones do stack, which moves the breakpoint
-  // down to a 4★ widget-4 Rosa.
-  assert.ok(ratio(24, 3) < 1, '4★ widget 3 Rosa is behind');
-  assert.ok(ratio(24, 4) > 1, '4★ widget 4 Rosa is ahead');
+  // down to a 4★ widget-5 Rosa. Marlin's damage-dealt chances (104) multiply with
+  // Petra's attack-up one (102) rather than dying behind it.
+  assert.ok(ratio(24, 4) < 1, '4★ widget 4 Rosa is behind');
+  assert.ok(ratio(24, 5) > 1, '4★ widget 5 Rosa is ahead');
   assert.ok(ratio(24, 5) > ratio(24, 4) && ratio(24, 6) > ratio(24, 5), 'each widget level helps');
   const mix = lead('marlin', 30, 10).mix;
   near(mix[0] + mix[1] + mix[2], 1, 'the ideal mix is whole');

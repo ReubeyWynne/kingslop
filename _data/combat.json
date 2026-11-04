@@ -26,6 +26,11 @@
    "family": "damageUp"
   },
   {
+   "code": 104,
+   "label": "Damage dealt up",
+   "family": "damageUp"
+  },
+  {
    "code": 111,
    "label": "Damage taken down",
    "family": "defenseUp"
@@ -441,7 +446,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 50.0,
       "fixed": true
      }
@@ -518,7 +523,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 50.0
      }
     ]
@@ -590,7 +595,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 40.0
      }
     ]
@@ -650,7 +655,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 200.0
      }
     ]
@@ -683,7 +688,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 50.0,
       "fixed": true
      }
@@ -713,7 +718,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 50.0
      }
     ]
@@ -816,7 +821,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 40.0
      }
     ]
@@ -879,14 +884,14 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 100.0,
       "troops": [
        "inf"
       ]
      },
      {
-      "code": 102,
+      "code": 104,
       "pct": 10.0,
       "troops": [
        "cav",
@@ -903,7 +908,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 60.0,
       "troops": [
        "inf"
@@ -949,7 +954,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 200.0,
       "troops": [
        "cav"
@@ -968,7 +973,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 50.0
      }
     ]
@@ -1040,7 +1045,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 200.0
      }
     ]
@@ -1063,7 +1068,7 @@
       ]
      },
      {
-      "code": 102,
+      "code": 104,
       "pct": 15.0,
       "troops": [
        "inf",
@@ -1081,7 +1086,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 100.0,
       "troops": [
        "cav"
@@ -1100,7 +1105,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 25.0
      },
      {
@@ -1135,7 +1140,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 100.0
      },
      {
@@ -1155,7 +1160,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 60.0
      }
     ]
@@ -1239,7 +1244,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 200.0,
       "troops": [
        "cav"
@@ -1256,7 +1261,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 75.0
      }
     ],
@@ -1275,7 +1280,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 100.0
      }
     ]
@@ -1289,7 +1294,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 100.0,
       "troops": [
        "arc"
@@ -1306,7 +1311,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 40.0
      }
     ],
@@ -1339,14 +1344,14 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 25.0,
       "vs": [
        "inf"
       ]
      },
      {
-      "code": 102,
+      "code": 104,
       "pct": 30.0,
       "vs": [
        "arc"
@@ -1364,7 +1369,7 @@
     },
     "effects": [
      {
-      "code": 102,
+      "code": 104,
       "pct": 50.0,
       "fixed": true
      }

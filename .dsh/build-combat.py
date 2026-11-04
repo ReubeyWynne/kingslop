@@ -74,6 +74,11 @@ families = dict(re.findall(r'(\d{3}): Family\.(\w+)', enums))
 family_id = {'DAMAGE_UP': 'damageUp', 'DEFENSE_UP': 'defenseUp', 'OPP_DAMAGE_DOWN': 'enemyDamageDown', 'OPP_DEFENSE_DOWN': 'enemyDefenseDown'}
 op_labels = next(v for v in labels.values() if isinstance(v, dict) and 101 in v and v[101] == 'Lethality up')
 codes = [{'code': c, 'label': op_labels[c], 'family': family_id[families[str(c)]]} for c in sorted(op_labels)]
+# The helper files every damage-side buff under 102 (attack up). In game, attack up
+# (Petra's The Favor: "Squads' Attack") and damage dealt up (Marlin's Wild Card,
+# Amadeus's Unrighteous Strike) are separate op codes: duplicates of one chance code
+# are dead, of different codes they multiply (player-confirmed, 2026-11). 104 is ours.
+codes.insert(next(i for i, c in enumerate(codes) if c['code'] > 103), {'code': 104, 'label': 'Damage dealt up', 'family': 'damageUp'})
 
 # Hero ceilings must match heroes.json to the hundredth.
 for name, ceiling in ref['HERO_LEADER_MAX'].items():
@@ -196,6 +201,13 @@ for key, rows in hero_skills.items():
         row['name'] = skill['name']
         if (key, row['slot']) in DEAD_ON_BEAR:
             row['bear'] = False
+        # A 102 effect is damage dealt (104) unless the skill's in-game scale says
+        # Attack Up; Jabel's Youthful Rage reads Lethality Up and stays as the helper has it.
+        labels = [s['label'] for s in skill['scales']]
+        if not any('attack up' in l.lower() for l in labels) and (key, row['slot']) != ('jabel', 'sk3'):
+            for e in row['effects']:
+                if e['code'] == 102:
+                    e['code'] = 104
 
 tg = {
     'tg3': {'inf': {'chance': skills['_TG3_INF_PROC'], 'damageTakenDownPct': skills['_TG3_INF_RED'] * 100},
