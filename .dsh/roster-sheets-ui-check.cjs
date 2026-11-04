@@ -9,8 +9,8 @@ const root = path.resolve('_site');
 const PAGES = [
   { page: 'heroes', link: '?lang=en&h=amadeus.80.27.6.545&hi=hero-shards-amadeus:34', section: 'heroes', id: 'amadeus',
     record: { level: 80, stars: 27, widget: 6, skills: [5, 4, 5] }, item: ['hero-shards-amadeus', 34], bad: '?lang=en&h=nobody.1' },
-  { page: 'masters', link: '?lang=en&m=valora.29.1.3.2.0.&mi=master-emblems-valora:10', section: 'masters', id: 'valora',
-    record: { affinity: 29, ready: true, skills: [3, 2, 0, null] }, item: ['master-emblems-valora', 10], bad: '?lang=en&m=valora.500' },
+  { page: 'masters', link: '?lang=en&m=valora.30.1.3.2.0.&mi=master-emblems-valora:10', section: 'masters', id: 'valora',
+    record: { affinity: 30, ready: true, skills: [3, 2, 0, null] }, item: ['master-emblems-valora', 10], bad: '?lang=en&m=valora.500' },
   { page: 'pets', link: '?lang=en&pets=gray-wolf.20a', section: 'pets', id: 'gray-wolf',
     record: { level: 20, advanced: true }, item: null, bad: '?lang=en&pets=gray-wolf.20x' }
 ];

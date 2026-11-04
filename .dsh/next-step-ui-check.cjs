@@ -46,7 +46,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     store.setBalance('hero-shards-jabel', 200);
     store.setGovernor('gear', { 'inf-1': 30, 'inf-2': 30, 'cav-1': 30, 'cav-2': 30, 'arc-1': 30, 'arc-2': 30 });
     store.setPet('lion', { level: 20, advanced: false });
-    store.setMaster('valora', { affinity: 29, ready: true, skills: [3, 2, 0, 0] });
+    store.setMaster('valora', { affinity: 30, ready: true, skills: [3, 2, 0, 0] });
     store.setBalance(window.PlayerLedger.masterEmblemId('valora'), 100000);
     store.setBalance('general-master-emblem', 0);
     store.setBalance('masters-manuscript', 0);
