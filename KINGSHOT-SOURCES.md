@@ -142,6 +142,12 @@ Verbatim rule the game uses (also blog "how-special-bonuses-work"):
 ```
 
 - Same-stat specials add their percents first, then apply **once**.
+- **Chance effects of one skill code don't stack** (player-confirmed, 2026-11): of the
+  per-round or per-attack chance buffs sharing a code, only the largest live one counts.
+  Fixed percentages (passives, every-N-turn buffs) of one code still add, and the two
+  totals add to each other before codes multiply. This is why Yeonwoo, Amane and Chenko
+  are the usual Bear joiners: their skills are fixed, so duplicates are safe. The battle
+  engine and the lead finder's Bear score both apply it (expected max of the chances).
 - **Enemy-down is a divisor, not a subtraction** (a 20% enemy Attack Down divides
   the boosted value by 1.20). Superseded for pets, turrets and consumables, which cancel
   by subtraction: see *KingShot Battle Helper* below.
@@ -399,7 +405,7 @@ site already carries from elsewhere disagrees:
   `heroes.json` (kingshot.net), the six battle-pet ladders in `pets.json`, each widget's role
   and stat, TG1–TG5 troop stats, the hero-gear formulas, ambush 20% / volley 10% / counter 10% /
   fatigue 0.01%.
-- **New to us:** skill codes in four families (same code adds, codes multiply; a hit is
+- **New to us:** skill codes in four families (same code adds, but chance effects of one code take the largest, not the sum; codes multiply; a hit is
   damage-up × enemy-defense-down ÷ (defense-up × enemy-damage-down)); how every hero skill
   triggers (passive, per round, per attack, every N turns, pity) with durations and troop
   scope; all 22 widget names and max stats; widget skill 15% × level step; Truegold troop

@@ -148,7 +148,7 @@
     return (list || []).map(function (sk) {
       var vsTerror = sk.special === 'vsTerror';
       var fx = (sk.effects || []).map(function (e) {
-        return { code: e.code, fam: family(e.code), pct: +e.pct || 0, troops: mask(e.troops) || [true, true, true], vs: mask(e.vs), vsTerror: vsTerror };
+        return { code: e.code, fam: family(e.code), pct: +e.pct || 0, troops: mask(e.troops) || [true, true, true], vs: mask(e.vs), vsTerror: vsTerror, chance: sk.kind === 'perRound' || sk.kind === 'perAttack' };
       });
       return {
         kind: sk.kind || 'passive', chance: pos(sk.chance), every: Math.max(1, sk.every | 0), offset: sk.offset | 0,
@@ -158,20 +158,29 @@
     }).filter(function (sk) { return sk.fx.length || sk.special === 'dodge'; });
   }
 
-  // One family's factor for a hit: (1 + summed % / 100) per code, multiplied
+  // One code's live effects: fixed (passive or scheduled) ones add, chance ones
+  // never stack with each other (the largest live one counts), and the two add.
+  function add(sums, e) {
+    var s = sums[e.code] || (sums[e.code] = { fixed: 0, chance: 0 });
+    if (e.chance) s.chance = Math.max(s.chance, e.pct); else s.fixed += e.pct;
+  }
+  function product(sums) {
+    var f = 1;
+    for (var code in sums) f *= 1 + (sums[code].fixed + sums[code].chance) / 100;
+    return f;
+  }
+
+  // One family's factor for a hit: (1 + one code's % / 100) per code, multiplied
   // across codes. `own` is the troop type the effect must cover, `enemy` the
   // type it must be aimed at when it names one.
   function factor(fx, fam, own, enemy, terror) {
-    var sums = null;
+    var sums = {};
     for (var i = 0; i < fx.length; i++) {
       var e = fx[i];
       if (e.fam !== fam || !e.troops[own] || (e.vs && !e.vs[enemy]) || (e.vsTerror && !terror)) continue;
-      sums = sums || {};
-      sums[e.code] = (sums[e.code] || 0) + e.pct;
+      add(sums, e);
     }
-    var f = 1;
-    for (var code in sums) f *= 1 + sums[code] / 100;
-    return f;
+    return product(sums);
   }
 
   // A side's state for one round: the effects live this round, the Truegold
@@ -260,15 +269,13 @@
         if (sk.special === 'debuffTargetOnHit') { if (e.fam === 3) foe.hurt[g] += e.pct; continue; }
         if (e.fam === 0 && e.troops[t] && (!e.vs || e.vs[g])) {
           sums = sums || {};
-          sums[e.code] = (sums[e.code] || 0) + e.pct;
+          add(sums, e);
         } else if (e.fam !== 0) {
           st.timed.push({ id: i + '.' + j, fx: [e], from: round + 1, until: round + Math.max(1, sk.turns) });
         }
       }
     }
-    var x = 1;
-    for (var code in sums) x *= 1 + sums[code] / 100;
-    return x;
+    return sums ? product(sums) : 1;
   }
 
   // SkillMod for type t striking type g, with the Truegold rolls folded in.

@@ -14,7 +14,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal(await page.locator('.lead-best').isHidden(), true, 'no best lineup before the roster');
   await page.evaluate(() => {
     const s = PlayerLedger.shared();
-    for (const [key, stars, widget] of [['amadeus', 30, 10], ['petra', 30, 10], ['marlin', 30, 10], ['rosa', 24, 6], ['jabel', 24, 0]]) s.setHero(key, { level: null, stars, widget, skills: null });
+    for (const [key, stars, widget] of [['amadeus', 30, 10], ['petra', 30, 10], ['marlin', 30, 10], ['rosa', 24, 4], ['jabel', 24, 0]]) s.setHero(key, { level: null, stars, widget, skills: null });
     KS_SERVER_AGE.setGeneration(4);
   });
   await page.waitForFunction(() => document.querySelectorAll('.lead-row').length === 3);

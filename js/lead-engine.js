@@ -223,22 +223,31 @@
   }
 
   // The expected SkillMod per troop type against the Bear. Only the
-  // attacker's families count: damage up and enemy defence down.
+  // attacker's families count: damage up and enemy defence down. Within a code,
+  // fixed effects (passive or scheduled) add; chance effects never stack with each
+  // other, so the code takes the largest one that procs: the expected maximum.
   function bearMod(skills) {
     var mod = [1, 1, 1];
     TYPES.forEach(function (type, t) {
-      var sums = {};
+      var fixed = {}, chances = {};
       skills.forEach(function (s) {
-        var up = uptime(s);
+        var up = uptime(s), chance = s.kind === 'perRound' || s.kind === 'perAttack';
         s.effects.forEach(function (e) {
           var fam = (e.code >= 200 ? 2 : 0) + (e.code % 100 >= 10 ? 1 : 0);
           if (fam !== 0 && fam !== 3) return;
           if (e.troops && e.troops.indexOf(t) < 0) return;
           if (e.vs && e.vs.indexOf(0) < 0) return;
-          sums[e.code] = (sums[e.code] || 0) + e.pct * up;
+          if (chance) (chances[e.code] = chances[e.code] || []).push({ pct: e.pct, up: up });
+          else fixed[e.code] = (fixed[e.code] || 0) + e.pct * up;
         });
       });
-      Object.keys(sums).forEach(function (code) { mod[t] *= 1 + sums[code] / 100; });
+      var codes = {};
+      Object.keys(fixed).concat(Object.keys(chances)).forEach(function (c) { codes[c] = true; });
+      Object.keys(codes).forEach(function (code) {
+        var miss = 1, best = 0;
+        (chances[code] || []).sort(function (a, b) { return b.pct - a.pct; }).forEach(function (c) { best += c.pct * c.up * miss; miss *= 1 - c.up; });
+        mod[t] *= 1 + ((fixed[code] || 0) + best) / 100;
+      });
     });
     return mod;
   }
