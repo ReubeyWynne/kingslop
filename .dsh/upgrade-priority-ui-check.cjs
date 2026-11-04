@@ -25,6 +25,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     store.setHero('jabel', { level: 60, stars: 10, widget: 2, skills: null });
     store.setHero('saul', { level: 60, stars: 8, widget: 0, skills: null });
     store.setBalance('mythic-hero-shard', 200);
+    store.setBalance('hero-shards-jabel', 200);
     store.setGovernor('gear', { 'inf-1': 30, 'inf-2': 30, 'cav-1': 30, 'cav-2': 30, 'arc-1': 30, 'arc-2': 30 });
     store.setPet('lion', { level: 20, advanced: false });
   });

@@ -8,7 +8,7 @@
     total: '{n} KvK prep points', complete: 'Every hero count this uses is entered.', partial: 'Partial: {names} not entered yet, so the total leaves them out.', more: '{n} more',
     empty: 'Mark the heroes you own, with their stars, to see what their shards and widgets can score.',
     stars: '{from} → {to}', maxed: 'maxed', none: '—', pieces: '{own} own + {general} general', widgetPieces: '{own} own + {general} chest', widgetLevel: 'widget {from} → {to}',
-    eventShards: 'Shards', eventWidgets: 'Widgets', leftShards: 'Unused general shards: {mythic} mythic, {epic} epic, {rare} rare.', leftWidgets: 'Unused widget chests: {n}.', unknownCount: '?'
+    eventShards: 'Shards', eventWidgets: 'Widgets', leftShards: 'Unused general shards: {mythic} mythic, {epic} epic, {rare} rare.', leftWidgets: 'Unused widget chests: {n}.', keptMythic: 'Mythic general shards are banked for your next new hero, so none go to the heroes above.', unknownCount: '?'
   };
   function t(api, key) { return api.tr('spend.' + key, EN[key]); }
   function fill(api, key, values) { return api.fill(t(api, key), values); }
@@ -56,7 +56,7 @@
       if (Object.keys(shards).length) events.push({ label: t(api, 'eventShards'), cells: window.EventPoints.forItems(shards) });
       if (widgets) events.push({ label: t(api, 'eventWidgets'), cells: window.EventPoints.forItems({ 'hero-widget': widgets }) });
       context.targets('events').forEach(function (node) { node.replaceChildren(); if (events.length) node.appendChild(window.EventPoints.table(api, events, 'hero-event-points')); });
-      put('left', rows.length ? fill(api, 'leftShards', { mythic: left('mythic-hero-shard'), epic: left('epic-hero-shard'), rare: left('rare-hero-shard') }) + ' ' + fill(api, 'leftWidgets', { n: left('hero-widget') }) : '');
+      put('left', rows.length ? fill(api, 'leftShards', { mythic: left('mythic-hero-shard'), epic: left('epic-hero-shard'), rare: left('rare-hero-shard') }) + ' ' + fill(api, 'leftWidgets', { n: left('hero-widget') }) + (plan.items['mythic-hero-shard'].kept !== 0 ? ' ' + t(api, 'keptMythic') : '') : '');
     }
     if (store) context.cleanup(store.subscribe(render));
     return { refresh: render };

@@ -46,11 +46,15 @@ assert.equal(plan.items['mythic-hero-shard'].amount, 0);
 store.setHero('petra', { stars: 24, widget: 0 }); store.setBalance(Ledger.heroShardId('petra'), 99);
 plan = S.plan(store.snapshot());
 assert.equal(plan.heroes.petra.shards.spend, 0);
-assert.ok(plan.unknown.includes('mythic-hero-shard') && plan.unknown.includes(Ledger.widgetChestId(3)) && plan.unknown.includes(Ledger.heroWidgetId('petra')));
+assert.ok(plan.unknown.includes(Ledger.widgetChestId(3)) && plan.unknown.includes(Ledger.heroWidgetId('petra')));
+assert.ok(!plan.unknown.includes('mythic-hero-shard'), 'mythic general shards are kept, so their count is not needed');
+// Mythic general shards are banked for the next new hero, so by default no owned hero takes them.
 store.setBalance('mythic-hero-shard', 1);
 plan = S.plan(store.snapshot());
+assert.deepEqual([plan.heroes.petra.shards.spend, plan.heroes.petra.shards.general, plan.items['mythic-hero-shard'].kept, plan.items['mythic-hero-shard'].left], [0, 0, 1, 1]);
+plan = S.plan(store.snapshot(), { spendKept: true });
 assert.deepEqual([plan.heroes.petra.shards.spend, plan.heroes.petra.shards.general, plan.heroes.petra.shards.to], [100, 1, 25]);
-assert.equal(plan.items['mythic-hero-shard'].left, 0);
+assert.deepEqual([plan.items['mythic-hero-shard'].kept, plan.items['mythic-hero-shard'].left], [0, 0]);
 
 // A maxed hero spends nothing, however many shards it holds.
 store.setHero('petra', { stars: 30, widget: 10 });
@@ -60,7 +64,7 @@ assert.deepEqual([plan.heroes.petra.shards.spend, plan.heroes.petra.shards.toMax
 // Amadeus and Helga take only their own shards; general shards go to everyone else of the rarity.
 store.setHero('petra', null); store.setBalance(Ledger.heroShardId('petra'), null);
 store.setHero('helga', { stars: 0 }); store.setBalance(Ledger.heroShardId('helga'), 0); store.setBalance('mythic-hero-shard', 1000);
-plan = S.plan(store.snapshot());
+plan = S.plan(store.snapshot(), { spendKept: true });
 assert.equal(plan.heroes.helga.shards.spend, 0);
 assert.equal(plan.items['mythic-hero-shard'].left, 1000);
 assert.ok(!plan.unknown.includes('mythic-hero-shard'));

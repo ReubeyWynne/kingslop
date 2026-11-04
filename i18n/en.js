@@ -1892,6 +1892,7 @@ window.__BH_I18N_DATA["en"] = {
   "spend.pieces": "{own} own + {general} general",
   "spend.widgetPieces": "{own} own + {general} chest",
   "spend.widgetLevel": "widget {from} → {to}",
+  "spend.keptMythic": "Mythic general shards are banked for your next new hero, so none go to the heroes above.",
   "spend.leftShards": "Unused general shards: {mythic} mythic, {epic} epic, {rare} rare.",
   "spend.leftWidgets": "Unused widget chests: {n}.",
   "spend.unknownCount": "?",
