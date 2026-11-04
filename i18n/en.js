@@ -2560,7 +2560,7 @@ window.__BH_I18N_DATA["en"] = {
   "leads.method.bear": "Bear: the expected damage of the lineup at its own ideal troop mix, with every chance skill at its average. The bar is each lineup against your best one.",
   "leads.method.fight": "Rally and garrison: your lineup fights each stock opponent of your kingdom’s generation, both sides at 100,000 troops in the usual mixes, 24 battles a fight. Lineups are sorted by how many more troops they keep than the opponent, on average.",
   "leads.method.limits": "Not counted: appointments, turrets and lineups with two heroes of one troop type. The stock opponents, with their joiners, pets and city buffs, are estimates around the KingShot Battle Helper’s benchmark accounts, not measured players.",
-  "leads.method.stats": "Each hero adds its star stats to attack and defence for its own troop type, its widget adds lethality and health for that type, and every Expedition skill counts at its level (the stars cap it). The widget skill counts only in its own role: a rally widget in a rally, a defender widget in a garrison.",
+  "leads.method.stats": "Each hero adds its star stats to attack and defence for its own troop type, its widget and the hero gear you saved on the Hero Gear page add lethality and health for that type (the same sums as the hero’s Hero Stats, Expedition block), and every Expedition skill counts at its level (the stars cap it). The widget skill counts only in its own role: a rally widget in a rally, a defender widget in a garrison.",
   "leads.mix": "Ideal mix {inf} / {cav} / {arc}",
   "leads.nav": "Best leads",
   "leads.noHeroes": "Mark the heroes you own, with their stars, in the roster above.",

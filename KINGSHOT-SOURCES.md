@@ -240,9 +240,21 @@ chance of 120→200% damage, *Trial by Fire* 8→40% chance of −50% damage tak
 Marlin *Dynamo* 50% chance of +50% damage.
 
 **4 · Gear, charms, research** — the "common" every hero sits on. Fitted from
-real panels: `panel_type = common_type + curve[index] × ceiling` holds exactly,
-and exclusive-gear stats enter through the special-bonus form
-`(100 + entered) × (1 + g/100) − 100`.
+real panels: `panel_type = common_type + curve[index] × ceiling` holds exactly.
+Exclusive-gear (widget) stats were first fitted as `(100 + entered) × (1 + g/100) − 100`;
+that is superseded by the check below: they **add**.
+
+**Hero Stats block, verified in-game 2026-11-04.** A hero's Stats → Expedition block
+is exactly, to the hundredth: attack = `ceiling × curve[index]` + red gear attack
+milestones; defence the same with the defence milestones; lethality = helm + boots
+gear core + widget stat; health = gloves + chest gear core + widget stat, where
+widget stat = `maxPct × level / 10` (Marlin 5★, Mistweaver 10, helm red 131 M11,
+gloves 62 M2, chest 62 M2, boots 100 M6 → 260.19 / 240.19 / 277.55 / 148.08; Amadeus
+and Petra matched as well, see `.dsh/lead-engine-check.cjs`). A battle report sent
+with those three heroes reads Bonus Overview (Squads' + type) + Hero Stats + a small
+constant: +4.3–4.4 defence and +9.0–9.2 health on every type, with attack +85–92 and
+lethality +76–113 from buffs running at the time. So the block is not misleading for
+these rows, and the Squads' row adds to each troop type's row.
 
 **Validation (2026-09-11).** Three independent checks against one account's real
 Bonus-Details panels: (a) Amadeus 2★ → `260.20 × 31.78%` = 82.7 vs 82.6 derived

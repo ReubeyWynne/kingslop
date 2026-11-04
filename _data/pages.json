@@ -652,6 +652,7 @@
       "../js/battle-engine.js",
       "../js/combat.js",
       "../js/lead-data.js",
+      "../js/hero-gear-engine.js",
       "../js/lead-engine.js",
       "../js/lead-finder.js",
       "../js/upgrade-priority-data.js",

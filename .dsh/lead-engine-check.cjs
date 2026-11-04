@@ -25,12 +25,36 @@ const you = (overview, extra = {}) => ({ overview, troops: tg5, joiners: [], cit
   near(p.def[0], p.atk[0], 'defence equals attack');
   assert.equal(p.atk[1], 100); assert.equal(p.atk[2], 100);
 }
-// Widgets: level / 10 of the top value, entered as (100 + overview) × (1 + g) − 100.
+// Widgets add level / 10 of the top value to lethality and health; hero gear adds its core
+// (helm and boots lethality, gloves and chest health) and red milestones. Checked against the
+// game's Hero Stats, Expedition block, for the owner's heroes on 4 November 2026:
+//   Marlin 5★, Mistweaver 10, helm red 131 M11, gloves 62 M2, chest 62 M2, boots 100 M6
+//     → Archer Attack 260.19, Defense 240.19, Lethality 277.55, Health 148.08
+//   Amadeus 3★ 4/6, Aegis of Fate 4, helm 61 M3, gloves red 133 M11, chest 100 M7, boots 65 M3
+//     → Infantry 156.92, 176.92, 121.33, 249.65
+//   Petra 4★ 3/6, Fate's Writ 3, helm 51 M2, gloves 34 M1, chest 34 M1, boots 48 M1
+//     → Cavalry 240.48, 240.48, 95.40, 80.18
 {
-  const p = L.panel(flat(250), [copy('marlin', 30, 10)], data);
-  near(p.let[2], 350 * 1.6 - 100, 'Marlin widget 10 lethality');
-  near(p.hea[2], 350 * 1.6 - 100, 'Marlin widget 10 health');
-  near(L.panel(flat(250), [copy('rosa', 24, 6)], data).let[2], 350 * (1 + 0.6 * 92.5 / 100) - 100, 'Rosa widget 6');
+  const m = q => ({ quality: q[0], level: q[1], mastery: q[2] });
+  const set = (type, [helm, gloves, chest, boots]) => ({ [type + '-helm']: m(helm), [type + '-gloves']: m(gloves), [type + '-chest']: m(chest), [type + '-boots']: m(boots) });
+  const gear = L.gearLayer({
+    ...set('arc', [['red', 131, 11], ['mythic', 62, 2], ['mythic', 62, 2], ['mythic', 100, 6]]),
+    ...set('inf', [['mythic', 61, 3], ['red', 133, 11], ['mythic', 100, 7], ['mythic', 65, 3]]),
+    ...set('cav', [['mythic', 51, 2], ['mythic', 34, 1], ['mythic', 34, 1], ['mythic', 48, 1]])
+  });
+  const p = L.panel(flat(0), [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)], data, gear);
+  const game = { atk: [156.92, 240.48, 260.19], def: [176.92, 240.48, 240.19], let: [121.33, 95.40, 277.55], hea: [249.65, 80.18, 148.08] };
+  for (const f of Object.keys(game)) game[f].forEach((want, t) => assert.ok(Math.abs(p[f][t] - want) < 0.02, `${f} ${t}: ${p[f][t]} vs the game's ${want}`));
+  // A battle report with that lineup and the overview + Squads' rows matches its defence to
+  // within 4.4 points and its health to within 9.2 on every type (the rest are live buffs).
+  const ov = { inf: { attack: 380.9, defense: 373.2, lethality: 264.1, health: 256.8 }, cav: { attack: 318.1, defense: 329.7, lethality: 243.9, health: 218.0 }, arc: { attack: 337.3, defense: 348.9, lethality: 303.7, health: 296.5 } };
+  const r = L.panel(ov, [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)], data, gear);
+  [554.5, 574.5, 593.4].forEach((want, t) => assert.ok(want - r.def[t] >= 0 && want - r.def[t] < 4.5, 'report defence ' + t));
+  [515.7, 307.2, 453.7].forEach((want, t) => assert.ok(want - r.hea[t] >= 0 && want - r.hea[t] < 9.3, 'report health ' + t));
+  // No gear saved adds nothing; a widget alone adds its stat.
+  near(L.panel(flat(250), [copy('marlin', 30, 10)], data).let[2], 310, 'Marlin widget 10 lethality, no gear');
+  near(L.panel(flat(250), [copy('rosa', 24, 6)], data).hea[2], 250 + 0.6 * 92.5, 'Rosa widget 6');
+  assert.deepEqual(L.gearLayer({}).arc, { atk: 0, def: 0, let: 0, hea: 0 });
   assert.equal(copy('saul', 30, 10).widget, 10, 'a widget hero keeps its level');
   assert.equal(copy('chenko', 30, 10).widget, 0, 'a hero without a widget has none');
 }

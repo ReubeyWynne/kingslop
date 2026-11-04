@@ -8,10 +8,19 @@
    heroes, so they cannot be used to compare one lineup with another. The
    four layers a hero adds on top (KINGSHOT-SOURCES.md, Hero layer):
 
-     attack, defence   overview + ceiling × curve[star index], own type only
-     lethality, health (100 + overview) × (1 + widget stat / 100) − 100,
-                       widget stat = level / 10 × the widget's top value,
-                       own type only, in every role
+     attack, defence   overview + ceiling × curve[star index] + red gear
+                       milestones, own type only
+     lethality, health overview + widget stat + hero gear, own type only,
+                       widget stat = level / 10 × the widget's top value
+                       (added, not multiplied), in every role
+     hero gear         the saved set for the hero's troop type
+                       (js/hero-gear-engine.js HeroGear.stats): helm and boots
+                       add lethality, gloves and chest health
+
+   Checked against the game's own Hero Stats block (Expedition) for three
+   heroes, to the hundredth, and against a battle report: overview + Squads'
+   + Hero Stats matches its defence and health rows to within a few points
+   (the rest are buffs running at the time).
      skills            js/combat.js: every Expedition skill at its level and
                        the widget's skill in its own role (rally or defender)
 
@@ -70,21 +79,39 @@
   function statLine(copy, data) { return data.heroes[copy.key].ceiling * data.curve[copy.stars] / 100; }
   function widgetStat(copy, data) { var w = data.widgets[copy.key]; return w && copy.widget ? w.maxPct * copy.widget / 10 : 0; }
 
+  // Hero gear by troop type from the save's pieces ('inf-helm' …): what a hero of
+  // that type wears. Pieces not recorded add nothing.
+  function gearLayer(pieces) {
+    var G = root.HeroGear, out = {};
+    TYPES.forEach(function (type) {
+      var sum = { atk: 0, def: 0, let: 0, hea: 0 };
+      if (G && pieces) ['helm', 'gloves', 'chest', 'boots'].forEach(function (slot) {
+        var piece = pieces[type + '-' + slot];
+        if (!piece) return;
+        var s = G.stats(piece, slot);
+        sum[slot === 'helm' || slot === 'boots' ? 'let' : 'hea'] += s.core;
+        sum.atk += s.attack; sum.def += s.defense;
+      });
+      out[type] = sum;
+    });
+    return out;
+  }
+
   // Bonus Overview plus a lineup → the four Bonus Details rows the battle
-  // engine fights with. overview is { inf: { attack, lethality, defense, health }, … }.
-  function panel(overview, lineup, data) {
+  // engine fights with. overview is { inf: { attack, lethality, defense, health }, … }
+  // with the Squads' row already added; gear is gearLayer's, worn by the seated hero.
+  function panel(overview, lineup, data, gear) {
     var out = { atk: [0, 0, 0], let: [0, 0, 0], def: [0, 0, 0], hea: [0, 0, 0] };
     TYPES.forEach(function (type, t) {
       var row = (overview && overview[type]) || {};
-      var atk = num(row.attack), def = num(row.defense), leth = num(row.lethality), hea = num(row.health), g = 0;
+      var atk = num(row.attack), def = num(row.defense), leth = num(row.lethality), hea = num(row.health);
       lineup.forEach(function (copy) {
         if (!copy || copy.type !== type) return;
-        var line = statLine(copy, data);
-        atk += line; def += line; g += widgetStat(copy, data);
+        var line = statLine(copy, data), w = widgetStat(copy, data), g = (gear && gear[type]) || {};
+        atk += line + num(g.atk); def += line + num(g.def);
+        leth += w + num(g.let); hea += w + num(g.hea);
       });
-      out.atk[t] = atk; out.def[t] = def;
-      out.let[t] = (100 + leth) * (1 + g / 100) - 100;
-      out.hea[t] = (100 + hea) * (1 + g / 100) - 100;
+      out.atk[t] = atk; out.def[t] = def; out.let[t] = leth; out.hea[t] = hea;
     });
     return out;
   }
@@ -185,7 +212,7 @@
   // Expected Bear damage of a lineup at the lead's ideal mix, and that mix.
   function bear(you, lineup, data) {
     var E = root.BattleEngine, troops = you.troops;
-    var p = layered(panel(you.overview, lineup, data), layersOf(you), null);
+    var p = layered(panel(you.overview, lineup, data, you.gear), layersOf(you), null);
     var mod = bearMod(skillsOf(lineup, 'rally', data, you.joiners));
     var terms = TYPES.map(function (type, t) {
       var tier = troops.tier[t], tg = troops.tg[t];
@@ -219,7 +246,7 @@
 
   // One side ready for the battle engine, its layers set against the other.
   function battleSide(who, lineup, role, against, data) {
-    var p = layered(panel(who.overview, lineup, data), layersOf(who), layersOf(against));
+    var p = layered(panel(who.overview, lineup, data, who.gear), layersOf(who), layersOf(against));
     return { atk: p.atk, let: p.let, def: p.def, hea: p.hea, tier: who.troops.tier, tg: who.troops.tg, skills: skillsOf(lineup, role, data, who.joiners) };
   }
 
@@ -284,13 +311,14 @@
   }
 
   var api = {
-    TYPES: TYPES, STAR_SKILLS: STAR_SKILLS, copyOf: copyOf, statLine: statLine, widgetStat: widgetStat, panel: panel,
+    TYPES: TYPES, STAR_SKILLS: STAR_SKILLS, copyOf: copyOf, statLine: statLine, widgetStat: widgetStat, gearLayer: gearLayer, panel: panel,
     uptime: uptime, bearMod: bearMod, bear: bear, opponent: opponent, fight: fight, candidates: candidates, lineups: lineups, rank: rank,
     LAYER_KEYS: LAYER_KEYS, blank: blank, petLevelPct: petLevelPct, petLayer: petLayer, cityLayer: cityLayer, layered: layered, battleSide: battleSide
   };
   if (typeof module !== 'undefined' && module.exports) {
     root.BattleEngine = root.BattleEngine || require('./battle-engine.js');
     root.CombatSkills = root.CombatSkills || require('./combat.js');
+    root.HeroGear = root.HeroGear || require('./hero-gear-engine.js');
     module.exports = api;
   }
   root.LeadEngine = api;
