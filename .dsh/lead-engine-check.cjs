@@ -122,8 +122,8 @@ near(L.bearMod([{ kind: 'passive', effects: [{ code: 102, pct: 25 }] }, { kind: 
 // Defensive skills add no Bear damage: Rosa's Rose of War is enemy damage down.
 assert.deepEqual(L.bearMod([{ kind: 'passive', effects: [{ code: 201, pct: 20 }] }]), [1, 1, 1]);
 
-// Megafauna: four rising opponents for every generation.
-assert.deepEqual(megafauna.foes.map(f => f.id), ['manta', 'shark', 'orca', 'whale']);
+// Four rising spender tiers for every generation, each with its own loadout there.
+assert.deepEqual(megafauna.foes.map(f => f.id), ['f2p', 'dolphin', 'whale', 'kraken']);
 for (const gen of megafauna.generations) {
   const g = String(gen);
   for (const job of ['rally', 'garrison']) assert.deepEqual(megafauna.lineups[g][job].map(k => data.heroes[k].type), ['inf', 'cav', 'arc'], `gen ${g} ${job}`);
@@ -183,9 +183,16 @@ assert.equal(L.opponent(megafauna.foes[3], 4, 'garrison', data).lineup[2].key, '
 }
 // Stock opponents carry their joiners, pets and city buffs.
 {
-  const whale = L.opponent(megafauna.foes[3], 6, 'rally', data), manta = L.opponent(megafauna.foes[0], 6, 'rally', data);
-  assert.equal(whale.joiners.length, 4); assert.equal(whale.joiners[0].level, 5);
-  assert.equal(whale.pets.health, 10); assert.equal(whale.city.attack, 20);
-  assert.equal(manta.pets.attack, 0); assert.equal(manta.city.attack, 0);
+  const kraken = L.opponent(megafauna.foes[3], 6, 'rally', data), f2p = L.opponent(megafauna.foes[0], 6, 'rally', data);
+  assert.equal(kraken.joiners.length, 4); assert.equal(kraken.joiners[0].level, 5);
+  assert.equal(kraken.pets.health, 10); assert.equal(kraken.city.attack, 20);
+  assert.equal(f2p.city.attack, 0);
+  assert.ok(kraken.gear.inf.let > f2p.gear.inf.let, 'the Kraken wears better hero gear');
+  assert.ok(kraken.town.tg > f2p.town.tg, 'and is further along Truegold');
+  // A tier's loadout changes with the generation: a Gen 3 Dolphin is not a Gen 4 Dolphin.
+  const d3 = L.loadout(megafauna.foes[1], 3, data), d4 = L.loadout(megafauna.foes[1], 4, data);
+  assert.notDeepEqual(d3, d4);
+  // F2P fields last generation's meta heroes.
+  assert.deepEqual(L.opponent(megafauna.foes[0], 4, 'garrison', data).lineup.map(c => c.key), megafauna.lineups['3'].rally);
 }
 console.log('Lead engine: stars, widgets, skill caps, Bear score, joiners, pets, city layers, megafauna opponents and ranking pass.');

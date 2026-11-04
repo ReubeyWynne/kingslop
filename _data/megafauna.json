@@ -1,5 +1,5 @@
 {
-  "_note": "Stock opponents for the Heroes page's lead finder (js/lead-engine.js). One ladder of account investment, scaled to each kingdom generation. The per-generation Bonus Overview, troop tier, march size, troop mixes and meta lineups are the KingShot Battle Helper's benchmark references (kingshot_sim/benchmark/reference.py at commit 463dba72, MIT): GEN_BONUS_PCT, GEN_TROOP_TIER, GEN_TROOP_COUNT, scenario_formations and GEN_LINEUPS rally_atk / defense. The four investment levels around them are this site's own estimates, not measured accounts: change them here. Joiners, pets and city buffs per opponent are this site's estimates too; the default joiner lists follow the Bear Hunt page and the hero directory's joiner roles.",
+  "_note": "Stock opponents for the Heroes page's lead finder (js/lead-engine.js). One ladder of account investment, scaled to each kingdom generation. The per-generation Bonus Overview, troop tier, march size, troop mixes and meta lineups are the KingShot Battle Helper's benchmark references (kingshot_sim/benchmark/reference.py at commit 463dba72, MIT): GEN_BONUS_PCT, GEN_TROOP_TIER, GEN_TROOP_COUNT, scenario_formations and GEN_LINEUPS rally_atk / defense. The four spender tiers (F2P, Dolphin, Whale, Kraken) and each one's loadout per generation are this site's own estimates, not measured accounts: change them here. A loadout's overview multiplies the generation's usual Bonus Overview (governor gear and the rest live there); tg is absolute (troops and Town Centre); gear is one hero gear piece worn in all twelve slots; lineupGen picks whose meta heroes they field (F2P a generation behind). Joiners, pets and city buffs per opponent are this site's estimates too; the default joiner lists follow the Bear Hunt page and the hero directory's joiner roles.",
   "source": {
     "label": "KingShot Battle Helper benchmark",
     "url": "https://github.com/Absyyyyyyy/ksbattlehelp_public/blob/463dba72409ac57b9a71c331584074725f5b5b1b/kingshot_sim/benchmark/reference.py",
@@ -168,79 +168,647 @@
   },
   "foes": [
     {
-      "id": "manta",
-      "name": "Manta ray",
-      "overview": 0.7,
-      "stars": 18,
-      "widget": 0,
-      "tg": -1,
-      "note": "Light account: 3★ meta heroes, no widgets, one Truegold step behind, level 3 joiners, no pets or city buffs.",
-      "joinerLevel": 3,
-      "petLevel": 0,
-      "city": {
-        "attack": 0,
-        "defense": 0,
-        "lethality": 0,
-        "health": 0,
-        "enemyAttack": 0,
-        "enemyDefense": 0
+      "id": "f2p",
+      "name": "F2P",
+      "summary": "Free to play: behind on buildings and heroes. Last generation’s meta heroes, Truegold a step behind, three quarters of the usual stats, light gear, no city buffs.",
+      "loadouts": {
+        "1": {
+          "overview": 0.75,
+          "stars": 12,
+          "widget": 0,
+          "tg": 0,
+          "gear": {
+            "quality": "epic",
+            "level": 40,
+            "mastery": 0
+          },
+          "joinerLevel": 2,
+          "petLevel": 0,
+          "city": {
+            "attack": 0,
+            "defense": 0,
+            "lethality": 0,
+            "health": 0,
+            "enemyAttack": 0,
+            "enemyDefense": 0
+          },
+          "lineupGen": 1
+        },
+        "2": {
+          "overview": 0.75,
+          "stars": 18,
+          "widget": 0,
+          "tg": 2,
+          "gear": {
+            "quality": "epic",
+            "level": 80,
+            "mastery": 0
+          },
+          "joinerLevel": 3,
+          "petLevel": 0,
+          "city": {
+            "attack": 0,
+            "defense": 0,
+            "lethality": 0,
+            "health": 0,
+            "enemyAttack": 0,
+            "enemyDefense": 0
+          },
+          "lineupGen": 1
+        },
+        "3": {
+          "overview": 0.75,
+          "stars": 18,
+          "widget": 2,
+          "tg": 3,
+          "gear": {
+            "quality": "mythic",
+            "level": 40,
+            "mastery": 0
+          },
+          "joinerLevel": 3,
+          "petLevel": 20,
+          "city": {
+            "attack": 0,
+            "defense": 0,
+            "lethality": 0,
+            "health": 0,
+            "enemyAttack": 0,
+            "enemyDefense": 0
+          },
+          "lineupGen": 2
+        },
+        "4": {
+          "overview": 0.75,
+          "stars": 24,
+          "widget": 2,
+          "tg": 4,
+          "gear": {
+            "quality": "mythic",
+            "level": 60,
+            "mastery": 2
+          },
+          "joinerLevel": 3,
+          "petLevel": 30,
+          "city": {
+            "attack": 0,
+            "defense": 0,
+            "lethality": 0,
+            "health": 0,
+            "enemyAttack": 0,
+            "enemyDefense": 0
+          },
+          "lineupGen": 3
+        },
+        "5": {
+          "overview": 0.75,
+          "stars": 24,
+          "widget": 4,
+          "tg": 4,
+          "gear": {
+            "quality": "mythic",
+            "level": 80,
+            "mastery": 3
+          },
+          "joinerLevel": 4,
+          "petLevel": 40,
+          "city": {
+            "attack": 0,
+            "defense": 0,
+            "lethality": 0,
+            "health": 0,
+            "enemyAttack": 0,
+            "enemyDefense": 0
+          },
+          "lineupGen": 4
+        },
+        "6": {
+          "overview": 0.75,
+          "stars": 24,
+          "widget": 4,
+          "tg": 7,
+          "gear": {
+            "quality": "mythic",
+            "level": 100,
+            "mastery": 5
+          },
+          "joinerLevel": 4,
+          "petLevel": 50,
+          "city": {
+            "attack": 0,
+            "defense": 0,
+            "lethality": 0,
+            "health": 0,
+            "enemyAttack": 0,
+            "enemyDefense": 0
+          },
+          "lineupGen": 5
+        },
+        "7": {
+          "overview": 0.75,
+          "stars": 24,
+          "widget": 4,
+          "tg": 7,
+          "gear": {
+            "quality": "red",
+            "level": 120,
+            "mastery": 10
+          },
+          "joinerLevel": 4,
+          "petLevel": 50,
+          "city": {
+            "attack": 0,
+            "defense": 0,
+            "lethality": 0,
+            "health": 0,
+            "enemyAttack": 0,
+            "enemyDefense": 0
+          },
+          "lineupGen": 6
+        }
       }
     },
     {
-      "id": "shark",
-      "name": "Great white",
-      "overview": 1.0,
-      "stars": 24,
-      "widget": 4,
-      "tg": 0,
-      "note": "Steady account: 4★ meta heroes, widgets at 4, the generation's usual stats, level 4 joiners, pets at 50, attack and defence I.",
-      "joinerLevel": 4,
-      "petLevel": 50,
-      "city": {
-        "attack": 10,
-        "defense": 10,
-        "lethality": 0,
-        "health": 0,
-        "enemyAttack": 0,
-        "enemyDefense": 0
-      }
-    },
-    {
-      "id": "orca",
-      "name": "Orca",
-      "overview": 1.2,
-      "stars": 30,
-      "widget": 8,
-      "tg": 0,
-      "note": "Heavy account: 5★ meta heroes, widgets at 8, a fifth above the usual stats, level 5 joiners, pets at 80, every city buff at I.",
-      "joinerLevel": 5,
-      "petLevel": 80,
-      "city": {
-        "attack": 10,
-        "defense": 10,
-        "lethality": 10,
-        "health": 10,
-        "enemyAttack": 10,
-        "enemyDefense": 10
+      "id": "dolphin",
+      "name": "Dolphin",
+      "summary": "Light spender: the generation’s meta heroes and Truegold, its usual stats, gear and widgets coming along, attack and defence city buffs at I.",
+      "loadouts": {
+        "1": {
+          "overview": 1.0,
+          "stars": 18,
+          "widget": 0,
+          "tg": 0,
+          "gear": {
+            "quality": "epic",
+            "level": 80,
+            "mastery": 0
+          },
+          "joinerLevel": 3,
+          "petLevel": 0,
+          "city": {
+            "attack": 0,
+            "defense": 0,
+            "lethality": 0,
+            "health": 0,
+            "enemyAttack": 0,
+            "enemyDefense": 0
+          },
+          "lineupGen": 1
+        },
+        "2": {
+          "overview": 1.0,
+          "stars": 24,
+          "widget": 2,
+          "tg": 3,
+          "gear": {
+            "quality": "mythic",
+            "level": 40,
+            "mastery": 2
+          },
+          "joinerLevel": 4,
+          "petLevel": 30,
+          "city": {
+            "attack": 10,
+            "defense": 10,
+            "lethality": 0,
+            "health": 0,
+            "enemyAttack": 0,
+            "enemyDefense": 0
+          },
+          "lineupGen": 2
+        },
+        "3": {
+          "overview": 1.0,
+          "stars": 24,
+          "widget": 4,
+          "tg": 4,
+          "gear": {
+            "quality": "mythic",
+            "level": 80,
+            "mastery": 5
+          },
+          "joinerLevel": 4,
+          "petLevel": 50,
+          "city": {
+            "attack": 10,
+            "defense": 10,
+            "lethality": 0,
+            "health": 0,
+            "enemyAttack": 0,
+            "enemyDefense": 0
+          },
+          "lineupGen": 3
+        },
+        "4": {
+          "overview": 1.0,
+          "stars": 30,
+          "widget": 4,
+          "tg": 5,
+          "gear": {
+            "quality": "mythic",
+            "level": 100,
+            "mastery": 8
+          },
+          "joinerLevel": 5,
+          "petLevel": 60,
+          "city": {
+            "attack": 10,
+            "defense": 10,
+            "lethality": 0,
+            "health": 0,
+            "enemyAttack": 0,
+            "enemyDefense": 0
+          },
+          "lineupGen": 4
+        },
+        "5": {
+          "overview": 1.0,
+          "stars": 30,
+          "widget": 6,
+          "tg": 5,
+          "gear": {
+            "quality": "red",
+            "level": 120,
+            "mastery": 10
+          },
+          "joinerLevel": 5,
+          "petLevel": 70,
+          "city": {
+            "attack": 10,
+            "defense": 10,
+            "lethality": 0,
+            "health": 0,
+            "enemyAttack": 0,
+            "enemyDefense": 0
+          },
+          "lineupGen": 5
+        },
+        "6": {
+          "overview": 1.0,
+          "stars": 30,
+          "widget": 6,
+          "tg": 8,
+          "gear": {
+            "quality": "red",
+            "level": 140,
+            "mastery": 12
+          },
+          "joinerLevel": 5,
+          "petLevel": 80,
+          "city": {
+            "attack": 10,
+            "defense": 10,
+            "lethality": 0,
+            "health": 0,
+            "enemyAttack": 0,
+            "enemyDefense": 0
+          },
+          "lineupGen": 6
+        },
+        "7": {
+          "overview": 1.0,
+          "stars": 30,
+          "widget": 8,
+          "tg": 8,
+          "gear": {
+            "quality": "red",
+            "level": 160,
+            "mastery": 14
+          },
+          "joinerLevel": 5,
+          "petLevel": 80,
+          "city": {
+            "attack": 10,
+            "defense": 10,
+            "lethality": 0,
+            "health": 0,
+            "enemyAttack": 0,
+            "enemyDefense": 0
+          },
+          "lineupGen": 7
+        }
       }
     },
     {
       "id": "whale",
-      "name": "Blue whale",
-      "overview": 1.5,
-      "stars": 30,
-      "widget": 10,
-      "tg": 0,
-      "note": "Top spender: 5★ meta heroes, full widgets, half again the usual stats, level 5 joiners, maxed pets, every city buff at II.",
-      "joinerLevel": 5,
-      "petLevel": 100,
-      "city": {
-        "attack": 20,
-        "defense": 20,
-        "lethality": 20,
-        "health": 20,
-        "enemyAttack": 20,
-        "enemyDefense": 20
+      "name": "Whale",
+      "summary": "Big spender: 5★ meta heroes, high widgets, red gear from generation 3, a third above the usual stats, level 5 joiners, every city buff at I.",
+      "loadouts": {
+        "1": {
+          "overview": 1.3,
+          "stars": 30,
+          "widget": 2,
+          "tg": 0,
+          "gear": {
+            "quality": "mythic",
+            "level": 60,
+            "mastery": 3
+          },
+          "joinerLevel": 5,
+          "petLevel": 30,
+          "city": {
+            "attack": 10,
+            "defense": 10,
+            "lethality": 10,
+            "health": 10,
+            "enemyAttack": 10,
+            "enemyDefense": 10
+          },
+          "lineupGen": 1
+        },
+        "2": {
+          "overview": 1.3,
+          "stars": 30,
+          "widget": 4,
+          "tg": 3,
+          "gear": {
+            "quality": "mythic",
+            "level": 100,
+            "mastery": 8
+          },
+          "joinerLevel": 5,
+          "petLevel": 60,
+          "city": {
+            "attack": 10,
+            "defense": 10,
+            "lethality": 10,
+            "health": 10,
+            "enemyAttack": 10,
+            "enemyDefense": 10
+          },
+          "lineupGen": 2
+        },
+        "3": {
+          "overview": 1.3,
+          "stars": 30,
+          "widget": 6,
+          "tg": 4,
+          "gear": {
+            "quality": "red",
+            "level": 120,
+            "mastery": 10
+          },
+          "joinerLevel": 5,
+          "petLevel": 80,
+          "city": {
+            "attack": 10,
+            "defense": 10,
+            "lethality": 10,
+            "health": 10,
+            "enemyAttack": 10,
+            "enemyDefense": 10
+          },
+          "lineupGen": 3
+        },
+        "4": {
+          "overview": 1.3,
+          "stars": 30,
+          "widget": 8,
+          "tg": 5,
+          "gear": {
+            "quality": "red",
+            "level": 140,
+            "mastery": 12
+          },
+          "joinerLevel": 5,
+          "petLevel": 90,
+          "city": {
+            "attack": 10,
+            "defense": 10,
+            "lethality": 10,
+            "health": 10,
+            "enemyAttack": 10,
+            "enemyDefense": 10
+          },
+          "lineupGen": 4
+        },
+        "5": {
+          "overview": 1.3,
+          "stars": 30,
+          "widget": 8,
+          "tg": 5,
+          "gear": {
+            "quality": "red",
+            "level": 160,
+            "mastery": 14
+          },
+          "joinerLevel": 5,
+          "petLevel": 100,
+          "city": {
+            "attack": 10,
+            "defense": 10,
+            "lethality": 10,
+            "health": 10,
+            "enemyAttack": 10,
+            "enemyDefense": 10
+          },
+          "lineupGen": 5
+        },
+        "6": {
+          "overview": 1.3,
+          "stars": 30,
+          "widget": 10,
+          "tg": 8,
+          "gear": {
+            "quality": "red",
+            "level": 180,
+            "mastery": 16
+          },
+          "joinerLevel": 5,
+          "petLevel": 100,
+          "city": {
+            "attack": 10,
+            "defense": 10,
+            "lethality": 10,
+            "health": 10,
+            "enemyAttack": 10,
+            "enemyDefense": 10
+          },
+          "lineupGen": 6
+        },
+        "7": {
+          "overview": 1.3,
+          "stars": 30,
+          "widget": 10,
+          "tg": 8,
+          "gear": {
+            "quality": "red",
+            "level": 200,
+            "mastery": 20
+          },
+          "joinerLevel": 5,
+          "petLevel": 100,
+          "city": {
+            "attack": 10,
+            "defense": 10,
+            "lethality": 10,
+            "health": 10,
+            "enemyAttack": 10,
+            "enemyDefense": 10
+          },
+          "lineupGen": 7
+        }
+      }
+    },
+    {
+      "id": "kraken",
+      "name": "Kraken",
+      "summary": "Everything maxed: 5★ meta heroes with full widgets, Truegold a step ahead, beefy Bonus Details from maxed hero and governor gear, maxed pets, every city buff at II.",
+      "loadouts": {
+        "1": {
+          "overview": 1.6,
+          "stars": 30,
+          "widget": 10,
+          "tg": 1,
+          "gear": {
+            "quality": "mythic",
+            "level": 100,
+            "mastery": 20
+          },
+          "joinerLevel": 5,
+          "petLevel": 100,
+          "city": {
+            "attack": 20,
+            "defense": 20,
+            "lethality": 20,
+            "health": 20,
+            "enemyAttack": 20,
+            "enemyDefense": 20
+          },
+          "lineupGen": 1
+        },
+        "2": {
+          "overview": 1.6,
+          "stars": 30,
+          "widget": 10,
+          "tg": 4,
+          "gear": {
+            "quality": "red",
+            "level": 140,
+            "mastery": 14
+          },
+          "joinerLevel": 5,
+          "petLevel": 100,
+          "city": {
+            "attack": 20,
+            "defense": 20,
+            "lethality": 20,
+            "health": 20,
+            "enemyAttack": 20,
+            "enemyDefense": 20
+          },
+          "lineupGen": 2
+        },
+        "3": {
+          "overview": 1.6,
+          "stars": 30,
+          "widget": 10,
+          "tg": 5,
+          "gear": {
+            "quality": "red",
+            "level": 160,
+            "mastery": 16
+          },
+          "joinerLevel": 5,
+          "petLevel": 100,
+          "city": {
+            "attack": 20,
+            "defense": 20,
+            "lethality": 20,
+            "health": 20,
+            "enemyAttack": 20,
+            "enemyDefense": 20
+          },
+          "lineupGen": 3
+        },
+        "4": {
+          "overview": 1.6,
+          "stars": 30,
+          "widget": 10,
+          "tg": 6,
+          "gear": {
+            "quality": "red",
+            "level": 180,
+            "mastery": 18
+          },
+          "joinerLevel": 5,
+          "petLevel": 100,
+          "city": {
+            "attack": 20,
+            "defense": 20,
+            "lethality": 20,
+            "health": 20,
+            "enemyAttack": 20,
+            "enemyDefense": 20
+          },
+          "lineupGen": 4
+        },
+        "5": {
+          "overview": 1.6,
+          "stars": 30,
+          "widget": 10,
+          "tg": 6,
+          "gear": {
+            "quality": "red",
+            "level": 200,
+            "mastery": 20
+          },
+          "joinerLevel": 5,
+          "petLevel": 100,
+          "city": {
+            "attack": 20,
+            "defense": 20,
+            "lethality": 20,
+            "health": 20,
+            "enemyAttack": 20,
+            "enemyDefense": 20
+          },
+          "lineupGen": 5
+        },
+        "6": {
+          "overview": 1.6,
+          "stars": 30,
+          "widget": 10,
+          "tg": 8,
+          "gear": {
+            "quality": "red",
+            "level": 200,
+            "mastery": 20
+          },
+          "joinerLevel": 5,
+          "petLevel": 100,
+          "city": {
+            "attack": 20,
+            "defense": 20,
+            "lethality": 20,
+            "health": 20,
+            "enemyAttack": 20,
+            "enemyDefense": 20
+          },
+          "lineupGen": 6
+        },
+        "7": {
+          "overview": 1.6,
+          "stars": 30,
+          "widget": 10,
+          "tg": 8,
+          "gear": {
+            "quality": "red",
+            "level": 200,
+            "mastery": 20
+          },
+          "joinerLevel": 5,
+          "petLevel": 100,
+          "city": {
+            "attack": 20,
+            "defense": 20,
+            "lethality": 20,
+            "health": 20,
+            "enemyAttack": 20,
+            "enemyDefense": 20
+          },
+          "lineupGen": 7
+        }
       }
     }
   ],

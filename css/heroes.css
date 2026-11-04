@@ -313,6 +313,7 @@
 .lead-foe-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--signal-line); }
 .lead-foe-list li { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: .1rem 1rem; padding: .5rem 0; border-bottom: 1px solid var(--signal-tint); font-size: .9rem; color: var(--ink-dim); }
 .lead-foe-list b { font-family: var(--display-2); font-weight: 700; color: var(--ink); }
+.lead-foe-list .lead-foe-kit { grid-column: 2; font-size: .82rem; font-style: italic; }
 @media (max-width: 30rem) {
   .lead-jobs label { font-size: .82rem; letter-spacing: .03em; }
   .lead-stats-table tbody th { width: 4.2rem; font-size: .62rem; letter-spacing: .04em; }
@@ -328,4 +329,5 @@
   .lead-panel-table tbody th { width: 4.2rem; font-size: .6rem; letter-spacing: .04em; }
   .lead-panel-table td { font-size: .82rem; }
   .lead-foe-list li { grid-template-columns: minmax(0, 1fr); }
+  .lead-foe-list .lead-foe-kit { grid-column: 1; }
 }

@@ -90,7 +90,7 @@ self: heroes
       <h3 data-i18n="leads.foes">The opponents</h3>
       <p class="note" data-target="lead-finder.foesNote"></p>
       <ul class="lead-foe-list">{% for foe in site.data.megafauna.foes %}
-        <li data-foe="{{ foe.id }}"><b data-i18n="leads.foe.{{ foe.id }}">{{ foe.name | escape }}</b> <span data-i18n="leads.foe.{{ foe.id }}.note">{{ foe.note | escape }}</span></li>{% endfor %}
+        <li data-foe="{{ foe.id }}"><b data-i18n="leads.foe.{{ foe.id }}">{{ foe.name | escape }}</b> <span data-i18n="leads.foe.{{ foe.id }}.note">{{ foe.summary | escape }}</span> <small class="lead-foe-kit" data-foe-kit="{{ foe.id }}"></small></li>{% endfor %}
       </ul>
     </div>
     <details class="lead-method" id="lead-method">
