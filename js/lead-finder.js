@@ -247,7 +247,7 @@
         answer.appendChild(el('p', 'lead-kicker', t('railTitle')));
         answer.append(rail(r, true), el('p', 'lead-answer-note', t('railNote')));
       }
-      var p = L.layered(L.panel(you.overview, r.lineup, data, you.gear), { city: you.city, pet: you.pets }, { city: L.blank(), pet: L.blank() });
+      var p = L.reportPanel(L.layered(L.panel(you.overview, r.lineup, data, you.gear), { city: you.city, pet: you.pets }, { city: L.blank(), pet: L.blank() }), r.lineup, job === 'garrison' ? 'defender' : 'rally', data);
       var body = context.targets('panel')[0];
       body.replaceChildren();
       TYPES.forEach(function (type, i) {

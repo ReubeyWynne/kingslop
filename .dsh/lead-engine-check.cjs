@@ -45,12 +45,19 @@ const you = (overview, extra = {}) => ({ overview, troops: tg5, joiners: [], cit
   const p = L.panel(flat(0), [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)], data, gear);
   const game = { atk: [156.92, 240.48, 260.19], def: [176.92, 240.48, 240.19], let: [121.33, 95.40, 277.55], hea: [249.65, 80.18, 148.08] };
   for (const f of Object.keys(game)) game[f].forEach((want, t) => assert.ok(Math.abs(p[f][t] - want) < 0.02, `${f} ${t}: ${p[f][t]} vs the game's ${want}`));
-  // A battle report with that lineup and the overview + Squads' rows matches its defence to
-  // within 4.4 points and its health to within 9.2 on every type (the rest are live buffs).
+  // The battle report sent with that lineup (no buffs running) against the Bonus Overview,
+  // Squads' added: Bonus Details = (100 + overview + Hero Stats + c) × (1 + widget skills) − 100,
+  // where the rally widget skills are attack ×1.125 (Aegis of Fate 4 + Fate's Writ 3, code 102)
+  // and lethality ×1.15 (Mistweaver 10, code 101), and c is a constant the save does not
+  // hold: +4.4 attack and defence, +9.1 lethality and health on every troop type.
   const ov = { inf: { attack: 380.9, defense: 373.2, lethality: 264.1, health: 256.8 }, cav: { attack: 318.1, defense: 329.7, lethality: 243.9, health: 218.0 }, arc: { attack: 337.3, defense: 348.9, lethality: 303.7, health: 296.5 } };
-  const r = L.panel(ov, [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)], data, gear);
-  [554.5, 574.5, 593.4].forEach((want, t) => assert.ok(want - r.def[t] >= 0 && want - r.def[t] < 4.5, 'report defence ' + t));
-  [515.7, 307.2, 453.7].forEach((want, t) => assert.ok(want - r.hea[t] >= 0 && want - r.hea[t] < 9.3, 'report health ' + t));
+  const lineup = [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)];
+  const c = { atk: 4.4, def: 4.4, let: 9.1, hea: 9.1 }, shifted = {};
+  for (const type of ['inf', 'cav', 'arc']) shifted[type] = { attack: ov[type].attack + c.atk, defense: ov[type].defense + c.def, lethality: ov[type].lethality + c.let, health: ov[type].health + c.hea };
+  const r = L.reportPanel(L.panel(shifted, lineup, data, gear), lineup, 'rally', data);
+  const report = { atk: [622.5, 645.9, 689.6], def: [554.5, 574.5, 593.4], let: [468.7, 415.7, 693.9], hea: [515.7, 307.2, 453.7] };
+  for (const f of Object.keys(report)) report[f].forEach((want, t) => assert.ok(Math.abs(r[f][t] - want) < 0.6, `report ${f} ${t}: ${r[f][t].toFixed(2)} vs ${want}`));
+  assert.deepEqual(L.reportPanel(r, lineup, 'defender', data), r, 'rally widgets do nothing in a garrison');
   // No gear saved adds nothing; a widget alone adds its stat.
   near(L.panel(flat(250), [copy('marlin', 30, 10)], data).let[2], 310, 'Marlin widget 10 lethality, no gear');
   near(L.panel(flat(250), [copy('rosa', 24, 6)], data).hea[2], 250 + 0.6 * 92.5, 'Rosa widget 6');

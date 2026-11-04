@@ -252,9 +252,14 @@ widget stat = `maxPct × level / 10` (Marlin 5★, Mistweaver 10, helm red 131 M
 gloves 62 M2, chest 62 M2, boots 100 M6 → 260.19 / 240.19 / 277.55 / 148.08; Amadeus
 and Petra matched as well, see `.dsh/lead-engine-check.cjs`). A battle report sent
 with those three heroes reads Bonus Overview (Squads' + type) + Hero Stats + a small
-constant: +4.3–4.4 defence and +9.0–9.2 health on every type, with attack +85–92 and
-lethality +76–113 from buffs running at the time. So the block is not misleading for
-these rows, and the Squads' row adds to each troop type's row.
+constant, then the widgets' skills multiply: Bonus Details = (100 + overview + Hero
+Stats + c) × (1 + widget skills / 100) − 100, every one of the twelve rows within 0.6.
+No buffs were running. Rally widget skills: attack ×1.125 (Aegis of Fate 4 + Fate's Writ
+3, code 102), lethality ×1.15 (Mistweaver 10, code 101); defence and health untouched.
+c is +4.4 on attack and defence and +9.1 on lethality and health, the same on every
+type, from something the Bonus Overview does not show (not yet identified). So the
+block is not misleading, the Squads' row adds to each troop type's row, and a widget
+has an additive stat (in Hero Stats) and a multiplicative skill (its role only).
 
 **Validation (2026-09-11).** Three independent checks against one account's real
 Bonus-Details panels: (a) Amadeus 2★ → `260.20 × 31.78%` = 82.7 vs 82.6 derived

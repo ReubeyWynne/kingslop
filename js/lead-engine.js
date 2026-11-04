@@ -116,6 +116,24 @@
     return out;
   }
 
+  // The widget skills seated in a role, as the battle report's Bonus Details show them:
+  // code 102 (attack up) and 101 (lethality up) multiply their row,
+  // (100 + row) × (1 + Σ / 100) − 100. The battle engine already counts them as
+  // skills, so this is for showing a report's numbers, not for scoring.
+  function reportPanel(p, lineup, role, data) {
+    var sums = { 101: 0, 102: 0 }, out = { atk: p.atk.slice(), let: p.let.slice(), def: p.def.slice(), hea: p.hea.slice() };
+    lineup.forEach(function (copy) {
+      var w = copy && data.widgets[copy.key], lvl = copy ? copy.widget : 0;
+      if (!w || !lvl || w.skill.role !== role || !Object.hasOwn(sums, w.skill.code)) return;
+      sums[w.skill.code] += data.widgetSkill.maxPct * data.widgetSkill.byLevel[lvl];
+    });
+    for (var t = 0; t < 3; t++) {
+      out.atk[t] = (100 + out.atk[t]) * (1 + sums[102] / 100) - 100;
+      out.let[t] = (100 + out.let[t]) * (1 + sums[101] / 100) - 100;
+    }
+    return out;
+  }
+
   // The lineup's skills plus the joiners' first skills, for one role.
   function skillsOf(lineup, role, data, joiners) {
     return root.CombatSkills.side(data, {
@@ -311,7 +329,7 @@
   }
 
   var api = {
-    TYPES: TYPES, STAR_SKILLS: STAR_SKILLS, copyOf: copyOf, statLine: statLine, widgetStat: widgetStat, gearLayer: gearLayer, panel: panel,
+    TYPES: TYPES, STAR_SKILLS: STAR_SKILLS, copyOf: copyOf, statLine: statLine, widgetStat: widgetStat, gearLayer: gearLayer, panel: panel, reportPanel: reportPanel,
     uptime: uptime, bearMod: bearMod, bear: bear, opponent: opponent, fight: fight, candidates: candidates, lineups: lineups, rank: rank,
     LAYER_KEYS: LAYER_KEYS, blank: blank, petLevelPct: petLevelPct, petLayer: petLayer, cityLayer: cityLayer, layered: layered, battleSide: battleSide
   };
