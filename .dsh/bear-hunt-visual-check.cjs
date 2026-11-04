@@ -30,6 +30,8 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.setViewportSize({ width, height: 1000 });
+      // Every page starts from an empty save: the allocator keeps the last page's troops.
+      await page.addInitScript(() => { if (!sessionStorage.getItem('bh-check')) { sessionStorage.setItem('bh-check', '1'); localStorage.removeItem('bh:bear-allocator:v1'); } });
       await page.goto(base + '/bear-hunt/?lang=' + lang, { waitUntil: 'networkidle' });
       await page.waitForFunction(lang => document.documentElement.lang === lang && window.__BH_I18N_DATA?.[lang], lang);
       await page.evaluate(() => document.fonts.ready);
@@ -89,6 +91,21 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
       await page.locator('#march-builder button[type="submit"]').click();
       assert.equal(await page.locator('#march-builder').isVisible(), false);
       assert.equal(await page.locator('#march-queues > div').count(), 3);
+      if (lang === 'en' && width === 390) {
+        // The troops you enter survive a reload.
+        await page.reload({ waitUntil: 'networkidle' });
+        await page.waitForFunction(lang => document.documentElement.lang === lang && window.__BH_I18N_DATA?.[lang], lang);
+        assert.equal(await page.locator('#join-queues').inputValue(), '3');
+        assert.equal(await page.locator('#own-archers').inputValue(), '50');
+        assert.equal(await page.locator('#own-priority').isChecked(), true);
+        assert.equal(await page.locator('#march-queues > div').count(), 3);
+        assert.equal(await page.locator('#allocator-example').isHidden(), true);
+        assert.equal(await button.innerText(), dictionaries[lang]['bh.alloc.edit']);
+        for (const section of ['marches', 'timing']) {
+          const toggle = page.locator('#' + section + ' .section-toggle');
+          if (await toggle.getAttribute('aria-expanded') === 'false') await toggle.click();
+        }
+      }
       if (lang === 'en' || lang === 'ar') {
         const other = lang === 'en' ? 'ar' : 'en';
         await page.evaluate(code => window.I18N.switchTo(code), other);
