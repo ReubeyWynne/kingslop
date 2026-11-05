@@ -8,7 +8,7 @@
     total: '{n} KvK prep points', more: '{n} more',
     empty: 'Mark the heroes you own, with their stars, to see what their shards and widgets can score.',
     stars: '{from} → {to}', maxed: 'maxed', none: '—', pieces: '{own} own + {general} general', widgetPieces: '{own} own + {general} chest', widgetLevel: 'widget {from} → {to}',
-    eventShards: 'Shards', eventWidgets: 'Widgets', leftShards: 'Unused general shards: {mythic} mythic, {epic} epic, {rare} rare.', leftWidgets: 'Unused widget chests: {n}.', keptMythic: 'Mythic general shards are banked for your next new hero, so none go to the heroes above.', unknownCount: '?'
+    eventShards: 'Shards', eventWidgets: 'Widgets', leftShards: 'Unused general shards: {mythic} mythic, {epic} epic, {rare} rare.', leftWidgets: 'Unused widget chests: {n}.', keptMythic: 'Mythic general shards are kept for your next new hero.', unknownCount: '?'
   };
   function t(api, key) { return api.tr('spend.' + key, EN[key]); }
   function fill(api, key, values) { return api.fill(t(api, key), values); }
@@ -20,6 +20,22 @@
     var out = ids.slice(0, 3).map(function (id) { var need = window.HeroSpend.missing(id), item = window.EventRuleData.items.find(function (entry) { return entry.id === id; }); return need ? missing(api, need) : item ? api.tr(item.key, item.label) : id; });
     if (ids.length > 3) out.push(fill(api, 'more', { n: api.fmt(ids.length - 3) }));
     return out.join(', ');
+  }
+  /* Under each figure, the event's days as a strip with the ❧ on the day it scores,
+     in place of the table's "day 3". */
+  function dayStrips(wrap, events) {
+    var EVENTS = window.EventPoints.EVENTS, rules = window.EventRules;
+    wrap.querySelectorAll('tbody tr').forEach(function (tr, row) {
+      tr.querySelectorAll('td').forEach(function (td, column) {
+        var cell = events[row].cells[EVENTS[column]], label = td.querySelector('small');
+        if (!cell || !label) return;
+        var best = cell.days || [cell.day], strip = element('ol', 'days');
+        strip.setAttribute('aria-label', label.textContent);
+        rules.days(EVENTS[column]).forEach(function (day) { var li = element('li', '', String(day.day)); if (best.indexOf(day.day) >= 0) li.dataset.best = ''; strip.appendChild(li); });
+        label.replaceWith(strip);
+      });
+    });
+    return wrap;
   }
   window.HeroPoints = { missing: missing };
 
@@ -61,7 +77,7 @@
       var events = [];
       if (Object.keys(shards).length) events.push({ label: t(api, 'eventShards'), cells: window.EventPoints.forItems(shards) });
       if (widgets) events.push({ label: t(api, 'eventWidgets'), cells: window.EventPoints.forItems({ 'hero-widget': widgets }) });
-      context.targets('events').forEach(function (node) { node.replaceChildren(); if (events.length) node.appendChild(window.EventPoints.table(api, events, 'hero-event-points')); });
+      context.targets('events').forEach(function (node) { node.replaceChildren(); if (events.length) node.appendChild(dayStrips(window.EventPoints.table(api, events, 'hero-event-points'), events)); });
       put('left', rows.length ? fill(api, 'leftShards', { mythic: left('mythic-hero-shard'), epic: left('epic-hero-shard'), rare: left('rare-hero-shard') }) + ' ' + fill(api, 'leftWidgets', { n: left('hero-widget') }) + (plan.items['mythic-hero-shard'].kept !== 0 ? ' ' + t(api, 'keptMythic') : '') : '');
     }
     if (store) context.cleanup(store.subscribe(render));
