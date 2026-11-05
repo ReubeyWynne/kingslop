@@ -5,6 +5,7 @@ self: heroes
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
   <a href="#directory" data-i18n="directory.browse">Browse heroes</a>
   <a href="#leads" data-i18n="leads.nav">Best leads</a>
+  <a href="#breakpoint" data-i18n="bp.nav">Break points</a>
   <a href="#kvk-points" data-i18n="spend.nav">KvK points</a>
   <a href="#roles" data-i18n="directory.roles">Choose a role</a>
   <a href="#how" data-i18n="notes.how">How it works</a>
@@ -44,6 +45,7 @@ self: heroes
         <div class="lead-troops">
           <label><span data-i18n="leads.tier">Troop tier</span><select data-target="lead-finder.tier" data-action="lead-finder.run">{% for tier in (1..11) %}<option value="{{ tier }}">T{{ tier }}</option>{% endfor %}</select></label>
           <label><span data-i18n="leads.tg">Truegold</span><select data-target="lead-finder.tg" data-action="lead-finder.run">{% for tg in (0..8) %}<option value="{{ tg }}">{% if tg == 0 %}—{% else %}TG{{ tg }}{% endif %}</option>{% endfor %}</select></label>
+          <label class="lead-rally-cap"><span data-i18n="leads.rallyCap">Bear rally capacity</span><input type="number" min="15" max="100000000" step="1" inputmode="numeric" data-target="lead-finder.rallyCap" data-action="lead-finder.extras"></label>
         </div>
         <p class="hero-mine-note"><span data-i18n="leads.saveNote">Saved on this device with the rest of your save. A troop type saves once all four of its stats are in.</span> <output data-target="lead-finder.saved" role="status"></output></p>
       </fieldset>
@@ -101,6 +103,52 @@ self: heroes
       <p data-i18n="leads.method.limits">Not counted: appointments, turrets and lineups with two heroes of one troop type. The stock opponents, with their joiners, pets and city buffs, are estimates around the KingShot Battle Helper’s benchmark accounts, not measured players.</p>
     </details>
     <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
+  </section>
+  <section class="section breakpoint" id="breakpoint" data-module="hero-breakpoint" aria-labelledby="breakpoint-title">
+    <h2 id="breakpoint-title" data-i18n="bp.title">Break points</h2>
+    <p data-i18n="bp.intro">Same troop type, same seat: from what investment does one beat the other?</p>
+    <fieldset class="lead-jobs" disabled data-target="hero-breakpoint.controls">
+      <legend data-i18n="leads.job">Job</legend>
+      <label><input type="radio" name="bp-job" value="bear" checked data-target="hero-breakpoint.job" data-action="hero-breakpoint.run"><span data-i18n="leads.job.bear">Bear lead</span></label>
+      <label><input type="radio" name="bp-job" value="rally" data-target="hero-breakpoint.job" data-action="hero-breakpoint.run"><span data-i18n="leads.job.rally">Rally lead</span></label>
+      <label><input type="radio" name="bp-job" value="garrison" data-target="hero-breakpoint.job" data-action="hero-breakpoint.run"><span data-i18n="leads.job.garrison">Garrison lead</span></label>
+    </fieldset>
+    {% assign bp_heroes = site.data.heroes.heroes | sort: 'generation' %}
+    <div class="bp-pair">
+      <fieldset class="bp-hero" disabled data-side="a" data-target="hero-breakpoint.controls">
+        <legend class="bp-legend" data-i18n="bp.side.a">Hero A</legend>
+        <div class="bp-face" data-target="hero-breakpoint.face" data-side="a"></div>
+        <label class="bp-wide"><select aria-label="Hero" data-side="a" data-field="key" data-target="hero-breakpoint.field" data-action="hero-breakpoint.pick">{% for troop in troops %}<optgroup label="{{ troop }}" data-troop="{{ troop }}" data-i18n-key="sim.calc.{{ troop }}" data-i18n-attr="label">{% assign typed_heroes = bp_heroes | where: 'type', troop %}{% for hero in typed_heroes %}<option value="{{ hero.key }}" data-troop="{{ troop }}">{{ hero.name | escape }} · G{{ hero.generation }}</option>{% endfor %}</optgroup>{% endfor %}</select></label>
+        <label><span data-i18n="bp.stars">Stars</span><select data-side="a" data-field="stars" data-target="hero-breakpoint.field" data-action="hero-breakpoint.run">{% for step in (0..30) %}{% assign whole = step | divided_by: 6 %}{% assign tier = step | modulo: 6 %}<option value="{{ step }}">{{ whole }}★{% if tier > 0 %} {{ tier }}/6{% endif %}</option>{% endfor %}</select></label>
+        <label><span data-i18n="bp.widget">Widget</span><select data-side="a" data-field="widget" data-target="hero-breakpoint.field" data-action="hero-breakpoint.run">{% for level in (0..10) %}<option value="{{ level }}">{% if level == 0 %}—{% else %}{{ level }}{% endif %}</option>{% endfor %}</select></label>
+        <div class="bp-skills"><span data-i18n="bp.skills">Skills</span>{% for slot in (0..2) %}<select data-side="a" data-field="skill" data-skill="{{ slot }}" data-target="hero-breakpoint.field" data-action="hero-breakpoint.run" aria-label="Skill {{ forloop.index }}"><option value="" data-i18n="bp.skillAuto">max</option>{% for level in (0..5) %}<option value="{{ level }}">{{ level }}</option>{% endfor %}</select>{% endfor %}</div>
+      </fieldset>
+      <fieldset class="bp-hero" disabled data-side="b" data-target="hero-breakpoint.controls">
+        <legend class="bp-legend" data-i18n="bp.side.b">Hero B</legend>
+        <div class="bp-face" data-target="hero-breakpoint.face" data-side="b"></div>
+        <label class="bp-wide"><select aria-label="Hero" data-side="b" data-field="key" data-target="hero-breakpoint.field" data-action="hero-breakpoint.pick">{% for troop in troops %}<optgroup label="{{ troop }}" data-troop="{{ troop }}" data-i18n-key="sim.calc.{{ troop }}" data-i18n-attr="label">{% assign typed_heroes = bp_heroes | where: 'type', troop %}{% for hero in typed_heroes %}<option value="{{ hero.key }}" data-troop="{{ troop }}">{{ hero.name | escape }} · G{{ hero.generation }}</option>{% endfor %}</optgroup>{% endfor %}</select></label>
+        <label><span data-i18n="bp.stars">Stars</span><select data-side="b" data-field="stars" data-target="hero-breakpoint.field" data-action="hero-breakpoint.run">{% for step in (0..30) %}{% assign whole = step | divided_by: 6 %}{% assign tier = step | modulo: 6 %}<option value="{{ step }}">{{ whole }}★{% if tier > 0 %} {{ tier }}/6{% endif %}</option>{% endfor %}</select></label>
+        <label><span data-i18n="bp.widget">Widget</span><select data-side="b" data-field="widget" data-target="hero-breakpoint.field" data-action="hero-breakpoint.run">{% for level in (0..10) %}<option value="{{ level }}">{% if level == 0 %}—{% else %}{{ level }}{% endif %}</option>{% endfor %}</select></label>
+        <div class="bp-skills"><span data-i18n="bp.skills">Skills</span>{% for slot in (0..2) %}<select data-side="b" data-field="skill" data-skill="{{ slot }}" data-target="hero-breakpoint.field" data-action="hero-breakpoint.run" aria-label="Skill {{ forloop.index }}"><option value="" data-i18n="bp.skillAuto">max</option>{% for level in (0..5) %}<option value="{{ level }}">{{ level }}</option>{% endfor %}</select>{% endfor %}</div>
+      </fieldset>
+    </div>
+    <fieldset class="bp-account" disabled data-target="hero-breakpoint.controls">
+      <label><span data-i18n="bp.account">Account</span><select data-target="hero-breakpoint.account" data-action="hero-breakpoint.run"><option value="mine" data-i18n="bp.account.mine">Mine</option>{% for foe in site.data.megafauna.foes %}<option value="{{ foe.id }}" data-i18n="leads.foe.{{ foe.id }}">{{ foe.name | escape }}</option>{% endfor %}</select></label>
+      <label><span data-i18n="bp.gen">Generation</span><select data-target="hero-breakpoint.gen" data-action="hero-breakpoint.run">{% for gen in site.data.megafauna.generations %}<option value="{{ gen }}">G{{ gen }}</option>{% endfor %}</select></label>
+    </fieldset>
+    <p class="note" data-target="hero-breakpoint.status" aria-live="polite"></p>
+    <article class="bp-result" data-target="hero-breakpoint.result" hidden aria-labelledby="bp-result-title">
+      <p class="lead-verdict" id="bp-result-title" data-target="hero-breakpoint.verdict"></p>
+      <div class="bp-grids">
+        <section class="bp-grid-block" data-target="hero-breakpoint.grid" data-grid="b"></section>
+        <section class="bp-grid-block" data-target="hero-breakpoint.grid" data-grid="a"></section>
+      </div>
+      <p class="lead-panel-note" data-i18n="bp.gridNote">W = widget level needed · ✓ no widget needed · — never</p>
+    </article>
+    <details class="lead-method" id="breakpoint-method">
+      <summary data-i18n="bp.method">Assumptions</summary>
+      <p data-i18n="bp.method.body">Lead finder scoring; only the shared seat changes. Gear stays with the troop type. On the tables, skills follow stars. Mine uses your save; F2P–Kraken are stock accounts.</p>
+    </details>
   </section>
   <section class="section hero-points" id="kvk-points" data-module="hero-points" aria-labelledby="kvk-points-title">
     <h2 id="kvk-points-title" data-i18n="spend.title">KvK points from your heroes</h2>

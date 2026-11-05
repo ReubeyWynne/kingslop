@@ -396,6 +396,73 @@
     };
   }
 
+  // ── The Bear. Bear Hunt is ten rounds against 5,000 special infantry that
+  // never fall and never strike back, so every round is the kill law above with
+  // N₀ = 5,000 and the same Bear: what changes round to round is only the skill,
+  // Truegold, volley and fatigue rolls. Damage is the deaths the march deals.
+  // No source publishes the Bear's stats (both community sims keep them
+  // server-side), so its defence is the one number set from outside: fitted to
+  // the hunts logged in _data/bear-reports.json (players' own hits, and the
+  // Frakinator's battle-engine Bear), a level-5 trap. .dsh/bear-reports-check.cjs
+  // refits it from every entry and fails when this drifts. Skills flagged
+  // bear: false (Zoe's Sundering Wound) do nothing here.
+  var BEAR = { troops: 5000, rounds: 10, def: 74.8 };
+
+  function bearSide(side) {
+    var s = {};
+    for (var k in side) s[k] = side[k];
+    s.skills = (side.skills || []).filter(function (sk) { return sk.bear !== false; });
+    return prepare(s);
+  }
+  function bearFoe() {
+    var f = prepare({ n: [BEAR.troops, 0, 0], skills: [] });
+    f.D = [BEAR.def, BEAR.def, BEAR.def];
+    f.s2 = [false, false, false];
+    f.tg = [0, 0, 0];
+    f.gold = false;
+    f.live = false;
+    return f;
+  }
+  // One Bear hunt: damage dealt per troop type over the ten rounds.
+  function hunt(a, bear, rand) {
+    var na = a.n.slice(), nb = bear.n.slice(), out = [0, 0, 0], kills = [0, 0, 0];
+    var armyMin = Math.min(na[0] + na[1] + na[2], BEAR.troops);
+    var sa = roundState(), sb = roundState();
+    for (var round = 1; round <= BEAR.rounds; round++) {
+      if (a.live) begin(a, sa, round, rand);
+      begin(bear, sb, round, rand);
+      for (var t = 0; t < 3; t++) {
+        if (na[t] <= 0) continue;
+        var one = [na[0] * (t === 0), na[1] * (t === 1), na[2] * (t === 2)];
+        kills[0] = 0;
+        strike(a, bear, one, nb, armyMin, round, rand, kills, sa, sb);
+        out[t] += kills[0];
+      }
+    }
+    return out;
+  }
+  // Many hunts: every total (for the histogram), the mean per type, and the
+  // mean. pointsPct is Valora's Hunter Instinct, on your own Damage Points.
+  function bearHunt(side, hunts, seed, pointsPct) {
+    var a = bearSide(side), bear = bearFoe(), rand = rng(seed || 1);
+    var count = a.live || (a.s2[2] && a.n[2] > 0) ? Math.max(1, hunts | 0) : 1;
+    var scale = 1 + pos(pointsPct) / 100, totals = new Array(count), byType = [0, 0, 0], sum = 0;
+    for (var i = 0; i < count; i++) {
+      var d = hunt(a, bear, rand), tot = (d[0] + d[1] + d[2]) * scale;
+      totals[i] = tot;
+      sum += tot;
+      for (var t = 0; t < 3; t++) byType[t] += d[t] * scale / count;
+    }
+    totals.sort(function (x, y) { return x - y; });
+    return { mean: sum / count, byType: byType, totals: totals, hunts: count };
+  }
+  // The share of hunts at or under a damage, read off sorted totals.
+  function quantile(sorted, q) {
+    if (!sorted.length) return 0;
+    var at = Math.min(sorted.length - 1, Math.max(0, Math.round(q * (sorted.length - 1))));
+    return sorted[at];
+  }
+
   // Every mix on a grid of `step`, inside the infantry/cavalry windows,
   // for a march of `total` troops. Fractions are rounded to the step so the
   // grid is exact; archers take the remainder.
@@ -463,7 +530,8 @@
     baseAtk: baseAtk, baseHea: baseHea, hasSecondSkill: hasSecondSkill,
     family: family, factor: factor, compile: compile, dead: dead,
     prepare: prepare, battle: battle, run: run, grid: grid, sweep: sweep, best: best,
-    rng: rng, seedOf: seedOf
+    rng: rng, seedOf: seedOf,
+    BEAR: BEAR, bearHunt: bearHunt, quantile: quantile
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.BattleEngine = api;

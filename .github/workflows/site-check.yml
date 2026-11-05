@@ -114,6 +114,8 @@ jobs:
               - *shared
               - .dsh/hero-directory-ui-check.cjs
               - .dsh/lead-finder-ui-check.cjs
+              - .dsh/hero-breakpoint-ui-check.cjs
+              - js/hero-breakpoint.js
               - heroes/**
               - _includes/heroes/**
               - js/hero-directory*.js
@@ -422,6 +424,9 @@ jobs:
       - name: Check the lead finder's engine and stock opponents
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/lead-engine-check.cjs
+      - name: Check the Bear reports fit the Bear
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/bear-reports-check.cjs
       - name: Check Castle Battle hero data
         if: needs.changes.outputs.logic == 'true'
         run: node --test .dsh/castle-battle-check.cjs
@@ -587,6 +592,9 @@ jobs:
       - name: Check the lead finder UI
         if: matrix.group == 'heroes'
         run: node .dsh/lead-finder-ui-check.cjs
+      - name: Check the break-point finder UI
+        if: matrix.group == 'heroes'
+        run: node .dsh/hero-breakpoint-ui-check.cjs
       - name: Check masters UI
         if: matrix.group == 'masters'
         run: node .dsh/masters-ui-check.cjs

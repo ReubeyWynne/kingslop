@@ -17,6 +17,8 @@
     ahead: '{n}% more Bear damage than your next lineup', tie: 'Level with your next lineup', only: 'Your only lineup',
     beats: 'Beats {n} of {total} opponents', mixTitle: 'Send this troop mix',
     mixNote: 'The split that gets the most damage out of these three heroes and your stats.',
+    damageTitle: 'Estimated Bear damage', damageNote: '{n} = 1/15 of a {cap} rally{est}{valora}. One hit can land about 20% either side.', valora: ', Valora +{n}%', estimated: ' (estimated: 15 × joiner cap)',
+    troops: '{n} troops',
     railTitle: 'Against each opponent', railNote: 'Win chance over repeated fights, and how much of your army is still standing.', win: '{n}%', empty: 'empty seat',
     foesNote: 'Generation {n} accounts, both sides at {total} troops. Win chance per opponent:',
     kit: 'At generation {gen}: {stars}★ heroes, widgets at {widget}, {pct}% Bonus Overview, TG{tg}, {gear} hero gear, level {joiners} joiners, pets at {pets}, {city}.',
@@ -51,6 +53,16 @@
       var saved = prefs.joiners[job];
       return Array.isArray(saved) ? saved.filter(function (j) { return j && data.heroes[j.key]; }).map(function (j) { return { key: j.key, level: Math.max(1, Math.min(5, j.level | 0)) }; }) : usualJoiners(gen);
     }
+    // The Bear rally's capacity: yours as typed, else 15 × the joiner cap saved on the Bear Hunt
+    // page (85k unless changed), since an alliance sets that cap so a full rally holds 15 marches.
+    function rallyCap() {
+      if (prefs.rallyCap > 0) return { cap: prefs.rallyCap, estimated: false };
+      var join = 85000;
+      try { var bh = JSON.parse(localStorage.getItem('bh:bear-allocator:v1') || 'null'); if (bh && Number(bh['join-cap']) > 0) join = Number(bh['join-cap']); } catch (cause) { /* the usual cap */ }
+      return { cap: join * 15, estimated: true };
+    }
+    // Valora's Hunter Instinct talent from the Masters save: it adds to your own Damage Points.
+    function valoraOf() { try { return L.valoraPoints(store ? store.masters().roster.valora : null); } catch (cause) { return 0; } }
     function cityOf() { var out = {}; Object.keys(prefs.city || {}).forEach(function (k) { out[k] = Number(prefs.city[k]) || 0; }); return out; }
     // Hero gear saved on the Hero Gear page, by troop type; nothing saved adds nothing.
     function gearOf() {
@@ -77,6 +89,10 @@
       var city = cityOf();
       context.targets('city').forEach(function (select) { select.value = String(city[select.dataset.city] || 0); });
       context.targets('usePets').forEach(function (box) { box.checked = prefs.usePets !== false; });
+      context.targets('rallyCap').forEach(function (input) {
+        input.placeholder = api.fmt(rallyCap().cap);
+        if (input !== document.activeElement) input.value = prefs.rallyCap ? String(prefs.rallyCap) : '';
+      });
       var levels = {};
       try { var roster = store ? store.pets().roster : {}; Object.keys(roster).forEach(function (id) { levels[id] = roster[id].level; }); } catch (cause) { /* no pets */ }
       var lines = data.pets.filter(function (pet) { return L.petLevelPct(pet, levels[pet.id]) > 0; }).map(function (pet) {
@@ -92,6 +108,8 @@
       prefs.city = {};
       context.targets('city').forEach(function (select) { if (Number(select.value)) prefs.city[select.dataset.city] = Number(select.value); });
       prefs.usePets = context.targets('usePets').every(function (box) { return box.checked; });
+      var cap = context.targets('rallyCap')[0];
+      if (cap) { if (cap.value !== '' && cap.validity.valid && Number(cap.value) > 0) prefs.rallyCap = Number(cap.value); else delete prefs.rallyCap; }
       writePrefs(prefs);
     }
 
@@ -182,6 +200,23 @@
     function heroName(copy) { return copy ? data.heroes[copy.key].name : t('empty'); }
     function stars(copy) { var s = Math.floor(copy.stars / 6), tier = copy.stars % 6; return api.fmt(s) + '★' + (tier ? ' ' + api.fmt(tier) + '/6' : '') + (copy.widget ? ' · W' + api.fmt(copy.widget) : ''); }
     var SVG = 'http://www.w3.org/2000/svg';
+    // The spread of simulated hunts: 24 bins from the 1st to the 99th percentile, the 80% band lit.
+    function histogram(sorted, lo, hi) {
+      var E = window.BattleEngine, a = E.quantile(sorted, 0.01), b = E.quantile(sorted, 0.99), bins = 24, width = (b - a) / bins || 1, counts = [];
+      for (var i = 0; i < bins; i++) counts.push(0);
+      sorted.forEach(function (x) { if (x >= a && x <= b) counts[Math.min(bins - 1, Math.floor((x - a) / width))]++; });
+      var top = Math.max.apply(null, counts) || 1, box = el('div', 'lead-hist');
+      box.setAttribute('role', 'img');
+      box.setAttribute('aria-label', fill('damageBand', { lo: api.compact(lo), hi: api.compact(hi) }));
+      counts.forEach(function (c, i) {
+        var from = a + i * width, to = from + width, bar = el('span', 'lead-hist-bar');
+        bar.style.setProperty('--h', String(c / top));
+        if (to > lo && from < hi) bar.dataset.band = '';
+        bar.title = fill('damageBin', { n: api.fmt(Math.round(c / sorted.length * 1000) / 10), lo: api.compact(from), hi: api.compact(to) });
+        box.appendChild(bar);
+      });
+      return box;
+    }
     function mark(symbol, className) {
       var svg = document.createElementNS(SVG, 'svg'), use = document.createElementNS(SVG, 'use');
       if (className) svg.setAttribute('class', className);
@@ -265,6 +300,15 @@
           legend.appendChild(key);
         });
         answer.append(bar, legend, el('p', 'lead-answer-note', t('mixNote')));
+        var rc = rallyCap(), march = Math.floor(rc.cap / 15), counts = TYPES.map(function (type, i) { return Math.round(march * r.mix[i]); });
+        var damage = el('div', 'lead-damage');
+        var sim = L.hunt(you, r.lineup, counts, data, { hunts: 2000, pointsPct: valoraOf() });
+        var lo = window.BattleEngine.quantile(sim.totals, 0.1), hi = window.BattleEngine.quantile(sim.totals, 0.9);
+        damage.append(el('p', 'lead-kicker', t('damageTitle')), el('b', 'lead-damage-value', api.compact(sim.mean)), histogram(sim.totals, lo, hi), el('p', 'lead-damage-band', fill('damageBand', { lo: api.compact(lo), hi: api.compact(hi) })));
+        var split = el('span', 'lead-damage-split');
+        TYPES.forEach(function (type, i) { var part = el('span'); part.dataset.troop = type; part.append(mark('troop-' + type), el('span', '', api.fmt(counts[i]))); split.appendChild(part); });
+        damage.append(split, el('p', 'lead-answer-note', fill('damageNote', { n: fill('troops', { n: api.fmt(march) }), cap: api.fmt(rc.cap), est: rc.estimated ? t('estimated') : '', valora: valoraOf() ? fill('valora', { n: api.fmt(valoraOf()) }) : '' })));
+        answer.appendChild(damage);
       } else {
         answer.appendChild(el('p', 'lead-kicker', t('railTitle')));
         answer.append(rail(r, true), el('p', 'lead-answer-note', t('railNote')));

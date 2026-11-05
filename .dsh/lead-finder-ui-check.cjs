@@ -25,6 +25,23 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal(await page.locator('[data-target="lead-finder.panel"] tr').count(), 3, 'report panel per troop type');
   assert.match(await page.locator('[data-target="lead-finder.panel"] tr').first().locator('td').first().textContent(), /^\+\d/);
   assert.equal(await page.locator('.lead-foes').isHidden(), true, 'no opponents for the Bear');
+  // The best Bear lineup's damage for one march of 1/15 of the rally capacity, estimated from the joiner cap until typed.
+  assert.match(await page.locator('.lead-damage').textContent(), /85,000 troops = 1\/15 of a 1,275,000 rally \(estimated/);
+  const damageAt = () => page.locator('.lead-damage-value').textContent();
+  assert.equal(await page.locator('.lead-hist-bar').count(), 24, 'a 24-bin histogram');
+  assert.ok(await page.locator('.lead-hist-bar[data-band]').count() >= 8, 'the 80% band lit');
+  assert.match(await page.locator('.lead-damage-band').textContent(), /^80% of hits land between \S+ and \S+$/);
+  const estimated = await damageAt();
+  await page.locator('#bonus-overview summary').click();
+  await page.locator('[data-target="lead-finder.rallyCap"]').fill('1800000');
+  await page.locator('[data-target="lead-finder.rallyCap"]').press('Tab');
+  await page.waitForFunction(() => /120,000 troops = 1\/15 of a 1,800,000 rally\./.test(document.querySelector('.lead-damage .lead-answer-note').textContent));
+  assert.notEqual(await damageAt(), estimated, 'a bigger rally, a bigger march, more damage');
+  const noValora = await damageAt();
+  await page.evaluate(() => PlayerLedger.shared().setMaster('valora', { affinity: 90, ready: true, skills: [0, 0, 0, 0] }));
+  await page.waitForFunction(() => /Valora \+24%/.test(document.querySelector('.lead-damage .lead-answer-note').textContent));
+  assert.notEqual(await damageAt(), noValora, 'Valora\'s talent adds to the damage');
+  await page.locator('#bonus-overview summary').click();
 
   // Typing a whole troop row saves it as the Bonus Overview, not as report stats.
   await page.locator('#bonus-overview summary').click();
@@ -46,7 +63,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.doesNotMatch(await status(), /Add your Squads' row/);
 
   // A rally ranks against the four stock opponents.
-  await page.locator('label:has(input[value="rally"])').click();
+  await page.locator('#leads label:has(input[value="rally"])').click();
   await page.waitForFunction(() => /Ranked from/.test(document.querySelector('[data-target="lead-finder.status"]').textContent) && document.querySelectorAll('#leads .lead-cell').length === 16);
   assert.equal(await page.locator('.lead-foes').isVisible(), true);
   assert.deepEqual(await page.locator('.lead-best .lead-cell > span').allTextContents(), ['F2P', 'Dolphin', 'Whale', 'Kraken']);
@@ -56,7 +73,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.deepEqual(await page.locator('[data-joiner][data-field="key"]').evaluateAll(s => s.map(x => x.value)), ['chenko', 'yeonwoo', 'amane', 'amadeus']);
   assert.match(await page.locator('[data-target="lead-finder.joinersTitle"]').textContent(), /Rally lead/);
   assert.match(await page.locator('[data-target="lead-finder.pets"]').textContent(), /No pets in your save/);
-  await page.locator('label:has(input[value="bear"])').click();
+  await page.locator('#leads label:has(input[value="bear"])').click();
   await page.waitForFunction(() => document.querySelectorAll('.lead-row').length === 3 && document.querySelector('.lead-mix'));
   assert.deepEqual(await page.locator('[data-joiner][data-field="key"]').evaluateAll(s => s.map(x => x.value)), ['chenko', 'yeonwoo', 'amane', 'margot'], 'the Bear keeps its own joiners');
   const mixOf = () => page.locator('.lead-mix-legend').textContent();
@@ -69,6 +86,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem('ks.lead-finder.v1')));
   assert.deepEqual(prefs.joiners.bear.map(j => j.key), ['chenko', 'yeonwoo', 'amane']);
   assert.equal(prefs.city.attack, 20);
+  assert.equal(prefs.rallyCap, 1800000, 'the rally capacity is remembered');
   await page.locator('[data-action="lead-finder.resetJoiners"]').click();
   await page.waitForFunction(() => document.querySelector('[data-joiner="3"][data-field="key"]').value === 'margot');
 

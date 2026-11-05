@@ -114,6 +114,17 @@ near(L.uptime({ kind: 'everyN', every: 4, offset: 3, turns: 1 }), 0.2, 'every fo
   near(mix[0] + mix[1] + mix[2], 1, 'the ideal mix is whole');
   assert.ok(mix[2] > 0.5, 'archers carry the Bear');
 }
+// Bear damage on the game's Damage Points: √N in the march size, Valora's talent on top.
+{
+  const plain = n => ({ n, tier: [10, 10, 10], tg: [0, 0, 0], atk: [300, 300, 300], let: [300, 300, 300], skills: [] });
+  const E = require('../js/battle-engine.js');
+  near(E.bearHunt(plain([0, 0, 400000]), 1).mean / E.bearHunt(plain([0, 0, 100000]), 1).mean, 2, 'four times the troops, twice the damage', 0.01);
+  near(E.bearHunt(plain([0, 0, 100000]), 1, 1, 30).mean / E.bearHunt(plain([0, 0, 100000]), 1).mean, 1.3, 'Valora at +30%');
+  assert.equal(E.bearHunt(plain([0, 0, 100000]), 500).hunts, 500, 'archers volley, so hunts differ');
+}
+assert.equal(L.valoraPoints({ affinity: 90, ready: true, skills: [0, 0, 0, 0] }), 24, 'a class waiting at 90 is still level 9');
+assert.equal(L.valoraPoints({ affinity: 100, ready: false, skills: [0, 0, 0, 0] }), 30);
+assert.equal(L.valoraPoints(null), 0);
 // Chance effects of one code never stack: only the strongest is active, duplicates are dead; fixed ones add.
 near(L.bearMod([{ kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 50 }] }, { kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 40 }] }])[0], 1.5, 'two sure chance skills: the larger');
 near(L.bearMod([{ kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }, { kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }])[0], 1.25, 'two coin flips: the duplicate is dead');
@@ -195,4 +206,66 @@ assert.equal(L.opponent(megafauna.foes[3], 4, 'garrison', data).lineup[2].key, '
   // F2P fields last generation's meta heroes.
   assert.deepEqual(L.opponent(megafauna.foes[0], 4, 'garrison', data).lineup.map(c => c.key), megafauna.lineups['3'].rally);
 }
-console.log('Lead engine: stars, widgets, skill caps, Bear score, joiners, pets, city layers, megafauna opponents and ranking pass.');
+
+// The break point: the staircase walk gives what scoring every star and widget step gives.
+{
+  const team = [copy('amadeus', 30, 10), copy('petra', 30, 10), null], me = you(flat(250));
+  const brute = (rival, key, line = team) => {
+    const target = L.score('bear', me, L.seated(line, rival), 4, data), top = data.widgets[key] ? 10 : 0, out = [];
+    for (let s = 0; s <= 30; s++) { let found = null; for (let w = 0; w <= top; w++) if (L.score('bear', me, L.seated(line, copy(key, s, w)), 4, data) >= target) { found = w; break; } out.push(found); }
+    return out;
+  };
+  const rosa = L.breakpoint('bear', me, team, copy('marlin', 30, 10), 'rosa', 4, data, {});
+  assert.deepEqual(rosa.widgets, brute(copy('marlin', 30, 10), 'rosa'), 'Rosa catching a 5★ widget-10 Marlin');
+  assert.equal(rosa.widgets[24], 5, 'the same 4★ widget-5 break point as above');
+  assert.ok(rosa.scores < 60, 'a staircase, not every cell');
+  assert.deepEqual(L.breakpoint('bear', me, team, copy('rosa', 24, 4), 'marlin', 4, data, {}).widgets, brute(copy('rosa', 24, 4), 'marlin'), 'and the other way round');
+  const infantry = [null, copy('petra', 30, 10), copy('rosa', 30, 10)];
+  assert.deepEqual(L.breakpoint('bear', me, infantry, copy('amadeus', 18, 4), 'alcar', 4, data, {}).widgets, brute(copy('amadeus', 18, 4), 'alcar', infantry), 'another seat');
+  assert.deepEqual(L.firstBreak(rosa.widgets), { any: { stars: rosa.widgets.findIndex(w => w !== null), widget: rosa.widgets.find(w => w !== null) }, bare: rosa.widgets.indexOf(0) < 0 ? null : { stars: rosa.widgets.indexOf(0), widget: 0 } });
+  // A stock tier as your own account: its own job's lineup, and the Bear joiners for the Bear.
+  const whale = L.stockAccount(megafauna.foes[2], 5, 'garrison', data);
+  assert.deepEqual(whale.lineup.map(c => c.key), megafauna.lineups['5'].garrison);
+  assert.deepEqual(L.stockAccount(megafauna.foes[2], 5, 'bear', data).joiners.map(j => j.key), megafauna.joiners.bear['5']);
+  // Rally fights walk the same way.
+  const acc = L.stockAccount(megafauna.foes[1], 4, 'rally', data), fight = L.breakpoint('rally', acc, acc.lineup, copy('marlin', 30, 10), 'rosa', 4, data, { battles: 4 });
+  assert.equal(fight.widgets.length, 31);
+  assert.ok(fight.widgets[30] !== null, 'a 5★ Rosa catches Marlin in a rally');
+}
+
+// The Bear (js/battle-engine.js BEAR, fitted by .dsh/bear-reports-check.cjs) against the
+// Frakinator's battle-engine Bear on 5 November 2026: the owner's rally report stats, T10 TG4 /
+// TG3 / TG4, Amadeus, Petra, Marlin with every skill at 5, Chenko ×2 and Amane ×2, Valora 24% →
+// 51.6M at 10/32/58, and 54.6M with 80% of hunts in 46.3M–63.2M at its best mix, 2/12/86.
+{
+  const E = require('../js/battle-engine.js'), C = require('../js/combat.js');
+  const lineup = [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)];
+  const report = { atk: [631.5, 654.9, 698.6], let: [468.7, 415.7, 693.9] }, tg = [4, 3, 4];
+  const skills = levels => C.side(data, { role: 'rally', heroes: lineup.map((c, i) => ({ key: c.key, levels: levels[i], widget: 0 })), joiners: ['chenko', 'chenko', 'amane', 'amane'].map(key => ({ key, level: 5 })) });
+  const go = (n, levels) => E.bearHunt({ n, tier: [10, 10, 10], tg, ...report, skills: skills(levels) }, 10000, 7, 24);
+  const max = [[5, 5, 5], [5, 5, 5], [5, 5, 5]];
+  const input = go([9000, 28500, 52500], max), best = go([1800, 10800, 77400], max);
+  near(input.mean / 51.6e6, 1, 'the Frakinator at 10/32/58', 0.06);
+  near(best.mean / 54.6e6, 1, 'and at its best mix', 0.06);
+  near(E.quantile(best.totals, 0.1) / 46.3e6, 1, 'its 80% band, low end', 0.06);
+  near(E.quantile(best.totals, 0.9) / 63.2e6, 1, 'its 80% band, high end', 0.08);
+
+  // The owner's own five hits that day (Hunting Trap 2, joiners unknown, Amadeus's skills at 4),
+  // through the whole page path: Bonus Overview, gear, TG4 town, report stats.
+  const m = q => ({ quality: q[0], level: q[1], mastery: q[2] });
+  const set = (type, [helm, gloves, chest, boots]) => ({ [type + '-helm']: m(helm), [type + '-gloves']: m(gloves), [type + '-chest']: m(chest), [type + '-boots']: m(boots) });
+  const gear = L.gearLayer({ ...set('arc', [['red', 131, 11], ['mythic', 62, 2], ['mythic', 62, 2], ['mythic', 100, 6]]), ...set('inf', [['mythic', 61, 3], ['red', 133, 11], ['mythic', 100, 7], ['mythic', 65, 3]]), ...set('cav', [['mythic', 51, 2], ['mythic', 34, 1], ['mythic', 34, 1], ['mythic', 48, 1]]) });
+  const row = (a, d, l, h) => ({ attack: a, defense: d, lethality: l, health: h });
+  const overview = { inf: row(389.3, 373.6, 264.2, 257.0), cav: row(326.5, 330.1, 244.0, 218.0), arc: row(345.7, 349.3, 303.8, 296.6) };
+  const owner = { overview, troops: { tier: [10, 10, 10], tg }, joiners: ['chenko', 'chenko', 'amane', 'amane'].map(key => ({ key, level: 5 })), city: L.blank(), pets: L.blank(), gear, town: L.townLayer('TG 4') };
+  const r = L.bear(owner, lineup, data);
+  r.panel.atk.forEach((v, t) => assert.ok(Math.abs(v - report.atk[t]) < 0.25 && Math.abs(r.panel.let[t] - report.let[t]) < 0.25, 'the Bear reads the report stats'));
+  const hits = [40185881, 50653325, 41701585, 57194303, 44869569], mean = hits.reduce((a, b) => a + b) / hits.length;
+  const sent = L.hunt(owner, lineup, [9000, 28500, 52500], data, { hunts: 10000, pointsPct: 24 });
+  assert.ok(Math.abs(sent.mean / mean - 1) < 0.08, `the owner's rallies: ${(sent.mean / 1e6).toFixed(1)}M against ${(mean / 1e6).toFixed(1)}M`);
+  const lo = E.quantile(sent.totals, 0.05), hi = E.quantile(sent.totals, 0.95);
+  assert.ok(hits.every(h => h >= lo && h <= hi), 'every hit inside the 90% band');
+  const ideal = L.hunt(owner, lineup, r.mix.map(f => Math.round(90000 * f)), data, { hunts: 10000, pointsPct: 24 });
+  assert.ok(ideal.mean > sent.mean, 'the ideal mix beats the one sent');
+}
+console.log('Lead engine: stars, widgets, skill caps, Bear score, joiners, pets, city layers, megafauna opponents, ranking and break points pass.');
