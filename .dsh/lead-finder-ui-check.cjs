@@ -48,7 +48,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   for (const [stat, value] of [['attack', 300], ['lethality', 280], ['defense', 300], ['health', 270]]) await page.locator(`[data-stat="arc.${stat}"]`).fill(String(value));
   await page.waitForFunction(() => (PlayerLedger.shared().combat().overview.arc || {}).health === 270);
   assert.deepEqual(await page.evaluate(() => PlayerLedger.shared().combat().stats), {});
-  assert.match(await status(), /missing Infantry, Cavalry/);
+  assert.match(await status(), /Infantry, Cavalry use a typical/);
   assert.match(await status(), /Add your Squads' row/);
 
   // A Bonus Overview screenshot from the import dock fills the table, Squads' row included.

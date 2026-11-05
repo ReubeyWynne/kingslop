@@ -170,7 +170,7 @@
     {
       "id": "f2p",
       "name": "F2P",
-      "summary": "A free player who’s behind on buildings and heroes, with last generation’s meta heroes, Truegold a step behind, three quarters of the usual stats, light gear and no city buffs.",
+      "summary": "Free to play: behind on buildings and heroes. Last generation’s meta heroes, Truegold a step behind, three quarters of the usual stats, light gear, no city buffs.",
       "loadouts": {
         "1": {
           "overview": 0.75,
@@ -331,7 +331,7 @@
     {
       "id": "dolphin",
       "name": "Dolphin",
-      "summary": "A light spender with this generation’s meta heroes and Truegold, the usual stats, gear and widgets still in progress, and attack and defence city buffs at I.",
+      "summary": "Light spender: the generation’s meta heroes and Truegold, its usual stats, gear and widgets coming along, attack and defence city buffs at I.",
       "loadouts": {
         "1": {
           "overview": 1.0,
@@ -492,7 +492,7 @@
     {
       "id": "whale",
       "name": "Whale",
-      "summary": "A big spender with 5★ meta heroes, high widgets, red gear from generation 3, stats a third above the usual, level 5 joiners and every city buff at I.",
+      "summary": "Big spender: 5★ meta heroes, high widgets, red gear from generation 3, a third above the usual stats, level 5 joiners, every city buff at I.",
       "loadouts": {
         "1": {
           "overview": 1.3,
@@ -653,7 +653,7 @@
     {
       "id": "kraken",
       "name": "Kraken",
-      "summary": "Everything maxed out, with 5★ meta heroes on full widgets, Truegold a step ahead, huge Bonus Details from maxed hero and governor gear, maxed pets and every city buff at II.",
+      "summary": "Everything maxed: 5★ meta heroes with full widgets, Truegold a step ahead, beefy Bonus Details from maxed hero and governor gear, maxed pets, every city buff at II.",
       "loadouts": {
         "1": {
           "overview": 1.6,

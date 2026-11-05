@@ -14,7 +14,7 @@ self: heroes
 <main>
   <section class="section hero" id="top">
     <h1 data-i18n="directory.title">Hero directory</h1>
-    <p class="lede" data-i18n="directory.intro">Pick the job first, then look for a hero whose skills fit it.</p>
+    <p class="lede" data-i18n="directory.intro">Pick a job, then find a hero whose skills fit it.</p>
     {% include ascii/motif.html kind="helm" %}
   </section>
   {% include page-sheet.html part="bar" class="sheet-dialog" title="sheet.heroes.confirmTitle" title_en="Save these heroes as yours?" body="sheet.heroes.confirmBody" body_en="It replaces the heroes in your save. A shard or widget count this sheet has not counted keeps your number." confirm="sheet.heroes.confirm" confirm_en="replace my heroes" %}
@@ -26,7 +26,7 @@ self: heroes
   </section>
   <section class="section lead-finder" id="leads" data-module="lead-finder" data-screen-import-sheet="bonus-overview" aria-labelledby="leads-title">
     <h2 id="leads-title" data-i18n="leads.title">Your best leads</h2>
-    <p data-i18n="leads.intro">This ranks your own heroes for each job. Set the stars and widget level of each hero you own in the roster above, then add your Bonus Overview.</p>
+    <p data-i18n="leads.intro">This ranks your heroes for each job.</p>
     <fieldset class="lead-jobs" disabled data-target="lead-finder.controls">
       <legend data-i18n="leads.job">Job</legend>
       <label><input type="radio" name="lead-job" value="bear" checked data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.bear">Bear lead</span></label>
@@ -35,8 +35,8 @@ self: heroes
     </fieldset>
     <details class="lead-overview" id="bonus-overview">
       <summary data-i18n="leads.overview">Your Bonus Overview</summary>
-      <p class="note" data-i18n="leads.overviewNote">Take these from the Military rows of your Bonus Overview. A battle report won’t work, because its numbers already include the heroes you sent. The Squads' row counts for every troop type, so fill that in too.</p>
-      <button type="button" class="lead-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="leads.drop.title">Fill this in from screenshots</strong> <span data-i18n="leads.drop.body">Add them here, or paste them. The popup scrolls, so it takes two shots to catch all sixteen rows, and you’ll check every number before it goes in.</span></button>
+      <p class="note" data-i18n="leads.overviewNote">Copy the Military rows of your Bonus Overview.</p>
+      <button type="button" class="lead-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="leads.drop.title">Fill this in from screenshots</strong> <span data-i18n="leads.drop.body">It takes two, because the popup scrolls.</span></button>
       <fieldset class="lead-stats" disabled data-target="lead-finder.controls">
         <table class="lead-stats-table">
           <thead><tr><td></td>{% assign stat_ids = 'attack,lethality,defense,health' | split: ',' %}{% for stat in stat_ids %}<th scope="col" data-i18n="leads.stat.{{ stat }}">{{ stat }}</th>{% endfor %}</tr></thead>
@@ -47,14 +47,14 @@ self: heroes
           <label><span data-i18n="leads.tg">Truegold</span><select data-target="lead-finder.tg" data-action="lead-finder.run">{% for tg in (0..8) %}<option value="{{ tg }}">{% if tg == 0 %}—{% else %}TG{{ tg }}{% endif %}</option>{% endfor %}</select></label>
           <label class="lead-rally-cap"><span data-i18n="leads.rallyCap">Bear rally capacity</span><input type="number" min="15" max="100000000" step="1" inputmode="numeric" data-target="lead-finder.rallyCap" data-action="lead-finder.extras"></label>
         </div>
-        <p class="hero-mine-note"><span data-i18n="leads.saveNote">It’s kept on this device with the rest of your save. Each troop type saves once all four of its stats are in.</span> <output data-target="lead-finder.saved" role="status"></output></p>
+        <p class="hero-mine-note"><span data-i18n="leads.saveNote">Saved on this device.</span> <output data-target="lead-finder.saved" role="status"></output></p>
       </fieldset>
     </details>
     <details class="lead-extras" id="lead-extras">
       <summary data-i18n="leads.extras">Joiners, pets and city buffs</summary>
       <fieldset class="lead-joiners" disabled data-target="lead-finder.controls">
         <legend data-target="lead-finder.joinersTitle">Joiners</legend>
-        <p class="note" data-i18n="leads.joinersNote">Up to four joiners’ first skills, highest level first. Each job has its own list, starting from the usual joiners for your generation.</p>
+        <p class="note" data-i18n="leads.joinersNote">Each job keeps its own joiners.</p>
         {% assign joiner_heroes = site.data.heroes.heroes | sort: 'name' %}{% for slot in (0..3) %}<div class="lead-joiner">
           <label><span data-i18n="leads.joiner" data-i18n-n="{{ forloop.index }}">Joiner {{ forloop.index }}</span><select data-joiner="{{ slot }}" data-field="key" data-target="lead-finder.joiner" data-action="lead-finder.extras"><option value="">—</option>{% for hero in joiner_heroes %}<option value="{{ hero.key }}">{{ hero.name | escape }}</option>{% endfor %}</select></label>
           <label><span data-i18n="leads.joinerLevel">Skill level</span><select data-joiner="{{ slot }}" data-field="level" data-target="lead-finder.joiner" data-action="lead-finder.extras">{% for level in (1..5) %}<option value="{{ level }}"{% if level == 5 %} selected{% endif %}>{{ level }}</option>{% endfor %}</select></label>
@@ -70,7 +70,7 @@ self: heroes
         <label class="hero-own"><input type="checkbox" checked data-target="lead-finder.usePets" data-action="lead-finder.extras"><span data-i18n="leads.usePets">Use my pets’ skills</span></label>
         <p class="note" data-target="lead-finder.pets"></p>
       </fieldset>
-      <p class="hero-mine-note" data-i18n="leads.extrasNote">Joiners and city buffs are remembered in this browser. Pets come from your save on the Pets page.</p>
+      <p class="hero-mine-note" data-i18n="leads.extrasNote">Saved on this device.</p>
     </details>
     <p class="note" data-target="lead-finder.status" aria-live="polite"></p>
     <article class="lead-best" data-target="lead-finder.best" hidden aria-labelledby="lead-best-title">
@@ -81,7 +81,7 @@ self: heroes
         <div class="lead-best-panel">
           <p class="lead-kicker" data-i18n="leads.panelTitle">Your report should read about</p>
           <table class="lead-panel-table"><thead><tr><td></td>{% for stat in stat_ids %}<th scope="col" data-i18n="leads.stat.{{ stat }}">{{ stat }}</th>{% endfor %}</tr></thead><tbody data-target="lead-finder.panel"></tbody></table>
-          <p class="lead-panel-note" data-i18n="leads.panelNote">These are the Bonus Details a report should show for this lineup before joiners: your overview plus hero stars, widgets and saved hero gear, your Town Centre’s Truegold, city buffs and pets. The Bear damage uses the same numbers.</p>
+          <p class="lead-panel-note" data-i18n="leads.panelNote">Before joiners, with your hero gear and Truegold.</p>
         </div>
       </div>
     </article>
@@ -96,17 +96,17 @@ self: heroes
     </div>
     <details class="lead-method" id="lead-method">
       <summary data-i18n="leads.method">How the ranking works</summary>
-      <p data-i18n="leads.method.stats">A hero’s stars add attack and defence for its own troop type. Its widget and the gear you saved on the Hero Gear page add lethality and health for that type, the same sums as the Expedition block of its Hero Stats. Every Expedition skill counts at its level, which the stars cap. Your Town Centre’s Truegold level, saved on the Buildings page, adds attack, defence, lethality and health to every march. The Bonus Overview leaves this out, and so far only TG2, TG4 and TG5 are known. A widget skill only counts in its own job: a rally widget in a rally, a defender widget in a garrison.</p>
-      <p data-i18n="leads.method.bear">For the Bear, each lineup is scored by its expected damage at its own best troop mix, with every chance skill counted at its average. The bar shows how it compares with your best lineup.</p>
-      <p data-i18n="leads.method.fight">For rallies and garrisons, each lineup fights every stock opponent from your kingdom’s generation 24 times, with both sides at 100,000 troops in the usual mixes. Lineups are then sorted by how many more troops they keep than the opponent, on average.</p>
-      <p data-i18n="leads.method.layers">Joiners add their first skills under the usual joiner rule. City buffs and pets each multiply the stat as a separate layer, and an enemy debuff only cancels a buff in its own layer. Against the Bear, only your attack and lethality buffs count.</p>
-      <p data-i18n="leads.method.limits">This leaves out appointments, turrets and lineups with two heroes of the same troop type. The stock opponents, with their joiners, pets and city buffs, are estimates based on the KingShot Battle Helper’s benchmark accounts, not real players.</p>
+      <p data-i18n="leads.method.stats">Your Bonus Overview is your account before any hero is seated, which is why a battle report won’t do. Each hero then adds its stars, widget, gear and Expedition skills, and your Truegold adds to every march. A widget skill only counts in its own job.</p>
+      <p data-i18n="leads.method.bear">For the Bear, a lineup scores its expected damage at its best troop mix, with chance skills at their average.</p>
+      <p data-i18n="leads.method.fight">For rallies and garrisons, a lineup fights each stock opponent 24 times, and lineups rank by how many more troops they keep.</p>
+      <p data-i18n="leads.method.layers">City buffs and pets multiply as separate layers. Against the Bear, only attack and lethality buffs count.</p>
+      <p data-i18n="leads.method.limits">Appointments, turrets and lineups with two heroes of one troop type aren’t counted. The stock opponents are estimates from the KingShot Battle Helper’s benchmarks, not real players.</p>
     </details>
     <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
   </section>
   <section class="section breakpoint" id="breakpoint" data-module="hero-breakpoint" aria-labelledby="breakpoint-title">
     <h2 id="breakpoint-title" data-i18n="bp.title">Break points</h2>
-    <p data-i18n="bp.intro">Two heroes of the same troop type, in the same seat. How far do you have to build one before it beats the other?</p>
+    <p data-i18n="bp.intro">How far do you have to build one hero before it beats the other?</p>
     <fieldset class="lead-jobs" disabled data-target="hero-breakpoint.controls">
       <legend data-i18n="leads.job">Job</legend>
       <label><input type="radio" name="bp-job" value="bear" checked data-target="hero-breakpoint.job" data-action="hero-breakpoint.run"><span data-i18n="leads.job.bear">Bear lead</span></label>
@@ -147,13 +147,13 @@ self: heroes
     </article>
     <details class="lead-method" id="breakpoint-method">
       <summary data-i18n="bp.method">Assumptions</summary>
-      <p data-i18n="bp.method.body">This uses the lead finder’s scoring with only the shared seat swapped, and gear stays with the troop type. In the tables, skill levels follow stars. Mine uses your save, while F2P to Kraken are stock accounts.</p>
+      <p data-i18n="bp.method.body">Scored like the lead finder, with only this seat changed. Mine uses your save, and F2P to Kraken are stock accounts.</p>
     </details>
   </section>
   <section class="section hero-points" id="kvk-points" data-module="hero-points" aria-labelledby="kvk-points-title">
     <h2 id="kvk-points-title" data-i18n="spend.title">KvK points from your heroes</h2>
     {% include empty-state.html needs="heroes" key="empty.heroes" text="Add your heroes to see your KvK points." fill="../town-centre/#town-heroes" %}
-    <p data-i18n="spend.intro">Shards and widgets only score once you spend them, so this counts what the heroes you own can actually use. It counts whole star steps up to 5★ and widget levels up to 10. Each hero’s own shards pay first, then general shards of the same rarity go wherever they finish the most steps. Amadeus and Helga only take their own shards.</p>
+    <p data-i18n="spend.intro">Shards and widgets only score once they’re spent, so this counts the star steps up to 5★ and widget levels up to 10 your heroes can actually take. Amadeus and Helga only take their own shards.</p>
     <p class="hero-points-total"><output data-target="hero-points.total">—</output></p>
     <p class="note" data-target="hero-points.coverage" aria-live="polite"></p>
     <div data-target="hero-points.events"></div>
@@ -169,13 +169,13 @@ self: heroes
   </section>
   <section class="section" id="roles">
     <h2 data-i18n="directory.roles">Choose a role</h2>
-    <div class="directory-role-guide"><div><h3 data-i18n="directory.role.garrison-lead">Garrison lead</h3><p data-i18n="directory.explain.garrison">Defending uses the whole kit, so start with a well-built defensive lineup and a defender widget. A stronger reinforcement can end up leading the garrison, so check whose stats it’s using.</p>
-    </div><div><h3 data-i18n="directory.joinerTitle">Joining &amp; reinforcing</h3><p data-i18n="directory.explain.joiner">Only slot 1 matters when you join. That hero’s first Expedition skill can fill one of the rally’s four shared joiner spots, and slots 2 and 3 add nothing. Send the hero and skill level your alliance asks for.</p>
-    </div><div><h3 data-i18n="directory.role.rally-lead">Offensive rally lead</h3><p data-i18n="directory.explain.rally">The caller brings their own stats and all three heroes’ Expedition kits. A rally widget helps, but judge the lineup you’ve actually built, and remember a good caller isn’t always a good slot-1 joiner.</p>
-    </div><div><h3 data-i18n="directory.bearTitle">Bear Hunt</h3><p data-i18n="directory.explain.bear">The Bear is all about damage, so defensive bonuses don’t help. A caller uses all three heroes’ kits, while a joiner brings troops and one useful first skill. Follow your alliance’s joiner list and its rules on duplicates.</p>
+    <div class="directory-role-guide"><div><h3 data-i18n="directory.role.garrison-lead">Garrison lead</h3><p data-i18n="directory.explain.garrison">The whole kit counts, and a defender widget helps. A stronger reinforcement can take over as leader.</p>
+    </div><div><h3 data-i18n="directory.joinerTitle">Joining &amp; reinforcing</h3><p data-i18n="directory.explain.joiner">Only your first hero’s first skill counts, so judge it by that.</p>
+    </div><div><h3 data-i18n="directory.role.rally-lead">Offensive rally lead</h3><p data-i18n="directory.explain.rally">The caller’s stats and all three heroes’ skills count, and a rally widget helps.</p>
+    </div><div><h3 data-i18n="directory.bearTitle">Bear Hunt</h3><p data-i18n="directory.explain.bear">Look for damage. Defensive skills and widgets do nothing to the Bear.</p>
     </div></div><a class="directory-more" href="../bear-hunt/#heroes" data-i18n="directory.bearGuide">read the Bear Hunt lineup rules</a>
   </section>
   {% include page-notes.html part="how" %}
-  {% capture extra %}<span id="hero-sources"></span><p class="note" data-i18n="directory.anomaly">Generation 2’s values at 4★ tier 3 are corrected to 199.02%, using Kingshot Data and the shared curve. The original comparison source still shows something different, but these values don’t affect the ranking.</p>{% endcapture %}
-  {% include page-notes.html part="sources" sources=site.data.hero_roles.sources checked="2026-10-08" note="directory.sourceNote" note_en="Portraits and skill notes were checked against the official hero wiki on 8 October 2026. Role advice also draws on community guides and our Bear Hunt rules. “Skill fit” is our reading of the kit, not an official recommendation." art="notes.art" art_en="Art: Kingshot game artwork by Century Games." extra=extra %}
+  {% capture extra %}<span id="hero-sources"></span><p class="note" data-i18n="directory.anomaly">Generation-2 values at 4★ tier 3 are corrected to 199.02% using Kingshot Data and the shared curve. The original comparison source still differs; these values do not rank the heroes.</p>{% endcapture %}
+  {% include page-notes.html part="sources" sources=site.data.hero_roles.sources checked="2026-10-08" note="directory.sourceNote" note_en="Portraits and skill notes were checked against the official hero wiki on 8 October 2026. Role advice also draws on community guides and our Bear Hunt rules. “Skill fit” is an inference from the kit, not an official recommendation." art="notes.art" art_en="Art: Kingshot game artwork by Century Games." extra=extra %}
 </main>

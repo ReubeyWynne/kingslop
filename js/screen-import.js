@@ -521,9 +521,9 @@
     // and filling `before` with what they replaced. Nothing reaches the
     // player save.
     var OPEN = {
-      'battle-report': ['import.openSheet', 'Open the battle simulator to apply this report. It’ll wait here until you do.'],
-      governor: ['import.openGovernor', 'Open the governor gear page to apply this profile. It’ll wait here until you do.'],
-      'bonus-overview': ['import.openOverview', 'Open the Heroes page to apply this Bonus Overview. It’ll wait here until you do.']
+      'battle-report': ['import.openSheet', 'Apply this on the battle simulator. It’ll wait here.'],
+      governor: ['import.openGovernor', 'Apply this on the governor gear page. It’ll wait here.'],
+      'bonus-overview': ['import.openOverview', 'Apply this on the Heroes page. It’ll wait here.']
     };
     function openSheet(name) { var say = OPEN[name] || OPEN['battle-report']; status(tr(say[0], say[1])); }
     function sheetHost(name) { return document.querySelector('[data-screen-import-sheet~="' + name + '"]'); }

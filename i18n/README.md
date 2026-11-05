@@ -88,9 +88,8 @@ window.__BH_I18N_DATA["en"] = {
   grammar forces a gender (Arabic 2nd person; Russian/Polish partly), keep that
   language's existing conventions — the rule is "no player is assumed male or
   female", not "strip gender out of the grammar". Apply this rule consistently across every language.
-- **Sound like a person.** English copy follows [docs/prose-standard.md](../docs/prose-standard.md),
-  checked by `node .dsh/prose-check.cjs`. A rewrite that changes only tone, not meaning, lists its keys
-  for re-translation instead of being machine-rewritten into every language.
+- **One job per line.** English copy follows [docs/prose-standard.md](../docs/prose-standard.md).
+  A cut changes the meaning of a string, so it lists its keys for re-translation.
 - **Changes propagate.** `en.js` is the source of truth; a copy change lands in all
   16 translated dictionaries, not just English. A stale translation that contradicts
   the corrected English is worse than the English fallback.
