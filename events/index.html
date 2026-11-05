@@ -52,7 +52,6 @@ self: events
 
   <section class="section event-availability" id="availability" data-module="event-availability">
     <h2 data-i18n="ks.available.title">Your available points</h2>
-    <p class="lede" data-i18n="ks.available.intro">Count what is in your bag, choose the day, and see how far it takes you. Leave a count blank until you know it; zero means none.</p>
     <div class="availability-controls">
       <label><span data-i18n="ks.available.event">Event</span><select data-target="event-availability.event" data-action="event-availability.select">
         <option value="prep" data-i18n="ks.today.kickerPrep">KvK prep</option>
@@ -64,13 +63,13 @@ self: events
     </div>
     <div class="availability-result" aria-live="polite">
       <p><span data-i18n="ks.available.spendable">points in reach</span> <output data-target="event-availability.total">—</output></p>
+      <ul class="unknowns" data-target="event-availability.coverage"></ul>
       <p><span data-i18n="ks.available.reservedPoints">kept for later</span> <output data-target="event-availability.reserved">—</output></p>
       <p><span data-i18n="ks.available.shortfall">still to find</span> <output data-target="event-availability.shortfall">—</output></p>
-      <p class="note" data-target="event-availability.coverage"></p>
     </div>
-    <p class="note" data-i18n="ks.available.limit">These points need upgrades you can actually make. Check the in-game requirements before spending. Comparing days does not give you a second bag of items.</p>
+    <p class="note" data-i18n="ks.available.limit">These points need upgrades you can actually make.</p>
     <p class="note"><a href="../town-centre/" data-i18n="town.title">Town Centre</a></p>
-    <div class="availability-inventory-heading"><h3 data-i18n="ks.available.inventory">Your inventory</h3><label class="availability-show-all"><input type="checkbox" data-target="event-availability.all" data-action="event-availability.showAll"><span data-i18n="ks.available.showAll">show items that do not score today</span></label></div>
+    <div class="availability-inventory-heading"><h3><span data-i18n="ks.available.inventory">Your inventory</span><details class="shared-by"><summary aria-label="Also used by 3 pages" data-i18n-key="ks.available.sharedAria" data-i18n-attr="aria-label"><i data-page="town" style="--hue: #DC8FDB"></i><i data-page="gear"></i><i data-page="governor"></i></summary><span class="motif-names"><span data-i18n="town.title">Town Centre</span> · <span data-i18n="gear.title">Hero gear</span> · <span data-i18n="gov.title">Governor gear</span></span></details></h3><label class="availability-show-all"><input type="checkbox" data-target="event-availability.all" data-action="event-availability.showAll"><span data-i18n="ks.available.showAll">show items that do not score today</span></label></div>
     <div class="availability-items">
       {% for item in site.data.event_rules.items %}
       <div class="availability-item" data-item="{{ item.id }}">
@@ -80,7 +79,7 @@ self: events
         {% elsif item.id == 'master-emblem' %}
         <a href="../town-centre/#town-masters" data-i18n="town.shelf.masters">Masters</a>
         {% else %}
-        <label data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed"><span data-i18n="ks.available.owned">in your bag</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize"><small data-target="ledger-form.save" aria-live="polite"></small></label>
+        <label data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed"><span data-i18n="ks.available.owned">in your bag</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize"><small class="seal" data-target="ledger-form.save" aria-live="polite"></small></label>
         <label><span data-i18n="ks.available.held">keep for later</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" data-held="{{ item.id }}" data-action="event-availability.reserve"></label>
         {% endif %}
         <p><span data-i18n="ks.available.rate">points each</span> <output data-rate>—</output></p>
@@ -89,13 +88,10 @@ self: events
       {% endfor %}
     </div>
     <ul class="availability-potential" data-target="event-availability.additional"></ul>
-    <p class="note" data-i18n="ks.available.reserveNote">Keeping items aside changes this calculation, not your saved bag. A backup includes your inventory; it does not include this plan.</p>
     <h3 data-i18n="ks.available.potential">Other ways to score</h3>
-    <p class="note" data-i18n="ks.available.potentialNote">There may be more points here. They need an in-game check, so they are not included in the total above.</p>
     <ul class="availability-potential" data-target="event-availability.unquantified"></ul>
     <details id="save-backups" data-module="save-transfer disclosure" data-status-scope="event-availability" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
       <summary data-i18n="gear.manageSave">your save &amp; backups</summary>
-      <p class="note" data-i18n="gear.sharedSaveHint">One save for your gear and event inventory. Keep a backup before importing another.</p>
       <button type="button" class="kb" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
       <button type="button" class="kb" data-action="save-transfer.choose" data-i18n="gear.load">import backup</button>
       <input type="file" accept="application/json,.json" hidden data-target="save-transfer.file" data-action="save-transfer.import">
@@ -119,8 +115,7 @@ self: events
 
     <p class="note" data-i18n-html="ks.cycle.note">The wheel is <b>global</b>: one date anchors it for every kingdom.
       New kingdoms join the wheel once they unlock Kingdom of Power, after their <b>5th Hall of Governors</b>; before
-      that, their events run on their own clock. The live clock above works today out from the UTC date, so every
-      kingdom sees the same day.</p>
+      that, their events run on their own clock.</p>
 
     <p data-i18n="ks.cycle.other">Bear Hunt, Mystic Trial and Arena have their own schedules. This cycle helps you plan spending for recurring scoring events.</p>
   </section>
@@ -152,7 +147,7 @@ self: events
     </div>
 
     <p class="note" data-i18n-html="ks.brawl.schedNote">Days 1–5 run 24 hours each; the finale ~36 hours, Saturday
-      into Sunday. Below: each day's tasks, points per action.</p>
+      into Sunday.</p>
 
     <details id="brawl-day-1" class="day">
       <summary><span class="sum-mark" aria-hidden="true">⚔️</span><span class="day-title">{{ site.data.event_rules.events.brawl[0].title | escape }}</span>
