@@ -577,32 +577,32 @@ html[data-page="home"]:has(.event-card[data-hover-page="vikings"]:is(:hover, :fo
 /* Motes move their own way: embers drift (home, default), fireflies
    rise and sway (bearhunt), ember-ash falls (vikings). Three soft dot
    layers, no streak grid — nothing that reads as flicker. */
-html[data-page="bearhunt"] .dust i:nth-child(1) { background-size: 120px 120px; animation: mote-drift 120s linear infinite; }
-html[data-page="bearhunt"] .dust i:nth-child(2) { background-size: 190px 190px; animation: mote-drift 170s linear infinite reverse; }
-html[data-page="bearhunt"] .dust i:nth-child(3) { background-size: 260px 260px; animation: mote-drift 220s linear infinite; }
+html[data-page="bearhunt"] .dust i:nth-child(1) { background-size: 120px 120px; animation: mote-drift 120s steps(240) infinite; }
+html[data-page="bearhunt"] .dust i:nth-child(2) { background-size: 190px 190px; animation: mote-drift 170s steps(240) infinite reverse; }
+html[data-page="bearhunt"] .dust i:nth-child(3) { background-size: 260px 260px; animation: mote-drift 220s steps(240) infinite; }
 @keyframes mote-drift {
-  from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(-3%, -6%, 0); }
+  from { background-position: 0 0; }
+  to   { background-position: -5.4vw -10.8vh; }
 }
 
 html[data-page="vikings"] .dust i:nth-child(1) {
   background-image: radial-gradient(circle, var(--ember) 1px, transparent 1.9px);
   background-size: 130px 130px;
-  animation: ash-fall 80s linear infinite;
+  animation: ash-fall 80s steps(240) infinite;
 }
 html[data-page="vikings"] .dust i:nth-child(2) {
   background-image: radial-gradient(circle, var(--ember-2) 1.7px, transparent 2.6px);
   background-size: 220px 220px;
-  animation: ash-fall 130s linear infinite reverse;
+  animation: ash-fall 130s steps(240) infinite reverse;
 }
 html[data-page="vikings"] .dust i:nth-child(3) {
   background-image: radial-gradient(circle, var(--ember-3) 1.6px, transparent 2.4px);
   background-size: 280px 280px;
-  animation: ash-fall 180s linear infinite;
+  animation: ash-fall 180s steps(240) infinite;
 }
 @keyframes ash-fall {
-  from { transform: translate3d(0, -5%, 0); }
-  to   { transform: translate3d(2%, 8%, 0); }
+  from { background-position: 0 -9vh; }
+  to   { background-position: 3.6vw 14.4vh; }
 }
 
 /* ─── Swordland — red vs blue, one duel ────────────────── */
@@ -645,12 +645,12 @@ html[data-page="swordland"] .section.blue.front h2 { color: var(--enemy); }
 
 /* Two tides drifting toward each other: crimson one way, blue
    the other. Layer three just settles (base dust-drift). */
-html[data-page="swordland"] .dust i:nth-child(1) { animation: duel-tide 150s linear infinite; }
-html[data-page="swordland"] .dust i:nth-child(2) { background-size: 150px 150px; animation: duel-tide 190s linear infinite reverse; }
-html[data-page="swordland"] .dust i:nth-child(3) { animation: dust-drift 80s linear infinite; }
+html[data-page="swordland"] .dust i:nth-child(1) { animation: duel-tide 150s steps(240) infinite; }
+html[data-page="swordland"] .dust i:nth-child(2) { background-size: 150px 150px; animation: duel-tide 190s steps(240) infinite reverse; }
+html[data-page="swordland"] .dust i:nth-child(3) { animation: dust-drift 80s steps(240) infinite; }
 @keyframes duel-tide {
-  from { transform: translate3d(-3%, 0, 0); }
-  to   { transform: translate3d(3%, -4%, 0); }
+  from { background-position: -5.4vw 0; }
+  to   { background-position: 5.4vw -7.2vh; }
 }
 
 /* ─── VIP — the court's violet night ───────────────────── */
@@ -676,12 +676,12 @@ html[data-page="home"]:has(.event-card[data-hover-page="vip"]:is(:hover, :focus-
 }
 
 /* Candlelight rises slow and straight — the court's quiet dust. */
-html[data-page="vip"] .dust i:nth-child(1) { animation: candle-rise 90s linear infinite; }
-html[data-page="vip"] .dust i:nth-child(2) { background-size: 200px 200px; animation: candle-rise 140s linear infinite reverse; }
-html[data-page="vip"] .dust i:nth-child(3) { background-size: 300px 300px; animation: candle-rise 200s linear infinite; }
+html[data-page="vip"] .dust i:nth-child(1) { animation: candle-rise 90s steps(240) infinite; }
+html[data-page="vip"] .dust i:nth-child(2) { background-size: 200px 200px; animation: candle-rise 140s steps(240) infinite reverse; }
+html[data-page="vip"] .dust i:nth-child(3) { background-size: 300px 300px; animation: candle-rise 200s steps(240) infinite; }
 @keyframes candle-rise {
-  from { transform: translate3d(0, 4%, 0); }
-  to   { transform: translate3d(-2%, -6%, 0); }
+  from { background-position: 0 7.2vh; }
+  to   { background-position: -3.6vw -10.8vh; }
 }
 
 /* ─── Battle Simulator — the war room's night ─────────── */
@@ -707,9 +707,9 @@ html[data-page="home"]:has(.event-card[data-hover-page="sim"]:is(:hover, :focus-
 }
 
 /* Embers drift slow and straight — the war room's quiet dust. */
-html[data-page="sim"] .dust i:nth-child(1) { animation: candle-rise 90s linear infinite; }
-html[data-page="sim"] .dust i:nth-child(2) { background-size: 200px 200px; animation: candle-rise 140s linear infinite reverse; }
-html[data-page="sim"] .dust i:nth-child(3) { background-size: 300px 300px; animation: candle-rise 200s linear infinite; }
+html[data-page="sim"] .dust i:nth-child(1) { animation: candle-rise 90s steps(240) infinite; }
+html[data-page="sim"] .dust i:nth-child(2) { background-size: 200px 200px; animation: candle-rise 140s steps(240) infinite reverse; }
+html[data-page="sim"] .dust i:nth-child(3) { background-size: 300px 300px; animation: candle-rise 200s steps(240) infinite; }
 
 /* ─── KvK & Strongest Governor — one wheel, two crowns ─── */
 /* The event cycle: one 28-day clock on a sea night, so its signal is
@@ -746,12 +746,12 @@ html[data-page="kvksg"] .section.sg h2 { color: var(--amber-dim); }
 html[data-page="kvksg"] .section.sg.front h2 { color: var(--amber); }
 
 /* The wheel's motes rise slowly — campaign banners going up. */
-html[data-page="kvksg"] .dust i:nth-child(1) { animation: mote-rise 110s linear infinite; }
-html[data-page="kvksg"] .dust i:nth-child(2) { background-size: 180px 180px; animation: mote-rise 160s linear infinite reverse; }
-html[data-page="kvksg"] .dust i:nth-child(3) { background-size: 260px 260px; animation: mote-rise 210s linear infinite; }
+html[data-page="kvksg"] .dust i:nth-child(1) { animation: mote-rise 110s steps(240) infinite; }
+html[data-page="kvksg"] .dust i:nth-child(2) { background-size: 180px 180px; animation: mote-rise 160s steps(240) infinite reverse; }
+html[data-page="kvksg"] .dust i:nth-child(3) { background-size: 260px 260px; animation: mote-rise 210s steps(240) infinite; }
 @keyframes mote-rise {
-  from { transform: translate3d(0, 6%, 0); }
-  to   { transform: translate3d(2%, -6%, 0); }
+  from { background-position: 0 10.8vh; }
+  to   { background-position: 3.6vw -10.8vh; }
 }
 
 /* ─── Shared ruled rows — wave/phase tables ───────────── */
