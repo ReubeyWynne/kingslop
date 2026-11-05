@@ -1,0 +1,22 @@
+{
+  "_note": "Bear hunt results that set the Bear's defence in js/battle-engine.js (BEAR.def); .dsh/bear-reports-check.cjs refits it from every entry. One entry per rally setup: the Bonus Details off a terror rally report with the same heroes, gear and buffs (attack and lethality per type), the troops' tier and Truegold, each lead hero's three skill levels, the formation sent, Valora's Hunter Instinct %, and the Damage Points of each Bear hit made with that setup. joiners: the four joiner heroes at skill level 5 when known, null when not (then the Bear Hunt page's usual four are assumed). source 'game' is a player's own hits; 'frakinator' is the Frakinator's battle-engine Bear for the same inputs (its mean only).",
+  "defaultJoiners": ["chenko", "chenko", "amane", "amane"],
+  "reports": [
+    {
+      "date": "2026-11-04", "player": "Deyci", "source": "game", "trap": "Hunting Trap 2",
+      "attack": [631.5, 654.9, 698.6], "lethality": [468.7, 415.7, 693.9],
+      "tier": [10, 10, 10], "tg": [4, 3, 4],
+      "heroes": [{ "key": "amadeus", "skills": [4, 4, 4] }, { "key": "petra", "skills": [5, 5, 5] }, { "key": "marlin", "skills": [5, 5, 5] }],
+      "joiners": null, "march": [9000, 28500, 52500], "valora": 24,
+      "hits": [40185881, 50653325, 41701585, 57194303, 44869569]
+    },
+    {
+      "date": "2026-11-05", "player": "Deyci", "source": "frakinator",
+      "attack": [631.5, 654.9, 698.6], "lethality": [468.7, 415.7, 693.9],
+      "tier": [10, 10, 10], "tg": [4, 3, 4],
+      "heroes": [{ "key": "amadeus", "skills": [5, 5, 5] }, { "key": "petra", "skills": [5, 5, 5] }, { "key": "marlin", "skills": [5, 5, 5] }],
+      "joiners": ["chenko", "chenko", "amane", "amane"], "march": [9000, 28500, 52500], "valora": 24,
+      "mean": 51600000
+    }
+  ]
+}

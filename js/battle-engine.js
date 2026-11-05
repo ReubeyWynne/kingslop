@@ -401,11 +401,12 @@
   // N₀ = 5,000 and the same Bear: what changes round to round is only the skill,
   // Truegold, volley and fatigue rolls. Damage is the deaths the march deals.
   // No source publishes the Bear's stats (both community sims keep them
-  // server-side), so its defence is the one number set from outside: the
-  // Frakinator's battle-engine Bear on the owner's rally report of 5 November
-  // 2026 (.dsh/battle-engine-check.cjs), a level-5 trap. Skills flagged
+  // server-side), so its defence is the one number set from outside: fitted to
+  // the hunts logged in _data/bear-reports.json (players' own hits, and the
+  // Frakinator's battle-engine Bear), a level-5 trap. .dsh/bear-reports-check.cjs
+  // refits it from every entry and fails when this drifts. Skills flagged
   // bear: false (Zoe's Sundering Wound) do nothing here.
-  var BEAR = { troops: 5000, rounds: 10, def: 72.3 };
+  var BEAR = { troops: 5000, rounds: 10, def: 74.8 };
 
   function bearSide(side) {
     var s = {};

@@ -233,10 +233,10 @@ assert.equal(L.opponent(megafauna.foes[3], 4, 'garrison', data).lineup[2].key, '
   assert.ok(fight.widgets[30] !== null, 'a 5★ Rosa catches Marlin in a rally');
 }
 
-// The Bear's defence (js/battle-engine.js BEAR) from the Frakinator's battle-engine Bear on
-// 5 November 2026: the owner's rally report stats, T10 TG4 / TG3 / TG4, Amadeus, Petra, Marlin
-// with every skill at 5, Chenko ×2 and Amane ×2, Valora 24% → 51.6M at 10/32/58 (fitted), and
-// 54.6M with 80% of hunts in 46.3M–63.2M at its best mix, 2/12/86 (not fitted: checked).
+// The Bear (js/battle-engine.js BEAR, fitted by .dsh/bear-reports-check.cjs) against the
+// Frakinator's battle-engine Bear on 5 November 2026: the owner's rally report stats, T10 TG4 /
+// TG3 / TG4, Amadeus, Petra, Marlin with every skill at 5, Chenko ×2 and Amane ×2, Valora 24% →
+// 51.6M at 10/32/58, and 54.6M with 80% of hunts in 46.3M–63.2M at its best mix, 2/12/86.
 {
   const E = require('../js/battle-engine.js'), C = require('../js/combat.js');
   const lineup = [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)];
@@ -245,9 +245,9 @@ assert.equal(L.opponent(megafauna.foes[3], 4, 'garrison', data).lineup[2].key, '
   const go = (n, levels) => E.bearHunt({ n, tier: [10, 10, 10], tg, ...report, skills: skills(levels) }, 10000, 7, 24);
   const max = [[5, 5, 5], [5, 5, 5], [5, 5, 5]];
   const input = go([9000, 28500, 52500], max), best = go([1800, 10800, 77400], max);
-  near(input.mean / 51.6e6, 1, 'the Frakinator at 10/32/58', 0.01);
-  near(best.mean / 54.6e6, 1, 'and at its best mix', 0.04);
-  near(E.quantile(best.totals, 0.1) / 46.3e6, 1, 'its 80% band, low end', 0.04);
+  near(input.mean / 51.6e6, 1, 'the Frakinator at 10/32/58', 0.06);
+  near(best.mean / 54.6e6, 1, 'and at its best mix', 0.06);
+  near(E.quantile(best.totals, 0.1) / 46.3e6, 1, 'its 80% band, low end', 0.06);
   near(E.quantile(best.totals, 0.9) / 63.2e6, 1, 'its 80% band, high end', 0.08);
 
   // The owner's own five hits that day (Hunting Trap 2, joiners unknown, Amadeus's skills at 4),
