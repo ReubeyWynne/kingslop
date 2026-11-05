@@ -195,4 +195,30 @@ assert.equal(L.opponent(megafauna.foes[3], 4, 'garrison', data).lineup[2].key, '
   // F2P fields last generation's meta heroes.
   assert.deepEqual(L.opponent(megafauna.foes[0], 4, 'garrison', data).lineup.map(c => c.key), megafauna.lineups['3'].rally);
 }
-console.log('Lead engine: stars, widgets, skill caps, Bear score, joiners, pets, city layers, megafauna opponents and ranking pass.');
+
+// The break point: the staircase walk gives what scoring every star and widget step gives.
+{
+  const team = [copy('amadeus', 30, 10), copy('petra', 30, 10), null], me = you(flat(250));
+  const brute = (rival, key, line = team) => {
+    const target = L.score('bear', me, L.seated(line, rival), 4, data), top = data.widgets[key] ? 10 : 0, out = [];
+    for (let s = 0; s <= 30; s++) { let found = null; for (let w = 0; w <= top; w++) if (L.score('bear', me, L.seated(line, copy(key, s, w)), 4, data) >= target) { found = w; break; } out.push(found); }
+    return out;
+  };
+  const rosa = L.breakpoint('bear', me, team, copy('marlin', 30, 10), 'rosa', 4, data, {});
+  assert.deepEqual(rosa.widgets, brute(copy('marlin', 30, 10), 'rosa'), 'Rosa catching a 5★ widget-10 Marlin');
+  assert.equal(rosa.widgets[24], 5, 'the same 4★ widget-5 break point as above');
+  assert.ok(rosa.scores < 60, 'a staircase, not every cell');
+  assert.deepEqual(L.breakpoint('bear', me, team, copy('rosa', 24, 4), 'marlin', 4, data, {}).widgets, brute(copy('rosa', 24, 4), 'marlin'), 'and the other way round');
+  const infantry = [null, copy('petra', 30, 10), copy('rosa', 30, 10)];
+  assert.deepEqual(L.breakpoint('bear', me, infantry, copy('amadeus', 18, 4), 'alcar', 4, data, {}).widgets, brute(copy('amadeus', 18, 4), 'alcar', infantry), 'another seat');
+  assert.deepEqual(L.firstBreak(rosa.widgets), { any: { stars: rosa.widgets.findIndex(w => w !== null), widget: rosa.widgets.find(w => w !== null) }, bare: rosa.widgets.indexOf(0) < 0 ? null : { stars: rosa.widgets.indexOf(0), widget: 0 } });
+  // A stock tier as your own account: its own job's lineup, and the Bear joiners for the Bear.
+  const whale = L.stockAccount(megafauna.foes[2], 5, 'garrison', data);
+  assert.deepEqual(whale.lineup.map(c => c.key), megafauna.lineups['5'].garrison);
+  assert.deepEqual(L.stockAccount(megafauna.foes[2], 5, 'bear', data).joiners.map(j => j.key), megafauna.joiners.bear['5']);
+  // Rally fights walk the same way.
+  const acc = L.stockAccount(megafauna.foes[1], 4, 'rally', data), fight = L.breakpoint('rally', acc, acc.lineup, copy('marlin', 30, 10), 'rosa', 4, data, { battles: 4 });
+  assert.equal(fight.widgets.length, 31);
+  assert.ok(fight.widgets[30] !== null, 'a 5★ Rosa catches Marlin in a rally');
+}
+console.log('Lead engine: stars, widgets, skill caps, Bear score, joiners, pets, city layers, megafauna opponents, ranking and break points pass.');

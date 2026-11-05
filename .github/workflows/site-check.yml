@@ -114,6 +114,8 @@ jobs:
               - *shared
               - .dsh/hero-directory-ui-check.cjs
               - .dsh/lead-finder-ui-check.cjs
+              - .dsh/hero-breakpoint-ui-check.cjs
+              - js/hero-breakpoint.js
               - heroes/**
               - _includes/heroes/**
               - js/hero-directory*.js
@@ -607,6 +609,9 @@ jobs:
       - name: Check the lead finder UI
         if: matrix.group == 'heroes'
         run: node .dsh/lead-finder-ui-check.cjs
+      - name: Check the break-point finder UI
+        if: matrix.group == 'heroes'
+        run: node .dsh/hero-breakpoint-ui-check.cjs
       - name: Check masters UI
         if: matrix.group == 'masters'
         run: node .dsh/masters-ui-check.cjs

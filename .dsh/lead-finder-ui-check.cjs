@@ -46,7 +46,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.doesNotMatch(await status(), /Add your Squads' row/);
 
   // A rally ranks against the four stock opponents.
-  await page.locator('label:has(input[value="rally"])').click();
+  await page.locator('#leads label:has(input[value="rally"])').click();
   await page.waitForFunction(() => /Ranked from/.test(document.querySelector('[data-target="lead-finder.status"]').textContent) && document.querySelectorAll('#leads .lead-cell').length === 16);
   assert.equal(await page.locator('.lead-foes').isVisible(), true);
   assert.deepEqual(await page.locator('.lead-best .lead-cell > span').allTextContents(), ['F2P', 'Dolphin', 'Whale', 'Kraken']);
@@ -56,7 +56,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.deepEqual(await page.locator('[data-joiner][data-field="key"]').evaluateAll(s => s.map(x => x.value)), ['chenko', 'yeonwoo', 'amane', 'amadeus']);
   assert.match(await page.locator('[data-target="lead-finder.joinersTitle"]').textContent(), /Rally lead/);
   assert.match(await page.locator('[data-target="lead-finder.pets"]').textContent(), /No pets in your save/);
-  await page.locator('label:has(input[value="bear"])').click();
+  await page.locator('#leads label:has(input[value="bear"])').click();
   await page.waitForFunction(() => document.querySelectorAll('.lead-row').length === 3 && document.querySelector('.lead-mix'));
   assert.deepEqual(await page.locator('[data-joiner][data-field="key"]').evaluateAll(s => s.map(x => x.value)), ['chenko', 'yeonwoo', 'amane', 'margot'], 'the Bear keeps its own joiners');
   const mixOf = () => page.locator('.lead-mix-legend').textContent();

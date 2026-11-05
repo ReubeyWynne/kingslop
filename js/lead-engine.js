@@ -363,7 +363,74 @@
     return scored;
   }
 
+  // A stock spender tier as your own account for one job: its overview, troops, gear,
+  // Truegold, pets, city buffs and joiners, and its meta lineup at its stars and widgets.
+  function stockAccount(foe, gen, job, data) {
+    var acc = opponent(foe, gen, job === 'garrison' ? 'rally' : 'garrison', data);
+    if (job === 'bear') {
+      var at = String(clamp(gen | 0, 1, data.megafauna.generations.length)), kit = loadout(foe, gen, data);
+      acc.joiners = (data.megafauna.joiners.bear[at] || []).map(function (key) { return { key: key, level: kit.joinerLevel }; });
+    }
+    return acc;
+  }
+
+  // One lineup's score for a job: Bear damage, or the edge over the stock opponents.
+  function score(job, you, lineup, gen, data, opts) {
+    return job === 'bear' ? bear(you, lineup, data).score : fight(you, lineup, job, gen, data, opts).score;
+  }
+
+  // Two heroes of one troop type in the same seat: the lineup with `copy` seated.
+  function seated(lineup, copy) {
+    return lineup.map(function (c, i) { return TYPES[i] === copy.type ? copy : c; });
+  }
+
+  // The break point: how far `key` has to be invested to match `rival` (a copy, fixed)
+  // in the same seat beside the same two teammates. For every star step (0 to 30) the
+  // lowest widget level at which it scores at least as well, null when even widget 10
+  // falls short; a hero without a widget has only level 0. Its skills follow its stars.
+  // Stars and widget levels only ever add stats and skill levels, so the answer can only
+  // fall as the stars rise: a staircase walk needs about 31 + 11 scores, not 341.
+  // job, you, lineup (the teammates; the rival's seat is replaced), gen, opts as score().
+  // A walker, so a page can score a few at a time: next() scores once and says whether
+  // more remain; result() is the answer once it is done. breakpoint() runs one to the end.
+  function walker(job, you, lineup, rival, key, gen, data, opts) {
+    var target = score(job, you, seated(lineup, rival), gen, data, opts);
+    var top = data.widgets[key] ? 10 : 0, w = top, s = 0, out = [], scores = 1;
+    return {
+      next: function () {
+        if (s > 30) return false;
+        var copy = copyOf(key, { stars: s, widget: w }, data);
+        scores += 1;
+        if (w >= 0 && score(job, you, seated(lineup, copy), gen, data, opts) >= target) w -= 1;
+        else { out.push(w + 1 <= top ? w + 1 : null); s += 1; }
+        // Below widget 0 there is nothing left to try: every later step holds at 0.
+        while (w < 0 && s <= 30) { out.push(0); s += 1; }
+        return s <= 30;
+      },
+      progress: function () { return s / 31; },
+      result: function () { return { target: target, widgets: out, top: top, scores: scores }; }
+    };
+  }
+  function breakpoint(job, you, lineup, rival, key, gen, data, opts) {
+    var walk = walker(job, you, lineup, rival, key, gen, data, opts);
+    while (walk.next()) { /* scoring */ }
+    return walk.result();
+  }
+
+  // The first star step where a break point is met at all, and the first where it
+  // needs no widget: the two sentences a reader asks for.
+  function firstBreak(widgets) {
+    var any = null, bare = null;
+    widgets.forEach(function (w, s) {
+      if (w === null) return;
+      if (any === null) any = { stars: s, widget: w };
+      if (bare === null && w === 0) bare = { stars: s, widget: 0 };
+    });
+    return { any: any, bare: bare };
+  }
+
   var api = {
+    stockAccount: stockAccount, score: score, seated: seated, walker: walker, breakpoint: breakpoint, firstBreak: firstBreak,
     TYPES: TYPES, STAR_SKILLS: STAR_SKILLS, copyOf: copyOf, statLine: statLine, widgetStat: widgetStat, gearLayer: gearLayer, townLayer: townLayer, TOWN_TG: TOWN_TG, panel: panel, reportPanel: reportPanel,
     uptime: uptime, bearMod: bearMod, bear: bear, opponent: opponent, loadout: loadout, fight: fight, candidates: candidates, lineups: lineups, rank: rank,
     LAYER_KEYS: LAYER_KEYS, blank: blank, petLevelPct: petLevelPct, petLayer: petLayer, cityLayer: cityLayer, layered: layered, battleSide: battleSide
