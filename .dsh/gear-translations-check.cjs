@@ -45,7 +45,13 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   const errors = []; page.on('pageerror', e => errors.push(e.message));
   for (const lang of langs) {
     await page.goto(origin + '/hero-gear/?lang=' + lang + '&' + gear);
-    await page.waitForFunction(() => document.querySelectorAll('.gear-card .gear-row').length === 12 && document.querySelector('#gear-optimal .gear-headline') && document.querySelector('#gear-results > *'), null, { timeout: 90000 });
+    await page.waitForFunction(() => document.querySelectorAll('.gear-card .gear-row').length === 12 && document.querySelector('#gear-optimal .gear-headline') && document.querySelector('#gear-results > *'), null, { timeout: 90000 })
+      .catch(async error => {
+        // Say which part never arrived, and any page error, so a timeout on CI can be told apart.
+        const state = await page.evaluate(() => ({ rows: document.querySelectorAll('.gear-card .gear-row').length, headline: !!document.querySelector('#gear-optimal .gear-headline'), results: !!document.querySelector('#gear-results > *'), resultsText: (document.querySelector('#gear-results') || {}).textContent }));
+        error.message += '\n' + lang + ' page state: ' + JSON.stringify(state) + '\npage errors: ' + JSON.stringify(errors);
+        throw error;
+      });
     await check(page, lang + ' cards and answer');
     if (await page.locator('#gear-show-optimal').count()) { await page.locator('#gear-show-optimal').check(); await check(page, lang + ' optimal'); await page.locator('#gear-show-optimal').uncheck(); }
     await page.locator('[data-open="cav"]').click();
