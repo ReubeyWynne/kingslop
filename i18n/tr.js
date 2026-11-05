@@ -1137,6 +1137,7 @@ window.__BH_I18N_DATA["tr"] = {
   "directory.intro": "Nesil, birlik ve role göre kahraman bul. Görev için önemli becerileri karşılaştır.",
   "directory.candidateNote": "Rol etiketleri adayları belirtir, sıralama değildir. Yıldızlar, beceri seviyeleri, widget'lar, hesap istatistikleri ve ittifak politikası dizilimi belirler.",
   "directory.unreviewed": "Bu kahraman için rol önerisi incelenmedi. Katalog becerileri aşağıda kullanılabilir.",
+  "directory.unreviewedSource": "Yalnızca resmî kahraman wikisi",
   "directory.skillNote": "Adlar ve değerler kaynak dilindeki katalog kaydıdır. İlk giriş beceri 1'dir; olasılık değeri garantili etki değildir.",
   "directory.explain.garrison": "Savunma istatistiği kaynağı geliştirilmiş kahraman kitini ve geçerli hesap bonuslarını sağlar. Savunma widget'larını ve savaş raporlarını karşılaştır. Daha güçlü takviye kaynağı değiştirebilir; etkin garnizonu kontrol et.",
   "directory.explain.joiner": "Atanan kahramanı 1. yuvaya koy. İlk Sefer becerisi dört ortak katılımcı yuvasından birine girebilir. Saldırı veya savunma etkilerini hedefle eşleştir ve seviyeleri koordine et. Diğer iki kahraman ek katılımcı becerisi sağlamaz.",

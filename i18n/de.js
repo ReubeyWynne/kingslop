@@ -1138,6 +1138,7 @@ window.__BH_I18N_DATA["de"] = {
   "directory.intro": "Helden nach Generation, Truppe und Rolle finden. Die für die Aufgabe wichtigen Fähigkeiten vergleichen.",
   "directory.candidateNote": "Rollen nennen Kandidaten, keine Rangfolge. Sterne, Fähigkeitsstufen, Widgets, Kontowerte und Allianzregeln bestimmen die Aufstellung.",
   "directory.unreviewed": "Für diesen Helden wurde keine Rollenempfehlung geprüft. Seine Katalogfähigkeiten stehen unten weiterhin bereit.",
+  "directory.unreviewedSource": "Nur das offizielle Helden-Wiki",
   "directory.skillNote": "Namen und Werte stammen aus dem Katalogstand in der Quellsprache. Der erste Eintrag ist Fähigkeit 1; eine Wahrscheinlichkeit garantiert keinen Effekt.",
   "directory.explain.garrison": "Die defensive Wertequelle liefert das entwickelte Heldenkit und passende Kontoboni. Defensive Widgets und Kampfberichte vergleichen. Eine stärkere Verstärkung kann die Wertequelle ändern; die aktive Garnison prüfen.",
   "directory.explain.joiner": "Den zugewiesenen Helden auf Platz 1 setzen. Seine erste Expeditionsfähigkeit kann einen von vier gemeinsamen Plätzen belegen. Offensive oder defensive Effekte zum Ziel passend wählen und Stufen abstimmen. Die anderen zwei Helden liefern keine zusätzlichen Beitrittsfähigkeiten.",

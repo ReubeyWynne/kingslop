@@ -1141,6 +1141,7 @@ window.__BH_I18N_DATA["es"] = {
   "directory.intro": "Busca un héroe por generación, tropa y rol. Compara las habilidades relevantes para su tarea.",
   "directory.candidateNote": "Las etiquetas indican candidatos, no una clasificación. Estrellas, niveles de habilidades, widgets, estadísticas y política de la alianza determinan el equipo.",
   "directory.unreviewed": "No se ha revisado una recomendación de rol para este héroe. Sus habilidades siguen disponibles abajo.",
+  "directory.unreviewedSource": "Solo la wiki oficial de héroes",
   "directory.skillNote": "Nombres y valores son una instantánea del catálogo en el idioma de origen. La primera entrada es la habilidad 1; una probabilidad no garantiza el efecto.",
   "directory.explain.garrison": "La fuente de estadísticas defensivas aporta el kit desarrollado y las bonificaciones aplicables. Compara widgets defensivos e informes. Un refuerzo más fuerte puede cambiar esa fuente; revisa la guarnición activa.",
   "directory.explain.joiner": "Pon al héroe asignado en la posición 1. Su primera habilidad de expedición puede ocupar uno de cuatro espacios compartidos. Adapta efectos ofensivos o defensivos al objetivo y coordina niveles. Los otros dos héroes no aportan habilidades adicionales al unirse.",

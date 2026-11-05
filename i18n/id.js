@@ -1149,6 +1149,7 @@ window.__BH_I18N_DATA["id"] = {
   "directory.intro": "Temukan hero berdasarkan generasi, pasukan dan peran. Bandingkan skill yang penting untuk tugasnya.",
   "directory.candidateNote": "Label peran menunjukkan kandidat, bukan peringkat. Bintang, level skill, widget, statistik akun dan kebijakan aliansi menentukan susunan.",
   "directory.unreviewed": "Rekomendasi peran untuk hero ini belum ditinjau. Skill katalog tetap tersedia di bawah.",
+  "directory.unreviewedSource": "Hanya wiki hero resmi",
   "directory.skillNote": "Nama dan nilai adalah versi katalog dalam bahasa sumber. Entri pertama adalah skill 1; nilai peluang bukan efek yang pasti.",
   "directory.explain.garrison": "Sumber statistik defensif menyediakan kit hero yang dikembangkan dan bonus akun yang berlaku. Bandingkan widget defensif dan laporan. Penguat yang lebih kuat bisa mengganti sumber statistik; periksa garnisun aktif.",
   "directory.explain.joiner": "Tempatkan hero yang ditugaskan di slot 1. Skill ekspedisi pertamanya dapat masuk salah satu dari empat slot bersama. Sesuaikan efek ofensif atau defensif dengan tujuan dan koordinasikan level. Dua hero lainnya tidak memberi skill peserta tambahan.",

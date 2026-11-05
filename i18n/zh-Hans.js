@@ -1138,6 +1138,7 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "directory.intro": "按代数、兵种和角色查找英雄，比较适合任务的技能。",
   "directory.candidateNote": "角色标签表示候选，不是排名。星级、技能等级、Widget、账号属性及联盟规则决定阵容。",
   "directory.unreviewed": "尚未审核此英雄的角色建议。下方仍可查看目录技能。",
+  "directory.unreviewedSource": "仅来自官方英雄维基",
   "directory.skillNote": "名称和数值是来源语言的目录快照。第一项为技能1；概率值不代表必定生效。",
   "directory.explain.garrison": "防御属性提供者贡献已培养的英雄技能组和适用的账号加成。比较防御Widget及战报。更强的增援账号可能改变属性来源，请检查当前驻防。",
   "directory.explain.joiner": "将指定英雄放在第1位。其第一远征技能可进入四个共享增援技能位之一。按目标搭配进攻或防御效果并协调技能等级。其余两位英雄不贡献额外加入技能。",
