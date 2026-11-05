@@ -65,10 +65,22 @@
       Object.keys(levels).forEach(function (k) { if (E.building(D, k)) out[k] = levels[k]; });
       return out;
     }
+    var saveState = 'saved';
     function setLevel(k, value) {
       if (!store) { if (value === null) delete memory[k]; else memory[k] = value; return render(); }
-      try { store.setBuilding(k, value, 'manual'); } catch (cause) { say(t('saveFailed', 'Could not save that level.')); }
-      if (!store.subscribe) render();
+      try { store.setBuilding(k, value, 'manual'); saveState = 'saved'; } catch (cause) { saveState = 'failed'; }
+      if (!store.subscribe || saveState === 'failed') render();
+    }
+    // Your own levels carry the saved seal and the dots of the pages that read them; a guest
+    // sheet is a loose leaf instead.
+    function fillSaved() {
+      var seal = one('saved'), own = !guest && !!store;
+      one('saveMark').hidden = !own;
+      one('levels').classList.toggle('loose-leaf', guest);
+      if (!own) { seal.textContent = ''; return; }
+      seal.dataset.state = saveState;
+      seal.textContent = saveState === 'failed' ? t('saveFailed', 'Could not save that.') : api.tr('leads.saved', 'Saved');
+      one('sharedBy').setAttribute('aria-label', api.tr('town.nav', 'Town Centre') + ', ' + api.tr('priority.title', 'Upgrade priority'));
     }
     function name(k) {
       var part = E.split(k), b = E.building(D, k), base = api.tr('town.building.' + part.id, (b && b.name) || NAMES[part.id] || part.id);
@@ -156,10 +168,10 @@
       img.src = '../img/buildings/' + E.split(k).id + '.webp'; img.alt = ''; img.width = 128; img.height = 128; img.loading = 'lazy'; img.decoding = 'async';
       return img;
     }
-    // A level as a button that opens the level grid: kind 'have' (the reader's own, '?' while
-    // assumed) or 'goal' (a goal's level).
+    // A level as an ink-well that opens the level grid: kind 'have' (the reader's own, in ghost
+    // ink while assumed) or 'goal' (a goal's level).
     function levelButton(kind, k, text, label, extra) {
-      var button = el('button', 'reqs-lv', text);
+      var button = el('button', 'reqs-lv inkwell', text);
       button.type = 'button'; button.dataset.kind = kind; button.dataset.building = k;
       button.setAttribute('data-action', 'building-paths.open');
       button.setAttribute('aria-label', label);
@@ -329,7 +341,8 @@
         if (goalAt >= 0) { li.dataset.goal = ''; head.appendChild(el('span', 'reqs-tag', t('goalTag', 'goal'))); }
         body.appendChild(head);
         var pick = el('p', 'reqs-run-levels'), known = levels[k] !== undefined;
-        pick.appendChild(levelButton('have', k, levelName(k, known ? levels[k] : at) + (known ? '' : '?'), t('yourLevel', 'Your {building} level', { building: name(k) }) + ': ' + (known ? levelName(k, levels[k]) : t('unsure', 'not sure ({level})', { level: levelName(k, at) })), { value: known ? levels[k] : '' }));
+        pick.appendChild(levelButton('have', k, levelName(k, known ? levels[k] : at), t('yourLevel', 'Your {building} level', { building: name(k) }) + ': ' + (known ? levelName(k, levels[k]) : t('unsure', 'not sure ({level})', { level: levelName(k, at) })), { value: known ? levels[k] : '' }));
+        if (!known) pick.lastChild.classList.add('ghost');
         if (goalAt >= 0) {
           pick.appendChild(el('span', 'reqs-arrow', li.dataset.state === 'done' ? '✓' : arrow().trim()));
           pick.appendChild(levelButton('goal', k, levelName(k, goals[goalAt].level), t('goalLevel', '{building} goal level', { building: name(k) }) + ': ' + levelName(k, goals[goalAt].level), { value: goals[goalAt].level, index: String(goalAt) }));
@@ -376,7 +389,7 @@
       flag.textContent = any ? t('oneSource', '◇ Only one source gives this figure.') : '';
       var add = one('addGoal');
       add.hidden = guest || !store || !plannedGoals().length || result.state === 'met';
-      one('saveNote').textContent = guest ? t('guestNote', 'Guest mode: levels stay on this page.') : store ? t('savedNote', 'Levels you set are saved on this device, and the Town Centre and Upgrade priority use them.') : '';
+      fillSaved();
       syncAddress();
     }
 
