@@ -69,7 +69,7 @@
       if (at >= 0 && at + 1 < values.length) lv.value = String(values[at + 1]);
     }
     function goals() { return store ? store.priority().goals : []; }
-    function say(key) { one('saved').textContent = t(key); }
+    function say(key) { var seal = one('saved'); seal.textContent = t(key); seal.dataset.state = key === 'saved' ? 'saved' : 'failed'; }
     function save(list) {
       try { store.setPriorityGoals(list); say('saved'); return true; } catch (cause) { say('saveFailed'); render(); return false; }
     }

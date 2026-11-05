@@ -65,7 +65,7 @@
       } },
       role: { run: function (node) {
         var saved = context.targets('saved')[0];
-        try { store.setPriorityRole(node.dataset.role); saved.textContent = t('saved'); } catch (cause) { saved.textContent = t('saveFailed'); render(); }
+        try { store.setPriorityRole(node.dataset.role); saved.textContent = t('saved'); saved.dataset.state = 'saved'; } catch (cause) { saved.textContent = t('saveFailed'); saved.dataset.state = 'failed'; render(); }
       } }
     } };
   });
