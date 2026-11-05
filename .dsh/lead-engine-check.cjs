@@ -228,20 +228,35 @@ assert.equal(L.opponent(megafauna.foes[3], 4, 'garrison', data).lineup[2].key, '
   assert.ok(fight.widgets[30] !== null, 'a 5★ Rosa catches Marlin in a rally');
 }
 
-// The scale: the owner's five rallies of 4 November 2026 on Hunting Trap 2 (40.2M, 50.7M, 41.7M,
-// 57.2M, 44.9M; 46.9M on average) with the lineup, Bonus Overview, gear and TG4 pinned above,
-// Apex T10 troops (cavalry TG3), 9,000 / 28,500 / 52,500, the usual Gen 4 joiners and Valora at 90 (+24%).
+// K, the Bear's side, from the Frakinator's battle-engine Bear on 5 November 2026: the owner's
+// rally report stats, T10 TG4 / TG3 / TG4, Amadeus, Petra, Marlin with every skill at 5,
+// Chenko ×2 and Amane ×2, Valora 24% → 51.6M at 10/32/58 and 54.6M at its best, 2/12/86.
 {
+  const lineup = [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)];
+  const report = [[631.5, 468.7], [654.9, 415.7], [698.6, 693.9]], tg = [4, 3, 4];
+  const skills = levels => L.bearMod(require('../js/combat.js').side(data, { role: 'rally', heroes: lineup.map((c, i) => ({ key: c.key, levels: levels[i], widget: 0 })), joiners: ['chenko', 'chenko', 'amane', 'amane'].map(key => ({ key, level: 5 })) }));
+  const E = require('../js/battle-engine.js');
+  const terms = mod => report.map(([a, l], t) => E.baseAtk(t, 10, tg[t]) * (t === 2 ? 1.21 : 1) * (1 + a / 100) * (1 + l / 100) * mod[t] * (t === 0 ? 1 : 1.1));
+  const max = terms(skills([[5, 5, 5], [5, 5, 5], [5, 5, 5]]));
+  const at = c => L.bearDamageAt(max, c, 24);
+  near(at([9000, 28500, 52500]) / 51.6e6, 1, 'the Frakinator at 10/32/58', 0.01);
+  near(at([1800, 10800, 77400]) / at([9000, 28500, 52500]), 54.6 / 51.6, 'the step to its best mix', 0.01);
+  const sq = max.reduce((s, x) => s + x * x, 0), ideal = max.map(x => x * x / sq * 100);
+  [2, 12, 86].forEach((f, t) => assert.ok(Math.abs(ideal[t] - f) < 1.5, `ideal mix ${ideal.map(x => x.toFixed(1)).join('/')} vs the Frakinator's 2/12/86`));
+
+  // The owner's own five hits that day (Hunting Trap 2, joiners unknown, Amadeus's skills at 4),
+  // through the whole page path: Bonus Overview, gear, TG4 town, report stats.
   const m = q => ({ quality: q[0], level: q[1], mastery: q[2] });
   const set = (type, [helm, gloves, chest, boots]) => ({ [type + '-helm']: m(helm), [type + '-gloves']: m(gloves), [type + '-chest']: m(chest), [type + '-boots']: m(boots) });
   const gear = L.gearLayer({ ...set('arc', [['red', 131, 11], ['mythic', 62, 2], ['mythic', 62, 2], ['mythic', 100, 6]]), ...set('inf', [['mythic', 61, 3], ['red', 133, 11], ['mythic', 100, 7], ['mythic', 65, 3]]), ...set('cav', [['mythic', 51, 2], ['mythic', 34, 1], ['mythic', 34, 1], ['mythic', 48, 1]]) });
   const row = (a, d, l, h) => ({ attack: a, defense: d, lethality: l, health: h });
   const overview = { inf: row(389.3, 373.6, 264.2, 257.0), cav: row(326.5, 330.1, 244.0, 218.0), arc: row(345.7, 349.3, 303.8, 296.6) };
-  const owner = { overview, troops: { tier: [10, 10, 10], tg: [4, 3, 4] }, joiners: megafauna.joiners.bear['4'].map(key => ({ key, level: 5 })), city: L.blank(), pets: L.blank(), gear, town: L.townLayer('TG 4') };
-  const r = L.bear(owner, [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)], data);
+  const owner = { overview, troops: { tier: [10, 10, 10], tg }, joiners: ['chenko', 'chenko', 'amane', 'amane'].map(key => ({ key, level: 5 })), city: L.blank(), pets: L.blank(), gear, town: L.townLayer('TG 4') };
+  const r = L.bear(owner, lineup, data);
+  r.panel.atk.forEach((v, t) => assert.ok(Math.abs(v - report[t][0]) < 0.25 && Math.abs(r.panel.let[t] - report[t][1]) < 0.25, 'the Bear reads the report stats'));
   const hits = [40185881, 50653325, 41701585, 57194303, 44869569], mean = hits.reduce((a, b) => a + b) / hits.length;
   const model = L.bearDamageAt(r.terms, [9000, 28500, 52500], 24);
-  assert.ok(Math.abs(model / mean - 1) < 0.05, `the owner's rallies: ${(model / 1e6).toFixed(1)}M against ${(mean / 1e6).toFixed(1)}M`);
+  assert.ok(Math.abs(model / mean - 1) < 0.08, `the owner's rallies: ${(model / 1e6).toFixed(1)}M against ${(mean / 1e6).toFixed(1)}M`);
   assert.ok(hits.every(h => Math.abs(h / model - 1) < 0.25), 'every hit within the chance skills\' swing');
   assert.ok(L.bearDamage(r.score, 90000, 24) > model, 'the ideal mix beats the one sent');
 }

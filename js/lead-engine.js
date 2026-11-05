@@ -150,11 +150,13 @@
     return out;
   }
 
-  // The lineup's skills plus the joiners' first skills, for one role.
+  // The lineup's skills plus the joiners' first skills, for one role. The widgets' skills are
+  // left out: the game folds them into the Bonus Details (reportPanel), as a multiplier on the
+  // stat, and counting them again as SkillMod would count them twice.
   function skillsOf(lineup, role, data, joiners) {
     return root.CombatSkills.side(data, {
       role: role,
-      heroes: lineup.filter(Boolean).map(function (c) { return { key: c.key, levels: c.levels, widget: c.widget }; }),
+      heroes: lineup.filter(Boolean).map(function (c) { return { key: c.key, levels: c.levels, widget: 0 }; }),
       joiners: (joiners || []).filter(function (j) { return j && j.key; })
     });
   }
@@ -254,12 +256,6 @@
     return mod;
   }
 
-  // A level-5 Bear Trap gives the rallies on it +25% attack (owner, 2026-11-05), assumed for every
-  // Bear score. Taken as its own layer, like city buffs and pets: the attack factor × 1.25. Added
-  // into the attack bonus instead it would be worth under 4% at these stats, and the owner's
-  // rallies (BEAR_SCALE below) leave far more than that to explain.
-  var BEAR_TRAP_ATTACK = 1.25;
-
   // Truegold troop skills on the Bear, at their expected value (js/battle-engine.js TRUEGOLD):
   // cavalry may deal double, archers half again more (three quarters at TG8). Infantry's
   // only takes damage, which the Bear never deals in this score.
@@ -273,42 +269,41 @@
   // Expected Bear damage of a lineup at the lead's ideal mix, and that mix.
   function bear(you, lineup, data) {
     var E = root.BattleEngine, troops = you.troops;
-    var p = layered(panel(you.overview, lineup, data, you.gear, you.town), layersOf(you), null);
+    var p = layered(reportPanel(panel(you.overview, lineup, data, you.gear, you.town), lineup, 'rally', data), layersOf(you), null);
     var mod = bearMod(skillsOf(lineup, 'rally', data, you.joiners));
     var terms = TYPES.map(function (type, t) {
       var tier = troops.tier[t], tg = troops.tg[t];
       // Archers deal +10% to the all-infantry Bear, and again from T7 / TG3 (Volley).
       var vs = t === 2 ? 1.1 * (E.hasSecondSkill(tier, tg) ? 1.1 : 1) : 1;
-      return E.baseAtk(t, tier, tg) * vs * (1 + (p.atk[t] + (t === 2 && tg >= 8 ? E.TRUEGOLD.flatTg8 : 0)) / 100) * BEAR_TRAP_ATTACK * (1 + p.let[t] / 100) * mod[t] * truegoldBear(t, tg);
+      return E.baseAtk(t, tier, tg) * vs * (1 + (p.atk[t] + (t === 2 && tg >= 8 ? E.TRUEGOLD.flatTg8 : 0)) / 100) * (1 + p.let[t] / 100) * mod[t] * truegoldBear(t, tg);
     });
     var sq = terms.reduce(function (s, x) { return s + x * x; }, 0);
     return { score: Math.sqrt(sq) / 1000, mix: terms.map(function (x) { return x * x / sq; }), panel: p, terms: terms };
   }
 
-  // The Bear damage of one march (MATHS.md §1, §5). Each troop type deals
-  // (1.2 / 1000) × √5000 × √N_t × base_att_t × A_t × SkillMod_t, so at the ideal split the march
-  // deals (1.2 / 1000) × √5000 × √N × √Σ term² = 1.2 × √5000 × √N × bear().score.
-  // BEAR_SCALE is the gap still unexplained, not a law: the owner's five rallies of 4 November 2026
-  // (Hunting Trap 2; Amadeus 3★ 4/6 W4, Petra 4★ 3/6 W3, Marlin 5★ W10; the Bonus Overview,
-  // hero gear and TG4 of .dsh/lead-engine-check.cjs; T10 troops, cavalry TG3; 9,000 / 28,500 /
-  // 52,500; Valora's talent at +24%) scored 40.2M, 50.7M, 41.7M, 57.2M and 44.9M, 46.9M on
-  // average, where this formula with the usual Gen 4 joiners, the Truegold troop skills and the
-  // level-5 trap's attack gives 35.3M. No city buffs or pets were running (owner), and the attack
-  // and lethality the formula uses match the owner's own rally report to 0.25 points. What one
-  // setup cannot separate: the community constant (1.2/1000)·√5000, fitted at an unknown trap
-  // level; the base attack scale it was fitted with; how skills of one code stack; the joiners.
+  // The Bear damage of one march. Each troop type deals K × √N_t × base_att_t × A_t × SkillMod_t
+  // (MATHS.md §1), so at the ideal split the march deals K × √N × √Σ term² = K × 1000 × √N × score.
+  // K is the Bear's side of the fight: its defence and army, at a level-5 trap. MATHS.md's
+  // community rule of thumb puts it at (1.2 / 1000) × √5000 ≈ 0.085; the Frakinator, which now
+  // runs the Bear through its PvP battle engine instead, gives 1.55 times that. Checked
+  // 2026-11-05 on the owner's rally report (Amadeus, Petra, Marlin; attack 631.5 / 654.9 / 698.6,
+  // lethality 468.7 / 415.7 / 693.9; T10 TG4 / TG3 / TG4; Chenko ×2, Amane ×2; Valora 24%):
+  // 51.6M at 10/32/58 and 54.6M at its best mix, 2/12/86. With every skill at 5 this formula
+  // gives the same 1.058 step between the two mixes, an ideal of 1/12/87, and 51.6M with K below.
+  // The owner's own five hits that day (lower skill levels, joiners unknown) averaged 46.9M
+  // against 49M here. The trap level is in K: the Frakinator has no trap setting.
   // Single hits swing about ±20% with the chance skills. pointsPct is Valora's Hunter Instinct
   // talent, which adds to your own Damage Points only.
-  var BEAR_SCALE = 1.33;
+  var BEAR_K = 1.55 * 1.2 * Math.sqrt(5000) / 1000;
   var VALORA_POINTS = [0, 2, 4, 6, 9, 12, 15, 18, 21, 24, 27, 30];
   function bearDamage(score, troops, pointsPct) {
-    return BEAR_SCALE * 1.2 * Math.sqrt(5000) * Math.sqrt(Math.max(0, num(troops))) * score * (1 + num(pointsPct) / 100);
+    return BEAR_K * 1000 * Math.sqrt(Math.max(0, num(troops))) * score * (1 + num(pointsPct) / 100);
   }
   // The same for a march you have already split: counts per type, with bear()'s terms.
   function bearDamageAt(terms, counts, pointsPct) {
     var sum = 0;
     for (var t = 0; t < 3; t++) sum += Math.sqrt(Math.max(0, num(counts[t]))) * terms[t];
-    return BEAR_SCALE * 1.2 * Math.sqrt(5000) / 1000 * sum * (1 + num(pointsPct) / 100);
+    return BEAR_K * sum * (1 + num(pointsPct) / 100);
   }
   // Valora's talent level from her save record: one level per class reached (affinity 1, 10,
   // 20 … 100), one less while the class at a gate waits for Relationship Advancement.
@@ -349,7 +344,7 @@
 
   // One side ready for the battle engine, its layers set against the other.
   function battleSide(who, lineup, role, against, data) {
-    var p = layered(panel(who.overview, lineup, data, who.gear, who.town), layersOf(who), layersOf(against));
+    var p = layered(reportPanel(panel(who.overview, lineup, data, who.gear, who.town), lineup, role, data), layersOf(who), layersOf(against));
     return { atk: p.atk, let: p.let, def: p.def, hea: p.hea, tier: who.troops.tier, tg: who.troops.tg, skills: skillsOf(lineup, role, data, who.joiners) };
   }
 
@@ -480,7 +475,7 @@
   }
 
   var api = {
-    bearDamage: bearDamage, bearDamageAt: bearDamageAt, valoraPoints: valoraPoints, BEAR_SCALE: BEAR_SCALE, VALORA_POINTS: VALORA_POINTS, stockAccount: stockAccount, score: score, seated: seated, walker: walker, breakpoint: breakpoint, firstBreak: firstBreak,
+    bearDamage: bearDamage, bearDamageAt: bearDamageAt, valoraPoints: valoraPoints, BEAR_K: BEAR_K, VALORA_POINTS: VALORA_POINTS, stockAccount: stockAccount, score: score, seated: seated, walker: walker, breakpoint: breakpoint, firstBreak: firstBreak,
     TYPES: TYPES, STAR_SKILLS: STAR_SKILLS, copyOf: copyOf, statLine: statLine, widgetStat: widgetStat, gearLayer: gearLayer, townLayer: townLayer, TOWN_TG: TOWN_TG, panel: panel, reportPanel: reportPanel,
     uptime: uptime, bearMod: bearMod, bear: bear, opponent: opponent, loadout: loadout, fight: fight, candidates: candidates, lineups: lineups, rank: rank,
     LAYER_KEYS: LAYER_KEYS, blank: blank, petLevelPct: petLevelPct, petLayer: petLayer, cityLayer: cityLayer, layered: layered, battleSide: battleSide
