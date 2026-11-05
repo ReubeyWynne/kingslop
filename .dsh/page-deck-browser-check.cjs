@@ -149,14 +149,14 @@ withBrowser({ root }, async ({ browser, origin }) => {
   assert.equal(await page.locator('.deck-card.is-running[data-page="' + tokens[1] + '"] .deck-ascii > *').first().evaluate(el => getComputedStyle(el, '::before').animationPlayState), 'running');
   // A sideways swipe moves the strip wherever the thumb lands on it: the
   // art, the title, the lede in the lower half of the cover, and the
-  // position label and hint under the covers.
+  // position label under the covers.
   const touchPage = await (await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true })).newPage();
   await touchPage.goto(origin + '/?lang=de');
   await touchPage.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
   await touchPage.locator('#ledger-btn').click();
   await selected(touchPage, 'home');
   const cdp = await touchPage.context().newCDPSession(touchPage);
-  const zones = ['.deck-card.is-selected .deck-ascii', '.deck-card.is-selected .deck-card-title', '.deck-card.is-selected .deck-card-lede', '.deck-position', '#deck-hint'];
+  const zones = ['.deck-card.is-selected .deck-ascii', '.deck-card.is-selected .deck-card-title', '.deck-card.is-selected .deck-card-lede', '.deck-position'];
   for (const [i, zone] of zones.entries()) {
     // The cover a swipe brings in is already running before it arrives.
     assert.equal(await touchPage.locator('.deck-card.is-running[data-page="' + tokens[i + 1] + '"]').count(), 1);

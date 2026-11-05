@@ -22,11 +22,7 @@ self: sim
 
 <main class="sim-main">
   <section class="section hero" id="top">
-    <h1 data-i18n-html="sim.hero.h1">BATTLE SIMULATOR,<br><span class="accent">DEMYSTIFIED</span></h1>
-    <details id="community-model" class="sim-why sim-model">
-      <summary data-i18n="sim.review.model">Community model · hero skills included</summary>
-    <p class="draft-note" data-i18n-html="sim.hero.alpha">a <b>community model</b>, not the game's own code — the battle engine is the one the Frakinator reverse-engineered and tested against real reports, and the hero skills are the KingShot Battle Helper's tested data. A few skill codes and the Truegold chances are still unconfirmed, so read a close fight as a starting point.</p>
-    </details>
+    <h1><span data-i18n-html="sim.hero.h1">BATTLE SIMULATOR,<br><span class="accent">DEMYSTIFIED</span></span><details class="src" data-src="est" id="community-model"><summary aria-label="Community model" data-i18n-key="sim.src.aria" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n-html="sim.src.names">A community model, tested against real reports. <a href="#sources">Sources</a></span></details></h1>
     <p class="lede" data-i18n-html="sim.hero.lede">The maths of your battles, in one place. Read a report once and
       the same numbers answer every fight: your lead's <b>bear ratio</b>, your own <b>bear march</b>, the
       <b>Mystic Trial</b> mix that clears, and any <b>battle</b> you can type both sides of.</p>
@@ -40,9 +36,6 @@ self: sim
   <section class="section sim-console" id="console" data-module="sim-player sim-army sim-run" data-sheet-key="bh:sim:v1" data-view="armies">
     <div class="sim-heading">
       <h2 data-i18n="sim.console.title">The console</h2>
-      <p class="lede" data-i18n-html="sim.console.lede">One report, four fights. Import a battle screenshot or type the
-        numbers in — the <b>Bonus Details</b> panel from the mail — then pick the fight. Nothing leaves the page; the
-        read and every battle run in your browser.</p>
     </div>
 
     <nav class="mode-rail" id="mode-rail" aria-label="Pick the fight" data-i18n-key="sim.rail.aria" data-i18n-attr="aria-label">
@@ -89,10 +82,10 @@ self: sim
                 <img class="army-art" src="../img/hero-gear/{{ tp[3] }}-helm.webp" width="96" height="96" alt="" loading="lazy" decoding="async">
                 <span class="army-body">
                   <span class="army-name" data-i18n="{{ tp[1] }}">{{ tp[2] }}</span>
-                  <span class="army-count{% if sd[0] == 'you' %} sim-for{% endif %}"{% if sd[0] == 'you' %} data-for="march" hidden{% endif %}><b data-show="{{ sd[1] }}n-{{ tp[0] }}" data-format="count">50,000</b> <span class="army-tier" data-show="{{ sd[1] }}tier-{{ tp[0] }} {{ sd[1] }}tg-{{ tp[0] }}" data-format="tier">T10 · TG0</span></span>
+                  <span class="army-count{% if sd[0] == 'you' %} sim-for{% endif %}"{% if sd[0] == 'you' %} data-for="march" hidden{% endif %}><b class="inkwell" data-show="{{ sd[1] }}n-{{ tp[0] }}" data-format="count">50,000</b> <span class="army-tier" data-show="{{ sd[1] }}tier-{{ tp[0] }} {{ sd[1] }}tg-{{ tp[0] }}" data-format="tier">T10 · TG0</span></span>
                   <span class="army-stats">
                     {%- for s in stats %}{% assign sp = s | split: "|" %}
-                    {% assign fightOnly = false %}{% if sd[0] == 'you' %}{% if sp[0] == 'def' or sp[0] == 'hea' %}{% assign fightOnly = true %}{% endif %}{% endif %}<span class="army-stat{% if fightOnly %} sim-for{% endif %}"{% if fightOnly %} data-for="fight" hidden{% endif %}><span data-i18n="sim.army.s.{{ sp[0] }}">{{ sp[4] }}</span> <b data-show="{{ sd[1] }}{{ sp[0] }}-{{ tp[0] }}" data-format="pct">0%</b></span>
+                    {% assign fightOnly = false %}{% if sd[0] == 'you' %}{% if sp[0] == 'def' or sp[0] == 'hea' %}{% assign fightOnly = true %}{% endif %}{% endif %}<span class="army-stat{% if fightOnly %} sim-for{% endif %}"{% if fightOnly %} data-for="fight" hidden{% endif %}><span data-i18n="sim.army.s.{{ sp[0] }}">{{ sp[4] }}</span> <b class="inkwell" data-show="{{ sd[1] }}{{ sp[0] }}-{{ tp[0] }}" data-format="pct">0%</b></span>
                     {%- endfor %}
                   </span>
                 </span>
@@ -111,12 +104,13 @@ self: sim
               <div class="sim-ledger-actions">
                 <button type="button" data-action="sim-player.load" data-i18n="sim.ledger.load">Use my saved stats and troops</button>
                 <button type="button" data-action="sim-player.save" data-i18n="sim.ledger.save">Save these as mine</button>
+                <output class="seal" data-target="sim-player.saved" role="status" data-saved-key="sim.ledger.saved" data-failed-key="sim.ledger.notSaved"></output>
                 <button type="button" data-action="sim-army.edit" data-dialog="sim-roster-dialog" data-i18n="sim.roster.title">Your troops</button>
               </div>
               <output class="sim-ocr-hint" data-target="sim-player.status" aria-live="polite"
                 data-empty-key="sim.ledger.empty" data-has-key="sim.ledger.has"
                 data-has-stats-key="sim.ledger.hasStats" data-has-troops-key="sim.ledger.hasTroops" data-loaded-key="sim.ledger.loaded"
-                data-saved-key="sim.ledger.saved" data-failed-key="sim.ledger.failed"></output>
+                data-failed-key="sim.ledger.failed"></output>
             </details>
             {%- endif %}
           </article>
@@ -224,9 +218,8 @@ self: sim
           </div>
           <details id="reading-rooms" class="sim-why">
             <summary data-i18n="sim.why">how this reads</summary>
-            <p class="note" data-i18n-html="sim.mystic.ledeSweep">Type the stage from its report — your stats on the left,
-              the trial's on the right, and the trial's troop numbers — then let the console try every mix of your march
-              against it. Today's rooms are marked; tap a room to compare its starting ratio.</p>
+            <p class="note" data-i18n-html="sim.mystic.ledeSweep">Type the stage from its report: your stats on the left,
+              the trial's on the right, and the trial's troop numbers.</p>
             <p class="note" data-i18n-html="sim.mystic.ratioGloss">A ratio is the share of your march per type —
             <b>infantry / cavalry / archers</b>. The <b>alt</b> is the first fallback when the starting line still
             doesn't clear.</p>
@@ -350,12 +343,11 @@ self: sim
       <p class="sim-gloss" data-i18n-html="sim.foe.lede">Their stats from the report's right column, and the troops they
         field. On a Mystic Trial report, switch it to show <b>troop numbers</b>, not percentages.</p>
       {%- else %}
-      <p class="sim-gloss sim-for" data-for="bear" data-i18n-html="sim.load.lede">The <b>Bonus Details</b> panel, as read.
-        On a bear report the left column is the <b>rally lead's shared stats</b> — every participant sees that same
-        panel, so those are the lead's numbers, not yours. Every value stays editable.</p>
-      <p class="sim-gloss sim-for" data-for="fight" hidden data-i18n-html="sim.load.ledeFight">The <b>Bonus Details</b>
-        panel, as read: the <b>left column is you</b>, the right column is the opponent — the screenshot fills both.
-        Every value stays editable.</p>
+      <p class="sim-gloss sim-for" data-for="bear" data-i18n-html="sim.load.lede">On a bear report, the left column of
+        <b>Bonus Details</b> is the <b>rally lead's</b>. Everyone in the rally sees the same panel, so those are the
+        lead's numbers, not yours.</p>
+      <p class="sim-gloss sim-for" data-for="fight" hidden data-i18n-html="sim.load.ledeFight">In <b>Bonus Details</b>,
+        the <b>left column is you</b> and the right column is the opponent.</p>
       {%- endif %}
       <div class="sim-tabs" data-module="tabs" data-tabs-bind="troop" role="tablist" aria-label="Troop type" data-i18n-key="sim.army.troopAria" data-i18n-attr="aria-label">
         {%- for t in types %}{% assign tp = t | split: "|" %}
@@ -442,8 +434,6 @@ self: sim
         <button type="button" data-action="sim-army.close" data-i18n="sim.army.done">done</button>
       </div>
       <div class="roster" id="sim-roster" data-module="troop-roster" data-total-key="sim.roster.total" data-empty-key="sim.roster.empty">
-        <p class="sim-gloss" data-i18n-html="sim.roster.lede">Every tier you own, kept in your player save. <b>Use my saved
-          stats and troops</b> takes the best tier of each type into your march.</p>
         {%- for t in types %}{% assign tp = t | split: "|" %}
         <fieldset class="roster-type" data-troop-type="{{ tp[0] }}">
           <legend data-i18n="{{ tp[1] }}">{{ tp[2] }}</legend>
@@ -508,10 +498,19 @@ self: sim
         <p class="d-formula" data-i18n-html="sim.maths.d2">D ∝ Σ<sub>t</sub> √N<sub>t</sub>·base<sub>t</sub>·A<sub>t</sub> · split efficiency = Σ(b<sub>t</sub>A<sub>t</sub>√f<sub>t</sub>) / √(Σ(b<sub>t</sub>A<sub>t</sub>)²)</p>
       </div>
     </details>
-    <p class="note" data-i18n-html="sim.maths.mystic">The Mystic Trial starting ratios are <b>community tables</b>
-      (Kingshot Mastery), not extracted formulas — the sweep is what tests them against your stage. The battle
-      engine and the bear maths are the Frakinator's.</p>
+    <p class="note" data-i18n-html="sim.maths.mystic">The Mystic Trial starting ratios are <b>community tables</b>,
+      not extracted formulas, and the sweep is what tests them against your stage.</p>
     <p class="note" data-i18n-html="sim.maths.note">Hero skills ride on every hit as <b>SkillMod</b>: your damage up and their defence down, divided by their defence up and your damage down. Within one kind of effect the percentages add; across kinds they multiply. In a bear split an all-troop buff still cancels out, so the bear modes leave heroes out.</p>
+    <details id="sources">
+      <summary data-i18n="sim.sources.title">Sources</summary>
+      <div class="d-body">
+        <ul class="sim-sources">
+          <li data-i18n-html="sim.sources.engine"><b>Battle engine and bear maths:</b> the <a href="https://frakinator.streamlit.app/">Frakinator</a>, reverse-engineered and tested against real reports.</li>
+          <li data-i18n-html="sim.sources.skills"><b>Hero skills:</b> the KingShot Battle Helper's tested data. A few skill codes and the Truegold chances aren't confirmed yet, so read a close fight as a starting point.</li>
+          <li data-i18n-html="sim.sources.rooms"><b>Mystic Trial starting ratios:</b> Kingshot Mastery's community tables.</li>
+        </ul>
+      </div>
+    </details>
       </div>
   </section>
 </main>

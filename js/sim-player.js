@@ -8,6 +8,7 @@
      [data-player-march="amount|tier|tg"][data-troop] your march rows
      [data-action="sim-player.load|sim-player.save"]  the two buttons
      [data-target="sim-player.status"]                the status line
+     [data-target="sim-player.saved"]                 the saved seal (css/motifs.css)
      data-sheet-key on the root                       the sheet's own save
 
    Loading writes field values and fires the fields' own input/change
@@ -72,6 +73,14 @@
       return true;
     }
 
+    // The seal beside Save: solid once saved, struck when nothing could be.
+    function seal(ok) {
+      context.targets('saved').forEach(function (node) {
+        node.dataset.state = ok ? 'saved' : 'failed';
+        node.textContent = context.api.tr(node.dataset[ok ? 'savedKey' : 'failedKey'], ok ? 'Saved' : 'Not saved');
+      });
+    }
+
     function paint() {
       var line = status();
       if (!line) return;
@@ -101,7 +110,8 @@
         save: { run: function () {
           var ok = false;
           try { ok = save(); } catch (e) { ok = false; }
-          note = ok ? 'saved' : 'failed';
+          note = ok ? null : 'failed';
+          seal(ok);
           paint();
         } }
       }

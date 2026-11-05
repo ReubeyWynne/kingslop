@@ -6,25 +6,21 @@ self: buildings
 <main data-module="building-paths page-sheet">
   <section class="section hero" id="top">
     <h1 data-i18n="reqs.title">Building requirements</h1>
-    <p class="lede" data-i18n="reqs.intro">Pick a goal and see every upgrade it takes, in order, with the resources and time. Then set your real levels to sharpen it, and send the link.</p>
     {% include ascii/motif.html kind="keep" %}
   </section>
 
   <section class="section reqs-goal" id="goal" aria-labelledby="goal-title">
     <h2 id="goal-title" data-i18n="reqs.goal">Your goal</h2>
     {% include page-sheet.html part="notice" %}
-    <div class="reqs-goal-tools">
-      <p class="note" data-i18n="reqs.pickGoal">Tap the buildings you want to upgrade.</p>
-    </div>
     <ul class="reqs-picks" data-target="building-paths.picks">{% for b in data.buildings %}
-      <li><button type="button" class="reqs-pick" data-building="{{ b.id }}" data-action="building-paths.pick" aria-pressed="{% if b.id == 'town-center' %}true{% else %}false{% endif %}" disabled><span class="reqs-art"><img src="../img/buildings/{{ b.id }}.webp" width="128" height="128" alt="" loading="lazy" decoding="async"><b class="reqs-badge">{% if b.id == 'town-center' %}3{% endif %}</b></span><span class="reqs-pick-name" data-i18n="town.building.{{ b.id }}">{{ b.name }}</span></button></li>{% endfor %}
+      <li><button type="button" class="reqs-pick inkwell" data-building="{{ b.id }}" data-action="building-paths.pick" aria-pressed="{% if b.id == 'town-center' %}true{% else %}false{% endif %}" disabled><span class="reqs-art"><img src="../img/buildings/{{ b.id }}.webp" width="128" height="128" alt="" loading="lazy" decoding="async"><b class="reqs-badge">{% if b.id == 'town-center' %}3{% endif %}</b></span><span class="reqs-pick-name" data-i18n="town.building.{{ b.id }}">{{ b.name }}</span></button></li>{% endfor %}
     </ul>
     <noscript><p data-i18n="reqs.noJS">Turn on JavaScript to work out a plan.</p></noscript>
   </section>
 
-  <section class="section reqs-levels" id="your-levels" aria-labelledby="levels-title">
+  <section class="section reqs-levels" id="your-levels" aria-labelledby="levels-title" data-target="building-paths.levels">
     <h2 id="levels-title" data-i18n="reqs.path">What it takes</h2>
-    <p class="note" data-i18n="reqs.tapLevel">A level marked ? is assumed: the least your city can have. Tap any level to set yours, and the plan shrinks to what is really left.</p>
+    <div class="reqs-saved" data-target="building-paths.saveMark" hidden><output class="seal" data-target="building-paths.saved" role="status"></output><details class="shared-by" id="reqs-shared-by"><summary data-target="building-paths.sharedBy"><i data-page="town"></i><i data-page="priority"></i></summary><span class="motif-names"><span data-i18n="town.nav">Town Centre</span> · <span data-i18n="priority.title">Upgrade priority</span></span></details></div>
     <ol class="reqs-runs" data-target="building-paths.summary"></ol>
   </section>
 
@@ -42,9 +38,8 @@ self: buildings
   </div>
 
   <div class="section reqs-tail">
-    <p class="note"><span data-target="building-paths.saveNote"></span></p>
     <div class="reqs-share">
-      <button type="button" data-action="building-paths.copy" data-i18n="reqs.copy">Copy link</button>
+      <span class="reqs-copy"><button type="button" data-action="building-paths.copy" data-i18n="reqs.copy">Copy link</button><ul class="carries"><li data-i18n="reqs.goalTag">goal</li><li data-i18n="reqs.carriesSpeed">speed</li><li data-off data-i18n="reqs.carriesLevels">your levels</li></ul></span>
       <button type="button" data-target="building-paths.addGoal" data-action="building-paths.addGoal" data-i18n="reqs.addGoal" hidden>Add to my goals</button>
       <output role="status" data-target="building-paths.copied"></output>
     </div>
@@ -80,8 +75,8 @@ self: buildings
     <div class="reqs-tiers" data-target="building-paths.tiers"></div>
     <div class="reqs-grid" data-target="building-paths.grid"></div>
   </dialog>
-  {% capture points_extra %}<p data-i18n="reqs.pointsHow">Truegold and Tempered Truegold score when you spend them on these upgrades. Speedups score per minute used, so the Sped up row assumes you finish every upgrade with construction or general speedups, at the construction speed above. Each event lists the days that pay most; the rates are the ones on the Events page.</p>{% endcapture %}{% capture links_extra %}<p data-i18n="reqs.shareNote">A plain link opens the goal with each reader's own levels. A link with levels opens exactly this plan, in guest mode.</p>{% endcapture %}
-  {% include page-notes.html part="how" points_id="reqs-points-note" points_extra=points_extra links_extra=links_extra %}
+  {% capture points_extra %}<p data-i18n="reqs.pointsHow">Truegold and Tempered Truegold score when you spend them on these upgrades. Speedups score per minute used, so the Sped up row assumes you finish every upgrade with construction or general speedups, at the construction speed above. Each event lists the days that pay most; the rates are the ones on the Events page.</p>{% endcapture %}
+  {% include page-notes.html part="how" points_id="reqs-points-note" points_extra=points_extra %}
   {% capture extra %}<span id="reqs-sources"></span>{% endcapture %}
   {% include page-notes.html part="sources" sources=data.sources checked="2026-10-17" note="reqs.sourceNote" note_en="Prerequisites, costs and base times from Kingshot Optimizer, checked against Kingshot Data and KS h5joy. A figure marked ◇ has only one source: Houses, the Clinic, resource buildings and every level past TG 8 are Kingshot Optimizer only. Check a long upgrade in game before you start it." art="notes.art" art_en="Art: Kingshot game artwork by Century Games." extra=extra %}
   {% include page-sheet.html part="confirm" class="reqs-picker" title="reqs.sheet.confirmTitle" title_en="Save these levels as yours?" body="reqs.sheet.confirmBody" body_en="It sets these building levels in your save. Buildings this sheet has not set keep your levels." confirm="reqs.sheet.confirm" confirm_en="save my levels" %}

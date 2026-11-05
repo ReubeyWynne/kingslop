@@ -5,12 +5,11 @@ self: kingdom
 <main data-module="kingdom-timeline">
   <section class="section hero" id="top">
     <h1 data-i18n="kingdom.title">Kingdom timeline</h1>
-    <p class="lede" data-i18n="kingdom.intro">Find your kingdom’s chapter. Carry its unlocks with you as you browse.</p>
-    <p class="note" data-i18n="kingdom.approximate">A broad progression guide. Order varies by kingdom; no exact dates are predicted.</p>
+    <p class="lede" data-i18n="kingdom.intro">Find your kingdom’s chapter.</p>
   </section>
   <section class="section" id="your-kingdom">
     <h2 data-i18n="kingdom.mine">My kingdom</h2>
-    <p data-i18n="kingdom.instructions">Choose a chapter below, then correct any unlocks that differ. Kingdom unlocks are separate from what your account owns.</p>
+    <p data-i18n="kingdom.instructions">Pick your chapter, then fix any unlock that’s different on your server.</p>
     <fieldset class="kingdom-fields">
       <legend data-i18n="kingdom.unlocks">What has unlocked?</legend>
       <label><span data-i18n="directory.server">Server generation</span><select data-field="generation" data-target="kingdom-timeline.generation" data-action="kingdom-timeline.edit" disabled><option value="" data-i18n="kingdom.unknown">Not sure</option>{% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}{% for gen in generations %}<option value="{{ gen }}">{{ gen }}</option>{% endfor %}</select></label>
@@ -18,13 +17,11 @@ self: kingdom
       <label><span data-i18n="kingdom.warAcademy">War Academy</span><select data-field="warAcademy" data-target="kingdom-timeline.warAcademy" data-action="kingdom-timeline.edit" disabled><option value="" data-i18n="kingdom.unknown">Not sure</option><option value="false" data-i18n="kingdom.noTruegold">Not unlocked</option><option value="true" data-i18n="kingdom.unlocked">Unlocked</option></select></label>
     </fieldset>
     <button type="button" class="kingdom-reset" data-target="kingdom-timeline.reset" data-action="kingdom-timeline.reset" data-i18n="kingdom.reset" disabled>Clear kingdom progression</button>
-    <output class="kingdom-status" role="status" data-target="kingdom-timeline.status"></output>
-    <p class="note" data-i18n="kingdom.manual">Update your position manually. It is saved in this browser and included in your player save.</p>
+    <output class="seal kingdom-status" role="status" data-target="kingdom-timeline.status"></output>
     <noscript><p data-i18n="kingdom.noJS">Enable JavaScript to save your position. You can still read the timeline.</p></noscript>
   </section>
   <section class="section" id="milestones">
-    <h2 data-i18n="kingdom.chapters">The kingdom’s chapters</h2>
-    <p data-i18n="kingdom.sequence">Each chapter supplies editable defaults. Choosing an earlier chapter also moves your saved unlocks back.</p>
+    <h2><span data-i18n="kingdom.chapters">The kingdom’s chapters</span><details class="src" id="chapters-estimate" data-src="est"><summary aria-label="Community estimate" data-i18n-key="src.estimate" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="kingdom.approximate">The order varies by kingdom, and there are no dates.</span></details></h2>
     <ol class="kingdom-rail">
       {% for stage in site.data.kingdom_progression.stages %}
       <li class="kingdom-milestone" id="{{ stage.id }}" data-stage="{{ stage.id }}" data-target="kingdom-timeline.card">
@@ -38,7 +35,7 @@ self: kingdom
   </section>
   <section class="section" id="timeline-sources">
     <h2 data-i18n="kingdom.sources">Sources & scope</h2>
-    <p data-i18n="kingdom.scope">Covers hero generations 1–7, early Truegold caps and War Academy. Enter later unlocks above. Only hero browsing uses this setting so far; other calculators keep their rules.</p>
+    <p data-i18n="kingdom.scope">Covers hero generations 1–7, the early Truegold caps and War Academy.</p>
     <ul>{% for source in site.data.kingdom_progression.sources %}<li><a href="{{ source.url }}">{{ source.label | escape }}</a></li>{% endfor %}</ul>
   </section>
 </main>

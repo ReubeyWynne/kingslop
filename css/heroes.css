@@ -381,3 +381,13 @@
   .bp-grid { border-spacing: 2px; }
   .bp-grid td { font-size: .72rem; }
 }
+/* KvK points: each event's days under its figure, the ❧ on the day it scores.
+   Borderless here, so a seven-day event fits a phone's column on one line. */
+.hero-event-points .days { justify-content: flex-end; flex-wrap: nowrap; gap: .2rem; margin-top: .1rem; }
+.hero-event-points .days li { min-width: 0; padding: 0; border: 0; font-size: .68rem; line-height: 1.4; }
+.hero-event-points .days li[data-best] { color: var(--amber); font-weight: 700; }
+.hero-event-points .days li[data-best]::after { content: none; }
+.hero-event-points .days li[data-best]::before { content: "❧"; font-weight: 400; }
+/* A bag count left blank keeps the dotted line of "not counted yet". */
+.hero-bag input[data-tally="blank"]:placeholder-shown { border-bottom-style: dotted; }
+.hero-unreviewed { color: var(--ink-muted); font-size: .85rem; }

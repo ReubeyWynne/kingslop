@@ -19,20 +19,6 @@
    STATES      first-run · importing · unreadable · sweeping · re-run after an edit ·
                no winning mix · language switch · 320px → desktop. */
 
-/* ─── The model gloss — a community engine, said plainly ─ */
-.draft-note {
-  margin-top: var(--space-s);
-  max-width: 34rem;
-  font-size: var(--step--1);
-  font-style: italic;
-  color: var(--ink-dim);
-}
-.draft-note b {
-  color: var(--ink);
-  font-style: normal;
-  font-weight: 700;
-}
-
 /* ─── The input rows — two labelled fields per troop type ──
    Each calc-row is "Infantry  [Attack %  input] [Lethality %  input]".
    On desktop the field group takes the same 55% the other calculators give
@@ -827,7 +813,6 @@
 .sim-main .hero h1 { font-size: clamp(2rem, 5vw, 2.6rem); }
 .sim-main .hero .lede, .sim-main .hero .chips, .sim-heading { display: none; }
 .sim-console { padding-top: 0; }
-.sim-main .hero .draft-note { max-width: 46rem; margin-bottom: 0; }
 .sim-main .hero .ascii-motif-rail { margin-top: 0.35rem; }
 .sim-run-metrics { display: block; font-size: var(--step--1); font-variant-numeric: tabular-nums; color: var(--ink-dim); }
 .sim-run-metrics[hidden], #sim-sweep-progress[hidden] { display: none; }
@@ -904,3 +889,12 @@
   .sim-out.rooms .room-pick::after { content: ""; position: absolute; inset: 0; }
   .tri svg { max-width: 18rem; }
 }
+
+/* Motifs on this page (css/motifs.css): the ink-well keeps a tile's figures bold,
+   the seal sits inline beside Save, and the title's source mark reads in body type. */
+.army-count b.inkwell { font-weight: 700; }
+.sim-ledger output.seal { display: inline-block; align-self: center; }
+.hero h1 .src { font-family: var(--body); letter-spacing: 0; text-transform: none; }
+.hero h1 .src .motif-names { font-weight: 400; line-height: 1.4; }
+.sim-sources { margin: 0; padding-inline-start: 1.1rem; }
+.sim-sources li + li { margin-top: var(--space-2xs, .3rem); }

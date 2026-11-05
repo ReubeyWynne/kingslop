@@ -190,6 +190,49 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.deepEqual(errors, []);
     await context.close();
   }
+  {
+    // Gear and charms are marked applied apart: each writes its own levels and spends its own materials, and can be undone.
+    const context = await browser.newContext({ viewport: { width: 390, height: 900 } }), page = await context.newPage(), errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.goto(origin + '/governor-gear/?lang=en'); await page.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
+    const button = kind => page.locator('[data-action="governor-planner.apply"][data-kind="' + kind + '"]');
+    assert.ok(await page.locator('[data-target="governor-planner.applied"]').isHidden(), 'nothing to apply before anything is set');
+    await page.locator('.gov-fill select[data-kind="gear"]').selectOption('0');
+    await page.evaluate(() => { const s = PlayerLedger.shared(); s.setGovernor('charms', Object.fromEntries(Object.keys(s.governor('charms')).map(id => [id, 0]))); });
+    for (const [id, n] of [['satin', '20000'], ['gilded-threads', '200'], ['artisans-vision', '0'], ['charm-guide', '400'], ['charm-design', '400']]) await page.fill('[data-bind="inventory.' + id + '"]', n);
+    await page.waitForFunction(() => document.querySelector('[data-action="governor-planner.apply"][data-kind="charms"]').hidden === false);
+    assert.equal(await button('gear').textContent(), 'Mark gear applied');
+    assert.equal(await button('charms').textContent(), 'Mark charms applied');
+    const planned = await page.evaluate(() => [...document.querySelectorAll('.gov-row')].map(r => r.querySelector('.gov-row-gear').textContent));
+    await button('gear').click();
+    await page.waitForFunction(() => document.querySelector('[data-action="governor-planner.apply"][data-kind="gear"]').dataset.state === 'applied');
+    const saved = await page.evaluate(() => { const s = PlayerLedger.shared(); return { gear: s.governor('gear'), charms: s.governor('charms'), satin: s.balance('satin').amount, guide: s.balance('charm-guide').amount }; });
+    assert.ok(Object.values(saved.gear).some(level => level > 0), 'the planned gear levels are saved');
+    assert.ok(saved.satin < 20000, 'the gear materials are spent');
+    assert.ok(Object.values(saved.charms).every(level => level === 0), 'charms are untouched');
+    assert.equal(saved.guide, 400, 'charm materials are untouched');
+    assert.equal(await button('gear').textContent(), 'Gear applied. Undo');
+    assert.equal(await button('charms').textContent(), 'Mark charms applied');
+    await button('charms').click();
+    await page.waitForFunction(() => PlayerLedger.shared().balance('charm-guide').amount < 400);
+    assert.equal(await button('gear').textContent(), 'Gear applied. Undo', 'applying charms keeps the gear undo');
+    await page.reload(); await page.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
+    assert.ok(Object.values(await page.evaluate(() => PlayerLedger.shared().governor('gear'))).some(level => level > 0), 'kept on this device');
+    await page.goto(origin + '/governor-gear/?lang=en'); await page.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
+    // A fresh page has nothing to undo, so the gear spend is final there; undo is checked on the page that applied it.
+    await page.evaluate(() => { const s = PlayerLedger.shared(); s.setGovernor('gear', Object.fromEntries(Object.keys(s.governor('gear')).map(id => [id, 0]))); s.setBalance('satin', 20000); s.setBalance('gilded-threads', 200); s.setBalance('artisans-vision', 0); });
+    await page.waitForFunction(() => document.querySelector('[data-action="governor-planner.apply"][data-kind="gear"]').hidden === false);
+    await button('gear').click();
+    await page.waitForFunction(() => document.querySelector('[data-action="governor-planner.apply"][data-kind="gear"]').dataset.state === 'applied');
+    await button('gear').click();
+    await page.waitForFunction(() => PlayerLedger.shared().balance('satin').amount === 20000 && PlayerLedger.shared().balance('gilded-threads').amount === 200);
+    assert.ok(Object.values(await page.evaluate(() => PlayerLedger.shared().governor('gear'))).every(level => level === 0), 'undo puts the gear back');
+    assert.deepEqual(await page.evaluate(() => [...document.querySelectorAll('.gov-row')].map(r => r.querySelector('.gov-row-gear').textContent)), planned, 'the same plan is offered again');
+    assert.equal(await button('gear').textContent(), 'Mark gear applied');
+    await page.screenshot({ path: path.join(output, 'applied-390.png'), fullPage: true });
+    assert.deepEqual(errors, []);
+    await context.close();
+  }
   const context = await browser.newContext({ viewport: { width: 390, height: 900 } }), page = await context.newPage(), errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(origin + '/governor-gear/?lang=ar'); await page.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
@@ -199,5 +242,5 @@ withBrowser({ root }, async ({ browser, origin }) => {
   assert.equal(await page.locator('a.event-card[href="governor-gear/"]').count(), 1);
   assert.deepEqual(errors, []);
   await context.close();
-  console.log('Governor gear UI: the shared profile and its editor, set all, the answer under Bear first and custom weights and by target, no inner scroll, saving as you go, the share link, start blank, load mine, save as mine from a link, reading a dropped screenshot, RTL and widths pass.');
+  console.log('Governor gear UI: the shared profile and its editor, set all, the answer under Bear first and custom weights and by target, no inner scroll, saving as you go, the share link, start blank, load mine, save as mine from a link, reading a dropped screenshot, gear and charms applied apart, RTL and widths pass.');
 }).catch(error => { console.error(error); process.exitCode = 1; });

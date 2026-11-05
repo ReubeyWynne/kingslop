@@ -14,7 +14,7 @@ const ledger=()=>page.evaluate(()=>PlayerLedger.shared().masters());
  assert.equal(await page.locator('.master-dossier[open]').count(),0);
  // Every dossier is a link, and one is open at a time.
  await page.goto(origin+'/masters/?lang=en#master-cassia');await ready(page);assert.equal(await page.locator('#master-cassia .master-dossier').getAttribute('open'),'');
- await page.locator('#master-valora summary').click();assert.equal(await page.locator('.master-dossier[open]').count(),1);await page.waitForURL(/#master-valora$/);
+ await page.locator('#master-valora summary.master-heading').click();assert.equal(await page.locator('.master-dossier[open]').count(),1);await page.waitForURL(/#master-valora$/);
  // Recording a master writes the shared save.
  // A master you do not have says what it is for, in plain words, before any form.
  assert.equal(await page.locator('#master-valora .master-scope').textContent(),masters[0].scope);
@@ -42,7 +42,7 @@ const ledger=()=>page.evaluate(()=>PlayerLedger.shared().masters());
  assert.equal(await page.locator('[data-target="master-points.rows"] tr').count(),1);assert.match(await page.locator('[data-target="master-points.coverage"]').textContent(),/Every master count/);
  assert.match(await page.locator('[data-target="master-points.left"]').textContent(),/95 general emblems/);
  await page.setViewportSize({width:390,height:844});await page.locator('#roster').screenshot({path:path.join(output,'masters-open-390.png')});
- await page.locator('#master-valora summary').click();await page.setViewportSize({width:1280,height:900});await page.locator('#roster').screenshot({path:path.join(output,'masters-1280.png')});await page.setViewportSize({width:390,height:844});
+ await page.locator('#master-valora summary.master-heading').click();await page.setViewportSize({width:1280,height:900});await page.locator('#roster').screenshot({path:path.join(output,'masters-1280.png')});await page.setViewportSize({width:390,height:844});
  // The Town Centre shelf shows the same save and scores the same pieces.
  const town=await context.newPage();town.on('pageerror',e=>errors.push(e.message));await town.goto(origin+'/town-centre/?lang=en#town-masters');await ready(town);
  assert.equal(await town.locator('#town-masters').isVisible(),true);assert.equal(await town.locator('#town-masters [data-master]').count(),masters.length);
@@ -50,7 +50,7 @@ const ledger=()=>page.evaluate(()=>PlayerLedger.shared().masters());
  assert.equal(await town.locator('#town-masters [data-count="general-master-emblem"] [data-amount]').textContent(),'100');
  assert.equal(await town.locator('#master-valora').getAttribute('data-owned'),'true');
  const best=await town.evaluate(()=>TownCentre.best(PlayerLedger.shared().snapshot(),'prep').lines.filter(l=>/^master/.test(l.id)).map(l=>l.points).reduce((a,b)=>a+b,0));assert.equal(best,expected);
- await town.locator('#master-roman summary').click();await town.locator('#master-roman [data-field="owned"]').check();await page.waitForFunction(()=>document.querySelector('#master-roman').dataset.owned==='true');
+ await town.locator('#master-roman summary.master-heading').click();await town.locator('#master-roman [data-field="owned"]').check();await page.waitForFunction(()=>document.querySelector('#master-roman').dataset.owned==='true');
  await town.locator('#town-masters').screenshot({path:path.join(output,'town-masters-390.png')});await town.close();
  // Every language at every width: nothing overflows.
  const langs=fs.readdirSync('i18n').filter(f=>f.endsWith('.js')).map(f=>f.slice(0,-3));
@@ -60,7 +60,7 @@ const ledger=()=>page.evaluate(()=>PlayerLedger.shared().masters());
   if(lang==='ar'){await page.setViewportSize({width:390,height:844});await page.locator('#roster').screenshot({path:path.join(output,'ar.png')});}
  }
  // Without JavaScript the roster and dossiers still read.
- const nojs=await browser.newContext({javaScriptEnabled:false});const plain=await nojs.newPage();await plain.goto(origin+'/masters/');await plain.evaluate(()=>document.fonts.ready);assert.equal(await plain.locator('[data-master]').count(),masters.length);assert.equal(await plain.locator('.master-mine [data-field="owned"]').first().isDisabled(),true);await plain.locator('#master-pan summary').click();assert.equal(await plain.locator('#master-pan .master-skills').isVisible(),true);await nojs.close();
+ const nojs=await browser.newContext({javaScriptEnabled:false});const plain=await nojs.newPage();await plain.goto(origin+'/masters/');await plain.evaluate(()=>document.fonts.ready);assert.equal(await plain.locator('[data-master]').count(),masters.length);assert.equal(await plain.locator('.master-mine [data-field="owned"]').first().isDisabled(),true);await plain.locator('#master-pan summary.master-heading').click();assert.equal(await plain.locator('#master-pan .master-skills').isVisible(),true);await nojs.close();
  await page.goto(origin+'/?lang=en');assert.equal(await page.locator('#tools a[href="masters/"]').count(),1);
  assert.deepEqual(errors,[]);console.log('Masters UI: roster, deep-linked dossiers, the shared save, class gates, KvK points, the Town Centre shelf and totals, static fallback and 10 languages at 5 widths pass.');
 }).catch(e=>{console.error(e);process.exitCode=1;});

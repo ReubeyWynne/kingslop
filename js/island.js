@@ -389,7 +389,6 @@
       var yours = fitting.filter(function (d) { return isYours(d.slug); }), others = fitting.filter(function (d) { return !isYours(d.slug); });
       var html = '';
       if (yours.length) html += '<p class="island-label">Yours · fits here</p><ul class="island-pieces">' + yours.map(function (d) { return pieceButton(d, 'island.pick', d.w + '×' + d.h); }).join('') + '</ul>';
-      else if (!anyOwned()) html += '<p class="island-empty">Mark the pieces you own and they come first here.</p>';
       if (others.length) html += '<p class="island-label">' + (anyOwned() ? 'Not yours yet · plan anyway' : 'Fits here') + '</p><ul class="island-pieces">' + others.slice(0, 24).map(function (d) { return pieceButton(d, 'island.pick', d.w + '×' + d.h); }).join('') + '</ul>';
       if (!fitting.length) html += '<p class="island-empty">Only paths fit on this spot.</p>';
       var path = recent.filter(function (s) { return s !== CLEAR && model.isSurface(s); })[0] || 'garden_path';
@@ -417,9 +416,11 @@
       if (!pending.ok) { say('Something is in the way there.'); return; }
       var slug = pending.slug, p = pending;
       model.edit(function () { model.place(slug, p.r, p.c, p.w, p.h); });
+      var first = !read(TAUGHT_KEY, false);
       remember(slug); taught();
       pending = null; confirmBox.hidden = true; hint.hidden = true;
-      say(def(slug).name + ' placed');
+      // The first piece placed teaches the one gesture nothing on screen shows.
+      say(def(slug).name + ' placed' + (first ? ' · press and hold it to move it' : ''), first);
       committed();
     }
     function reject() { pending = null; confirmBox.hidden = true; hint.hidden = true; invalidate(); }
@@ -781,8 +782,10 @@
     }
     function syncOwner() {
       var name = '<button type="button" class="island-owner-name" data-action="island.browse" aria-expanded="' + deckOpen + '" aria-controls="island-deck" title="Switch preset">' + (owner.mine ? 'Your plan' : esc(owner.name)) + ' <span aria-hidden="true">▾</span></button>';
-      node('owner').innerHTML = owner.mine ? name + ' · saved on this device'
-        : name + ' · a copy, not saved <button type="button" data-action="island.keep">Keep it</button> <button type="button" data-action="island.mine">Back to mine</button>';
+      // Your plan wears the saved seal; a preset is a loose leaf until you keep it.
+      node('owner').classList.toggle('loose-leaf', !owner.mine);
+      node('owner').innerHTML = owner.mine ? name + ' <output class="seal" data-state="saved">Saved</output>'
+        : name + ' <button type="button" data-action="island.keep">Keep it</button> <button type="button" data-action="island.mine">Back to mine</button>';
     }
 
     /* ─── The preset carousel inside the board ──────────────────
@@ -826,7 +829,7 @@
     }
     function ownedNote() {
       var n = Object.keys(owns).filter(function (s) { return owns[s] > 0; }).length;
-      node('ownedNote').textContent = store ? (n ? 'You have marked ' + n + ' kind' + (n === 1 ? '' : 's') + ' of piece as yours. It is kept with the rest of your save.' : 'Nothing marked yet.') : 'Your save cannot be read in this browser, so ownership is not kept.';
+      node('ownedNote').textContent = store ? (n ? n + ' kind' + (n === 1 ? '' : 's') + ' of piece marked as yours.' : 'Nothing marked yet.') : 'Your save can’t be read in this browser.';
     }
 
     /* ─── Full screen: the default. The board covers the page, so the carousel can't open. ─ */

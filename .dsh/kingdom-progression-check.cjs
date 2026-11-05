@@ -73,7 +73,7 @@ const dictionaries = fs.readdirSync('i18n').filter(name => name.endsWith('.js'))
   return Object.values(context.window.__BH_I18N_DATA)[0];
 });
 const keys = Object.keys(dictionaries[0]).filter(key => key.startsWith('kingdom.'));
-assert.equal(keys.length, 34);
+assert.equal(keys.length, 32);
 for (const dictionary of dictionaries) for (const key of keys) assert.equal(typeof dictionary[key], 'string', key);
 for (const stage of stages) {
   assert.equal(stage.id, stage.profile.position);

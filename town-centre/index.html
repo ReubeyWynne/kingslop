@@ -10,7 +10,7 @@ self: town
   </section>
 
   <section class="section town-shelves" id="town-inventory" aria-labelledby="town-inventory-title" data-module="town-inventory">
-    <div class="town-heading"><h2 id="town-inventory-title" data-i18n="town.inventory">Your inventory</h2><small data-i18n="town.tapToCount">tap to edit · ? means unknown</small><button type="button" class="town-read-shots" data-screen-import="pick" data-i18n="town.readShots">read screenshots</button></div>
+    <div class="town-heading"><h2 id="town-inventory-title" data-i18n="town.inventory">Your inventory</h2><span class="town-saved"><output class="seal" data-target="town-inventory.saved" role="status"></output><details class="shared-by" id="town-shared-by"><summary aria-label="Also used by 7 pages" data-i18n-key="town.sharedByAria" data-i18n-attr="aria-label"><i data-page="gear"></i><i data-page="governor"></i><i data-page="heroes"></i><i data-page="masters"></i><i data-page="buildings"></i><i data-page="priority"></i><i data-page="kvksg"></i></summary><span class="motif-names" data-i18n="town.sharedBy">Hero gear · Governor gear · Heroes · Masters · Buildings · Upgrade priority · Event Cycle</span></details></span><button type="button" class="town-read-shots" data-screen-import="pick" data-i18n="town.readShots">read screenshots</button></div>
     <div class="town-rail" data-module="tabs" data-tabs-bind="town-shelf" role="tablist" aria-label="Inventory" data-i18n-key="town.inventory" data-i18n-attr="aria-label">
       <button type="button" role="tab" aria-selected="true" aria-controls="town-bag" data-value="bag" data-action="tabs.select" data-i18n="town.shelf.bag">Bag</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-speedups" data-value="speedups" data-action="tabs.select" data-i18n="town.shelf.speedups">Speedups</button>
@@ -27,25 +27,25 @@ self: town
       <div class="town-bag">
       {% for item in rules.items %}{% if item.id == "hero-widget" or item.id == "master-emblem" %}{% continue %}{% endif %}{% case item.id %}{% when "truegold" %}{% assign icon = "../img/kingshot/truegold.png" %}{% when "tempered-truegold", "truegold-dust", "masters-manuscript" %}{% capture icon %}../img/items/{{ item.id }}.webp{% endcapture %}{% when "advanced-taming-mark" %}{% assign icon = "../img/items/taming-mark-advanced.webp" %}{% when "common-taming-mark" %}{% assign icon = "../img/items/taming-mark-common.webp" %}{% when "mithril" %}{% assign icon = "../img/hero-gear/mithril.webp" %}{% when "forgehammer" %}{% assign icon = "../img/hero-gear/forgehammer.webp" %}{% when "mythic-hero-shard", "epic-hero-shard", "rare-hero-shard" %}{% assign rarity = item.id | split: "-" | first %}{% capture icon %}../img/items/shard-{{ rarity }}.webp{% endcapture %}{% else %}{% assign icon = "" %}{% endcase %}
         <button type="button" class="town-tile" data-count="{{ item.id }}" data-action="town-inventory.edit">
-          <span class="town-tile-art">{% if icon != "" %}<img src="{{ icon }}" width="56" height="56" alt="" loading="lazy">{% else %}<span class="town-monogram" aria-hidden="true">{{ item.label | slice: 0 }}</span>{% endif %}<output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art">{% if icon != "" %}<img src="{{ icon }}" width="56" height="56" alt="" loading="lazy">{% else %}<span class="town-monogram" aria-hidden="true">{{ item.label | slice: 0 }}</span>{% endif %}<output class="town-tile-count inkwell" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="{{ item.key }}">{{ item.label | escape }}</span>
         </button>
       {% endfor %}
       {% for gen in (1..7) %}
         <button type="button" class="town-tile" data-count="hero-widget-chest-gen{{ gen }}" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/items/hero-widget-chest.svg" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art"><img src="../img/items/hero-widget-chest.svg" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="town.widgetChest" data-i18n-n="{{ gen }}">Gen {{ gen }} widget chest</span>
         </button>
       {% endfor %}
       </div>
-      <p class="town-gloss" data-i18n="town.widgetChestNote">Chests count towards upgrades for heroes you own in that generation. Set their widget levels under Heroes.</p>
+      <p class="town-gloss" data-i18n="town.widgetChestNote">Chests count towards upgrades for heroes you own in that generation.</p>
     </div>
 
     <div class="town-shelf" id="town-speedups" role="tabpanel" data-shelf="speedups" hidden>
       <div class="town-bag">
       {% for kind in speedups %}{% case kind %}{% when "construction", "research", "training" %}{% capture icon %}../img/kingshot/{{ kind }}-speedup.png{% endcapture %}{% when "healing" %}{% assign icon = "../img/items/healing-speedup.svg" %}{% when "general", "learning" %}{% capture icon %}../img/items/{{ kind }}-speedup.webp{% endcapture %}{% else %}{% assign icon = "" %}{% endcase %}
         <button type="button" class="town-tile" data-duration="speedup-{{ kind }}" data-action="town-inventory.edit">
-          <span class="town-tile-art">{% if icon != "" %}<img src="{{ icon }}" width="56" height="56" alt="" loading="lazy">{% else %}<span class="town-monogram" aria-hidden="true">{{ kind | slice: 0 | upcase }}</span>{% endif %}<output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art">{% if icon != "" %}<img src="{{ icon }}" width="56" height="56" alt="" loading="lazy">{% else %}<span class="town-monogram" aria-hidden="true">{{ kind | slice: 0 | upcase }}</span>{% endif %}<output class="town-tile-count inkwell" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="town.speedup.{{ kind }}">{{ kind | capitalize }}</span>
         </button>
       {% endfor %}
@@ -57,12 +57,12 @@ self: town
       <div class="town-bag">
       {% for id in resources %}
         <button type="button" class="town-tile" data-count="{{ id }}" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/items/{{ id }}.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art"><img src="../img/items/{{ id }}.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="town.res.{{ id }}">{{ id | capitalize }}</span>
         </button>
       {% endfor %}
       </div>
-      <p class="town-gloss" data-i18n="town.resNote">Record your bag and warehouse totals. These balances do not earn event points; gathering does.</p>
+      <p class="town-gloss" data-i18n="town.resNote">Gathering earns event points. What you hold doesn't.</p>
     </div>
 
     <div class="town-shelf" id="town-buildings" role="tabpanel" data-shelf="buildings" hidden>
@@ -75,7 +75,7 @@ self: town
         {% assign gold = "truegold:../img/kingshot/truegold.png,tempered-truegold:../img/items/tempered-truegold.webp" | split: "," %}
         {% for entry in gold %}{% assign m = entry | split: ":" %}{% assign item = rules.items | where: "id", m[0] | first %}
         <button type="button" class="town-tile town-tile-small" data-count="{{ m[0] }}" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="{{ m[1] }}" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art"><img src="{{ m[1] }}" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="{{ item.key }}">{{ item.label | escape }}</span>
         </button>
         {% endfor %}
@@ -83,30 +83,29 @@ self: town
       <div class="town-bag">
       {% for building in buildings %}
         <button type="button" class="town-tile" data-building="{{ building.id }}" data-state="unknown" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/buildings/{{ building.id }}.webp" width="64" height="64" alt="" loading="lazy"><output class="town-tile-count" data-level>?</output></span>
+          <span class="town-tile-art"><img src="../img/buildings/{{ building.id }}.webp" width="64" height="64" alt="" loading="lazy"><output class="town-tile-count inkwell" data-level>?</output></span>
           <span class="town-tile-name" data-i18n="town.building.{{ building.id }}">{{ building.name | escape }}</span>
           <small class="town-rate" data-building-plan="{{ building.id }}"></small>
         </button>
       {% endfor %}
       </div>
-      <p class="town-note" data-target="town-inventory.buildingSpend"></p>
+      <p class="town-note"><span data-target="town-inventory.buildingSpend"></span><details class="src" data-src="2"><summary aria-label="Two sources agree" data-i18n-key="town.src.two" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="town.src.buildings">Kingshot Data, Kingshot Optimizer and KS h5joy, two agreeing</span></details></p>
       <details id="building-priorities">
         <summary data-i18n="town.prioritiesTitle">Upgrade priorities</summary>
         <p class="town-gloss" data-i18n="town.prioritiesNote">Points follow these priorities. Lead buildings climb together, lowest first. Keep up waits for Lead until it falls a whole TG tier behind the Town Centre. Spare gets only what is left. Skip never upgrades for its own sake. A building's prerequisites, like the Town Centre and Embassy, are upgraded first whatever their priority. Ties go to the building higher in the list.</p>
         <ol class="town-priorities" data-target="town-inventory.priorities"></ol>
       </details>
-      <p class="town-gloss" data-i18n="town.buildingsSource">Costs to TG 8, where two of Kingshot Data, Kingshot Optimizer and KS h5joy agree. Each step is paid whole with the resources it needs, once its Town Centre and Embassy or troop building are high enough.</p>
     </div>
 
     <div class="town-shelf" id="town-troops" role="tabpanel" data-shelf="troops" hidden>
       <div class="town-heading"><p class="town-gloss" data-i18n="town.troopsNote">Set your training speed, your training capacity, the tier each camp trains and the buffs you will have. Troops score on troop days.</p></div>
       <div class="town-strip">
         <button type="button" class="town-tile town-tile-small" data-training="speed" data-state="unknown" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/kingshot/training-speedup.png" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art"><img src="../img/kingshot/training-speedup.png" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="town.training.speed">Training speed</span>
         </button>
         <button type="button" class="town-tile town-tile-small" data-training="capacity" data-state="unknown" data-action="town-inventory.edit">
-          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">#</span><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">#</span><output class="town-tile-count inkwell" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="town.training.capacity">Training capacity</span>
         </button>
         <button type="button" class="town-tile town-tile-small" data-state="off" aria-pressed="false" data-action="town-inventory.buff">
@@ -116,22 +115,22 @@ self: town
       </div>
       <div class="town-strip" role="group" aria-label="Training speed buffs" data-i18n-key="town.training.buffs" data-i18n-attr="aria-label">
         <button type="button" class="town-tile town-tile-small" data-training="position" data-state="off" data-action="town-inventory.edit">
-          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">C</span><output class="town-tile-count" data-amount>—</output></span>
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">C</span><output class="town-tile-count inkwell" data-amount>—</output></span>
           <span class="town-tile-name" data-i18n="town.training.position">Castle position</span>
         </button>
         <button type="button" class="town-tile town-tile-small" data-plan="highKing" data-state="off" aria-pressed="false" data-action="town-inventory.plan">
-          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">H</span><output class="town-tile-count" data-amount>—</output></span>
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">H</span><output class="town-tile-count inkwell" data-amount>—</output></span>
           <span class="town-tile-name" data-i18n="town.training.highKing">High King</span>
         </button>
         <button type="button" class="town-tile town-tile-small" data-plan="mobilize" data-state="off" aria-pressed="false" data-action="town-inventory.plan">
-          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">M</span><output class="town-tile-count" data-amount>—</output></span>
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">M</span><output class="town-tile-count inkwell" data-amount>—</output></span>
           <span class="town-tile-name" data-i18n="town.training.mobilize">Mobilize</span>
         </button>
       </div>
       <div class="town-bag">
       {% for camp in camps %}
         <button type="button" class="town-tile" data-training="{{ camp.id }}" data-state="unknown" data-action="town-inventory.edit">
-          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">{{ camp.name | slice: 0 }}</span><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">{{ camp.name | slice: 0 }}</span><output class="town-tile-count inkwell" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="gear.{{ camp.id }}">{{ camp.name }}</span>
           <small class="town-rate" data-camp-plan="{{ camp.id }}"></small>
         </button>
@@ -141,8 +140,8 @@ self: town
         <h3 data-target="town-inventory.troopTitle"></h3>
         <dl class="town-troop-facts">
           <div class="town-troop-start"><dt data-i18n="town.troopStartBy">Start the batch by</dt><dd data-target="town-inventory.troopStartAt"></dd></div>
-          <div><dt data-i18n="town.troopTakes">Batch takes</dt><dd data-target="town-inventory.troopTakes"></dd></div>
-          <div><dt data-i18n="town.troopSpeed">Training speed</dt><dd data-target="town-inventory.troopSpeed"></dd></div>
+          <div><dt><span data-i18n="town.troopTakes">Batch takes</span><details class="src" data-src="2"><summary aria-label="Two sources agree" data-i18n-key="town.src.two" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="town.src.troops">Kingshot Optimizer and Kingshot Guide</span></details></dt><dd data-target="town-inventory.troopTakes"></dd></div>
+          <div><dt><span data-i18n="town.troopSpeed">Training speed</span><details class="src" data-src="1"><summary aria-label="One source" data-i18n-key="town.src.one" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="town.src.buffs">Read in game</span></details></dt><dd data-target="town-inventory.troopSpeed"></dd></div>
         </dl>
         <div class="town-scroll"><table class="town-lines">
           <thead><tr><th scope="col" data-i18n="town.col.troops">troops</th><th scope="col" data-i18n="town.col.count">count</th><th scope="col" data-i18n="town.col.each">each</th><th scope="col" data-i18n="town.col.points">points</th></tr></thead>
@@ -150,9 +149,8 @@ self: town
           <tfoot><tr><th scope="row" data-i18n="town.col.total">total</th><td data-target="town-inventory.troopCount"></td><td></td><td data-target="town-inventory.troopPoints"></td></tr></tfoot>
         </table></div>
       </div>
-      <p class="town-note" data-target="town-inventory.troopPlan"></p>
-      <p class="town-gloss" data-i18n="town.troopsSource">Training times and costs where Kingshot Optimizer and Kingshot Guide agree. The capacity buff costs 3,000 gems and triples the batch you start before a troop day. It does not speed up training and adds nothing on the day itself.</p>
-      <p class="town-gloss" data-i18n="town.buffsSource">Buffs as read in game: Mobilize +30% on event days. Noble Advisor +50% and Chief Minister +10%, or +75% and +15% while your kingdom holds the High King. The High King's term ends before KvK, when everyone gets +25% instead.</p>
+      <div class="town-note" data-target="town-inventory.troopPlan"></div>
+      <p class="town-gloss" data-i18n="town.capacityBuffNote">The capacity buff costs 3,000 gems and triples the batch you start before a troop day. It doesn't speed up training or add anything on the day itself.</p>
     </div>
 
     <div class="town-shelf town-heroes" id="town-heroes" role="tabpanel" data-shelf="heroes" hidden>
@@ -167,15 +165,15 @@ self: town
       <div class="town-heading"><p class="town-gloss" data-i18n="town.mastersNote">Select a master to record affinity, emblems and skill levels.</p><a href="../masters/" data-i18n="town.planMasters">compare masters →</a></div>
       <div class="town-bag town-master-bag">
         <button type="button" class="town-tile" data-count="general-master-emblem" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/masters/emblem-general.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art"><img src="../img/masters/emblem-general.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="masters.generalEmblem">General Master Emblems</span>
         </button>
         <button type="button" class="town-tile" data-count="masters-manuscript" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/items/masters-manuscript.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art"><img src="../img/items/masters-manuscript.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="ks.available.item.masters-manuscript">Master's Manuscript</span>
         </button>
         <button type="button" class="town-tile" data-duration="speedup-learning" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/items/learning-speedup.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art"><img src="../img/items/learning-speedup.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="town.speedup.learning">Learning</span>
         </button>
       </div>
@@ -190,7 +188,7 @@ self: town
         {% assign heroMats = "hero-gear-xp:xp-part-100:gear.xpTotal:XP total,spare-mythic-gear:mythic-gear:gear.mythic:Spare mythic gear,forgehammer:forgehammer:gear.hammers:Forgehammers,mithril:mithril:gear.mithril:Mithril" | split: "," %}
         {% for entry in heroMats %}{% assign m = entry | split: ":" %}
         <button type="button" class="town-tile town-tile-small" data-count="{{ m[0] }}" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/hero-gear/{{ m[1] }}.webp" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art"><img src="../img/hero-gear/{{ m[1] }}.webp" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="{{ m[2] }}">{{ m[3] }}</span>
         </button>
         {% endfor %}
@@ -218,7 +216,7 @@ self: town
       <div class="town-strip">
         {% for item in gov.materials %}
         <button type="button" class="town-tile town-tile-small" data-count="{{ item.id }}" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/governor/{{ item.id }}.webp" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count" data-amount>?</output></span>
+          <span class="town-tile-art"><img src="../img/governor/{{ item.id }}.webp" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
           <span class="town-tile-name" data-i18n="{{ item.key }}">{{ item.label | escape }}</span>
         </button>
         {% endfor %}
@@ -278,7 +276,6 @@ self: town
       <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="sg" data-action="tabs.select"><span data-i18n="ks.governor.title">Strongest Governor</span><output data-event-total="sg">—</output></button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="brawl" data-action="tabs.select"><span data-i18n="ks.brawl.title">Alliance Brawl</span><output data-event-total="brawl">—</output></button>
     </div>
-    <p class="town-gloss" data-i18n="town.bestTotal">Each item counts once, on its best day. Tap a day to see its breakdown.</p>
     <p class="town-note" data-target="town-centre.coverage" aria-live="polite"></p>
     <p class="town-gloss" data-target="town-centre.buildingMax" hidden></p>
     <details id="missing-details" data-target="town-centre.missingDisclosure" hidden>
@@ -311,7 +308,6 @@ self: town
   <section class="section town-notes" id="town-save">
     <details id="save-backups" data-module="save-transfer disclosure" data-status-scope="town" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
       <summary data-i18n="gear.manageSave">your save &amp; backups</summary>
-      <p class="town-gloss" data-i18n="town.saveHint">Changes are shared with the other tools and saved in this browser. Export a backup before importing another save.</p>
       <button type="button" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
       <button type="button" data-action="save-transfer.choose" data-i18n="gear.load">import backup</button>
       <input type="file" accept="application/json,.json" hidden data-target="save-transfer.file" data-action="save-transfer.import">
@@ -324,6 +320,12 @@ self: town
       <p data-i18n="town.mathsBuildings">Truegold and Tempered Truegold count only the building upgrades they can fund, one whole step at a time, in the order your upgrade priorities set. Each step also needs its resources, its Town Centre level and its prerequisites. Unset buildings and uncounted resources add nothing. The points-only figure spends the cheapest Truegold step anywhere instead, which is the most your buildings can take. Costs stop at TG 8 until a second source confirms higher levels.</p>
       <p data-i18n="town.mathsTroops">Troops count on troop days. Each camp adds one batch at your capacity, started before the day and collected on it, and then the troops your training and general speedups can train on the day. Speedups used for troops are not also counted on another day. Troops are paid with the resources your buildings leave. T11 costs are not checked until a second source confirms them.</p>
       <p data-i18n="town.mathsLimits">Totals exclude gathering, intel, roulette and pet advancement. Missing counts are left out and mark the total as partial.</p>
+    </details>
+    <details id="town-sources">
+      <summary data-i18n="town.sources">Sources</summary>
+      <p data-i18n="town.buildingsSource">Building costs to TG 8, where two of Kingshot Data, Kingshot Optimizer and KS h5joy agree.</p>
+      <p data-i18n="town.troopsSource">Training times and costs, where Kingshot Optimizer and Kingshot Guide agree.</p>
+      <p data-i18n="town.buffsSource">Buffs as read in game: Mobilize +30% on event days. Noble Advisor +50% and Chief Minister +10%, or +75% and +15% while your kingdom holds the High King. The High King's term ends before KvK, when everyone gets +25% instead.</p>
     </details>
   </section>
 </main>

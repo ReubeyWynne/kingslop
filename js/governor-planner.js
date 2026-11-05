@@ -16,13 +16,14 @@
     nothing: 'Nothing the materials can pay for yet. Count them, or set the level of each piece.',
     bagUnknown: 'Materials not counted count as none.',
     reached: 'Everything set is already there.', unverified: 'Includes a step only one table lists (◇).',
-    pieceTroop: '{slot} · {troop}'
+    pieceTroop: '{slot} · {troop}',
+    applyGear: 'Mark gear applied', applyCharms: 'Mark charms applied', undoGear: 'Gear applied. Undo', undoCharms: 'Charms applied. Undo'
   };
   var TROOPS = { inf: 'Infantry', cav: 'Cavalry', arc: 'Archer' };
   var ORDER = ['cav-1', 'cav-2', 'inf-1', 'inf-2', 'arc-1', 'arc-2'];
   window.Interactions.register('governor-planner', function (context) {
     var G = window.Governor, store = context.ledger, api = context.api, root = context.root;
-    var mode = 'spend', reachTroop = 'all', art = root.dataset.art || '../img/governor/';
+    var mode = 'spend', reachTroop = 'all', last = null, undo = {}, art = root.dataset.art || '../img/governor/';
     var view = window.GovernorView.create(G, api, art, { emptyGemLabel: '', stars: '[data-part="stars"]' });
     function t(key) { return api.tr((/^slot\./.test(key) ? 'gov.' : 'gov.answer.') + key, EN[key]); }
     function fill(key, values) { return api.fill(t(key), values); }
@@ -90,6 +91,7 @@
         Object.keys(result[kind].cost).forEach(function (id) { cost[id] = result[kind].cost[id]; });
         if (result[kind].score === null) scoreKnown = false; else scoreTotal += result[kind].score;
       });
+      last = { result: result, amounts: materials.amounts };
       context.targets('rows').forEach(function (list) { list.replaceChildren.apply(list, ORDER.map(function (id) { return row(id, result.gear, result.charms); })); });
       put('billTitle', t(mode === 'spend' ? 'billSpend' : 'billReach'));
       context.targets('bill').forEach(function (strip) { strip.replaceChildren.apply(strip, bill(cost, materials.amounts, mode === 'reach')); });
@@ -104,6 +106,15 @@
         });
         node.appendChild(window.EventPoints.table(api, rows, 'gov-event-points'));
       });
+      // Gear and charms are marked applied apart; an apply stays undoable until either side of it changes.
+      var anyApply = false;
+      context.nodes('[data-action="governor-planner.apply"]').forEach(function (button) {
+        var kind = button.dataset.kind, back = undoable(kind), show = back || result[kind].steps > 0;
+        button.hidden = !show; anyApply = anyApply || show;
+        button.textContent = t(back ? (kind === 'gear' ? 'undoGear' : 'undoCharms') : (kind === 'gear' ? 'applyGear' : 'applyCharms'));
+        button.dataset.state = back ? 'applied' : 'planned';
+      });
+      context.targets('applied').forEach(function (node) { node.hidden = !anyApply; });
       if (!steps) notes.push(t(mode === 'spend' ? 'nothing' : 'reached'));
       if (mode === 'spend' && materials.unknown) notes.push(t('bagUnknown'));
       if (steps && !scoreKnown) notes.push(t('scoreNone'));
@@ -130,6 +141,13 @@
       mode = event.detail.value === 'reach' ? 'reach' : 'spend'; render();
     });
     context.cleanup(store.subscribe(render));
+    // What one kind holds now: its levels and the bag of its own materials.
+    function held(kind) {
+      var snapshot = store.snapshot(), bag = {};
+      G.data[kind].materials.forEach(function (id) { bag[id] = window.PlayerLedger.confirmed(snapshot, id); });
+      return { levels: store.governor(kind, snapshot), bag: bag };
+    }
+    function undoable(kind) { return !!undo[kind] && JSON.stringify(held(kind)) === JSON.stringify(undo[kind].after); }
     function write(fn) { try { fn(); } catch (cause) { render(); throw cause; } }
     return { refresh: function () { labelOptions(); render(); }, actions: {
       profile: { events: ['change'], run: function (select) {
@@ -148,7 +166,17 @@
         write(function () { store.setGovernorPreference('weights', [weights.inf, weights.cav, weights.arc].join(':')); store.setGovernorPreference('profile', 'custom'); });
       } },
       option: { events: ['change'], run: function (select) { write(function () { store.setGovernorPreference(select.dataset.option, Number(select.value)); }); } },
-      reachTroop: { events: ['change'], run: function (select) { reachTroop = select.value; render(); } }
+      reachTroop: { events: ['change'], run: function (select) { reachTroop = select.value; render(); } },
+      apply: { run: function (button) {
+        var kind = button.dataset.kind;
+        if (undoable(kind)) { var back = undo[kind]; delete undo[kind]; write(function () { store.applyGovernor(kind, back.before.levels, back.before.bag, 'manual'); }); return; }
+        if (!last || !last.result[kind].steps) return;
+        var planned = last.result[kind], before = held(kind), bag = {};
+        G.data[kind].materials.forEach(function (id) { var have = before.bag[id]; if (have !== null) bag[id] = Math.max(0, have - (planned.cost[id] || 0)); });
+        write(function () { store.applyGovernor(kind, planned.to, bag); });
+        undo[kind] = { before: before, after: held(kind) };
+        render();
+      } }
     } };
   });
 })();

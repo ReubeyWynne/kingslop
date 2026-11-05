@@ -27,13 +27,26 @@
         else if (key && /^heroGear\.parts\.(ten|hundred)$/.test(key)) { if (amount === null) return; store.setHeroGearPart(key.split('.')[2], amount); }
         else return;
       } catch (cause) {
-        render(); context.targets('save').forEach(function (node) { node.textContent = context.api.tr(context.root.dataset.saveFailedKey, ''); }); throw cause;
+        render(); context.targets('save').forEach(function (node) { node.textContent = context.api.tr(context.root.dataset.saveFailedKey, ''); if (node.classList.contains('seal')) node.dataset.state = 'failed'; }); throw cause;
       }
-      context.targets('save').forEach(function (node) { node.textContent = context.api.tr(context.root.dataset.savedKey, ''); }); context.emit('ledger-form:edited', { binding: key, amount: amount });
+      // A saved seal (css/motifs.css) is solid on your save and hollow on a guest sheet.
+      context.targets('save').forEach(function (node) { node.textContent = context.api.tr(context.root.dataset.savedKey, ''); if (node.classList.contains('seal')) node.dataset.state = context.root.dataset.guest ? 'unsaved' : 'saved'; }); context.emit('ledger-form:edited', { binding: key, amount: amount });
     } }, normalize: { events: ['change'], run: render } } };
   });
   M.register('save-transfer', function (context) {
     var store = context.ledger, sequence = 0;
+    // The seal is your own save on this device, even on a guest sheet.
+    var SEAL = { saved: ['notes.sealSaved', 'Saved'], unsaved: ['notes.sealUnsaved', 'Nothing saved yet'], failed: ['notes.sealFailed', 'This browser can’t save'] };
+    function seal() {
+      var state;
+      try { state = window.PlayerLedger.shared().snapshot().revision > 0 ? 'saved' : 'unsaved'; } catch (cause) { state = 'failed'; }
+      context.targets('seal').forEach(function (node) { node.dataset.state = state; node.textContent = context.api.tr(SEAL[state][0], SEAL[state][1]); });
+    }
+    if (context.targets('seal').length) {
+      seal();
+      try { context.cleanup(window.PlayerLedger.shared().subscribe(seal)); } catch (cause) { /* no store: the seal already says so */ }
+      context.listen(document, 'i18n:change', seal);
+    }
     return { dispose: function () { sequence++; }, actions: {
       export: { run: function () {
         var url = URL.createObjectURL(new Blob([store.exportJSON()], { type: 'application/json' })), link = document.createElement('a');

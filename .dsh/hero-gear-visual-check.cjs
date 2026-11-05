@@ -122,7 +122,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     fixture.pieces['cav-chest']={quality:'mythic',level:40,mastery:1};
     fixture.pieces['cav-boots']={quality:'mythic',level:63,mastery:1};
     fixture.selected='inf-gloves';fixture.resources={xp:52650,hammers:110,mythic:6,mithril:10};
-    await page.locator('#save-backups summary').click();
+    await page.locator('#save-backups > summary').click();
     await page.locator('#gear-load').click();
     await page.locator('#gear-save-file').setInputFiles({name:'gear.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(fixture))});
     await page.waitForFunction(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-gloves'].level===120);
@@ -422,7 +422,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
       await visitor.locator('#weights > summary').click();
       // Old links to Settings and Theory open the fold they now sit in; the old sources link lands
       // on Sources & confidence, which is a section, not a fold.
-      for(const [hash,fold] of [['#kvk-points','#kvk-points'],['#maths','#maths'],['#maths-sources',''],['#how-it-works','#how-it-works'],['#save-backups','#save-backups'],['#best-split-method','#best-split-method'],['#weights','#weights']]){
+      for(const [hash,fold] of [['#kvk-points','#kvk-points'],['#maths','#maths'],['#maths-sources',''],['#how-it-works','#maths'],['#save-backups','#save-backups'],['#best-split-method','#best-split-method'],['#weights','#weights']]){
         await visitor.goto(origin+'/hero-gear/?lang=en'+hash);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-card .gear-row').length===12);
         if(fold)assert.equal(await visitor.locator(fold).evaluate(d=>d.open),true,hash+' opens its fold');
         assert.equal(await visitor.locator('#gear-planner').isVisible(),true,'the planner stays in view');

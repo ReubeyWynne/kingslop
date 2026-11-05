@@ -7,9 +7,9 @@
     dayTitle: '{event}, day {day}', dayLabel: 'Day {n}', dayEmpty: 'No recorded inventory scores on this day.',
     complete: 'All required counts entered.', partial: 'Partial estimate. Missing counts or levels are excluded.',
     alsoNone: 'No other activities listed.', planEmpty: 'Record your inventory to see the best days.',
-    planRow: '{item}: day {day}, {points} points', topRate: 'best {rate} each · {event} day {day}', topRateMinute: 'best {rate} a minute · {event} day {day}', noRate: 'No rate per item.',
+    planRow: '{item}: {points} points', bestDay: '{n}, best day', saved: 'Saved', saveFailed: 'Could not save', topRate: 'best {rate} each · {event} day {day}', topRateMinute: 'best {rate} a minute · {event} day {day}', noRate: 'No rate per item.',
     scoreGain: '+{n} score', govGear: 'Governor gear score', govCharms: 'Governor charm score',
-    gainBoth: 'Available upgrades: +{gear} gear score · +{charms} charm score.', gainUnknown: 'Enter levels and materials to estimate upgrades.',
+    gainBoth: 'Available upgrades: +{gear} gear score · +{charms} charm score.',
     missingDetails: 'Missing details',
     missingSpeedup: '{kind} speedups',
     missingGovGear: 'Governor gear levels and materials',
@@ -37,8 +37,7 @@
     tierHint: 'T10 and T11 Truegold troops train in the same time for the same cost as plain T10 and T11.',
     troopTitle: 'Best troop day: {event}, day {day}', 'troopLine.batchBuff': 'T{tier} troops, tripled batch',
     speedSame: '{n}%', speedSplit: '{batch}%, {day}% on the day', troopNoStart: 'set your training speed and capacity',
-    troopUnchecked: 'T{tier} costs are not checked against your resources yet.',
-    troopPlanNone: 'Set your training speed, capacity and camp tiers to see what you can train for a troop day.'
+    troopUnchecked: 'T{tier} costs are not checked against your resources yet.'
   };
   var EVENTS = { prep: ['ks.today.kickerPrep', 'KvK prep'], sg: ['ks.governor.title', 'Strongest Governor'], brawl: ['ks.brawl.title', 'Alliance Brawl'] };
   function t(api, key) { return api.tr('town.' + key, EN[key]); }
@@ -127,7 +126,16 @@
       if (!selected.unquantified.length) also.appendChild(element('li', '', t(api, 'alsoNone')));
 
       var plan = context.targets('plan')[0]; plan.replaceChildren();
-      result.lines.forEach(function (line) { plan.appendChild(element('li', '', fill(api, 'planRow', { item: name(api, line.id), day: api.fmt(line.day), points: api.fmt(line.points) }))); });
+      // Each item carries the event's day strip, its own scoring day marked.
+      result.lines.forEach(function (line) {
+        var item = element('li', '', fill(api, 'planRow', { item: name(api, line.id), points: api.fmt(line.points) })), strip = element('ol', 'days');
+        result.days.forEach(function (day) {
+          var mark = element('li', '', api.fmt(day.day));
+          if (day.day === line.day) { mark.dataset.best = ''; mark.setAttribute('aria-label', fill(api, 'bestDay', { n: api.fmt(day.day) })); }
+          strip.appendChild(mark);
+        });
+        item.appendChild(strip); plan.appendChild(item);
+      });
       if (!result.lines.length) plan.appendChild(element('li', '', t(api, 'planEmpty')));
       context.emit('town-centre:calculated', { event: event, results: results });
     }
@@ -160,6 +168,10 @@
       part(node, 'mastery-wrap').hidden = !piece || piece.quality === 'epic';
       part(node, 'band').textContent = piece ? quality(piece.quality) : api.tr('gov.notSet', 'not set');
     }
+    // Unknown counts show a dim ?, none a solid 0.
+    function tally(node, n) { if (n === null || n === undefined) node.dataset.tally = 'unknown'; else if (n === 0) node.dataset.tally = 'zero'; else delete node.dataset.tally; return node; }
+    var saveState = 'saved';
+    function seal(state) { saveState = state; context.targets('saved').forEach(function (node) { node.dataset.state = state; node.textContent = t(api, state === 'failed' ? 'saveFailed' : 'saved'); }); }
     function tileName(node) { var label = node.querySelector('.town-tile-name'); return label ? label.textContent : ''; }
     function levelName(level) { return level === '0' ? t(api, 'notBuilt') : level; }
     function renderBuildings(snapshot, plan, most) {
@@ -167,7 +179,7 @@
       context.nodes('[data-building]').forEach(function (tile) {
         var id = tile.dataset.building, level = Object.hasOwn(levels, id) ? levels[id] : null, step = plan.buildings[id];
         tile.dataset.state = level === null ? 'unknown' : 'confirmed';
-        tile.querySelector('[data-level]').textContent = level === null ? '?' : level === '0' ? '—' : level;
+        tally(tile.querySelector('[data-level]'), level === null ? null : level === '0' ? 0 : 1).textContent = level === null ? '?' : level === '0' ? '—' : level;
         tile.querySelector('[data-building-plan]').textContent = !step ? '' : step.steps ? fill(api, 'buildingTo', { level: step.to }) : t(api, 'buildingStuck');
       });
       var gold = plan.items.truegold, tempered = plan.items['tempered-truegold'];
@@ -218,7 +230,7 @@
           return;
         }
         tile.dataset.state = fact === undefined ? 'unknown' : 'confirmed';
-        tile.querySelector('[data-amount]').textContent = trainingText(key, fact);
+        tally(tile.querySelector('[data-amount]'), fact === undefined ? null : fact).textContent = trainingText(key, fact);
         var note = tile.querySelector('[data-camp-plan]');
         if (note) note.textContent = fact !== undefined && size !== null ? fill(api, 'batchOf', { n: api.fmt(size) }) : '';
       });
@@ -233,7 +245,7 @@
       });
       if (!troopResult) troopResult = T.best(snapshot, troopEvent).troops;
       // The result: the best troop day as a ledger, with when to start the batch above its lines.
-      var found = troopResult, plan = found && found.plan, text = [], shown = Boolean(plan && plan.troops);
+      var found = troopResult, plan = found && found.plan, text = [], waiting = [], shown = Boolean(plan && plan.troops);
       target('troopResult').hidden = !shown;
       if (shown) {
         put('troopTitle', fill(api, 'troopTitle', { event: eventName(api, troopEvent), day: api.fmt(found.day) }));
@@ -256,8 +268,18 @@
         }));
         put('troopCount', api.fmt(plan.troops)); put('troopPoints', api.fmt(plan.points));
         plan.unverified.forEach(function (id) { text.push(fill(api, 'troopUnchecked', { tier: R.missing(id).tier })); });
-      } else text.push(t(api, 'troopPlanNone'));
-      put('troopPlan', text.join(' '));
+      } else {
+        if (!Object.hasOwn(facts, 'speed')) waiting.push('training-speed');
+        if (!Object.hasOwn(facts, 'capacity')) waiting.push('training-capacity');
+        if (!R.TYPES.some(function (type) { return Object.hasOwn(facts, type.id); })) waiting.push('training-tiers');
+      }
+      var note = target('troopPlan');
+      if (waiting.length) {
+        var open = element('output', '', api.fmt(0)), list = element('ul', 'unknowns');
+        open.dataset.open = '';
+        waiting.forEach(function (key) { list.appendChild(element('li', '', t(api, key))); });
+        note.replaceChildren(open, list);
+      } else note.textContent = text.join(' ');
     }
     context.listen(document, 'town-centre:calculated', function (e) {
       troopEvent = e.detail.event; troopResult = e.detail.results[troopEvent].troops;
@@ -270,7 +292,7 @@
       context.nodes('[data-count]').forEach(function (tile) {
         var amount = confirmed(snapshot, tile.dataset.count);
         tile.dataset.state = amount === null ? 'unknown' : 'confirmed';
-        var out = tile.querySelector('[data-amount]'), short = amount === null ? '?' : api.compact(amount);
+        var out = tally(tile.querySelector('[data-amount]'), amount), short = amount === null ? '?' : api.compact(amount);
         out.textContent = short;
         // A shortened figure keeps the exact one a hover away.
         if (amount !== null && short !== api.fmt(amount)) out.title = api.fmt(amount); else out.removeAttribute('title');
@@ -278,7 +300,7 @@
       context.nodes('[data-duration]').forEach(function (tile) {
         var minutes = confirmed(snapshot, tile.dataset.duration);
         tile.dataset.state = minutes === null ? 'unknown' : 'confirmed';
-        tile.querySelector('[data-amount]').textContent = minutes === null ? '?' : duration(api, minutes);
+        tally(tile.querySelector('[data-amount]'), minutes).textContent = minutes === null ? '?' : duration(api, minutes);
       });
       context.nodes('[data-piece]').forEach(function (tile) {
         var piece = Object.hasOwn(pieces, tile.dataset.piece) ? pieces[tile.dataset.piece] : null;
@@ -288,7 +310,7 @@
       });
       put('pieces', fill(api, 'pieces', { n: api.fmt(set) }));
       var gearGain = shared.score.gear.score, charmGain = shared.score.charms.score;
-      put('gain', gearGain === null && charmGain === null ? t(api, 'gainUnknown') : fill(api, 'gainBoth', { gear: gearGain === null ? '—' : api.fmt(gearGain), charms: charmGain === null ? '—' : api.fmt(charmGain) }));
+      put('gain', fill(api, 'gainBoth', { gear: gearGain === null ? '?' : api.fmt(gearGain), charms: charmGain === null ? '?' : api.fmt(charmGain) }));
       renderDialog(snapshot, plan);
     }
     function value(input, next) { if (input !== document.activeElement) input.value = next === null || next === undefined ? '' : next; }
@@ -352,7 +374,7 @@
         if (keep) all.value = keep;
       }
     }
-    function write(fn) { try { fn(); } catch (cause) { render(); throw cause; } }
+    function write(fn) { try { fn(); seal('saved'); } catch (cause) { seal('failed'); render(); throw cause; } }
     function writePiece(change) {
       var snapshot = store.snapshot(), old = Object.hasOwn(snapshot.heroGear.pieces, editing.id) ? snapshot.heroGear.pieces[editing.id] : null;
       var next = Object.assign({ quality: 'mythic', level: 0, mastery: 0 }, old || {}, change), state = store.heroGear(H);
@@ -368,7 +390,8 @@
       context.listen(dialog, 'click', function (event) { if (event.target === dialog) dialog.close(); });
     }
     context.cleanup(store.subscribe(render));
-    return { refresh: function () { labelOptions(); render(); }, actions: {
+    seal('saved');
+    return { refresh: function () { labelOptions(); seal(saveState); render(); }, actions: {
       edit: { run: function (tile) {
         if (!dialog) return;
         editing = tile.dataset.count ? { type: 'count', id: tile.dataset.count } : tile.dataset.duration ? { type: 'duration', id: tile.dataset.duration } : tile.dataset.piece ? { type: 'hero', id: tile.dataset.piece } : tile.dataset.building ? { type: 'building', id: tile.dataset.building } : { type: tile.dataset.training === 'position' ? 'position' : /^(speed|capacity)$/.test(tile.dataset.training) ? 'training' : 'tier', id: tile.dataset.training };

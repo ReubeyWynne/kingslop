@@ -8,10 +8,11 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 /* The goal: every building tile in view at once, as a grid that wraps (no sideways scroll). */
 .reqs-picks { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(4rem, 1fr)); gap: .35rem .2rem; margin: var(--space-s) 0 0; padding: .2rem 0 .4rem; }
 .reqs-picks li { min-width: 0; display: grid; }
-.reqs-pick { display: grid; justify-items: center; align-content: start; gap: .25rem; min-width: 0; padding: .25rem .05rem; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--ink-dim); font: inherit; text-align: center; cursor: pointer; }
+/* Each tile is an ink-well (css/motifs.css): a dashed foot until it is in the goal. */
+.reqs-pick { display: grid; justify-items: center; align-content: start; gap: .25rem; min-width: 0; padding: .25rem .05rem; border: 0; border-bottom: 1px dashed var(--amber-dim); background: none; color: var(--ink-dim); font: inherit; text-align: center; cursor: pointer; }
 .reqs-pick .reqs-art { width: 2.9rem; }
 .reqs-pick[aria-pressed="false"] img { filter: grayscale(.6); opacity: .6; }
-.reqs-pick[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--amber); }
+.reqs-pick[aria-pressed="true"] { color: var(--ink); border-bottom: 2px solid var(--amber); }
 .reqs-pick[aria-pressed="true"] .reqs-art { border-color: var(--amber); }
 .reqs-pick:hover .reqs-art, .reqs-pick:focus-visible .reqs-art { border-color: var(--amber); }
 .reqs-pick:hover img, .reqs-pick:focus-visible img { filter: none; opacity: 1; }
@@ -20,8 +21,6 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 .reqs-pick-name { font-size: .66rem; line-height: 1.1; overflow-wrap: anywhere; hyphens: auto; }
 .reqs-badge { position: absolute; inset-inline-end: -.35rem; inset-block-end: -.45rem; padding: .05rem .3rem; background: var(--void); border: 1px solid var(--amber); color: var(--amber); font: .8rem/1.2 var(--display-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .reqs-badge:empty { display: none; }
-.reqs-goal-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 1rem; }
-.reqs-goal-tools .note { margin: 0; }
 /* Guest mode is a switch: a track with a knob that moves a whole cell, no sliding. */
 .reqs-guest { padding: var(--space-s); border-inline-start: 3px solid var(--amber); background: var(--signal-tint); }
 
@@ -35,10 +34,11 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 .reqs-tag { padding: 0 .35rem; border: 1px solid var(--amber-dim); color: var(--amber); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
 .reqs-run[data-goal] .reqs-art { border-color: var(--amber); }
 .reqs-run[data-state="done"] { opacity: .7; }
-.reqs-lv { min-width: 3.4rem; min-height: 44px; padding: .2rem .55rem; border: 1px solid var(--amber-dim); border-radius: 2px; background: var(--void-2); color: var(--ink); font: 1rem/1.2 var(--display-2); font-variant-numeric: tabular-nums; cursor: pointer; }
-.reqs-run[data-state="assumed"] .reqs-lv[data-kind="have"] { border-style: dashed; border-color: var(--ink-muted); color: var(--ink-dim); }
-.reqs-lv-goal { border-color: var(--amber); color: var(--amber); background: var(--signal-tint); }
-.reqs-lv:hover, .reqs-lv:focus-visible { border-color: var(--amber); outline: none; box-shadow: 0 0 0 1px var(--amber); }
+/* A level is an ink-well; one the plan assumes is in ghost ink until you set it. */
+.reqs-lv { min-width: 3.4rem; min-height: 44px; padding: .2rem .55rem; border: 0; border-bottom: 1px dashed var(--amber-dim); background: none; color: var(--ink); font: 1rem/1.2 var(--display-2); font-variant-numeric: tabular-nums; }
+.reqs-lv.ghost { font-style: italic; color: var(--ink-muted); }
+.reqs-lv-goal { border-bottom-style: solid; border-bottom-color: var(--amber); color: var(--amber); }
+.reqs-lv:hover, .reqs-lv:focus-visible { border-bottom-style: solid; border-bottom-color: var(--amber); outline: none; background: var(--signal-tint); }
 .reqs-arrow { flex: none; color: var(--amber); white-space: nowrap; }
 /* A card's tick: accept that upgrade as done. */
 .reqs-done { flex: none; width: 44px; height: 44px; padding: 0; border: 1px solid var(--amber-dim); border-radius: 2px; background: none; color: var(--ink-dim); font: 1.1rem/1 var(--body); cursor: pointer; }
@@ -131,3 +131,13 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 .reqs-boost .note { margin: 0; font-size: var(--step--1); }
 .reqs-boost-head { margin: 1rem 0 .2rem; font-size: 1rem; }
 .reqs-boost-head::before { display: none; }
+
+/* Your levels: the saved seal, then a dot for each page that reads them. */
+.reqs-saved { display: flex; align-items: center; gap: .1rem; margin: 0 0 var(--space-s); }
+.reqs-saved[hidden] { display: none; }
+.reqs-saved i[data-page="town"] { --hue: #DC8FDB; }
+.reqs-saved i[data-page="priority"] { --hue: #DD8FD6; }
+/* A guest sheet is a loose leaf: its cards keep their own spacing. */
+.reqs-levels.loose-leaf { line-height: inherit; margin-block: var(--space-s); }
+.reqs-copy { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .3rem 0; }
+.reqs-saved .shared-by { margin-block: 0; padding: 0; border: 0; }

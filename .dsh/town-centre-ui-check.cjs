@@ -193,7 +193,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.locator('[aria-controls="town-troops"]').click();
     assert.equal(await page.locator('#town-troops [data-training]').count(), 6);
     assert.equal(await page.locator('#town-troops [data-target="town-inventory.troopResult"]').isHidden(), true);
-    assert.match(await page.locator('[data-target="town-inventory.troopPlan"]').textContent(), /Set your training speed/);
+    // Without its facts the troop total stays open, and names what it waits on.
+    assert.equal(await page.locator('[data-target="town-inventory.troopPlan"] output[data-open]').count(), 1);
+    assert.deepEqual(await page.locator('[data-target="town-inventory.troopPlan"] .unknowns li').allTextContents(), ['training speed', 'training capacity', 'the tier each camp trains']);
     await edit('#town-troops [data-training="speed"]'); await dialog.locator('[data-field="training"]').fill('150'); await done();
     await edit('#town-troops [data-training="capacity"]'); await dialog.locator('[data-field="training"]').fill('1000'); await done();
     await edit('#town-troops [data-training="inf"]'); await dialog.locator('select[data-field="tier"]').selectOption('10'); await done();

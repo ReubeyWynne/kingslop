@@ -11,6 +11,10 @@
 .master-bag-caption { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: .7rem; margin: 0; color: var(--ink-muted); font-size: .72rem; font-style: italic; }
 :is(.master-bag, .master-mine) :is(input, select) { width: 100%; min-width: 0; min-height: 40px; padding: .2rem 0; font: inherit; font-size: max(1rem, 16px); color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; }
 :is(.master-bag, .master-mine) :is(input, select):focus { border-bottom-color: var(--amber); }
+/* Blank, zero and unknown ink (css/motifs.css), kept over the solid rule above. */
+:is(.master-bag, .master-mine) [data-tally="blank"] { border-bottom-style: dotted; }
+:is(.master-bag, .master-mine) [data-tally="unknown"] { color: var(--ink-muted); font-style: italic; }
+:is(.master-bag, .master-mine) [data-tally="zero"] { font-weight: 700; }
 :is(.master-bag, .master-mine) option { background: var(--void); color: var(--ink); }
 :is(.master-bag, .master-mine) :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 .master-mine :is(input, select):disabled { opacity: .45; }
