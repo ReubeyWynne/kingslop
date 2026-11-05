@@ -6,9 +6,6 @@
   'use strict';
   var EN = {
     noHeroes: 'Mark the heroes you own, with their stars, in the roster above.',
-    noOverview: 'Using a typical generation {n} Bonus Overview ({pct}% everywhere) until you enter yours.',
-    partial: 'Your Bonus Overview is missing {types}; those use a typical {pct}%.',
-    noSquads: 'Add your Squads\' row too: it adds to every troop type, so the lineups are counted low until it is in.',
     ready: 'Ranked from your {n} heroes that have stars.',
     working: 'Fighting {done} of {total} lineups…',
     best: 'best', no: 'No.', ofBest: '{n}% of your best', mix: 'Ideal mix {inf} / {cav} / {arc}',
@@ -20,7 +17,7 @@
     damageTitle: 'Estimated Bear damage', damageNote: '{n} = 1/15 of a {cap} rally{est}{valora}. One hit can land about 20% either side.', valora: ', Valora +{n}%', estimated: ' (estimated: 15 × joiner cap)',
     troops: '{n} troops',
     railTitle: 'Against each opponent', railNote: 'Win chance over repeated fights, and how much of your army is still standing.', win: '{n}%', empty: 'empty seat',
-    foesNote: 'Generation {n} accounts, both sides at {total} troops. Win chance per opponent:',
+    foesNote: 'Generation {n} accounts, {total} troops a side.',
     kit: 'At generation {gen}: {stars}★ heroes, widgets at {widget}, {pct}% Bonus Overview, TG{tg}, {gear} hero gear, level {joiners} joiners, pets at {pets}, {city}.',
     'gear.epic': 'epic {n}', 'gear.mythic': 'mythic {n}', 'gear.red': 'red {n}',
     'city.0': 'no city buffs', 'city.ad': 'attack and defence city buffs at I', 'city.10': 'every city buff at I', 'city.20': 'every city buff at II',
@@ -177,10 +174,30 @@
       var rows = typed(), whole = {};
       ['squads'].concat(TYPES).forEach(function (type) { var row = rows[type] || {}; if (STATS.every(function (k) { return row[k] !== null && row[k] !== undefined; })) whole[type] = row; });
       if (!Object.keys(whole).length) return;
+      var state = 'saved';
       try { store.setCombat({ overview: whole }, 'manual'); put('saved', t('saved')); }
-      catch (cause) { put('saved', t('saveFailed')); }
+      catch (cause) { state = 'failed'; put('saved', t('saveFailed')); }
+      context.targets('saved').forEach(function (node) { node.dataset.state = state; });
     }
 
+    // The table shows what the ranking assumes: a troop type it fills with the
+    // generation's typical stats carries them as ghost values in its blank boxes,
+    // and a row it still needs (a part-typed type, or the Squads' row once any
+    // type is in) is marked unknown.
+    function paintOverview(ov) {
+      var rows = typed();
+      context.targets('stat').forEach(function (input) {
+        var type = input.dataset.stat.split('.')[0], assumed = ov.missing.indexOf(type) !== -1;
+        input.classList.toggle('ghost', assumed);
+        input.placeholder = assumed ? api.fmt(ov.typical) : '?';
+      });
+      context.root.querySelectorAll('.lead-stats-table tbody tr').forEach(function (tr) {
+        var input = tr.querySelector('[data-stat]'), type = input && input.dataset.stat.split('.')[0], row = rows[type] || {};
+        var some = STATS.some(function (k) { return row[k] !== null && row[k] !== undefined; });
+        var unknown = type === 'squads' ? ov.noSquads : ov.missing.indexOf(type) !== -1 && some;
+        if (unknown) tr.dataset.unknown = ''; else delete tr.dataset.unknown;
+      });
+    }
     // Each tier's loadout at your generation, under its summary.
     function cityKey(c) { return !c.attack ? 'city.0' : !c.lethality ? 'city.ad' : c.attack >= 20 ? 'city.20' : 'city.10'; }
     function paintKits(gen) {
@@ -363,16 +380,14 @@
       troopsDefault(gen);
       var ov = overview(gen), by = L.candidates(owned, data), list = L.lineups(by);
       if (!list.length) { paintExtras(gen); clear(); put('status', t('noHeroes')); return; }
-      var note = ov.missing.length === 3 ? fill('noOverview', { n: api.fmt(gen), pct: api.fmt(ov.typical) })
-        : ov.missing.length ? fill('partial', { types: ov.missing.map(function (type) { return api.tr('sim.calc.' + type, type); }).join(', '), pct: api.fmt(ov.typical) }) : '';
-      if (ov.noSquads) note = (note ? note + ' ' : '') + t('noSquads');
+      paintOverview(ov);
       var ready = fill('ready', { n: api.fmt(Object.keys(owned).filter(function (k) { return L.copyOf(k, owned[k], data); }).length) });
       paintExtras(gen);
       var you = { overview: ov.rows, troops: troops(), joiners: joinersOf(gen), city: L.cityLayer(cityOf()), pets: petsOf(), gear: gearOf(), town: townOf() }, opts = { gen: gen };
       if (job === 'bear') {
         var scored = list.map(function (lineup) { var r = L.bear(you, lineup, data); r.lineup = lineup; return r; });
         scored.sort(function (a, b) { return b.score - a.score; });
-        put('status', (note ? note + ' ' : '') + ready);
+        put('status', ready);
         paint(scored, gen, you);
         return;
       }
@@ -385,7 +400,7 @@
         }
         if (at < list.length) { put('status', fill('working', { done: api.fmt(at), total: api.fmt(list.length) })); setTimeout(step, 0); return; }
         done.sort(function (a, b) { return b.score - a.score; });
-        put('status', (note ? note + ' ' : '') + ready);
+        put('status', ready);
         paint(done, gen, you);
       })();
     }

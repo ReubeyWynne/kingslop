@@ -18,7 +18,9 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
     KS_SERVER_AGE.setGeneration(4);
   });
   await page.waitForFunction(() => document.querySelectorAll('.lead-row').length === 3);
-  assert.match(await status(), /typical generation 4 Bonus Overview \(250% everywhere\)/);
+  // No Bonus Overview yet: every box carries the generation's typical 250% as a ghost value, and the status says nothing about it.
+  assert.deepEqual(await page.locator('[data-stat="inf.attack"]').evaluate(n => [n.placeholder, n.classList.contains('ghost')]), ['250', true]);
+  assert.doesNotMatch(await status(), /typical/);
   assert.equal(await page.locator('.lead-best .lead-hero-name b').allTextContents().then(t => t.join('/')), 'Amadeus/Petra/Marlin', 'the best lineup leads the dossier');
   assert.equal(await page.locator('.lead-best .hero-star-row').first().locator('[data-on]').count(), 5, 'roster stars on the portrait');
   assert.match(await page.locator('[data-target="lead-finder.verdict"]').textContent(), /more Bear damage|Level with/);
@@ -48,8 +50,11 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   for (const [stat, value] of [['attack', 300], ['lethality', 280], ['defense', 300], ['health', 270]]) await page.locator(`[data-stat="arc.${stat}"]`).fill(String(value));
   await page.waitForFunction(() => (PlayerLedger.shared().combat().overview.arc || {}).health === 270);
   assert.deepEqual(await page.evaluate(() => PlayerLedger.shared().combat().stats), {});
-  assert.match(await status(), /missing Infantry, Cavalry/);
-  assert.match(await status(), /Add your Squads' row/);
+  // Archers typed: their boxes lose the ghost, infantry and cavalry keep it, and the empty Squads' row is marked unknown.
+  assert.equal(await page.locator('[data-stat="arc.attack"]').evaluate(n => n.classList.contains('ghost')), false);
+  assert.equal(await page.locator('[data-stat="cav.health"]').getAttribute('placeholder'), '250');
+  assert.equal(await page.locator('tr.lead-squads').getAttribute('data-unknown'), '');
+  assert.equal(await page.locator('[data-target="lead-finder.saved"]').getAttribute('data-state'), 'saved', 'the seal shows the save');
 
   // A Bonus Overview screenshot from the import dock fills the table, Squads' row included.
   const held = await page.evaluate(() => {
@@ -60,7 +65,9 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal(held['ov-squads-attack'], null, 'the dock learns what each box held');
   await page.waitForFunction(() => (PlayerLedger.shared().combat().overview.squads || {}).health === 50.9);
   assert.equal(await page.locator('[data-stat="inf.attack"]').inputValue(), '218.5', 'a part-read row stays in its boxes');
-  assert.doesNotMatch(await status(), /Add your Squads' row/);
+  assert.equal(await page.locator('tr.lead-squads').getAttribute('data-unknown'), null, 'a whole Squads\' row clears the mark');
+  // Infantry is part-read (attack only), so its row is still needed.
+  assert.equal(await page.locator('[data-stat="inf.attack"]').evaluate(n => n.closest('tr').hasAttribute('data-unknown')), true);
 
   // A rally ranks against the four stock opponents.
   await page.locator('#leads label:has(input[value="rally"])').click();

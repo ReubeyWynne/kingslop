@@ -1,0 +1,124 @@
+/* Motifs: the interface shows these states instead of describing them in copy
+   (docs/prose-standard.md, "Show, don't tell"). Each is a class or attribute a
+   page puts on its own markup; nothing here applies until a page opts in. */
+
+/* The glossary page (/motifs/) shows each one live, with its markup.
+
+   Saved seal. A persisting value's status output shows a solid ❧ once it is
+   saved, a hollow one while a change is waiting, and a struck oxblood one when
+   saving fails. The word stays in the output for screen readers; only its glyph
+   is drawn. */
+.seal { display: inline-block; font-size: 0; line-height: 1; vertical-align: middle; }
+.seal:not(:empty)::before { content: "❧"; font-size: 1.15rem; color: var(--amber); }
+.seal[data-state="unsaved"]::before { color: transparent; -webkit-text-stroke: 1px var(--amber); }
+.seal[data-state="failed"]::before { display: inline-block; color: var(--oxblood); text-decoration: line-through; transform: rotate(-18deg); }
+
+/* Ghost ink. An assumed value sits in the field as a placeholder, in the
+   marginal-gloss voice, until you type your own. */
+input.ghost::placeholder { font-style: italic; color: var(--ink-muted); opacity: .7; }
+
+/* Unknown row. A row the result still needs keeps a dashed rule and a ? after
+   its label. */
+tr[data-unknown] :is(input, select) { border-bottom-style: dashed; border-bottom-color: var(--amber-dim); }
+tr[data-unknown] th::after { content: " ?"; color: var(--ink-muted); }
+
+/* Open-ended total. A total still missing inputs never closes: it trails a dim +?,
+   and the counts it is waiting for follow as ? marks. */
+output[data-open]::after { content: " +?"; font-style: italic; color: var(--ink-muted); }
+.unknowns { display: flex; flex-wrap: wrap; gap: .2rem .8rem; margin: .2rem 0 0; padding: 0; list-style: none; font-size: .85rem; font-style: italic; color: var(--ink-muted); }
+.unknowns li::before { content: "? "; font-style: normal; color: var(--amber-dim); }
+
+/* Shared-by dots. Under a shared value, one dot in each page's own hue for
+   every page that reads it. Each dot's title names its page. */
+.shared-by { display: inline-flex; gap: .3rem; align-items: center; margin-inline-start: .4rem; vertical-align: middle; }
+.shared-by i { width: .5rem; height: .5rem; border-radius: 50%; background: var(--hue, var(--ink-muted)); }
+.shared-by i[data-page="home"] { --hue: #F5C851; }
+.shared-by i[data-page="kvksg"] { --hue: #5FC8A6; }
+.shared-by i[data-page="bearhunt"] { --hue: #AEC878; }
+.shared-by i[data-page="vikings"] { --hue: #E08A3C; }
+.shared-by i[data-page="swordland"] { --hue: #E05555; }
+.shared-by i[data-page="vip"] { --hue: #C5A3EE; }
+.shared-by i[data-page="sim"] { --hue: #88A8F0; }
+.shared-by i[data-page="gear"] { --hue: #72CBDD; }
+.shared-by i[data-page="heroes"] { --hue: #E68AB4; }
+.shared-by i[data-page="masters"] { --hue: #A29BF4; }
+.shared-by i[data-page="governor"] { --hue: #86D48A; }
+.shared-by i[data-page="pets"] { --hue: #F0907A; }
+.shared-by i[data-page="buildings"] { --hue: #D8B08C; }
+.shared-by i[data-page="castle"] { --hue: #DFAA77; }
+.shared-by i[data-page="seasonal"] { --hue: #CAA0F1; }
+
+/* Blank, zero and unknown ink. Not counted yet is an empty dotted slot, none
+   is a solid 0, and unknown is a dim ?. Put data-tally on the field or the
+   output that holds the count. */
+[data-tally] { font-variant-numeric: lining-nums tabular-nums; }
+output[data-tally] { display: inline-block; min-width: 2.5ch; text-align: center; }
+[data-tally="blank"] { border-bottom: 1px dotted var(--ink-muted); }
+output[data-tally="blank"] { color: transparent; }
+[data-tally="zero"] { color: var(--ink); font-weight: 700; }
+[data-tally="unknown"] { color: var(--ink-muted); font-style: italic; }
+output[data-tally="unknown"]:empty::before { content: "?"; }
+
+/* Loose-leaf frame. A guest or link sheet is a torn, ruled leaf with an
+   unbound margin, so it never looks like your own ledger. */
+.loose-leaf {
+  --tooth: .45rem;
+  --rule: 1.75rem;
+  position: relative;
+  padding: calc(var(--tooth) + var(--rule) * .5) 1rem calc(var(--rule) * .5) 2.4rem;
+  line-height: var(--rule);
+  background:
+    linear-gradient(90deg, transparent 1.6rem, rgba(140, 48, 48, .55) 1.6rem calc(1.6rem + 1px), transparent calc(1.6rem + 1px)),
+    repeating-linear-gradient(transparent 0 calc(var(--rule) - 1px), rgba(241, 227, 194, .09) calc(var(--rule) - 1px) var(--rule)),
+    rgba(241, 227, 194, .04);
+  background-position: 0 0, 0 calc(var(--tooth) + var(--rule) * .5 + 1px), 0 0;
+  -webkit-mask:
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / calc(var(--tooth) * 2) var(--tooth) repeat-x,
+    linear-gradient(#000 0 0) 0 var(--tooth) / 100% calc(100% - var(--tooth)) no-repeat;
+          mask:
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / calc(var(--tooth) * 2) var(--tooth) repeat-x,
+    linear-gradient(#000 0 0) 0 var(--tooth) / 100% calc(100% - var(--tooth)) no-repeat;
+}
+
+/* Ink-well. A value you can change wears a dashed underline and the
+   ink-well cursor, so "tap to edit" never needs saying. */
+.inkwell {
+  border: 0; border-bottom: 1px dashed var(--amber-dim); background: none; color: inherit; font: inherit; padding: 0 .1rem;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M20 2 9 15' stroke='%23F1E3C2' stroke-width='1.6' stroke-linecap='round'/%3E%3Cpath d='M20 2c-3 1-6 4-7 7' stroke='%23F5C851' stroke-width='1.2' fill='none'/%3E%3Cpath d='M4 15h8l1 7H3z' fill='%230B0E16' stroke='%23F5C851' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E") 9 15, pointer;
+}
+.inkwell:hover, .inkwell:focus-visible { border-bottom-style: solid; border-bottom-color: var(--amber); outline: none; background: var(--signal-tint); }
+
+/* Best-day mark. On a day strip, the day an item scores on carries the ❧. */
+.days { display: flex; gap: .25rem; margin: 0; padding: 0; list-style: none; }
+.days li { min-width: 2.2rem; padding: .2rem .35rem; border: 1px solid var(--signal-line); text-align: center; font-size: .85rem; color: var(--ink-muted); }
+.days li[data-best] { color: var(--ink); border-color: var(--amber); }
+.days li[data-best]::after { content: " ❧"; color: var(--amber); }
+
+/* Source marks. A superscript on a number: ◆ one source, ◆◆ two that agree,
+   ◇ a community estimate. The page's one Sources disclosure holds the detail;
+   the mark's title names them. */
+sup.src { margin-inline-start: .1em; font-size: .6em; letter-spacing: -.05em; color: var(--amber-dim); cursor: help; }
+sup.src[data-src="1"]::before { content: "◆"; }
+sup.src[data-src="2"]::before { content: "◆◆"; }
+sup.src[data-src="est"]::before { content: "◇"; color: var(--ink-muted); }
+
+/* Example stamp. Sample data carries a faint stamp, the word taken from the
+   attribute so it translates, until your own data replaces it. */
+[data-example] { position: relative; }
+[data-example]::after {
+  content: attr(data-example); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-11deg);
+  padding: .15rem .8rem; border: 3px double currentColor; color: var(--oxblood); opacity: .55; pointer-events: none;
+  font-family: var(--display); font-size: clamp(1.1rem, 4vw, 2rem); letter-spacing: .25em; text-transform: uppercase; white-space: nowrap;
+}
+
+/* Undo in the toast. A toast for a reset or an apply carries its own undo,
+   so no sentence promises one. The page positions the toast. */
+.toast { display: flex; align-items: center; gap: .9rem; width: max-content; max-width: calc(100vw - 2rem); padding: .5rem .55rem .5rem .95rem; background: var(--ink); color: var(--void); font-style: italic; box-shadow: 0 14px 34px rgba(0, 0, 0, .55); }
+.toast .undo { padding: .15rem .3rem .15rem .9rem; border: 0; border-inline-start: 1px solid rgba(11, 14, 22, .25); background: none; color: var(--oxblood); font: inherit; font-style: normal; font-weight: 700; cursor: pointer; }
+.toast .undo:hover, .toast .undo:focus-visible { text-decoration: underline; outline: none; }
+
+/* Share-link preview. Beside a share button, a chip for each thing the link
+   carries; a struck chip is something it leaves behind. */
+.carries { display: inline-flex; flex-wrap: wrap; gap: .3rem; margin: 0 0 0 .5rem; padding: 0; list-style: none; vertical-align: middle; }
+.carries li { padding: .05rem .55rem; border: 1px solid var(--signal-line); border-radius: 999px; font-size: .8rem; color: var(--ink-dim); }
+.carries li[data-off] { border-style: dashed; color: var(--ink-muted); text-decoration: line-through; }

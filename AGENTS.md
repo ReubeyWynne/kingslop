@@ -15,3 +15,5 @@ The one exception is a live pet: `js/pet-live.js` may draw a pet's model as char
 Every disclosure is a link. Give each static `details` a stable readable id, and mark custom disclosure buttons with `data-deep-link`; see "Deep links" in [INTERACTIONS.md](INTERACTIONS.md). Do not add page-specific hash handlers.
 
 Keep roulette scenes centred in their cards. Ambient twinkles change glyphs at fixed positions. Smooth background colour blending remains allowed. Preserve static frames for reduced motion.
+
+Write English copy to [docs/prose-standard.md](docs/prose-standard.md). Show, don't tell: the interface explains itself through its visual motifs, and copy never describes how the site works. Only the game's screens may be described. Each line does only the job of the spot it sits in.

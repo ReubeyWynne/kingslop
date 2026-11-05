@@ -1,0 +1,181 @@
+---
+layout: page
+self: motifs
+---
+
+<main class="glossary-main">
+  <section class="section hero" id="top">
+    <h1>Motifs</h1>
+    <p class="lede">The marks this site uses where it would otherwise need a sentence. Each one is a class or an
+      attribute in <code>css/motifs.css</code>, and a page opts in on its own markup.</p>
+  </section>
+
+  <section class="section glossary" id="glossary" aria-label="Glossary">
+
+    <article class="motif" id="seal">
+      <h2>Saved seal</h2>
+      <p>A ❧ beside anything that keeps. Solid once it’s saved, hollow while a change is waiting, struck when saving fails.</p>
+      <div class="motif-demo">
+        <span class="demo-pair">Saved <output class="seal" data-state="saved">Saved</output></span>
+        <span class="demo-pair">Waiting <output class="seal" data-state="unsaved">Not saved yet</output></span>
+        <span class="demo-pair">Failed <output class="seal" data-state="failed">Couldn’t save</output></span>
+      </div>
+      <pre><code>&lt;output class="seal" data-state="saved|unsaved|failed"&gt;Saved&lt;/output&gt;</code></pre>
+      <p class="motif-replaces">Replaces “Saved on this device”, “Saved with your player save” and the save-failed warnings.</p>
+    </article>
+
+    <article class="motif" id="shared-by">
+      <h2>Shared-by dots</h2>
+      <p>A dot in each page’s colour, for every page that reads the same value. Hover a dot for its page.</p>
+      <div class="motif-demo">
+        <span>Town Centre level <b>25</b><span class="shared-by" role="img" aria-label="Also used by Buildings, Hero gear and Event Cycle"><i data-page="buildings" title="Buildings"></i><i data-page="gear" title="Hero gear"></i><i data-page="kvksg" title="Event Cycle"></i></span></span>
+      </div>
+      <pre><code>&lt;span class="shared-by" role="img" aria-label="Also used by …"&gt;
+  &lt;i data-page="buildings" title="Buildings"&gt;&lt;/i&gt; …
+&lt;/span&gt;</code></pre>
+      <p class="motif-replaces">Replaces “shared with hero gear and events” and “the Town Centre and Upgrade priority use them”.</p>
+    </article>
+
+    <article class="motif" id="ink">
+      <h2>Blank, zero and unknown</h2>
+      <p>An empty dotted slot hasn’t been counted. A solid 0 is none. A dim ? is unknown.</p>
+      <div class="motif-demo">
+        <table class="demo-table">
+          <tbody>
+            <tr><th scope="row">Mithril</th><td><output data-tally="blank"></output></td></tr>
+            <tr><th scope="row">Forgehammers</th><td><output data-tally="zero">0</output></td></tr>
+            <tr><th scope="row">Truegold</th><td><output data-tally="unknown"></output></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <pre><code>&lt;output data-tally="blank|zero|unknown"&gt;&lt;/output&gt;</code></pre>
+      <p class="motif-replaces">Replaces “blank means not counted yet”, “zero means none” and “? means unknown”.</p>
+    </article>
+
+    <article class="motif" id="unknown-row">
+      <h2>Unknown row</h2>
+      <p>A row the result still needs keeps a dashed rule and a ? after its name.</p>
+      <div class="motif-demo">
+        <table class="demo-table">
+          <tbody>
+            <tr><th scope="row">Infantry attack</th><td><input type="text" inputmode="decimal" value="312.4%" aria-label="Infantry attack"></td></tr>
+            <tr data-unknown><th scope="row">Squads’ attack</th><td><input type="text" inputmode="decimal" aria-label="Squads’ attack"></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <pre><code>&lt;tr data-unknown&gt;…&lt;/tr&gt;</code></pre>
+      <p class="motif-replaces">Replaces “Add your Squads’ row” as a standing note. The warning shows only when the row is missing.</p>
+    </article>
+
+    <article class="motif" id="ghost">
+      <h2>Ghost ink</h2>
+      <p>An assumed value sits in the field in faint italic. Type your own and it turns solid.</p>
+      <div class="motif-demo">
+        <label class="demo-pair">Cavalry attack <input class="ghost" type="text" inputmode="decimal" placeholder="250%"></label>
+      </div>
+      <pre><code>&lt;input class="ghost" placeholder="250%"&gt;</code></pre>
+      <p class="motif-replaces">Replaces “Using a typical generation 4 Bonus Overview until you enter yours”.</p>
+    </article>
+
+    <article class="motif" id="open-total">
+      <h2>Open-ended total</h2>
+      <p>A total that’s still missing something trails a +?, and what it’s waiting for follows.</p>
+      <div class="motif-demo">
+        <div><output class="demo-total" data-open>41,200</output>
+          <ul class="unknowns"><li>Amadeus</li><li>Jabel</li><li>Helga</li><li>2 more</li></ul></div>
+      </div>
+      <pre><code>&lt;output data-open&gt;41,200&lt;/output&gt;
+&lt;ul class="unknowns"&gt;&lt;li&gt;Amadeus&lt;/li&gt; …&lt;/ul&gt;</code></pre>
+      <p class="motif-replaces">Replaces “The total leaves out … until you enter them” and “There may be more points here”.</p>
+    </article>
+
+    <article class="motif" id="loose-leaf">
+      <h2>Loose leaf</h2>
+      <p>Someone else’s sheet, or one opened from a link, is a torn ruled leaf. It never looks like your own ledger.</p>
+      <div class="motif-demo">
+        <div class="loose-leaf">
+          <b>Kael’s hero gear</b>
+          <p>Helm 6 · Gloves 5 · Chest 6 · Boots 4</p>
+          <button type="button" class="demo-button">Keep a copy</button>
+        </div>
+      </div>
+      <pre><code>&lt;div class="loose-leaf"&gt;…&lt;/div&gt;</code></pre>
+      <p class="motif-replaces">Replaces the guest banners, “Changed on this page only” and “A preset opens as a copy”.</p>
+    </article>
+
+    <article class="motif" id="inkwell">
+      <h2>Ink-well</h2>
+      <p>A value you can change has a dashed underline and an ink-well pointer.</p>
+      <div class="motif-demo">
+        <span class="demo-pair">Helm <button type="button" class="inkwell" data-glossary="bump">Lv 6</button></span>
+        <span class="demo-pair">Gloves <button type="button" class="inkwell" data-glossary="bump">Lv 5</button></span>
+      </div>
+      <pre><code>&lt;button class="inkwell"&gt;Lv 6&lt;/button&gt;</code></pre>
+      <p class="motif-replaces">Replaces “tap a slot to edit”, “Tap a piece to set it” and “Tap one for its bill”.</p>
+    </article>
+
+    <article class="motif" id="best-day">
+      <h2>Best-day mark</h2>
+      <p>On a day strip, the day an item scores most carries the ❧.</p>
+      <div class="motif-demo">
+        <div><span class="demo-label">Speedups</span>
+          <ol class="days" aria-label="KvK prep days"><li>1</li><li>2</li><li data-best aria-label="3, best day">3</li><li>4</li><li>5</li></ol></div>
+      </div>
+      <pre><code>&lt;ol class="days"&gt;&lt;li&gt;1&lt;/li&gt; … &lt;li data-best&gt;3&lt;/li&gt; …&lt;/ol&gt;</code></pre>
+      <p class="motif-replaces">Replaces “Each kind counts on the KvK prep day that pays most” and “Each item counts once, on its best day”.</p>
+    </article>
+
+    <article class="motif" id="sources">
+      <h2>Source marks</h2>
+      <p>A small mark on a number. ◆ is one source, ◆◆ is two that agree, and ◇ is a community estimate. Hover for the names.</p>
+      <div class="motif-demo">
+        <span class="demo-pair">Attack <b>1,240</b><sup class="src" data-src="1" title="Kingshot Optimizer" aria-label="one source"></sup></span>
+        <span class="demo-pair">Health <b>9,800</b><sup class="src" data-src="2" title="Kingshot Optimizer and Kingshot Mastery" aria-label="two sources agree"></sup></span>
+        <span class="demo-pair">Bear damage <b>×1.35</b><sup class="src" data-src="est" title="Community estimate" aria-label="community estimate"></sup></span>
+      </div>
+      <pre><code>&lt;sup class="src" data-src="1|2|est" title="…"&gt;&lt;/sup&gt;</code></pre>
+      <p class="motif-replaces">Replaces “Only Kingshot Optimizer lists this master”, “Listed by two of the three sources” and “Community numbers, not official”.</p>
+    </article>
+
+    <article class="motif" id="example">
+      <h2>Example stamp</h2>
+      <p>Sample data carries a faint stamp until your own replaces it.</p>
+      <div class="motif-demo">
+        <table class="demo-table" data-example="Example">
+          <tbody>
+            <tr><th scope="row">Infantry</th><td>120,000</td></tr>
+            <tr><th scope="row">Cavalry</th><td>90,000</td></tr>
+            <tr><th scope="row">Archers</th><td>110,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <pre><code>&lt;table data-example="Example"&gt;…&lt;/table&gt;</code></pre>
+      <p class="motif-replaces">Replaces “Example troops. Tap the button to enter yours.” and “Example times”.</p>
+    </article>
+
+    <article class="motif" id="undo">
+      <h2>Undo in the toast</h2>
+      <p>A reset or an apply says what it did and offers its own undo.</p>
+      <div class="motif-demo motif-demo-stack">
+        <p class="demo-gear">Hero gear: <output data-glossary="gear">12 pieces set</output></p>
+        <button type="button" class="demo-button" data-glossary="reset">Reset</button>
+        <div class="toast" role="status" data-glossary="toast" hidden><span>Reset 12 pieces.</span><button type="button" class="undo" data-glossary="undo">Undo</button></div>
+      </div>
+      <pre><code>&lt;div class="toast" role="status"&gt;
+  &lt;span&gt;Reset 12 pieces.&lt;/span&gt;&lt;button class="undo"&gt;Undo&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+      <p class="motif-replaces">Replaces “You can undo this” on the hero gear reset and the import panel.</p>
+    </article>
+
+    <article class="motif" id="share">
+      <h2>Share-link preview</h2>
+      <p>Beside a share button, a chip for each thing the link carries. A struck chip stays behind.</p>
+      <div class="motif-demo">
+        <span><button type="button" class="demo-button">Copy link</button><ul class="carries"><li>goal</li><li>your levels</li><li data-off>notes</li></ul></span>
+      </div>
+      <pre><code>&lt;ul class="carries"&gt;&lt;li&gt;goal&lt;/li&gt; … &lt;li data-off&gt;notes&lt;/li&gt;&lt;/ul&gt;</code></pre>
+      <p class="motif-replaces">Replaces “A plain link opens the goal with each reader’s own levels” and “Copy share link sends exactly what you see”.</p>
+    </article>
+
+  </section>
+</main>

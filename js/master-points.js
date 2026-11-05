@@ -5,7 +5,7 @@
   'use strict';
   var EN = {
     'missing.masters': 'your masters', 'missing.affinity': '{master} affinity', 'missing.skills': '{master} skill levels', 'missing.emblems': '{master} emblems',
-    total: '{n} KvK prep points', complete: 'Every master count this uses is entered.', partial: 'Partial: {names} not entered yet, so the total leaves them out.', more: '{n} more',
+    total: '{n} KvK prep points', complete: 'Every master count this uses is entered.', partial: 'The total leaves out {names} until you enter them.', more: '{n} more',
     empty: 'Mark the masters you have unlocked, with their affinity and skill levels, to see what their emblems and manuscripts can score.',
     none: '—', classStep: '→ {name}', emblemPieces: '{own} own + {general} general', skillSteps: '{n} skill levels', learning: '{n} learning XP',
     eventEmblems: 'Emblems', eventManuscripts: 'Manuscripts', left: 'Unused: {general} general emblems, {manuscripts} manuscripts.', unknownCount: '?'

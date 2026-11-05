@@ -1025,13 +1025,13 @@
     }
   },
   "reasons": {
-    "defenderWidget": "Recorded defender widget; compare the full developed kit.",
-    "rallyWidget": "Recorded rally widget; compare the full developed kit.",
-    "firstDefence": "First skill supports defence; use in slot 1 when assigned.",
-    "firstDamage": "First skill supports damage; coordinate slot 1 and skill level.",
-    "petra": "Avoid duplicate Petras in one rally; follow the alliance policy.",
-    "amadeus": "Use as a joiner when not needed to lead a rally.",
+    "defenderWidget": "Has a defender widget.",
+    "rallyWidget": "Has a rally widget.",
+    "firstDefence": "Its first skill helps defence.",
+    "firstDamage": "Its first skill adds damage.",
+    "petra": "One per rally is enough.",
+    "amadeus": "Join with him when he isn’t leading.",
     "hilde": "Some alliances exclude Hilde from Bear joins; permission is required.",
-    "bearAlternative": "Generation 2 alternative to Amadeus; compare developed damage skills, not the defensive widget skill."
+    "bearAlternative": "A generation 2 stand-in for Amadeus."
   }
 }
