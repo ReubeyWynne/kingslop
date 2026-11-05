@@ -114,34 +114,35 @@ html, body { overflow-x: clip; }
   pointer-events: none;
   overflow: hidden;
 }
-/* Each layer is a composited bitmap the size of its box at the screen's pixel
-   density, so a layer only overhangs the viewport by as far as it drifts
-   (the drifts below are in vw/vh, at most 14.4vh). At 180% of the viewport a
-   phone at 3x spent about 30 MB a layer, enough with the home page's hover
-   fields for iOS Safari to kill the tab. */
+/* The motes drift by sliding each layer's dot pattern (background-position),
+   not by moving the layer. A moving layer is its own GPU bitmap at the
+   screen's pixel density, and three oversized ones (eighteen on home) were
+   enough for iOS Safari to kill the tab. The drift is a pixel or two a
+   second, so each layer steps (steps(240) over 60 to 220 s, one to four
+   repaints a second, under a pixel each) instead of repainting every frame.
+   The whole field is then one viewport-sized surface. */
 .dust i {
-  position: absolute; inset: -15vh -8vw;
+  position: absolute; inset: 0;
   background-repeat: repeat;
-  will-change: transform;
 }
 .dust i:nth-child(1) {
   background-image: radial-gradient(circle, var(--ember) 1px, transparent 1.8px);
   background-size: 110px 110px;
-  animation: dust-drift 150s linear infinite;
+  animation: dust-drift 150s steps(240) infinite;
 }
 .dust i:nth-child(2) {
   background-image: radial-gradient(circle, var(--ember-2) 1.6px, transparent 2.4px);
   background-size: 170px 170px;
-  animation: dust-drift 95s linear infinite reverse;
+  animation: dust-drift 95s steps(240) infinite reverse;
 }
 .dust i:nth-child(3) {
   background-image: radial-gradient(circle, var(--ember-3) 2.2px, transparent 3.2px);
   background-size: 250px 250px;
-  animation: dust-drift 60s linear infinite;
+  animation: dust-drift 60s steps(240) infinite;
 }
 @keyframes dust-drift {
-  from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(-7.2vw, -5.4vh, 0); }
+  from { background-position: 0 0; }
+  to   { background-position: -7.2vw -5.4vh; }
 }
 
 /* ─── Base surfaces ───────────────────────────────────── */
