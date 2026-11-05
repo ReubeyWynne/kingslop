@@ -25,6 +25,16 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal(await page.locator('[data-target="lead-finder.panel"] tr').count(), 3, 'report panel per troop type');
   assert.match(await page.locator('[data-target="lead-finder.panel"] tr').first().locator('td').first().textContent(), /^\+\d/);
   assert.equal(await page.locator('.lead-foes').isHidden(), true, 'no opponents for the Bear');
+  // The best Bear lineup's damage for one march of 1/15 of the rally capacity, estimated from the joiner cap until typed.
+  assert.match(await page.locator('.lead-damage').textContent(), /85,000 troops = 1\/15 of a 1,275,000 rally \(estimated/);
+  const damageAt = () => page.locator('.lead-damage-value').textContent();
+  const estimated = await damageAt();
+  await page.locator('#bonus-overview summary').click();
+  await page.locator('[data-target="lead-finder.rallyCap"]').fill('1800000');
+  await page.locator('[data-target="lead-finder.rallyCap"]').press('Tab');
+  await page.waitForFunction(() => /120,000 troops = 1\/15 of a 1,800,000 rally\.$/.test(document.querySelector('.lead-damage .lead-answer-note').textContent));
+  assert.notEqual(await damageAt(), estimated, 'a bigger rally, a bigger march, more damage');
+  await page.locator('#bonus-overview summary').click();
 
   // Typing a whole troop row saves it as the Bonus Overview, not as report stats.
   await page.locator('#bonus-overview summary').click();
@@ -69,6 +79,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem('ks.lead-finder.v1')));
   assert.deepEqual(prefs.joiners.bear.map(j => j.key), ['chenko', 'yeonwoo', 'amane']);
   assert.equal(prefs.city.attack, 20);
+  assert.equal(prefs.rallyCap, 1800000, 'the rally capacity is remembered');
   await page.locator('[data-action="lead-finder.resetJoiners"]').click();
   await page.waitForFunction(() => document.querySelector('[data-joiner="3"][data-field="key"]').value === 'margot');
 

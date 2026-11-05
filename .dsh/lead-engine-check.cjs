@@ -114,6 +114,9 @@ near(L.uptime({ kind: 'everyN', every: 4, offset: 3, turns: 1 }), 0.2, 'every fo
   near(mix[0] + mix[1] + mix[2], 1, 'the ideal mix is whole');
   assert.ok(mix[2] > 0.5, 'archers carry the Bear');
 }
+// Bear damage on the Frakinator's scale: (1.2 / 1000) × √5000 × √N × √Σ term², and √N in the march size.
+near(L.bearDamage(2, 5000), 1.2 * 5000 * 2, 'the scale');
+near(L.bearDamage(1, 400000) / L.bearDamage(1, 100000), 2, 'four times the troops, twice the damage');
 // Chance effects of one code never stack: only the strongest is active, duplicates are dead; fixed ones add.
 near(L.bearMod([{ kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 50 }] }, { kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 40 }] }])[0], 1.5, 'two sure chance skills: the larger');
 near(L.bearMod([{ kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }, { kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }])[0], 1.25, 'two coin flips: the duplicate is dead');

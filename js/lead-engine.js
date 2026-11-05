@@ -269,6 +269,12 @@
     return { score: Math.sqrt(sq) / 1000, mix: terms.map(function (x) { return x * x / sq; }), panel: p };
   }
 
+  // The Bear damage of one march at the lineup's ideal mix (MATHS.md §1, §5): each troop type
+  // deals (1.2 / 1000) × √5000 × √N_t × base_att_t × A_t × SkillMod_t, so at the ideal split
+  // the march deals (1.2 / 1000) × √5000 × √N × √Σ term² = 1.2 × √5000 × √N × bear().score.
+  // An estimate on the Frakinator's scale, for one participant's march of `troops`.
+  function bearDamage(score, troops) { return 1.2 * Math.sqrt(5000) * Math.sqrt(Math.max(0, num(troops))) * score; }
+
   // A stock opponent at one generation: the tier's loadout for that generation
   // gives its lineup, stats, Truegold, hero gear, joiners, pets and city.
   var SLOTS = ['helm', 'gloves', 'chest', 'boots'];
@@ -430,7 +436,7 @@
   }
 
   var api = {
-    stockAccount: stockAccount, score: score, seated: seated, walker: walker, breakpoint: breakpoint, firstBreak: firstBreak,
+    bearDamage: bearDamage, stockAccount: stockAccount, score: score, seated: seated, walker: walker, breakpoint: breakpoint, firstBreak: firstBreak,
     TYPES: TYPES, STAR_SKILLS: STAR_SKILLS, copyOf: copyOf, statLine: statLine, widgetStat: widgetStat, gearLayer: gearLayer, townLayer: townLayer, TOWN_TG: TOWN_TG, panel: panel, reportPanel: reportPanel,
     uptime: uptime, bearMod: bearMod, bear: bear, opponent: opponent, loadout: loadout, fight: fight, candidates: candidates, lineups: lineups, rank: rank,
     LAYER_KEYS: LAYER_KEYS, blank: blank, petLevelPct: petLevelPct, petLayer: petLayer, cityLayer: cityLayer, layered: layered, battleSide: battleSide

@@ -17,6 +17,8 @@
     ahead: '{n}% more Bear damage than your next lineup', tie: 'Level with your next lineup', only: 'Your only lineup',
     beats: 'Beats {n} of {total} opponents', mixTitle: 'Send this troop mix',
     mixNote: 'The split that gets the most damage out of these three heroes and your stats.',
+    damageTitle: 'Estimated Bear damage', damageNote: '{n} = 1/15 of a {cap} rally{est}.', estimated: ' (estimated: 15 × joiner cap)',
+    troops: '{n} troops',
     railTitle: 'Against each opponent', railNote: 'Win chance over repeated fights, and how much of your army is still standing.', win: '{n}%', empty: 'empty seat',
     foesNote: 'Generation {n} accounts, both sides at {total} troops. Win chance per opponent:',
     kit: 'At generation {gen}: {stars}★ heroes, widgets at {widget}, {pct}% Bonus Overview, TG{tg}, {gear} hero gear, level {joiners} joiners, pets at {pets}, {city}.',
@@ -51,6 +53,14 @@
       var saved = prefs.joiners[job];
       return Array.isArray(saved) ? saved.filter(function (j) { return j && data.heroes[j.key]; }).map(function (j) { return { key: j.key, level: Math.max(1, Math.min(5, j.level | 0)) }; }) : usualJoiners(gen);
     }
+    // The Bear rally's capacity: yours as typed, else 15 × the joiner cap saved on the Bear Hunt
+    // page (85k unless changed), since an alliance sets that cap so a full rally holds 15 marches.
+    function rallyCap() {
+      if (prefs.rallyCap > 0) return { cap: prefs.rallyCap, estimated: false };
+      var join = 85000;
+      try { var bh = JSON.parse(localStorage.getItem('bh:bear-allocator:v1') || 'null'); if (bh && Number(bh['join-cap']) > 0) join = Number(bh['join-cap']); } catch (cause) { /* the usual cap */ }
+      return { cap: join * 15, estimated: true };
+    }
     function cityOf() { var out = {}; Object.keys(prefs.city || {}).forEach(function (k) { out[k] = Number(prefs.city[k]) || 0; }); return out; }
     // Hero gear saved on the Hero Gear page, by troop type; nothing saved adds nothing.
     function gearOf() {
@@ -77,6 +87,10 @@
       var city = cityOf();
       context.targets('city').forEach(function (select) { select.value = String(city[select.dataset.city] || 0); });
       context.targets('usePets').forEach(function (box) { box.checked = prefs.usePets !== false; });
+      context.targets('rallyCap').forEach(function (input) {
+        input.placeholder = api.fmt(rallyCap().cap);
+        if (input !== document.activeElement) input.value = prefs.rallyCap ? String(prefs.rallyCap) : '';
+      });
       var levels = {};
       try { var roster = store ? store.pets().roster : {}; Object.keys(roster).forEach(function (id) { levels[id] = roster[id].level; }); } catch (cause) { /* no pets */ }
       var lines = data.pets.filter(function (pet) { return L.petLevelPct(pet, levels[pet.id]) > 0; }).map(function (pet) {
@@ -92,6 +106,8 @@
       prefs.city = {};
       context.targets('city').forEach(function (select) { if (Number(select.value)) prefs.city[select.dataset.city] = Number(select.value); });
       prefs.usePets = context.targets('usePets').every(function (box) { return box.checked; });
+      var cap = context.targets('rallyCap')[0];
+      if (cap) { if (cap.value !== '' && cap.validity.valid && Number(cap.value) > 0) prefs.rallyCap = Number(cap.value); else delete prefs.rallyCap; }
       writePrefs(prefs);
     }
 
@@ -265,6 +281,13 @@
           legend.appendChild(key);
         });
         answer.append(bar, legend, el('p', 'lead-answer-note', t('mixNote')));
+        var rc = rallyCap(), march = Math.floor(rc.cap / 15), counts = TYPES.map(function (type, i) { return Math.round(march * r.mix[i]); });
+        var damage = el('div', 'lead-damage');
+        damage.append(el('p', 'lead-kicker', t('damageTitle')), el('b', 'lead-damage-value', api.compact(L.bearDamage(r.score, march))));
+        var split = el('span', 'lead-damage-split');
+        TYPES.forEach(function (type, i) { var part = el('span'); part.dataset.troop = type; part.append(mark('troop-' + type), el('span', '', api.fmt(counts[i]))); split.appendChild(part); });
+        damage.append(split, el('p', 'lead-answer-note', fill('damageNote', { n: fill('troops', { n: api.fmt(march) }), cap: api.fmt(rc.cap), est: rc.estimated ? t('estimated') : '' })));
+        answer.appendChild(damage);
       } else {
         answer.appendChild(el('p', 'lead-kicker', t('railTitle')));
         answer.append(rail(r, true), el('p', 'lead-answer-note', t('railNote')));
