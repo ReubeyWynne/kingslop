@@ -193,3 +193,13 @@
 /* Troops — the capacity buff is a switch: its gem greys out while off. */
 .town-tile[data-state="off"] .town-tile-art img, .town-tile[data-state="off"] .town-monogram { filter: grayscale(.7); opacity: .55; }
 .town-tile[data-state="off"] .town-tile-count { color: var(--ink-muted); border-color: var(--signal-line); }
+
+/* Motifs on this page (css/motifs.css): a tile's count is the ink-well, kept as its badge. */
+.town-tile .town-tile-count.inkwell { border-bottom-style: dashed; background: var(--void); padding: .05rem .3rem; }
+.town-saved { display: inline-flex; align-items: center; gap: .2rem; }
+.town-plan:has(.days) { padding-inline-start: 0; list-style: none; }
+.town-plan > li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .3rem .8rem; padding: .25rem 0; }
+.town-plan .days li { min-width: 1.9rem; padding: .05rem .25rem; font-size: .78rem; }
+.town-troop-facts dt .src, .town-note .src { font-size: .75em; }
+.town-troop-facts dt .motif-names { text-transform: none; }
+#town-shared-by .motif-names { inset-inline-start: auto; inset-inline-end: -.3rem; }
