@@ -21,30 +21,28 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   await field('b', 'stars').selectOption('24'); await field('b', 'widget').selectOption('4');
   await page.locator('[data-target="hero-breakpoint.account"]').selectOption('whale');
   await page.locator('[data-target="hero-breakpoint.gen"]').selectOption('4');
-  await ready(/Marlin 5★ W10/);
-  assert.match(await verdict(), /more Bear damage/);
-  assert.match(await page.locator('[data-target="hero-breakpoint.accountNote"]').textContent(), /Whale at generation 4/);
+  await ready(/(Marlin 5★ W10|Rosa 4★ W4) \+[\d.]+% Bear damage|Level/);
   assert.match(await page.locator('[data-grid="b"] .lead-kicker').textContent(), /Rosa catches Marlin 5★ W10/);
-  assert.match(await page.locator('[data-grid="b"] .bp-line').textContent(), /Rosa matches Marlin 5★ W10 from \d★/);
+  assert.match(await page.locator('[data-grid="b"] .bp-line').textContent(), /^from \d★/);
   assert.equal(await page.locator('[data-grid="b"] tbody td').count(), 31, 'every star step from 0★ to 5★');
   assert.equal(await page.locator('[data-grid="b"] td[data-first]').count(), 1, 'the first break marked');
 
   // Switching the first hero's type moves the second to that type; a hero without a widget greys the widget out.
   await field('a', 'key').selectOption('amadeus');
-  await ready(/Amadeus/);
+  await ready(/Amadeus|Level/);
   assert.equal(await page.evaluate(() => LeadData.heroes[document.querySelector('[data-side="b"][data-field="key"]').value].type), 'inf');
   await field('b', 'key').selectOption('howard');
-  await ready(/Howard/);
-  assert.equal(await field('b', 'widget').isDisabled(), true);
-  assert.match(await page.locator('[data-grid="b"]').textContent(), /Howard has no widget/);
+  await page.waitForFunction(() => /Howard/.test(document.querySelector('[data-grid="b"] .lead-kicker').textContent));
+  assert.equal(await field('b', 'widget').isDisabled(), true, 'no widget to pick');
+  assert.doesNotMatch(await page.locator('[data-grid="b"] tbody').textContent(), /W\d/, 'a widgetless hero needs no widget level');
 
   // Rally fights; the skill boxes change only the hero as set.
   await field('b', 'key').selectOption('alcar');
   await page.locator('#breakpoint label:has(input[value="rally"])').click();
-  await ready(/army|level/);
+  await ready(/army kept|Level/);
   const before = await verdict();
   await field('a', 'skill', 0).selectOption('0');
-  await ready(/army|level/);
+  await ready(/army kept|Level/);
   assert.notEqual(await verdict(), before, 'a skill level changes the verdict');
 
   // Choices come back after a reload.

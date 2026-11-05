@@ -6,23 +6,15 @@
 (function () {
   'use strict';
   var EN = {
-    'side.a': 'First hero', 'side.b': 'Second hero',
     sameHero: 'Pick two different heroes.',
-    working: 'Comparing… {n}%',
-    'account.mineNote': 'Your saved Bonus Overview, troops, gear, Truegold and pets. {missing}',
-    'account.typical': 'Typical generation {n} stats ({pct}%) where your Bonus Overview is not saved.',
-    'account.stock': '{name} at generation {n}: {stars}★ teammates, widgets at {widget}, TG{tg}.',
-    team: 'Beside {team}, with {joiners}.', noJoiners: 'no joiners', joinersList: 'joiners {list}', and: ' and ',
-    'verdict.bear.ahead': '{winner} does {n}% more Bear damage than {loser}.',
-    'verdict.fight.ahead': '{winner} keeps {n} points more of the army than {loser} on average.',
-    'verdict.level': '{a} and {b} are level.',
-    'catch.title': 'When {hero} catches {rival} as set',
-    'catch.any': '{hero} matches {rival} from {stars} with widget {widget}.',
-    'catch.bare': '{hero} matches {rival} from {stars} without a widget.',
-    'catch.bareToo': 'Without a widget, from {stars}.',
-    'catch.never': 'Even at 5★ with every widget level, {hero} does not catch {rival}.',
-    'catch.always': '{hero} matches {rival} from 0★ with no widget.',
-    noWidget: '{hero} has no widget; only the stars count.',
+    working: '{n}%…',
+    'verdict.bear': '{winner} +{n}% Bear damage',
+    'verdict.fight': '{winner} +{n} pts army kept',
+    'verdict.level': 'Level',
+    'catch.title': '{hero} catches {rival}',
+    'catch.at': 'from {stars} W{widget}',
+    'catch.bare': 'from {stars}, no widget',
+    'catch.never': 'never',
     starN: '{n}★', tier: '{n}/6', w: 'W{n}', yes: '✓', no: '—'
   };
   var PREFS = 'ks.hero-breakpoint.v1', LEAD_PREFS = 'ks.lead-finder.v1';
@@ -127,12 +119,12 @@
     // ---- The account ---------------------------------------------------------
     // Yours: the lead finder's sources, read the same way (js/lead-finder.js).
     function mine(gen, which) {
-      var saved = combat(), typical = data.megafauna.overview[String(gen)], rows = saved.overview || {}, out = {}, missing = [];
+      var saved = combat(), typical = data.megafauna.overview[String(gen)], rows = saved.overview || {}, out = {};
       function whole(row) { return row && STATS.every(function (k) { return typeof row[k] === 'number'; }); }
       var squads = whole(rows.squads) ? rows.squads : null;
       TYPES.forEach(function (type) {
         if (whole(rows[type])) { out[type] = {}; STATS.forEach(function (k) { out[type][k] = rows[type][k] + (squads ? squads[k] : 0); }); }
-        else { missing.push(type); out[type] = { attack: typical, lethality: typical, defense: typical, health: typical }; }
+        else { out[type] = { attack: typical, lethality: typical, defense: typical, health: typical }; }
       });
       var best = null;
       (saved.troops || []).forEach(function (row) { if (!best || row.tier > best.tier || (row.tier === best.tier && row.tg > best.tg)) best = row; });
@@ -154,17 +146,15 @@
           city: L.cityLayer(city), pets: prefs.usePets === false ? L.blank() : L.petLayer(levels, data),
           gear: L.gearLayer(pieces), town: L.townLayer(town)
         },
-        lineup: TYPES.map(function (type, i) { return by[type][0] || dolphin.lineup[i]; }),
-        note: fill('account.mineNote', { missing: missing.length ? fill('account.typical', { n: api.fmt(gen), pct: api.fmt(typical) }) : '' }).trim()
+        lineup: TYPES.map(function (type, i) { return by[type][0] || dolphin.lineup[i]; })
       };
     }
     function account(gen, which) {
       var id = context.targets('account')[0].value;
       if (id === 'mine') return mine(gen, which);
       var foe = data.megafauna.foes.filter(function (f) { return f.id === id; })[0] || data.megafauna.foes[1];
-      var acc = L.stockAccount(foe, gen, which, data), kit = L.loadout(foe, gen, data);
-      var stars = Math.floor(kit.stars / 6) + (kit.stars % 6 ? ' ' + (kit.stars % 6) + '/6' : '');
-      return { account: acc, lineup: acc.lineup, note: fill('account.stock', { name: api.tr('leads.foe.' + foe.id, foe.name), n: api.fmt(gen), stars: stars, widget: api.fmt(kit.widget), tg: api.fmt(kit.tg) }) };
+      var acc = L.stockAccount(foe, gen, which, data);
+      return { account: acc, lineup: acc.lineup };
     }
 
     // ---- Painting --------------------------------------------------------------
@@ -174,23 +164,17 @@
       var node = context.targets('face').filter(function (n) { return n.dataset.side === side; })[0];
       if (!node) return;
       var img = el('img'); img.src = '../img/heroes/' + copy.key + '.webp'; img.alt = ''; img.width = 56; img.height = 56; img.loading = 'lazy'; img.decoding = 'async';
-      node.replaceChildren(img, el('b', '', data.heroes[copy.key].name));
+      node.replaceChildren(img);
     }
     // One block: the sentence, then the 0★–4★ rows of six tiers and the 5★ cell.
     function grid(side, hero, rival, r) {
       var block = context.targets('grid').filter(function (n) { return n.dataset.grid === side; })[0];
       var names = { hero: data.heroes[hero.key].name, rival: label(rival) };
       block.replaceChildren(el('p', 'lead-kicker', fill('catch.title', names)));
-      var first = L.firstBreak(r.widgets), line;
-      if (!first.any) line = fill('catch.never', names);
-      else if (first.any.stars === 0 && first.any.widget === 0) line = fill('catch.always', names);
-      else if (first.bare && first.bare.stars === first.any.stars) line = fill('catch.bare', { hero: names.hero, rival: names.rival, stars: starsText(first.bare.stars) });
-      else {
-        line = fill('catch.any', { hero: names.hero, rival: names.rival, stars: starsText(first.any.stars), widget: api.fmt(first.any.widget) });
-        if (first.bare) line += ' ' + fill('catch.bareToo', { stars: starsText(first.bare.stars) });
-      }
-      block.appendChild(el('p', 'bp-line', line));
-      if (!r.top) block.appendChild(el('p', 'lead-answer-note', fill('noWidget', { hero: names.hero })));
+      var first = L.firstBreak(r.widgets), parts = [];
+      if (first.any && first.any.widget > 0) parts.push(fill('catch.at', { stars: starsText(first.any.stars), widget: api.fmt(first.any.widget) }));
+      if (first.bare) parts.push(fill('catch.bare', { stars: starsText(first.bare.stars) }));
+      block.appendChild(el('p', 'bp-line', parts.length ? parts.join(' · ') : t('catch.never')));
       var table = el('table', 'bp-grid'), head = el('tr'), body = el('tbody');
       head.appendChild(el('td'));
       for (var tier = 0; tier < 6; tier++) { var th = el('th', '', tier ? fill('tier', { n: api.fmt(tier) }) : '—'); th.scope = 'col'; head.appendChild(th); }
@@ -212,20 +196,9 @@
       block.appendChild(table);
     }
     function verdict(which, a, b, sa, sb) {
-      var na = label(a), nb = label(b), diff;
-      if (which === 'bear') {
-        diff = Math.abs(sa / sb - 1) * 100;
-        if (diff < 0.05) return fill('verdict.level', { a: na, b: nb });
-        return fill('verdict.bear.ahead', { winner: sa > sb ? na : nb, loser: sa > sb ? nb : na, n: api.fmt(Math.round(diff * 10) / 10) });
-      }
-      diff = Math.abs(sa - sb) * 100;
-      if (diff < 0.05) return fill('verdict.level', { a: na, b: nb });
-      return fill('verdict.fight.ahead', { winner: sa > sb ? na : nb, loser: sa > sb ? nb : na, n: api.fmt(Math.round(diff * 10) / 10) });
-    }
-    function teamLine(lineup, type, acc) {
-      var team = lineup.filter(function (c, i) { return c && TYPES[i] !== type; }).map(label);
-      var joiners = acc.joiners && acc.joiners.length ? fill('joinersList', { list: acc.joiners.map(function (j) { return data.heroes[j.key].name + ' ' + api.fmt(j.level); }).join(', ') }) : t('noJoiners');
-      return fill('team', { team: team.join(t('and')), joiners: joiners });
+      var diff = which === 'bear' ? Math.abs(sa / sb - 1) * 100 : Math.abs(sa - sb) * 100;
+      if (diff < 0.05) return t('verdict.level');
+      return fill(which === 'bear' ? 'verdict.bear' : 'verdict.fight', { winner: label(sa > sb ? a : b), n: api.fmt(Math.round(diff * 10) / 10) });
     }
 
     function run() {
@@ -235,7 +208,6 @@
       face('a', a); face('b', b);
       if (a.key === b.key) { result.hidden = true; put('status', t('sameHero')); return; }
       var acc = account(gen, which);
-      put('accountNote', acc.note);
       var opts = {}, you = acc.account, lineup = acc.lineup;
       // B against A as set, then A against B as set: two walks, a few scores per tick.
       var walks = [L.walker(which, you, lineup, a, b.key, gen, data, opts), L.walker(which, you, lineup, b, a.key, gen, data, opts)];
@@ -247,7 +219,6 @@
         if (at < 2) { put('status', fill('working', { n: api.fmt(Math.round((at + walks[at].progress()) * 50)) })); setTimeout(step, 0); return; }
         put('status', '');
         put('verdict', verdict(which, a, b, sa, sb));
-        put('team', teamLine(lineup, a.type, you));
         grid('b', b, a, walks[0].result());
         grid('a', a, b, walks[1].result());
         result.hidden = false;
