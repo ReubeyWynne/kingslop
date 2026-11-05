@@ -14,10 +14,10 @@
     count: '{n} pets', owned: '{n} tamed', needs: '{n} need you', lv: 'Lv {n}',
     'mood.asleep': 'Asleep', 'mood.hungry': 'Hungry', 'mood.lonely': 'Lonely', 'mood.delighted': 'Delighted', 'mood.content': 'Content', 'mood.restless': 'Restless', pat: 'Pet',
     next: 'Next Advance at level {level}: {cost}. Worth {points} KvK prep points.', nextOnly: 'Next Advance at level {level}: {cost}.', top: 'Every Advance is done.',
-    tomax: 'To level {max} with every Advance: {cost}, {n} Advances, {points} KvK prep points.', unread: 'Enter its level to see what comes next.',
+    tomax: 'To level {max} with every Advance: {cost}, {n} Advances, {points} KvK prep points.',
     'm.petFood': '{n} Pet Food', 'm.growthManual': '{n} Growth Manuals', 'm.nutrientPotion': '{n} Nutrient Potions', 'm.promotionMedallion': '{n} Promotion Medallions', free: 'nothing more',
-    skillNow: 'skill level {n}', total: '{points} KvK prep points from your next Advances', none: 'Tame a pet and enter its level to count its Advances.',
-    eventNext: 'Next Advances', eventMax: 'Every Advance', unknownPets: 'Unread levels: {names}.', allRead: 'Every tamed pet counted.',
+    skillNow: 'skill level {n}', total: '{points} KvK prep points from your next Advances',
+    eventNext: 'Next Advances', eventMax: 'Every Advance',
     'bond.new': 'Getting acquainted', 'bond.familiar': 'Familiar', 'bond.close': 'Close companion', 'bond.trusted': 'Trusted friend',
     bondDays: 'Care days: {n}', bondHint: 'Grows with care on different days. Never lost when you are away.',
     'spot.head': 'Head', 'spot.cheeks': 'Cheeks', 'spot.chin': 'Chin', favourite: 'Favourite spot: {spot}',
@@ -79,7 +79,7 @@
       var next = Plan.nextAdvance(pet, copy), max = Plan.toMax(pet, copy);
       find(record.node, 'next').forEach(function (node) {
         if (!copy) { node.textContent = ''; return; }
-        if (copy.level === null) { node.textContent = t(api, 'unread'); return; }
+        if (copy.level === null) { node.textContent = ''; return; }
         node.textContent = !next ? t(api, 'top') : api.fill(t(api, 'next'), { level: api.fmt(next.level), cost: costText(api, next.cost), points: api.fmt(next.cost.kvk) });
       });
       find(record.node, 'tomax').forEach(function (node) {
@@ -89,7 +89,7 @@
       record.form.querySelectorAll('[data-field]').forEach(function (input) {
         if (input === document.activeElement && input.type !== 'checkbox') return;
         if (input.dataset.field === 'advanced') { input.checked = Boolean(copy && copy.advanced); input.disabled = !copy; }
-        else { input.value = copy && copy.level !== null ? copy.level : ''; input.disabled = !copy; }
+        else { input.value = copy && copy.level !== null ? copy.level : ''; input.disabled = !copy; if (copy && copy.level === null) input.dataset.tally = 'unknown'; else delete input.dataset.tally; }
       });
     }
     function render() {
@@ -285,9 +285,10 @@
       if (nextScore) events.push({ label: t(api, 'eventNext'), cells: window.EventPoints.forPets(nextScore) });
       if (maxScore) events.push({ label: t(api, 'eventMax'), cells: window.EventPoints.forPets(maxScore) });
       context.targets('events').forEach(function (node) { node.replaceChildren(); if (events.length) node.appendChild(window.EventPoints.table(api, events, 'hero-event-points')); });
-      context.targets('total').forEach(function (node) { node.textContent = rows.length ? api.fill(t(api, 'total'), { points: api.fmt(total) }) : '—'; });
+      context.targets('total').forEach(function (node) { node.textContent = rows.length ? api.fill(t(api, 'total'), { points: api.fmt(total) }) : '—'; node.toggleAttribute('data-open', rows.length > 0 && unread.length > 0); });
+      // Tamed pets without a level: the total stays open, and each one waits as a ? beneath it.
       context.targets('coverage').forEach(function (node) {
-        node.textContent = !rows.length && !unread.length ? t(api, 'none') : unread.length ? api.fill(t(api, 'unknownPets'), { names: unread.join(', ') }) : t(api, 'allRead');
+        node.replaceChildren.apply(node, unread.map(function (name) { var li = document.createElement('li'); li.lang = 'en'; li.textContent = name; return li; }));
       });
       context.root.querySelectorAll('[data-number]').forEach(function (node) { node.textContent = api.fmt(Number(node.dataset.number)); });
     }

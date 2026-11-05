@@ -38,6 +38,8 @@ html[data-page="island"] {
 
 .island-chip, .island-hint { padding: .2rem .6rem; background: var(--chrome); border: 1px solid var(--ink-muted); border-radius: 2px; font-size: .95rem; line-height: 1.35; color: var(--ink-dim); }
 .island-chip b { color: var(--ink); }
+/* A preset on the board is a loose leaf (css/motifs.css), kept to the chip's own size. */
+.island-chip.loose-leaf { --rule: 1.6rem; background-color: var(--chrome); padding: calc(var(--tooth) + .1rem) .6rem .2rem 2rem; border: 0; color: var(--ink-dim); }
 .island-owner { inset-block-start: .6rem; inset-inline-start: .6rem; max-width: calc(100% - 4.5rem); }
 .island-owner button { margin-inline-start: .3rem; padding: 0; border: 0; background: none; color: var(--amber); font: inherit; text-decoration: underline 1px; text-underline-offset: .2em; cursor: pointer; }
 .island-corner { inset-block-start: .6rem; inset-inline-end: .6rem; display: flex; gap: .4rem; }

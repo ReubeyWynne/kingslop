@@ -76,13 +76,13 @@
 
     if (!s.ok) {
       if (headline) headline.innerHTML = BH.tr('vip.calc.atTop',
-        'You\u2019re at <b>VIP 12</b>, the highest level. There are no more dates to work out.');
+        'You\u2019re at <b>VIP 12</b>, the highest level.');
     } else if (s.D < 1) {
       if (headline) headline.innerHTML = BH.tr('vip.calc.noDays',
-        'Enter <b>days played</b>. The rate is your earned XP divided by your time.');
+        'Enter your <b>days played</b>.');
     } else if (s.earned < 1) {
       if (headline) headline.innerHTML = BH.tr('vip.calc.noRate',
-        'No rate yet. You\u2019ve earned <b>0 VIP XP</b>, so there\u2019s nothing to divide. Play for a few days and come back.');
+        'No rate yet: you\u2019ve earned <b>0 VIP XP</b>. Play a few days and come back.');
     } else {
       var nDays = Math.ceil((CUM[s.L + 1] - s.earned) / s.rate);
       var dateTxt = fmtDate(addDays(new Date(), nDays));
