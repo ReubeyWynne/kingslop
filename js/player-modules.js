@@ -27,9 +27,10 @@
         else if (key && /^heroGear\.parts\.(ten|hundred)$/.test(key)) { if (amount === null) return; store.setHeroGearPart(key.split('.')[2], amount); }
         else return;
       } catch (cause) {
-        render(); context.targets('save').forEach(function (node) { node.textContent = context.api.tr(context.root.dataset.saveFailedKey, ''); }); throw cause;
+        render(); context.targets('save').forEach(function (node) { node.textContent = context.api.tr(context.root.dataset.saveFailedKey, ''); if (node.classList.contains('seal')) node.dataset.state = 'failed'; }); throw cause;
       }
-      context.targets('save').forEach(function (node) { node.textContent = context.api.tr(context.root.dataset.savedKey, ''); }); context.emit('ledger-form:edited', { binding: key, amount: amount });
+      // A saved seal (css/motifs.css) is solid on your save and hollow on a guest sheet.
+      context.targets('save').forEach(function (node) { node.textContent = context.api.tr(context.root.dataset.savedKey, ''); if (node.classList.contains('seal')) node.dataset.state = context.root.dataset.guest ? 'unsaved' : 'saved'; }); context.emit('ledger-form:edited', { binding: key, amount: amount });
     } }, normalize: { events: ['change'], run: render } } };
   });
   M.register('save-transfer', function (context) {

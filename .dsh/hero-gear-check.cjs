@@ -27,7 +27,7 @@ function checkGuestLedger() {
       document: {
         currentScript: { src: 'https://dey.ci/js/hero-gear.js' },
         getElementById: id => {
-          if (!nodes.has(id)) nodes.set(id, { dataset: {}, setAttribute() {} });
+          if (!nodes.has(id)) nodes.set(id, { dataset: {}, setAttribute() {}, classList: { add() {} } });
           return nodes.get(id);
         }
       },

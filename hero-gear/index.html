@@ -6,7 +6,6 @@ self: gear
 <main class="gear-main sheet-page">
   <section class="section hero gear-hero sheet-hero" id="top">
     <h1 data-i18n="gear.title">Hero gear</h1>
-    <p class="lede" data-i18n="gear.lede2">Set your gear as it is in game, or read it from a hero screenshot. The answer shows what your materials buy now and what red costs.</p>
     {% include ascii/motif.html kind="helm" %}
   </section>
 
@@ -19,7 +18,16 @@ self: gear
     <div id="gear-planner" class="sheet-workspace">
       <div class="gear-editor sheet-side">
         <h2 data-i18n="gear.yourGear">Your gear</h2>
-        <button type="button" id="gear-import" class="sheet-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="gear.drop.title">Fill this in from a screenshot</strong> <span data-i18n="gear.drop.body">Use a hero’s gear screen.</span></button>
+        <button type="button" id="gear-import" class="sheet-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="gear.drop.title">Fill this in from a screenshot</strong></button>
+        <button type="button" class="explain" popovertarget="gear-shots" data-i18n="gear.shots.open">Which screenshot?</button>
+        <div class="explainer" id="gear-shots" popover>
+          <h3 data-i18n="gear.shots.title">One screenshot for each hero</h3>
+          <ol class="explainer-steps">
+            <li><img src="../img/screen-import/hero-gear-1-tab.webp" alt="" width="600" height="188" decoding="async"><span data-i18n="gear.shots.tab">Open a hero and tap Gear.</span></li>
+            <li><img src="../img/screen-import/hero-gear-2-pieces.webp" alt="" width="600" height="308" decoding="async"><span data-i18n="gear.shots.pieces">Take a screenshot with all four pieces in it.</span></li>
+          </ol>
+          <button type="button" class="explainer-close" popovertarget="gear-shots" popovertargetaction="hide" data-i18n-key="gear.shots.close" data-i18n-attr="aria-label" aria-label="Close">×</button>
+        </div>
         <div id="gear-optimal" class="gear-optimal" aria-live="polite"></div>
         <div id="gear-cards" class="gear-cards"></div>
         <div id="gear-detail" class="gear-detail" hidden></div>
@@ -31,7 +39,7 @@ self: gear
       <label><img src="../img/hero-gear/mythic-gear.webp" width="40" height="40" alt=""><span data-i18n="gear.mythic">Spare mythic gear</span><input id="gear-mythic" data-resource="mythic" data-bind="inventory.spare-mythic-gear" data-action="ledger-form.set ledger-form.normalize" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Spare mythic gear" data-i18n-key="gear.mythic" data-i18n-attr="aria-label"></label>
       <label><img src="../img/hero-gear/mithril.webp" width="40" height="40" alt=""><span data-i18n="gear.mithril">Mithril</span><input id="gear-mithril" data-resource="mithril" data-bind="inventory.mithril" data-action="ledger-form.set ledger-form.normalize" type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" aria-label="Mithril" data-i18n-key="gear.mithril" data-i18n-attr="aria-label"></label>
     </div>
-        <div class="gear-budget-caption"><span><span data-i18n="gear.xpTotal">XP total</span> <output id="gear-xp-total" data-bind="inventory.hero-gear-xp" data-unknown="0">0</output></span><span id="gear-save" data-target="ledger-form.save" role="status" data-i18n="gear.saved">saved on this device</span></div>
+        <div class="gear-budget-caption"><span><span data-i18n="gear.xpTotal">XP total</span> <output id="gear-xp-total" data-bind="inventory.hero-gear-xp" data-unknown="0">0</output></span><output id="gear-save" class="seal" data-state="saved" data-target="ledger-form.save" role="status" data-i18n="gear.saved">saved on this device</output></div>
       </div>
 
       <div class="gear-answer sheet-answer">
@@ -58,23 +66,18 @@ self: gear
         {% include page-notes.html part="pointer" checked="2026-10-06" %}
       </div>
     </div>
-    <output id="gear-status" data-module="result-panel" data-target="result-panel.message" data-status-scope="hero-gear" role="status" hidden></output>
-    <button id="gear-undo" type="button" hidden data-i18n="gear.undo">undo last update</button>
+    <div class="toast gear-toast"><output id="gear-status" data-module="result-panel" data-target="result-panel.message" data-status-scope="hero-gear" role="status" hidden></output><button id="gear-undo" class="undo" type="button" hidden data-i18n="gear.undo">undo last update</button></div>
     <noscript><p data-i18n="gear.noJS">Turn on JavaScript to use the planner. The notes on costs and scoring still work without it.</p></noscript>
     {% include page-sheet.html part="confirm" class="gear-dialog" title="gear.sheet.confirmTitle" title_en="Save this sheet as yours?" body="gear.sheet.confirmBody" body_en="It replaces the hero gear and priority in your save. A material this sheet left at 0 keeps your number." confirm="gear.sheet.confirm" confirm_en="replace my gear" %}
   </section>
 
-  {% capture own %}<details id="how-it-works">
-      <summary data-i18n="gear.searchMethod">How the planner works</summary>
-      <p class="gear-gloss" data-i18n="gear.optimiseHint">The planner compares upgrades using the resources you enter and your priority weights. Costs are exact game values. Spend now searches for a strong set of upgrades but can miss the very best one.</p>
-    </details>
-    <details id="ranking">
+  {% capture own %}<details id="ranking">
       <summary data-i18n="gear.scoreCostExplained">How choices are ranked</summary>
       <p class="gear-gloss" data-i18n="gear.budgetMethod">For each bigger budget, Save for red picks the red milestone that adds the most weighted score, and a tie goes to the better gain per cost. The three picks are alternatives, not a queue. Only the expedition bonus milestones (+20, +60 and +100) are compared, and the upgrades in between are counted in the cost.</p><p class="gear-gloss" data-i18n="gear.scoreFormula">Weighted gain is the added health or lethality times its profile weight, plus added attack times the lethality weight, plus added defence times the health weight. It is a priority score, not a damage percentage. The percentage shown is that gain divided by the weighted score of your current gear for the included troops.</p><p class="gear-gloss"><span data-i18n="gear.costUnitFormula">Gain per cost divides the weighted gain by the total cost, with each resource measured against a reference amount: your budget, or 52,650 XP, 550 hammers, 6 spare mythic gear and 10 mithril, whichever is larger. These are scales for comparison, not exchange rates. Current reference amounts</span>: <span id="gear-cost-units"></span>.</p><p class="gear-gloss" data-i18n="gear.budgetGrowthFormula">Each bigger budget adds the same share of every reference amount. That gives evenly spaced saving steps; it isn’t a forecast of how fast you’ll collect resources. Change your bag to rerank. Build profiles are preferences you can edit, and the cavalry reminder at 65% doesn’t change the score.</p><ul class="gear-roles" id="gear-roles"></ul>
     </details>
     <details id="cost-includes">
       <summary data-i18n="gear.costIncludes">What the costs include</summary>
-      <p class="gear-gloss" data-i18n="gear.includesMastery">Each cost includes any missing mastery, the ascension and every imbuement on the way. Every piece is priced against the same bag.</p><p class="gear-gloss" data-i18n="gear.applyHint">After you upgrade in the game, mark the upgrades done. That saves the new levels and takes the cost out of your bag.</p>
+      <p class="gear-gloss" data-i18n="gear.includesMastery">Each cost includes any missing mastery, the ascension and every imbuement on the way. Every piece is priced against the same bag.</p><p class="gear-gloss" data-i18n="gear.applyHint">After you upgrade in the game, mark the upgrades done.</p>
     </details>
     <details id="best-split-method">
       <summary data-i18n="gear.optimalMethodTitle">How % of optimal works</summary>
@@ -83,7 +86,7 @@ self: gear
     <details id="maths">
       <summary data-i18n="notes.maths">The maths</summary>
       <p data-i18n="gear.mathsBody">XP, Forgehammers, spare mythic gear and mithril are counted separately. A milestone’s cost includes any missing mastery and the spare mythic gear it uses, the ascension, and every imbuement on the way. Costs start from the level you saved, so XP already partway into the next level isn’t counted.</p>
-        <p data-i18n="gear.method">Spend now tries XP, mastery and whole milestones over several passes and keeps the highest score it finds. With reforge on, it also compares against keeping your gear as it is. The score covers expedition health, lethality, attack and defence; conquest bonuses aren’t included.</p>
+        <p id="how-it-works" data-i18n="gear.method">Spend now tries XP, mastery and whole milestones over several passes and keeps the highest score it finds, so it can miss the very best set. With reforge on, it also compares against keeping your gear as it is. The score covers expedition health, lethality, attack and defence; conquest bonuses aren’t included.</p>
     </details>{% endcapture %}{% capture points_extra %}<p class="gear-gloss" id="gear-kvk-formula"></p><p class="gear-gloss" id="gear-kvk-bag"></p><p class="gear-gloss" data-i18n="gear.kvkOnlySpend">XP, XP reforge and sacrificed mythic gear score nothing. Each saving choice shows the points for its full cost, and the spend total covers every changed piece across all three troops. Points count once, on the day you use the materials.</p><a href="../events/#days" data-i18n="gear.kvkGuide">KvK scoring and timing</a>{% endcapture %}{% capture reset %}<button type="button" id="gear-reset" data-i18n="gear.reset">reset hero gear</button>{% endcapture %}
   {% include page-notes.html part="how" own=own points_id="kvk-points" points_extra=points_extra prefix="gear" scope="hero-gear" reset=reset %}
   {% capture extra %}<span id="maths-sources"></span>{% endcapture %}
@@ -98,7 +101,7 @@ self: gear
 </dialog>
 <dialog id="gear-reset-dialog" class="gear-dialog" aria-labelledby="gear-reset-title">
   <h2 id="gear-reset-title" data-i18n="gear.resetTitle">Reset your hero gear?</h2>
-  <p data-i18n="gear.resetHint">Your gear, gear resources and planner preferences return to defaults. Other event items stay in your bag. You can undo this.</p>
+  <p data-i18n="gear.resetHint">Your gear, gear resources and planner preferences return to defaults. Other event items stay in your bag.</p>
   <div class="gear-tools"><button type="button" id="gear-confirm-reset" data-i18n="gear.reset">reset hero gear</button><button type="button" id="gear-cancel-reset" data-i18n="gear.cancel">cancel</button></div>
 </dialog>
 
