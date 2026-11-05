@@ -9,8 +9,12 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.goto(origin+'/events/?lang=en');await page.waitForFunction(()=>window.EventRules&&document.querySelector('[data-target="event-availability.total"]').textContent==='0');
   await select('day').selectOption('4');assert.equal(await owned('mithril').inputValue(),'');assert.equal(await held('mithril').isDisabled(),true);
   assert.equal(await page.locator('[data-item="truegold"]').isVisible(),false);await select('all').check();assert.equal(await page.locator('[data-item="truegold"]').isVisible(),true);await select('all').uncheck();
-  assert.equal(await page.locator('[data-item="mithril"] [data-points]').textContent(),'Unknown');
-  await owned('mithril').fill('10');await owned('forgehammer').fill('25');assert.equal(await select('total').textContent(),'0');
+  // Show, don't tell: a blank count is a dotted slot, its points a ?, and the total stays open, listing what it waits for.
+  assert.equal(await page.locator('[data-item="mithril"] [data-points]').textContent(),'');assert.equal(await page.locator('[data-item="mithril"] [data-points]').getAttribute('data-tally'),'unknown');
+  assert.equal(await owned('mithril').getAttribute('data-tally'),'blank');assert.equal(await select('total').getAttribute('data-open'),'');
+  assert.ok((await select('coverage').locator('li').allTextContents()).includes('Mithril'));
+  await owned('mithril').fill('0');assert.equal(await owned('mithril').getAttribute('data-tally'),'zero');assert.equal(await page.locator('[data-item="mithril"] .seal').getAttribute('data-state'),'saved');
+  await owned('mithril').fill('10');assert.equal(await owned('mithril').getAttribute('data-tally'),null);await owned('forgehammer').fill('25');assert.equal(await select('total').textContent(),'0');
   assert.equal(await owned('hero-widget').count(),0);assert.equal(await owned('master-emblem').count(),0);
   await page.evaluate(()=>{const s=PlayerLedger.shared();s.setBalance('hero-gear-xp',1000000);s.setBalance('spare-mythic-gear',10);s.setBalance('forgehammer',200);const gear=s.heroGear(HeroGear);gear.pieces['inf-helm']=HeroGear.normalisePiece({quality:'mythic',level:100,mastery:10});s.writeHeroGear(gear,HeroGear,{piece:'inf-helm'});});
   assert.equal(await select('total').textContent(),'840,000');
@@ -26,7 +30,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await select('event').selectOption('prep');assert.equal(await select('day').inputValue(),'5','day clamps when changing event');await select('day').selectOption('4');
   const other=await context.newPage();await other.goto(origin+'/hero-gear/?lang=en');await other.locator('#gear-mithril').fill('7');await page.waitForFunction(()=>document.querySelector('[data-bind="inventory.mithril"]').value==='7');assert.equal(await select('total').textContent(),'440,000');
   await owned('mithril').fill('8');await other.waitForFunction(()=>document.getElementById('gear-mithril').value==='8');await other.close();
-  const save=page.locator('#availability details');await save.locator('summary').click();
+  const save=page.locator('#availability #save-backups');await save.locator('summary').click();
   const [download]=await Promise.all([page.waitForEvent('download'),save.locator('[data-action="save-transfer.export"]').click()]);const backup=JSON.parse(fs.readFileSync(await download.path(),'utf8'));assert.equal(backup.inventory.mithril.amount,8);assert.equal(backup.reservations,undefined);
   backup.inventory.mithril.amount=12;await save.locator('input[type="file"]').setInputFiles({name:'player.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});await page.waitForFunction(()=>PlayerLedger.shared().balance('mithril').amount===12);assert.equal(await select('total').textContent(),'840,000');
   backup.schemaVersion=99;await save.locator('input[type="file"]').setInputFiles({name:'future.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});await page.waitForFunction(()=>document.querySelector('#availability [data-target="result-panel.message"]').textContent===I18N.tr('gear.invalidSave'));assert.equal(await page.evaluate(()=>PlayerLedger.shared().balance('mithril').amount),12);
@@ -49,7 +53,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await troopPage.close();await page.evaluate(()=>{const s=PlayerLedger.shared();for(const k of ['speed','capacity','inf'])s.setTraining(k,null);});
   [troopPage,notes]=await troopNotes('2026-10-21T09:00:00Z');assert.match(notes.join(' '),/Strongest Governor day 4 tomorrow is a troop day/);assert.equal(await troopPage.locator('#ks-card [data-troop-note] a').getAttribute('href'),'../town-centre/#town-troops');await troopPage.close();
   const langs=fs.readdirSync('i18n').filter(name=>name.endsWith('.js')).map(name=>name.slice(0,-3));
-  for(const lang of langs){await page.goto(origin+'/events/?lang='+lang);await page.waitForFunction(lang=>document.documentElement.lang===lang&&window.I18N&&document.querySelector('[data-target="event-availability.coverage"]').textContent.length>0,lang);
+  for(const lang of langs){await page.goto(origin+'/events/?lang='+lang);await page.waitForFunction(lang=>document.documentElement.lang===lang&&window.I18N&&document.querySelector('[data-target="event-availability.total"]').textContent!=='—',lang);
    for(const width of [320,768]){await page.setViewportSize({width,height:900});const overflow=await page.locator('#availability').evaluate(el=>[el,...el.querySelectorAll('.availability-item,.availability-controls,.availability-result')].filter(el=>el.scrollWidth>el.clientWidth+2).map(el=>el.className));assert.deepEqual(overflow,[],lang+' at '+width);}
    assert.equal(await page.locator('#availability h2').textContent(),await page.evaluate(()=>I18N.tr('ks.available.title')));
    if(lang==='en'||lang==='ar')await page.locator('#availability').screenshot({path:path.join(output,lang+'.png')});
