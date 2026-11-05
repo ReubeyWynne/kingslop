@@ -417,9 +417,9 @@
       tiles(entry);
       recipe(!!entry || !!waiting.length);
       if (waiting.length) progress();
-      else if (entries.some(function (e) { return e.status === 'unknown'; })) status(tr('import.unknown', 'One screenshot isn’t a screen I can read yet. It was skipped. Email it to screenshots@dey.ci to have it added.'));
-      else if (entries.some(function (e) { return e.status === 'empty'; })) status(tr('import.empty', 'No items I track were found on one screenshot. It was skipped. If it shows items that should count, email it to screenshots@dey.ci.'));
-      else if (entries.some(function (e) { return e.status === 'failed'; })) status(tr('import.failed', 'A screenshot couldn’t be read. Try it again, or a clearer shot.'));
+      else if (entries.some(function (e) { return e.status === 'unknown'; })) status(tr('import.unknown', 'I skipped one screenshot because I can’t read that screen yet. Email it to screenshots@dey.ci to have it added.'));
+      else if (entries.some(function (e) { return e.status === 'empty'; })) status(tr('import.empty', 'I skipped one screenshot because it had nothing I track. If it shows items that should count, email it to screenshots@dey.ci.'));
+      else if (entries.some(function (e) { return e.status === 'failed'; })) status(tr('import.failed', 'I couldn’t read a screenshot. Try it again, or try a clearer one.'));
       else if (entry) status(checks ? tr('import.check', '{n} values need a look. Everything else is ticked.', { n: api.fmt(checks) }) : tr('import.allSure', 'Everything was read. Check the numbers, then apply.'));
       if (!waiting.length) { done = 0; progress(); }
       // Unknown and failed shots are reported once, then dropped from the queue.
@@ -521,9 +521,9 @@
     // and filling `before` with what they replaced. Nothing reaches the
     // player save.
     var OPEN = {
-      'battle-report': ['import.openSheet', 'Open the battle simulator to apply this report. It waits here until then.'],
-      governor: ['import.openGovernor', 'Open the governor gear page to apply this profile. It waits here until then.'],
-      'bonus-overview': ['import.openOverview', 'Open the Heroes page to apply this Bonus Overview. It waits here until then.']
+      'battle-report': ['import.openSheet', 'Open the battle simulator to apply this report. It’ll wait here until you do.'],
+      governor: ['import.openGovernor', 'Open the governor gear page to apply this profile. It’ll wait here until you do.'],
+      'bonus-overview': ['import.openOverview', 'Open the Heroes page to apply this Bonus Overview. It’ll wait here until you do.']
     };
     function openSheet(name) { var say = OPEN[name] || OPEN['battle-report']; status(tr(say[0], say[1])); }
     function sheetHost(name) { return document.querySelector('[data-screen-import-sheet~="' + name + '"]'); }

@@ -5,7 +5,7 @@
   'use strict';
   var EN = {
     'missing.heroes': 'your heroes', 'missing.stars': '{hero} stars', 'missing.shards': '{hero} shards', 'missing.widgetLevel': '{hero} widget level', 'missing.widgets': '{hero} widgets', 'missing.chest': 'generation {n} widget chests',
-    total: '{n} KvK prep points', complete: 'Every hero count this uses is entered.', partial: 'Partial: {names} not entered yet, so the total leaves them out.', more: '{n} more',
+    total: '{n} KvK prep points', complete: 'Every hero count this uses is entered.', partial: 'The total leaves out {names} until you enter them.', more: '{n} more',
     empty: 'Mark the heroes you own, with their stars, to see what their shards and widgets can score.',
     stars: '{from} → {to}', maxed: 'maxed', none: '—', pieces: '{own} own + {general} general', widgetPieces: '{own} own + {general} chest', widgetLevel: 'widget {from} → {to}',
     eventShards: 'Shards', eventWidgets: 'Widgets', leftShards: 'Unused general shards: {mythic} mythic, {epic} epic, {rare} rare.', leftWidgets: 'Unused widget chests: {n}.', keptMythic: 'Mythic general shards are banked for your next new hero, so none go to the heroes above.', unknownCount: '?'

@@ -8,7 +8,7 @@
       <label><span data-i18n="directory.role">Role</span><select data-target="hero-directory.role" data-action="hero-directory.filter"><option value="" data-i18n="directory.role">Role</option>{% assign role_ids = 'garrison-lead,defence-joiner,rally-lead,attack-joiner,bear-lead,bear-joiner' | split: ',' %}{% for role in role_ids %}<option value="{{ role }}" data-i18n="directory.role.{{ role }}">{{ role | replace: '-', ' ' }}</option>{% endfor %}</select></label>
       <label><span data-i18n="directory.mine">Collection</span><select data-target="hero-directory.mine" data-action="hero-directory.filter"><option value="" data-i18n="directory.mine">Collection</option><option value="owned" data-i18n="directory.mine.owned">I have</option><option value="missing" data-i18n="directory.mine.missing">Not yet</option></select></label>
       <label><span data-i18n="directory.generation">Generation</span><select data-target="hero-directory.generation" data-action="hero-directory.filter"><option value="" data-i18n="directory.generation">Generation</option>{% for generation in generations %}<option value="{{ generation }}">{{ generation }}</option>{% endfor %}</select></label>
-      <label title="Set your server’s generation to hide heroes you cannot use yet. Other tools share this setting; resetting filters keeps it." data-i18n-key="directory.serverNote" data-i18n-attr="title"><span data-i18n="directory.server">Server generation</span><select data-target="hero-directory.server" data-action="hero-directory.server"><option value="" data-i18n="directory.unspecified">Any generation</option>{% for generation in generations %}<option value="{{ generation }}">{{ generation }}</option>{% endfor %}</select></label>
+      <label title="Set your server’s generation to hide heroes you can’t use yet. Other tools use the same setting, and resetting the filters won’t change it." data-i18n-key="directory.serverNote" data-i18n-attr="title"><span data-i18n="directory.server">Server generation</span><select data-target="hero-directory.server" data-action="hero-directory.server"><option value="" data-i18n="directory.unspecified">Any generation</option>{% for generation in generations %}<option value="{{ generation }}">{{ generation }}</option>{% endfor %}</select></label>
       </div>
     </fieldset>
     <div class="directory-results"><output class="hero-count" aria-live="polite" data-target="hero-directory.count">{{ site.data.heroes.heroes.size }}</output><button type="button" class="directory-reset" data-action="hero-directory.reset" data-i18n="directory.reset">Reset filters</button></div>
@@ -20,7 +20,7 @@
       <p class="hero-bag-caption"><span data-i18n="directory.bagNote">blank means not counted yet · shared with events</span> <output data-target="ledger-form.save" role="status"></output></p>
     </div>
     {% endunless %}
-    <p class="directory-empty" hidden data-target="hero-directory.empty" data-i18n="directory.empty">No heroes match. Adjust the filters or server generation.</p>
+    <p class="directory-empty" hidden data-target="hero-directory.empty" data-i18n="directory.empty">No heroes match. Try loosening the filters or changing the server generation.</p>
     <div class="hero-roster">
     {% for generation in generations %}
     {% assign gen_heroes = site.data.heroes.heroes | where: 'generation', generation %}
@@ -47,7 +47,7 @@
                   {% if hero.widget %}<label><span data-i18n="directory.widgetLevel">Widget level</span><select data-field="widget"><option value="">?</option>{% for level in (0..10) %}<option value="{{ level }}">{% if level == 0 %}—{% else %}{{ level }}{% endif %}</option>{% endfor %}</select></label><label class="hero-widgets"><span data-i18n="heroWidgets.count">Widgets</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="widgets"></label>{% endif %}
                   {% for skill in hero.skills %}<label><span data-i18n="directory.skillLevel" data-i18n-n="{{ forloop.index }}">Skill {{ forloop.index }}</span><select data-field="skill" data-skill="{{ forloop.index0 }}"><option value="">?</option>{% for level in (1..5) %}<option value="{{ level }}">{{ level }}</option>{% endfor %}</select></label>{% endfor %}
                   <label class="hero-shards"><span data-i18n="directory.shards">Shards</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="shards"></label>
-                  <p class="hero-mine-note"><span data-i18n="directory.mineNote">Saved on this device with your inventory. Shards count before you unlock the hero.</span> <output data-target="hero-directory.saved" role="status"></output></p>
+                  <p class="hero-mine-note"><span data-i18n="directory.mineNote">This is saved on this device with your inventory. You can count shards before you’ve unlocked the hero.</span> <output data-target="hero-directory.saved" role="status"></output></p>
                 </fieldset>
                 <div class="hero-dossier-brief">
                   <div class="hero-role-tags" aria-label="Roles" data-i18n-key="directory.role" data-i18n-attr="aria-label">{% for rec in metadata.recommendations %}<span data-i18n="directory.role.{{ rec.role }}">{{ rec.role | replace: '-', ' ' }}</span>{% endfor %}</div>
@@ -66,7 +66,7 @@
                   <ol class="hero-skills">
                     {% for skill in hero.skills %}{% assign skill_note = metadata.skillNotes[forloop.index0] %}<li><h4><span class="hero-skill-number">{{ forloop.index }}</span>{{ skill_note.name | escape }}</h4><p class="hero-skill-effect" lang="en">{{ skill_note.summary | escape }}</p>{% for scale in skill.scales %}<p class="hero-skill-levels" lang="en"><span>{{ scale.label | escape }}</span> {{ scale.levels | join: ' / ' | escape }}</p>{% endfor %}{% if skill_note.source %}<p class="hero-source-link" lang="en"><a href="{{ skill_note.source.url }}">{{ skill_note.source.label | escape }}</a></p>{% endif %}</li>{% endfor %}
                   </ol>
-                  <p class="note" data-i18n="directory.skillNote">The numbered skills are in Expedition order. Joiners use the first one. Names, effects and level values are shown in English; a chance to trigger is not a guaranteed bonus.</p>
+                  <p class="note" data-i18n="directory.skillNote">Skills are numbered in Expedition order, and joiners only use the first. Names, effects and levels are shown in English, and a skill with a chance to trigger won’t always fire.</p>
                   <p class="hero-source-link"><a href="{{ metadata.wiki }}" data-i18n="directory.heroSource">Check the official hero page</a></p>
                 </div>
               </div>

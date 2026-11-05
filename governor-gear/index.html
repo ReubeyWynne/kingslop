@@ -15,7 +15,7 @@ self: governor
     <div class="sheet-workspace">
       <div class="gov-left sheet-side">
         <h2 data-i18n="gov.theGovernor">The governor</h2>
-        <button type="button" class="gov-drop sheet-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="gov.drop.title">Read a Governor Profile screenshot</strong> <span data-i18n="gov.drop.body">Pick, drop or paste one. You check the levels before they fill the governor.</span></button>
+        <button type="button" class="gov-drop sheet-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="gov.drop.title">Fill this in from a screenshot</strong> <span data-i18n="gov.drop.body">Add a shot of your Governor Profile here, or paste one. You’ll check the levels before the governor changes.</span></button>
         {% include governor/profile.html %}
         <div class="gov-bag" id="governor-bag" data-module="ledger-form" data-saved-key="gov.sheet.bagSaved" data-save-failed-key="gear.saveFailed">
           {% for item in gov.materials %}{% if gov.gear.materials contains item.id %}{% assign group = "gear" %}{% else %}{% assign group = "charms" %}{% endif %}

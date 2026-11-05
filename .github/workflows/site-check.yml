@@ -400,6 +400,9 @@ jobs:
         if: needs.changes.outputs.logic == 'true'
         run: |
           node -e "const fs = require('node:fs'); for (const file of fs.readdirSync('_data')) if (file.endsWith('.json')) JSON.parse(fs.readFileSync('_data/' + file, 'utf8'));"
+      - name: Check English prose
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/prose-check.cjs
       - name: Check page navigation
         if: needs.changes.outputs.logic == 'true'
         run: node --test .dsh/page-deck-check.cjs
