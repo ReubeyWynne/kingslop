@@ -19,7 +19,9 @@ main .section.page-notes > h2::before { display: inline-block; }
 .page-notes .notes-tools button:hover { color: var(--ink); }
 .page-notes .notes-status { display: block; color: var(--ink); }
 .page-notes .notes-shared { margin-bottom: .4rem; }
-.page-notes .notes-shared .shared-by { margin-inline-start: -.1rem; }
+.page-notes .notes-shared .shared-by { display: block; margin-inline-start: -.1rem; }
+/* In a fold the names open in the flow under the dots, so a long list wraps with the text. */
+.page-notes .notes-shared .motif-names { position: static; display: block; width: auto; max-width: none; margin-top: .2rem; }
 
 .page-notes .notes-chips { display: flex; flex-wrap: wrap; gap: .4rem .6rem; margin: 0 0 .7rem; }
 .page-notes .notes-chips > span { font: 600 .72rem var(--display-2); letter-spacing: .08em; text-transform: uppercase; border: 1px solid var(--signal-line); padding: .2rem .55rem; color: var(--ink); }
