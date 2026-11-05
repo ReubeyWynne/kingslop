@@ -99,7 +99,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
         assert.equal(await page.locator('#own-archers').inputValue(), '50');
         assert.equal(await page.locator('#own-priority').isChecked(), true);
         assert.equal(await page.locator('#march-queues > div').count(), 3);
-        assert.equal(await page.locator('#allocator-example').isHidden(), true);
+        assert.equal(await page.locator('#march-sample').getAttribute('data-example'), null);
         assert.equal(await button.innerText(), dictionaries[lang]['bh.alloc.edit']);
         for (const section of ['marches', 'timing']) {
           const toggle = page.locator('#' + section + ' .section-toggle');

@@ -145,7 +145,7 @@ self: bear
           </fieldset>
           <button class="allocator-button" type="submit" data-i18n="bh.alloc.apply">Show my marches</button>
         </form>
-        <p class="diagram-caption" id="allocator-example" data-i18n="bh.alloc.example">Example troops. Tap the button to enter yours.</p>
+        <div class="march-sample" id="march-sample" data-example="Example" data-i18n-key="bh.example" data-i18n-attr="data-example">
         <div class="march-own" id="march-own">
           <b data-i18n="bh.page.90">Your rally</b>
           <div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div>
@@ -159,6 +159,7 @@ self: bear
           <div><b>4</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
           <div><b>5</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
           <div><b>6</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
+        </div>
         </div>
         <ul class="march-key">
           <li><i class="march-infantry" aria-hidden="true"></i><span data-i18n="sim.calc.inf">Infantry</span></li>
@@ -181,7 +182,7 @@ self: bear
           <div><dt data-i18n="sim.calc.cav">Cavalry</dt><dd id="home-cav">0</dd></div>
           <div><dt data-i18n="bh.marches.archers">Archers</dt><dd id="alloc-home">0</dd></div>
         </dl>
-        <p class="note" id="alloc-note" aria-live="polite" data-i18n="bh.alloc.equalNote">Troops split between your rally and equal joins.</p>
+        <p class="note" id="alloc-note" aria-live="polite"></p>
         <p class="note" data-i18n="bh.alloc.method">Archers first, then cavalry, then infantry. Use 5 / 15 / 80 once you have the troops to fill every join.</p>
       </figure>
 
@@ -215,7 +216,7 @@ self: bear
         <svg class="opening-symbols" aria-hidden="true" width="0" height="0">
           <defs><symbol id="opening-march-symbol" viewBox="0 0 24 24"><path d="m4 3 6 3 10 14-3 1L6 7Zm16 0-6 3L4 20l3 1L18 7M3 15l6 6M15 21l6-6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol></defs>
         </svg>
-        <ol class="opening-scenes">
+        <ol class="opening-scenes" data-example="Example" data-i18n-key="bh.example" data-i18n-attr="data-example">
           <li>
             <div class="opening-head">
               <h3><span data-i18n="bh.opening.first">First group launches</span></h3>
@@ -265,7 +266,7 @@ self: bear
             </div>
           </li>
         </ol>
-        <p class="note" data-i18n="bh.opening.note">Example times. Adjust the gap for your alliance's travel times.</p>
+        <p class="note" data-i18n="bh.opening.note">Adjust the gap for your alliance's travel times.</p>
       </figure>
 
       <ol class="hunt-steps">
@@ -304,7 +305,6 @@ self: bear
         <p><b><span data-i18n="bh.page.129">Later options:</span></b> <span data-i18n="bh.page.130">Petra (only one per rally), Ava, Wee &amp; Woo.</span></p>
       </div>
 
-      <p class="note"><span data-i18n="bh.page.131">Rally leaders use all their heroes and stats, so the selector above picks a leader lineup separately.</span></p>
     </div>
   </section>
 
