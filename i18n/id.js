@@ -1063,6 +1063,7 @@ window.__BH_I18N_DATA["id"] = {
   "ks.available.shortfall": "Kekurangan poin",
   "ks.available.limit": "Nilai mengasumsikan peningkatan yang memenuhi syarat dalam game. Memiliki bahan tidak menjamin bisa menggunakannya. Total harian adalah alternatif; item yang sama tidak bisa digunakan dua kali.",
   "ks.available.inventory": "Inventaris terkonfirmasi",
+  "ks.available.sharedAria": "Juga dipakai 3 halaman",
   "ks.available.owned": "Tersedia sekarang",
   "ks.available.held": "Tahan untuk target lain",
   "ks.available.rate": "Poin per item hari ini",

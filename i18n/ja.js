@@ -1052,6 +1052,7 @@ window.__BH_I18N_DATA["ja"] = {
   "ks.available.shortfall": "目標までの不足",
   "ks.available.limit": "ゲーム内で実行可能な強化がある前提の値です。素材の所持は使用可能量を保証しません。各日の合計は別の選択肢で、同じアイテムを二度使うことはできません。",
   "ks.available.inventory": "確認済み在庫",
+  "ks.available.sharedAria": "ほかの3ページでも使用",
   "ks.available.owned": "現在の所持量",
   "ks.available.held": "別の目標に取り置き",
   "ks.available.rate": "本日のアイテム単価",

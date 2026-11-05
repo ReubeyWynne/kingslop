@@ -1242,6 +1242,7 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "ks.available.shortfall": "Pontos que faltam",
   "ks.available.limit": "As taxas pressupõem melhorias elegíveis no jogo. Ter materiais não garante poder usá-los. Os totais diários são alternativas; os mesmos itens não podem ser gastos duas vezes.",
   "ks.available.inventory": "Inventário confirmado",
+  "ks.available.sharedAria": "Também usado por 3 páginas",
   "ks.available.owned": "Disponível agora",
   "ks.available.held": "Reter para outra meta",
   "ks.available.rate": "Pontos por item hoje",

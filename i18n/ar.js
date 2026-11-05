@@ -1049,6 +1049,7 @@ window.__BH_I18N_DATA["ar"] = {
   "ks.available.shortfall": "النقاط الناقصة",
   "ks.available.limit": "تفترض المعدلات وجود ترقيات مؤهلة في اللعبة. امتلاك المواد لا يضمن إمكانية استخدامها. مجاميع الأيام بدائل؛ لا يمكن إنفاق العناصر نفسها مرتين.",
   "ks.available.inventory": "المخزون المؤكد",
+  "ks.available.sharedAria": "تستخدمه 3 صفحات أخرى",
   "ks.available.owned": "المتاح الآن",
   "ks.available.held": "الاحتفاظ لهدف آخر",
   "ks.available.rate": "النقاط لكل عنصر اليوم",

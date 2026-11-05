@@ -1052,6 +1052,7 @@ window.__BH_I18N_DATA["de"] = {
   "ks.available.shortfall": "Fehlende Punkte",
   "ks.available.limit": "Die Werte setzen mögliche Verbesserungen im Spiel voraus. Materialien zu besitzen garantiert nicht ihre Nutzbarkeit. Tagessummen sind Alternativen; dieselben Gegenstände können nicht zweimal ausgegeben werden.",
   "ks.available.inventory": "Bestätigtes Inventar",
+  "ks.available.sharedAria": "Auch auf 3 Seiten genutzt",
   "ks.available.owned": "Jetzt verfügbar",
   "ks.available.held": "Für anderes Ziel zurückhalten",
   "ks.available.rate": "Punkte je Gegenstand heute",

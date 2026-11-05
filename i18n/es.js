@@ -1055,6 +1055,7 @@ window.__BH_I18N_DATA["es"] = {
   "ks.available.shortfall": "Puntos que faltan",
   "ks.available.limit": "Las tasas suponen mejoras elegibles en el juego. Tener materiales no garantiza poder usarlos. Los totales diarios son alternativas; no se pueden gastar los mismos objetos dos veces.",
   "ks.available.inventory": "Inventario confirmado",
+  "ks.available.sharedAria": "También lo usan 3 páginas",
   "ks.available.owned": "Disponible ahora",
   "ks.available.held": "Retener para otro objetivo",
   "ks.available.rate": "Puntos por objeto hoy",

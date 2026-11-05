@@ -1051,6 +1051,7 @@ window.__BH_I18N_DATA["tr"] = {
   "ks.available.shortfall": "Eksik puanlar",
   "ks.available.limit": "Oranlar oyunda uygun yükseltmeler olduğunu varsayar. Malzemeye sahip olmak onu kullanabilmeyi garanti etmez. Günlük toplamlar alternatiftir; aynı eşyalar iki kez harcanamaz.",
   "ks.available.inventory": "Doğrulanmış envanter",
+  "ks.available.sharedAria": "3 sayfa daha kullanıyor",
   "ks.available.owned": "Şimdi kullanılabilir",
   "ks.available.held": "Başka hedef için ayır",
   "ks.available.rate": "Bugün eşya başına puan",

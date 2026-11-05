@@ -1052,6 +1052,7 @@ window.__BH_I18N_DATA["ko"] = {
   "ks.available.shortfall": "목표까지 부족한 포인트",
   "ks.available.limit": "게임에서 가능한 업그레이드를 전제로 합니다. 재료 보유가 사용 가능량을 보장하지는 않습니다. 날짜별 합계는 대안이며 같은 아이템을 두 번 사용할 수 없습니다.",
   "ks.available.inventory": "확인된 보유량",
+  "ks.available.sharedAria": "다른 3개 페이지에서도 사용",
   "ks.available.owned": "현재 보유량",
   "ks.available.held": "다른 목표를 위해 보류",
   "ks.available.rate": "오늘 아이템당 포인트",

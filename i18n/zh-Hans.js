@@ -1052,6 +1052,7 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "ks.available.shortfall": "目标缺口",
   "ks.available.limit": "积分率以游戏内可进行的升级为前提。持有材料不代表一定能使用。每天的总计是不同方案；同一物品不能花费两次。",
   "ks.available.inventory": "已确认库存",
+  "ks.available.sharedAria": "另有 3 个页面使用",
   "ks.available.owned": "当前持有",
   "ks.available.held": "为其他目标保留",
   "ks.available.rate": "今天每件物品积分",
