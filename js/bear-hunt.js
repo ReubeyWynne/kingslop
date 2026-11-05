@@ -144,20 +144,14 @@
       document.getElementById('home-inf').textContent = format(result.home.infantry);
       document.getElementById('home-cav').textContent = format(result.home.cavalry);
       document.getElementById('alloc-home').textContent = format(result.home.archers);
-      document.getElementById('allocator-example').hidden = personalized;
+      var sample = document.getElementById('march-sample');
+      if (personalized) ['data-example', 'data-i18n-key', 'data-i18n-attr'].forEach(function (name) { sample.removeAttribute(name); });
       var text = button.querySelector('[data-i18n]');
       var key = personalized ? 'bh.alloc.edit' : 'bh.alloc.open';
       text.setAttribute('data-i18n', key);
       text.textContent = label(key, personalized ? 'Edit troops' : 'Use my troops');
       var note = document.getElementById('alloc-note');
-      var noteKey = result.priority ? 'bh.alloc.priorityNote' : 'bh.alloc.equalNote';
-      note.removeAttribute('data-i18n');
-      note.textContent = '';
-      var explanation = document.createElement('span');
-      explanation.setAttribute('data-i18n', noteKey);
-      explanation.textContent = label(noteKey, result.priority ? 'Your own rally is filled first. The remaining troops form equal, capped join marches.' : 'Share troops across your own rally and equal join marches.');
-      note.appendChild(explanation);
-      note.appendChild(document.createTextNode(' ' + label('bh.alloc.result', 'Your rally: {own}. Joins: {n} × {join}.').replace('{own}', format(result.own.total)).replace('{n}', format(result.queues)).replace('{join}', format(result.join.total))));
+      note.textContent = label('bh.alloc.result', 'Your rally: {own}. Joins: {n} × {join}.').replace('{own}', format(result.own.total)).replace('{n}', format(result.queues)).replace('{join}', format(result.join.total));
     }
 
     button.hidden = false;
