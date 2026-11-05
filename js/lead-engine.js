@@ -293,8 +293,10 @@
   // hero gear and TG4 of .dsh/lead-engine-check.cjs; T10 troops, cavalry TG3; 9,000 / 28,500 /
   // 52,500; Valora's talent at +24%) scored 40.2M, 50.7M, 41.7M, 57.2M and 44.9M, 46.9M on
   // average, where this formula with the usual Gen 4 joiners, the Truegold troop skills and the
-  // level-5 trap's attack gives 35.3M. Candidates still being checked: city buffs and pets on those
-  // rallies (not in the model above) and the actual joiners.
+  // level-5 trap's attack gives 35.3M. No city buffs or pets were running (owner), and the attack
+  // and lethality the formula uses match the owner's own rally report to 0.25 points. What one
+  // setup cannot separate: the community constant (1.2/1000)·√5000, fitted at an unknown trap
+  // level; the base attack scale it was fitted with; how skills of one code stack; the joiners.
   // Single hits swing about ±20% with the chance skills. pointsPct is Valora's Hunter Instinct
   // talent, which adds to your own Damage Points only.
   var BEAR_SCALE = 1.33;
