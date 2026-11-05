@@ -2540,7 +2540,7 @@ window.__BH_I18N_DATA["en"] = {
   "leads.nextTitle": "The next four",
   "leads.no": "No.",
   "leads.only": "Your only lineup",
-  "leads.panelNote": "Bonus Details for this lineup before joiners: your overview plus hero stars and widgets, city buffs and pets.",
+  "leads.panelNote": "Bonus Details for this lineup before joiners: your overview plus hero stars, widgets and the hero gear saved on the Hero Gear page, your Town Centre’s Truegold, city buffs and pets. The Bear damage uses these.",
   "leads.panelTitle": "Your report should read about",
   "leads.railNote": "Win chance over repeated fights, and how much of your army is still standing.",
   "leads.railTitle": "Against each opponent",
