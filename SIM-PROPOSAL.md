@@ -176,10 +176,10 @@ family). Enemy stat tables are **not yet collected** — mode ships as a frame +
 
 ## 8 · Constraints, open decisions, research gates
 
-- **Jekyll static, i18n across 17 dictionaries** — per-mode copy must be lean and reuse
+- **Jekyll static, i18n across 10 dictionaries** — per-mode copy must be lean and reuse
   shared tool labels; new keys live in the `sim.*` namespace; `.dsh` verify harness
   extends per mode (see `verify-sim.mjs` pattern: every referenced key exists in en.js,
-  all 17 dictionaries carry each `sim.*` key non-empty, HTML tags balanced).
+  all 10 dictionaries carry each `sim.*` key non-empty, HTML tags balanced).
 - **OCR:** keep PaddleOCR.js client-side + self-hosted `/models/`. New reading: right
   (opponent) column; per-type tier + count strip. Bear-damage mode explicitly ignores OCR
   troop counts. The sim site's private `stats-parser` endpoints are **not** ours — do not
@@ -201,7 +201,7 @@ family). Enemy stat tables are **not yet collected** — mode ships as a frame +
 1. Land this doc (done). 2. Mode rail + loadout strip + bear ratio mode (structure first,
    then OCR right-column + strip reading). 3. Damage→bracket reader → predictor (gate A).
 4. Mystic advisor (gate B collects beside it). 5. PvE bench frame (gate C).
-Each step ships with its `sim.*` keys across all 17 dictionaries and the `.dsh` harness
+Each step ships with its `sim.*` keys across all 10 dictionaries and the `.dsh` harness
 extended; `jekyll build` + page checks against `_site/` before done.
 
 ### Progress
@@ -346,6 +346,6 @@ re-checked against a 5★ hero's panel.
 5. **Then** the roster becomes the collection grid for gate A: every rally report
    pins one hero × star × gear state, which is how the damage constant gets fitted.
 
-Each step ships with its `sim.*` keys across all 17 dictionaries and the `.dsh`
+Each step ships with its `sim.*` keys across all 10 dictionaries and the `.dsh`
 harness extended; `jekyll build` + page checks against `_site/` before done.
 

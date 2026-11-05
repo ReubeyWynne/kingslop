@@ -44,25 +44,9 @@
       "js/common.js"
     ],
     "lateBoot": true,
-    "lateCss": [
-      "css/next-step.css"
-    ],
     "lateScripts": [
-      "js/upgrade-priority-data.js",
-      "js/building-data.js",
-      "js/hero-data.js",
-      "js/pet-data.js",
-      "js/governor-data.js",
-      "js/governor-engine.js",
       "js/event-data.js",
       "js/event-rules.js",
-      "js/master-data.js",
-      "js/hero-spend.js",
-      "js/master-spend.js",
-      "js/hero-gear-engine.js",
-      "js/upgrade-priority.js",
-      "js/upgrade-priority-words.js",
-      "js/next-step.js",
       "js/home-yours.js"
     ],
     "footMainKey": "home.foot.main",
@@ -561,8 +545,7 @@
       "../css/sheet.css",
       "../css/page-sheet.css",
       "../css/page-notes.css",
-      "../css/event-points.css",
-      "../css/next-step.css"
+      "../css/event-points.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -576,11 +559,7 @@
       "../js/hero-gear-view.js",
       "../js/page-sheet.js",
       "../js/hero-gear.js",
-      "../js/upgrade-priority-data.js",
       "../js/building-data.js",
-      "../js/upgrade-priority.js",
-      "../js/upgrade-priority-words.js",
-      "../js/next-step.js",
       "../js/empty-state.js"
     ],
     "footMainKey": "gear.kicker",
@@ -633,7 +612,7 @@
       "../css/page-sheet.css",
       "../css/page-notes.css",
       "../css/event-points.css",
-      "../css/next-step.css"
+      "../css/empty-state.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -657,11 +636,7 @@
       "../js/hero-gear-engine.js",
       "../js/lead-engine.js",
       "../js/lead-finder.js",
-      "../js/upgrade-priority-data.js",
       "../js/building-data.js",
-      "../js/upgrade-priority.js",
-      "../js/upgrade-priority-words.js",
-      "../js/next-step.js",
       "../js/empty-state.js"
     ],
     "footMainKey": "directory.title",
@@ -715,7 +690,7 @@
       "../css/page-sheet.css",
       "../css/page-notes.css",
       "../css/event-points.css",
-      "../css/next-step.css"
+      "../css/empty-state.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -734,11 +709,7 @@
       "../js/master-directory.js",
       "../js/event-points.js",
       "../js/master-points.js",
-      "../js/upgrade-priority-data.js",
       "../js/building-data.js",
-      "../js/upgrade-priority.js",
-      "../js/upgrade-priority-words.js",
-      "../js/next-step.js",
       "../js/empty-state.js"
     ],
     "footMainKey": "masters.title",
@@ -781,7 +752,7 @@
       "../css/masters.css",
       "../css/town.css",
       "../css/governor-profile.css",
-      "../css/next-step.css"
+      "../css/empty-state.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -811,10 +782,6 @@
       "../js/governor-view.js",
       "../js/governor-profile.js",
       "../js/town-centre.js",
-      "../js/upgrade-priority-data.js",
-      "../js/upgrade-priority.js",
-      "../js/upgrade-priority-words.js",
-      "../js/next-step.js",
       "../js/empty-state.js"
     ],
     "footMainKey": "town.kicker",
@@ -938,7 +905,7 @@
       "../css/page-sheet.css",
       "../css/page-notes.css",
       "../css/event-points.css",
-      "../css/next-step.css"
+      "../css/empty-state.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -956,11 +923,7 @@
       "../js/roster-sheets.js",
       "../js/pet-den.js",
       "../js/pet-live.js",
-      "../js/upgrade-priority-data.js",
       "../js/building-data.js",
-      "../js/upgrade-priority.js",
-      "../js/upgrade-priority-words.js",
-      "../js/next-step.js",
       "../js/empty-state.js"
     ],
     "footMainKey": "pets.title",

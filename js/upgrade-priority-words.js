@@ -1,6 +1,5 @@
 /* The words for an upgrade priority step: its title and its reason, from the step's kind and
-   the facts it carries, and the tool that does it. Shared by the upgrade priority page and the
-   next-step lines on the tool pages, so a step reads the same wherever it shows. */
+   the facts it carries, and the tool that does it, for the upgrade priority page. */
 (function () {
   'use strict';
   var TOOLS = [['town-centre/', 'town.nav', 'Town Centre'], ['heroes/', 'directory.nav', 'Heroes'], ['hero-gear/', 'ev.switch.gear', 'Gear'], ['governor-gear/', 'gov.nav', 'Governor'], ['pets/', 'pets.nav', 'Pets'], ['masters/', 'masters.nav', 'Masters']];

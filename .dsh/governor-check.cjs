@@ -178,7 +178,7 @@ const nav = require('../_data/nav.json'), pages = require('../_data/pages.json')
 assert.equal(nav.filter(n => n.self === 'governor').length, 1);
 assert.ok(pages.governor.scripts.includes('../js/event-data.js') && pages.governor.scripts.includes('../js/governor-data.js'));
 const dictionaries = fs.readdirSync('i18n').filter(f => f.endsWith('.js')).map(file => { const ctx = { window: {} }; vm.runInNewContext(fs.readFileSync('i18n/' + file, 'utf8'), ctx); return [file, Object.values(ctx.window.__BH_I18N_DATA)[0]]; });
-assert.equal(dictionaries.length, 17);
+assert.equal(dictionaries.length, 10);
 for (const [file, d] of dictionaries) for (const key of ['gov.nav', 'ev.deck.lede.governor', 'gov.title', 'gov.cardLede', 'gov.kicker']) assert.equal(typeof d[key], 'string', file + ' ' + key);
 const en = dictionaries.find(([file]) => file === 'en.js')[1];
 const html = fs.readFileSync('governor-gear/index.html', 'utf8');

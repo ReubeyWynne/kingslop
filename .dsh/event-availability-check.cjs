@@ -54,5 +54,5 @@ withBrowser({ root }, async ({ browser, origin }) => {
    assert.equal(await page.locator('#availability h2').textContent(),await page.evaluate(()=>I18N.tr('ks.available.title')));
    if(lang==='en'||lang==='ar')await page.locator('#availability').screenshot({path:path.join(output,lang+'.png')});
   }
-  assert.deepEqual(errors,[]);console.log('Event availability: ledger, cross-tab changes, reserves, targets, save transfer, reference tables, 28 cycle days, 17 languages and responsive layouts pass.');
+  assert.deepEqual(errors,[]);console.log('Event availability: ledger, cross-tab changes, reserves, targets, save transfer, reference tables, 28 cycle days, 10 languages and responsive layouts pass.');
 }).catch(error=>{console.error(error);process.exitCode=1;});

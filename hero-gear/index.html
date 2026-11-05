@@ -64,7 +64,6 @@ self: gear
     {% include page-sheet.html part="confirm" class="gear-dialog" title="gear.sheet.confirmTitle" title_en="Save this sheet as yours?" body="gear.sheet.confirmBody" body_en="It replaces the hero gear and priority in your save. A material this sheet left at 0 keeps your number." confirm="gear.sheet.confirm" confirm_en="replace my gear" %}
   </section>
 
-  {% include next-step.html kinds="gear-next gear-spend record:hero-gear" %}
   {% capture own %}<details id="how-it-works">
       <summary data-i18n="gear.searchMethod">How the planner works</summary>
       <p class="gear-gloss" data-i18n="gear.optimiseHint">The planner compares upgrades using the resources you enter and your priority weights. Costs are exact game values. Spend now searches for a strong set of upgrades but can miss the very best one.</p>

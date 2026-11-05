@@ -11,7 +11,7 @@ const en = dict('en');
 const keys = Object.keys(en).filter(k => k.startsWith('gear.'));
 const holes = s => (s.match(/\{\w+\}/g) || []).sort().join();
 const tags = s => (s.match(/<[^>]+>/g) || []).join('');
-assert.equal(langs.length, 17, 'every language');
+assert.equal(langs.length, 10, 'every language');
 langs.forEach(lang => {
   const d = dict(lang);
   keys.forEach(k => {

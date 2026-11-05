@@ -48,5 +48,5 @@ The **Guest mode** switch above the goal tiles reloads the page with `?guest`, w
 
 ## Checks
 
-- `node .dsh/building-paths-check.cjs`: the generated paths, ranks, the Town Center 3 answer, assumptions, ordering against prerequisites to TG 8, several goals sharing prerequisites, links old and new (Double Time and Pan included), the construction speed model, page wiring and every `reqs.*` and building name key in all 17 dictionaries.
+- `node .dsh/building-paths-check.cjs`: the generated paths, ranks, the Town Center 3 answer, assumptions, ordering against prerequisites to TG 8, several goals sharing prerequisites, links old and new (Double Time and Pan included), the construction speed model, page wiring and every `reqs.*` and building name key in all 10 dictionaries.
 - `node .dsh/building-paths-ui-check.cjs` (after a Jekyll build): the quick answer in view at once, no selects, every card with its art, the level grid fitting a phone without scrolling, refining into the save, a second goal tile added and removed, the guest switch both ways, adding to Upgrade priority's goals, guest links that leave the save alone, the met state, speed, goals and speed settings kept for the next visit (and not overwritten by a guest link), the speed panel, a tap in the page deck's gap opening the middle card, every language at 320px, screenshots in `.dsh/buildings-preview/`.

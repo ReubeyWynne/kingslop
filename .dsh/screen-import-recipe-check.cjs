@@ -99,7 +99,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     assert.equal(await next.locator('a').getAttribute('aria-current'), 'page');
 
     // Every language carries the recipe, and the rows fit a small phone.
-    for (const lang of ['de', 'ar', 'th']) {
+    for (const lang of ['de', 'ar', 'ja']) {
       const fresh = await browser.newContext({ viewport: { width: 320, height: 640 }, reducedMotion: 'reduce' });
       const p = await fresh.newPage();
       p.on('pageerror', e => errors.push(lang + ': ' + e.message));

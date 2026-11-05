@@ -138,5 +138,5 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.close();
 
   assert.deepEqual(errors, []);
-  console.log('Guide: swipe note waits, shows by input, retires on deck or ledger, caps at three visits; rail note retires on a scrub; the door saves generation and role, follows got it or a later visit, and retires on a way in or just looking; replay from the deck and #site-guide; 17 languages at 320px.');
+  console.log('Guide: swipe note waits, shows by input, retires on deck or ledger, caps at three visits; rail note retires on a scrub; the door saves generation and role, follows got it or a later visit, and retires on a way in or just looking; replay from the deck and #site-guide; 10 languages at 320px.');
 }).catch(error => { console.error(error); process.exitCode = 1; });

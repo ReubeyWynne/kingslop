@@ -1,7 +1,7 @@
-/* Home's own corner, once the player's save holds something: today on the 28-day event clock,
-   the next upgrade (next-step, across every kind), and what the save is holding, each linking
-   to its page. It stays hidden on an empty save, under a guest or shared-link store, and
-   without JavaScript, so a first visit sees the plain guide list. */
+/* Home's own corner, once the player's save holds something: today on the 28-day event clock
+   and what the save is holding, each linking to its page. It stays hidden on an empty save,
+   under a guest or shared-link store, and without JavaScript, so a first visit sees the plain
+   guide list. */
 (function () {
   'use strict';
   var PARTS = ['items', 'heroes', 'masters', 'pets', 'gear'];

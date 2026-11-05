@@ -176,7 +176,7 @@ const page = read('pets/index.html');
 for (const pet of data.pets) assert.match(page, /data-deep-link="pet-{{ pet.id }}"/);
 assert.doesNotMatch(read('js/pet-den.js'), /innerHTML/);
 const dictionaries = fs.readdirSync(path.join(__dirname, '../i18n')).filter(f => f.endsWith('.js')).map(file => { const ctx = { window: {} }; vm.runInNewContext(read('i18n/' + file), ctx); return [file, Object.values(ctx.window.__BH_I18N_DATA)[0]]; });
-assert.equal(dictionaries.length, 17);
+assert.equal(dictionaries.length, 10);
 for (const [file, d] of dictionaries) for (const key of ['pets.nav', 'ev.deck.lede.pets', 'pets.title', 'pets.cardLede', 'pets.kicker', 'pets.metaTitle']) assert.equal(typeof d[key], 'string', file + ' ' + key);
 const en = dictionaries.find(([file]) => file === 'en.js')[1];
 for (const [, key] of (page + read('index.html')).matchAll(/data-i18n(?:-key)?="(pets\.[^"{]+)"/g)) assert.ok(Object.hasOwn(en, key), 'en.js lacks ' + key);
