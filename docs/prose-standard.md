@@ -16,7 +16,7 @@ These are in `css/motifs.css`, and the [glossary page](../motifs/index.html) (`/
 | --- | --- | --- |
 | Saved seal | `<output class="seal">`, with `data-state` of `saved`, `unsaved` or `failed` | "Saved on this device" |
 | Shared-by dots | `span.shared-by` holding an `<i data-page="…">` per page that reads the value | "shared with hero gear and events" |
-| Blank, zero, unknown | `data-ink="blank"`, `"zero"` or `"unknown"` on the field or output | "blank means not counted yet", "? means unknown" |
+| Blank, zero, unknown | `data-tally="blank"`, `"zero"` or `"unknown"` on the field or output | "blank means not counted yet", "? means unknown" |
 | Unknown row | `tr[data-unknown]` | "Add your Squads' row" as a standing note |
 | Ghost ink | `input.ghost`, with the assumed value as its placeholder | "Using a typical … until you enter yours" |
 | Open-ended total | `output[data-open]`, followed by a `ul.unknowns` of what it's waiting for | "The total leaves out … until you enter them" |

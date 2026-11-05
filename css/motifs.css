@@ -49,15 +49,15 @@ output[data-open]::after { content: " +?"; font-style: italic; color: var(--ink-
 .shared-by i[data-page="seasonal"] { --hue: #CAA0F1; }
 
 /* Blank, zero and unknown ink. Not counted yet is an empty dotted slot, none
-   is a solid 0, and unknown is a dim ?. Put data-ink on the field or the
+   is a solid 0, and unknown is a dim ?. Put data-tally on the field or the
    output that holds the count. */
-[data-ink] { font-variant-numeric: lining-nums tabular-nums; }
-output[data-ink] { display: inline-block; min-width: 2.5ch; text-align: center; }
-[data-ink="blank"] { border-bottom: 1px dotted var(--ink-muted); }
-output[data-ink="blank"] { color: transparent; }
-[data-ink="zero"] { color: var(--ink); font-weight: 700; }
-[data-ink="unknown"] { color: var(--ink-muted); font-style: italic; }
-output[data-ink="unknown"]:empty::before { content: "?"; }
+[data-tally] { font-variant-numeric: lining-nums tabular-nums; }
+output[data-tally] { display: inline-block; min-width: 2.5ch; text-align: center; }
+[data-tally="blank"] { border-bottom: 1px dotted var(--ink-muted); }
+output[data-tally="blank"] { color: transparent; }
+[data-tally="zero"] { color: var(--ink); font-weight: 700; }
+[data-tally="unknown"] { color: var(--ink-muted); font-style: italic; }
+output[data-tally="unknown"]:empty::before { content: "?"; }
 
 /* Loose-leaf frame. A guest or link sheet is a torn, ruled leaf with an
    unbound margin, so it never looks like your own ledger. */
