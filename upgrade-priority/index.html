@@ -14,7 +14,6 @@ self: priority
 <main data-module="upgrade-priority">
   <section class="section hero" id="top">
     <h1 data-i18n="priority.title">Upgrade priority</h1>
-    <p class="lede" data-i18n="priority.intro">What to upgrade next, worked out from your own save: your Town Centre sets the stage, your part in the alliance sets the order, and every step names the fact behind it.</p>
   </section>
 
   <section class="section" id="where">
@@ -23,7 +22,7 @@ self: priority
     <ol class="priority-stages">
       {% for stage in site.data.upgrade_priority.stages %}
       <li class="priority-stage" id="stage-{{ stage.id }}" data-stage="{{ stage.id }}" data-target="upgrade-priority.stage">
-        <button type="button" data-action="upgrade-priority.preview" data-stage="{{ stage.id }}" aria-pressed="false" disabled><b data-i18n="priority.stage.{{ stage.id }}">{{ stage.id }}</b> <small>{% unless stage.from contains "TG" %}TC {% endunless %}{{ stage.from }} – {{ stage.to }}</small></button>
+        <button type="button" data-action="upgrade-priority.preview" data-stage="{{ stage.id }}" aria-pressed="false" disabled><b class="inkwell" data-i18n="priority.stage.{{ stage.id }}">{{ stage.id }}</b> <small>{% unless stage.from contains "TG" %}TC {% endunless %}{{ stage.from }} – {{ stage.to }}</small></button>
         <p data-i18n="priority.stageNote.{{ stage.id }}"></p>
       </li>
       {% endfor %}
@@ -34,13 +33,13 @@ self: priority
       <button type="button" data-action="upgrade-priority.role" data-role="{{ role }}" data-target="upgrade-priority.role" aria-pressed="false" disabled><b data-i18n="priority.role.{{ role }}">{{ role }}</b> <small data-i18n="priority.roleNote.{{ role }}"></small></button>
       {% endfor %}
     </fieldset>
-    <p class="note" data-target="upgrade-priority.saved" role="status"></p>
+    <p class="note"><output class="seal" data-target="upgrade-priority.saved" role="status"></output></p>
     <noscript><p data-i18n="priority.noJS">Enable JavaScript to read your save. The order below still applies.</p></noscript>
   </section>
 
   <section class="section" id="next">
     <h2 data-i18n="priority.next">Do these next</h2>
-    <p data-i18n="priority.nextIntro">Ranked for your stage and role. Each step comes from your save; blank facts are asked for, never guessed.</p>
+    <p data-i18n="priority.nextIntro">Ranked for your stage and role.</p>
     <ol class="rule-list priority-list" data-target="upgrade-priority.list"></ol>
     <details class="priority-more" id="next-more" data-target="upgrade-priority.more" hidden>
       <summary data-target="upgrade-priority.moreLabel" data-i18n="priority.more">More steps</summary>
@@ -64,7 +63,7 @@ self: priority
       <label><span data-i18n="priority.goal.level">Up to</span><select name="level" data-target="upgrade-goals.level" disabled></select></label>
       <button type="submit" disabled data-i18n="priority.goal.add">Add goal</button>
     </form>
-    <p class="note" data-target="upgrade-goals.saved" role="status"></p>
+    <p class="note"><output class="seal" data-target="upgrade-goals.saved" role="status"></output></p>
     <p class="note" data-target="upgrade-goals.full" data-i18n="priority.goal.full" hidden>That is the most goals the save keeps. Remove one to add another.</p>
     <p data-target="upgrade-goals.empty" data-i18n="priority.goal.none">No goals yet. Pick one above and it stays with your player save.</p>
     <ol class="priority-goals" data-target="upgrade-goals.list"></ol>
@@ -78,7 +77,6 @@ self: priority
 
   <section class="section" id="savings" data-module="upgrade-savings">
     <h2 data-i18n="priority.savings">Saving for the next event</h2>
-    <p data-i18n="priority.savingsIntro">How fast your bag fills, learned from the balances you record, and what your goals can reach by the next KvK prep or Strongest Governor.</p>
     <fieldset class="priority-roles priority-events">
       <legend data-i18n="priority.savings.by">Count up to</legend>
       <button type="button" data-action="upgrade-savings.event" data-event="prep" aria-pressed="false" disabled><b data-i18n="priority.savings.event.prep">KvK prep</b> <small></small></button>
@@ -99,7 +97,7 @@ self: priority
 
   <section class="section" id="order">
     <h2 data-i18n="priority.order">The order, system by system</h2>
-    <p data-i18n="priority.orderIntro">The rules behind the list. Steps for a later stage or another role are dimmed.</p>
+    <p data-i18n="priority.orderIntro">The rules behind the list.</p>
     {% for ladder in site.data.upgrade_priority.ladders %}
     <details class="priority-ladder" id="order-{{ ladder.id }}" data-target="upgrade-priority.ladder" data-ladder="{{ ladder.id }}" data-stage="{{ ladder.stage }}"{% if forloop.first %} open{% endif %}>
       <summary data-i18n="{{ ladder.titleKey }}">{{ ladder.id }}</summary>
@@ -125,7 +123,7 @@ self: priority
 
   <section class="section" id="priority-sources">
     <h2 data-i18n="directory.sources">Sources &amp; confidence</h2>
-    <p data-i18n="priority.sourceNote">The order follows community guides, checked on 23 October 2026; the numbers behind each step (Town Centre prerequisites, governor costs, star and widget costs, pet Advances, master classes) come from the tables the other tools already use. The guides are fan sites and often disagree: research order, early Truegold on troop buildings and pet order vary most. Check a long upgrade's prerequisites in game before you start it.</p>
+    <p data-i18n="priority.sourceNote">The order follows community guides, checked on 23 October 2026. The guides are fan sites and often disagree: research order, early Truegold on troop buildings and pet order vary most. Check a long upgrade's prerequisites in game before you start it.</p>
     <ol class="priority-sources">{% for entry in site.data.upgrade_priority.sources %}<li><a href="{{ entry[1].url }}">{{ entry[1].label | escape }}</a></li>{% endfor %}</ol>
   </section>
 </main>
