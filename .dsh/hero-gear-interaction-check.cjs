@@ -170,7 +170,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await sibling.locator('.gear-card .gear-row').first().waitFor({ state: 'attached' });
     await sibling.evaluate(() => window.PlayerLedger.shared().setBalance('mithril', 17));
     await page.waitForFunction(() => document.getElementById('gear-mithril').value === '17');
-    await page.locator('#save-backups summary').click();
+    await page.locator('#save-backups > summary').click();
     const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#gear-export').click()]);
     assert.equal(download.suggestedFilename(), 'kingshot-player.json');
     const backup = JSON.parse(fs.readFileSync(await download.path(), 'utf8'));

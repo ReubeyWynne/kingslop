@@ -61,6 +61,7 @@ output[data-open]::after { content: " +?"; font-style: italic; color: var(--ink-
 .shared-by i[data-page="governor"] { --hue: #86D48A; }
 .shared-by i[data-page="pets"] { --hue: #F0907A; }
 .shared-by i[data-page="buildings"] { --hue: #D8B08C; }
+.shared-by i[data-page="town"] { --hue: #DC8FDB; }
 .shared-by i[data-page="castle"] { --hue: #DFAA77; }
 .shared-by i[data-page="seasonal"] { --hue: #CAA0F1; }
 

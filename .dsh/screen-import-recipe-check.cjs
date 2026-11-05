@@ -42,7 +42,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     await page.goto(base + '/events/?lang=en#screenshot-recipe');
     await recipe.waitFor({ state: 'visible', timeout: 15000 });
     assert.equal(await dock.locator('[data-target~="screen-import.chip"]').getAttribute('aria-expanded'), 'true', 'the link presses the dock open');
-    assert.equal(await recipe.locator('#import-recipe-title').textContent(), 'Five screenshots and the tools know you');
+    assert.equal(await recipe.locator('#import-recipe-title').textContent(), 'Start with these five screenshots');
     assert.deepEqual(await state(), ['resources:false', 'speedups:false', 'backpack:false', 'gear:false', 'pets:false']);
     assert.equal(await count(), '0 of 5');
     assert.equal(await recipe.locator('[data-target~="screen-import.recipeNext"]').isHidden(), true, 'Town Centre waits for the bag');
@@ -106,7 +106,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
       await p.goto(base + '/vip-calculator/?lang=' + lang + '#screenshot-recipe');
       const r = p.locator('#screenshot-recipe');
       await r.waitFor({ state: 'visible', timeout: 15000 });
-      await p.waitForFunction(() => document.documentElement.lang && document.querySelector('#import-recipe-title').textContent !== 'Five screenshots and the tools know you');
+      await p.waitForFunction(() => document.documentElement.lang && document.querySelector('#import-recipe-title').textContent !== 'Start with these five screenshots');
       const fit = await p.evaluate(() => {
         const sheet = document.querySelector('#screen-import .import-sheet').getBoundingClientRect();
         const rows = Array.from(document.querySelectorAll('#screenshot-recipe [data-recipe]')).map(li => li.getBoundingClientRect());

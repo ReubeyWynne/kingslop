@@ -29,19 +29,21 @@ A source checked more than 30 days before the page is marked so a stale one stan
     {%- unless include.points == false %}
     <details id="{{ include.points_id | default: 'how-points' }}">
       <summary data-i18n="notes.pointsTitle">How event points score</summary>
-      <p data-i18n="notes.pointsBody">Items score when you spend them, not while you hold them. Each event lists the days that pay most, at the rates on the Events page.</p>
+      <p data-i18n="notes.pointsBody">Items score when you spend them, not while you hold them.</p>
       {{ include.points_extra }}
     </details>
     {%- endunless %}
+    {%- if include.links_extra %}
     <details id="how-links">
       <summary data-i18n="notes.linksTitle">Links and guest mode</summary>
-      <p data-i18n="notes.linksBody">Copy share link sends exactly what you see. Guest mode works on a copy, so nothing you change touches your save until you press Save as mine, which asks first.</p>
       {{ include.links_extra }}
     </details>
-    {%- assign save_scope = include.scope | default: "player-save" -%}{%- assign save_id = include.prefix | default: "save" %}
+    {%- endif %}
+    {%- assign save_scope = include.scope | default: "player-save" -%}{%- assign save_readers = "events,sim,heroes,masters,gear,governor,pets,buildings,town" | split: "," -%}{%- assign save_id = include.prefix | default: "save" %}
     <details id="save-backups" data-module="save-transfer" data-status-scope="{{ save_scope }}" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
-      <summary data-i18n="gear.manageSave">Your save and backups</summary>
-      <p data-i18n="notes.saveBody">One save on this device holds what every calculator uses. Keep a backup before importing someone else’s.</p>
+      <summary><span data-i18n="gear.manageSave">Your save and backups</span> <output class="seal" data-target="save-transfer.seal" data-state="unsaved" role="status"></output></summary>
+      <div class="notes-shared"><details class="shared-by" id="save-shared-by"><summary aria-label="Used by these pages" data-i18n-key="notes.sharedBy" data-i18n-attr="aria-label">{% for self in save_readers %}<i data-page="{{ site.data.pages[self].token }}"></i>{% endfor %}</summary><span class="motif-names">{% for self in save_readers %}{% assign n = site.data.nav | where: "self", self | first %}{% unless forloop.first %} · {% endunless %}{% if n %}<span data-i18n="{{ n.labelKey }}">{{ n.label }}</span>{% else %}<span data-i18n="town.nav">Town Centre</span>{% endif %}{% endfor %}</span></details></div>
+      <p data-i18n="notes.saveBody">Download a backup before you import someone else’s.</p>
       <p class="notes-tools">
         <button type="button" id="{{ save_id }}-export" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
         <button type="button" id="{{ save_id }}-load" data-action="save-transfer.choose" data-i18n="gear.load">import backup</button>

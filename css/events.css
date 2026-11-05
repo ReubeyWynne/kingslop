@@ -164,24 +164,24 @@ html, body { overscroll-behavior-x: none; }
   overflow: auto;
   overscroll-behavior: contain;
 }
-.page-deck[data-selected="home"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #F5C851; --deck-ground: #25231b; }
-.page-deck[data-selected="bearhunt"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #AEC878; --deck-ground: #1d2320; }
-.page-deck[data-selected="vikings"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E08A3C; --deck-ground: #231c19; }
-.page-deck[data-selected="swordland"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E05555; --deck-ground: #23161c; }
-.page-deck[data-selected="vip"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #C5A3EE; --deck-ground: #201f2e; }
-.page-deck[data-selected="sim"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #88A8F0; --deck-ground: #18202e; }
-.page-deck[data-selected="kvksg"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #5FC8A6; --deck-ground: #132326; }
-.page-deck[data-selected="gear"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #72CBDD; --deck-ground: #16242c; }
-.page-deck[data-selected="heroes"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #E68AB4; --deck-ground: #241c27; }
-.page-deck[data-selected="masters"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #A29BF4; --deck-ground: #1d1c30; }
-.page-deck[data-selected="governor"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #86D48A; --deck-ground: #19241b; }
-.page-deck[data-selected="pets"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #F0907A; --deck-ground: #271b1b; }
-.page-deck[data-selected="buildings"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #D8B08C; --deck-ground: #241e18; }
-.page-deck[data-selected="castle"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #DFAA77; --deck-ground: #27201b; }
+.page-deck[data-selected="home"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #F5C851; --deck-ground: #25231b; }
+.page-deck[data-selected="bearhunt"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #AEC878; --deck-ground: #1d2320; }
+.page-deck[data-selected="vikings"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #E08A3C; --deck-ground: #231c19; }
+.page-deck[data-selected="swordland"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #E05555; --deck-ground: #23161c; }
+.page-deck[data-selected="vip"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #C5A3EE; --deck-ground: #201f2e; }
+.page-deck[data-selected="sim"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #88A8F0; --deck-ground: #18202e; }
+.page-deck[data-selected="kvksg"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #5FC8A6; --deck-ground: #132326; }
+.page-deck[data-selected="gear"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #72CBDD; --deck-ground: #16242c; }
+.page-deck[data-selected="heroes"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #E68AB4; --deck-ground: #241c27; }
+.page-deck[data-selected="masters"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #A29BF4; --deck-ground: #1d1c30; }
+.page-deck[data-selected="governor"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #86D48A; --deck-ground: #19241b; }
+.page-deck[data-selected="pets"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #F0907A; --deck-ground: #271b1b; }
+.page-deck[data-selected="buildings"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #D8B08C; --deck-ground: #241e18; }
+.page-deck[data-selected="castle"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #DFAA77; --deck-ground: #27201b; }
 /* The selected page's colours land only on the parts that use them, not on
    the strip, so a change restyles a handful of elements rather than every
    cover in the ring. */
-.page-deck :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) {
+.page-deck :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) {
   --amber: var(--deck-accent);
   --amber-dim: color-mix(in srgb, var(--deck-accent) 76%, #090d14);
   --signal-line: color-mix(in srgb, var(--deck-accent) 35%, transparent);
@@ -230,7 +230,7 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
   gap: 1rem;
   padding-block: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-bottom));
 }
-.deck-header, .deck-groups, .deck-footer, #deck-hint {
+.deck-header, .deck-groups, .deck-footer {
   width: min(90%, 38rem);
   margin-inline: auto;
 }
@@ -275,14 +275,13 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
   row-gap: 1rem;
   flex-shrink: 0;
 }
-.deck-stage > .deck-footer, .deck-stage > #deck-hint {
+.deck-stage > .deck-footer {
   grid-column: 1;
   position: relative;
   z-index: 1;
   pointer-events: none;
 }
 .deck-stage > .deck-footer { grid-row: 2; }
-.deck-stage > #deck-hint { grid-row: 3; }
 .deck-footer button { pointer-events: auto; }
 .deck-viewport {
   --card-width: min(76vw, 23rem);
@@ -416,7 +415,6 @@ html.deck-open body > :not(.page-deck) { visibility: hidden; }
 .deck-pip.is-last::before { content: "\25C7"; }
 .deck-pip.is-selected::before { content: "\25C6"; }
 .deck-pip:is(.is-selected, .is-last) { color: var(--deck-accent); }
-#deck-hint { margin-block: 0; text-align: center; color: var(--ink-dim); font-size: var(--step--1); }
 html[dir="rtl"] .deck-card { direction: rtl; }
 @media (prefers-reduced-motion: no-preference) {
   .page-deck[open] { animation: deck-reveal 0.16s ease-out; }
@@ -1042,7 +1040,6 @@ html[data-page="town"], html[data-page="home"]:has(.event-card[data-hover-page="
 /* It takes the hint's place under the rail while it shows, so the deck's
    layout never shifts and touches there still reach the strip. */
 .deck-stage > .guide-rail { grid-row: 3; grid-column: 1; position: relative; z-index: 1; margin: 0; color: var(--deck-accent, var(--amber)); font-style: italic; font-size: var(--step--1); text-align: center; pointer-events: none; }
-.page-deck[data-guide="rail"] #deck-hint { visibility: hidden; }
 .guide-rail[hidden] { display: none; }
 /* The rail wakes once, left to right: each mark shows the selected diamond for
    a beat. A mark changes glyph, never size or position. */
@@ -1078,4 +1075,4 @@ html[data-page="town"], html[data-page="home"]:has(.event-card[data-hover-page="
 
 html[data-page="seasonal"], .deck-card[data-page="seasonal"] { --void: #170D25; --void-2: #251535; --amber: #F5A04A; --amber-dim: #CE7534; }
 :is(.deck-card, .deck-pip)[data-page="seasonal"] { --deck-accent: #CAA0F1; }
-.page-deck[data-selected="seasonal"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint) { --deck-accent: #CAA0F1; --deck-ground: #251535; }
+.page-deck[data-selected="seasonal"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer) { --deck-accent: #CAA0F1; --deck-ground: #251535; }

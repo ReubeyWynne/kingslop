@@ -262,7 +262,7 @@ test('cancelled and multitouch gestures leave a usable deck and history restores
 test('all dictionaries carry plain-text deck labels and the template covers the nav data', () => {
   const template = fs.readFileSync(path.join(root, '_includes/page-deck.html'), 'utf8');
   const keys = [...template.matchAll(/data-i18n(?:-key)?="(ev\.deck\.[^"]+)"/g)].map(match => match[1]);
-  assert.equal(new Set(keys).size, 7);
+  assert.equal(new Set(keys).size, 6);
   for (const file of fs.readdirSync(path.join(root, 'i18n')).filter(name => name.endsWith('.js'))) {
     const scope = { window: {} };
     vm.runInNewContext(fs.readFileSync(path.join(root, 'i18n', file), 'utf8'), scope);
@@ -339,7 +339,7 @@ test('palette selection is declared in CSS without JavaScript colour writes or f
   assert.doesNotMatch(css, /^\.deck-card[^{]*is-selected/m, 'covers look the same whichever is selected');
   assert.doesNotMatch(css, /deck-wash/);
   for (const n of nav) {
-    assert.ok(css.includes(`.page-deck[data-selected="${pages[n.self].token}"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer, #deck-hint)`));
+    assert.ok(css.includes(`.page-deck[data-selected="${pages[n.self].token}"] :is(.deck-ground, .deck-atmosphere, .deck-header, .deck-groups, .deck-footer)`));
     assert.ok(css.includes(`:is(.deck-card, .deck-pip)[data-page="${pages[n.self].token}"] { --deck-accent:`), "each cover and its rail mark carry the page colour");
   }
   assert.doesNotMatch(source, /requestAnimationFrame|cancelAnimationFrame|getComputedStyle/);
