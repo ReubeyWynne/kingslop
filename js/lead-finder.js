@@ -17,7 +17,7 @@
     ahead: '{n}% more Bear damage than your next lineup', tie: 'Level with your next lineup', only: 'Your only lineup',
     beats: 'Beats {n} of {total} opponents', mixTitle: 'Send this troop mix',
     mixNote: 'The split that gets the most damage out of these three heroes and your stats.',
-    damageTitle: 'Estimated Bear damage', damageNote: '{n} = 1/15 of a {cap} rally{est}.', estimated: ' (estimated: 15 × joiner cap)',
+    damageTitle: 'Estimated Bear damage', damageNote: '{n} = 1/15 of a {cap} rally{est}{valora}. One hit can land about 20% either side.', valora: ', Valora +{n}%', estimated: ' (estimated: 15 × joiner cap)',
     troops: '{n} troops',
     railTitle: 'Against each opponent', railNote: 'Win chance over repeated fights, and how much of your army is still standing.', win: '{n}%', empty: 'empty seat',
     foesNote: 'Generation {n} accounts, both sides at {total} troops. Win chance per opponent:',
@@ -61,6 +61,8 @@
       try { var bh = JSON.parse(localStorage.getItem('bh:bear-allocator:v1') || 'null'); if (bh && Number(bh['join-cap']) > 0) join = Number(bh['join-cap']); } catch (cause) { /* the usual cap */ }
       return { cap: join * 15, estimated: true };
     }
+    // Valora's Hunter Instinct talent from the Masters save: it adds to your own Damage Points.
+    function valoraOf() { try { return L.valoraPoints(store ? store.masters().roster.valora : null); } catch (cause) { return 0; } }
     function cityOf() { var out = {}; Object.keys(prefs.city || {}).forEach(function (k) { out[k] = Number(prefs.city[k]) || 0; }); return out; }
     // Hero gear saved on the Hero Gear page, by troop type; nothing saved adds nothing.
     function gearOf() {
@@ -283,10 +285,10 @@
         answer.append(bar, legend, el('p', 'lead-answer-note', t('mixNote')));
         var rc = rallyCap(), march = Math.floor(rc.cap / 15), counts = TYPES.map(function (type, i) { return Math.round(march * r.mix[i]); });
         var damage = el('div', 'lead-damage');
-        damage.append(el('p', 'lead-kicker', t('damageTitle')), el('b', 'lead-damage-value', api.compact(L.bearDamage(r.score, march))));
+        damage.append(el('p', 'lead-kicker', t('damageTitle')), el('b', 'lead-damage-value', api.compact(L.bearDamage(r.score, march, valoraOf()))));
         var split = el('span', 'lead-damage-split');
         TYPES.forEach(function (type, i) { var part = el('span'); part.dataset.troop = type; part.append(mark('troop-' + type), el('span', '', api.fmt(counts[i]))); split.appendChild(part); });
-        damage.append(split, el('p', 'lead-answer-note', fill('damageNote', { n: fill('troops', { n: api.fmt(march) }), cap: api.fmt(rc.cap), est: rc.estimated ? t('estimated') : '' })));
+        damage.append(split, el('p', 'lead-answer-note', fill('damageNote', { n: fill('troops', { n: api.fmt(march) }), cap: api.fmt(rc.cap), est: rc.estimated ? t('estimated') : '', valora: valoraOf() ? fill('valora', { n: api.fmt(valoraOf()) }) : '' })));
         answer.appendChild(damage);
       } else {
         answer.appendChild(el('p', 'lead-kicker', t('railTitle')));

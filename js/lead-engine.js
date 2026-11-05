@@ -266,14 +266,38 @@
       return E.baseAtk(t, tier, tg) * vs * (1 + p.atk[t] / 100) * (1 + p.let[t] / 100) * mod[t];
     });
     var sq = terms.reduce(function (s, x) { return s + x * x; }, 0);
-    return { score: Math.sqrt(sq) / 1000, mix: terms.map(function (x) { return x * x / sq; }), panel: p };
+    return { score: Math.sqrt(sq) / 1000, mix: terms.map(function (x) { return x * x / sq; }), panel: p, terms: terms };
   }
 
-  // The Bear damage of one march at the lineup's ideal mix (MATHS.md §1, §5): each troop type
-  // deals (1.2 / 1000) × √5000 × √N_t × base_att_t × A_t × SkillMod_t, so at the ideal split
-  // the march deals (1.2 / 1000) × √5000 × √N × √Σ term² = 1.2 × √5000 × √N × bear().score.
-  // An estimate on the Frakinator's scale, for one participant's march of `troops`.
-  function bearDamage(score, troops) { return 1.2 * Math.sqrt(5000) * Math.sqrt(Math.max(0, num(troops))) * score; }
+  // The Bear damage of one march (MATHS.md §1, §5). Each troop type deals
+  // (1.2 / 1000) × √5000 × √N_t × base_att_t × A_t × SkillMod_t, so at the ideal split the march
+  // deals (1.2 / 1000) × √5000 × √N × √Σ term² = 1.2 × √5000 × √N × bear().score.
+  // BEAR_SCALE puts that on the game's Damage Points: the owner's five rallies of 4 November 2026
+  // (Hunting Trap 2; Amadeus 3★ 4/6 W4, Petra 4★ 3/6 W3, Marlin 5★ W10; the Bonus Overview,
+  // hero gear and TG4 of .dsh/lead-engine-check.cjs; Apex T10 troops, cavalry TG3; 9,000 /
+  // 28,500 / 52,500; Valora's talent at +24%) scored 40.2M, 50.7M, 41.7M, 57.2M and 44.9M,
+  // 46.9M on average, where the formula with the usual Gen 4 joiners gives 25.8M. Single hits
+  // swing about ±20% with the chance skills. pointsPct is Valora's Hunter Instinct talent,
+  // which adds to your own Damage Points only.
+  var BEAR_SCALE = 1.82;
+  var VALORA_POINTS = [0, 2, 4, 6, 9, 12, 15, 18, 21, 24, 27, 30];
+  function bearDamage(score, troops, pointsPct) {
+    return BEAR_SCALE * 1.2 * Math.sqrt(5000) * Math.sqrt(Math.max(0, num(troops))) * score * (1 + num(pointsPct) / 100);
+  }
+  // The same for a march you have already split: counts per type, with bear()'s terms.
+  function bearDamageAt(terms, counts, pointsPct) {
+    var sum = 0;
+    for (var t = 0; t < 3; t++) sum += Math.sqrt(Math.max(0, num(counts[t]))) * terms[t];
+    return BEAR_SCALE * 1.2 * Math.sqrt(5000) / 1000 * sum * (1 + num(pointsPct) / 100);
+  }
+  // Valora's talent level from her save record: one level per class reached (affinity 1, 10,
+  // 20 … 100), one less while the class at a gate waits for Relationship Advancement.
+  function valoraPoints(record) {
+    if (!record || record.affinity === null || record.affinity === undefined) return 0;
+    var a = num(record.affinity), level = a >= 1 ? 1 + Math.min(10, Math.floor(a / 10)) : 0;
+    if (record.ready && a >= 10 && a % 10 === 0) level -= 1;
+    return VALORA_POINTS[clamp(level, 0, 11)];
+  }
 
   // A stock opponent at one generation: the tier's loadout for that generation
   // gives its lineup, stats, Truegold, hero gear, joiners, pets and city.
@@ -436,7 +460,7 @@
   }
 
   var api = {
-    bearDamage: bearDamage, stockAccount: stockAccount, score: score, seated: seated, walker: walker, breakpoint: breakpoint, firstBreak: firstBreak,
+    bearDamage: bearDamage, bearDamageAt: bearDamageAt, valoraPoints: valoraPoints, BEAR_SCALE: BEAR_SCALE, VALORA_POINTS: VALORA_POINTS, stockAccount: stockAccount, score: score, seated: seated, walker: walker, breakpoint: breakpoint, firstBreak: firstBreak,
     TYPES: TYPES, STAR_SKILLS: STAR_SKILLS, copyOf: copyOf, statLine: statLine, widgetStat: widgetStat, gearLayer: gearLayer, townLayer: townLayer, TOWN_TG: TOWN_TG, panel: panel, reportPanel: reportPanel,
     uptime: uptime, bearMod: bearMod, bear: bear, opponent: opponent, loadout: loadout, fight: fight, candidates: candidates, lineups: lineups, rank: rank,
     LAYER_KEYS: LAYER_KEYS, blank: blank, petLevelPct: petLevelPct, petLayer: petLayer, cityLayer: cityLayer, layered: layered, battleSide: battleSide

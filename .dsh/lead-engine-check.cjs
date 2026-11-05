@@ -114,9 +114,12 @@ near(L.uptime({ kind: 'everyN', every: 4, offset: 3, turns: 1 }), 0.2, 'every fo
   near(mix[0] + mix[1] + mix[2], 1, 'the ideal mix is whole');
   assert.ok(mix[2] > 0.5, 'archers carry the Bear');
 }
-// Bear damage on the Frakinator's scale: (1.2 / 1000) × √5000 × √N × √Σ term², and √N in the march size.
-near(L.bearDamage(2, 5000), 1.2 * 5000 * 2, 'the scale');
+// Bear damage on the game's Damage Points: √N in the march size, Valora's talent on top.
 near(L.bearDamage(1, 400000) / L.bearDamage(1, 100000), 2, 'four times the troops, twice the damage');
+near(L.bearDamage(1, 100000, 30) / L.bearDamage(1, 100000), 1.3, 'Valora at +30%');
+assert.equal(L.valoraPoints({ affinity: 90, ready: true, skills: [0, 0, 0, 0] }), 24, 'a class waiting at 90 is still level 9');
+assert.equal(L.valoraPoints({ affinity: 100, ready: false, skills: [0, 0, 0, 0] }), 30);
+assert.equal(L.valoraPoints(null), 0);
 // Chance effects of one code never stack: only the strongest is active, duplicates are dead; fixed ones add.
 near(L.bearMod([{ kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 50 }] }, { kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 40 }] }])[0], 1.5, 'two sure chance skills: the larger');
 near(L.bearMod([{ kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }, { kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }])[0], 1.25, 'two coin flips: the duplicate is dead');
@@ -223,5 +226,23 @@ assert.equal(L.opponent(megafauna.foes[3], 4, 'garrison', data).lineup[2].key, '
   const acc = L.stockAccount(megafauna.foes[1], 4, 'rally', data), fight = L.breakpoint('rally', acc, acc.lineup, copy('marlin', 30, 10), 'rosa', 4, data, { battles: 4 });
   assert.equal(fight.widgets.length, 31);
   assert.ok(fight.widgets[30] !== null, 'a 5★ Rosa catches Marlin in a rally');
+}
+
+// The scale: the owner's five rallies of 4 November 2026 on Hunting Trap 2 (40.2M, 50.7M, 41.7M,
+// 57.2M, 44.9M; 46.9M on average) with the lineup, Bonus Overview, gear and TG4 pinned above,
+// Apex T10 troops (cavalry TG3), 9,000 / 28,500 / 52,500, the usual Gen 4 joiners and Valora at 90 (+24%).
+{
+  const m = q => ({ quality: q[0], level: q[1], mastery: q[2] });
+  const set = (type, [helm, gloves, chest, boots]) => ({ [type + '-helm']: m(helm), [type + '-gloves']: m(gloves), [type + '-chest']: m(chest), [type + '-boots']: m(boots) });
+  const gear = L.gearLayer({ ...set('arc', [['red', 131, 11], ['mythic', 62, 2], ['mythic', 62, 2], ['mythic', 100, 6]]), ...set('inf', [['mythic', 61, 3], ['red', 133, 11], ['mythic', 100, 7], ['mythic', 65, 3]]), ...set('cav', [['mythic', 51, 2], ['mythic', 34, 1], ['mythic', 34, 1], ['mythic', 48, 1]]) });
+  const row = (a, d, l, h) => ({ attack: a, defense: d, lethality: l, health: h });
+  const overview = { inf: row(389.3, 373.6, 264.2, 257.0), cav: row(326.5, 330.1, 244.0, 218.0), arc: row(345.7, 349.3, 303.8, 296.6) };
+  const owner = { overview, troops: { tier: [10, 10, 10], tg: [4, 3, 4] }, joiners: megafauna.joiners.bear['4'].map(key => ({ key, level: 5 })), city: L.blank(), pets: L.blank(), gear, town: L.townLayer('TG 4') };
+  const r = L.bear(owner, [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)], data);
+  const hits = [40185881, 50653325, 41701585, 57194303, 44869569], mean = hits.reduce((a, b) => a + b) / hits.length;
+  const model = L.bearDamageAt(r.terms, [9000, 28500, 52500], 24);
+  assert.ok(Math.abs(model / mean - 1) < 0.05, `the owner's rallies: ${(model / 1e6).toFixed(1)}M against ${(mean / 1e6).toFixed(1)}M`);
+  assert.ok(hits.every(h => Math.abs(h / model - 1) < 0.25), 'every hit within the chance skills\' swing');
+  assert.ok(L.bearDamage(r.score, 90000, 24) > model, 'the ideal mix beats the one sent');
 }
 console.log('Lead engine: stars, widgets, skill caps, Bear score, joiners, pets, city layers, megafauna opponents, ranking and break points pass.');
