@@ -254,6 +254,16 @@
     return mod;
   }
 
+  // Truegold troop skills on the Bear, at their expected value (js/battle-engine.js TRUEGOLD):
+  // cavalry may deal double, archers half again more (three quarters at TG8). Infantry's
+  // only takes damage, which the Bear never deals in this score.
+  function truegoldBear(t, tg) {
+    var G = root.BattleEngine.TRUEGOLD, steps = t === 1 ? G.cav : t === 2 ? G.arc : null;
+    if (!steps || tg < steps[0][0]) return 1;
+    var step = tg >= steps[1][0] ? steps[1] : steps[0];
+    return 1 + step[1] * (step[2] + (t === 2 && tg >= 8 ? G.arcTg8 : 0));
+  }
+
   // Expected Bear damage of a lineup at the lead's ideal mix, and that mix.
   function bear(you, lineup, data) {
     var E = root.BattleEngine, troops = you.troops;
@@ -261,9 +271,9 @@
     var mod = bearMod(skillsOf(lineup, 'rally', data, you.joiners));
     var terms = TYPES.map(function (type, t) {
       var tier = troops.tier[t], tg = troops.tg[t];
-      // Archers deal +10% to the all-infantry Bear, and again from T7 / TG3.
+      // Archers deal +10% to the all-infantry Bear, and again from T7 / TG3 (Volley).
       var vs = t === 2 ? 1.1 * (E.hasSecondSkill(tier, tg) ? 1.1 : 1) : 1;
-      return E.baseAtk(t, tier, tg) * vs * (1 + p.atk[t] / 100) * (1 + p.let[t] / 100) * mod[t];
+      return E.baseAtk(t, tier, tg) * vs * (1 + (p.atk[t] + (t === 2 && tg >= 8 ? E.TRUEGOLD.flatTg8 : 0)) / 100) * (1 + p.let[t] / 100) * mod[t] * truegoldBear(t, tg);
     });
     var sq = terms.reduce(function (s, x) { return s + x * x; }, 0);
     return { score: Math.sqrt(sq) / 1000, mix: terms.map(function (x) { return x * x / sq; }), panel: p, terms: terms };
@@ -272,14 +282,16 @@
   // The Bear damage of one march (MATHS.md §1, §5). Each troop type deals
   // (1.2 / 1000) × √5000 × √N_t × base_att_t × A_t × SkillMod_t, so at the ideal split the march
   // deals (1.2 / 1000) × √5000 × √N × √Σ term² = 1.2 × √5000 × √N × bear().score.
-  // BEAR_SCALE puts that on the game's Damage Points: the owner's five rallies of 4 November 2026
+  // BEAR_SCALE is the gap still unexplained, not a law: the owner's five rallies of 4 November 2026
   // (Hunting Trap 2; Amadeus 3★ 4/6 W4, Petra 4★ 3/6 W3, Marlin 5★ W10; the Bonus Overview,
-  // hero gear and TG4 of .dsh/lead-engine-check.cjs; Apex T10 troops, cavalry TG3; 9,000 /
-  // 28,500 / 52,500; Valora's talent at +24%) scored 40.2M, 50.7M, 41.7M, 57.2M and 44.9M,
-  // 46.9M on average, where the formula with the usual Gen 4 joiners gives 25.8M. Single hits
-  // swing about ±20% with the chance skills. pointsPct is Valora's Hunter Instinct talent,
-  // which adds to your own Damage Points only.
-  var BEAR_SCALE = 1.82;
+  // hero gear and TG4 of .dsh/lead-engine-check.cjs; T10 troops, cavalry TG3; 9,000 / 28,500 /
+  // 52,500; Valora's talent at +24%) scored 40.2M, 50.7M, 41.7M, 57.2M and 44.9M, 46.9M on
+  // average, where this formula with the usual Gen 4 joiners and the Truegold troop skills gives
+  // 28.2M. Candidates still being checked: city buffs and pets on those rallies (not in the model
+  // above), the actual joiners, and the trap level the Frakinator's constant was measured at.
+  // Single hits swing about ±20% with the chance skills. pointsPct is Valora's Hunter Instinct
+  // talent, which adds to your own Damage Points only.
+  var BEAR_SCALE = 1.66;
   var VALORA_POINTS = [0, 2, 4, 6, 9, 12, 15, 18, 21, 24, 27, 30];
   function bearDamage(score, troops, pointsPct) {
     return BEAR_SCALE * 1.2 * Math.sqrt(5000) * Math.sqrt(Math.max(0, num(troops))) * score * (1 + num(pointsPct) / 100);
