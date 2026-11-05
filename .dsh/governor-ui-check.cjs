@@ -13,9 +13,15 @@ withBrowser({ root }, async ({ browser, origin }) => {
     const tile = id => page.locator('.gov-piece[data-gov="' + id + '"]');
     const row = id => page.locator('.gov-row[data-item="' + id + '"]');
     await page.goto(origin + '/governor-gear/?lang=en'); await ready();
-    assert.match(await target('notes').textContent(), /6 not set/);
+    // An unset piece shows as unknown ink rather than a note.
+    assert.equal(await page.locator('.gov-piece-level[data-tally="unknown"]').count(), 6);
+    assert.equal(await page.locator('.gov-row-gear[data-tally="unknown"]').count(), 6);
+    assert.equal(await page.locator('#governor-bag input[data-tally="blank"]').count(), await page.locator('#governor-bag input').count());
     assert.equal(await tile('cav-1').locator('.gov-piece-name').textContent(), 'Hat');
     await page.fill('[data-bind="inventory.satin"]', '20000'); await page.fill('[data-bind="inventory.gilded-threads"]', '200'); await page.fill('[data-bind="inventory.artisans-vision"]', '0');
+    assert.equal(await page.getAttribute('[data-bind="inventory.artisans-vision"]', 'data-tally'), 'zero');
+    assert.equal(await page.getAttribute('[data-bind="inventory.satin"]', 'data-tally'), null);
+    assert.equal(await page.getAttribute('#governor-bag output.seal', 'data-state'), 'saved');
     // Set all sits under the profile and applies on pick.
     await page.locator('.gov-fill select[data-kind="gear"]').selectOption('0');
     assert.equal(await tile('inf-1').getAttribute('data-state'), 'empty');
@@ -80,7 +86,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await target('billTitle').textContent(), 'Needs');
     assert.match(await row('arc-1').locator('.gov-row-gear').textContent(), /→ Blue 0★ 1★|→ Blue 1★/);
     assert.equal(await row('inf-1').getAttribute('data-moved'), 'false');
-    assert.match(await target('notes').textContent(), /1 not set/);
+    assert.equal(await page.locator('.gov-row-gear[data-tally="unknown"]').count(), 1);
     await page.click('[role="tab"][data-value="spend"]');
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width, 'no sideways scroll at ' + width);
     await page.screenshot({ path: path.join(output, width + '.png'), fullPage: true });

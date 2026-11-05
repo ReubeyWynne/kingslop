@@ -14,7 +14,7 @@
     stays: 'stays', notSet: 'not set', scoreGain: '+{n} governor score', scoreNone: 'No published score for one of these levels.',
     kindGear: 'Gear', kindCharms: 'Charms',
     nothing: 'Nothing the materials can pay for yet. Count them, or set the level of each piece.',
-    unset: '{n} not set and left out. Tap a piece to set it.', bagUnknown: 'Materials not counted count as none.',
+    bagUnknown: 'Materials not counted count as none.',
     reached: 'Everything set is already there.', unverified: 'Includes a step only one table lists (◇).',
     pieceTroop: '{slot} · {troop}'
   };
@@ -50,7 +50,9 @@
       var card = el('span', null, 'gov-card'); card.appendChild(img(art + 'gear/' + id + '-green-0.webp', 160)); view.paintCard(card, id, to);
       var text = el('span', null, 'gov-row-text');
       text.appendChild(el('span', fill('pieceTroop', { slot: t('slot.' + p.slot), troop: api.tr('gear.' + p.troop, TROOPS[p.troop]) }), 'gov-row-name'));
-      text.appendChild(el('span', from === null ? t('notSet') : from === to ? view.levelName('gear', from) + ' · ' + t('stays') : view.levelName('gear', from) + ' → ' + view.levelName('gear', to), 'gov-row-gear'));
+      var gearText = el('span', from === null ? t('notSet') : from === to ? view.levelName('gear', from) + ' · ' + t('stays') : view.levelName('gear', from) + ' → ' + view.levelName('gear', to), 'gov-row-gear');
+      if (from === null) gearText.dataset.tally = 'unknown';
+      text.appendChild(gearText);
       var gems = el('span', null, 'gov-row-charms');
       [1, 2, 3].forEach(function (c) {
         var cid = id + '-' + c, a = charms.from[cid], b = charms.to[cid], gem = el('span', null, 'gov-gem'), wrap = el('span', null, 'gov-row-charm');
@@ -102,9 +104,7 @@
         });
         node.appendChild(window.EventPoints.table(api, rows, 'gov-event-points'));
       });
-      var unset = ORDER.filter(function (id) { return gear[id] === null && (mode === 'spend' || reachTroop === 'all' || piece(id).troop === reachTroop); }).length;
       if (!steps) notes.push(t(mode === 'spend' ? 'nothing' : 'reached'));
-      if (unset) notes.push(fill('unset', { n: api.fmt(unset) }));
       if (mode === 'spend' && materials.unknown) notes.push(t('bagUnknown'));
       if (steps && !scoreKnown) notes.push(t('scoreNone'));
       if (result.gear.unverified || result.charms.unverified) notes.push(t('unverified'));
