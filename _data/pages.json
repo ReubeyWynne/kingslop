@@ -1320,5 +1320,41 @@
       "lede": "the alliance events in plain words — how each one scores, what to do about it."
     },
     "skipGuide": true
+  },
+  "motifs": {
+    "token": "motifs",
+    "depth": "../",
+    "canonicalPath": "/motifs/",
+    "themeColor": "#0B0E16",
+    "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 fill=%27%230B0E16%27/%3E%3Ctext x=%2716%27 y=%2724%27 font-size=%2222%22 text-anchor=%27middle%27 fill=%27%23F5C851%27%3E%E2%9D%A7%3C/text%3E%3C/svg%3E\">",
+    "titleText": "Motifs, the site’s visual glossary — dey.ci",
+    "metaDesc": "The marks the site uses in place of sentences: saved, shared, unknown, assumed, a copy, editable, best day, sourced, example, undo and what a link carries.",
+    "ogTitle": "Motifs, the site’s visual glossary",
+    "ogDesc": "The marks the site uses in place of sentences.",
+    "skipHref": "#glossary",
+    "skipText": "Skip to the glossary",
+    "dust": "<i></i><i></i><i></i>",
+    "brand": "Motifs",
+    "brandNote": "show, don’t tell",
+    "css": [
+      "../css/styles.css",
+      "../css/events.css",
+      "../css/glossary.css"
+    ],
+    "scripts": [
+      "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
+      "../js/common.js",
+      "../js/glossary.js"
+    ],
+    "footMain": "show, don’t tell",
+    "footSubs": [
+      {
+        "html": "The rules behind these marks are in <a href=\"https://github.com/ReubeyWynne/kingslop/blob/main/docs/prose-standard.md\">the prose standard</a>."
+      }
+    ],
+    "headScripts": [],
+    "skipGuide": true
   }
 }

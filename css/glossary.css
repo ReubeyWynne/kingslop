@@ -1,0 +1,21 @@
+/* The motif glossary (/motifs/). The motifs themselves are in css/motifs.css;
+   this only lays out the specimens. */
+.glossary { display: grid; gap: var(--space-l); }
+.motif { display: grid; gap: .6rem; padding-top: var(--space-s); border-top: 1px solid var(--signal-line); }
+.motif h2 { margin: 0; }
+.motif p { margin: 0; }
+.motif-demo { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1.6rem; padding: 1rem; border: 1px solid rgba(241, 227, 194, .12); background: rgba(241, 227, 194, .03); }
+.motif-demo-stack { flex-direction: column; align-items: flex-start; }
+.motif pre { margin: 0; padding: .6rem .8rem; overflow-x: auto; background: rgba(0, 0, 0, .3); font-size: .8rem; line-height: 1.5; }
+.motif-replaces { font-style: italic; font-size: var(--step--1); color: var(--ink-muted); }
+.demo-pair { display: inline-flex; align-items: center; gap: .45rem; }
+.demo-label { display: block; margin-bottom: .3rem; font-size: .85rem; color: var(--ink-dim); }
+.demo-total { font-size: 1.4rem; font-weight: 700; }
+.demo-table { border-collapse: collapse; }
+.demo-table th { padding: .3rem 1.2rem .3rem 0; font-weight: 400; text-align: start; color: var(--ink-dim); }
+.demo-table td { padding: .3rem .2rem; text-align: end; }
+.motif-demo input { width: 6rem; padding: .15rem .3rem; border: 0; border-bottom: 1px solid var(--signal-line); background: none; color: var(--ink); font: inherit; }
+.demo-button { padding: .3rem .8rem; border: 1px solid var(--amber-dim); background: none; color: var(--amber); font: inherit; cursor: pointer; }
+.loose-leaf { width: min(100%, 26rem); }
+.loose-leaf p { margin: 0; }
+.loose-leaf .demo-button { line-height: 1.2; }
