@@ -200,6 +200,23 @@
     function heroName(copy) { return copy ? data.heroes[copy.key].name : t('empty'); }
     function stars(copy) { var s = Math.floor(copy.stars / 6), tier = copy.stars % 6; return api.fmt(s) + '★' + (tier ? ' ' + api.fmt(tier) + '/6' : '') + (copy.widget ? ' · W' + api.fmt(copy.widget) : ''); }
     var SVG = 'http://www.w3.org/2000/svg';
+    // The spread of simulated hunts: 24 bins from the 1st to the 99th percentile, the 80% band lit.
+    function histogram(sorted, lo, hi) {
+      var E = window.BattleEngine, a = E.quantile(sorted, 0.01), b = E.quantile(sorted, 0.99), bins = 24, width = (b - a) / bins || 1, counts = [];
+      for (var i = 0; i < bins; i++) counts.push(0);
+      sorted.forEach(function (x) { if (x >= a && x <= b) counts[Math.min(bins - 1, Math.floor((x - a) / width))]++; });
+      var top = Math.max.apply(null, counts) || 1, box = el('div', 'lead-hist');
+      box.setAttribute('role', 'img');
+      box.setAttribute('aria-label', fill('damageBand', { lo: api.compact(lo), hi: api.compact(hi) }));
+      counts.forEach(function (c, i) {
+        var from = a + i * width, to = from + width, bar = el('span', 'lead-hist-bar');
+        bar.style.setProperty('--h', String(c / top));
+        if (to > lo && from < hi) bar.dataset.band = '';
+        bar.title = fill('damageBin', { n: api.fmt(Math.round(c / sorted.length * 1000) / 10), lo: api.compact(from), hi: api.compact(to) });
+        box.appendChild(bar);
+      });
+      return box;
+    }
     function mark(symbol, className) {
       var svg = document.createElementNS(SVG, 'svg'), use = document.createElementNS(SVG, 'use');
       if (className) svg.setAttribute('class', className);
@@ -285,7 +302,9 @@
         answer.append(bar, legend, el('p', 'lead-answer-note', t('mixNote')));
         var rc = rallyCap(), march = Math.floor(rc.cap / 15), counts = TYPES.map(function (type, i) { return Math.round(march * r.mix[i]); });
         var damage = el('div', 'lead-damage');
-        damage.append(el('p', 'lead-kicker', t('damageTitle')), el('b', 'lead-damage-value', api.compact(L.bearDamage(r.score, march, valoraOf()))));
+        var sim = L.hunt(you, r.lineup, counts, data, { hunts: 2000, pointsPct: valoraOf() });
+        var lo = window.BattleEngine.quantile(sim.totals, 0.1), hi = window.BattleEngine.quantile(sim.totals, 0.9);
+        damage.append(el('p', 'lead-kicker', t('damageTitle')), el('b', 'lead-damage-value', api.compact(sim.mean)), histogram(sim.totals, lo, hi), el('p', 'lead-damage-band', fill('damageBand', { lo: api.compact(lo), hi: api.compact(hi) })));
         var split = el('span', 'lead-damage-split');
         TYPES.forEach(function (type, i) { var part = el('span'); part.dataset.troop = type; part.append(mark('troop-' + type), el('span', '', api.fmt(counts[i]))); split.appendChild(part); });
         damage.append(split, el('p', 'lead-answer-note', fill('damageNote', { n: fill('troops', { n: api.fmt(march) }), cap: api.fmt(rc.cap), est: rc.estimated ? t('estimated') : '', valora: valoraOf() ? fill('valora', { n: api.fmt(valoraOf()) }) : '' })));

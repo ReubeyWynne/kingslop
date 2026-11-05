@@ -28,11 +28,14 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   // The best Bear lineup's damage for one march of 1/15 of the rally capacity, estimated from the joiner cap until typed.
   assert.match(await page.locator('.lead-damage').textContent(), /85,000 troops = 1\/15 of a 1,275,000 rally \(estimated/);
   const damageAt = () => page.locator('.lead-damage-value').textContent();
+  assert.equal(await page.locator('.lead-hist-bar').count(), 24, 'a 24-bin histogram');
+  assert.ok(await page.locator('.lead-hist-bar[data-band]').count() >= 8, 'the 80% band lit');
+  assert.match(await page.locator('.lead-damage-band').textContent(), /^80% of hits land between \S+ and \S+$/);
   const estimated = await damageAt();
   await page.locator('#bonus-overview summary').click();
   await page.locator('[data-target="lead-finder.rallyCap"]').fill('1800000');
   await page.locator('[data-target="lead-finder.rallyCap"]').press('Tab');
-  await page.waitForFunction(() => /120,000 troops = 1\/15 of a 1,800,000 rally\. One hit/.test(document.querySelector('.lead-damage .lead-answer-note').textContent));
+  await page.waitForFunction(() => /120,000 troops = 1\/15 of a 1,800,000 rally\./.test(document.querySelector('.lead-damage .lead-answer-note').textContent));
   assert.notEqual(await damageAt(), estimated, 'a bigger rally, a bigger march, more damage');
   const noValora = await damageAt();
   await page.evaluate(() => PlayerLedger.shared().setMaster('valora', { affinity: 90, ready: true, skills: [0, 0, 0, 0] }));

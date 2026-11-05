@@ -278,6 +278,11 @@
 /* One march's Bear damage at the ideal mix, and the troops that make it. */
 .lead-damage { margin-top: 1rem; padding-top: .8rem; border-top: 1px solid var(--signal-tint); }
 .lead-damage-value { display: block; margin-top: .2rem; font: 600 var(--step-3)/1 var(--display-2); color: var(--amber); font-variant-numeric: tabular-nums; }
+.lead-hist { display: flex; align-items: flex-end; gap: 2px; height: 3rem; margin-top: .6rem; }
+.lead-hist-bar { flex: 1 1 0; min-width: 0; height: calc(var(--h) * 100%); min-height: 1px; border-radius: 3px 3px 0 0; background: var(--ink-muted); opacity: .45; }
+.lead-hist-bar[data-band] { background: var(--amber); opacity: 1; }
+.lead-hist-bar:hover { opacity: .75; }
+.lead-damage-band { margin: .35rem 0 0; font-size: .85rem; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
 .lead-damage-split { display: flex; flex-wrap: wrap; gap: .3rem 1rem; margin-top: .5rem; font-size: .9rem; color: var(--ink); font-variant-numeric: tabular-nums; }
 .lead-damage-split > span { display: inline-flex; align-items: center; gap: .3rem; }
 .lead-damage-split svg { width: 1rem; height: 1rem; fill: none; stroke: var(--ink-dim); stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round; }

@@ -115,8 +115,13 @@ near(L.uptime({ kind: 'everyN', every: 4, offset: 3, turns: 1 }), 0.2, 'every fo
   assert.ok(mix[2] > 0.5, 'archers carry the Bear');
 }
 // Bear damage on the game's Damage Points: √N in the march size, Valora's talent on top.
-near(L.bearDamage(1, 400000) / L.bearDamage(1, 100000), 2, 'four times the troops, twice the damage');
-near(L.bearDamage(1, 100000, 30) / L.bearDamage(1, 100000), 1.3, 'Valora at +30%');
+{
+  const plain = n => ({ n, tier: [10, 10, 10], tg: [0, 0, 0], atk: [300, 300, 300], let: [300, 300, 300], skills: [] });
+  const E = require('../js/battle-engine.js');
+  near(E.bearHunt(plain([0, 0, 400000]), 1).mean / E.bearHunt(plain([0, 0, 100000]), 1).mean, 2, 'four times the troops, twice the damage', 0.01);
+  near(E.bearHunt(plain([0, 0, 100000]), 1, 1, 30).mean / E.bearHunt(plain([0, 0, 100000]), 1).mean, 1.3, 'Valora at +30%');
+  assert.equal(E.bearHunt(plain([0, 0, 100000]), 500).hunts, 500, 'archers volley, so hunts differ');
+}
 assert.equal(L.valoraPoints({ affinity: 90, ready: true, skills: [0, 0, 0, 0] }), 24, 'a class waiting at 90 is still level 9');
 assert.equal(L.valoraPoints({ affinity: 100, ready: false, skills: [0, 0, 0, 0] }), 30);
 assert.equal(L.valoraPoints(null), 0);
@@ -228,21 +233,22 @@ assert.equal(L.opponent(megafauna.foes[3], 4, 'garrison', data).lineup[2].key, '
   assert.ok(fight.widgets[30] !== null, 'a 5★ Rosa catches Marlin in a rally');
 }
 
-// K, the Bear's side, from the Frakinator's battle-engine Bear on 5 November 2026: the owner's
-// rally report stats, T10 TG4 / TG3 / TG4, Amadeus, Petra, Marlin with every skill at 5,
-// Chenko ×2 and Amane ×2, Valora 24% → 51.6M at 10/32/58 and 54.6M at its best, 2/12/86.
+// The Bear's defence (js/battle-engine.js BEAR) from the Frakinator's battle-engine Bear on
+// 5 November 2026: the owner's rally report stats, T10 TG4 / TG3 / TG4, Amadeus, Petra, Marlin
+// with every skill at 5, Chenko ×2 and Amane ×2, Valora 24% → 51.6M at 10/32/58 (fitted), and
+// 54.6M with 80% of hunts in 46.3M–63.2M at its best mix, 2/12/86 (not fitted: checked).
 {
+  const E = require('../js/battle-engine.js'), C = require('../js/combat.js');
   const lineup = [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)];
-  const report = [[631.5, 468.7], [654.9, 415.7], [698.6, 693.9]], tg = [4, 3, 4];
-  const skills = levels => L.bearMod(require('../js/combat.js').side(data, { role: 'rally', heroes: lineup.map((c, i) => ({ key: c.key, levels: levels[i], widget: 0 })), joiners: ['chenko', 'chenko', 'amane', 'amane'].map(key => ({ key, level: 5 })) }));
-  const E = require('../js/battle-engine.js');
-  const terms = mod => report.map(([a, l], t) => E.baseAtk(t, 10, tg[t]) * (t === 2 ? 1.21 : 1) * (1 + a / 100) * (1 + l / 100) * mod[t] * (t === 0 ? 1 : 1.1));
-  const max = terms(skills([[5, 5, 5], [5, 5, 5], [5, 5, 5]]));
-  const at = c => L.bearDamageAt(max, c, 24);
-  near(at([9000, 28500, 52500]) / 51.6e6, 1, 'the Frakinator at 10/32/58', 0.01);
-  near(at([1800, 10800, 77400]) / at([9000, 28500, 52500]), 54.6 / 51.6, 'the step to its best mix', 0.01);
-  const sq = max.reduce((s, x) => s + x * x, 0), ideal = max.map(x => x * x / sq * 100);
-  [2, 12, 86].forEach((f, t) => assert.ok(Math.abs(ideal[t] - f) < 1.5, `ideal mix ${ideal.map(x => x.toFixed(1)).join('/')} vs the Frakinator's 2/12/86`));
+  const report = { atk: [631.5, 654.9, 698.6], let: [468.7, 415.7, 693.9] }, tg = [4, 3, 4];
+  const skills = levels => C.side(data, { role: 'rally', heroes: lineup.map((c, i) => ({ key: c.key, levels: levels[i], widget: 0 })), joiners: ['chenko', 'chenko', 'amane', 'amane'].map(key => ({ key, level: 5 })) });
+  const go = (n, levels) => E.bearHunt({ n, tier: [10, 10, 10], tg, ...report, skills: skills(levels) }, 10000, 7, 24);
+  const max = [[5, 5, 5], [5, 5, 5], [5, 5, 5]];
+  const input = go([9000, 28500, 52500], max), best = go([1800, 10800, 77400], max);
+  near(input.mean / 51.6e6, 1, 'the Frakinator at 10/32/58', 0.01);
+  near(best.mean / 54.6e6, 1, 'and at its best mix', 0.04);
+  near(E.quantile(best.totals, 0.1) / 46.3e6, 1, 'its 80% band, low end', 0.04);
+  near(E.quantile(best.totals, 0.9) / 63.2e6, 1, 'its 80% band, high end', 0.08);
 
   // The owner's own five hits that day (Hunting Trap 2, joiners unknown, Amadeus's skills at 4),
   // through the whole page path: Bonus Overview, gear, TG4 town, report stats.
@@ -253,11 +259,13 @@ assert.equal(L.opponent(megafauna.foes[3], 4, 'garrison', data).lineup[2].key, '
   const overview = { inf: row(389.3, 373.6, 264.2, 257.0), cav: row(326.5, 330.1, 244.0, 218.0), arc: row(345.7, 349.3, 303.8, 296.6) };
   const owner = { overview, troops: { tier: [10, 10, 10], tg }, joiners: ['chenko', 'chenko', 'amane', 'amane'].map(key => ({ key, level: 5 })), city: L.blank(), pets: L.blank(), gear, town: L.townLayer('TG 4') };
   const r = L.bear(owner, lineup, data);
-  r.panel.atk.forEach((v, t) => assert.ok(Math.abs(v - report[t][0]) < 0.25 && Math.abs(r.panel.let[t] - report[t][1]) < 0.25, 'the Bear reads the report stats'));
+  r.panel.atk.forEach((v, t) => assert.ok(Math.abs(v - report.atk[t]) < 0.25 && Math.abs(r.panel.let[t] - report.let[t]) < 0.25, 'the Bear reads the report stats'));
   const hits = [40185881, 50653325, 41701585, 57194303, 44869569], mean = hits.reduce((a, b) => a + b) / hits.length;
-  const model = L.bearDamageAt(r.terms, [9000, 28500, 52500], 24);
-  assert.ok(Math.abs(model / mean - 1) < 0.08, `the owner's rallies: ${(model / 1e6).toFixed(1)}M against ${(mean / 1e6).toFixed(1)}M`);
-  assert.ok(hits.every(h => Math.abs(h / model - 1) < 0.25), 'every hit within the chance skills\' swing');
-  assert.ok(L.bearDamage(r.score, 90000, 24) > model, 'the ideal mix beats the one sent');
+  const sent = L.hunt(owner, lineup, [9000, 28500, 52500], data, { hunts: 10000, pointsPct: 24 });
+  assert.ok(Math.abs(sent.mean / mean - 1) < 0.08, `the owner's rallies: ${(sent.mean / 1e6).toFixed(1)}M against ${(mean / 1e6).toFixed(1)}M`);
+  const lo = E.quantile(sent.totals, 0.05), hi = E.quantile(sent.totals, 0.95);
+  assert.ok(hits.every(h => h >= lo && h <= hi), 'every hit inside the 90% band');
+  const ideal = L.hunt(owner, lineup, r.mix.map(f => Math.round(90000 * f)), data, { hunts: 10000, pointsPct: 24 });
+  assert.ok(ideal.mean > sent.mean, 'the ideal mix beats the one sent');
 }
 console.log('Lead engine: stars, widgets, skill caps, Bear score, joiners, pets, city layers, megafauna opponents, ranking and break points pass.');
