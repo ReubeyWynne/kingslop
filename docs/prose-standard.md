@@ -8,6 +8,19 @@ The interface explains itself through its visual motifs: a dashed drop zone, a s
 
 The exception is the game. Telling the reader which game screen to take a screenshot of, or which rows to copy, is about something we can't show, so it's allowed.
 
+## The motifs
+
+These are in `css/motifs.css`. A page opts in by putting the class or attribute on its own markup, and then the sentence it replaces goes.
+
+| Motif | Markup | Replaces |
+| --- | --- | --- |
+| Saved seal | `<output class="seal">`, with `data-state="failed"` when saving fails | "Saved on this device" |
+| Ghost ink | `input.ghost`, with the assumed value as its placeholder | "Using a typical … until you enter yours" |
+| Unknown row | `tr[data-unknown]` | "Add your Squads' row", "blank means not counted yet" |
+| Open-ended total | `output[data-open]`, followed by a `ul.unknowns` of what it's waiting for | "The total leaves out … until you enter them" |
+
+The Heroes page uses all four. The rest of the catalogue (shared-by dots, a guest-mode frame, the ink-well affordance, best-day marks, source marks, the example stamp, undo in the toast and the share-link preview) comes with each page's own pass.
+
 ## One job per line
 
 Every line of copy answers the question the reader has at that exact spot, and nothing else.

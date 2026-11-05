@@ -5,7 +5,7 @@
   'use strict';
   var EN = {
     'missing.heroes': 'your heroes', 'missing.stars': '{hero} stars', 'missing.shards': '{hero} shards', 'missing.widgetLevel': '{hero} widget level', 'missing.widgets': '{hero} widgets', 'missing.chest': 'generation {n} widget chests',
-    total: '{n} KvK prep points', complete: 'Every hero count this uses is entered.', partial: 'The total leaves out {names} until you enter them.', more: '{n} more',
+    total: '{n} KvK prep points', more: '{n} more',
     empty: 'Mark the heroes you own, with their stars, to see what their shards and widgets can score.',
     stars: '{from} → {to}', maxed: 'maxed', none: '—', pieces: '{own} own + {general} general', widgetPieces: '{own} own + {general} chest', widgetLevel: 'widget {from} → {to}',
     eventShards: 'Shards', eventWidgets: 'Widgets', leftShards: 'Unused general shards: {mythic} mythic, {epic} epic, {rare} rare.', leftWidgets: 'Unused widget chests: {n}.', keptMythic: 'Mythic general shards are banked for your next new hero, so none go to the heroes above.', unknownCount: '?'
@@ -47,7 +47,13 @@
       context.targets('table').forEach(function (node) { node.hidden = !rows.length; });
       context.targets('empty').forEach(function (node) { node.hidden = rows.length > 0; node.textContent = t(api, 'empty'); });
       put('total', fill(api, 'total', { n: api.fmt(total) }));
-      put('coverage', plan.unknown.length ? fill(api, 'partial', { names: names(api, plan.unknown) }) : t(api, 'complete'));
+      // A total still waiting on counts stays open, and the counts it waits on follow as ? marks.
+      context.targets('total').forEach(function (node) { if (plan.unknown.length) node.dataset.open = ''; else delete node.dataset.open; });
+      context.targets('coverage').forEach(function (node) {
+        node.replaceChildren();
+        plan.unknown.slice(0, 3).forEach(function (id) { node.appendChild(element('li', '', names(api, [id]))); });
+        if (plan.unknown.length > 3) node.appendChild(element('li', '', fill(api, 'more', { n: api.fmt(plan.unknown.length - 3) })));
+      });
       var left = function (id) { var value = plan.items[id].left; return value === null ? t(api, 'unknownCount') : api.fmt(value); };
       // The same three-event table as every calculator: shards and widgets each on their best days.
       var shards = {}, widgets = 0;

@@ -47,7 +47,7 @@
                   {% if hero.widget %}<label><span data-i18n="directory.widgetLevel">Widget level</span><select data-field="widget"><option value="">?</option>{% for level in (0..10) %}<option value="{{ level }}">{% if level == 0 %}—{% else %}{{ level }}{% endif %}</option>{% endfor %}</select></label><label class="hero-widgets"><span data-i18n="heroWidgets.count">Widgets</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="widgets"></label>{% endif %}
                   {% for skill in hero.skills %}<label><span data-i18n="directory.skillLevel" data-i18n-n="{{ forloop.index }}">Skill {{ forloop.index }}</span><select data-field="skill" data-skill="{{ forloop.index0 }}"><option value="">?</option>{% for level in (1..5) %}<option value="{{ level }}">{{ level }}</option>{% endfor %}</select></label>{% endfor %}
                   <label class="hero-shards"><span data-i18n="directory.shards">Shards</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="shards"></label>
-                  <p class="hero-mine-note"><output data-target="hero-directory.saved" role="status"></output></p>
+                  <p class="hero-mine-note"><output class="seal" data-target="hero-directory.saved" role="status"></output></p>
                 </fieldset>
                 <div class="hero-dossier-brief">
                   <div class="hero-role-tags" aria-label="Roles" data-i18n-key="directory.role" data-i18n-attr="aria-label">{% for rec in metadata.recommendations %}<span data-i18n="directory.role.{{ rec.role }}">{{ rec.role | replace: '-', ' ' }}</span>{% endfor %}</div>

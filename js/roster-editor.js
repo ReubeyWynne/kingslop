@@ -8,9 +8,9 @@
   function save(api, status, refresh, write) {
     try {
       write();
-      if (status) status.textContent = api.tr('gear.saved', '');
+      if (status) { status.textContent = api.tr('gear.saved', ''); if (status.dataset) status.dataset.state = 'saved'; }
     } catch (cause) {
-      if (status) status.textContent = api.tr('gear.saveFailed', '');
+      if (status) { status.textContent = api.tr('gear.saveFailed', ''); if (status.dataset) status.dataset.state = 'failed'; }
       refresh(); throw cause;
     }
   }

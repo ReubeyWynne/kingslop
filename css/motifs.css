@@ -1,0 +1,25 @@
+/* Motifs: the interface shows these states instead of describing them in copy
+   (docs/prose-standard.md, "Show, don't tell"). Each is a class or attribute a
+   page puts on its own markup; nothing here applies until a page opts in. */
+
+/* Saved seal. A persisting value's status output shows a ❧ once it is saved and
+   a struck oxblood one when saving fails. The word stays in the output for
+   screen readers; only its glyph is drawn. */
+.seal { display: inline-block; font-size: 0; line-height: 1; vertical-align: middle; }
+.seal:not(:empty)::before { content: "❧"; font-size: 1rem; color: var(--amber); }
+.seal[data-state="failed"]::before { color: var(--oxblood); text-decoration: line-through; }
+
+/* Ghost ink. An assumed value sits in the field as a placeholder, in the
+   marginal-gloss voice, until you type your own. */
+input.ghost::placeholder { font-style: italic; color: var(--ink-muted); opacity: .7; }
+
+/* Unknown row. A row the result still needs keeps a dashed rule and a ? after
+   its label. */
+tr[data-unknown] :is(input, select) { border-bottom-style: dashed; border-bottom-color: var(--amber-dim); }
+tr[data-unknown] th::after { content: " ?"; color: var(--ink-muted); }
+
+/* Open-ended total. A total still missing inputs never closes: it trails a dim +?,
+   and the counts it is waiting for follow as ? marks. */
+output[data-open]::after { content: " +?"; font-style: italic; color: var(--ink-muted); }
+.unknowns { display: flex; flex-wrap: wrap; gap: .2rem .8rem; margin: .2rem 0 0; padding: 0; list-style: none; font-size: .85rem; font-style: italic; color: var(--ink-muted); }
+.unknowns li::before { content: "? "; font-style: normal; color: var(--amber-dim); }

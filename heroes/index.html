@@ -46,7 +46,7 @@ self: heroes
           <label><span data-i18n="leads.tg">Truegold</span><select data-target="lead-finder.tg" data-action="lead-finder.run">{% for tg in (0..8) %}<option value="{{ tg }}">{% if tg == 0 %}—{% else %}TG{{ tg }}{% endif %}</option>{% endfor %}</select></label>
           <label class="lead-rally-cap"><span data-i18n="leads.rallyCap">Bear rally capacity</span><input type="number" min="15" max="100000000" step="1" inputmode="numeric" data-target="lead-finder.rallyCap" data-action="lead-finder.extras"></label>
         </div>
-        <p class="hero-mine-note"><output data-target="lead-finder.saved" role="status"></output></p>
+        <p class="hero-mine-note"><output class="seal" data-target="lead-finder.saved" role="status"></output></p>
       </fieldset>
     </details>
     <details class="lead-extras" id="lead-extras">
@@ -152,7 +152,7 @@ self: heroes
     {% include empty-state.html needs="heroes" key="empty.heroes" text="Add your heroes to see your KvK points." fill="../town-centre/#town-heroes" %}
     <p data-i18n="spend.intro">Shards and widgets only score once they’re spent, so this counts the star steps up to 5★ and widget levels up to 10 your heroes can actually take. Amadeus and Helga only take their own shards.</p>
     <p class="hero-points-total"><output data-target="hero-points.total">—</output></p>
-    <p class="note" data-target="hero-points.coverage" aria-live="polite"></p>
+    <ul class="unknowns" data-target="hero-points.coverage" aria-live="polite"></ul>
     <div data-target="hero-points.events"></div>
     <div class="hero-points-scroll" data-target="hero-points.table" hidden><table class="hero-points-table">
       <thead><tr><th scope="col" data-i18n="spend.col.hero">hero</th><th scope="col" data-i18n="spend.col.points">KvK prep points</th><th scope="col" data-i18n="spend.col.stars">stars</th><th scope="col" data-i18n="spend.col.shards">shards used</th><th scope="col" data-i18n="spend.col.widgets">widgets used</th></tr></thead>
