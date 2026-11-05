@@ -590,15 +590,31 @@
       spec.ids.forEach(function (id) { levels[id] = section.status === 'tracked' && Object.hasOwn(section[spec.field], id) ? section[spec.field][id].level : null; });
       return levels;
     }
+    function governorLevels(spec, levels) { valid(object(levels) && Object.keys(levels).every(function (id) { return spec.ids.includes(id) && (levels[id] === null || count(levels[id]) && levels[id] <= spec.max); })); }
+    function writeGovernor(next, spec, levels, facts) {
+      var section = next[spec.section];
+      if (section.status !== 'tracked') { section.status = 'tracked'; section[spec.field] = {}; section.provenance = {}; }
+      Object.keys(levels).forEach(function (id) {
+        if (levels[id] === null) { delete section[spec.field][id]; delete section.provenance[id]; }
+        else if (!Object.hasOwn(section[spec.field], id) || section[spec.field][id].level !== levels[id]) { section[spec.field][id] = { level: levels[id] }; section.provenance[id] = copy(facts); }
+      });
+    }
     function setGovernor(kind, levels, source) {
       var spec = governorSpec(kind);
-      valid(object(levels) && Object.keys(levels).every(function (id) { return spec.ids.includes(id) && (levels[id] === null || count(levels[id]) && levels[id] <= spec.max); }));
+      governorLevels(spec, levels);
+      return transaction(function (next) { writeGovernor(next, spec, levels, { source: source || 'manual', at: new Date().toISOString() }); });
+    }
+    /* Upgrades made in game: the new levels and what the bag holds after them, in one write,
+       so the save never shows the levels without the spend. */
+    function applyGovernor(kind, levels, balances, source) {
+      var spec = governorSpec(kind);
+      governorLevels(spec, levels);
+      valid(object(balances) && Object.keys(balances).every(function (key) { return id(key) && (balances[key] === null || count(balances[key])); }));
       return transaction(function (next) {
-        var section = next[spec.section], facts = { source: source || 'manual', at: new Date().toISOString() };
-        if (section.status !== 'tracked') { section.status = 'tracked'; section[spec.field] = {}; section.provenance = {}; }
-        Object.keys(levels).forEach(function (id) {
-          if (levels[id] === null) { delete section[spec.field][id]; delete section.provenance[id]; }
-          else if (!Object.hasOwn(section[spec.field], id) || section[spec.field][id].level !== levels[id]) { section[spec.field][id] = { level: levels[id] }; section.provenance[id] = copy(facts); }
+        var facts = { source: source || 'plan', at: new Date().toISOString() };
+        writeGovernor(next, spec, levels, facts);
+        Object.keys(balances).forEach(function (key) {
+          next.inventory[key] = balances[key] === null ? { amount: null, status: 'unknown', provenance: null } : { amount: balances[key], status: 'confirmed', provenance: copy(facts) };
         });
       });
     }
@@ -696,7 +712,7 @@
     if (events && events.addEventListener) events.addEventListener('storage', function (event) {
       if ((event.key === KEY || event.key === null) && (!event.storageArea || event.storageArea === storage)) { try { current = read(); notify(); } catch (error) { if (events.dispatchEvent && typeof CustomEvent === 'function') events.dispatchEvent(new CustomEvent('player-ledger:error', { detail: error.message })); } }
     });
-    return { seasonal: seasonal, setSeasonal: setSeasonal, kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, masters: masters, setMaster: setMaster, pets: pets, setPet: setPet, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, priority: priority, setPriorityRole: setPriorityRole, setPriorityGoals: setPriorityGoals, training: training, setTraining: setTraining, setTrainingPlan: setTrainingPlan, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, applyImport: applyImport, importJSON: importJSON, history: history, backup: backup, exportJSON: function () { return JSON.stringify(backup(), null, 2); } };
+    return { seasonal: seasonal, setSeasonal: setSeasonal, kingdom: kingdom, setKingdom: setKingdom, snapshot: snapshot, balance: balance, setBalance: setBalance, setHeroGearPart: setHeroGearPart, combat: combat, setCombat: setCombat, heroes: heroes, setHero: setHero, masters: masters, setMaster: setMaster, pets: pets, setPet: setPet, buildings: buildings, setBuilding: setBuilding, setBuildings: setBuildings, setBuildingPriorities: setBuildingPriorities, priority: priority, setPriorityRole: setPriorityRole, setPriorityGoals: setPriorityGoals, training: training, setTraining: setTraining, setTrainingPlan: setTrainingPlan, setTrainingBuff: setTrainingBuff, governor: governor, setGovernor: setGovernor, applyGovernor: applyGovernor, setGovernorPreference: setGovernorPreference, resetGovernor: resetGovernor, subscribe: function (listener) { listeners.push(listener); return function () { listeners = listeners.filter(function (item) { return item !== listener; }); }; }, migrate: migrate, heroGear: function (engine) { return project(snapshot(), engine); }, writeHeroGear: writeHeroGear, applyImport: applyImport, importJSON: importJSON, history: history, backup: backup, exportJSON: function () { return JSON.stringify(backup(), null, 2); } };
   }
   /* The one inventory rule every calculator reads by: a confirmed amount, or null when the
      balance is unknown, unsupported or missing. Never infer a confirmed zero from an absent entry. */
