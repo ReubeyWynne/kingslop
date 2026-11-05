@@ -582,7 +582,7 @@ html[data-page="bearhunt"] .dust i:nth-child(2) { background-size: 190px 190px; 
 html[data-page="bearhunt"] .dust i:nth-child(3) { background-size: 260px 260px; animation: mote-drift 220s linear infinite; }
 @keyframes mote-drift {
   from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(-3%, -6%, 0); }
+  to   { transform: translate3d(-5.4vw, -10.8vh, 0); }
 }
 
 html[data-page="vikings"] .dust i:nth-child(1) {
@@ -601,8 +601,8 @@ html[data-page="vikings"] .dust i:nth-child(3) {
   animation: ash-fall 180s linear infinite;
 }
 @keyframes ash-fall {
-  from { transform: translate3d(0, -5%, 0); }
-  to   { transform: translate3d(2%, 8%, 0); }
+  from { transform: translate3d(0, -9vh, 0); }
+  to   { transform: translate3d(3.6vw, 14.4vh, 0); }
 }
 
 /* ─── Swordland — red vs blue, one duel ────────────────── */
@@ -649,8 +649,8 @@ html[data-page="swordland"] .dust i:nth-child(1) { animation: duel-tide 150s lin
 html[data-page="swordland"] .dust i:nth-child(2) { background-size: 150px 150px; animation: duel-tide 190s linear infinite reverse; }
 html[data-page="swordland"] .dust i:nth-child(3) { animation: dust-drift 80s linear infinite; }
 @keyframes duel-tide {
-  from { transform: translate3d(-3%, 0, 0); }
-  to   { transform: translate3d(3%, -4%, 0); }
+  from { transform: translate3d(-5.4vw, 0, 0); }
+  to   { transform: translate3d(5.4vw, -7.2vh, 0); }
 }
 
 /* ─── VIP — the court's violet night ───────────────────── */
@@ -680,8 +680,8 @@ html[data-page="vip"] .dust i:nth-child(1) { animation: candle-rise 90s linear i
 html[data-page="vip"] .dust i:nth-child(2) { background-size: 200px 200px; animation: candle-rise 140s linear infinite reverse; }
 html[data-page="vip"] .dust i:nth-child(3) { background-size: 300px 300px; animation: candle-rise 200s linear infinite; }
 @keyframes candle-rise {
-  from { transform: translate3d(0, 4%, 0); }
-  to   { transform: translate3d(-2%, -6%, 0); }
+  from { transform: translate3d(0, 7.2vh, 0); }
+  to   { transform: translate3d(-3.6vw, -10.8vh, 0); }
 }
 
 /* ─── Battle Simulator — the war room's night ─────────── */
@@ -750,8 +750,8 @@ html[data-page="kvksg"] .dust i:nth-child(1) { animation: mote-rise 110s linear 
 html[data-page="kvksg"] .dust i:nth-child(2) { background-size: 180px 180px; animation: mote-rise 160s linear infinite reverse; }
 html[data-page="kvksg"] .dust i:nth-child(3) { background-size: 260px 260px; animation: mote-rise 210s linear infinite; }
 @keyframes mote-rise {
-  from { transform: translate3d(0, 6%, 0); }
-  to   { transform: translate3d(2%, -6%, 0); }
+  from { transform: translate3d(0, 10.8vh, 0); }
+  to   { transform: translate3d(3.6vw, -10.8vh, 0); }
 }
 
 /* ─── Shared ruled rows — wave/phase tables ───────────── */

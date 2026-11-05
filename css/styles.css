@@ -114,8 +114,13 @@ html, body { overflow-x: clip; }
   pointer-events: none;
   overflow: hidden;
 }
+/* Each layer is a composited bitmap the size of its box at the screen's pixel
+   density, so a layer only overhangs the viewport by as far as it drifts
+   (the drifts below are in vw/vh, at most 14.4vh). At 180% of the viewport a
+   phone at 3x spent about 30 MB a layer, enough with the home page's hover
+   fields for iOS Safari to kill the tab. */
 .dust i {
-  position: absolute; inset: -40%;
+  position: absolute; inset: -15vh -8vw;
   background-repeat: repeat;
   will-change: transform;
 }
@@ -136,7 +141,7 @@ html, body { overflow-x: clip; }
 }
 @keyframes dust-drift {
   from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(-4%, -3%, 0); }
+  to   { transform: translate3d(-7.2vw, -5.4vh, 0); }
 }
 
 /* ─── Base surfaces ───────────────────────────────────── */
