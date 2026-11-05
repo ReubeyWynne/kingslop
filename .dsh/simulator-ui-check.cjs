@@ -117,7 +117,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.locator('#screen-import [data-target="screen-import.chip"]').click();
     await page.evaluate(() => { window.unreadable = true; });
     await upload(page, 'blank.png');
-    await page.locator('#screen-import [data-target="screen-import.status"]', { hasText: 'isn’t a screen I can read' }).waitFor();
+    await page.locator('#screen-import [data-target="screen-import.status"]', { hasText: 'can’t read that screen yet' }).waitFor();
     assert.equal(await raw(page, 'sim-atk-inf'), atkBefore, 'an unreadable shot changes nothing');
     assert.deepEqual(errors, []);
     await page.close();
