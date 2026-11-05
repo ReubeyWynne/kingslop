@@ -88,7 +88,7 @@ The section `#savings` learns how fast each balance grows from that history and 
 
 ## Checks
 
-- `node .dsh/upgrade-priority-check.cjs`: stages, blockers, core heroes, gear and governor picks matching `HeroGear.redPlans` and `Governor.plan`, role effects, rule shapes, page wiring (and that no other page loads the engine) and every `priority.*` key in all 17 dictionaries with matching placeholders.
-- `node .dsh/upgrade-goals-check.cjs`: each goal kind's shortfall against its planner, prerequisite chains, unknown levels and balances, caps, the export round trip, page wiring and every `priority.goal*` and `priority.item.*` key in all 17 dictionaries.
-- `node .dsh/upgrade-savings-check.cjs`: rates and spending, the enough-data rule, chain breaks and the four-week window, the next KvK prep and Strongest Governor dates, every projection state including pooled lines, page wiring and every `priority.savings*` key in all 17 dictionaries.
+- `node .dsh/upgrade-priority-check.cjs`: stages, blockers, core heroes, gear and governor picks matching `HeroGear.redPlans` and `Governor.plan`, role effects, rule shapes, page wiring (and that no other page loads the engine) and every `priority.*` key in all 10 dictionaries with matching placeholders.
+- `node .dsh/upgrade-goals-check.cjs`: each goal kind's shortfall against its planner, prerequisite chains, unknown levels and balances, caps, the export round trip, page wiring and every `priority.goal*` and `priority.item.*` key in all 10 dictionaries.
+- `node .dsh/upgrade-savings-check.cjs`: rates and spending, the enough-data rule, chain breaks and the four-week window, the next KvK prep and Strongest Governor dates, every projection state including pooled lines, page wiring and every `priority.savings*` key in all 10 dictionaries.
 - `node .dsh/upgrade-priority-ui-check.cjs` (after a Jekyll build): the page in a browser, empty and filled saves, role and preview, adding, replacing and removing goals and recording a balance in place, savings before and after enough history and switching the event, three languages and three widths, screenshots in `.dsh/priority-preview/`.

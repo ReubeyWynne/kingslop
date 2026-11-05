@@ -79,5 +79,5 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await noJS.close();
   assert.deepEqual(errors, []);
   await context.close();
-  console.log('Kingdom UI: placement, independent corrections, hero scope, tabs, saves, storage failure, no-JS and 17 languages at 320/768px pass.');
+  console.log('Kingdom UI: placement, independent corrections, hero scope, tabs, saves, storage failure, no-JS and 10 languages at 320/768px pass.');
 }).catch(error => { console.error(error); process.exitCode = 1; });

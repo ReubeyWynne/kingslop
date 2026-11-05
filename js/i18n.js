@@ -31,7 +31,7 @@
   var DICT_BASE = dictBase();
 
   var KEY = 'bh_lang';
-  var LOCALES = { en: 'en-GB', es: 'es-ES', 'pt-BR': 'pt-BR', de: 'de-DE', fr: 'fr-FR', it: 'it-IT', ru: 'ru-RU', pl: 'pl-PL', tr: 'tr-TR', 'zh-Hans': 'zh-Hans-CN', 'zh-Hant': 'zh-Hant-TW', ko: 'ko-KR', ja: 'ja-JP', th: 'th-TH', id: 'id-ID', vi: 'vi-VN', ar: 'ar-u-nu-latn' };
+  var LOCALES = { en: 'en-GB', es: 'es-ES', 'pt-BR': 'pt-BR', de: 'de-DE', tr: 'tr-TR', 'zh-Hans': 'zh-Hans-CN', ko: 'ko-KR', ja: 'ja-JP', id: 'id-ID', ar: 'ar-u-nu-latn' };
   // RTL languages (Arabic is the first). Default stays LTR.
   var DIRS = { ar: 'rtl' };
 

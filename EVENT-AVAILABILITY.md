@@ -48,7 +48,7 @@ Each event/day reuses the same holdings. Daily totals are alternative budgets an
 
 `event-availability` owns event/day/target/withholding controls and bounded result regions. Nested `ledger-form` fields own confirmed inventory writes. `save-transfer`, `disclosure` and `result-panel` provide the existing shared save controls and status messages. Store subscriptions update same-page and cross-tab calculations; locale refresh preserves the open scenario. `event-availability:calculated` emits the pure result. No private inventory copy or new ledger schema is introduced.
 
-`.dsh/event-rules-check.cjs` checks event-specific totals, unknown versus zero, reserves, target shortfall, unsupported days, invalid counts, extracted-rule preservation, canonical reference bindings and translation keys. `.dsh/event-availability-check.cjs` runs against Jekyll output and checks actual ledger edits, cross-tab hero-gear synchronization, save transfer, reload semantics, all reference task/rate pairs, all 28 clock days and 17 languages at 320/768px. CI also runs the existing ledger, hero-gear, OCR and module checks.
+`.dsh/event-rules-check.cjs` checks event-specific totals, unknown versus zero, reserves, target shortfall, unsupported days, invalid counts, extracted-rule preservation, canonical reference bindings and translation keys. `.dsh/event-availability-check.cjs` runs against Jekyll output and checks actual ledger edits, cross-tab hero-gear synchronization, save transfer, reload semantics, all reference task/rate pairs, all 28 clock days and 10 languages at 320/768px. CI also runs the existing ledger, hero-gear, OCR and module checks.
 
 ## Troop batch reminders
 

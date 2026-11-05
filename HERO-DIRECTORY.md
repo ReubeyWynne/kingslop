@@ -34,7 +34,7 @@ The DOM is the catalogue view. A scoped `hero-directory` module reads static att
 
 Server generation reuses `KS_SERVER_AGE` and its existing key/event. It means the highest available generation, not the generation of a particular selected hero. It is shared across tools and tabs. Reset clears the directory filters but retains the server limit; selecting Unspecified clears that shared preference. Later server generations beyond the documented catalogue remain valid and show all documented heroes. The directory does not write player inventory or infer unlock dates from calendar age.
 
-Without JavaScript, every hero, source link, reason, role explainer and native skills disclosure remains available. Filter controls are disabled until enhancement. UI copy uses the separate `directory.*` namespace so existing Bear Hunt `heroes.*` strings remain unchanged. All 17 dictionaries include the new copy.
+Without JavaScript, every hero, source link, reason, role explainer and native skills disclosure remains available. Filter controls are disabled until enhancement. UI copy uses the separate `directory.*` namespace so existing Bear Hunt `heroes.*` strings remain unchanged. All 10 dictionaries include the new copy.
 
 ## Integration and validation
 
@@ -42,7 +42,7 @@ Canonical navigation order is Home → Event Cycle → Bear Hunt → Vikings →
 
 The ninth navigation entry raises the desktop strip threshold to 1600px and adjusts the common masthead width allowance. The drawer remains available below it. Styling follows flat manuscript sections, logical spacing and one page signal hue.
 
-`.dsh/hero-directory-check.cjs` checks catalogue coverage, metadata referential integrity, reason/widget consistency, source/confidence labels, combined filters, conditional choices, the complete navigation cycle and all translation keys. `.dsh/hero-directory-ui-check.cjs` checks the actual Jekyll page, live filtering, saved/shared/cross-tab generation, future generations, native disclosure, all 34 portrait paths and first-skill notes, navigation/home links, static fallback and 17 languages at 320/390/768/1280/1600/1920px. Existing event, ledger, module, gear and OCR CI checks remain enabled.
+`.dsh/hero-directory-check.cjs` checks catalogue coverage, metadata referential integrity, reason/widget consistency, source/confidence labels, combined filters, conditional choices, the complete navigation cycle and all translation keys. `.dsh/hero-directory-ui-check.cjs` checks the actual Jekyll page, live filtering, saved/shared/cross-tab generation, future generations, native disclosure, all 34 portrait paths and first-skill notes, navigation/home links, static fallback and 10 languages at 320/390/768/1280/1600/1920px. Existing event, ledger, module, gear and OCR CI checks remain enabled.
 
 ## Completion pass · 2026-10-08
 

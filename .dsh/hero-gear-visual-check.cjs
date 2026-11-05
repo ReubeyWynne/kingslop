@@ -6,7 +6,7 @@ const { withBrowser } = require('./lib/browser-harness.cjs');
 const E = require('../js/hero-gear-engine.js');
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/gear-preview');
-const langs = ['en','es','pt-BR','de','fr','it','ru','pl','tr','zh-Hans','zh-Hant','ko','ja','th','id','vi','ar'];
+const langs = ['en', 'es', 'pt-BR', 'de', 'tr', 'zh-Hans', 'ko', 'ja', 'id', 'ar'];
 async function fits(page, label) {
   const failures = await page.evaluate(() => [...document.querySelectorAll('.gear-main,.gear-bag,.gear-workspace,.gear-editor,.gear-answer,.gear-row,.topbar,.ev-switch,.gear-dialog[open]')].filter(el=>el.getClientRects().length && el.scrollWidth>el.clientWidth+2).map(el=>el.className));
   assert.deepEqual(failures, [], label);

@@ -42,18 +42,11 @@ no local server, no CORS errors.
 | `es.js` | Spanish |
 | `pt-BR.js` | Portuguese (Brazil) |
 | `de.js` | German |
-| `fr.js` | French |
-| `it.js` | Italian |
-| `ru.js` | Russian |
-| `pl.js` | Polish |
 | `tr.js` | Turkish |
 | `zh-Hans.js` | Simplified Chinese |
-| `zh-Hant.js` | Traditional Chinese |
 | `ko.js` | Korean |
 | `ja.js` | Japanese |
-| `th.js` | Thai |
 | `id.js` | Indonesian |
-| `vi.js` | Vietnamese |
 | `ar.js` | Arabic (first RTL language) |
 
 Each file is exactly:

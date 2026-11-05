@@ -67,5 +67,5 @@ withBrowser({ root }, async ({ browser, origin }) => {
   assert.equal(await page.evaluate(() => document.documentElement.classList.contains('has-save')), false, 'an empty save gives back the space');
   assert.deepEqual(await page.evaluate(() => window.moduleErrors), []);
   assert.deepEqual(errors, []);
-  console.log('Home: hidden on an empty save; once it holds something, today on the clock and the holdings, live; 17 languages at 320px.');
+  console.log('Home: hidden on an empty save; once it holds something, today on the clock and the holdings, live; 10 languages at 320px.');
 }).catch(error => { console.error(error); process.exitCode = 1; });

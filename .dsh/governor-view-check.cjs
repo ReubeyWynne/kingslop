@@ -97,4 +97,4 @@ assert.equal(gem.label.textContent, api.fmt(22));
 const browser = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.resolve(__dirname, '../js/governor-view.js'), 'utf8'), browser);
 assert.equal(browser.window.GovernorView.create(G, api, '/art/').levelName('gear', null), 'inconnu');
-console.log('Governor view: unknown/zero levels, tier and star formatting, 17 translations, explicit art bases, both painters and live locale changes pass.');
+console.log('Governor view: unknown/zero levels, tier and star formatting, 10 translations, explicit art bases, both painters and live locale changes pass.');

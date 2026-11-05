@@ -26,10 +26,10 @@ The shared layout includes a compact link to the progression editor on every pag
 
 Both the Heroes page and Town Centre use the existing shared hero directory. They default to the saved generation. Selecting a specific generation in the existing Generation filter temporarily browses that generation, including upcoming heroes, without changing saved progression. Clearing or resetting the filter restores the saved kingdom cutoff. Upcoming heroes are labelled. Resetting the ordinary directory filters retains the kingdom setting. Existing calculators, spending totals, saved heroes and building levels are unchanged in this slice. Future consumers should use `availability()` rather than derive every feature from hero generation.
 
-All new UI keys are provided in the 17 dictionaries. Static chapters remain readable without JavaScript; persistence controls are disabled. The page uses the manuscript layout and an independent pale-blue signal without introducing new animation.
+All new UI keys are provided in the 10 dictionaries. Static chapters remain readable without JavaScript; persistence controls are disabled. The page uses the manuscript layout and an independent pale-blue signal without introducing new animation.
 
 ## Verification
 
 - `node .dsh/kingdom-progression-check.cjs`: legacy migration, old/corrupt saves, unknown versus locked unlocks, independent corrections, unrelated fact preservation, revisions, import/export and cross-tab events.
-- Build Jekyll, then `node .dsh/kingdom-progression-ui-check.cjs`: actual chapter selection, corrections, both-tab hero scope, preview, reload, save import, blocked writes, no-JavaScript rendering and 17 languages at 320/768px. Screenshots are written to `.dsh/kingdom-preview/`.
+- Build Jekyll, then `node .dsh/kingdom-progression-ui-check.cjs`: actual chapter selection, corrections, both-tab hero scope, preview, reload, save import, blocked writes, no-JavaScript rendering and 10 languages at 320/768px. Screenshots are written to `.dsh/kingdom-preview/`.
 - The existing ledger, hero directory, Town Centre, spending and navigation checks remain applicable. Site check runs the new domain and browser checks.

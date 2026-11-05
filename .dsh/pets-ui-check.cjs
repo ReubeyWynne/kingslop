@@ -150,5 +150,5 @@ const errors=[];
   assert.equal(await calm.locator('canvas.pet-live').count(),0);assert.equal(await calm.locator('#pet-grizzly-bear .ascii-mini--portrait').evaluate(n=>getComputedStyle(n).visibility),'visible');
   await still.close();
  }finally{await gpu.close();}
- assert.deepEqual(errors,[]);console.log('Pets UI: pens, deep-linked dossiers, taming, petting by rubbing and feeding by dragging, care with real-time decay, sleep and reactions, the live pets and their baked fallback, the Advances table, static fallback and 17 languages at 5 widths pass.');
+ assert.deepEqual(errors,[]);console.log('Pets UI: pens, deep-linked dossiers, taming, petting by rubbing and feeding by dragging, care with real-time decay, sleep and reactions, the live pets and their baked fallback, the Advances table, static fallback and 10 languages at 5 widths pass.');
 }).catch(e=>{console.error(e);process.exitCode=1;});
