@@ -122,7 +122,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     fixture.pieces['cav-chest']={quality:'mythic',level:40,mastery:1};
     fixture.pieces['cav-boots']={quality:'mythic',level:63,mastery:1};
     fixture.selected='inf-gloves';fixture.resources={xp:52650,hammers:110,mythic:6,mithril:10};
-    await page.locator('#save-backups summary').click();
+    await page.locator('#save-backups > summary').click();
     await page.locator('#gear-load').click();
     await page.locator('#gear-save-file').setInputFiles({name:'gear.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(fixture))});
     await page.waitForFunction(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-gloves'].level===120);

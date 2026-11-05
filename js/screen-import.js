@@ -417,10 +417,10 @@
       tiles(entry);
       recipe(!!entry || !!waiting.length);
       if (waiting.length) progress();
-      else if (entries.some(function (e) { return e.status === 'unknown'; })) status(tr('import.unknown', 'I skipped one screenshot because I can’t read that screen yet. Email it to screenshots@dey.ci to have it added.'));
-      else if (entries.some(function (e) { return e.status === 'empty'; })) status(tr('import.empty', 'I skipped one screenshot because it had nothing I track. If it shows items that should count, email it to screenshots@dey.ci.'));
+      else if (entries.some(function (e) { return e.status === 'unknown'; })) status(tr('import.unknown', 'I can’t read that screen yet. Email it to screenshots@dey.ci and I’ll add it.'));
+      else if (entries.some(function (e) { return e.status === 'empty'; })) status(tr('import.empty', 'No items I track were found. If they should count, email the screenshot to screenshots@dey.ci.'));
       else if (entries.some(function (e) { return e.status === 'failed'; })) status(tr('import.failed', 'I couldn’t read a screenshot. Try it again, or try a clearer one.'));
-      else if (entry) status(checks ? tr('import.check', '{n} values need a look. Everything else is ticked.', { n: api.fmt(checks) }) : tr('import.allSure', 'Everything was read. Check the numbers, then apply.'));
+      else if (entry) status(checks ? tr('import.check', '{n} values need a look.', { n: api.fmt(checks) }) : tr('import.allSure', 'Everything was read. Check the numbers, then apply.'));
       if (!waiting.length) { done = 0; progress(); }
       // Unknown and failed shots are reported once, then dropped from the queue.
       entries.filter(function (e) { return e.status === 'unknown' || e.status === 'failed' || e.status === 'empty'; }).forEach(forget);
@@ -467,8 +467,8 @@
       var total = done + waiting, mb = function (bytes) { return number(bytes / 1e6, { style: 'unit', unit: 'megabyte', maximumFractionDigits: 1 }); };
       if (download) {
         status(download.total
-          ? tr('import.downloadingOf', 'Downloading the reading models, once per device: {loaded} of {total}.', { loaded: mb(download.loaded), total: mb(download.total) })
-          : tr('import.downloading', 'Downloading the reading models, once per device: {loaded}.', { loaded: mb(download.loaded) }));
+          ? tr('import.downloadingOf', 'Downloading the reading models: {loaded} of {total}.', { loaded: mb(download.loaded), total: mb(download.total) })
+          : tr('import.downloading', 'Downloading the reading models: {loaded}.', { loaded: mb(download.loaded) }));
         bar.max = download.total || 1;
         if (download.total) bar.value = download.loaded; else bar.removeAttribute('value');
       } else {
@@ -521,9 +521,9 @@
     // and filling `before` with what they replaced. Nothing reaches the
     // player save.
     var OPEN = {
-      'battle-report': ['import.openSheet', 'Apply this on the battle simulator. It’ll wait here.'],
-      governor: ['import.openGovernor', 'Apply this on the governor gear page. It’ll wait here.'],
-      'bonus-overview': ['import.openOverview', 'Apply this on the Heroes page. It’ll wait here.']
+      'battle-report': ['import.openSheet', 'Apply this on the battle simulator.'],
+      governor: ['import.openGovernor', 'Apply this on the governor gear page.'],
+      'bonus-overview': ['import.openOverview', 'Apply this on the Heroes page.']
     };
     function openSheet(name) { var say = OPEN[name] || OPEN['battle-report']; status(tr(say[0], say[1])); }
     function sheetHost(name) { return document.querySelector('[data-screen-import-sheet~="' + name + '"]'); }
@@ -615,14 +615,14 @@
         var host = sheetHost(lastApply.sheet);
         if (!host) { openSheet(lastApply.sheet); return; }
         host.dispatchEvent(new CustomEvent('screen-import:sheet', { bubbles: true, detail: { values: lastApply.before, before: {} } }));
-        status(tr('import.undone', 'Undone. {name} can be applied again.', { name: lastApply.name }));
+        status(tr('import.undone', 'Undone.', { name: lastApply.name }));
         lastApply = null;
         render();
         return;
       }
       if (!lastApply || !ledger) return;
       try { ledger.importJSON(lastApply.before, null, ledger.snapshot().revision); } catch (err) { status(tr('import.changed', 'Your saved data changed in another tab. Check the numbers and apply again.')); return; }
-      status(tr('import.undone', 'Undone. {name} can be applied again.', { name: lastApply.name }));
+      status(tr('import.undone', 'Undone.', { name: lastApply.name }));
       lastApply = null;
       render();
     }

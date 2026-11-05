@@ -34,6 +34,18 @@
   });
   M.register('save-transfer', function (context) {
     var store = context.ledger, sequence = 0;
+    // The seal is your own save on this device, even on a guest sheet.
+    var SEAL = { saved: ['notes.sealSaved', 'Saved'], unsaved: ['notes.sealUnsaved', 'Nothing saved yet'], failed: ['notes.sealFailed', 'This browser can’t save'] };
+    function seal() {
+      var state;
+      try { state = window.PlayerLedger.shared().snapshot().revision > 0 ? 'saved' : 'unsaved'; } catch (cause) { state = 'failed'; }
+      context.targets('seal').forEach(function (node) { node.dataset.state = state; node.textContent = context.api.tr(SEAL[state][0], SEAL[state][1]); });
+    }
+    if (context.targets('seal').length) {
+      seal();
+      try { context.cleanup(window.PlayerLedger.shared().subscribe(seal)); } catch (cause) { /* no store: the seal already says so */ }
+      context.listen(document, 'i18n:change', seal);
+    }
     return { dispose: function () { sequence++; }, actions: {
       export: { run: function () {
         var url = URL.createObjectURL(new Blob([store.exportJSON()], { type: 'application/json' })), link = document.createElement('a');
