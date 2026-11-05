@@ -141,3 +141,35 @@ output[data-tally="unknown"]:empty::before { content: "?"; }
 .carries { display: inline-flex; flex-wrap: wrap; gap: .3rem; margin: 0 0 0 .5rem; padding: 0; list-style: none; vertical-align: middle; }
 .carries li { padding: .05rem .55rem; border: 1px solid var(--signal-line); border-radius: 999px; font-size: .8rem; color: var(--ink-dim); }
 .carries li[data-off] { border-style: dashed; color: var(--ink-muted); text-decoration: line-through; }
+
+/* Explainer. When the game needs showing (which screen, which button), a small
+   "?" link opens the steps in a popover: a card over the page, a sheet from the
+   bottom on a phone. It's the native popover, so a tap, a click, Escape or a tap
+   outside all work without script. Each step is a picture with one line. */
+.explain {
+  display: inline-flex; align-items: center; gap: .4rem; padding: .2rem 0; border: 0; background: none;
+  color: var(--ink-dim); font: inherit; font-size: .9rem; text-decoration: underline dotted var(--amber-dim); text-underline-offset: .25em; cursor: pointer;
+}
+.explain::before {
+  content: "?"; display: inline-grid; place-items: center; width: 1.15rem; height: 1.15rem; border: 1px solid var(--amber-dim); border-radius: 50%;
+  color: var(--amber); font-size: .75rem; font-style: normal; font-weight: 700; text-decoration: none;
+}
+.explain:hover, .explain:focus-visible { color: var(--ink); outline: none; }
+.explainer {
+  width: min(26rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); margin: auto; padding: 1.1rem 1.1rem 1.3rem; overflow: auto;
+  border: 1px solid var(--signal-line); background: var(--void); color: var(--ink); box-shadow: 0 24px 60px rgba(0, 0, 0, .7);
+}
+.explainer::backdrop { background: rgba(5, 7, 12, .72); }
+.explainer h3 { margin: 0 2rem .9rem 0; font-size: 1.05rem; }
+.explainer-steps { display: grid; gap: 1.1rem; margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.explainer-steps li { display: grid; gap: .45rem; counter-increment: step; }
+.explainer-steps img { display: block; width: 100%; height: auto; border-radius: 3px; }
+.explainer-steps span::before { content: counter(step) ". "; color: var(--amber); font-weight: 700; }
+.explainer-close {
+  position: absolute; top: .55rem; inset-inline-end: .55rem; width: 2rem; height: 2rem; border: 0; background: none;
+  color: var(--ink-dim); font-size: 1.4rem; line-height: 1; cursor: pointer;
+}
+.explainer-close:hover, .explainer-close:focus-visible { color: var(--amber); outline: none; }
+@media (max-width: 40rem) {
+  .explainer { width: 100%; max-width: none; max-height: 88dvh; margin: auto 0 0; border-inline: 0; border-bottom: 0; border-radius: 10px 10px 0 0; }
+}

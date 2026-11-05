@@ -6,7 +6,7 @@ Our copy's worst problem is structural rather than stylistic. Most notes on the 
 
 The interface explains itself through its visual motifs: a dashed drop zone, a saved mark, a disabled control, a filled or empty row, a ruled table. Copy never describes how our site works, including what saves where, what a filter or setting does, what another tool picks up, or what happens after a click. If a reader can't tell, fix the motif rather than adding a sentence.
 
-The exception is the game. Telling the reader which game screen to take a screenshot of, or which rows to copy, is about something we can't show, so it's allowed.
+The exception is the game. Telling the reader which game screen to take a screenshot of, or which rows to copy, is about something we can't show, so it's allowed. When it takes more than a few words, put it in an explainer: a picture of each step with one line under it.
 
 ## The motifs
 
@@ -27,6 +27,7 @@ These are in `css/motifs.css`, and the [glossary page](../motifs/index.html) (`/
 | Example stamp | `data-example="Example"` on the sample's container | "Example troops. Tap the button to enter yours." |
 | Undo in the toast | `.toast` with a `button.undo` | "You can undo this" |
 | Share-link preview | `ul.carries` beside the share button, `li[data-off]` for what stays behind | "Copy share link sends exactly what you see" |
+| Explainer | `button.explain` with `popovertarget`, opening a `div.explainer[popover]` of `ol.explainer-steps`, each a picture and one line | game how-tos in a note, such as "Copy the Military rows of your Bonus Overview" |
 
 The Heroes page uses the seal, ghost ink, unknown rows and the open-ended total. The rest reach each page with that page's own pass.
 

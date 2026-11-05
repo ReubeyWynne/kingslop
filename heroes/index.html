@@ -34,7 +34,17 @@ self: heroes
     </fieldset>
     <details class="lead-overview" id="bonus-overview">
       <summary data-i18n="leads.overview">Your Bonus Overview</summary>
-      <button type="button" class="lead-drop" data-screen-import="pick" data-screen-import-drop><span class="lead-drop-shots" aria-hidden="true"><img src="../img/screen-import/bonus-overview-top.webp" alt="" width="68" height="85" loading="lazy" decoding="async"><img src="../img/screen-import/bonus-overview-end.webp" alt="" width="68" height="85" loading="lazy" decoding="async"></span><span class="lead-drop-text"><strong data-i18n="leads.drop.title">Fill this in from screenshots</strong><span data-i18n="leads.overviewNote">Bonus Overview → Military: one shot at the top, one scrolled to the end</span></span></button>
+      <button type="button" class="lead-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="leads.drop.title">Fill this in from screenshots</strong></button>
+      <button type="button" class="explain" popovertarget="bonus-shots" data-i18n="leads.shots.open">Which screenshots?</button>
+      <div class="explainer" id="bonus-shots" popover>
+        <h3 data-i18n="leads.shots.title">Your Bonus Overview, in two screenshots</h3>
+        <ol class="explainer-steps">
+          <li><img src="../img/screen-import/bonus-overview-1-power.webp" alt="" width="600" height="256" loading="lazy" decoding="async"><span data-i18n="leads.shots.power">Tap your power, in your town or on the world map.</span></li>
+          <li><img src="../img/screen-import/bonus-overview-2-top.webp" alt="" width="600" height="646" loading="lazy" decoding="async"><span data-i18n="leads.shots.top">Take a screenshot of the Military list.</span></li>
+          <li><img src="../img/screen-import/bonus-overview-3-end.webp" alt="" width="600" height="643" loading="lazy" decoding="async"><span data-i18n="leads.shots.end">Scroll to the end and take another.</span></li>
+        </ol>
+        <button type="button" class="explainer-close" popovertarget="bonus-shots" popovertargetaction="hide" data-i18n-key="leads.shots.close" data-i18n-attr="aria-label" aria-label="Close">×</button>
+      </div>
       <fieldset class="lead-stats" disabled data-target="lead-finder.controls">
         <table class="lead-stats-table">
           <thead><tr><td></td>{% assign stat_ids = 'attack,lethality,defense,health' | split: ',' %}{% for stat in stat_ids %}<th scope="col" data-i18n="leads.stat.{{ stat }}">{{ stat }}</th>{% endfor %}</tr></thead>
