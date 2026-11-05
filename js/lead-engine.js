@@ -254,6 +254,12 @@
     return mod;
   }
 
+  // A level-5 Bear Trap gives the rallies on it +25% attack (owner, 2026-11-05), assumed for every
+  // Bear score. Taken as its own layer, like city buffs and pets: the attack factor × 1.25. Added
+  // into the attack bonus instead it would be worth under 4% at these stats, and the owner's
+  // rallies (BEAR_SCALE below) leave far more than that to explain.
+  var BEAR_TRAP_ATTACK = 1.25;
+
   // Truegold troop skills on the Bear, at their expected value (js/battle-engine.js TRUEGOLD):
   // cavalry may deal double, archers half again more (three quarters at TG8). Infantry's
   // only takes damage, which the Bear never deals in this score.
@@ -273,7 +279,7 @@
       var tier = troops.tier[t], tg = troops.tg[t];
       // Archers deal +10% to the all-infantry Bear, and again from T7 / TG3 (Volley).
       var vs = t === 2 ? 1.1 * (E.hasSecondSkill(tier, tg) ? 1.1 : 1) : 1;
-      return E.baseAtk(t, tier, tg) * vs * (1 + (p.atk[t] + (t === 2 && tg >= 8 ? E.TRUEGOLD.flatTg8 : 0)) / 100) * (1 + p.let[t] / 100) * mod[t] * truegoldBear(t, tg);
+      return E.baseAtk(t, tier, tg) * vs * (1 + (p.atk[t] + (t === 2 && tg >= 8 ? E.TRUEGOLD.flatTg8 : 0)) / 100) * BEAR_TRAP_ATTACK * (1 + p.let[t] / 100) * mod[t] * truegoldBear(t, tg);
     });
     var sq = terms.reduce(function (s, x) { return s + x * x; }, 0);
     return { score: Math.sqrt(sq) / 1000, mix: terms.map(function (x) { return x * x / sq; }), panel: p, terms: terms };
@@ -286,12 +292,12 @@
   // (Hunting Trap 2; Amadeus 3★ 4/6 W4, Petra 4★ 3/6 W3, Marlin 5★ W10; the Bonus Overview,
   // hero gear and TG4 of .dsh/lead-engine-check.cjs; T10 troops, cavalry TG3; 9,000 / 28,500 /
   // 52,500; Valora's talent at +24%) scored 40.2M, 50.7M, 41.7M, 57.2M and 44.9M, 46.9M on
-  // average, where this formula with the usual Gen 4 joiners and the Truegold troop skills gives
-  // 28.2M. Candidates still being checked: city buffs and pets on those rallies (not in the model
-  // above), the actual joiners, and the trap level the Frakinator's constant was measured at.
+  // average, where this formula with the usual Gen 4 joiners, the Truegold troop skills and the
+  // level-5 trap's attack gives 35.3M. Candidates still being checked: city buffs and pets on those
+  // rallies (not in the model above) and the actual joiners.
   // Single hits swing about ±20% with the chance skills. pointsPct is Valora's Hunter Instinct
   // talent, which adds to your own Damage Points only.
-  var BEAR_SCALE = 1.66;
+  var BEAR_SCALE = 1.33;
   var VALORA_POINTS = [0, 2, 4, 6, 9, 12, 15, 18, 21, 24, 27, 30];
   function bearDamage(score, troops, pointsPct) {
     return BEAR_SCALE * 1.2 * Math.sqrt(5000) * Math.sqrt(Math.max(0, num(troops))) * score * (1 + num(pointsPct) / 100);
