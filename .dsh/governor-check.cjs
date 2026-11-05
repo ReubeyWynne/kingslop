@@ -38,7 +38,7 @@ const plan = G.plan('gear', gear, bag);
 assert.ok(plan.steps.length > 0);
 assert.ok(plan.steps.every(step => step.id !== 'arc-2'));
 for (const id of Object.keys(bag)) { assert.equal(plan.spent[id] + plan.left[id], bag[id]); assert.ok(plan.left[id] >= 0); }
-// Bear first is the default: equal pieces go to archers first; infantry and cavalry weigh the same.
+// Bear first is the default: equal pieces go to archers first, then infantry, then cavalry.
 assert.equal(plan.profile, 'bear');
 assert.deepEqual(plan.steps.map(s => s.id), ['arc-1', 'inf-1', 'inf-2', 'cav-1', 'cav-2', 'arc-1', 'arc-1']);
 assert.equal(plan.levels['arc-1'], 3); assert.equal(plan.levels['inf-1'], 1);
@@ -47,8 +47,8 @@ assert.deepEqual(even.steps.slice(0, 5).map(s => s.id), ['inf-1', 'inf-2', 'cav-
 assert.deepEqual(G.plan('gear', gear, bag, { profile: 'even' }).steps, even.steps, 'an older save\'s even reads as a custom 1:1:1');
 assert.deepEqual(G.plan('gear', gear, bag, { profile: 'defence' }).steps, G.plan('gear', gear, bag, { profile: 'custom', weights: '1:0.5:0.7' }).steps, 'an older save\'s defence keeps its weights');
 assert.equal(G.plan('gear', gear, bag, { profile: 'custom', weights: '3:1:1' }).steps[0].troop, 'inf');
-// Weights multiply each troop's gain. Bear first keeps infantry level with cavalry (owner, 30 Oct).
-assert.deepEqual(G.weights({}), { inf: 1, cav: 1, arc: 3 });
+// Weights multiply each troop's gain: a troop's lethality plus health. Bear first puts archers well ahead (owner, 5 Nov).
+assert.deepEqual(G.weights({}), { inf: 2.2, cav: 1.6, arc: 4.2 });
 assert.deepEqual(G.weights({ profile: 'custom', weights: '0.5:1:10' }), { inf: 0.5, cav: 1, arc: 10 });
 assert.equal(G.weights({ profile: 'score' }), null);
 for (const bad of ['1:1', '11:1:1', '0.55:1:1', '-1:1:1', '1:1:1:1']) assert.equal(G.parseWeights(bad), null, bad);

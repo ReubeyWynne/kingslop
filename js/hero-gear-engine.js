@@ -12,12 +12,14 @@
   var MYTHIC = [3, 5, 5, 10, 10];
   /* Priority profiles, per troop [lethality, health]; attack counts with lethality and
      defence with health. Governor gear uses the same table (_data/governor.json profiles,
-     checked equal by .dsh/governor-check.cjs), in the same order. Bear first, as on Governor
-     gear: troops 1:1:3, and lethality only, because defence and health never move a bear
-     fight (see sim.army.bearNote). Health pieces still count through their red milestones'
-     attack. */
+     checked equal by .dsh/governor-check.cjs), in the same order. Bear first takes Early
+     combat's infantry and cavalry as they are and puts archers well ahead: archer lethality
+     stays at 3, with health 1.2, about the sourced profiles' 2:1 archer split. Health and
+     defence never move a bear fight (sim.army.bearNote), but the same gear has to hold up
+     elsewhere, so it still counts (owner, 5 Nov: "heavy archer bias, but not full glass
+     cannon"). */
   var PROFILES = {
-    bear: { inf: [1, 0], cav: [1, 0], arc: [3, 0] },
+    bear: { inf: [0.7, 1.5], cav: [1.2, 0.4], arc: [3, 1.2] },
     growth: { inf: [0.7, 1.5], cav: [0.4, 0.2], arc: [1.4, 0.7] },
     combat: { inf: [0.7, 1.5], cav: [1.2, 0.4], arc: [1.3, 0.6] },
     gen4: { inf: [1.1, 1.5], cav: [1.2, 0.4], arc: [1.2, 0.6] },

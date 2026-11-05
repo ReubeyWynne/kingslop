@@ -51,7 +51,7 @@
   /* Troop weights multiply each step's stat gain by its troop. The presets are Hero gear's
      priority profiles, in its order: each gives a troop [lethality, health], and since every
      governor piece and charm gives its two stats at the same percentage, the troop's weight
-     here is their sum (Bear first is still 1:1:3). "custom" is the player's own weights
+     here is their sum (Bear first is 2.2:1.6:4.2). "custom" is the player's own weights
      ("1:1:3", infantry : cavalry : archers, 0 to 10 in tenths) and "score" ranks by governor
      score instead. A troop at 0 never moves. Older saves and links keep working: a goal of
      score reads as the score profile, and the retired "even" and "defence" as custom weights

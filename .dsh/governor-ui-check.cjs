@@ -59,21 +59,21 @@ withBrowser({ root }, async ({ browser, origin }) => {
     // Bear first shows its weights in the Advanced fold; typing one makes them custom weights, which travel in the link.
     await target('weightsFold').locator('summary').click();
     const weights = () => page.locator('[data-action="governor-planner.weight"]').evaluateAll(nodes => nodes.map(n => n.dataset.troop + ' ' + n.value));
-    assert.deepEqual(await weights(), ['inf 1', 'cav 1', 'arc 3']);
+    assert.deepEqual(await weights(), ['inf 2.2', 'cav 1.6', 'arc 4.2']);
     await page.fill('[data-action="governor-planner.weight"][data-troop="cav"]', '0');
     await page.locator('[data-action="governor-planner.weight"][data-troop="cav"]').dispatchEvent('change');
     // On your own save the weights are kept there; a share link carries them as w=.
-    await page.waitForFunction(() => window.Governor.encodeLink({ gear: {}, charms: {}, bag: {}, prefs: window.PlayerLedger.shared().snapshot().preferences.governor || {} }).w === '1_0_3');
+    await page.waitForFunction(() => window.Governor.encodeLink({ gear: {}, charms: {}, bag: {}, prefs: window.PlayerLedger.shared().snapshot().preferences.governor || {} }).w === '2.2_0_4.2');
     assert.equal(await page.locator('select[data-action=\"governor-planner.profile\"]').inputValue(), 'custom');
     assert.deepEqual(await page.locator('.gov-row[data-moved="true"]').evaluateAll(rows => rows.map(r => r.dataset.item).filter(id => /^cav/.test(id))), [], 'a troop at 0 stays where it is');
     await page.fill('[data-action="governor-planner.weight"][data-troop="inf"]', '1.5');
     await page.locator('[data-action="governor-planner.weight"][data-troop="inf"]').dispatchEvent('change');
-    await page.waitForFunction(() => window.Governor.encodeLink({ gear: {}, charms: {}, bag: {}, prefs: window.PlayerLedger.shared().snapshot().preferences.governor || {} }).w === '1.5_0_3');
+    await page.waitForFunction(() => window.Governor.encodeLink({ gear: {}, charms: {}, bag: {}, prefs: window.PlayerLedger.shared().snapshot().preferences.governor || {} }).w === '1.5_0_4.2');
     await page.selectOption('select[data-action="governor-planner.profile"]', 'score');
     assert.equal(await target('weightsFold').isHidden(), true, 'event score has no weights');
     await page.selectOption('select[data-action="governor-planner.profile"]', 'custom');
     assert.equal(await target('weightsFold').evaluate(node => node.open), true, 'choosing Custom opens the weights, as on Hero gear');
-    assert.deepEqual(await weights(), ['inf 1.5', 'cav 0', 'arc 3'], 'custom weights are kept');
+    assert.deepEqual(await weights(), ['inf 1.5', 'cav 0', 'arc 4.2'], 'custom weights are kept');
     await page.click('[role="tab"][data-value="reach"]');
     await target('reachTroop').selectOption('arc');
     await target('gearTarget').selectOption('4');
