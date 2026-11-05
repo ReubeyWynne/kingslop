@@ -39,7 +39,7 @@ self: pets
             <details class="pet-dossier" name="pet-dossier" data-module="disclosure" data-deep-link="pet-{{ pet.id }}">
               <summary data-i18n="pets.dossier">Skill &amp; costs</summary>
               <div class="pet-dossier-body">
-                <p class="pet-skill"><b lang="en">{{ pet.skill.name | escape }}</b> <span lang="en">{{ pet.skill.say | escape }}</span></p>
+                <div class="pet-skill"><b><span lang="en">{{ pet.skill.name | escape }}</span>{% unless pet.verified %}<details class="src" id="pet-{{ pet.id }}-sources" data-src="2"><summary aria-label="Two sources agree" data-i18n-key="pets.twoSources" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="pets.twoSources">Two of the three sources agree</span></details>{% endunless %}</b> <span lang="en">{{ pet.skill.say | escape }}</span></div>
                 <div class="pet-ladder-scroll"><table class="pet-ladder">
                   <thead><tr><th scope="col" data-i18n="pets.advance">Advance</th>{% for value in pet.skill.ladder[0].values %}<th scope="col" data-level="{{ forloop.index }}">{{ forloop.index }}</th>{% endfor %}</tr></thead>
                   <tbody>{% for row in pet.skill.ladder %}<tr><th scope="row" lang="en">{{ row.label | escape }}</th>{% for value in row.values %}<td data-level="{{ forloop.index }}">{{ value }}</td>{% endfor %}</tr>{% endfor %}</tbody>
@@ -53,12 +53,11 @@ self: pets
                   <legend data-i18n="pets.yours">Your pet</legend>
                   <label><span data-i18n="pets.level">Level</span><input type="number" min="1" max="{{ pet.maxLevel }}" step="1" inputmode="numeric" placeholder="?" data-field="level"></label>
                   <label class="pet-advanced" data-target="pet-den.advanced" hidden><input type="checkbox" data-field="advanced"><span data-i18n="pets.advancedHere">The Advance at this level is done</span></label>
-                  <p class="pet-mine-note"><output data-target="pet-den.saved" role="status"></output></p>
+                  <p class="pet-mine-note"><output class="seal" data-target="pet-den.saved" role="status"></output></p>
                 </fieldset>
                 <p class="pet-next" data-target="pet-den.next"></p>
                 <p class="pet-tomax" data-target="pet-den.tomax"></p>
                 <p class="pet-totals"><span data-i18n="pets.totals" data-i18n-n="{{ pet.maxLevel }}">Level 1 to {{ pet.maxLevel }}:</span> <span data-number="{{ profile.totals.petFood }}">{{ profile.totals.petFood }}</span> <span data-i18n="pets.mat.petFood">Pet Food</span> · <span data-number="{{ profile.totals.growthManual }}">{{ profile.totals.growthManual }}</span> <span data-i18n="pets.mat.growthManual">Growth Manuals</span> · <span data-number="{{ profile.totals.nutrientPotion }}">{{ profile.totals.nutrientPotion }}</span> <span data-i18n="pets.mat.nutrientPotion">Nutrient Potions</span> · <span data-number="{{ profile.totals.promotionMedallion }}">{{ profile.totals.promotionMedallion }}</span> <span data-i18n="pets.mat.promotionMedallion">Promotion Medallions</span></p>
-                {% unless pet.verified %}<p class="note" data-i18n="pets.twoSources">Listed by two of the three sources.</p>{% endunless %}
               </div>
             </details>
           </article>
@@ -74,7 +73,7 @@ self: pets
     {% include empty-state.html needs="pets" key="empty.pets" text="Tame your pets to plan their Advances." import=true fill="#cage" %}
     <p data-i18n="pets.advancesIntro">Each Advance scores Pet Advancement points: 50 KvK prep or Strongest Governor points per score, 30 in Brawl.</p>
     <p class="hero-points-total"><output data-target="pet-advances.total">—</output></p>
-    <p class="note" data-target="pet-advances.coverage" aria-live="polite"></p>
+    <ul class="unknowns" data-target="pet-advances.coverage" aria-live="polite"></ul>
     <div data-target="pet-advances.events"></div>
     <div class="hero-points-scroll" data-target="pet-advances.table" hidden><table class="hero-points-table">
       <thead><tr><th scope="col" data-i18n="pets.col.pet">pet</th><th scope="col" data-i18n="pets.col.next">next Advance</th><th scope="col" data-i18n="spend.col.points">KvK prep points</th><th scope="col" data-i18n="pets.col.left">Advances left</th></tr></thead>

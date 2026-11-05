@@ -75,7 +75,8 @@ const errors=[];
  await rub('gray-wolf');await page.clock.runFor(3000);assert.notEqual(await pen('gray-wolf').getAttribute('data-mood'),'asleep');
  // The Advances table counts the next Advance of each tamed pet with a level.
  await page.locator('#pet-lion [data-field="owned"]').check();
- assert.match(await page.locator('[data-target="pet-advances.coverage"]').textContent(),/Unread levels: Lion/);
+ assert.equal(await page.locator('[data-target="pet-advances.coverage"] li').textContent(),'Lion');
+ assert.equal(await page.locator('[data-target="pet-advances.total"]').getAttribute('data-open'),'');
  assert.equal(await page.locator('[data-target="pet-advances.rows"] tr').count(),1);
  assert.match(await page.locator('[data-target="pet-advances.total"]').textContent(),/100,000 KvK prep points/);
  await page.locator('#advances').screenshot({path:path.join(output,'advances-390.png')});

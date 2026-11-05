@@ -15,7 +15,7 @@
     var progression = window.KingdomProgression, fields = {}, stages = window.KingdomData.stages;
     ['generation', 'truegold', 'warAcademy'].forEach(function (key) { fields[key] = context.targets(key)[0]; });
     function text(key) { return context.api.tr('kingdom.' + key, key); }
-    function status(message) { context.targets('status')[0].textContent = text(message); }
+    function status(message) { var node = context.targets('status')[0]; node.textContent = text(message); node.dataset.state = message === 'saveFailed' ? 'failed' : 'saved'; }
     function render() {
       var profile = progression.get(), hasProfile = Object.keys(fields).some(function (key) { return profile[key] !== null; });
       Object.keys(fields).forEach(function (key) {
