@@ -20,6 +20,14 @@
     function target(record, name) { return Array.from(record.node.querySelectorAll('[data-target~="master-directory.' + name + '"]')); }
     // Values only, in the order of the talent sentence above them: "6% · 6%".
     function effects(list) { return list.map(function (effect) { return api.fmt(effect.value) + (effect.percent ? '%' : ''); }).join(' · '); }
+    // Blank, zero and unknown ink: an empty box hasn't been counted, 0 is none, and a skill
+    // still on ? is unknown.
+    function tally(input) {
+      if (input.type === 'checkbox') return;
+      if (input.value === '') input.dataset.tally = input.tagName === 'SELECT' ? 'unknown' : 'blank';
+      else if (Number(input.value) === 0) input.dataset.tally = 'zero';
+      else delete input.dataset.tally;
+    }
     function paint(record) {
       var copy = mine.roster[record.id] || null, affinity = copy ? copy.affinity : null, data = record.data;
       record.node.dataset.owned = String(Boolean(copy));
@@ -49,7 +57,7 @@
       if (!record.form) return;
       record.form.querySelectorAll('[data-field]').forEach(function (input) {
         var field = input.dataset.field;
-        if (input === document.activeElement && input.type !== 'checkbox') return;
+        if (input === document.activeElement && input.type !== 'checkbox') { tally(input); return; }
         if (field === 'owned') input.checked = Boolean(copy);
         else if (field === 'emblems') input.value = Object.hasOwn(mine.emblems, record.id) ? mine.emblems[record.id] : '';
         else if (field === 'ready') { input.checked = Boolean(copy && copy.ready); input.disabled = !copy; }
@@ -58,6 +66,7 @@
           input.value = value === null || value === undefined ? '' : value;
           input.disabled = !copy;
         }
+        tally(input);
       });
     }
     function render() {
@@ -71,6 +80,7 @@
         var badge = record.node.querySelector('[data-kingdom-upcoming]');
         if (badge) badge.hidden = window.KingdomProgression.availability(need) !== 'upcoming';
       });
+      context.root.querySelectorAll('.master-bag input[data-bind]').forEach(tally);
       context.root.querySelectorAll('[data-number]').forEach(function (node) { node.textContent = api.fmt(Number(node.dataset.number)); });
       var text = api.fill(t(api, 'count'), { n: api.fmt(records.length) });
       if (owned) text += ' · ' + api.fill(t(api, 'owned'), { n: api.fmt(owned) });
@@ -95,6 +105,7 @@
     }
     editor.dossiers(context, records, '.master-dossier');
     editor.onChange(context, 'master-directory', '.master-mine [data-field]', edit);
+    context.listen(context.root, 'input', function (event) { if (event.target.matches('.master-bag input[data-bind]')) tally(event.target); });
     context.listen(document, 'ks:kingdom-change', render);
     if (store) context.cleanup(store.subscribe(render));
     render();
