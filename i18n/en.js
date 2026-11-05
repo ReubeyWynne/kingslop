@@ -2567,7 +2567,7 @@ window.__BH_I18N_DATA["en"] = {
   "leads.ofBest": "{n}% of your best",
   "leads.overview": "Your Bonus Overview",
   "leads.drop.title": "Fill this in from screenshots",
-  "leads.overviewNote": "Copy the Military rows of your Bonus Overview.",
+  "leads.overviewNote": "Bonus Overview → Military: one shot at the top, one scrolled to the end",
   "leads.squads": "Squads'",
   "leads.ready": "Ranked from your {n} heroes that have stars.",
   "leads.saveFailed": "Could not save",

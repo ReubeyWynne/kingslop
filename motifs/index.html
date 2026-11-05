@@ -26,13 +26,14 @@ self: motifs
 
     <article class="motif" id="shared-by">
       <h2>Shared-by dots</h2>
-      <p>A dot in each page’s colour, for every page that reads the same value. Hover a dot for its page.</p>
+      <p>A dot in each page’s colour, for every page that reads the same value. Tap the dots to name the pages.</p>
       <div class="motif-demo">
-        <span>Town Centre level <b>25</b><span class="shared-by" role="img" aria-label="Also used by Buildings, Hero gear and Event Cycle"><i data-page="buildings" title="Buildings"></i><i data-page="gear" title="Hero gear"></i><i data-page="kvksg" title="Event Cycle"></i></span></span>
+        <span>Town Centre level <b>25</b><details class="shared-by"><summary aria-label="Also used by 3 pages"><i data-page="buildings"></i><i data-page="gear"></i><i data-page="kvksg"></i></summary><span class="motif-names">Buildings · Hero gear · Event Cycle</span></details></span>
       </div>
-      <pre><code>&lt;span class="shared-by" role="img" aria-label="Also used by …"&gt;
-  &lt;i data-page="buildings" title="Buildings"&gt;&lt;/i&gt; …
-&lt;/span&gt;</code></pre>
+      <pre><code>&lt;details class="shared-by"&gt;
+  &lt;summary aria-label="Also used by 3 pages"&gt;&lt;i data-page="buildings"&gt;&lt;/i&gt; …&lt;/summary&gt;
+  &lt;span class="motif-names"&gt;Buildings · Hero gear · Event Cycle&lt;/span&gt;
+&lt;/details&gt;</code></pre>
       <p class="motif-replaces">Replaces “shared with hero gear and events” and “the Town Centre and Upgrade priority use them”.</p>
     </article>
 
@@ -105,7 +106,7 @@ self: motifs
 
     <article class="motif" id="inkwell">
       <h2>Ink-well</h2>
-      <p>A value you can change has a dashed underline and an ink-well pointer.</p>
+      <p>A value you can change has a dashed underline, and with a mouse an ink-well pointer.</p>
       <div class="motif-demo">
         <span class="demo-pair">Helm <button type="button" class="inkwell" data-glossary="bump">Lv 6</button></span>
         <span class="demo-pair">Gloves <button type="button" class="inkwell" data-glossary="bump">Lv 5</button></span>
@@ -127,13 +128,15 @@ self: motifs
 
     <article class="motif" id="sources">
       <h2>Source marks</h2>
-      <p>A small mark on a number. ◆ is one source, ◆◆ is two that agree, and ◇ is a community estimate. Hover for the names.</p>
+      <p>A small mark on a number. ◆ is one source, ◆◆ is two that agree, and ◇ is a community estimate. Tap a mark to name its sources.</p>
       <div class="motif-demo">
-        <span class="demo-pair">Attack <b>1,240</b><sup class="src" data-src="1" title="Kingshot Optimizer" aria-label="one source"></sup></span>
-        <span class="demo-pair">Health <b>9,800</b><sup class="src" data-src="2" title="Kingshot Optimizer and Kingshot Mastery" aria-label="two sources agree"></sup></span>
-        <span class="demo-pair">Bear damage <b>×1.35</b><sup class="src" data-src="est" title="Community estimate" aria-label="community estimate"></sup></span>
+        <span class="demo-pair">Attack <b>1,240</b><details class="src" data-src="1"><summary aria-label="One source"></summary><span class="motif-names">Kingshot Optimizer</span></details></span>
+        <span class="demo-pair">Health <b>9,800</b><details class="src" data-src="2"><summary aria-label="Two sources agree"></summary><span class="motif-names">Kingshot Optimizer and Kingshot Mastery</span></details></span>
+        <span class="demo-pair">Bear damage <b>×1.35</b><details class="src" data-src="est"><summary aria-label="Community estimate"></summary><span class="motif-names">Community estimate</span></details></span>
       </div>
-      <pre><code>&lt;sup class="src" data-src="1|2|est" title="…"&gt;&lt;/sup&gt;</code></pre>
+      <pre><code>&lt;details class="src" data-src="1|2|est"&gt;
+  &lt;summary aria-label="One source"&gt;&lt;/summary&gt;&lt;span class="motif-names"&gt;Kingshot Optimizer&lt;/span&gt;
+&lt;/details&gt;</code></pre>
       <p class="motif-replaces">Replaces “Only Kingshot Optimizer lists this master”, “Listed by two of the three sources” and “Community numbers, not official”.</p>
     </article>
 

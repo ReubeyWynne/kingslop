@@ -10,12 +10,12 @@ The exception is the game. Telling the reader which game screen to take a screen
 
 ## The motifs
 
-These are in `css/motifs.css`, and the [glossary page](../motifs/index.html) (`/motifs/`) shows each one live. A page opts in by putting the class or attribute on its own markup, and then the sentence it replaces goes.
+These are in `css/motifs.css`, and the [glossary page](../motifs/index.html) (`/motifs/`) shows each one live. A page opts in by putting the class or attribute on its own markup, and then the sentence it replaces goes. Nothing may depend on hover: anything a mark names opens on a tap, so it works the same on a phone.
 
 | Motif | Markup | Replaces |
 | --- | --- | --- |
 | Saved seal | `<output class="seal">`, with `data-state` of `saved`, `unsaved` or `failed` | "Saved on this device" |
-| Shared-by dots | `span.shared-by` holding an `<i data-page="…">` per page that reads the value | "shared with hero gear and events" |
+| Shared-by dots | `details.shared-by`: a `summary` holding an `<i data-page="…">` per page that reads the value, then a `span.motif-names` naming them | "shared with hero gear and events" |
 | Blank, zero, unknown | `data-tally="blank"`, `"zero"` or `"unknown"` on the field or output | "blank means not counted yet", "? means unknown" |
 | Unknown row | `tr[data-unknown]` | "Add your Squads' row" as a standing note |
 | Ghost ink | `input.ghost`, with the assumed value as its placeholder | "Using a typical … until you enter yours" |
@@ -23,7 +23,7 @@ These are in `css/motifs.css`, and the [glossary page](../motifs/index.html) (`/
 | Loose leaf | `div.loose-leaf` around a guest or link sheet | the guest banners, "Changed on this page only" |
 | Ink-well | `.inkwell` on a value you can change | "tap a slot to edit" |
 | Best-day mark | `ol.days` with `li[data-best]` | "Each item counts once, on its best day" |
-| Source marks | `sup.src` with `data-src` of `1`, `2` or `est`, its `title` naming the sources | "Listed by two of the three sources" |
+| Source marks | `details.src` with `data-src` of `1`, `2` or `est`: an empty `summary`, then a `span.motif-names` naming the sources | "Listed by two of the three sources" |
 | Example stamp | `data-example="Example"` on the sample's container | "Example troops. Tap the button to enter yours." |
 | Undo in the toast | `.toast` with a `button.undo` | "You can undo this" |
 | Share-link preview | `ul.carries` beside the share button, `li[data-off]` for what stays behind | "Copy share link sends exactly what you see" |
