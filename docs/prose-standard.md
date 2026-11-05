@@ -2,6 +2,12 @@
 
 Our copy's worst problem is structural rather than stylistic. Most notes on the site try to explain how their piece fits into everything else: which page saved the data, what feeds what, why the alternative won't work, what happens later. Every piece does this, so the same explanations turn up on every page and the one thing the reader needed is buried among them. Rewording doesn't fix that. Cutting does.
 
+## Show, don't tell
+
+The interface explains itself through its visual motifs: a dashed drop zone, a saved mark, a disabled control, a filled or empty row, a ruled table. Copy never describes how our site works, including what saves where, what a filter or setting does, what another tool picks up, or what happens after a click. If a reader can't tell, fix the motif rather than adding a sentence.
+
+The exception is the game. Telling the reader which game screen to take a screenshot of, or which rows to copy, is about something we can't show, so it's allowed.
+
 ## One job per line
 
 Every line of copy answers the question the reader has at that exact spot, and nothing else.

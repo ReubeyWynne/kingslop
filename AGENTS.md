@@ -16,4 +16,4 @@ Every disclosure is a link. Give each static `details` a stable readable id, and
 
 Keep roulette scenes centred in their cards. Ambient twinkles change glyphs at fixed positions. Smooth background colour blending remains allowed. Preserve static frames for reduced motion.
 
-Write English copy to [docs/prose-standard.md](docs/prose-standard.md): each line does only the job of the spot it sits in. Don't explain how a piece fits the rest of the site, repeat what the interface shows, or restate a fact that has a home elsewhere.
+Write English copy to [docs/prose-standard.md](docs/prose-standard.md). Show, don't tell: the interface explains itself through its visual motifs, and copy never describes how the site works. Only the game's screens may be described. Each line does only the job of the spot it sits in.

@@ -26,7 +26,6 @@ self: heroes
   </section>
   <section class="section lead-finder" id="leads" data-module="lead-finder" data-screen-import-sheet="bonus-overview" aria-labelledby="leads-title">
     <h2 id="leads-title" data-i18n="leads.title">Your best leads</h2>
-    <p data-i18n="leads.intro">This ranks your heroes for each job.</p>
     <fieldset class="lead-jobs" disabled data-target="lead-finder.controls">
       <legend data-i18n="leads.job">Job</legend>
       <label><input type="radio" name="lead-job" value="bear" checked data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.bear">Bear lead</span></label>
@@ -47,14 +46,13 @@ self: heroes
           <label><span data-i18n="leads.tg">Truegold</span><select data-target="lead-finder.tg" data-action="lead-finder.run">{% for tg in (0..8) %}<option value="{{ tg }}">{% if tg == 0 %}—{% else %}TG{{ tg }}{% endif %}</option>{% endfor %}</select></label>
           <label class="lead-rally-cap"><span data-i18n="leads.rallyCap">Bear rally capacity</span><input type="number" min="15" max="100000000" step="1" inputmode="numeric" data-target="lead-finder.rallyCap" data-action="lead-finder.extras"></label>
         </div>
-        <p class="hero-mine-note"><span data-i18n="leads.saveNote">Saved on this device.</span> <output data-target="lead-finder.saved" role="status"></output></p>
+        <p class="hero-mine-note"><output data-target="lead-finder.saved" role="status"></output></p>
       </fieldset>
     </details>
     <details class="lead-extras" id="lead-extras">
       <summary data-i18n="leads.extras">Joiners, pets and city buffs</summary>
       <fieldset class="lead-joiners" disabled data-target="lead-finder.controls">
         <legend data-target="lead-finder.joinersTitle">Joiners</legend>
-        <p class="note" data-i18n="leads.joinersNote">Each job keeps its own joiners.</p>
         {% assign joiner_heroes = site.data.heroes.heroes | sort: 'name' %}{% for slot in (0..3) %}<div class="lead-joiner">
           <label><span data-i18n="leads.joiner" data-i18n-n="{{ forloop.index }}">Joiner {{ forloop.index }}</span><select data-joiner="{{ slot }}" data-field="key" data-target="lead-finder.joiner" data-action="lead-finder.extras"><option value="">—</option>{% for hero in joiner_heroes %}<option value="{{ hero.key }}">{{ hero.name | escape }}</option>{% endfor %}</select></label>
           <label><span data-i18n="leads.joinerLevel">Skill level</span><select data-joiner="{{ slot }}" data-field="level" data-target="lead-finder.joiner" data-action="lead-finder.extras">{% for level in (1..5) %}<option value="{{ level }}"{% if level == 5 %} selected{% endif %}>{{ level }}</option>{% endfor %}</select></label>
@@ -70,7 +68,6 @@ self: heroes
         <label class="hero-own"><input type="checkbox" checked data-target="lead-finder.usePets" data-action="lead-finder.extras"><span data-i18n="leads.usePets">Use my pets’ skills</span></label>
         <p class="note" data-target="lead-finder.pets"></p>
       </fieldset>
-      <p class="hero-mine-note" data-i18n="leads.extrasNote">Saved on this device.</p>
     </details>
     <p class="note" data-target="lead-finder.status" aria-live="polite"></p>
     <article class="lead-best" data-target="lead-finder.best" hidden aria-labelledby="lead-best-title">
@@ -163,7 +160,7 @@ self: heroes
     </table></div>
     <p class="note" data-target="hero-points.empty" hidden></p>
     <p class="note" data-target="hero-points.left"></p>
-    <p class="note" data-i18n="spend.rates">Each kind counts on the KvK prep day that pays most for it. The Town Centre adds these to the rest of your bag.</p>
+    <p class="note" data-i18n="spend.rates">Each kind counts on the KvK prep day that pays most for it.</p>
     <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
     {% include page-notes.html part="pointer" checked="2026-10-08" %}
   </section>
