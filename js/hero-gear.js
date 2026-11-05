@@ -43,7 +43,10 @@
     var forge = document.getElementById('gear-forge');
     forge.dataset.guest = 'true';
     forge.dataset.savedKey = 'gear.guestSaved';
-    document.getElementById('gear-save').setAttribute('data-i18n', 'gear.guestSaved');
+    var seal = document.getElementById('gear-save');
+    seal.setAttribute('data-i18n', 'gear.guestSaved'); seal.dataset.state = 'unsaved';
+    // A guest or link sheet is a loose leaf, never your own ledger.
+    document.getElementById('gear-planner').classList.add('loose-leaf');
   }
   function workerURL(filename) { var url = new URL(filename, base); url.search = scriptURL.search; return url; }
   function partsTotal() { return Math.min(1e9, parts.ten * 10 + parts.hundred * 100 + (parts.remainder || 0)); }
@@ -80,10 +83,10 @@
       saving = true;
       var saved = ledger.writeHeroGear(Object.assign({}, state, { parts: parts }), E, Object.assign({ expectedRevision: ledgerRevision }, options));
       ledgerRevision = saved.revision;
-      el('save').textContent = tr(guest ? 'guestSaved' : 'saved');
+      el('save').textContent = tr(guest ? 'guestSaved' : 'saved'); el('save').dataset.state = guest ? 'unsaved' : 'saved';
       return true;
     } catch (error) {
-      el('save').textContent = tr('saveFailed');
+      el('save').textContent = tr('saveFailed'); el('save').dataset.state = 'failed';
       try { var restored = ledger.heroGear(E); state = E.normaliseState(restored); readParts(restored); ledgerRevision = ledger.snapshot().revision; paint(); } catch (ignored) {}
       return false;
     } finally { saving = false; }
@@ -94,7 +97,8 @@
     searchFailed = false;
     result = null;
     optimum = null; planned = null; fit = null;
-    note(null);
+    // A new change closes the toast; an apply or a reset opens it again with its undo.
+    note(null); el('undo').hidden = true;
     var saved = persist(options);
     paint();
     return saved;
@@ -257,7 +261,7 @@
       forecast.routes.map(function (r) {
         var missing = E.RES.filter(function (k) { return r.gap[k] > 0; }).map(function (k) { return fmt(r.gap[k]) + ' ' + tr(k + 'Unit'); }).join(' · ');
         return '<button type="button" class="gear-route" data-edit-piece="' + r.id + '">' + view.gearItem(r.id, r.to) +
-          '<span class="gear-route-piece"><strong>' + view.esc(view.name(r.id)) + '</strong>' +
+          '<span class="gear-route-piece"><strong class="inkwell">' + view.esc(view.name(r.id)) + '</strong>' +
           '<span class="gear-route-levels">' + view.levelLabel(r.from) + ' → <b class="gear-rarity-red">' + view.esc(view.fullLevel(r.to)) + '</b></span>' +
           '<small>' + view.esc(missing ? BH.fill(tr('oppShort'), { missing: missing }) : tr('readyShort')) + '</small></span>' +
           '<span class="gear-route-metrics"><span><b>' + view.gainPct(r.gain, baseline) + '</b><small>' + view.esc(tr('weightedGain')) + '</small></span>' +
@@ -355,7 +359,7 @@
       var saved = ledger.migrate(E), input = ledger.heroGear(E);
       ledgerRevision = saved.revision;
       state = E.normaliseState(input); readParts(input);
-    } catch (error) { note('loadFailed'); el('save').textContent = tr('saveFailed'); }
+    } catch (error) { note('loadFailed'); el('save').textContent = tr('saveFailed'); el('save').dataset.state = 'failed'; }
     syncXP();
     paint();
     openHash();
@@ -444,6 +448,8 @@
         ledgerRevision = restored.revision;
         var input = ledger.heroGear(E); state = E.normaliseState(input); readParts(input);
         previous = null; changed(); el('undo').hidden = true; note('undone');
+        // With nothing left to undo, the toast closes on its own.
+        setTimeout(function () { if (el('undo').hidden && el('status').textContent === tr('undone')) note(null); }, 4000);
       } catch (error) { note('loadFailed'); } finally { saving = false; }
     });
     document.addEventListener('player-save:imported', function (event) {
