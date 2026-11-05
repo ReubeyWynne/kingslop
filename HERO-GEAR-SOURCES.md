@@ -80,7 +80,7 @@ They express user priorities, not predicted damage percentages.
 | Early growth | 0.7, 1.5 | 0.4, 0.2 | 1.4, 0.7 |
 | Early combat | 0.7, 1.5 | 1.2, 0.4 | 1.3, 0.6 |
 | Generation 4+ | 1.1, 1.5 | 1.2, 0.4 | 1.2, 0.6 |
-| Bear first | 1, 0 | 1, 0 | 3, 0 |
+| Bear first | 0.7, 1.5 | 1.2, 0.4 | 3, 1.2 |
 | Equal stats | 1, 1 | 1, 1 | 1, 1 |
 
 The reference optimiser is server-backed: the browser posts heroes, resource
@@ -394,3 +394,18 @@ The owner asked for consistency between the gear pages: "profiles should be cons
 
 - **Profiles.** Hero gear and Governor gear offer the same priority profiles in one order, from one select (`_includes/priority-options.html`): Bear first, Early growth, Early combat, Generation 4+, Garrison lead, Equal stats, then Custom (Governor gear adds Event score before Custom). Both start on Bear first; a save or link that already names a profile keeps it. `_data/governor.json` carries the same table as `PROFILES` here and `governor-check` asserts they match. Custom weights sit in the "Advanced: custom weights" fold on both pages.
 - **Event points.** Spend now's bill ends with the event points table that Governor gear uses (`js/event-points.js`): the Forgehammers and mithril it spends, scored on the best day of KvK prep, Strongest Governor and Alliance Brawl, every rate from `_data/event_rules.json` (4,000 and 40,000 points in KvK prep and Strongest Governor, 1,875 and 18,750 in Brawl). It replaces the single KvK total beside the Spend title; each step row keeps its own KvK prep points.
+
+## Bear first, less of a glass cannon — 5 November 2026
+
+The owner found Bear first "bonkers": with health at 0 everywhere, Spend now
+reforged every gloves and chest piece to +0 to feed lethality. They want "a heavy
+archer bias, but not full glass cannon", and asked for the presets we sourced to
+anchor it, with their own sketch (lethality 5, 10, 30; health 15, 5, 10) as a guide
+rather than gospel.
+
+Bear first now takes Early combat's infantry and cavalry as they are (0.7, 1.5 and
+1.2, 0.4) and gives archers lethality 3, health 1.2. Archer lethality stays where Bear
+first had it; the archer health sits between the sourced profiles' roughly 2:1 split
+and the owner's 3:1. As troop totals that is 2.2 : 1.6 : 4.2, against the sketch's
+2 : 1.5 : 4. Governor gear shares the table, so its Bear first is now 2.2 : 1.6 : 4.2
+too: archers still well ahead, infantry a little ahead of cavalry instead of level.
