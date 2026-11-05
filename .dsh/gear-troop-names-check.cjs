@@ -9,7 +9,7 @@ const E = require('../js/hero-gear-engine.js');
 const langs = JSON.parse(fs.readFileSync('_data/langs.json', 'utf8')).map(l => l.h).filter(h => fs.existsSync('i18n/' + h + '.js'));
 const dict = lang => { const sandbox = { window: {} }; vm.runInNewContext(fs.readFileSync('i18n/' + lang + '.js', 'utf8'), sandbox); return sandbox.window.__BH_I18N_DATA[lang]; };
 const codes = E.TYPES.concat(E.SLOTS);
-assert.equal(langs.length, 17, 'every language');
+assert.equal(langs.length, 10, 'every language');
 langs.forEach(lang => {
   const d = dict(lang);
   codes.forEach(code => assert.ok(typeof d['gear.' + code] === 'string' && d['gear.' + code].trim() && d['gear.' + code] !== code, lang + ' gear.' + code));

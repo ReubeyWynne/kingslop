@@ -28,4 +28,4 @@ const dictionaries=fs.readdirSync('i18n').filter(x=>x.endsWith('.js')).map(file=
 const keys=Object.keys(dictionaries.find(d=>d['directory.title']==='Hero directory')).filter(k=>k.startsWith('directory.'));assert.equal(keys.length,74);
 for(const dictionary of dictionaries){for(const key of keys)assert.equal(typeof dictionary[key],'string',key);assert(dictionary['directory.count'].includes('{n}')&&dictionary['directory.count'].includes('{total}'));}
 const html=fs.readFileSync('heroes/index.html','utf8');assert(html.includes('site.data.heroes.heroes'));assert(!html.includes('window.HeroData'));
-console.log('Hero directory: canonical metadata, sources, filters, conditional guidance, navigation cycle and 17 dictionaries pass.');
+console.log('Hero directory: canonical metadata, sources, filters, conditional guidance, navigation cycle and 10 dictionaries pass.');

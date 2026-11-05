@@ -6,7 +6,7 @@ const { withBrowser } = require('./lib/browser-harness.cjs');
 
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/visual-preview');
-const langs = ['en', 'es', 'pt-BR', 'de', 'fr', 'it', 'ru', 'pl', 'tr', 'zh-Hans', 'zh-Hant', 'ko', 'ja', 'th', 'id', 'vi', 'ar'];
+const langs = ['en', 'es', 'pt-BR', 'de', 'tr', 'zh-Hans', 'ko', 'ja', 'id', 'ar'];
 const diagrams = ['rally-anatomy', 'march-composition', 'hunt-opening'];
 const screenshotStyle = '.topbar, .toc { visibility: hidden !important; }';
 
@@ -134,5 +134,5 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     fs.writeFileSync(path.join(output, 'checks.json'), JSON.stringify({ report, failures }, null, 2));
   }
   assert.equal(failures.length, 0, JSON.stringify(failures, null, 2));
-  console.log('Passed ' + report.length + ' diagram checks across all 17 languages, mobile and desktop, including RTL.');
+  console.log('Passed ' + report.length + ' diagram checks across all 10 languages, mobile and desktop, including RTL.');
 }).catch(error => { console.error(error); process.exitCode = 1; });

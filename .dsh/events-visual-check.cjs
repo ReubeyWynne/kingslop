@@ -5,7 +5,7 @@ const vm = require('node:vm');
 const { withBrowser } = require('./lib/browser-harness.cjs');
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/events-preview');
-const langs = ['en', 'es', 'pt-BR', 'de', 'fr', 'it', 'ru', 'pl', 'tr', 'zh-Hans', 'zh-Hant', 'ko', 'ja', 'th', 'id', 'vi', 'ar'];
+const langs = ['en', 'es', 'pt-BR', 'de', 'tr', 'zh-Hans', 'ko', 'ja', 'id', 'ar'];
 const dictionaries = {};
 for (const lang of langs) {
   const scope = { window: {} };
@@ -190,5 +190,5 @@ withBrowser({ root }, async ({ browser, origin }) => {
   } finally {
     fs.writeFileSync(path.join(output, 'checks.json'), JSON.stringify(report, null, 2));
   }
-  console.log('Passed 100 layout checks across 17 languages, copy placement, optional canonical site links and message limits for all 28 days, KvK task display, day 20 reminders, navigation, UTC rollover, clipboard success/failure and RTL.');
+  console.log('Passed 100 layout checks across 10 languages, copy placement, optional canonical site links and message limits for all 28 days, KvK task display, day 20 reminders, navigation, UTC rollover, clipboard success/failure and RTL.');
 }).catch(error => { console.error(error); process.exitCode = 1; });

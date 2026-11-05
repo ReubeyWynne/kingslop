@@ -18,7 +18,6 @@ self: heroes
     {% include ascii/motif.html kind="helm" %}
   </section>
   {% include page-sheet.html part="bar" class="sheet-dialog" title="sheet.heroes.confirmTitle" title_en="Save these heroes as yours?" body="sheet.heroes.confirmBody" body_en="It replaces the heroes in your save. A shard or widget count this sheet has not counted keeps your number." confirm="sheet.heroes.confirm" confirm_en="replace my heroes" %}
-  {% include next-step.html kinds="hero-stars hero-widget record:heroes record:hero-stars" %}
   <section class="section" id="directory" data-module="hero-directory">
     <h2 data-i18n="directory.browse">Browse heroes</h2>
     {% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}
@@ -170,8 +169,6 @@ self: heroes
   </section>
   <section class="section" id="roles">
     <h2 data-i18n="directory.roles">Choose a role</h2>
-    <p lang="en"><a href="../castle-battle/">Understand Castle Battle combat, joiners and troop choices</a></p>
-    <p class="note" data-i18n="directory.candidateNote">Role labels are a shortlist. Your stars, skills and alliance plan make the final call.</p>
     <div class="directory-role-guide"><div><h3 data-i18n="directory.role.garrison-lead">Garrison lead</h3><p data-i18n="directory.explain.garrison">Defending is a full-kit job. Start with a developed defensive lineup and a defender widget. A stronger reinforcement can change whose stats the garrison uses; check the active leader.</p>
     </div><div><h3 data-i18n="directory.joinerTitle">Joining &amp; reinforcing</h3><p data-i18n="directory.explain.joiner">Slot 1 is the important one. Its first Expedition skill can take one of four shared joiner slots. Send the hero and skill level your alliance asks for; slots 2 and 3 do not add joiner skills.</p>
     </div><div><h3 data-i18n="directory.role.rally-lead">Offensive rally lead</h3><p data-i18n="directory.explain.rally">The caller brings the account stats and all three heroes’ Expedition kits. A rally widget helps, but compare the lineup you have built. A good caller is not automatically a good slot-1 joiner.</p>

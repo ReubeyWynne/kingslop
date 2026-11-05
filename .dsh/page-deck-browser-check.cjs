@@ -225,8 +225,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.waitForFunction(() => window.I18N && window.I18N.lang === 'en');
   await page.evaluate(() => window.I18N.switchTo('de'));
   await page.waitForFunction(() => document.documentElement.lang === 'de' && location.search === '?keep=1&lang=de' && location.hash === '#top');
-  await page.goto(origin + '/?lang=fr');
-  await page.waitForFunction(() => window.I18N && window.I18N.lang === 'fr' && location.search === '?lang=fr');
+  await page.goto(origin + '/?lang=de');
+  await page.waitForFunction(() => window.I18N && window.I18N.lang === 'de' && location.search === '?lang=de');
   await page.evaluate(() => sessionStorage.clear());
   for (const lang of ['de', 'ar']) {
     await page.goto(origin + '/?lang=' + lang);

@@ -270,43 +270,23 @@ jobs:
               - _data/heroes.json
               - js/pet-*
               - _data/pets.json
-            # Next-step lines from the upgrade priority on six tool pages.
+            # Your kingdom on the home page.
             hints:
               - *shared
-              - .dsh/next-step-ui-check.cjs
               - .dsh/home-yours-ui-check.cjs
-              - _includes/next-step.html
               - index.html
               - js/home-yours.js
               - css/home.css
-              - js/next-step.js
-              - css/next-step.css
-              - js/upgrade-priority*
-              - _data/upgrade_priority.json
-              - town-centre/**
-              - heroes/**
-              - hero-gear/**
-              - governor-gear/**
-              - pets/**
-              - masters/**
-              - js/hero-spend.js
-              - js/master-*
-              - js/hero-gear-engine.js
-              - js/governor-*
-              - js/building-*
-              - js/pet-*
-              - _data/buildings.json
-              - _data/governor.json
-              - _data/heroes.json
-              - _data/masters.json
-              - _data/pets.json
+              - js/event-data.liquid
+              - js/event-rules.js
+              - _data/event_rules.json
             # Teaching empty states on the six tool pages.
             empty:
               - *shared
               - .dsh/empty-state-ui-check.cjs
               - _includes/empty-state.html
               - js/empty-state.js
-              - css/next-step.css
+              - css/empty-state.css
               - js/screen-import*.js
               - town-centre/**
               - heroes/**
@@ -656,9 +636,6 @@ jobs:
       - name: Check building requirements UI
         if: matrix.group == 'priority'
         run: node .dsh/building-paths-ui-check.cjs
-      - name: Check next-step lines on the tool pages
-        if: matrix.group == 'hints'
-        run: node .dsh/next-step-ui-check.cjs
       - name: Check your kingdom on the home page
         if: matrix.group == 'hints'
         run: node .dsh/home-yours-ui-check.cjs
@@ -717,7 +694,6 @@ jobs:
             .dsh/governor-preview/
             .dsh/town-preview/
             .dsh/priority-preview/
-            .dsh/next-step-preview/
             .dsh/home-preview/
             .dsh/empty-state-preview/
             .dsh/deck-preview/
