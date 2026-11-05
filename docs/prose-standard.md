@@ -14,12 +14,13 @@ If a line does none of these, cut it.
 
 ## What to cut
 
-1. **How it fits.** Don't say which page saves what, where data comes from, what else uses a setting, or which other tool shares it. If that matters, it goes in the page's one "How it works" disclosure, written once.
-2. **Why not the alternative.** "Not a battle report, because…" answers a question nobody at that field asked. Put the reason in the method if it's needed at all.
-3. **What the interface already shows.** Four joiner slots don't need "up to four joiners". A Saved indicator doesn't need a sentence about saving, and the review step doesn't need announcing before the reader gets to it.
-4. **Warnings in advance.** A runtime message that appears when the Squads' row is missing makes a standing note about the Squads' row redundant. Warn when the problem happens.
-5. **Facts that live elsewhere.** Each fact has one home. The Bear Hunt page explains the joiner rule, the hero directory explains roles, and the method disclosure explains the maths. Everything else points to them or leaves the fact out.
-6. **Ingredient lists.** "Your overview plus hero stars, widgets and the hero gear saved on the Hero Gear page, your Town Centre's Truegold, city buffs and pets" is the formula, not the label. Name only what the reader needs in order to recognise the number.
+1. **Another component's mechanics.** A drop zone doesn't explain how the game's popup scrolls or pages, and a table doesn't explain the import panel. Each component describes only itself. Mechanics described second-hand are usually wrong, too.
+2. **How it fits.** Don't say which page saves what, where data comes from, what else uses a setting, or which other tool shares it. If that matters, it goes in the page's one "How it works" disclosure, written once.
+3. **Why not the alternative.** "Not a battle report, because…" answers a question nobody at that field asked. Put the reason in the method if it's needed at all.
+4. **What the interface already shows.** Four joiner slots don't need "up to four joiners". A Saved indicator doesn't need a sentence about saving, and the review step doesn't need announcing before the reader gets to it.
+5. **Warnings in advance.** A runtime message that appears when the Squads' row is missing makes a standing note about the Squads' row redundant. Warn when the problem happens.
+6. **Facts that live elsewhere.** Each fact has one home. The Bear Hunt page explains the joiner rule, the hero directory explains roles, and the method disclosure explains the maths. Everything else points to them or leaves the fact out.
+7. **Ingredient lists.** "Your overview plus hero stars, widgets and the hero gear saved on the Hero Gear page, your Town Centre's Truegold, city buffs and pets" is the formula, not the label. Name only what the reader needs in order to recognise the number.
 
 ## The test
 
@@ -30,7 +31,7 @@ Cover the line and ask whether the reader would do anything differently without 
 | Before | After |
 |---|---|
 | Use the Military rows of your Bonus Overview, not a battle report. A report already includes the heroes you sent, so it cannot compare one lineup with another. The Squads' row adds to every troop type. | Copy the Military rows of your Bonus Overview. |
-| **Read Bonus Overview screenshots.** Pick, drop or paste them. The popup scrolls, so two shots cover all sixteen rows. You check each value before it fills the table. | **Fill this in from screenshots.** It takes two, because the popup scrolls. |
+| **Read Bonus Overview screenshots.** Pick, drop or paste them. The popup scrolls, so two shots cover all sixteen rows. You check each value before it fills the table. | **Fill this in from screenshots.** |
 | Bonus Details for this lineup before joiners: your overview plus hero stars, widgets and the hero gear saved on the Hero Gear page, your Town Centre's Truegold, city buffs and pets. The Bear damage uses these. | Before joiners, with your hero gear and Truegold. |
 | Set your server's generation to hide heroes you cannot use yet. Other tools share this setting; resetting filters keeps it. | Hides heroes your server doesn't have yet. |
 | The Bear rewards damage. A caller uses the full kit; a joiner brings troops and a useful first skill. Defensive bonuses do not add Bear damage. Follow your alliance's joiner list and duplicate rules. | Look for damage. Defensive skills and widgets do nothing to the Bear. |

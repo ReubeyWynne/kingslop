@@ -2573,7 +2573,6 @@ window.__BH_I18N_DATA["en"] = {
   "leads.noOverview": "Using a typical generation {n} Bonus Overview ({pct}% everywhere) until you enter yours.",
   "leads.ofBest": "{n}% of your best",
   "leads.overview": "Your Bonus Overview",
-  "leads.drop.body": "It takes two, because the popup scrolls.",
   "leads.drop.title": "Fill this in from screenshots",
   "leads.overviewNote": "Copy the Military rows of your Bonus Overview.",
   "leads.squads": "Squads'",
