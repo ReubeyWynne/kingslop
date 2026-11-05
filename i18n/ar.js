@@ -1077,7 +1077,6 @@ window.__BH_I18N_DATA["ar"] = {
   "directory.mine.owned": "لدي",
   "directory.mine.missing": "ليس بعد",
   "directory.bag": "حقيبتك",
-  "directory.bagNote": "الفراغ يعني لم يُحسب بعد · مشترك مع الفعاليات",
   "directory.genShort": "جيل",
   "directory.yours": "بطلك",
   "directory.have": "لدي هذا البطل",

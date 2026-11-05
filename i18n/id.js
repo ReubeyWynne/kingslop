@@ -1091,7 +1091,6 @@ window.__BH_I18N_DATA["id"] = {
   "directory.mine.owned": "Punya",
   "directory.mine.missing": "Belum",
   "directory.bag": "Tasmu",
-  "directory.bagNote": "kosong = belum dihitung · dibagi dengan event",
   "directory.genShort": "Gen",
   "directory.yours": "Pahlawanmu",
   "directory.have": "Saya punya pahlawan ini",

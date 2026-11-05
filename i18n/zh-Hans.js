@@ -1080,7 +1080,6 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "directory.mine.owned": "已拥有",
   "directory.mine.missing": "未拥有",
   "directory.bag": "你的背包",
-  "directory.bagNote": "空白表示尚未统计 · 与活动共享",
   "directory.genShort": "代",
   "directory.yours": "你的英雄",
   "directory.have": "我拥有这个英雄",

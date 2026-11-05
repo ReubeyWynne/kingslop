@@ -1079,7 +1079,6 @@ window.__BH_I18N_DATA["tr"] = {
   "directory.mine.owned": "Bende var",
   "directory.mine.missing": "Henüz yok",
   "directory.bag": "Çantan",
-  "directory.bagNote": "boş = henüz sayılmadı · etkinliklerle ortak",
   "directory.genShort": "Nsl",
   "directory.yours": "Kahramanın",
   "directory.have": "Bu kahraman bende var",

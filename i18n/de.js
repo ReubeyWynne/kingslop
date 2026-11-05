@@ -1080,7 +1080,6 @@ window.__BH_I18N_DATA["de"] = {
   "directory.mine.owned": "Habe ich",
   "directory.mine.missing": "Noch nicht",
   "directory.bag": "Dein Lager",
-  "directory.bagNote": "leer heißt noch nicht gezählt · geteilt mit Events",
   "directory.genShort": "Gen",
   "directory.yours": "Dein Held",
   "directory.have": "Ich habe diesen Helden",

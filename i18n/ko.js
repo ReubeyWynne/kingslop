@@ -1080,7 +1080,6 @@ window.__BH_I18N_DATA["ko"] = {
   "directory.mine.owned": "보유",
   "directory.mine.missing": "미보유",
   "directory.bag": "내 가방",
-  "directory.bagNote": "빈칸은 아직 미집계 · 이벤트와 공유",
   "directory.genShort": "세대",
   "directory.yours": "내 영웅",
   "directory.have": "이 영웅을 보유 중",

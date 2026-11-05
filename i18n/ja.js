@@ -1080,7 +1080,6 @@ window.__BH_I18N_DATA["ja"] = {
   "directory.mine.owned": "所持済み",
   "directory.mine.missing": "未所持",
   "directory.bag": "手持ち",
-  "directory.bagNote": "空欄は未集計 · イベントと共有",
   "directory.genShort": "世代",
   "directory.yours": "あなたの英雄",
   "directory.have": "この英雄を持っている",
