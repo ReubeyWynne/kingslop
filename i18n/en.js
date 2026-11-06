@@ -2541,9 +2541,9 @@ window.__BH_I18N_DATA["en"] = {
   "leads.noHeroes": "Mark the heroes you own, with their stars, in the roster above.",
   "leads.ofBest": "{n}% of your best",
   "leads.overview": "Your Bonus Overview",
-  "leads.drop.title": "Fill this in from screenshots",
+  "leads.drop.title": "Fill these in from screenshots",
   "leads.shots.open": "Which screenshots?",
-  "leads.shots.title": "Your Bonus Overview, in two screenshots",
+  "leads.shots.title": "Your Bonus Overview and hero gear",
   "leads.shots.power": "Tap your power, in your town or on the world map.",
   "leads.shots.top": "Take a screenshot of the Military list.",
   "leads.shots.end": "Scroll to the end and take another.",
@@ -2622,6 +2622,16 @@ window.__BH_I18N_DATA["en"] = {
   "leads.petStat.lethality": "lethality +",
   "leads.pets": "Pets",
   "leads.petsOff": "Pets are left out.",
-  "leads.usePets": "Use my pets’ skills"
+  "leads.usePets": "Use my pets’ skills",
+  "leads.est": "Estimate",
+  "leads.partOf": "{what}: {types}",
+  "leads.input.heroes": "Heroes",
+  "leads.input.overview": "Bonus Overview",
+  "leads.input.gear": "Hero gear",
+  "leads.input.town": "Town Centre",
+  "leads.input.valora": "Valora",
+  "leads.input.troops": "Troop tier",
+  "leads.input.rally": "Rally capacity",
+  "leads.input.pets": "Pets"
 }
 ;

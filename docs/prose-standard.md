@@ -27,9 +27,11 @@ These are in `css/motifs.css`, and the [glossary page](../motifs/index.html) (`/
 | Example stamp | `data-example="Example"` on the sample's container | "Example troops. Tap the button to enter yours." |
 | Undo in the toast | `.toast` with a `button.undo` | "You can undo this" |
 | Share-link preview | `ul.carries` beside the share button, `li[data-off]` for what stays behind | "Copy share link sends exactly what you see" |
+| Inputs | `ul.inputs` of `li[data-have]`, `yes`, `est` or `no`, each holding a link to where it's filled in | "Add your hero gear for a better estimate", "Using a typical Bonus Overview" |
+| Provisional result | `[data-provisional]` on the result's frame, with a `details.src[data-src="est"]` naming what stands in and a `ul.unknowns` of what's missing | "This is only an estimate until you add …" |
 | Explainer | `button.explain` with `popovertarget`, opening a `div.explainer[popover]` of `ol.explainer-steps`, each a picture and one line | game how-tos in a note, such as "Copy the Military rows of your Bonus Overview" |
 
-The Heroes page uses the seal, ghost ink, unknown rows and the open-ended total. The rest reach each page with that page's own pass.
+The Heroes page uses the seal, ghost ink, unknown rows, the open-ended total, the inputs and the provisional result. The rest reach each page with that page's own pass.
 
 ## One job per line
 

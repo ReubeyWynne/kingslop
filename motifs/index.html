@@ -90,6 +90,32 @@ self: motifs
       <p class="motif-replaces">Replaces “The total leaves out … until you enter them” and “There may be more points here”.</p>
     </article>
 
+    <article class="motif" id="inputs">
+      <h2>Inputs</h2>
+      <p>What a result is worked out from, as a row of chips, each a link to where it’s filled in. A solid chip is in, a ◇ chip has a typical value standing in for it, and a dashed chip with a ? is missing.</p>
+      <div class="motif-demo">
+        <ul class="inputs"><li data-have="yes"><a href="#inputs">Heroes</a></li><li data-have="est"><a href="#inputs">Bonus Overview</a></li><li data-have="no"><a href="#inputs">Hero gear</a></li></ul>
+      </div>
+      <pre><code>&lt;ul class="inputs"&gt;
+  &lt;li data-have="yes|est|no"&gt;&lt;a href="…"&gt;Hero gear&lt;/a&gt;&lt;/li&gt; …
+&lt;/ul&gt;</code></pre>
+      <p class="motif-replaces">Replaces “Add your hero gear for a better estimate” and “Using a typical Bonus Overview”.</p>
+    </article>
+
+    <article class="motif" id="provisional">
+      <h2>Provisional result</h2>
+      <p>A result worked out while something it needs is still missing keeps a dashed frame. What stands in is named under its ◇, and what’s missing follows as ? marks.</p>
+      <div class="motif-demo">
+        <div class="demo-provisional" data-provisional><output class="demo-total" data-open>29.6M</output><details class="src" data-src="est"><summary aria-label="Estimate"></summary><span class="motif-names">Bonus Overview</span></details>
+          <ul class="unknowns"><li>Hero gear</li><li>Valora</li></ul></div>
+      </div>
+      <pre><code>&lt;article data-provisional&gt; … &lt;output data-open&gt;29.6M&lt;/output&gt;
+  &lt;details class="src" data-src="est"&gt;…&lt;/details&gt;
+  &lt;ul class="unknowns"&gt;&lt;li&gt;Hero gear&lt;/li&gt; …&lt;/ul&gt;
+&lt;/article&gt;</code></pre>
+      <p class="motif-replaces">Replaces “This is only an estimate until you add …” beside a confident-looking answer.</p>
+    </article>
+
     <article class="motif" id="loose-leaf">
       <h2>Loose leaf</h2>
       <p>Someone else’s sheet, or one opened from a link, is a torn ruled leaf. It never looks like your own ledger.</p>

@@ -24,13 +24,15 @@
     saved: 'Saved', saveFailed: 'Could not save',
     joinersFor: 'Joiners for the {job}', noPets: 'No pets in your save yet. Add them on the Pets page.', petsOff: 'Pets are left out.',
     pet: '{name} {level}: {stat}{pct}%', 'petStat.attack': 'attack +', 'petStat.defense': 'defence +', 'petStat.lethality': 'lethality +', 'petStat.health': 'health +',
-    'petStat.enemyLethality': 'enemy lethality −', 'petStat.enemyHealth': 'enemy health −'
+    'petStat.enemyLethality': 'enemy lethality −', 'petStat.enemyHealth': 'enemy health −',
+    'input.heroes': 'Heroes', 'input.overview': 'Bonus Overview', 'input.gear': 'Hero gear', 'input.town': 'Town Centre',
+    'input.valora': 'Valora', 'input.troops': 'Troop tier', 'input.rally': 'Rally capacity', 'input.pets': 'Pets', est: 'Estimate', partOf: '{what}: {types}'
   };
   var PREFS = 'ks.lead-finder.v1';
   var STATS = ['attack', 'lethality', 'defense', 'health'], TYPES = ['inf', 'cav', 'arc'], TOP = 5, CHUNK = 4;
 
   window.Interactions.register('lead-finder', function (context) {
-    var api = context.api, L = window.LeadEngine, data = window.LeadData, store = null, job = 'bear', ticket = 0, saveTimer = null;
+    var api = context.api, L = window.LeadEngine, I = window.LeadInputs, data = window.LeadData, store = null, job = 'bear', ticket = 0, saveTimer = null, inputs = null;
     try { store = context.ledger; store.snapshot(); } catch (cause) { store = null; }
     function t(key) { return api.tr('leads.' + key, EN[key]); }
     function fill(key, values) { return api.fill(t(key), values); }
@@ -198,6 +200,39 @@
         if (unknown) tr.dataset.unknown = ''; else delete tr.dataset.unknown;
       });
     }
+    // What the ranking is worked out from (js/lead-inputs.js): a chip for each
+    // input, solid when it's in, ◇ when a typical value stands in, dashed when missing.
+    function inputLabel(id) { return t('input.' + id); }
+    function assessInputs() {
+      var facts = I.gather(store, { overview: typed(), usePets: prefs.usePets !== false, rallyTyped: prefs.rallyCap > 0, tierPicked: tierPicked });
+      inputs = I.assess(job, facts, { townKnown: L.TOWN_TG });
+      context.targets('inputs').forEach(function (list) { I.paint(list, inputs, { self: 'heroes', label: inputLabel }); });
+      return inputs;
+    }
+    function names(ids) { return ids.map(inputLabel).join(' · '); }
+    function estMark(id) {
+      var box = el('details', 'src'), summary = el('summary');
+      box.id = id; box.dataset.src = 'est';
+      summary.setAttribute('aria-label', t('est'));
+      box.append(summary, el('span', 'motif-names', names(inputs.estimated)));
+      return box;
+    }
+    // A result short of a core input keeps a dashed frame; what it stands in
+    // for is named under its ◇, and what it leaves out follows as ? marks.
+    function paintConfidence(best) {
+      if (inputs.provisional) best.dataset.provisional = ''; else delete best.dataset.provisional;
+      context.targets('estMark').forEach(function (node) { node.hidden = !inputs.estimated.length; if (node.hidden) node.open = false; });
+      put('estNames', names(inputs.estimated));
+      context.targets('unknowns').forEach(function (list) {
+        list.replaceChildren.apply(list, inputs.open.map(function (id) {
+          // Gear saved for some troop types names the ones still missing.
+          var item = inputs.items.filter(function (i) { return i.id === id; })[0], some = item.missing && item.missing.length && item.missing.length < TYPES.length;
+          return el('li', '', some ? fill('partOf', { what: inputLabel(id), types: item.missing.map(function (type) { return api.tr('sim.calc.' + type, type); }).join(', ') }) : inputLabel(id));
+        }));
+        list.hidden = !inputs.open.length;
+      });
+    }
+
     // Each tier's loadout at your generation, under its summary.
     function cityKey(c) { return !c.attack ? 'city.0' : !c.lethality ? 'city.ad' : c.attack >= 20 ? 'city.20' : 'city.10'; }
     function paintKits(gen) {
@@ -298,6 +333,7 @@
       var best = context.targets('best')[0];
       best.hidden = false;
       best.dataset.job = job;
+      paintConfidence(best);
       put('bestTitle', t('bestTitle.' + job));
       if (job === 'bear') {
         var lead = next ? r.score / next.score - 1 : 0;
@@ -321,7 +357,12 @@
         var damage = el('div', 'lead-damage');
         var sim = L.hunt(you, r.lineup, counts, data, { hunts: 2000, pointsPct: valoraOf() });
         var lo = window.BattleEngine.quantile(sim.totals, 0.1), hi = window.BattleEngine.quantile(sim.totals, 0.9);
-        damage.append(el('p', 'lead-kicker', t('damageTitle')), el('b', 'lead-damage-value', api.compact(sim.mean)), histogram(sim.totals, lo, hi), el('p', 'lead-damage-band', fill('damageBand', { lo: api.compact(lo), hi: api.compact(hi) })));
+        // Anything left out only adds damage, so the number stays open until it's in.
+        var value = el('output', 'lead-damage-value', api.compact(sim.mean)), headline = el('div', 'lead-damage-head');
+        if (inputs.open.length) value.dataset.open = '';
+        headline.appendChild(value);
+        if (inputs.estimated.length) headline.appendChild(estMark('lead-damage-est'));
+        damage.append(el('p', 'lead-kicker', t('damageTitle')), headline, histogram(sim.totals, lo, hi), el('p', 'lead-damage-band', fill('damageBand', { lo: api.compact(lo), hi: api.compact(hi) })));
         var split = el('span', 'lead-damage-split');
         TYPES.forEach(function (type, i) { var part = el('span'); part.dataset.troop = type; part.append(mark('troop-' + type), el('span', '', api.fmt(counts[i]))); split.appendChild(part); });
         damage.append(split, el('p', 'lead-answer-note', fill('damageNote', { n: fill('troops', { n: api.fmt(march) }), cap: api.fmt(rc.cap), est: rc.estimated ? t('estimated') : '', valora: valoraOf() ? fill('valora', { n: api.fmt(valoraOf()) }) : '' })));
@@ -335,6 +376,7 @@
       body.replaceChildren();
       TYPES.forEach(function (type, i) {
         var tr = el('tr'), th = el('th', '', api.tr('sim.calc.' + type, type)); th.scope = 'row';
+        if (inputs.typeShort(type)) tr.dataset.unknown = '';
         tr.appendChild(th);
         ['atk', 'let', 'def', 'hea'].forEach(function (field) { tr.appendChild(el('td', '', sign(p[field][i]))); });
         body.appendChild(tr);
@@ -379,6 +421,7 @@
       job = (context.targets('job').filter(function (n) { return n.checked; })[0] || {}).value || 'bear';
       troopsDefault(gen);
       var ov = overview(gen), by = L.candidates(owned, data), list = L.lineups(by);
+      assessInputs();
       if (!list.length) { paintExtras(gen); clear(); put('status', t('noHeroes')); return; }
       paintOverview(ov);
       var ready = fill('ready', { n: api.fmt(Object.keys(owned).filter(function (k) { return L.copyOf(k, owned[k], data); }).length) });

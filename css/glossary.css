@@ -11,6 +11,7 @@
 .demo-pair { display: inline-flex; align-items: baseline; gap: .45rem; }
 .demo-label { display: block; margin-bottom: .3rem; font-size: .85rem; color: var(--ink-dim); }
 .demo-total { font-size: 1.4rem; font-weight: 700; }
+.demo-provisional { padding: .6rem .9rem; border: 1px solid var(--signal-line); }
 .demo-table { border-collapse: collapse; }
 .demo-table th { padding: .3rem 1.2rem .3rem 0; font-weight: 400; text-align: start; color: var(--ink-dim); }
 .demo-table td { padding: .3rem .2rem; text-align: end; }
