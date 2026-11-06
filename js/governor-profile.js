@@ -65,7 +65,9 @@
         var id = tile.dataset.gov, index = gear[id], levels = [];
         tile.dataset.state = view.state(index);
         view.paintCard(tile.querySelector('.gov-card'), id, index);
-        tile.querySelector('[data-part="level"]').textContent = view.levelName('gear', index);
+        var level = tile.querySelector('[data-part="level"]');
+        level.textContent = view.levelName('gear', index);
+        if (index === null) level.dataset.tally = 'unknown'; else delete level.dataset.tally;
         tile.querySelectorAll('[data-charm]').forEach(function (gem) {
           var level = charms[gem.dataset.charm];
           view.paintGem(gem, tile.dataset.troop, level);

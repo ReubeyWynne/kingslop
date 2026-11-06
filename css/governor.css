@@ -32,7 +32,7 @@
 .gov-bag label[data-kind="charms"] + label[data-kind="charms"] { border-inline-start: 0; padding-inline-start: 0; }
 .gov-bag img { grid-row: 1 / 3; width: 2.5rem; height: 2.5rem; object-fit: contain; }
 .gov-bag label > span { font-size: .8rem; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.gov-bag-caption { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: .7rem; margin: 0; color: var(--ink-muted); font-size: .72rem; }
+.gov-bag-caption { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: .7rem; margin: 0; color: var(--ink-muted); font-size: .72rem; }
 
 
 
@@ -64,7 +64,8 @@
 .gov-row-charm .gov-gem { --equipment-gem-size: 1.3rem; width: 1.3rem; height: 1.3rem; }
 .gov-bill h3 { font-size: 1.05rem; margin: .9rem 0 .3rem; }
 .gov-score { margin: .5rem 0 .2rem; font: 1.15rem var(--display-2); color: var(--amber); }
-.gov-score:empty { display: none; }
+.gov-score:has(> output:empty) { display: none; }
+.gov-row-gear[data-tally="unknown"] { color: var(--ink-muted); font-style: italic; }
 .gov-events { margin: .2rem 0 0; }
 .gov-applied { display: flex; flex-wrap: wrap; gap: 0 1.2rem; margin: .3rem 0 0; }
 .gov-applied[hidden], .gov-applied button[hidden] { display: none; }
@@ -102,3 +103,5 @@
 .gov-strip .gov-short { color: var(--amber); }
 .gov-weights > span:first-child { margin-inline-end: .3rem; }
 .gov-weights > span:first-child { align-self: center; }
+/* On a guest or link sheet the workspace is a loose leaf; keep its unbound margin narrow so the bag's fields keep their width. */
+.sheet-workspace.loose-leaf { padding-inline: 1.95rem .4rem; }
