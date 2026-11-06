@@ -6,7 +6,6 @@ self: governor
 <main class="gov-main sheet-page">
   <section class="section hero gov-hero sheet-hero" id="top">
     <h1 data-i18n="gov.title">Governor gear</h1>
-    <p class="lede" data-i18n="gov.lede2">Set the gear as it is in game, or read it from a profile screenshot. The answer shows where the materials take it and what the rest costs.</p>
     {% include ascii/motif.html kind="seal" %}
   </section>
 
@@ -19,9 +18,9 @@ self: governor
         {% include governor/profile.html %}
         <div class="gov-bag" id="governor-bag" data-module="ledger-form" data-saved-key="gov.sheet.bagSaved" data-save-failed-key="gear.saveFailed">
           {% for item in gov.materials %}{% if gov.gear.materials contains item.id %}{% assign group = "gear" %}{% else %}{% assign group = "charms" %}{% endif %}
-          <label data-kind="{{ group }}"><img src="../img/governor/{{ item.id }}.webp" width="40" height="40" alt=""><span data-i18n="{{ item.key }}">{{ item.label | escape }}</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize" aria-label="{{ item.label | escape }}" data-i18n-key="{{ item.key }}" data-i18n-attr="aria-label"></label>
+          <label data-kind="{{ group }}"><img src="../img/governor/{{ item.id }}.webp" width="40" height="40" alt=""><span data-i18n="{{ item.key }}">{{ item.label | escape }}</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-tally="blank" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize" aria-label="{{ item.label | escape }}" data-i18n-key="{{ item.key }}" data-i18n-attr="aria-label"></label>
           {% endfor %}
-          <p class="gov-bag-caption"><span data-i18n="gov.bagSheet">blank means not counted yet</span> <output data-target="ledger-form.save" role="status"></output></p>
+          <div class="gov-bag-caption"><details class="shared-by" id="governor-bag-shared"><summary aria-label="Also used by 2 pages" data-i18n-key="gov.bagSharedLabel" data-i18n-attr="aria-label"><i data-page="town" style="--hue: #DC8FDB"></i><i data-page="priority" style="--hue: #DD8FD6"></i></summary><span class="motif-names" data-i18n="gov.bagShared">Town Centre · Upgrade priority</span></details> <output class="seal" data-target="ledger-form.save" role="status"></output></div>
         </div>
       </div>
 
@@ -48,12 +47,11 @@ self: governor
         <div class="gov-bill">
           <h3 data-target="governor-planner.billTitle"></h3>
           <div class="gov-strip sheet-strip" data-target="governor-planner.bill"></div>
-          <p class="gov-score" data-target="governor-planner.score"></p>
+          <div class="gov-score"><output data-target="governor-planner.score"></output><details class="src" data-src="est" id="governor-score-estimate"><summary aria-label="Estimate" data-i18n-key="gov.estimateLabel" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="gov.estimateMark">From published scores, which are rounded</span></details></div>
           <div class="gov-events" data-target="governor-planner.events"></div>
           <p class="gov-applied" data-target="governor-planner.applied" hidden><button type="button" data-action="governor-planner.apply" data-kind="gear"></button><button type="button" data-action="governor-planner.apply" data-kind="charms"></button></p>
         </div>
         <p class="gov-note" data-target="governor-planner.notes" hidden></p>
-        <p class="gov-gloss" data-i18n="gov.estimate">An estimate: published scores are rounded, and each event day lists its own tasks. Upgrades score only on the day you make them.</p>
         <details id="weights" class="gov-advanced" data-target="governor-planner.weightsFold">
           <summary data-i18n="gear.advancedWeights">Advanced: custom weights</summary>
           <div class="gov-weights" role="group" aria-labelledby="gov-weights-label" data-target="governor-planner.weights"><span id="gov-weights-label" class="sheet-label" data-i18n="gov.weights">Weights</span>

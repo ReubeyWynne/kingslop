@@ -188,8 +188,9 @@
    while it says something, so a reset made from the notes below still shows its undo. */
 .gear-toast { position: fixed; inset-inline: 0; bottom: max(1rem, env(safe-area-inset-bottom)); z-index: 20; margin-inline: auto; font-size: .9rem; }
 .gear-toast:not(:has(> :not([hidden]))) { display: none; }
-/* main is a stacking context level with the footer, so lift it while the toast shows, or the footer covers the toast at the foot of the page. */
-.gear-main:has(.gear-toast > :not([hidden])) { z-index: 2; }
+/* The toast lives inside main, whose stacking layer ties the footer's (both z-index 1), so the
+   footer would paint over it once the page is scrolled to the end. Lift main one layer. */
+.gear-main { z-index: 2; }
 .gear-main .gear-route .inkwell { justify-self: start; padding: 0; font-weight: 700; }
 /* A guest or link sheet is a loose leaf (css/motifs.css). The planner keeps its own line height,
    and on a phone the leaf keeps its torn edge and ruling but gives up the margin, since the
