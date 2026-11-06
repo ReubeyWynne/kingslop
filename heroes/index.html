@@ -32,19 +32,22 @@ self: heroes
       <label><input type="radio" name="lead-job" value="rally" data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.rally">Rally lead</span></label>
       <label><input type="radio" name="lead-job" value="garrison" data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.garrison">Garrison lead</span></label>
     </fieldset>
+    <ul class="inputs lead-inputs" data-target="lead-finder.inputs" aria-labelledby="leads-title"></ul>
+    <button type="button" class="lead-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="leads.drop.title">Fill these in from screenshots</strong></button>
+    <button type="button" class="explain" popovertarget="bonus-shots" data-i18n="leads.shots.open">Which screenshots?</button>
+    <div class="explainer" id="bonus-shots" popover>
+      <h3 data-i18n="leads.shots.title">Your Bonus Overview and hero gear</h3>
+      <ol class="explainer-steps">
+        <li><img src="../img/screen-import/bonus-overview-1-power.webp" alt="" width="600" height="256" loading="lazy" decoding="async"><span data-i18n="leads.shots.power">Tap your power, in your town or on the world map.</span></li>
+        <li><img src="../img/screen-import/bonus-overview-2-top.webp" alt="" width="600" height="646" loading="lazy" decoding="async"><span data-i18n="leads.shots.top">Take a screenshot of the Military list.</span></li>
+        <li><img src="../img/screen-import/bonus-overview-3-end.webp" alt="" width="600" height="643" loading="lazy" decoding="async"><span data-i18n="leads.shots.end">Scroll to the end and take another.</span></li>
+        <li><img src="../img/screen-import/hero-gear-1-tab.webp" alt="" width="600" height="188" loading="lazy" decoding="async"><span data-i18n="gear.shots.tab">Open a hero and tap Gear.</span></li>
+        <li><img src="../img/screen-import/hero-gear-2-pieces.webp" alt="" width="600" height="308" loading="lazy" decoding="async"><span data-i18n="gear.shots.pieces">Take a screenshot with all four pieces in it.</span></li>
+      </ol>
+      <button type="button" class="explainer-close" popovertarget="bonus-shots" popovertargetaction="hide" data-i18n-key="leads.shots.close" data-i18n-attr="aria-label" aria-label="Close">×</button>
+    </div>
     <details class="lead-overview" id="bonus-overview">
       <summary data-i18n="leads.overview">Your Bonus Overview</summary>
-      <button type="button" class="lead-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="leads.drop.title">Fill this in from screenshots</strong></button>
-      <button type="button" class="explain" popovertarget="bonus-shots" data-i18n="leads.shots.open">Which screenshots?</button>
-      <div class="explainer" id="bonus-shots" popover>
-        <h3 data-i18n="leads.shots.title">Your Bonus Overview, in two screenshots</h3>
-        <ol class="explainer-steps">
-          <li><img src="../img/screen-import/bonus-overview-1-power.webp" alt="" width="600" height="256" loading="lazy" decoding="async"><span data-i18n="leads.shots.power">Tap your power, in your town or on the world map.</span></li>
-          <li><img src="../img/screen-import/bonus-overview-2-top.webp" alt="" width="600" height="646" loading="lazy" decoding="async"><span data-i18n="leads.shots.top">Take a screenshot of the Military list.</span></li>
-          <li><img src="../img/screen-import/bonus-overview-3-end.webp" alt="" width="600" height="643" loading="lazy" decoding="async"><span data-i18n="leads.shots.end">Scroll to the end and take another.</span></li>
-        </ol>
-        <button type="button" class="explainer-close" popovertarget="bonus-shots" popovertargetaction="hide" data-i18n-key="leads.shots.close" data-i18n-attr="aria-label" aria-label="Close">×</button>
-      </div>
       <fieldset class="lead-stats" disabled data-target="lead-finder.controls">
         <table class="lead-stats-table">
           <thead><tr><td></td>{% assign stat_ids = 'attack,lethality,defense,health' | split: ',' %}{% for stat in stat_ids %}<th scope="col" data-i18n="leads.stat.{{ stat }}">{{ stat }}</th>{% endfor %}</tr></thead>
@@ -80,7 +83,7 @@ self: heroes
     </details>
     <p class="note" data-target="lead-finder.status" aria-live="polite"></p>
     <article class="lead-best" data-target="lead-finder.best" hidden aria-labelledby="lead-best-title">
-      <header class="lead-best-head"><p class="lead-kicker" id="lead-best-title" data-target="lead-finder.bestTitle">Your best lead</p><p class="lead-verdict" data-target="lead-finder.verdict"></p></header>
+      <header class="lead-best-head"><div class="lead-kicker" id="lead-best-title"><span data-target="lead-finder.bestTitle">Your best lead</span><details class="src" id="lead-best-est" data-src="est" data-target="lead-finder.estMark" hidden><summary aria-label="Estimate" data-i18n-key="leads.est" data-i18n-attr="aria-label"></summary><span class="motif-names" data-target="lead-finder.estNames"></span></details></div><p class="lead-verdict" data-target="lead-finder.verdict"></p><ul class="unknowns lead-unknowns" data-target="lead-finder.unknowns" hidden></ul></header>
       <div class="lead-best-trio" data-target="lead-finder.trio"></div>
       <div class="lead-best-body">
         <div class="lead-best-answer" data-target="lead-finder.answer"></div>

@@ -12,6 +12,10 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.match(await status(), /Mark the heroes you own/);
   assert.equal(await rows(), 0);
   assert.equal(await page.locator('.lead-best').isHidden(), true, 'no best lineup before the roster');
+  const chips = () => page.locator('.lead-inputs li').evaluateAll(list => Object.fromEntries(list.map(li => [li.dataset.input, li.dataset.have])));
+  assert.deepEqual(await chips(), { heroes: 'no', overview: 'est', gear: 'no', town: 'no', valora: 'no', troops: 'est', rally: 'est', pets: 'no' }, 'every input the Bear needs, as chips');
+  assert.equal(await page.locator('.lead-inputs [data-input="gear"] a').getAttribute('href'), '../hero-gear/');
+  assert.equal(await page.locator('.lead-inputs [data-input="overview"] a').getAttribute('href'), '#bonus-overview');
   await page.evaluate(() => {
     const s = PlayerLedger.shared();
     for (const [key, stars, widget] of [['amadeus', 30, 10], ['petra', 30, 10], ['marlin', 30, 10], ['rosa', 24, 4], ['jabel', 24, 0]]) s.setHero(key, { level: null, stars, widget, skills: null });
@@ -27,6 +31,15 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal(await page.locator('[data-target="lead-finder.panel"] tr').count(), 3, 'report panel per troop type');
   assert.match(await page.locator('[data-target="lead-finder.panel"] tr').first().locator('td').first().textContent(), /^\+\d/);
   assert.equal(await page.locator('.lead-foes').isHidden(), true, 'no opponents for the Bear');
+  // With no overview, gear, Town Centre or Valora the answer is provisional: a dashed frame, a ◇ naming
+  // what stands in, the damage open-ended and what it's waiting for as ? marks.
+  assert.equal(await page.locator('.lead-best').getAttribute('data-provisional'), '');
+  assert.equal(await page.locator('#lead-best-est').isVisible(), true);
+  assert.match(await page.locator('#lead-best-est .motif-names').textContent(), /Bonus Overview/);
+  assert.deepEqual(await page.locator('.lead-unknowns li').allTextContents(), ['Hero gear', 'Town Centre', 'Valora', 'Pets']);
+  assert.equal(await page.locator('output.lead-damage-value').getAttribute('data-open'), '');
+  assert.equal(await page.locator('.lead-panel-table tbody tr[data-unknown]').count(), 3, 'every report row is short');
+  assert.equal(await page.locator('.lead-best').evaluate(n => getComputedStyle(n).borderTopStyle), 'dashed');
   // The best Bear lineup's damage for one march of 1/15 of the rally capacity, estimated from the joiner cap until typed.
   assert.match(await page.locator('.lead-damage').textContent(), /85,000 troops = 1\/15 of a 1,275,000 rally \(estimated/);
   const damageAt = () => page.locator('.lead-damage-value').textContent();
@@ -44,6 +57,17 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   await page.waitForFunction(() => /Valora \+24%/.test(document.querySelector('.lead-damage .lead-answer-note').textContent));
   assert.notEqual(await damageAt(), noValora, 'Valora\'s talent adds to the damage');
   await page.locator('#bonus-overview summary').click();
+
+  // A hero gear screenshot lands in the save; the gear chip and the open list follow it.
+  await page.evaluate(() => {
+    // What the import dock applies for a hero gear shot (js/screen-import.js apply).
+    const piece = { quality: 'mythic', level: 40, mastery: 5 }, s = PlayerLedger.shared(), snap = s.snapshot();
+    const itemDelta = Object.fromEntries(['inf-helm', 'cav-helm', 'arc-helm'].map(id => [id, { before: null, after: piece }]));
+    s.applyImport({ id: 'shot-gear', sourceType: 'hero-gear', at: new Date().toISOString(), contentHash: 'a'.repeat(64), confirmation: 'confirmed', itemDelta }, snap.revision);
+  });
+  await page.waitForFunction(() => document.querySelector('.lead-inputs [data-input="gear"]').dataset.have === 'yes');
+  assert.deepEqual(await page.locator('.lead-unknowns li').allTextContents(), ['Town Centre', 'Pets']);
+  assert.equal(await page.locator('.lead-best').getAttribute('data-provisional'), '', 'still waiting on the Town Centre and stats');
 
   // Typing a whole troop row saves it as the Bonus Overview, not as report stats.
   await page.locator('#bonus-overview summary').click();

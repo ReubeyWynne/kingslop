@@ -208,7 +208,8 @@
 :is(.lead-joiner, .lead-city, .lead-troops) label > span { font-size: .72rem; line-height: 1.2; color: var(--ink-muted); }
 :is(.lead-joiner, .lead-city, .lead-troops) label { display: grid; min-width: 0; }
 
-.lead-drop { display: grid; gap: .15rem; width: 100%; margin: .2rem 0 .6rem; padding: .6rem .8rem; font: inherit; text-align: start; color: var(--ink-dim); border: 1px dashed var(--signal-line); border-radius: 2px; background: transparent; cursor: pointer; }
+.lead-inputs { margin-top: var(--space-s); }
+.lead-drop { display: grid; gap: .15rem; width: 100%; margin: .6rem 0 .3rem; padding: .6rem .8rem; font: inherit; text-align: start; color: var(--ink-dim); border: 1px dashed var(--signal-line); border-radius: 2px; background: transparent; cursor: pointer; }
 .lead-drop strong { color: var(--amber); font-weight: 600; }
 .lead-drop span { font-size: .85rem; }
 .lead-drop:hover, .lead-drop[data-dragging="true"] { color: var(--ink); border-color: var(--amber); background: var(--signal-tint); }
@@ -277,7 +278,9 @@
 
 /* One march's Bear damage at the ideal mix, and the troops that make it. */
 .lead-damage { margin-top: 1rem; padding-top: .8rem; border-top: 1px solid var(--signal-tint); }
-.lead-damage-value { display: block; margin-top: .2rem; font: 600 var(--step-3)/1 var(--display-2); color: var(--amber); font-variant-numeric: tabular-nums; }
+.lead-unknowns { flex-basis: 100%; }
+.lead-damage-head { margin: .2rem 0 0; }
+.lead-damage-value { display: inline-block; font: 600 var(--step-3)/1 var(--display-2); color: var(--amber); font-variant-numeric: tabular-nums; }
 .lead-hist { display: flex; align-items: flex-end; gap: 2px; height: 3rem; margin-top: .6rem; }
 .lead-hist-bar { flex: 1 1 0; min-width: 0; height: calc(var(--h) * 100%); min-height: 1px; border-radius: 3px 3px 0 0; background: var(--ink-muted); opacity: .45; }
 .lead-hist-bar[data-band] { background: var(--amber); opacity: 1; }

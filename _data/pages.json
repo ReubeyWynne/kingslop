@@ -635,6 +635,7 @@
       "../js/lead-data.js",
       "../js/hero-gear-engine.js",
       "../js/lead-engine.js",
+      "../js/lead-inputs.js",
       "../js/lead-finder.js",
       "../js/hero-breakpoint.js",
       "../js/building-data.js",

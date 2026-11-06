@@ -174,3 +174,20 @@ output[data-tally="unknown"]:empty::before { content: "?"; }
 @media (max-width: 40rem) {
   .explainer { width: 100%; max-width: none; max-height: 88dvh; margin: auto 0 0; border-inline: 0; border-bottom: 0; border-radius: 10px 10px 0 0; }
 }
+
+/* Inputs. What a result is worked out from, as a row of chips, each a link to
+   where it's filled in: a solid chip is in, a ◇ chip has a typical value
+   standing in for it, and a dashed chip with a ? is missing. */
+.inputs { display: flex; flex-wrap: wrap; gap: .35rem; margin: 0; padding: 0; list-style: none; }
+.inputs a { display: inline-flex; align-items: center; gap: .3rem; min-height: 2rem; padding: .1rem .65rem; border: 1px solid var(--signal-line); border-radius: 999px; font-size: .82rem; color: var(--ink); text-decoration: none; }
+.inputs a:hover, .inputs a:focus-visible { border-color: var(--amber); background: var(--signal-tint); outline: none; }
+.inputs [data-have="est"] a { font-style: italic; color: var(--ink-dim); }
+.inputs [data-have="est"] a::before { content: "◇"; font-style: normal; color: var(--ink-muted); }
+.inputs [data-have="no"] a { border-style: dashed; border-color: var(--amber-dim); color: var(--ink-muted); }
+.inputs [data-have="no"] a::after { content: "?"; font-weight: 700; color: var(--amber); }
+
+/* Provisional result. A result worked out while something it needs is still
+   missing or stood in for keeps a dashed frame, and the inputs it's waiting
+   for follow it as an .unknowns list. The doubled attribute outranks the
+   page's own one-class frame rule. */
+[data-provisional][data-provisional] { border-style: dashed; border-color: var(--amber-dim); }
