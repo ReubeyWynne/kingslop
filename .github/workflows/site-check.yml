@@ -114,6 +114,10 @@ jobs:
               - *shared
               - .dsh/hero-directory-ui-check.cjs
               - .dsh/lead-finder-ui-check.cjs
+              - .dsh/bear-hunt-ui-check.cjs
+              - bear-hunt/**
+              - js/bear-*.js
+              - css/bear-hunt.css
               - .dsh/hero-breakpoint-ui-check.cjs
               - js/hero-breakpoint.js
               - heroes/**
@@ -411,7 +415,9 @@ jobs:
           python3 .dsh/moon-check.py
       - name: Check troop allocation
         if: needs.changes.outputs.logic == 'true'
-        run: node .dsh/bear-allocator-check.cjs
+        run: |
+          node .dsh/bear-allocator-check.cjs
+          node .dsh/bear-hunt-plan-check.cjs
       - name: Check Vikings allocation
         if: needs.changes.outputs.logic == 'true'
         run: node --test .dsh/vikings-check.cjs
@@ -595,6 +601,9 @@ jobs:
       - name: Check the lead finder UI
         if: matrix.group == 'heroes'
         run: node .dsh/lead-finder-ui-check.cjs
+      - name: Check the Bear Hunt plan and damage UI
+        if: matrix.group == 'heroes'
+        run: node .dsh/bear-hunt-ui-check.cjs
       - name: Check the break-point finder UI
         if: matrix.group == 'heroes'
         run: node .dsh/hero-breakpoint-ui-check.cjs

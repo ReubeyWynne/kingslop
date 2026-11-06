@@ -741,3 +741,53 @@ html[data-page="bearhunt"] .glance-list h3 {
   font-size: var(--step-0);
   line-height: 1.25;
 }
+
+/* The hunt: players and the biggest rally, side by side above the rules they set. */
+.hunt-size {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-block: var(--space-m);
+  padding: 0;
+}
+.hunt-size .calc-title { grid-column: 1 / -1; margin: 0; }
+.hunt-size .calc-row {
+  min-width: 0;
+  margin: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.2rem;
+}
+.hunt-size input[type="number"] { width: 100%; min-width: 0; min-height: 2.75rem; font-size: var(--step-0); }
+
+/* A space nobody is left to fill: the rally still has it, the hunt can't use it. */
+.rally-slots span[data-off] {
+  border-style: dashed;
+  background: transparent;
+  color: var(--ink-muted);
+}
+.glance-list p + p { margin-top: 0.4rem; }
+
+/* Your Bear damage: the save's best Bear lead hitting with the builder's marches. */
+.hunt-damage {
+  margin: var(--space-m) 0;
+  padding: var(--space-s) var(--space-m);
+  border: 1px solid var(--signal-line);
+  display: grid;
+  gap: 0.6rem;
+}
+.hunt-damage-head { display: flex; align-items: center; gap: 0.5rem; color: var(--amber); font-weight: 700; }
+.hunt-damage .inputs, .hunt-damage .note, .hunt-damage-lead { margin: 0; }
+.hunt-damage .note:empty { display: none; }
+.hunt-damage-result { display: grid; gap: 0.5rem; }
+.hunt-damage-result[hidden] { display: none; }
+.hunt-damage-rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; margin: 0; }
+.hunt-damage-rows dt { font-size: var(--step--1); color: var(--ink-dim); }
+.hunt-damage-rows dd { margin: 0; font-variant-numeric: tabular-nums; }
+.hunt-damage-total { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.6rem; margin: 0; color: var(--ink-dim); }
+.hunt-damage-total output { font: 600 var(--step-3)/1 var(--display-2); color: var(--amber); font-variant-numeric: tabular-nums; }
+.hunt-damage-method summary { font-size: var(--step--1); color: var(--ink-dim); }
+.hunt-damage-method p { margin: 0.4rem 0 0; font-size: var(--step--1); }
+
+/* The tier your estimate reaches. */
+.brackets li[data-reached] { outline: 1px solid var(--amber); outline-offset: 0.3rem; }
