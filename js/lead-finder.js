@@ -32,7 +32,7 @@
   var STATS = ['attack', 'lethality', 'defense', 'health'], TYPES = ['inf', 'cav', 'arc'], TOP = 5, CHUNK = 4;
 
   window.Interactions.register('lead-finder', function (context) {
-    var api = context.api, L = window.LeadEngine, I = window.LeadInputs, data = window.LeadData, store = null, job = 'bear', ticket = 0, saveTimer = null, inputs = null;
+    var api = context.api, L = window.LeadEngine, I = window.LeadInputs, A = window.LeadAccount, data = window.LeadData, store = null, job = 'bear', ticket = 0, saveTimer = null, inputs = null;
     try { store = context.ledger; store.snapshot(); } catch (cause) { store = null; }
     function t(key) { return api.tr('leads.' + key, EN[key]); }
     function fill(key, values) { return api.fill(t(key), values); }
@@ -43,40 +43,16 @@
 
     // Joiners, city buffs and the pets switch: choices, not game facts, so
     // they stay in this browser. Storage can be blocked; the page still works.
-    function readPrefs() { try { var v = JSON.parse(localStorage.getItem(PREFS) || '{}'); return v && typeof v === 'object' ? v : {}; } catch (cause) { return {}; } }
     function writePrefs(v) { try { localStorage.setItem(PREFS, JSON.stringify(v)); } catch (cause) { /* kept for this visit */ } }
-    var prefs = readPrefs();
-    if (!prefs.joiners || typeof prefs.joiners !== 'object') prefs.joiners = {};
-    function usualJoiners(gen) { return (data.megafauna.joiners[job][String(gen)] || []).map(function (key) { return { key: key, level: 5 }; }); }
-    function joinersOf(gen) {
-      var saved = prefs.joiners[job];
-      return Array.isArray(saved) ? saved.filter(function (j) { return j && data.heroes[j.key]; }).map(function (j) { return { key: j.key, level: Math.max(1, Math.min(5, j.level | 0)) }; }) : usualJoiners(gen);
-    }
-    // The Bear rally's capacity: yours as typed, else 15 × the joiner cap saved on the Bear Hunt
-    // page (85k unless changed), since an alliance sets that cap so a full rally holds 15 marches.
-    function rallyCap() {
-      if (prefs.rallyCap > 0) return { cap: prefs.rallyCap, estimated: false };
-      var join = 85000;
-      try { var bh = JSON.parse(localStorage.getItem('bh:bear-allocator:v1') || 'null'); if (bh && Number(bh['join-cap']) > 0) join = Number(bh['join-cap']); } catch (cause) { /* the usual cap */ }
-      return { cap: join * 15, estimated: true };
-    }
-    // Valora's Hunter Instinct talent from the Masters save: it adds to your own Damage Points.
-    function valoraOf() { try { return L.valoraPoints(store ? store.masters().roster.valora : null); } catch (cause) { return 0; } }
-    function cityOf() { var out = {}; Object.keys(prefs.city || {}).forEach(function (k) { out[k] = Number(prefs.city[k]) || 0; }); return out; }
-    // Hero gear saved on the Hero Gear page, by troop type; nothing saved adds nothing.
-    function gearOf() {
-      try { return L.gearLayer(store ? store.snapshot().heroGear.pieces : {}); } catch (cause) { return L.gearLayer({}); }
-    }
-    // The Town Centre's Truegold level from the Buildings page: a bonus every march gets that the Bonus Overview leaves out.
-    function townOf() {
-      try { return L.townLayer(store ? store.buildings().levels['town-center'] : null); } catch (cause) { return L.townLayer(null); }
-    }
-    function petsOf() {
-      if (prefs.usePets === false) return L.blank();
-      var levels = {};
-      try { var roster = store ? store.pets().roster : {}; Object.keys(roster).forEach(function (id) { levels[id] = roster[id].level; }); } catch (cause) { /* no pets */ }
-      return L.petLayer(levels, data);
-    }
+    // Reading the save is shared with the Bear Hunt page (js/lead-account.js).
+    var prefs = A.prefs();
+    function joinersOf(gen) { return A.joiners(prefs, job, gen, data); }
+    function rallyCap() { return A.rallyCap(prefs); }
+    function valoraOf() { return A.valora(store); }
+    function cityOf() { return A.city(prefs); }
+    function gearOf() { return A.gear(store); }
+    function townOf() { return A.town(store); }
+    function petsOf() { return A.pets(store, data, prefs.usePets); }
     function paintExtras(gen) {
       var list = joinersOf(gen), jobLabel = api.tr('leads.job.' + job, job);
       put('joinersTitle', api.fill(t('joinersFor'), { job: jobLabel }));
@@ -92,8 +68,7 @@
         input.placeholder = api.fmt(rallyCap().cap);
         if (input !== document.activeElement) input.value = prefs.rallyCap ? String(prefs.rallyCap) : '';
       });
-      var levels = {};
-      try { var roster = store ? store.pets().roster : {}; Object.keys(roster).forEach(function (id) { levels[id] = roster[id].level; }); } catch (cause) { /* no pets */ }
+      var levels = A.petLevels(store);
       var lines = data.pets.filter(function (pet) { return L.petLevelPct(pet, levels[pet.id]) > 0; }).map(function (pet) {
         var key = pet.side === 'enemy' ? 'enemy' + pet.stat.charAt(0).toUpperCase() + pet.stat.slice(1) : pet.stat;
         return api.fill(t('pet'), { name: api.tr('pets.name.' + pet.id, pet.name), level: api.fmt(levels[pet.id]), stat: t('petStat.' + key), pct: api.fmt(L.petLevelPct(pet, levels[pet.id])) });
@@ -112,16 +87,9 @@
       writePrefs(prefs);
     }
 
-    function roster() { try { return store ? store.heroes().roster : {}; } catch (cause) { return {}; } }
-    function combat() { try { return store ? store.combat() : { overview: {}, troops: [] }; } catch (cause) { return { overview: {}, troops: [] }; } }
-    function generation(owned) {
-      // The stock opponents stop at the last generation they know.
-      var last = data.megafauna.generations.length, gen = window.KS_SERVER_AGE && window.KS_SERVER_AGE.getGeneration();
-      if (gen) return Math.max(1, Math.min(last, gen | 0));
-      var top = 0;
-      Object.keys(owned).forEach(function (key) { if (data.heroes[key]) top = Math.max(top, data.heroes[key].generation); });
-      return top || 4;
-    }
+    function roster() { return A.roster(store); }
+    function combat() { return A.combat(store); }
+    function generation(owned) { return A.generation(owned, data, window.KS_SERVER_AGE && window.KS_SERVER_AGE.getGeneration()); }
 
     // The typed rows; a type with any blank uses the generation's typical stats.
     function typed() {
@@ -133,19 +101,7 @@
       });
       return rows;
     }
-    // The Squads' row adds to every troop type; a type not typed in full takes the
-    // generation's typical total instead.
-    function overview(gen) {
-      var rows = typed(), typical = data.megafauna.overview[String(gen)], out = {}, missing = [];
-      function whole(row) { return row && STATS.every(function (k) { return row[k] !== null && row[k] !== undefined; }); }
-      var squads = whole(rows.squads) ? rows.squads : null;
-      TYPES.forEach(function (type) {
-        var row = rows[type];
-        if (whole(row)) { out[type] = {}; STATS.forEach(function (k) { out[type][k] = row[k] + (squads ? squads[k] : 0); }); }
-        else { missing.push(type); out[type] = { attack: typical, lethality: typical, defense: typical, health: typical }; }
-      });
-      return { rows: out, missing: missing, typical: typical, noSquads: !squads && missing.length < 3 };
-    }
+    function overview(gen) { return A.overview(typed(), gen, data); }
 
     function load() {
       var saved = combat().overview || {};

@@ -14,7 +14,7 @@ self: bear
   <a href="#rewards"><span data-i18n="bh.page.6">Rewards</span></a>
 </nav>
 
-<main>
+<main data-group="hunt">
   <section class="section hero" id="top">
     <h1><span data-i18n="bh.page.7">BEAR HUNT</span></h1>
     <p class="lede"><span data-i18n="bh.page.8">How Bear damage works and how to organise rallies around it.</span></p>
@@ -25,11 +25,16 @@ self: bear
   <section class="section" id="glance">
     <h2><span data-i18n="bh.glance.nav">At a glance</span></h2>
     <p class="lede"><span data-i18n="bh.glance.lede">The short version. A few of these go against the usual Bear advice.</span></p>
+    <div class="calc hunt-size" role="group" aria-labelledby="hunt-size-title">
+      <h3 class="calc-title" id="hunt-size-title" data-i18n="bh.hunt.title">Your hunt</h3>
+      <div class="calc-row"><label for="hunt-players" data-i18n="bh.hunt.players">Players</label><input id="hunt-players" data-in="players" type="number" inputmode="numeric" min="5" max="100" step="1" value="15"></div>
+      <div class="calc-row"><label for="hunt-rally" data-i18n="bh.hunt.rally">Biggest rally</label><input id="hunt-rally" class="ghost" data-in="rally" type="number" inputmode="numeric" min="16" max="1000000000" step="1" placeholder="1,360,000"></div>
+    </div>
     <ol class="rule-list glance-list">
-      <li><span class="rule-num" aria-hidden="true">1</span><div><h3><span data-i18n="bh.glance.1h">Everyone rallies, however weak.</span></h3><p data-i18n="bh.glance.1p">Weak players still take up spaces in other rallies, so they need to launch their own to give those spaces back.</p></div></li>
-      <li><span class="rule-num" aria-hidden="true">2</span><div><h3><span data-i18n="bh.glance.2h">Fill every rally to 15.</span></h3><p data-i18n="bh.glance.2p">That's 14 joiners plus the leader, the number the game shows. Join whichever rally is closest to marching out, and relaunch yours as soon as it's home.</p></div></li>
-      <li><span class="rule-num" aria-hidden="true">3</span><div><h3><span data-i18n="bh.glance.3h">Cap joins at your biggest rally ÷ 16.</span></h3><p data-i18n="bh.glance.3p">That fits 14 full joins plus a double share for its leader, who is usually well ahead of everyone else and gets some extra damage from it.</p></div></li>
-      <li><span class="rule-num" aria-hidden="true">4</span><div><h3><span data-i18n="bh.glance.4h">Archers, then cavalry, then infantry.</span></h3><p data-i18n="bh.glance.4p">Split your archers evenly across your joins and your own rally: usually 7 marches, or 6 if you have five joins. If yours is the oversized rally from rule 3, count it twice, making 8. Do the same with cavalry, then top each march up to the cap with infantry.</p></div></li>
+      <li><span class="rule-num" aria-hidden="true">1</span><div><h3><span data-i18n="bh.glance.1h">Everyone rallies, however weak.</span></h3><p data-i18n="bh.glance.1p">Weak players still take up spaces in other rallies, so they need to launch their own to give those spaces back. A weak rally can launch with just one troop.</p></div></li>
+      <li><span class="rule-num" aria-hidden="true">2</span><div><h3><span data-i18n="bh.glance.2h" data-i18n-vars="hunt">Fill every rally to 15.</span></h3><p data-i18n="bh.glance.2ps" data-hunt-when="small" hidden>That's everyone else, since a player joins each rally only once. Join whichever rally is closest to marching out, and relaunch yours as soon as it's home.</p><p data-hunt-when="full" data-i18n="bh.glance.2p">That's 14 joiners plus the leader, the number the game shows. Join whichever rally is closest to marching out, and relaunch yours as soon as it's home.</p></div></li>
+      <li><span class="rule-num" aria-hidden="true">3</span><div><h3><span data-i18n="bh.glance.3h" data-i18n-vars="hunt">Send 6 joins of up to 85,000.</span></h3><p data-i18n="bh.glance.3p" data-i18n-vars="hunt">That's your biggest rally ÷ 16, which fits 14 full joins plus a double share for its leader, who is usually well ahead of everyone else and gets some extra damage from it.</p><p data-i18n="bh.glance.3ps" data-i18n-vars="hunt" data-hunt-when="few" hidden>With 14 rallies to join, 6 joins reach every one of them every five minutes, so make them bigger rather than send six.</p></div></li>
+      <li><span class="rule-num" aria-hidden="true">4</span><div><h3><span data-i18n="bh.glance.4h">Archers, then cavalry, then infantry.</span></h3><p data-i18n="bh.glance.4p" data-i18n-vars="hunt">Split your archers evenly across your joins and your own rally: 7 marches. If yours is the oversized rally from rule 3, count it twice, making 8. Do the same with cavalry, then top each march up to the cap with infantry.</p></div></li>
       <li><span class="rule-num" aria-hidden="true">5</span><div><h3><span data-i18n="bh.glance.5h">Ratios only matter with lots of archers.</span></h3><p data-i18n="bh.glance.5p">Aim for 5 / 15 / 80 once your archers can fill most of every march. Until then, keep your marches equal.</p></div></li>
       <li><span class="rule-num" aria-hidden="true">6</span><div><h3><span data-i18n="bh.glance.6h">Join with a recommended first hero, or none.</span></h3><p data-i18n="bh.glance.6p">Up to four joiners' first-hero skills apply to the whole rally, so the wrong hero can waste a spot.</p></div></li>
     </ol>
@@ -60,8 +65,8 @@ self: bear
 
     <ul class="facts strategy-list">
       <li><b><span data-i18n="bh.page.14">Everyone should launch a rally every five minutes.</span></b> <span data-i18n="bh.page.15">Spread the launches out so each rally has time to fill.</span></li>
-      <li><span data-i18n="bh.page.16">Fill all</span> <b><span data-i18n="bh.page.17">14 joiner spaces</span></b> <span data-i18n="bh.page.18">in every rally. The real limit in Bear is spaces in rallies.</span></li>
-      <li><span data-i18n="bh.page.19">Cap joins so more of them fit. Ours is</span> <b><span data-i18n="bh.page.20">85k</span></b> <span data-i18n="bh.page.21">for now, and it goes up as rally capacity grows.</span></li>
+      <li data-i18n-html="bh.plan.fill" data-i18n-vars="hunt">Fill every rally to <b>14 joiners</b>. The real limit in Bear is spaces in rallies.</li>
+      <li data-i18n-html="bh.plan.cap" data-i18n-vars="hunt">Cap joins at <b>85,000</b> so every rally fills. The cap goes up as rally capacity grows.</li>
       <li><b><span data-i18n="bh.page.22">Keep your joins the same size.</span></b> <span data-i18n="bh.page.23">Split archers evenly first, then cavalry, then fill the rest with infantry. For full joins,</span> <b>5 / 15 / 80</b> <span data-i18n="bh.page.24">is a good ratio.</span></li>
       <li><span data-i18n="bh.page.25">Join with one of the recommended first heroes. If you don't have one, join with no hero.</span></li>
     </ul>
@@ -98,10 +103,11 @@ self: bear
     <span class="anchor-alias" id="cap" aria-hidden="true"></span>
     <h2><button class="section-toggle" type="button" aria-expanded="true" aria-controls="rally-body"><span><span data-i18n="bh.page.44">Fill rallies</span></span><span class="section-chevron" aria-hidden="true"><svg viewBox="0 0 12 12" focusable="false"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></button></h2>
     <div class="section-body" id="rally-body">
-      <p class="lede"><span data-i18n="bh.page.45">Aim for</span> <strong><span data-i18n="bh.page.46">14 joiners</span></strong> <span data-i18n="bh.page.47">in every rally. Full rallies give returning marches the most places to join.</span></p>
-      <p><span data-i18n="bh.page.48">If everyone has six marches and launches a rally every five minutes, full rallies let each march hit the Bear up to</span> <strong><span data-i18n="bh.page.49">2.33 times every five minutes</span></strong><span data-i18n="bh.page.50">. Empty spaces, or players who don't launch, bring that down.</span></p>
-      <p><span data-i18n="bh.page.51">Our joiner cap is</span> <strong><span data-i18n="bh.page.52">85k troops</span></strong><span data-i18n="bh.page.53"> for now. That's our number, not a Bear rule, and it goes up as rally capacity grows. It stops a few big joins using up a rally's capacity and leaving spaces empty.</span></p>
+      <p class="lede" data-i18n-html="bh.rally.lede" data-i18n-vars="hunt">Aim for <strong>14 joiners</strong> in every rally. Full rallies give returning marches the most places to join.</p>
+      <p data-i18n-html="bh.rally.hits" data-i18n-vars="hunt">If everyone launches a rally every five minutes and sends 6 joins, full rallies let each join hit the Bear up to <strong>2.33 times every five minutes</strong>. Empty spaces, or players who don't launch, bring that down.</p>
+      <p data-i18n-html="bh.rally.cap" data-i18n-vars="hunt">The joiner cap is <strong>85,000 troops</strong>, your biggest rally ÷ 16. That's your alliance's number, not a Bear rule, and it goes up as rally capacity grows. It stops a few big joins using up a rally's capacity and leaving spaces empty.</p>
       <p><span data-i18n="bh.page.54">The cap doesn't apply to a strong leader's</span> <strong><span data-i18n="bh.page.55">own rally</span></strong><span data-i18n="bh.page.56">. Fill it with whatever ratio works for that leader. Their joins into other rallies still follow the cap.</span></p>
+      <p data-i18n-html="bh.rally.token" data-i18n-vars="hunt"><strong>A weak rally can launch with one troop.</strong> It still opens 14 spaces for everyone else, and all of that player's troops go to stronger rallies.</p>
 
       <details id="why-14">
         <summary><span data-i18n="bh.page.57">Why 14, and why everyone launches</span></summary>
@@ -109,6 +115,7 @@ self: bear
           <p><span data-i18n="bh.page.58">Say P players have six marches each, L of them launch every five minutes, and each rally has S joiners on average. Each march then hits</span> <b><span data-i18n="bh.page.59">H = L × S ÷ (P × 6)</span></b> <span data-i18n="bh.page.60">times every five minutes.</span></p>
           <p><span data-i18n="bh.page.61">That's highest when</span> <b><span data-i18n="bh.page.62">L = P</span></b> <span data-i18n="bh.page.63">because everyone launches, and</span> <b><span data-i18n="bh.page.64">S = 14</span></b> <span data-i18n="bh.page.65">because every rally fills. That gives</span> <b><span data-i18n="bh.page.66">H = 14 ÷ 6 = 2.33</span></b><span data-i18n="bh.page.67">. With 13 joiners on average it drops to</span> <b>2.17</b><span data-i18n="bh.page.68">; with 14 joiners but only 80% of players launching, it's</span> <b>1.87</b>.</p>
           <p><span data-i18n="bh.page.69">The 14th joiner adds damage to that rally, but the bigger gain is that returning marches reuse that space all event.</span></p>
+          <p data-i18n="bh.why.small">With fewer than 15 players, S can't go past P − 1, because a player joins each rally only once. Every five minutes, each player has P − 1 rallies to join, however many marches they send. About (P − 1) ÷ 2.33 joins reach all of them, so the rest of your troops can make those joins bigger, up to the cap. Damage grows with the square root of a join's troops, so fewer, bigger joins do more.</p>
         </div>
       </details>
     </div>
@@ -134,6 +141,8 @@ self: bear
           <div class="calc-row"><label for="join-queues" data-i18n="bh.page.85">Joins</label><input id="join-queues" type="number" inputmode="numeric" min="0" max="6" step="1" value="6" required></div>
           <div class="calc-row"><label for="join-cap" data-i18n="bh.page.86">Alliance joiner cap</label><input id="join-cap" type="number" inputmode="numeric" min="1" max="1000000000000" step="1" value="85000" required></div>
           <div class="calc-row"><label for="own-cap" data-i18n="bh.page.87">Your march size</label><input id="own-cap" type="number" inputmode="numeric" min="1" max="1000000000000" step="1" value="130000" required></div>
+          <label class="allocator-priority"><input id="own-token" type="checkbox"><span data-i18n="bh.alloc.token">Launch my rally with one troop</span></label>
+          <p class="note" data-i18n="bh.alloc.tokenHelp">For weaker players, so all your troops go to stronger rallies.</p>
           <label class="allocator-priority"><input id="own-priority" type="checkbox"><span data-i18n="bh.alloc.priority">Fill my own rally first</span></label>
           <p class="note" data-i18n="bh.alloc.priorityHelp">For your alliance's stronger leaders. Your own rally can take a bigger share, while your joins still follow the alliance cap.</p>
           <fieldset id="own-ratio" class="allocator-ratio" hidden>
@@ -193,11 +202,11 @@ self: bear
         </article>
         <article class="card">
           <h3><span data-i18n="bh.page.76">2. Use 5 / 15 / 80 when full</span></h3>
-          <p><span data-i18n="bh.page.77">For the rally leaders we've tested,</span> <b><span data-i18n="bh.page.78">5% infantry / 15% cavalry / 80% archers</span></b> <span data-i18n="bh.page.79">comes very close to the best possible ratio. The exact ratio depends on the leader. At our 85k cap, that's about 4.25k infantry, 12.75k cavalry and 68k archers per join.</span></p>
+          <p><span data-i18n="bh.page.77">For the rally leaders we've tested,</span> <b><span data-i18n="bh.page.78">5% infantry / 15% cavalry / 80% archers</span></b> <span data-i18n="bh.marches.ratio" data-i18n-vars="hunt">comes very close to the best possible ratio. The exact ratio depends on the leader. At a cap of 85,000, that's about 4,250 infantry, 12,750 cavalry and 68,000 archers per join.</span></p>
         </article>
       </div>
 
-      <p><span data-i18n="bh.page.80">Six full 85k joins at 5 / 15 / 80 need about</span> <strong><span data-i18n="bh.page.81">25.5k infantry, 76.5k cavalry and 408k archers</span></strong> <span data-i18n="bh.page.82">in total. Until you have that many, keeping your joins equal matters more than hitting the ratio.</span></p>
+      <p data-i18n-html="bh.marches.total" data-i18n-vars="hunt">6 full joins of 85,000 at 5 / 15 / 80 need about <strong>25,500 infantry, 76,500 cavalry and 408,000 archers</strong> in total. Until you have that many, keeping your joins equal matters more than hitting the ratio.</p>
 
 
     </div>
@@ -282,7 +291,7 @@ self: bear
       <details id="first-group">
         <summary><span data-i18n="bh.page.110">How many rallies in the first group?</span></summary>
         <div class="d-body">
-          <p><span data-i18n="bh.page.111">Count the marches free at the start and divide by 14. Fifteen players with six marches each is 90, enough for six full rallies with six marches spare. A seventh rally can work too, if its leader is happy to cancel when fewer people turn up.</span></p>
+          <p data-i18n="bh.first.count" data-i18n-vars="hunt">Count the joins free at the start and divide by 14. 15 players with 6 joins each is 90, enough for 6 full rallies. One more rally can work too, if its leader is happy to cancel when fewer people turn up.</p>
           <p><span data-i18n="bh.page.112">Once the first hits land, those marches come home and join again, so the size of the first group doesn't limit the rest of the event.</span></p>
         </div>
       </details>
@@ -315,6 +324,24 @@ self: bear
         <p class="lede"><span data-i18n="bh.page.133">Your rewards depend on your own total Bear damage. Each tier adds one Forgehammer.</span></p>
         {% include ascii/forge.html label="A hammer strikes a hot bar on an anvil and throws off sparks" %}
       </div>
+      <figure class="hunt-damage" id="your-damage" data-module="bear-damage" aria-labelledby="hunt-damage-title">
+        <figcaption class="hunt-damage-head"><span id="hunt-damage-title" data-i18n="bh.damage.title">Your Bear damage</span><details class="src" id="hunt-damage-est" data-src="est" data-target="bear-damage.estMark" hidden><summary aria-label="Estimate" data-i18n-key="leads.est" data-i18n-attr="aria-label"></summary><span class="motif-names" data-target="bear-damage.estNames"></span></details></figcaption>
+        <ul class="inputs" data-target="bear-damage.inputs" aria-labelledby="hunt-damage-title"></ul>
+        <p class="note" data-target="bear-damage.status" aria-live="polite"></p>
+        <div class="hunt-damage-result" data-target="bear-damage.result" hidden>
+          <p class="hunt-damage-lead" data-target="bear-damage.lead"></p>
+          <dl class="hunt-damage-rows">
+            <div><dt data-i18n="bh.page.90">Your rally</dt><dd data-target="bear-damage.own"></dd></div>
+            <div><dt data-i18n="bh.page.85">Joins</dt><dd data-target="bear-damage.join"></dd></div>
+          </dl>
+          <p class="hunt-damage-total"><span data-i18n="bh.damage.total">Over the hunt</span> <output data-target="bear-damage.total"></output></p>
+          <ul class="unknowns" data-target="bear-damage.unknowns" hidden></ul>
+        </div>
+        <details class="hunt-damage-method" id="damage-method">
+          <summary data-i18n="bh.damage.method">How it's worked out</summary>
+          <p data-i18n="bh.damage.methodBody">Each hit is the Bear fight for that march, led by your best Bear lineup with its chance skills averaged. Your joins are counted as if you led them. Over 30 minutes you launch six rallies and join each other rally once every five minutes.</p>
+        </details>
+      </figure>
       <ul class="brackets compact-brackets">
         <li><b><span data-i18n="bh.page.134">47M</span></b><span>8</span></li>
         <li><b><span data-i18n="bh.page.135">90M</span></b><span>9</span></li>

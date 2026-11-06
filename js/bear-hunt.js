@@ -36,11 +36,99 @@
     return Math.max(0, Math.round(n)).toLocaleString((window.I18N && window.I18N.locale) || 'en-GB');
   }
 
+  /* The hunt: how many players turn up and the biggest rally's capacity.
+     js/bear-hunt-plan.js works out the rest, and every sentence marked
+     data-i18n-vars="hunt" carries the numbers (js/bind.js). */
+  var HUNT_KEY = 'bh:hunt:v1';
+  var DEFAULT_RALLY = 1360000;
+  var huntGuest = /(?:^|[?&])guest(?:=|&|$)/.test(location.search);
+
+  function huntPlan(players, rally) {
+    return window.BH_HUNT_PLAN.plan(isFinite(players) ? players : 15, isFinite(rally) && rally > 0 ? rally : DEFAULT_RALLY);
+  }
+
+  function huntField(name) { return document.getElementById('hunt-' + name); }
+
+  function readHunt() {
+    var players = huntField('players'), rally = huntField('rally');
+    return huntPlan(players ? parseFloat(players.value) : NaN, rally ? parseFloat(rally.value) : NaN);
+  }
+
+  (function restoreHunt() {
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem(HUNT_KEY) || 'null'); } catch (ignored) { saved = null; }
+    if (!saved || typeof saved !== 'object') return;
+    ['players', 'rally'].forEach(function (name) {
+      var field = huntField(name), value = saved[name];
+      if (field && typeof value === 'string' && value !== '' && isFinite(Number(value))) field.value = value;
+    });
+  })();
+
+  if (window.BH && window.BH.group && window.BH_HUNT_PLAN) {
+    window.BH.group('hunt', {
+      inputs: ['players', 'rally'],
+      values: function (v, BH) {
+        var p = huntPlan(v.players, v.rally), cap = p.cap;
+        var hits = Math.round(p.hits * 100) / 100;
+        var locale = (window.I18N && window.I18N.locale) || 'en-GB';
+        return {
+          players: BH.fmt(p.players), joiners: BH.fmt(p.joiners), fill: BH.fmt(p.fill), divisor: BH.fmt(p.divisor),
+          joins: BH.fmt(p.joins), marches: BH.fmt(p.marches), marches2: BH.fmt(p.marches + 1),
+          cap: BH.fmt(cap), hits: hits.toLocaleString(locale, { maximumFractionDigits: 2 }),
+          first: BH.fmt(p.first), open: BH.fmt(p.players * p.joins),
+          capInf: BH.fmt(cap * 0.05), capCav: BH.fmt(cap * 0.15), capArc: BH.fmt(cap * 0.8),
+          totInf: BH.fmt(cap * 0.05 * p.joins), totCav: BH.fmt(cap * 0.15 * p.joins), totArc: BH.fmt(cap * 0.8 * p.joins)
+        };
+      }
+    });
+  }
+
+  // What the numbers alone can't change: which lines apply, and which of the
+  // rally's fourteen spaces anyone is left to fill.
+  function paintHunt(plan) {
+    window.BH_HUNT = plan;
+    document.dispatchEvent(new CustomEvent('bh:hunt', { detail: plan }));
+    Array.prototype.forEach.call(document.querySelectorAll('[data-hunt-when]'), function (node) {
+      var when = node.getAttribute('data-hunt-when');
+      node.hidden = when === 'small' ? plan.full : when === 'full' ? !plan.full : when === 'few' ? plan.joins >= window.BH_HUNT_PLAN.QUEUES : false;
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.rally-slots span'), function (slot, i) {
+      if (i < plan.joiners) slot.removeAttribute('data-off'); else slot.setAttribute('data-off', '');
+    });
+  }
+
+  function wireHunt(allocator) {
+    var fields = [huntField('players'), huntField('rally')];
+    if (!fields[0] || !fields[1] || !window.BH_HUNT_PLAN) return;
+    function save() {
+      if (huntGuest) return;
+      try { localStorage.setItem(HUNT_KEY, JSON.stringify({ players: fields[0].value, rally: fields[1].value })); } catch (ignored) { /* private mode */ }
+    }
+    fields.forEach(function (field) {
+      field.addEventListener('input', function () {
+        if (!field.validity.valid) return;
+        var plan = readHunt();
+        paintHunt(plan);
+        save();
+        if (allocator) allocator.follow(plan);
+      });
+    });
+    // The usual rally as ghost ink, in the reader's own number format.
+    function ghost() { fields[1].placeholder = window.BH && window.BH.fmt ? window.BH.fmt(DEFAULT_RALLY) : formatNumber(DEFAULT_RALLY); }
+    ghost();
+    document.addEventListener('i18n:change', ghost);
+    var plan = readHunt();
+    paintHunt(plan);
+    if (allocator && !allocator.restored) allocator.follow(plan);
+  }
+
   function wireAllocator() {
     var root = document.getElementById('march-builder');
     var button = document.getElementById('allocator-toggle');
-    if (!root || !button || !window.BH_BEAR_ALLOCATOR) return;
+    if (!root || !button || !window.BH_BEAR_ALLOCATOR) return null;
     var priority = document.getElementById('own-priority');
+    var token = document.getElementById('own-token');
+    var ownCap = document.getElementById('own-cap');
     var ratio = document.getElementById('own-ratio');
     var ratios = Array.prototype.slice.call(ratio.querySelectorAll('input'));
     var personalized = false;
@@ -84,7 +172,11 @@
       if (show) document.getElementById('infantry-total').focus();
     }
 
+    // A one-troop rally takes nothing from the joins and has no ratio of its own.
     function showRatio() {
+      if (token.checked) priority.checked = false;
+      priority.disabled = token.checked;
+      ownCap.disabled = token.checked;
       ratio.hidden = !priority.checked;
       ratios.forEach(function (input) { input.disabled = !priority.checked; input.setCustomValidity(''); });
     }
@@ -96,8 +188,8 @@
         archers: numberValue('archer-total', 0),
         queues: numberValue('join-queues', 6),
         joinCap: numberValue('join-cap', 85000),
-        ownCap: numberValue('own-cap', 130000),
-        priority: priority.checked,
+        ownCap: token.checked ? 1 : numberValue('own-cap', 130000),
+        priority: priority.checked && !token.checked,
         ratio: { infantry: numberValue('own-infantry', 5), cavalry: numberValue('own-cavalry', 15), archers: numberValue('own-archers', 80) }
       };
     }
@@ -150,6 +242,8 @@
       var key = personalized ? 'bh.alloc.edit' : 'bh.alloc.open';
       text.setAttribute('data-i18n', key);
       text.textContent = label(key, personalized ? 'Edit troops' : 'Use my troops');
+      window.BH_MARCHES = result;
+      document.dispatchEvent(new CustomEvent('bh:marches', { detail: result }));
       var note = document.getElementById('alloc-note');
       note.textContent = label('bh.alloc.result', 'Your rally: {own}. Joins: {n} × {join}.').replace('{own}', format(result.own.total)).replace('{n}', format(result.queues)).replace('{join}', format(result.join.total));
     }
@@ -157,6 +251,7 @@
     button.hidden = false;
     button.addEventListener('click', function () { open(root.hidden); });
     priority.addEventListener('change', showRatio);
+    token.addEventListener('change', showRatio);
     ratios.forEach(function (input) { input.addEventListener('input', function () { ratios.forEach(function (field) { field.setCustomValidity(''); }); }); });
     root.addEventListener('input', save);
     root.addEventListener('change', save);
@@ -183,6 +278,16 @@
     }
     render();
     document.addEventListener('i18n:change', render);
+
+    // The hunt above sets how many joins to send and how big: a change there
+    // carries into the builder, and a first visit starts from it.
+    function follow(hunt) {
+      document.getElementById('join-queues').value = String(hunt.joins);
+      if (hunt.cap) document.getElementById('join-cap').value = String(hunt.cap);
+      save();
+      try { result = window.BH_BEAR_ALLOCATOR.allocate(read()); render(); } catch (ignored) { /* a ratio that doesn't add up waits for the reader */ }
+    }
+    return { follow: follow, restored: restored };
   }
 
   var HEROES = {
@@ -421,7 +526,7 @@
   }
 
   function init() {
-    wireAllocator();
+    wireHunt(wireAllocator());
     wireHeroExplorer();
   }
 
