@@ -60,7 +60,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
       assert.equal(await page.locator('#march-queues > div').count(), 6);
       await button.click();
       assert.equal(await page.locator('#march-builder').isVisible(), true);
-      await page.locator('label:has(#mode-lead)').click();
+      await page.locator('#own-priority').check();
       assert.equal(await page.locator('#own-ratio').isVisible(), true);
       await page.locator('#march-builder').screenshot({ path: path.join(output, lang + '-' + width + '-allocator-inputs.png'), style: screenshotStyle });
       const inputOverflow = await figure.evaluate(el => el.scrollWidth > el.clientWidth + 1);
@@ -93,7 +93,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
         await page.waitForFunction(lang => document.documentElement.lang === lang && window.__BH_I18N_DATA?.[lang], lang);
         assert.equal(await page.locator('#join-queues').inputValue(), '3');
         assert.equal(await page.locator('#own-archers').inputValue(), '50');
-        assert.equal(await page.locator('#mode-lead').isChecked(), true);
+        assert.equal(await page.locator('#own-priority').isChecked(), true);
         assert.equal(await page.locator('#march-queues > div').count(), 3);
         assert.equal(await page.locator('#march-sample').getAttribute('data-example'), null);
         assert.equal(await button.innerText(), dictionaries[lang]['bh.alloc.edit']);
@@ -109,7 +109,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
         await page.waitForFunction(([code, text]) => window.I18N.lang === code && document.getElementById('allocator-toggle').textContent.trim() === text, [lang, dictionaries[lang]['bh.alloc.edit']]);
       }
       await button.click();
-      await page.locator('label:has(#mode-join)').click();
+      await page.locator('#own-even').check();
       assert.equal(await page.locator('#own-ratio').isVisible(), false);
       for (const id of ['infantry-total', 'cavalry-total', 'archer-total']) await page.locator('#' + id).fill('0');
       await page.locator('#join-queues').fill('0');

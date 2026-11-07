@@ -62,12 +62,6 @@ self: bear
     <span class="anchor-alias" id="mix" aria-hidden="true"></span><span class="anchor-alias" id="rally" aria-hidden="true"></span><span class="anchor-alias" id="cap" aria-hidden="true"></span>
     <h2 id="marches-title"><span data-i18n="bh.marches.heading">Your marches</span></h2>
     {% include ascii/march.html kind="sky" %}
-    <fieldset class="lead-jobs march-mode">
-      <legend data-i18n="bh.mode.legend">You're</legend>
-      <label><input type="radio" name="march-mode" id="mode-join" value="join" checked><span data-i18n="bh.mode.join">Joining</span></label>
-      <label><input type="radio" name="march-mode" id="mode-lead" value="lead"><span id="mode-lead-name" data-i18n="bh.mode.lead">Leading</span></label>
-    </fieldset>
-
     <figure class="hunt-diagram march-composition" aria-labelledby="marches-title">
       <figcaption class="allocator-heading">
         <button id="allocator-toggle" class="allocator-button" type="button" aria-expanded="false" aria-controls="march-builder" data-deep-link="march-builder" hidden><span data-i18n="bh.alloc.open">Use my troops</span></button>
@@ -80,8 +74,13 @@ self: bear
         <div class="calc-row"><label for="join-queues" data-i18n="bh.page.85">Joins</label><input id="join-queues" type="number" inputmode="numeric" min="0" max="6" step="1" value="6" required></div>
         <div class="calc-row"><label for="join-cap" data-i18n="bh.page.86">Alliance joiner cap</label><input id="join-cap" type="number" inputmode="numeric" min="1" max="1000000000000" step="1" value="85000" required></div>
         <div class="calc-row"><label for="own-cap" data-i18n="bh.page.87">Your march size</label><input id="own-cap" type="number" inputmode="numeric" min="1" max="1000000000000" step="1" value="130000" required></div>
-        <label class="allocator-priority" data-mode="join"><input id="own-token" type="checkbox"><span data-i18n="bh.alloc.token">Launch my rally with one troop</span></label>
-        <fieldset id="own-ratio" class="allocator-ratio" data-mode="lead" hidden>
+        <fieldset class="allocator-own">
+          <legend data-i18n="bh.page.90">Your rally</legend>
+          <label class="allocator-priority"><input type="radio" name="own-rally" id="own-token" value="token"><span data-i18n="bh.own.token">One troop</span></label>
+          <label class="allocator-priority"><input type="radio" name="own-rally" id="own-even" value="even" checked><span data-i18n="bh.own.even">Same as a join</span></label>
+          <label class="allocator-priority"><input type="radio" name="own-rally" id="own-priority" value="first"><span data-i18n="bh.own.first">Filled first, at its own mix</span></label>
+        </fieldset>
+        <fieldset id="own-ratio" class="allocator-ratio" hidden>
           <legend data-i18n="bh.alloc.ratio">Your rally ratio (%)</legend>
           <button type="button" class="directory-reset" id="own-mix" hidden><span data-i18n="bh.alloc.useMix">Use my best lead's mix</span> <bdi id="own-mix-value"></bdi></button>
           <div class="calc-row"><label for="own-infantry" data-i18n="sim.calc.inf">Infantry</label><input id="own-infantry" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="5" required></div>
