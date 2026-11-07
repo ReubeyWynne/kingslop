@@ -279,6 +279,27 @@
     render();
     document.addEventListener('i18n:change', render);
 
+    // The lead finder below works out a leader's best troop mix; a leader can fill
+    // their own rally with it.
+    var mixButton = document.getElementById('own-mix'), mix = null;
+    function percent(n) { return Math.round(n * 1000) / 10; }
+    document.addEventListener('lead-finder:mix', function (event) {
+      var m = event.detail && event.detail.mix;
+      if (!mixButton || !m || m.length !== 3) return;
+      var inf = percent(m[0]), cav = percent(m[1]);
+      mix = { infantry: inf, cavalry: cav, archers: Math.round((100 - inf - cav) * 10) / 10 };
+      document.getElementById('own-mix-value').textContent = [mix.infantry, mix.cavalry, mix.archers].map(function (n) { return n.toLocaleString((window.I18N && window.I18N.locale) || 'en-GB'); }).join(' / ');
+      mixButton.hidden = false;
+    });
+    if (mixButton) mixButton.addEventListener('click', function () {
+      if (!mix) return;
+      document.getElementById('own-infantry').value = String(mix.infantry);
+      document.getElementById('own-cavalry').value = String(mix.cavalry);
+      document.getElementById('own-archers').value = String(mix.archers);
+      ratios.forEach(function (field) { field.setCustomValidity(''); });
+      save();
+    });
+
     // The hunt above sets how many joins to send and how big: a change there
     // carries into the builder, and a first visit starts from it.
     function follow(hunt) {

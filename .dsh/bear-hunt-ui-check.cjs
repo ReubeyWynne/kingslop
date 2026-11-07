@@ -1,6 +1,7 @@
 // Bear Hunt UI — the hunt's size sets the rules, the march builder follows it,
-// a one-troop rally gives everything to the joins, and the damage estimate
-// scores the save's best Bear lead with those marches.
+// a one-troop rally gives everything to the joins, and
+// the hero page's Bear ratio and damage calc sits on the page and hands its
+// mix to the builder.
 const assert = require('node:assert/strict'), path = require('node:path');
 const { withBrowser } = require('./lib/browser-harness.cjs');
 withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
@@ -40,7 +41,6 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal(await page.locator('#join-cap').inputValue(), '100000');
 
   // A one-troop rally: the own rally takes nothing, the joins take the rest.
-  await page.evaluate(() => document.querySelectorAll('.section-toggle[aria-expanded="false"]').forEach(b => b.click()));
   await page.locator('#allocator-toggle').click();
   await page.locator('#own-token').check();
   assert.equal(await page.locator('#own-cap').isDisabled(), true);
@@ -56,34 +56,35 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal(await page.locator('#hunt-rally').inputValue(), '900000');
   assert.equal(await page.locator('#own-token').isChecked(), true);
 
-  // No heroes: the estimate asks for them, every input shown as a chip.
-  const chips = () => page.locator('.hunt-damage .inputs li').evaluateAll(list => Object.fromEntries(list.map(li => [li.dataset.input, li.dataset.have])));
-  assert.match(await text('[data-target="bear-damage.status"]'), /Mark the heroes you own/);
-  assert.equal(await page.locator('[data-target="bear-damage.result"]').isHidden(), true);
-  assert.deepEqual(await chips(), { heroes: 'no', overview: 'est', gear: 'no', town: 'no', valora: 'no', troops: 'est', pets: 'no' });
-  assert.equal(await page.locator('.hunt-damage [data-input="gear"] a').getAttribute('href'), '../hero-gear/');
-  assert.equal(await page.locator('.hunt-damage [data-input="overview"] a').getAttribute('href'), '../heroes/#bonus-overview');
+  // The hero page's Bear calc, Bear job only: no heroes yet, so it asks for them.
+  assert.equal(await page.locator('#lead .lead-jobs').count(), 0, 'no job picker on the Bear page');
+  assert.equal(await page.locator('#lead details:not(.src)').count(), 1, 'only the joiners, pets and city buffs fold away');
+  assert.match(await text('[data-target="lead-finder.status"]'), /Mark the heroes you own/);
+  assert.equal(await page.locator('#lead [data-input="overview"] a').getAttribute('href'), '#bonus-overview', 'the overview is filled in on this page');
+  assert.equal(await page.locator('#lead [data-input="heroes"] a').getAttribute('href'), '../heroes/#directory');
 
-  // Heroes in the save: the best Bear lead, a hit per march, the hunt's total and its tier.
+  // Heroes in the save: the best Bear lead, its troop mix and damage, and the mix offered to the builder.
   await page.evaluate(() => {
     const s = PlayerLedger.shared();
     for (const [key, stars, widget] of [['amadeus', 30, 10], ['petra', 30, 10], ['marlin', 30, 10], ['rosa', 24, 4]]) s.setHero(key, { level: null, stars, widget, skills: null });
     KS_SERVER_AGE.setGeneration(4);
   });
-  await page.waitForFunction(() => !document.querySelector('[data-target="bear-damage.result"]').hidden);
-  assert.equal(await text('[data-target="bear-damage.lead"]'), 'Leading with Amadeus, Petra, Marlin');
-  assert.match(await text('[data-target="bear-damage.own"]'), / a hit × 0$/, 'a one-troop rally adds no hits of its own');
-  assert.match(await text('[data-target="bear-damage.join"]'), / a hit × 42$/, 'one join in each of the 7 other rallies, six times');
-  assert.equal(await page.locator('.hunt-damage').getAttribute('data-provisional'), '', 'provisional without gear, Town Centre or Valora');
-  assert.equal(await page.locator('[data-target="bear-damage.total"]').getAttribute('data-open'), '');
-  assert.match(await text('#hunt-damage-est .motif-names'), /Other rally leaders/);
-  assert.equal(await page.locator('.brackets li[data-reached]').count(), 1, 'the tier the total reaches');
+  await page.waitForFunction(() => !document.querySelector('#lead .lead-best').hidden);
+  assert.equal(await page.locator('#lead .lead-best .lead-hero-name b').allTextContents().then(t => t.join('/')), 'Amadeus/Petra/Marlin');
+  assert.equal(await page.locator('#lead .lead-mix-key').count(), 3, 'the troop mix');
+  assert.match(await text('#lead .lead-damage-value'), /\d/, 'the damage per hit');
+  await page.waitForFunction(() => !document.getElementById('own-mix').hidden);
+  if (await page.locator('#march-builder').isHidden()) await page.locator('#allocator-toggle').click();
+  await page.locator('#own-token').uncheck();
+  await page.locator('#own-priority').check();
+  await page.locator('#own-mix').click();
+  const ratio = await page.evaluate(() => ['own-infantry', 'own-cavalry', 'own-archers'].map(id => Number(document.getElementById(id).value)));
+  assert.equal(Math.round(ratio.reduce((a, b) => a + b, 0) * 10) / 10, 100, 'the mix fills the rally ratio');
+  assert.notDeepEqual(ratio, [5, 15, 80]);
 
-  // Back to a full hunt: 14 joins every five minutes, so more join hits.
-  const before = await text('[data-target="bear-damage.total"]');
+  // Back to a full hunt.
   await page.locator('#hunt-players').fill('15');
-  await page.waitForFunction(() => / × 84$/.test(document.querySelector('[data-target="bear-damage.join"]').textContent));
-  assert.notEqual(await text('[data-target="bear-damage.total"]'), before);
+  await page.waitForFunction(() => /to 15\./.test(document.querySelector('[data-i18n="bh.glance.2h"]').textContent));
 
   for (const width of [320, 1280]) {
     await page.setViewportSize({ width, height: 900 });
@@ -91,5 +92,5 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
     assert.equal(wide, false, width + 'px: no sideways scroll');
   }
   assert.deepEqual(errors, []);
-  console.log('Bear Hunt UI: hunt size, small-group rules, builder follow, one-troop rally, damage estimate, reload and widths pass.');
+  console.log('Bear Hunt UI: hunt size, small-group rules, builder follow, one-troop rally, Bear lead calc, reload and widths pass.');
 });

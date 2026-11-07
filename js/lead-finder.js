@@ -162,7 +162,7 @@
     function assessInputs() {
       var facts = I.gather(store, { overview: typed(), usePets: prefs.usePets !== false, rallyTyped: prefs.rallyCap > 0, tierPicked: tierPicked });
       inputs = I.assess(job, facts, { townKnown: L.TOWN_TG });
-      context.targets('inputs').forEach(function (list) { I.paint(list, inputs, { self: 'heroes', label: inputLabel }); });
+      context.targets('inputs').forEach(function (list) { I.paint(list, inputs, { self: context.root.dataset.self || 'heroes', here: (context.root.dataset.here || '').split(' '), label: inputLabel }); });
       return inputs;
     }
     function names(ids) { return ids.map(inputLabel).join(' · '); }
@@ -309,6 +309,8 @@
           legend.appendChild(key);
         });
         answer.append(bar, legend, el('p', 'lead-answer-note', t('mixNote')));
+        // The Bear Hunt page's march builder can fill a leader's own rally with this mix.
+        context.emit('lead-finder:mix', { mix: r.mix.slice() });
         var rc = rallyCap(), march = Math.floor(rc.cap / 15), counts = TYPES.map(function (type, i) { return Math.round(march * r.mix[i]); });
         var damage = el('div', 'lead-damage');
         var sim = L.hunt(you, r.lineup, counts, data, { hunts: 2000, pointsPct: valoraOf() });

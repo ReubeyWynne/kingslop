@@ -35,10 +35,6 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
       await page.goto(base + '/bear-hunt/?lang=' + lang, { waitUntil: 'networkidle' });
       await page.waitForFunction(lang => document.documentElement.lang === lang && window.__BH_I18N_DATA?.[lang], lang);
       await page.evaluate(() => document.fonts.ready);
-      for (const section of ['marches', 'timing']) {
-        const toggle = page.locator('#' + section + ' .section-toggle');
-        if (await toggle.getAttribute('aria-expanded') === 'false') await toggle.click();
-      }
       for (const name of diagrams) {
         const figure = page.locator('.' + name);
         await figure.scrollIntoViewIfNeeded();
@@ -101,10 +97,6 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
         assert.equal(await page.locator('#march-queues > div').count(), 3);
         assert.equal(await page.locator('#march-sample').getAttribute('data-example'), null);
         assert.equal(await button.innerText(), dictionaries[lang]['bh.alloc.edit']);
-        for (const section of ['marches', 'timing']) {
-          const toggle = page.locator('#' + section + ' .section-toggle');
-          if (await toggle.getAttribute('aria-expanded') === 'false') await toggle.click();
-        }
       }
       if (lang === 'en' || lang === 'ar') {
         const other = lang === 'en' ? 'ar' : 'en';
