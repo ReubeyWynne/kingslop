@@ -622,9 +622,11 @@ html[data-page="bearhunt"] .hunt-sub > p + p { margin-top: 0.75rem; }
 }
 
 /* Joining or leading: one switch, and what doesn't apply goes. */
-.march-mode { margin-block: var(--space-s) 0; }
-[data-mode][hidden] { display: none !important; }
-#lead { margin-top: var(--space-m); }
+/* Your own rally: three ways to fill it, side by side. */
+.allocator-own { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; min-width: 0; margin: 0; padding: 0.6rem; border: 1px solid var(--signal-line); }
+.allocator-own legend { padding-inline: 0.3rem; }
+#lead { margin-top: var(--space-l); padding-top: var(--space-m); border-top: 1px solid var(--signal-line); }
+#lead > .lead-title { margin: 0 0 var(--space-s); }
 #timing .hero-permission + .hunt-steps { counter-reset: hunt 2; }
 .allocator-heading { justify-content: flex-end; }
 .lead-flat > h3 { margin: var(--space-m) 0 0.4rem; font: 700 var(--step--1) var(--body); letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
