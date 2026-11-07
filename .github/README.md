@@ -33,28 +33,30 @@ Figures tied to a particular server, alliance, or account are examples. The unde
 
 ## Development
 
-This is a static [Jekyll](https://jekyllrb.com/) site with plain HTML, CSS, and JavaScript. GitHub Pages builds and publishes the site.
+This is a static site with plain HTML, CSS, and JavaScript, built with [Eleventy](https://www.11ty.dev/) (Liquid templates) and published to GitHub Pages by the **Pages** workflow on every push to `main`.
 
-Install Ruby and Jekyll, then run:
-
-```sh
-jekyll serve
-```
-
-Open [http://localhost:4000](http://localhost:4000). To build without running the server:
+Install Node 22 or later, then run:
 
 ```sh
-jekyll build
+npm ci
+npm run serve
 ```
 
-The generated site is written to `../_site/`.
+Open [http://localhost:8080](http://localhost:8080). To build without running the server:
+
+```sh
+npm run build
+```
+
+The generated site is written to `../_site/`. Each page's scripts are joined into one minified bundle (`js/page-<page>.bundle.js`); `npm run debug` serves the site with every script loaded on its own instead, which is easier to step through.
 
 ### Repository layout
 
 | Path | Purpose |
 | --- | --- |
-| `_data/` | Page metadata and the site navigation. |
-| `_includes/`, `_layouts/` | Shared Jekyll page chrome. |
+| `_data/` | Page metadata, the site navigation, and the scripts every page runs (`boot.json`). |
+| `_includes/`, `_layouts/` | Shared page chrome (Liquid). |
+| `eleventy.config.mjs`, `../.eleventy/` | The build: which files are published, the Liquid dialect, and the script bundles. |
 | `bear-hunt/`, `vikings-vengeance/`, `swordland-showdown/`, `events/` | Event guide pages. |
 | `battle-simulator/`, `hero-gear/`, `vip-calculator/` | Interactive tools. |
 | `css/`, `js/` | Shared and page-specific client assets. |
@@ -63,14 +65,14 @@ The generated site is written to `../_site/`.
 
 ## Checks
 
-The **Site check** GitHub Actions workflow runs JavaScript syntax checks, validates JSON data, builds the Jekyll site, and runs calculator and browser checks. **Visual preview** is a manual workflow that captures the pages for review.
+The **Site check** GitHub Actions workflow runs JavaScript syntax checks, validates JSON data, builds the site, and runs calculator and browser checks. **Visual preview** is a manual workflow that captures the pages for review.
 
 Before opening a pull request, run the relevant checks for the page or tool you changed. For example:
 
 ```sh
 node ../.dsh/bear-allocator-check.cjs
 node ../.dsh/hero-gear-check.cjs
-jekyll build
+npm run build
 ```
 
 ## Translations

@@ -4,7 +4,7 @@
   <div class="deck-sheet">
     <header class="deck-header">
       <h2 id="deck-title" data-i18n="ev.ledger.aria">the ledger — every page</h2>
-      <a class="deck-town" href="{{ p.depth }}town-centre/"{% if page.self == 'town' %} aria-current="page"{% endif %}><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M6 26V14l10-7 10 7v12h-7v-7h-6v7z"/></svg><span data-i18n="town.nav">Town Centre</span></a>
+      <a class="deck-town" href="{{ p.depth }}town-centre/"{% if self == 'town' %} aria-current="page"{% endif %}><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M6 26V14l10-7 10 7v12h-7v-7h-6v7z"/></svg><span data-i18n="town.nav">Town Centre</span></a>
       <a class="deck-guide" href="#site-guide" data-guide-replay data-i18n="guide.replayShort">show me how</a>
       <button type="button" class="deck-close" data-i18n="ev.deck.close" autofocus>close</button>
     </header>
@@ -16,7 +16,7 @@
     <div class="deck-stage">
     <div class="deck-viewport">
       {% for n in site.data.nav %}{% assign entry = site.data.pages[n.self] %}
-      <a class="deck-card" href="{{ p.depth }}{{ n.tail }}" data-page="{{ entry.token }}" data-group="{{ n.group }}"{% if n.self == page.self or n.self == page.navSelf %} aria-current="page"{% endif %} tabindex="-1">
+      <a class="deck-card" href="{{ p.depth }}{{ n.tail }}" data-page="{{ entry.token }}" data-group="{{ n.group }}"{% if n.self == self or n.self == navSelf %} aria-current="page"{% endif %} tabindex="-1">
         <span class="deck-card-title" data-i18n="{{ n.labelKey }}">{{ n.label }}</span>
         <div class="deck-ascii" aria-hidden="true">{% include ascii/deck-scene.html token=entry.token %}</div>
         <span class="deck-card-copy">

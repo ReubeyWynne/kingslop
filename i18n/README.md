@@ -62,7 +62,10 @@ window.__BH_I18N_DATA["en"] = {
 
 1. Copy `en.js` → `i18n/<code>.js`, translate every value, and make sure the `<code>`
    inside the wrapper's brackets matches the filename (`["<code>"] =`).
-2. Keep **every key** identical (456 today) — a missing key falls back to English.
+2. Keep **every key** identical — a missing key falls back to English. `node .dsh/i18n-parity-check.cjs`
+   (run in CI) fails when English gains a key a dictionary lacks, when a dictionary keeps a key
+   English dropped, or when a translation's `{tokens}` differ from English. The keys that were
+   already untranslated are listed in `.dsh/i18n-baseline.json`; translate them off the list.
 3. Keep all HTML tags, classes and ids byte-identical; translate only the text inside.
 4. Never alter numbers, math symbols (`√ × ÷ ≈ Σ ∝ ≤ →`), `{n}`, or proper nouns
    (Bear Hunt, Forgehammer, Frakinator, [2129]MadNess, player names).

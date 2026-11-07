@@ -527,13 +527,11 @@
 
   // The worker keeps a long sweep off the page's thread. If it cannot start
   // (an old browser, a blocked file:// worker), the same engine runs here.
+  // The site root, read from this script's own URL while it runs: it sits in js/, whether it
+  // loads on its own or inside the page's bundle (js/page-*.bundle.js).
+  var SCRIPT_SRC = (document.currentScript && document.currentScript.src) || '';
   function scriptBase() {
-    var tags = document.getElementsByTagName('script');
-    for (var i = 0; i < tags.length; i++) {
-      var src = tags[i].src || '';
-      if (src.indexOf('js/sim.js') !== -1) return src.replace(/js\/sim\.js[^/]*$/, '');
-    }
-    return '';
+    return SCRIPT_SRC ? SCRIPT_SRC.replace(/js\/[^/]*$/, '') : '';
   }
 
   var sweepWorker = null, sweepSeq = 0, sweepBusy = false;

@@ -1,4 +1,4 @@
-{% assign p = site.data.pages[page.self] %}<!DOCTYPE html>
+{% assign p = site.data.pages[self] %}<!DOCTYPE html>
 <html lang="en" data-page="{{ p.token }}"{% if p.swipePrev %} data-prev-url="{{ p.swipePrev.url }}" data-prev-page="{{ p.swipePrev.page }}" data-prev-title="{{ p.swipePrev.title }}" data-prev-lede="{{ p.swipePrev.lede }}"{% endif %}{% if p.swipeNext %} data-next-url="{{ p.swipeNext.url }}" data-next-page="{{ p.swipeNext.page }}" data-next-title="{{ p.swipeNext.title }}" data-next-lede="{{ p.swipeNext.lede }}"{% endif %}>
 <head>
 {% include head.html %}
@@ -22,16 +22,17 @@
 
 {% include screen-import.html %}
 
-{% capture boot %}{{ p.depth }}js/player-ledger.js {{ p.depth }}js/unit-input.js {{ p.depth }}js/interactions.js {{ p.depth }}js/player-modules.js {{ p.depth }}js/import-queue.js {{ p.depth }}js/screen-import.js {{ p.depth }}js/server-age.js {{ p.depth }}js/kingdom-progression.js {{ p.depth }}js/site-guide.js {{ p.scripts | join: ' ' }} {{ p.depth }}js/deep-link.js{% endcapture %}{% assign boot = boot | split: ' ' %}{% unless p.lateBoot %}{% for s in boot %}<script defer src="{{ s }}?v={{ site.time | date: '%s' }}"></script>
+{% comment %} Every page runs the shared scripts in _data/boot.json around its own (pages.json scripts). The build joins them into two bundles, the site's and the page's (site.bundles); `npm run debug` builds without, and each loads on its own. {% endcomment %}{% assign v = site.time | date: '%s' %}{% if site.bundles %}{% assign b = site.bundles.pages[self] %}{% capture boot %}{{ p.depth }}{{ site.bundles.shared.file }}?v={{ site.bundles.shared.v }} {{ p.depth }}{{ b.file }}?v={{ b.v }}{% endcapture %}{% else %}{% capture boot %}{% for s in site.data.boot.before %}{{ p.depth }}{{ s }}?v={{ v }} {% endfor %}{% for s in p.scripts %}{{ s }}?v={{ v }} {% endfor %}{% for s in site.data.boot.after %}{{ p.depth }}{{ s }}?v={{ v }}{% endfor %}{% endcapture %}{% endif %}{% assign boot = boot | split: ' ' %}{% unless p.lateBoot %}{% for s in boot %}<script defer src="{{ s }}"></script>
 {% endfor %}{% endunless %}{% if p.lateBoot or p.lateScripts %}<script>
 /* A lateBoot page (pages.json) starts its scripts once the page has painted, so its first paint
    waits on nothing but the stylesheets; they keep their listed order, as defer would.
+   The boot list already carries its ?v= (a bundle's is a hash of its contents).
    What only a returning player's save needs (lateCss, lateScripts) follows: when the head
    script marked a save, or on the save's first write. Its styles land before its scripts. */
 (function () {
   var boot = {% if p.lateBoot %}{{ boot | jsonify }}{% else %}[]{% endif %}, css = {{ p.lateCss | jsonify }} || [], js = {{ p.lateScripts | jsonify }} || [], v = '?v={{ site.time | date: '%s' }}', started = false;
-  function add(list, done) {
-    list.forEach(function (src, i) { var s = document.createElement('script'); s.src = src + v; s.async = false; if (done && i === list.length - 1) s.onload = s.onerror = done; document.body.appendChild(s); });
+  function add(list, done, versioned) {
+    list.forEach(function (src, i) { var s = document.createElement('script'); s.src = versioned ? src : src + v; s.async = false; if (done && i === list.length - 1) s.onload = s.onerror = done; document.body.appendChild(s); });
     if (done && !list.length) done();
   }
   function corner() {
@@ -45,7 +46,7 @@
     if (document.documentElement.classList.contains('has-save')) return corner();
     try { var off = window.PlayerLedger.shared().subscribe(function () { off(); corner(); }); } catch (e) { /* no store: nothing to show */ }
   }
-  window.__bhAfterPaint(function () { add(boot, save); });
+  window.__bhAfterPaint(function () { add(boot, save, true); });
 })();
 </script>
 {% endif %}</body>

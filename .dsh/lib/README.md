@@ -38,4 +38,4 @@ NODE_PATH="$CODEX_PRIMARY_RUNTIME_NODE_MODULES" node --test .dsh/lib/browser-har
 ```
 
 The tests use temporary fixtures and mock browser launches; they need Playwright
-on the module path but do not require `_site`, Jekyll, or a Chromium binary.
+on the module path but do not require `_site`, a site build, or a Chromium binary.

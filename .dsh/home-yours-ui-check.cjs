@@ -1,4 +1,4 @@
-// Home's own corner (js/home-yours.js), after a Jekyll build: hidden on an empty save, then once
+// Home's own corner (js/home-yours.js), after `npm run build`: hidden on an empty save, then once
 // the save holds something it shows today on the 28-day clock and what the save is holding, each linking to its page; it follows the save live, and
 // reads in every language at 320px. Its scripts and styles stay off first paint: an empty save
 // never fetches them, and a save fetches them once the page has loaded. Screenshots in .dsh/home-preview/.

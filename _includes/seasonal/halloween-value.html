@@ -1,4 +1,4 @@
-{% assign event = site.data.seasonal.halloween_party %}{% assign depth = site.data.pages[page.self].depth %}
+{% assign event = site.data.seasonal.halloween_party %}{% assign depth = site.data.pages[self].depth %}
 <main class="seasonal-page" lang="en" dir="ltr" data-module="seasonal" data-occurrence="halloween-2026" data-worker="{{ depth }}js/halloween-worker.js?v={{ site.time | date: '%s' }}" data-depth="{{ depth }}">
   <header class="candy-heading"><img class="candy-event-art" src="{{ depth }}img/seasonal/pumpkin-man.png" width="64" height="64" alt="Pumpkin Man"><p class="candy-kicker">Halloween Party · 2026</p><h1>What’s your candy worth?</h1></header>
   <section id="planner" class="candy-now" aria-labelledby="candy-label">
