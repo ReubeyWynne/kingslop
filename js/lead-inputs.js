@@ -109,11 +109,12 @@
   }
 
   // An input's link from the page it's shown on: an anchor on the same page,
-  // otherwise the page beside it.
-  function href(id, self) {
+  // otherwise the page beside it. here lists inputs a page fills in itself
+  // (the Bear Hunt page carries its own Bonus Overview), linked in place.
+  function href(id, self, here) {
     var at = WHERE[id];
     if (!at) return '#';
-    if (at.page === self) return '#' + at.hash;
+    if (at.page === self || (here && here.indexOf(id) !== -1)) return '#' + at.hash;
     return '../' + at.page + '/' + (at.hash ? '#' + at.hash : '');
   }
 
@@ -128,7 +129,7 @@
       li.dataset.have = item.have;
       li.dataset.input = item.id;
       if (item.core) li.dataset.core = '';
-      a.href = href(item.id, opts.self);
+      a.href = href(item.id, opts.self, opts.here);
       a.textContent = opts.label ? opts.label(item.id) : LABELS[item.id];
       li.appendChild(a);
       list.appendChild(li);

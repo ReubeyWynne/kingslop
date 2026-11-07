@@ -175,7 +175,8 @@
     },
     "css": [
       "../css/styles.css",
-      "../css/events.css"
+      "../css/events.css",
+      "../css/heroes.css"
     ],
     "scripts": [
       "../js/i18n.js",
@@ -193,7 +194,7 @@
       "../js/lead-engine.js",
       "../js/lead-inputs.js",
       "../js/lead-account.js",
-      "../js/bear-damage.js"
+      "../js/lead-finder.js"
     ],
     "footMainKey": "",
     "footMain": "BEAR HUNT",

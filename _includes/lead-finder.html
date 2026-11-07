@@ -1,0 +1,93 @@
+{% comment %} The lead finder. The Heroes page shows all three jobs; include.bear shows the Bear
+   job alone, for the Bear Hunt page, with its inputs laid out flat. {% endcomment %}{% assign stat_ids = 'attack,lethality,defense,health' | split: ',' %}
+  <section class="section lead-finder" id="{% if include.bear %}lead{% else %}leads{% endif %}" data-module="lead-finder" data-screen-import-sheet="bonus-overview"{% if include.bear %} data-self="bear-hunt" data-here="overview troops rally"{% endif %} aria-labelledby="leads-title">
+    {% if include.bear %}<h2 id="leads-title" data-i18n="bh.lead.title">Lead a rally</h2>
+    {% else %}<h2 id="leads-title" data-i18n="leads.title">Your best leads</h2>
+    <fieldset class="lead-jobs" disabled data-target="lead-finder.controls">
+      <legend data-i18n="leads.job">Job</legend>
+      <label><input type="radio" name="lead-job" value="bear" checked data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.bear">Bear lead</span></label>
+      <label><input type="radio" name="lead-job" value="rally" data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.rally">Rally lead</span></label>
+      <label><input type="radio" name="lead-job" value="garrison" data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.garrison">Garrison lead</span></label>
+    </fieldset>{% endif %}
+    <ul class="inputs lead-inputs" data-target="lead-finder.inputs" aria-labelledby="leads-title"></ul>
+    <button type="button" class="lead-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="leads.drop.title">Fill these in from screenshots</strong></button>
+    <button type="button" class="explain" popovertarget="bonus-shots" data-i18n="leads.shots.open">Which screenshots?</button>
+    <div class="explainer" id="bonus-shots" popover>
+      <h3 data-i18n="leads.shots.title">Your Bonus Overview and hero gear</h3>
+      <ol class="explainer-steps">
+        <li><img src="../img/screen-import/bonus-overview-1-power.webp" alt="" width="600" height="256" loading="lazy" decoding="async"><span data-i18n="leads.shots.power">Tap your power, in your town or on the world map.</span></li>
+        <li><img src="../img/screen-import/bonus-overview-2-top.webp" alt="" width="600" height="646" loading="lazy" decoding="async"><span data-i18n="leads.shots.top">Take a screenshot of the Military list.</span></li>
+        <li><img src="../img/screen-import/bonus-overview-3-end.webp" alt="" width="600" height="643" loading="lazy" decoding="async"><span data-i18n="leads.shots.end">Scroll to the end and take another.</span></li>
+        <li><img src="../img/screen-import/hero-gear-1-tab.webp" alt="" width="600" height="188" loading="lazy" decoding="async"><span data-i18n="gear.shots.tab">Open a hero and tap Gear.</span></li>
+        <li><img src="../img/screen-import/hero-gear-2-pieces.webp" alt="" width="600" height="308" loading="lazy" decoding="async"><span data-i18n="gear.shots.pieces">Take a screenshot with all four pieces in it.</span></li>
+      </ol>
+      <button type="button" class="explainer-close" popovertarget="bonus-shots" popovertargetaction="hide" data-i18n-key="leads.shots.close" data-i18n-attr="aria-label" aria-label="Close">×</button>
+    </div>
+    {% if include.bear %}<div class="lead-overview lead-flat" id="bonus-overview">
+      <h3 data-i18n="leads.overview">Your Bonus Overview</h3>{% else %}<details class="lead-overview" id="bonus-overview">
+      <summary data-i18n="leads.overview">Your Bonus Overview</summary>{% endif %}
+      <fieldset class="lead-stats" disabled data-target="lead-finder.controls">
+        <table class="lead-stats-table">
+          <thead><tr><td></td>{% for stat in stat_ids %}<th scope="col" data-i18n="leads.stat.{{ stat }}">{{ stat }}</th>{% endfor %}</tr></thead>
+          {% assign overview_rows = 'squads,inf,cav,arc' | split: ',' %}<tbody>{% for troop in overview_rows %}<tr{% if troop == 'squads' %} class="lead-squads"{% endif %}><th scope="row" {% if troop == 'squads' %}data-i18n="leads.squads">Squads'{% else %}data-i18n="sim.calc.{{ troop }}">{{ troop }}{% endif %}</th>{% for stat in stat_ids %}<td><input type="number" min="0" max="100000" step="0.1" inputmode="decimal" placeholder="?" aria-label="{{ troop }} {{ stat }} %" data-stat="{{ troop }}.{{ stat }}" data-target="lead-finder.stat" data-action="lead-finder.edit"></td>{% endfor %}</tr>{% endfor %}</tbody>
+        </table>
+        <div class="lead-troops">
+          <label><span data-i18n="leads.tier">Troop tier</span><select data-target="lead-finder.tier" data-action="lead-finder.run">{% for tier in (1..11) %}<option value="{{ tier }}">T{{ tier }}</option>{% endfor %}</select></label>
+          <label><span data-i18n="leads.tg">Truegold</span><select data-target="lead-finder.tg" data-action="lead-finder.run">{% for tg in (0..8) %}<option value="{{ tg }}">{% if tg == 0 %}—{% else %}TG{{ tg }}{% endif %}</option>{% endfor %}</select></label>
+          <label class="lead-rally-cap"><span data-i18n="leads.rallyCap">Bear rally capacity</span><input type="number" min="15" max="100000000" step="1" inputmode="numeric" data-target="lead-finder.rallyCap" data-action="lead-finder.extras"></label>
+        </div>
+        <p class="hero-mine-note"><output class="seal" data-target="lead-finder.saved" role="status"></output></p>
+      </fieldset>
+    {% if include.bear %}</div>{% else %}</details>{% endif %}
+    <details class="lead-extras" id="lead-extras">
+      <summary data-i18n="leads.extras">Joiners, pets and city buffs</summary>
+      <fieldset class="lead-joiners" disabled data-target="lead-finder.controls">
+        <legend data-target="lead-finder.joinersTitle">Joiners</legend>
+        {% assign joiner_heroes = site.data.heroes.heroes | sort: 'name' %}{% for slot in (0..3) %}<div class="lead-joiner">
+          <label><span data-i18n="leads.joiner" data-i18n-n="{{ forloop.index }}">Joiner {{ forloop.index }}</span><select data-joiner="{{ slot }}" data-field="key" data-target="lead-finder.joiner" data-action="lead-finder.extras"><option value="">—</option>{% for hero in joiner_heroes %}<option value="{{ hero.key }}">{{ hero.name | escape }}</option>{% endfor %}</select></label>
+          <label><span data-i18n="leads.joinerLevel">Skill level</span><select data-joiner="{{ slot }}" data-field="level" data-target="lead-finder.joiner" data-action="lead-finder.extras">{% for level in (1..5) %}<option value="{{ level }}"{% if level == 5 %} selected{% endif %}>{{ level }}</option>{% endfor %}</select></label>
+        </div>{% endfor %}
+        <button type="button" class="directory-reset" data-action="lead-finder.resetJoiners" data-i18n="leads.joinersReset">Use the usual joiners</button>
+      </fieldset>
+      <fieldset class="lead-city" disabled data-target="lead-finder.controls">
+        <legend data-i18n="leads.city">City buffs</legend>
+        {% assign city_ids = 'attack,lethality,defense,health,enemyAttack,enemyDefense' | split: ',' %}{% for buff in city_ids %}<label><span data-i18n="leads.city.{{ buff }}">{{ buff }}</span><select data-city="{{ buff }}" data-target="lead-finder.city" data-action="lead-finder.extras"><option value="0">—</option><option value="10">I · 10%</option><option value="20">II · 20%</option></select></label>{% endfor %}
+      </fieldset>
+      <fieldset class="lead-pets" disabled data-target="lead-finder.controls">
+        <legend data-i18n="leads.pets">Pets</legend>
+        <label class="hero-own"><input type="checkbox" checked data-target="lead-finder.usePets" data-action="lead-finder.extras"><span data-i18n="leads.usePets">Use my pets’ skills</span></label>
+        <p class="note" data-target="lead-finder.pets"></p>
+      </fieldset>
+    </details>
+    <p class="note" data-target="lead-finder.status" aria-live="polite"></p>
+    <article class="lead-best" data-target="lead-finder.best" hidden aria-labelledby="lead-best-title">
+      <header class="lead-best-head"><div class="lead-kicker" id="lead-best-title"><span data-target="lead-finder.bestTitle">Your best lead</span><details class="src" id="lead-best-est" data-src="est" data-target="lead-finder.estMark" hidden><summary aria-label="Estimate" data-i18n-key="leads.est" data-i18n-attr="aria-label"></summary><span class="motif-names" data-target="lead-finder.estNames"></span></details></div><p class="lead-verdict" data-target="lead-finder.verdict"></p><ul class="unknowns lead-unknowns" data-target="lead-finder.unknowns" hidden></ul></header>
+      <div class="lead-best-trio" data-target="lead-finder.trio"></div>
+      <div class="lead-best-body">
+        <div class="lead-best-answer" data-target="lead-finder.answer"></div>
+        <div class="lead-best-panel">
+          <p class="lead-kicker" data-i18n="leads.panelTitle">Your report should read about</p>
+          <table class="lead-panel-table"><thead><tr><td></td>{% for stat in stat_ids %}<th scope="col" data-i18n="leads.stat.{{ stat }}">{{ stat }}</th>{% endfor %}</tr></thead><tbody data-target="lead-finder.panel"></tbody></table>
+          <p class="lead-panel-note" data-i18n="leads.panelNote">Before joiners, with your hero gear and Truegold.</p>
+        </div>
+      </div>
+    </article>
+    <p class="lead-kicker lead-next-title" data-target="lead-finder.nextTitle" hidden data-i18n="leads.nextTitle">The next four</p>
+    <ol class="lead-list" data-target="lead-finder.list"></ol>
+    {% unless include.bear %}<div class="lead-foes" data-target="lead-finder.foes" hidden>
+      <h3 data-i18n="leads.foes">The opponents</h3>
+      <p class="note" data-target="lead-finder.foesNote"></p>
+      <ul class="lead-foe-list">{% for foe in site.data.megafauna.foes %}
+        <li data-foe="{{ foe.id }}"><b data-i18n="leads.foe.{{ foe.id }}">{{ foe.name | escape }}</b> <span data-i18n="leads.foe.{{ foe.id }}.note">{{ foe.summary | escape }}</span> <small class="lead-foe-kit" data-foe-kit="{{ foe.id }}"></small></li>{% endfor %}
+      </ul>
+    </div>
+    <details class="lead-method" id="lead-method">
+      <summary data-i18n="leads.method">How the ranking works</summary>
+      <p data-i18n="leads.method.stats">Your Bonus Overview is your account before any hero is seated, which is why a battle report won’t do. Each hero then adds its stars, widget, gear and Expedition skills, and your Truegold adds to every march. A widget skill only counts in its own job.</p>
+      <p data-i18n="leads.method.bear">For the Bear, a lineup scores its expected damage at its best troop mix, with chance skills at their average.</p>
+      <p data-i18n="leads.method.fight">For rallies and garrisons, a lineup fights each stock opponent 24 times, and lineups rank by how many more troops they keep.</p>
+      <p data-i18n="leads.method.layers">City buffs and pets multiply as separate layers. Against the Bear, only attack and lethality buffs count.</p>
+      <p data-i18n="leads.method.limits">Appointments, turrets and lineups with two heroes of one troop type aren’t counted. The stock opponents are estimates from the KingShot Battle Helper’s benchmarks, not real players.</p>
+    </details>
+    {% endunless %}<noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
+  </section>
