@@ -16,7 +16,7 @@ This roadmap extends the current site; it does not propose a new application.
 
 - The site is a static Jekyll/GitHub Pages tool suite. Pages and their navigation are described by `_data/nav.json` and `_data/pages.json`; shared page behaviour lives in `js/common.js`.
 - Hero data already exists in `_data/heroes.json`.
-- `hero-gear/` is the established optimiser pattern: resource inputs, a saved local ledger, JSON export/import, an upgrade engine (`js/hero-gear-engine.js`) and screenshot import through the site-wide import panel (`js/import-adapters/hero-gear.js` over `js/hero-gear-ocr.js` + `js/ocr-worker.js`).
+- `hero-gear/` is the established optimiser pattern: resource inputs, a saved local ledger, JSON export/import, an upgrade engine (`js/hero-gear-engine.mjs`) and screenshot import through the site-wide import panel (`js/import-adapters/hero-gear.js` over `js/hero-gear-ocr.js` + `js/ocr-worker.js`).
 - `events/` and `js/kvk.js` already model the 28-day cycle, KvK prep, Strongest Governor, Alliance Brawl and their point-bearing items. Governor gear and governor charms are already recognised as scoring actions, but the page does not know a player's holdings.
 - The repository is deliberately client-side. Player data must remain local-first; there is no server account or shared database to introduce.
 
@@ -66,7 +66,7 @@ Use a small DOM-oriented convention, not an SPA framework and not a generic virt
 - Modules communicate through named browser events and the shared store—not direct calls between page-sized scripts.
 - Each action updates a bounded target region and emits a semantic event; another tool can listen without importing its controller.
 - The static page remains meaningful before enhancement. JavaScript adds persistence, calculation, import and live results.
-- Keep domain logic pure and separate from DOM wiring, following the existing `hero-gear-engine.js` pattern.
+- Keep domain logic pure and separate from DOM wiring, following the existing `hero-gear-engine.mjs` pattern.
 
 The goal is an HTMX/Alpine/Datastar *feel*: inspectable markup, local behaviour and composable fragments—while remaining compatible with the static GitHub Pages deployment.
 

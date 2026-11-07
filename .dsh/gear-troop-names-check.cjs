@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const { withBrowser } = require('./lib/browser-harness.cjs');
-const E = require('../js/hero-gear-engine.js');
+const E = require('../js/hero-gear-engine.mjs');
 const langs = JSON.parse(fs.readFileSync('_data/langs.json', 'utf8')).map(l => l.h).filter(h => fs.existsSync('i18n/' + h + '.js'));
 const dict = lang => { const sandbox = { window: {} }; vm.runInNewContext(fs.readFileSync('i18n/' + lang + '.js', 'utf8'), sandbox); return sandbox.window.__BH_I18N_DATA[lang]; };
 const codes = E.TYPES.concat(E.SLOTS);

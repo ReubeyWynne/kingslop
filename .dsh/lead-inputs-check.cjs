@@ -2,7 +2,7 @@
 // from, read from a save, and when the result is provisional.
 const assert = require('node:assert/strict');
 const I = require('../js/lead-inputs.js');
-const L = require('../js/lead-engine.js');
+const L = require('../js/lead-engine.mjs');
 const row = { attack: 300, lethality: 280, defense: 300, health: 270 };
 const piece = { quality: 'mythic', level: 40, mastery: 5 };
 // A stand-in for PlayerLedger.shared(): only the reads gather() makes.

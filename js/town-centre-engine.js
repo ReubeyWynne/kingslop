@@ -9,7 +9,7 @@
    emblems and manuscripts only what your masters can take (MasterSpend). Inventory
    is spent once, so an event's best total puts each holding on the day it scores most. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/event_rules.json'), require('./event-rules.js'), require('./governor-engine.js'), require('./hero-spend.js'), require('./hero-gear-engine.js'), require('./building-spend.js'), require('./troop-spend.js'), require('./master-spend.js'), require('./player-ledger.js'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/event_rules.json'), require('./event-rules.js'), require('./governor-engine.js'), require('./hero-spend.js'), require('./hero-gear-engine.mjs'), require('./building-spend.js'), require('./troop-spend.js'), require('./master-spend.js'), require('./player-ledger.js'));
   else root.TownCentre = factory(root.EventRuleData, root.EventRules, root.Governor, root.HeroSpend, root.HeroGear, root.BuildingSpend, root.TroopSpend, root.MasterSpend, root.PlayerLedger);
 })(typeof window === 'object' ? window : globalThis, function (data, rules, governor, heroes, gearEngine, buildingSpend, troopSpend, masterSpend, ledger) {
   'use strict';

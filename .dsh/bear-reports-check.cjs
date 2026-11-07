@@ -1,10 +1,10 @@
-// Bear reports check — _data/bear-reports.json against the battle engine's Bear (js/battle-engine.js
+// Bear reports check — _data/bear-reports.json against the battle engine's Bear (js/battle-engine.mjs
 // BEAR). Every entry is simulated at the current Bear defence; the defence each entry asks for is
 // that defence × simulated ÷ seen (damage is inversely proportional to it). The game's own hits
 // decide, weighted by how many there are; the Frakinator's run stands in while there are none.
 // Run it after adding an entry: it prints the refitted defence to put in BEAR.def.
 const assert = require('node:assert/strict');
-const E = require('../js/battle-engine.js'), C = require('../js/combat.js');
+const E = require('../js/battle-engine.mjs'), C = require('../js/combat.mjs');
 const combat = require('../_data/combat.json'), log = require('../_data/bear-reports.json');
 const data = { heroSkills: combat.heroSkills, widgets: combat.widgets, widgetSkill: combat.widgetSkill };
 const rows = log.reports.map(r => {

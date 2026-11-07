@@ -24,7 +24,7 @@
    `scores`, so the page can say to spend it then. Unknown facts become "record" steps and
    never count as zero. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/upgrade_priority.json'), require('../_data/buildings.json'), require('../_data/heroes.json').heroes, require('../_data/pets.json'), require('../_data/governor.json'), require('./hero-spend.js'), require('./master-spend.js'), require('./hero-gear-engine.js'), require('./governor-engine.js'), require('./player-ledger.js'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('../_data/upgrade_priority.json'), require('../_data/buildings.json'), require('../_data/heroes.json').heroes, require('../_data/pets.json'), require('../_data/governor.json'), require('./hero-spend.js'), require('./master-spend.js'), require('./hero-gear-engine.mjs'), require('./governor-engine.js'), require('./player-ledger.js'));
   else root.UpgradePriority = factory(root.UpgradePriorityData, root.BuildingData, root.HeroCatalogue, root.PetData, root.GovernorData, root.HeroSpend, root.MasterSpend, root.HeroGear, root.Governor, root.PlayerLedger);
 })(typeof window === 'object' ? window : globalThis, function (rules, buildingData, catalogue, petData, governorData, heroSpend, masterSpend, heroGear, governor, ledger) {
   'use strict';
