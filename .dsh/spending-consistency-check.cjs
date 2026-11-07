@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const Ledger = require('../js/player-ledger.js');
-const Gear = require('../js/hero-gear-engine.js');
+const Gear = require('../js/hero-gear-engine.mjs');
 const Town = require('../js/town-centre-engine.js');
 const Rules = require('../js/event-rules.js');
 const HeroSpend = require('../js/hero-spend.js');

@@ -1,8 +1,8 @@
-// Lead engine check — js/lead-engine.js, the Heroes page's lead finder.
+// Lead engine check — js/lead-engine.mjs, the Heroes page's lead finder.
 // Pins how a hero's stars, widget and skills reach the Bonus Details, the
 // Bear score, the stock megafauna opponents and the ranking.
 const assert = require('node:assert/strict');
-const L = require('../js/lead-engine.js');
+const L = require('../js/lead-engine.mjs');
 const catalogue = require('../_data/heroes.json'), combat = require('../_data/combat.json'), megafauna = require('../_data/megafauna.json'), petData = require('../_data/pets.json');
 const data = {
   curve: catalogue.curve,
@@ -117,7 +117,7 @@ near(L.uptime({ kind: 'everyN', every: 4, offset: 3, turns: 1 }), 0.2, 'every fo
 // Bear damage on the game's Damage Points: √N in the march size, Valora's talent on top.
 {
   const plain = n => ({ n, tier: [10, 10, 10], tg: [0, 0, 0], atk: [300, 300, 300], let: [300, 300, 300], skills: [] });
-  const E = require('../js/battle-engine.js');
+  const E = require('../js/battle-engine.mjs');
   near(E.bearHunt(plain([0, 0, 400000]), 1).mean / E.bearHunt(plain([0, 0, 100000]), 1).mean, 2, 'four times the troops, twice the damage', 0.01);
   near(E.bearHunt(plain([0, 0, 100000]), 1, 1, 30).mean / E.bearHunt(plain([0, 0, 100000]), 1).mean, 1.3, 'Valora at +30%');
   assert.equal(E.bearHunt(plain([0, 0, 100000]), 500).hunts, 500, 'archers volley, so hunts differ');
@@ -233,12 +233,12 @@ assert.equal(L.opponent(megafauna.foes[3], 4, 'garrison', data).lineup[2].key, '
   assert.ok(fight.widgets[30] !== null, 'a 5★ Rosa catches Marlin in a rally');
 }
 
-// The Bear (js/battle-engine.js BEAR, fitted by .dsh/bear-reports-check.cjs) against the
+// The Bear (js/battle-engine.mjs BEAR, fitted by .dsh/bear-reports-check.cjs) against the
 // Frakinator's battle-engine Bear on 5 November 2026: the owner's rally report stats, T10 TG4 /
 // TG3 / TG4, Amadeus, Petra, Marlin with every skill at 5, Chenko ×2 and Amane ×2, Valora 24% →
 // 51.6M at 10/32/58, and 54.6M with 80% of hunts in 46.3M–63.2M at its best mix, 2/12/86.
 {
-  const E = require('../js/battle-engine.js'), C = require('../js/combat.js');
+  const E = require('../js/battle-engine.mjs'), C = require('../js/combat.mjs');
   const lineup = [copy('amadeus', 22, 4), copy('petra', 27, 3), copy('marlin', 30, 10)];
   const report = { atk: [631.5, 654.9, 698.6], let: [468.7, 415.7, 693.9] }, tg = [4, 3, 4];
   const skills = levels => C.side(data, { role: 'rally', heroes: lineup.map((c, i) => ({ key: c.key, levels: levels[i], widget: 0 })), joiners: ['chenko', 'chenko', 'amane', 'amane'].map(key => ({ key, level: 5 })) });

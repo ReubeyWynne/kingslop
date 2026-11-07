@@ -59,7 +59,7 @@ assert.throws(() => G.plan('gear', gear, bag, { profile: 'whale' }));
 assert.deepEqual(G.profiles(), ['bear', 'growth', 'combat', 'gen4', 'garrison', 'equal', 'score', 'custom']);
 // One set of priority profiles: Governor gear's are Hero gear's, same names, order and weights.
 {
-  const hero = require('../js/hero-gear-engine.js').PROFILES;
+  const hero = require('../js/hero-gear-engine.mjs').PROFILES;
   assert.deepEqual(JSON.parse(JSON.stringify(hero)), data.profiles, 'Hero gear and Governor gear share their profiles');
   assert.deepEqual(Object.keys(hero), G.profiles().slice(0, 6));
   assert.deepEqual(G.weights({ profile: 'growth' }), { inf: 2.2, cav: 0.6, arc: 2.1 }, 'a troop weight is lethality plus health');

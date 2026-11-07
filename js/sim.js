@@ -5,14 +5,14 @@
    - Bear ratio: the lead's ideal troop mix (MATHS.md §4–5).
    - Bear march: your own march's split measured against that ratio.
    - Mystic Trial: the stage from its report, fought by the battle engine
-     (js/battle-engine.js), plus a sweep of every mix of your march.
+     (js/battle-engine.mjs), plus a sweep of every mix of your march.
    - Battle: any two sides you can type, fought the same way.
    Strings come from the active dictionary (sim.* keys, English fallback) and
    the page re-paints on i18n:change, so a language switch mid-session shows
    the new language and locale-formatted numbers.
 
    Heroes join the fights (Mystic Trial and Battle): each side picks three
-   leads and up to four joiners, and js/combat.js turns their skills into the
+   leads and up to four joiners, and js/combat.mjs turns their skills into the
    engine's effects. Only skills are added — a hero's stats and gear are
    already in the report's Bonus Details. The bear modes stay hero-less: an
    ALL-TROOP skill cancels out of a bear split (SIM-PROPOSAL.md §10). */

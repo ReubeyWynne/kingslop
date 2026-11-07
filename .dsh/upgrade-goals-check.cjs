@@ -3,7 +3,7 @@
 // keys exist in every dictionary with matching placeholders.
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
 const Goals = require('../js/upgrade-goals.js'), Ledger = require('../js/player-ledger.js');
-const B = require('../js/building-spend.js'), HS = require('../js/hero-spend.js'), H = require('../js/hero-gear-engine.js'), G = require('../js/governor-engine.js'), PP = require('../js/pet-plan.js'), MS = require('../js/master-spend.js');
+const B = require('../js/building-spend.js'), HS = require('../js/hero-spend.js'), H = require('../js/hero-gear-engine.mjs'), G = require('../js/governor-engine.js'), PP = require('../js/pet-plan.js'), MS = require('../js/master-spend.js');
 const rules = require('../_data/upgrade_priority.json');
 function storage() { const values = new Map(); return { getItem: k => values.has(k) ? values.get(k) : null, setItem: (k, v) => values.set(k, v), removeItem: k => values.delete(k) }; }
 const store = Ledger.create(storage());

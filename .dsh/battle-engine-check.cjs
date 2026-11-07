@@ -1,8 +1,8 @@
-// Battle engine check — js/battle-engine.js, the model behind the simulator's
+// Battle engine check — js/battle-engine.mjs, the model behind the simulator's
 // Mystic Trial sweep and battle mode. Pins the troop table, the kill formula,
 // the troop skills, determinism and the sweep grid.
 const assert = require('node:assert/strict');
-const E = require('../js/battle-engine.js');
+const E = require('../js/battle-engine.mjs');
 
 const stats = v => ({ atk: [v, v, v], let: [v, v, v], def: [v, v, v], hea: [v, v, v] });
 const side = (n, tier, v) => Object.assign({ n, tier: [tier, tier, tier], tg: [0, 0, 0] }, stats(v));

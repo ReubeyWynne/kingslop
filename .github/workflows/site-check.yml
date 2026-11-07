@@ -89,6 +89,7 @@ jobs:
               - '**/*.html'
               - '**/*.css'
               - '**/*.js'
+              - '**/*.mjs'
               - '**/*.cjs'
               - '**/*.liquid'
               - '**/*.json'
@@ -103,6 +104,7 @@ jobs:
               - _includes/ascii/**
               - css/**
               - js/*.js
+              - js/*.mjs
             interactions:
               - *shared
               - .dsh/interaction-modules-check.cjs
@@ -132,8 +134,8 @@ jobs:
               - js/hero-points.js
               - js/hero-data.liquid
               - js/lead-*
-              - js/battle-engine.js
-              - js/combat.js
+              - js/battle-engine.mjs
+              - js/combat.mjs
               - _data/combat.json
               - _data/megafauna.json
               - js/event-rules.js
@@ -185,7 +187,7 @@ jobs:
               - events/**
               - js/event-*
               - js/kvk.js
-              - js/hero-gear-engine.js
+              - js/hero-gear-engine.mjs
               - js/hero-spend.js
               - js/hero-data.liquid
               - _data/heroes.json
@@ -228,7 +230,7 @@ jobs:
               - js/town-centre*.js
               - js/event-*
               - js/governor-*
-              - js/hero-gear-engine.js
+              - js/hero-gear-engine.mjs
               - _data/event_rules.json
               - _data/governor.json
               - css/town.css
@@ -270,7 +272,7 @@ jobs:
               - js/hero-spend.js
               - js/master-*
               - _data/masters.json
-              - js/hero-gear-engine.js
+              - js/hero-gear-engine.mjs
               - js/governor-*
               - _data/governor.json
               - js/building-*
@@ -304,6 +306,7 @@ jobs:
               - pets/**
               - masters/**
               - js/hero-gear*.js
+              - js/hero-gear*.mjs
               - js/governor-*
               - js/pet-*
               - js/master-*
@@ -346,6 +349,7 @@ jobs:
               - i18n/**
               - hero-gear/**
               - js/hero-gear*.js
+              - js/hero-gear*.mjs
               - js/ocr-worker.js
               - js/ocr-client.js
               - js/ocr-text.js
@@ -397,11 +401,15 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
+      # The checks require() the engines in js/*.mjs, which needs Node 22.12 or later.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
       - name: Check JavaScript syntax
         if: needs.changes.outputs.logic == 'true'
         shell: bash
         run: |
-          find js i18n .dsh -type f \( -name '*.js' -o -name '*.cjs' \) -print0 |
+          find js i18n .dsh -type f \( -name '*.js' -o -name '*.cjs' -o -name '*.mjs' \) -print0 |
           while IFS= read -r -d '' file; do
             node --check "$file"
           done

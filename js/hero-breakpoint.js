@@ -1,6 +1,6 @@
 /* The Heroes page's break-point finder: two heroes of one troop type, each at its
    own stars, widget and skills, and how far either has to be built to catch the
-   other. LeadEngine does the maths (js/lead-engine.js: score, walker); this file
+   other. LeadEngine does the maths (js/lead-engine.mjs: score, walker); this file
    reads the choices and the account, walks a few scores at a time, and paints
    two star-by-widget tables. */
 (function () {

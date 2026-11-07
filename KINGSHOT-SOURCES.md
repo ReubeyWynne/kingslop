@@ -423,7 +423,7 @@ site already carries from elsewhere disagrees:
   Commander is +10% lethality, +15% after a won KvK until Castle Battle; the helper only has 15.
 - **Still open (`unverified` in the JSON):** TG6–TG8 stats and Truegold chances have no stated
   basis; the op codes are marked probable by their authors; the helper's fatigue starts at
-  round 0, `js/battle-engine.js` at round 1.
+  round 0, `js/battle-engine.mjs` at round 1.
 - **Regression case** (kingshotsim.com): 40,233 T10.1 infantry (attack 293.66%, lethality
   251.82%) in a 120,789 army against a 78,872 army, defender per-troop 2,557.9, SkillMod 1.26,
   round 0 → **189** deaths. Pinned in `.dsh/combat-check.cjs`.

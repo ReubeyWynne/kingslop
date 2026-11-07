@@ -1,11 +1,11 @@
-// Combat check — js/combat.js and the hero half of js/battle-engine.js.
+// Combat check — js/combat.mjs and the hero half of js/battle-engine.mjs.
 // Pins the engine's copies of _data/combat.json, how skills scale and stack,
 // the joiner rule, exclusive gear by role, and kingshotsim.com's worked round.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const E = require('../js/battle-engine.js');
-const C = require('../js/combat.js');
+const E = require('../js/battle-engine.mjs');
+const C = require('../js/combat.mjs');
 const data = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '_data', 'combat.json'), 'utf8'));
 
 const near = (a, b, what) => assert.ok(Math.abs(a - b) < 1e-9, `${what}: ${a} vs ${b}`);

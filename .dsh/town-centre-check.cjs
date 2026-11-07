@@ -1,6 +1,6 @@
 // Town Centre: points from the whole ledger, page wiring and dictionaries.
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
-const T = require('../js/town-centre-engine.js'), H = require('../js/hero-gear-engine.js'), Spend = require('../js/hero-spend.js'), Ledger = require('../js/player-ledger.js'), rules = require('../js/event-rules.js'), B = require('../js/building-spend.js');
+const T = require('../js/town-centre-engine.js'), H = require('../js/hero-gear-engine.mjs'), Spend = require('../js/hero-spend.js'), Ledger = require('../js/player-ledger.js'), rules = require('../js/event-rules.js'), B = require('../js/building-spend.js');
 const storage = { getItem(k) { return this[k] ?? null; }, setItem(k, v) { this[k] = v; } };
 const store = Ledger.create(storage);
 
@@ -214,7 +214,7 @@ assert.equal(nav.filter(n => n.self === 'town').length, 0);
 assert.ok(!pages.town.swipePrev && !pages.town.swipeNext);
 assert.ok(fs.readFileSync('_includes/page-deck.html', 'utf8').includes('class="deck-town" href="{{ p.depth }}town-centre/"'));
 assert.ok(!fs.readFileSync('_includes/ascii/deck-scene.html', 'utf8').includes("'town'"));
-for (const script of ['event-data.js', 'governor-data.js', 'event-rules.js', 'governor-engine.js', 'hero-gear-engine.js', 'hero-data.js', 'hero-spend.js', 'building-data.js', 'building-spend.js', 'troop-data.js', 'troop-spend.js', 'town-centre-engine.js', 'hero-points.js', 'town-centre.js']) assert.ok(pages.town.scripts.includes('../js/' + script), script);
+for (const script of ['event-data.js', 'governor-data.js', 'event-rules.js', 'governor-engine.js', 'hero-gear-engine.mjs', 'hero-data.js', 'hero-spend.js', 'building-data.js', 'building-spend.js', 'troop-data.js', 'troop-spend.js', 'town-centre-engine.js', 'hero-points.js', 'town-centre.js']) assert.ok(pages.town.scripts.includes('../js/' + script), script);
 assert.ok(pages.town.scripts.indexOf('../js/town-centre-engine.js') < pages.town.scripts.indexOf('../js/town-centre.js'));
 assert.ok(pages.town.scripts.indexOf('../js/hero-spend.js') < pages.town.scripts.indexOf('../js/town-centre-engine.js'));
 assert.ok(pages.town.scripts.indexOf('../js/building-data.js') < pages.town.scripts.indexOf('../js/building-spend.js') && pages.town.scripts.indexOf('../js/building-spend.js') < pages.town.scripts.indexOf('../js/town-centre-engine.js'));

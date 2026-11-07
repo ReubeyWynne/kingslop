@@ -70,7 +70,7 @@
     };
   }
 
-  // Truegold levels whose Town Centre bonus is known (js/lead-engine.js TOWN_TG).
+  // Truegold levels whose Town Centre bonus is known (js/lead-engine.mjs TOWN_TG).
   function townState(level, known) {
     if (level === null) return 'no';
     var m = /^TG ?(\d+)/.exec(level);

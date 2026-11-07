@@ -27,7 +27,7 @@ Follow the Bear and Swordland pages: short instructions, ruled examples, and sec
 | [Sloth's published combat guide](https://kingshotoptimizer.com/guides/kingshot-combat-guide/) | Combat interpretation and rally contributions | Does not replace a hero-specific interaction test. |
 | Kingshot Optimizer hero analyses linked from `_data/castle_battle.json` | Hero-specific tested behavior | Authored by Sloth/Zebrave, crediting joint testing with Frak. Tooltip values and effective behavior are distinct. |
 | [Petra](https://kingshotoptimizer.com/heroes/petra/) / [Marlin](https://kingshotoptimizer.com/heroes/marlin/) | Duplicate first-skill interactions | Do not generalize to every chance skill or later-generation exception. |
-| Existing `MATHS.md`, `KINGSHOT-SOURCES.md` and `js/battle-engine.js` | Frakinator model provenance and stat factors | Community model, not official code; the site's simulator omits heroes. |
+| Existing `MATHS.md`, `KINGSHOT-SOURCES.md` and `js/battle-engine.mjs` | Frakinator model provenance and stat factors | Community model, not official code; the site's simulator omits heroes. |
 
 Direct video links use the chapters verified from the creator's video description:
 

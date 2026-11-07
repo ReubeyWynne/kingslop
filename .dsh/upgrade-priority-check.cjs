@@ -1,7 +1,7 @@
 // Upgrade priority: stages, Town Centre blockers, core heroes, and gear and governor picks that
 // come from the same planners the gear and governor pages use. Then page wiring and dictionaries.
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
-const P = require('../js/upgrade-priority.js'), Ledger = require('../js/player-ledger.js'), H = require('../js/hero-gear-engine.js'), G = require('../js/governor-engine.js');
+const P = require('../js/upgrade-priority.js'), Ledger = require('../js/player-ledger.js'), H = require('../js/hero-gear-engine.mjs'), G = require('../js/governor-engine.js');
 const rules = require('../_data/upgrade_priority.json');
 const storage = { getItem(k) { return this[k] ?? null; }, setItem(k, v) { this[k] = v; } };
 const store = Ledger.create(storage);
@@ -108,7 +108,7 @@ rules.ladders.forEach(l => l.rungs.forEach(r => r.sources.forEach(s => assert.ok
 const pages = JSON.parse(fs.readFileSync('_data/pages.json', 'utf8'));
 const page = (Array.isArray(pages) ? pages : Object.values(pages).flat()).find(p => p && p.token === 'priority');
 assert.ok(page, 'priority page registered');
-['../js/upgrade-priority.js', '../js/upgrade-priority-words.js', '../js/upgrade-priority-page.js', '../js/governor-engine.js', '../js/hero-gear-engine.js'].forEach(s => assert.ok(page.scripts.includes(s), s));
+['../js/upgrade-priority.js', '../js/upgrade-priority-words.js', '../js/upgrade-priority-page.js', '../js/governor-engine.js', '../js/hero-gear-engine.mjs'].forEach(s => assert.ok(page.scripts.includes(s), s));
 assert.ok(page.scripts.indexOf('../js/upgrade-priority-words.js') < page.scripts.indexOf('../js/upgrade-priority-page.js'), 'words before the page');
 // The priority engine is the upgrade priority page's own: no other page loads it.
 Object.entries(pages).filter(([token]) => token !== 'priority').forEach(([token, entry]) => ['scripts', 'lateScripts'].forEach(list => (entry[list] || []).forEach(src => assert.ok(!/upgrade-priority|next-step/.test(src), token + ' loads ' + src))));
