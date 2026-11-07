@@ -1,4 +1,4 @@
-// Building requirements in a browser (after a Jekyll build): a quick answer with nothing saved,
+// Building requirements in a browser (after `npm run build`): a quick answer with nothing saved,
 // pinned in view; refining one building at a time through the level grid (no selects) into the
 // shared save; goal tiles for several goals in one plan; the guest switch and links (the first
 // ?b=&to= form included); the met state;

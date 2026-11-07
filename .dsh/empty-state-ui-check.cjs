@@ -1,4 +1,4 @@
-// Teaching empty states on the tool pages (js/empty-state.js), after a Jekyll build: each tool with
+// Teaching empty states on the tool pages (js/empty-state.js), after `npm run build`: each tool with
 // nothing to work from shows one line naming the missing part of the save, a screenshot reader only
 // where an import adapter fills that part, and a link to where it is filled in by hand. It treats a
 // confirmed zero as recorded, follows the save live, hides without JavaScript, and reads in every language and at 320px. Screenshots in .dsh/empty-state-preview/.

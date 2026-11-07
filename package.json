@@ -1,0 +1,18 @@
+{
+  "name": "kingslop-site",
+  "private": true,
+  "description": "dey.ci: Kingshot, Demystified. A static site built with Eleventy; each page's scripts are bundled with esbuild.",
+  "scripts": {
+    "build": "eleventy",
+    "serve": "eleventy --serve",
+    "debug": "SITE_BUNDLE=0 eleventy --serve"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "3.1.2",
+    "esbuild": "0.25.5",
+    "liquidjs": "10.21.1"
+  }
+}

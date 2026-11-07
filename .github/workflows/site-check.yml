@@ -36,12 +36,17 @@ jobs:
             # styles, navigation data and every translation.
             shared: &shared
               - .github/workflows/site-check.yml
-              - _config.yml
               - _layouts/**
               - _includes/**
               - _data/nav.json
               - _data/pages.json
               - _data/langs.json
+              # The build: Eleventy, the Liquid dialect and each page's script bundle.
+              - package.json
+              - package-lock.json
+              - eleventy.config.mjs
+              - .eleventy/**
+              - _data/boot.json
               - css/styles.css
               - css/ascii.css
               - css/ascii-frames.css
@@ -404,6 +409,9 @@ jobs:
         if: needs.changes.outputs.logic == 'true'
         run: |
           node -e "const fs = require('node:fs'); for (const file of fs.readdirSync('_data')) if (file.endsWith('.json')) JSON.parse(fs.readFileSync('_data/' + file, 'utf8'));"
+      - name: Check every dictionary against English
+        if: needs.changes.outputs.logic == 'true'
+        run: node .dsh/i18n-parity-check.cjs
       - name: Check page navigation
         if: needs.changes.outputs.logic == 'true'
         run: node --test .dsh/page-deck-check.cjs
@@ -525,7 +533,14 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - uses: actions/jekyll-build-pages@44a6e6beabd48582f863aeeb6cb2151cc1716697
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+      - name: Build the site
+        run: |
+          npm ci
+          npm run build
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: site

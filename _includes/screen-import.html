@@ -20,7 +20,7 @@
         <li data-recipe="gear" data-done="false"><img src="{{ p.depth }}img/screen-import/gear.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.gear">A hero’s gear screen</strong><small data-i18n="import.recipe.gearFills">That hero’s gear pieces</small></span><span class="import-recipe-state" data-field="state"></span></li>
         <li data-recipe="pets" data-done="false"><img src="{{ p.depth }}img/screen-import/pets.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.pets">Pets → Pet List</strong><small data-i18n="import.recipe.petsFills">Pet levels</small></span><span class="import-recipe-state" data-field="state"></span></li>
       </ol>
-      <p class="import-recipe-next" data-target="screen-import.recipeNext" hidden><span data-i18n="import.recipe.next">See what your bag scores:</span> <a href="{{ p.depth }}town-centre/"{% if page.self == 'town' %} aria-current="page"{% endif %} data-i18n="town.nav">Town Centre</a></p>
+      <p class="import-recipe-next" data-target="screen-import.recipeNext" hidden><span data-i18n="import.recipe.next">See what your bag scores:</span> <a href="{{ p.depth }}town-centre/"{% if self == 'town' %} aria-current="page"{% endif %} data-i18n="town.nav">Town Centre</a></p>
     </section>
     <div class="import-shot" data-target="screen-import.shot" hidden>
       <p class="import-shot-name"><strong data-target="screen-import.screen"></strong> <small data-target="screen-import.name"></small></p>

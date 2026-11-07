@@ -1,7 +1,7 @@
 // Share links and guest sheets on Heroes, Masters and Pets (js/roster-sheets.js on the shared
 // js/page-sheet.js): a link opens on a sheet and never touches the save, the copied link opens
 // the same sheet, Save as mine writes it back, and an unreadable link opens a copy of the save.
-// Run after a Jekyll build: node .dsh/roster-sheets-ui-check.cjs
+// Run after `npm run build`: node .dsh/roster-sheets-ui-check.cjs
 const assert = require('node:assert/strict'), path = require('node:path');
 const { withBrowser } = require('./lib/browser-harness.cjs');
 const root = path.resolve('_site');

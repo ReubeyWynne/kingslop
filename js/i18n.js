@@ -20,13 +20,14 @@
     if (!src) {
       var tags = document.getElementsByTagName('script');
       for (var i = 0; i < tags.length; i++) {
-        if ((tags[i].src || '').indexOf('i18n.js') !== -1) { src = tags[i].src; break; }
+        if (/\/js\/(i18n|site\.bundle)\.js/.test(tags[i].src || '')) { src = tags[i].src; break; }
       }
     }
-    // This loader now lives in js/ at the site root, one level below the
-    // dictionaries — strip ".../js/i18n.js" back to the site root so every
-    // page finds the same /i18n/<code>.js.
-    return src ? src.replace(/\/js\/i18n\.js[^/]*$/, '/') : '';
+    // This loader lives in js/ at the site root, one level below the
+    // dictionaries, on its own or inside the site's bundle (js/site.bundle.js):
+    // strip ".../js/<file>" back to the site root so every page finds the same
+    // /i18n/<code>.js.
+    return src ? src.replace(/\/js\/[^/]*$/, '/') : '';
   }
   var DICT_BASE = dictBase();
 
