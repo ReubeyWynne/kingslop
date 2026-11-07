@@ -1,5 +1,5 @@
 {
-  "_note": "Scripts every page runs, around its own list in pages.json (scripts): before, then the page's, then after. The layout writes them in this order. The build joins `before` and `shared` (which every page lists among its own) into js/site.bundle.js, which every page shares and a browser caches once, and the rest into the page's own js/page-<page>.bundle.js.",
+  "_note": "Scripts every page runs, around its own list in pages.json (scripts): before, then the page's, then after. Bundled, `before` and `shared` (which every page lists among its own) become js/site.bundle.js, which every page shares, and the rest the page's own js/page-<page>.bundle.js. See .eleventy/bundles.mjs.",
   "before": [
     "js/player-ledger.js",
     "js/unit-input.js",
@@ -19,5 +19,12 @@
   ],
   "after": [
     "js/deep-link.js"
-  ]
+  ],
+  "_globalsNote": "Modules (js/*.mjs) whose exports the page's classic scripts still read as a global. Remove an entry once nothing reads that global.",
+  "globals": {
+    "js/battle-engine.mjs": "BattleEngine",
+    "js/combat.mjs": "CombatSkills",
+    "js/hero-gear-engine.mjs": "HeroGear",
+    "js/lead-engine.mjs": "LeadEngine"
+  }
 }

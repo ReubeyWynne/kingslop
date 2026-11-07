@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const Ledger = require('../js/player-ledger.js');
-const E = require('../js/hero-gear-engine.js');
+const E = require('../js/hero-gear-engine.mjs');
 function storage(seed = {}) {
   const values = new Map(Object.entries(seed));
   return { getItem: key => values.has(key) ? values.get(key) : null, setItem: (key, value) => values.set(key, value), removeItem: key => values.delete(key) };

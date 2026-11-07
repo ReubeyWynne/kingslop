@@ -48,7 +48,18 @@ Open [http://localhost:8080](http://localhost:8080). To build without running th
 npm run build
 ```
 
-The generated site is written to `../_site/`. Each page's scripts are joined into one minified bundle (`js/page-<page>.bundle.js`); `npm run debug` serves the site with every script loaded on its own instead, which is easier to step through.
+The generated site is written to `../_site/`. Each page loads two minified bundles: `js/site.bundle.js`, which every page shares, and `js/page-<page>.bundle.js`. `npm run debug` serves the site with every classic script loaded on its own instead, which is easier to step through. [`.eleventy/bundles.mjs`](../.eleventy/bundles.mjs) explains how they are built.
+
+### Scripts and modules
+
+The scripts are moving from classic scripts that share globals (`window.BH`, `window.HeroGear` …) to ES modules, one slice at a time:
+
+- A module ends in `.mjs`, imports what it needs, and lists its exports. Pages still name it in `_data/pages.json`, and the build bundles a page's modules together.
+- While classic scripts still read a module's old global, `_data/boot.json` `globals` names it, and the module also exports one object as `'module.exports'`. That object is what the global holds and what `require()` returns to the `.dsh` checks. Drop both once nothing reads the global.
+- A module never reads a classic script's global while it loads, so it can run where the page's first module is listed.
+- A worker written as a module (`js/*-worker.mjs`) is bundled into the classic worker script the page starts (`js/*-worker.js`).
+
+The pure engines are modules so far: `js/battle-engine.mjs`, `js/combat.mjs`, `js/hero-gear-engine.mjs` and `js/lead-engine.mjs`.
 
 ### Repository layout
 

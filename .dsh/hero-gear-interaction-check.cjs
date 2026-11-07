@@ -2,11 +2,14 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { withBrowser } = require('./lib/browser-harness.cjs');
-const E = require('../js/hero-gear-engine.js');
+const E = require('../js/hero-gear-engine.mjs');
 const root = path.resolve('_site');
 const output = path.resolve('.dsh/gear-preview');
 const key = 'bh:hero-gear:v1';
-const workerBody = "importScripts('hero-gear-engine.js' + self.location.search);self.onmessage=e=>setTimeout(()=>self.postMessage({ok:true,result:{now:self.HeroGear.optimise(e.data),optimal:self.HeroGear.optimal(e.data),planned:self.HeroGear.optimal(e.data,{bag:true})}}),400);";
+// The built search worker (js/hero-gear-worker.js, the engine bundled in), slowed by 400 ms and
+// passing on only its answer, never the profile fit that follows.
+const workerBody = fs.readFileSync(path.join(root, 'js', 'hero-gear-worker.js'), 'utf8') +
+  ';(()=>{const real=self.onmessage,post=self.postMessage.bind(self);self.postMessage=m=>{if(m&&m.result)post(m)};self.onmessage=e=>setTimeout(()=>real(e),400);})();';
 function fixture() {
   const state = E.defaults();
   state.reforge = false; state.view = 'plan';

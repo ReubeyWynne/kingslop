@@ -85,9 +85,9 @@ for name, ceiling in ref['HERO_LEADER_MAX'].items():
     hero = next((h for h in heroes if h['name'] == name), None)
     check(hero and abs(hero['ceiling'] - ceiling) < 0.01, 'ceiling for %s' % name)
 
-# Troop stats. Base stats for TG0 to TG5 are already on the site (js/battle-engine.js,
+# Troop stats. Base stats for TG0 to TG5 are already on the site (js/battle-engine.mjs,
 # from sos.battle); the helper's TG multipliers reproduce them, and extend to TG8.
-engine = (SITE / 'js' / 'battle-engine.js').read_text()
+engine = (SITE / 'js' / 'battle-engine.mjs').read_text()
 inf_atk = [int(n) for n in re.search(r'var ATK = \[\s*\[([\d,\s]+)\]', engine).group(1).split(',')]
 for tier in range(1, 12):
     base = ref['TIER_BASE_STATS']['T%d' % tier]['inf_atk']

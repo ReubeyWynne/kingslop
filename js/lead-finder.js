@@ -1,5 +1,5 @@
 /* The Heroes page's lead finder: your owned heroes ranked as a Bear, rally or
-   garrison lead. LeadEngine does the maths (js/lead-engine.js); this file reads
+   garrison lead. LeadEngine does the maths (js/lead-engine.mjs); this file reads
    the roster, Bonus Overview and pets from the save, keeps joiners and city
    buffs in this browser, and paints the ranking. */
 (function () {

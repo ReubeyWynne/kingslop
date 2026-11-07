@@ -15,7 +15,7 @@
    A level the save does not hold makes the goal ask for it. A balance it does not hold leaves
    that line's shortfall unknown and names the balance to record: blank is never zero. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./building-spend.js'), require('./hero-spend.js'), require('./hero-gear-engine.js'), require('./governor-engine.js'), require('./pet-plan.js'), require('./master-spend.js'), require('./player-ledger.js'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./building-spend.js'), require('./hero-spend.js'), require('./hero-gear-engine.mjs'), require('./governor-engine.js'), require('./pet-plan.js'), require('./master-spend.js'), require('./player-ledger.js'));
   else root.UpgradeGoals = factory(root.BuildingSpend, root.HeroSpend, root.HeroGear, root.Governor, root.PetPlan, root.MasterSpend, root.PlayerLedger);
 })(typeof window === 'object' ? window : globalThis, function (buildingSpend, heroSpend, heroGear, governor, petPlan, masterSpend, ledger) {
   'use strict';

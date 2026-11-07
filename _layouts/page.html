@@ -22,7 +22,7 @@
 
 {% include screen-import.html %}
 
-{% comment %} Every page runs the shared scripts in _data/boot.json around its own (pages.json scripts). The build joins them into two bundles, the site's and the page's (site.bundles); `npm run debug` builds without, and each loads on its own. {% endcomment %}{% assign v = site.time | date: '%s' %}{% if site.bundles %}{% assign b = site.bundles.pages[self] %}{% capture boot %}{{ p.depth }}{{ site.bundles.shared.file }}?v={{ site.bundles.shared.v }} {{ p.depth }}{{ b.file }}?v={{ b.v }}{% endcapture %}{% else %}{% capture boot %}{% for s in site.data.boot.before %}{{ p.depth }}{{ s }}?v={{ v }} {% endfor %}{% for s in p.scripts %}{{ s }}?v={{ v }} {% endfor %}{% for s in site.data.boot.after %}{{ p.depth }}{{ s }}?v={{ v }}{% endfor %}{% endcapture %}{% endif %}{% assign boot = boot | split: ' ' %}{% unless p.lateBoot %}{% for s in boot %}<script defer src="{{ s }}"></script>
+{% comment %} The script files this page loads, in order (site.scripts, from .eleventy/bundles.mjs): the shared scripts in _data/boot.json around the page's own (pages.json scripts), bundled unless built with `npm run debug`. {% endcomment %}{% capture boot %}{% for s in site.scripts[self] %}{{ p.depth }}{{ s }} {% endfor %}{% endcapture %}{% assign boot = boot | split: ' ' %}{% unless p.lateBoot %}{% for s in boot %}<script defer src="{{ s }}"></script>
 {% endfor %}{% endunless %}{% if p.lateBoot or p.lateScripts %}<script>
 /* A lateBoot page (pages.json) starts its scripts once the page has painted, so its first paint
    waits on nothing but the stylesheets; they keep their listed order, as defer would.
