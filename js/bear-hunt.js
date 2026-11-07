@@ -95,6 +95,12 @@
     Array.prototype.forEach.call(document.querySelectorAll('.rally-slots span'), function (slot, i) {
       if (i < plan.joiners) slot.removeAttribute('data-off'); else slot.setAttribute('data-off', '');
     });
+    // One bar for each join you send, as tall as the cap: smaller hunts send fewer, bigger joins.
+    Array.prototype.forEach.call(document.querySelectorAll('.plan-joins'), function (row) {
+      while (row.children.length < plan.joins) row.appendChild(document.createElement('i'));
+      while (row.children.length > plan.joins) row.removeChild(row.lastChild);
+      row.style.setProperty('--tall', String(Math.min(1, 8 / plan.divisor)));
+    });
   }
 
   function wireHunt(allocator) {
@@ -126,7 +132,7 @@
     var root = document.getElementById('march-builder');
     var button = document.getElementById('allocator-toggle');
     if (!root || !button || !window.BH_BEAR_ALLOCATOR) return null;
-    var priority = document.getElementById('own-priority');
+    var modes = Array.prototype.slice.call(document.querySelectorAll('input[name="march-mode"]'));
     var token = document.getElementById('own-token');
     var ownCap = document.getElementById('own-cap');
     var ratio = document.getElementById('own-ratio');
@@ -138,11 +144,15 @@
     var KEY = 'bh:bear-allocator:v1';
     var guest = /(?:^|[?&])guest(?:=|&|$)/.test(location.search);
     var fields = Array.prototype.slice.call(root.querySelectorAll('input[id]'));
+    function leading() { return modes.some(function (input) { return input.checked && input.value === 'lead'; }); }
 
     function restore() {
       var saved = null;
       try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (ignored) { saved = null; }
       if (!saved || typeof saved !== 'object') return false;
+      // Saves from before the switch kept a "fill my own rally first" box.
+      var mode = saved.mode || (saved['own-priority'] ? 'lead' : 'join');
+      modes.forEach(function (input) { input.checked = input.value === mode; });
       fields.forEach(function (field) {
         var value = saved[field.id];
         if (field.type === 'checkbox') { if (typeof value === 'boolean') field.checked = value; }
@@ -155,6 +165,7 @@
       if (guest) return;
       var out = {};
       fields.forEach(function (field) { out[field.id] = field.type === 'checkbox' ? field.checked : field.value; });
+      out.mode = leading() ? 'lead' : 'join';
       try { localStorage.setItem(KEY, JSON.stringify(out)); } catch (ignored) { /* private mode, full storage */ }
     }
 
@@ -172,13 +183,14 @@
       if (show) document.getElementById('infantry-total').focus();
     }
 
-    // A one-troop rally takes nothing from the joins and has no ratio of its own.
+    // Joining: your rally can go with one troop. Leading: your rally fills first, at its own ratio,
+    // and the lead finder shows your best lead.
     function showRatio() {
-      if (token.checked) priority.checked = false;
-      priority.disabled = token.checked;
-      ownCap.disabled = token.checked;
-      ratio.hidden = !priority.checked;
-      ratios.forEach(function (input) { input.disabled = !priority.checked; input.setCustomValidity(''); });
+      var lead = leading();
+      Array.prototype.forEach.call(document.querySelectorAll('[data-mode]'), function (node) { node.hidden = node.getAttribute('data-mode') !== (lead ? 'lead' : 'join'); });
+      token.disabled = lead;
+      ownCap.disabled = token.checked && !lead;
+      ratios.forEach(function (input) { input.disabled = !lead; input.setCustomValidity(''); });
     }
 
     function read() {
@@ -188,8 +200,8 @@
         archers: numberValue('archer-total', 0),
         queues: numberValue('join-queues', 6),
         joinCap: numberValue('join-cap', 85000),
-        ownCap: token.checked ? 1 : numberValue('own-cap', 130000),
-        priority: priority.checked && !token.checked,
+        ownCap: token.checked && !leading() ? 1 : numberValue('own-cap', 130000),
+        priority: leading(),
         ratio: { infantry: numberValue('own-infantry', 5), cavalry: numberValue('own-cavalry', 15), archers: numberValue('own-archers', 80) }
       };
     }
@@ -236,6 +248,7 @@
       document.getElementById('home-inf').textContent = format(result.home.infantry);
       document.getElementById('home-cav').textContent = format(result.home.cavalry);
       document.getElementById('alloc-home').textContent = format(result.home.archers);
+      document.getElementById('home-total').textContent = format(result.home.infantry + result.home.cavalry + result.home.archers);
       var sample = document.getElementById('march-sample');
       if (personalized) ['data-example', 'data-i18n-key', 'data-i18n-attr'].forEach(function (name) { sample.removeAttribute(name); });
       var text = button.querySelector('[data-i18n]');
@@ -244,13 +257,18 @@
       text.textContent = label(key, personalized ? 'Edit troops' : 'Use my troops');
       window.BH_MARCHES = result;
       document.dispatchEvent(new CustomEvent('bh:marches', { detail: result }));
-      var note = document.getElementById('alloc-note');
-      note.textContent = label('bh.alloc.result', 'Your rally: {own}. Joins: {n} × {join}.').replace('{own}', format(result.own.total)).replace('{n}', format(result.queues)).replace('{join}', format(result.join.total));
     }
 
     button.hidden = false;
     button.addEventListener('click', function () { open(root.hidden); });
-    priority.addEventListener('change', showRatio);
+    // The switch redraws the marches straight away; a ratio that doesn't add up waits for the reader.
+    modes.forEach(function (input) {
+      input.addEventListener('change', function () {
+        showRatio();
+        save();
+        try { result = window.BH_BEAR_ALLOCATOR.allocate(read()); render(); } catch (ignored) { /* waits */ }
+      });
+    });
     token.addEventListener('change', showRatio);
     ratios.forEach(function (input) { input.addEventListener('input', function () { ratios.forEach(function (field) { field.setCustomValidity(''); }); }); });
     root.addEventListener('input', save);
@@ -312,25 +330,6 @@
   }
 
   var HEROES = {
-    amadeus: { name: 'Amadeus', type: 'inf', why: 'Three offensive skills plus an offensive rally widget. Recommended infantry lead through Generation VII.' },
-    helga: { name: 'Helga', type: 'inf', why: 'Two offensive skills plus an offensive widget. Use her when Amadeus is unavailable or significantly less developed.' },
-    zoe: { name: 'Zoe', type: 'inf', why: 'Strong free-to-play infantry stats, but Sundering Wounds does not work on the Bear, so part of her kit is wasted here.' },
-    alcar: { name: 'Alcar', type: 'inf', why: 'High infantry damage and an enemy-damage-taken effect. He favours a more infantry-heavy formation, so compare him with Amadeus using your own setup.' },
-
-    jabel: { name: 'Jabel', type: 'cav', why: 'Two offensive skills and the strongest cavalry stats available in Generation I.' },
-    hilde: { name: 'Hilde', type: 'cav', why: 'Generation-II cavalry stats and some offensive value, but part of her kit is defensive and adds no Bear damage.' },
-    petra: { name: 'Petra', type: 'cav', why: 'An offensive widget, strong cavalry stats and a first-skill interaction with unusually high expected value against the Bear.' },
-    margot: { name: 'Margot', type: 'cav', why: 'Higher cavalry stats and two offensive skills. Her widget is defensive, so Petra usually stays ahead.' },
-    thrud: { name: 'Thrud', type: 'cav', why: 'An offensive widget and several damage effects, although some of her kit ramps up or applies awkwardly over a ten-round Bear fight.' },
-    ava: { name: 'Ava', type: 'cav', why: 'Generation-VII cavalry stats, an offensive widget and three offensive skills, including an enemy-damage-taken effect. Recommended cavalry lead in Generation VII.' },
-
-    saul: { name: 'Saul', type: 'arc', why: 'The strongest archer stats available in Generation I, making him the recommended archer lead for that generation.' },
-    marlin: { name: 'Marlin', type: 'arc', why: 'An offensive widget, two all-troop offensive skills and a large stat increase over Saul. Recommended from Generation II.' },
-    rosa: { name: 'Rosa', type: 'arc', why: 'An offensive widget, higher archer stats and a 30% archer attack skill. Recommended from Generation IV until Yang arrives.' },
-    vivian: { name: 'Vivian', type: 'arc', why: 'Higher Generation-V archer stats and three offensive skills, but two ramp slowly across the ten rounds. In our model she remains close to Rosa rather than clearly overtaking her.' },
-    yang: { name: 'Yang', type: 'arc', why: 'Three offensive skills, an offensive widget and high archer stats. Recommended from Generation VI.' },
-    weewoo: { name: 'Wee & Woo', type: 'arc', why: 'Generation-VII archer stats and three offensive skills. They are close to Yang, but Yang’s widget keeps her ahead in our current model.' },
-
     chenko: { name: 'Chenko', type: 'cav', whyJoin: 'Raises attack by 25%. A simple, reliable shared offensive skill.' },
     yeonwoo: { name: 'Yeonwoo', type: 'inf', whyJoin: 'Raises attack by 25%. It shares an effect family with Chenko, so their bonuses add together.' },
     amane: { name: 'Amane', type: 'arc', whyJoin: 'Raises attack by 25% in a different effect family from Chenko and Yeonwoo, so it multiplies with their shared attack stack.' },
@@ -338,16 +337,6 @@
     vivianJoin: { name: 'Vivian', key: 'vivian', type: 'arc', whyJoin: 'Raises enemy damage taken by 25%. It uses a different effect family from the common attack bonuses, so it multiplies with them.' },
     avaJoin: { name: 'Ava', key: 'ava', type: 'cav', whyJoin: 'Reduces enemy defence in its own effect family. Strong shared value when Ava is not leading the rally.' },
     weewooJoin: { name: 'Wee & Woo', key: 'weewoo', type: 'arc', whyJoin: 'Their first skill splits its bonus between attack and lethality. Those effect families multiply, giving slightly more combined value than a flat 25% bonus.' }
-  };
-
-  var LEADER_BY_GEN = {
-    1: { inf: ['amadeus', 'helga'], cav: ['jabel'], arc: ['saul'] },
-    2: { inf: ['amadeus', 'helga', 'zoe'], cav: ['jabel', 'hilde'], arc: ['marlin', 'saul'] },
-    3: { inf: ['amadeus', 'helga', 'zoe'], cav: ['petra', 'jabel', 'hilde'], arc: ['marlin', 'saul'] },
-    4: { inf: ['amadeus', 'alcar', 'helga'], cav: ['petra', 'margot', 'jabel'], arc: ['rosa', 'marlin'] },
-    5: { inf: ['amadeus', 'alcar', 'helga'], cav: ['petra', 'thrud', 'margot'], arc: ['rosa', 'vivian', 'marlin'] },
-    6: { inf: ['amadeus', 'alcar', 'helga'], cav: ['petra', 'thrud', 'margot'], arc: ['yang', 'rosa', 'vivian'] },
-    7: { inf: ['amadeus', 'alcar', 'helga'], cav: ['ava', 'petra', 'thrud'], arc: ['yang', 'weewoo', 'rosa'] }
   };
 
   var JOINER_S_BY_GEN = {
@@ -376,40 +365,29 @@
     return '../img/heroes/' + file + '.webp';
   }
 
-  function typeLabel(type) {
-    return t(type === 'inf' ? 'Infantry' : type === 'cav' ? 'Cavalry' : 'Archer');
-  }
-
   function heroPortrait(key, compact) {
     var hero = HEROES[key];
     return '<img class="hero-explorer-portrait' + (compact ? ' compact' : '') + '" src="' + heroImage(key) + '" alt="" width="256" height="256" loading="lazy" decoding="async">';
   }
 
   function wireHeroExplorer() {
-    var mount = document.querySelector('#heroes .hero-permission');
+    var mount = document.querySelector('.hero-permission');
     if (!mount) return;
 
     mount.innerHTML =
       '<div class="hero-explorer" id="hero-explorer">' +
         '<div class="hero-age-row">' +
-          '<label for="server-generation"><b>' + i18nText('Your server generation') + '</b><small>' + i18nText('Saved on this device for use by other tools.') + '</small></label>' +
+          '<label for="server-generation"><b>' + i18nText('Your server generation') + '</b></label>' +
           '<select id="server-generation"><option value="" ' + i18nAttr('Choose generation…') + '>Choose generation…</option>' +
             [1,2,3,4,5,6,7].map(function (g) { return '<option value="' + g + '">' + i18nText('Generation ') + g + '</option>'; }).join('') +
           '</select>' +
         '</div>' +
         '<div id="hero-generation-content" hidden>' +
-          '<div class="hero-explorer-block">' +
-            '<h3>' + i18nText('Recommended leader lineup') + '</h3>' +
-            '<p class="hero-explorer-help">' + i18nText('Assuming similar development. Tap a slot to see the alternatives and why each is recommended.') + '</p>' +
-            '<div class="leader-lineup" id="leader-lineup"></div>' +
-            '<div class="leader-alts" id="leader-alts" hidden></div>' +
-          '</div>' +
           '<div class="hero-explorer-block joiner-explorer">' +
             '<h3>' + i18nText('Recommended first heroes for join marches') + '</h3>' +
-            '<p class="hero-explorer-help">' + i18nText('Only the first hero matters here. Tap a hero to see what their first skill adds. If none of the approved options is available, send the march without a hero.') + '</p>' +
             '<div class="joiner-icons" id="joiner-icons"></div>' +
             '<div class="joiner-explain" id="joiner-explain" hidden></div>' +
-            '<details class="hero-backups"><summary>' + i18nText('Other options and alliance rules') + '</summary><p id="hero-backup-copy"></p></details>' +
+            '<p class="hero-explorer-help hero-backups" id="hero-backup-copy"></p>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -417,63 +395,23 @@
 
     var select = document.getElementById('server-generation');
     var content = document.getElementById('hero-generation-content');
-    var lineup = document.getElementById('leader-lineup');
-    var alts = document.getElementById('leader-alts');
     var joiners = document.getElementById('joiner-icons');
     var joinerExplain = document.getElementById('joiner-explain');
     var backupCopy = document.getElementById('hero-backup-copy');
     var latest = 7;
-    var activeSlot = null;
 
     function generationValue() {
       var n = Number(select.value);
       return isFinite(n) && n >= 1 ? Math.min(latest, Math.round(n)) : null;
     }
 
-    function renderAlternates(slot, generation) {
-      activeSlot = slot;
-      var keys = LEADER_BY_GEN[generation][slot] || [];
-      if (!keys.length) { alts.hidden = true; return; }
-      alts.hidden = false;
-      alts.innerHTML = '<h4>' + typeLabel(slot) + ' ' + t('options') + '</h4>' +
-        keys.map(function (key, index) {
-          var hero = HEROES[key];
-          return '<article class="leader-alt' + (index === 0 ? ' recommended' : '') + '">' +
-            heroPortrait(key, true) +
-            '<div><p class="leader-alt-name"><b>' + hero.name + '</b>' + (index === 0 ? '<span>' + i18nText('recommended') + '</span>' : '') + '</p>' +
-            '<p>' + i18nText(hero.why) + '</p></div>' +
-          '</article>';
-        }).join('');
-      refreshI18n(alts);
-
-      Array.prototype.forEach.call(lineup.querySelectorAll('.leader-slot'), function (button) {
-        button.classList.toggle('active', button.getAttribute('data-slot') === slot);
-      });
-    }
-
     function render(generation) {
-      if (!generation || !LEADER_BY_GEN[generation]) {
+      if (!generation || !JOINER_S_BY_GEN[generation]) {
         content.hidden = true;
         return;
       }
       content.hidden = false;
-      activeSlot = null;
-      alts.hidden = true;
-
-      var slots = ['inf', 'cav', 'arc'];
-      lineup.innerHTML = slots.map(function (slot) {
-        var key = LEADER_BY_GEN[generation][slot][0];
-        var hero = HEROES[key];
-        return '<button class="leader-slot" type="button" data-slot="' + slot + '" aria-label="' + typeLabel(slot) + ': ' + hero.name + '. ' + t('Show alternatives') + '">' +
-          '<span class="leader-slot-type">' + typeLabel(slot) + '</span>' +
-          heroPortrait(key, false) +
-          '<strong>' + hero.name + '</strong>' +
-          '<span class="leader-slot-hint">' + t('alternatives') + '</span>' +
-        '</button>';
-      }).join('');
-
-      var sKeys = JOINER_S_BY_GEN[generation] || [];
-      joiners.innerHTML = sKeys.map(function (key) {
+      joiners.innerHTML = JOINER_S_BY_GEN[generation].map(function (key) {
         var hero = HEROES[key];
         return '<button class="joiner-icon" type="button" data-hero="' + key + '" aria-label="' + hero.name + ': ' + t('show recommendation details') + '">' +
           heroPortrait(key, true) + '<span>' + hero.name + '</span>' +
@@ -487,20 +425,6 @@
       backupCopy.innerHTML = base + i18nText('Hilde is excluded from the default list because alliance policies vary. Use her only if your alliance allows her. If no approved hero is available, send no hero.');
       refreshI18n(backupCopy);
     }
-
-    lineup.addEventListener('click', function (event) {
-      var button = event.target.closest && event.target.closest('.leader-slot');
-      if (!button) return;
-      var generation = generationValue();
-      var slot = button.getAttribute('data-slot');
-      if (activeSlot === slot && !alts.hidden) {
-        alts.hidden = true;
-        activeSlot = null;
-        button.classList.remove('active');
-        return;
-      }
-      renderAlternates(slot, generation);
-    });
 
     joiners.addEventListener('click', function (event) {
       var button = event.target.closest && event.target.closest('.joiner-icon');
@@ -537,13 +461,7 @@
       render(stored);
     }
 
-    document.addEventListener('i18n:change', function () {
-      var generation = generationValue();
-      var slot = activeSlot;
-      var showAlternates = !alts.hidden;
-      render(generation);
-      if (showAlternates && slot && generation) renderAlternates(slot, generation);
-    });
+    document.addEventListener('i18n:change', function () { render(generationValue()); });
   }
 
   function init() {

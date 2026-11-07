@@ -1,7 +1,7 @@
-// Bear Hunt UI — the hunt's size sets the rules, the march builder follows it,
-// a one-troop rally gives everything to the joins, and
-// the hero page's Bear ratio and damage calc sits on the page and hands its
-// mix to the builder.
+// Bear Hunt UI — the hunt's size sets the rules and their pictures, the march
+// builder follows it, a one-troop rally gives everything to the joins, and the
+// Leading switch brings in the hero page's Bear ratio and damage calc, which
+// hands its mix to the builder.
 const assert = require('node:assert/strict'), path = require('node:path');
 const { withBrowser } = require('./lib/browser-harness.cjs');
 withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
@@ -15,21 +15,20 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   // Fifteen players: the plan the page has always given.
   assert.equal((await text('[data-i18n="bh.glance.2h"]')).trim(), 'Fill every rally to 15.');
   assert.equal((await text('[data-i18n="bh.glance.3h"]')).trim(), 'Send 6 joins of up to 85,000.');
-  assert.equal(await page.locator('[data-i18n="bh.glance.2ps"]').isHidden(), true);
-  assert.equal(await page.locator('[data-i18n="bh.glance.3ps"]').isHidden(), true);
   assert.equal(await page.locator('.rally-slots span[data-off]').count(), 0);
+  assert.equal(await page.locator('.plan-joins i').count(), 6, 'a bar for each join');
+  assert.match(await text('[data-i18n="bh.run.first"]'), /^With 15 players, that's 6 rallies\./);
+  assert.equal(await page.locator('#rewards').count(), 1, 'old links still land');
+  assert.equal(await page.locator('.brackets').count(), 0, 'no rewards ladder');
   assert.equal(await page.locator('#hunt-rally').getAttribute('placeholder'), '1,360,000', 'the usual rally as ghost ink');
 
   // Eight players: every other player joins, three bigger joins, the builder follows.
   await page.locator('#hunt-players').fill('8');
   await page.waitForFunction(() => /to 8\./.test(document.querySelector('[data-i18n="bh.glance.2h"]').textContent));
   assert.equal((await text('[data-i18n="bh.glance.3h"]')).trim(), 'Send 3 joins of up to 151,000.');
-  assert.equal(await page.locator('[data-i18n="bh.glance.2ps"]').isVisible(), true);
-  assert.equal(await page.locator('[data-i18n="bh.glance.2p"]').isHidden(), true);
-  assert.equal(await page.locator('[data-i18n="bh.glance.3ps"]').isVisible(), true);
   assert.equal(await page.locator('.rally-slots span[data-off]').count(), 7, 'seven spaces nobody is left to fill');
-  assert.match(await text('[data-i18n-html="bh.plan.cap"]'), /151,000/);
-  assert.match(await text('[data-i18n="bh.first.count"]'), /^Count the joins free at the start and divide by 7\. 8 players with 3 joins each is 24, enough for 3 full rallies\./);
+  assert.equal(await page.locator('.plan-joins i').count(), 3, 'three bigger joins');
+  assert.match(await text('[data-i18n="bh.why.first"]'), /^Count the joins free at the start and divide by 7\. 8 players with 3 joins each is 24, enough for 3 full rallies\./);
   assert.equal(await page.locator('#join-queues').inputValue(), '3');
   assert.equal(await page.locator('#join-cap').inputValue(), '151000');
   assert.equal(await page.locator('#march-queues > div').count(), 3, 'three joins drawn');
@@ -40,11 +39,12 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   await page.waitForFunction(() => /up to 100,000/.test(document.querySelector('[data-i18n="bh.glance.3h"]').textContent));
   assert.equal(await page.locator('#join-cap').inputValue(), '100000');
 
-  // A one-troop rally: the own rally takes nothing, the joins take the rest.
+  // Joining: no lead finder, no rally ratio. A one-troop rally takes nothing, the joins take the rest.
+  assert.equal(await page.locator('#lead').isHidden(), true);
   await page.locator('#allocator-toggle').click();
+  assert.equal(await page.locator('#own-ratio').isHidden(), true);
   await page.locator('#own-token').check();
   assert.equal(await page.locator('#own-cap').isDisabled(), true);
-  assert.equal(await page.locator('#own-priority').isDisabled(), true);
   await page.locator('#march-builder button[type="submit"]').click();
   assert.equal(await page.locator('#alloc-own').textContent(), '1');
   assert.equal(await joinTotal(), '100,000');
@@ -56,7 +56,11 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal(await page.locator('#hunt-rally').inputValue(), '900000');
   assert.equal(await page.locator('#own-token').isChecked(), true);
 
-  // The hero page's Bear calc, Bear job only: no heroes yet, so it asks for them.
+  // Leading: the hero page's Bear calc, Bear job only. No heroes yet, so it asks for them.
+  await page.locator('label:has(#mode-lead)').click();
+  assert.equal(await page.locator('#lead').isVisible(), true);
+  assert.equal(await page.locator('#own-token').isHidden(), true);
+  assert.equal(await page.locator('#lead .lead-best-panel, #lead .lead-list').count(), 0, 'no report panel or runners-up');
   assert.equal(await page.locator('#lead .lead-jobs').count(), 0, 'no job picker on the Bear page');
   assert.equal(await page.locator('#lead details:not(.src)').count(), 1, 'only the joiners, pets and city buffs fold away');
   assert.match(await text('[data-target="lead-finder.status"]'), /Mark the heroes you own/);
@@ -75,12 +79,16 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.match(await text('#lead .lead-damage-value'), /\d/, 'the damage per hit');
   await page.waitForFunction(() => !document.getElementById('own-mix').hidden);
   if (await page.locator('#march-builder').isHidden()) await page.locator('#allocator-toggle').click();
-  await page.locator('#own-token').uncheck();
-  await page.locator('#own-priority').check();
   await page.locator('#own-mix').click();
   const ratio = await page.evaluate(() => ['own-infantry', 'own-cavalry', 'own-archers'].map(id => Number(document.getElementById(id).value)));
   assert.equal(Math.round(ratio.reduce((a, b) => a + b, 0) * 10) / 10, 100, 'the mix fills the rally ratio');
   assert.notDeepEqual(ratio, [5, 15, 80]);
+  await page.locator('#march-builder button[type="submit"]').click();
+  assert.equal(await page.locator('#alloc-own').textContent(), '130,000', 'a leader fills their own rally first');
+  await page.reload();
+  await page.waitForFunction(() => window.BH_HUNT && window.BH_MARCHES);
+  assert.equal(await page.locator('#mode-lead').isChecked(), true, 'the switch is kept');
+  assert.equal(await page.locator('#lead').isVisible(), true);
 
   // Back to a full hunt.
   await page.locator('#hunt-players').fill('15');
@@ -92,5 +100,5 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
     assert.equal(wide, false, width + 'px: no sideways scroll');
   }
   assert.deepEqual(errors, []);
-  console.log('Bear Hunt UI: hunt size, small-group rules, builder follow, one-troop rally, Bear lead calc, reload and widths pass.');
+  console.log('Bear Hunt UI: hunt size, plan pictures, builder follow, one-troop rally, joining/leading switch, Bear lead calc, reload and widths pass.');
 });

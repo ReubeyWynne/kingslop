@@ -331,6 +331,7 @@
       }
       var p = L.reportPanel(L.layered(L.panel(you.overview, r.lineup, data, you.gear, you.town), { city: you.city, pet: you.pets }, { city: L.blank(), pet: L.blank() }), r.lineup, job === 'garrison' ? 'defender' : 'rally', data);
       var body = context.targets('panel')[0];
+      if (!body) return;
       body.replaceChildren();
       TYPES.forEach(function (type, i) {
         var tr = el('tr'), th = el('th', '', api.tr('sim.calc.' + type, type)); th.scope = 'row';
@@ -342,7 +343,7 @@
     }
 
     function paint(results, gen, you) {
-      var list = context.targets('list')[0];
+      var list = context.targets('list')[0] || document.createElement('ol');
       list.replaceChildren();
       var top = results[0];
       paintBest(top, results[1], you);
@@ -370,7 +371,7 @@
       paintKits(gen);
     }
     function clear() {
-      context.targets('list')[0].replaceChildren();
+      context.targets('list').forEach(function (n) { n.replaceChildren(); });
       context.targets('best').concat(context.targets('nextTitle'), context.targets('foes')).forEach(function (n) { n.hidden = true; });
     }
 

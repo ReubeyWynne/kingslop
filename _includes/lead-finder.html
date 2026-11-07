@@ -1,15 +1,15 @@
 {% comment %} The lead finder. The Heroes page shows all three jobs; include.bear shows the Bear
    job alone, for the Bear Hunt page, with its inputs laid out flat. {% endcomment %}{% assign stat_ids = 'attack,lethality,defense,health' | split: ',' %}
-  <section class="section lead-finder" id="{% if include.bear %}lead{% else %}leads{% endif %}" data-module="lead-finder" data-screen-import-sheet="bonus-overview"{% if include.bear %} data-self="bear-hunt" data-here="overview troops rally"{% endif %} aria-labelledby="leads-title">
-    {% if include.bear %}<h2 id="leads-title" data-i18n="bh.lead.title">Lead a rally</h2>
-    {% else %}<h2 id="leads-title" data-i18n="leads.title">Your best leads</h2>
+  {% if include.bear %}<div class="lead-finder" id="lead" data-mode="lead" hidden data-module="lead-finder" data-screen-import-sheet="bonus-overview" data-self="bear-hunt" data-here="overview troops rally" aria-labelledby="mode-lead-name">
+    {% else %}<section class="section lead-finder" id="leads" data-module="lead-finder" data-screen-import-sheet="bonus-overview" aria-labelledby="leads-title">
+    <h2 id="leads-title" data-i18n="leads.title">Your best leads</h2>
     <fieldset class="lead-jobs" disabled data-target="lead-finder.controls">
       <legend data-i18n="leads.job">Job</legend>
       <label><input type="radio" name="lead-job" value="bear" checked data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.bear">Bear lead</span></label>
       <label><input type="radio" name="lead-job" value="rally" data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.rally">Rally lead</span></label>
       <label><input type="radio" name="lead-job" value="garrison" data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.garrison">Garrison lead</span></label>
     </fieldset>{% endif %}
-    <ul class="inputs lead-inputs" data-target="lead-finder.inputs" aria-labelledby="leads-title"></ul>
+    <ul class="inputs lead-inputs" data-target="lead-finder.inputs" aria-labelledby="{% if include.bear %}mode-lead-name{% else %}leads-title{% endif %}"></ul>
     <button type="button" class="lead-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="leads.drop.title">Fill these in from screenshots</strong></button>
     <button type="button" class="explain" popovertarget="bonus-shots" data-i18n="leads.shots.open">Which screenshots?</button>
     <div class="explainer" id="bonus-shots" popover>
@@ -65,16 +65,16 @@
       <div class="lead-best-trio" data-target="lead-finder.trio"></div>
       <div class="lead-best-body">
         <div class="lead-best-answer" data-target="lead-finder.answer"></div>
-        <div class="lead-best-panel">
+        {% unless include.bear %}<div class="lead-best-panel">
           <p class="lead-kicker" data-i18n="leads.panelTitle">Your report should read about</p>
           <table class="lead-panel-table"><thead><tr><td></td>{% for stat in stat_ids %}<th scope="col" data-i18n="leads.stat.{{ stat }}">{{ stat }}</th>{% endfor %}</tr></thead><tbody data-target="lead-finder.panel"></tbody></table>
           <p class="lead-panel-note" data-i18n="leads.panelNote">Before joiners, with your hero gear and Truegold.</p>
-        </div>
+        </div>{% endunless %}
       </div>
     </article>
-    <p class="lead-kicker lead-next-title" data-target="lead-finder.nextTitle" hidden data-i18n="leads.nextTitle">The next four</p>
+    {% unless include.bear %}<p class="lead-kicker lead-next-title" data-target="lead-finder.nextTitle" hidden data-i18n="leads.nextTitle">The next four</p>
     <ol class="lead-list" data-target="lead-finder.list"></ol>
-    {% unless include.bear %}<div class="lead-foes" data-target="lead-finder.foes" hidden>
+    {% endunless %}    {% unless include.bear %}<div class="lead-foes" data-target="lead-finder.foes" hidden>
       <h3 data-i18n="leads.foes">The opponents</h3>
       <p class="note" data-target="lead-finder.foesNote"></p>
       <ul class="lead-foe-list">{% for foe in site.data.megafauna.foes %}
@@ -90,4 +90,4 @@
       <p data-i18n="leads.method.limits">Appointments, turrets and lineups with two heroes of one troop type aren’t counted. The stock opponents are estimates from the KingShot Battle Helper’s benchmarks, not real players.</p>
     </details>
     {% endunless %}<noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
-  </section>
+  {% if include.bear %}</div>{% else %}</section>{% endif %}
