@@ -19,6 +19,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal(await page.locator('[data-cap="off"] .cap-bar i[data-out]').count(), 5, 'without it, five are left out');
   assert.equal((await text('[data-i18n="bh.cap.out"]')).trim(), '5 left out');
   assert.match((await text('[data-i18n="bh.cap.gain"]')).trim(), /^\+\d+% damage$/);
+  assert.equal(await page.locator('[data-cap="off"]').isVisible(), true, 'a full hunt compares the two');
   assert.equal(await page.locator('.plan-joiners img').count(), 3, 'the joiner heroes, before a generation is set');
   assert.equal(await page.locator('.plan-joins i').count(), 6, 'a bar for each join');
   assert.match(await text('[data-i18n="bh.run.first2"]'), /^With 15 players, open 7 rallies,/);
@@ -34,6 +35,8 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal((await text('[data-i18n="bh.glance.3h"]')).trim(), 'Send 3 joins of up to 168,000.');
   assert.equal(await page.locator('[data-cap="on"] .cap-bar i').count(), 8, 'the leader and seven joiners');
   assert.equal(await page.locator('[data-cap="off"] .cap-bar i[data-out]').count(), 0, 'seven usual marches all fit a big rally');
+  assert.equal(await page.locator('[data-cap="off"]').isHidden(), true, 'so there is nothing to compare');
+  assert.equal(await page.locator('[data-cap="on"] .cap-note').isHidden(), true);
   assert.equal(await page.locator('.plan-joins i').count(), 3, 'three bigger joins');
   assert.match(await text('[data-i18n="bh.why.first2"]'), /^Count the joins free at the start and divide by 7, rounding up so nobody's joins sit idle\. 8 players with 3 joins each is 24, so open 4 rallies\./);
   assert.equal(await page.locator('#join-queues').inputValue(), '3');

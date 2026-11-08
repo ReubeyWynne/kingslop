@@ -637,6 +637,7 @@ html[data-page="bearhunt"] .hunt-sub > p + p { margin-top: 0.75rem; }
 .cap-label { color: var(--ink-dim); overflow-wrap: anywhere; }
 .cap-note { color: var(--ink-muted); font-style: italic; overflow-wrap: anywhere; }
 .cap-row[data-cap="on"] .cap-note { color: var(--amber); font-style: normal; font-weight: 700; }
+.cap-row[data-cap="off"][data-same], .cap-row[data-same] .cap-note { display: none; }
 .cap-bar { display: flex; height: 1.4rem; gap: 2px; }
 .cap-bar i { flex: 0 0 calc(var(--w) * (100% - var(--outs, 0) * 0.55rem) - 2px); min-width: 2px; background: var(--signal-tint); border: 1px solid var(--amber-dim); }
 .cap-bar i[data-lead] { background: var(--amber); border-color: var(--amber); }

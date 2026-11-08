@@ -110,8 +110,11 @@
     });
     // The same rally twice: who fits without a cap, and with one.
     var cc = capCompare(plan);
+    // When every usual march already fits, the cap changes nothing: one rally, no comparison.
+    var same = cc.out === 0 && cc.gain === 0;
     Array.prototype.forEach.call(document.querySelectorAll('.cap-row'), function (row) {
       var on = row.getAttribute('data-cap') === 'on', bar = row.querySelector('.cap-bar');
+      row.toggleAttribute('data-same', same);
       var sizes = on ? Array.apply(null, Array(plan.joiners)).map(function () { return cc.even; }) : cc.fit.slice();
       if (!on) for (var k = 0; k < cc.out; k++) sizes.push(-cc.join);
       bar.replaceChildren();
