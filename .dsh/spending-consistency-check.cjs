@@ -1,11 +1,11 @@
 const assert = require('node:assert/strict');
-const Ledger = require('../js/player-ledger.js');
+const Ledger = require('../js/player-ledger.mjs');
 const Gear = require('../js/hero-gear-engine.mjs');
-const Town = require('../js/town-centre-engine.js');
-const Rules = require('../js/event-rules.js');
-const HeroSpend = require('../js/hero-spend.js');
-const BuildingSpend = require('../js/building-spend.js');
-const MasterSpend = require('../js/master-spend.js');
+const Town = require('../js/town-centre-engine.mjs');
+const Rules = require('../js/event-rules.mjs');
+const HeroSpend = require('../js/hero-spend.mjs');
+const BuildingSpend = require('../js/building-spend.mjs');
+const MasterSpend = require('../js/master-spend.mjs');
 
 function storage() {
   const values = new Map();

@@ -1,5 +1,5 @@
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
-const Ledger = require('../js/player-ledger.js');
+const Ledger = require('../js/player-ledger.mjs');
 const stages = require('../_data/kingdom_progression.json').stages;
 function fixture(seed = {}) {
   const values = new Map(Object.entries(seed)), events = [], listeners = {};

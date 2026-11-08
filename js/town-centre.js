@@ -1,4 +1,4 @@
-/* Bounded DOM adapters for the Town Centre. Arithmetic lives in town-centre-engine.js;
+/* Bounded DOM adapters for the Town Centre. Arithmetic lives in town-centre-engine.mjs;
    every count lives in the shared player ledger, so the hero gear, governor and event
    pages see each edit made here. */
 (function () {

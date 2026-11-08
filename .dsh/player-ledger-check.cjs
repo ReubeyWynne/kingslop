@@ -1,5 +1,5 @@
 const assert = require('node:assert/strict');
-const Ledger = require('../js/player-ledger.js');
+const Ledger = require('../js/player-ledger.mjs');
 const E = require('../js/hero-gear-engine.mjs');
 function storage(seed = {}) {
   const values = new Map(Object.entries(seed));

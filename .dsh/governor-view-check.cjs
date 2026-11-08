@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const G = require('../js/governor-engine.js');
+const G = require('../js/governor-engine.mjs');
 const GovernorView = require('../js/governor-view.js');
 
 let dictionary = {}, locale = 'en-GB';

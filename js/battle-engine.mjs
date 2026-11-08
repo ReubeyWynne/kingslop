@@ -531,4 +531,4 @@ export { TIERS, TGS, MAX_TG, TG_HIGH, TRUEGOLD, baseAtk, baseHea, hasSecondSkill
 const api = { TIERS, TGS, MAX_TG, TG_HIGH, TRUEGOLD, baseAtk, baseHea, hasSecondSkill, family,
   factor, compile, dead, prepare, battle, run, grid, sweep, best, rng, seedOf, BEAR, bearHunt,
   quantile };
-export { api as 'module.exports' };
+export { api as default, api as 'module.exports' };

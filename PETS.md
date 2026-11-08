@@ -14,7 +14,7 @@ The three sources agree on every row but three cells, where the two that agree w
 
 ## Advances
 
-`js/pet-plan.js` (`PetPlan`) works from a pet's level and whether the Advance at that level is done. The skill level is the number of Advances done. `nextAdvance` is the cost of the next cap with its Advance, `toMax` the cost of every step left; both carry the Advances' score and points. An unread level counts as nothing.
+`js/pet-plan.mjs` (`PetPlan`) works from a pet's level and whether the Advance at that level is done. The skill level is the number of Advances done. `nextAdvance` is the cost of the next cap with its Advance, `toMax` the cost of every step left; both carry the Advances' score and points. An unread level counts as nothing.
 
 ## Care
 

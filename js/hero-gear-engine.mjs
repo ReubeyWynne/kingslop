@@ -607,4 +607,4 @@ const api = { XP, CUM, TYPES, SLOTS, RES, KVK_RATES, kvkPoints, spendable, MILES
   defaults, normaliseState, normalisePiece, cap, cost, target, milestone, gap, affordable, stats,
   score, total, redPlans, nearbyMilestones, optimise, strategyComparison, encodeLink, readLink,
   invested, bestSet, bestSplit, optimal, profileFit };
-export { api as 'module.exports' };
+export { api as default, api as 'module.exports' };

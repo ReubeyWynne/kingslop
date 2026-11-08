@@ -1,7 +1,7 @@
 // Masters: canonical data, art, the shared ledger section, the spending plan, Town Centre totals and page wiring.
 const assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path');
-const data = require('../_data/masters.json'), Ledger = require('../js/player-ledger.js'), S = require('../js/master-spend.js');
-const T = require('../js/town-centre-engine.js'), rules = require('../js/event-rules.js'), pages = require('../_data/pages.json'), nav = require('../_data/nav.json');
+const data = require('../_data/masters.json'), Ledger = require('../js/player-ledger.mjs'), S = require('../js/master-spend.mjs');
+const T = require('../js/town-centre-engine.mjs'), rules = require('../js/event-rules.mjs'), pages = require('../_data/pages.json'), nav = require('../_data/nav.json');
 const read = file => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
 function storage(seed = {}) { const values = new Map(Object.entries(seed)); return { getItem: key => values.has(key) ? values.get(key) : null, setItem: (key, value) => values.set(key, value), removeItem: key => values.delete(key) }; }
 const sum = list => list.reduce((total, n) => total + n, 0);
@@ -124,12 +124,12 @@ assert.equal(pages.masters.swipePrev.page, 'heroes'); assert.equal(pages.masters
 assert.equal(pages.heroes.swipeNext.page, 'masters'); assert.equal(pages.gear.swipePrev.page, 'masters');
 for (const page of ['masters', 'town']) {
   const scripts = pages[page].scripts.map(s => s.replace('../js/', ''));
-  for (const need of ['hero-spend.js', 'master-data.js', 'master-spend.js', 'master-directory.js']) assert(scripts.includes(need), page + ' loads ' + need);
-  assert(scripts.indexOf('master-spend.js') > scripts.indexOf('master-data.js') && scripts.indexOf('master-spend.js') > scripts.indexOf('hero-spend.js'), page + ' script order');
+  for (const need of ['hero-spend.mjs', 'master-data.js', 'master-spend.mjs', 'master-directory.js']) assert(scripts.includes(need), page + ' loads ' + need);
+  assert(scripts.indexOf('master-spend.mjs') > scripts.indexOf('master-data.js') && scripts.indexOf('master-spend.mjs') > scripts.indexOf('hero-spend.mjs'), page + ' script order');
   assert(pages[page].css.includes('../css/masters.css'), page + ' css');
 }
 const town = pages.town.scripts.map(s => s.replace('../js/', ''));
-assert(town.indexOf('master-spend.js') < town.indexOf('town-centre-engine.js'));
+assert(town.indexOf('master-spend.mjs') < town.indexOf('town-centre-engine.mjs'));
 assert(town.indexOf('master-points.js') < town.indexOf('town-centre.js'));
 const townPage = read('town-centre/index.html');
 assert.match(townPage, /aria-controls="town-masters"/); assert.match(townPage, /id="town-masters"[^>]*data-shelf="masters"/);

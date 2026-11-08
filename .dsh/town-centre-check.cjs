@@ -1,6 +1,6 @@
 // Town Centre: points from the whole ledger, page wiring and dictionaries.
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
-const T = require('../js/town-centre-engine.js'), H = require('../js/hero-gear-engine.mjs'), Spend = require('../js/hero-spend.js'), Ledger = require('../js/player-ledger.js'), rules = require('../js/event-rules.js'), B = require('../js/building-spend.js');
+const T = require('../js/town-centre-engine.mjs'), H = require('../js/hero-gear-engine.mjs'), Spend = require('../js/hero-spend.mjs'), Ledger = require('../js/player-ledger.mjs'), rules = require('../js/event-rules.mjs'), B = require('../js/building-spend.mjs');
 const storage = { getItem(k) { return this[k] ?? null; }, setItem(k, v) { this[k] = v; } };
 const store = Ledger.create(storage);
 
@@ -142,7 +142,7 @@ for (let gen = 1; gen <= 7; gen++) assert.deepEqual(T.topRate(Ledger.widgetChest
 
 // Troops: a pre-trained batch per camp, then what training and general speedups can train with
 // the resources left. Rates come from the day's "T{n} troop" rows, then the cross-checked table.
-const R = require('../js/troop-spend.js');
+const R = require('../js/troop-spend.mjs');
 assert.deepEqual(Object.keys(R.TIERS).map(Number), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
 for (const tier of Object.values(R.TIERS)) assert.ok(tier.seconds > 0 && R.TYPES.every(type => tier.cost[type.id]), 'T' + tier.tier);
 assert.deepEqual(R.rates(rules.rules('prep', 4).rows, 'prep').rates, { 1: 3, 2: 4, 3: 5, 4: 8, 5: 12, 6: 18, 7: 25, 8: 35, 9: 45, 10: 60, 11: 75 });
@@ -214,10 +214,10 @@ assert.equal(nav.filter(n => n.self === 'town').length, 0);
 assert.ok(!pages.town.swipePrev && !pages.town.swipeNext);
 assert.ok(fs.readFileSync('_includes/page-deck.html', 'utf8').includes('class="deck-town" href="{{ p.depth }}town-centre/"'));
 assert.ok(!fs.readFileSync('_includes/ascii/deck-scene.html', 'utf8').includes("'town'"));
-for (const script of ['event-data.js', 'governor-data.js', 'event-rules.js', 'governor-engine.js', 'hero-gear-engine.mjs', 'hero-data.js', 'hero-spend.js', 'building-data.js', 'building-spend.js', 'troop-data.js', 'troop-spend.js', 'town-centre-engine.js', 'hero-points.js', 'town-centre.js']) assert.ok(pages.town.scripts.includes('../js/' + script), script);
-assert.ok(pages.town.scripts.indexOf('../js/town-centre-engine.js') < pages.town.scripts.indexOf('../js/town-centre.js'));
-assert.ok(pages.town.scripts.indexOf('../js/hero-spend.js') < pages.town.scripts.indexOf('../js/town-centre-engine.js'));
-assert.ok(pages.town.scripts.indexOf('../js/building-data.js') < pages.town.scripts.indexOf('../js/building-spend.js') && pages.town.scripts.indexOf('../js/building-spend.js') < pages.town.scripts.indexOf('../js/town-centre-engine.js'));
+for (const script of ['event-data.js', 'governor-data.js', 'event-rules.mjs', 'governor-engine.mjs', 'hero-gear-engine.mjs', 'hero-data.js', 'hero-spend.mjs', 'building-data.js', 'building-spend.mjs', 'troop-data.js', 'troop-spend.mjs', 'town-centre-engine.mjs', 'hero-points.js', 'town-centre.js']) assert.ok(pages.town.scripts.includes('../js/' + script), script);
+assert.ok(pages.town.scripts.indexOf('../js/town-centre-engine.mjs') < pages.town.scripts.indexOf('../js/town-centre.js'));
+assert.ok(pages.town.scripts.indexOf('../js/hero-spend.mjs') < pages.town.scripts.indexOf('../js/town-centre-engine.mjs'));
+assert.ok(pages.town.scripts.indexOf('../js/building-data.js') < pages.town.scripts.indexOf('../js/building-spend.mjs') && pages.town.scripts.indexOf('../js/building-spend.mjs') < pages.town.scripts.indexOf('../js/town-centre-engine.mjs'));
 const dictionaries = fs.readdirSync('i18n').filter(f => f.endsWith('.js')).map(file => { const ctx = { window: {} }; vm.runInNewContext(fs.readFileSync('i18n/' + file, 'utf8'), ctx); return [file, Object.values(ctx.window.__BH_I18N_DATA)[0]]; });
 assert.equal(dictionaries.length, 10);
 for (const [file, d] of dictionaries) for (const key of ['town.nav', 'town.title', 'town.cardLede', 'town.kicker']) assert.equal(typeof d[key], 'string', file + ' ' + key);

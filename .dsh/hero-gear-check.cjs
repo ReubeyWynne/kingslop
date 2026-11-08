@@ -4,7 +4,7 @@ const vm = require('node:vm');
 const E = require('../js/hero-gear-engine.mjs');
 const OCR = require('../js/hero-gear-ocr.js');
 const View = require('../js/hero-gear-view.mjs');
-const Ledger = require('../js/player-ledger.js');
+const Ledger = require('../js/player-ledger.mjs');
 // A fresh sheet starts on Bear first, as on Governor gear. The worked cases below were written
 // for Early growth (lethality and health both count), so their blank sheets start there.
 { const fresh = E.defaults(); assert.equal(fresh.profile, 'bear'); assert.deepEqual(fresh.weights, E.PROFILES.bear); }

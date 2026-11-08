@@ -1,7 +1,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const E = require('../js/halloween-engine.js');
-const L = require('../js/player-ledger.js');
+const L = require('../js/player-ledger.mjs');
 const D = E.data;
 function facts() { return Object.assign(E.blank(), { points: 10000, candy: 1000, daysLeft: 3 }); }
 function storage() { const data = new Map(); return { getItem: key => data.get(key) || null, setItem: (key, value) => data.set(key, value), removeItem: key => data.delete(key) }; }

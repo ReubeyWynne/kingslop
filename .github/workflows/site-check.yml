@@ -61,7 +61,7 @@ jobs:
               - .dsh/lib/**
               - js/i18n.js
               - js/interactions.js
-              - js/player-ledger.js
+              - js/player-ledger.mjs
               - js/player-modules.js
               - js/unit-input.js
               - js/deep-link.js
@@ -72,7 +72,7 @@ jobs:
               - css/event-points.css
               - _includes/page-notes.html
               - css/page-notes.css
-              - js/event-rules.js
+              - js/event-rules.mjs
               - _data/event_rules.json
               - js/server-age.js
               - js/kingdom-progression.js
@@ -132,7 +132,7 @@ jobs:
               - _includes/heroes/**
               - js/hero-directory*.js
               - js/hero-directory*.mjs
-              - js/hero-spend.js
+              - js/hero-spend.mjs
               - js/hero-points.js
               - js/hero-data.liquid
               - js/lead-*
@@ -140,7 +140,7 @@ jobs:
               - js/combat.mjs
               - _data/combat.json
               - _data/megafauna.json
-              - js/event-rules.js
+              - js/event-rules.mjs
               - _data/event_rules.json
               - _data/heroes.json
               - _data/hero_roles.json
@@ -155,11 +155,12 @@ jobs:
               - css/masters.css
               - _includes/masters/**
               - img/masters/**
-              - js/hero-spend.js
-              - js/event-rules.js
+              - js/hero-spend.mjs
+              - js/event-rules.mjs
               - _data/event_rules.json
               - town-centre/**
               - js/town-centre*.js
+              - js/town-centre*.mjs
             pets:
               - *shared
               - .dsh/pets-ui-check.cjs
@@ -190,16 +191,16 @@ jobs:
               - js/event-*
               - js/kvk.js
               - js/hero-gear-engine.mjs
-              - js/hero-spend.js
+              - js/hero-spend.mjs
               - js/hero-data.liquid
               - _data/heroes.json
-              - js/governor-engine.js
+              - js/governor-engine.mjs
               - js/governor-data.liquid
               - _data/governor.json
-              - js/master-spend.js
+              - js/master-spend.mjs
               - js/master-data.liquid
               - _data/masters.json
-              - js/town-centre-engine.js
+              - js/town-centre-engine.mjs
               - js/troop-*
               - js/building-*
               - _data/event_rules.json
@@ -230,6 +231,7 @@ jobs:
               - .dsh/number-format-ui-check.cjs
               - town-centre/**
               - js/town-centre*.js
+              - js/town-centre*.mjs
               - js/event-*
               - js/governor-*
               - js/hero-gear-engine.mjs
@@ -241,7 +243,7 @@ jobs:
               - _includes/heroes/**
               - js/hero-directory*.js
               - js/hero-directory*.mjs
-              - js/hero-spend.js
+              - js/hero-spend.mjs
               - js/hero-points.js
               - js/building-*
               - img/buildings/**
@@ -268,11 +270,11 @@ jobs:
               - js/upgrade-priority*
               - js/upgrade-goals*
               - js/upgrade-savings*
-              - js/event-rules.js
+              - js/event-rules.mjs
               - _data/event_rules.json
               - _data/upgrade_priority.json
               - css/priority.css
-              - js/hero-spend.js
+              - js/hero-spend.mjs
               - js/master-*
               - _data/masters.json
               - js/hero-gear-engine.mjs
@@ -292,7 +294,7 @@ jobs:
               - js/home-yours.js
               - css/home.css
               - js/event-data.liquid
-              - js/event-rules.js
+              - js/event-rules.mjs
               - _data/event_rules.json
             # Teaching empty states on the six tool pages.
             empty:
@@ -317,6 +319,7 @@ jobs:
               - js/hero-directory*.mjs
               - js/hero-points.js
               - js/town-centre*.js
+              - js/town-centre*.mjs
             seasonal:
               - *shared
               - seasonal/**
@@ -405,10 +408,13 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      # The checks require() the engines in js/*.mjs, which needs Node 22.12 or later.
+      # The checks require() the engines in js/*.mjs, which needs Node 22.12 or later, and
+      # some bundle an engine as a page runs it (.dsh/lib/classic-modules.cjs), which needs esbuild.
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24
+          cache: npm
+      - run: npm ci
       - name: Check JavaScript syntax
         if: needs.changes.outputs.logic == 'true'
         shell: bash
@@ -580,6 +586,12 @@ jobs:
         with:
           name: site
           path: _site
+      # Some checks bundle an engine as a page runs it (.dsh/lib/classic-modules.cjs), which needs esbuild.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
       - id: browser-cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:

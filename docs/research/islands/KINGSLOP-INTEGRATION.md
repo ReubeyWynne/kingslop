@@ -9,7 +9,7 @@ These notes describe the repository at the branch base, `30c98e5`, and the paral
 | Page layout and asset loading | `_layouts/page.html`, `_includes/head.html`, `_data/pages.json` | Add island-specific scripts, styles and data through the existing page configuration |
 | Navigation and home deck | `_data/nav.json`, `_data/pages.json`, `js/page-deck.js` | Add the island page through the existing page/deck model |
 | Interaction modules | `INTERACTIONS.md`, `js/interactions.js`, `js/player-modules.js` | Native controls with explicit `data-module`, `data-action`, `data-target` contracts |
-| Shared player state | `js/player-ledger.js` | Add an explicit schema extension if island ownership becomes confirmed player data; do not add arbitrary bindings |
+| Shared player state | `js/player-ledger.mjs` | Add an explicit schema extension if island ownership becomes confirmed player data; do not add arbitrary bindings |
 | Imported/shared copies | Store selection described in `INTERACTIONS.md` | Keep a viewed or edited shared design separate from the player's persistent save until they choose to adopt it |
 | Save import/export | `save-transfer` capability in `js/player-modules.js` | Preserve validation, revision checks and undo behaviour if this becomes part of whole-player state |
 | Kingdom progression | `js/kingdom-progression.js`, `_data/kingdom_progression.json` | Reuse shared kingdom context only when island unlock rules are verified |

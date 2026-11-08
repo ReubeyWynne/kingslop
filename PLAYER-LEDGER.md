@@ -1,6 +1,6 @@
 # Shared player ledger
 
-The static site loads `js/player-ledger.js` before page scripts. `window.PlayerLedger.shared()` returns the shared store; the same module is available through CommonJS for domain checks. Player data remains in browser storage, with no network requests.
+The static site loads `js/player-ledger.mjs` before page scripts. `window.PlayerLedger.shared()` returns the shared store; the same module is available through CommonJS for domain checks. Player data remains in browser storage, with no network requests.
 
 ## Contract
 

@@ -19,11 +19,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
   // A first visit sees the plain guide list.
   await open();
   assert.equal(await yours.isVisible(), false, 'hidden on an empty save');
-  assert.equal(await page.evaluate(() => Boolean(window.EventRules || document.querySelector('script[src*="home-yours"]'))), false, 'an empty save fetches none of the corner');
+  assert.equal(await page.evaluate(() => Boolean(window.EventRules || document.querySelector('script[src*="home-yours"], script[src*="page-home.late"]'))), false, 'an empty save fetches none of the corner');
 
   // Something in the save brings the corner, live.
   await page.evaluate(() => window.PlayerLedger.shared().setBuildings({ 'town-center': '24', embassy: '23', barracks: '22' }));
-  await page.waitForFunction(() => window.EventRules && document.querySelector('script[src*="home-yours"]'));
+  await page.waitForFunction(() => window.EventRules && document.querySelector('script[src*="home-yours"], script[src*="page-home.late"]'));
   assert.equal(await yours.isVisible(), false, 'buildings alone are not holdings');
   await page.evaluate(() => { const s = window.PlayerLedger.shared(); s.setHero('jabel', { level: 60, stars: 10, widget: 2, skills: null }); s.setBalance('mythic-hero-shard', 200); s.setPet('lion', { level: 20, advanced: false }); });
   await page.waitForSelector('#yours:not([hidden])');

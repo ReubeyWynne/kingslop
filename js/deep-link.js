@@ -140,9 +140,12 @@
 
   // Start after the page has booted, so the buttons it presses are wired:
   // common.js boots on DOMContentLoaded when the dictionary is ready first,
-  // and its listener was added before this one.
+  // and its listener was added before this one. BH.whenLoaded is the test
+  // common.js boots by; readyState alone is 'interactive' while deferred
+  // scripts still run.
   function begin() {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    if (window.BH && window.BH.whenLoaded) window.BH.whenLoaded(start);
+    else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
   }
   if (window.I18N && window.I18N.onReady) window.I18N.onReady(begin);

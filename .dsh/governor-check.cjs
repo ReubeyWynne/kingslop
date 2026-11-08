@@ -2,8 +2,9 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const data = require('../_data/governor.json');
-const G = require('../js/governor-engine.js');
-const Ledger = require('../js/player-ledger.js');
+const { classicModules } = require('./lib/classic-modules.cjs');
+const G = require('../js/governor-engine.mjs');
+const Ledger = require('../js/player-ledger.mjs');
 
 // Data: sourced, monotonic, and agreeing with the cross-checked totals.
 assert.equal(data.gear.levels.length, 58);
@@ -102,9 +103,9 @@ assert.throws(() => G.events('unknown', 100));
 assert.ok(G.events('gear', null).every(event => event.points === null));
 const eventData = JSON.parse(JSON.stringify(require('../_data/event_rules.json')));
 for (const days of Object.values(eventData.events)) for (const day of days) for (const row of day.rows) { row.label = '表示'; row.points = 'presentation'; }
-const eventContext = { window: { EventRuleData: eventData, GovernorData: data } };
-vm.runInNewContext(fs.readFileSync('js/event-rules.js', 'utf8'), eventContext);
-vm.runInNewContext(fs.readFileSync('js/governor-engine.js', 'utf8'), eventContext);
+const eventContext = { EventRuleData: eventData, GovernorData: data };
+eventContext.window = eventContext;
+vm.runInNewContext(classicModules('js/event-rules.mjs', 'js/governor-engine.mjs'), eventContext);
 for (const kind of ['gear', 'charms']) assert.deepEqual(JSON.parse(JSON.stringify(eventContext.window.Governor.events(kind, 625))), G.events(kind, 625), kind + ' scores from metadata when labels and display points change');
 
 // Ledger: governor sections stay unsupported until written, then validate strictly.

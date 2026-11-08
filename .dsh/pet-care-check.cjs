@@ -2,7 +2,7 @@
 // the care meters and moods, the ledger's pets section, and the page's wiring.
 const assert = require('node:assert/strict'), fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
 const read = file => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
-const data = require('../_data/pets.json'), Plan = require('../js/pet-plan.js'), Care = require('../js/pet-care.mjs'), Ledger = require('../js/player-ledger.js');
+const data = require('../_data/pets.json'), Plan = require('../js/pet-plan.mjs'), Care = require('../js/pet-care.mjs'), Ledger = require('../js/player-ledger.mjs');
 
 // Data: fourteen pets on five profiles, the totals the research publishes, one value per Advance.
 assert.equal(data.pets.length, 14);
@@ -158,7 +158,7 @@ assert.equal(nav[petsAt - 1].self, 'governor'); assert.equal(nav[petsAt + 1].sel
 assert.equal(pages.pets.swipePrev.page, 'governor'); assert.equal(pages.pets.swipeNext.page, 'buildings');
 assert.equal(pages.governor.swipeNext.page, 'pets'); assert.equal(pages.buildings.swipePrev.page, 'pets');
 const petScripts = pages.pets.scripts.map(script => script.split('/').at(-1));
-for (const [dependency, consumer] of [['pet-data.js', 'pet-plan.js'], ['pet-plan.js', 'pet-den.js'], ['pet-care.mjs', 'pet-den.js'], ['roster-editor.js', 'pet-den.js'], ['pet-den.js', 'pet-live.js']]) {
+for (const [dependency, consumer] of [['pet-data.js', 'pet-plan.mjs'], ['pet-plan.mjs', 'pet-den.js'], ['pet-care.mjs', 'pet-den.js'], ['roster-editor.js', 'pet-den.js'], ['pet-den.js', 'pet-live.js']]) {
   assert.ok(petScripts.indexOf(dependency) >= 0 && petScripts.indexOf(consumer) > petScripts.indexOf(dependency), dependency + ' before ' + consumer);
 }
 // Every pet with a portrait is drawn live from its model (pets/models/<id>.bin and .json) and keeps its baked portrait as the fallback.

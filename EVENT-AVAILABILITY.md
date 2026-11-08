@@ -4,7 +4,7 @@ Milestone 3 adds a personal point budget to `events/#availability`. It reads the
 
 ## Single rule source
 
-`_data/event_rules.json` contains the original guide rows for KvK Prep, Strongest Governor and Alliance Brawl, plus the extracted alliance matrix, display rates, themes, run schedules and copy-task arrays formerly in `js/kvk.js`. Liquid renders the reference tables from these rows. `js/event-data.liquid` emits `/js/event-data.js` for the browser; `js/event-rules.js` consumes that data and is also directly requireable in Node.
+`_data/event_rules.json` contains the original guide rows for KvK Prep, Strongest Governor and Alliance Brawl, plus the extracted alliance matrix, display rates, themes, run schedules and copy-task arrays formerly in `js/kvk.js`. Liquid renders the reference tables from these rows. `js/event-data.liquid` emits `/js/event-data.js` for the browser; `js/event-rules.mjs` consumes that data and is also directly requireable in Node.
 
 KvK prep was checked against the owner's full in-game event lists on 2 Nov 2026. Day 4 (Hero Development) now also lists T1 to T3 troops (3, 4 and 5 points, already in the troop rate set) and gathering. Day 5 (Power Boost) now lists master skill speedups with the other 30-point speedups, both taming marks (15,000 and 1,150), and governor gear at 36 points per score. Days 1 and 2 still list Tempered Truegold and Truegold Dust: the owner's lists didn't show them because the account hasn't unlocked them yet (owner, 2 Nov), so the game only lists them once they're unlocked.
 

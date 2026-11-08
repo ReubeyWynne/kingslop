@@ -107,4 +107,4 @@ export { side, leader, chosen as joiners, joinerSkills, skill, widget, MAX_JOINE
 // The same exports as one object: what the page's classic scripts read as window.CombatSkills
 // and what require() returns to the CommonJS checks, until neither needs it.
 const api = { side, leader, joiners: chosen, joinerSkills, skill, widget, MAX_JOINERS };
-export { api as 'module.exports' };
+export { api as default, api as 'module.exports' };

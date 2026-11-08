@@ -2,8 +2,8 @@
 // ask to be recorded, unknown balances leave the shortfall unknown (never zero), and the page's
 // keys exist in every dictionary with matching placeholders.
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
-const Goals = require('../js/upgrade-goals.js'), Ledger = require('../js/player-ledger.js');
-const B = require('../js/building-spend.js'), HS = require('../js/hero-spend.js'), H = require('../js/hero-gear-engine.mjs'), G = require('../js/governor-engine.js'), PP = require('../js/pet-plan.js'), MS = require('../js/master-spend.js');
+const Goals = require('../js/upgrade-goals.mjs'), Ledger = require('../js/player-ledger.mjs');
+const B = require('../js/building-spend.mjs'), HS = require('../js/hero-spend.mjs'), H = require('../js/hero-gear-engine.mjs'), G = require('../js/governor-engine.mjs'), PP = require('../js/pet-plan.mjs'), MS = require('../js/master-spend.mjs');
 const rules = require('../_data/upgrade_priority.json');
 function storage() { const values = new Map(); return { getItem: k => values.has(k) ? values.get(k) : null, setItem: (k, v) => values.set(k, v), removeItem: k => values.delete(k) }; }
 const store = Ledger.create(storage());
@@ -144,8 +144,8 @@ assert.deepEqual(copy.priority().goals, goals);
 // Page wiring and dictionaries.
 const pages = JSON.parse(fs.readFileSync('_data/pages.json', 'utf8'));
 const page = Object.values(pages).find(p => p && p.token === 'priority');
-['../js/building-spend.js', '../js/pet-plan.js', '../js/upgrade-goals.js', '../js/upgrade-goals-page.js'].forEach(s => assert.ok(page.scripts.includes(s), s));
-assert.ok(page.scripts.indexOf('../js/upgrade-goals.js') > page.scripts.indexOf('../js/pet-plan.js'));
+['../js/building-spend.mjs', '../js/pet-plan.mjs', '../js/upgrade-goals.mjs', '../js/upgrade-goals-page.js'].forEach(s => assert.ok(page.scripts.includes(s), s));
+assert.ok(page.scripts.indexOf('../js/upgrade-goals.mjs') > page.scripts.indexOf('../js/pet-plan.mjs'));
 const markup = fs.readFileSync('upgrade-priority/index.html', 'utf8'), script = fs.readFileSync('js/upgrade-goals-page.js', 'utf8');
 assert.match(markup, /data-module="upgrade-goals"/);
 const dict = lang => { const sandbox = { window: {} }; vm.runInNewContext(fs.readFileSync('i18n/' + lang + '.js', 'utf8'), sandbox); return sandbox.window.__BH_I18N_DATA[lang]; };

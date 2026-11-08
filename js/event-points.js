@@ -4,7 +4,7 @@
    forGovernor; Pet Advancement score through forPets. Every rate comes
    from the event rules (_data/event_rules.json), so these match the Event Cycle page. */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./event-rules.js'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./event-rules.mjs'));
   else root.EventPoints = factory(root.EventRules);
 })(typeof window === 'object' ? window : globalThis, function (rules) {
   'use strict';

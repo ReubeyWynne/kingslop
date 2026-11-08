@@ -14,8 +14,12 @@
    load as one unminified file, js/page-<token>.modules.js, so there is still one copy of each.
 
    In either form a page's modules are bundled together and run where the first of them is
-   listed, each setting its global as it does. A module may import other modules but never
-   read a classic script's global as it loads, so running a little earlier changes nothing.
+   listed, each setting its global as it does, and the site bundle's modules (boot.before and
+   boot.shared) are a group of their own that the page's modules read through their globals.
+   A module may import other modules but never read a classic script's global as it loads,
+   so running a little earlier changes nothing. It imports the _data JSON it needs; where the
+   page lists that data's script (boot.json "data") before its modules, the build reads the
+   global the script sets instead, and stops if the script comes after them.
 
    Classic scripts are joined as they are (esbuild keeps every top-level name). A script that
    finds files beside itself (workers, dictionaries) reads its own URL, and every bundle sits
@@ -54,21 +58,89 @@ function liquidScripts(root) {
   return map;
 }
 
-async function esbuild(root, contents, minify) {
+/* The page globals a group of modules reads instead of bundling its own copy, keyed by file:
+   the modules an earlier group already ran (the site bundle's, for a page's own modules), by
+   their boot.json "globals" name, and the _data files whose data script (boot.json "data")
+   the page lists before the group runs. An import of either becomes `module.exports = <global>`,
+   so a default import is that object and a named import one of its properties. */
+function pageGlobals(root, boot, before, ran) {
+  const provided = new Map(), later = new Map();
+  for (const rel of ran) if (boot.globals && boot.globals[rel]) provided.set(path.resolve(root, rel), 'globalThis.' + boot.globals[rel]);
+  for (const [file, { script, value }] of Object.entries(boot.data || {})) {
+    if (before.includes(script)) provided.set(path.resolve(root, file), value);
+    else later.set(path.resolve(root, file), script);
+  }
+  return { provided, later, ran: new Set(ran.map(rel => path.resolve(root, rel))) };
+}
+
+function pageGlobalsPlugin(root, { provided, later, ran }, first) {
+  return {
+    name: 'page-globals',
+    setup(b) {
+      b.onResolve({ filter: /^\.\.?\// }, args => {
+        if (args.namespace === 'page-global' || !args.resolveDir) return undefined;
+        const file = path.resolve(args.resolveDir, args.path), rel = path.relative(root, file);
+        if (provided.has(file)) return { path: rel + ' (page global)', namespace: 'page-global', pluginData: provided.get(file) };
+        if (later.has(file)) throw new Error(rel + ' is read from ' + later.get(file) + ', so the page must list that before ' + first);
+        if (ran.has(file)) throw new Error(rel + ' already runs earlier on the page; name its global in _data/boot.json "globals"');
+        return undefined;
+      });
+      b.onLoad({ filter: /.*/, namespace: 'page-global' }, args => ({ contents: 'module.exports = ' + args.pluginData + ';', loader: 'js' }));
+    }
+  };
+}
+
+async function esbuild(root, contents, minify, plugins = []) {
   const result = await build({
     stdin: { contents, resolveDir: root, sourcefile: 'entry.mjs', loader: 'js' },
-    bundle: true, format: 'iife', minify, write: false, legalComments: 'none', charset: 'utf8', logLevel: 'silent'
+    bundle: true, format: 'iife', minify, write: false, legalComments: 'none', charset: 'utf8', logLevel: 'silent', plugins
   });
   return result.outputFiles[0].text;
 }
 
-/** Builds every bundle. Returns { scripts: { token: [root-relative src, …] }, files: { path: text } }.
+/* A list of scripts as the parts a page runs in order: each classic script, and each group of
+   modules where the first of the group is listed. Modules in `sharedMods` (what the site bundle
+   runs) are one group and the page's own modules another, so in either form a module the site
+   bundle runs is read through its global rather than bundled twice. */
+function parts(list, sharedMods) {
+  const out = [], groups = new Map();
+  list.forEach((rel, i) => {
+    if (!isModule(rel)) return out.push({ rel });
+    const key = sharedMods.includes(rel) ? 'shared' : 'own';
+    if (!groups.has(key)) { groups.set(key, { mods: [], before: list.slice(0, i) }); out.push(groups.get(key)); }
+    groups.get(key).mods.push(rel);
+  });
+  return out;
+}
+
+/** A list of modules as one classic script that sets each module's global, as a page runs
+    them. `before` is every script the page runs ahead of them. The .dsh checks use it too. */
+export async function bundleModules({ root, boot, mods, before = [], minify = false }) {
+  const globals = boot.globals || {};
+  const lines = mods.map((rel, i) => {
+    if (!fs.existsSync(path.join(root, rel))) throw new Error('No such module: ' + rel);
+    const name = globals[rel];
+    return name
+      ? 'import * as m' + i + " from './" + rel + "';\nglobalThis." + name + " = m" + i + "['module.exports'] || Object.assign({}, m" + i + ');'
+      : "import './" + rel + "';";
+  });
+  const plugin = pageGlobalsPlugin(root, pageGlobals(root, boot, before, before.filter(isModule)), mods[0]);
+  try {
+    return await esbuild(root, lines.join('\n') + '\n', minify, [plugin]);
+  } catch (error) {
+    throw new Error('Could not bundle ' + mods.join(', ') + ': ' + (((error.errors || [])[0] || {}).text || error.message));
+  }
+}
+
+/** Builds every bundle. Returns { scripts: { token: [root-relative src, …] }, late: { token: […] },
+    files: { path: text } }; `late` is what a page loads after paint (pages.json lateScripts).
     `stamp` versions the unbundled classic scripts, as before. */
 export async function buildScripts({ root, data, bundle, stamp }) {
   const liquid = createLiquid(root);
   const templates = liquidScripts(root);
-  const globals = data.boot.globals || {};
-  const cache = new Map(), files = {}, scripts = {};
+  const boot = data.boot;
+  const cache = new Map(), files = {}, scripts = {}, late = {};
+  const sharedList = [...boot.before, ...boot.shared], sharedMods = sharedList.filter(isModule);
 
   async function classic(rel) {
     if (!cache.has(rel)) {
@@ -79,29 +151,18 @@ export async function buildScripts({ root, data, bundle, stamp }) {
     return cache.get(rel);
   }
 
-  /* The page's modules as one classic script that sets each module's global. */
-  async function modules(list, minify) {
-    const lines = list.map((rel, i) => {
-      if (!fs.existsSync(path.join(root, rel))) throw new Error('No such module: ' + rel);
-      const name = globals[rel];
-      return name
-        ? 'import * as m' + i + " from './" + rel + "';\nglobalThis." + name + " = m" + i + "['module.exports'] || Object.assign({}, m" + i + ');'
-        : "import './" + rel + "';";
-    });
-    return esbuild(root, lines.join('\n') + '\n', minify);
-  }
+  const modules = (group, before, minify) => bundleModules({ root, boot, mods: group.mods, before, minify });
 
-  /* Classic scripts in order, with the modules joined where the first of them is listed. */
-  async function join(name, list) {
-    const mods = list.filter(isModule);
-    const parts = [];
-    for (const rel of list) {
-      if (!isModule(rel)) parts.push('/* ' + rel + ' */\n' + (await classic(rel)) + '\n;\n');
-      else if (rel === mods[0]) parts.push('/* ' + mods.join(', ') + ' */\n' + (await modules(mods, false)) + '\n;\n');
+  /* `list` joined into one minified file; `earlier` is what the page has already run. */
+  async function join(name, list, earlier) {
+    const out = [];
+    for (const part of parts(list, sharedMods)) {
+      if (part.rel) out.push('/* ' + part.rel + ' */\n' + (await classic(part.rel)) + '\n;\n');
+      else out.push('/* ' + part.mods.join(', ') + ' */\n' + (await modules(part, [...earlier, ...part.before], false)) + '\n;\n');
     }
     let code;
     try {
-      ({ code } = await transform(parts.join(''), { loader: 'js', minify: true, legalComments: 'none', charset: 'utf8' }));
+      ({ code } = await transform(out.join(''), { loader: 'js', minify: true, legalComments: 'none', charset: 'utf8' }));
     } catch (error) {
       throw new Error('Could not bundle ' + name + ': ' + error.message);
     }
@@ -110,30 +171,43 @@ export async function buildScripts({ root, data, bundle, stamp }) {
   }
 
   let shared = null;
-  for (const [token, page] of Object.entries(data.pages)) {
-    const split = splitScripts(token, page, data.boot);
+  for (const [token, page] of Object.entries(data.pages)) await pageScripts(token, page).catch(error => {
+    throw new Error('pages.json "' + token + '": ' + error.message);
+  });
+  async function pageScripts(token, page) {
+    const split = splitScripts(token, page, boot);
+    // What the page loads after paint for a returning player (pages.json lateScripts), after all of the rest.
+    const lateList = (page.lateScripts || []).map(s => s.slice((page.depth || '').length));
     if (bundle) {
-      shared = shared || await join('js/site.bundle.js', split.shared);
-      scripts[token] = [shared, await join('js/page-' + token + '.bundle.js', split.own)];
-      continue;
+      shared = shared || await join('js/site.bundle.js', split.shared, []);
+      scripts[token] = [shared, await join('js/page-' + token + '.bundle.js', split.own, split.shared)];
+      if (lateList.length) late[token] = [await join('js/page-' + token + '.late.bundle.js', lateList, [...split.shared, ...split.own])];
+      return;
     }
-    // Unbundled: the page's own order, every module in one file where the first is listed.
-    const list = [...split.shared.slice(0, data.boot.before.length), ...(page.scripts || []).map(s => s.slice((page.depth || '').length)), ...data.boot.after];
-    const mods = list.filter(isModule), out = [];
-    for (const rel of list) {
-      if (!isModule(rel)) out.push(rel + '?v=' + stamp);
-      else if (rel === mods[0]) {
-        const name = 'js/page-' + token + '.modules.js', code = await modules(mods, false);
-        files[name] = code;
-        out.push(name + '?v=' + hash(code));
-      }
+    // Unbundled: the page's own order, each group of modules as one file where its first is listed.
+    const list = [...boot.before, ...(page.scripts || []).map(s => s.slice((page.depth || '').length)), ...boot.after];
+    const out = [];
+    for (const part of parts(list, sharedMods)) {
+      if (part.rel) { out.push(part.rel + '?v=' + stamp); continue; }
+      const name = sharedMods.includes(part.mods[0]) ? 'js/site.modules.js' : 'js/page-' + token + '.modules.js';
+      files[name] = await modules(part, part.before, false);
+      out.push(name + '?v=' + hash(files[name]));
     }
     scripts[token] = out;
+    if (lateList.length) {
+      late[token] = [];
+      for (const part of parts(lateList, [])) {
+        if (part.rel) { late[token].push(part.rel + '?v=' + stamp); continue; }
+        const name = 'js/page-' + token + '.late.modules.js';
+        files[name] = await modules(part, [...list, ...part.before], false);
+        late[token].push(name + '?v=' + hash(files[name]));
+      }
+    }
   }
 
   // Workers written as modules, bundled into the classic scripts the pages start.
   for (const name of fs.readdirSync(path.join(root, 'js')).filter(n => /-worker\.mjs$/.test(n)).sort()) {
     files['js/' + name.replace(/\.mjs$/, '.js')] = await esbuild(root, "import './js/" + name + "';\n", bundle);
   }
-  return { scripts, files };
+  return { scripts, late, files };
 }

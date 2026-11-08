@@ -1,7 +1,7 @@
 /* The governor profile (_includes/governor/profile.html), shared by the governor page and the
    Town Centre: paints the six pieces and their charms from whichever store the page gives it,
    edits one piece in a dialog, and sets every piece at once. Arithmetic lives in
-   governor-engine.js, art and level names in governor-view.js. */
+   governor-engine.mjs, art and level names in governor-view.js. */
 (function () {
   'use strict';
   var EN = {

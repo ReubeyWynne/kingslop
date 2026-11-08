@@ -24,8 +24,10 @@ test('every role sees the live marches, and only management can change them', as
   for (const code of [s.codes.view, s.codes.join, s.players[0].editCode]) {
     const b = (await call(s, '/board', 'GET', undefined, code)).data, own = code === s.players[0].editCode;
     assert.deepEqual(b.assignments[a], own ? live[a] : routes(live[a]), 'who goes where, with counts only for your own marches');
-    assert.equal(b.roster.length, 3); assert.equal(b.roster[1].infantry, null); assert.equal(b.roster[0].infantry, own ? 600 : null);
-    assert.equal((await call(s, '', 'GET', undefined, code)).data.registrations[1].archers, null);
+    // Read players by id: sign-ups made in the same millisecond list in id order.
+    const mine = list => list.find(r => r.id === a), other = list => list.find(r => r.id === s.players[1].registration.id);
+    assert.equal(b.roster.length, 3); assert.equal(other(b.roster).infantry, null); assert.equal(mine(b.roster).infantry, own ? 600 : null);
+    assert.equal(other((await call(s, '', 'GET', undefined, code)).data.registrations).archers, null);
     assert.equal((await call(s, '/assignments/' + s.players[0].registration.id, 'PUT', { ...revisions(b), marches: [] }, code)).status, 403);
   }
   s.env.sql.close();
@@ -51,12 +53,14 @@ test('a room rolls on to its next event, resetting sign-ups but keeping troops',
     const p = s.players[0], q = s.players[1];
     assert.equal((await call(s, '/registrations/' + p.registration.id, 'PUT', { nickname: 'A', infantry: 640, cavalry: 300, archers: 100, marchCapacity: 500, marches: 2, attending: true, revision: 1 }, p.editCode)).status, 200);
     assert.equal((await call(s, '/registrations/' + q.registration.id, 'PUT', { nickname: 'B', infantry: 600, cavalry: 300, archers: 100, marchCapacity: 500, marches: 2, attending: false, revision: 1 }, q.editCode)).status, 200);
-    b = await board(s); assert.deepEqual(b.roster.map(r => r.attending), [true, false, null]);
+    // Sign-ups made in the same millisecond list in id order, so read each player by id.
+    const answers = board => s.players.map(x => board.roster.find(r => r.id === x.registration.id).attending);
+    b = await board(s); assert.deepEqual(answers(b), [true, false, null]);
     const edited = await call(s, '/registrations/' + p.registration.id, 'PUT', { nickname: 'A', infantry: 650, cavalry: 300, archers: 100, marchCapacity: 500, marches: 2, revision: 2 }, p.editCode);
     assert.equal(edited.data.registration.attending, true, 'leaving attending out keeps the answer');
     Date.now = () => Date.parse('2026-11-03T23:30:00Z');
     b = await board(s); assert.equal(b.plan.eventAt, '2026-11-17T20:00:00.000Z');
-    assert.deepEqual(b.roster.map(r => r.attending), [null, null, null]); assert.equal(b.roster[0].infantry, 650);
+    assert.deepEqual(answers(b), [null, null, null]); assert.equal(b.roster.find(r => r.id === p.registration.id).infantry, 650);
   } finally { Date.now = real; }
   s.env.sql.close();
 });
