@@ -152,12 +152,18 @@
     var nav = window.performance && performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
     return !nav || nav.domContentLoadedEventStart > 0;
   }
+  // Runs fn once every deferred script has run: now, or on DOMContentLoaded. Scripts that must
+  // follow the page's boot (deep-link.js) wait with this too, so they keep their order.
+  function whenLoaded(fn) {
+    if (!domLoaded()) document.addEventListener('DOMContentLoaded', fn, { once: true });
+    else fn();
+  }
+  BH.whenLoaded = whenLoaded;
 
   if (window.I18N) {
     window.I18N.onReady(function () {
       // Page scripts must configure dependencies and register before discovery.
-      if (!domLoaded()) document.addEventListener('DOMContentLoaded', boot, { once: true });
-      else boot();
+      whenLoaded(boot);
     });
   } else if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);
