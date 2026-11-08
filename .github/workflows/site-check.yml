@@ -125,6 +125,7 @@ jobs:
               - .dsh/bear-hunt-ui-check.cjs
               - bear-hunt/**
               - js/bear-*.js
+              - js/bear-*.mjs
               - css/bear-hunt.css
               - .dsh/hero-breakpoint-ui-check.cjs
               - js/hero-breakpoint.js

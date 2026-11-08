@@ -1,5 +1,5 @@
 const assert = require('node:assert/strict');
-const { plan, MIN_PLAYERS, QUEUES } = require('../js/bear-hunt-plan.js');
+const { plan, MIN_PLAYERS, QUEUES } = require('../js/bear-hunt-plan.mjs');
 
 // Fifteen players is the plan the page has always given: 14 joiners, 6 joins, a cap of rally ÷ 16.
 const full = plan(15, 1360000);

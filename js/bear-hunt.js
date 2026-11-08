@@ -37,7 +37,7 @@
   }
 
   /* The hunt: how many players turn up and the biggest rally's capacity.
-     js/bear-hunt-plan.js works out the rest, and every sentence marked
+     js/bear-hunt-plan.mjs works out the rest, and every sentence marked
      data-i18n-vars="hunt" carries the numbers (js/bind.js). */
   var HUNT_KEY = 'bh:hunt:v1';
   var DEFAULT_RALLY = 1360000;
