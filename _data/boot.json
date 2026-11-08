@@ -44,7 +44,9 @@
     "js/town-centre-engine.mjs": "TownCentre",
     "js/upgrade-goals.mjs": "UpgradeGoals",
     "js/upgrade-priority.mjs": "UpgradePriority",
-    "js/upgrade-savings.mjs": "UpgradeSavings"
+    "js/upgrade-savings.mjs": "UpgradeSavings",
+    "js/bear-allocator.mjs": "BH_BEAR_ALLOCATOR",
+    "js/bear-hunt-plan.mjs": "BH_HUNT_PLAN"
   },
   "_dataNote": "Data files the page already holds as a global, set by a data script (js/*-data.liquid). A module imports the _data file itself, which Node reads as JSON; on a page that lists `script` before its modules, the build reads `value` instead, so the data is not loaded twice.",
   "data": {

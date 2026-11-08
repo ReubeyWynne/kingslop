@@ -1,5 +1,5 @@
 const assert = require('node:assert/strict');
-const { allocate } = require('../js/bear-allocator.js');
+const { allocate } = require('../js/bear-allocator.mjs');
 const base = { infantry: 29750, cavalry: 89250, archers: 476000, queues: 6, joinCap: 85000, ownCap: 130000 };
 const equal = allocate(base);
 assert.deepEqual(equal.own, { infantry: 4250, cavalry: 12750, archers: 68000, total: 85000 });
