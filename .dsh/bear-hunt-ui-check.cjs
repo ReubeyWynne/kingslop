@@ -16,8 +16,8 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal((await text('[data-i18n="bh.glance.2h"]')).trim(), 'Fill every rally to 15.');
   assert.equal((await text('[data-i18n="bh.glance.3h"]')).trim(), 'Send 6 joins of up to 85,000.');
   assert.equal(await page.locator('[data-cap="on"] .cap-bar i').count(), 15, 'with the cap, the leader and all 14 joiners fit');
-  assert.equal(await page.locator('[data-cap="off"] .cap-bar i[data-out]').count(), 6, 'without it, six are left out');
-  assert.equal((await text('[data-i18n="bh.cap.out"]')).trim(), '6 left out');
+  assert.equal(await page.locator('[data-cap="off"] .cap-bar i[data-out]').count(), 5, 'without it, five are left out');
+  assert.equal((await text('[data-i18n="bh.cap.out"]')).trim(), '5 left out');
   assert.match((await text('[data-i18n="bh.cap.gain"]')).trim(), /^\+\d+% damage$/);
   assert.equal(await page.locator('.plan-joiners img').count(), 3, 'the joiner heroes, before a generation is set');
   assert.equal(await page.locator('.plan-joins i').count(), 6, 'a bar for each join');
