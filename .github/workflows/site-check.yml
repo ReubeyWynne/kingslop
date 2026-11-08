@@ -47,6 +47,8 @@ jobs:
               - eleventy.config.mjs
               - .eleventy/**
               - _data/boot.json
+              # Alpine and its stores, for pages whose view is declared in markup.
+              - js/alpine.mjs
               - css/styles.css
               - css/ascii.css
               - css/ascii-frames.css
@@ -135,6 +137,7 @@ jobs:
               - js/hero-directory*.mjs
               - js/hero-spend.mjs
               - js/hero-points.js
+              - js/pages/hero-points.mjs
               - js/hero-data.liquid
               - js/lead-*
               - js/battle-engine.mjs

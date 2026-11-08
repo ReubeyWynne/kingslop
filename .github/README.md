@@ -61,7 +61,16 @@ The scripts are moving from classic scripts that share globals (`window.BH`, `wi
 - Modules in the site bundle (`js/player-ledger.mjs`) are read through their global by the page's own modules, so there is one ledger on the page.
 - A worker written as a module (`js/*-worker.mjs`) is bundled into the classic worker script the page starts (`js/*-worker.js`).
 
-Modules so far: the player ledger (`js/player-ledger.mjs`); the battle, combat, hero gear and lead engines (`js/battle-engine.mjs`, `js/combat.mjs`, `js/hero-gear-engine.mjs`, `js/lead-engine.mjs`); the lead finder's inputs and account (`js/lead-inputs.mjs`, `js/lead-account.mjs`); the event rules and Governor gear (`js/event-rules.mjs`, `js/governor-engine.mjs`); the spend engines (`js/building-spend.mjs`, `js/hero-spend.mjs`, `js/master-spend.mjs`, `js/troop-spend.mjs`, `js/pet-plan.mjs`); the Town Centre and upgrade engines (`js/town-centre-engine.mjs`, `js/upgrade-goals.mjs`, `js/upgrade-priority.mjs`, `js/upgrade-savings.mjs`); the Bear Hunt allocator and plan (`js/bear-allocator.mjs`, `js/bear-hunt-plan.mjs`); and `js/hero-directory-engine.mjs`, `js/hero-gear-view.mjs`, `js/island-model.mjs`, `js/pet-care.mjs` and `js/vikings-engine.mjs` (which the Vikings API imports too). Each has a default export, the same object as `'module.exports'`.
+Modules so far: the player ledger (`js/player-ledger.mjs`); the battle, combat, hero gear and lead engines (`js/battle-engine.mjs`, `js/combat.mjs`, `js/hero-gear-engine.mjs`, `js/lead-engine.mjs`); the lead finder's inputs and account (`js/lead-inputs.mjs`, `js/lead-account.mjs`); the event rules and Governor gear (`js/event-rules.mjs`, `js/governor-engine.mjs`); the spend engines (`js/building-spend.mjs`, `js/hero-spend.mjs`, `js/master-spend.mjs`, `js/troop-spend.mjs`, `js/pet-plan.mjs`); the Town Centre and upgrade engines (`js/town-centre-engine.mjs`, `js/upgrade-goals.mjs`, `js/upgrade-priority.mjs`, `js/upgrade-savings.mjs`); the Bear Hunt allocator and plan (`js/bear-allocator.mjs`, `js/bear-hunt-plan.mjs`); and `js/hero-directory-engine.mjs`, `js/hero-gear-view.mjs`, `js/island-model.mjs`, `js/pet-care.mjs` `js/vikings-engine.mjs` (which the Vikings API imports too) and the VIP ladder (`js/vip-ladder.mjs`). Each has a default export, the same object as `'module.exports'`.
+
+### Pages declared in markup (Alpine)
+
+The VIP calculator and the Heroes page's KvK points are a trial of [Alpine.js](https://alpinejs.dev/): the page's template declares its view with `x-data`, `x-text`, `x-model` and the rest, and a small controller in `js/pages/` holds its state.
+
+- A controller registers its state with `Alpine.data` (or `shared` from `js/alpine.mjs`, for one state bound in several places) and calls the engines for the maths. It holds no DOM code, apart from a bridge to a shared widget that is still built in script.
+- Expressions in attributes stay short: a field, or one call. Anything longer is a getter in the controller.
+- `$store.i18n` changes on a language switch and `$store.ledger` holds the player ledger's latest snapshot. Static copy stays on `data-i18n`; only text that depends on state is bound, never on a node that also carries `data-i18n`.
+- `js/alpine.mjs` starts Alpine when common.js boots the page. It is bundled only into the pages that use it.
 
 ### Repository layout
 

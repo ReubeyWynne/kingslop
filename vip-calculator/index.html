@@ -23,30 +23,45 @@ self: vip
 
   <section class="section" id="calc">
     <h2 data-i18n="vip.calc.title">The calculator</h2>
-    <div class="calc" id="vipcalc">
+    <div class="calc" id="vipcalc" x-data="vip">
       <h4 class="calc-title" data-i18n="vip.calc.titleTag">TRY IT — YOUR VIP DATES</h4>
       <div class="calc-row">
         <label for="vip-level" data-i18n="vip.calc.levelLabel">Your current VIP level</label>
         <div class="vip-input-wrap">
-          <input id="vip-level" type="range" min="1" max="12" step="1" value="5">
-          <output id="vip-l-out" class="vip-chip" for="vip-level">5/12</output>
+          <input id="vip-level" type="range" min="1" max="12" step="1" value="5" x-model.number="level">
+          <output id="vip-l-out" class="vip-chip" for="vip-level" x-text="plan.L + '/' + MAX">5/12</output>
         </div>
       </div>
       <div class="calc-row">
         <label for="vip-xp" data-i18n="vip.calc.xpLabel">VIP XP toward the next level</label>
         <div class="vip-input-wrap">
-          <input id="vip-xp" type="number" inputmode="numeric" min="0" step="1" value="12000">
-          <output id="vip-xp-out" class="vip-chip" for="vip-xp">12,000 / 40,000</output>
+          <input id="vip-xp" type="number" inputmode="numeric" min="0" step="1" value="12000" x-model.number="xp" :max="plan.next" :disabled="plan.status === 'top'">
+          <output id="vip-xp-out" class="vip-chip" for="vip-xp" x-text="fmt(plan.p) + ' / ' + fmt(plan.next)">12,000 / 40,000</output>
         </div>
       </div>
       <div class="calc-row">
         <label for="vip-days" data-i18n="vip.calc.daysLabel">Days played</label>
         <div class="vip-input-wrap">
-          <input id="vip-days" type="number" inputmode="numeric" min="1" step="1" value="120">
+          <input id="vip-days" type="number" inputmode="numeric" min="1" step="1" value="120" x-model.number="days">
         </div>
       </div>
-      <p class="calc-out" id="vip-headline" role="status">Your dates land here.</p>
-      <div class="vip-out" id="vip-out" role="table" data-i18n-key="vip.calc.tableAria" data-i18n-attr="aria-label" hidden></div>
+      <p class="calc-out" id="vip-headline" role="status" x-html="headline">Your dates land here.</p>
+      <div class="vip-out" id="vip-out" role="table" data-i18n-key="vip.calc.tableAria" data-i18n-attr="aria-label" hidden :hidden="!plan.rows.length">
+        <div class="vip-head" role="row">
+          <span role="columnheader" data-i18n="vip.calc.thLevel">Level</span>
+          <span class="vip-need" role="columnheader" data-i18n="vip.calc.thNeed">XP still needed</span>
+          <span role="columnheader" data-i18n="vip.calc.thDays">Days</span>
+          <span role="columnheader" data-i18n="vip.calc.thDate">Date</span>
+        </div>
+        <template x-for="row in plan.rows" :key="row.level">
+          <div class="vip-row" :class="{ milestone: row.milestone }" role="row">
+            <span role="cell" class="vip-lvl">VIP <span x-text="row.level"></span><small x-show="row.milestone" x-text="tag(row.level)"></small></span>
+            <span role="cell" class="vip-need" x-text="fmt(row.need)"></span>
+            <span role="cell" class="vip-days" x-text="fmt(row.days)"></span>
+            <span role="cell" class="vip-date" x-text="date(row.date)"></span>
+          </div>
+        </template>
+      </div>
     </div>
 
     <p class="note" data-i18n-html="vip.calc.note">Free VIP XP is roughly <b>200–500 a day</b>, from logins, the Alliance Store and events.</p>
@@ -54,22 +69,22 @@ self: vip
 
   <section class="section" id="targets">
     <h2 data-i18n="vip.targets.title">The milestones</h2>
-    <div class="cards vip-targets">
+    <div class="cards vip-targets" x-data="vip">
       <article class="card">
         <h3><span class="tag tag-lead" data-i18n="vip.targets.m4.tag">VIP 4</span> <span data-i18n="vip.targets.m4.title">Construction speed +10%</span></h3>
         <p data-i18n-html="vip.targets.m4.body">The first level where activating VIP is generally worth it.</p>
-        <p class="vip-target-date" id="vip-target-4"></p>
+        <p class="vip-target-date" id="vip-target-4" :class="{ done: plan.L >= 4 }" x-html="milestone(4)"></p>
       </article>
       <article class="card">
         <h3><span class="tag tag-lead" data-i18n="vip.targets.m6.tag">VIP 6</span> <span data-i18n="vip.targets.m6.title">An extra march queue</span></h3>
         <p data-i18n-html="vip.targets.m6.body">The perk most players notice first: an extra march means more
           gathering and more rallies.</p>
-        <p class="vip-target-date" id="vip-target-6"></p>
+        <p class="vip-target-date" id="vip-target-6" :class="{ done: plan.L >= 6 }" x-html="milestone(6)"></p>
       </article>
       <article class="card">
         <h3><span class="tag tag-lead" data-i18n="vip.targets.m9.tag">VIP 9</span> <span data-i18n="vip.targets.m9.title">Construction +20% and combat stats</span></h3>
         <p data-i18n-html="vip.targets.m9.body">The first combat stat boost. Free players usually stop here, because the costs start doubling.</p>
-        <p class="vip-target-date" id="vip-target-9"></p>
+        <p class="vip-target-date" id="vip-target-9" :class="{ done: plan.L >= 9 }" x-html="milestone(9)"></p>
       </article>
     </div>
   </section>

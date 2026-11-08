@@ -228,7 +228,7 @@ DmgUp); their effect multiplies into `A`, which everyone in the rally shares.
 
 ## VIP XP ladder — the calculator's table
 
-The VIP calculator (`vip-calculator/`, `vip.js`) is pinned to the in-game VIP screen
+The VIP calculator (`vip-calculator/`, `js/vip-ladder.mjs` and its controller `js/pages/vip.mjs`) is pinned to the in-game VIP screen
 (verified March 2026 patch, per the Kingshot Mastery VIP guide:
 <https://kingshotmastery.com/guides/kingshot-vip-guide>). The ladder is a game-wide
 constant — same on every server — and XP resets to 0 on each level-up.

@@ -433,7 +433,7 @@
       "../js/page-deck.js",
       "../js/page-chrome.js",
       "../js/common.js",
-      "../js/vip.js"
+      "../js/pages/vip.mjs"
     ],
     "footMainKey": "vip.foot.main",
     "footMain": "JUST THE DATES",
@@ -643,6 +643,7 @@
       "../js/hero-directory.js",
       "../js/event-points.js",
       "../js/hero-points.js",
+      "../js/pages/hero-points.mjs",
       "../js/battle-engine.mjs",
       "../js/combat.mjs",
       "../js/lead-data.js",

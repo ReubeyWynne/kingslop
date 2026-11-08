@@ -1,0 +1,73 @@
+/* alpine.mjs — Alpine.js for pages whose view is declared in their markup.
+
+   A page's controller (js/pages/<page>.mjs) imports Alpine from here, registers its state
+   with Alpine.data, and the page's template binds to it with x-data, x-text, x-model and the
+   rest. This file adds what every controller shares, then starts Alpine once the active
+   dictionary has arrived and every deferred script has run, the same moment common.js boots
+   the page, so a controller registered anywhere in the page's bundle is in place.
+
+   Two stores:
+   - $store.i18n: `v` changes on every language or number-format switch. Anything that reads
+     it re-renders then. Controllers spread `words` into their state, whose helpers read it
+     for them.
+   - $store.ledger: the player ledger's latest snapshot, replaced on every save, in this tab
+     or another. `snapshot` is null when the ledger cannot be read (storage blocked).
+
+   Static copy stays on data-i18n, painted by i18n.js. Only text that depends on state is
+   bound here, and never on a node that also carries data-i18n. */
+import Alpine from 'alpinejs';
+import PlayerLedger from './player-ledger.mjs';
+
+const BH = () => globalThis.BH;
+
+Alpine.store('i18n', { v: 0 });
+document.addEventListener('i18n:change', () => { Alpine.store('i18n').v++; });
+
+let ledger = null;
+try { ledger = PlayerLedger.shared(); } catch (cause) { ledger = null; }
+// The snapshot is kept outside Alpine's reactivity (a large object, never edited here);
+// `v` is what bindings track.
+let snapshot = null;
+try { snapshot = ledger && ledger.snapshot(); } catch (cause) { snapshot = null; }
+Alpine.store('ledger', {
+  v: 0,
+  get snapshot() { this.v; return snapshot; },
+  get ready() { this.v; return snapshot !== null; }
+});
+if (ledger && snapshot) ledger.subscribe(next => { snapshot = next; Alpine.store('ledger').v++; });
+
+/* Text helpers for controllers and templates. Each reads $store.i18n.v, so a binding that
+   uses one re-renders on a language switch. */
+const lang = () => Alpine.store('i18n').v;
+export const words = {
+  t(key, fallback, values) { lang(); const text = BH().tr(key, fallback); return values ? BH().fill(text, values) : text; },
+  count(key, n, fallbacks, values) { lang(); return BH().fill(BH().trCount(key, n, fallbacks), values || {}); },
+  fmt(n) { lang(); return BH().fmt(n); },
+  date(d) {
+    lang();
+    const options = { day: 'numeric', month: 'short', year: 'numeric' };
+    try { return new Intl.DateTimeFormat((globalThis.I18N && I18N.locale) || 'en-GB', options).format(d); }
+    catch (e) { return d.toLocaleDateString('en-GB', options); }
+  }
+};
+
+/* One state for several regions of a page (x-data="<name>" on each): Alpine gives each x-data
+   its own object, so each gets a view whose fields and methods forward to the shared state. */
+export function shared(name, definition) {
+  const state = Alpine.reactive(definition);
+  Alpine.data(name, () => {
+    const view = {};
+    for (const key of Object.getOwnPropertyNames(definition)) {
+      if (typeof Object.getOwnPropertyDescriptor(definition, key).value === 'function') view[key] = (...args) => state[key](...args);
+      else Object.defineProperty(view, key, { get: () => state[key], set: value => { state[key] = value; }, enumerable: true, configurable: true });
+    }
+    return view;
+  });
+  return state;
+}
+
+function start() { globalThis.Alpine = Alpine; Alpine.start(); }
+if (globalThis.I18N) I18N.onReady(() => BH().whenLoaded(start));
+else BH().whenLoaded(start);
+
+export default Alpine;

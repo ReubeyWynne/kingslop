@@ -26,19 +26,24 @@ self: heroes
         {% include planner.html part="shelf" kind="heroes" fill="#directory" empty="planner.heroesEmpty" empty_en="Mark the heroes you have ↓" %}
         {% include heroes/bag.html %}
       </div>
-      <div class="sheet-answer hero-points" data-half="answer" id="kvk-points" data-module="hero-points" aria-labelledby="kvk-points-title">
+      <div class="sheet-answer hero-points" data-half="answer" id="kvk-points" x-data="heroPoints" aria-labelledby="kvk-points-title">
         <h2 data-i18n="gov.theAnswer">The answer</h2>
         <h3 class="sheet-subhead" id="kvk-points-title" data-i18n="planner.kvk">KvK points</h3>
         {% include empty-state.html needs="heroes" key="empty.heroes" text="Add your heroes to see your KvK points." fill="#directory" %}
-        <p class="hero-points-total"><output data-target="hero-points.total">—</output></p>
-        <ul class="unknowns" data-target="hero-points.coverage" aria-live="polite"></ul>
-        <div data-target="hero-points.events"></div>
-        <div class="hero-points-scroll" data-target="hero-points.table" hidden><table class="hero-points-table">
+        <p class="hero-points-total"><output :data-open="view.open" x-text="view.total">—</output></p>
+        <ul class="unknowns" aria-live="polite"><template x-for="line in view.unknowns"><li x-text="line"></li></template></ul>
+        <div x-effect="placeEvents($el)"></div>
+        <div class="hero-points-scroll" hidden :hidden="!view.rows.length"><table class="hero-points-table">
           <thead><tr><th scope="col" data-i18n="spend.col.hero">hero</th><th scope="col" data-i18n="spend.col.points">KvK prep points</th><th scope="col" data-i18n="spend.col.stars">stars</th><th scope="col" data-i18n="spend.col.shards">shards used</th><th scope="col" data-i18n="spend.col.widgets">widgets used</th></tr></thead>
-          <tbody data-target="hero-points.rows"></tbody>
+          <tbody><template x-for="row in view.rows" :key="row.key"><tr>
+            <th scope="row" x-text="row.name"></th>
+            <td x-text="row.points"></td>
+            <td x-text="row.stars"></td>
+            <template x-for="cell in [row.shards, row.widget]"><td><b x-show="cell.b" x-text="cell.b"></b><template x-for="line in cell.small"><small x-text="line"></small></template><span x-show="cell.plain" x-text="cell.plain"></span></td></template>
+          </tr></template></tbody>
         </table></div>
-        <p class="note" data-target="hero-points.empty" hidden></p>
-        <p class="note" data-target="hero-points.left"></p>
+        <p class="note" hidden :hidden="!view.empty" x-text="view.empty"></p>
+        <p class="note" x-text="view.left"></p>
         <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
         {% include page-notes.html part="pointer" checked="2026-10-08" %}
       </div>
