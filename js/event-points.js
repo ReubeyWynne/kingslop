@@ -74,9 +74,8 @@
     return top;
   }
   /* rows: [{ label, cells }] → a table: one column per event, the points and the day under them.
-     options.compact shows big totals short (1.58M), with the whole figure as the cell's title. */
-  function table(api, rows, className, options) {
-    options = options || {};
+     A table always shows the whole figure; only tiles shorten (BH.compact). */
+  function table(api, rows, className) {
     function t(key) { return api.tr('gear.points' + key.charAt(0).toUpperCase() + key.slice(1), EN[key]); }
     function el(tag, text, cls) { var node = document.createElement(tag); if (text !== undefined && text !== null) node.textContent = text; if (cls) node.className = cls; return node; }
     var tableNode = el('table', null, 'event-points' + (className ? ' ' + className : '')), head = el('tr'), body = el('tbody'), unpublished = false;
@@ -91,9 +90,8 @@
         else {
           if (cell.points === null) { td.appendChild(el('b', '?')); td.title = cell.unpublished ? t('unpublished') : t('unknown'); td.dataset.points = 'unknown'; if (cell.unpublished) unpublished = true; }
           else {
-            var whole = Math.round(cell.points), shown = options.compact && api.compact ? api.compact(whole) : api.fmt(whole);
-            td.appendChild(el('b', shown)); td.dataset.points = String(whole);
-            if (shown !== api.fmt(whole)) td.title = api.fmt(whole);
+            var whole = Math.round(cell.points);
+            td.appendChild(el('b', api.fmt(whole))); td.dataset.points = String(whole);
           }
           var days = cell.days || [cell.day];
           td.appendChild(el('small', days.length > 1 ? api.fill(t('days'), { days: days.map(function (d) { return api.fmt(d); }).join(', ') }) : api.fill(t('day'), { n: api.fmt(cell.day) })));

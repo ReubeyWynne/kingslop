@@ -316,7 +316,7 @@
         var sim = L.hunt(you, r.lineup, counts, data, { hunts: 2000, pointsPct: valoraOf() });
         var lo = window.BattleEngine.quantile(sim.totals, 0.1), hi = window.BattleEngine.quantile(sim.totals, 0.9);
         // Anything left out only adds damage, so the number stays open until it's in.
-        var value = el('output', 'lead-damage-value', api.compact(sim.mean)), headline = el('div', 'lead-damage-head');
+        var value = api.tile(el('output', 'lead-damage-value'), sim.mean), headline = el('div', 'lead-damage-head');
         if (inputs.open.length) value.dataset.open = '';
         headline.appendChild(value);
         if (inputs.estimated.length) headline.appendChild(estMark('lead-damage-est'));

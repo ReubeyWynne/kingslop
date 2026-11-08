@@ -95,7 +95,6 @@
   .gov-main .gov-priority select { flex: 1; max-width: none; }
 }
 .gov-left .gov-bag { margin-top: .9rem; }
-.gov-strip .gov-short { color: var(--amber); }
 .gov-weights > span:first-child { margin-inline-end: .3rem; }
 .gov-weights > span:first-child { align-self: center; }
 /* On a guest or link sheet the workspace is a loose leaf; keep its unbound margin narrow so the bag's fields keep their width. */

@@ -192,7 +192,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await open('?lang=en&goal=town-center:TG4,barracks:TG4,range:TG4,command-center:TG4,stable:TG4&have=barracks:TG3,command-center:TG2,embassy:TG2-2,range:TG3,stable:TG3,town-center:TG3&speed=117.2&dt=1&pan=2');
   // The points fold under one closed line that carries the most any event pays.
   assert.equal(await page.locator('#reqs-points').evaluate(d => d.open), false, 'event points start closed');
-  assert.equal((await page.locator('#reqs-points summary').textContent()).replace(/\s+/g, ' '), 'Event points up to 11.04m');
+  assert.equal((await page.locator('#reqs-points summary').textContent()).replace(/\s+/g, ' '), 'Event points up to 11,039,190');
   await page.screenshot({ path: path.join(output, 'en-390-points-closed.png') });
   // The pinned answer never takes more than a third of the screen, the points open or not.
   for (const [width, height] of [[390, 844], [390, 667], [320, 568]]) {
@@ -211,8 +211,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
   // The shared event points table (js/event-points.js): a column per event, a row for spending and for speeding up.
   const cells = await page.locator('.reqs-points tr').evaluateAll(rows => rows.map(r => [...r.cells].map(c => c.textContent)));
   assert.deepEqual(cells, [['', 'KvK prep', 'Strongest Governor', 'Alliance Brawl'],
-    ['Spent', '8.66mdays 1, 2, 5', '8.66mdays 1, 2, 5, 7', '5.42mdays 1, 2, 5, 6'],
-    ['Sped up', '11.04mdays 1, 2, 5', '11.04mdays 1, 2, 5, 7', '6.84mdays 1, 2, 5, 6']]);
+    ['Spent', '8,664,000days 1, 2, 5', '8,664,000days 1, 2, 5, 7', '5,415,000days 1, 2, 5, 6'],
+    ['Sped up', '11,039,190days 1, 2, 5', '11,039,190days 1, 2, 5, 7', '6,840,114days 1, 2, 5, 6']], 'a table shows whole figures');
   assert.match(await page.locator('.reqs-answer .reqs-cost').innerText(), /4,332/, 'Truegold reads exactly');
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'the points table fits a phone');
   await page.screenshot({ path: path.join(output, 'en-390-points.png') });

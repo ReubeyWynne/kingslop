@@ -1604,7 +1604,6 @@ window.__BH_I18N_DATA["en"] = {
   "gov.spentLeft": "{n} left",
   "gov.needMissing": "{n} still to find",
   "gov.needEnough": "you have enough",
-  "gov.needUnknown": "count not entered",
   "town.nav": "Town Centre",
   "town.metaTitle": "Town Centre, Demystified — dey.ci",
   "town.metaDescription": "Track your items, speedups, troop training, heroes, hero gear, governor gear and charms, and estimate their event points.",
