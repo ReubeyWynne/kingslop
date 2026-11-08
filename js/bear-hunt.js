@@ -47,6 +47,23 @@
     return window.BH_HUNT_PLAN.plan(isFinite(players) ? players : 15, isFinite(rally) && rally > 0 ? rally : DEFAULT_RALLY);
   }
 
+  /* The cap, shown on one rally. Without it, players join with whatever they have, in
+     the order they arrive (sizes as multiples of the cap, a spread like a real alliance),
+     until the rally's capacity is full; the rest are left out. With it, the leader's double
+     share and every joiner fit. A march's damage grows with the square root of its troops. */
+  var UNCAPPED = [1.9, 1.2, 2.6, 0.9, 1.5, 3.0, 1.1, 0.8, 2.2, 1.0, 1.7, 0.7, 1.3, 0.6];
+  function capCompare(plan) {
+    var room = plan.divisor, used = 2, fit = [];
+    for (var i = 0; i < plan.joiners; i++) {
+      var size = UNCAPPED[i % UNCAPPED.length];
+      if (used + size > room) break;
+      fit.push(size); used += size;
+    }
+    var root = function (sum, x) { return sum + Math.sqrt(x); };
+    var without = fit.reduce(root, Math.SQRT2), withCap = Math.SQRT2 + plan.joiners;
+    return { room: room, fit: fit, out: plan.joiners - fit.length, gain: Math.round(100 * (withCap / without - 1)) };
+  }
+
   function huntField(name) { return document.getElementById('hunt-' + name); }
 
   function readHunt() {
@@ -69,13 +86,13 @@
       inputs: ['players', 'rally'],
       values: function (v, BH) {
         var p = huntPlan(v.players, v.rally), cap = p.cap;
-        var hits = Math.round(p.hits * 100) / 100;
+        var hits = Math.round(p.hits * 100) / 100, cc = capCompare(p);
         var locale = (window.I18N && window.I18N.locale) || 'en-GB';
         return {
           players: BH.fmt(p.players), joiners: BH.fmt(p.joiners), fill: BH.fmt(p.fill), divisor: BH.fmt(p.divisor),
           joins: BH.fmt(p.joins), marches: BH.fmt(p.marches), marches2: BH.fmt(p.marches + 1),
           cap: BH.fmt(cap), hits: hits.toLocaleString(locale, { maximumFractionDigits: 2 }),
-          first: BH.fmt(p.first), open: BH.fmt(p.players * p.joins),
+          first: BH.fmt(p.first), open: BH.fmt(p.players * p.joins), out: BH.fmt(cc.out), gain: BH.fmt(cc.gain),
           capInf: BH.fmt(cap * 0.05), capCav: BH.fmt(cap * 0.15), capArc: BH.fmt(cap * 0.8),
           totInf: BH.fmt(cap * 0.05 * p.joins), totCav: BH.fmt(cap * 0.15 * p.joins), totArc: BH.fmt(cap * 0.8 * p.joins)
         };
@@ -92,8 +109,21 @@
       var when = node.getAttribute('data-hunt-when');
       node.hidden = when === 'small' ? plan.full : when === 'full' ? !plan.full : when === 'few' ? plan.joins >= window.BH_HUNT_PLAN.QUEUES : false;
     });
-    Array.prototype.forEach.call(document.querySelectorAll('.rally-slots span'), function (slot, i) {
-      if (i < plan.joiners) slot.removeAttribute('data-off'); else slot.setAttribute('data-off', '');
+    // The same rally twice: who fits without a cap, and with one.
+    var cc = capCompare(plan);
+    Array.prototype.forEach.call(document.querySelectorAll('.cap-row'), function (row) {
+      var on = row.getAttribute('data-cap') === 'on', bar = row.querySelector('.cap-bar');
+      var sizes = on ? Array.apply(null, Array(plan.joiners)).map(function () { return 1; }) : cc.fit.slice();
+      if (!on) for (var k = 0; k < cc.out; k++) sizes.push(-UNCAPPED[(cc.fit.length + k) % UNCAPPED.length]);
+      bar.replaceChildren();
+      bar.style.setProperty('--outs', String(on ? 0 : cc.out));
+      [2].concat(sizes).forEach(function (size, i) {
+        var seg = document.createElement('i');
+        if (i === 0) seg.setAttribute('data-lead', '');
+        if (size < 0) seg.setAttribute('data-out', '');
+        seg.style.setProperty('--w', String(Math.abs(size) / cc.room));
+        bar.appendChild(seg);
+      });
     });
     // One bar for each join you send, as tall as the cap: smaller hunts send fewer, bigger joins.
     Array.prototype.forEach.call(document.querySelectorAll('.plan-joins'), function (row) {
@@ -101,6 +131,20 @@
       while (row.children.length > plan.joins) row.removeChild(row.lastChild);
       row.style.setProperty('--tall', String(Math.min(1, 8 / plan.divisor)));
     });
+  }
+
+  // Rule 5: the joiner heroes your generation has, then the empty slot for "none".
+  function paintJoiners(generation) {
+    var row = document.querySelector('.plan-joiners');
+    if (!row) return;
+    var keys = (JOINER_S_BY_GEN[Math.min(7, generation | 0)] || JOINER_S_BY_GEN[1]).slice(0, 4);
+    row.replaceChildren();
+    keys.forEach(function (key) {
+      var img = document.createElement('img');
+      img.src = heroImage(key); img.width = 48; img.height = 48; img.alt = ''; img.loading = 'lazy';
+      row.appendChild(img);
+    });
+    row.appendChild(document.createElement('i'));
   }
 
   function wireHunt(allocator) {
@@ -455,6 +499,8 @@
   }
 
   function init() {
+    paintJoiners(window.KS_SERVER_AGE && window.KS_SERVER_AGE.getGeneration());
+    document.addEventListener('ks:server-age-change', function (event) { paintJoiners(event.detail && event.detail.generation); });
     wireHunt(wireAllocator());
     wireHeroExplorer();
   }

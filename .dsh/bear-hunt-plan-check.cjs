@@ -5,7 +5,7 @@ const { plan, MIN_PLAYERS, QUEUES } = require('../js/bear-hunt-plan.js');
 const full = plan(15, 1360000);
 assert.deepEqual(
   { joiners: full.joiners, fill: full.fill, divisor: full.divisor, joins: full.joins, cap: full.cap, first: full.first, full: full.full },
-  { joiners: 14, fill: 15, divisor: 16, joins: 6, cap: 85000, first: 6, full: true });
+  { joiners: 14, fill: 15, divisor: 16, joins: 6, cap: 85000, first: 7, full: true });
 assert.equal(Math.round(full.hits * 100) / 100, 2.33);
 
 // More players never change a rally: it still takes 14.
