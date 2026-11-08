@@ -1,4 +1,4 @@
-import Engine from '../../js/vikings-engine.js';
+import Engine from '../../js/vikings-engine.mjs';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 // New codes are 16 random bytes (22 characters) so links fit in game chat; codes issued before that are 43.
 const TOKEN = /^(?:[A-Za-z0-9_-]{22}|[A-Za-z0-9_-]{43})$/;

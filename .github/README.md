@@ -59,7 +59,7 @@ The scripts are moving from classic scripts that share globals (`window.BH`, `wi
 - A module never reads a classic script's global while it loads, so it can run where the page's first module is listed.
 - A worker written as a module (`js/*-worker.mjs`) is bundled into the classic worker script the page starts (`js/*-worker.js`).
 
-The pure engines are modules so far: `js/battle-engine.mjs`, `js/combat.mjs`, `js/hero-gear-engine.mjs` and `js/lead-engine.mjs`.
+Modules so far: the battle, combat, hero gear and lead engines (`js/battle-engine.mjs`, `js/combat.mjs`, `js/hero-gear-engine.mjs`, `js/lead-engine.mjs`), the lead finder's inputs and account (`js/lead-inputs.mjs`, `js/lead-account.mjs`), and `js/hero-directory-engine.mjs`, `js/hero-gear-view.mjs`, `js/island-model.mjs`, `js/pet-care.mjs` and `js/vikings-engine.mjs` (which the Vikings API imports too). Each also has a default export, the same object as `'module.exports'`.
 
 ### Repository layout
 

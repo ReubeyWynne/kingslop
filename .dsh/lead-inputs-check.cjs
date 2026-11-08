@@ -1,7 +1,7 @@
-// Lead inputs check — js/lead-inputs.js: what a lineup's result is worked out
+// Lead inputs check — js/lead-inputs.mjs: what a lineup's result is worked out
 // from, read from a save, and when the result is provisional.
 const assert = require('node:assert/strict');
-const I = require('../js/lead-inputs.js');
+const I = require('../js/lead-inputs.mjs');
 const L = require('../js/lead-engine.mjs');
 const row = { attack: 300, lethality: 280, defense: 300, health: 270 };
 const piece = { quality: 'mythic', level: 40, mastery: 5 };

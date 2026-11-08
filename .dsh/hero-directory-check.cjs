@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const catalogue=require('../_data/heroes.json'),heroes=catalogue.heroes,roles=require('../_data/hero_roles.json'),engine=require('../js/hero-directory-engine.js');
+const catalogue=require('../_data/heroes.json'),heroes=catalogue.heroes,roles=require('../_data/hero_roles.json'),engine=require('../js/hero-directory-engine.mjs');
 assert.equal(catalogue.anomalies.length,0);
 assert.deepEqual(catalogue.corrections.map(c=>c.key).sort(),['hilde','marlin','zoe']);
 for(const hero of heroes){assert.equal(hero.ladder.length,31);assert.equal(hero.ladder[30],hero.ceiling);assert(hero.ladder.every((v,i)=>i===0||v>=hero.ladder[i-1]));if(hero.generation===2)for(let i=0;i<31;i++)assert(Math.abs(hero.ladder[i]/hero.ceiling*100-catalogue.curve[i])<.05);}

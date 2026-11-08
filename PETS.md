@@ -18,7 +18,7 @@ The three sources agree on every row but three cells, where the two that agree w
 
 ## Care
 
-`js/pet-care.js` (`PetCare`) keeps two meters per tamed pet, fullness and affection, as a value and the time it was set; the current value is worked out from the clock, so pets get hungry (empty over 16 hours) and lonely (over 10) whether or not the page is open. Pet Food adds 30, a pat 20, and a pet over 90 full turns food down. The mood follows the whole-point meters: asleep at night (23:00–06:00 local) after ten minutes alone, then hungry (below 25), lonely (below 25), delighted (both 70 or more), content (average 45 or more), else restless. The care lives under `ks.pet-care.v1` in local storage, not in the ledger, so it never reaches saves or the event maths; an unreadable record starts again.
+`js/pet-care.mjs` (`PetCare`) keeps two meters per tamed pet, fullness and affection, as a value and the time it was set; the current value is worked out from the clock, so pets get hungry (empty over 16 hours) and lonely (over 10) whether or not the page is open. Pet Food adds 30, a pat 20, and a pet over 90 full turns food down. The mood follows the whole-point meters: asleep at night (23:00–06:00 local) after ten minutes alone, then hungry (below 25), lonely (below 25), delighted (both 70 or more), content (average 45 or more), else restless. The care lives under `ks.pet-care.v1` in local storage, not in the ledger, so it never reaches saves or the event maths; an unreadable record starts again.
 
 ### Familiarity
 

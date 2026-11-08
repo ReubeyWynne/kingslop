@@ -25,6 +25,13 @@
     "js/battle-engine.mjs": "BattleEngine",
     "js/combat.mjs": "CombatSkills",
     "js/hero-gear-engine.mjs": "HeroGear",
-    "js/lead-engine.mjs": "LeadEngine"
+    "js/lead-engine.mjs": "LeadEngine",
+    "js/island-model.mjs": "IslandModel",
+    "js/pet-care.mjs": "PetCare",
+    "js/vikings-engine.mjs": "VikingsEngine",
+    "js/hero-directory-engine.mjs": "HeroDirectory",
+    "js/hero-gear-view.mjs": "HeroGearView",
+    "js/lead-inputs.mjs": "LeadInputs",
+    "js/lead-account.mjs": "LeadAccount"
   }
 }

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import worker from '../src/index.js';
 import { environment } from './database.mjs';
-import E from '../../js/vikings-engine.js';
+import E from '../../js/vikings-engine.mjs';
 async function call(s, suffix = '', method = 'GET', value, code = s.codes?.manage) {
   const r = await worker.fetch(new Request('https://vikings.example/v1/plans' + (s.path || '') + suffix, { method, headers: { ...(code ? { authorization: 'Bearer ' + code } : {}), ...(value ? { 'content-type': 'application/json' } : {}) }, ...(value ? { body: JSON.stringify(value) } : {}) }), s.env);
   return { status: r.status, data: r.status === 204 ? null : await r.json() };

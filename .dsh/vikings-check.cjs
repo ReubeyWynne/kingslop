@@ -1,4 +1,4 @@
-const test = require('node:test'), assert = require('node:assert/strict'), E = require('../js/vikings-engine.js');
+const test = require('node:test'), assert = require('node:assert/strict'), E = require('../js/vikings-engine.mjs');
 test('city splits conserve troops over 500 unequal-capacity rosters', () => {
   let seed = 17; const random = n => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed % n; };
   for (let i = 0; i < 500; i++) {
