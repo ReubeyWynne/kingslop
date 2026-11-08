@@ -589,11 +589,11 @@
     "themeColor": "#150A11",
     "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23150A11'/%3E%3Ctext x='16' y='24' font-size='22' text-anchor='middle' fill='%23E68AB4'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E\">",
     "titleKey": "directory.title",
-    "titleText": "Hero directory — dey.ci",
+    "titleText": "Heroes — dey.ci",
     "metaDescKey": "directory.intro",
     "metaDesc": "Find a hero by generation, troop and role. Compare the skills that matter for the job.",
     "ogTitleKey": "directory.title",
-    "ogTitle": "Hero directory",
+    "ogTitle": "Heroes",
     "ogDescKey": "directory.intro",
     "ogDesc": "Find a hero by generation, troop and role. Compare the skills that matter for the job.",
     "skipHref": "#directory",
@@ -655,7 +655,7 @@
       "../js/empty-state.js"
     ],
     "footMainKey": "directory.title",
-    "footMain": "Hero directory",
+    "footMain": "Heroes",
     "footSubs": [
       {
         "key": "directory.candidateNote",

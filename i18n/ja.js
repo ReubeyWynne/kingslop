@@ -1013,7 +1013,7 @@ window.__BH_I18N_DATA["ja"] = {
   "ks.available.item.advanced-taming-mark": "上級調教マーク",
   "ks.available.item.common-taming-mark": "通常調教マーク",
   "ks.available.item.hero-widget": "Widget",
-  "directory.title": "英雄一覧",
+  "directory.title": "ヒーロー",
   "directory.mine": "所持",
   "directory.mine.owned": "所持済み",
   "directory.mine.missing": "未所持",

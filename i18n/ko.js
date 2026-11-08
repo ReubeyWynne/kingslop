@@ -1013,7 +1013,7 @@ window.__BH_I18N_DATA["ko"] = {
   "ks.available.item.advanced-taming-mark": "고급 길들이기 표식",
   "ks.available.item.common-taming-mark": "일반 길들이기 표식",
   "ks.available.item.hero-widget": "Widget",
-  "directory.title": "영웅 목록",
+  "directory.title": "영웅",
   "directory.mine": "컬렉션",
   "directory.mine.owned": "보유",
   "directory.mine.missing": "미보유",
