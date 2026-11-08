@@ -39,3 +39,17 @@ NODE_PATH="$CODEX_PRIMARY_RUNTIME_NODE_MODULES" node --test .dsh/lib/browser-har
 
 The tests use temporary fixtures and mock browser launches; they need Playwright
 on the module path but do not require `_site`, a site build, or a Chromium binary.
+
+## Modules as classic scripts
+
+`classic-modules.cjs` bundles modules (`js/*.mjs`) into one classic script, the way a page
+runs them: each sets its global and reads its `_data` from the data globals. Use it where a
+check runs an engine in a `vm` context or a test page with data of its own:
+
+```js
+const { classicModules } = require('./lib/classic-modules.cjs');
+const context = { EventRuleData: data };
+context.window = context;
+vm.runInNewContext(classicModules('js/event-rules.mjs'), context);
+context.EventRules.calculate(...);
+```

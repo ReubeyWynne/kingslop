@@ -17,7 +17,7 @@ Set bonuses appear in only one table and are not modelled.
 
 ## Planner
 
-`js/governor-engine.js` is pure and runs under Node for checks. Levels are indices: 0 is not crafted (or no charm), and index n is the nth table row.
+`js/governor-engine.mjs` is pure and runs under Node for checks. Levels are indices: 0 is not crafted (or no charm), and index n is the nth table row.
 
 - **plan:** one step at a time, the affordable next level with the most gain for the share of the starting bag it uses. Gain is the stat rise weighted by the troop profile, or the governor score rise for the score profile. Ties go to the heavier troop, then the lower level, then table order. Gear and charms use different materials, so they are planned separately. Unset pieces are left out, never treated as zero.
 - **Troop weights** multiply each step's stat gain by its troop (infantry : cavalry : archers). The priority profiles are Hero gear's, with the same names, order, labels and default (owner, 2 Nov: "profiles should be consistent across hero gear and gov gear"). `profiles` in `_data/governor.json` holds them in Hero gear's form, per troop [lethality, health], and `governor-check` asserts it equals `PROFILES` in `js/hero-gear-engine.mjs`. Gear attack counts with the lethality weight and defence with the health weight, as on Hero gear; charm lethality and health with their own. Every governor piece and charm gives its pair at the same percentage, so the troop weight here is lethality plus health:

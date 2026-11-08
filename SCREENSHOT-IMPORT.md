@@ -47,7 +47,7 @@ These came from the owner in the project thread and are not open questions.
 | Worker client | Written twice: `js/sim.js` (`askWorker`, `killWorker`) and `js/hero-gear.js` (`read`, `killReader`) | Drifted: different backend policy, preview handling and retry. |
 | Parsing helpers | Row grouping, text folding and number parsing in `js/sim.js` and again in `js/hero-gear-ocr.js` | Different tolerances; only hero gear handles Arabic/full-width digits. |
 | Review | Sim writes straight into the sheet then flags fields; hero gear has a review dialog, include toggles, undo | Two UX models. |
-| Ledger | `PlayerLedger` import records accept `sourceType: 'hero-gear'` only (`js/player-ledger.js`, `valid` for `imports`) | Needs any adapter's source type and inventory deltas. |
+| Ledger | `PlayerLedger` import records accept `sourceType: 'hero-gear'` only (`js/player-ledger.mjs`, `valid` for `imports`) | Needs any adapter's source type and inventory deltas. |
 
 ## Pipeline
 
@@ -136,7 +136,7 @@ the current page and says so.
 
 ### 6. Ledger commit
 
-Generalise import records in `js/player-ledger.js`: `sourceType` from an
+Generalise import records in `js/player-ledger.mjs`: `sourceType` from an
 allow-list (`hero-gear`, `backpack`), and an `inventoryDelta`
 (`{ id: { before, after } }`) beside the existing `itemDelta`. Add
 `applyImport(record, expectedRevision)` that writes balances with

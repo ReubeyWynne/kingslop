@@ -33,15 +33,16 @@ export default function (eleventyConfig) {
   for (const [name, fn] of Object.entries(filters)) eleventyConfig.addFilter(name, fn);
 
   // `site.data`, `site.time` and `site.url` as the templates have always read them, plus
-  // `site.scripts`: the script files each page loads (see .eleventy/bundles.mjs). Read afresh
-  // on every build, so `npm run serve` picks up changes to _data and js/.
+  // `site.scripts`: the script files each page loads, and `site.lateScripts` the ones it loads
+  // after paint for a returning player (see .eleventy/bundles.mjs). Read afresh on every
+  // build, so `npm run serve` picks up changes to _data and js/.
   let written = {};
   eleventyConfig.addGlobalData('site', async () => {
     const data = loadSiteData(path.join(root, '_data'));
     const time = new Date();
     const built = await buildScripts({ root, data, bundle, stamp: String(Math.floor(time.getTime() / 1000)) });
     written = built.files;
-    return { url: SITE_URL, time, data, scripts: built.scripts };
+    return { url: SITE_URL, time, data, scripts: built.scripts, lateScripts: built.late };
   });
 
   eleventyConfig.on('eleventy.after', ({ directories }) => {

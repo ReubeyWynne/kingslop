@@ -37,7 +37,7 @@ The product gap is a **shared, versioned player ledger** and a **small declarati
 
 ## Milestone 1 — unified player ledger
 
-**Implementation:** shared ledger and hero-gear integration are prepared for review. `js/player-ledger.js` owns versioned inventory, equipment facts, preferences and confirmed import history. Legacy saves are migrated without deleting the original; hero gear reads/writes shared balances, exports the whole player save, accepts both save formats and observes cross-tab changes. Governor sections remain explicitly unsupported. See [PLAYER-LEDGER.md](PLAYER-LEDGER.md) for the contract, recovery behaviour and checks. The next deliverable is milestone 2's shared interaction layer.
+**Implementation:** shared ledger and hero-gear integration are prepared for review. `js/player-ledger.mjs` owns versioned inventory, equipment facts, preferences and confirmed import history. Legacy saves are migrated without deleting the original; hero gear reads/writes shared balances, exports the whole player save, accepts both save formats and observes cross-tab changes. Governor sections remain explicitly unsupported. See [PLAYER-LEDGER.md](PLAYER-LEDGER.md) for the contract, recovery behaviour and checks. The next deliverable is milestone 2's shared interaction layer.
 
 
 Define the data contract before adding more screens. It should include:
@@ -72,7 +72,7 @@ The goal is an HTMX/Alpine/Datastar *feel*: inspectable markup, local behaviour 
 
 ## Milestone 3 — event calculator
 
-**Implementation:** `events/#availability` calculates conditional point budgets for KvK Prep, Strongest Governor and Brawl from confirmed shared inventory. `_data/event_rules.json` is the shared guide/rules source; `js/event-rules.js` supplies pure arithmetic and `event-availability` composes the shared ledger and save modules. Unknowns, ephemeral withheld amounts, unquantified actions and target shortfall remain distinct. See [EVENT-AVAILABILITY.md](EVENT-AVAILABILITY.md) for units, limits and checks. The next deliverable is milestone 4's hero directory.
+**Implementation:** `events/#availability` calculates conditional point budgets for KvK Prep, Strongest Governor and Brawl from confirmed shared inventory. `_data/event_rules.json` is the shared guide/rules source; `js/event-rules.mjs` supplies pure arithmetic and `event-availability` composes the shared ledger and save modules. Unknowns, ephemeral withheld amounts, unquantified actions and target shortfall remain distinct. See [EVENT-AVAILABILITY.md](EVENT-AVAILABILITY.md) for units, limits and checks. The next deliverable is milestone 4's hero directory.
 
 `js/kvk.js` already contains the useful domain foundation: the 28-day cycle, day-specific Strongest Governor tasks, Brawl/Officer/Armament runs, KvK prep matrix and normalised tracked item labels. Extract those rules without changing their current output first.
 
@@ -102,7 +102,7 @@ This ships as a directory first. Per-hero deep pages are optional follow-up work
 
 ## Milestone 5 — governor gear and charms
 
-**Implementation:** `governor-gear/` plans gear and charm upgrades from the shared ledger. `_data/governor.json` holds cross-checked cost, stat and score tables with per-row sources; `js/governor-engine.js` supplies pure plans, target costs and event-point estimates from the shared event rules. Levels and planner choices are typed ledger sections. Set bonuses stay out until a second source confirms them. See [GOVERNOR-GEAR.md](GOVERNOR-GEAR.md) for sources, limits and checks. The next deliverable is milestone 6's screenshot import.
+**Implementation:** `governor-gear/` plans gear and charm upgrades from the shared ledger. `_data/governor.json` holds cross-checked cost, stat and score tables with per-row sources; `js/governor-engine.mjs` supplies pure plans, target costs and event-point estimates from the shared event rules. Levels and planner choices are typed ledger sections. Set bonuses stay out until a second source confirms them. See [GOVERNOR-GEAR.md](GOVERNOR-GEAR.md) for sources, limits and checks. The next deliverable is milestone 6's screenshot import.
 
 Governor progression deserves its own domain model. Hero-gear levels, mastery, parts and mithril cannot be repurposed as governor gear/charm facts. It should nevertheless feel like the same product:
 

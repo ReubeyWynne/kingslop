@@ -3,6 +3,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { withBrowser } = require('./lib/browser-harness.cjs');
 const vm = require('node:vm');
+const os = require('node:os');
+const { classicModules } = require('./lib/classic-modules.cjs');
+// The ledger is a module; the page runs it bundled as a classic script.
+const built = fs.mkdtempSync(path.join(os.tmpdir(), 'interaction-modules-'));
+fs.writeFileSync(path.join(built, 'player-ledger.js'), classicModules('js/player-ledger.mjs'));
 
 function checkDependencies() {
   const errors = [], roots = [], selected = {}, persistent = {};
@@ -101,10 +106,10 @@ const markup = `<!doctype html><html><head><meta charset="utf-8"></head><body>
 <output id="result" data-module="result-panel" data-target="result-panel.message" hidden></output>
 <div id="tabs" data-module="tabs" data-tabs-bind="mode" role="tablist"><button role="tab" data-value="one" data-action="tabs.select" aria-selected="true">One</button><button role="tab" data-value="two" data-action="tabs.select" aria-selected="false" tabindex="-1">Two</button></div>
 <div id="disclosure" data-module="disclosure"><button id="toggle" data-action="disclosure.toggle" aria-expanded="false">Toggle</button><p id="panel" data-target="disclosure.panel" hidden>Panel</p></div>
-<script src="/js/player-ledger.js"></script><script src="/js/interactions.js"></script><script src="/js/player-modules.js"></script>
+<script src="/built/player-ledger.js"></script><script src="/js/interactions.js"></script><script src="/js/player-modules.js"></script>
 <script>window.errors=[];document.addEventListener('module:error',e=>errors.push(e.detail));window.testAPI={fmt:n=>new Intl.NumberFormat('en-GB').format(n),tr:(key,fallback)=>({saved:'Saved',failed:'Failed',loaded:'Loaded',invalid:'Invalid'})[key]||fallback,fill:(text)=>text};Interactions.start(testAPI);</script>
 </body></html>`;
-withBrowser({ mounts: { '/js/': path.resolve('js') }, pages: { '/': markup } }, async ({ browser, origin }) => {
+withBrowser({ mounts: { '/js/': path.resolve('js'), '/built/': built }, pages: { '/': markup } }, async ({ browser, origin }) => {
   const context = await browser.newContext();
   const page = await context.newPage();
 

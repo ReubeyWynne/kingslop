@@ -2,7 +2,7 @@
 // nothing shows before enough readings, imports and resets restart the chain, the next KvK prep and
 // Strongest Governor come from the event cycle, and goal projections say reached, short or no rate.
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
-const Savings = require('../js/upgrade-savings.js'), Goals = require('../js/upgrade-goals.js'), Ledger = require('../js/player-ledger.js'), Rules = require('../js/event-rules.js');
+const Savings = require('../js/upgrade-savings.mjs'), Goals = require('../js/upgrade-goals.mjs'), Ledger = require('../js/player-ledger.mjs'), Rules = require('../js/event-rules.mjs');
 const DAY = 864e5, T0 = Date.UTC(2026, 9, 1);
 const at = d => new Date(T0 + d * DAY).toISOString();
 const log = (id, rows) => rows.map(([d, before, after, source]) => ({ at: at(d), id, before, after, source: source || 'manual' }));
@@ -107,7 +107,7 @@ assert.equal(Savings.rates(ledger.history()).truegold.perDay, 100);
 // Page wiring and dictionaries.
 const pages = JSON.parse(fs.readFileSync('_data/pages.json', 'utf8'));
 const page = Object.values(pages).find(x => x && x.token === 'priority');
-const order = ['../js/event-rules.js', '../js/upgrade-goals.js', '../js/upgrade-savings.js', '../js/upgrade-goals-page.js', '../js/upgrade-savings-page.js'].map(s => page.scripts.indexOf(s));
+const order = ['../js/event-rules.mjs', '../js/upgrade-goals.mjs', '../js/upgrade-savings.mjs', '../js/upgrade-goals-page.js', '../js/upgrade-savings-page.js'].map(s => page.scripts.indexOf(s));
 assert.ok(order.every((n, i) => n >= 0 && (i === 0 || n > order[i - 1])), 'savings scripts load after the event rules and the goals');
 const markup = fs.readFileSync('upgrade-priority/index.html', 'utf8'), script = fs.readFileSync('js/upgrade-savings-page.js', 'utf8');
 assert.match(markup, /<section class="section" id="savings" data-module="upgrade-savings">/);

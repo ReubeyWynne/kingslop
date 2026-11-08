@@ -30,7 +30,7 @@
    What only a returning player's save needs (lateCss, lateScripts) follows: when the head
    script marked a save, or on the save's first write. Its styles land before its scripts. */
 (function () {
-  var boot = {% if p.lateBoot %}{{ boot | jsonify }}{% else %}[]{% endif %}, css = {{ p.lateCss | jsonify }} || [], js = {{ p.lateScripts | jsonify }} || [], v = '?v={{ site.time | date: '%s' }}', started = false;
+  var boot = {% if p.lateBoot %}{{ boot | jsonify }}{% else %}[]{% endif %}, css = {{ p.lateCss | jsonify }} || [], js = [{% for s in site.lateScripts[self] %}{% unless forloop.first %}, {% endunless %}{{ p.depth | append: s | jsonify }}{% endfor %}], v = '?v={{ site.time | date: '%s' }}', started = false;
   function add(list, done, versioned) {
     list.forEach(function (src, i) { var s = document.createElement('script'); s.src = versioned ? src : src + v; s.async = false; if (done && i === list.length - 1) s.onload = s.onerror = done; document.body.appendChild(s); });
     if (done && !list.length) done();
@@ -38,8 +38,8 @@
   function corner() {
     if (started) return; started = true;
     var left = css.length;
-    if (!left) return add(js);
-    css.forEach(function (href) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + v; l.onload = l.onerror = function () { if (!--left) add(js); }; document.head.appendChild(l); });
+    if (!left) return add(js, null, true);
+    css.forEach(function (href) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href + v; l.onload = l.onerror = function () { if (!--left) add(js, null, true); }; document.head.appendChild(l); });
   }
   function save() {
     if (!js.length) return;

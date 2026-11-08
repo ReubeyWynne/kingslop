@@ -60,7 +60,7 @@ The roster is now one band per generation with the rank in a narrow gutter, so e
 
 ## KvK points from your heroes
 
-`heroes/#kvk-points` shows what each owned hero's shards and widgets score in KvK prep when spent. The arithmetic is `js/hero-spend.js`, pure and requireable in Node, and the Town Centre totals use the same plan, so the two pages always agree.
+`heroes/#kvk-points` shows what each owned hero's shards and widgets score in KvK prep when spent. The arithmetic is `js/hero-spend.mjs`, pure and requireable in Node, and the Town Centre totals use the same plan, so the two pages always agree.
 
 - A hero piece scores only when consumed. Star steps follow the shared curve (catalogue index i → i + 1 costs `STAR_STEPS[i]`; 0★ to 5★ is 1,065 shards) and widget level n costs 5n (0 to 10 is 275). Sources: kingshotguide.com hero shard database, the kingshotmastery.com ascension calculator and the kingshotguide.com widget calculator.
 - Steps are paid whole, so a part-filled step consumes nothing. Each hero pays with its own pieces first.

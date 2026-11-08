@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'), fs=require('node:fs'), path=require('node:path');
-const { withBrowser } = require('./lib/browser-harness.cjs');const rules=require('../js/event-rules.js');
+const { withBrowser } = require('./lib/browser-harness.cjs');const rules=require('../js/event-rules.mjs');
 const root=path.resolve('_site'), output=path.resolve('.dsh/event-preview');
 withBrowser({ root }, async ({ browser, origin }) => {
  const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});const page=await context.newPage(), errors=[];page.on('pageerror',e=>errors.push(e.message));

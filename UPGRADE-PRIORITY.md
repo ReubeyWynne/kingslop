@@ -7,13 +7,13 @@
 | Piece | Role |
 | --- | --- |
 | `_data/upgrade_priority.json` | Stages, unlock levels, list weights, role multipliers, pet focus per role, research focus per stage, the system-by-system ladders and their sources |
-| `js/upgrade-priority.js` | Pure engine (UMD, requireable in Node): `evaluate(snapshot, { stage })` returns the stage, the saved role and the ranked actions |
+| `js/upgrade-priority.mjs` | Pure engine (UMD, requireable in Node): `evaluate(snapshot, { stage })` returns the stage, the saved role and the ranked actions |
 | `js/upgrade-priority-words.js` | `UpgradePriorityWords(api)`: a step's title and reason, used by the page |
 | `js/upgrade-priority-page.js` | The `upgrade-priority` interaction module: paints the list, the stage rail, role buttons and dims ladder rungs for a later stage or another role |
 | `js/upgrade-priority-data.liquid` | Publishes the rules as `window.UpgradePriorityData` |
-| `js/upgrade-goals.js` | Pure goal engine (UMD): `evaluate(snapshot, goal)` and `all(snapshot)` return each goal's state and shortfall; `targets`, `levels` and `current` feed the editor |
+| `js/upgrade-goals.mjs` | Pure goal engine (UMD): `evaluate(snapshot, goal)` and `all(snapshot)` return each goal's state and shortfall; `targets`, `levels` and `current` feed the editor |
 | `js/upgrade-goals-page.js` | The `upgrade-goals` interaction module: the goal editor, the goal list and balances recorded in place; `UpgradeGoalsText` names goals for the savings section too |
-| `js/upgrade-savings.js` | Pure savings engine (UMD): `rate(entries)` and `rates(history)` learn daily income from the inventory history, `next(now)` gives the next KvK prep and Strongest Governor, `project` and `all` project goals to one of them |
+| `js/upgrade-savings.mjs` | Pure savings engine (UMD): `rate(entries)` and `rates(history)` learn daily income from the inventory history, `next(now)` gives the next KvK prep and Strongest Governor, `project` and `all` project goals to one of them |
 | `js/upgrade-savings-page.js` | The `upgrade-savings` interaction module: the event choice, each goal's pace and the daily rates |
 | `css/priority.css` | Page hue (orchid) and layout |
 

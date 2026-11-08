@@ -1,7 +1,7 @@
 // Hero spending plan: star and widget curves, whole steps, general shard and chest sharing,
 // unknowns, and the Heroes page wiring that shows it.
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
-const S = require('../js/hero-spend.js'), Ledger = require('../js/player-ledger.js'), rules = require('../js/event-rules.js');
+const S = require('../js/hero-spend.mjs'), Ledger = require('../js/player-ledger.mjs'), rules = require('../js/event-rules.mjs');
 const storage = () => ({ getItem(k) { return this[k] ?? null; }, setItem(k, v) { this[k] = v; } });
 
 // Curves: 0★ to 5★ is 1,065 shards in 30 steps; widget 0 to 10 is 275.
@@ -98,7 +98,7 @@ assert.equal(S.missing('mithril'), null);
 
 // Heroes page: the panel, its scripts in order, a deep-linkable section and English copy.
 const pages = require('../_data/pages.json'), html = fs.readFileSync('heroes/index.html', 'utf8');
-const order = ['event-data.js', 'event-rules.js', 'hero-data.js', 'hero-spend.js', 'hero-directory-engine.mjs', 'hero-points.js'].map(f => pages.heroes.scripts.indexOf('../js/' + f));
+const order = ['event-data.js', 'hero-data.js', 'event-rules.mjs', 'hero-spend.mjs', 'hero-directory-engine.mjs', 'hero-points.js'].map(f => pages.heroes.scripts.indexOf('../js/' + f));
 assert.ok(order.every((at, i) => at >= 0 && (i === 0 || at > order[i - 1])), order.join());
 assert.ok(html.includes('id="kvk-points" data-module="hero-points"') && html.includes('href="#kvk-points"'));
 assert.equal(fs.readFileSync('_includes/heroes/roster.html', 'utf8').match(/data-field="widgets"/g).length, 1);

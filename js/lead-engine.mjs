@@ -473,4 +473,4 @@ const api = { hunt, valoraPoints, VALORA_POINTS, stockAccount, score, seated, wa
   firstBreak, TYPES, STAR_SKILLS, copyOf, statLine, widgetStat, gearLayer, townLayer, TOWN_TG,
   panel, reportPanel, uptime, bearMod, bear, opponent, loadout, fight, candidates, lineups, rank,
   LAYER_KEYS, blank, petLevelPct, petLayer, cityLayer, layered, battleSide };
-export { api as 'module.exports' };
+export { api as default, api as 'module.exports' };

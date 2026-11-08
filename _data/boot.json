@@ -1,7 +1,7 @@
 {
   "_note": "Scripts every page runs, around its own list in pages.json (scripts): before, then the page's, then after. Bundled, `before` and `shared` (which every page lists among its own) become js/site.bundle.js, which every page shares, and the rest the page's own js/page-<page>.bundle.js. See .eleventy/bundles.mjs.",
   "before": [
-    "js/player-ledger.js",
+    "js/player-ledger.mjs",
     "js/unit-input.js",
     "js/interactions.js",
     "js/player-modules.js",
@@ -32,6 +32,53 @@
     "js/hero-directory-engine.mjs": "HeroDirectory",
     "js/hero-gear-view.mjs": "HeroGearView",
     "js/lead-inputs.mjs": "LeadInputs",
-    "js/lead-account.mjs": "LeadAccount"
+    "js/lead-account.mjs": "LeadAccount",
+    "js/player-ledger.mjs": "PlayerLedger",
+    "js/event-rules.mjs": "EventRules",
+    "js/governor-engine.mjs": "Governor",
+    "js/building-spend.mjs": "BuildingSpend",
+    "js/hero-spend.mjs": "HeroSpend",
+    "js/master-spend.mjs": "MasterSpend",
+    "js/troop-spend.mjs": "TroopSpend",
+    "js/pet-plan.mjs": "PetPlan",
+    "js/town-centre-engine.mjs": "TownCentre",
+    "js/upgrade-goals.mjs": "UpgradeGoals",
+    "js/upgrade-priority.mjs": "UpgradePriority",
+    "js/upgrade-savings.mjs": "UpgradeSavings"
+  },
+  "_dataNote": "Data files the page already holds as a global, set by a data script (js/*-data.liquid). A module imports the _data file itself, which Node reads as JSON; on a page that lists `script` before its modules, the build reads `value` instead, so the data is not loaded twice.",
+  "data": {
+    "_data/event_rules.json": {
+      "script": "js/event-data.js",
+      "value": "globalThis.EventRuleData"
+    },
+    "_data/governor.json": {
+      "script": "js/governor-data.js",
+      "value": "globalThis.GovernorData"
+    },
+    "_data/buildings.json": {
+      "script": "js/building-data.js",
+      "value": "globalThis.BuildingData"
+    },
+    "_data/heroes.json": {
+      "script": "js/hero-data.js",
+      "value": "{ heroes: globalThis.HeroCatalogue }"
+    },
+    "_data/masters.json": {
+      "script": "js/master-data.js",
+      "value": "globalThis.MasterData"
+    },
+    "_data/troops.json": {
+      "script": "js/troop-data.js",
+      "value": "globalThis.TroopData"
+    },
+    "_data/pets.json": {
+      "script": "js/pet-data.js",
+      "value": "globalThis.PetData"
+    },
+    "_data/upgrade_priority.json": {
+      "script": "js/upgrade-priority-data.js",
+      "value": "globalThis.UpgradePriorityData"
+    }
   }
 }

@@ -1,6 +1,7 @@
 const assert=require('node:assert/strict'), fs=require('node:fs'), vm=require('node:vm');
-const rules=require('../js/event-rules.js'), Ledger=require('../js/player-ledger.js');
-const Troops=require('../js/troop-spend.js');
+const { classicModules } = require('./lib/classic-modules.cjs');
+const rules=require('../js/event-rules.mjs'), Ledger=require('../js/player-ledger.mjs');
+const Troops=require('../js/troop-spend.mjs');
 const digest=value=>require('node:crypto').createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const storage={getItem(k){return this[k]??null},setItem(k,v){this[k]=v}};
 const store=Ledger.create(storage);
@@ -98,8 +99,8 @@ assert.equal(digest(cycle.cards),'67fdc91830eea4b97ac82c15c4c2dabeeeb325167817ed
 const altered=JSON.parse(JSON.stringify(rules.data));
 for(const days of Object.values(altered.events))for(const day of days)for(const row of day.rows){row.label='翻訳された表示';row.points='display only';}
 for(const key of ['SG_TASKS','ARM_TASKS','OFF_TASKS'])for(const rows of Object.values(altered.legacy[key]))for(const row of rows)row[0]='翻訳された表示';
-const context={window:{EventRuleData:altered}};
-vm.runInNewContext(fs.readFileSync('js/event-rules.js','utf8'),context);
+const context={EventRuleData:altered};context.window=context;
+vm.runInNewContext(classicModules('js/event-rules.mjs'),context);
 const renamed=context.window.EventRules;
 for(const day of before){
  const rows=renamed.rules(day.event,day.day).rows;

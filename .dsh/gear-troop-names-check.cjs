@@ -23,6 +23,8 @@ const shown = page => page.evaluate(() => [...document.querySelectorAll('.gear-c
 const gear = 'gear=m69.2-r120.11-m100.6-m72.3-m20.20-m100.0-r160.13-e80.0-r200.20-r200.20-r200.20-r200.20&w=growth';
 withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' });
+  // The site guide's first-visit door card covers the page; this check is about the gear page's words.
+  await page.addInitScript(() => { localStorage.setItem('bh:guide', JSON.stringify({ swipe: 'done', rail: 'done', door: 'done' })); });
   const errors = []; page.on('pageerror', e => errors.push(e.message));
   for (const lang of langs) {
     const d = dict(lang);
