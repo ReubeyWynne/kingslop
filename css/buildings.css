@@ -64,8 +64,6 @@ html[data-page="buildings"] .hero h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
 .reqs-points-box[hidden] { display: none; }
 .reqs-points-box summary { min-height: 40px; padding-block: 0; letter-spacing: .06em; white-space: nowrap; }
 .reqs-points-sum { color: var(--ink); font-weight: normal; letter-spacing: 0; text-transform: none; font-variant-numeric: tabular-nums; }
-.reqs-more { margin-block: var(--space-s); }
-.reqs-more summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--amber); }
 .reqs-more label { display: grid; gap: 0.4rem; max-width: 20rem; }
 .reqs-more input { width: 100%; min-height: 44px; color: var(--ink); background: var(--void-2); border: 0; border-bottom: 1px solid var(--ink-muted); border-radius: 0; font: inherit; }
 .reqs-more input:focus-visible { outline: none; border-bottom-color: var(--amber); }

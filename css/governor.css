@@ -41,9 +41,6 @@
 .gov-main .gov-priority { display: flex; flex-direction: row; align-items: center; gap: .8rem; margin: 0; }
 .gov-main .gov-priority select { width: auto; max-width: 18rem; }
 .gov-priority + .gov-gloss { margin-top: .3rem; }
-.gov-main .gov-advanced { margin-top: 1.2rem; padding-top: .4rem; border-top: 1px solid var(--signal-line); }
-.gov-main .gov-advanced > summary { font-size: .95rem; font-weight: 700; color: var(--ink-dim); }
-.gov-advanced > :not(summary) { margin-top: .6rem; }
 .gov-weights { display: flex; flex-wrap: wrap; align-items: end; gap: .2rem .9rem; margin: .3rem 0 0; }
 .gov-main .gov-weights label { gap: 0; font-size: .75rem; }
 .gov-main .gov-weights input[type="number"] { width: 3.2rem; text-align: center; border-bottom-color: var(--signal-line); }

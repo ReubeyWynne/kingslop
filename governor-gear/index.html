@@ -52,7 +52,7 @@ self: governor
           <p class="gov-applied" data-target="governor-planner.applied" hidden><button type="button" data-action="governor-planner.apply" data-kind="gear"></button><button type="button" data-action="governor-planner.apply" data-kind="charms"></button></p>
         </div>
         <p class="gov-note" data-target="governor-planner.notes" hidden></p>
-        <details id="weights" class="gov-advanced" data-target="governor-planner.weightsFold">
+        <details id="weights" class="fold" data-target="governor-planner.weightsFold">
           <summary data-i18n="gear.advancedWeights">Advanced: custom weights</summary>
           <div class="gov-weights" role="group" aria-labelledby="gov-weights-label" data-target="governor-planner.weights"><span id="gov-weights-label" class="sheet-label" data-i18n="gov.weights">Weights</span>
             {% assign weighted = "inf,cav,arc" | split: "," %}{% for troop in weighted %}<label><span data-i18n="gear.{{ troop }}">{% case troop %}{% when "inf" %}Infantry{% when "cav" %}Cavalry{% else %}Archer{% endcase %}</span><input type="number" min="0" max="10" step="0.1" inputmode="decimal" data-troop="{{ troop }}" data-action="governor-planner.weight"></label>{% endfor %}

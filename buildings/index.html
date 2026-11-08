@@ -43,7 +43,7 @@ self: buildings
       <button type="button" data-target="building-paths.addGoal" data-action="building-paths.addGoal" data-i18n="reqs.addGoal" hidden>Add to my goals</button>
       <output role="status" data-target="building-paths.copied"></output>
     </div>
-    <details class="reqs-more reqs-speed" id="reqs-speed">
+    <details class="fold reqs-more reqs-speed" id="reqs-speed">
       <summary><span data-i18n="reqs.speedTitle">Construction speed</span> <span class="reqs-speed-sum" data-target="building-paths.speedSum"></span></summary>
       <div class="reqs-chips reqs-mode" role="group" data-target="building-paths.speedMode"></div>
       <div class="reqs-boost" data-target="building-paths.overview">
@@ -62,7 +62,7 @@ self: buildings
       <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.pan">Pan's Master Architect: hours off every upgrade</span><div class="reqs-chips" role="group" data-boost="pan"></div></div>
       <p class="note" data-i18n="reqs.speedHow">Speed bonuses add up and divide each upgrade's base time. Double Time then takes 20% off, and Pan's hours come off last, from every upgrade. ◇ The High King's construction value comes from one alliance's report.</p>
     </details>
-    <details class="reqs-more" id="reqs-order">
+    <details class="fold reqs-more" id="reqs-order">
       <summary data-i18n="reqs.inOrder">Every step, in order</summary>
       <ol class="reqs-steps" data-target="building-paths.steps"></ol>
     </details>

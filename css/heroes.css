@@ -196,7 +196,6 @@
 .lead-jobs label:has(input:checked) { color: var(--amber); border-bottom-color: var(--amber); }
 .lead-jobs label:has(input:focus-visible) { outline: 2px solid var(--amber); outline-offset: 3px; }
 
-.lead-overview, .lead-extras, .lead-method { margin-top: var(--space-s); }
 .lead-section-title, .lead-joiners legend, .lead-city legend, .lead-pets legend { margin: 0; padding: 0; font-size: .78rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); }
 .lead-stats, .lead-joiners, .lead-city, .lead-pets { border: 0; padding: .6rem 0 0; margin: 0; min-width: 0; }
 .lead-joiners, .lead-city, .lead-pets { border-top: 1px solid var(--signal-tint); margin-top: .7rem; }

@@ -346,9 +346,6 @@
 .gear-spend > h3, .gear-saving > h3 { font-size: 1.1rem; margin: 0 0 .3rem; }
 .gear-main .gear-saving .gear-route { grid-template-columns: 3.5rem minmax(0, 1fr) 7rem; }
 .gear-saving .gear-route .gear-item { max-width: 3.5rem; }
-.gear-main .gear-advanced { margin-top: 1.2rem; padding-top: .4rem; border-top: 1px solid var(--signal-line); }
-.gear-main .gear-advanced > summary { font-size: .95rem; font-weight: 700; color: var(--ink-dim); }
-.gear-advanced > :not(summary) { margin-top: .6rem; }
 @media (max-width: 780px) {
   .gear-card-grid .gear-item { max-width: 4.2rem; }
   .gear-board { gap: .3rem; padding: .4rem; }

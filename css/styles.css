@@ -447,6 +447,13 @@ details summary:hover { color: var(--ink); }
 details summary::-webkit-details-marker { display: none; }
 details summary::before { content: "❧ "; }
 details[open] summary { color: var(--ink); }
+/* One fold for every disclosure that holds settings or method inside a calculator: the ❧ prompt line
+   above, a hairline over it, the same size as the folds in How it works. Page-specific fold classes
+   only place a fold; they never restyle its summary. */
+main details.fold { margin: var(--space-s) 0 0; border-top: 1px solid var(--signal-line); }
+main details.fold > summary { display: flex; min-height: 44px; padding: .4rem 0; font-size: .95rem; letter-spacing: 0.14em; }
+main details.fold > :not(summary) { margin-top: .6rem; }
+main details.fold[open] { padding-bottom: .6rem; }
 .d-body { padding: 0.4rem 0 var(--space-m); color: var(--ink-dim); font-size: var(--step--1); }
 .d-body ul { list-style: none; }
 .d-body li { padding: 0.15rem 0; }
