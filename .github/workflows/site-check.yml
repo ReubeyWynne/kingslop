@@ -686,6 +686,9 @@ jobs:
       - name: Check simulator battle reports and activity
         if: matrix.group == 'deck'
         run: node .dsh/simulator-ui-check.cjs
+      - name: Check calculator folds, icons and contents rails
+        if: matrix.group == 'deck'
+        run: node .dsh/calculator-consistency-ui-check.cjs
       - name: Check ASCII scenes frame by frame
         if: matrix.group == 'ascii-capture'
         run: |

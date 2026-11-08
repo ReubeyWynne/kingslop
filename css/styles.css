@@ -27,6 +27,10 @@
   --signal-glow: rgba(245, 200, 81, 0.22); /* portrait inner glow */
   --signal-halo: rgba(245, 200, 81, 0.28); /* portrait hover halo */
 
+  /* Two icon sizes: a tile in a strip or bag, and inline in a line of text. */
+  --icon-tile: 2.5rem;  /* 40px */
+  --icon-inline: 1.5rem; /* 24px */
+
   --display: 'Cinzel Decorative', 'Cinzel', serif;
   --display-2: 'Cinzel', 'Georgia', serif;
   --body: 'Alegreya', 'Georgia', serif;
