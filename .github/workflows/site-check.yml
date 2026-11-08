@@ -112,6 +112,7 @@ jobs:
               - vikings-vengeance/**
               - vv/**
               - js/vikings*.js
+              - js/vikings*.mjs
               - css/vikings.css
               - _data/vikings.json
               - api/src/**
@@ -130,6 +131,7 @@ jobs:
               - heroes/**
               - _includes/heroes/**
               - js/hero-directory*.js
+              - js/hero-directory*.mjs
               - js/hero-spend.js
               - js/hero-points.js
               - js/hero-data.liquid
@@ -238,6 +240,7 @@ jobs:
               - _includes/governor/**
               - _includes/heroes/**
               - js/hero-directory*.js
+              - js/hero-directory*.mjs
               - js/hero-spend.js
               - js/hero-points.js
               - js/building-*
@@ -311,6 +314,7 @@ jobs:
               - js/pet-*
               - js/master-*
               - js/hero-directory*.js
+              - js/hero-directory*.mjs
               - js/hero-points.js
               - js/town-centre*.js
             seasonal:

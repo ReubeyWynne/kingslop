@@ -5,7 +5,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const { test } = require('node:test');
 const root = path.resolve(__dirname, '..');
-const Model = require(path.join(root, 'js/island-model.js'));
+const Model = require(path.join(root, 'js/island-model.mjs'));
 
 function load(file, name) {
   const sandbox = { window: {} };

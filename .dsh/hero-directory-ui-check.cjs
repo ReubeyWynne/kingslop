@@ -19,7 +19,7 @@ const field=k=>page.locator('[data-target="hero-directory.'+k+'"]'),visible=()=>
  assert.equal(await page.locator('.hero-dossier[open]').count(),1);
  assert.equal(await page.locator('.hero-first-skill').count(),34);
  await field('query').fill('quinn');await page.locator('#hero-quinn summary').click();assert.match(await page.locator('#hero-quinn .hero-skills').textContent(),/50% chance/);await page.locator('[data-action="hero-directory.reset"]').click();
- const order=await page.locator('.hero-gen[data-generation="1"] [data-hero]').evaluateAll(n=>n.map(x=>x.dataset.hero));assert.deepEqual(order,heroes.filter(h=>h.generation===1).sort(require('../js/hero-directory-engine.js').compare).map(h=>h.key));
+ const order=await page.locator('.hero-gen[data-generation="1"] [data-hero]').evaluateAll(n=>n.map(x=>x.dataset.hero));assert.deepEqual(order,heroes.filter(h=>h.generation===1).sort(require('../js/hero-directory-engine.mjs').compare).map(h=>h.key));
  assert.deepEqual(await page.locator('.hero-gen[data-generation="1"] .hero-band').evaluateAll(n=>n.map(x=>x.dataset.tier)),['legendary','epic','rare']);
  const ledger=()=>page.evaluate(()=>PlayerLedger.shared().heroes());
  await page.locator('#hero-amadeus summary').click();const form=page.locator('#hero-amadeus .hero-mine');assert.equal(await form.locator('[data-field="level"]').isDisabled(),true);

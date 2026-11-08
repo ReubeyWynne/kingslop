@@ -32,11 +32,11 @@ The guide is its own page, `/vikings-vengeance/guide/`, the other side of the Vi
 
 ## Event days
 
-Vikings opens every fourteen days on Tuesday and Thursday, server time (UTC); R4/R5 choose the hour. It runs in the Strongest Governor and KvK prep weeks of the 28-day wheel. `VikingsEngine.eventDays` counts from the Strongest Governor Tuesday of the wheel's first cycle, 25 August 2026 (`SCHEDULE.anchor` in `js/vikings-engine.js`). The page shows the next window; a new room picks Tuesday or Thursday and a start time in UTC, remembering the last time used on the device.
+Vikings opens every fourteen days on Tuesday and Thursday, server time (UTC); R4/R5 choose the hour. It runs in the Strongest Governor and KvK prep weeks of the 28-day wheel. `VikingsEngine.eventDays` counts from the Strongest Governor Tuesday of the wheel's first cycle, 25 August 2026 (`SCHEDULE.anchor` in `js/vikings-engine.mjs`). The page shows the next window; a new room picks Tuesday or Thursday and a start time in UTC, remembering the last time used on the device.
 
 ## Assignments
 
-`js/vikings-engine.js` is the pure allocation and validation engine used by the browser and Worker. City splits fill available capacity with infantry, then cavalry, then archers when overflow requires prioritisation. With enough room, they send all troop types. Each type is distributed proportionally across the remaining queue capacities, with deterministic integer rounding.
+`js/vikings-engine.mjs` is the pure allocation and validation engine used by the browser and Worker. City splits fill available capacity with infantry, then cavalry, then archers when overflow requires prioritisation. With enough room, they send all troop types. Each type is distributed proportionally across the remaining queue capacities, with deterministic integer rounding.
 
 Each player has up to six draft march rows. Every row names a queue, destination registration and three troop amounts. The Worker checks player membership, queue uniqueness, capacity, troop availability and self-reinforcement. The engine does not infer combat safety or points from troop counts.
 

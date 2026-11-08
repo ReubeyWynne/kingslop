@@ -44,7 +44,7 @@
     // Joiners, city buffs and the pets switch: choices, not game facts, so
     // they stay in this browser. Storage can be blocked; the page still works.
     function writePrefs(v) { try { localStorage.setItem(PREFS, JSON.stringify(v)); } catch (cause) { /* kept for this visit */ } }
-    // Reading the save is shared with the Bear Hunt page (js/lead-account.js).
+    // Reading the save is shared with the Bear Hunt page (js/lead-account.mjs).
     var prefs = A.prefs();
     function joinersOf(gen) { return A.joiners(prefs, job, gen, data); }
     function rallyCap() { return A.rallyCap(prefs); }
@@ -156,7 +156,7 @@
         if (unknown) tr.dataset.unknown = ''; else delete tr.dataset.unknown;
       });
     }
-    // What the ranking is worked out from (js/lead-inputs.js): a chip for each
+    // What the ranking is worked out from (js/lead-inputs.mjs): a chip for each
     // input, solid when it's in, ◇ when a typical value stands in, dashed when missing.
     function inputLabel(id) { return t('input.' + id); }
     function assessInputs() {

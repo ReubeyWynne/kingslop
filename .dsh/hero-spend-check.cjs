@@ -98,7 +98,7 @@ assert.equal(S.missing('mithril'), null);
 
 // Heroes page: the panel, its scripts in order, a deep-linkable section and English copy.
 const pages = require('../_data/pages.json'), html = fs.readFileSync('heroes/index.html', 'utf8');
-const order = ['event-data.js', 'event-rules.js', 'hero-data.js', 'hero-spend.js', 'hero-directory-engine.js', 'hero-points.js'].map(f => pages.heroes.scripts.indexOf('../js/' + f));
+const order = ['event-data.js', 'event-rules.js', 'hero-data.js', 'hero-spend.js', 'hero-directory-engine.mjs', 'hero-points.js'].map(f => pages.heroes.scripts.indexOf('../js/' + f));
 assert.ok(order.every((at, i) => at >= 0 && (i === 0 || at > order[i - 1])), order.join());
 assert.ok(html.includes('id="kvk-points" data-module="hero-points"') && html.includes('href="#kvk-points"'));
 assert.equal(fs.readFileSync('_includes/heroes/roster.html', 'utf8').match(/data-field="widgets"/g).length, 1);
