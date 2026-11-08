@@ -16,8 +16,8 @@
      cap = biggest rally ÷ (S + 2)   S full joins plus a double share for its leader,
                                      rounded down to a whole thousand
 
-   The first group of rallies is as many as the opening joins can fill:
-   ⌊P × J ÷ S⌋, never more than P. */
+   The first group of rallies takes every opening join, rounded up so no
+   march queue sits idle: ⌈P × J ÷ S⌉, never more than P. */
 (function (root) {
   'use strict';
 
@@ -45,7 +45,7 @@
       cap: R ? Math.max(1, Math.floor(R / (S + 2) / 1000)) * 1000 : 0,
       rally: R,
       hits: S / J,
-      first: Math.min(P, Math.floor(P * J / S)),
+      first: Math.min(P, Math.ceil(P * J / S - 1e-9)),
       full: S === FULL
     };
   }

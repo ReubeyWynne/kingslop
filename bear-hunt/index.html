@@ -37,8 +37,11 @@ self: bear
           <div class="plan-visual" aria-hidden="true"><img class="plan-lead" src="../img/heroes/amadeus.webp" width="64" height="64" alt="" loading="lazy"></div>
           <div class="plan-rule"><span class="rule-num" aria-hidden="true">1</span><div><h3 data-i18n="bh.rules.1h">Everyone launches a rally.</h3><p data-i18n="bh.rules.1p">A weak one can go with 1 troop.</p></div></div>
         </li>
-        <li>
-          <div class="plan-visual" aria-hidden="true"><div class="rally-slots"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+        <li class="plan-wide">
+          <div class="plan-visual cap-compare">
+            <div class="cap-row" data-cap="off"><span class="cap-label" data-i18n="bh.cap.off">No cap</span><div class="cap-bar" aria-hidden="true"></div><span class="cap-note" data-i18n="bh.cap.out" data-i18n-vars="hunt">6 left out</span></div>
+            <div class="cap-row" data-cap="on"><span class="cap-label" data-i18n="bh.cap.on" data-i18n-vars="hunt">Cap 85,000</span><div class="cap-bar" aria-hidden="true"></div><span class="cap-note" data-i18n="bh.cap.gain" data-i18n-vars="hunt">+36% damage</span></div>
+          </div>
           <div class="plan-rule"><span class="rule-num" aria-hidden="true">2</span><div><h3 data-i18n="bh.glance.2h" data-i18n-vars="hunt">Fill every rally to 15.</h3><p data-i18n="bh.rules.2p">Join whichever rally is closest to marching out.</p></div></div>
         </li>
         <li>
@@ -50,7 +53,7 @@ self: bear
           <div class="plan-rule"><span class="rule-num" aria-hidden="true">4</span><div><h3 data-i18n="bh.rules.4h">Cavalry and archers first, infantry last.</h3><p data-i18n="bh.rules.4p">Split each evenly across your marches. 5 / 15 / 80 is a fair start.</p></div></div>
         </li>
         <li>
-          <div class="plan-visual" aria-hidden="true"><div class="rally-skill-slots"><span></span><span></span><span></span><span></span></div></div>
+          <div class="plan-visual" aria-hidden="true"><div class="plan-joiners"><img src="../img/heroes/chenko.webp" width="48" height="48" alt="" loading="lazy"><img src="../img/heroes/yeonwoo.webp" width="48" height="48" alt="" loading="lazy"><img src="../img/heroes/amane.webp" width="48" height="48" alt="" loading="lazy"><i></i></div></div>
           <div class="plan-rule"><span class="rule-num" aria-hidden="true">5</span><div><h3 data-i18n="bh.glance.6h">Join with a recommended first hero, or none.</h3></div></div>
         </li>
       </ol>
@@ -61,7 +64,6 @@ self: bear
   <section class="section" id="marches">
     <span class="anchor-alias" id="mix" aria-hidden="true"></span><span class="anchor-alias" id="rally" aria-hidden="true"></span><span class="anchor-alias" id="cap" aria-hidden="true"></span>
     <h2 id="marches-title"><span data-i18n="bh.marches.heading">Your marches</span></h2>
-    {% include ascii/march.html kind="sky" %}
     <figure class="hunt-diagram march-composition" aria-labelledby="marches-title">
       <figcaption class="allocator-heading">
         <button id="allocator-toggle" class="allocator-button" type="button" aria-expanded="false" aria-controls="march-builder" data-deep-link="march-builder" hidden><span data-i18n="bh.alloc.open">Use my troops</span></button>
@@ -127,30 +129,14 @@ self: bear
 
   <section class="section" id="timing">
     <h2><span data-i18n="bh.page.95">Run the hunt</span></h2>
+    <h3 class="run-who" data-i18n="bh.run.organisers">For organisers</h3>
     <ol class="hunt-steps">
       <li><strong><span data-i18n="bh.page.98">Poll before the event.</span></strong> <span data-i18n="bh.page.99">Ask who's coming and whether they want the first or second group. Leave room for people who don't answer and people who turn up late.</span></li>
-      <li><strong data-i18n="bh.run.save">Save your formations.</strong> <span data-i18n="bh.run.saveP">One for each joiner hero, one with no joiner hero, and one for each rally lead.</span></li>
+      <li><strong><span data-i18n="bh.page.100">The first group launches straight away.</span></strong> <span data-i18n="bh.run.first2" data-i18n-vars="hunt">With 15 players, open 7 rallies, so everyone can use all their joins.</span></li>
+      <li><strong data-i18n="bh.run.second">The second group launches between 28:00 and 27:30.</strong> <span data-i18n="bh.page.103">Those rallies should still be waiting when the first group's joins get home. Leave enough time to hit the Bear, go home and join the next rally.</span></li>
+      <li><strong data-i18n="bh.run.full">Rallies should launch mostly full.</strong> <span data-i18n="bh.run.fullP">One a little short is fine. If they're often well short, raise the joiner cap or tune the plan to your alliance.</span></li>
+      <li><strong data-i18n="bh.run.last">Lift the cap for the last 5 minutes.</strong></li>
     </ol>
-    <div class="hero-permission" id="heroes">
-      <h3><span data-i18n="bh.page.116">First heroes for joining</span></h3>
-      <p><b><span data-i18n="bh.page.117">Gen I:</span></b> <span data-i18n="bh.page.118">Chenko, Yeonwoo, Amane, and Amadeus when you aren't leading with him.</span></p>
-      <p><b><span data-i18n="bh.page.119">Gen II–III:</span></b> <span data-i18n="bh.page.120">nothing new for joining.</span> <b><span data-i18n="bh.page.121">Hilde depends on your alliance</span></b><span data-i18n="bh.page.122">; many ban her, so check your alliance's rule.</span></p>
-      <p><b><span data-i18n="bh.page.123">Gen IV:</span></b> <span data-i18n="bh.page.124">Margot, Rosa.</span></p>
-      <p><b><span data-i18n="bh.page.125">Gen V:</span></b> <span data-i18n="bh.page.126">Vivian.</span></p>
-      <p><b><span data-i18n="bh.page.127">Gen VI:</span></b> <span data-i18n="bh.page.128">Yang.</span></p>
-      <p><b><span data-i18n="bh.page.129">Later options:</span></b> <span data-i18n="bh.page.130">Petra (only one per rally), Ava, Wee &amp; Woo.</span></p>
-    </div>
-
-
-    <ol class="hunt-steps">
-      <li><strong><span data-i18n="bh.page.100">The first group launches straight away.</span></strong> <span data-i18n="bh.run.first" data-i18n-vars="hunt">With 15 players, that's 6 rallies. One more is fine if its leader doesn't mind cancelling.</span></li>
-      <li><strong><span data-i18n="bh.page.102">The second group launches between 29:00 and 28:30.</span></strong> <span data-i18n="bh.page.103">Those rallies should still be waiting when the first group's joins get home. Leave enough time to hit the Bear, go home and join the next rally.</span></li>
-      <li><strong><span data-i18n="bh.page.104">If the first group doesn't fill, cancel a rally.</span></strong> <span data-i18n="bh.page.105">Relaunch it with the second group instead of letting it go half-empty.</span></li>
-      <li><strong><span data-i18n="bh.page.106">After that, everyone relaunches as soon as they're home.</span></strong> <span data-i18n="bh.run.relaunchP">While your rally marches home, open the rally screen and tap your saved formation. It won't load until your troops are back, so tap it again the moment they arrive.</span></li>
-      <li><strong data-i18n="bh.run.look">Look before you join.</strong> <span data-i18n="bh.run.lookP">Tap into the rally. If it already has 4 joiner heroes, send your formation with no joiner hero.</span></li>
-      <li><strong data-i18n="bh.run.last">Lift the cap for the last 5 minutes.</strong> <span data-i18n="bh.run.lastP">Anyone close to more rewards sends everything. Anyone who can't get more steps back.</span></li>
-    </ol>
-
     <figure class="hunt-opening" aria-labelledby="hunt-opening-title">
       <figcaption>
         <span id="hunt-opening-title" data-i18n="bh.opening.title">The opening</span>
@@ -180,11 +166,11 @@ self: bear
         <li>
           <div class="opening-head">
             <h3><span data-i18n="bh.opening.second">Second group launches</span></h3>
-            <bdi class="opening-time">29:00–28:30</bdi>
+            <bdi class="opening-time">28:00–27:30</bdi>
           </div>
           <p class="opening-group" data-i18n="bh.opening.group2">Second group</p>
           <div class="opening-launches">
-            <bdi>29:00</bdi><bdi>28:45</bdi><bdi>28:30</bdi>
+            <bdi>28:00</bdi><bdi>27:45</bdi><bdi>27:30</bdi>
           </div>
         </li>
         <li>
@@ -211,6 +197,24 @@ self: bear
       </ol>
       <p class="note" data-i18n="bh.opening.note">Adjust the gap for your alliance's travel times.</p>
     </figure>
+
+    <h3 class="run-who" data-i18n="bh.run.everyone">For everyone</h3>
+    <ol class="hunt-steps">
+      <li><strong data-i18n="bh.run.save">Save your formations.</strong> <span data-i18n="bh.run.saveP">One for each joiner hero, one with no joiner hero, and one for each rally lead.</span>
+        <div class="hero-permission" id="heroes">
+          <h3><span data-i18n="bh.page.116">First heroes for joining</span></h3>
+          <p><b><span data-i18n="bh.page.117">Gen I:</span></b> <span data-i18n="bh.page.118">Chenko, Yeonwoo, Amane, and Amadeus when you aren't leading with him.</span></p>
+          <p><b><span data-i18n="bh.page.119">Gen II–III:</span></b> <span data-i18n="bh.page.120">nothing new for joining.</span> <b><span data-i18n="bh.page.121">Hilde depends on your alliance</span></b><span data-i18n="bh.page.122">; many ban her, so check your alliance's rule.</span></p>
+          <p><b><span data-i18n="bh.page.123">Gen IV:</span></b> <span data-i18n="bh.page.124">Margot, Rosa.</span></p>
+          <p><b><span data-i18n="bh.page.125">Gen V:</span></b> <span data-i18n="bh.page.126">Vivian.</span></p>
+          <p><b><span data-i18n="bh.page.127">Gen VI:</span></b> <span data-i18n="bh.page.128">Yang.</span></p>
+          <p><b><span data-i18n="bh.page.129">Later options:</span></b> <span data-i18n="bh.page.130">Petra (only one per rally), Ava, Wee &amp; Woo.</span></p>
+        </div>
+      </li>
+      <li><strong><span data-i18n="bh.run.relaunch">Relaunch as soon as you're home.</span></strong> <span data-i18n="bh.run.relaunchP">While your rally marches home, open the rally screen and tap your saved formation. It won't load until your troops are back, so tap it again the moment they arrive.</span></li>
+      <li><strong data-i18n="bh.run.look">Look before you join.</strong> <span data-i18n="bh.run.lookP">Tap into the rally. If it already has 4 joiner heroes, send your formation with no joiner hero.</span></li>
+      <li><strong data-i18n="bh.run.end">In the last 5 minutes:</strong> <span data-i18n="bh.run.lastP">Anyone close to more rewards sends everything. Anyone who can't get more steps back.</span></li>
+    </ol>
   </section>
 
   <section class="section" id="sqrt">
@@ -224,6 +228,8 @@ self: bear
       <div class="bar-row"><span class="bar-label"><span data-i18n="bh.page.32">6 marches</span></span><div class="bar-track"><div class="bar-fill" style="--p:100"></div></div><span class="bar-value">2.45×</span></div>
     </div>
 
+    <details class="hunt-maths">
+    <summary data-i18n="bh.why.more">The maths</summary>
     <p><span data-i18n="bh.page.33">Each march in a rally is scored on its own, and its infantry, cavalry and archers each get their own square root. So the same troops do more damage spread across several joins than packed into one.</span></p>
 
     <div class="hunt-sub" id="exact-model">
@@ -249,8 +255,9 @@ self: bear
 
     <div class="hunt-sub" id="first-group">
       <h3><span data-i18n="bh.page.110">How many rallies in the first group?</span></h3>
-      <p data-i18n="bh.why.first" data-i18n-vars="hunt">Count the joins free at the start and divide by 14. 15 players with 6 joins each is 90, enough for 6 full rallies.</p>
+      <p data-i18n="bh.why.first2" data-i18n-vars="hunt">Count the joins free at the start and divide by 14, rounding up so nobody's joins sit idle. 15 players with 6 joins each is 90, so open 7 rallies.</p>
       <p><span data-i18n="bh.page.112">Once the first hits land, those marches come home and join again, so the size of the first group doesn't limit the rest of the event.</span></p>
     </div>
+    </details>
   </section>
 </main>
