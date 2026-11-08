@@ -133,7 +133,7 @@ assert(town.indexOf('master-spend.js') < town.indexOf('town-centre-engine.js'));
 assert(town.indexOf('master-points.js') < town.indexOf('town-centre.js'));
 const townPage = read('town-centre/index.html');
 assert.match(townPage, /aria-controls="town-masters"/); assert.match(townPage, /id="town-masters"[^>]*data-shelf="masters"/);
-assert.match(townPage, /data-module="master-directory">\s*{% include masters\/roster.html bag="off" %}/);
+assert.match(townPage, /data-module="master-directory">\s*{% include masters\/roster.html %}/);
 assert.match(townPage, /data-count="general-master-emblem"/);
 assert.match(townPage, /item.id == "master-emblem" %}{% continue %}/);
 const sources = ['masters/index.html', '_includes/masters/roster.html', 'town-centre/index.html', 'index.html'].map(read).join('\n');
