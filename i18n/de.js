@@ -718,7 +718,7 @@ window.__BH_I18N_DATA["de"] = {
   "bh.hunt.title": "Eure Jagd",
   "bh.hunt.players": "Spieler",
   "bh.hunt.rally": "Größte Rallye",
-  "bh.hunt.march": "Marsch der Rallyeleitung",
+  "bh.hunt.march": "Marsch der Leitung",
   "bh.why.small": "Mit weniger als 15 Spielern kann S nicht über P − 1 steigen, denn jeder Spieler tritt jeder Rallye nur einmal bei. Alle fünf Minuten hat also jeder Spieler P − 1 Rallyes zum Beitreten, egal wie viele Märsche er schickt. Etwa (P − 1) ÷ 2,33 Beitrittsmärsche erreichen alle davon, also können deine übrigen Truppen diese Märsche größer machen, bis zur Grenze. Schaden wächst mit der Quadratwurzel der Truppen eines Marschs, also bringen weniger, größere Beitrittsmärsche mehr.",
   "bh.cap.off": "Ohne Grenze",
   "bh.cap.on": "Grenze {cap}",
