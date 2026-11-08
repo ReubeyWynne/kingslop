@@ -142,10 +142,21 @@
   };
   window.BH = BH;
 
+  /* Whether DOMContentLoaded has fired, so every deferred script (the page's own bundle too)
+     has run. readyState alone cannot say: deferred scripts run while it is already
+     'interactive', and a dictionary that arrives between two of them would boot the page
+     before its own scripts have configured their dependencies. */
+  function domLoaded() {
+    if (document.readyState === 'complete') return true;
+    if (document.readyState === 'loading') return false;
+    var nav = window.performance && performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
+    return !nav || nav.domContentLoadedEventStart > 0;
+  }
+
   if (window.I18N) {
     window.I18N.onReady(function () {
       // Page scripts must configure dependencies and register before discovery.
-      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
+      if (!domLoaded()) document.addEventListener('DOMContentLoaded', boot, { once: true });
       else boot();
     });
   } else if (document.readyState === 'loading') {
