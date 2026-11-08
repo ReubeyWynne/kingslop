@@ -1010,7 +1010,7 @@ window.__BH_I18N_DATA["ar"] = {
   "ks.available.item.advanced-taming-mark": "علامة ترويض متقدمة",
   "ks.available.item.common-taming-mark": "علامة ترويض عادية",
   "ks.available.item.hero-widget": "Widget",
-  "directory.title": "دليل الأبطال",
+  "directory.title": "الأبطال",
   "directory.mine": "المجموعة",
   "directory.mine.owned": "لدي",
   "directory.mine.missing": "ليس بعد",

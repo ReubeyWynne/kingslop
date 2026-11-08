@@ -55,7 +55,14 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   }
   assert.equal(half.size, 1, 'one heading size inside planners: ' + [...half]);
   assert.equal(section.size, 1, 'one heading size for page sections: ' + [...section]);
+  // Number rules (common.js tileText): tiles shorten from 10,000 with the exact
+  // figure as the title, ? for not entered, — for a cost of nothing; tables never shorten.
+  assert.deepEqual(await page.evaluate(() => [4332, 48213, 1580000000, null, 0].map(n => BH.tileText(n, true)).concat([BH.tileText(0)])), [
+    { text: '4,332', title: '' }, { text: '48.2k', title: '48,213' }, { text: '1.58bn', title: '1,580,000,000' },
+    { text: '?', title: '' }, { text: '\u2014', title: '' }, { text: '0', title: '' }]);
+  await page.goto(origin + '/buildings/?lang=en');
+  assert.deepEqual(await page.locator('table b').evaluateAll(b => b.map(x => x.textContent).filter(t => /\d[a-z]/i.test(t))), [], 'no table shortens a figure');
   await context.close();
   assert.deepEqual(errors, []);
-  console.log('Calculator consistency: one fold style, 40px tile icons, two heading sizes, a rail ending in How it works · Sources on ' + pages.length + ' pages at 2 widths, and the planner frame on Heroes, Masters and Pets pass.');
+  console.log('Calculator consistency: one fold style, 40px tile icons, two heading sizes, a rail ending in How it works · Sources on ' + pages.length + ' pages at 2 widths, the planner frame on Heroes, Masters and Pets, and the number rules pass.');
 }).catch(e => { console.error(e); process.exitCode = 1; });

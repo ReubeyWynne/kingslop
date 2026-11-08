@@ -1024,7 +1024,7 @@ window.__BH_I18N_DATA["id"] = {
   "ks.available.item.advanced-taming-mark": "Tanda Penjinakan Lanjutan",
   "ks.available.item.common-taming-mark": "Tanda Penjinakan Umum",
   "ks.available.item.hero-widget": "Widget",
-  "directory.title": "Direktori hero",
+  "directory.title": "Hero",
   "directory.mine": "Koleksi",
   "directory.mine.owned": "Punya",
   "directory.mine.missing": "Belum",

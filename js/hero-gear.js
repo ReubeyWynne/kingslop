@@ -10,7 +10,7 @@
   var scriptURL = new URL(document.currentScript.src);
   var base = new URL('./', scriptURL);
   var view = window.HeroGearView.create({
-    engine: E, tr: tr, fmt: fmt,
+    engine: E, tr: tr, fmt: fmt, tileText: function (n, nothing) { return BH.tileText(n, nothing); },
     art: new URL('../img/hero-gear/', base),
     fill: function (text, values) { return BH.fill(text, values); }
   });

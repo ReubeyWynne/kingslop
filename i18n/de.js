@@ -1013,7 +1013,7 @@ window.__BH_I18N_DATA["de"] = {
   "ks.available.item.advanced-taming-mark": "Fortgeschrittene Zähmungsmarke",
   "ks.available.item.common-taming-mark": "Gewöhnliche Zähmungsmarke",
   "ks.available.item.hero-widget": "Widget",
-  "directory.title": "Heldenverzeichnis",
+  "directory.title": "Helden",
   "directory.mine": "Sammlung",
   "directory.mine.owned": "Habe ich",
   "directory.mine.missing": "Noch nicht",

@@ -220,6 +220,10 @@ The system's "buttons" are **margin prompts, not button chrome** — controls re
 ### Icons
 - **Two sizes:** `--icon-tile` (40px) for an item in a strip, bill or bag, and `--icon-inline` (24px) inside a line of text. No other icon size, and no smaller tile on a phone; hide the caption instead.
 
+### Numbers
+- **Tiles shorten, tables never do:** a figure in a strip, bill or bag tile reads in the reader's short form from 10,000 (48.2K, 1.58B, three digits), with the exact figure as its title; below 10,000 it stays exact. Tables, sentences and fold summaries show the whole figure. One helper paints a tile: `BH.tile(node, n, nothing)` or `BH.tileText(n, nothing)`.
+- **? and —:** `?` where the reader has not entered the count, `—` where there is nothing to do (a cost or shortfall of nothing). An amount held of 0 stays 0.
+
 ### Signature Components
 - **Rule cells** — square amber numerals (`3.8rem`) stamping each of the "four rules"; a reversed oxblood cell (`.rev`) marks the failure/rubrication case.
 - **The ❧ Fleuron** — the brand mark: opens active TOC links, lead/you tags, rank titles, and disclosure prompts.

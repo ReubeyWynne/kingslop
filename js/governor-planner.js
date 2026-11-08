@@ -10,7 +10,7 @@
     'profileNote.bear': 'Archers first: Bear Hunt runs every two days and pays back in hammers. Infantry keeps level with cavalry for Vikings, Alliance Championship and the rest.',
     'profileNote.custom': 'Your own weights: each troop\'s gains count that many times. A troop at 0 stays where it is.',
     'profileNote.score': 'The most governor score for the materials, for an event day.',
-    billSpend: 'Spends', billReach: 'Needs', spendLeft: '{n} left', needShort: '{n} short', needEnough: 'enough', needUnknown: 'not counted',
+    billSpend: 'Spends', billReach: 'Needs', spendLeft: '{n} left', needShort: '{n} short', needEnough: 'enough',
     stays: 'stays', notSet: 'not set', scoreGain: '+{n} governor score', scoreNone: 'No published score for one of these levels.',
     kindGear: 'Gear', kindCharms: 'Charms',
     nothing: 'Nothing the materials can pay for yet. Count them, or set the level of each piece.',
@@ -58,21 +58,27 @@
       [1, 2, 3].forEach(function (c) {
         var cid = id + '-' + c, a = charms.from[cid], b = charms.to[cid], gem = el('span', null, 'gov-gem'), wrap = el('span', null, 'gov-row-charm');
         gem.appendChild(img(art + 'charms/' + p.troop + '-1.webp', 72)); view.paintGem(gem, p.troop, b);
-        wrap.append(gem, el('span', a === null ? '—' : a === b ? api.fmt(a) : api.fmt(a) + '→' + api.fmt(b)));
+        wrap.append(gem, el('span', a === null ? '?' : a === b ? api.fmt(a) : api.fmt(a) + '→' + api.fmt(b)));
         wrap.dataset.moved = String(a !== b); gems.appendChild(wrap);
       });
       text.appendChild(gems);
       li.append(card, text);
       return li;
     }
+    function tileLine(key, n, cls) {
+      var out = api.tileText(n), line = el('small', fill(key, { n: out.text }), cls);
+      if (out.title) line.title = fill(key, { n: out.title });
+      return line;
+    }
     function bill(cost, amounts, need) {
       return G.data.materials.map(function (m) {
         var cell = el('div'), have = amounts[m.id], n = cost[m.id] || 0;
         cell.dataset.material = m.id;
         cell.title = api.tr(m.key, m.label) + ': ' + api.fmt(n);
-        cell.append(img(art + m.id + '.webp', 40, 'gov-icon gov-icon-lg'), el('strong', api.compact(n)));
-        if (!need) cell.appendChild(el('small', have === null ? t('needUnknown') : fill('spendLeft', { n: api.compact(Math.max(0, have - n)) })));
-        else { var short = have === null ? null : Math.max(0, n - have); cell.appendChild(el('small', short === null ? t('needUnknown') : short > 0 ? fill('needShort', { n: api.compact(short) }) : t('needEnough'), short > 0 ? 'gov-short' : '')); }
+        cell.append(img(art + m.id + '.webp', 40, 'gov-icon gov-icon-lg'), api.tile(el('strong'), n, true));
+        // What is left or short reads like the cost: ? until the bag is counted.
+        if (!need) cell.appendChild(tileLine('spendLeft', have === null ? null : Math.max(0, have - n), 'sheet-left'));
+        else { var short = have === null ? null : Math.max(0, n - have); cell.appendChild(short === 0 ? el('small', t('needEnough')) : tileLine('needShort', short, short > 0 ? 'sheet-short' : '')); }
         return cell;
       });
     }

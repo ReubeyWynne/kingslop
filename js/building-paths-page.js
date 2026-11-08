@@ -91,11 +91,8 @@
       if (b && b.single) return id === '0' ? t('notBuilt', 'not built') : t('built', 'built');
       return id === '0' ? t('notBuilt', 'not built') : id;
     }
-    function compact(n) {
-      try { return new Intl.NumberFormat((window.I18N && window.I18N.locale) || 'en-GB', { notation: 'compact', maximumFractionDigits: n >= 1e6 ? 2 : 1 }).format(n); } catch (ignored) { return api.fmt(n); }
-    }
-    // Counts under 100,000 (Truegold, Tempered Truegold) read exactly: 4,332, not 4.3k.
-    function amount(n) { return n < 1e5 ? api.fmt(n) : compact(n); }
+    // A bill tile: the short form, with the exact figure in the tile's title.
+    function amount(n) { return api.compact(n); }
     function duration(s) {
       var d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), parts = [];
       if (d) parts.push(t('days', '{n}d', { n: api.fmt(d) }));
@@ -156,8 +153,8 @@
       if (minutes) rows.push({ label: t('pointsSpedUp', 'Sped up'), cells: P.forItems(cost, { construction: minutes }) });
       top = P.most(rows);
       one('pointsBox').hidden = !top;
-      one('pointsSum').textContent = top ? t('pointsUpTo', 'up to {n}', { n: compact(top) }) : '';
-      if (top) box.appendChild(P.table(api, rows, 'reqs-points', { compact: true }));
+      one('pointsSum').textContent = top ? t('pointsUpTo', 'up to {n}', { n: api.fmt(top) }) : '';
+      if (top) box.appendChild(P.table(api, rows, 'reqs-points'));
     }
     function stepTime(steps) { return duration(E.timed(steps, E.boost(cs)).time); }
     function arrow() { return document.documentElement.dir === 'rtl' ? ' ← ' : ' → '; }

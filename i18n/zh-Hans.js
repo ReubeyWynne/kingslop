@@ -1013,7 +1013,7 @@ window.__BH_I18N_DATA["zh-Hans"] = {
   "ks.available.item.advanced-taming-mark": "高级驯养印记",
   "ks.available.item.common-taming-mark": "普通驯养印记",
   "ks.available.item.hero-widget": "Widget",
-  "directory.title": "英雄目录",
+  "directory.title": "英雄",
   "directory.mine": "收藏",
   "directory.mine.owned": "已拥有",
   "directory.mine.missing": "未拥有",

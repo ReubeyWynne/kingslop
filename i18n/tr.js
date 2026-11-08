@@ -1012,7 +1012,7 @@ window.__BH_I18N_DATA["tr"] = {
   "ks.available.item.advanced-taming-mark": "Gelişmiş Evcilleştirme İşareti",
   "ks.available.item.common-taming-mark": "Yaygın Evcilleştirme İşareti",
   "ks.available.item.hero-widget": "Widget",
-  "directory.title": "Kahraman kataloğu",
+  "directory.title": "Kahramanlar",
   "directory.mine": "Koleksiyon",
   "directory.mine.owned": "Bende var",
   "directory.mine.missing": "Henüz yok",

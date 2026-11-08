@@ -32,14 +32,31 @@
     if (loc !== nfLocale) { nf = new Intl.NumberFormat(loc); nfLocale = loc; }
     return nf.format(Math.round(n));
   }
-  // A big amount in the reader's own short form: 1.58B, 1,58 Mrd., 15.8億, 15.8亿.
-  // Below a million the full figure is short enough and stays exact.
+  // A figure in a tile, in the reader's own short form: 48.2K, 1.58B, 15.8億.
+  // Below 10,000 the full figure is short enough and stays exact. Tables never
+  // shorten; a tile keeps the exact figure a hover away (see tile below).
   var cf = null, cfLocale = '';
   function compact(n) {
-    if (!isFinite(n) || Math.abs(n) < 1e6) return fmt(n);
+    if (!isFinite(n) || Math.abs(n) < 1e4) return fmt(n);
     var loc = getLocale();
-    if (loc !== cfLocale) { cf = new Intl.NumberFormat(loc, { notation: 'compact', maximumFractionDigits: 2 }); cfLocale = loc; }
+    if (loc !== cfLocale) { cf = new Intl.NumberFormat(loc, { notation: 'compact', maximumSignificantDigits: 3 }); cfLocale = loc; }
     return cf.format(n);
+  }
+  // One tile figure: ? when the reader has not entered it, — for a cost or
+  // shortfall of nothing (pass `nothing`; an amount held of 0 stays 0), else
+  // the short form with the exact figure as its title.
+  // Returns { text, title }; title is '' when the text is already exact.
+  function tileText(n, nothing) {
+    if (n === null || n === undefined) return { text: '?', title: '' };
+    if (!isFinite(n) || (nothing && !n)) return { text: '\u2014', title: '' };
+    var text = compact(n), exact = fmt(n);
+    return { text: text, title: text === exact ? '' : exact };
+  }
+  function tile(node, n, nothing) {
+    var out = tileText(n, nothing);
+    node.textContent = out.text;
+    if (out.title) node.title = out.title; else node.removeAttribute('title');
+    return node;
   }
   function mult(n) {
     return n.toLocaleString(getLocale(), { maximumFractionDigits: 1, minimumFractionDigits: 0 }) + '\u00D7';
@@ -127,6 +144,8 @@
     get page() { return page; },
     fmt: fmt,
     compact: compact,
+    tileText: tileText,
+    tile: tile,
     mult: mult,
     tr: tr,
     trCount: trCount,

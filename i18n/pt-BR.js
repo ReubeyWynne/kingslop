@@ -1208,7 +1208,7 @@ window.__BH_I18N_DATA["pt-BR"] = {
   "ks.available.item.advanced-taming-mark": "Marca de doma avançada",
   "ks.available.item.common-taming-mark": "Marca de doma comum",
   "ks.available.item.hero-widget": "Widget",
-  "directory.title": "Diretório de heróis",
+  "directory.title": "Heróis",
   "directory.mine": "Coleção",
   "directory.mine.owned": "Tenho",
   "directory.mine.missing": "Ainda não",

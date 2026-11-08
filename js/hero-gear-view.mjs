@@ -1,5 +1,11 @@
 function create(options) {
   var E = options.engine, tr = options.tr, fmt = options.fmt, art = options.art, fill = options.fill;
+  // A tile figure (BH.tileText): short form with the exact figure as its title.
+  var tileText = options.tileText || function (n, nothing) { return { text: n === null || n === undefined ? '?' : nothing && !n ? '\u2014' : fmt(n), title: '' }; };
+  function tile(tag, n, nothing, cls, wrap) {
+    var out = tileText(n, nothing), text = wrap ? fill(wrap, { n: out.text }) : out.text;
+    return '<' + tag + (cls ? ' class="' + cls + '"' : '') + (out.title ? ' title="' + esc(wrap ? fill(wrap, { n: out.title }) : out.title) + '"' : '') + '>' + esc(text) + '</' + tag + '>';
+  }
   var troopArt = { inf: 'infantry', cav: 'cavalry', arc: 'archer' };
   var resourceArt = { xp: 'xp-part-100', hammers: 'forgehammer', mythic: 'mythic-gear', mithril: 'mithril' };
 
@@ -104,14 +110,14 @@ function create(options) {
   function gainPct(gain, baseline) { return '+' + (baseline > 0 ? gain / baseline * 100 : 0).toFixed(1) + '%'; }
   function roleText(type) { return tr(type === 'arc' ? 'archerRole' : type === 'inf' ? 'infantryRole' : 'cavalryRole'); }
   function costStrip(costs, remaining) {
-    return '<div class="gear-cost-strip">' + E.RES.map(function (r) { return '<div data-cost-resource="' + r + '">' + image(resourceArt[r], 'gear-resource-art') + '<strong>' + fmt(costs[r]) + '</strong>' +
+    return '<div class="gear-cost-strip sheet-strip">' + E.RES.map(function (r) { return '<div data-cost-resource="' + r + '">' + image(resourceArt[r], 'gear-resource-art') + tile('strong', costs[r], true) +
       '<small>' + esc(tr(r + 'Unit')) + '</small>' +
-      (remaining ? '<span>' + (remaining[r] ? fmt(remaining[r]) + ' ' + esc(tr('missingShort')) : esc(tr('readyShort'))) + '</span>' : '') + '</div>'; }).join('') + '</div>';
+      (remaining ? (remaining[r] ? tile('small', remaining[r], true, 'sheet-short', '{n} ' + tr('missingShort')) : '<small class="sheet-ready">' + esc(tr('readyShort')) + '</small>') : '') + '</div>'; }).join('') + '</div>';
   }
   // What the bag spends, with what is left of each under it.
   function spendStrip(spent, left) {
-    return '<div class="gear-cost-strip gear-spend-strip">' + E.RES.map(function (r) { return '<div data-cost-resource="' + r + '">' + image(resourceArt[r], 'gear-resource-art') + '<strong>' + fmt(spent[r]) + '</strong>' +
-      '<small>' + esc(tr(r + 'Unit')) + '</small><small class="gear-left">' + esc(fill(tr('leftShort'), { n: fmt(left[r]) })) + '</small></div>'; }).join('') + '</div>';
+    return '<div class="gear-cost-strip gear-spend-strip sheet-strip">' + E.RES.map(function (r) { return '<div data-cost-resource="' + r + '">' + image(resourceArt[r], 'gear-resource-art') + tile('strong', spent[r], true) +
+      '<small>' + esc(tr(r + 'Unit')) + '</small>' + tile('small', left[r], false, 'sheet-left', tr('leftShort')) + '</div>'; }).join('') + '</div>';
   }
   // One step of Spend now: which troop's piece, from what to what, and what it takes or gives back.
   function stepRow(d, n) {

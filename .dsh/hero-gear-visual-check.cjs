@@ -55,7 +55,10 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.deepEqual(await page.locator('#gear-edit-dialog .gear-step').evaluateAll(s=>s.map(x=>x.dataset.goal)),['red','mithril']);
     const toMithril=E.cost(helm,E.milestone(helm,'mithril'));
     const step=page.locator('#gear-edit-dialog .gear-step[data-goal="mithril"]');
-    assert.match(await step.textContent(),new RegExp(new Intl.NumberFormat('en-GB').format(toMithril.xp)));
+    // A strip tile shortens the figure (52.7k) and keeps the exact one as its title.
+    const xpTile=step.locator('[data-cost-resource="xp"] strong');
+    assert.equal(await xpTile.getAttribute('title'),new Intl.NumberFormat('en-GB').format(toMithril.xp));
+    assert.equal(await xpTile.textContent(),new Intl.NumberFormat('en-GB',{notation:'compact',maximumSignificantDigits:3}).format(toMithril.xp));
     assert.equal(await step.locator('.gear-kvk-points').getAttribute('data-kvk-points'),String(E.kvkPoints(toMithril)));
     assert.equal(await step.locator('[data-apply-goal]').count(),0,'nothing to mark done without the materials');
     await page.locator('#gear-close-edit').click();
@@ -127,7 +130,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.locator('#gear-save-file').setInputFiles({name:'gear.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(fixture))});
     await page.waitForFunction(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-gloves'].level===120);
     await page.locator('.gear-row[data-select="inf-gloves"]').click();
-    assert.match(await page.locator('#gear-edit-dialog .gear-step[data-goal="mithril"] [data-cost-resource="xp"]').textContent(),/74,100/);
+    assert.equal(await page.locator('#gear-edit-dialog .gear-step[data-goal="mithril"] [data-cost-resource="xp"]').locator('strong').getAttribute('title'),'74,100');
     assert.match(await page.locator('#gear-edit-dialog .gear-step[data-goal="mithril"] [data-cost-resource="mithril"]').textContent(),/10 missing/);
     await page.locator('#gear-close-edit').click();
     await page.waitForFunction(()=>[...document.querySelectorAll('.gear-main img')].every(img=>img.complete&&img.naturalWidth>0));
