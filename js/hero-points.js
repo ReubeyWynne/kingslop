@@ -1,6 +1,6 @@
-/* The Heroes page's KvK points: what each owned hero's shards and widgets score when
-   spent. The plan and every rate come from HeroSpend and the event rules, the same
-   numbers the Town Centre totals use; this file only paints them. */
+/* The words of the Heroes page's KvK points, shared with Town Centre: the panel's English
+   copy (spend.* keys), hero stars, and missing facts named for people. The panel itself is
+   js/pages/hero-points.mjs. */
 (function () {
   'use strict';
   var EN = {
@@ -13,7 +13,6 @@
   function t(api, key) { return api.tr('spend.' + key, EN[key]); }
   function fill(api, key, values) { return api.fill(t(api, key), values); }
   function stars(api, index) { var at = window.HeroDirectory.stars(index); return api.fmt(at.stars) + '★' + (at.tier ? ' ' + api.fmt(at.tier) + '/6' : ''); }
-  function element(tag, className, text) { var node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; }
   // A missing fact named for people: "Jabel stars", "your heroes".
   function missing(api, need) { return need.hero ? fill(api, 'missing.' + need.kind, { hero: need.hero.name }) : need.generation ? fill(api, 'missing.' + need.kind, { n: api.fmt(need.generation) }) : t(api, 'missing.' + need.kind); }
   function names(api, ids) {
@@ -21,66 +20,5 @@
     if (ids.length > 3) out.push(fill(api, 'more', { n: api.fmt(ids.length - 3) }));
     return out.join(', ');
   }
-  /* Under each figure, the event's days as a strip with the ❧ on the day it scores,
-     in place of the table's "day 3". */
-  function dayStrips(wrap, events) {
-    var EVENTS = window.EventPoints.EVENTS, rules = window.EventRules;
-    wrap.querySelectorAll('tbody tr').forEach(function (tr, row) {
-      tr.querySelectorAll('td').forEach(function (td, column) {
-        var cell = events[row].cells[EVENTS[column]], label = td.querySelector('small');
-        if (!cell || !label) return;
-        var best = cell.days || [cell.day], strip = element('ol', 'days');
-        strip.setAttribute('aria-label', label.textContent);
-        rules.days(EVENTS[column]).forEach(function (day) { var li = element('li', '', String(day.day)); if (best.indexOf(day.day) >= 0) li.dataset.best = ''; strip.appendChild(li); });
-        label.replaceWith(strip);
-      });
-    });
-    return wrap;
-  }
-  window.HeroPoints = { missing: missing };
-
-  window.Interactions.register('hero-points', function (context) {
-    var S = window.HeroSpend, rules = window.EventRules, api = context.api, store = null;
-    try { store = context.ledger; store.snapshot(); } catch (cause) { store = null; }
-    function put(key, value) { context.targets(key).forEach(function (node) { node.textContent = value; }); }
-    function render() {
-      if (!store) return;
-      var plan = S.plan(store.snapshot()), body = context.targets('rows')[0], total = 0, rows = [];
-      Object.keys(plan.heroes).forEach(function (key) { var hero = plan.heroes[key]; rows.push({ hero: hero, points: S.points(rules, 'prep', hero) }); });
-      rows.sort(function (a, b) { return b.points.total - a.points.total || a.hero.name.localeCompare(b.hero.name); });
-      body.replaceChildren();
-      rows.forEach(function (row) {
-        var hero = row.hero, tr = element('tr'), name = element('th', '', hero.name), shards = element('td'), widget = element('td'), points = element('td', '', api.fmt(row.points.total));
-        name.scope = 'row';
-        var change = element('td', '', hero.shards ? (hero.shards.from === 30 ? t(api, 'maxed') : fill(api, 'stars', { from: stars(api, hero.shards.from), to: stars(api, hero.shards.to) })) : t(api, 'unknownCount'));
-        if (hero.shards) { shards.append(element('b', '', api.fmt(hero.shards.spend)), element('small', '', fill(api, 'pieces', { own: api.fmt(hero.shards.ownUsed), general: api.fmt(hero.shards.general) }))); }
-        else shards.textContent = t(api, 'unknownCount');
-        if (hero.widget) widget.append(element('b', '', api.fmt(hero.widget.spend)), element('small', '', fill(api, 'widgetLevel', { from: api.fmt(hero.widget.from), to: api.fmt(hero.widget.to) })), element('small', '', fill(api, 'widgetPieces', { own: api.fmt(hero.widget.ownUsed), general: api.fmt(hero.widget.general) })));
-        else widget.textContent = t(api, 'none');
-        tr.append(name, points, change, shards, widget); body.appendChild(tr);
-        total += row.points.total;
-      });
-      context.targets('table').forEach(function (node) { node.hidden = !rows.length; });
-      context.targets('empty').forEach(function (node) { node.hidden = rows.length > 0; node.textContent = t(api, 'empty'); });
-      put('total', fill(api, 'total', { n: api.fmt(total) }));
-      // A total still waiting on counts stays open, and the counts it waits on follow as ? marks.
-      context.targets('total').forEach(function (node) { if (plan.unknown.length) node.dataset.open = ''; else delete node.dataset.open; });
-      context.targets('coverage').forEach(function (node) {
-        node.replaceChildren();
-        plan.unknown.slice(0, 3).forEach(function (id) { node.appendChild(element('li', '', names(api, [id]))); });
-        if (plan.unknown.length > 3) node.appendChild(element('li', '', fill(api, 'more', { n: api.fmt(plan.unknown.length - 3) })));
-      });
-      var left = function (id) { var value = plan.items[id].left; return value === null ? t(api, 'unknownCount') : api.fmt(value); };
-      // The same three-event table as every calculator: shards and widgets each on their best days.
-      var shards = {}, widgets = 0;
-      rows.forEach(function (row) { var hero = row.hero; if (hero.shards && hero.shards.spend) shards[hero.item] = (shards[hero.item] || 0) + hero.shards.spend; if (hero.widget) widgets += hero.widget.spend; });
-      var events = [];
-      if (Object.keys(shards).length) events.push({ label: t(api, 'eventShards'), cells: window.EventPoints.forItems(shards) });
-      if (widgets) events.push({ label: t(api, 'eventWidgets'), cells: window.EventPoints.forItems({ 'hero-widget': widgets }) });
-      context.targets('events').forEach(function (node) { node.replaceChildren(); if (events.length) node.appendChild(dayStrips(window.EventPoints.table(api, events, 'hero-event-points'), events)); });
-      put('left', rows.length ? fill(api, 'leftShards', { mythic: left('mythic-hero-shard'), epic: left('epic-hero-shard'), rare: left('rare-hero-shard') }) + ' ' + fill(api, 'leftWidgets', { n: left('hero-widget') }) + (plan.items['mythic-hero-shard'].kept !== 0 ? ' ' + t(api, 'keptMythic') : '') : '');
-    }
-    if (store) context.cleanup(store.subscribe(render));
-    return { refresh: render };
-  });
+  window.HeroPoints = { missing: missing, names: names, stars: stars, t: t, fill: fill };
 })();

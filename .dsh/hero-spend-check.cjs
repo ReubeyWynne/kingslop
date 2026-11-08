@@ -98,9 +98,9 @@ assert.equal(S.missing('mithril'), null);
 
 // Heroes page: the panel, its scripts in order, a deep-linkable section and English copy.
 const pages = require('../_data/pages.json'), html = fs.readFileSync('heroes/index.html', 'utf8');
-const order = ['event-data.js', 'hero-data.js', 'event-rules.mjs', 'hero-spend.mjs', 'hero-directory-engine.mjs', 'hero-points.js'].map(f => pages.heroes.scripts.indexOf('../js/' + f));
+const order = ['event-data.js', 'hero-data.js', 'event-rules.mjs', 'hero-spend.mjs', 'hero-directory-engine.mjs', 'hero-points.js', 'pages/hero-points.mjs'].map(f => pages.heroes.scripts.indexOf('../js/' + f));
 assert.ok(order.every((at, i) => at >= 0 && (i === 0 || at > order[i - 1])), order.join());
-assert.ok(html.includes('id="kvk-points" data-module="hero-points"') && html.includes('href="#planner"'));
+assert.ok(html.includes('id="kvk-points" x-data="heroPoints"') && html.includes('href="#planner"'));
 assert.equal(fs.readFileSync('_includes/heroes/roster.html', 'utf8').match(/data-field="widgets"/g).length, 1);
 const ctx = { window: {} }; vm.runInNewContext(fs.readFileSync('i18n/en.js', 'utf8'), ctx);
 const en = ctx.window.__BH_I18N_DATA.en, source = fs.readFileSync('js/hero-points.js', 'utf8');
@@ -109,4 +109,5 @@ const block = source.slice(source.indexOf('var EN = {'), source.indexOf('};', so
 for (const match of block.matchAll(/'([a-zA-Z.]+)': '/g)) assert.ok(en['spend.' + match[1]] !== undefined, 'spend.' + match[1]);
 for (const match of block.matchAll(/(?:^|[{,]\s*)([a-zA-Z]+): '/gm)) assert.ok(en['spend.' + match[1]] !== undefined, 'spend.' + match[1]);
 assert.doesNotMatch(source, /innerHTML/);
+assert.doesNotMatch(fs.readFileSync('js/pages/hero-points.mjs', 'utf8'), /innerHTML/);
 console.log('Hero spending: curves, whole steps, shared shards and chests, exclusives, unknowns, budgets and the Heroes page pass.');
