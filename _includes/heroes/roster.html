@@ -1,4 +1,4 @@
-{% comment %} The hero roster with each hero's "Your copy" form. Shared by the Heroes page and the Town Centre; expects `generations` and `troops`, and a hero-directory module around it. bag="off" leaves out the shard bag. {% endcomment %}
+{% comment %} The hero roster with each hero's "Your copy" form. Shared by the Heroes page and the Town Centre; expects `generations` and `troops`, and a hero-directory module around it. {% endcomment %}
     <svg class="troop-sprite" aria-hidden="true" focusable="false"><symbol id="troop-inf" viewBox="0 0 16 16"><path d="M8 1.5 13.5 3.5V8c0 3.2-2.3 5.6-5.5 6.5C4.8 13.6 2.5 11.2 2.5 8V3.5Z"/></symbol><symbol id="troop-cav" viewBox="0 0 16 16"><path d="M4.5 14.5h8c0-3.5-1-5.5-1-8.5 0-2.8-1.8-4.5-4.5-4.5L6.2 3 4 4.2 2 8l2 1.2 2.4-1.6c.8 1.6-1.9 3.4-1.9 6.9Z"/></symbol><symbol id="troop-arc" viewBox="0 0 16 16"><path d="M4.5 1.5c6.5 2 6.5 11 0 13M4.5 1.5v13M1.5 8h12M10.5 5l3 3-3 3"/></symbol><symbol id="hero-widget-mark" viewBox="0 0 16 16"><path d="M8 1.5 14 8 8 14.5 2 8Z M8 5.5 10.5 8 8 10.5 5.5 8Z"/></symbol></svg>
     <fieldset class="hero-filters" disabled data-target="hero-directory.filters">
       <legend data-i18n="directory.filters">Find your hero</legend>
@@ -12,14 +12,6 @@
       </div>
     </fieldset>
     <div class="directory-results"><output class="hero-count" aria-live="polite" data-target="hero-directory.count">{{ site.data.heroes.heroes.size }}</output><button type="button" class="directory-reset" data-action="hero-directory.reset" data-i18n="directory.reset">Reset filters</button></div>
-    {% unless include.bag == "off" %}
-    <div class="hero-bag" data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed">
-      <p class="hero-bag-title" data-i18n="directory.bag">Your bag</p>
-      {% assign bag_ids = 'mythic-hero-shard,epic-hero-shard,rare-hero-shard' | split: ',' %}{% for bag_id in bag_ids %}{% assign item = site.data.event_rules.items | where: 'id', bag_id | first %}
-      <label><span data-i18n="{{ item.key }}">{{ item.label | escape }}</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder=" " data-tally="blank" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize"></label>{% endfor %}
-      <p class="hero-bag-caption"><details class="shared-by" id="hero-bag-shared"><summary aria-label="Event Cycle" data-i18n-key="ev.switch.cycle" data-i18n-attr="aria-label"><i data-page="kvksg"></i></summary><span class="motif-names" data-i18n="ev.switch.cycle">Event Cycle</span></details> <output data-target="ledger-form.save" role="status"></output></p>
-    </div>
-    {% endunless %}
     <p class="directory-empty" hidden data-target="hero-directory.empty" data-i18n="directory.empty">No heroes match these filters.</p>
     <div class="hero-roster">
     {% for generation in generations %}

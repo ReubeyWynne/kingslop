@@ -212,6 +212,11 @@ The system's "buttons" are **margin prompts, not button chrome** — controls re
 - **Every calculator has one:** the rail lists the page's own sections and always ends How it works · Sources & confidence.
 - **Language menu:** void-2 surface, `1px` ink-muted border, `3px` radius, `0 10px 28px` float shadow; hover/selected = amber.
 
+### Calculator frame
+- **Calculator first:** every calculator opens with the planner frame Hero gear set: the title and lede, the guest row, then yours beside the answer (`.sheet-workspace`), which become two tabs on a phone. Heroes, Masters and Pets use it for their KvK points, with a chip for each hero, master or pet you own; their directories follow below in the frame they had.
+- **Two heading sizes, by role:** the display heading for whole page sections (Browse heroes, How it works, Sources), and the small `1.3rem` heading for a planner's halves, with `.sheet-subhead` under it. No third size.
+- **The answer is short:** a total, what is still unknown, the event table and the per-item table, ending in the checked line. Explanations sit in How it works.
+
 ### Icons
 - **Two sizes:** `--icon-tile` (40px) for an item in a strip, bill or bag, and `--icon-inline` (24px) inside a line of text. No other icon size, and no smaller tile on a phone; hide the caption instead.
 

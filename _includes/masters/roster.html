@@ -1,13 +1,5 @@
-{% comment %} The master roster with each master's "Your master" form. Shared by the Masters page and the Town Centre; expects a master-directory module around it. bag="off" leaves out the emblem and manuscript bag. Paths are relative to a page one folder deep. {% endcomment %}
+{% comment %} The master roster with each master's "Your master" form. Shared by the Masters page and the Town Centre; expects a master-directory module around it. Paths are relative to a page one folder deep. {% endcomment %}
 {% assign masters = site.data.masters.masters %}{% assign days = masters | map: 'unlockDay' | uniq %}
-    {% unless include.bag == "off" %}
-    <div class="master-bag" data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed">
-      <p class="master-bag-title" data-i18n="masters.bag">Your bag</p>
-      <label><img src="../img/masters/emblem-general.webp" width="32" height="32" alt="" loading="lazy"><span data-i18n="masters.generalEmblem">General Master Emblems</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.general-master-emblem" data-action="ledger-form.set ledger-form.normalize"></label>
-      <label><img src="../img/items/masters-manuscript.webp" width="32" height="32" alt="" loading="lazy"><span data-i18n="ks.available.item.masters-manuscript">Master's Manuscript</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.masters-manuscript" data-action="ledger-form.set ledger-form.normalize"></label>
-      <p class="master-bag-caption"><output data-target="ledger-form.save" role="status"></output></p>
-    </div>
-    {% endunless %}
     <p class="master-count"><output aria-live="polite" dir="auto" data-target="master-directory.count">{{ masters.size }} masters</output></p>
     <div class="master-roster">
     {% for day in days %}{% assign wave = masters | where: 'unlockDay', day %}

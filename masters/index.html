@@ -3,41 +3,50 @@ layout: page
 self: masters
 ---
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
+  <a href="#planner" data-i18n="planner.masters">Your masters</a>
   <a href="#roster" data-i18n="masters.browse">Browse masters</a>
-  <a href="#kvk-points" data-i18n="masterPoints.nav">KvK points</a>
   <a href="#where" data-i18n="masters.where">Where they matter</a>
   <a href="#how" data-i18n="notes.how">How it works</a>
   <a href="#sources" data-i18n="directory.sources">Sources &amp; confidence</a>
 </nav>
-<main>
-  <section class="section hero" id="top">
+<main class="sheet-page sheet-roster">
+  <section class="section hero sheet-hero" id="top">
     <h1 data-i18n="masters.title">Masters</h1>
     <p class="lede" data-i18n="masters.intro">Eight masters, each with an affinity ladder, a talent and four skills. Record yours to see what comes next and what your emblems and manuscripts can score.</p>
     {% include ascii/motif.html kind="tome" %}
   </section>
-  {% include page-sheet.html part="bar" class="sheet-dialog" title="sheet.masters.confirmTitle" title_en="Save these masters as yours?" body="sheet.masters.confirmBody" body_en="It replaces the masters in your save. An emblem or manuscript count this sheet has not counted keeps your number." confirm="sheet.masters.confirm" confirm_en="replace my masters" %}
+  <section class="section sheet-console" id="planner" data-module="planner page-sheet" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label">
+    {% include page-sheet.html part="notice" %}
+    {% include planner.html part="views" mine="planner.masters" mine_en="Your masters" %}
+    <div class="sheet-workspace">
+      <div class="sheet-side" data-half="mine" id="your-masters">
+        <h2 data-i18n="planner.masters">Your masters</h2>
+        {% include planner.html part="shelf" kind="masters" fill="#roster" empty="planner.mastersEmpty" empty_en="Record your masters ↓" %}
+        {% include masters/bag.html %}
+      </div>
+      <div class="sheet-answer master-points" data-half="answer" id="kvk-points" data-module="master-points" aria-labelledby="kvk-points-title">
+        <h2 data-i18n="gov.theAnswer">The answer</h2>
+        <h3 class="sheet-subhead" id="kvk-points-title" data-i18n="planner.kvk">KvK points</h3>
+        {% include empty-state.html needs="masters" key="empty.masters" text="Add your masters to see your KvK points." fill="#roster" %}
+        <p class="hero-points-total"><output data-target="master-points.total">—</output></p>
+        <p class="note" data-target="master-points.coverage" aria-live="polite"></p>
+        <div data-target="master-points.events"></div>
+        <div class="hero-points-scroll" data-target="master-points.table" hidden><table class="hero-points-table">
+          <thead><tr><th scope="col" data-i18n="masterPoints.col.master">master</th><th scope="col" data-i18n="spend.col.points">KvK prep points</th><th scope="col" data-i18n="masterPoints.col.emblems">emblems used</th><th scope="col" data-i18n="masterPoints.col.manuscripts">manuscripts used</th></tr></thead>
+          <tbody data-target="master-points.rows"></tbody>
+        </table></div>
+        <p class="note" data-target="master-points.empty" hidden></p>
+        <p class="note" data-target="master-points.left"></p>
+        <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
+        {% include page-notes.html part="pointer" checked="2026-10-17" %}
+      </div>
+    </div>
+    {% include page-sheet.html part="confirm" class="sheet-dialog" title="sheet.masters.confirmTitle" title_en="Save these masters as yours?" body="sheet.masters.confirmBody" body_en="It replaces the masters in your save. An emblem or manuscript count this sheet has not counted keeps your number." confirm="sheet.masters.confirm" confirm_en="replace my masters" %}
+  </section>
   <section class="section" id="roster" data-module="master-directory">
     <h2 data-i18n="masters.browse">Browse masters</h2>
     <p class="note" data-i18n="masters.howNote">Masters join the Master Academy in four waves, from server day 113. Affinity comes from Journey and gifts; every ten levels a new class costs that master's emblems and raises the talent. Skills unlock with affinity and are learned with Master's Manuscripts.</p>
     {% include masters/roster.html %}
-  </section>
-  <section class="section master-points" id="kvk-points" data-module="master-points" aria-labelledby="kvk-points-title">
-    <h2 id="kvk-points-title" data-i18n="masterPoints.title">KvK points from your masters</h2>
-    {% include empty-state.html needs="masters" key="empty.masters" text="Add your masters to see your KvK points." fill="../town-centre/#town-masters" %}
-    <p data-i18n="masterPoints.intro">An emblem or manuscript only scores when it is spent. This counts what your masters can actually take: the next class for each master whose affinity bar is full, paid with its own emblems first and then general ones, and whole skill levels, cheapest first, once each level's requirement is met.</p>
-    <p class="hero-points-total"><output data-target="master-points.total">—</output></p>
-    <p class="note" data-target="master-points.coverage" aria-live="polite"></p>
-    <div data-target="master-points.events"></div>
-    <div class="hero-points-scroll" data-target="master-points.table" hidden><table class="hero-points-table">
-      <thead><tr><th scope="col" data-i18n="masterPoints.col.master">master</th><th scope="col" data-i18n="spend.col.points">KvK prep points</th><th scope="col" data-i18n="masterPoints.col.emblems">emblems used</th><th scope="col" data-i18n="masterPoints.col.manuscripts">manuscripts used</th></tr></thead>
-      <tbody data-target="master-points.rows"></tbody>
-    </table></div>
-    <p class="note" data-target="master-points.empty" hidden></p>
-    <p class="note" data-target="master-points.left"></p>
-    <p class="note" data-i18n="masterPoints.research">Special Research is not counted yet. It takes emblems from affinity 100, but the two sources disagree on its cost per research (25,000 or 14,000 emblems a master), so emblems kept for it are left out until one is confirmed in game.</p>
-    <p class="note" data-i18n="spend.rates">Each kind counts on the KvK prep day that pays most for it.</p>
-    <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
-    {% include page-notes.html part="pointer" checked="2026-10-17" %}
   </section>
   <section class="section" id="where">
     <h2 data-i18n="masters.where">Where they matter</h2>
@@ -50,7 +59,8 @@ self: masters
     </ul>
     <p class="note" data-i18n="masters.whereNote">Effects are each skill at its top level.</p>
   </section>
-  {% include page-notes.html part="how" %}
+  {% capture points_extra %}<p data-i18n="masterPoints.intro">An emblem or manuscript only scores when it is spent. This counts what your masters can actually take: the next class for each master whose affinity bar is full, paid with its own emblems first and then general ones, and whole skill levels, cheapest first, once each level's requirement is met.</p><p data-i18n="masterPoints.research">Special Research is not counted yet. It takes emblems from affinity 100, but the two sources disagree on its cost per research (25,000 or 14,000 emblems a master), so emblems kept for it are left out until one is confirmed in game.</p><p data-i18n="spend.rates">Each kind counts on the KvK prep day that pays most for it.</p>{% endcapture %}
+  {% include page-notes.html part="how" points_extra=points_extra %}
   {% capture extra %}<span id="master-sources"></span>{% endcapture %}
   {% include page-notes.html part="sources" sources=site.data.masters.sources checked="2026-10-17" note="masters.sourceNote" note_en="Affinity ladders, talents and skills were compared row by row between two community databases on 17 October 2026. They agree exactly for the six masters both list. Aena and Isnor are on Kingshot Optimizer only." art="masters.artNote" art_en="Portraits, emblems and skill icons are Kingshot game art, published by Century Games." extra=extra %}
 </main>

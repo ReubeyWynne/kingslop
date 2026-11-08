@@ -3,18 +3,41 @@ layout: page
 self: pets
 ---
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
+  <a href="#planner" data-i18n="planner.pets">Your pets</a>
   <a href="#cage" data-i18n="pets.cage">The Beast Cage</a>
-  <a href="#advances" data-i18n="pets.advancesNav">Advances</a>
   <a href="#how" data-i18n="notes.how">How it works</a>
   <a href="#sources" data-i18n="directory.sources">Sources &amp; confidence</a>
 </nav>
-<main>
-  <section class="section hero" id="top">
+<main class="sheet-page sheet-roster">
+  <section class="section hero sheet-hero" id="top">
     <h1 data-i18n="pets.title">Pets</h1>
     <p class="lede" data-i18n="pets.intro">Fourteen pets, one skill each. Tame yours to plan its Advances.</p>
     {% include ascii/motif.html kind="pet" %}
   </section>
-  {% include page-sheet.html part="bar" class="sheet-dialog" title="sheet.pets.confirmTitle" title_en="Save these pets as yours?" body="sheet.pets.confirmBody" body_en="It replaces the pets in your save." confirm="sheet.pets.confirm" confirm_en="replace my pets" %}
+  <section class="section sheet-console" id="planner" data-module="planner page-sheet" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label">
+    {% include page-sheet.html part="notice" %}
+    {% include planner.html part="views" mine="planner.pets" mine_en="Your pets" %}
+    <div class="sheet-workspace">
+      <div class="sheet-side" data-half="mine" id="your-pets">
+        <h2 data-i18n="planner.pets">Your pets</h2>
+        {% include planner.html part="shelf" kind="pets" fill="#cage" empty="planner.petsEmpty" empty_en="Tame your pets ↓" %}
+      </div>
+      <div class="sheet-answer" data-half="answer" id="advances" data-module="pet-advances" aria-labelledby="advances-title">
+        <h2 data-i18n="gov.theAnswer">The answer</h2>
+        <h3 class="sheet-subhead" id="advances-title" data-i18n="pets.advancesTitle">Advances and KvK points</h3>
+        {% include empty-state.html needs="pets" key="empty.pets" text="Tame your pets to plan their Advances." import=true fill="#cage" %}
+        <p class="hero-points-total"><output data-target="pet-advances.total">—</output></p>
+        <ul class="unknowns" data-target="pet-advances.coverage" aria-live="polite"></ul>
+        <div data-target="pet-advances.events"></div>
+        <div class="hero-points-scroll" data-target="pet-advances.table" hidden><table class="hero-points-table">
+          <thead><tr><th scope="col" data-i18n="pets.col.pet">pet</th><th scope="col" data-i18n="pets.col.next">next Advance</th><th scope="col" data-i18n="spend.col.points">KvK prep points</th><th scope="col" data-i18n="pets.col.left">Advances left</th></tr></thead>
+          <tbody data-target="pet-advances.rows"></tbody>
+        </table></div>
+        {% include page-notes.html part="pointer" checked="2026-10-17" %}
+      </div>
+    </div>
+    {% include page-sheet.html part="confirm" class="sheet-dialog" title="sheet.pets.confirmTitle" title_en="Save these pets as yours?" body="sheet.pets.confirmBody" body_en="It replaces the pets in your save." confirm="sheet.pets.confirm" confirm_en="replace my pets" %}
+  </section>
   {% comment %}Pets drawn from a model: one span per ink of .dsh/pet-portraits/<id>.json.{% endcomment %}{% assign portraits = 'alpha-black-panther,bison,cheetah,giant-rhino,gray-wolf,great-moose,grizzly-bear,ironclad-war-bear,ironclad-war-elephant,lion,lynx,mighty-bison,moose,regal-white-lion' | split: ',' %}
   {% assign pets = site.data.pets.pets %}{% assign generations = pets | map: 'generation' | uniq %}
   <section class="section" id="cage" data-module="pet-den">
@@ -68,25 +91,12 @@ self: pets
     </div>
     <noscript><p data-i18n="pets.noJS">Enable JavaScript to tame your pets.</p></noscript>
   </section>
-  <section class="section" id="advances" data-module="pet-advances" aria-labelledby="advances-title">
-    <h2 id="advances-title" data-i18n="pets.advancesTitle">Advances and KvK points</h2>
-    {% include empty-state.html needs="pets" key="empty.pets" text="Tame your pets to plan their Advances." import=true fill="#cage" %}
-    <p data-i18n="pets.advancesIntro">Each Advance scores Pet Advancement points: 50 KvK prep or Strongest Governor points per score, 30 in Brawl.</p>
-    <p class="hero-points-total"><output data-target="pet-advances.total">—</output></p>
-    <ul class="unknowns" data-target="pet-advances.coverage" aria-live="polite"></ul>
-    <div data-target="pet-advances.events"></div>
-    <div class="hero-points-scroll" data-target="pet-advances.table" hidden><table class="hero-points-table">
-      <thead><tr><th scope="col" data-i18n="pets.col.pet">pet</th><th scope="col" data-i18n="pets.col.next">next Advance</th><th scope="col" data-i18n="spend.col.points">KvK prep points</th><th scope="col" data-i18n="pets.col.left">Advances left</th></tr></thead>
-      <tbody data-target="pet-advances.rows"></tbody>
-    </table></div>
-    <div class="hero-points-scroll"><table class="hero-points-table pet-score-table">
+  {% capture points_extra %}<p data-i18n="pets.advancesIntro">Each Advance scores Pet Advancement points: 50 KvK prep or Strongest Governor points per score, 30 in Brawl.</p><div class="hero-points-scroll"><table class="hero-points-table pet-score-table">
       <thead><tr><th scope="col" data-i18n="pets.col.at">Advance at level</th>{% for row in site.data.pets.points %}<th scope="col">{{ row[0] }}</th>{% endfor %}</tr></thead>
       <tbody><tr><th scope="row" data-i18n="pets.col.kvk">KvK prep · SG</th>{% for row in site.data.pets.points %}<td data-number="{{ row[1].kvk }}">{{ row[1].kvk }}</td>{% endfor %}</tr>
       <tr><th scope="row" data-i18n="pets.col.brawl">Brawl</th>{% for row in site.data.pets.points %}<td data-number="{{ row[1].brawl }}">{{ row[1].brawl }}</td>{% endfor %}</tr></tbody>
-    </table></div>
-    {% include page-notes.html part="pointer" checked="2026-10-17" %}
-  </section>
-  {% include page-notes.html part="how" %}
+    </table></div>{% endcapture %}
+  {% include page-notes.html part="how" points_extra=points_extra %}
   {% capture extra %}<span id="pet-sources"></span>
     {% comment %}Models the pens draw from that ask for credit (pets/models; sources in the project files).{% endcomment %}
     <ul class="pet-credits" lang="en">
