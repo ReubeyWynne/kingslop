@@ -3,6 +3,12 @@ layout: page
 self: buildings
 ---
 {% assign data = site.data.building_paths %}{% assign tc = data.buildings | first %}
+<nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
+  <a href="#goal" data-i18n="reqs.goal">Your goal</a>
+  <a href="#your-levels" data-i18n="reqs.path">What it takes</a>
+  <a href="#how" data-i18n="notes.how">How it works</a>
+  <a href="#sources" data-i18n="directory.sources">Sources &amp; confidence</a>
+</nav>
 <main data-module="building-paths page-sheet">
   <section class="section hero" id="top">
     <h1 data-i18n="reqs.title">Building requirements</h1>
@@ -43,7 +49,7 @@ self: buildings
       <button type="button" data-target="building-paths.addGoal" data-action="building-paths.addGoal" data-i18n="reqs.addGoal" hidden>Add to my goals</button>
       <output role="status" data-target="building-paths.copied"></output>
     </div>
-    <details class="reqs-more reqs-speed" id="reqs-speed">
+    <details class="fold reqs-more reqs-speed" id="reqs-speed">
       <summary><span data-i18n="reqs.speedTitle">Construction speed</span> <span class="reqs-speed-sum" data-target="building-paths.speedSum"></span></summary>
       <div class="reqs-chips reqs-mode" role="group" data-target="building-paths.speedMode"></div>
       <div class="reqs-boost" data-target="building-paths.overview">
@@ -62,7 +68,7 @@ self: buildings
       <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.pan">Pan's Master Architect: hours off every upgrade</span><div class="reqs-chips" role="group" data-boost="pan"></div></div>
       <p class="note" data-i18n="reqs.speedHow">Speed bonuses add up and divide each upgrade's base time. Double Time then takes 20% off, and Pan's hours come off last, from every upgrade. ◇ The High King's construction value comes from one alliance's report.</p>
     </details>
-    <details class="reqs-more" id="reqs-order">
+    <details class="fold reqs-more" id="reqs-order">
       <summary data-i18n="reqs.inOrder">Every step, in order</summary>
       <ol class="reqs-steps" data-target="building-paths.steps"></ol>
     </details>

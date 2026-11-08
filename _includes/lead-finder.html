@@ -25,7 +25,7 @@
       <button type="button" class="explainer-close" popovertarget="bonus-shots" popovertargetaction="hide" data-i18n-key="leads.shots.close" data-i18n-attr="aria-label" aria-label="Close">×</button>
     </div>
     {% if include.bear %}<div class="lead-overview lead-flat" id="bonus-overview">
-      <h3 data-i18n="leads.overview">Your Bonus Overview</h3>{% else %}<details class="lead-overview" id="bonus-overview">
+      <h3 data-i18n="leads.overview">Your Bonus Overview</h3>{% else %}<details class="fold lead-overview" id="bonus-overview">
       <summary data-i18n="leads.overview">Your Bonus Overview</summary>{% endif %}
       <fieldset class="lead-stats" disabled data-target="lead-finder.controls">
         <table class="lead-stats-table">
@@ -40,7 +40,7 @@
         <p class="hero-mine-note"><output class="seal" data-target="lead-finder.saved" role="status"></output></p>
       </fieldset>
     {% if include.bear %}</div>{% else %}</details>{% endif %}
-    <details class="lead-extras" id="lead-extras">
+    <details class="fold lead-extras" id="lead-extras">
       <summary data-i18n="leads.extras">Joiners, pets and city buffs</summary>
       <fieldset class="lead-joiners" disabled data-target="lead-finder.controls">
         <legend data-target="lead-finder.joinersTitle">Joiners</legend>
@@ -82,7 +82,7 @@
         <li data-foe="{{ foe.id }}"><b data-i18n="leads.foe.{{ foe.id }}">{{ foe.name | escape }}</b> <span data-i18n="leads.foe.{{ foe.id }}.note">{{ foe.summary | escape }}</span> <small class="lead-foe-kit" data-foe-kit="{{ foe.id }}"></small></li>{% endfor %}
       </ul>
     </div>
-    <details class="lead-method" id="lead-method">
+    <details class="fold lead-method" id="lead-method">
       <summary data-i18n="leads.method">How the ranking works</summary>
       <p data-i18n="leads.method.stats">Your Bonus Overview is your account before any hero is seated, which is why a battle report won’t do. Each hero then adds its stars, widget, gear and Expedition skills, and your Truegold adds to every march. A widget skill only counts in its own job.</p>
       <p data-i18n="leads.method.bear">For the Bear, a lineup scores its expected damage at its best troop mix, with chance skills at their average.</p>

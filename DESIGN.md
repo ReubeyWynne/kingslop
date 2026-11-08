@@ -191,6 +191,7 @@ The system's "buttons" are **margin prompts, not button chrome** — controls re
 - **Style:** no button box. A disclosure is an uppercase letter-spaced prompt in amber, opened by a ❧ fleuron, with a hairline underline that appears on hover (`details summary`).
 - **Shape:** radius 0; underline-only, no fill, no border box.
 - **Hover / Focus:** color shifts amber → ink; the ❧ prompt is the affordance.
+- **One fold inside a calculator:** a disclosure that holds settings or method takes `details.fold`: the same prompt over a 1px signal hairline, at `.95rem`, the size of the How it works folds. A page class may place a fold (spacing, width of its contents) but never restyle its summary.
 - **Addressable:** every disclosure has a URL. Opening one puts its `#id` in the address bar and a link to it opens it (see "Deep links" in INTERACTIONS.md). The web already has the state model; use it rather than inventing one.
 
 ### Cards / Containers
@@ -208,7 +209,11 @@ The system's "buttons" are **margin prompts, not button chrome** — controls re
 ### Navigation
 - **Topbar:** Cinzel Decorative brand + event switcher (body serif, uppercase) + language picker; amber active + progress fill.
 - **TOC rail:** scrollspy links, uppercase `--step--1`; active = amber + "❧ " prefix.
+- **Every calculator has one:** the rail lists the page's own sections and always ends How it works · Sources & confidence.
 - **Language menu:** void-2 surface, `1px` ink-muted border, `3px` radius, `0 10px 28px` float shadow; hover/selected = amber.
+
+### Icons
+- **Two sizes:** `--icon-tile` (40px) for an item in a strip, bill or bag, and `--icon-inline` (24px) inside a line of text. No other icon size, and no smaller tile on a phone; hide the caption instead.
 
 ### Signature Components
 - **Rule cells** — square amber numerals (`3.8rem`) stamping each of the "four rules"; a reversed oxblood cell (`.rev`) marks the failure/rubrication case.
