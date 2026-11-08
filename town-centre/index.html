@@ -157,7 +157,7 @@ self: town
       <div class="town-heading"><p class="town-gloss" data-i18n="town.heroesNote">Select a hero to record levels, stars, shards and widgets.</p><a href="../heroes/" data-i18n="town.planHeroes">compare heroes →</a></div>
       <div data-module="hero-directory">
       {% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}
-      {% include heroes/roster.html bag="off" %}
+      {% include heroes/roster.html %}
       </div>
     </div>
 
@@ -178,7 +178,7 @@ self: town
         </button>
       </div>
       <div class="town-heroes" data-module="master-directory">
-      {% include masters/roster.html bag="off" %}
+      {% include masters/roster.html %}
       </div>
     </div>
 

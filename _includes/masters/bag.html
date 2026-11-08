@@ -1,0 +1,7 @@
+{% comment %} The emblem and manuscript bag, kept in the shared save. The Masters page shows it in its planner, beside the masters you own. {% endcomment %}
+<div class="master-bag" data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed">
+  <p class="master-bag-title" data-i18n="masters.bag">Your bag</p>
+  <label><img src="../img/masters/emblem-general.webp" width="32" height="32" alt="" loading="lazy"><span data-i18n="masters.generalEmblem">General Master Emblems</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.general-master-emblem" data-action="ledger-form.set ledger-form.normalize"></label>
+  <label><img src="../img/items/masters-manuscript.webp" width="32" height="32" alt="" loading="lazy"><span data-i18n="ks.available.item.masters-manuscript">Master's Manuscript</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.masters-manuscript" data-action="ledger-form.set ledger-form.normalize"></label>
+  <p class="master-bag-caption"><output data-target="ledger-form.save" role="status"></output></p>
+</div>

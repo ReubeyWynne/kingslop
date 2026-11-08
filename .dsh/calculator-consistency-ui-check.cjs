@@ -22,6 +22,40 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
     assert.equal(foldSizes.size, 1, 'one fold style at ' + width + ': ' + [...foldSizes].join(' | '));
     await context.close();
   }
+  // Heroes, Masters and Pets open on the planner frame: yours beside the answer, two tabs on a phone.
+  const rosters = { heroes: ['#kvk-points', () => PlayerLedger.shared().setHero('jabel', { level: 60 })], masters: ['#kvk-points', () => PlayerLedger.shared().setMaster('valora', { affinity: 29 })], pets: ['#advances', () => PlayerLedger.shared().setPet('lion', { level: 20 })] };
+  for (const [self, [answer, record]] of Object.entries(rosters)) {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' }), page = await context.newPage();
+    page.on('pageerror', e => errors.push(e.message));
+    await page.goto(origin + '/' + self + '/?lang=en');
+    await page.waitForFunction(() => document.getElementById('planner').dataset.view);
+    assert.equal(await page.locator('#planner').getAttribute('data-view'), 'mine', self + ': an empty save opens on its own half');
+    assert.equal(await page.locator('.sheet-shelf-empty').isVisible(), true, self + ': the empty shelf says where to start');
+    assert.equal(await page.locator(answer).isVisible(), false, self + ': the answer waits behind its tab');
+    await page.evaluate(record);
+    await page.waitForFunction(() => document.querySelector('.sheet-chip:not([hidden])'));
+    assert.equal(await page.locator('#planner').getAttribute('data-view'), 'mine', self + ': an edit never moves the reader');
+    await page.reload(); await page.waitForFunction(() => document.getElementById('planner').dataset.view);
+    assert.equal(await page.locator('#planner').getAttribute('data-view'), 'answer', self + ': a save with something in it opens on the answer');
+    await page.locator('.sheet-views [data-value="mine"]').click();
+    assert.equal(await page.locator('.sheet-chip:not([hidden])').count(), 1, self + ': one chip for one owned');
+    await page.goto(origin + '/' + self + '/?lang=en' + answer); await page.waitForFunction(() => document.getElementById('planner').dataset.view);
+    assert.equal(await page.locator('#planner').getAttribute('data-view'), 'answer', self + ': a link into the answer opens it');
+    await page.setViewportSize({ width: 1280, height: 900 });
+    const [mine, ans] = await page.locator('[data-half]').evaluateAll(n => n.map(x => x.getBoundingClientRect()));
+    assert(mine.width > 300 && ans.width > 300 && Math.abs(mine.top - ans.top) < 2 && ans.left > mine.right, self + ': the halves sit side by side on a wide screen');
+    await context.close();
+  }
+  // Two heading sizes: the planner's halves share one, and page sections share the other.
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 } }), page = await context.newPage(), half = new Set(), section = new Set();
+  for (const self of ['hero-gear', 'governor-gear', 'heroes', 'masters', 'pets']) {
+    await page.goto(origin + '/' + self + '/?lang=en');
+    (await page.locator('.sheet-side > h2, .sheet-answer > h2').evaluateAll(h => h.map(x => getComputedStyle(x).fontSize))).forEach(v => half.add(v));
+    (await page.locator('main > .section:not(.sheet-console):not(.hero) > h2').evaluateAll(h => h.map(x => getComputedStyle(x).fontSize))).forEach(v => section.add(v));
+  }
+  assert.equal(half.size, 1, 'one heading size inside planners: ' + [...half]);
+  assert.equal(section.size, 1, 'one heading size for page sections: ' + [...section]);
+  await context.close();
   assert.deepEqual(errors, []);
-  console.log('Calculator consistency: one fold style, 40px tile icons and a rail ending in How it works · Sources on ' + pages.length + ' pages at 2 widths pass.');
+  console.log('Calculator consistency: one fold style, 40px tile icons, two heading sizes, a rail ending in How it works · Sources on ' + pages.length + ' pages at 2 widths, and the planner frame on Heroes, Masters and Pets pass.');
 }).catch(e => { console.error(e); process.exitCode = 1; });

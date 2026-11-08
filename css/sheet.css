@@ -40,6 +40,33 @@
 .sheet-page .sheet-notes summary { font-size: .85rem; padding: .25rem 0; cursor: pointer; }
 .sheet-notes details > :not(summary) { max-width: 46rem; }
 
+/* A small heading inside a half: one size below the half's own heading. */
+.sheet-page .sheet-subhead { font: 700 .95rem var(--display-2); letter-spacing: .06em; text-transform: uppercase; color: var(--ink); margin: .75rem 0 .25rem; }
+.sheet-page .sheet-subhead::before { display: none; }
+.sheet-page .sheet-answer > h2 + .sheet-subhead { margin-top: .25rem; }
+
+/* A roster page's frame (_includes/planner.html): the title and the frame are as wide as the gear
+   pages' planner, wider than the directory below them. */
+.sheet-roster > .sheet-hero, .sheet-roster > .sheet-console { --frame: min(74rem, calc(100vw - 2 * var(--space-s))); width: var(--frame); margin-inline: calc((100% - var(--frame)) / 2); }
+.sheet-roster > .sheet-console { padding: .75rem 0 var(--space-l); }
+
+/* The things you own, one chip each, linking to its card below. */
+.sheet-shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(4.4rem, 1fr)); gap: .7rem .5rem; margin: .4rem 0 .8rem; }
+.sheet-chip { display: grid; justify-items: center; align-content: start; gap: .15rem; min-width: 0; text-align: center; text-decoration: none; color: var(--ink); }
+.sheet-chip img, .sheet-chip-initial { width: 3.5rem; height: 3.5rem; object-fit: cover; border: 1px solid var(--signal-line); border-radius: 2px; }
+.sheet-chip-initial { display: grid; place-items: center; font: 1.4rem var(--display-2); color: var(--ink-dim); }
+.sheet-chip-name { max-width: 100%; font: 600 .72rem/1.15 var(--display-2); letter-spacing: .04em; text-transform: uppercase; overflow-wrap: anywhere; }
+.sheet-chip small { font-size: .72rem; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.sheet-chip-word { justify-items: start; text-align: start; padding: .35rem 0; border-bottom: 1px solid var(--signal-line); }
+.sheet-shelf:has(.sheet-chip-word) { grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr)); }
+@media (hover: hover) { .sheet-chip:hover .sheet-chip-name { color: var(--amber); } }
+.sheet-chip[hidden] { display: none; }
+.sheet-chip:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+.sheet-shelf-empty { grid-column: 1 / -1; margin: 0; }
+
+/* Two tabs on a phone, yours and the answer; on wider screens both halves show. */
+.sheet-views { display: none; }
+
 @media (max-width: 780px) {
   .sheet-page .sheet-hero { padding-top: var(--space-m); }
   .sheet-page .sheet-hero h1 { font-size: 2.25rem; }
@@ -50,4 +77,14 @@
   .sheet-answer { border-inline-start: 0; padding-inline-start: 0; margin-top: 1.5rem; padding-top: .75rem; border-top: 1px solid var(--signal-line); }
   .sheet-page .sheet-modes button { font-size: .85rem; }
   .sheet-strip strong { font-size: .95rem; }
+  .sheet-roster > .sheet-console { padding-top: .25rem; }
+  .sheet-views { display: grid; grid-template-columns: 1fr 1fr; margin: .4rem 0 .6rem; border: 1px solid var(--signal-line); background: var(--void); }
+  .sheet-page .sheet-views button { min-height: 2.75rem; color: var(--ink-muted); font: 700 1rem var(--body); background: transparent; border: 0; border-bottom: 2px solid transparent; cursor: pointer; }
+  .sheet-page .sheet-views button + button { border-inline-start: 1px solid var(--signal-line); }
+  .sheet-page .sheet-views [aria-selected="true"] { color: var(--amber); background: var(--signal-tint); border-bottom-color: var(--amber); }
+  [data-module~="planner"][data-view="mine"] [data-half="answer"], [data-module~="planner"][data-view="answer"] [data-half="mine"] { display: none; }
+  [data-module~="planner"] .sheet-answer { margin-top: 0; padding-top: 0; border-top: 0; }
+  [data-module~="planner"] .sheet-side > h2, [data-module~="planner"] .sheet-answer > h2 { display: none; }
+  .sheet-shelf { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .5rem .3rem; }
+  .sheet-chip img, .sheet-chip-initial { width: 100%; height: auto; aspect-ratio: 1; }
 }

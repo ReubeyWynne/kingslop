@@ -11,8 +11,8 @@ const EmptyState = require('../js/empty-state.js');
 // and how a player records that part.
 const TOOLS = {
   'town-centre': { needs: 'inventory', key: 'empty.town', line: "Count what's in your bag to see the event points it can score.", import: true, fill: '#town-bag', section: '#town-points' },
-  heroes: { needs: 'heroes', key: 'empty.heroes', line: 'Add your heroes to see your KvK points.', import: false, fill: '../town-centre/#town-heroes', section: '#kvk-points' },
-  masters: { needs: 'masters', key: 'empty.masters', line: 'Add your masters to see your KvK points.', import: false, fill: '../town-centre/#town-masters', section: '#kvk-points' },
+  heroes: { needs: 'heroes', key: 'empty.heroes', line: 'Add your heroes to see your KvK points.', import: false, fill: '#directory', section: '#kvk-points' },
+  masters: { needs: 'masters', key: 'empty.masters', line: 'Add your masters to see your KvK points.', import: false, fill: '#roster', section: '#kvk-points' },
   pets: { needs: 'pets', key: 'empty.pets', line: 'Tame your pets to plan their Advances.', import: true, fill: '#cage', section: '#advances' }
 };
 const PAGES = Object.keys(TOOLS), KEYS = ['empty.import', 'empty.fill'].concat(PAGES.map(dir => TOOLS[dir].key));
@@ -48,6 +48,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.goto(origin + '/' + dir + '/?lang=' + (lang || 'en'));
     await page.waitForFunction(l => window.EmptyState && document.documentElement.lang === l && window.__BH_I18N_DATA && window.__BH_I18N_DATA[l], lang || 'en');
     await page.waitForTimeout(150);
+    // On a phone a planner opens an empty save on its own half; the note waits in The answer.
+    const answer = page.locator('.sheet-views [data-value="answer"]');
+    if (await answer.isVisible()) await answer.click();
   }
 
   // An empty save: every tool says what it is missing, inside the section it would fill.
@@ -78,8 +81,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.waitForFunction(() => location.hash === '#town-bag' && !document.getElementById('town-bag').hidden);
   await open('heroes');
   await page.locator('.empty-state a').click();
-  await page.waitForURL(/\/town-centre\/#town-heroes$/);
-  await page.waitForFunction(() => !document.getElementById('town-heroes').hidden);
+  await page.waitForFunction(() => location.hash === '#directory');
   await open('pets');
   await page.locator('.empty-state a').click();
   await page.waitForFunction(() => location.hash === '#cage');
