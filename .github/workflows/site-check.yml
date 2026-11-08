@@ -586,6 +586,12 @@ jobs:
         with:
           name: site
           path: _site
+      # Some checks bundle an engine as a page runs it (.dsh/lib/classic-modules.cjs), which needs esbuild.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
       - id: browser-cache
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
