@@ -1,6 +1,7 @@
 {% comment %} The lead finder. The Heroes page shows all three jobs; include.bear shows the Bear
    job alone, for the Bear Hunt page, with its inputs laid out flat. {% endcomment %}{% assign stat_ids = 'attack,lethality,defense,health' | split: ',' %}
-  {% if include.bear %}<div class="lead-finder" id="lead" data-mode="lead" hidden data-module="lead-finder" data-screen-import-sheet="bonus-overview" data-self="bear-hunt" data-here="overview troops rally" aria-labelledby="mode-lead-name">
+  {% if include.bear %}<div class="lead-finder" id="lead" data-module="lead-finder" data-screen-import-sheet="bonus-overview" data-self="bear-hunt" data-here="overview troops rally" aria-labelledby="leads-title">
+    <h3 class="lead-title" id="leads-title" data-i18n="bh.lead.best">Your best Bear lead</h3>
     {% else %}<section class="section lead-finder" id="leads" data-module="lead-finder" data-screen-import-sheet="bonus-overview" aria-labelledby="leads-title">
     <h2 id="leads-title" data-i18n="leads.title">Your best leads</h2>
     <fieldset class="lead-jobs" disabled data-target="lead-finder.controls">
@@ -9,7 +10,7 @@
       <label><input type="radio" name="lead-job" value="rally" data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.rally">Rally lead</span></label>
       <label><input type="radio" name="lead-job" value="garrison" data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.garrison">Garrison lead</span></label>
     </fieldset>{% endif %}
-    <ul class="inputs lead-inputs" data-target="lead-finder.inputs" aria-labelledby="{% if include.bear %}mode-lead-name{% else %}leads-title{% endif %}"></ul>
+    <ul class="inputs lead-inputs" data-target="lead-finder.inputs" aria-labelledby="leads-title"></ul>
     <button type="button" class="lead-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="leads.drop.title">Fill these in from screenshots</strong></button>
     <button type="button" class="explain" popovertarget="bonus-shots" data-i18n="leads.shots.open">Which screenshots?</button>
     <div class="explainer" id="bonus-shots" popover>

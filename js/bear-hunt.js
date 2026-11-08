@@ -132,8 +132,7 @@
     var root = document.getElementById('march-builder');
     var button = document.getElementById('allocator-toggle');
     if (!root || !button || !window.BH_BEAR_ALLOCATOR) return null;
-    var modes = Array.prototype.slice.call(document.querySelectorAll('input[name="march-mode"]'));
-    var token = document.getElementById('own-token');
+    var rallies = Array.prototype.slice.call(root.querySelectorAll('input[name="own-rally"]'));
     var ownCap = document.getElementById('own-cap');
     var ratio = document.getElementById('own-ratio');
     var ratios = Array.prototype.slice.call(ratio.querySelectorAll('input'));
@@ -143,16 +142,17 @@
        so a reload or a later visit opens on your own marches. ?guest never writes. */
     var KEY = 'bh:bear-allocator:v1';
     var guest = /(?:^|[?&])guest(?:=|&|$)/.test(location.search);
-    var fields = Array.prototype.slice.call(root.querySelectorAll('input[id]'));
-    function leading() { return modes.some(function (input) { return input.checked && input.value === 'lead'; }); }
+    var fields = Array.prototype.slice.call(root.querySelectorAll('input[id]:not([type="radio"])'));
+    // Your own rally: one troop, the same as a join, or filled first at its own mix.
+    function ownRally() { return (rallies.filter(function (input) { return input.checked; })[0] || {}).value || 'even'; }
 
     function restore() {
       var saved = null;
       try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (ignored) { saved = null; }
       if (!saved || typeof saved !== 'object') return false;
-      // Saves from before the switch kept a "fill my own rally first" box.
-      var mode = saved.mode || (saved['own-priority'] ? 'lead' : 'join');
-      modes.forEach(function (input) { input.checked = input.value === mode; });
+      // Older saves kept two boxes, or a Joining/Leading switch.
+      var own = saved['own-rally'] || (saved['own-token'] === true ? 'token' : saved['own-priority'] === true || saved.mode === 'lead' ? 'first' : 'even');
+      rallies.forEach(function (input) { input.checked = input.value === own; });
       fields.forEach(function (field) {
         var value = saved[field.id];
         if (field.type === 'checkbox') { if (typeof value === 'boolean') field.checked = value; }
@@ -165,7 +165,7 @@
       if (guest) return;
       var out = {};
       fields.forEach(function (field) { out[field.id] = field.type === 'checkbox' ? field.checked : field.value; });
-      out.mode = leading() ? 'lead' : 'join';
+      out['own-rally'] = ownRally();
       try { localStorage.setItem(KEY, JSON.stringify(out)); } catch (ignored) { /* private mode, full storage */ }
     }
 
@@ -183,14 +183,12 @@
       if (show) document.getElementById('infantry-total').focus();
     }
 
-    // Joining: your rally can go with one troop. Leading: your rally fills first, at its own ratio,
-    // and the lead finder shows your best lead.
+    // A one-troop rally has no size to set; only a rally filled first has a mix of its own.
     function showRatio() {
-      var lead = leading();
-      Array.prototype.forEach.call(document.querySelectorAll('[data-mode]'), function (node) { node.hidden = node.getAttribute('data-mode') !== (lead ? 'lead' : 'join'); });
-      token.disabled = lead;
-      ownCap.disabled = token.checked && !lead;
-      ratios.forEach(function (input) { input.disabled = !lead; input.setCustomValidity(''); });
+      var own = ownRally();
+      ownCap.disabled = own === 'token';
+      ratio.hidden = own !== 'first';
+      ratios.forEach(function (input) { input.disabled = own !== 'first'; input.setCustomValidity(''); });
     }
 
     function read() {
@@ -200,8 +198,8 @@
         archers: numberValue('archer-total', 0),
         queues: numberValue('join-queues', 6),
         joinCap: numberValue('join-cap', 85000),
-        ownCap: token.checked && !leading() ? 1 : numberValue('own-cap', 130000),
-        priority: leading(),
+        ownCap: ownRally() === 'token' ? 1 : numberValue('own-cap', 130000),
+        priority: ownRally() === 'first',
         ratio: { infantry: numberValue('own-infantry', 5), cavalry: numberValue('own-cavalry', 15), archers: numberValue('own-archers', 80) }
       };
     }
@@ -261,15 +259,7 @@
 
     button.hidden = false;
     button.addEventListener('click', function () { open(root.hidden); });
-    // The switch redraws the marches straight away; a ratio that doesn't add up waits for the reader.
-    modes.forEach(function (input) {
-      input.addEventListener('change', function () {
-        showRatio();
-        save();
-        try { result = window.BH_BEAR_ALLOCATOR.allocate(read()); render(); } catch (ignored) { /* waits */ }
-      });
-    });
-    token.addEventListener('change', showRatio);
+    rallies.forEach(function (input) { input.addEventListener('change', showRatio); });
     ratios.forEach(function (input) { input.addEventListener('input', function () { ratios.forEach(function (field) { field.setCustomValidity(''); }); }); });
     root.addEventListener('input', save);
     root.addEventListener('change', save);
