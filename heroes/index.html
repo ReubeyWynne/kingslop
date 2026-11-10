@@ -3,7 +3,7 @@ layout: page
 self: heroes
 ---
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
-  <a href="#planner" data-i18n="planner.heroes">Your heroes</a>
+  <a href="#planner" data-i18n="directory.bag">Your bag</a>
   <a href="#directory" data-i18n="directory.browse">Browse heroes</a>
   <a href="#leads" data-i18n="leads.nav">Best leads</a>
   <a href="#breakpoint" data-i18n="bp.nav">Break points</a>
@@ -19,10 +19,10 @@ self: heroes
   </section>
   <section class="section sheet-console" id="planner" data-module="planner page-sheet" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label">
     {% include page-sheet.html part="notice" %}
-    {% include planner.html part="views" mine="planner.heroes" mine_en="Your heroes" %}
+    {% include planner.html part="views" mine="directory.bag" mine_en="Your bag" %}
     <div class="sheet-workspace">
-      <div class="sheet-side" data-half="mine" id="your-heroes">
-        <h2 data-i18n="planner.heroes">Your heroes</h2>
+      <div class="sheet-side" data-half="mine" id="your-bag">
+        <h2 data-i18n="directory.bag">Your bag</h2>
         {% include planner.html part="shelf" kind="heroes" fill="#directory" empty="planner.heroesEmpty" empty_en="Mark the heroes you have ↓" %}
         {% include heroes/bag.html %}
       </div>

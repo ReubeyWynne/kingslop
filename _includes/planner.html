@@ -4,6 +4,8 @@ the gear pages (css/sheet.css), and two tabs on a phone (js/planner.js). Wrap th
 a section with data-module="planner page-sheet" and class "section sheet-console":
   part="views"  the phone's two tabs. mine= / mine_en= the first tab's i18n key and English text.
   part="shelf"  the chips for what you own, linking to each card below. kind= heroes, masters or pets.
+                Heroes gets no chips: its Browse grid already marks what you own, so the shelf there is only the
+                empty prompt that points down to it.
 Each half is a div with data-half="mine" or data-half="answer".
 {%- endcomment -%}
 {%- if include.part == "views" -%}
@@ -13,16 +15,11 @@ Each half is a div with data-half="mine" or data-half="answer".
 </div>
 {%- elsif include.part == "shelf" -%}
 <div class="sheet-shelf" data-module="roster-shelf" data-shelf="{{ include.kind }}">
-  {%- if include.kind == "heroes" -%}
-  {%- assign shelf_heroes = site.data.heroes.heroes | sort: 'generation' -%}
-  {%- for hero in shelf_heroes %}{% assign meta = site.data.hero_roles.heroes[hero.key] %}
-  <a class="sheet-chip" href="#hero-{{ hero.key }}" data-key="{{ hero.key }}" hidden>{% if meta.portrait %}<img src="../img/heroes/{{ meta.portrait }}" width="56" height="56" alt="" loading="lazy" decoding="async">{% else %}<span class="sheet-chip-initial" aria-hidden="true">{{ hero.name | slice: 0 }}</span>{% endif %}<span class="sheet-chip-name" lang="en">{{ hero.name | escape }}</span><small data-line></small></a>
-  {%- endfor -%}
-  {%- elsif include.kind == "masters" -%}
+  {%- if include.kind == "masters" -%}
   {%- for master in site.data.masters.masters %}
   <a class="sheet-chip" href="#master-{{ master.id }}" data-key="{{ master.id }}" hidden><img src="../img/masters/{{ master.id }}.webp" width="56" height="56" alt="" loading="lazy" decoding="async"><span class="sheet-chip-name" lang="en">{{ master.name | escape }}</span><small data-line></small></a>
   {%- endfor -%}
-  {%- else -%}
+  {%- elsif include.kind == "pets" -%}
   {%- for pet in site.data.pets.pets %}
   <a class="sheet-chip sheet-chip-word" href="#pet-{{ pet.id }}" data-key="{{ pet.id }}" hidden><span class="sheet-chip-name" lang="en">{{ pet.name | escape }}</span><small data-line></small></a>
   {%- endfor -%}

@@ -24,8 +24,7 @@
 .directory-empty { padding-block: var(--space-m); color: var(--ink-dim); }
 
 /* Your bag — the general shards and widget parts, shared with the event inventory. */
-.hero-bag { display: grid; grid-template-columns: auto repeat(4, minmax(0, 1fr)); align-items: end; gap: .2rem .9rem; padding: .3rem 0 .4rem; border-bottom: 1px solid var(--signal-line); }
-.hero-bag-title { margin: 0; align-self: center; font-size: .78rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); }
+.hero-bag { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: .2rem .9rem; padding: .3rem 0 .4rem; border-bottom: 1px solid var(--signal-line); }
 .hero-bag label { display: grid; min-width: 0; }
 .hero-bag label > span { font-size: .72rem; line-height: 1.2; color: var(--ink-muted); overflow-wrap: anywhere; }
 .hero-bag-caption { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: .7rem; margin: 0; color: var(--ink-muted); font-size: .72rem; font-style: italic; }
@@ -164,14 +163,11 @@
   .hero-gen[data-tiered]:has(.hero-dossier[open]) .hero-catalogue { grid-template-columns: repeat(8, minmax(0, 1fr)); }
   .hero-band:has(.hero-dossier[open]) { grid-column: 1 / -1; }
   .hero-gen:not([data-tiered]) .hero-band:has(.hero-dossier[open]) .hero-catalogue { grid-template-columns: repeat(7, minmax(0, 1fr)); }
-  .hero-bag-caption { grid-column: 2 / -1; }
 }
 @media (max-width: 650px) {
   .hero-filter-row { gap: .6rem; mask-image: linear-gradient(to right, #000 calc(100% - 1.25rem), transparent); }
   .hero-filter-row:dir(rtl) { mask-image: linear-gradient(to left, #000 calc(100% - 1.25rem), transparent); }
   .hero-dossier-body, .directory-role-guide { grid-template-columns: minmax(0, 1fr); }
-  .hero-bag { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .hero-bag-title { grid-column: 1 / -1; }
 }
 
 /* KvK points from your heroes — the spending plan as one ruled table. */
