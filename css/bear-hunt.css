@@ -556,10 +556,10 @@ html[dir="rtl"] .opening-arrow {
 .march-breakdown th, .march-breakdown td { padding: 0.45rem 0.25rem; border-bottom: 1px solid var(--signal-line); text-align: end; }
 .march-breakdown th:first-child { text-align: start; }
 
-/* The hunt: players and the biggest rally, side by side above the rules they set. */
+/* The hunt: players, the biggest rally and its leader's march, on one row above the rules they set. */
 .hunt-size {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
   margin-block: var(--space-m);
   padding: 0;
@@ -570,8 +570,11 @@ html[dir="rtl"] .opening-arrow {
   margin: 0;
   flex-direction: column;
   align-items: stretch;
+  /* A label that wraps in a narrow column pushes its input down; keep the inputs level. */
+  justify-content: space-between;
   gap: 0.2rem;
 }
+.hunt-size label { min-width: 0; overflow-wrap: anywhere; }
 .hunt-size input[type="number"] { width: 100%; min-width: 0; min-height: 2.75rem; font-size: var(--step-0); }
 
 /* A space nobody is left to fill: the rally still has it, the hunt can't use it. */
@@ -634,6 +637,7 @@ html[data-page="bearhunt"] .hunt-sub > p + p { margin-top: 0.75rem; }
 .cap-label { color: var(--ink-dim); overflow-wrap: anywhere; }
 .cap-note { color: var(--ink-muted); font-style: italic; overflow-wrap: anywhere; }
 .cap-row[data-cap="on"] .cap-note { color: var(--amber); font-style: normal; font-weight: 700; }
+.cap-row[data-cap="off"][data-same], .cap-row[data-same] .cap-note { display: none; }
 .cap-bar { display: flex; height: 1.4rem; gap: 2px; }
 .cap-bar i { flex: 0 0 calc(var(--w) * (100% - var(--outs, 0) * 0.55rem) - 2px); min-width: 2px; background: var(--signal-tint); border: 1px solid var(--amber-dim); }
 .cap-bar i[data-lead] { background: var(--amber); border-color: var(--amber); }

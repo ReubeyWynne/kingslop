@@ -10,10 +10,13 @@
    march hit up to 14 ÷ 6 = 2⅓ times every five minutes; that is the turnover T
    a join can manage, so J = ⌈S ÷ T⌉ joins (at most 6) reach every space.
    Fewer joins mean bigger ones, and a march's damage grows with the square
-   root of its troops, so with fewer players J drops and the cap rises:
+   root of its troops, so with fewer players J drops and the cap rises.
 
-     cap = biggest rally ÷ (S + 2)   S full joins plus a double share for its leader,
-                                     rounded down to a whole thousand
+   The rally's leader always sends the biggest march they can, M. Left blank it is
+   2/15 of the rally, about what a big player's solo march holds. The joiners share
+   the rest, and no join can be bigger than a march:
+
+     cap = min(biggest rally − M, S × M) ÷ S   rounded down to a whole thousand
 
    The first group of rallies takes every opening join, rounded up so no
    march queue sits idle: ⌈P × J ÷ S⌉, never more than P. */
@@ -25,10 +28,12 @@ function whole(value, fallback) {
   return isFinite(value) && value > 0 ? Math.floor(value) : fallback;
 }
 
-function plan(players, rally) {
+function plan(players, rally, march) {
   var P = Math.min(MAX_PLAYERS, Math.max(MIN_PLAYERS, whole(players, 15)));
   var R = whole(rally, 0);
   var S = Math.min(FULL, P - 1);
+  // The leader's own march: what they told us, or 2/15 of the rally, never more than the rally.
+  var M = R ? Math.min(R, whole(march, 0) || Math.round(R * 2 / 15)) : 0;
   // A hair under each whole number, so 14 ÷ (14 ÷ 6) comes out as 6, not 7.
   var J = Math.max(1, Math.min(QUEUES, S, Math.ceil(S / TURNOVER - 1e-9)));
   return {
@@ -39,8 +44,9 @@ function plan(players, rally) {
     joins: J,
     marches: J + 1,
     // Rounded down to a whole thousand, the kind of number an alliance posts.
-    cap: R ? Math.max(1, Math.floor(R / (S + 2) / 1000)) * 1000 : 0,
+    cap: R ? Math.max(1, Math.floor(Math.min(R - M, S * M) / S / 1000)) * 1000 : 0,
     rally: R,
+    march: M,
     hits: S / J,
     first: Math.min(P, Math.ceil(P * J / S - 1e-9)),
     full: S === FULL

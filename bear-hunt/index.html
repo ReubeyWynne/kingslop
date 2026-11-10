@@ -28,6 +28,7 @@ self: bear
     <div class="calc hunt-size" role="group" aria-label="Your hunt" data-i18n-key="bh.hunt.title" data-i18n-attr="aria-label">
       <div class="calc-row"><label for="hunt-players" data-i18n="bh.hunt.players">Players</label><input id="hunt-players" data-in="players" type="number" inputmode="numeric" min="5" max="100" step="1" value="15"></div>
       <div class="calc-row"><label for="hunt-rally" data-i18n="bh.hunt.rally">Biggest rally</label><input id="hunt-rally" class="ghost" data-in="rally" type="number" inputmode="numeric" min="16" max="1000000000" step="1" placeholder="1,360,000"></div>
+      <div class="calc-row"><label for="hunt-march" data-i18n="bh.hunt.march">Leader's march</label><input id="hunt-march" class="ghost" data-in="march" type="number" inputmode="numeric" min="1" max="1000000000" step="1" placeholder="181,333"></div>
     </div>
 
     <figure class="hunt-diagram rally-anatomy hunt-plan" aria-labelledby="hunt-plan-title">
@@ -39,14 +40,14 @@ self: bear
         </li>
         <li class="plan-wide">
           <div class="plan-visual cap-compare">
-            <div class="cap-row" data-cap="off"><span class="cap-label" data-i18n="bh.cap.off">No cap</span><div class="cap-bar" aria-hidden="true"></div><span class="cap-note" data-i18n="bh.cap.out" data-i18n-vars="hunt">6 left out</span></div>
-            <div class="cap-row" data-cap="on"><span class="cap-label" data-i18n="bh.cap.on" data-i18n-vars="hunt">Cap 85,000</span><div class="cap-bar" aria-hidden="true"></div><span class="cap-note" data-i18n="bh.cap.gain" data-i18n-vars="hunt">+36% damage</span></div>
+            <div class="cap-row" data-cap="off"><span class="cap-label" data-i18n="bh.cap.off">No cap</span><div class="cap-bar" aria-hidden="true"></div><span class="cap-note" data-i18n="bh.cap.out" data-i18n-vars="hunt">5 left out</span></div>
+            <div class="cap-row" data-cap="on"><span class="cap-label" data-i18n="bh.cap.on" data-i18n-vars="hunt">Cap 84,000</span><div class="cap-bar" aria-hidden="true"></div><span class="cap-note" data-i18n="bh.cap.gain" data-i18n-vars="hunt">+24% damage</span></div>
           </div>
           <div class="plan-rule"><span class="rule-num" aria-hidden="true">2</span><div><h3 data-i18n="bh.glance.2h" data-i18n-vars="hunt">Fill every rally to 15.</h3><p data-i18n="bh.rules.2p">Join whichever rally is closest to marching out.</p></div></div>
         </li>
         <li>
           <div class="plan-visual" aria-hidden="true"><div class="plan-joins"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
-          <div class="plan-rule"><span class="rule-num" aria-hidden="true">3</span><div><h3 data-i18n="bh.glance.3h" data-i18n-vars="hunt">Send 6 joins of up to 85,000.</h3></div></div>
+          <div class="plan-rule"><span class="rule-num" aria-hidden="true">3</span><div><h3 data-i18n="bh.glance.3h" data-i18n-vars="hunt">Send 6 joins of up to 84,000.</h3></div></div>
         </li>
         <li>
           <div class="plan-visual" aria-hidden="true"><div class="plan-mix"><span class="march-archers"></span><span class="march-cavalry"></span><span class="march-infantry"></span></div></div>
@@ -249,7 +250,7 @@ self: bear
 
     <div class="hunt-sub" id="why-cap">
       <h3 data-i18n="bh.why.capTitle">Why the cap</h3>
-      <p data-i18n="bh.glance.3p" data-i18n-vars="hunt">That's your biggest rally ÷ 16, which fits 14 full joins plus a double share for its leader, who is usually well ahead of everyone else and gets some extra damage from it.</p>
+      <p data-i18n="bh.glance.3p" data-i18n-vars="hunt">That's your biggest rally less its leader's march of 181,333, shared between 14 joins. The leader always sends their biggest march, and no join can be bigger than a march.</p>
       <p data-i18n="bh.why.cap">Without it, a few big joins fill a rally's capacity and leave spaces empty. In the last five minutes, marches won't get home in time to join again, so the cap can go.</p>
     </div>
 

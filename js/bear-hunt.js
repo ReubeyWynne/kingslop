@@ -43,39 +43,38 @@
   var DEFAULT_RALLY = 1360000;
   var huntGuest = /(?:^|[?&])guest(?:=|&|$)/.test(location.search);
 
-  function huntPlan(players, rally) {
-    return window.BH_HUNT_PLAN.plan(isFinite(players) ? players : 15, isFinite(rally) && rally > 0 ? rally : DEFAULT_RALLY);
+  function huntPlan(players, rally, march) {
+    return window.BH_HUNT_PLAN.plan(isFinite(players) ? players : 15, isFinite(rally) && rally > 0 ? rally : DEFAULT_RALLY, isFinite(march) && march > 0 ? march : 0);
   }
 
-  /* The cap, shown on one rally. Without it, players join with whatever they have, in
-     the order they arrive (sizes as multiples of the cap, a spread like a real alliance),
-     until the rally's capacity is full; the rest are left out. With it, the leader's double
-     share and every joiner fit. A march's damage grows with the square root of its troops. */
-  var UNCAPPED = [1.9, 1.2, 2.6, 0.9, 1.5, 3.0, 1.1, 0.8, 2.2, 1.0, 1.7, 0.7, 1.3, 0.6];
+  /* The cap, shown on one rally, as fractions of its capacity. The rally's leader sends
+     their biggest march (2/15 of the rally unless the reader says otherwise). With the cap,
+     the S joiners each send up to the cap. Without it, joiners send their usual march,
+     about 80% of the leader's, until the rally is full: one last join fills what room is
+     left and everyone after it is left out. A march's damage grows with the square root
+     of its troops, so the gain is fewer joins and fewer troops per √, together. */
+  var UNCAPPED_SHARE = 0.8;
   function capCompare(plan) {
-    var room = plan.divisor, used = 2, fit = [];
-    for (var i = 0; i < plan.joiners; i++) {
-      var size = UNCAPPED[i % UNCAPPED.length];
-      if (used + size > room) break;
-      fit.push(size); used += size;
-    }
+    var S = plan.joiners, lead = plan.march / plan.rally, room = 1 - lead, join = UNCAPPED_SHARE * lead, fit = [];
+    var even = Math.min(join, plan.cap / plan.rally);
+    while (fit.length < S && room > 1e-9) { var size = Math.min(join, room); fit.push(size); room -= size; }
     var root = function (sum, x) { return sum + Math.sqrt(x); };
-    var without = fit.reduce(root, Math.SQRT2), withCap = Math.SQRT2 + plan.joiners;
-    return { room: room, fit: fit, out: plan.joiners - fit.length, gain: Math.round(100 * (withCap / without - 1)) };
+    var without = fit.reduce(root, Math.sqrt(lead)), withCap = Math.sqrt(lead) + S * Math.sqrt(even);
+    return { lead: lead, join: join, even: even, fit: fit, out: S - fit.length, gain: Math.max(0, Math.round(100 * (withCap / without - 1))) };
   }
 
   function huntField(name) { return document.getElementById('hunt-' + name); }
 
   function readHunt() {
-    var players = huntField('players'), rally = huntField('rally');
-    return huntPlan(players ? parseFloat(players.value) : NaN, rally ? parseFloat(rally.value) : NaN);
+    var players = huntField('players'), rally = huntField('rally'), march = huntField('march');
+    return huntPlan(players ? parseFloat(players.value) : NaN, rally ? parseFloat(rally.value) : NaN, march ? parseFloat(march.value) : NaN);
   }
 
   (function restoreHunt() {
     var saved = null;
     try { saved = JSON.parse(localStorage.getItem(HUNT_KEY) || 'null'); } catch (ignored) { saved = null; }
     if (!saved || typeof saved !== 'object') return;
-    ['players', 'rally'].forEach(function (name) {
+    ['players', 'rally', 'march'].forEach(function (name) {
       var field = huntField(name), value = saved[name];
       if (field && typeof value === 'string' && value !== '' && isFinite(Number(value))) field.value = value;
     });
@@ -83,13 +82,13 @@
 
   if (window.BH && window.BH.group && window.BH_HUNT_PLAN) {
     window.BH.group('hunt', {
-      inputs: ['players', 'rally'],
+      inputs: ['players', 'rally', 'march'],
       values: function (v, BH) {
-        var p = huntPlan(v.players, v.rally), cap = p.cap;
+        var p = huntPlan(v.players, v.rally, v.march), cap = p.cap;
         var hits = Math.round(p.hits * 100) / 100, cc = capCompare(p);
         var locale = (window.I18N && window.I18N.locale) || 'en-GB';
         return {
-          players: BH.fmt(p.players), joiners: BH.fmt(p.joiners), fill: BH.fmt(p.fill), divisor: BH.fmt(p.divisor),
+          players: BH.fmt(p.players), march: BH.fmt(p.march), joiners: BH.fmt(p.joiners), fill: BH.fmt(p.fill), divisor: BH.fmt(p.divisor),
           joins: BH.fmt(p.joins), marches: BH.fmt(p.marches), marches2: BH.fmt(p.marches + 1),
           cap: BH.fmt(cap), hits: hits.toLocaleString(locale, { maximumFractionDigits: 2 }),
           first: BH.fmt(p.first), open: BH.fmt(p.players * p.joins), out: BH.fmt(cc.out), gain: BH.fmt(cc.gain),
@@ -111,17 +110,20 @@
     });
     // The same rally twice: who fits without a cap, and with one.
     var cc = capCompare(plan);
+    // When every usual march already fits, the cap changes nothing: one rally, no comparison.
+    var same = cc.out === 0 && cc.gain === 0;
     Array.prototype.forEach.call(document.querySelectorAll('.cap-row'), function (row) {
       var on = row.getAttribute('data-cap') === 'on', bar = row.querySelector('.cap-bar');
-      var sizes = on ? Array.apply(null, Array(plan.joiners)).map(function () { return 1; }) : cc.fit.slice();
-      if (!on) for (var k = 0; k < cc.out; k++) sizes.push(-UNCAPPED[(cc.fit.length + k) % UNCAPPED.length]);
+      row.toggleAttribute('data-same', same);
+      var sizes = on ? Array.apply(null, Array(plan.joiners)).map(function () { return cc.even; }) : cc.fit.slice();
+      if (!on) for (var k = 0; k < cc.out; k++) sizes.push(-cc.join);
       bar.replaceChildren();
       bar.style.setProperty('--outs', String(on ? 0 : cc.out));
-      [2].concat(sizes).forEach(function (size, i) {
+      [cc.lead].concat(sizes).forEach(function (size, i) {
         var seg = document.createElement('i');
         if (i === 0) seg.setAttribute('data-lead', '');
         if (size < 0) seg.setAttribute('data-out', '');
-        seg.style.setProperty('--w', String(Math.abs(size) / cc.room));
+        seg.style.setProperty('--w', String(Math.abs(size)));
         bar.appendChild(seg);
       });
     });
@@ -148,11 +150,11 @@
   }
 
   function wireHunt(allocator) {
-    var fields = [huntField('players'), huntField('rally')];
-    if (!fields[0] || !fields[1] || !window.BH_HUNT_PLAN) return;
+    var fields = [huntField('players'), huntField('rally'), huntField('march')];
+    if (!fields[0] || !fields[1] || !fields[2] || !window.BH_HUNT_PLAN) return;
     function save() {
       if (huntGuest) return;
-      try { localStorage.setItem(HUNT_KEY, JSON.stringify({ players: fields[0].value, rally: fields[1].value })); } catch (ignored) { /* private mode */ }
+      try { localStorage.setItem(HUNT_KEY, JSON.stringify({ players: fields[0].value, rally: fields[1].value, march: fields[2].value })); } catch (ignored) { /* private mode */ }
     }
     fields.forEach(function (field) {
       field.addEventListener('input', function () {
@@ -160,11 +162,16 @@
         var plan = readHunt();
         paintHunt(plan);
         save();
+        ghost();
         if (allocator) allocator.follow(plan);
       });
     });
-    // The usual rally as ghost ink, in the reader's own number format.
-    function ghost() { fields[1].placeholder = window.BH && window.BH.fmt ? window.BH.fmt(DEFAULT_RALLY) : formatNumber(DEFAULT_RALLY); }
+    // The usual rally, and 2/15 of whatever rally is in play, as ghost ink in the reader's own number format.
+    function ghost() {
+      var fmt = window.BH && window.BH.fmt ? window.BH.fmt : formatNumber, rally = parseFloat(fields[1].value);
+      fields[1].placeholder = fmt(DEFAULT_RALLY);
+      fields[2].placeholder = fmt(Math.round((isFinite(rally) && rally > 0 ? rally : DEFAULT_RALLY) * 2 / 15));
+    }
     ghost();
     document.addEventListener('i18n:change', ghost);
     var plan = readHunt();

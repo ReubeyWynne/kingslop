@@ -14,11 +14,12 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
 
   // Fifteen players: the plan the page has always given.
   assert.equal((await text('[data-i18n="bh.glance.2h"]')).trim(), 'Fill every rally to 15.');
-  assert.equal((await text('[data-i18n="bh.glance.3h"]')).trim(), 'Send 6 joins of up to 85,000.');
+  assert.equal((await text('[data-i18n="bh.glance.3h"]')).trim(), 'Send 6 joins of up to 84,000.');
   assert.equal(await page.locator('[data-cap="on"] .cap-bar i').count(), 15, 'with the cap, the leader and all 14 joiners fit');
-  assert.equal(await page.locator('[data-cap="off"] .cap-bar i[data-out]').count(), 6, 'without it, six are left out');
-  assert.equal((await text('[data-i18n="bh.cap.out"]')).trim(), '6 left out');
+  assert.equal(await page.locator('[data-cap="off"] .cap-bar i[data-out]').count(), 5, 'without it, five are left out');
+  assert.equal((await text('[data-i18n="bh.cap.out"]')).trim(), '5 left out');
   assert.match((await text('[data-i18n="bh.cap.gain"]')).trim(), /^\+\d+% damage$/);
+  assert.equal(await page.locator('[data-cap="off"]').isVisible(), true, 'a full hunt compares the two');
   assert.equal(await page.locator('.plan-joiners img').count(), 3, 'the joiner heroes, before a generation is set');
   assert.equal(await page.locator('.plan-joins i').count(), 6, 'a bar for each join');
   assert.match(await text('[data-i18n="bh.run.first2"]'), /^With 15 players, open 7 rallies,/);
@@ -31,18 +32,26 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   // Eight players: every other player joins, three bigger joins, the builder follows.
   await page.locator('#hunt-players').fill('8');
   await page.waitForFunction(() => /to 8\./.test(document.querySelector('[data-i18n="bh.glance.2h"]').textContent));
-  assert.equal((await text('[data-i18n="bh.glance.3h"]')).trim(), 'Send 3 joins of up to 151,000.');
+  assert.equal((await text('[data-i18n="bh.glance.3h"]')).trim(), 'Send 3 joins of up to 168,000.');
   assert.equal(await page.locator('[data-cap="on"] .cap-bar i').count(), 8, 'the leader and seven joiners');
-  assert.equal(await page.locator('[data-cap="off"] .cap-bar i[data-out]').count(), 3);
+  assert.equal(await page.locator('[data-cap="off"] .cap-bar i[data-out]').count(), 0, 'seven usual marches all fit a big rally');
+  assert.equal(await page.locator('[data-cap="off"]').isHidden(), true, 'so there is nothing to compare');
+  assert.equal(await page.locator('[data-cap="on"] .cap-note').isHidden(), true);
   assert.equal(await page.locator('.plan-joins i').count(), 3, 'three bigger joins');
   assert.match(await text('[data-i18n="bh.why.first2"]'), /^Count the joins free at the start and divide by 7, rounding up so nobody's joins sit idle\. 8 players with 3 joins each is 24, so open 4 rallies\./);
   assert.equal(await page.locator('#join-queues').inputValue(), '3');
-  assert.equal(await page.locator('#join-cap').inputValue(), '151000');
+  assert.equal(await page.locator('#join-cap').inputValue(), '168000');
   assert.equal(await page.locator('#march-queues > div').count(), 3, 'three joins drawn');
-  assert.equal(await joinTotal(), '151,000');
+  assert.equal(await joinTotal(), '155,000', 'the troops run out before the cap');
 
   // The biggest rally sets the cap.
   await page.locator('#hunt-rally').fill('900000');
+  await page.waitForFunction(() => /up to 111,000/.test(document.querySelector('[data-i18n="bh.glance.3h"]').textContent));
+  assert.equal(await page.locator('#join-cap').inputValue(), '111000');
+  assert.equal(await page.locator('#hunt-march').getAttribute('placeholder'), '120,000', "the leader's march ghosts at 2/15 of the rally");
+
+  // The leader's march: with room to spare in a small hunt, no join is bigger than one march.
+  await page.locator('#hunt-march').fill('100000');
   await page.waitForFunction(() => /up to 100,000/.test(document.querySelector('[data-i18n="bh.glance.3h"]').textContent));
   assert.equal(await page.locator('#join-cap').inputValue(), '100000');
 
@@ -62,6 +71,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   await page.waitForFunction(() => window.BH_HUNT && window.BH_MARCHES);
   assert.equal(await page.locator('#hunt-players').inputValue(), '8');
   assert.equal(await page.locator('#hunt-rally').inputValue(), '900000');
+  assert.equal(await page.locator('#hunt-march').inputValue(), '100000');
   assert.equal(await page.locator('#own-token').isChecked(), true);
 
   // The hero page's Bear calc, Bear job only. No heroes yet, so it asks for them.
