@@ -2,7 +2,7 @@
 layout: page
 self: vikingsGuide
 ---
-<main class="vv-page vv-guide" data-module="vikings-guide" id="vikings-guide">
+<main class="vv-page vv-guide" x-data="vikingsGuide" id="vikings-guide">
   <header class="vv-header" id="top">
     <div><p class="vv-eyebrow">Vikings Vengeance</p><h1>Vikings guide</h1><a class="vv-flip" href="../">Flip to the planner <span aria-hidden="true">↻</span></a></div>
     <img src="../../img/buildings/town-center.webp" width="128" height="128" alt="" decoding="async">
@@ -10,9 +10,9 @@ self: vikingsGuide
   {% include ascii/motif.html kind="charm" %}
   <h2 id="waves">The twenty waves</h2>
   <p>Choose a wave to check its instructions. Set your place manually as the event runs.</p>
-  <div class="vv-waves" data-target="vikings-guide.waves" role="group" aria-label="Wave"></div>
+  <div class="vv-waves" role="group" aria-label="Wave"><template x-for="w in waves" :key="w.n"><button type="button" :data-kind="w.kind" :aria-label="w.label" :aria-pressed="String(w.n === wave)" @click="wave = w.n"><span x-text="w.n"></span><small x-text="w.short"></small></button></template></div>
   <p class="vv-wave-key"><span data-kind="city">City</span> <span data-kind="online">On: online cities only</span> <span data-kind="hq">HQ</span></p>
-  <p class="vv-wave-detail" data-target="vikings-guide.waveDetail" aria-live="polite">City waves: reinforce your assigned towns before the hit.</p>
+  <p class="vv-wave-detail" aria-live="polite" x-text="detail">City waves: reinforce your assigned towns before the hit.</p>
   {% include ascii/march.html %}
   <noscript><p>Waves 7, 14 and 17 hit online cities only. Waves 10 and 20 hit HQ. The other waves hit cities.</p></noscript>
   <div class="vv-prep"><img src="../../img/buildings/guard-station.webp" width="96" height="96" alt=""><div id="routine"><h3>Before the first wave</h3><p>Set your guard station, check your march capacities, and agree who covers your city. HQ participants should know which queue to recall.</p></div></div>

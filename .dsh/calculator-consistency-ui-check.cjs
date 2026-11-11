@@ -38,12 +38,11 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
     await page.reload(); await page.waitForFunction(() => document.getElementById('planner').dataset.view);
     assert.equal(await page.locator('#planner').getAttribute('data-view'), 'answer', self + ': a save with something in it opens on the answer');
     await page.locator('.sheet-views [data-value="mine"]').click();
-    // Heroes shows one roster, and it is your half: the bag above the full hero grid, no chips and no second grid.
-    if (self === 'heroes') {
-      assert.equal(await page.locator('.sheet-chip').count(), 0, 'heroes: no chips beside the roster');
-      assert.equal(await page.locator('[data-module~="hero-directory"]').count(), 1, 'heroes: one hero grid');
-      assert.equal(await page.locator('[data-half="mine"] #directory [data-hero]').count(), await page.locator('[data-hero]').count(), 'heroes: the grid is in Your heroes');
-    } else assert.equal(await page.locator('.sheet-chip:not([hidden])').count(), 1, self + ': one chip for one owned');
+    // One roster per page, and it is your half: no chips and no second grid.
+    const grid = { heroes: 'hero-directory', masters: 'master-directory', pets: 'pet-den' }[self];
+    assert.equal(await page.locator('.sheet-chip').count(), 0, self + ': no chips beside the roster');
+    assert.equal(await page.locator('[data-module~="' + grid + '"]').count(), 1, self + ': one grid');
+    assert.equal(await page.locator('[data-half="mine"] [data-module~="' + grid + '"]').isVisible(), true, self + ': the grid is your half');
     await page.goto(origin + '/' + self + '/?lang=en' + answer); await page.waitForFunction(() => document.getElementById('planner').dataset.view);
     assert.equal(await page.locator('#planner').getAttribute('data-view'), 'answer', self + ': a link into the answer opens it');
     await page.setViewportSize({ width: 1280, height: 900 });

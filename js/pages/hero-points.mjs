@@ -2,7 +2,7 @@
    when spent. The plan and every rate come from HeroSpend and the event rules, the same
    numbers the Town Centre totals use. heroes/index.html binds to it with x-data="heroPoints".
    Its words and the names of missing facts are js/hero-points.js, which Town Centre shares. */
-import Alpine from '../alpine.mjs';
+import { Alpine } from '../alpine.mjs';
 import HeroSpend from '../hero-spend.mjs';
 import EventRules from '../event-rules.mjs';
 

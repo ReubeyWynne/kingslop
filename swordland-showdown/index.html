@@ -60,21 +60,21 @@ self: swordland
       </div>
     </details>
 
-    <div class="calc" id="swcalc">
+    <div class="calc" id="swcalc" x-data="swordland">
       <h4 class="calc-title" data-i18n="sw.target.calcTitle">TRY IT — THE 180,000 LINE</h4>
       <div class="calc-row">
-        <label for="sw-occ" data-i18n-html="sw.target.occLabel">Minutes at max occupation <output id="sw-occ-out">25</output></label>
-        <input id="sw-occ" type="range" min="0" max="55" step="1" value="25">
+        <label for="sw-occ"><span data-i18n="sw.target.occLabel">Minutes at max occupation</span> <output id="sw-occ-out" x-text="points.m">25</output></label>
+        <input id="sw-occ" type="range" min="0" max="55" step="1" value="25" x-model.number="minutes">
       </div>
       <div class="calc-row">
-        <label for="sw-kill" data-i18n-html="sw.target.killLabel">Enemy power you defeat while attacking <output id="sw-kill-out">0</output></label>
-        <input id="sw-kill" type="range" min="0" max="50000000" step="500000" value="0">
+        <label for="sw-kill"><span data-i18n="sw.target.killLabel">Enemy power you defeat while attacking</span> <output id="sw-kill-out" x-text="fmt(points.k)">0</output></label>
+        <input id="sw-kill" type="range" min="0" max="50000000" step="500000" value="0" x-model.number="attack">
       </div>
       <div class="calc-row">
-        <label for="sw-def" data-i18n-html="sw.target.defLabel">Enemy power you defeat while defending <output id="sw-def-out">0</output></label>
-        <input id="sw-def" type="range" min="0" max="50000000" step="500000" value="0">
+        <label for="sw-def"><span data-i18n="sw.target.defLabel">Enemy power you defeat while defending</span> <output id="sw-def-out" x-text="fmt(points.d)">0</output></label>
+        <input id="sw-def" type="range" min="0" max="50000000" step="500000" value="0" x-model.number="defence">
       </div>
-      <p class="calc-out" role="status" data-i18n-html="sw.target.out"><b id="sw-total">75,000</b> personal points, <b id="sw-pct">42%</b> of the 180,000 line.</p>
+      <p class="calc-out" role="status" x-html="line"><b id="sw-total">75,000</b> personal points, <b id="sw-pct">42%</b> of the 180,000 line.</p>
       <ul class="unknowns"><li data-i18n="sw.target.notCrates">Loot crates</li><li data-i18n="sw.target.notUndercellers">Undercellers</li></ul>
     </div>
   </section>
