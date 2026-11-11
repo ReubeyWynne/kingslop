@@ -22,7 +22,7 @@ self: masters
         <h2 data-i18n="planner.masters">Your masters</h2>
         {% include masters/bag.html %}
         {% include planner.html part="shelf" kind="masters" fill="#roster" empty="planner.mastersEmpty" empty_en="Record your masters ↓" %}
-        <div class="master-directory" id="roster" data-module="master-directory">
+        <div class="master-directory" id="roster" x-data="masterRoster" :data-collection="any ? '' : null" @ks:kingdom-change.document="kingdom++">
           <p class="note" data-i18n="masters.howNote">Masters join the Master Academy in four waves, from server day 113. Affinity comes from Journey and gifts; every ten levels a new class costs that master's emblems and raises the talent. Skills unlock with affinity and are learned with Master's Manuscripts.</p>
           {% include masters/roster.html %}
         </div>

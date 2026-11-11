@@ -177,7 +177,7 @@ self: town
           <span class="town-tile-name" data-i18n="town.speedup.learning">Learning</span>
         </button>
       </div>
-      <div class="town-heroes" data-module="master-directory">
+      <div class="town-heroes" x-data="masterRoster" :data-collection="any ? '' : null" @ks:kingdom-change.document="kingdom++">
       {% include masters/roster.html %}
       </div>
     </div>
