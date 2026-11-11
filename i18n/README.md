@@ -28,7 +28,8 @@ no local server, no CORS errors.
    active dictionary via `window.I18N.tr(key, fallback)`, formats calculator numbers
    with the active locale (page scripts use `BH.fmt`), and re-paints on the
    `i18n:change` event. Page toys (calculators, page eggs) register through
-   `window.BH.registerPage(...)` from `bear-hunt.js` / `vikings.js` / `swordland.js`.
+   `window.BH.registerPage(...)` from `bear-hunt.js` / `vikings.js`. Pages declared
+   in markup with Alpine (`js/pages/`) re-render through `$store.i18n` instead (see `js/alpine.mjs`).
 4. The topbar flag dropdown (`#lang-btn` + `#lang-menu`) switches live, remembers
    the choice, and writes it into the address bar as `?lang=<code>` (keeping every
    other parameter and the `#hash`), so a copied link opens in that language. It is a custom listbox with inline SVG flags (flag emojis render as

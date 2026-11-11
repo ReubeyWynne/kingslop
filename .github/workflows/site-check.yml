@@ -114,6 +114,7 @@ jobs:
               - vikings-vengeance/**
               - vv/**
               - js/vikings*.js
+              - js/pages/vikings-guide.mjs
               - js/vikings*.mjs
               - css/vikings.css
               - _data/vikings.json
@@ -155,6 +156,7 @@ jobs:
               - .dsh/masters-ui-check.cjs
               - masters/**
               - js/master-*
+              - js/pages/master-points.mjs
               - _data/masters.json
               - css/masters.css
               - _includes/masters/**
@@ -184,6 +186,7 @@ jobs:
               - .dsh/castle-battle-ui-check.cjs
               - castle-battle/**
               - js/castle-battle*.js
+              - js/pages/castle-battle.mjs
               - css/castle-battle.css
               - _data/castle_battle.json
               - _data/heroes.json
