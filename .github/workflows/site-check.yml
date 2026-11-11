@@ -299,7 +299,7 @@ jobs:
               - *shared
               - .dsh/home-yours-ui-check.cjs
               - index.html
-              - js/home-yours.js
+              - js/pages/home-yours.mjs
               - css/home.css
               - js/event-data.liquid
               - js/event-rules.mjs

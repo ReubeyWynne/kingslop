@@ -96,7 +96,8 @@ html[data-page="home"]:has(.event-card[data-hover-page="kvksg"]:is(:hover, :focu
 
 /* ─── Home — your kingdom, once the save holds something ─ */
 .home-yours[hidden] { display: none; }
-/* A returning player's corner holds its place until the script fills it (head script in pages.json). */
-html.has-save .home-yours[hidden] { display: block; visibility: hidden; }
+/* A returning player's corner holds its place until the script fills it (head script in pages.json),
+   unless the save turns out to hold nothing it shows (data-empty, js/pages/home-yours.mjs). */
+html.has-save .home-yours[hidden]:not([data-empty="true"]) { display: block; visibility: hidden; }
 /* Its scripts load after the page does, so the held space stands in for the filled corner: a line in each card. */
 html.has-save .home-yours[hidden] .event-lede:empty::before { content: "\00a0"; }

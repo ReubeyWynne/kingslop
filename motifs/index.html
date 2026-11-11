@@ -134,8 +134,8 @@ self: motifs
       <h2>Ink-well</h2>
       <p>A value you can change has a dashed underline, and with a mouse an ink-well pointer.</p>
       <div class="motif-demo">
-        <span class="demo-pair">Helm <button type="button" class="inkwell" data-glossary="bump">Lv 6</button></span>
-        <span class="demo-pair">Gloves <button type="button" class="inkwell" data-glossary="bump">Lv 5</button></span>
+        <span class="demo-pair">Helm <button type="button" class="inkwell" x-data="glossaryLevel(6)" @click="bump()">Lv <span x-text="level">6</span></button></span>
+        <span class="demo-pair">Gloves <button type="button" class="inkwell" x-data="glossaryLevel(5)" @click="bump()">Lv <span x-text="level">5</span></button></span>
       </div>
       <pre><code>&lt;button class="inkwell"&gt;Lv 6&lt;/button&gt;</code></pre>
       <p class="motif-replaces">Replaces “tap a slot to edit”, “Tap a piece to set it” and “Tap one for its bill”.</p>
@@ -185,10 +185,10 @@ self: motifs
     <article class="motif" id="undo">
       <h2>Undo in the toast</h2>
       <p>A reset or an apply says what it did and offers its own undo.</p>
-      <div class="motif-demo motif-demo-stack">
-        <p class="demo-gear">Hero gear: <output data-glossary="gear">12 pieces set</output></p>
-        <button type="button" class="demo-button" data-glossary="reset">Reset</button>
-        <div class="toast" role="status" data-glossary="toast" hidden><span>Reset 12 pieces.</span><button type="button" class="undo" data-glossary="undo">Undo</button></div>
+      <div class="motif-demo motif-demo-stack" x-data="glossaryReset">
+        <p class="demo-gear">Hero gear: <output x-text="gear">12 pieces set</output></p>
+        <button type="button" class="demo-button" @click="reset()">Reset</button>
+        <div class="toast" role="status" :hidden="!toast" hidden><span>Reset 12 pieces.</span><button type="button" class="undo" @click="undo()">Undo</button></div>
       </div>
       <pre><code>&lt;div class="toast" role="status"&gt;
   &lt;span&gt;Reset 12 pieces.&lt;/span&gt;&lt;button class="undo"&gt;Undo&lt;/button&gt;

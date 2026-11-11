@@ -47,7 +47,7 @@
     "lateScripts": [
       "js/event-data.js",
       "js/event-rules.mjs",
-      "js/home-yours.js"
+      "js/pages/home-yours.mjs"
     ],
     "footMainKey": "home.foot.main",
     "footMain": "JUST THE GUIDES",
@@ -1419,7 +1419,7 @@
       "../js/page-deck.js",
       "../js/page-chrome.js",
       "../js/common.js",
-      "../js/glossary.js"
+      "../js/pages/glossary.mjs"
     ],
     "footMain": "show, don’t tell",
     "footSubs": [

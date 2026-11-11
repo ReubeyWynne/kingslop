@@ -1,4 +1,4 @@
-// Home's own corner (js/home-yours.js), after `npm run build`: hidden on an empty save, then once
+// Home's own corner (js/pages/home-yours.mjs), after `npm run build`: hidden on an empty save, then once
 // the save holds something it shows today on the 28-day clock and what the save is holding, each linking to its page; it follows the save live, and
 // reads in every language at 320px. Its scripts and styles stay off first paint: an empty save
 // never fetches them, and a save fetches them once the page has loaded. Screenshots in .dsh/home-preview/.
@@ -28,9 +28,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.evaluate(() => { const s = window.PlayerLedger.shared(); s.setHero('jabel', { level: 60, stars: 10, widget: 2, skills: null }); s.setBalance('mythic-hero-shard', 200); s.setPet('lion', { level: 20, advanced: false }); });
   await page.waitForSelector('#yours:not([hidden])');
   const day = await page.evaluate(() => { const n = new Date(), since = Math.floor((Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate()) - EventRules.EPOCH) / EventRules.DAY_MS); return (since % 28 + 28) % 28 + 1; });
-  assert.match(await page.locator('[data-target="home-yours.today"]').textContent(), new RegExp('^day ' + day + ' of 28 · \\S'));
+  assert.match(await page.locator('#yours-today').textContent(), new RegExp('^day ' + day + ' of 28 · \\S'));
   assert.equal(await page.locator('#yours a[href="events/"]').count(), 1);
-  assert.equal(await page.locator('[data-target="home-yours.held"]').textContent(), 'items: 1 · heroes: 1 · pets: 1');
+  assert.equal(await page.locator('#yours-held').textContent(), 'items: 1 · heroes: 1 · pets: 1');
   assert.equal(await page.locator('#yours a[href="town-centre/"]').count(), 1);
   assert.equal(await page.locator('#yours .next-step').count(), 0, 'no next-step reminder');
   assert.equal(await page.evaluate(() => Boolean(window.UpgradePriority)), false, 'home never loads the priority engine');
@@ -48,9 +48,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
   for (const lang of fs.readdirSync('i18n').filter(f => f.endsWith('.js')).map(f => f.slice(0, -3))) {
     await open(lang);
     await page.waitForSelector('#yours:not([hidden])');
-    const held = await page.locator('[data-target="home-yours.held"]').textContent();
+    const held = await page.locator('#yours-held').textContent();
     if (lang !== 'en') assert.notEqual(held, 'items: 1 · heroes: 1 · pets: 1', lang + ' is translated');
-    assert.ok((await page.locator('[data-target="home-yours.today"]').textContent()).trim(), lang);
+    assert.ok((await page.locator('#yours-today').textContent()).trim(), lang);
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), lang + ' overflow');
     if (lang === 'ar' || lang === 'ja') await page.locator('#yours').screenshot({ path: path.join(output, 'yours-320-' + lang + '.png') });
   }
@@ -64,7 +64,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.evaluate(() => window.PlayerLedger.shared().setBuildings({ 'town-center': '24' }));
   await open();
   await page.waitForLoadState('networkidle'); // the corner's scripts follow the page's load
-  assert.equal(await page.evaluate(() => document.documentElement.classList.contains('has-save')), false, 'an empty save gives back the space');
+  assert.equal(await yours.evaluate(el => getComputedStyle(el).display), 'none', 'an empty save gives back the space');
   assert.deepEqual(await page.evaluate(() => window.moduleErrors), []);
   assert.deepEqual(errors, []);
   console.log('Home: hidden on an empty save; once it holds something, today on the clock and the holdings, live; 10 languages at 320px.');
