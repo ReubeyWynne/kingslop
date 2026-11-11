@@ -257,7 +257,7 @@
       "../js/page-chrome.js",
       "../js/common.js",
       "../js/vikings-engine.mjs",
-      "../js/vikings.js"
+      "../js/pages/vikings.mjs"
     ],
     "footMainKey": "",
     "footMain": "VIKINGS VENGEANCE",

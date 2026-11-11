@@ -114,7 +114,8 @@ jobs:
               - vikings-vengeance/**
               - vv/**
               - js/vikings*.js
-              - js/pages/vikings-guide.mjs
+              - js/pages/vikings*.mjs
+              - _includes/vikings-*.html
               - js/vikings*.mjs
               - css/vikings.css
               - _data/vikings.json

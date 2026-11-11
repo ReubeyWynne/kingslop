@@ -1,0 +1,50 @@
+{% comment %} The planner's one dialog. `dialog.kind` picks what it holds; each form binds to its own model in
+   `forms` (js/pages/vikings.mjs). Footers end with the affirmative action: right in LTR, left in RTL. {% endcomment %}
+  <dialog class="vv-dialog" aria-labelledby="vv-dialog-title" x-effect="dialog ? $el.open || $el.showModal() : $el.open && $el.close()" @close="dialog = null">
+    <div class="vv-dialog-head"><h2 id="vv-dialog-title" x-text="dialog ? dialog.title : ''"></h2><button type="button" aria-label="Close editor" @click="close()">×</button></div>
+    <p class="vv-dialog-message" role="alert" x-text="dialogMessage"></p>
+    <div class="vv-dialog-body">
+      <template x-if="dialog && dialog.kind === 'copy'"><textarea class="vv-link" readonly rows="4" :value="dialog.value" x-init="$nextTick(() => $el.select())"></textarea></template>
+      <template x-if="dialog && dialog.kind === 'switch'"><div class="vv-contents"><p x-text="dialog.text"></p><div class="vv-actions vv-foot"><button type="button" class="vv-quiet" @click="keepCurrent()" x-text="dialog.keep"></button><button type="button" class="vv-primary" @click="confirmSwitch()">Open it</button></div></div></template>
+      <template x-if="dialog && dialog.kind === 'ask'"><div class="vv-contents"><p x-text="dialog.text"></p><div class="vv-actions vv-foot"><button type="button" class="vv-quiet" @click="close()">Cancel</button><button type="button" :class="dialog.cls" @click="dialog.yes()" x-text="dialog.label"></button></div></div></template>
+      <template x-if="dialog && dialog.kind === 'open'"><form @submit.prevent="send('open')"><label>Link from your leader<input type="url" name="link" x-model="forms.link" required placeholder="https://dey.ci/vv/#join-…"></label><div class="vv-actions vv-foot"><button type="submit" class="vv-primary" :disabled="busy">Open</button></div></form></template>
+      <template x-if="dialog && dialog.kind === 'player'"><form @submit.prevent="send('player')">
+        {% include vikings-player.html model="forms.player" %}
+        <div class="vv-actions vv-foot"><template x-if="forms.player.id && manager"><button type="button" class="vv-danger" @click="removePlayer(forms.player.id)">Remove</button></template><button type="submit" class="vv-primary" :disabled="busy">Save</button></div>
+      </form></template>
+      <template x-if="dialog && dialog.kind === 'room'"><form @submit.prevent="send('room')">
+        <div class="vv-form-grid">
+          <label class="vv-wide">Alliance<input name="name" x-model="forms.room.name" maxlength="80" placeholder="[TAG] Vikings"></label>
+          <fieldset class="vv-days vv-wide"><legend>Day</legend><template x-for="d in forms.room.days"><label class="vv-chip"><input type="radio" name="day" :value="d.value" x-model="forms.room.day" required><span x-text="d.label"></span></label></template></fieldset>
+          <label>Start (UTC)<input type="time" name="time" x-model="forms.room.time" required></label>
+          <template x-if="state"><label>Sign-ups<select name="closed" x-model="forms.room.closed"><option value="false">Open</option><option value="true">Closed</option></select></label></template>
+          <template x-if="!state"><button type="submit" class="vv-primary vv-grid-submit" :disabled="busy">Set up</button></template>
+          <p class="vv-caption vv-local-time vv-wide" x-text="localTime"></p>
+        </div>
+        <template x-if="state"><div class="vv-actions vv-foot"><button type="submit" class="vv-primary" :disabled="busy">Save</button></div></template>
+      </form></template>
+      <template x-if="dialog && dialog.kind === 'sends'"><div class="vv-contents">
+        <div class="vv-editor-top">{% include vikings-counts.html of="forms.sends.player" %}<span class="vv-avail" :data-presence="forms.sends.player.availability || 'unknown'" x-text="presence(forms.sends.player)"></span><button type="button" class="vv-quiet" @click="editPlayer(forms.sends.id)">Edit</button></div>
+        <div class="vv-cover-in"><span class="vv-label">Covered by</span><template x-if="!forms.sends.cover.length"><span class="vv-dim">nobody yet</span></template><template x-for="c in forms.sends.cover"><button type="button" class="vv-quiet" @click="assign(c.id)" x-text="c.label"></button></template></div>
+        <form @submit.prevent="send('sends')">
+          <p class="vv-label vv-sends-label" x-text="forms.sends.label"></p>
+          <div class="vv-sends"><template x-for="(s, i) in forms.sends.rows" :key="s.queue"><div class="vv-send" :data-queue="s.queue" :data-auto="String(s.auto)" :data-sent="String(line(s).sent)" :data-over="line(s).over" :data-open="s.open">
+            <button type="button" class="vv-send-row" :aria-expanded="String(s.open === 'true')" :aria-controls="'vv-send-' + s.queue" @click="toggle(s)"><span class="vv-send-n" x-text="s.queue"></span><span class="vv-send-who"><span class="vv-send-name" x-text="line(s).name"></span><template x-if="line(s).sent"><small class="vv-send-mix"><template x-for="m in line(s).mix"><span class="vv-contents"><span x-text="m.sep"></span><svg class="vv-symbol" aria-hidden="true"><use :href="m.href"></use></svg><span x-text="m.text"></span></span></template></small></template><template x-if="s.hq"><small class="vv-send-hq">HQ in waves 10 and 20</small></template></span><span class="vv-send-cap" x-text="line(s).cap"></span></button>
+            <div class="vv-send-edit" :id="'vv-send-' + s.queue" :hidden="s.open !== 'true'">
+              <select :name="'destination-' + s.queue" :aria-label="'March ' + s.queue + ' goes to'" x-model="s.destination" @change="balance()" x-effect="s.focus && reveal($el, s)"><template x-for="o in s.options"><option :value="o.value" :disabled="taken(i, o.value)" x-text="o.label"></option></template></select>
+              <template x-for="t in troops"><label class="vv-send-troop"><svg class="vv-symbol" aria-hidden="true"><use :href="t.href"></use></svg><span class="vv-k-input"><input type="number" min="0" step="any" inputmode="decimal" data-scaled :name="t.k + '-' + s.queue" :aria-label="'March ' + s.queue + ' ' + t.label" x-model="s[t.k]" @input="s.auto = false"><span class="vv-k-unit">k</span></span></label></template>
+              <span class="vv-meter" aria-hidden="true"><span :style="line(s).width"></span></span>
+            </div>
+          </div></template></div>
+          <div class="vv-actions vv-foot vv-sends-foot"><p class="vv-send-status" aria-live="polite" :data-error="sendsStatus.error" x-text="sendsStatus.line"></p><button type="button" @click="evenSplit()">Even split</button><button type="submit" class="vv-primary" :disabled="busy">Save</button></div>
+        </form>
+      </div></template>
+      <template x-if="dialog && dialog.kind === 'hq'"><form @submit.prevent="send('hq')">
+        <div class="vv-form-grid"><label class="vv-k vv-wide"><span>HQ capacity</span><span class="vv-k-input"><input name="capacity" x-model="forms.hq.capacity" min="0" required placeholder="—" data-unit-input="count" data-unit-default="k"></span></label><label>Infantry %<input type="number" name="infantryPercent" x-model="forms.hq.infantryPercent" min="0" max="100" step="1" inputmode="numeric" required></label><label>Cavalry %<input type="number" name="cavalryPercent" x-model="forms.hq.cavalryPercent" min="0" max="100" step="1" inputmode="numeric" required></label></div>
+        <p class="vv-label">Who sends, and which march</p>
+        <template x-for="p in forms.hq.people" :key="p.id"><div class="vv-hq-pick"><label><input type="checkbox" name="participant" :value="p.id" x-model="p.on"><span class="vv-hq-who"><span x-text="p.nickname"></span><small class="vv-dim" x-text="p.note"></small></span></label><label><select :name="'queue-' + p.id" :aria-label="p.nickname + ' HQ march'" x-model="p.queue"><template x-for="q in p.queues"><option :value="q.value" x-text="q.label"></option></template></select></label></div></template>
+        <div class="vv-actions vv-foot"><button type="submit" class="vv-primary" :disabled="busy">Save</button></div>
+      </form></template>
+      <template x-if="dialog && dialog.kind === 'share'"><div class="vv-contents"><template x-for="row in shareRows" :key="row.role"><div class="vv-share"><div><strong x-text="row.title"></strong><span class="vv-dim" x-text="row.note"></span></div><div class="vv-share-actions"><template x-if="row.code && row.role !== 'manage'"><button type="button" class="vv-quiet" @click="rotate(row.role)">Replace</button></template><template x-if="row.code"><button type="button" :class="row.role === 'join' ? 'vv-primary' : 'vv-secondary'" :data-copy="row.text" @click="copy(row.text)">Copy</button></template><template x-if="!row.code"><button type="button" class="vv-secondary" @click="rotate(row.role)">New link</button></template></div></div></template></div></template>
+    </div>
+  </dialog>
