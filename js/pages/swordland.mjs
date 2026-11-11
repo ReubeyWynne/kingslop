@@ -5,7 +5,7 @@
    Honest by design: it only sums what the event publishes, occupation income and combat
    points. Loot crates are randomised and undercellers are slower, so they stay out of the sum
    (the note under the calculator says so). */
-import Alpine, { words } from '../alpine.mjs';
+import { Alpine, words } from '../alpine.mjs';
 
 // From the transcript: best-case occupation income is 3,000 personal a minute (shrine + 2
 // sanctums + 3 abbeys); combat scores 80 per 10,000 power defeated attacking, 40 defending;

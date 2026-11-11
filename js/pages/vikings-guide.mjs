@@ -1,7 +1,7 @@
 /* The Vikings guide's wave map: twenty waves, each hitting every city, online cities only, or
    HQ; choosing one shows what to do before it. vikings-vengeance/guide/index.html binds to it
    with x-data="vikingsGuide". */
-import Alpine from '../alpine.mjs';
+import { Alpine } from '../alpine.mjs';
 
 const ONLINE = [7, 14, 17], HQ = [10, 20];
 const KINDS = {

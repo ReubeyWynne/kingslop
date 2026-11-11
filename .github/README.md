@@ -70,7 +70,7 @@ Pages are moving to [Alpine.js](https://alpinejs.dev/), one at a time: the page'
 - A controller registers its state with `Alpine.data` (or `shared` from `js/alpine.mjs`, for one state bound in several places) and calls the engines for the maths. It holds no DOM code, apart from a bridge to a shared widget that is still built in script.
 - Expressions in attributes stay short: a field, or one call. Anything longer is a getter in the controller.
 - `$store.i18n` changes on a language switch and `$store.ledger` holds the player ledger's latest snapshot. Static copy stays on `data-i18n`; only text that depends on state is bound, never on a node that also carries `data-i18n`.
-- `js/alpine.mjs` starts Alpine when common.js boots the page. It is bundled only into the pages that use it.
+- `js/alpine.mjs` starts Alpine when common.js boots the page. It is in the site bundle, so every page shares one cached copy.
 
 ### Repository layout
 

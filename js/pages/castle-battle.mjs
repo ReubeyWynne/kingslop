@@ -2,7 +2,7 @@
    reports each choice as tabs:select), the roster stage the lineups are shown for, and the
    reader's own copy of each hero from their saved roster. castle-battle/index.html binds to
    it with x-data="castleBattle". The page is English only. */
-import Alpine from '../alpine.mjs';
+import { Alpine } from '../alpine.mjs';
 
 const STATUS = { event: 'The event', formation: 'Troops', joiners: 'Joiners', combat: 'Combat' };
 
