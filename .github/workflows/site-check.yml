@@ -196,7 +196,8 @@ jobs:
               - .dsh/event-availability-check.cjs
               - events/**
               - js/event-*
-              - js/kvk.js
+              - js/pages/events.mjs
+              - js/pages/event-availability.mjs
               - js/hero-gear-engine.mjs
               - js/hero-spend.mjs
               - js/hero-data.liquid
