@@ -8,12 +8,15 @@ withBrowser({ root: path.resolve(process.env.SITE_ROOT || '_site') }, async ({ b
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
   const page = await context.newPage(), errors = [], failures = [];
   page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error' || message.type() === 'warning') errors.push(message.text()); });
   page.on('response', response => { if (new URL(response.url()).origin === origin && response.status() >= 400) failures.push(response.url()); });
   const headline = () => page.locator('.theater-page .candy-headline strong').textContent();
   for (const url of ['/seasonal/', '/seasonal/fantasy-theater/']) {
     await page.goto(origin + url + '?lang=en');
-    await page.waitForFunction(() => window.Alpine && document.querySelector('.theater-page tbody tr'));
-    assert.equal(await headline(), '21,614');
+    // The static calculation table has rows before Alpine runs, so wait for the pack rows Alpine draws.
+    await page.waitForFunction(() => window.Alpine && document.querySelector('#price tbody tr'));
+    await page.waitForFunction(() => document.querySelector('.theater-page .candy-headline strong').textContent === '21,614', null, { timeout: 5000 }).catch(() => {});
+    assert.equal(await headline(), '21,614', 'headline on ' + url + '; page errors: ' + JSON.stringify(errors));
     assert.equal(await page.locator('.theater-page .candy-value').getAttribute('data-example'), 'Example');
   }
   await page.fill('#held-amulets', '0');
