@@ -569,7 +569,8 @@
       "../js/hero-gear-engine.mjs",
       "../js/hero-gear-view.mjs",
       "../js/page-sheet.js",
-      "../js/hero-gear.js",
+      "../js/hero-gear-sheet.js",
+      "../js/pages/hero-gear.mjs",
       "../js/empty-state.js"
     ],
     "footMainKey": "gear.kicker",

@@ -65,10 +65,11 @@ Modules so far: the player ledger (`js/player-ledger.mjs`); the battle, combat, 
 
 ### Pages declared in markup (Alpine)
 
-Pages are moving to [Alpine.js](https://alpinejs.dev/), one at a time: the page's template declares its view with `x-data`, `x-text`, `x-model` and the rest, and a small controller in `js/pages/` holds its state. So far: the VIP calculator, the Swordland calculator, the Vikings guide's wave map, Castle Battle, the KvK points on Heroes and Masters, and the Event Cycle page (its clock, today's card and available points).
+Pages are moving to [Alpine.js](https://alpinejs.dev/), one at a time: the page's template declares its view with `x-data`, `x-text`, `x-model` and the rest, and a small controller in `js/pages/` holds its state. So far: the VIP calculator, the Swordland calculator, the Vikings guide's wave map, Castle Battle, the KvK points on Heroes and Masters, the Event Cycle page (its clock, today's card and available points), the motif glossary, Home's own corner, Upgrade priority, the Halloween candy planner, the Town Centre, the governor profile, Building requirements and Hero gear.
 
 - A controller registers its state with `Alpine.data` (or `shared` from `js/alpine.mjs`, for one state bound in several places) and calls the engines for the maths. It holds no DOM code, apart from a bridge to a shared widget that is still built in script.
 - Expressions in attributes stay short: a field, or one call. Anything longer is a getter in the controller.
+- A page on a guest sheet defines it in a small classic script (`js/governor-sheet.js`, `js/building-paths-sheet.js`, `js/hero-gear-sheet.js`), which runs before Alpine starts, so the sheet is chosen first; the controller reads the store through `Interactions.ledger()` and `$store.ledger`.
 - `$store.i18n` changes on a language switch and `$store.ledger` holds the player ledger's latest snapshot. Static copy stays on `data-i18n`; only text that depends on state is bound, never on a node that also carries `data-i18n`.
 - `js/alpine.mjs` starts Alpine when common.js boots the page. It is in the site bundle, so every page shares one cached copy. A tab the shared `tabs` widget selects before then (a link to a shelf or panel) is announced again once Alpine has started, so a page's `@tabs:select` still hears it.
 

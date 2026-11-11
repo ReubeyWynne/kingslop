@@ -329,6 +329,7 @@ jobs:
               - masters/**
               - js/hero-gear*.js
               - js/hero-gear*.mjs
+              - js/pages/hero-gear.mjs
               - js/governor-*
               - js/pages/governor-profile.mjs
               - js/pet-*
@@ -379,6 +380,7 @@ jobs:
               - hero-gear/**
               - js/hero-gear*.js
               - js/hero-gear*.mjs
+              - js/pages/hero-gear.mjs
               - js/ocr-worker.js
               - js/ocr-client.js
               - js/ocr-text.js
