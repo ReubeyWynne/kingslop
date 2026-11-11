@@ -1,7 +1,8 @@
 /* alpine.mjs — Alpine.js for pages whose view is declared in their markup.
 
-   A page's controller (js/pages/<page>.mjs) imports Alpine from here, registers its state
-   with Alpine.data, and the page's template binds to it with x-data, x-text, x-model and the
+   It runs in the site bundle, so every page shares one cached copy, read by the page's own
+   modules through its global (SiteAlpine). A page's controller (js/pages/<page>.mjs) imports
+   { Alpine } from here, registers its state with Alpine.data, and the page's template binds to it with x-data, x-text, x-model and the
    rest. This file adds what every controller shares, then starts Alpine once the active
    dictionary has arrived and every deferred script has run, the same moment common.js boots
    the page, so a controller registered anywhere in the page's bundle is in place.
@@ -66,8 +67,15 @@ export function shared(name, definition) {
   return state;
 }
 
+/* Started once the active dictionary has arrived and every deferred script has run (the page's
+   own bundle, with its controllers, too), the moment common.js boots the page. This file runs in
+   the site bundle, ahead of i18n.js and common.js, so it waits for DOMContentLoaded before
+   asking either: readyState alone cannot say that the deferred scripts have all run. */
 function start() { globalThis.Alpine = Alpine; Alpine.start(); }
-if (globalThis.I18N) I18N.onReady(() => BH().whenLoaded(start));
-else BH().whenLoaded(start);
+function begin() { if (globalThis.I18N) I18N.onReady(start); else start(); }
+const nav = globalThis.performance && performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
+if (document.readyState === 'complete' || (document.readyState === 'interactive' && nav && nav.domContentLoadedEventStart > 0)) begin();
+else document.addEventListener('DOMContentLoaded', begin, { once: true });
 
+export { Alpine };
 export default Alpine;

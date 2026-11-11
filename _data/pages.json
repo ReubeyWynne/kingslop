@@ -318,7 +318,7 @@
       "../../js/page-deck.js",
       "../../js/page-chrome.js",
       "../../js/common.js",
-      "../../js/vikings-guide.js"
+      "../../js/pages/vikings-guide.mjs"
     ],
     "footMainKey": "",
     "footMain": "VIKINGS VENGEANCE",
@@ -374,7 +374,7 @@
       "../js/page-deck.js",
       "../js/page-chrome.js",
       "../js/common.js",
-      "../js/swordland.js"
+      "../js/pages/swordland.mjs"
     ],
     "footMainKey": "sw.foot.main",
     "footMain": "JUST THE SCOREBOARDS",
@@ -728,6 +728,7 @@
       "../js/master-directory.js",
       "../js/event-points.js",
       "../js/master-points.js",
+      "../js/pages/master-points.mjs",
       "../js/empty-state.js"
     ],
     "footMainKey": "masters.title",
@@ -999,7 +1000,7 @@
       "../js/page-deck.js",
       "../js/page-chrome.js",
       "../js/common.js",
-      "../js/castle-battle.js"
+      "../js/pages/castle-battle.mjs"
     ],
     "footMainKey": "castle.nav",
     "footMain": "CASTLE BATTLE",

@@ -11,7 +11,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     const page = await browser.newPage({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
     const errors = []; page.on('pageerror', error => errors.push(error.message));
     await page.goto(origin + '/castle-battle/?lang=' + lang);
-    await page.waitForFunction(() => !document.querySelector('[data-target="castle-battle.stage"]').disabled);
+    await page.waitForFunction(() => !document.querySelector('.castle-progress select').disabled);
     await page.evaluate(() => {
       window.castleErrors = [];
       document.addEventListener('module:error', event => window.castleErrors.push(event.detail));
@@ -54,7 +54,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     for (const role of ['defense', 'attack']) {
       await page.locator('#castle-' + role + '-tab').click();
       for (const stage of ['older', 'mixed', 'mature']) {
-        await page.locator('[data-target="castle-battle.stage"]').selectOption(stage);
+        await page.locator('.castle-progress select').selectOption(stage);
         assert.equal(await page.locator('[data-lineup-role]:visible').count(), 1);
         assert.equal(await page.locator('#castle-leaders').getAttribute('aria-labelledby'), 'castle-' + role + '-tab');
       }

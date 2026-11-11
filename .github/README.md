@@ -65,12 +65,12 @@ Modules so far: the player ledger (`js/player-ledger.mjs`); the battle, combat, 
 
 ### Pages declared in markup (Alpine)
 
-The VIP calculator and the Heroes page's KvK points are a trial of [Alpine.js](https://alpinejs.dev/): the page's template declares its view with `x-data`, `x-text`, `x-model` and the rest, and a small controller in `js/pages/` holds its state.
+Pages are moving to [Alpine.js](https://alpinejs.dev/), one at a time: the page's template declares its view with `x-data`, `x-text`, `x-model` and the rest, and a small controller in `js/pages/` holds its state. So far: the VIP calculator, the Swordland calculator, the Vikings guide's wave map, Castle Battle, and the KvK points on Heroes and Masters.
 
 - A controller registers its state with `Alpine.data` (or `shared` from `js/alpine.mjs`, for one state bound in several places) and calls the engines for the maths. It holds no DOM code, apart from a bridge to a shared widget that is still built in script.
 - Expressions in attributes stay short: a field, or one call. Anything longer is a getter in the controller.
 - `$store.i18n` changes on a language switch and `$store.ledger` holds the player ledger's latest snapshot. Static copy stays on `data-i18n`; only text that depends on state is bound, never on a node that also carries `data-i18n`.
-- `js/alpine.mjs` starts Alpine when common.js boots the page. It is bundled only into the pages that use it.
+- `js/alpine.mjs` starts Alpine when common.js boots the page. It is in the site bundle, so every page shares one cached copy.
 
 ### Repository layout
 

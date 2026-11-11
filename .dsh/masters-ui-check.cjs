@@ -35,12 +35,12 @@ const ledger=()=>page.evaluate(()=>PlayerLedger.shared().masters());
  await form.locator('[data-field="affinity"]').fill('30');await form.locator('[data-field="affinity"]').press('Tab');await form.locator('[data-field="ready"]').check();
  assert.match(await page.locator('[data-target="master-directory.count"]').textContent(),/8 masters · 1 yours/);
  // KvK points: only what the masters can take.
- assert.match(await page.locator('[data-target="master-points.coverage"]').textContent(),/General Master Emblems|Master's Manuscript/);
+ assert.match(await page.locator('#master-points-coverage').textContent(),/General Master Emblems|Master's Manuscript/);
  await page.locator('.master-bag [data-bind="inventory.general-master-emblem"]').fill('100');await page.locator('.master-bag [data-bind="inventory.masters-manuscript"]').fill('1000');await page.locator('.master-bag [data-bind="inventory.masters-manuscript"]').press('Tab');
  const plan=await page.evaluate(()=>MasterSpend.plan(PlayerLedger.shared().snapshot()));const expected=15*6000+plan.items['masters-manuscript'].amount*60;
- await page.waitForFunction(n=>document.querySelector('[data-target="master-points.total"]').textContent.replace(/\D/g,'')===String(n),expected);
- assert.equal(await page.locator('[data-target="master-points.rows"] tr').count(),1);assert.match(await page.locator('[data-target="master-points.coverage"]').textContent(),/Every master count/);
- assert.match(await page.locator('[data-target="master-points.left"]').textContent(),/95 general emblems/);
+ await page.waitForFunction(n=>document.querySelector('#kvk-points output').textContent.replace(/\D/g,'')===String(n),expected);
+ assert.equal(await page.locator('#kvk-points .hero-points-table tbody tr').count(),1);assert.match(await page.locator('#master-points-coverage').textContent(),/Every master count/);
+ assert.match(await page.locator('#master-points-left').textContent(),/95 general emblems/);
  await page.setViewportSize({width:390,height:844});await page.locator('#roster').screenshot({path:path.join(output,'masters-open-390.png')});
  await page.locator('#master-valora summary.master-heading').click();await page.setViewportSize({width:1280,height:900});await page.locator('#roster').screenshot({path:path.join(output,'masters-1280.png')});await page.setViewportSize({width:390,height:844});
  // The Town Centre shelf shows the same save and scores the same pieces.
