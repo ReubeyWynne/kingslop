@@ -2,7 +2,7 @@
    token, and the KvK points the shop turns tokens into. seasonal/index.html binds to it with
    x-data="theater". The maths is js/fantasy-theater.mjs. English only, like the Halloween
    page. */
-import Alpine from '../alpine.mjs';
+import { Alpine } from '../alpine.mjs';
 import Theater from '../fantasy-theater.mjs';
 
 const RATE = Theater.tokensPerAmulet();
