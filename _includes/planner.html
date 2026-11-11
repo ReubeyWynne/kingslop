@@ -1,7 +1,7 @@
 {%- comment -%}
 The calculator-first frame for a roster page (Heroes, Masters, Pets): yours beside the answer, as on
-the gear pages (css/sheet.css), and two tabs on a phone (js/planner.js). Wrap the page's two halves in
-a section with data-module="planner page-sheet" and class "section sheet-console":
+the gear pages (css/sheet.css), and two tabs on a phone (js/planner.js). Wrap the page's two halves in a section with class
+"section sheet-console roster-console", data-module="page-sheet" and x-data="planner('<kind>')" (see a roster page):
   part="views"  the phone's two tabs. mine= / mine_en= the first tab's i18n key and English text.
   part="shelf"  while you own nothing, the line pointing to the roster in your half. kind= heroes, masters or pets.
                 Your half is the page's one roster (by generation, marking what you own), so there are no chips.
@@ -9,11 +9,11 @@ Each half is a div with data-half="mine" or data-half="answer".
 {%- endcomment -%}
 {%- if include.part == "views" -%}
 <div class="sheet-views" role="tablist" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label" data-module="tabs" data-tabs-bind="view">
-  <button type="button" role="tab" aria-selected="true" tabindex="0" data-value="mine" data-action="tabs.select" data-i18n="{{ include.mine }}">{{ include.mine_en }}</button>
-  <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="answer" data-action="tabs.select" data-i18n="gov.theAnswer">The answer</button>
+  <button type="button" role="tab" aria-selected="true" tabindex="0" :aria-selected="String(view === 'mine')" :tabindex="view === 'mine' ? 0 : -1" data-value="mine" data-action="tabs.select" data-i18n="{{ include.mine }}">{{ include.mine_en }}</button>
+  <button type="button" role="tab" aria-selected="false" tabindex="-1" :aria-selected="String(view === 'answer')" :tabindex="view === 'answer' ? 0 : -1" data-value="answer" data-action="tabs.select" data-i18n="gov.theAnswer">The answer</button>
 </div>
 {%- elsif include.part == "shelf" -%}
-<div class="sheet-shelf" data-module="roster-shelf" data-shelf="{{ include.kind }}">
-  <p class="sheet-shelf-empty" data-target="roster-shelf.empty"><a href="{{ include.fill }}" data-i18n="{{ include.empty }}">{{ include.empty_en }}</a></p>
+<div class="sheet-shelf" data-shelf="{{ include.kind }}">
+  <p class="sheet-shelf-empty" :hidden="owned > 0"><a href="{{ include.fill }}" data-i18n="{{ include.empty }}">{{ include.empty_en }}</a></p>
 </div>
 {%- endif -%}

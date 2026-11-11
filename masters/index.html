@@ -14,7 +14,7 @@ self: masters
     <p class="lede" data-i18n="masters.intro">Eight masters, each with an affinity ladder, a talent and four skills. Record yours to see what comes next and what your emblems and manuscripts can score.</p>
     {% include ascii/motif.html kind="tome" %}
   </section>
-  <section class="section sheet-console roster-console" id="planner" data-module="planner page-sheet" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label">
+  <section class="section sheet-console roster-console" id="planner" data-module="page-sheet" x-data="planner('masters')" :data-view="view" @tabs:select="pick($event.detail)" @hashchange.window="follow()" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label">
     {% include page-sheet.html part="notice" %}
     {% include planner.html part="views" mine="planner.masters" mine_en="Your masters" %}
     <div class="sheet-workspace">
