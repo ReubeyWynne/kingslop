@@ -58,6 +58,7 @@ jobs:
               - js/page-chrome.js
               - js/page-deck.js
               - js/roster-editor.js
+              - js/roster-form.mjs
               - js/governor-view.js
               - css/equipment.css
               - .dsh/lib/**
@@ -158,6 +159,7 @@ jobs:
               - .dsh/masters-ui-check.cjs
               - masters/**
               - js/master-*
+              - js/pages/master-roster.mjs
               - js/pages/master-points.mjs
               - _data/masters.json
               - css/masters.css
@@ -266,6 +268,7 @@ jobs:
               - _data/heroes.json
               - css/heroes.css
               - js/master-*
+              - js/pages/master-roster.mjs
               - _data/masters.json
               - css/masters.css
               - _includes/masters/**
@@ -288,6 +291,7 @@ jobs:
               - css/priority.css
               - js/hero-spend.mjs
               - js/master-*
+              - js/pages/master-roster.mjs
               - _data/masters.json
               - js/hero-gear-engine.mjs
               - js/governor-*
@@ -327,6 +331,7 @@ jobs:
               - js/governor-*
               - js/pet-*
               - js/master-*
+              - js/pages/master-roster.mjs
               - js/hero-directory*.js
               - js/hero-directory*.mjs
               - js/pages/hero-roster.mjs
