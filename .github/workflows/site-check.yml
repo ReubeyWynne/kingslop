@@ -136,6 +136,8 @@ jobs:
               - _includes/heroes/**
               - js/hero-directory*.js
               - js/hero-directory*.mjs
+              - js/pages/hero-roster.mjs
+              - js/roster-form.mjs
               - js/hero-spend.mjs
               - js/hero-points.js
               - js/pages/hero-points.mjs
@@ -251,6 +253,8 @@ jobs:
               - _includes/heroes/**
               - js/hero-directory*.js
               - js/hero-directory*.mjs
+              - js/pages/hero-roster.mjs
+              - js/roster-form.mjs
               - js/hero-spend.mjs
               - js/hero-points.js
               - js/building-*
@@ -325,6 +329,8 @@ jobs:
               - js/master-*
               - js/hero-directory*.js
               - js/hero-directory*.mjs
+              - js/pages/hero-roster.mjs
+              - js/roster-form.mjs
               - js/hero-points.js
               - js/town-centre*.js
               - js/town-centre*.mjs

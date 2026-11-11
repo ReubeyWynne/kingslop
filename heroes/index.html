@@ -24,7 +24,7 @@ self: heroes
         <h2 data-i18n="planner.heroes">Your heroes</h2>
         {% include heroes/bag.html %}
         {% include planner.html part="shelf" kind="heroes" fill="#directory" empty="planner.heroesEmpty" empty_en="Mark the heroes you have ↓" %}
-        <div class="hero-directory" id="directory" data-module="hero-directory">
+        <div class="hero-directory" id="directory" x-data="heroRoster" :data-collection="any ? '' : null" @ks:server-age-change.document="serverChanged($event.detail)" @ks:kingdom-change.document="kingdom++">
           {% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}
           {% assign troops = 'inf,cav,arc' | split: ',' %}
           {% include heroes/roster.html %}

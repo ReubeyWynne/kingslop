@@ -137,7 +137,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.locator('#hero-chenko [data-field="owned"]').check();
     await page.locator('#hero-chenko [data-field="level"]').fill('40'); await page.locator('#hero-chenko [data-field="level"]').press('Tab');
     assert.equal((await ledger()).heroes.roster.chenko.level, 40);
-    assert.match(await page.locator('#hero-chenko [data-target~="hero-directory.badge"]').textContent(), /40/);
+    assert.match(await page.locator('#hero-chenko [data-roster="badge"]').textContent(), /40/);
     assert.equal(await page.locator('#town-heroes .hero-bag').count(), 0, 'shards stay on the bag shelf');
     await page.locator('#town-heroes #hero-chenko summary').click(); await page.locator('#town-heroes #hero-amadeus summary').click();
     await page.locator('#hero-amadeus [data-field="widgets"]').fill('3'); await page.locator('#hero-amadeus [data-field="widgets"]').press('Tab');
