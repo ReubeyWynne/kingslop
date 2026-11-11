@@ -183,10 +183,8 @@
       "../js/page-deck.js",
       "../js/page-chrome.js",
       "../js/common.js",
-      "../js/bind.js",
       "../js/bear-allocator.mjs",
       "../js/bear-hunt-plan.mjs",
-      "../js/bear-hunt.js",
       "../js/battle-engine.mjs",
       "../js/combat.mjs",
       "../js/lead-data.js",
@@ -194,7 +192,8 @@
       "../js/lead-engine.mjs",
       "../js/lead-inputs.mjs",
       "../js/lead-account.mjs",
-      "../js/lead-finder.js"
+      "../js/pages/lead-finder.mjs",
+      "../js/pages/bear-hunt.mjs"
     ],
     "footMainKey": "",
     "footMain": "BEAR HUNT",
@@ -651,7 +650,7 @@
       "../js/lead-engine.mjs",
       "../js/lead-inputs.mjs",
       "../js/lead-account.mjs",
-      "../js/lead-finder.js",
+      "../js/pages/lead-finder.mjs",
       "../js/hero-breakpoint.js",
       "../js/empty-state.js"
     ],

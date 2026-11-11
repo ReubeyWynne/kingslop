@@ -661,3 +661,6 @@ html[data-page="bearhunt"] .hunt-sub > p + p { margin-top: 0.75rem; }
 .hunt-maths { margin-top: var(--space-m); }
 .hunt-maths > summary { cursor: pointer; }
 .hunt-maths[open] > summary { margin-bottom: var(--space-s); }
+
+/* The open joiner's card (js/pages/bear-hunt.mjs) lays out as the panel's own content. */
+.joiner-explain-body { display: contents; }

@@ -13,16 +13,16 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   const joinTotal = () => page.locator('#alloc-join').textContent();
 
   // Fifteen players: the plan the page has always given.
-  assert.equal((await text('[data-i18n="bh.glance.2h"]')).trim(), 'Fill every rally to 15.');
-  assert.equal((await text('[data-i18n="bh.glance.3h"]')).trim(), 'Send 6 joins of up to 84,000.');
+  assert.equal((await text('[data-say="bh.glance.2h"]')).trim(), 'Fill every rally to 15.');
+  assert.equal((await text('[data-say="bh.glance.3h"]')).trim(), 'Send 6 joins of up to 84,000.');
   assert.equal(await page.locator('[data-cap="on"] .cap-bar i').count(), 15, 'with the cap, the leader and all 14 joiners fit');
   assert.equal(await page.locator('[data-cap="off"] .cap-bar i[data-out]').count(), 5, 'without it, five are left out');
-  assert.equal((await text('[data-i18n="bh.cap.out"]')).trim(), '5 left out');
-  assert.match((await text('[data-i18n="bh.cap.gain"]')).trim(), /^\+\d+% damage$/);
+  assert.equal((await text('[data-say="bh.cap.out"]')).trim(), '5 left out');
+  assert.match((await text('[data-say="bh.cap.gain"]')).trim(), /^\+\d+% damage$/);
   assert.equal(await page.locator('[data-cap="off"]').isVisible(), true, 'a full hunt compares the two');
   assert.equal(await page.locator('.plan-joiners img').count(), 3, 'the joiner heroes, before a generation is set');
   assert.equal(await page.locator('.plan-joins i').count(), 6, 'a bar for each join');
-  assert.match(await text('[data-i18n="bh.run.first2"]'), /^With 15 players, open 7 rallies,/);
+  assert.match(await text('[data-say="bh.run.first2"]'), /^With 15 players, open 7 rallies,/);
   assert.equal(await page.locator('.ascii-march-band').count(), 0, 'no march animation');
   assert.equal(await page.locator('#sqrt details.hunt-maths').count(), 1, 'the maths folds away');
   assert.equal(await page.locator('#rewards').count(), 1, 'old links still land');
@@ -31,14 +31,14 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
 
   // Eight players: every other player joins, three bigger joins, the builder follows.
   await page.locator('#hunt-players').fill('8');
-  await page.waitForFunction(() => /to 8\./.test(document.querySelector('[data-i18n="bh.glance.2h"]').textContent));
-  assert.equal((await text('[data-i18n="bh.glance.3h"]')).trim(), 'Send 3 joins of up to 168,000.');
+  await page.waitForFunction(() => /to 8\./.test(document.querySelector('[data-say="bh.glance.2h"]').textContent));
+  assert.equal((await text('[data-say="bh.glance.3h"]')).trim(), 'Send 3 joins of up to 168,000.');
   assert.equal(await page.locator('[data-cap="on"] .cap-bar i').count(), 8, 'the leader and seven joiners');
   assert.equal(await page.locator('[data-cap="off"] .cap-bar i[data-out]').count(), 0, 'seven usual marches all fit a big rally');
   assert.equal(await page.locator('[data-cap="off"]').isHidden(), true, 'so there is nothing to compare');
   assert.equal(await page.locator('[data-cap="on"] .cap-note').isHidden(), true);
   assert.equal(await page.locator('.plan-joins i').count(), 3, 'three bigger joins');
-  assert.match(await text('[data-i18n="bh.why.first2"]'), /^Count the joins free at the start and divide by 7, rounding up so nobody's joins sit idle\. 8 players with 3 joins each is 24, so open 4 rallies\./);
+  assert.match(await text('[data-say="bh.why.first2"]'), /^Count the joins free at the start and divide by 7, rounding up so nobody's joins sit idle\. 8 players with 3 joins each is 24, so open 4 rallies\./);
   assert.equal(await page.locator('#join-queues').inputValue(), '3');
   assert.equal(await page.locator('#join-cap').inputValue(), '168000');
   assert.equal(await page.locator('#march-queues > div').count(), 3, 'three joins drawn');
@@ -46,13 +46,13 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
 
   // The biggest rally sets the cap.
   await page.locator('#hunt-rally').fill('900000');
-  await page.waitForFunction(() => /up to 111,000/.test(document.querySelector('[data-i18n="bh.glance.3h"]').textContent));
+  await page.waitForFunction(() => /up to 111,000/.test(document.querySelector('[data-say="bh.glance.3h"]').textContent));
   assert.equal(await page.locator('#join-cap').inputValue(), '111000');
   assert.equal(await page.locator('#hunt-march').getAttribute('placeholder'), '120,000', "the leader's march ghosts at 2/15 of the rally");
 
   // The leader's march: with room to spare in a small hunt, no join is bigger than one march.
   await page.locator('#hunt-march').fill('100000');
-  await page.waitForFunction(() => /up to 100,000/.test(document.querySelector('[data-i18n="bh.glance.3h"]').textContent));
+  await page.waitForFunction(() => /up to 100,000/.test(document.querySelector('[data-say="bh.glance.3h"]').textContent));
   assert.equal(await page.locator('#join-cap').inputValue(), '100000');
 
   // The lead finder is always there. A one-troop rally takes nothing, the joins take the rest.
@@ -78,7 +78,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal(await page.locator('#lead .lead-best-panel, #lead .lead-list').count(), 0, 'no report panel or runners-up');
   assert.equal(await page.locator('#lead .lead-jobs').count(), 0, 'no job picker on the Bear page');
   assert.equal(await page.locator('#lead details:not(.src)').count(), 1, 'only the joiners, pets and city buffs fold away');
-  assert.match(await text('[data-target="lead-finder.status"]'), /Mark the heroes you own/);
+  assert.match(await text('.lead-status'), /Mark the heroes you own/);
   assert.equal(await page.locator('#lead [data-input="overview"] a').getAttribute('href'), '#bonus-overview', 'the overview is filled in on this page');
   assert.equal(await page.locator('#lead [data-input="heroes"] a').getAttribute('href'), '../heroes/#directory');
 
@@ -110,7 +110,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
 
   // Back to a full hunt.
   await page.locator('#hunt-players').fill('15');
-  await page.waitForFunction(() => /to 15\./.test(document.querySelector('[data-i18n="bh.glance.2h"]').textContent));
+  await page.waitForFunction(() => /to 15\./.test(document.querySelector('[data-say="bh.glance.2h"]').textContent));
 
   for (const width of [320, 1280]) {
     await page.setViewportSize({ width, height: 900 });

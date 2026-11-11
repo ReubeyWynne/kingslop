@@ -117,7 +117,7 @@
     function job() { return (context.targets('job').filter(function (n) { return n.checked; })[0] || {}).value || 'bear'; }
 
     // ---- The account ---------------------------------------------------------
-    // Yours: the lead finder's sources, read the same way (js/lead-finder.js).
+    // Yours: the lead finder's sources, read the same way (js/pages/lead-finder.mjs).
     function mine(gen, which) {
       var saved = combat(), typical = data.megafauna.overview[String(gen)], rows = saved.overview || {}, out = {};
       function whole(row) { return row && STATS.every(function (k) { return typeof row[k] === 'number'; }); }

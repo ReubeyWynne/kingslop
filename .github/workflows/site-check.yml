@@ -129,6 +129,10 @@ jobs:
               - bear-hunt/**
               - js/bear-*.js
               - js/bear-*.mjs
+              - js/pages/bear-hunt.mjs
+              - js/pages/lead-finder.mjs
+              - _includes/lead-finder.html
+              - _includes/lead-lineup.html
               - css/bear-hunt.css
               - .dsh/hero-breakpoint-ui-check.cjs
               - js/hero-breakpoint.js
