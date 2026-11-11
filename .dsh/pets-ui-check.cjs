@@ -11,7 +11,8 @@ const errors=[];
  // Six in the morning on the page's clock, so nobody is asleep yet.
  const context=await browser.newContext({viewport:{width:390,height:844},timezoneId:'UTC'}),page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  await page.clock.install({time:new Date('2026-10-17T06:00:00Z')});
- const ready=()=>page.waitForFunction(()=>![...document.querySelectorAll('.pet-card [data-field="owned"]')].some(f=>f.disabled));
+ // Ready, and on Your pets: a save with a pet in it opens the phone on the answer.
+ const ready=async()=>{await page.waitForFunction(()=>![...document.querySelectorAll('.pet-card [data-field="owned"]')].some(f=>f.disabled)&&document.getElementById('planner').dataset.view);if(await page.locator('#planner').getAttribute('data-view')==='answer')await page.locator('.sheet-views [data-value="mine"]').click();};
  const pen=id=>page.locator('#pet-'+id+' [data-pen]');
  // Rub a pet back and forth with the mouse: three turns make a pat.
  const rub=async id=>{const card=page.locator('#pet-'+id);await card.scrollIntoViewIfNeeded();const box=await card.locator('.pet-stroke').boundingBox(),y=box.y+box.height*.45;
@@ -79,7 +80,7 @@ const errors=[];
  assert.equal(await page.locator('[data-target="pet-advances.total"]').getAttribute('data-open'),'');
  assert.equal(await page.locator('[data-target="pet-advances.rows"] tr').count(),1);
  assert.match(await page.locator('[data-target="pet-advances.total"]').textContent(),/100,000 KvK prep points/);
- await page.locator('#advances').screenshot({path:path.join(output,'advances-390.png')});
+ await page.locator('.sheet-views [data-value="answer"]').click();await page.locator('#advances').screenshot({path:path.join(output,'advances-390.png')});await page.locator('.sheet-views [data-value="mine"]').click();
  // Corrupt care in storage starts the pen again rather than breaking the page.
  await page.evaluate(()=>localStorage.setItem('ks.pet-care.v1','{oops'));await page.reload();await ready();assert.equal(await page.locator('#pet-gray-wolf [data-meter="fullness"]').getAttribute('aria-valuenow'),'60');
 
