@@ -39,7 +39,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
     assert.equal(await page.locator('#planner').getAttribute('data-view'), 'answer', self + ': a save with something in it opens on the answer');
     await page.locator('.sheet-views [data-value="mine"]').click();
     // One roster per page, and it is your half: no chips and no second grid.
-    const grid = { heroes: '[x-data="heroRoster"]', masters: '[x-data="masterRoster"]', pets: '[data-module~="pet-den"]' }[self];
+    const grid = { heroes: '[x-data="heroRoster"]', masters: '[x-data="masterRoster"]', pets: '[x-data="petDen"]' }[self];
     assert.equal(await page.locator('.sheet-chip').count(), 0, self + ': no chips beside the roster');
     assert.equal(await page.locator(grid).count(), 1, self + ': one grid');
     assert.equal(await page.locator('[data-half="mine"] ' + grid).isVisible(), true, self + ': the grid is your half');

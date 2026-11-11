@@ -41,12 +41,12 @@ const errors=[];
  assert.equal(await page.locator('#pet-gray-wolf [data-meter="affection"]').getAttribute('aria-valuenow'),'50');
  assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'content');
  const level=page.locator('#pet-gray-wolf [data-field="level"]');await level.fill('20');await level.press('Tab');
- assert.equal(await page.locator('#pet-gray-wolf [data-target="pet-den.advanced"]').isVisible(),true);
- assert.match(await page.locator('#pet-gray-wolf [data-target="pet-den.next"]').textContent(),/level 20: 30 Growth Manuals\. Worth 50,000 KvK prep points/);
+ assert.equal(await page.locator('#pet-gray-wolf [data-roster="advanced"]').isVisible(),true);
+ assert.match(await page.locator('#pet-gray-wolf [data-roster="next"]').textContent(),/level 20: 30 Growth Manuals\. Worth 50,000 KvK prep points/);
  await page.locator('#pet-gray-wolf [data-field="advanced"]').check();
  assert.deepEqual((await page.evaluate(()=>PlayerLedger.shared().pets().roster))['gray-wolf'],{level:20,advanced:true});
  assert.equal(await page.locator('#pet-gray-wolf .pet-ladder td[data-reached]').count(),2);
- assert.match(await page.locator('#pet-gray-wolf [data-target="pet-den.next"]').textContent(),/level 30:/);
+ assert.match(await page.locator('#pet-gray-wolf [data-roster="next"]').textContent(),/level 30:/);
  // There are no buttons to read: a click on the pet or its food does nothing.
  assert.deepEqual(await page.locator('#pet-gray-wolf .pet-care button:visible').evaluateAll(n=>n.map(b=>b.textContent.trim()+(b.querySelector('img')||{}).src)),[origin+'/img/items/stamina.webp']);
  await page.locator('#pet-gray-wolf .pet-stroke').click();await page.locator('#pet-gray-wolf .pet-food').click();
@@ -67,7 +67,7 @@ const errors=[];
  await page.locator('#cage').screenshot({path:path.join(output,'cage-390.png')});
  // Real time: a few hours alone and the wolf is lonely, then hungry; it remembers across a reload.
  await page.clock.runFor(6*3600000);assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'lonely');
- assert.match(await page.locator('[data-target="pet-den.count"]').textContent(),/14 pets · 1 tamed · 1 need you/);
+ assert.match(await page.locator('[data-roster="count"]').textContent(),/14 pets · 1 tamed · 1 need you/);
  await page.clock.runFor(7*3600000);await page.reload();await ready();assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'hungry');
  assert.equal(await page.locator('#pet-gray-wolf .ascii-mini--portrait > [data-ink="0"]').evaluate(n=>getComputedStyle(n,'::before').animationName),'ascii-portrait-gray-wolf-low-0');
  // Night: left alone it sleeps; a pat wakes it.
@@ -76,10 +76,10 @@ const errors=[];
  await rub('gray-wolf');await page.clock.runFor(3000);assert.notEqual(await pen('gray-wolf').getAttribute('data-mood'),'asleep');
  // The Advances table counts the next Advance of each tamed pet with a level.
  await page.locator('#pet-lion [data-field="owned"]').check();
- assert.equal(await page.locator('[data-target="pet-advances.coverage"] li').textContent(),'Lion');
- assert.equal(await page.locator('[data-target="pet-advances.total"]').getAttribute('data-open'),'');
- assert.equal(await page.locator('[data-target="pet-advances.rows"] tr').count(),1);
- assert.match(await page.locator('[data-target="pet-advances.total"]').textContent(),/100,000 KvK prep points/);
+ assert.equal(await page.locator('[data-answer="coverage"] li').textContent(),'Lion');
+ assert.equal(await page.locator('[data-answer="total"]').getAttribute('data-open'),'');
+ assert.equal(await page.locator('[data-answer="rows"] tr').count(),1);
+ assert.match(await page.locator('[data-answer="total"]').textContent(),/100,000 KvK prep points/);
  await page.locator('.sheet-views [data-value="answer"]').click();await page.locator('#advances').screenshot({path:path.join(output,'advances-390.png')});await page.locator('.sheet-views [data-value="mine"]').click();
  // Corrupt care in storage starts the pen again rather than breaking the page.
  await page.evaluate(()=>localStorage.setItem('ks.pet-care.v1','{oops'));await page.reload();await ready();assert.equal(await page.locator('#pet-gray-wolf [data-meter="fullness"]').getAttribute('aria-valuenow'),'60');

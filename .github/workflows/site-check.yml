@@ -57,7 +57,6 @@ jobs:
               - js/common.js
               - js/page-chrome.js
               - js/page-deck.js
-              - js/roster-editor.js
               - js/roster-form.mjs
               - js/governor-view.js
               - css/equipment.css
@@ -180,6 +179,7 @@ jobs:
               - masters/**
               - pets/**
               - js/pet-*
+              - js/pages/pet-den.mjs
               - _data/pets.json
               - css/pets.css
               - css/ascii-frames-pets.css
@@ -301,6 +301,7 @@ jobs:
               - js/hero-data.liquid
               - _data/heroes.json
               - js/pet-*
+              - js/pages/pet-den.mjs
               - _data/pets.json
             # Your kingdom on the home page.
             hints:
@@ -330,6 +331,7 @@ jobs:
               - js/hero-gear*.mjs
               - js/governor-*
               - js/pet-*
+              - js/pages/pet-den.mjs
               - js/master-*
               - js/pages/master-roster.mjs
               - js/hero-directory*.js
@@ -540,9 +542,9 @@ jobs:
       - name: Check governor equipment presentation
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/governor-view-check.cjs
-      - name: Check shared roster editing
+      - name: Check shared roster forms
         if: needs.changes.outputs.logic == 'true'
-        run: node .dsh/roster-editor-check.cjs
+        run: node .dsh/roster-form-check.cjs
       - name: Check hero spending plan and Heroes page points
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/hero-spend-check.cjs
