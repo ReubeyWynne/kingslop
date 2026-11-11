@@ -14,7 +14,7 @@ withBrowser({ root: path.resolve(process.env.SITE_ROOT || '_site') }, async ({ b
   const choice = key => page.locator('[data-choice="' + key + '"]').first();
   const ready = () => page.waitForFunction(() => document.querySelector('[data-target="seasonal.held"] .candy-headline') && document.querySelector('[data-target="seasonal.offers"] .candy-offer') && !document.querySelector('[data-target="seasonal.held"]').hasAttribute('aria-busy') && !document.querySelector('[data-target="seasonal.offers"]').hasAttribute('aria-busy'));
   const fill = async (field, value) => { await field.fill(String(value)); await field.dispatchEvent('change'); };
-  await page.goto(origin + '/seasonal/?lang=en'); await ready();
+  await page.goto(origin + '/seasonal/halloween-party/?lang=en'); await ready();
   assert.match(await target('held').textContent(), /Forgehammers/); assert.match(await target('held').textContent(), /Gems/);
   assert.equal(await page.locator('button[data-action="seasonal.forecast"]').count(), 0);
   assert.equal(await page.evaluate(() => PlayerLedger.shared().seasonal('halloween-2026')), null);
@@ -61,7 +61,7 @@ withBrowser({ root: path.resolve(process.env.SITE_ROOT || '_site') }, async ({ b
   await other.evaluate(() => { const s = PlayerLedger.shared(), f = s.seasonal('halloween-2026'); f.candy = 2000; s.setSeasonal('halloween-2026', f); });
   await page.waitForFunction(() => document.querySelector('[data-fact="candy"]').value === '2000');
   const save = await page.evaluate(() => PlayerLedger.shared().exportJSON());
-  const imported = await browser.newContext(), importedPage = await imported.newPage(); await importedPage.goto(origin + '/seasonal/?lang=en');
+  const imported = await browser.newContext(), importedPage = await imported.newPage(); await importedPage.goto(origin + '/seasonal/halloween-party/?lang=en');
   await importedPage.waitForFunction(() => window.Halloween); await importedPage.evaluate(save => PlayerLedger.shared().importJSON(save), save);
   await importedPage.waitForFunction(() => document.querySelector('[data-fact="candy"]').value === '2000'); await imported.close();
   await page.locator('[data-action="seasonal.progress"][data-panel="passes"]').click();
@@ -83,13 +83,13 @@ withBrowser({ root: path.resolve(process.env.SITE_ROOT || '_site') }, async ({ b
   await page.goto(origin + '/seasonal/halloween-party/?lang=en#pass-age-449');
   await page.waitForFunction(() => document.querySelector('#pass-age-449').open && document.querySelector('#event-reference').open);
   for (const width of [320, 768, 1920]) {
-    await page.setViewportSize({ width, height: 900 }); await page.goto(origin + '/seasonal/?lang=en'); await ready();
+    await page.setViewportSize({ width, height: 900 }); await page.goto(origin + '/seasonal/halloween-party/?lang=en'); await ready();
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'layout fits at ' + width);
     const ids = await page.evaluate(() => [...document.querySelectorAll('main [id]')].map(n => n.id)); assert.equal(ids.length, new Set(ids).size);
   }
-  await page.setViewportSize({ width: 390, height: 844 }); await page.goto(origin + '/seasonal/?lang=ar'); await ready();
+  await page.setViewportSize({ width: 390, height: 844 }); await page.goto(origin + '/seasonal/halloween-party/?lang=ar'); await ready();
   assert.equal(await fact('candy').inputValue(), '2000'); assert.equal(await page.locator('main').getAttribute('lang'), 'en');
-  await page.goto(origin + '/seasonal/?lang=en'); await ready(); await page.evaluate(() => scrollTo(0, 0));
+  await page.goto(origin + '/seasonal/halloween-party/?lang=en'); await ready(); await page.evaluate(() => scrollTo(0, 0));
   fs.mkdirSync('.dsh/seasonal-preview', { recursive: true }); await page.screenshot({ path: '.dsh/seasonal-preview/candy-mobile.png', fullPage: true }); await page.screenshot({ path: '.dsh/seasonal-preview/candy-first-screen.png' });
   await page.locator('#purchases > summary').click(); await choice('next').selectOption('1'); await ready(); await page.locator('#purchases').scrollIntoViewIfNeeded(); await page.screenshot({ path: '.dsh/seasonal-preview/candy-purchases.png' });
   await target('offers').locator('article').first().scrollIntoViewIfNeeded(); await page.screenshot({ path: '.dsh/seasonal-preview/candy-fixed-pack.png' });

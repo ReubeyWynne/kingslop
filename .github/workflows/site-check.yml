@@ -331,6 +331,8 @@ jobs:
               - _data/seasonal/**
               - js/seasonal*
               - js/halloween*
+              - js/fantasy-theater*
+              - js/pages/fantasy-theater.mjs
               - css/seasonal.css
               - .dsh/seasonal*.cjs
             # The deck walks every page and fails on any script error.
@@ -481,7 +483,9 @@ jobs:
 
       - name: Seasonal event calculations and save compatibility
         if: needs.changes.outputs.logic == 'true'
-        run: node --test .dsh/seasonal-check.cjs
+        run: |
+          node --test .dsh/seasonal-check.cjs
+          node --test .dsh/seasonal-theater-check.cjs
       - name: Check kingdom progression and migration
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/kingdom-progression-check.cjs
@@ -634,7 +638,9 @@ jobs:
           node .dsh/interaction-modules-check.cjs
       - name: Check seasonal event UI
         if: matrix.group == 'seasonal'
-        run: node .dsh/seasonal-ui-check.cjs
+        run: |
+          node .dsh/seasonal-ui-check.cjs
+          node .dsh/seasonal-theater-ui-check.cjs
       - name: Check kingdom timeline UI
         if: matrix.group == 'heroes'
         run: node .dsh/kingdom-progression-ui-check.cjs

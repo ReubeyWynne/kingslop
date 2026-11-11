@@ -1,7 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["en"] = {
   "seasonal.nav": "Seasonal",
-  "seasonal.lede": "what your Halloween candy is worth.",
+  "seasonal.lede": "what your Fantasy Theater amulets are worth.",
   "castle.nav": "Castle",
   "castle.deck.lede": "take the castle, keep it reinforced, and hold it.",
   "castle.meta.title": "Castle Battle — dey.ci",

@@ -99,3 +99,23 @@ html[data-page="seasonal"] { --void: #170D25; --void-2: #251535; --navy: #483153
 .candy-pack-price { color: var(--halloween-orange); font-size: .9rem; }
 .candy-packs small { color: var(--ink-muted); font-size: .75rem; }
 .candy-offer { scroll-margin-top: 4rem; }
+
+/* Fantasy Theater: the theater's jade stage and gold tokens in place of Halloween's purple and orange. */
+html[data-page="seasonal"]:has(.theater-page) { --void: #0E1F22; --void-2: #15302F; --navy: #2A4A47; --amber: #F0CE7A; --amber-dim: #C69A4E; --halloween-green: #8FE3C2; --halloween-purple: #7FCFC0; --halloween-orange: #F0CE7A; --ink: #F1E9D2; --ink-dim: #CFD8CC; --ink-muted: #A3B5AE; }
+.theater-facts { list-style: none; padding: 0; margin: .5rem 0 0; display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; color: var(--ink-dim); }
+.theater-facts b { color: var(--halloween-green); font-weight: 600; }
+.theater-facts small { color: var(--ink-muted); }
+.theater-rule { color: var(--halloween-orange); font-size: 1rem; }
+.seasonal-page .theater-check { flex-direction: row; align-items: center; gap: .6rem; min-height: 44px; }
+.theater-check input { width: 1.2rem; height: 1.2rem; accent-color: var(--halloween-green); }
+.theater-buys { list-style: none; padding: 0; margin: .6rem 0; }
+.theater-buys li { padding: .45rem 0; border-bottom: 1px solid var(--navy); }
+.theater-buys small { display: block; color: var(--ink-muted); font-size: .8rem; }
+.theater-count { color: var(--halloween-green); font-family: var(--display-2); }
+.theater-shop td small { display: block; color: var(--ink-muted); font-size: .78rem; }
+.theater-shop td b { color: var(--halloween-green); font-weight: 600; }
+.theater-zero td { color: var(--ink-muted); }
+.seasonal-page input.theater-left { width: 4.5rem; min-height: 36px; padding: .2rem .3rem; }
+.theater-narrow { max-width: 20rem; }
+.theater-other { margin-top: 2rem; font-size: .95rem; }
+.theater-other a { color: var(--halloween-orange); }

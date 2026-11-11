@@ -1,0 +1,83 @@
+{% assign event = site.data.seasonal.fantasy_theater %}{% assign depth = site.data.pages[self].depth %}
+<main class="seasonal-page theater-page" lang="en" dir="ltr" x-data="theater">
+  <header class="candy-heading"><p class="candy-kicker">Fantasy Theater · November 2026</p><h1>What are your amulets worth?</h1></header>
+
+  <section id="planner" class="candy-now" aria-labelledby="amulet-label">
+    <div class="candy-entry"><label id="amulet-label" for="held-amulets">Fantasy Amulets you have</label><input id="held-amulets" type="number" min="0" max="1000000" step="1" inputmode="numeric" value="1000" x-model.number="amulets" @input="enter()"><span class="candy-unit">amulets</span></div>
+    <div class="candy-value" aria-live="polite" :data-example="example ? 'Example' : null" data-example="Example">
+      <p class="candy-headline"><strong x-text="fmt(expected)">21,614</strong><span>tokens on average</span></p>
+      <ul class="theater-facts">
+        <li><b x-text="climbs.toFixed(1)">1.9</b> climbs to floor 7 <small>(<b x-text="safeClimbs">1</b> with 90% certainty)</small></li>
+        <li><b x-text="fortressRuns.toFixed(2)">0.56</b> Fortress runs</li>
+      </ul>
+    </div>
+    <p class="theater-rule">Claim only at the top: floor 7, and floor 8 in the Fortress.</p>
+  </section>
+
+  <details id="price" class="candy-chapter" open><summary><span class="candy-step">01</span><span>What a token costs<small>From the Fantasy Theater packs, one of each a day.</small></span></summary>
+    <div class="seasonal-table-wrap"><table class="seasonal-table">
+      <thead><tr><th>Pack</th><th>Price</th><th>Amulets</th><th>Per amulet</th><th>Per 1,000 tokens</th></tr></thead>
+      <tbody><template x-for="p in packs" :key="p.id"><tr><td x-text="p.name"></td><td x-text="money(p.price)"></td><td x-text="fmt(p.amulets)"></td><td x-text="money(p.perAmulet, 3)"></td><td><b x-text="money(p.perThousand)"></b></td></tr></template></tbody>
+    </table></div>
+    <p class="candy-context">The whole price is charged to the amulets; the gems and chests in each pack come free.</p>
+  </details>
+
+  <details id="shop" class="candy-chapter" open><summary><span class="candy-step">02</span><span>What to buy in the Theater Shop<small>Ranked by KvK prep points per token.</small></span></summary>
+    <div class="candy-income-grid">
+      <label>Tokens you have<input type="number" min="0" max="10000000" step="1" inputmode="numeric" value="0" x-model.number="tokens"><small>Added to the tokens your amulets are expected to earn.</small></label>
+      <label>Price tokens at<select x-model="pack">{% for p in event.packs %}<option value="{{ p.id }}"{% if p.id == 'rare' %} selected{% endif %}>{{ p.name }} pack</option>{% endfor %}</select></label>
+    </div>
+    <label class="theater-check"><input type="checkbox" checked x-model="mithrilFirst">Buy the 500-token Mithril first</label>
+    <p class="candy-income-total"><span x-text="fmt(budget)">21,614</span> tokens buy <b x-text="fmt(plan.points)">0</b> KvK points.</p>
+    <ul class="theater-buys"><template x-for="b in plan.buys" :key="b.index"><li><span class="theater-count" x-text="b.count + ' ×'"></span> <span x-text="b.name + ' ×' + b.per"></span> <small x-text="rows[b.row] + ' · ' + fmt(b.cost) + ' tokens · ' + fmt(b.total) + ' points'"></small></li></template></ul>
+    <details id="shop-lines" class="candy-subdetail"><summary>Every line, and what you have left</summary>
+    <div class="seasonal-table-wrap"><table class="seasonal-table theater-shop">
+      <thead><tr><th>Item</th><th>Tokens</th><th>Left</th><th>Points per token</th><th>Points per <span>{{ event.currency }}</span>1</th></tr></thead>
+      <tbody><template x-for="line in shop" :key="line.index"><tr :class="{ 'theater-zero': !line.points }">
+        <td><span x-text="line.name + ' ×' + line.per"></span><small x-text="rows[line.row] + ' · ' + days(line)"></small><small x-show="line.note && line.row === 'gold'" x-text="line.note"></small></td>
+        <td x-text="fmt(line.price)"></td>
+        <td><input class="theater-left" type="number" min="0" step="1" inputmode="numeric" :value="line.left" @change="setLeft(line.index, $event.target.value)" :aria-label="'Left: ' + line.name + ', ' + rows[line.row]"></td>
+        <td><b x-text="line.points ? line.perToken.toFixed(1) : '—'"></b></td>
+        <td x-text="line.points ? fmt(perMoney(line)) : '—'"></td>
+      </tr></template></tbody>
+    </table></div></details>
+    <p class="candy-context">Mithril's points undersell it: it is the cheapest Mithril you can buy anywhere.</p>
+  </details>
+
+  <details id="track" class="candy-chapter"><summary><span class="candy-step">03</span><span>Exploration rewards your amulets reach</span></summary>
+    <label class="theater-narrow">Amulets used this event<input type="number" min="0" max="100000" step="1" inputmode="numeric" value="0" x-model.number="used"><small>The counter beside the chest at the top right.</small></label>
+    <ul class="theater-buys"><template x-for="m in milestones" :key="m.at"><li><span class="theater-count" x-text="fmt(m.at)"></span> <span x-text="m.amount + ' × ' + m.name"></span></li></template></ul>
+    <p class="candy-income-total" x-show="milestonePoints"><span x-text="fmt(milestonePoints)"></span> KvK points from the speedups.</p>
+  </details>
+
+  <details id="climb" class="candy-chapter"><summary><span class="candy-step">04</span><span>How many amulets a climb takes</span></summary>
+    <div class="seasonal-table-wrap"><table class="seasonal-table">
+      <thead><tr><th></th><th>Theater, floor 1 to 7</th><th>Fortress, floor 1 to 8</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Average</th><td x-text="fmt(climbStats.mean)"></td><td x-text="fmt(fortressStats.mean)"></td></tr>
+        <tr><th scope="row">Half of climbs within</th><td x-text="fmt(climbStats.median)"></td><td x-text="fmt(fortressStats.median)"></td></tr>
+        <tr><th scope="row">90% within</th><td x-text="fmt(climbStats.p90)"></td><td x-text="fmt(fortressStats.p90)"></td></tr>
+        <tr><th scope="row">Every try fails</th><td x-text="fmt(climbStats.max)"></td><td x-text="fmt(fortressStats.max)"></td></tr>
+        <tr><th scope="row">Tokens, pauses and top</th><td x-text="fmt(climbStats.tokens)"></td><td x-text="fmt(fortressStats.tokens)"></td></tr>
+      </tbody>
+    </table></div>
+    <h3>Claiming earlier</h3>
+    <div class="seasonal-table-wrap"><table class="seasonal-table">
+      <thead><tr><th>Claim from floor</th><th>Tokens per amulet</th></tr></thead>
+      <tbody><template x-for="c in claimAt" :key="c.floor"><tr><td x-text="c.floor"></td><td x-text="c.rate.toFixed(1)"></td></tr></template></tbody>
+    </table></div>
+  </details>
+
+  <details id="calculation" class="candy-chapter"><summary>How this is calculated</summary>
+    <p>A pause pays {{ event.pauseTokensPerAmulet }} tokens per amulet. The ascent chance climbs 10%, 30%, 60%, 80%, then 100% on the fifth try, and an ascent is 1, 2 or 3 floors (80%, 19.67%, 0.33%). The top of the Theater gives 1–5 Fanstars, 1.5 on average; five send the next round into the Fortress.</p>
+    <p>The tokens per amulet are the long-run average with the best claim on every floor, solved exactly rather than simulated. Fortress floors 2 to 7 are counted at the Theater's rewards, since only floor 8's is published. KvK points are the prep values on the <a href="{{ depth }}events/">Event Cycle</a>.</p>
+    <div class="seasonal-table-wrap"><table class="seasonal-table">
+      <thead><tr><th>Floor</th><th>Theater explore</th><th>Fortress explore</th><th>Reward</th></tr></thead>
+      <tbody>{% for n in (1..8) %}{% assign k = n | append: '' %}<tr><td>{{ n }}</td><td>{{ event.theater.exploreCost[k] | default: '—' }}</td><td>{{ event.fortress.exploreCost[k] | default: '—' }}</td><td>{{ event.fortress.floorReward[k] | default: '—' }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    <p class="note">{% for s in event.sources %}{% if s.url != '' %}<a href="{{ s.url }}">{{ s.label }}</a>{% else %}{{ s.label }}{% endif %}: {{ s.covers }}.{% unless forloop.last %} {% endunless %}{% endfor %}</p>
+  </details>
+
+  <p class="theater-other"><a href="{{ depth }}seasonal/halloween-party/">Halloween Party candy</a></p>
+  <noscript><p>Enable JavaScript to value your amulets.</p></noscript>
+</main>

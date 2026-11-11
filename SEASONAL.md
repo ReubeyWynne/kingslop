@@ -1,6 +1,22 @@
+# Seasonal events
+
+`/seasonal/` opens the current event. Since 11 November 2026 that is Fantasy Theater, which `/seasonal/fantasy-theater/` also opens; the Halloween candy calculator stays at `/seasonal/halloween-party/`, linked from the foot of the Fantasy Theater page. There is no event listing. The Seasonal navigation, carousel and footer links are unchanged.
+
+## Fantasy Theater
+
+The page is built in Alpine (`js/pages/fantasy-theater.mjs` over `js/fantasy-theater.mjs`), with its data in `_data/seasonal/fantasy_theater.json`. It is English only, like the Halloween page, and nothing is saved: every input is a scenario.
+
+One input, amulets held, gives the expected Fantasy Tokens, the number of full climbs and the expected Fortress runs. The engine solves the best claim policy exactly: a dynamic programme over (floor, pity step) inside a bisection on tokens per amulet, the renewal-reward ratio of a round. A Fanstar is valued at a fifth of a Fortress round's surplus at that rate. With the published odds, best play is to claim only at the top (about 21.6 tokens per amulet); claiming on floors 2 to 5 earns about 18.7.
+
+The pack table divides each pack's whole price by its amulets and by the tokens they earn. The shop plan spends the tokens held plus the amulets' expected tokens: the 500-token Mithril first (optional; it is the cheapest Mithril anywhere), then the best KvK prep points per token while each line's stock lasts. Every line's stock can be overridden. KvK points follow `_data/event_rules.json`; `.dsh/seasonal-theater-check.cjs` holds the two to the same values. The exploration rewards list the milestones that the held amulets reach from the amulets already used. The climb table gives the exact spread of amulets a climb takes (average, median, 90th percentile, worst case).
+
+Sources: explore costs, floor rewards and pause rewards from Kingshot Packs; Fortress explore costs from Kingshot Mastery; odds, prices, stock, packs and the exploration track from the game's own screens (11 November 2026). Fortress floors 2 to 7 are counted at the Theater's rewards, since only floor 8's reward is published.
+
+Run `node --test .dsh/seasonal-theater-check.cjs`, then build and run `node .dsh/seasonal-theater-ui-check.cjs`.
+
 # Halloween candy value
 
-Both `/seasonal/` and `/seasonal/halloween-party/` open the Halloween candy calculator. There is no intermediate event listing while Halloween is the only seasonal event. The existing Seasonal navigation, carousel and footer links remain in place.
+`/seasonal/halloween-party/` opens the Halloween candy calculator.
 
 ## User flow
 
