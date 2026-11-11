@@ -1,7 +1,7 @@
 {%- comment -%}
 The calculator-first frame for a roster page (Heroes, Masters, Pets): yours beside the answer, as on
 the gear pages (css/sheet.css), and two tabs on a phone (js/planner.js). Wrap the page's two halves in a section with class
-"section sheet-console roster-console", data-module="page-sheet" and x-data="planner('<kind>')" (see a roster page):
+"section sheet-console roster-console", data-sheet-root and x-data="planner('<kind>')" (see a roster page):
   part="views"  the phone's two tabs. mine= / mine_en= the first tab's i18n key and English text.
   part="shelf"  while you own nothing, the line pointing to the roster in your half. kind= heroes, masters or pets.
                 Your half is the page's one roster (by generation, marking what you own), so there are no chips.

@@ -97,7 +97,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('select[data-action=\"governor-planner.profile\"]').inputValue(), 'custom');
     assert.equal(await page.locator('[data-bind="inventory.satin"]').inputValue(), '20000');
     // Without a link the page works on your save: edits save as you go and the address stays clean.
-    const sheet = key => page.locator('[data-target="page-sheet.' + key + '"]');
+    const sheet = key => page.locator('[data-sheet="' + key + '"]');
     assert.doesNotMatch(page.url(), /gov=/);
     assert.equal(await page.evaluate(() => PlayerLedger.shared().governor('gear')['inf-1']), 0);
     assert.equal(await page.evaluate(() => PlayerLedger.shared().balance('satin').amount), 20000);
@@ -106,8 +106,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.ok(await sheet('saveMine').isHidden()); assert.ok(await sheet('loadMine').isHidden());
     // Copy share link carries the governor, bag and priority.
     await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin });
-    await page.locator('[data-action="page-sheet.copy"]').click();
-    await page.waitForFunction(() => document.querySelector('[data-action="page-sheet.copy"]').textContent === 'Link copied');
+    await page.locator('[data-sheet="copy"]').click();
+    await page.waitForFunction(() => document.querySelector('[data-sheet="copy"]').textContent === 'Link copied');
     const shared = await page.evaluate(() => navigator.clipboard.readText());
     assert.match(shared, /[?&]gov=[^&]{24}/); assert.match(shared, /[?&]bag=20000\.200\.0\.\.(&|$)/);
     // Start blank opens a sheet of its own; Load mine goes back to your save.
@@ -125,22 +125,22 @@ withBrowser({ root }, async ({ browser, origin }) => {
     const visitor = await browser.newContext({ viewport: { width, height: 900 } }), guest = await visitor.newPage();
     await guest.goto(origin + '/hero-gear/?lang=en'); await guest.locator('#gear-mithril').fill('7');
     await guest.goto(shared); await guest.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
-    assert.equal(await guest.locator('[data-target="page-sheet.source"]').textContent(), 'A shared sheet.');
+    assert.equal(await guest.locator('[data-sheet="source"]').textContent(), 'A shared sheet.');
     assert.equal(await guest.locator('.gov-piece[data-gov="cav-2"]').getAttribute('data-state'), 'empty');
     assert.equal(await guest.locator('select[data-action=\"governor-planner.profile\"]').inputValue(), 'custom', 'the profile travels in the link');
     assert.equal(await guest.locator('[data-action="governor-planner.weight"][data-troop="cav"]').inputValue(), '0', 'and its weights');
     assert.equal(await guest.locator('[data-bind="inventory.satin"]').inputValue(), '20000');
     assert.equal(await guest.evaluate(() => PlayerLedger.shared().governor('gear')['cav-2']), null);
-    await guest.locator('[data-action="page-sheet.saveMine"]').click();
-    await Promise.all([guest.waitForNavigation(), guest.locator('[data-action="page-sheet.confirm"]').click()]);
+    await guest.locator('[data-sheet="saveMine"]').click();
+    await Promise.all([guest.waitForNavigation(), guest.locator('[data-sheet="confirm"]').click()]);
     await guest.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
     assert.equal(await guest.evaluate(() => PlayerLedger.shared().governor('gear')['inf-1']), 0, 'save as mine writes the sheet');
     assert.equal(await guest.evaluate(() => PlayerLedger.shared().balance('satin').amount), 20000);
     assert.equal(await guest.evaluate(() => PlayerLedger.shared().balance('mithril').amount), 7, 'other facts in the save stay');
-    assert.equal(await guest.locator('[data-target="page-sheet.source"]').textContent(), 'Your save.');
+    assert.equal(await guest.locator('[data-sheet="source"]').textContent(), 'Your save.');
     assert.doesNotMatch(guest.url(), /gov=/);
     await guest.goto(origin + '/governor-gear/?lang=en&gov=nonsense'); await guest.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
-    assert.match(await guest.locator('[data-target="page-sheet.source"]').textContent(), /could not be read/);
+    assert.match(await guest.locator('[data-sheet="source"]').textContent(), /could not be read/);
     await visitor.close();
     assert.deepEqual(errors, []);
     await context.close();
