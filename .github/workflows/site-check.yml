@@ -278,6 +278,8 @@ jobs:
               - js/upgrade-priority*
               - js/upgrade-goals*
               - js/upgrade-savings*
+              - js/pages/upgrade-*.mjs
+              - _includes/priority/**
               - js/event-rules.mjs
               - _data/event_rules.json
               - _data/upgrade_priority.json

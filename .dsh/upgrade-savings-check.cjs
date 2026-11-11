@@ -107,10 +107,10 @@ assert.equal(Savings.rates(ledger.history()).truegold.perDay, 100);
 // Page wiring and dictionaries.
 const pages = JSON.parse(fs.readFileSync('_data/pages.json', 'utf8'));
 const page = Object.values(pages).find(x => x && x.token === 'priority');
-const order = ['../js/event-rules.mjs', '../js/upgrade-goals.mjs', '../js/upgrade-savings.mjs', '../js/upgrade-goals-page.js', '../js/upgrade-savings-page.js'].map(s => page.scripts.indexOf(s));
+const order = ['../js/event-rules.mjs', '../js/upgrade-goals.mjs', '../js/upgrade-savings.mjs', '../js/pages/upgrade-goals.mjs', '../js/pages/upgrade-savings.mjs'].map(s => page.scripts.indexOf(s));
 assert.ok(order.every((n, i) => n >= 0 && (i === 0 || n > order[i - 1])), 'savings scripts load after the event rules and the goals');
-const markup = fs.readFileSync('upgrade-priority/index.html', 'utf8'), script = fs.readFileSync('js/upgrade-savings-page.js', 'utf8');
-assert.match(markup, /<section class="section" id="savings" data-module="upgrade-savings">/);
+const markup = fs.readFileSync('upgrade-priority/index.html', 'utf8'), script = fs.readFileSync('js/pages/upgrade-savings.mjs', 'utf8');
+assert.match(markup, /<section class="section" id="savings" x-data="upgradeSavings">/);
 assert.match(markup, /<a href="#savings"/);
 Savings.EVENTS.forEach(e => assert.match(markup, new RegExp('data-event="' + e + '"')));
 const dict = lang => { const sandbox = { window: {} }; vm.runInNewContext(fs.readFileSync('i18n/' + lang + '.js', 'utf8'), sandbox); return sandbox.window.__BH_I18N_DATA[lang]; };

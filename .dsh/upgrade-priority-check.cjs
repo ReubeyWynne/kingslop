@@ -108,8 +108,8 @@ rules.ladders.forEach(l => l.rungs.forEach(r => r.sources.forEach(s => assert.ok
 const pages = JSON.parse(fs.readFileSync('_data/pages.json', 'utf8'));
 const page = (Array.isArray(pages) ? pages : Object.values(pages).flat()).find(p => p && p.token === 'priority');
 assert.ok(page, 'priority page registered');
-['../js/upgrade-priority.mjs', '../js/upgrade-priority-words.js', '../js/upgrade-priority-page.js', '../js/governor-engine.mjs', '../js/hero-gear-engine.mjs'].forEach(s => assert.ok(page.scripts.includes(s), s));
-assert.ok(page.scripts.indexOf('../js/upgrade-priority-words.js') < page.scripts.indexOf('../js/upgrade-priority-page.js'), 'words before the page');
+['../js/upgrade-priority.mjs', '../js/upgrade-priority-words.js', '../js/pages/upgrade-priority.mjs', '../js/governor-engine.mjs', '../js/hero-gear-engine.mjs'].forEach(s => assert.ok(page.scripts.includes(s), s));
+assert.ok(page.scripts.indexOf('../js/upgrade-priority-words.js') < page.scripts.indexOf('../js/pages/upgrade-priority.mjs'), 'words before the page');
 // The priority engine is the upgrade priority page's own: no other page loads it.
 Object.entries(pages).filter(([token]) => token !== 'priority').forEach(([token, entry]) => ['scripts', 'lateScripts'].forEach(list => (entry[list] || []).forEach(src => assert.ok(!/upgrade-priority|next-step/.test(src), token + ' loads ' + src))));
 assert.match(fs.readFileSync('_includes/topbar.html', 'utf8'), /upgrade-priority\//);
@@ -118,7 +118,7 @@ const en = dict('en'), keys = Object.keys(en).filter(k => k.startsWith('priority
 const used = new Set();
 const markup = fs.readFileSync('upgrade-priority/index.html', 'utf8');
 for (const m of markup.matchAll(/data-i18n="(priority\.[A-Za-z0-9.-]+)"/g)) used.add(m[1]);
-for (const file of ['js/upgrade-priority-page.js', 'js/upgrade-priority-words.js']) for (const m of fs.readFileSync(file, 'utf8').matchAll(/t(?:pl)?\('([A-Za-z0-9.-]+)'/g)) if (!m[1].endsWith('.')) used.add('priority.' + m[1]);
+for (const file of ['js/pages/upgrade-priority.mjs', 'js/upgrade-priority-words.js']) for (const m of fs.readFileSync(file, 'utf8').matchAll(/t(?:pl)?\('([A-Za-z0-9.-]+)'/g)) if (!m[1].endsWith('.')) used.add('priority.' + m[1]);
 rules.ladders.forEach(l => { used.add(l.titleKey); l.rungs.forEach(r => used.add(r.key)); });
 stages.forEach(s => ['stage.', 'stageNote.'].forEach(p => used.add('priority.' + p + s)));
 rules.roles.forEach(r => ['role.', 'roleNote.'].forEach(p => used.add('priority.' + p + r)));

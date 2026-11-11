@@ -9,11 +9,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
   // Governor, so pin the clock: 13 days before prep opens on 2 Nov 2026.
   await context.clock.setFixedTime(new Date('2026-10-20T12:00:00Z'));
   await context.addInitScript(() => { window.moduleErrors = []; document.addEventListener('module:error', e => moduleErrors.push(e.detail)); });
-  const steps = () => page.locator('[data-target="upgrade-priority.list"] li h3').allTextContents();
+  const steps = () => page.locator('#priority-list li h3').allTextContents();
 
   // An empty save asks for the Town Centre first and still shows the static order.
   await page.goto(origin + '/upgrade-priority/?lang=en');
-  await page.waitForFunction(() => document.querySelector('[data-target="upgrade-priority.list"] li'));
+  await page.waitForFunction(() => document.querySelector('#priority-list li'));
   assert.equal((await steps())[0], 'Record your Town Center level');
   assert.equal(await page.locator('.priority-ladder').count(), 6);
   assert.equal(await page.locator('#order-buildings').getAttribute('open'), '');
@@ -29,11 +29,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
     store.setGovernor('gear', { 'inf-1': 30, 'inf-2': 30, 'cav-1': 30, 'cav-2': 30, 'arc-1': 30, 'arc-2': 30 });
     store.setPet('lion', { level: 20, advanced: false });
   });
-  await page.waitForFunction(() => /Embassy/.test(document.querySelector('[data-target="upgrade-priority.list"] li h3').textContent));
+  await page.waitForFunction(() => /Embassy/.test(document.querySelector('#priority-list li h3').textContent));
   let titles = await steps();
   assert.deepEqual(titles.slice(0, 2), ['Raise the Embassy from 23 to 24', 'Raise the Barracks from 22 to 24']);
   assert.ok(titles.some(t => /^Ascend Jabel/.test(t)));
-  assert.match(await page.locator('[data-target="upgrade-priority.status"]').textContent(), /24: Governor/);
+  assert.match(await page.locator('#priority-status').textContent(), /24: Governor/);
   assert.equal(await page.locator('#stage-governor').getAttribute('data-state'), 'current');
   assert.equal(await page.locator('[data-role="joiner"]').getAttribute('aria-pressed'), 'true');
   assert.match(await page.locator('#next').textContent(), /Record your governor materials/);
@@ -52,7 +52,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.waitForFunction(() => window.PlayerLedger.shared().priority().role === 'lead');
   await page.locator('#stage-tempered button').click();
   assert.equal(await page.locator('#stage-tempered').getAttribute('data-state'), 'preview');
-  assert.match(await page.locator('[data-target="upgrade-priority.status"]').textContent(), /Previewing Tempered Truegold/);
+  assert.match(await page.locator('#priority-status').textContent(), /Previewing Tempered Truegold/);
   assert.equal(await page.locator('#order-research li[data-later="false"]').count(), 4);
   await page.locator('#stage-tempered button').click();
   assert.equal(await page.locator('#stage-tempered').getAttribute('data-state'), '');
@@ -60,15 +60,15 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.waitForFunction(() => document.querySelector('[data-role="lead"]').getAttribute('aria-pressed') === 'true');
 
   // Goals: the editor adds one per target, each shows its shortfall, blanks can be recorded in place.
-  const goalTitles = () => page.locator('[data-target="upgrade-goals.list"] > li h3').allTextContents();
-  assert.equal(await page.locator('[data-target="upgrade-goals.empty"]').isVisible(), true);
-  await page.selectOption('[data-target="upgrade-goals.kind"]', 'building');
-  await page.selectOption('[data-target="upgrade-goals.target"]', 'town-center');
-  await page.selectOption('[data-target="upgrade-goals.level"]', '25');
+  const goalTitles = () => page.locator('#goal-list > li h3').allTextContents();
+  assert.equal(await page.locator('#goal-empty').isVisible(), true);
+  await page.selectOption('#goal-kind', 'building');
+  await page.selectOption('#goal-target', 'town-center');
+  await page.selectOption('#goal-level', '25');
   await page.getByRole('button', { name: 'Add goal' }).click();
   await page.waitForFunction(() => window.PlayerLedger.shared().priority().goals.length === 1);
   assert.deepEqual(await goalTitles(), ['Town Center to 25']);
-  let goal = page.locator('[data-target="upgrade-goals.list"] > li').first();
+  let goal = page.locator('#goal-list > li').first();
   assert.match(await goal.textContent(), /This counts the prerequisites too: Embassy 23 to 24, Barracks 22 to 24/);
   assert.match(await goal.textContent(), /how many you have is not recorded/);
   assert.equal(await goal.getAttribute('data-state'), 'unknown');
@@ -76,34 +76,34 @@ withBrowser({ root }, async ({ browser, origin }) => {
   const bread = goal.locator('input[data-item="bread"]');
   await bread.fill('5000'); await bread.press('Enter');
   await page.waitForFunction(() => window.PlayerLedger.shared().balance('bread').amount === 5000);
-  goal = page.locator('[data-target="upgrade-goals.list"] > li').first();
+  goal = page.locator('#goal-list > li').first();
   assert.match(await goal.locator('li[data-state="short"]').first().textContent(), /^Bread needs [\d,]+, you have 5,000: [\d,]+ short$/);
   assert.equal(await goal.getAttribute('data-state'), 'short');
   assert.match(await goal.locator('[data-part="state"]').textContent(), /blanks below may add more/);
   // A pet goal; the same target again replaces the level rather than adding a second goal.
-  await page.selectOption('[data-target="upgrade-goals.kind"]', 'pet');
-  await page.selectOption('[data-target="upgrade-goals.target"]', 'lion');
-  await page.selectOption('[data-target="upgrade-goals.level"]', '30');
+  await page.selectOption('#goal-kind', 'pet');
+  await page.selectOption('#goal-target', 'lion');
+  await page.selectOption('#goal-level', '30');
   await page.getByRole('button', { name: 'Add goal' }).click();
-  await page.selectOption('[data-target="upgrade-goals.level"]', '40');
+  await page.selectOption('#goal-level', '40');
   await page.getByRole('button', { name: 'Add goal' }).click();
   await page.waitForFunction(() => window.PlayerLedger.shared().priority().goals.some(g => g.level === 40));
   assert.deepEqual(await goalTitles(), ['Town Center to 25', 'Lion to level 40']);
   await page.screenshot({ path: path.join(output, 'priority-goals-390.png'), fullPage: true });
   await page.reload();
-  await page.waitForFunction(() => document.querySelectorAll('[data-target="upgrade-goals.list"] > li').length === 2);
+  await page.waitForFunction(() => document.querySelectorAll('#goal-list > li').length === 2);
   await page.getByRole('button', { name: 'Remove the Lion goal' }).click();
   await page.waitForFunction(() => window.PlayerLedger.shared().priority().goals.length === 1);
   assert.equal(await page.evaluate(() => document.activeElement.textContent), 'Remove');
 
   // Savings: no rate until enough readings; then each goal is projected to the soonest scoring event.
   const savings = page.locator('#savings');
-  assert.equal(await savings.locator('[data-target="upgrade-savings.learning"]').isVisible(), true);
-  assert.equal(await savings.locator('[data-target="upgrade-savings.rates"] li').count(), 0);
+  assert.equal(await savings.locator('#savings-learning').isVisible(), true);
+  assert.equal(await savings.locator('#savings-rates li').count(), 0);
   const soonest = await page.evaluate(() => window.UpgradeSavings.next(Date.now())[0]);
   assert.equal(await savings.locator('[data-event="' + soonest.event + '"]').getAttribute('aria-pressed'), 'true');
-  assert.match(await savings.locator('[data-target="upgrade-savings.status"]').textContent(), /^(KvK prep|Strongest Governor) opens on .+ \(UTC\), (today|in 1 day|in \d+ days)\.$/);
-  assert.match(await savings.locator('[data-target="upgrade-savings.goals"] > li').first().textContent(), /Record what this goal still needs/);
+  assert.match(await savings.locator('#savings-status').textContent(), /^(KvK prep|Strongest Governor) opens on .+ \(UTC\), (today|in 1 day|in \d+ days)\.$/);
+  assert.match(await savings.locator('#savings-goals > li').first().textContent(), /Record what this goal still needs/);
   await page.evaluate(() => {
     const store = window.PlayerLedger.shared(), day = 864e5, now = Date.now(), at = d => new Date(now - d * day).toISOString();
     ['wood', 'stone', 'iron'].forEach(id => store.setBalance(id, 1e9));
@@ -112,11 +112,11 @@ withBrowser({ root }, async ({ browser, origin }) => {
     localStorage.setItem(window.PlayerLedger.HISTORY_KEY, JSON.stringify({ schemaVersion: 1, entries: entries.sort((a, b) => a.at < b.at ? -1 : 1) }));
   });
   await page.reload();
-  await page.waitForFunction(() => document.querySelector('[data-target="upgrade-savings.rates"] li'));
-  const rates = await savings.locator('[data-target="upgrade-savings.rates"] li').allTextContents();
+  await page.waitForFunction(() => document.querySelector('#savings-rates li'));
+  const rates = await savings.locator('#savings-rates li').allTextContents();
   assert.deepEqual(rates, ['Bread: about 133,333,333 a day over 9 days of readings (300,000,000 spent in that time)']);
-  assert.equal(await savings.locator('[data-target="upgrade-savings.learning"]').isVisible(), false);
-  let pace = savings.locator('[data-target="upgrade-savings.goals"] > li').first();
+  assert.equal(await savings.locator('#savings-learning').isVisible(), false);
+  let pace = savings.locator('#savings-goals > li').first();
   assert.equal(await pace.locator('h4').textContent(), 'Town Center to 25');
   assert.equal(await pace.getAttribute('data-state'), 'reached');
   assert.match(await pace.locator('[data-part="state"]').textContent(), /^On pace: covered by .+, before (KvK prep|Strongest Governor)\.$/);
@@ -124,26 +124,26 @@ withBrowser({ root }, async ({ browser, origin }) => {
   const other = soonest.event === 'prep' ? 'sg' : 'prep';
   await savings.locator('[data-event="' + other + '"]').click();
   assert.equal(await savings.locator('[data-event="' + other + '"]').getAttribute('aria-pressed'), 'true');
-  assert.match(await savings.locator('[data-target="upgrade-savings.status"]').textContent(), other === 'sg' ? /^Strongest Governor/ : /^KvK prep/);
+  assert.match(await savings.locator('#savings-status').textContent(), other === 'sg' ? /^Strongest Governor/ : /^KvK prep/);
   await savings.screenshot({ path: path.join(output, 'priority-savings-390.png') });
 
   // A Truegold lead: troop buildings a tier behind, the War Academy, and steps that score.
   await page.evaluate(() => window.PlayerLedger.shared().setBuildings({ 'town-center': 'TG 5', embassy: 'TG 5', academy: '30', barracks: 'TG 3', range: 'TG 5', stable: 'TG 5', 'command-center': 'TG 2', 'war-academy': 'TG 2' }));
-  await page.waitForFunction(() => /TG 5: Tempered/.test(document.querySelector('[data-target="upgrade-priority.status"]').textContent));
+  await page.waitForFunction(() => /TG 5: Tempered/.test(document.querySelector('#priority-status').textContent));
   titles = await steps();
   assert.equal(titles[0], 'Raise the Barracks from TG 3 to TG 5');
   assert.ok(titles.includes('Raise the War Academy from TG 2 to TG 5'));
-  assert.ok(await page.locator('[data-target="upgrade-priority.list"] [data-part="scores"]:visible').count() > 0);
+  assert.ok(await page.locator('#priority-list [data-part="scores"]:visible').count() > 0);
   await page.locator('#next-more summary').click();
   await page.waitForFunction(() => location.hash === '#next-more');
 
   // Every language and width paints without errors; Arabic runs right to left.
   for (const lang of ['de', 'ar', 'ja']) {
     await page.goto(origin + '/upgrade-priority/?lang=' + lang);
-    await page.waitForFunction(() => document.querySelector('[data-target="upgrade-priority.list"] li'));
+    await page.waitForFunction(() => document.querySelector('#priority-list li'));
     await page.waitForFunction(l => document.documentElement.lang === l, lang);
     await page.waitForTimeout(150);
-    await page.waitForFunction(() => document.querySelector('[data-target="upgrade-goals.list"] li'));
+    await page.waitForFunction(() => document.querySelector('#goal-list li'));
     const text = await page.locator('main').innerText();
     assert.doesNotMatch(text, /priority\.[a-z]/, lang);
     await page.screenshot({ path: path.join(output, 'priority-' + lang + '-390.png'), fullPage: true });
@@ -151,7 +151,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   for (const width of [320, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(origin + '/upgrade-priority/?lang=en');
-    await page.waitForFunction(() => document.querySelector('[data-target="upgrade-priority.list"] li'));
+    await page.waitForFunction(() => document.querySelector('#priority-list li'));
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), 'no sideways scroll at ' + width);
     await page.screenshot({ path: path.join(output, 'priority-en-' + width + '.png'), fullPage: true });
   }

@@ -1100,9 +1100,9 @@
       "../js/upgrade-priority-words.js",
       "../js/upgrade-goals.mjs",
       "../js/upgrade-savings.mjs",
-      "../js/upgrade-priority-page.js",
-      "../js/upgrade-goals-page.js",
-      "../js/upgrade-savings-page.js"
+      "../js/pages/upgrade-priority.mjs",
+      "../js/pages/upgrade-goals.mjs",
+      "../js/pages/upgrade-savings.mjs"
     ],
     "footMainKey": "priority.kicker",
     "footMain": "what to raise next",
