@@ -167,6 +167,8 @@ jobs:
               - town-centre/**
               - js/town-centre*.js
               - js/town-centre*.mjs
+              - js/pages/town-centre.mjs
+              - js/pages/governor-profile.mjs
             pets:
               - *shared
               - .dsh/pets-ui-check.cjs
@@ -222,6 +224,7 @@ jobs:
               - .dsh/governor-fixtures/**
               - governor-gear/**
               - js/governor-*
+              - js/pages/governor-profile.mjs
               - js/screen-import*.js
               - js/import-adapters/governor.js
               - css/screen-import.css
@@ -240,6 +243,8 @@ jobs:
               - town-centre/**
               - js/town-centre*.js
               - js/town-centre*.mjs
+              - js/pages/town-centre.mjs
+              - js/pages/governor-profile.mjs
               - js/event-*
               - js/governor-*
               - js/hero-gear-engine.mjs
@@ -289,6 +294,7 @@ jobs:
               - _data/masters.json
               - js/hero-gear-engine.mjs
               - js/governor-*
+              - js/pages/governor-profile.mjs
               - _data/governor.json
               - js/building-*
               - _data/buildings.json
@@ -323,6 +329,7 @@ jobs:
               - js/hero-gear*.js
               - js/hero-gear*.mjs
               - js/governor-*
+              - js/pages/governor-profile.mjs
               - js/pet-*
               - js/master-*
               - js/hero-directory*.js
@@ -330,6 +337,7 @@ jobs:
               - js/hero-points.js
               - js/town-centre*.js
               - js/town-centre*.mjs
+              - js/pages/town-centre.mjs
             seasonal:
               - *shared
               - seasonal/**

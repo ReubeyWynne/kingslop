@@ -9,7 +9,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     page.on('pageerror', error => errors.push(error.message));
     const ready = () => page.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
     const target = key => page.locator('[data-target="governor-planner.' + key + '"]');
-    const profile = key => page.locator('[data-target="governor-profile.' + key + '"]');
+    const profile = key => page.locator({ dialog: '.gov-profile .gov-dialog', editTitle: '#gov-edit-title', editNext: '#gov-editNext' }[key]);
     const tile = id => page.locator('.gov-piece[data-gov="' + id + '"]');
     const row = id => page.locator('.gov-row[data-item="' + id + '"]');
     await page.goto(origin + '/governor-gear/?lang=en'); await ready();
@@ -32,7 +32,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.ok(await dialog.evaluate(node => node.open));
     assert.equal(await profile('editTitle').textContent(), 'Staff · Archer');
     await gearLevel.selectOption('');
-    await dialog.locator('[data-action="governor-profile.close"]').click();
+    await dialog.locator('.gov-done').click();
     assert.equal(await tile('arc-2').getAttribute('data-state'), 'unset');
     await tile('cav-2').click();
     await dialog.locator('.gov-edit-gear [data-step="1"]').click();
@@ -115,7 +115,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await tile('inf-1').getAttribute('data-state'), 'unset');
     assert.equal(await sheet('source').textContent(), 'A blank sheet.');
     assert.match(page.url(), /gov=\.{24}(&|#|$)/); assert.doesNotMatch(page.url(), /bag=/);
-    await tile('inf-1').click(); await dialog.locator('.gov-edit-gear [data-step="1"]').click(); await dialog.locator('[data-action="governor-profile.close"]').click();
+    await tile('inf-1').click(); await dialog.locator('.gov-edit-gear [data-step="1"]').click(); await dialog.locator('.gov-done').click();
     assert.equal(await page.evaluate(() => PlayerLedger.shared().governor('gear')['inf-1']), 0, 'a sheet leaves the save');
     assert.equal(await sheet('source').textContent(), 'A shared sheet.');
     await Promise.all([page.waitForNavigation(), sheet('loadMine').click()]); await ready();

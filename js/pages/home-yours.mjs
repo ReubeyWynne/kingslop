@@ -15,7 +15,7 @@ const count = (map, test) => Object.keys(map || {}).filter(id => test(map[id])).
 const confirmed = entry => Boolean(entry) && entry.status === 'confirmed';
 const known = entry => Boolean(entry) && entry.level !== null && entry.level !== undefined;
 const roster = (snapshot, section) => count(snapshot[section] && snapshot[section].roster, () => true);
-// The kvk.js weeks, by day of the cycle.
+// The event-cycle.mjs weeks, by day of the cycle.
 const weekOf = day => day <= 7 ? 'brawl' : day <= 14 ? 'sg' : day <= 20 ? 'mob' : day === 21 ? 'gap' : day <= 26 ? 'prep' : 'battle';
 
 function held(snapshot) {

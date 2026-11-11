@@ -130,7 +130,7 @@ for (const page of ['masters', 'town']) {
 }
 const town = pages.town.scripts.map(s => s.replace('../js/', ''));
 assert(town.indexOf('master-spend.mjs') < town.indexOf('town-centre-engine.mjs'));
-assert(town.indexOf('master-points.js') < town.indexOf('town-centre.js'));
+assert(town.indexOf('master-points.js') < town.indexOf('pages/town-centre.mjs'));
 const townPage = read('town-centre/index.html');
 assert.match(townPage, /aria-controls="town-masters"/); assert.match(townPage, /id="town-masters"[^>]*data-shelf="masters"/);
 assert.match(townPage, /data-module="master-directory">\s*{% include masters\/roster.html %}/);

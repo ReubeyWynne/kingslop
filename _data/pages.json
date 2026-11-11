@@ -799,8 +799,8 @@
       "../js/master-directory.js",
       "../js/master-points.js",
       "../js/governor-view.js",
-      "../js/governor-profile.js",
-      "../js/town-centre.js",
+      "../js/pages/governor-profile.mjs",
+      "../js/pages/town-centre.mjs",
       "../js/empty-state.js"
     ],
     "footMainKey": "town.kicker",
@@ -868,7 +868,7 @@
       "../js/governor-engine.mjs",
       "../js/event-points.js",
       "../js/governor-view.js",
-      "../js/governor-profile.js",
+      "../js/pages/governor-profile.mjs",
       "../js/page-sheet.js",
       "../js/governor-sheet.js",
       "../js/governor-planner.js"

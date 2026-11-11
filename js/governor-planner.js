@@ -1,6 +1,6 @@
 /* Bounded DOM adapter for the governor answer. Arithmetic lives in governor-engine.mjs;
    levels, choices and materials live in the page's own sheet (governor-sheet.js), and the
-   profile beside it (governor-profile.js) edits them. The answer is where each piece ends
+   profile beside it (js/pages/governor-profile.mjs) edits them. The answer is where each piece ends
    up and one bill, never a queue of single steps: "with what I have" spends the bag by the
    chosen troop profile, "cost to reach" prices a target for every piece or one troop. */
 (function () {
