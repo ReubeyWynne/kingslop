@@ -37,7 +37,7 @@ Art in `img/masters/` is Kingshot game art; `img/masters/SOURCES.md` lists where
 ## Page
 
 - `_includes/masters/roster.html` is the roster with each master's dossier and "Your master" form, shared by the Masters page and the Town Centre (`bag="off"` leaves out the emblem and manuscript bag). Masters are grouped by unlock day. Every dossier is a `details` with `data-deep-link="master-{id}"`, so `#master-valora` opens Valora's.
-- `js/master-directory.js` paints the tiles and forms from the ledger and writes edits back.
+- `js/pages/master-roster.mjs` is the roster's Alpine controller: `masterRoster` around it and `master('<id>')` on each master bind the tiles, dossier lines and forms to the store the page works on, and write edits back.
 - `js/master-points.js` paints the KvK points table.
 - The Tome scene (`tome` in `.dsh/build-ascii.py`) is the page hero and deck cover.
 
