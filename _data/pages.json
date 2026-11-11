@@ -1173,19 +1173,19 @@
     "token": "seasonal",
     "depth": "../",
     "canonicalPath": "/seasonal/",
-    "themeColor": "#170D25",
+    "themeColor": "#0E1F22",
     "icon": "",
     "titleKey": "",
-    "titleText": "Seasonal events — dey.ci",
+    "titleText": "Fantasy Theater — dey.ci",
     "metaDescKey": "",
-    "metaDesc": "What your Halloween candy is worth: expected items and points, future income, and remaining pack value.",
+    "metaDesc": "What your Fantasy Theater amulets are worth: expected tokens, the money price of a token, and the Theater Shop ranked by KvK points.",
     "ogTitleKey": "",
-    "ogTitle": "Seasonal events",
+    "ogTitle": "Fantasy Theater",
     "ogDescKey": "",
-    "ogDesc": "Plan seasonal rewards from where you are now.",
+    "ogDesc": "What your amulets are worth, and what to buy with the tokens.",
     "skipHref": "#planner",
     "skipKey": "",
-    "skipText": "Skip to candy value",
+    "skipText": "Skip to amulet value",
     "dust": "",
     "brand": "SEASONAL",
     "brandNoteKey": "",
@@ -1212,16 +1212,14 @@
       "../js/page-deck.js",
       "../js/page-chrome.js",
       "../js/common.js",
-      "../js/seasonal-data.js",
-      "../js/halloween-engine.js",
-      "../js/seasonal.js"
+      "../js/pages/fantasy-theater.mjs"
     ],
     "footMainKey": "",
     "footMain": "SEASONAL EVENTS",
     "footSubs": [
       {
         "key": "",
-        "html": "Event data from <a href=\"https://kingshotpacks.com/halloween-party\">Kingshot Packs</a>, extracted 28 October 2026. Community data; check your in-game rules and timer."
+        "html": "Event data from <a href=\"https://kingshotpacks.com/fantasy-theater\">Kingshot Packs</a> and the game's own Probabilities tab, checked 11 November 2026. Community data; check your in-game rules and timer."
       }
     ],
     "headScripts": []
@@ -1279,6 +1277,61 @@
       {
         "key": "",
         "html": "Event data from <a href=\"https://kingshotpacks.com/halloween-party\">Kingshot Packs</a>, extracted 28 October 2026. Community data; check your in-game rules and timer."
+      }
+    ],
+    "headScripts": []
+  },
+  "fantasy": {
+    "token": "seasonal",
+    "depth": "../../",
+    "canonicalPath": "/seasonal/fantasy-theater/",
+    "themeColor": "#0E1F22",
+    "icon": "",
+    "titleKey": "",
+    "titleText": "Fantasy Theater — dey.ci",
+    "metaDescKey": "",
+    "metaDesc": "What your Fantasy Theater amulets are worth: expected tokens, the money price of a token, and the Theater Shop ranked by KvK points.",
+    "ogTitleKey": "",
+    "ogTitle": "Fantasy Theater",
+    "ogDescKey": "",
+    "ogDesc": "What your amulets are worth, and what to buy with the tokens.",
+    "skipHref": "#planner",
+    "skipKey": "",
+    "skipText": "Skip to amulet value",
+    "dust": "",
+    "brand": "SEASONAL",
+    "brandNoteKey": "",
+    "brandNote": "from where you are now",
+    "swipePrev": {
+      "url": "../../events/",
+      "page": "kvksg",
+      "title": "Event Cycle",
+      "lede": "what’s on today, what scores, and what to save."
+    },
+    "swipeNext": {
+      "url": "../../bear-hunt/",
+      "page": "bearhunt",
+      "title": "Bear Hunt",
+      "lede": "build your marches, fill rallies, and run the hunt."
+    },
+    "css": [
+      "../../css/styles.css",
+      "../../css/events.css",
+      "../../css/seasonal.css"
+    ],
+    "scripts": [
+      "../../js/i18n.js",
+      "../../js/page-deck.js",
+      "../../js/page-chrome.js",
+      "../../js/common.js",
+      "../../js/pages/fantasy-theater.mjs"
+    ],
+    "footMainKey": "",
+    "footMain": "SEASONAL EVENTS",
+    "footSubs": [
+      {
+        "key": "",
+        "html": "Event data from <a href=\"https://kingshotpacks.com/fantasy-theater\">Kingshot Packs</a> and the game's own Probabilities tab, checked 11 November 2026. Community data; check your in-game rules and timer."
       }
     ],
     "headScripts": []

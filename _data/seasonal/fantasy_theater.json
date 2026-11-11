@@ -1,0 +1,115 @@
+{
+  "id": "fantasy-theater",
+  "name": "Fantasy Theater",
+  "checked": "2026-11-11",
+  "sources": [
+    { "label": "Kingshot Packs", "url": "https://kingshotpacks.com/fantasy-theater", "covers": "Explore costs, floor rewards, pause rewards, ascent odds" },
+    { "label": "Kingshot Mastery", "url": "https://kingshotmastery.com/guides/kingshot-fantasy-theater-guide", "covers": "Fortress explore costs" },
+    { "label": "In game", "url": "", "covers": "Probabilities tab, shop prices and stock, packs, exploration rewards (owner's screenshots, 11 Nov 2026)" }
+  ],
+  "eventDays": 7,
+  "pauseTokensPerAmulet": 10,
+  "ascentByAttempt": [0.10, 0.30, 0.60, 0.80, 1.00],
+  "floorsClimbed": [
+    { "floors": 1, "chance": 0.80 },
+    { "floors": 2, "chance": 0.1967 },
+    { "floors": 3, "chance": 0.0033 }
+  ],
+  "fanstars": [
+    { "stars": 1, "chance": 0.72 },
+    { "stars": 2, "chance": 0.14 },
+    { "stars": 3, "chance": 0.08 },
+    { "stars": 4, "chance": 0.04 },
+    { "stars": 5, "chance": 0.02 }
+  ],
+  "fanstarsForFortress": 5,
+  "theater": {
+    "top": 7,
+    "exploreCost": { "1": 5, "2": 8, "3": 20, "4": 30, "5": 60, "6": 100 },
+    "floorReward": { "2": 140, "3": 300, "4": 850, "5": 1600, "6": 3000, "7": 6800 }
+  },
+  "fortress": {
+    "top": 8,
+    "exploreCost": { "1": 3, "2": 7, "3": 14, "4": 20, "5": 40, "6": 70, "7": 100 },
+    "floorReward": { "2": 140, "3": 300, "4": 850, "5": 1600, "6": 3000, "7": 6800, "8": 13000 },
+    "assumed": "Fortress floors 2 to 7 are counted at the Theater's rewards; only floor 8 is published."
+  },
+  "packs": [
+    { "id": "common", "name": "Common", "price": 4.99, "amulets": 60, "gems": 2500 },
+    { "id": "uncommon", "name": "Uncommon", "price": 9.99, "amulets": 120, "gems": 5000 },
+    { "id": "rare", "name": "Rare", "price": 19.99, "amulets": 240, "gems": 10000 },
+    { "id": "epic", "name": "Epic", "price": 49.99, "amulets": 550, "gems": 25000 },
+    { "id": "mythic", "name": "Mythic", "price": 99.99, "amulets": 1000, "gems": 50000 }
+  ],
+  "currency": "£",
+  "track": [
+    { "at": 100, "item": "speedup", "amount": 15 },
+    { "at": 200, "item": "goldChest", "amount": 10 },
+    { "at": 500, "item": "silverChest", "amount": 15 },
+    { "at": 800, "item": "speedup", "amount": 45 },
+    { "at": 1100, "item": "goldChest", "amount": 30 },
+    { "at": 1400, "item": "silverChest", "amount": 15 },
+    { "at": 1700, "item": "speedup", "amount": 45 },
+    { "at": 2000, "item": "goldChest", "amount": 30 },
+    { "at": 2300, "item": "silverChest", "amount": 15 },
+    { "at": 2600, "item": "speedup", "amount": 45 },
+    { "at": 2900, "item": "goldChest", "amount": 30 },
+    { "at": 3200, "item": "silverChest", "amount": 15 },
+    { "at": 3500, "item": "speedup", "amount": 45 },
+    { "at": 3800, "item": "goldChest", "amount": 30 },
+    { "at": 4100, "item": "silverChest", "amount": 15 },
+    { "at": 4400, "item": "speedup", "amount": 45 },
+    { "at": 4700, "item": "goldChest", "amount": 30 },
+    { "at": 5000, "item": "silverChest", "amount": 15 },
+    { "at": 5300, "item": "speedup", "amount": 45 },
+    { "at": 5600, "item": "goldChest", "amount": 30 },
+    { "at": 5900, "item": "silverChest", "amount": 15 }
+  ],
+  "trackItems": {
+    "speedup": { "name": "1h speedups", "kvkPoints": 1800 },
+    "goldChest": { "name": "Gold chests", "kvkPoints": 0 },
+    "silverChest": { "name": "Mystery chests", "kvkPoints": 0 }
+  },
+  "items": {
+    "truegold": { "name": "Truegold", "per": 20, "kvkPoints": 2000, "days": [1, 2, 5], "img": "img/kingshot/truegold.png", "note": "Scores only when spent on a building upgrade." },
+    "mithril": { "name": "Mithril", "per": 1, "kvkPoints": 40000, "days": [4, 5], "img": "img/hero-gear/mithril.webp", "priority": true },
+    "gearChest": { "name": "Mythic gear chest", "per": 1, "kvkPoints": 0, "days": [], "img": "img/hero-gear/mythic-gear.webp" },
+    "forgehammer": { "name": "Forgehammer", "per": 7, "kvkPoints": 4000, "days": [4, 5], "img": "img/hero-gear/forgehammer.webp" },
+    "emblem": { "name": "Master Emblem", "per": 4, "kvkPoints": 6000, "days": [2, 3], "img": "img/items/master-emblem.webp" },
+    "manuscript": { "name": "Master's Manuscript", "per": 210, "kvkPoints": 60, "days": [2, 3], "img": "img/items/masters-manuscript.webp" },
+    "spices": { "name": "Elite Spices", "per": 4, "kvkPoints": 0, "days": [], "img": "", "note": "+1,000 master affinity each." },
+    "speedup": { "name": "1h speedup", "per": 18, "kvkPoints": 1800, "days": [1, 2, 5], "img": "img/items/general-speedup.webp" },
+    "training": { "name": "1h training speedup", "per": 22, "kvkPoints": 1800, "days": [1, 2, 5], "img": "img/items/general-speedup.webp", "note": "On day 4 it scores through the troops it finishes." },
+    "training5": { "name": "5-min training speedup", "per": 6, "kvkPoints": 150, "days": [1, 2, 5], "img": "img/items/general-speedup.webp" }
+  },
+  "shop": [
+    { "row": "gold", "item": "truegold", "price": 200, "stock": 15 },
+    { "row": "gold", "item": "mithril", "price": 500, "stock": 6 },
+    { "row": "gold", "item": "gearChest", "price": 1600, "stock": 2 },
+    { "row": "gold", "item": "forgehammer", "price": 190, "stock": 16 },
+    { "row": "gold", "item": "emblem", "price": 170, "stock": 18 },
+    { "row": "gold", "item": "manuscript", "price": 150, "stock": 20 },
+    { "row": "gold", "item": "spices", "price": 170, "stock": 18 },
+    { "row": "gold", "item": "speedup", "price": 200, "stock": 15 },
+    { "row": "gold", "item": "training", "price": 200, "stock": 15 },
+    { "row": "purple", "item": "truegold", "price": 300, "stock": 38 },
+    { "row": "purple", "item": "mithril", "price": 750, "stock": 15 },
+    { "row": "purple", "item": "gearChest", "price": 2400, "stock": 5 },
+    { "row": "purple", "item": "forgehammer", "price": 280, "stock": 40 },
+    { "row": "purple", "item": "emblem", "price": 260, "stock": 44 },
+    { "row": "purple", "item": "manuscript", "price": 220, "stock": 52 },
+    { "row": "purple", "item": "spices", "price": 260, "stock": 45 },
+    { "row": "purple", "item": "speedup", "price": 300, "stock": 38 },
+    { "row": "purple", "item": "training", "price": 300, "stock": 38 },
+    { "row": "blue", "item": "truegold", "price": 360, "stock": 50 },
+    { "row": "blue", "item": "mithril", "price": 900, "stock": 20 },
+    { "row": "blue", "item": "gearChest", "price": 3000, "stock": 6 },
+    { "row": "blue", "item": "forgehammer", "price": 350, "stock": 50 },
+    { "row": "blue", "item": "emblem", "price": 300, "stock": 60 },
+    { "row": "blue", "item": "manuscript", "price": 260, "stock": 70 },
+    { "row": "blue", "item": "spices", "price": 300, "stock": 60 },
+    { "row": "blue", "item": "speedup", "price": 360, "stock": 60 },
+    { "row": "blue", "item": "training", "price": 360, "stock": 60 },
+    { "row": "blue", "item": "training5", "price": 10, "stock": 9999 }
+  ]
+}
