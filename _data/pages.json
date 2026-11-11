@@ -1269,7 +1269,7 @@
       "../../js/common.js",
       "../../js/seasonal-data.js",
       "../../js/halloween-engine.js",
-      "../../js/seasonal.js"
+      "../../js/pages/seasonal.mjs"
     ],
     "footMainKey": "",
     "footMain": "SEASONAL EVENTS",

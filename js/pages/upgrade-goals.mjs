@@ -81,7 +81,8 @@ function present(snapshot) {
   });
 }
 
-const ledger = () => globalThis.PlayerLedger.shared();
+// Edits go to the store the page works on, the one $store.ledger follows.
+const ledger = () => globalThis.Interactions.ledger();
 
 Alpine.data('upgradeGoals', () => ({
   goals: [], kind: UpgradePriority.rules.goalKinds[0], target: '', level: '', seal: '', sealState: null,

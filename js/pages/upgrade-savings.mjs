@@ -57,7 +57,7 @@ Alpine.data('upgradeSavings', () => ({
   init() {
     Alpine.effect(() => {
       Alpine.store('i18n').v; const ready = Alpine.store('ledger').ready;
-      this.view = present(ready ? globalThis.PlayerLedger.shared() : null, this.chosen);
+      this.view = present(ready ? globalThis.Interactions.ledger() : null, this.chosen);
     });
   },
   pressed(event) { return String(event === this.view.pick); }

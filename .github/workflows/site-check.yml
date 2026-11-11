@@ -336,6 +336,7 @@ jobs:
               - _includes/seasonal/**
               - _data/seasonal/**
               - js/seasonal*
+              - js/pages/seasonal.mjs
               - js/halloween*
               - js/fantasy-theater*
               - js/pages/fantasy-theater.mjs
