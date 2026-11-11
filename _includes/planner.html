@@ -4,8 +4,8 @@ the gear pages (css/sheet.css), and two tabs on a phone (js/planner.js). Wrap th
 a section with data-module="planner page-sheet" and class "section sheet-console":
   part="views"  the phone's two tabs. mine= / mine_en= the first tab's i18n key and English text.
   part="shelf"  the chips for what you own, linking to each card below. kind= heroes, masters or pets.
-                Heroes gets no chips: its Browse grid already marks what you own, so the shelf there is only the
-                empty prompt that points down to it.
+                Heroes gets no chips: its own half holds the whole roster, which marks what you own, so the
+                shelf there is only the empty prompt that points down to it.
 Each half is a div with data-half="mine" or data-half="answer".
 {%- endcomment -%}
 {%- if include.part == "views" -%}

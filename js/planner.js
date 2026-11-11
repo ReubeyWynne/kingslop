@@ -9,8 +9,8 @@
                   shelf holds anything at first paint, and a link into either half
                   opens that one.
    roster-shelf   [data-shelf="heroes|masters|pets"], one [data-key] chip per entry
-                  in the static markup (none on Heroes, whose Browse grid already
-                  marks what you own). It shows the chips the save owns, writes
+                  in the static markup (none on Heroes, whose own half holds the
+                  whole roster). It shows the chips the save owns, writes
                   each chip's level into its [data-line], shows
                   [data-target="roster-shelf.empty"] when none are owned and fires
                   `roster-shelf:paint` with { owned } (entries in the save) on the root.
