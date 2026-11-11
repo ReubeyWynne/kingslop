@@ -11,8 +11,9 @@
    - $store.i18n: `v` changes on every language or number-format switch. Anything that reads
      it re-renders then. Controllers spread `words` into their state, whose helpers read it
      for them.
-   - $store.ledger: the player ledger's latest snapshot, replaced on every save, in this tab
-     or another. `snapshot` is null when the ledger cannot be read (storage blocked).
+   - $store.ledger: the latest snapshot of the store the page works on (your save, or a shared
+     sheet's copy), replaced on every save, in this tab or another. `snapshot` is null when the
+     ledger cannot be read (storage blocked).
 
    Static copy stays on data-i18n, painted by i18n.js. Only text that depends on state is
    bound here, and never on a node that also carries data-i18n. */
@@ -24,18 +25,23 @@ const BH = () => globalThis.BH;
 Alpine.store('i18n', { v: 0 });
 document.addEventListener('i18n:change', () => { Alpine.store('i18n').v++; });
 
-let ledger = null;
-try { ledger = PlayerLedger.shared(); } catch (cause) { ledger = null; }
 // The snapshot is kept outside Alpine's reactivity (a large object, never edited here);
-// `v` is what bindings track.
+// `v` is what bindings track. Filled in at start, from the store the page works on.
 let snapshot = null;
-try { snapshot = ledger && ledger.snapshot(); } catch (cause) { snapshot = null; }
 Alpine.store('ledger', {
   v: 0,
   get snapshot() { this.v; return snapshot; },
   get ready() { this.v; return snapshot !== null; }
 });
-if (ledger && snapshot) ledger.subscribe(next => { snapshot = next; Alpine.store('ledger').v++; });
+/* The store the page works on: your save, or a sheet's in-memory copy when the page is on a
+   shared link or ?guest (page-sheet.js chooses before the page starts). */
+function connect() {
+  let ledger = null;
+  try { ledger = globalThis.Interactions ? Interactions.ledger() : PlayerLedger.shared(); snapshot = ledger.snapshot(); }
+  catch (cause) { ledger = null; snapshot = null; }
+  if (ledger && snapshot) ledger.subscribe(next => { snapshot = next; Alpine.store('ledger').v++; });
+  Alpine.store('ledger').v++;
+}
 
 /* Text helpers for controllers and templates. Each reads $store.i18n.v, so a binding that
    uses one re-renders on a language switch. */
@@ -71,7 +77,7 @@ export function shared(name, definition) {
    own bundle, with its controllers, too), the moment common.js boots the page. This file runs in
    the site bundle, ahead of i18n.js and common.js, so it waits for DOMContentLoaded before
    asking either: readyState alone cannot say that the deferred scripts have all run. */
-function start() { globalThis.Alpine = Alpine; Alpine.start(); }
+function start() { connect(); globalThis.Alpine = Alpine; Alpine.start(); }
 function begin() { if (globalThis.I18N) I18N.onReady(start); else start(); }
 const nav = globalThis.performance && performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
 if (document.readyState === 'complete' || (document.readyState === 'interactive' && nav && nav.domContentLoadedEventStart > 0)) begin();
