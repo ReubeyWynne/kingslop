@@ -25,7 +25,7 @@
     sourceLink: 'A shared sheet.', sourceSame: 'Your save.', sourceBlank: 'A blank sheet.', sourceChanged: 'Changed on this page only.',
     untouched: 'Your save is untouched.', saveHint: 'Edits here stay on this page until you save them.',
     linkInvalid: 'That link could not be read, so this is a copy of your save.',
-    copied: 'Link copied', liveHint: 'Changes save as you go.'
+    copy: 'Copy share link', copied: 'Link copied', liveHint: 'Changes save as you go.'
   };
 
   function query(encoded) { return Object.keys(encoded).filter(function (key) { return encoded[key] !== undefined && encoded[key] !== null && encoded[key] !== ''; }).map(function (key) { return key + '=' + encoded[key]; }).join('&'); }

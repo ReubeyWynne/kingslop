@@ -31,6 +31,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await open('?lang=en');
     assert.equal(await notice().isHidden(), true, p.page + ': no notice on your own save');
     assert.equal(await page.locator('[data-sheet="copy"]').isVisible(), true);
+    // The copy button has words in every language, English where a dictionary has none.
+    await open('?lang=de');
+    assert.notEqual((await page.locator('[data-sheet="copy"]').textContent()).trim(), '', p.page + ': the copy button is labelled in German');
 
     // A link opens on a sheet of its own.
     await open(p.link);
