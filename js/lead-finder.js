@@ -14,7 +14,7 @@
     ahead: '{n}% more Bear damage than your next lineup', tie: 'Level with your next lineup', only: 'Your only lineup',
     beats: 'Beats {n} of {total} opponents', mixTitle: 'Send this troop mix',
     mixNote: 'The split that gets the most damage out of these three heroes and your stats.',
-    damageTitle: 'Estimated Bear damage', damageNote: '{n} = 1/15 of a {cap} rally{est}{valora}. One hit can land about 20% either side.', valora: ', Valora +{n}%', estimated: ' (estimated: 15 × joiner cap)',
+    damageTitle: 'Estimated Bear damage', damageBand: '80% of hits land between {lo} and {hi}', damageBin: '{n}% of hits from {lo} to {hi}', damageNote: '{n} = 1/15 of a {cap} rally{est}{valora}. One hit can land about 20% either side.', valora: ', Valora +{n}%', estimated: ' (estimated: 15 × joiner cap)',
     troops: '{n} troops',
     railTitle: 'Against each opponent', railNote: 'Win chance over repeated fights, and how much of your army is still standing.', win: '{n}%', empty: 'empty seat',
     foesNote: 'Generation {n} accounts, {total} troops a side.',

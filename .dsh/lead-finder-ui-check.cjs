@@ -2,6 +2,18 @@
 // Overview in, ranked lineups out, the overview kept in the shared save.
 const assert = require('node:assert/strict'), path = require('node:path');
 const { withBrowser } = require('./lib/browser-harness.cjs');
+
+// Every line the finder writes has words in every language: a key a dictionary lacks falls
+// back to the finder's English, never to undefined (which threw inside the save's listeners).
+{
+  const fs = require('node:fs'), source = fs.readFileSync('js/lead-finder.js', 'utf8'), start = source.indexOf('var EN = {');
+  const EN = Function('return ' + source.slice(start + 9, source.indexOf('};', start) + 1))();
+  const sandbox = {}; for (const file of fs.readdirSync('i18n').filter(f => f.endsWith('.js'))) Function('window', fs.readFileSync('i18n/' + file, 'utf8'))(sandbox);
+  for (const [, key] of source.matchAll(/\b(?:t|fill)\('([a-zA-Z]+)'[,)]/g)) {
+    if (EN[key] !== undefined) continue;
+    for (const [lang, words] of Object.entries(sandbox.__BH_I18N_DATA)) assert.notEqual(words['leads.' + key], undefined, 'leads.' + key + ' has no English fallback and no ' + lang + ' text');
+  }
+}
 withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' }), page = await context.newPage(), errors = [];
   page.on('pageerror', e => errors.push(e.message));
