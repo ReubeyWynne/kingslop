@@ -1150,7 +1150,8 @@
       "../js/building-paths-data.js",
       "../js/building-paths.js",
       "../js/page-sheet.js",
-      "../js/building-paths-page.js"
+      "../js/building-paths-sheet.js",
+      "../js/pages/building-paths.mjs"
     ],
     "footMainKey": "reqs.kicker",
     "footMain": "what each level needs",

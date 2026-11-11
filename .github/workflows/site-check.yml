@@ -277,6 +277,7 @@ jobs:
               - .dsh/building-paths-ui-check.cjs
               - buildings/**
               - js/building-paths*
+              - js/pages/building-paths.mjs
               - _data/building_paths.json
               - css/buildings.css
               - upgrade-priority/**

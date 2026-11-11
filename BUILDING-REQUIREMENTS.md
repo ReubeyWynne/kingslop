@@ -9,7 +9,8 @@
 | `_data/building_paths.json` | Every level of the 20 upgradable buildings: `needs` (`[building, level]`, a numbered copy such as House 1 as a third item, a single-level building such as the Hero Hall with no level), `cost` of that one step, base `time` in seconds, `unverified` cells, `sources`. Generated with `_data/buildings.json` by `python3 .dsh/build-buildings.py` |
 | `js/building-paths-data.liquid` | Publishes it as `window.BuildingPaths`, on this page only |
 | `js/building-paths.js` | Pure engine (UMD): `plan`, `rank`, `encode`/`decode` for links |
-| `js/building-paths-page.js` | The `building-paths` interaction module, plus guest mode |
+| `js/building-paths-sheet.js` | The levels on the shared guest sheet (`js/page-sheet.js`): guest mode and `have=` links |
+| `js/pages/building-paths.mjs` | The page's Alpine state (`x-data="buildingPaths"` on `<main>` in `buildings/index.html`): the goal tiles, the plan, the level grid and construction speed |
 | `css/buildings.css` | Page hue (terracotta) and layout |
 
 `_data/buildings.json` stays the planner's table (nine buildings, two-source costs only). This file keeps every prerequisite and every cost, and names a cell only one source gives in `unverified`; the page marks those with †. Houses, the Clinic, the resource buildings, the Barricade and Defense Tower and every level past TG 8 are Kingshot Optimizer only.
