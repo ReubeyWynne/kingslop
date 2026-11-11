@@ -4,9 +4,9 @@ const root=path.resolve('_site'), output=path.resolve('.dsh/event-preview');
 withBrowser({ root }, async ({ browser, origin }) => {
  const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});const page=await context.newPage(), errors=[];page.on('pageerror',e=>errors.push(e.message));
  fs.mkdirSync(output,{recursive:true});
- const select=(key)=>page.locator('[data-target="event-availability.'+key+'"]');const owned=id=>page.locator('[data-bind="inventory.'+id+'"]');const held=id=>page.locator('[data-held="'+id+'"]');
+ const hooks={event:'.availability-event',day:'.availability-day',target:'.availability-target',total:'.availability-total',coverage:'.availability-coverage',reserved:'.availability-reserved',shortfall:'.availability-shortfall',all:'.availability-show-all input'};const select=(key)=>page.locator('#availability '+hooks[key]);const owned=id=>page.locator('[data-bind="inventory.'+id+'"]');const held=id=>page.locator('[data-held="'+id+'"]');
 
-  await page.goto(origin+'/events/?lang=en');await page.waitForFunction(()=>window.EventRules&&document.querySelector('[data-target="event-availability.total"]').textContent==='0');
+  await page.goto(origin+'/events/?lang=en');await page.waitForFunction(()=>window.EventRules&&document.querySelector('#availability .availability-total').textContent==='0');
   await select('day').selectOption('4');assert.equal(await owned('mithril').inputValue(),'');assert.equal(await held('mithril').isDisabled(),true);
   assert.equal(await page.locator('[data-item="truegold"]').isVisible(),false);await select('all').check();assert.equal(await page.locator('[data-item="truegold"]').isVisible(),true);await select('all').uncheck();
   // Show, don't tell: a blank count is a dotted slot, its points a ?, and the total stays open, listing what it waits for.
@@ -53,7 +53,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await troopPage.close();await page.evaluate(()=>{const s=PlayerLedger.shared();for(const k of ['speed','capacity','inf'])s.setTraining(k,null);});
   [troopPage,notes]=await troopNotes('2026-10-21T09:00:00Z');assert.match(notes.join(' '),/Strongest Governor day 4 tomorrow is a troop day/);assert.equal(await troopPage.locator('#ks-card [data-troop-note] a').getAttribute('href'),'../town-centre/#town-troops');await troopPage.close();
   const langs=fs.readdirSync('i18n').filter(name=>name.endsWith('.js')).map(name=>name.slice(0,-3));
-  for(const lang of langs){await page.goto(origin+'/events/?lang='+lang);await page.waitForFunction(lang=>document.documentElement.lang===lang&&window.I18N&&document.querySelector('[data-target="event-availability.total"]').textContent!=='—',lang);
+  for(const lang of langs){await page.goto(origin+'/events/?lang='+lang);await page.waitForFunction(lang=>document.documentElement.lang===lang&&window.I18N&&document.querySelector('#availability .availability-total').textContent!=='—',lang);
    for(const width of [320,768]){await page.setViewportSize({width,height:900});const overflow=await page.locator('#availability').evaluate(el=>[el,...el.querySelectorAll('.availability-item,.availability-controls,.availability-result')].filter(el=>el.scrollWidth>el.clientWidth+2).map(el=>el.className));assert.deepEqual(overflow,[],lang+' at '+width);}
    assert.equal(await page.locator('#availability h2').textContent(),await page.evaluate(()=>I18N.tr('ks.available.title')));
    if(lang==='en'||lang==='ar')await page.locator('#availability').screenshot({path:path.join(output,lang+'.png')});

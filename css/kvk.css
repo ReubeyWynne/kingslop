@@ -266,11 +266,12 @@
 .mtable td.best { color: var(--amber); }
 .mtable td.ok { color: var(--ink); }
 .mtable td.no { color: var(--ink-muted); opacity: 0.55; }
-.mtable td.today, .mtable th.today {
+/* Today's prep-day column: the table carries the day (data-today), each cell its column (data-d). */
+.mtable[data-today="1"] [data-d="1"], .mtable[data-today="2"] [data-d="2"], .mtable[data-today="3"] [data-d="3"],
+.mtable[data-today="4"] [data-d="4"], .mtable[data-today="5"] [data-d="5"] {
   background: var(--signal-tint);
   box-shadow: inset 0 0 0 1px var(--signal-line);
 }
-.mtable td.today.best { color: var(--amber); }
 
 /* ─── The day cards & point tables ────────────────────── */
 .day {

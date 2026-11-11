@@ -123,8 +123,8 @@
       "../js/troop-spend.mjs",
       "../js/master-spend.mjs",
       "../js/town-centre-engine.mjs",
-      "../js/event-availability.js",
-      "../js/kvk.js"
+      "../js/pages/event-availability.mjs",
+      "../js/pages/events.mjs"
     ],
     "footMainKey": "ks.foot.main",
     "footMain": "EVENT CYCLE",

@@ -82,20 +82,18 @@ const sgTroops=rules.rules('sg',4).rows.filter(row=>row.scoring?.type==='troops'
 assert.equal(Troops.rates(sgTroops,'brawl').rates[10],39,'rate sets belong to rows');
 assert.equal(Troops.rates([{scoring:{type:'troops',rates:{10:41},rateSet:'sg'}}],'sg').rates[10],41,'explicit rates override a verified rate set');
 
+// Every day of the wheel: its card (as the page shows it, from js/event-cycle.mjs) and its KingShot copy.
 function cycleCards(engine){
- const nodes={};
- for(const id of ['ks-prev','ks-next','ks-today','ks-view-title','ks-date','ks-next-day','ks-card','ks-copy-out','ks-copy-meta','ks-copy-btn','ks-copy-status','ks-copy-preview','ks-copy-link'])nodes[id]={textContent:'',innerHTML:'',value:'',handlers:{},setAttribute(){},addEventListener(key,fn){this.handlers[key]=fn;}};
- const document={getElementById:id=>nodes[id]||null,querySelectorAll:()=>[],querySelector:()=>null,addEventListener(){}};
- const BH={tr:(key,fallback)=>fallback,fmt:n=>n.toLocaleString('en-GB'),tpl:(key,fallback,values)=>fallback.replace(/\{(\w+)\}/g,(_,key)=>values[key]),registerPage(page){this.page=page;}};
- const clock=class extends Date{constructor(...args){super(...args.length?args:[rules.EPOCH]);}};
- vm.runInNewContext(fs.readFileSync('js/kvk.js','utf8'),{document,BH,Date:clock,window:{EventRules:engine,BH,addEventListener(){}}});BH.page.boot(BH);
- const copies=[],cards=[];
- for(let day=1;day<=rules.CYCLE;day++){copies.push(nodes['ks-copy-out'].value);cards.push(nodes['ks-card'].innerHTML);nodes['ks-next'].handlers.click();}
+ const cycle=require('../js/event-cycle.mjs').eventCycle(engine),copies=[],cards=[];
+ // Today on the site's epoch, then 27 presses of the next-day button, on the engine's own clock.
+ const RealDate=Date;globalThis.Date=class extends RealDate{constructor(...args){super(...args.length?args:[rules.EPOCH]);}};
+ const start=cycle.todayDay();globalThis.Date=RealDate;
+ for(let step=0;step<rules.CYCLE;step++){const card=cycle.present((start-1+step)%engine.CYCLE+1,true,null);copies.push(cycle.splitParts(card.copy)[0]);cards.push(JSON.stringify(card));}
  return {copies,cards};
 }
 const cycle=cycleCards(rules);
 assert.equal(digest(cycle.copies),'6ae8291336a06093987fcccb7acd4a18f293cd514cf053eb0a2f576e0832e70b');
-assert.equal(digest(cycle.cards),'67fdc91830eea4b97ac82c15c4c2dabeeeb325167817ed91cfb6786b9905b434','28 days preserve cards and copy without reference DOM');
+assert.equal(digest(cycle.cards),'f3e40412fd8f3933b0b94f1e2e7bc77076143952bf0f966ddcab3445f6fa3b42','28 days preserve cards and copy without reference DOM');
 const altered=JSON.parse(JSON.stringify(rules.data));
 for(const days of Object.values(altered.events))for(const day of days)for(const row of day.rows){row.label='翻訳された表示';row.points='display only';}
 for(const key of ['SG_TASKS','ARM_TASKS','OFF_TASKS'])for(const rows of Object.values(altered.legacy[key]))for(const row of rows)row[0]='翻訳された表示';
@@ -110,7 +108,7 @@ for(const day of before){
 }
 const translated=cycleCards(renamed);
 assert.deepEqual(translated.copies,cycle.copies,'display label changes cannot change chat labels, icons or roulette warnings');
-function advisory(cards){return cards.map(card=>[...card.matchAll(/class="trow ([^"]*v-(?:best|ok|low|hold))"[^]*?<span class="tname">([^]*?)<\/span>/g)].map(match=>[match[1],match[2]]));}
+function advisory(cards){return cards.map(card=>{const {zones,folds}=JSON.parse(card);return [...zones,...folds].flatMap(zone=>zone.rows.filter(row=>row.value).map(row=>[row.value,row.name]));});}
 assert.deepEqual(advisory(translated.cards),advisory(cycle.cards),'display labels cannot change recommendations');
 assert.equal(cycleCards(Object.assign({},rules,{CYCLE:7})).copies[7],cycle.copies[0],'the clock uses the shared cycle length');
 assert.equal(cycleCards(Object.assign({},rules,{EPOCH:rules.EPOCH+rules.DAY_MS})).copies[0],cycle.copies[27],'the clock uses the shared UTC epoch');

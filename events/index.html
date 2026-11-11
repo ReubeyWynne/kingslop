@@ -27,69 +27,88 @@ self: events
     {% include ascii/motif.html kind="moon" %}
   </header>
 
-  <section class="section today-section" id="today">
+  <section class="section today-section" id="today" x-data="kvk" x-init="site = '{{ site.url }}{{ site.data.pages[self].canonicalPath }}'" @visibilitychange.document="catchUp()" @focus.window="catchUp()">
     <div class="today-heading">
-      <h2 id="ks-view-title" data-i18n="ks.today.title">Today</h2>
-      <p id="ks-date"></p>
+      <h2 id="ks-view-title" x-text="heading">Today</h2>
+      <p id="ks-date" x-text="date"></p>
     </div>
     <div class="cycle-controls">
-      <button type="button" id="ks-prev" class="kb" aria-label="previous day" data-i18n-key="ks.today.prevAria" data-i18n-attr="aria-label"><svg class="day-step" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <output id="ks-day-out" class="cycle-day-out" aria-live="polite"><span class="cycle-weekday"></span> <span class="cycle-position"></span></output>
-      <button type="button" id="ks-next" class="kb" aria-label="next day" data-i18n-key="ks.today.nextAria" data-i18n-attr="aria-label"><svg class="day-step" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button type="button" id="ks-today" class="kb" data-i18n="ks.today.btn">Today</button>
+      <button type="button" id="ks-prev" class="kb" aria-label="previous day" data-i18n-key="ks.today.prevAria" data-i18n-attr="aria-label" @click="go(day - 1)"><svg class="day-step" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <output id="ks-day-out" class="cycle-day-out" aria-live="polite"><span class="cycle-weekday" x-text="weekday"></span> <span class="cycle-position" x-text="position"></span></output>
+      <button type="button" id="ks-next" class="kb" aria-label="next day" data-i18n-key="ks.today.nextAria" data-i18n-attr="aria-label" @click="go(day + 1)"><svg class="day-step" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" id="ks-today" class="kb" data-i18n="ks.today.btn" :aria-pressed="following" @click="today()">Today</button>
     </div>
     <div id="ks-card" class="today-card" aria-live="polite">
-      <p class="today-empty" data-i18n="ks.today.empty">Loading today’s events.</p>
+      <p class="today-empty" data-i18n="ks.today.empty" x-show="false">Loading today’s events.</p>
+      <p class="today-kicker" x-text="card.kicker"></p>
+      <p class="today-title" x-text="card.title"></p>
+      <template x-if="card.meta"><p class="today-meta" x-text="card.meta"></p></template>
+      <template x-if="card.run"><p class="side-run"><span x-text="card.run.glyph"></span><b x-text="card.run.name"></b> — <span x-text="card.run.line"></span></p></template>
+      <template x-if="card.actions.length"><div class="today-actions">
+        <template x-for="action in card.actions"><p class="today-action" :data-troop-note="action.troop ? '' : null" x-html="action.glyph + action.html"></p></template>
+      </div></template>
+      <div class="today-value">
+        <template x-for="zone in card.zones"><div class="today-zone"><h4 x-text="zone.label"></h4><template x-for="row in zone.rows"><div :class="['trow', row.value]"><span class="tmark" x-html="row.glyph"></span><span class="tname" x-text="row.name"></span><template x-if="row.pts"><span class="tpts" x-text="row.pts"></span></template></div></template></div></template>
+        <template x-for="zone in card.folds"><details class="today-stored"><summary x-html="zone.glyph + zone.label"></summary><template x-for="row in zone.rows"><div :class="['trow', row.value]"><span class="tmark" x-html="row.glyph"></span><span class="tname" x-text="row.name"></span><template x-if="row.pts"><span class="tpts" x-text="row.pts"></span></template></div></template></details></template>
+        <template x-if="card.units"><p class="today-meta" x-text="card.units"></p></template>
+      </div>
+      <div class="copy-box"><div class="copy-btns">
+        <button type="button" id="ks-copy-btn" class="kb copy-action" :disabled="copying" x-text="copyLabel" @click="copy($refs.out)"></button>
+        <label class="copy-link-option"><input type="checkbox" id="ks-copy-link" :checked="link" @change="setLink($event.target.checked)"><span x-text="t('ks.today.includeLink', 'Include site link')"></span></label>
+        <span id="ks-copy-status" role="status" x-text="status"></span><span id="ks-copy-parts" class="cycle-quick"><template x-for="(_, i) in partList"><button type="button" :class="{ kb: true, on: i === part }" x-text="partLabel(i)" @click="pick(i)"></button></template></span></div>
+        <details id="ks-copy-preview" :open="preview" @toggle="preview = $el.open"><summary x-text="t('ks.today.preview', 'Message preview')"></summary><div class="copy-inner">
+          <textarea id="ks-copy-out" x-ref="out" readonly spellcheck="false" :aria-label="t('ks.today.copyRun', 'Copy for KingShot')" :value="message"></textarea>
+          <p class="copy-meta" id="ks-copy-meta" x-html="chars"></p><p class="copy-note" x-html="copyNote"></p></div></details></div>
     </div>
     <div class="cycle-quick week-jumps" role="group" aria-label="Jump to an event" data-i18n-key="ks.today.weeks" data-i18n-attr="aria-label">
-      <button type="button" class="kb" data-jump="1" data-end="7"><span class="week-jump-icon" aria-hidden="true">⚔️</span><span class="week-jump-copy"><span data-i18n="ks.brawl.title">Alliance Brawl</span><small class="week-jump-range">Days 1–7</small></span></button>
-      <button type="button" class="kb" data-jump="8" data-end="14"><span class="week-jump-icon" aria-hidden="true">👑</span><span class="week-jump-copy"><span data-i18n="ks.governor.title">Strongest Governor</span><small class="week-jump-range">Days 8–14</small></span></button>
-      <button type="button" class="kb" data-jump="15" data-end="20"><span class="week-jump-icon" aria-hidden="true">📜</span><span class="week-jump-copy"><span data-i18n="ks.mob.title">Alliance Mobilization</span><small class="week-jump-range">Days 15–20</small></span></button>
-      <button type="button" class="kb" data-jump="22" data-end="28"><span class="week-jump-icon" aria-hidden="true">🏰</span><span class="week-jump-copy"><span data-i18n="ks.today.kvkWeek">KvK prep &amp; battle</span><small class="week-jump-range">Days 22–28</small></span></button>
+      <button type="button" class="kb" data-jump="1" :aria-pressed="jumped(jumps[0])" @click="go(1)"><span class="week-jump-icon" aria-hidden="true">⚔️</span><span class="week-jump-copy"><span data-i18n="ks.brawl.title">Alliance Brawl</span><small class="week-jump-range" x-text="range(jumps[0])">Days 1–7</small></span></button>
+      <button type="button" class="kb" data-jump="8" :aria-pressed="jumped(jumps[1])" @click="go(8)"><span class="week-jump-icon" aria-hidden="true">👑</span><span class="week-jump-copy"><span data-i18n="ks.governor.title">Strongest Governor</span><small class="week-jump-range" x-text="range(jumps[1])">Days 8–14</small></span></button>
+      <button type="button" class="kb" data-jump="15" :aria-pressed="jumped(jumps[2])" @click="go(15)"><span class="week-jump-icon" aria-hidden="true">📜</span><span class="week-jump-copy"><span data-i18n="ks.mob.title">Alliance Mobilization</span><small class="week-jump-range" x-text="range(jumps[2])">Days 15–20</small></span></button>
+      <button type="button" class="kb" data-jump="22" :aria-pressed="jumped(jumps[3])" @click="go(22)"><span class="week-jump-icon" aria-hidden="true">🏰</span><span class="week-jump-copy"><span data-i18n="ks.today.kvkWeek">KvK prep &amp; battle</span><small class="week-jump-range" x-text="range(jumps[3])">Days 22–28</small></span></button>
     </div>
-    <div class="next-day" id="ks-next-day"></div>
+    <div class="next-day" id="ks-next-day" x-text="next"></div>
   </section>
 
-  <section class="section event-availability" id="availability" data-module="event-availability">
+  <section class="section event-availability" id="availability" x-data="eventAvailability">
     <h2 data-i18n="ks.available.title">Your available points</h2>
     <div class="availability-controls">
-      <label><span data-i18n="ks.available.event">Event</span><select data-target="event-availability.event" data-action="event-availability.select">
+      <label><span data-i18n="ks.available.event">Event</span><select class="availability-event" :value="event" @change="pickEvent($el.value)">
         <option value="prep" data-i18n="ks.today.kickerPrep">KvK prep</option>
         <option value="sg" data-i18n="ks.governor.title">Strongest Governor</option>
         <option value="brawl" data-i18n="ks.brawl.title">Alliance Brawl</option>
       </select></label>
-      <label><span data-i18n="ks.today.day">day</span><select data-target="event-availability.day" data-action="event-availability.select"><option value="1">1</option></select></label>
-      <label><span data-i18n="ks.available.target">Point target</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-target="event-availability.target" data-action="event-availability.target"></label>
+      <label><span data-i18n="ks.today.day">day</span><select class="availability-day" x-model.number="day"><template x-for="d in days" :key="d"><option :value="d" :selected="d === day" x-text="dayLabel(d)"></option></template></select></label>
+      <label><span data-i18n="ks.available.target">Point target</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" class="availability-target" @input="setTarget($el.value, $el.validity.valid)"></label>
     </div>
     <div class="availability-result" aria-live="polite">
-      <p><span data-i18n="ks.available.spendable">points in reach</span> <output data-target="event-availability.total">—</output></p>
-      <ul class="unknowns" data-target="event-availability.coverage"></ul>
-      <p><span data-i18n="ks.available.reservedPoints">kept for later</span> <output data-target="event-availability.reserved">—</output></p>
-      <p><span data-i18n="ks.available.shortfall">still to find</span> <output data-target="event-availability.shortfall">—</output></p>
+      <p><span data-i18n="ks.available.spendable">points in reach</span> <output class="availability-total" :data-open="open" x-text="total">—</output></p>
+      <ul class="unknowns availability-coverage"><template x-for="name in coverage"><li x-text="name"></li></template></ul>
+      <p><span data-i18n="ks.available.reservedPoints">kept for later</span> <output class="availability-reserved" x-text="reserved">—</output></p>
+      <p><span data-i18n="ks.available.shortfall">still to find</span> <output class="availability-shortfall" x-text="shortfall">—</output></p>
     </div>
     <p class="note" data-i18n="ks.available.limit">These points need upgrades you can actually make.</p>
     <p class="note"><a href="../town-centre/" data-i18n="town.title">Town Centre</a></p>
-    <div class="availability-inventory-heading"><h3><span data-i18n="ks.available.inventory">Your inventory</span><details class="shared-by"><summary aria-label="Also used by 3 pages" data-i18n-key="ks.available.sharedAria" data-i18n-attr="aria-label"><i data-page="town" style="--hue: #DC8FDB"></i><i data-page="gear"></i><i data-page="governor"></i></summary><span class="motif-names"><span data-i18n="town.title">Town Centre</span> · <span data-i18n="gear.title">Hero gear</span> · <span data-i18n="gov.title">Governor gear</span></span></details></h3><label class="availability-show-all"><input type="checkbox" data-target="event-availability.all" data-action="event-availability.showAll"><span data-i18n="ks.available.showAll">show items that do not score today</span></label></div>
+    <div class="availability-inventory-heading"><h3><span data-i18n="ks.available.inventory">Your inventory</span><details class="shared-by"><summary aria-label="Also used by 3 pages" data-i18n-key="ks.available.sharedAria" data-i18n-attr="aria-label"><i data-page="town" style="--hue: #DC8FDB"></i><i data-page="gear"></i><i data-page="governor"></i></summary><span class="motif-names"><span data-i18n="town.title">Town Centre</span> · <span data-i18n="gear.title">Hero gear</span> · <span data-i18n="gov.title">Governor gear</span></span></details></h3><label class="availability-show-all"><input type="checkbox" x-model="all"><span data-i18n="ks.available.showAll">show items that do not score today</span></label></div>
     <div class="availability-items">
       {% for item in site.data.event_rules.items %}
-      <div class="availability-item" data-item="{{ item.id }}">
+      <div class="availability-item" data-item="{{ item.id }}" :data-eligible="eligible('{{ item.id }}')" :hidden="hide('{{ item.id }}')">
         <h3 data-i18n="{{ item.key }}">{{ item.label | escape }}</h3>
         {% if item.id == 'hero-widget' %}
         <a href="../town-centre/#town-heroes" data-i18n="town.shelf.heroes">Heroes</a>
         {% elsif item.id == 'master-emblem' %}
         <a href="../town-centre/#town-masters" data-i18n="town.shelf.masters">Masters</a>
         {% else %}
-        <label data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed"><span data-i18n="ks.available.owned">in your bag</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize"><small class="seal" data-target="ledger-form.save" aria-live="polite"></small></label>
-        <label><span data-i18n="ks.available.held">keep for later</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" data-held="{{ item.id }}" data-action="event-availability.reserve"></label>
+        <label data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed" @ledger-form:edited="seal('{{ item.id }}', 'saved')" @module:error="failed('{{ item.id }}', $event.detail)"><span data-i18n="ks.available.owned">in your bag</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize" :data-tally="bagTally('{{ item.id }}')"><small class="seal" data-target="ledger-form.save" aria-live="polite" :data-state="seals['{{ item.id }}']"></small></label>
+        <label><span data-i18n="ks.available.held">keep for later</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" data-held="{{ item.id }}" :value="keep('{{ item.id }}')" :max="keepMax('{{ item.id }}')" :disabled="keepOff('{{ item.id }}')" @input="reserve('{{ item.id }}', $el.value, $el.validity.valid)" @change="reserve('{{ item.id }}', $el.value, $el.validity.valid, true)"></label>
         {% endif %}
-        <p><span data-i18n="ks.available.rate">points each</span> <output data-rate>—</output></p>
-        <p><span data-i18n="ks.available.contribution">points available</span> <output data-points>—</output></p>
+        <p><span data-i18n="ks.available.rate">points each</span> <output data-rate x-text="rate('{{ item.id }}')">—</output></p>
+        <p><span data-i18n="ks.available.contribution">points available</span> <output data-points :data-tally="pointsTally('{{ item.id }}')" x-text="points('{{ item.id }}')">—</output></p>
       </div>
       {% endfor %}
     </div>
-    <ul class="availability-potential" data-target="event-availability.additional"></ul>
+    <ul class="availability-potential"><template x-for="line in additional"><li x-text="line"></li></template></ul>
     <h3 data-i18n="ks.available.potential">Other ways to score</h3>
-    <ul class="availability-potential" data-target="event-availability.unquantified"></ul>
+    <ul class="availability-potential"><template x-for="line in unquantified"><li x-text="line"></li></template></ul>
     <details id="save-backups" data-module="save-transfer disclosure" data-status-scope="event-availability" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
       <summary data-i18n="gear.manageSave">your save &amp; backups</summary>
       <button type="button" class="kb" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
@@ -103,7 +122,7 @@ self: events
   <!-- ═══════════ 2 · THE 28-DAY CLOCK ═══════════ -->
   <section class="section" id="cycle">
     <h2 data-i18n="ks.cycle.title">The 28-day clock</h2>
-    <div id="ks-cycle" role="group" aria-label="the 28 day cycle" data-i18n-key="ks.today.calcTitle" data-i18n-attr="aria-label"></div>
+    <div id="ks-cycle" role="group" aria-label="the 28 day cycle" data-i18n-key="ks.today.calcTitle" data-i18n-attr="aria-label" x-data="kvk" class="cycle-bar"><template x-for="d in days" :key="d"><button type="button" :class="cell(d)" :data-cycle-day="d" :aria-pressed="d === day" :aria-label="cellLabel(d)" :aria-current="isToday(d)" x-text="fmt(d)" @click="go(d)"></button></template></div>
     <p class="lede" data-i18n="ks.cycle.lede">After your kingdom’s first KvK, events follow a 28-day cycle. Day 1 is Monday; this clock uses UTC.</p>
 
     <div class="wavetable">
@@ -123,9 +142,9 @@ self: events
 
 
   <!-- ═══════════ 2C · ALLIANCE BRAWL ═══════════ -->
-  <section class="section" id="brawl" data-phase="brawl">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="brawl-body" data-deep-link="brawl"><span data-i18n="ks.brawl.title">Alliance Brawl</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
-    <div id="brawl-body" class="reference-body">
+  <section class="section" id="brawl" data-phase="brawl" x-data="reference('brawl')" :class="{ 'current-phase': current }">
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" :aria-expanded="open" aria-controls="brawl-body" @click="open = !open" data-deep-link="brawl"><span data-i18n="ks.brawl.title">Alliance Brawl</span><span class="reference-mark" aria-hidden="true" x-text="mark">−</span></button></h2>
+    <div id="brawl-body" class="reference-body" :hidden="!open">
     <p class="lede" data-i18n-html="ks.brawl.lede">The week-1 main event, right after KvK: your alliance against one
       from another kingdom for <b>6.5 days</b> — five 24-hour themed days, then a ~36-hour finale. In eligible
       kingdoms it runs beside Merchant Empire, so the truck tasks count in both.</p>
@@ -229,9 +248,9 @@ self: events
   </section>
 
   <!-- ═══════════ 3 · THE PREP CHART ═══════════ -->
-  <section class="section" id="matrix" data-phase="prep">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="matrix-body" data-deep-link="matrix"><span data-i18n="ks.matrix.title">The prep chart</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
-    <div id="matrix-body" class="reference-body">
+  <section class="section" id="matrix" data-phase="prep" x-data="reference('prep')" :class="{ 'current-phase': current }">
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" :aria-expanded="open" aria-controls="matrix-body" @click="open = !open" data-deep-link="matrix"><span data-i18n="ks.matrix.title">The prep chart</span><span class="reference-mark" aria-hidden="true" x-text="mark">−</span></button></h2>
+    <div id="matrix-body" class="reference-body" :hidden="!open">
     <p class="lede" data-i18n-html="ks.matrix.lede">The whole KvK prep week as one chart: every material you've been
       saving, and which of the five prep days wants it. <strong>Today's column is what the clock above says to
       spend.</strong></p>
@@ -241,10 +260,10 @@ self: events
       <span class="lg ok">🆗</span> <span data-i18n="ks.matrix.ok">scores, but saving it is better</span>
       <span class="lg no">🚫</span> <span data-i18n="ks.matrix.no">doesn't score</span></p>
 
-    <table class="mtable" id="ks-matrix">
+    <table class="mtable" id="ks-matrix" x-data="kvk" :data-today="prepDay || null">
       <thead>
         <tr><th data-i18n="ks.matrix.resource">material</th>
-          <th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th></tr>
+          <th scope="col" data-d="1">1</th><th scope="col" data-d="2">2</th><th scope="col" data-d="3">3</th><th scope="col" data-d="4">4</th><th scope="col" data-d="5">5</th></tr>
       </thead>
       <tbody>
         <tr><td><img class="ks-ico" loading="lazy" decoding="async" src="../img/kingshot/truegold.png" alt="">Truegold</td><td data-d="1" class="best">✅</td><td data-d="2" class="ok">🆗</td><td data-d="3" class="no">🚫</td><td data-d="4" class="no">🚫</td><td data-d="5" class="ok">🆗</td></tr>
@@ -276,9 +295,9 @@ self: events
   </section>
 
   <!-- ═══════════ 4 · THE FIVE PREP DAYS ═══════════ -->
-  <section class="section" id="days" data-phase="prep">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="days-body" data-deep-link="days"><span data-i18n="ks.days.title">The five prep days</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
-    <div id="days-body" class="reference-body">
+  <section class="section" id="days" data-phase="prep" x-data="reference('prep')" :class="{ 'current-phase': current }">
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" :aria-expanded="open" aria-controls="days-body" @click="open = !open" data-deep-link="days"><span data-i18n="ks.days.title">The five prep days</span><span class="reference-mark" aria-hidden="true" x-text="mark">−</span></button></h2>
+    <div id="days-body" class="reference-body" :hidden="!open">
     <p class="lede" data-i18n="ks.days.lede">Each prep day has its own tasks. Use the lists below to plan your materials, and check your reward milestones in game.</p>
 
     <details id="prep-day-1" class="day">
@@ -329,9 +348,9 @@ self: events
   </section>
 
   <!-- ═══════════ 5 · STRONGEST GOVERNOR ═══════════ -->
-  <section class="section sg" id="governor" data-phase="sg">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="governor-body" data-deep-link="governor"><span data-i18n="ks.governor.title">Strongest Governor</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
-    <div id="governor-body" class="reference-body">
+  <section class="section sg" id="governor" data-phase="sg" x-data="reference('sg')" :class="{ 'current-phase': current }">
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" :aria-expanded="open" aria-controls="governor-body" @click="open = !open" data-deep-link="governor"><span data-i18n="ks.governor.title">Strongest Governor</span><span class="reference-mark" aria-hidden="true" x-text="mark">−</span></button></h2>
+    <div id="governor-body" class="reference-body" :hidden="!open">
     <p class="lede" data-i18n="ks.governor.lede">Seven scoring days. Repeated day names can have different tasks, so check the current day’s table.</p>
 
     <p class="legend"><span class="lg free">💎 gems</span> <span data-i18n="ks.governor.gems">roulette spins cost
@@ -411,18 +430,18 @@ self: events
 
   <!-- ═══════════ 6 · THE BATTLE WEEKEND ═══════════ -->
     <!-- ═══ 6A · ALLIANCE MOBILIZATION (week 3) ════════════ -->
-  <section class="section" id="mobilize" data-phase="mob">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="mobilize-body" data-deep-link="mobilize"><span data-i18n="ks.mob.title">Alliance Mobilization</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
-    <div id="mobilize-body" class="reference-body">
+  <section class="section" id="mobilize" data-phase="mob" x-data="reference('mob')" :class="{ 'current-phase': current }">
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" :aria-expanded="open" aria-controls="mobilize-body" @click="open = !open" data-deep-link="mobilize"><span data-i18n="ks.mob.title">Alliance Mobilization</span><span class="reference-mark" aria-hidden="true" x-text="mark">−</span></button></h2>
+    <div id="mobilize-body" class="reference-body" :hidden="!open">
     <p class="lede" data-i18n="ks.mob.lede">Alliance Mobilization runs on cycle days 15–20 with no daily themes. Accept a mission before completing its task.</p>
     <p class="note" data-i18n="ks.today.budget">Choose your reward target before spending. Keep materials reserved for another event unless you decide to use them here.</p>
     <p class="note" data-i18n="ks.mob.open">Full Mobilization scoring tables aren’t included here yet. Check the active mission in game.</p>
     </div>
   </section>
 
-<section class="section" id="battle" data-phase="battle">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="battle-body" data-deep-link="battle"><span data-i18n="ks.battle.title">The battle weekend</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
-    <div id="battle-body" class="reference-body">
+<section class="section" id="battle" data-phase="battle" x-data="reference('battle')" :class="{ 'current-phase': current }">
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" :aria-expanded="open" aria-controls="battle-body" @click="open = !open" data-deep-link="battle"><span data-i18n="ks.battle.title">The battle weekend</span><span class="reference-mark" aria-hidden="true" x-text="mark">−</span></button></h2>
+    <div id="battle-body" class="reference-body" :hidden="!open">
     <p class="lede" data-i18n-html="ks.battle.lede">Prep decides who attacks; the weekend decides who holds. The prep
       winner enters the loser's kingdom and tries to take the Castle — a <strong>five-hour contest</strong>: one clean
       2.5-hour hold wins it, else the most hold time at the close.</p>
@@ -448,9 +467,9 @@ self: events
   </section>
 
   <!-- ═══════════ 7 · THE ROUTINE ═══════════ -->
-  <section class="section" id="checklist">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="checklist-body" data-deep-link="checklist"><span data-i18n="ks.checklist.title">The routine</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
-    <div id="checklist-body" class="reference-body">
+  <section class="section" id="checklist" x-data="reference('')" :class="{ 'current-phase': current }">
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" :aria-expanded="open" aria-controls="checklist-body" @click="open = !open" data-deep-link="checklist"><span data-i18n="ks.checklist.title">The routine</span><span class="reference-mark" aria-hidden="true" x-text="mark">−</span></button></h2>
+    <div id="checklist-body" class="reference-body" :hidden="!open">
     <p class="lede" data-i18n-html="ks.checklist.lede">The page, in the order you'll do it: save for KvK prep, the
       day-one ritual, then the weekend:</p>
     <ol class="checklist">
@@ -468,9 +487,9 @@ self: events
   </section>
 
   <!-- ═══ A · THE LIGHT-WEEK FILLERS (Armament + Officer — reference only) ═════════ -->
-  <section class="section" id="fillers" data-phase="fillers">
-    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" aria-controls="fillers-body" data-deep-link="fillers"><span data-i18n="ks.fm.title">Armament &amp; Officer</span><span class="reference-mark" aria-hidden="true">−</span></button></h2>
-    <div id="fillers-body" class="reference-body">
+  <section class="section" id="fillers" data-phase="fillers" x-data="reference('fillers')" :class="{ 'current-phase': current }">
+    <h2 class="reference-heading"><button type="button" class="reference-toggle" aria-expanded="true" :aria-expanded="open" aria-controls="fillers-body" @click="open = !open" data-deep-link="fillers"><span data-i18n="ks.fm.title">Armament &amp; Officer</span><span class="reference-mark" aria-hidden="true" x-text="mark">−</span></button></h2>
+    <div id="fillers-body" class="reference-body" :hidden="!open">
     <p class="lede" data-i18n="ks.fm.lede">Armament Competition and Officer Project each run twice in Brawl and Mobilization weeks. Tasks depend on the run type.</p>
     <p class="note" data-i18n="ks.today.budget">Choose your reward target before spending. Keep materials reserved for another event unless you decide to use them here.</p>
     <details id="point-tables" class="day">
