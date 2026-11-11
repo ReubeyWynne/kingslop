@@ -144,10 +144,12 @@
 .directory-more:hover { color: var(--ink); border-bottom-color: var(--signal-line); }
 #hero-sources ul { padding-inline-start: 1.1rem; font-size: var(--step--1); }
 
-/* Wider screens: generation 1's three tiers sit side by side (2 + 4 + 2 tiles)
+/* A wider roster: generation 1's three tiers sit side by side (2 + 4 + 2 tiles)
    and the short generations pair up. A band with a hero open takes the full width
-   so the dossier always has the measure. */
-@media (min-width: 651px) {
+   so the dossier always has the measure. Measured on the roster's own width, since
+   on Heroes it sits in the planner's half beside the answer. */
+[data-module~="hero-directory"] { container: hero-directory / inline-size; }
+@container hero-directory (min-width: 36rem) {
   .hero-roster { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1.5rem; }
   .hero-gen { display: contents; }
   .hero-gen[data-tiered] { display: grid; grid-column: 1 / -1; grid-template-columns: 1fr 2fr 1fr; gap: 1.5rem; }
@@ -164,15 +166,21 @@
   .hero-gen[data-tiered]:has(.hero-dossier[open]) .hero-catalogue { grid-template-columns: repeat(8, minmax(0, 1fr)); }
   .hero-band:has(.hero-dossier[open]) { grid-column: 1 / -1; }
   .hero-gen:not([data-tiered]) .hero-band:has(.hero-dossier[open]) .hero-catalogue { grid-template-columns: repeat(7, minmax(0, 1fr)); }
-  .hero-bag-caption { grid-column: 2 / -1; }
 }
-@media (max-width: 650px) {
+@container hero-directory (max-width: 35.98rem) {
   .hero-filter-row { gap: .6rem; mask-image: linear-gradient(to right, #000 calc(100% - 1.25rem), transparent); }
   .hero-filter-row:dir(rtl) { mask-image: linear-gradient(to left, #000 calc(100% - 1.25rem), transparent); }
-  .hero-dossier-body, .directory-role-guide { grid-template-columns: minmax(0, 1fr); }
+  .hero-dossier-body { grid-template-columns: minmax(0, 1fr); }
+}
+@media (min-width: 651px) { .hero-bag-caption { grid-column: 2 / -1; } }
+@media (max-width: 650px) {
+  .directory-role-guide { grid-template-columns: minmax(0, 1fr); }
   .hero-bag { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .hero-bag-title { grid-column: 1 / -1; }
 }
+
+/* Heroes' planner: the roster is your half, so it takes the wider column. */
+.hero-console .sheet-workspace { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
 
 /* KvK points from your heroes — the spending plan as one ruled table. */
 .hero-points-total { margin: var(--space-s) 0 0; font-family: var(--display-2); font-size: var(--step-1); color: var(--amber); font-variant-numeric: tabular-nums; }

@@ -4,7 +4,6 @@ self: heroes
 ---
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
   <a href="#planner" data-i18n="planner.heroes">Your heroes</a>
-  <a href="#directory" data-i18n="directory.browse">Browse heroes</a>
   <a href="#leads" data-i18n="leads.nav">Best leads</a>
   <a href="#breakpoint" data-i18n="bp.nav">Break points</a>
   <a href="#roles" data-i18n="directory.roles">Choose a role</a>
@@ -17,14 +16,19 @@ self: heroes
     <p class="lede" data-i18n="directory.intro">Pick a job, then find a hero whose skills fit it.</p>
     {% include ascii/motif.html kind="helm" %}
   </section>
-  <section class="section sheet-console" id="planner" data-module="planner page-sheet" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label">
+  <section class="section sheet-console hero-console" id="planner" data-module="planner page-sheet" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label">
     {% include page-sheet.html part="notice" %}
     {% include planner.html part="views" mine="planner.heroes" mine_en="Your heroes" %}
     <div class="sheet-workspace">
       <div class="sheet-side" data-half="mine" id="your-heroes">
         <h2 data-i18n="planner.heroes">Your heroes</h2>
-        {% include planner.html part="shelf" kind="heroes" fill="#directory" empty="planner.heroesEmpty" empty_en="Mark the heroes you have ↓" %}
         {% include heroes/bag.html %}
+        {% include planner.html part="shelf" kind="heroes" fill="#directory" empty="planner.heroesEmpty" empty_en="Mark the heroes you have ↓" %}
+        <div class="hero-directory" id="directory" data-module="hero-directory">
+          {% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}
+          {% assign troops = 'inf,cav,arc' | split: ',' %}
+          {% include heroes/roster.html %}
+        </div>
       </div>
       <div class="sheet-answer hero-points" data-half="answer" id="kvk-points" x-data="heroPoints" aria-labelledby="kvk-points-title">
         <h2 data-i18n="gov.theAnswer">The answer</h2>
@@ -49,12 +53,6 @@ self: heroes
       </div>
     </div>
     {% include page-sheet.html part="confirm" class="sheet-dialog" title="sheet.heroes.confirmTitle" title_en="Save these heroes as yours?" body="sheet.heroes.confirmBody" body_en="It replaces the heroes in your save." confirm="sheet.heroes.confirm" confirm_en="replace my heroes" %}
-  </section>
-  <section class="section" id="directory" data-module="hero-directory">
-    <h2 data-i18n="directory.browse">Browse heroes</h2>
-    {% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}
-    {% assign troops = 'inf,cav,arc' | split: ',' %}
-    {% include heroes/roster.html %}
   </section>
   {% include lead-finder.html %}
   <section class="section breakpoint" id="breakpoint" data-module="hero-breakpoint" aria-labelledby="breakpoint-title">

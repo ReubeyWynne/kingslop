@@ -9,10 +9,11 @@
                   shelf holds anything at first paint, and a link into either half
                   opens that one.
    roster-shelf   [data-shelf="heroes|masters|pets"], one [data-key] chip per entry
-                  in the static markup. It shows the chips the save owns, writes
+                  in the static markup (none on Heroes, whose own half holds the
+                  whole roster). It shows the chips the save owns, writes
                   each chip's level into its [data-line], shows
                   [data-target="roster-shelf.empty"] when none are owned and fires
-                  `roster-shelf:paint` with { owned } on the root.
+                  `roster-shelf:paint` with { owned } (entries in the save) on the root.
    ═══════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -29,12 +30,12 @@
       } catch (cause) { return {}; }
     }
     function paint() {
-      var mine = roster(), owned = 0, api = context.api;
+      var mine = roster(), api = context.api;
+      var owned = Object.keys(mine).filter(function (key) { return mine[key]; }).length;
       root.querySelectorAll('[data-key]').forEach(function (chip) {
         var copy = mine[chip.dataset.key], line = chip.querySelector('[data-line]');
         chip.hidden = !copy;
         if (!copy) return;
-        owned++;
         var level = kind === 'masters' ? copy.affinity : copy.level;
         if (line) line.textContent = level === null || level === undefined ? '' : api.fill(api.tr('directory.lvl', 'Lv {n}'), { n: api.fmt(level) });
       });

@@ -33,12 +33,17 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
     assert.equal(await page.locator('.sheet-shelf-empty').isVisible(), true, self + ': the empty shelf says where to start');
     assert.equal(await page.locator(answer).isVisible(), false, self + ': the answer waits behind its tab');
     await page.evaluate(record);
-    await page.waitForFunction(() => document.querySelector('.sheet-chip:not([hidden])'));
+    await page.waitForFunction(() => document.querySelector('.sheet-shelf-empty').offsetParent === null);
     assert.equal(await page.locator('#planner').getAttribute('data-view'), 'mine', self + ': an edit never moves the reader');
     await page.reload(); await page.waitForFunction(() => document.getElementById('planner').dataset.view);
     assert.equal(await page.locator('#planner').getAttribute('data-view'), 'answer', self + ': a save with something in it opens on the answer');
     await page.locator('.sheet-views [data-value="mine"]').click();
-    assert.equal(await page.locator('.sheet-chip:not([hidden])').count(), 1, self + ': one chip for one owned');
+    // Heroes shows one roster, and it is your half: the bag above the full hero grid, no chips and no second grid.
+    if (self === 'heroes') {
+      assert.equal(await page.locator('.sheet-chip').count(), 0, 'heroes: no chips beside the roster');
+      assert.equal(await page.locator('[data-module~="hero-directory"]').count(), 1, 'heroes: one hero grid');
+      assert.equal(await page.locator('[data-half="mine"] #directory [data-hero]').count(), await page.locator('[data-hero]').count(), 'heroes: the grid is in Your heroes');
+    } else assert.equal(await page.locator('.sheet-chip:not([hidden])').count(), 1, self + ': one chip for one owned');
     await page.goto(origin + '/' + self + '/?lang=en' + answer); await page.waitForFunction(() => document.getElementById('planner').dataset.view);
     assert.equal(await page.locator('#planner').getAttribute('data-view'), 'answer', self + ': a link into the answer opens it');
     await page.setViewportSize({ width: 1280, height: 900 });
