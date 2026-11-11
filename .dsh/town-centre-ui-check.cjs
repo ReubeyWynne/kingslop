@@ -122,7 +122,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal((await ledger()).governorCharms.slots['inf-1-1'].level, 0);
     await govDialog.locator('select[data-level="gear"]').selectOption('3');
     assert.equal((await ledger()).governorGear.pieces['inf-1'].level, 3);
-    await govDialog.locator('[data-action="governor-profile.close"]').click(); await govDialog.waitFor({ state: 'hidden' });
+    await govDialog.locator('[data-profile="close"]').click(); await govDialog.waitFor({ state: 'hidden' });
     assert.equal(await page.locator('[data-gov="inf-1"] [data-part="level"]').textContent(), 'Blue 0★');
     assert.match(await page.locator('[data-charm="inf-1-1"] img').getAttribute('src'), /charms\/inf-1\.webp$/);
     assert.equal(await page.locator('[data-gov="inf-1"]').getAttribute('data-state'), 'set');

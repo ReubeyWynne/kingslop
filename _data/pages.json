@@ -796,7 +796,7 @@
       "../js/pages/master-roster.mjs",
       "../js/master-points.js",
       "../js/governor-view.js",
-      "../js/governor-profile.js",
+      "../js/pages/governor-profile.mjs",
       "../js/town-centre.js",
       "../js/empty-state.js"
     ],
@@ -865,10 +865,10 @@
       "../js/governor-engine.mjs",
       "../js/event-points.js",
       "../js/governor-view.js",
-      "../js/governor-profile.js",
+      "../js/pages/governor-profile.mjs",
       "../js/page-sheet.js",
       "../js/governor-sheet.js",
-      "../js/governor-planner.js"
+      "../js/pages/governor-planner.mjs"
     ],
     "footMainKey": "gov.kicker",
     "footMain": "the governor's wardrobe",

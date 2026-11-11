@@ -59,6 +59,7 @@ jobs:
               - js/page-deck.js
               - js/roster-form.mjs
               - js/governor-view.js
+              - js/pages/governor-profile.mjs
               - css/equipment.css
               - .dsh/lib/**
               - js/i18n.js
@@ -226,6 +227,7 @@ jobs:
               - .dsh/governor-fixtures/**
               - governor-gear/**
               - js/governor-*
+              - js/pages/governor-*
               - js/screen-import*.js
               - js/import-adapters/governor.js
               - css/screen-import.css
@@ -246,6 +248,7 @@ jobs:
               - js/town-centre*.mjs
               - js/event-*
               - js/governor-*
+              - js/pages/governor-*
               - js/hero-gear-engine.mjs
               - _data/event_rules.json
               - _data/governor.json
@@ -295,6 +298,7 @@ jobs:
               - _data/masters.json
               - js/hero-gear-engine.mjs
               - js/governor-*
+              - js/pages/governor-*
               - _data/governor.json
               - js/building-*
               - _data/buildings.json
@@ -330,6 +334,7 @@ jobs:
               - js/hero-gear*.js
               - js/hero-gear*.mjs
               - js/governor-*
+              - js/pages/governor-*
               - js/pet-*
               - js/pages/pet-den.mjs
               - js/master-*
