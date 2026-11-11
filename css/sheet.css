@@ -53,19 +53,12 @@
 .sheet-roster > .sheet-hero, .sheet-roster > .sheet-console { --frame: min(74rem, calc(100vw - 2 * var(--space-s))); width: var(--frame); margin-inline: calc((100% - var(--frame)) / 2); }
 .sheet-roster > .sheet-console { padding: .75rem 0 var(--space-l); }
 
-/* The things you own, one chip each, linking to its card below. */
-.sheet-shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(4.4rem, 1fr)); gap: .7rem .5rem; margin: .4rem 0 .8rem; }
-.sheet-chip { display: grid; justify-items: center; align-content: start; gap: .15rem; min-width: 0; text-align: center; text-decoration: none; color: var(--ink); }
-.sheet-chip img, .sheet-chip-initial { width: 3.5rem; height: 3.5rem; object-fit: cover; border: 1px solid var(--signal-line); border-radius: 2px; }
-.sheet-chip-initial { display: grid; place-items: center; font: 1.4rem var(--display-2); color: var(--ink-dim); }
-.sheet-chip-name { max-width: 100%; font: 600 .72rem/1.15 var(--display-2); letter-spacing: .04em; text-transform: uppercase; overflow-wrap: anywhere; }
-.sheet-chip small { font-size: .72rem; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
-.sheet-chip-word { justify-items: start; text-align: start; padding: .35rem 0; border-bottom: 1px solid var(--signal-line); }
-.sheet-shelf:has(.sheet-chip-word) { grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr)); }
-@media (hover: hover) { .sheet-chip:hover .sheet-chip-name { color: var(--amber); } }
-.sheet-chip[hidden] { display: none; }
-.sheet-chip:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+/* While you own nothing, one line pointing to the roster below it. */
+.sheet-shelf { margin: .4rem 0 .8rem; }
 .sheet-shelf-empty { grid-column: 1 / -1; margin: 0; }
+
+/* On Heroes, Masters and Pets your half is the whole roster, so it takes the wider column. */
+.roster-console .sheet-workspace { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
 
 /* Two tabs on a phone, yours and the answer; on wider screens both halves show. */
 .sheet-views { display: none; }
@@ -88,6 +81,4 @@
   [data-module~="planner"][data-view="mine"] [data-half="answer"], [data-module~="planner"][data-view="answer"] [data-half="mine"] { display: none; }
   [data-module~="planner"] .sheet-answer { margin-top: 0; padding-top: 0; border-top: 0; }
   [data-module~="planner"] .sheet-side > h2, [data-module~="planner"] .sheet-answer > h2 { display: none; }
-  .sheet-shelf { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .5rem .3rem; }
-  .sheet-chip img, .sheet-chip-initial { width: 100%; height: auto; aspect-ratio: 1; }
 }

@@ -140,8 +140,10 @@
 
 /* Wider screens: the four waves stand side by side, each as wide as its masters, with the
    day over the tiles. A wave with a master open takes the full width, so the dossier has
-   the measure. */
-@media (min-width: 651px) {
+   the measure. Measured on the roster's own width, since on Masters it sits in the
+   planner's half beside the answer. */
+[data-module~="master-directory"] { container: master-directory / inline-size; }
+@container master-directory (min-width: 36rem) {
   /* Tracks sized so every tile matches across waves: eight tiles, three band gaps, four tile gaps. */
   .master-roster { --tile: calc((100% - 5rem) / 8); grid-template-columns: calc(3 * var(--tile) + 1rem) var(--tile) calc(2 * var(--tile) + .5rem) calc(2 * var(--tile) + .5rem); column-gap: 1rem; }
   .master-band { grid-template-columns: minmax(0, 1fr); --band-label: 0px; --band-gap: .4rem; }
@@ -152,11 +154,13 @@
   .master-band:is([data-day="197"], [data-day="281"]) .master-catalogue { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .master-roster:has(.master-dossier[open]) { grid-template-columns: minmax(0, 1fr); }
   .master-roster:has(.master-dossier[open]) .master-catalogue { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; }
-  .master-bag-caption { grid-column: 2 / -1; }
 }
-@media (max-width: 650px) {
+@container master-directory (max-width: 35.98rem) {
   .master-dossier-body { grid-template-columns: minmax(0, 1fr); }
+  .master-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 651px) { .master-bag-caption { grid-column: 2 / -1; } }
+@media (max-width: 650px) {
   .master-bag { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .master-bag-title { grid-column: 1 / -1; }
-  .master-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

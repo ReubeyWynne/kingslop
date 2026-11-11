@@ -16,7 +16,7 @@ self: heroes
     <p class="lede" data-i18n="directory.intro">Pick a job, then find a hero whose skills fit it.</p>
     {% include ascii/motif.html kind="helm" %}
   </section>
-  <section class="section sheet-console hero-console" id="planner" data-module="planner page-sheet" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label">
+  <section class="section sheet-console roster-console" id="planner" data-module="planner page-sheet" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label">
     {% include page-sheet.html part="notice" %}
     {% include planner.html part="views" mine="planner.heroes" mine_en="Your heroes" %}
     <div class="sheet-workspace">

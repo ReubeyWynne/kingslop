@@ -179,9 +179,6 @@
   .hero-bag-title { grid-column: 1 / -1; }
 }
 
-/* Heroes' planner: the roster is your half, so it takes the wider column. */
-.hero-console .sheet-workspace { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
-
 /* KvK points from your heroes — the spending plan as one ruled table. */
 .hero-points-total { margin: var(--space-s) 0 0; font-family: var(--display-2); font-size: var(--step-1); color: var(--amber); font-variant-numeric: tabular-nums; }
 .hero-points-scroll { overflow-x: auto; }

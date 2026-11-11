@@ -4,7 +4,6 @@ self: masters
 ---
 <nav class="toc" id="toc" aria-label="Sections" data-i18n-key="nav.aria" data-i18n-attr="aria-label">
   <a href="#planner" data-i18n="planner.masters">Your masters</a>
-  <a href="#roster" data-i18n="masters.browse">Browse masters</a>
   <a href="#where" data-i18n="masters.where">Where they matter</a>
   <a href="#how" data-i18n="notes.how">How it works</a>
   <a href="#sources" data-i18n="directory.sources">Sources &amp; confidence</a>
@@ -15,14 +14,18 @@ self: masters
     <p class="lede" data-i18n="masters.intro">Eight masters, each with an affinity ladder, a talent and four skills. Record yours to see what comes next and what your emblems and manuscripts can score.</p>
     {% include ascii/motif.html kind="tome" %}
   </section>
-  <section class="section sheet-console" id="planner" data-module="planner page-sheet" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label">
+  <section class="section sheet-console roster-console" id="planner" data-module="planner page-sheet" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label">
     {% include page-sheet.html part="notice" %}
     {% include planner.html part="views" mine="planner.masters" mine_en="Your masters" %}
     <div class="sheet-workspace">
       <div class="sheet-side" data-half="mine" id="your-masters">
         <h2 data-i18n="planner.masters">Your masters</h2>
-        {% include planner.html part="shelf" kind="masters" fill="#roster" empty="planner.mastersEmpty" empty_en="Record your masters ↓" %}
         {% include masters/bag.html %}
+        {% include planner.html part="shelf" kind="masters" fill="#roster" empty="planner.mastersEmpty" empty_en="Record your masters ↓" %}
+        <div class="master-directory" id="roster" data-module="master-directory">
+          <p class="note" data-i18n="masters.howNote">Masters join the Master Academy in four waves, from server day 113. Affinity comes from Journey and gifts; every ten levels a new class costs that master's emblems and raises the talent. Skills unlock with affinity and are learned with Master's Manuscripts.</p>
+          {% include masters/roster.html %}
+        </div>
       </div>
       <div class="sheet-answer master-points" data-half="answer" id="kvk-points" data-module="master-points" aria-labelledby="kvk-points-title">
         <h2 data-i18n="gov.theAnswer">The answer</h2>
@@ -42,11 +45,6 @@ self: masters
       </div>
     </div>
     {% include page-sheet.html part="confirm" class="sheet-dialog" title="sheet.masters.confirmTitle" title_en="Save these masters as yours?" body="sheet.masters.confirmBody" body_en="It replaces the masters in your save. An emblem or manuscript count this sheet has not counted keeps your number." confirm="sheet.masters.confirm" confirm_en="replace my masters" %}
-  </section>
-  <section class="section" id="roster" data-module="master-directory">
-    <h2 data-i18n="masters.browse">Browse masters</h2>
-    <p class="note" data-i18n="masters.howNote">Masters join the Master Academy in four waves, from server day 113. Affinity comes from Journey and gifts; every ten levels a new class costs that master's emblems and raises the talent. Skills unlock with affinity and are learned with Master's Manuscripts.</p>
-    {% include masters/roster.html %}
   </section>
   <section class="section" id="where">
     <h2 data-i18n="masters.where">Where they matter</h2>
