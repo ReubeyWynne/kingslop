@@ -3,45 +3,90 @@ layout: page
 self: vikings
 ---
 {% include vikings-troops.html %}
-<main class="vv-page" data-module="vikings">
+<main class="vv-page" x-data="vikings($el.dataset.vikingsApi)" :class="state && 'vv-active'" :aria-busy="busy ? 'true' : null" x-effect="opened && document.documentElement.classList.remove('vv-opening')">
   <header class="vv-header" id="top">
     <div><p class="vv-eyebrow">Vikings Vengeance</p><h1>Vikings planner</h1><a class="vv-flip" href="guide/">Flip to the guide <span aria-hidden="true">↻</span></a></div>
     <img src="../img/buildings/town-center.webp" width="128" height="128" alt="" decoding="async">
   </header>
-  <p class="vv-next" data-target="vikings.next">Vikings opens every two weeks, on Tuesday and Thursday.</p>
-  <section class="vv-event" data-target="vikings.event" aria-label="Open plan" hidden></section>
-  <nav class="vv-tabs" role="tablist" aria-label="Vikings planner">
-    <button type="button" role="tab" id="vv-my-tab" aria-selected="true" aria-controls="my-plan" data-action="vikings.tab" data-tab="my-plan">My troops</button>
-    <button type="button" role="tab" id="vv-alliance-tab" aria-selected="false" aria-controls="alliance-plan" data-action="vikings.tab" data-tab="alliance-plan">Alliance</button>
+  <p class="vv-next" :hidden="!!state"><span x-show="!nextLine">Vikings opens every two weeks, on Tuesday and Thursday.</span><template x-if="nextLine"><span class="vv-contents"><span class="vv-label">Next Vikings</span><strong x-text="nextLine.when"></strong><span class="vv-dim" x-text="nextLine.dim"></span></span></template></p>
+  <section class="vv-event" aria-label="Open plan" hidden :hidden="!state"><template x-if="bar"><div class="vv-contents">
+    <div class="vv-bar-head"><div><p class="vv-label" x-text="bar.label"></p><h2 x-text="bar.name"></h2></div><button type="button" class="vv-quiet" @click="leave()">Leave</button></div>
+    <p class="vv-when"><strong x-text="bar.utc"></strong><template x-if="bar.local"><span class="vv-dim" x-text="bar.local"></span></template><template x-if="bar.setIt"><button type="button" class="vv-inline" @click="settings()">Set it</button></template></p>
+  </div></template></section>
+  <nav class="vv-tabs" role="tablist" aria-label="Vikings planner" @keydown.left.prevent="$refs[flip()].focus()" @keydown.right.prevent="$refs[flip()].focus()" @keydown.home.prevent="$refs[flip('my-plan')].focus()" @keydown.end.prevent="$refs[flip('alliance-plan')].focus()">
+    <button type="button" role="tab" id="vv-my-tab" x-ref="my-plan" aria-selected="true" :aria-selected="String(mode === 'my-plan')" aria-controls="my-plan" :hidden="viewer" @click="tab('my-plan')">My troops</button>
+    <button type="button" role="tab" id="vv-alliance-tab" x-ref="alliance-plan" aria-selected="false" :aria-selected="String(mode === 'alliance-plan')" aria-controls="alliance-plan" @click="tab('alliance-plan')">Alliance</button>
   </nav>
-  <p class="vv-message" data-target="vikings.message" role="status" aria-live="polite"></p>
+  <p class="vv-message" role="status" aria-live="polite" :data-error="String(error)" x-text="message"></p>
 
-  <section class="vv-panel" id="my-plan" role="tabpanel" aria-labelledby="vv-my-tab">
-    <div data-target="vikings.personal"></div>
-    <div class="vv-start" data-target="vikings.start">
-      <div data-target="vikings.remembered"></div>
+  <section class="vv-panel" id="my-plan" role="tabpanel" aria-labelledby="vv-my-tab" :hidden="mode !== 'my-plan'">
+    <div class="vv-personal">
+      <template x-if="personal.heading"><h2 x-text="personal.heading"></h2></template>
+      <template x-if="personal.flag"><p class="vv-flag" x-text="personal.flag"></p></template>
+      <template x-if="personal.lede"><p class="vv-lede" x-text="personal.lede"></p></template>
+      <template x-if="personal.kind === 'answer' && answer"><form @submit.prevent="send('answer')" @focusin="typing = true" @focusout="typing = false">
+        {% include vikings-player.html model="answer" %}
+        <div class="vv-actions"><button type="submit" class="vv-primary" :disabled="busy">I’m in</button><template x-if="answer.id"><button type="button" class="vv-secondary" :disabled="busy" @click="notIn()">Not this time</button></template></div>
+      </form></template>
+      <template x-if="personal.kind === 'out'"><div class="vv-actions"><button type="button" class="vv-primary" :disabled="busy" @click="imIn()">Sign up again</button></div></template>
+      <template x-if="personal.kind === 'marches'"><div class="vv-contents">
+        <template x-if="plan.waiting"><div class="vv-contents">
+          <p class="vv-lede" x-text="plan.lede"></p>
+          <template x-if="manager"><div class="vv-actions"><button type="button" class="vv-primary" @click="assign(me.id)">Set my marches</button></div></template>
+          <div class="vv-marches"><template x-for="slot in plan.slots"><div class="vv-march vv-march-empty"><span class="vv-queue" x-text="slot.q"></span><span class="vv-slot"></span><div class="vv-march-main"><div class="vv-march-head"><strong>Not set</strong><span class="vv-dim" x-text="slot.cap"></span></div></div></div></template></div>
+        </div></template>
+        <template x-if="!plan.waiting"><div class="vv-contents">
+          <p class="vv-lede" x-text="plan.lede"></p>
+          <div class="vv-marches"><template x-for="m in plan.marches">{% include vikings-march.html %}</template></div>
+          <template x-if="plan.hq"><div class="vv-hq"><p class="vv-label">HQ · waves 10 &amp; 20</p><template x-for="m in [plan.hq]">{% include vikings-march.html %}</template></div></template>
+          <div class="vv-actions"><button type="button" class="vv-primary" @click="copyInstructions()">Copy for game chat</button></div>
+          <div class="vv-section"><h3>Covering your city</h3><template x-if="!plan.cover.length"><p class="vv-caption">Nobody yet.</p></template><template x-if="plan.cover.length"><ul class="vv-cover"><template x-for="c in plan.cover"><li><span x-text="c.name"></span><template x-if="c.total !== null"><span class="vv-total" x-text="c.total"></span></template></li></template></ul></template></div>
+        </div></template>
+        <div class="vv-section"><div class="vv-heading"><h3>You’re bringing</h3><button type="button" class="vv-quiet" @click="editMine()">Edit</button></div>{% include vikings-counts.html of="me" %}<p class="vv-caption" x-text="bringing"></p></div>
+        <div class="vv-actions"><button type="button" class="vv-secondary" @click="withdraw()">Withdraw sign-up</button></div>
+      </div></template>
+    </div>
+    <div class="vv-start" :hidden="!!state">
       <div class="vv-paths">
-        <div class="vv-path"><p class="vv-label">Leading</p><h2>Your alliance</h2><p>Sign-ups every Vikings, marches and HQ.</p><button type="button" class="vv-primary" data-action="vikings.create">Set up your alliance</button></div>
-        <div class="vv-path"><p class="vv-label">Joining</p><h2>Got a link?</h2><p>Paste it to sign up or see your marches.</p><button type="button" class="vv-primary" data-action="vikings.open">Paste a link</button></div>
+        <div class="vv-path"><p class="vv-label">Leading</p><h2>Your alliance</h2><p>Sign-ups every Vikings, marches and HQ.</p><button type="button" class="vv-primary" @click="create()">Set up your alliance</button></div>
+        <div class="vv-path"><p class="vv-label">Joining</p><h2>Got a link?</h2><p>Paste it to sign up or see your marches.</p><button type="button" class="vv-primary" @click="paste()">Paste a link</button></div>
       </div>
     </div>
-    <section data-target="vikings.calculator" class="vv-calculator" aria-labelledby="vv-calc-title">
+    <section class="vv-calculator" aria-labelledby="vv-calc-title" :hidden="!!state">
       <h2 id="vv-calc-title">Just your own marches</h2>
-      <form data-action="vikings.calculate" data-target="vikings.calculatorForm">
-        <div class="vv-troop-inputs">{% for t in site.data.vikings.troops %}<label class="vv-k"><img src="../img/buildings/{{ t.art }}.webp" width="48" height="48" alt="" loading="lazy"><span>{{ t.name }}</span><span class="vv-k-input"><input name="{{ t.id }}" min="0" placeholder="—" required data-unit-input="count" data-unit-default="k"></span></label>{% endfor %}</div>
-        <div class="vv-form-grid"><label class="vv-k"><span>March size</span><span class="vv-k-input"><input name="marchCapacity" min="0" placeholder="160" required data-unit-input="count" data-unit-default="k"></span></label><label>Marches<input type="number" name="marches" min="1" max="6" value="5" inputmode="numeric" required></label></div>
-        <div class="vv-troop-tools" data-target="vikings.calcUnits"></div>
-        <button type="submit" class="vv-primary" disabled>Work out my marches</button>
+      <form @submit.prevent="calculate()" @focusin="focused = $event.target.name" @focusout="focused = null">
+        <div class="vv-troop-inputs">{% for t in site.data.vikings.troops %}<label class="vv-k"><img src="../img/buildings/{{ t.art }}.webp" width="48" height="48" alt="" loading="lazy"><span>{{ t.name }}</span><span class="vv-k-input"><input name="{{ t.id }}" x-model="calc.{{ t.id }}" min="0" placeholder="—" required data-unit-input="count" data-unit-default="k"></span></label>{% endfor %}</div>
+        <div class="vv-form-grid"><label class="vv-k"><span>March size</span><span class="vv-k-input"><input name="marchCapacity" x-model="calc.marchCapacity" min="0" placeholder="160" required data-unit-input="count" data-unit-default="k"></span></label><label>Marches<input type="number" name="marches" x-model="calc.marches" min="1" max="6" value="5" inputmode="numeric" required></label></div>
+        <div class="vv-troop-tools">{% include vikings-sync.html %}</div>
+        <button type="submit" class="vv-primary" disabled :disabled="false">Work out my marches</button>
       </form>
-      <div class="vv-local-answer" data-target="vikings.split" aria-live="polite"></div>
-      <p class="vv-caption"><button type="button" class="vv-inline" data-action="vikings.demo">See an example</button></p>
+      <div class="vv-local-answer" aria-live="polite"><template x-if="split"><div class="vv-contents"><p class="vv-lede" x-text="split.lede"></p><div class="vv-marches"><template x-for="m in split.marches">{% include vikings-march.html %}</template></div></div></template></div>
+      <p class="vv-caption"><button type="button" class="vv-inline" @click="example()">See an example</button></p>
     </section>
   </section>
 
-  <section class="vv-panel" id="alliance-plan" role="tabpanel" aria-labelledby="vv-alliance-tab" hidden>
-    <div data-target="vikings.alliance"></div>
+  <section class="vv-panel" id="alliance-plan" role="tabpanel" aria-labelledby="vv-alliance-tab" hidden :hidden="mode !== 'alliance-plan'">
+    <div class="vv-alliance">
+      <template x-if="!state"><button type="button" class="vv-primary" @click="create()">Set up your alliance</button></template>
+      <template x-if="state && !manager"><div class="vv-contents">
+        <h2 x-text="'In for ' + when"></h2>
+        <div class="vv-rows"><template x-for="p in team.inn" :key="p.id"><div class="vv-row vv-route" :class="p.id === state.registrationId && 'vv-mine'"><img src="../img/buildings/town-center.webp" alt="" width="40" height="40" loading="lazy"><span class="vv-row-main"><span class="vv-row-top"><strong x-text="p.nickname"></strong><span class="vv-avail" :data-presence="p.availability || 'unknown'" x-text="presence(p)"></span></span><span class="vv-dim" x-text="routeLine(p)"></span></span></div></template></div>
+        <template x-if="!team.inn.length"><p class="vv-caption">Nobody yet.</p></template>
+      </div></template>
+      <template x-if="manager"><div class="vv-contents">
+        <dl class="vv-tally"><div><dt>In</dt><dd x-text="team.inn.length"></dd></div><div><dt>Not yet</dt><dd :class="team.waiting.length > 0 && 'vv-short'" x-text="team.waiting.length"></dd></div><div><dt>Out</dt><dd x-text="team.out.length"></dd></div><div><dt>Marches set</dt><dd :class="team.sent < team.queues && 'vv-short'" x-text="team.sent + '/' + team.queues"></dd></div></dl>
+        <template x-if="team.joinText || !state.example"><div class="vv-actions vv-lead"><template x-if="team.joinText"><button type="button" class="vv-primary" :data-copy="team.joinText" @click="copy(team.joinText)">Copy sign-up message</button></template><template x-if="!state.example"><button type="button" class="vv-secondary" @click="share()">Links</button></template></div></template>
+        <template x-if="team.check.errors.length"><ul class="vv-problems"><template x-for="m in team.check.errors"><li x-text="m"></li></template></ul></template>
+        <div class="vv-heading"><h2>In</h2><button type="button" class="vv-quiet" @click="addPlayer()">Add a player</button></div>
+        <template x-if="!team.inn.length"><p class="vv-caption">Nobody yet.</p></template>
+        <div class="vv-rows vv-in"><template x-for="p in team.inn" :key="p.id">{% include vikings-row.html %}</template></div>
+        <template x-if="team.waiting.length"><details class="vv-gaps" id="not-answered" x-effect="renders; $el.open = false"><summary x-text="'Not answered yet · ' + team.waiting.length"></summary><div class="vv-rows vv-faint"><template x-for="p in team.waiting" :key="p.id">{% include vikings-row.html %}</template></div></details></template>
+        <template x-if="team.out.length"><details class="vv-gaps" id="sitting-out" x-effect="renders; $el.open = false"><summary x-text="'Out · ' + team.out.length"></summary><div class="vv-rows vv-faint"><template x-for="p in team.out" :key="p.id">{% include vikings-row.html %}</template></div></details></template>
+        <div class="vv-section vv-hq-section"><div class="vv-hq-head"><span class="vv-hq-mark" aria-hidden="true">HQ</span><div><h3>HQ · waves 10 &amp; 20</h3><p class="vv-dim" x-text="team.hqLine"></p></div></div><template x-if="team.inn.length"><button type="button" class="vv-quiet" @click="hq()" x-text="state.hq.participants.length ? 'Change' : 'Set up'"></button></template></div>
+        <details class="vv-tools" id="room-tools" x-effect="renders; $el.open = false"><summary>More</summary><div class="vv-actions"><button type="button" @click="settings()">Settings</button><template x-if="!state.example"><button type="button" @click="refresh()">Refresh</button></template><template x-if="!state.example"><button type="button" class="vv-danger" @click="deletePlan()">Delete</button></template></div></details>
+      </div></template>
+    </div>
   </section>
-
-  <dialog class="vv-dialog" data-target="vikings.dialog" aria-labelledby="vv-dialog-title"><div class="vv-dialog-head"><h2 id="vv-dialog-title"></h2><button type="button" data-action="vikings.closeDialog" aria-label="Close editor">×</button></div><p class="vv-dialog-message" data-target="vikings.dialogMessage" role="alert"></p><div data-target="vikings.dialogBody"></div></dialog>
+{% include vikings-dialog.html %}
   <noscript><p class="vv-caption">The planner needs JavaScript. <a href="guide/">The guide</a> works without it.</p></noscript>
 </main>

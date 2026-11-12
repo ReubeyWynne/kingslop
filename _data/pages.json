@@ -257,7 +257,7 @@
       "../js/page-chrome.js",
       "../js/common.js",
       "../js/vikings-engine.mjs",
-      "../js/vikings.js"
+      "../js/pages/vikings.mjs"
     ],
     "footMainKey": "",
     "footMain": "VIKINGS VENGEANCE",
@@ -494,11 +494,7 @@
       "../js/battle-engine.mjs",
       "../js/combat-data.js",
       "../js/combat.mjs",
-      "../js/sim-player.js",
-      "../js/sim-army.js",
-      "../js/sim-run.js",
-      "../js/sim-sheet.js",
-      "../js/sim.js"
+      "../js/pages/simulator.mjs"
     ],
     "footMainKey": "sim.foot.main",
     "footMain": "JUST THE MATHS",
@@ -1370,7 +1366,7 @@
       "../js/common.js",
       "../js/island-data.js",
       "../js/island-model.mjs",
-      "../js/island.js"
+      "../js/pages/island.mjs"
     ],
     "footMainKey": "",
     "footMain": "THE ISLAND",

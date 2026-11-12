@@ -36,7 +36,7 @@ Vikings opens every fourteen days on Tuesday and Thursday, server time (UTC); R4
 
 ## Assignments
 
-`js/vikings-engine.mjs` is the pure allocation and validation engine used by the browser and Worker. City splits fill available capacity with infantry, then cavalry, then archers when overflow requires prioritisation. With enough room, they send all troop types. Each type is distributed proportionally across the remaining queue capacities, with deterministic integer rounding.
+The page (`vikings-vengeance/index.html`, with the dialog and rows in `_includes/vikings-*.html`) is declared in Alpine markup; its controller, `js/pages/vikings.mjs`, holds the plan and talks to the API. `js/vikings-engine.mjs` is the pure allocation and validation engine used by the browser and Worker. City splits fill available capacity with infantry, then cavalry, then archers when overflow requires prioritisation. With enough room, they send all troop types. Each type is distributed proportionally across the remaining queue capacities, with deterministic integer rounding.
 
 Each player has up to six draft march rows. Every row names a queue, destination registration and three troop amounts. The Worker checks player membership, queue uniqueness, capacity, troop availability and self-reinforcement. The engine does not infer combat safety or points from troop counts.
 

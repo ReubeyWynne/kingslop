@@ -111,10 +111,18 @@ jobs:
               - *shared
               - .dsh/interaction-modules-check.cjs
               - .dsh/vikings-ui-check.cjs
+              - .dsh/island-ui-check.cjs
+              - island/**
+              - js/island*.js
+              - js/island*.mjs
+              - js/pages/island.mjs
+              - _includes/island-*.html
+              - css/island.css
               - vikings-vengeance/**
               - vv/**
               - js/vikings*.js
-              - js/pages/vikings-guide.mjs
+              - js/pages/vikings*.mjs
+              - _includes/vikings-*.html
               - js/vikings*.mjs
               - css/vikings.css
               - _data/vikings.json
@@ -716,6 +724,9 @@ jobs:
       - name: Check Vikings planner UI
         if: matrix.group == 'interactions'
         run: node .dsh/vikings-ui-check.cjs
+      - name: Check the Island planner UI
+        if: matrix.group == 'interactions'
+        run: node .dsh/island-ui-check.cjs
       - name: Check building requirements UI
         if: matrix.group == 'priority'
         run: node .dsh/building-paths-ui-check.cjs

@@ -453,7 +453,7 @@ site already carries from elsewhere disagrees:
   sim's 4-joiner-slots abstraction are different structures — do not silently
   cross-import.
 
-### Battle Simulator page (`battle-simulator/`, `js/sim.js`)
+### Battle Simulator page (`battle-simulator/`, `js/pages/simulator.mjs`)
 
 - The page's ratio maths (MATHS.md §4–5: `f_t ∝ (w·A)²`, `K = √Σ`) is corroborated
   by the SoS engine's A/D factor structure.

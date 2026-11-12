@@ -108,7 +108,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.locator('.sweep-settings summary').click();
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
     await page.screenshot({ path: path.join(output, 'answer-' + lang + '-' + width + '.png') });
-    await page.locator('[data-mode="bear-ratio"]').first().click();
+    await page.locator('.mode-rail a[href="?mode=bear-ratio"]').click();
     if (width <= 860) await page.locator('#sim-view-armies').click();
     // Undo puts back what the report replaced.
     await page.locator('#screen-import [data-target="screen-import.chip"]').click();
