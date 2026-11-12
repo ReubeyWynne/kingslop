@@ -146,10 +146,10 @@ withBrowser({ root }, async ({ browser, origin }) => {
             await page.locator('#sim-ledger .sim-ledger-actions button').nth(2).click();
             const roster = page.locator('#sim-roster [data-troop-type="cav"]');
             const before = await roster.locator('.roster-row').count();
-            await roster.locator('[data-action="troop-roster.add"]').click();
+            await roster.locator('[data-roster="add"]').click();
             await roster.locator('.roster-row').nth(before).locator('[data-field="amount"]').fill('4321');
             assert.ok((await page.evaluate(() => window.PlayerLedger.shared().combat().troops)).some(t => t.type === 'cav' && t.amount === 4321), lang + ': the roster writes troops to the player save');
-            await roster.locator('.roster-row').nth(before).locator('[data-action="troop-roster.remove"]').click();
+            await roster.locator('.roster-row').nth(before).locator('[data-roster="remove"]').click();
             assert.equal(await roster.locator('.roster-row').count(), before);
             await page.locator('#sim-roster-dialog .sim-dialog-head button').click();
             if (width === 390) {

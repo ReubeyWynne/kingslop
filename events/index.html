@@ -98,7 +98,7 @@ self: events
         {% elsif item.id == 'master-emblem' %}
         <a href="../town-centre/#town-masters" data-i18n="town.shelf.masters">Masters</a>
         {% else %}
-        <label data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed" @ledger-form:edited="seal('{{ item.id }}', 'saved')" @module:error="failed('{{ item.id }}', $event.detail)"><span data-i18n="ks.available.owned">in your bag</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize" :data-tally="bagTally('{{ item.id }}')"><small class="seal" data-target="ledger-form.save" aria-live="polite" :data-state="seals['{{ item.id }}']"></small></label>
+        <label x-data="ledgerForm" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed" @ledger-form:edited="seal('{{ item.id }}', 'saved')" @module:error="failed('{{ item.id }}', $event.detail)"><span data-i18n="ks.available.owned">in your bag</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-bind="inventory.{{ item.id }}" :value="formValue('inventory.{{ item.id }}')" :data-state="formState('inventory.{{ item.id }}')" @input="formSet($el)" @change="formNormalize()" :data-tally="bagTally('{{ item.id }}')"><small class="seal" aria-live="polite" :data-state="seals['{{ item.id }}']" x-text="formNote"></small></label>
         <label><span data-i18n="ks.available.held">keep for later</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" value="0" data-held="{{ item.id }}" :value="keep('{{ item.id }}')" :max="keepMax('{{ item.id }}')" :disabled="keepOff('{{ item.id }}')" @input="reserve('{{ item.id }}', $el.value, $el.validity.valid)" @change="reserve('{{ item.id }}', $el.value, $el.validity.valid, true)"></label>
         {% endif %}
         <p><span data-i18n="ks.available.rate">points each</span> <output data-rate x-text="rate('{{ item.id }}')">—</output></p>
@@ -109,13 +109,13 @@ self: events
     <ul class="availability-potential"><template x-for="line in additional"><li x-text="line"></li></template></ul>
     <h3 data-i18n="ks.available.potential">Other ways to score</h3>
     <ul class="availability-potential"><template x-for="line in unquantified"><li x-text="line"></li></template></ul>
-    <details id="save-backups" data-module="save-transfer disclosure" data-status-scope="event-availability" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
+    <details id="save-backups" x-data="saveTransfer" data-status-scope="event-availability" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
       <summary data-i18n="gear.manageSave">your save &amp; backups</summary>
-      <button type="button" class="kb" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
-      <button type="button" class="kb" data-action="save-transfer.choose" data-i18n="gear.load">import backup</button>
-      <input type="file" accept="application/json,.json" hidden data-target="save-transfer.file" data-action="save-transfer.import">
+      <button type="button" class="kb" data-save="export" @click="transferExport()" data-i18n="gear.export">download backup</button>
+      <button type="button" class="kb" data-save="choose" @click="$refs.file.click()" data-i18n="gear.load">import backup</button>
+      <input type="file" accept="application/json,.json" hidden data-save="file" x-ref="file" @change="transferImport($el)">
     </details>
-    <output hidden aria-live="polite" data-module="result-panel" data-status-scope="event-availability" data-target="result-panel.message"></output>
+    <output hidden aria-live="polite" data-status x-data="resultPanel('event-availability')" @player-status.document="panelHear($event)" x-text="panelText" :hidden="!panelText" data-status-scope="event-availability"></output>
     <noscript><p data-i18n="ks.available.nojs">Enable JavaScript to read local inventory and calculate points. Reference tables below remain available.</p></noscript>
   </section>
 

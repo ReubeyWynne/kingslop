@@ -65,7 +65,7 @@ jobs:
               - js/i18n.js
               - js/interactions.js
               - js/player-ledger.mjs
-              - js/player-modules.js
+              - js/pages/widgets.mjs
               - js/unit-input.js
               - js/deep-link.js
               # Shared by every calculator: guest sheets, share links and event points.
