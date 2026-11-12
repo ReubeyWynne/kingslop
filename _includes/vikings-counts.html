@@ -1,0 +1,1 @@
+{% comment %} One player's or march's troops, a mark and a count per type, from js/pages/vikings.mjs `counts`. {% endcomment %}<div class="vv-counts"><template x-for="c in counts({{ include.of }})"><span :aria-label="c.label"><svg class="vv-symbol" aria-hidden="true"><use :href="c.href"></use></svg><span x-text="c.text"></span></span></template></div>

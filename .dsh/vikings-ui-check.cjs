@@ -29,7 +29,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
       assert(await page.locator('.vv-next strong').isVisible());
       await page.getByRole('button', { name: 'See an example' }).click();
       await page.getByText('Marches set').waitFor();
-      assert.equal(await page.locator('#alliance-plan > div > .vv-rows .vv-row').count(), 4);
+      assert.equal(await page.locator('#alliance-plan .vv-in .vv-row').count(), 4);
       await page.locator('.vv-rows .vv-row', { hasText: 'Rowan' }).click();
       await dialog(page).waitFor();
       assert.equal(await page.locator('dialog [data-queue]').count(), 3);
@@ -51,7 +51,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     // Troop counts start in thousands, and another unit keeps the count.
     {
       const context = await device(), page = await context.newPage(); await page.goto(origin + '/vikings-vengeance/');
-      const box = page.locator('[data-target="vikings.calculatorForm"] [name=infantry]'), unit = box.locator('xpath=following-sibling::select');
+      const box = page.locator('.vv-calculator form [name=infantry]'), unit = box.locator('xpath=following-sibling::select');
       assert.equal(await unit.inputValue(), 'k');
       await box.fill('240'); assert.equal(await raw(box), '240000');
       await unit.selectOption('m'); assert.equal(await raw(box), '240000');
@@ -65,15 +65,15 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await L.getByRole('button', { name: 'Set up your alliance' }).first().click();
     await dialog(L).locator('[name=time]').fill('20:00');
     await L.getByRole('button', { name: 'Set up', exact: true }).click();
-    await dialog(L).locator('[data-action="vikings.copy"]').first().waitFor();
-    const [join, view] = await dialog(L).locator('[data-action="vikings.copy"]').evaluateAll(nodes => nodes.map(n => n.dataset.value.match(/https?:\S+/)[0]));
+    await dialog(L).locator('[data-copy]').first().waitFor();
+    const [join, view] = await dialog(L).locator('[data-copy]').evaluateAll(nodes => nodes.map(n => n.dataset.copy.match(/https?:\S+/)[0]));
     assert.match(join, /\/vv\/#join-[A-Za-z0-9_-]{22}$/); assert.match(view, /\/vv\/#view-[A-Za-z0-9_-]{22}$/);
     assert.equal(await L.locator('.vv-event h2').textContent(), 'Vikings');
     assert(await L.locator('.vv-when').getByText(/20:00 UTC/).isVisible());
-    await dialog(L).locator('[data-action="vikings.closeDialog"]').click();
+    await dialog(L).locator('.vv-dialog-head button').click();
     // The leader signs up on the same tab as everyone else.
     await L.getByRole('tab', { name: 'My troops', exact: true }).click();
-    const own = L.locator('[data-target="vikings.personal"] form');
+    const own = L.locator('.vv-personal form');
     await own.locator('[name=nickname]').fill('Lead');
     for (const k of ['infantry', 'cavalry', 'archers']) await own.locator(`[name=${k}]`).fill('60');
     await own.locator('[name=marchCapacity]').fill('100'); await own.locator('[name=marches]').fill('2');
@@ -93,15 +93,15 @@ const API = 'https://kingslop.reubeycw.workers.dev';
         // Willow has troops in her save: the sign-up starts from them and writes changes back.
         await page.goto(origin + '/vikings-vengeance/');
         await page.evaluate(() => window.PlayerLedger.shared().setCombat({ troops: [{ type: 'inf', tier: 10, tg: 0, amount: 300000 }] }, 'manual'));
-        assert.equal(await raw(page.locator('[data-target="vikings.calculatorForm"] [name=infantry]')), '300000');
+        assert.equal(await raw(page.locator('.vv-calculator form [name=infantry]')), '300000');
       }
       await page.goto(local(join));
       if (nickname === 'Willow') {
-        assert.equal(await raw(page.locator('[data-target="vikings.personal"] [name=infantry]')), '300000');
-        assert(await page.locator('[data-target="vikings.personal"]').getByText('Synced with your saved troops').isVisible());
+        assert.equal(await raw(page.locator('.vv-personal [name=infantry]')), '300000');
+        assert(await page.locator('.vv-personal').getByText('Synced with your saved troops').isVisible());
       }
       assert.equal(new URL(page.url()).hash, '', 'the code leaves the address bar');
-      const signup = page.locator('[data-target="vikings.personal"] form');
+      const signup = page.locator('.vv-personal form');
       await signup.locator('[name=nickname]').fill(nickname);
       for (const k of ['infantry', 'cavalry', 'archers']) await signup.locator(`[name=${k}]`).fill('90');
       await signup.locator('[name=marchCapacity]').fill('150'); await signup.locator('[name=marches]').fill('2');
@@ -124,7 +124,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await again.getByRole('heading', { name: /^You’re out for/ }).waitFor(); await again.close();
 
     await L.reload(); await L.getByText('Marches set').waitFor();
-    assert.equal(await L.locator('#alliance-plan > div > .vv-rows .vv-row').count(), 3);
+    assert.equal(await L.locator('#alliance-plan .vv-in .vv-row').count(), 3);
     const names = ['Rowan', 'Ash'];
     for (let i = 0; i < 2; i++) {
       await L.locator('.vv-rows .vv-row', { hasText: names[i] }).first().click();
@@ -155,7 +155,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     try {
       again = await players.Ash.newPage(); await again.goto(origin + '/vikings-vengeance/');
       await again.getByRole('heading', { name: /^In for / }).waitFor();
-      assert.equal(await raw(again.locator('[data-target="vikings.personal"] [name=infantry]')), '90000');
+      assert.equal(await raw(again.locator('.vv-personal [name=infantry]')), '90000');
     } finally { Date.now = real; }
 
     // A viewer gets the alliance tab only, and keeps it. A sign-up link then adds signing up; a viewing link never takes it away.
@@ -166,17 +166,17 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     again = await viewer.newPage(); await again.goto(origin + '/vikings-vengeance/');
     await again.locator('#alliance-plan').getByRole('heading', { name: /^In for / }).waitFor();
     assert.equal((await alliance(again)).role, 'view');
-    await again.goto(local(join)); await again.locator('[data-target="vikings.personal"] form').waitFor();
+    await again.goto(local(join)); await again.locator('.vv-personal form').waitFor();
     assert.equal((await alliance(again)).role, 'join');
-    await again.goto(local(view)); await again.locator('[data-target="vikings.personal"] form').waitFor();
+    await again.goto(local(view)); await again.locator('.vv-personal form').waitFor();
     assert.equal((await alliance(again)).role, 'join', 'a lower link never downgrades');
 
     // A leader removes a player straight from the list.
     await L.bringToFront(); await L.reload(); await L.getByText('Marches set').waitFor();
-    const before = await L.locator('#alliance-plan > div > .vv-rows .vv-row').count();
+    const before = await L.locator('#alliance-plan .vv-in .vv-row').count();
     await L.getByRole('button', { name: 'Remove Ash' }).click();
     await dialog(L).getByRole('button', { name: 'Remove', exact: true }).click(); await dialog(L).waitFor({ state: 'hidden' });
-    await L.waitForFunction(n => document.querySelectorAll('#alliance-plan > div > .vv-rows .vv-row').length === n - 1, before);
+    await L.waitForFunction(n => document.querySelectorAll('#alliance-plan .vv-in .vv-row').length === n - 1, before);
 
     // A phone that saved links with the earlier version opens its leader link.
     {

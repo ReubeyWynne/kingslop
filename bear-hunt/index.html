@@ -10,7 +10,7 @@ self: bear
   <a href="#sqrt"><span data-i18n="bh.page.1">Why it works</span></a>
 </nav>
 
-<main data-group="hunt">
+<main x-data="bearHunt" @ks:server-age-change.document="ageChanged($event.detail)">
   <section class="section hero" id="top">
     <h1><span data-i18n="bh.page.7">BEAR HUNT</span></h1>
     <p class="lede"><span data-i18n="bh.page.8">How Bear damage works and how to organise rallies around it.</span></p>
@@ -26,9 +26,9 @@ self: bear
       {% include ascii/forge.html label="A hammer strikes a hot bar on an anvil and throws off sparks" %}
     </div>
     <div class="calc hunt-size" role="group" aria-label="Your hunt" data-i18n-key="bh.hunt.title" data-i18n-attr="aria-label">
-      <div class="calc-row"><label for="hunt-players" data-i18n="bh.hunt.players">Players</label><input id="hunt-players" data-in="players" type="number" inputmode="numeric" min="5" max="100" step="1" value="15"></div>
-      <div class="calc-row"><label for="hunt-rally" data-i18n="bh.hunt.rally">Biggest rally</label><input id="hunt-rally" class="ghost" data-in="rally" type="number" inputmode="numeric" min="16" max="1000000000" step="1" placeholder="1,360,000"></div>
-      <div class="calc-row"><label for="hunt-march" data-i18n="bh.hunt.march">Leader's march</label><input id="hunt-march" class="ghost" data-in="march" type="number" inputmode="numeric" min="1" max="1000000000" step="1" placeholder="181,333"></div>
+      <div class="calc-row"><label for="hunt-players" data-i18n="bh.hunt.players">Players</label><input id="hunt-players" x-model="hunt.players" @input="huntInput('players', $el.validity.valid)" type="number" inputmode="numeric" min="5" max="100" step="1" value="15"></div>
+      <div class="calc-row"><label for="hunt-rally" data-i18n="bh.hunt.rally">Biggest rally</label><input id="hunt-rally" class="ghost" x-model="hunt.rally" @input="huntInput('rally', $el.validity.valid)" :placeholder="rallyGhost" type="number" inputmode="numeric" min="16" max="1000000000" step="1" placeholder="1,360,000"></div>
+      <div class="calc-row"><label for="hunt-march" data-i18n="bh.hunt.march">Leader's march</label><input id="hunt-march" class="ghost" x-model="hunt.march" @input="huntInput('march', $el.validity.valid)" :placeholder="marchGhost" type="number" inputmode="numeric" min="1" max="1000000000" step="1" placeholder="181,333"></div>
     </div>
 
     <figure class="hunt-diagram rally-anatomy hunt-plan" aria-labelledby="hunt-plan-title">
@@ -40,21 +40,21 @@ self: bear
         </li>
         <li class="plan-wide">
           <div class="plan-visual cap-compare">
-            <div class="cap-row" data-cap="off"><span class="cap-label" data-i18n="bh.cap.off">No cap</span><div class="cap-bar" aria-hidden="true"></div><span class="cap-note" data-i18n="bh.cap.out" data-i18n-vars="hunt">5 left out</span></div>
-            <div class="cap-row" data-cap="on"><span class="cap-label" data-i18n="bh.cap.on" data-i18n-vars="hunt">Cap 84,000</span><div class="cap-bar" aria-hidden="true"></div><span class="cap-note" data-i18n="bh.cap.gain" data-i18n-vars="hunt">+24% damage</span></div>
+            <div class="cap-row" data-cap="off" :data-same="same"><span class="cap-label" data-i18n="bh.cap.off">No cap</span><div class="cap-bar" aria-hidden="true" :style="capOuts(false)"><template x-for="seg in capBar(false)"><i :data-lead="seg.lead" :data-out="seg.out" :style="seg.style"></i></template></div><span class="cap-note" data-say="bh.cap.out" x-text="say('bh.cap.out')">5 left out</span></div>
+            <div class="cap-row" data-cap="on" :data-same="same"><span class="cap-label" data-say="bh.cap.on" x-text="say('bh.cap.on')">Cap 84,000</span><div class="cap-bar" aria-hidden="true" :style="capOuts(true)"><template x-for="seg in capBar(true)"><i :data-lead="seg.lead" :data-out="seg.out" :style="seg.style"></i></template></div><span class="cap-note" data-say="bh.cap.gain" x-text="say('bh.cap.gain')">+24% damage</span></div>
           </div>
-          <div class="plan-rule"><span class="rule-num" aria-hidden="true">2</span><div><h3 data-i18n="bh.glance.2h" data-i18n-vars="hunt">Fill every rally to 15.</h3><p data-i18n="bh.rules.2p">Join whichever rally is closest to marching out.</p></div></div>
+          <div class="plan-rule"><span class="rule-num" aria-hidden="true">2</span><div><h3 data-say="bh.glance.2h" x-text="say('bh.glance.2h')">Fill every rally to 15.</h3><p data-i18n="bh.rules.2p">Join whichever rally is closest to marching out.</p></div></div>
         </li>
         <li>
-          <div class="plan-visual" aria-hidden="true"><div class="plan-joins"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
-          <div class="plan-rule"><span class="rule-num" aria-hidden="true">3</span><div><h3 data-i18n="bh.glance.3h" data-i18n-vars="hunt">Send 6 joins of up to 84,000.</h3></div></div>
+          <div class="plan-visual" aria-hidden="true"><div class="plan-joins" :style="joinsTall"><template x-for="n in joinBars" :key="n"><i></i></template></div></div>
+          <div class="plan-rule"><span class="rule-num" aria-hidden="true">3</span><div><h3 data-say="bh.glance.3h" x-text="say('bh.glance.3h')">Send 6 joins of up to 84,000.</h3></div></div>
         </li>
         <li>
           <div class="plan-visual" aria-hidden="true"><div class="plan-mix"><span class="march-archers"></span><span class="march-cavalry"></span><span class="march-infantry"></span></div></div>
           <div class="plan-rule"><span class="rule-num" aria-hidden="true">4</span><div><h3 data-i18n="bh.rules.4h">Cavalry and archers first, infantry last.</h3><p data-i18n="bh.rules.4p">Split each evenly across your marches. 5 / 15 / 80 is a fair start.</p></div></div>
         </li>
         <li>
-          <div class="plan-visual" aria-hidden="true"><div class="plan-joiners"><img src="../img/heroes/chenko.webp" width="48" height="48" alt="" loading="lazy"><img src="../img/heroes/yeonwoo.webp" width="48" height="48" alt="" loading="lazy"><img src="../img/heroes/amane.webp" width="48" height="48" alt="" loading="lazy"><i></i></div></div>
+          <div class="plan-visual" aria-hidden="true"><div class="plan-joiners"><template x-for="src in joinerImages" :key="src"><img :src="src" width="48" height="48" alt="" loading="lazy"></template><i></i></div></div>
           <div class="plan-rule"><span class="rule-num" aria-hidden="true">5</span><div><h3 data-i18n="bh.glance.6h">Join with a recommended first hero, or none.</h3></div></div>
         </li>
       </ol>
@@ -67,45 +67,40 @@ self: bear
     <h2 id="marches-title"><span data-i18n="bh.marches.heading">Your marches</span></h2>
     <figure class="hunt-diagram march-composition" aria-labelledby="marches-title">
       <figcaption class="allocator-heading">
-        <button id="allocator-toggle" class="allocator-button" type="button" aria-expanded="false" aria-controls="march-builder" data-deep-link="march-builder" hidden><span data-i18n="bh.alloc.open">Use my troops</span></button>
+        <button id="allocator-toggle" class="allocator-button" type="button" aria-expanded="false" :aria-expanded="builderOpen" aria-controls="march-builder" data-deep-link="march-builder" hidden :hidden="false" x-ref="toggle" @click="toggle($refs.first)"><span x-text="toggleLabel">Use my troops</span></button>
       </figcaption>
-      <form class="calc allocator-inputs" id="march-builder" hidden>
+      <form class="calc allocator-inputs" id="march-builder" hidden :hidden="!builderOpen" @input="saveBuilder()" @change="saveBuilder()" @submit.prevent="apply($el, $refs.toggle, $refs.ratio)">
         <h4 class="calc-title" data-i18n="bh.alloc.inputs">Your available troops</h4>
-        <div class="calc-row"><label for="infantry-total" data-i18n="sim.calc.inf">Infantry</label><input id="infantry-total" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" value="29750" required></div>
-        <div class="calc-row"><label for="cavalry-total" data-i18n="sim.calc.cav">Cavalry</label><input id="cavalry-total" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" value="89250" required></div>
-        <div class="calc-row"><label for="archer-total" data-i18n="bh.marches.archers">Archers</label><input id="archer-total" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" value="476000" required></div>
-        <div class="calc-row"><label for="join-queues" data-i18n="bh.page.85">Joins</label><input id="join-queues" type="number" inputmode="numeric" min="0" max="6" step="1" value="6" required></div>
-        <div class="calc-row"><label for="join-cap" data-i18n="bh.page.86">Alliance joiner cap</label><input id="join-cap" type="number" inputmode="numeric" min="1" max="1000000000000" step="1" value="85000" required></div>
-        <div class="calc-row"><label for="own-cap" data-i18n="bh.page.87">Your march size</label><input id="own-cap" type="number" inputmode="numeric" min="1" max="1000000000000" step="1" value="130000" required></div>
+        <div class="calc-row"><label for="infantry-total" data-i18n="sim.calc.inf">Infantry</label><input id="infantry-total" x-model="fields['infantry-total']" x-ref="first" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" value="29750" required></div>
+        <div class="calc-row"><label for="cavalry-total" data-i18n="sim.calc.cav">Cavalry</label><input id="cavalry-total" x-model="fields['cavalry-total']" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" value="89250" required></div>
+        <div class="calc-row"><label for="archer-total" data-i18n="bh.marches.archers">Archers</label><input id="archer-total" x-model="fields['archer-total']" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" value="476000" required></div>
+        <div class="calc-row"><label for="join-queues" data-i18n="bh.page.85">Joins</label><input id="join-queues" x-model="fields['join-queues']" type="number" inputmode="numeric" min="0" max="6" step="1" value="6" required></div>
+        <div class="calc-row"><label for="join-cap" data-i18n="bh.page.86">Alliance joiner cap</label><input id="join-cap" x-model="fields['join-cap']" type="number" inputmode="numeric" min="1" max="1000000000000" step="1" value="85000" required></div>
+        <div class="calc-row"><label for="own-cap" data-i18n="bh.page.87">Your march size</label><input id="own-cap" x-model="fields['own-cap']" :disabled="ownCapOff" type="number" inputmode="numeric" min="1" max="1000000000000" step="1" value="130000" required></div>
         <fieldset class="allocator-own">
           <legend data-i18n="bh.page.90">Your rally</legend>
-          <label class="allocator-priority"><input type="radio" name="own-rally" id="own-token" value="token"><span data-i18n="bh.own.token">One troop</span></label>
-          <label class="allocator-priority"><input type="radio" name="own-rally" id="own-even" value="even" checked><span data-i18n="bh.own.even">Same as a join</span></label>
-          <label class="allocator-priority"><input type="radio" name="own-rally" id="own-priority" value="first"><span data-i18n="bh.own.first">Filled first, at its own mix</span></label>
+          <label class="allocator-priority"><input type="radio" name="own-rally" id="own-token" value="token" x-model="own" @change="ratioChecked = false"><span data-i18n="bh.own.token">One troop</span></label>
+          <label class="allocator-priority"><input type="radio" name="own-rally" id="own-even" value="even" checked x-model="own" @change="ratioChecked = false"><span data-i18n="bh.own.even">Same as a join</span></label>
+          <label class="allocator-priority"><input type="radio" name="own-rally" id="own-priority" value="first" x-model="own" @change="ratioChecked = false"><span data-i18n="bh.own.first">Filled first, at its own mix</span></label>
         </fieldset>
-        <fieldset id="own-ratio" class="allocator-ratio" hidden>
+        <fieldset id="own-ratio" class="allocator-ratio" hidden :hidden="ratioOff">
           <legend data-i18n="bh.alloc.ratio">Your rally ratio (%)</legend>
-          <button type="button" class="directory-reset" id="own-mix" hidden><span data-i18n="bh.alloc.useMix">Use my best lead's mix</span> <bdi id="own-mix-value"></bdi></button>
-          <div class="calc-row"><label for="own-infantry" data-i18n="sim.calc.inf">Infantry</label><input id="own-infantry" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="5" required></div>
-          <div class="calc-row"><label for="own-cavalry" data-i18n="sim.calc.cav">Cavalry</label><input id="own-cavalry" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="15" required></div>
-          <div class="calc-row"><label for="own-archers" data-i18n="bh.marches.archers">Archers</label><input id="own-archers" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="80" required></div>
+          <button type="button" class="directory-reset" id="own-mix" hidden :hidden="!mix" @click="useMix()"><span data-i18n="bh.alloc.useMix">Use my best lead's mix</span> <bdi id="own-mix-value" x-text="mixText"></bdi></button>
+          <div class="calc-row"><label for="own-infantry" data-i18n="sim.calc.inf">Infantry</label><input id="own-infantry" x-model="fields['own-infantry']" :disabled="ratioOff" @input="ratioChecked = false" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="5" required></div>
+          <div class="calc-row"><label for="own-cavalry" data-i18n="sim.calc.cav">Cavalry</label><input id="own-cavalry" x-model="fields['own-cavalry']" :disabled="ratioOff" @input="ratioChecked = false" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="15" required></div>
+          <div class="calc-row"><label for="own-archers" data-i18n="bh.marches.archers">Archers</label><input id="own-archers" x-model="fields['own-archers']" :disabled="ratioOff" @input="ratioChecked = false" x-ref="ratio" x-effect="$el.setCustomValidity(ratioError)" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="80" required></div>
         </fieldset>
         <button class="allocator-button" type="submit" data-i18n="bh.alloc.apply">Show my marches</button>
       </form>
-      <div class="march-sample" id="march-sample" data-example="Example" data-i18n-key="bh.example" data-i18n-attr="data-example">
+      <div class="march-sample" id="march-sample" data-example="Example" :data-example="example">
         <div class="march-own" id="march-own">
           <b data-i18n="bh.page.90">Your rally</b>
-          <div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div>
-          <b class="march-total"><bdi>85,000</bdi></b>
+          <div class="march-bar"><div class="march-stack" :style="stack(result.own)"><span :style="part(result.own, 'archers')"></span><span :style="part(result.own, 'cavalry')"></span><span :style="part(result.own, 'infantry')"></span></div></div>
+          <b class="march-total" x-text="fmt(result.own.total)"><bdi>85,000</bdi></b>
         </div>
         <p class="diagram-label" data-i18n="bh.page.85">Joins</p>
         <div class="march-queues" id="march-queues" aria-hidden="true">
-          <div><b>1</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
-          <div><b>2</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
-          <div><b>3</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
-          <div><b>4</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
-          <div><b>5</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
-          <div><b>6</b><div class="march-bar"><div class="march-stack"><span></span><span></span><span></span></div></div><b class="march-total">85,000</b></div>
+          <template x-for="n in queues"><div><b x-text="n"></b><div class="march-bar"><div class="march-stack" :style="stack(result.join)"><span :style="part(result.join, 'archers')"></span><span :style="part(result.join, 'cavalry')"></span><span :style="part(result.join, 'infantry')"></span></div></div><b class="march-total" x-text="fmt(result.join.total)"></b></div></template>
         </div>
       </div>
       <ul class="march-key">
@@ -117,10 +112,10 @@ self: bear
         <caption data-i18n="bh.alloc.breakdown">Troops per march</caption>
         <thead><tr><th scope="col" data-i18n="bh.alloc.type">Troop type</th><th scope="col" data-i18n="bh.page.90">Your rally</th><th scope="col" data-i18n="bh.page.91">Each join</th><th scope="col" data-i18n="bh.alloc.homeCol">Left home</th></tr></thead>
         <tbody>
-          <tr><th scope="row" data-i18n="sim.calc.inf">Infantry</th><td id="own-inf">4,250</td><td id="join-inf">4,250</td><td id="home-inf">0</td></tr>
-          <tr><th scope="row" data-i18n="sim.calc.cav">Cavalry</th><td id="own-cav">12,750</td><td id="join-cav">12,750</td><td id="home-cav">0</td></tr>
-          <tr><th scope="row" data-i18n="bh.marches.archers">Archers</th><td id="own-arc">68,000</td><td id="join-arc">68,000</td><td id="alloc-home">0</td></tr>
-          <tr><th scope="row" data-i18n="bh.alloc.total">Total</th><td id="alloc-own">85,000</td><td id="alloc-join">85,000</td><td id="home-total">0</td></tr>
+          <tr><th scope="row" data-i18n="sim.calc.inf">Infantry</th><td id="own-inf" x-text="troop('own', 'infantry')">4,250</td><td id="join-inf" x-text="troop('join', 'infantry')">4,250</td><td id="home-inf" x-text="troop('home', 'infantry')">0</td></tr>
+          <tr><th scope="row" data-i18n="sim.calc.cav">Cavalry</th><td id="own-cav" x-text="troop('own', 'cavalry')">12,750</td><td id="join-cav" x-text="troop('join', 'cavalry')">12,750</td><td id="home-cav" x-text="troop('home', 'cavalry')">0</td></tr>
+          <tr><th scope="row" data-i18n="bh.marches.archers">Archers</th><td id="own-arc" x-text="troop('own', 'archers')">68,000</td><td id="join-arc" x-text="troop('join', 'archers')">68,000</td><td id="alloc-home" x-text="troop('home', 'archers')">0</td></tr>
+          <tr><th scope="row" data-i18n="bh.alloc.total">Total</th><td id="alloc-own" x-text="fmt(result.own.total)">85,000</td><td id="alloc-join" x-text="fmt(result.join.total)">85,000</td><td id="home-total" x-text="homeTotal">0</td></tr>
         </tbody>
       </table>
     </figure>
@@ -133,7 +128,7 @@ self: bear
     <h3 class="run-who" data-i18n="bh.run.organisers">For organisers</h3>
     <ol class="hunt-steps">
       <li><strong><span data-i18n="bh.page.98">Poll before the event.</span></strong> <span data-i18n="bh.page.99">Ask who's coming and whether they want the first or second group. Leave room for people who don't answer and people who turn up late.</span></li>
-      <li><strong><span data-i18n="bh.page.100">The first group launches straight away.</span></strong> <span data-i18n="bh.run.first2" data-i18n-vars="hunt">With 15 players, open 7 rallies, so everyone can use all their joins.</span></li>
+      <li><strong><span data-i18n="bh.page.100">The first group launches straight away.</span></strong> <span data-say="bh.run.first2" x-text="say('bh.run.first2')">With 15 players, open 7 rallies, so everyone can use all their joins.</span></li>
       <li><strong data-i18n="bh.run.second">The second group launches between 28:00 and 27:30.</strong> <span data-i18n="bh.page.103">Those rallies should still be waiting when the first group's joins get home. Leave enough time to hit the Bear, go home and join the next rally.</span></li>
       <li><strong data-i18n="bh.run.full">Rallies should launch mostly full.</strong> <span data-i18n="bh.run.fullP">One a little short is fine. If they're often well short, raise the joiner cap or tune the plan to your alliance.</span></li>
       <li><strong data-i18n="bh.run.last">Lift the cap for the last 5 minutes.</strong></li>
@@ -203,6 +198,7 @@ self: bear
     <ol class="hunt-steps">
       <li><strong data-i18n="bh.run.save">Save your formations.</strong> <span data-i18n="bh.run.saveP">One for each joiner hero, one with no joiner hero, and one for each rally lead.</span>
         <div class="hero-permission" id="heroes">
+          <div class="hero-permission-guide" x-show="false">
           <h3><span data-i18n="bh.page.116">First heroes for joining</span></h3>
           <p><b><span data-i18n="bh.page.117">Gen I:</span></b> <span data-i18n="bh.page.118">Chenko, Yeonwoo, Amane, and Amadeus when you aren't leading with him.</span></p>
           <p><b><span data-i18n="bh.page.119">Gen II–III:</span></b> <span data-i18n="bh.page.120">nothing new for joining.</span> <b><span data-i18n="bh.page.121">Hilde depends on your alliance</span></b><span data-i18n="bh.page.122">; many ban her, so check your alliance's rule.</span></p>
@@ -210,6 +206,21 @@ self: bear
           <p><b><span data-i18n="bh.page.125">Gen V:</span></b> <span data-i18n="bh.page.126">Vivian.</span></p>
           <p><b><span data-i18n="bh.page.127">Gen VI:</span></b> <span data-i18n="bh.page.128">Yang.</span></p>
           <p><b><span data-i18n="bh.page.129">Later options:</span></b> <span data-i18n="bh.page.130">Petra (only one per rally), Ava, Wee &amp; Woo.</span></p>
+          </div>
+          <template x-if="true"><div class="hero-explorer" id="hero-explorer">
+            <div class="hero-age-row">
+              <label for="server-generation"><b><span x-text="said('Your server generation')"></span></b></label>
+              <select id="server-generation" x-model="explorerGen" @change="pickGeneration()"><option value="" x-text="said('Choose generation…')"></option><template x-for="g in [1, 2, 3, 4, 5, 6, 7]"><option :value="String(g)" :selected="explorerGen === String(g)" x-text="said('Generation ') + g"></option></template></select>
+            </div>
+            <div id="hero-generation-content" :hidden="!joinerCards.length">
+              <div class="hero-explorer-block joiner-explorer">
+                <h3><span x-text="said('Recommended first heroes for join marches')"></span></h3>
+                <div class="joiner-icons" id="joiner-icons"><template x-for="card in joinerCards" :key="card.key"><button class="joiner-icon" :class="{ active: picked === card.key }" type="button" :data-hero="card.key" :aria-label="card.label" @click="picked = card.key"><img class="hero-explorer-portrait compact" :src="card.img" alt="" width="256" height="256" loading="lazy" decoding="async"><span x-text="card.name"></span></button></template></div>
+                <div class="joiner-explain" id="joiner-explain" :hidden="!pickedHero"><template x-if="pickedHero"><div class="joiner-explain-body"><div class="joiner-explain-head"><img class="hero-explorer-portrait compact" :src="pickedHero.img" alt="" width="256" height="256" loading="lazy" decoding="async"><b x-text="pickedHero.name"></b></div><p><span x-text="pickedHero.why"></span></p></div></template></div>
+                <p class="hero-explorer-help hero-backups" id="hero-backup-copy" x-text="backups"></p>
+              </div>
+            </div>
+          </div></template>
         </div>
       </li>
       <li><strong><span data-i18n="bh.run.relaunch">Relaunch as soon as you're home.</span></strong> <span data-i18n="bh.run.relaunchP">While your rally marches home, open the rally screen and tap your saved formation. It won't load until your troops are back, so tap it again the moment they arrive.</span></li>
@@ -250,13 +261,13 @@ self: bear
 
     <div class="hunt-sub" id="why-cap">
       <h3 data-i18n="bh.why.capTitle">Why the cap</h3>
-      <p data-i18n="bh.glance.3p" data-i18n-vars="hunt">That's your biggest rally less its leader's march of 181,333, shared between 14 joins. The leader always sends their biggest march, and no join can be bigger than a march.</p>
+      <p data-say="bh.glance.3p" x-text="say('bh.glance.3p')">That's your biggest rally less its leader's march of 181,333, shared between 14 joins. The leader always sends their biggest march, and no join can be bigger than a march.</p>
       <p data-i18n="bh.why.cap">Without it, a few big joins fill a rally's capacity and leave spaces empty. In the last five minutes, marches won't get home in time to join again, so the cap can go.</p>
     </div>
 
     <div class="hunt-sub" id="first-group">
       <h3><span data-i18n="bh.page.110">How many rallies in the first group?</span></h3>
-      <p data-i18n="bh.why.first2" data-i18n-vars="hunt">Count the joins free at the start and divide by 14, rounding up so nobody's joins sit idle. 15 players with 6 joins each is 90, so open 7 rallies.</p>
+      <p data-say="bh.why.first2" x-text="say('bh.why.first2')">Count the joins free at the start and divide by 14, rounding up so nobody's joins sit idle. 15 players with 6 joins each is 90, so open 7 rallies.</p>
       <p><span data-i18n="bh.page.112">Once the first hits land, those marches come home and join again, so the size of the first group doesn't limit the rest of the event.</span></p>
     </div>
     </details>

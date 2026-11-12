@@ -2,77 +2,99 @@
 layout: page
 self: island
 ---
-<main class="island-page" lang="en" dir="ltr" data-full data-module="island" data-art="../img/island/" data-examples="../js/island-examples.js?v={{ site.time | date: '%s' }}">
+<main class="island-page" lang="en" dir="ltr" data-full x-data="island($el.dataset.art, $el.dataset.examples)" :data-full="full ? '' : null" @keydown.window.capture="holdArrows($event)" data-art="../img/island/" data-examples="../js/island-examples.js?v={{ site.time | date: '%s' }}">
   <section class="island-intro" id="top">
     <h1>The Island</h1>
   </section>
 
   <section class="island-work" id="plan" aria-label="Your island plan">
-    <div class="island-board" data-target="island.board" data-swipe-ignore>
-      <canvas tabindex="0" role="application" aria-roledescription="island board" aria-label="Island board. Arrow keys move the cursor, Enter acts on the cell, Delete removes, R turns, Escape cancels." aria-describedby="island-status"></canvas>
+    <div class="island-board" x-ref="board" data-swipe-ignore>
+      <canvas x-ref="canvas" tabindex="0" role="application" aria-roledescription="island board" aria-label="Island board. Arrow keys move the cursor, Enter acts on the cell, Delete removes, R turns, Escape cancels." aria-describedby="island-status"></canvas>
       <noscript><p class="island-noscript">Turn on JavaScript to plan your island.</p></noscript>
 
-      <div class="island-chip island-owner" data-target="island.owner"><b>Your plan</b> <output class="seal" data-state="saved">Saved</output></div>
+      <div class="island-chip island-owner" :class="!owner.mine && 'loose-leaf'"><button type="button" class="island-owner-name" :aria-expanded="String(deckOpen)" aria-controls="island-deck" title="Switch preset" @click="browse()"><span x-text="owner.mine ? 'Your plan' : owner.name"></span> <span aria-hidden="true">▾</span></button> <template x-if="owner.mine"><output class="seal" data-state="saved">Saved</output></template><template x-if="!owner.mine"><span class="island-contents"><button type="button" @click="keep()">Keep it</button> <button type="button" @click="backToMine()">Back to mine</button></span></template></div>
       <div class="island-corner">
-        <button type="button" class="island-fit" data-action="island.fit" aria-label="Show the whole island">⤢</button>
-        <button type="button" class="island-full" data-action="island.full" data-target="island.fullBtn" aria-pressed="true">Page</button>
+        <button type="button" class="island-fit" aria-label="Show the whole island" @click="fitWhole()">⤢</button>
+        <button type="button" class="island-full" :aria-pressed="String(full)" :aria-label="full ? 'Leave full screen and show the page' : 'Fill the screen with the board'" @click="setFull(!full)" x-text="full ? 'Page' : 'Full screen'">Page</button>
       </div>
-      <p class="island-hint" data-target="island.hint" hidden></p>
+      <p class="island-hint" :hidden="!hintShown" x-text="hint" hidden></p>
 
-      <div class="island-pop" data-target="island.ground" role="dialog" aria-label="What fits here" hidden></div>
+      <div class="island-pop" x-ref="pop" role="dialog" aria-label="What fits here" :class="guarded && 'is-guarded'" :hidden="!ground" hidden><template x-if="groundView"><div class="island-contents">
+        <template x-if="groundView.yours.length"><div class="island-contents"><p class="island-label">Yours · fits here</p><ul class="island-pieces"><template x-for="d in groundView.yours" :key="d.slug">{% include island-piece.html click="pick(d.slug)" %}</template></ul></div></template>
+        <template x-if="groundView.others.length"><div class="island-contents"><p class="island-label" x-text="groundView.othersLabel"></p><ul class="island-pieces"><template x-for="d in groundView.others" :key="d.slug">{% include island-piece.html click="pick(d.slug)" %}</template></ul></div></template>
+        <template x-if="groundView.empty"><p class="island-empty">Only paths fit on this spot.</p></template>
+        <div class="island-links"><button type="button" class="island-link" @click="pathHere(groundView.path)" x-text="groundView.pathLabel"></button><button type="button" class="island-link" @click="openSheet()">All pieces</button></div>
+      </div></template></div>
 
-      <div class="island-confirm" data-target="island.confirm" hidden>
-        <button type="button" data-action="island.accept" aria-label="Place it">✓</button>
-        <button type="button" class="is-quiet" data-action="island.reject" aria-label="Cancel">✕</button>
+      <div class="island-confirm" x-ref="confirm" :hidden="!pending" hidden>
+        <button type="button" aria-label="Place it" @click="accept()">✓</button>
+        <button type="button" class="is-quiet" aria-label="Cancel" @click="reject()">✕</button>
       </div>
 
-      <div class="island-quick" data-target="island.quick" hidden><button type="button" data-action="island.remove" aria-label="Remove this piece">✕</button></div>
+      <div class="island-quick" x-ref="quick" :class="guarded && 'is-guarded'" :hidden="!card || card.fountain" hidden><button type="button" aria-label="Remove this piece" @click="removeSelected()">✕</button></div>
 
-      <div class="island-card" data-target="island.card" role="dialog" aria-label="Piece" hidden></div>
+      <div class="island-card" role="dialog" aria-label="Piece" :class="guarded && 'is-guarded'" :hidden="!card" hidden><template x-if="card"><div class="island-contents">
+        <button type="button" class="island-close" aria-label="Close" @click="closeCard()">✕</button>
+        <div class="island-card-head"><template x-if="card.piece.img"><img :src="card.piece.img" width="128" height="128" alt="" loading="lazy" decoding="async"></template><template x-if="!card.piece.img"><i class="island-swatch" :style="card.piece.swatch"></i></template><h3 x-text="card.name"></h3><p x-text="card.meta"></p></div>
+        <p class="island-card-note"><template x-for="n in card.notes"><span class="island-contents"><span x-text="n.gap"></span><span :class="n.warn && 'is-warn'" x-text="n.text"></span></span></template></p>
+        <div class="island-card-foot">
+          <template x-if="hasStore && !card.fountain"><span class="island-own">You own <span class="island-step"><button type="button" aria-label="One fewer" @click="own(-1)">−</button><output aria-live="polite" x-text="card.own"></output><button type="button" aria-label="One more" @click="own(1)">+</button></span></span></template>
+          <button type="button" class="island-act" :disabled="card.square" :title="card.square ? 'Square pieces keep their footprint' : null" @click="turn()">⟳ Turn</button>
+          <template x-if="card.more"><button type="button" class="island-act" @click="more()">Place more</button></template>
+          <template x-if="!card.fountain"><button type="button" class="island-act is-warn" @click="removeSelected()">Remove</button></template>
+        </div>
+      </div></template></div>
 
-      <div class="island-deck" id="island-deck" data-target="island.deck" role="region" aria-label="Presets" hidden>
+      <div class="island-deck" id="island-deck" x-ref="deck" role="region" aria-label="Presets" :class="guarded && 'is-guarded'" :hidden="!deckOpen" hidden>
         <div class="island-deck-head">
           <b>Presets</b>
-          <button type="button" class="island-act" data-action="island.keep" data-target="island.deckKeep" hidden>Keep this one</button>
-          <button type="button" class="island-close" data-action="island.closeDeck" aria-label="Close presets">✕</button>
+          <button type="button" class="island-act" :hidden="owner.mine" @click="keep()" hidden>Keep this one</button>
+          <button type="button" class="island-close" aria-label="Close presets" @click="closeDeck()">✕</button>
         </div>
-        <ul class="island-deck-list" data-target="island.deckList"></ul>
+        <ul class="island-deck-list"><template x-for="ex in (deckOpen ? deckList : [])" :key="ex.slug"><li><button type="button" class="island-deck-card" :data-slug="ex.slug" :aria-current="String(current(ex.slug))" x-effect="current(ex.slug) && $nextTick(() => reveal($el))" @click="pickPreset(ex.slug)"><canvas width="240" height="150" x-init="thumb($el, ex.slug)"></canvas><b x-text="ex.name"></b><small x-text="ex.tag"></small></button></li></template></ul>
       </div>
 
-      <div class="island-strip" data-target="island.strip">
-        <div class="island-strip-rest" data-target="island.rest">
-          <button type="button" class="island-undo" data-action="island.undo" data-target="island.undo" aria-label="Undo" disabled>↶</button>
-          <button type="button" class="island-erase" data-action="island.load" data-slug="__clear" aria-label="Eraser: tap or drag over pieces and paths to clear them" title="Eraser">⌫</button>
-          <ul class="island-recent" data-target="island.recent" aria-label="Recent pieces"></ul>
-          <button type="button" class="island-all" data-action="island.catalogue">All…</button>
+      <div class="island-strip" :hidden="cardId != null || deckOpen">
+        <div class="island-strip-rest" :hidden="!!brush || !!lifted">
+          <button type="button" class="island-undo" aria-label="Undo" disabled :disabled="!canUndo" @click="undo()">↶</button>
+          <button type="button" class="island-erase" aria-label="Eraser: tap or drag over pieces and paths to clear them" title="Eraser" @click="loadBrush('__clear')">⌫</button>
+          <ul class="island-recent" aria-label="Recent pieces"><template x-for="d in recentPieces" :key="d.slug"><li><button type="button" class="island-piece" :aria-label="d.name" :data-own="d.own" @click="loadBrush(d.slug)"><template x-if="d.img"><img :src="d.img" width="128" height="128" alt="" loading="lazy" decoding="async"></template><template x-if="!d.img"><i class="island-swatch" :style="d.swatch"></i></template></button></li></template></ul>
+          <button type="button" class="island-all" @click="openSheet()">All…</button>
         </div>
-        <div class="island-brush" data-target="island.brush" hidden></div>
-        <div class="island-drop" data-target="island.drop" hidden><span aria-hidden="true">✕</span> Drop here to remove</div>
+        <div class="island-brush" :hidden="!brush || !!lifted" hidden><template x-if="brushView"><div class="island-contents">
+          <template x-if="brushView.eraser"><span class="island-eraser" aria-hidden="true">⌫</span></template><template x-if="!brushView.eraser && brushView.piece.img"><img :src="brushView.piece.img" width="128" height="128" alt="" loading="lazy" decoding="async"></template><template x-if="!brushView.eraser && !brushView.piece.img"><i class="island-swatch" :style="brushView.piece.swatch"></i></template>
+          <div><b x-text="brushView.name"></b><small><template x-for="part in brushView.line"><span :class="part.warn && 'is-warn'" x-text="part.text"></span></template></small></div><button type="button" class="island-close" aria-label="Put the brush down" @click="unloadBrush()">✕</button>
+        </div></template></div>
+        <div class="island-drop" x-ref="drop" :data-over="lifted && lifted.overDrop ? '' : null" :hidden="!lifted" hidden><span aria-hidden="true">✕</span> Drop here to remove</div>
       </div>
     </div>
-    <p id="island-status" class="visually-hidden" role="status" data-target="island.status"></p>
+    <p id="island-status" class="visually-hidden" role="status" x-text="status"></p>
   </section>
 
-  <dialog class="island-sheet" data-target="island.sheet" aria-labelledby="island-sheet-title">
+  <dialog class="island-sheet" aria-labelledby="island-sheet-title" x-effect="sheetOpen ? $el.open || $el.showModal() : $el.open && $el.close()" @close="sheetOpen = false">
     <div class="island-sheet-head">
       <h2 id="island-sheet-title">All pieces</h2>
-      <button type="button" class="island-close" data-action="island.closeSheet" aria-label="Close">✕</button>
+      <button type="button" class="island-close" aria-label="Close" @click="closeSheet()">✕</button>
     </div>
-    <label class="island-search"><span class="visually-hidden">Find a piece</span><input type="search" placeholder="Find a piece" autocomplete="off" data-action="island.search" data-target="island.search"></label>
-    <div class="island-kinds" role="tablist" aria-label="Kinds of piece" data-target="island.kinds"></div>
-    <div class="island-sheet-body" data-target="island.catalogue"></div>
+    <label class="island-search"><span class="visually-hidden">Find a piece</span><input type="search" placeholder="Find a piece" autocomplete="off" x-model="query"></label>
+    <div class="island-kinds" role="tablist" aria-label="Kinds of piece"><template x-for="k in kinds" :key="k.kind"><button type="button" role="tab" :aria-selected="String(k.kind === kind)" @click="pickKind(k.kind)" x-text="k.label"></button></template></div>
+    <div class="island-sheet-body"><template x-if="sheetOpen"><div class="island-contents">
+      <template x-if="sheet.yours.length"><div class="island-contents"><p class="island-label">Yours</p><ul class="island-pieces"><template x-for="d in sheet.yours" :key="d.slug">{% include island-piece.html click="loadBrush(d.slug)" %}</template></ul></div></template>
+      <template x-if="sheet.others.length"><div class="island-contents"><p class="island-label" x-text="sheet.othersLabel"></p><ul class="island-pieces"><template x-for="d in sheet.others" :key="d.slug">{% include island-piece.html click="loadBrush(d.slug)" %}</template></ul></div></template>
+      <template x-if="sheet.empty"><p class="island-empty">Nothing by that name.</p></template>
+    </div></template></div>
   </dialog>
 
   <section class="island-more" id="presets" aria-labelledby="presets-title">
     <h2 id="presets-title">Start from a preset</h2>
-    <ul class="island-presets" data-target="island.presets"></ul>
+    <ul class="island-presets"><template x-for="ex in examples" :key="ex.slug"><li><button type="button" class="island-preset" @click="preset(ex.slug)"><canvas width="380" height="240" x-init="thumb($el, ex.slug)"></canvas><span class="island-tag" :class="ex.authored && 'is-ours'" x-text="ex.authored ? 'Ours' : 'Game layout'"></span><b x-text="ex.name"></b><small x-text="ex.note"></small></button></li></template></ul>
   </section>
 
   <section class="island-more" id="island-owned" aria-labelledby="owned-title">
     <h2 id="owned-title">What's yours</h2>
     <p>Many decorations only come from event packs. Tap a piece and set how many you have.</p>
     <p>Each pond costs 200 gems, once: a pond you buy stays yours, so 100,000 gems buys all 500.</p>
-    <p class="note" data-target="island.ownedNote"></p>
+    <p class="note" x-text="ownedNote"></p>
   </section>
 
   <section class="island-more" id="island-sources" aria-labelledby="sources-title">

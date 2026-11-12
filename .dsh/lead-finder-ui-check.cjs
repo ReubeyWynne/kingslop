@@ -6,8 +6,8 @@ const { withBrowser } = require('./lib/browser-harness.cjs');
 // Every line the finder writes has words in every language: a key a dictionary lacks falls
 // back to the finder's English, never to undefined (which threw inside the save's listeners).
 {
-  const fs = require('node:fs'), source = fs.readFileSync('js/lead-finder.js', 'utf8'), start = source.indexOf('var EN = {');
-  const EN = Function('return ' + source.slice(start + 9, source.indexOf('};', start) + 1))();
+  const fs = require('node:fs'), source = fs.readFileSync('js/pages/lead-finder.mjs', 'utf8'), start = source.indexOf('const EN = {');
+  const EN = Function('return ' + source.slice(start + 11, source.indexOf('};', start) + 1))();
   const sandbox = {}; for (const file of fs.readdirSync('i18n').filter(f => f.endsWith('.js'))) Function('window', fs.readFileSync('i18n/' + file, 'utf8'))(sandbox);
   for (const [, key] of source.matchAll(/\b(?:t|fill)\('([a-zA-Z]+)'[,)]/g)) {
     if (EN[key] !== undefined) continue;
@@ -17,7 +17,7 @@ const { withBrowser } = require('./lib/browser-harness.cjs');
 withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' }), page = await context.newPage(), errors = [];
   page.on('pageerror', e => errors.push(e.message));
-  const status = () => page.locator('[data-target="lead-finder.status"]').textContent();
+  const status = () => page.locator('.lead-status').textContent();
   const rows = () => page.locator('.lead-row').count();
   await page.goto(origin + '/heroes/?lang=en#leads');
   await page.waitForFunction(() => !document.querySelector('.lead-jobs').disabled);
@@ -39,9 +39,9 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.doesNotMatch(await status(), /typical/);
   assert.equal(await page.locator('.lead-best .lead-hero-name b').allTextContents().then(t => t.join('/')), 'Amadeus/Petra/Marlin', 'the best lineup leads the dossier');
   assert.equal(await page.locator('.lead-best .hero-star-row').first().locator('[data-on]').count(), 5, 'roster stars on the portrait');
-  assert.match(await page.locator('[data-target="lead-finder.verdict"]').textContent(), /more Bear damage|Level with/);
-  assert.equal(await page.locator('[data-target="lead-finder.panel"] tr').count(), 3, 'report panel per troop type');
-  assert.match(await page.locator('[data-target="lead-finder.panel"] tr').first().locator('td').first().textContent(), /^\+\d/);
+  assert.match(await page.locator('#leads .lead-verdict').textContent(), /more Bear damage|Level with/);
+  assert.equal(await page.locator('#leads .lead-panel tr').count(), 3, 'report panel per troop type');
+  assert.match(await page.locator('#leads .lead-panel tr').first().locator('td').first().textContent(), /^\+\d/);
   assert.equal(await page.locator('.lead-foes').isHidden(), true, 'no opponents for the Bear');
   // With no overview, gear, Town Centre or Valora the answer is provisional: a dashed frame, a ◇ naming
   // what stands in, the damage open-ended and what it's waiting for as ? marks.
@@ -60,8 +60,8 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.match(await page.locator('.lead-damage-band').textContent(), /^80% of hits land between \S+ and \S+$/);
   const estimated = await damageAt();
   await page.locator('#bonus-overview summary').click();
-  await page.locator('[data-target="lead-finder.rallyCap"]').fill('1800000');
-  await page.locator('[data-target="lead-finder.rallyCap"]').press('Tab');
+  await page.locator('.lead-rally-cap input').fill('1800000');
+  await page.locator('.lead-rally-cap input').press('Tab');
   await page.waitForFunction(() => /120,000 troops = 1\/15 of a 1,800,000 rally\./.test(document.querySelector('.lead-damage .lead-answer-note').textContent));
   assert.notEqual(await damageAt(), estimated, 'a bigger rally, a bigger march, more damage');
   const noValora = await damageAt();
@@ -90,7 +90,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   assert.equal(await page.locator('[data-stat="arc.attack"]').evaluate(n => n.classList.contains('ghost')), false);
   assert.equal(await page.locator('[data-stat="cav.health"]').getAttribute('placeholder'), '250');
   assert.equal(await page.locator('tr.lead-squads').getAttribute('data-unknown'), '');
-  assert.equal(await page.locator('[data-target="lead-finder.saved"]').getAttribute('data-state'), 'saved', 'the seal shows the save');
+  assert.equal(await page.locator('#bonus-overview .seal').getAttribute('data-state'), 'saved', 'the seal shows the save');
 
   // A Bonus Overview screenshot from the import dock fills the table, Squads' row included.
   const held = await page.evaluate(() => {
@@ -107,15 +107,15 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
 
   // A rally ranks against the four stock opponents.
   await page.locator('#leads label:has(input[value="rally"])').click();
-  await page.waitForFunction(() => /Ranked from/.test(document.querySelector('[data-target="lead-finder.status"]').textContent) && document.querySelectorAll('#leads .lead-cell').length === 16);
+  await page.waitForFunction(() => /Ranked from/.test(document.querySelector('.lead-status').textContent) && document.querySelectorAll('#leads .lead-cell').length === 16);
   assert.equal(await page.locator('.lead-foes').isVisible(), true);
   assert.deepEqual(await page.locator('.lead-best .lead-cell > span').allTextContents(), ['F2P', 'Dolphin', 'Whale', 'Kraken']);
 
   // Joiners start from the job's usual list; city buffs and pets move the ranking's numbers.
   await page.locator('#lead-extras summary').click();
   assert.deepEqual(await page.locator('[data-joiner][data-field="key"]').evaluateAll(s => s.map(x => x.value)), ['chenko', 'yeonwoo', 'amane', 'amadeus']);
-  assert.match(await page.locator('[data-target="lead-finder.joinersTitle"]').textContent(), /Rally lead/);
-  assert.match(await page.locator('[data-target="lead-finder.pets"]').textContent(), /No pets in your save/);
+  assert.match(await page.locator('.lead-joiners legend').textContent(), /Rally lead/);
+  assert.match(await page.locator('.lead-pets .note').textContent(), /No pets in your save/);
   await page.locator('#leads label:has(input[value="bear"])').click();
   await page.waitForFunction(() => document.querySelectorAll('.lead-row').length === 3 && document.querySelector('.lead-mix'));
   assert.deepEqual(await page.locator('[data-joiner][data-field="key"]').evaluateAll(s => s.map(x => x.value)), ['chenko', 'yeonwoo', 'amane', 'margot'], 'the Bear keeps its own joiners');
@@ -124,13 +124,13 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   await page.locator('[data-joiner="3"][data-field="key"]').selectOption('');
   await page.locator('[data-city="attack"]').selectOption('20');
   await page.evaluate(() => PlayerLedger.shared().setPet('giant-rhino', { level: 60, advanced: false }));
-  await page.waitForFunction(() => /Giant Rhino 60: attack \+6%/.test(document.querySelector('[data-target="lead-finder.pets"]').textContent));
+  await page.waitForFunction(() => /Giant Rhino 60: attack \+6%/.test(document.querySelector('.lead-pets .note').textContent));
   assert.equal(typeof before, 'string');
   const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem('ks.lead-finder.v1')));
   assert.deepEqual(prefs.joiners.bear.map(j => j.key), ['chenko', 'yeonwoo', 'amane']);
   assert.equal(prefs.city.attack, 20);
   assert.equal(prefs.rallyCap, 1800000, 'the rally capacity is remembered');
-  await page.locator('[data-action="lead-finder.resetJoiners"]').click();
+  await page.locator('.lead-joiners .directory-reset').click();
   await page.waitForFunction(() => document.querySelector('[data-joiner="3"][data-field="key"]').value === 'margot');
 
   await page.reload();
