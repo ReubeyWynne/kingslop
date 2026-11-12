@@ -1,16 +1,16 @@
 {% comment %} The lead finder. The Heroes page shows all three jobs; include.bear shows the Bear
    job alone, for the Bear Hunt page, with its inputs laid out flat. {% endcomment %}{% assign stat_ids = 'attack,lethality,defense,health' | split: ',' %}
-  {% if include.bear %}<div class="lead-finder" id="lead" data-module="lead-finder" data-screen-import-sheet="bonus-overview" data-self="bear-hunt" data-here="overview troops rally" aria-labelledby="leads-title">
+  {% if include.bear %}<div class="lead-finder" id="lead" x-data="leadFinder('bear-hunt', 'overview troops rally')" @screen-import:sheet="importSheet($event.detail)" @ks:server-age-change.document="run()" data-screen-import-sheet="bonus-overview" aria-labelledby="leads-title">
     <h3 class="lead-title" id="leads-title" data-i18n="bh.lead.best">Your best Bear lead</h3>
-    {% else %}<section class="section lead-finder" id="leads" data-module="lead-finder" data-screen-import-sheet="bonus-overview" aria-labelledby="leads-title">
+    {% else %}<section class="section lead-finder" id="leads" x-data="leadFinder('heroes', '')" @screen-import:sheet="importSheet($event.detail)" @ks:server-age-change.document="run()" data-screen-import-sheet="bonus-overview" aria-labelledby="leads-title">
     <h2 id="leads-title" data-i18n="leads.title">Your best leads</h2>
-    <fieldset class="lead-jobs" disabled data-target="lead-finder.controls">
+    <fieldset class="lead-jobs" disabled :disabled="!ready">
       <legend data-i18n="leads.job">Job</legend>
-      <label><input type="radio" name="lead-job" value="bear" checked data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.bear">Bear lead</span></label>
-      <label><input type="radio" name="lead-job" value="rally" data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.rally">Rally lead</span></label>
-      <label><input type="radio" name="lead-job" value="garrison" data-target="lead-finder.job" data-action="lead-finder.run"><span data-i18n="leads.job.garrison">Garrison lead</span></label>
+      <label><input type="radio" name="lead-job" value="bear" checked x-model="job" @change="run()"><span data-i18n="leads.job.bear">Bear lead</span></label>
+      <label><input type="radio" name="lead-job" value="rally" x-model="job" @change="run()"><span data-i18n="leads.job.rally">Rally lead</span></label>
+      <label><input type="radio" name="lead-job" value="garrison" x-model="job" @change="run()"><span data-i18n="leads.job.garrison">Garrison lead</span></label>
     </fieldset>{% endif %}
-    <ul class="inputs lead-inputs" data-target="lead-finder.inputs" aria-labelledby="leads-title"></ul>
+    <ul class="inputs lead-inputs" aria-labelledby="leads-title"><template x-for="chip in chips" :key="chip.id"><li :data-have="chip.have" :data-input="chip.id" :data-core="chip.core"><a :href="chip.href" x-text="chip.label"></a></li></template></ul>
     <button type="button" class="lead-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="leads.drop.title">Fill these in from screenshots</strong></button>
     <button type="button" class="explain" popovertarget="bonus-shots" data-i18n="leads.shots.open">Which screenshots?</button>
     <div class="explainer" id="bonus-shots" popover>
@@ -25,61 +25,83 @@
       <button type="button" class="explainer-close" popovertarget="bonus-shots" popovertargetaction="hide" data-i18n-key="leads.shots.close" data-i18n-attr="aria-label" aria-label="Close">×</button>
     </div>
     {% if include.bear %}<div class="lead-overview lead-flat" id="bonus-overview">
-      <h3 data-i18n="leads.overview">Your Bonus Overview</h3>{% else %}<details class="fold lead-overview" id="bonus-overview">
+      <h3 data-i18n="leads.overview">Your Bonus Overview</h3>{% else %}<details class="fold lead-overview" id="bonus-overview" :open="overviewOpen" @toggle="overviewOpen = $el.open">
       <summary data-i18n="leads.overview">Your Bonus Overview</summary>{% endif %}
-      <fieldset class="lead-stats" disabled data-target="lead-finder.controls">
+      <fieldset class="lead-stats" disabled :disabled="!ready">
         <table class="lead-stats-table">
           <thead><tr><td></td>{% for stat in stat_ids %}<th scope="col" data-i18n="leads.stat.{{ stat }}">{{ stat }}</th>{% endfor %}</tr></thead>
-          {% assign overview_rows = 'squads,inf,cav,arc' | split: ',' %}<tbody>{% for troop in overview_rows %}<tr{% if troop == 'squads' %} class="lead-squads"{% endif %}><th scope="row" {% if troop == 'squads' %}data-i18n="leads.squads">Squads'{% else %}data-i18n="sim.calc.{{ troop }}">{{ troop }}{% endif %}</th>{% for stat in stat_ids %}<td><input type="number" min="0" max="100000" step="0.1" inputmode="decimal" placeholder="?" aria-label="{{ troop }} {{ stat }} %" data-stat="{{ troop }}.{{ stat }}" data-target="lead-finder.stat" data-action="lead-finder.edit"></td>{% endfor %}</tr>{% endfor %}</tbody>
+          {% assign overview_rows = 'squads,inf,cav,arc' | split: ',' %}<tbody>{% for troop in overview_rows %}<tr{% if troop == 'squads' %} class="lead-squads"{% endif %} :data-unknown="unknownRow('{{ troop }}')"><th scope="row" {% if troop == 'squads' %}data-i18n="leads.squads">Squads'{% else %}data-i18n="sim.calc.{{ troop }}">{{ troop }}{% endif %}</th>{% for stat in stat_ids %}<td><input type="number" min="0" max="100000" step="0.1" inputmode="decimal" placeholder="?" aria-label="{{ troop }} {{ stat }} %" data-stat="{{ troop }}.{{ stat }}" :class="{ ghost: ghost('{{ troop }}') }" :placeholder="holder('{{ troop }}')" x-model="stats['{{ troop }}.{{ stat }}']" @input="edit()"></td>{% endfor %}</tr>{% endfor %}</tbody>
         </table>
         <div class="lead-troops">
-          <label><span data-i18n="leads.tier">Troop tier</span><select data-target="lead-finder.tier" data-action="lead-finder.run">{% for tier in (1..11) %}<option value="{{ tier }}">T{{ tier }}</option>{% endfor %}</select></label>
-          <label><span data-i18n="leads.tg">Truegold</span><select data-target="lead-finder.tg" data-action="lead-finder.run">{% for tg in (0..8) %}<option value="{{ tg }}">{% if tg == 0 %}—{% else %}TG{{ tg }}{% endif %}</option>{% endfor %}</select></label>
-          <label class="lead-rally-cap"><span data-i18n="leads.rallyCap">Bear rally capacity</span><input type="number" min="15" max="100000000" step="1" inputmode="numeric" data-target="lead-finder.rallyCap" data-action="lead-finder.extras"></label>
+          <label><span data-i18n="leads.tier">Troop tier</span><select class="lead-tier" x-model="tier" @change="pickTier()">{% for tier in (1..11) %}<option value="{{ tier }}" :selected="tier === '{{ tier }}'">T{{ tier }}</option>{% endfor %}</select></label>
+          <label><span data-i18n="leads.tg">Truegold</span><select class="lead-tg" x-model="tg" @change="pickTier()">{% for tg in (0..8) %}<option value="{{ tg }}" :selected="tg === '{{ tg }}'">{% if tg == 0 %}—{% else %}TG{{ tg }}{% endif %}</option>{% endfor %}</select></label>
+          <label class="lead-rally-cap"><span data-i18n="leads.rallyCap">Bear rally capacity</span><input type="number" min="15" max="100000000" step="1" inputmode="numeric" x-model="cap" :placeholder="capHolder" @change="extras()"></label>
         </div>
-        <p class="hero-mine-note"><output class="seal" data-target="lead-finder.saved" role="status"></output></p>
+        <p class="hero-mine-note"><output class="seal" role="status" :data-state="savedState" x-text="saved"></output></p>
       </fieldset>
     {% if include.bear %}</div>{% else %}</details>{% endif %}
     <details class="fold lead-extras" id="lead-extras">
       <summary data-i18n="leads.extras">Joiners, pets and city buffs</summary>
-      <fieldset class="lead-joiners" disabled data-target="lead-finder.controls">
-        <legend data-target="lead-finder.joinersTitle">Joiners</legend>
+      <fieldset class="lead-joiners" disabled :disabled="!ready">
+        <legend x-text="joinersTitle">Joiners</legend>
         {% assign joiner_heroes = site.data.heroes.heroes | sort: 'name' %}{% for slot in (0..3) %}<div class="lead-joiner">
-          <label><span data-i18n="leads.joiner" data-i18n-n="{{ forloop.index }}">Joiner {{ forloop.index }}</span><select data-joiner="{{ slot }}" data-field="key" data-target="lead-finder.joiner" data-action="lead-finder.extras"><option value="">—</option>{% for hero in joiner_heroes %}<option value="{{ hero.key }}">{{ hero.name | escape }}</option>{% endfor %}</select></label>
-          <label><span data-i18n="leads.joinerLevel">Skill level</span><select data-joiner="{{ slot }}" data-field="level" data-target="lead-finder.joiner" data-action="lead-finder.extras">{% for level in (1..5) %}<option value="{{ level }}"{% if level == 5 %} selected{% endif %}>{{ level }}</option>{% endfor %}</select></label>
+          <label><span data-i18n="leads.joiner" data-i18n-n="{{ forloop.index }}">Joiner {{ forloop.index }}</span><select data-joiner="{{ slot }}" data-field="key" x-model="joiners[{{ slot }}].key" @change="extras()"><option value="">—</option>{% for hero in joiner_heroes %}<option value="{{ hero.key }}" :selected="joiners[{{ slot }}].key === '{{ hero.key }}'">{{ hero.name | escape }}</option>{% endfor %}</select></label>
+          <label><span data-i18n="leads.joinerLevel">Skill level</span><select data-joiner="{{ slot }}" data-field="level" x-model="joiners[{{ slot }}].level" @change="extras()">{% for level in (1..5) %}<option value="{{ level }}"{% if level == 5 %} selected{% endif %} :selected="joiners[{{ slot }}].level === '{{ level }}'">{{ level }}</option>{% endfor %}</select></label>
         </div>{% endfor %}
-        <button type="button" class="directory-reset" data-action="lead-finder.resetJoiners" data-i18n="leads.joinersReset">Use the usual joiners</button>
+        <button type="button" class="directory-reset" @click="resetJoiners()" data-i18n="leads.joinersReset">Use the usual joiners</button>
       </fieldset>
-      <fieldset class="lead-city" disabled data-target="lead-finder.controls">
+      <fieldset class="lead-city" disabled :disabled="!ready">
         <legend data-i18n="leads.city">City buffs</legend>
-        {% assign city_ids = 'attack,lethality,defense,health,enemyAttack,enemyDefense' | split: ',' %}{% for buff in city_ids %}<label><span data-i18n="leads.city.{{ buff }}">{{ buff }}</span><select data-city="{{ buff }}" data-target="lead-finder.city" data-action="lead-finder.extras"><option value="0">—</option><option value="10">I · 10%</option><option value="20">II · 20%</option></select></label>{% endfor %}
+        {% assign city_ids = 'attack,lethality,defense,health,enemyAttack,enemyDefense' | split: ',' %}{% for buff in city_ids %}<label><span data-i18n="leads.city.{{ buff }}">{{ buff }}</span><select data-city="{{ buff }}" x-model="city['{{ buff }}']" @change="extras()"><option value="0">—</option><option value="10">I · 10%</option><option value="20">II · 20%</option></select></label>{% endfor %}
       </fieldset>
-      <fieldset class="lead-pets" disabled data-target="lead-finder.controls">
+      <fieldset class="lead-pets" disabled :disabled="!ready">
         <legend data-i18n="leads.pets">Pets</legend>
-        <label class="hero-own"><input type="checkbox" checked data-target="lead-finder.usePets" data-action="lead-finder.extras"><span data-i18n="leads.usePets">Use my pets’ skills</span></label>
-        <p class="note" data-target="lead-finder.pets"></p>
+        <label class="hero-own"><input type="checkbox" checked x-model="usePets" @change="extras()"><span data-i18n="leads.usePets">Use my pets’ skills</span></label>
+        <p class="note" x-text="pets"></p>
       </fieldset>
     </details>
-    <p class="note" data-target="lead-finder.status" aria-live="polite"></p>
-    <article class="lead-best" data-target="lead-finder.best" hidden aria-labelledby="lead-best-title">
-      <header class="lead-best-head"><div class="lead-kicker" id="lead-best-title"><span data-target="lead-finder.bestTitle">Your best lead</span><details class="src" id="lead-best-est" data-src="est" data-target="lead-finder.estMark" hidden><summary aria-label="Estimate" data-i18n-key="leads.est" data-i18n-attr="aria-label"></summary><span class="motif-names" data-target="lead-finder.estNames"></span></details></div><p class="lead-verdict" data-target="lead-finder.verdict"></p><ul class="unknowns lead-unknowns" data-target="lead-finder.unknowns" hidden></ul></header>
-      <div class="lead-best-trio" data-target="lead-finder.trio"></div>
+    <p class="note lead-status" aria-live="polite" x-text="status"></p>
+    <article class="lead-best" hidden :hidden="!best" :data-job="best && best.job" :data-provisional="best && best.provisional" aria-labelledby="lead-best-title">
+      <template x-if="best"><div class="lead-best-inner">
+      <header class="lead-best-head"><div class="lead-kicker" id="lead-best-title"><span class="lead-best-title" x-text="best.title">Your best lead</span><details class="src" id="lead-best-est" data-src="est" x-data="{ open: false }" :hidden="!best.estimated" :open="best.estimated && open" @toggle="open = $el.open"><summary aria-label="Estimate" :aria-label="t('leads.est', 'Estimate')"></summary><span class="motif-names" x-text="best.estNames"></span></details></div><p class="lead-verdict" x-text="best.verdict"></p><ul class="unknowns lead-unknowns" :hidden="!best.unknowns.length"><template x-for="name in best.unknowns"><li x-text="name"></li></template></ul></header>
+      <div class="lead-best-trio">{% include lead-lineup.html seats="best.seats" big=true %}</div>
       <div class="lead-best-body">
-        <div class="lead-best-answer" data-target="lead-finder.answer"></div>
+        <div class="lead-best-answer">
+          <template x-if="best.mix"><div class="lead-answer-mix">
+            <p class="lead-kicker" x-text="t('leads.mixTitle', 'Send this troop mix')"></p>
+            <span class="lead-mix"><template x-for="part in best.mix"><span class="lead-mix-part" :data-troop="part.type" :style="part.style"></span></template></span>
+            <span class="lead-mix-legend"><template x-for="part in best.mix"><span class="lead-mix-key" :data-troop="part.type"><svg aria-hidden="true" focusable="false"><use :href="'#troop-' + part.type"></use></svg><b x-text="part.pct"></b><span x-text="part.name"></span></span></template></span>
+            <p class="lead-answer-note" x-text="t('leads.mixNote', 'The split that gets the most damage out of these three heroes and your stats.')"></p>
+            <div class="lead-damage">
+              <p class="lead-kicker" x-text="t('leads.damageTitle', 'Estimated Bear damage')"></p>
+              <div class="lead-damage-head"><output class="lead-damage-value" :title="best.damage.title" :data-open="best.damage.open" x-text="best.damage.value"></output><template x-if="best.estimated"><details class="src" id="lead-damage-est" data-src="est"><summary :aria-label="t('leads.est', 'Estimate')"></summary><span class="motif-names" x-text="best.estNames"></span></details></template></div>
+              <div class="lead-hist" role="img" :aria-label="best.damage.band"><template x-for="bin in best.damage.bins"><span class="lead-hist-bar" :style="bin.style" :data-band="bin.band ? '' : null" :title="bin.title"></span></template></div>
+              <p class="lead-damage-band" x-text="best.damage.band"></p>
+              <span class="lead-damage-split"><template x-for="part in best.damage.split"><span :data-troop="part.type"><svg aria-hidden="true" focusable="false"><use :href="'#troop-' + part.type"></use></svg><span x-text="part.n"></span></span></template></span>
+              <p class="lead-answer-note" x-text="best.damage.note"></p>
+            </div>
+          </div></template>
+          <template x-if="best.rail"><div class="lead-answer-rail">
+            <p class="lead-kicker" x-text="t('leads.railTitle', 'Against each opponent')"></p>
+            <span class="lead-rail lead-rail-big"><template x-for="cell in best.rail"><span class="lead-cell" :data-win="cell.yes" :style="cell.style"><span x-text="cell.name"></span><b x-text="cell.win"></b><small x-text="cell.kept"></small></span></template></span>
+            <p class="lead-answer-note" x-text="t('leads.railNote', 'Win chance over repeated fights, and how much of your army is still standing.')"></p>
+          </div></template>
+        </div>
         {% unless include.bear %}<div class="lead-best-panel">
-          <p class="lead-kicker" data-i18n="leads.panelTitle">Your report should read about</p>
-          <table class="lead-panel-table"><thead><tr><td></td>{% for stat in stat_ids %}<th scope="col" data-i18n="leads.stat.{{ stat }}">{{ stat }}</th>{% endfor %}</tr></thead><tbody data-target="lead-finder.panel"></tbody></table>
-          <p class="lead-panel-note" data-i18n="leads.panelNote">Before joiners, with your hero gear and Truegold.</p>
+          <p class="lead-kicker" x-text="t('leads.panelTitle', 'Your report should read about')"></p>
+          <table class="lead-panel-table"><thead><tr><td></td>{% for stat in stat_ids %}<th scope="col" x-text="t('leads.stat.{{ stat }}', '{{ stat }}')"></th>{% endfor %}</tr></thead><tbody class="lead-panel"><template x-for="row in best.panel"><tr :data-unknown="row.unknown"><th scope="row" x-text="row.name"></th><template x-for="cell in row.cells"><td x-text="cell"></td></template></tr></template></tbody></table>
+          <p class="lead-panel-note" x-text="t('leads.panelNote', 'Before joiners, with your hero gear and Truegold.')"></p>
         </div>{% endunless %}
       </div>
+      </div></template>
     </article>
-    {% unless include.bear %}<p class="lead-kicker lead-next-title" data-target="lead-finder.nextTitle" hidden data-i18n="leads.nextTitle">The next four</p>
-    <ol class="lead-list" data-target="lead-finder.list"></ol>
-    {% endunless %}    {% unless include.bear %}<div class="lead-foes" data-target="lead-finder.foes" hidden>
+    {% unless include.bear %}<p class="lead-kicker lead-next-title" hidden :hidden="list.length < 1" data-i18n="leads.nextTitle">The next four</p>
+    <ol class="lead-list"><template x-for="row in list"><li class="lead-row"><span class="lead-rank"><small x-text="t('leads.no', 'No.')"></small><b x-text="row.rank"></b></span>{% include lead-lineup.html seats="row.seats" %}<span class="lead-detail"><span class="lead-score"><b x-text="row.score"></b><template x-if="row.bear"><small x-text="row.mix"></small></template></span><template x-if="row.bear"><span class="lead-bar" :style="row.share"></span></template><template x-if="!row.bear"><span class="lead-rail"><template x-for="cell in row.rail"><span class="lead-cell" :data-win="cell.yes" :style="cell.style"><span x-text="cell.name"></span><b x-text="cell.win"></b></span></template></span></template></span></li></template></ol>
+    {% endunless %}    {% unless include.bear %}<div class="lead-foes" hidden :hidden="!foes">
       <h3 data-i18n="leads.foes">The opponents</h3>
-      <p class="note" data-target="lead-finder.foesNote"></p>
+      <p class="note" x-text="foesNote"></p>
       <ul class="lead-foe-list">{% for foe in site.data.megafauna.foes %}
-        <li data-foe="{{ foe.id }}"><b data-i18n="leads.foe.{{ foe.id }}">{{ foe.name | escape }}</b> <span data-i18n="leads.foe.{{ foe.id }}.note">{{ foe.summary | escape }}</span> <small class="lead-foe-kit" data-foe-kit="{{ foe.id }}"></small></li>{% endfor %}
+        <li data-foe="{{ foe.id }}"><b data-i18n="leads.foe.{{ foe.id }}">{{ foe.name | escape }}</b> <span data-i18n="leads.foe.{{ foe.id }}.note">{{ foe.summary | escape }}</span> <small class="lead-foe-kit" data-foe-kit="{{ foe.id }}" x-text="kit('{{ foe.id }}')"></small></li>{% endfor %}
       </ul>
     </div>
     <details class="fold lead-method" id="lead-method">

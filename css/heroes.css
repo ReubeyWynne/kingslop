@@ -245,6 +245,8 @@
 .lead-best-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .2rem 1rem; }
 .lead-verdict { margin: 0; font: 600 var(--step-0)/1.25 var(--display-2); letter-spacing: .03em; color: var(--ink); }
 .lead-best-trio { margin-top: 1rem; }
+/* The dossier's bound parts (js/pages/lead-finder.mjs) lay out as if they were the article's own. */
+.lead-best-inner, .lead-answer-mix, .lead-answer-rail { display: contents; }
 .lead-best-body { display: grid; gap: 1.2rem 2rem; margin-top: 1rem; padding-top: .9rem; border-top: 1px solid var(--signal-line); }
 @media (min-width: 48rem) { .lead-best-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
 .lead-answer-note, .lead-panel-note { margin: .5rem 0 0; font-size: .75rem; font-style: italic; color: var(--ink-muted); }
