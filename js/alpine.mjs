@@ -83,7 +83,16 @@ export function shared(name, definition) {
    own bundle, with its controllers, too), the moment common.js boots the page. This file runs in
    the site bundle, ahead of i18n.js and common.js, so it waits for DOMContentLoaded before
    asking either: readyState alone cannot say that the deferred scripts have all run. */
-function start() { connect(); globalThis.Alpine = Alpine; Alpine.start(); }
+// A tab chosen before Alpine starts (deep-link.js selecting the panel a link names) is announced
+// again once it has, so the page's @tabs:select hears it.
+const early = [];
+const hold = event => { early.push(event); };
+document.addEventListener('tabs:select', hold);
+function start() {
+  connect(); globalThis.Alpine = Alpine; Alpine.start();
+  document.removeEventListener('tabs:select', hold);
+  early.splice(0).forEach(event => event.target.dispatchEvent(new CustomEvent('tabs:select', { bubbles: true, detail: event.detail })));
+}
 function begin() { if (globalThis.I18N) I18N.onReady(start); else start(); }
 const nav = globalThis.performance && performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
 if (document.readyState === 'complete' || (document.readyState === 'interactive' && nav && nav.domContentLoadedEventStart > 0)) begin();

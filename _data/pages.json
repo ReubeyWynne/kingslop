@@ -47,7 +47,7 @@
     "lateScripts": [
       "js/event-data.js",
       "js/event-rules.mjs",
-      "js/home-yours.js"
+      "js/pages/home-yours.mjs"
     ],
     "footMainKey": "home.foot.main",
     "footMain": "JUST THE GUIDES",
@@ -564,7 +564,8 @@
       "../js/hero-gear-engine.mjs",
       "../js/hero-gear-view.mjs",
       "../js/page-sheet.js",
-      "../js/hero-gear.js",
+      "../js/hero-gear-sheet.js",
+      "../js/pages/hero-gear.mjs",
       "../js/empty-state.js"
     ],
     "footMainKey": "gear.kicker",
@@ -792,7 +793,7 @@
       "../js/master-points.js",
       "../js/governor-view.js",
       "../js/pages/governor-profile.mjs",
-      "../js/town-centre.js",
+      "../js/pages/town-centre.mjs",
       "../js/empty-state.js"
     ],
     "footMainKey": "town.kicker",
@@ -1091,9 +1092,9 @@
       "../js/upgrade-priority-words.js",
       "../js/upgrade-goals.mjs",
       "../js/upgrade-savings.mjs",
-      "../js/upgrade-priority-page.js",
-      "../js/upgrade-goals-page.js",
-      "../js/upgrade-savings-page.js"
+      "../js/pages/upgrade-priority.mjs",
+      "../js/pages/upgrade-goals.mjs",
+      "../js/pages/upgrade-savings.mjs"
     ],
     "footMainKey": "priority.kicker",
     "footMain": "what to raise next",
@@ -1141,7 +1142,8 @@
       "../js/building-paths-data.js",
       "../js/building-paths.js",
       "../js/page-sheet.js",
-      "../js/building-paths-page.js"
+      "../js/building-paths-sheet.js",
+      "../js/pages/building-paths.mjs"
     ],
     "footMainKey": "reqs.kicker",
     "footMain": "what each level needs",
@@ -1260,7 +1262,7 @@
       "../../js/common.js",
       "../../js/seasonal-data.js",
       "../../js/halloween-engine.js",
-      "../../js/seasonal.js"
+      "../../js/pages/seasonal.mjs"
     ],
     "footMainKey": "",
     "footMain": "SEASONAL EVENTS",
@@ -1410,7 +1412,7 @@
       "../js/page-deck.js",
       "../js/page-chrome.js",
       "../js/common.js",
-      "../js/glossary.js"
+      "../js/pages/glossary.mjs"
     ],
     "footMain": "show, don’t tell",
     "footSubs": [

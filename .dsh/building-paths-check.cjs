@@ -117,11 +117,12 @@ assert.equal(E.plan(D, [{ building: 'academy', level: '5' }, { building: 'embass
 }
 
 const page = fs.readFileSync(path.join(root, 'buildings/index.html'), 'utf8');
-const script = fs.readFileSync(path.join(root, 'js/building-paths-page.js'), 'utf8');
+const script = fs.readFileSync(path.join(root, 'js/pages/building-paths.mjs'), 'utf8');
 const pages = JSON.parse(fs.readFileSync(path.join(root, '_data/pages.json'), 'utf8'));
-assert.ok(pages.buildings.scripts.indexOf('../js/building-paths-page.js') > pages.buildings.scripts.indexOf('../js/building-paths.js'));
+assert.ok(pages.buildings.scripts.indexOf('../js/building-paths-sheet.js') > pages.buildings.scripts.indexOf('../js/building-paths.js'));
+assert.ok(pages.buildings.scripts.indexOf('../js/building-paths-sheet.js') > pages.buildings.scripts.indexOf('../js/page-sheet.js'));
+assert.ok(pages.buildings.scripts.includes('../js/pages/building-paths.mjs'));
 assert.ok(!pages.home.scripts.some(s => s.includes('building-paths')), 'home never loads the paths');
-for (const target of script.matchAll(/one\('(\w+)'\)/g)) assert.ok(page.includes('building-paths.' + target[1] + '"'), 'target ' + target[1]);
 const keys = new Set([...page.matchAll(/data-i18n(?:-html)?="(reqs\.[\w.]+)"/g)].map(m => m[1]).concat(
   [...script.matchAll(/t\('(\w+)'/g)].map(m => 'reqs.' + m[1]),
   [...D.buildings.map(b => 'town.building.' + b.id), ...D.single.map(id => 'town.building.' + id)]));

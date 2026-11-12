@@ -25,7 +25,7 @@ function checkGuestLedger() {
     const scope = {
       URL, URLSearchParams, location: { search },
       document: {
-        currentScript: { src: 'https://dey.ci/js/hero-gear.js' },
+        currentScript: { src: 'https://dey.ci/js/hero-gear-sheet.js' },
         getElementById: id => {
           if (!nodes.has(id)) nodes.set(id, { dataset: {}, setAttribute() {}, classList: { add() {} } });
           return nodes.get(id);
@@ -35,7 +35,7 @@ function checkGuestLedger() {
     };
     vm.runInNewContext(fs.readFileSync('js/interactions.js', 'utf8'), scope);
     vm.runInNewContext(fs.readFileSync('js/page-sheet.js', 'utf8'), scope);
-    vm.runInNewContext(fs.readFileSync('js/hero-gear.js', 'utf8'), scope);
+    vm.runInNewContext(fs.readFileSync('js/hero-gear-sheet.js', 'utf8'), scope);
     assert.equal(reads, 0, 'guest configuration does not read storage before module mount');
     const selected = scope.window.Interactions.ledger();
     assert.notEqual(selected, persistent);

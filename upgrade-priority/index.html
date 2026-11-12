@@ -11,18 +11,18 @@ self: priority
   <a href="#timing" data-i18n="priority.timing">Spend it when it scores</a>
   <a href="#priority-sources" data-i18n="directory.sources">Sources &amp; confidence</a>
 </nav>
-<main data-module="upgrade-priority">
+<main x-data="upgradePriority" @ks:kingdom-change.document="kingdom++">
   <section class="section hero" id="top">
     <h1 data-i18n="priority.title">Upgrade priority</h1>
   </section>
 
   <section class="section" id="where">
     <h2 data-i18n="priority.where">Where you stand</h2>
-    <p class="priority-status" data-target="upgrade-priority.status" aria-live="polite" data-i18n="priority.tcUnknown">Record your Town Centre level and the list below fills in from your save.</p>
+    <p class="priority-status" id="priority-status" aria-live="polite" x-text="view.status">Record your Town Centre level and the list below fills in from your save.</p>
     <ol class="priority-stages">
       {% for stage in site.data.upgrade_priority.stages %}
-      <li class="priority-stage" id="stage-{{ stage.id }}" data-stage="{{ stage.id }}" data-target="upgrade-priority.stage">
-        <button type="button" data-action="upgrade-priority.preview" data-stage="{{ stage.id }}" aria-pressed="false" disabled><b class="inkwell" data-i18n="priority.stage.{{ stage.id }}">{{ stage.id }}</b> <small>{% unless stage.from contains "TG" %}TC {% endunless %}{{ stage.from }} – {{ stage.to }}</small></button>
+      <li class="priority-stage" id="stage-{{ stage.id }}" data-stage="{{ stage.id }}" :data-state="stageState('{{ stage.id }}')">
+        <button type="button" data-stage="{{ stage.id }}" aria-pressed="false" disabled :disabled="false" :aria-pressed="pressed('{{ stage.id }}')" @click="togglePreview('{{ stage.id }}')"><b class="inkwell" data-i18n="priority.stage.{{ stage.id }}">{{ stage.id }}</b> <small>{% unless stage.from contains "TG" %}TC {% endunless %}{{ stage.from }} – {{ stage.to }}</small></button>
         <p data-i18n="priority.stageNote.{{ stage.id }}"></p>
       </li>
       {% endfor %}
@@ -30,80 +30,74 @@ self: priority
     <fieldset class="priority-roles">
       <legend data-i18n="priority.roleLegend">Your part in the alliance</legend>
       {% for role in site.data.upgrade_priority.roles %}
-      <button type="button" data-action="upgrade-priority.role" data-role="{{ role }}" data-target="upgrade-priority.role" aria-pressed="false" disabled><b data-i18n="priority.role.{{ role }}">{{ role }}</b> <small data-i18n="priority.roleNote.{{ role }}"></small></button>
+      <button type="button" data-role="{{ role }}" aria-pressed="false" disabled :disabled="!readable" :aria-pressed="rolePressed('{{ role }}')" :data-default="roleDefault('{{ role }}')" @click="setRole('{{ role }}')"><b data-i18n="priority.role.{{ role }}">{{ role }}</b> <small data-i18n="priority.roleNote.{{ role }}"></small></button>
       {% endfor %}
     </fieldset>
-    <p class="note"><output class="seal" data-target="upgrade-priority.saved" role="status"></output></p>
+    <p class="note"><output class="seal" role="status" :data-state="sealState" x-text="seal"></output></p>
     <noscript><p data-i18n="priority.noJS">Enable JavaScript to read your save. The order below still applies.</p></noscript>
   </section>
 
   <section class="section" id="next">
     <h2 data-i18n="priority.next">Do these next</h2>
     <p data-i18n="priority.nextIntro">Ranked for your stage and role.</p>
-    <ol class="rule-list priority-list" data-target="upgrade-priority.list"></ol>
-    <details class="priority-more" id="next-more" data-target="upgrade-priority.more" hidden>
-      <summary data-target="upgrade-priority.moreLabel" data-i18n="priority.more">More steps</summary>
-      <ol class="rule-list priority-list" data-target="upgrade-priority.rest"></ol>
+    <ol class="rule-list priority-list" id="priority-list"><template x-for="step in view.top" :key="step.key">{% include priority/step.html %}</template></ol>
+    <details class="priority-more" id="next-more" hidden :hidden="!view.rest.length">
+      <summary x-text="view.more">More steps</summary>
+      <ol class="rule-list priority-list" id="priority-rest"><template x-for="step in view.rest" :key="step.key">{% include priority/step.html %}</template></ol>
     </details>
-    <template data-target="upgrade-priority.item">
-      <li class="priority-step"><span class="rule-num" aria-hidden="true"></span><div><h3 data-part="title"></h3><p data-part="why"></p><p class="priority-scores" data-part="scores" hidden data-i18n="priority.scores">Scores in KvK prep and Strongest Governor.</p><a data-part="link"></a></div></li>
-    </template>
   </section>
 
-  <section class="section" id="goals" data-module="upgrade-goals">
+  <section class="section" id="goals" x-data="upgradeGoals">
     <h2 data-i18n="priority.goals">Your goals</h2>
     <p data-i18n="priority.goalsIntro">Set a level you are working towards and see what it still takes from your bag. Balances your save does not hold are asked for, never counted as zero.</p>
-    <form class="priority-goal-form" data-action="upgrade-goals.add">
+    <form class="priority-goal-form" @submit.prevent="add()">
       <label><span data-i18n="priority.goal.kind">Goal</span>
-        <select name="kind" data-target="upgrade-goals.kind" data-action="upgrade-goals.kind" disabled>
+        <select name="kind" id="goal-kind" disabled :disabled="!readable" @change="pickKind($el.value)" x-effect="focusAt === -1 && $el.focus()">
           {% for kind in site.data.upgrade_priority.goalKinds %}<option value="{{ kind }}" data-i18n="priority.goal.kind.{{ kind }}">{{ kind }}</option>{% endfor %}
         </select>
       </label>
-      <label><span data-i18n="priority.goal.target">Which</span><select name="target" data-target="upgrade-goals.target" data-action="upgrade-goals.target" disabled></select></label>
-      <label><span data-i18n="priority.goal.level">Up to</span><select name="level" data-target="upgrade-goals.level" disabled></select></label>
-      <button type="submit" disabled data-i18n="priority.goal.add">Add goal</button>
+      <label><span data-i18n="priority.goal.target">Which</span><select name="target" id="goal-target" disabled :disabled="!readable" @change="pickTarget($el.value)"><template x-for="option in targets" :key="option.id"><option :value="option.id" :selected="option.id === target" x-text="option.name"></option></template></select></label>
+      <label><span data-i18n="priority.goal.level">Up to</span><select name="level" id="goal-level" disabled :disabled="!readable" @change="level = $el.value"><template x-for="option in levels" :key="option.id"><option :value="option.id" :selected="option.id === level" x-text="option.name"></option></template></select></label>
+      <button type="submit" disabled :disabled="!readable" data-i18n="priority.goal.add">Add goal</button>
     </form>
-    <p class="note"><output class="seal" data-target="upgrade-goals.saved" role="status"></output></p>
-    <p class="note" data-target="upgrade-goals.full" data-i18n="priority.goal.full" hidden>That is the most goals the save keeps. Remove one to add another.</p>
-    <p data-target="upgrade-goals.empty" data-i18n="priority.goal.none">No goals yet. Pick one above and it stays with your player save.</p>
-    <ol class="priority-goals" data-target="upgrade-goals.list"></ol>
-    <template data-target="upgrade-goals.item">
-      <li class="priority-goal"><h3 data-part="title"></h3><p class="priority-goal-state" data-part="state"></p><ul class="priority-goal-lines" data-part="lines"></ul><p class="note" data-part="notes"></p><p class="priority-goal-actions"><a data-part="link"></a><button type="button" data-part="remove" data-action="upgrade-goals.remove" data-i18n="priority.goal.remove">Remove</button></p></li>
-    </template>
-    <template data-target="upgrade-goals.line">
-      <li><b data-part="item"></b> <span data-part="figures"></span><span class="priority-goal-record" data-part="record"><label hidden><span></span><input type="number" min="0" max="1000000000000000" step="1" inputmode="numeric" data-action="upgrade-goals.balance"></label></span></li>
-    </template>
+    <p class="note"><output class="seal" role="status" :data-state="sealState" x-text="seal"></output></p>
+    <p class="note" id="goal-full" data-i18n="priority.goal.full" hidden :hidden="!full">That is the most goals the save keeps. Remove one to add another.</p>
+    <p id="goal-empty" data-i18n="priority.goal.none" :hidden="goals.length > 0">No goals yet. Pick one above and it stays with your player save.</p>
+    <ol class="priority-goals" id="goal-list"><template x-for="goal in goals" :key="goal.key">
+      <li class="priority-goal" :data-state="goal.state"><h3 data-part="title" x-text="goal.title"></h3><p class="priority-goal-state" data-part="state" x-text="goal.said"></p><template x-if="goal.lines.length"><ul class="priority-goal-lines" data-part="lines"><template x-for="line in goal.lines" :key="line.key">
+        <li :data-state="line.state"><b data-part="item" x-text="line.item"></b> <span data-part="figures" x-text="line.figures"></span><span class="priority-goal-record" data-part="record"><template x-for="blank in line.record" :key="blank.id"><label><span x-text="blank.label"></span><input type="number" min="0" max="1000000000000000" step="1" inputmode="numeric" :data-item="blank.id" @change="record(blank.id, $el.value, $el.validity.valid)"></label></template></span></li>
+      </template></ul></template><p class="note" data-part="notes" :hidden="!goal.notes" x-text="goal.notes"></p><p class="priority-goal-actions"><template x-if="goal.href"><a data-part="link" :href="goal.href" x-text="goal.link"></a></template><button type="button" data-part="remove" data-i18n="priority.goal.remove" :aria-label="goal.remove" @click="remove(goal.at)" x-effect="focusAt === goal.at && $el.focus()">Remove</button></p></li>
+    </template></ol>
   </section>
 
-  <section class="section" id="savings" data-module="upgrade-savings">
+  <section class="section" id="savings" x-data="upgradeSavings">
     <h2 data-i18n="priority.savings">Saving for the next event</h2>
     <fieldset class="priority-roles priority-events">
       <legend data-i18n="priority.savings.by">Count up to</legend>
-      <button type="button" data-action="upgrade-savings.event" data-event="prep" aria-pressed="false" disabled><b data-i18n="priority.savings.event.prep">KvK prep</b> <small></small></button>
-      <button type="button" data-action="upgrade-savings.event" data-event="sg" aria-pressed="false" disabled><b data-i18n="priority.savings.event.sg">Strongest Governor</b> <small></small></button>
+      <button type="button" data-event="prep" aria-pressed="false" disabled :disabled="false" :aria-pressed="pressed('prep')" @click="chosen = 'prep'"><b data-i18n="priority.savings.event.prep">KvK prep</b> <small x-text="view.when.prep"></small></button>
+      <button type="button" data-event="sg" aria-pressed="false" disabled :disabled="false" :aria-pressed="pressed('sg')" @click="chosen = 'sg'"><b data-i18n="priority.savings.event.sg">Strongest Governor</b> <small x-text="view.when.sg"></small></button>
     </fieldset>
-    <p class="priority-status" data-target="upgrade-savings.status" aria-live="polite"></p>
+    <p class="priority-status" id="savings-status" aria-live="polite" x-text="view.status"></p>
     <h3 data-i18n="priority.savings.goals">Your goals by then</h3>
-    <p data-target="upgrade-savings.none" data-i18n="priority.savings.none">Add a goal above that is still short and its pace shows here.</p>
-    <ol class="priority-goals" data-target="upgrade-savings.goals"></ol>
+    <p id="savings-none" data-i18n="priority.savings.none" :hidden="view.goals.length > 0">Add a goal above that is still short and its pace shows here.</p>
+    <ol class="priority-goals" id="savings-goals"><template x-for="goal in view.goals" :key="goal.key">
+      <li class="priority-goal" :data-state="goal.state"><h4 data-part="title" x-text="goal.title"></h4><p class="priority-goal-state" data-part="state" x-text="goal.said"></p><template x-if="goal.lines.length"><ul class="priority-goal-lines" data-part="lines"><template x-for="line in goal.lines" :key="line.key"><li :data-state="line.state" x-text="line.text"></li></template></ul></template></li>
+    </template></ol>
     <h3 data-i18n="priority.savings.rates">What comes in each day</h3>
-    <p data-target="upgrade-savings.learning" data-i18n="priority.savings.learning">Nothing to show yet. A balance gets a rate once you have recorded it at least three times, three or more days apart from first to last.</p>
-    <ul class="priority-rates" data-target="upgrade-savings.rates"></ul>
+    <p id="savings-learning" data-i18n="priority.savings.learning" :hidden="view.rates.length > 0">Nothing to show yet. A balance gets a rate once you have recorded it at least three times, three or more days apart from first to last.</p>
+    <ul class="priority-rates" id="savings-rates"><template x-for="rate in view.rates" :key="rate.id"><li :data-item="rate.id" x-text="rate.text"></li></template></ul>
     <p class="note" data-i18n="priority.savings.how">A rate counts what came in between your readings over the last four weeks. What you spent is shown apart and never taken off as a loss, but spending between two readings hides income, so rates err low. Each goal is projected on its own from today, as if you spend nothing more on what it needs. Save-file imports and resets are not income.</p>
-    <template data-target="upgrade-savings.goal">
-      <li class="priority-goal"><h4 data-part="title"></h4><p class="priority-goal-state" data-part="state"></p><ul class="priority-goal-lines" data-part="lines"></ul></li>
-    </template>
   </section>
 
   <section class="section" id="order">
     <h2 data-i18n="priority.order">The order, system by system</h2>
     <p data-i18n="priority.orderIntro">The rules behind the list.</p>
     {% for ladder in site.data.upgrade_priority.ladders %}
-    <details class="priority-ladder" id="order-{{ ladder.id }}" data-target="upgrade-priority.ladder" data-ladder="{{ ladder.id }}" data-stage="{{ ladder.stage }}"{% if forloop.first %} open{% endif %}>
+    <details class="priority-ladder" id="order-{{ ladder.id }}" data-ladder="{{ ladder.id }}" data-stage="{{ ladder.stage }}" :data-later="later('{{ ladder.stage }}', '')"{% if forloop.first %} open{% endif %}>
       <summary data-i18n="{{ ladder.titleKey }}">{{ ladder.id }}</summary>
       <ol class="priority-rungs">
         {% for rung in ladder.rungs %}
-        <li data-stage="{{ rung.stage }}" data-role="{{ rung.role }}"><span data-i18n="{{ rung.key }}"></span>{% if rung.stage != nil %} <small class="priority-from" data-i18n="priority.from.{{ rung.stage }}"></small>{% endif %}{% if rung.role != nil %} <small class="priority-from" data-i18n="priority.roleOnly.{{ rung.role }}"></small>{% endif %} <small class="priority-cite">{% for key in rung.sources %}{% assign source = site.data.upgrade_priority.sources[key] %}{% unless forloop.first %} · {% endunless %}<a href="{{ source.url }}" title="{{ source.label | escape }}" lang="en">{{ source.label | split: " · " | last | escape }}</a>{% endfor %}</small></li>
+        <li data-stage="{{ rung.stage }}" data-role="{{ rung.role }}" :data-later="later('{{ rung.stage }}', '{{ rung.role }}')"><span data-i18n="{{ rung.key }}"></span>{% if rung.stage != nil %} <small class="priority-from" data-i18n="priority.from.{{ rung.stage }}"></small>{% endif %}{% if rung.role != nil %} <small class="priority-from" data-i18n="priority.roleOnly.{{ rung.role }}"></small>{% endif %} <small class="priority-cite">{% for key in rung.sources %}{% assign source = site.data.upgrade_priority.sources[key] %}{% unless forloop.first %} · {% endunless %}<a href="{{ source.url }}" title="{{ source.label | escape }}" lang="en">{{ source.label | split: " · " | last | escape }}</a>{% endfor %}</small></li>
         {% endfor %}
       </ol>
       {% if ladder.href != "" %}<a class="priority-tool" href="../{{ ladder.href }}" data-i18n="priority.openTool">Open the tool</a>{% endif %}

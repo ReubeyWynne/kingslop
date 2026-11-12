@@ -13,7 +13,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.goto(origin + '/town-centre/?lang=en'); await page.waitForFunction(() => document.querySelector('.town-daybar'));
     assert.equal(await prep(), 0);
     assert.equal(await page.locator('.town-days li').count(), 5);
-    assert.equal(await page.locator('[data-target="town-centre.coverage"]').textContent(), 'Partial estimate. Missing counts or levels are excluded.');
+    assert.equal(await page.locator('#town-coverage').textContent(), 'Partial estimate. Missing counts or levels are excluded.');
     const missing = page.locator('#missing-details');
     assert.equal(await missing.evaluate(node => node.open), false);
     assert.equal(await missing.locator('li').count(), await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'prep').unknown.length));
@@ -26,12 +26,12 @@ withBrowser({ root }, async ({ browser, origin }) => {
     // Bag tiles open one dialog; counts write the shared ledger and score on their best day.
     const dialog = page.locator('.town-dialog');
     const edit = async selector => { await page.locator(selector).click(); await dialog.waitFor({ state: 'visible' }); };
-    const done = async () => { await dialog.locator('[data-action="town-inventory.close"]').click(); await dialog.waitFor({ state: 'hidden' }); };
+    const done = async () => { await dialog.locator('.town-done').click(); await dialog.waitFor({ state: 'hidden' }); };
     assert.equal(await page.locator('#town-bag input').count(), 0, 'the shelf is tiles, not fields');
     await edit('#town-bag [data-count="mithril"]');
-    await dialog.locator('[data-field="count"]').fill('10');
+    await dialog.locator('#town-count').fill('10');
     assert.equal((await ledger()).inventory.mithril.amount, 10);
-    assert.match(await dialog.locator('[data-target="town-inventory.rate"]').textContent(), /40,000/);
+    assert.match(await dialog.locator('#town-rate').textContent(), /40,000/);
     await done();
     assert.equal(await page.locator('#town-bag [data-count="mithril"] [data-amount]').textContent(), '10');
     // Resources run to billions: the tile says it short, the exact figure stays on hover.
@@ -52,9 +52,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
       assert.equal(await icon.evaluate(async img => { await img.decode(); return img.naturalWidth > 0; }), true);
     }
     await edit('#town-bag [data-count="hero-widget-chest-gen3"]');
-    await dialog.locator('[data-field="count"]').fill('2');
+    await dialog.locator('#town-count').fill('2');
     assert.equal((await ledger()).inventory['hero-widget-chest-gen3'].amount, 2);
-    assert.match(await dialog.locator('[data-target="town-inventory.rate"]').textContent(), /best 8,000 each · KvK prep day 4/);
+    assert.match(await dialog.locator('#town-rate').textContent(), /best 8,000 each · KvK prep day 4/);
     await done();
     assert.equal(await prep(), 0, 'chests cannot score without an eligible owned hero');
 
@@ -65,7 +65,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await edit('[data-duration="speedup-general"]');
     // One box with a unit: a typed suffix wins, and the box settles into
     // the largest unit that keeps the figure whole.
-    const time = dialog.locator('[data-field="duration"]'), timeUnit = dialog.locator('[data-panel="duration"] .unit-select');
+    const time = dialog.locator('#town-duration'), timeUnit = dialog.locator('[data-panel="duration"] .unit-select');
     await time.fill('27.5h'); await time.blur();
     assert.equal((await ledger()).inventory['speedup-general'].amount, 1440 + 120 + 90);
     assert.equal(await timeUnit.inputValue(), 'min');
@@ -79,14 +79,14 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await healingIcon.scrollIntoViewIfNeeded();
     assert.equal(await healingIcon.evaluate(async img => { await img.decode(); return img.naturalWidth > 0; }), true);
     await edit('[data-duration="speedup-healing"]');
-    await dialog.locator('[data-action="town-inventory.clear"]').click();
+    await dialog.locator('.town-clear').click();
     assert.equal((await ledger()).inventory['speedup-healing'].status, 'unknown');
     await done();
 
     // Days are choices: the selected day lists its lines.
     await page.locator('.town-daybar[data-day="1"]').click();
     assert.equal(await page.locator('.town-daybar[data-day="1"]').getAttribute('aria-pressed'), 'true');
-    assert.match(await page.locator('[data-target="town-centre.lines"]').textContent(), /General/);
+    assert.match(await page.locator('#town-lines').textContent(), /General/);
     await page.locator('.town-events [data-value="sg"]').click();
     assert.equal(await page.locator('.town-days li').count(), 7);
     assert.equal(await missing.locator('li').count(), await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'sg').unknown.length));
@@ -100,12 +100,12 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('[data-troop-board="inf"]').isVisible(), false);
     await page.locator('.town-troops [data-value="inf"]').click();
     await edit('[data-piece="inf-helm"]');
-    await dialog.locator('[data-action="town-inventory.quality"][data-quality="red"]').click();
+    await dialog.locator('[data-quality="red"]').click();
     await dialog.locator('input[data-field="level"]').fill('120'); await dialog.locator('input[data-field="level"]').blur();
-    await dialog.locator('[data-action="town-inventory.step"][data-field="level"][data-step="1"]').click();
+    await dialog.locator('.town-step[data-field="level"][data-step="1"]').click();
     let piece = (await ledger()).heroGear.pieces['inf-helm'];
     assert.equal(piece.quality, 'red'); assert.equal(piece.level, 121); assert.ok(piece.mastery >= 11);
-    assert.equal(await dialog.locator('[data-action="town-inventory.clear"]').isVisible(), false);
+    assert.equal(await dialog.locator('.town-clear').isVisible(), false);
     await done();
     assert.equal(await page.locator('[data-piece="inf-helm"]').getAttribute('data-state'), 'set');
     assert.equal(await page.locator('[data-piece="inf-helm"] [data-part="level"]').textContent(), '+21');
@@ -114,8 +114,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
     // Governor: the shared governor profile (the governor page's own), writing this save; levels and materials score through the governor planner.
     await page.locator('[aria-controls="town-governor"]').click();
     assert.equal(await page.locator('#town-governor .gov-piece').count(), 6);
-    await edit('[data-count="charm-guide"]'); await dialog.locator('[data-field="count"]').fill('5'); await done();
-    await edit('[data-count="charm-design"]'); await dialog.locator('[data-field="count"]').fill('5'); await done();
+    await edit('[data-count="charm-guide"]'); await dialog.locator('#town-count').fill('5'); await done();
+    await edit('[data-count="charm-design"]'); await dialog.locator('#town-count').fill('5'); await done();
     const govDialog = page.locator('#town-governor .gov-dialog');
     await page.locator('[data-gov="inf-1"]').click(); await govDialog.waitFor({ state: 'visible' });
     await govDialog.locator('[data-charm-row="1"] [data-step="-1"]').click();
@@ -126,7 +126,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('[data-gov="inf-1"] [data-part="level"]').textContent(), 'Blue 0★');
     assert.match(await page.locator('[data-charm="inf-1-1"] img').getAttribute('src'), /charms\/inf-1\.webp$/);
     assert.equal(await page.locator('[data-gov="inf-1"]').getAttribute('data-state'), 'set');
-    assert.match(await page.locator('[data-target="town-inventory.gain"]').textContent(), /625 charm score/);
+    assert.match(await page.locator('#town-gain').textContent(), /625 charm score/);
     const sg = num(await page.locator('[data-event-total="sg"]').textContent());
     assert.ok(sg >= 625 * 70, 'charm score counts in Strongest Governor');
 
@@ -154,28 +154,28 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.locator('[aria-controls="town-buildings"]').click();
     assert.equal(await page.locator('#town-buildings').isVisible(), true);
     assert.equal(await page.locator('#town-buildings [data-building]').count(), 9);
-    assert.match(await page.locator('[data-target="town-inventory.buildingSpend"]').textContent(), /Set your building levels/);
-    await edit('#town-buildings [data-count="truegold"]'); await dialog.locator('[data-field="count"]').fill('1000'); await done();
+    assert.match(await page.locator('#town-buildingSpend').textContent(), /Set your building levels/);
+    await edit('#town-buildings [data-count="truegold"]'); await dialog.locator('#town-count').fill('1000'); await done();
     await page.evaluate(() => { const store = PlayerLedger.shared(); for (const id of ['embassy', 'barracks', 'range', 'stable', 'command-center', 'infirmary', 'war-academy']) store.setBuilding(id, 'TG 3'); store.setBuilding('academy', '30'); for (const id of ['bread', 'wood', 'stone', 'iron']) store.setBalance(id, 1e9); });
     await edit('#town-buildings [data-building="town-center"]');
-    assert.equal(await dialog.locator('select[data-field="building"] option').count(), 81, 'not set, then 1 to TG 10');
-    await dialog.locator('select[data-field="building"]').selectOption('TG 2');
-    await dialog.locator('[data-action="town-inventory.buildingStep"][data-step="1"]').click();
+    assert.equal(await dialog.locator('#town-building option').count(), 81, 'not set, then 1 to TG 10');
+    await dialog.locator('#town-building').selectOption('TG 2');
+    await dialog.locator('.town-buildingStep[data-step="1"]').click();
     assert.equal((await ledger()).buildings.levels['town-center'], 'TG2-1');
-    await dialog.locator('select[data-field="building"]').selectOption('TG 3');
-    assert.match(await dialog.locator('[data-target="town-inventory.buildingPlan"]').textContent(), /reach TG3-3: 3 steps, 840 Truegold/);
+    await dialog.locator('#town-building').selectOption('TG 3');
+    assert.match(await dialog.locator('#town-buildingPlan').textContent(), /reach TG3-3: 3 steps, 840 Truegold/);
     await done();
     assert.equal(await page.locator('[data-building="town-center"] [data-level]').textContent(), 'TG 3');
-    assert.match(await page.locator('[data-target="town-inventory.buildingSpend"]').textContent(), /840 of 1,000 Truegold/);
+    assert.match(await page.locator('#town-buildingSpend').textContent(), /840 of 1,000 Truegold/);
     assert.equal(await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'prep').lines.find(l => l.id === 'truegold').points), 840 * 2000);
     await edit('#town-buildings [data-building="war-academy"]');
-    await dialog.locator('[data-action="town-inventory.clear"]').click();
+    await dialog.locator('.town-clear').click();
     assert.equal((await ledger()).buildings.levels['war-academy'], undefined);
     await done();
     assert.equal(await page.locator('[data-building="war-academy"]').getAttribute('data-state'), 'unknown');
     // Set every building at once: each takes the level, or its nearest one.
-    await page.locator('[data-target="town-inventory.setAllLevel"]').selectOption('TG 2');
-    await page.locator('[data-action="town-inventory.setAll"]').click();
+    await page.locator('#town-setAllLevel').selectOption('TG 2');
+    await page.locator('#town-setAll').click();
     assert.deepEqual(Object.values((await ledger()).buildings.levels).sort(), ['30', ...Array(8).fill('TG 2')].sort());
     assert.equal(await page.locator('[data-building="academy"] img').getAttribute('src'), '../img/buildings/academy.webp');
     // Priorities: a tier per building and a tie-break order, saved with the ledger.
@@ -186,37 +186,37 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.locator('[data-move-for="range"][data-step="-1"]').click();
     assert.equal((await ledger()).preferences.buildings.order.indexOf('range'), 2);
     assert.equal(await page.locator('.town-priority').nth(2).locator('[data-tier-for]').getAttribute('data-tier-for'), 'range');
-    assert.match(await page.locator('[data-target="town-inventory.buildingSpend"]').textContent(), /Following your priorities/);
+    assert.match(await page.locator('#town-buildingSpend').textContent(), /Following your priorities/);
     await page.locator('[data-tier-for="infirmary"]').selectOption('3');
 
     // Troops: training facts on tiles, the capacity buff as a switch, and the troop day they score on.
     await page.locator('[aria-controls="town-troops"]').click();
     assert.equal(await page.locator('#town-troops [data-training]').count(), 6);
-    assert.equal(await page.locator('#town-troops [data-target="town-inventory.troopResult"]').isHidden(), true);
+    assert.equal(await page.locator('#town-troops #town-troopResult').isHidden(), true);
     // Without its facts the troop total stays open, and names what it waits on.
-    assert.equal(await page.locator('[data-target="town-inventory.troopPlan"] output[data-open]').count(), 1);
-    assert.deepEqual(await page.locator('[data-target="town-inventory.troopPlan"] .unknowns li').allTextContents(), ['training speed', 'training capacity', 'the tier each camp trains']);
-    await edit('#town-troops [data-training="speed"]'); await dialog.locator('[data-field="training"]').fill('150'); await done();
-    await edit('#town-troops [data-training="capacity"]'); await dialog.locator('[data-field="training"]').fill('1000'); await done();
-    await edit('#town-troops [data-training="inf"]'); await dialog.locator('select[data-field="tier"]').selectOption('10'); await done();
+    assert.equal(await page.locator('#town-troopPlan output[data-open]').count(), 1);
+    assert.deepEqual(await page.locator('#town-troopPlan .unknowns li').allTextContents(), ['training speed', 'training capacity', 'the tier each camp trains']);
+    await edit('#town-troops [data-training="speed"]'); await dialog.locator('#town-training').fill('150'); await done();
+    await edit('#town-troops [data-training="capacity"]'); await dialog.locator('#town-training').fill('1000'); await done();
+    await edit('#town-troops [data-training="inf"]'); await dialog.locator('#town-tier').selectOption('10'); await done();
     assert.deepEqual((await ledger()).training.facts, { speed: 150, capacity: 1000, inf: 10 });
     assert.equal(await page.locator('[data-training="speed"] [data-amount]').textContent(), '150%');
     assert.equal(await page.locator('[data-training="inf"] [data-amount]').textContent(), 'T10');
-    const troopText = key => page.locator('[data-target="town-inventory.' + key + '"]').textContent();
-    const troopRows = () => page.locator('[data-target="town-inventory.troopLines"] tr').evaluateAll(rows => rows.map(row => Array.from(row.children, cell => cell.textContent)));
+    const troopText = key => page.locator('#town-' + key).textContent();
+    const troopRows = () => page.locator('#town-troopLines tr').evaluateAll(rows => rows.map(row => Array.from(row.children, cell => cell.textContent)));
     assert.match(await troopText('troopTitle'), /, day 4$/);
     assert.deepEqual((await troopRows())[0], ['T10 troops, pre-trained', '1,000', '39', '39,000']);
     assert.equal(await troopText('troopPlan'), '');
-    await page.locator('#town-troops [data-action="town-inventory.buff"]').click();
+    await page.locator('#town-troops .town-buff').click();
     assert.equal((await ledger()).preferences.training.buff, true);
-    assert.equal(await page.locator('#town-troops [data-action="town-inventory.buff"]').getAttribute('aria-pressed'), 'true');
+    assert.equal(await page.locator('#town-troops .town-buff').getAttribute('aria-pressed'), 'true');
     assert.deepEqual((await troopRows())[0], ['T10 troops, tripled batch', '3,000', '39', '117,000']);
     assert.equal(await troopText('troopTakes'), '2d 2h 40m', '3,000 T10 at 152 s each, 150% faster');
     assert.match(await troopText('troopStartAt'), /\d\d:\d\d UTC$/);
     assert.equal(await troopText('troopSpeed'), '150%');
     // Buffs: a castle position speeds up the batch and the day, more under the High King; Mobilize only the day.
     assert.equal(await page.locator('[data-training="position"]').getAttribute('data-state'), 'off');
-    await edit('#town-troops [data-training="position"]'); await dialog.locator('select[data-field="position"]').selectOption('advisor'); await done();
+    await edit('#town-troops [data-training="position"]'); await dialog.locator('#town-position').selectOption('advisor'); await done();
     assert.equal(await page.locator('[data-training="position"] [data-amount]').textContent(), '+50%');
     assert.equal(await troopText('troopTakes'), '1d 18h 14m', '3,000 T10 at 152 s each, 200% faster');
     await page.locator('#town-troops [data-plan="highKing"]').click();
@@ -229,13 +229,13 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.match(await troopText('troopTitle'), /KvK prep, day 4$/);
     assert.equal(await troopText('troopSpeed'), '225%, 255% on the day', 'KvK prep: +25% for everyone and +50% for the Advisor, as the High King has ended');
     await page.locator('#town-troops [data-plan="highKing"]').click(); await page.locator('#town-troops [data-plan="mobilize"]').click();
-    await edit('#town-troops [data-training="position"]'); await dialog.locator('[data-action="town-inventory.clear"]').click(); await done();
+    await edit('#town-troops [data-training="position"]'); await dialog.locator('.town-clear').click(); await done();
     assert.deepEqual((await ledger()).preferences.training, { buff: true });
     assert.equal(await troopText('troopSpeed'), '175%');
     assert.equal(await page.evaluate(() => TownCentre.best(PlayerLedger.shared().snapshot(), 'prep').lines.find(l => l.id === 'troops-batch-t10').points), 3000 * 60);
-    await page.locator('#town-troops [data-action="town-inventory.buff"]').click();
+    await page.locator('#town-troops .town-buff').click();
     assert.equal((await ledger()).preferences.training, undefined);
-    await edit('#town-troops [data-training="capacity"]'); await dialog.locator('[data-action="town-inventory.clear"]').click(); await done();
+    await edit('#town-troops [data-training="capacity"]'); await dialog.locator('.town-clear').click(); await done();
     assert.equal(await page.locator('[data-training="capacity"]').getAttribute('data-state'), 'unknown');
 
     // Persisted, and the governor page starts from a copy of the same save.

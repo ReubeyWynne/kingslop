@@ -183,6 +183,8 @@ jobs:
               - town-centre/**
               - js/town-centre*.js
               - js/town-centre*.mjs
+              - js/pages/town-centre.mjs
+              - js/pages/governor-profile.mjs
             pets:
               - *shared
               - .dsh/pets-ui-check.cjs
@@ -258,6 +260,8 @@ jobs:
               - town-centre/**
               - js/town-centre*.js
               - js/town-centre*.mjs
+              - js/pages/town-centre.mjs
+              - js/pages/governor-profile.mjs
               - js/event-*
               - js/governor-*
               - js/pages/governor-*
@@ -294,12 +298,15 @@ jobs:
               - .dsh/building-paths-ui-check.cjs
               - buildings/**
               - js/building-paths*
+              - js/pages/building-paths.mjs
               - _data/building_paths.json
               - css/buildings.css
               - upgrade-priority/**
               - js/upgrade-priority*
               - js/upgrade-goals*
               - js/upgrade-savings*
+              - js/pages/upgrade-*.mjs
+              - _includes/priority/**
               - js/event-rules.mjs
               - _data/event_rules.json
               - _data/upgrade_priority.json
@@ -324,7 +331,7 @@ jobs:
               - *shared
               - .dsh/home-yours-ui-check.cjs
               - index.html
-              - js/home-yours.js
+              - js/pages/home-yours.mjs
               - css/home.css
               - js/event-data.liquid
               - js/event-rules.mjs
@@ -345,6 +352,7 @@ jobs:
               - masters/**
               - js/hero-gear*.js
               - js/hero-gear*.mjs
+              - js/pages/hero-gear.mjs
               - js/governor-*
               - js/pages/governor-*
               - js/pet-*
@@ -358,12 +366,14 @@ jobs:
               - js/hero-points.js
               - js/town-centre*.js
               - js/town-centre*.mjs
+              - js/pages/town-centre.mjs
             seasonal:
               - *shared
               - seasonal/**
               - _includes/seasonal/**
               - _data/seasonal/**
               - js/seasonal*
+              - js/pages/seasonal.mjs
               - js/halloween*
               - js/fantasy-theater*
               - js/pages/fantasy-theater.mjs
@@ -397,6 +407,7 @@ jobs:
               - hero-gear/**
               - js/hero-gear*.js
               - js/hero-gear*.mjs
+              - js/pages/hero-gear.mjs
               - js/ocr-worker.js
               - js/ocr-client.js
               - js/ocr-text.js

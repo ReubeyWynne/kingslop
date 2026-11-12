@@ -6,7 +6,7 @@ It is not an event page, so it is not in the page ring: no deck card, no cover a
 
 ## Inventory
 
-Every shelf is a grid of tiles painted from the ledger; tapping one opens a single edit dialog (`town-inventory`), so the page has no blocks of bare fields.
+Every shelf is a grid of tiles painted from the ledger; tapping one opens a single edit dialog, so the page has no blocks of bare fields. The page is declared in its markup with Alpine: `town-centre/index.html` binds to the `townCentre` state in `js/pages/town-centre.mjs`, which works the view out once per save, language switch or event choice.
 
 | Shelf | Ledger | Edited as |
 | --- | --- | --- |

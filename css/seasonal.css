@@ -119,3 +119,4 @@ html[data-page="seasonal"]:has(.theater-page) { --void: #0E1F22; --void-2: #1530
 .theater-narrow { max-width: 20rem; }
 .theater-other { margin-top: 2rem; font-size: .95rem; }
 .theater-other a { color: var(--halloween-orange); }
+.candy-slot { display: contents; }

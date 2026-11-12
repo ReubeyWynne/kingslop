@@ -3,14 +3,14 @@ layout: page
 self: town
 ---
 {% assign rules = site.data.event_rules %}{% assign gov = site.data.governor %}{% assign troops = "inf,cav,arc" | split: "," %}{% assign slots = "helm,gloves,chest,boots" | split: "," %}{% assign speedups = "general,construction,research,training,learning,healing" | split: "," %}{% assign resources = "bread,wood,stone,iron" | split: "," %}{% assign buildings = site.data.buildings.buildings %}{% assign camps = site.data.troops.types %}
-<main class="town-main" data-module="town-centre">
+<main class="town-main" x-data="townCentre" @tabs:select="select($event.detail)">
   <section class="section hero town-hero" id="top">
     <h1 data-i18n="town.title">Town Centre</h1>
     <p class="lede" data-i18n="town.cardLede">Your inventory and the event points it can score.</p>
   </section>
 
-  <section class="section town-shelves" id="town-inventory" aria-labelledby="town-inventory-title" data-module="town-inventory">
-    <div class="town-heading"><h2 id="town-inventory-title" data-i18n="town.inventory">Your inventory</h2><span class="town-saved"><output class="seal" data-target="town-inventory.saved" role="status"></output><details class="shared-by" id="town-shared-by"><summary aria-label="Also used by 7 pages" data-i18n-key="town.sharedByAria" data-i18n-attr="aria-label"><i data-page="gear"></i><i data-page="governor"></i><i data-page="heroes"></i><i data-page="masters"></i><i data-page="buildings"></i><i data-page="priority"></i><i data-page="kvksg"></i></summary><span class="motif-names" data-i18n="town.sharedBy">Hero gear · Governor gear · Heroes · Masters · Buildings · Upgrade priority · Event Cycle</span></details></span><button type="button" class="town-read-shots" data-screen-import="pick" data-i18n="town.readShots">read screenshots</button></div>
+  <section class="section town-shelves" id="town-inventory" aria-labelledby="town-inventory-title">
+    <div class="town-heading"><h2 id="town-inventory-title" data-i18n="town.inventory">Your inventory</h2><span class="town-saved"><output class="seal" id="town-saved" role="status" :data-state="seal" x-text="sealText"></output><details class="shared-by" id="town-shared-by"><summary aria-label="Also used by 7 pages" data-i18n-key="town.sharedByAria" data-i18n-attr="aria-label"><i data-page="gear"></i><i data-page="governor"></i><i data-page="heroes"></i><i data-page="masters"></i><i data-page="buildings"></i><i data-page="priority"></i><i data-page="kvksg"></i></summary><span class="motif-names" data-i18n="town.sharedBy">Hero gear · Governor gear · Heroes · Masters · Buildings · Upgrade priority · Event Cycle</span></details></span><button type="button" class="town-read-shots" data-screen-import="pick" data-i18n="town.readShots">read screenshots</button></div>
     <div class="town-rail" data-module="tabs" data-tabs-bind="town-shelf" role="tablist" aria-label="Inventory" data-i18n-key="town.inventory" data-i18n-attr="aria-label">
       <button type="button" role="tab" aria-selected="true" aria-controls="town-bag" data-value="bag" data-action="tabs.select" data-i18n="town.shelf.bag">Bag</button>
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-speedups" data-value="speedups" data-action="tabs.select" data-i18n="town.shelf.speedups">Speedups</button>
@@ -23,17 +23,17 @@ self: town
       <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-governor" data-value="governor" data-action="tabs.select" data-i18n="town.shelf.governor">Governor</button>
     </div>
 
-    <div class="town-shelf" id="town-bag" role="tabpanel" data-shelf="bag">
+    <div class="town-shelf" id="town-bag" role="tabpanel" data-shelf="bag" :hidden="shelf !== 'bag'">
       <div class="town-bag">
       {% for item in rules.items %}{% if item.id == "hero-widget" or item.id == "master-emblem" %}{% continue %}{% endif %}{% case item.id %}{% when "truegold" %}{% assign icon = "../img/kingshot/truegold.png" %}{% when "tempered-truegold", "truegold-dust", "masters-manuscript" %}{% capture icon %}../img/items/{{ item.id }}.webp{% endcapture %}{% when "advanced-taming-mark" %}{% assign icon = "../img/items/taming-mark-advanced.webp" %}{% when "common-taming-mark" %}{% assign icon = "../img/items/taming-mark-common.webp" %}{% when "mithril" %}{% assign icon = "../img/hero-gear/mithril.webp" %}{% when "forgehammer" %}{% assign icon = "../img/hero-gear/forgehammer.webp" %}{% when "mythic-hero-shard", "epic-hero-shard", "rare-hero-shard" %}{% assign rarity = item.id | split: "-" | first %}{% capture icon %}../img/items/shard-{{ rarity }}.webp{% endcapture %}{% else %}{% assign icon = "" %}{% endcase %}
-        <button type="button" class="town-tile" data-count="{{ item.id }}" data-action="town-inventory.edit">
-          <span class="town-tile-art">{% if icon != "" %}<img src="{{ icon }}" width="56" height="56" alt="" loading="lazy">{% else %}<span class="town-monogram" aria-hidden="true">{{ item.label | slice: 0 }}</span>{% endif %}<output class="town-tile-count inkwell" data-amount>?</output></span>
+        <button type="button" class="town-tile" data-count="{{ item.id }}" :data-state="count('{{ item.id }}').state" @click="edit('count', '{{ item.id }}', '{{ item.key }}'); $refs.edit.showModal()">
+          <span class="town-tile-art">{% if icon != "" %}<img src="{{ icon }}" width="56" height="56" alt="" loading="lazy">{% else %}<span class="town-monogram" aria-hidden="true">{{ item.label | slice: 0 }}</span>{% endif %}<output class="town-tile-count inkwell" data-amount :data-tally="count('{{ item.id }}').tally" :title="count('{{ item.id }}').title" x-text="count('{{ item.id }}').text">?</output></span>
           <span class="town-tile-name" data-i18n="{{ item.key }}">{{ item.label | escape }}</span>
         </button>
       {% endfor %}
       {% for gen in (1..7) %}
-        <button type="button" class="town-tile" data-count="hero-widget-chest-gen{{ gen }}" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/items/hero-widget-chest.svg" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
+        <button type="button" class="town-tile" data-count="hero-widget-chest-gen{{ gen }}" :data-state="count('hero-widget-chest-gen{{ gen }}').state" @click="edit('count', 'hero-widget-chest-gen{{ gen }}', 'town.widgetChest', {{ gen }}); $refs.edit.showModal()">
+          <span class="town-tile-art"><img src="../img/items/hero-widget-chest.svg" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount :data-tally="count('hero-widget-chest-gen{{ gen }}').tally" :title="count('hero-widget-chest-gen{{ gen }}').title" x-text="count('hero-widget-chest-gen{{ gen }}').text">?</output></span>
           <span class="town-tile-name" data-i18n="town.widgetChest" data-i18n-n="{{ gen }}">Gen {{ gen }} widget chest</span>
         </button>
       {% endfor %}
@@ -41,11 +41,11 @@ self: town
       <p class="town-gloss" data-i18n="town.widgetChestNote">Chests count towards upgrades for heroes you own in that generation.</p>
     </div>
 
-    <div class="town-shelf" id="town-speedups" role="tabpanel" data-shelf="speedups" hidden>
+    <div class="town-shelf" id="town-speedups" role="tabpanel" data-shelf="speedups" hidden :hidden="shelf !== 'speedups'">
       <div class="town-bag">
       {% for kind in speedups %}{% case kind %}{% when "construction", "research", "training" %}{% capture icon %}../img/kingshot/{{ kind }}-speedup.png{% endcapture %}{% when "healing" %}{% assign icon = "../img/items/healing-speedup.svg" %}{% when "general", "learning" %}{% capture icon %}../img/items/{{ kind }}-speedup.webp{% endcapture %}{% else %}{% assign icon = "" %}{% endcase %}
-        <button type="button" class="town-tile" data-duration="speedup-{{ kind }}" data-action="town-inventory.edit">
-          <span class="town-tile-art">{% if icon != "" %}<img src="{{ icon }}" width="56" height="56" alt="" loading="lazy">{% else %}<span class="town-monogram" aria-hidden="true">{{ kind | slice: 0 | upcase }}</span>{% endif %}<output class="town-tile-count inkwell" data-amount>?</output></span>
+        <button type="button" class="town-tile" data-duration="speedup-{{ kind }}" :data-state="duration('speedup-{{ kind }}').state" @click="edit('duration', 'speedup-{{ kind }}', 'town.speedup.{{ kind }}'); $refs.edit.showModal()">
+          <span class="town-tile-art">{% if icon != "" %}<img src="{{ icon }}" width="56" height="56" alt="" loading="lazy">{% else %}<span class="town-monogram" aria-hidden="true">{{ kind | slice: 0 | upcase }}</span>{% endif %}<output class="town-tile-count inkwell" data-amount :data-tally="duration('speedup-{{ kind }}').tally" x-text="duration('speedup-{{ kind }}').text">?</output></span>
           <span class="town-tile-name" data-i18n="town.speedup.{{ kind }}">{{ kind | capitalize }}</span>
         </button>
       {% endfor %}
@@ -53,11 +53,11 @@ self: town
       <p class="town-gloss" data-i18n="town.speedupNote">Enter the total time for each kind.</p>
     </div>
 
-    <div class="town-shelf" id="town-resources" role="tabpanel" data-shelf="resources" hidden>
+    <div class="town-shelf" id="town-resources" role="tabpanel" data-shelf="resources" hidden :hidden="shelf !== 'resources'">
       <div class="town-bag">
       {% for id in resources %}
-        <button type="button" class="town-tile" data-count="{{ id }}" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/items/{{ id }}.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
+        <button type="button" class="town-tile" data-count="{{ id }}" :data-state="count('{{ id }}').state" @click="edit('count', '{{ id }}', 'town.res.{{ id }}'); $refs.edit.showModal()">
+          <span class="town-tile-art"><img src="../img/items/{{ id }}.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount :data-tally="count('{{ id }}').tally" :title="count('{{ id }}').title" x-text="count('{{ id }}').text">?</output></span>
           <span class="town-tile-name" data-i18n="town.res.{{ id }}">{{ id | capitalize }}</span>
         </button>
       {% endfor %}
@@ -65,95 +65,97 @@ self: town
       <p class="town-gloss" data-i18n="town.resNote">Gathering earns event points. What you hold doesn't.</p>
     </div>
 
-    <div class="town-shelf" id="town-buildings" role="tabpanel" data-shelf="buildings" hidden>
+    <div class="town-shelf" id="town-buildings" role="tabpanel" data-shelf="buildings" hidden :hidden="shelf !== 'buildings'">
       <div class="town-heading"><p class="town-gloss" data-i18n="town.buildingsNote">Set each building's level. Truegold only scores when a building can take it.</p><a class="town-shelf-link" href="../buildings/" data-i18n="reqs.fromTown">what a level needs</a></div>
       <div class="town-setall">
-        <label><span data-i18n="town.setAllLabel">Set every building to</span><select data-target="town-inventory.setAllLevel" aria-label="Level for every building" data-i18n-key="town.setAllLabel" data-i18n-attr="aria-label"></select></label>
-        <button type="button" data-action="town-inventory.setAll" data-i18n="town.setAll">set all</button>
+        <label><span data-i18n="town.setAllLabel">Set every building to</span><select id="town-setAllLevel" x-ref="setAll" aria-label="Level for every building" data-i18n-key="town.setAllLabel" data-i18n-attr="aria-label"><template x-for="option in setAllOptions" :key="option.id"><option :value="option.id" x-text="option.name"></option></template></select></label>
+        <button type="button" id="town-setAll" @click="setAll($refs.setAll.value)" data-i18n="town.setAll">set all</button>
       </div>
       <div class="town-strip">
         {% assign gold = "truegold:../img/kingshot/truegold.png,tempered-truegold:../img/items/tempered-truegold.webp" | split: "," %}
         {% for entry in gold %}{% assign m = entry | split: ":" %}{% assign item = rules.items | where: "id", m[0] | first %}
-        <button type="button" class="town-tile town-tile-small" data-count="{{ m[0] }}" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="{{ m[1] }}" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
+        <button type="button" class="town-tile town-tile-small" data-count="{{ m[0] }}" :data-state="count('{{ m[0] }}').state" @click="edit('count', '{{ m[0] }}', '{{ item.key }}'); $refs.edit.showModal()">
+          <span class="town-tile-art"><img src="{{ m[1] }}" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount :data-tally="count('{{ m[0] }}').tally" :title="count('{{ m[0] }}').title" x-text="count('{{ m[0] }}').text">?</output></span>
           <span class="town-tile-name" data-i18n="{{ item.key }}">{{ item.label | escape }}</span>
         </button>
         {% endfor %}
       </div>
       <div class="town-bag">
       {% for building in buildings %}
-        <button type="button" class="town-tile" data-building="{{ building.id }}" data-state="unknown" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/buildings/{{ building.id }}.webp" width="64" height="64" alt="" loading="lazy"><output class="town-tile-count inkwell" data-level>?</output></span>
+        <button type="button" class="town-tile" data-building="{{ building.id }}" data-state="unknown" :data-state="building('{{ building.id }}').state" @click="edit('building', '{{ building.id }}', 'town.building.{{ building.id }}'); $refs.edit.showModal()">
+          <span class="town-tile-art"><img src="../img/buildings/{{ building.id }}.webp" width="64" height="64" alt="" loading="lazy"><output class="town-tile-count inkwell" data-level :data-tally="building('{{ building.id }}').tally" x-text="building('{{ building.id }}').text">?</output></span>
           <span class="town-tile-name" data-i18n="town.building.{{ building.id }}">{{ building.name | escape }}</span>
-          <small class="town-rate" data-building-plan="{{ building.id }}"></small>
+          <small class="town-rate" data-building-plan="{{ building.id }}" x-text="building('{{ building.id }}').plan"></small>
         </button>
       {% endfor %}
       </div>
-      <p class="town-note"><span data-target="town-inventory.buildingSpend"></span><details class="src" data-src="2"><summary aria-label="Two sources agree" data-i18n-key="town.src.two" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="town.src.buildings">Kingshot Data, Kingshot Optimizer and KS h5joy, two agreeing</span></details></p>
+      <p class="town-note"><span id="town-buildingSpend" x-text="buildingSpend"></span><details class="src" data-src="2"><summary aria-label="Two sources agree" data-i18n-key="town.src.two" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="town.src.buildings">Kingshot Data, Kingshot Optimizer and KS h5joy, two agreeing</span></details></p>
       <details id="building-priorities">
         <summary data-i18n="town.prioritiesTitle">Upgrade priorities</summary>
         <p class="town-gloss" data-i18n="town.prioritiesNote">Points follow these priorities. Lead buildings climb together, lowest first. Keep up waits for Lead until it falls a whole TG tier behind the Town Centre. Spare gets only what is left. Skip never upgrades for its own sake. A building's prerequisites, like the Town Centre and Embassy, are upgraded first whatever their priority. Ties go to the building higher in the list.</p>
-        <ol class="town-priorities" data-target="town-inventory.priorities"></ol>
+        <ol class="town-priorities" id="town-priorities"><template x-for="row in priorities" :key="row.id">
+          <li class="town-priority"><img :src="'../img/buildings/' + row.id + '.webp'" width="32" height="32" alt=""><span class="town-priority-name" x-text="row.name"></span><select :data-tier-for="row.id" :aria-label="row.label" @change="setTierFor(row.id, $el.value)"><template x-for="tier in tiers" :key="tier.id"><option :value="tier.id" :selected="tier.id === row.tier" x-text="tier.name"></option></template></select><button type="button" :data-move-for="row.id" data-step="-1" :aria-label="row.up" :disabled="row.first" @click="move(row.id, -1)" x-effect="refocus(row.id, -1) && !row.first && $el.focus()">↑</button><button type="button" :data-move-for="row.id" data-step="1" :aria-label="row.down" :disabled="row.last" @click="move(row.id, 1)" x-effect="refocus(row.id, 1) && !row.last && $el.focus()">↓</button></li>
+        </template></ol>
       </details>
     </div>
 
-    <div class="town-shelf" id="town-troops" role="tabpanel" data-shelf="troops" hidden>
+    <div class="town-shelf" id="town-troops" role="tabpanel" data-shelf="troops" hidden :hidden="shelf !== 'troops'">
       <div class="town-heading"><p class="town-gloss" data-i18n="town.troopsNote">Set your training speed, your training capacity, the tier each camp trains and the buffs you will have. Troops score on troop days.</p></div>
       <div class="town-strip">
-        <button type="button" class="town-tile town-tile-small" data-training="speed" data-state="unknown" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/kingshot/training-speedup.png" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
+        <button type="button" class="town-tile town-tile-small" data-training="speed" data-state="unknown" :data-state="training('speed').state" @click="edit('training', 'speed', 'town.training.speed'); $refs.edit.showModal()">
+          <span class="town-tile-art"><img src="../img/kingshot/training-speedup.png" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount :data-tally="training('speed').tally" x-text="training('speed').text">?</output></span>
           <span class="town-tile-name" data-i18n="town.training.speed">Training speed</span>
         </button>
-        <button type="button" class="town-tile town-tile-small" data-training="capacity" data-state="unknown" data-action="town-inventory.edit">
-          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">#</span><output class="town-tile-count inkwell" data-amount>?</output></span>
+        <button type="button" class="town-tile town-tile-small" data-training="capacity" data-state="unknown" :data-state="training('capacity').state" @click="edit('training', 'capacity', 'town.training.capacity'); $refs.edit.showModal()">
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">#</span><output class="town-tile-count inkwell" data-amount :data-tally="training('capacity').tally" x-text="training('capacity').text">?</output></span>
           <span class="town-tile-name" data-i18n="town.training.capacity">Training capacity</span>
         </button>
-        <button type="button" class="town-tile town-tile-small" data-state="off" aria-pressed="false" data-action="town-inventory.buff">
-          <span class="town-tile-art"><img src="../img/kingshot/gem.png" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count" data-buff>×1</output></span>
+        <button type="button" class="town-tile town-tile-small town-buff" data-state="off" aria-pressed="false" :data-state="view.troops.buff ? 'on' : 'off'" :aria-pressed="String(view.troops.buff)" @click="toggleBuff()">
+          <span class="town-tile-art"><img src="../img/kingshot/gem.png" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count" data-buff x-text="view.troops.buffText">×1</output></span>
           <span class="town-tile-name" data-i18n="town.training.buff">Capacity buff</span>
         </button>
       </div>
       <div class="town-strip" role="group" aria-label="Training speed buffs" data-i18n-key="town.training.buffs" data-i18n-attr="aria-label">
-        <button type="button" class="town-tile town-tile-small" data-training="position" data-state="off" data-action="town-inventory.edit">
-          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">C</span><output class="town-tile-count inkwell" data-amount>—</output></span>
+        <button type="button" class="town-tile town-tile-small" data-training="position" data-state="off" :data-state="training('position').state" @click="edit('training', 'position', 'town.training.position'); $refs.edit.showModal()">
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">C</span><output class="town-tile-count inkwell" data-amount x-text="training('position').text">—</output></span>
           <span class="town-tile-name" data-i18n="town.training.position">Castle position</span>
         </button>
-        <button type="button" class="town-tile town-tile-small" data-plan="highKing" data-state="off" aria-pressed="false" data-action="town-inventory.plan">
-          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">H</span><output class="town-tile-count inkwell" data-amount>—</output></span>
+        <button type="button" class="town-tile town-tile-small" data-plan="highKing" data-state="off" aria-pressed="false" :data-state="plan('highKing').state" :aria-pressed="plan('highKing').pressed" @click="togglePlan('highKing')">
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">H</span><output class="town-tile-count inkwell" data-amount x-text="plan('highKing').text">—</output></span>
           <span class="town-tile-name" data-i18n="town.training.highKing">High King</span>
         </button>
-        <button type="button" class="town-tile town-tile-small" data-plan="mobilize" data-state="off" aria-pressed="false" data-action="town-inventory.plan">
-          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">M</span><output class="town-tile-count inkwell" data-amount>—</output></span>
+        <button type="button" class="town-tile town-tile-small" data-plan="mobilize" data-state="off" aria-pressed="false" :data-state="plan('mobilize').state" :aria-pressed="plan('mobilize').pressed" @click="togglePlan('mobilize')">
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">M</span><output class="town-tile-count inkwell" data-amount x-text="plan('mobilize').text">—</output></span>
           <span class="town-tile-name" data-i18n="town.training.mobilize">Mobilize</span>
         </button>
       </div>
       <div class="town-bag">
       {% for camp in camps %}
-        <button type="button" class="town-tile" data-training="{{ camp.id }}" data-state="unknown" data-action="town-inventory.edit">
-          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">{{ camp.name | slice: 0 }}</span><output class="town-tile-count inkwell" data-amount>?</output></span>
+        <button type="button" class="town-tile" data-training="{{ camp.id }}" data-state="unknown" :data-state="training('{{ camp.id }}').state" @click="edit('training', '{{ camp.id }}', 'gear.{{ camp.id }}'); $refs.edit.showModal()">
+          <span class="town-tile-art"><span class="town-monogram" aria-hidden="true">{{ camp.name | slice: 0 }}</span><output class="town-tile-count inkwell" data-amount :data-tally="training('{{ camp.id }}').tally" x-text="training('{{ camp.id }}').text">?</output></span>
           <span class="town-tile-name" data-i18n="gear.{{ camp.id }}">{{ camp.name }}</span>
-          <small class="town-rate" data-camp-plan="{{ camp.id }}"></small>
+          <small class="town-rate" data-camp-plan="{{ camp.id }}" x-text="training('{{ camp.id }}').camp"></small>
         </button>
       {% endfor %}
       </div>
-      <div class="town-troop-result" data-target="town-inventory.troopResult" hidden>
-        <h3 data-target="town-inventory.troopTitle"></h3>
+      <div class="town-troop-result" id="town-troopResult" hidden :hidden="!view.troops.shown">
+        <h3 id="town-troopTitle" x-text="view.troops.title"></h3>
         <dl class="town-troop-facts">
-          <div class="town-troop-start"><dt data-i18n="town.troopStartBy">Start the batch by</dt><dd data-target="town-inventory.troopStartAt"></dd></div>
-          <div><dt><span data-i18n="town.troopTakes">Batch takes</span><details class="src" data-src="2"><summary aria-label="Two sources agree" data-i18n-key="town.src.two" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="town.src.troops">Kingshot Optimizer and Kingshot Guide</span></details></dt><dd data-target="town-inventory.troopTakes"></dd></div>
-          <div><dt><span data-i18n="town.troopSpeed">Training speed</span><details class="src" data-src="1"><summary aria-label="One source" data-i18n-key="town.src.one" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="town.src.buffs">Read in game</span></details></dt><dd data-target="town-inventory.troopSpeed"></dd></div>
+          <div class="town-troop-start"><dt data-i18n="town.troopStartBy">Start the batch by</dt><dd id="town-troopStartAt" x-text="view.troops.startAt"></dd></div>
+          <div><dt><span data-i18n="town.troopTakes">Batch takes</span><details class="src" data-src="2"><summary aria-label="Two sources agree" data-i18n-key="town.src.two" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="town.src.troops">Kingshot Optimizer and Kingshot Guide</span></details></dt><dd id="town-troopTakes" x-text="view.troops.takes"></dd></div>
+          <div><dt><span data-i18n="town.troopSpeed">Training speed</span><details class="src" data-src="1"><summary aria-label="One source" data-i18n-key="town.src.one" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="town.src.buffs">Read in game</span></details></dt><dd id="town-troopSpeed" x-text="view.troops.speed"></dd></div>
         </dl>
         <div class="town-scroll"><table class="town-lines">
           <thead><tr><th scope="col" data-i18n="town.col.troops">troops</th><th scope="col" data-i18n="town.col.count">count</th><th scope="col" data-i18n="town.col.each">each</th><th scope="col" data-i18n="town.col.points">points</th></tr></thead>
-          <tbody data-target="town-inventory.troopLines"></tbody>
-          <tfoot><tr><th scope="row" data-i18n="town.col.total">total</th><td data-target="town-inventory.troopCount"></td><td></td><td data-target="town-inventory.troopPoints"></td></tr></tfoot>
+          <tbody id="town-troopLines"><template x-for="line in view.troops.lines || []" :key="line.key"><tr><th scope="row" x-text="line.name"></th><td x-text="line.cells[0]"></td><td x-text="line.cells[1]"></td><td x-text="line.cells[2]"></td></tr></template></tbody>
+          <tfoot><tr><th scope="row" data-i18n="town.col.total">total</th><td id="town-troopCount" x-text="view.troops.count"></td><td></td><td id="town-troopPoints" x-text="view.troops.points"></td></tr></tfoot>
         </table></div>
       </div>
-      <div class="town-note" data-target="town-inventory.troopPlan"></div>
+      <div class="town-note" id="town-troopPlan"><template x-if="view.troops.waiting.length"><output data-open x-text="view.api.fmt(0)"></output></template><template x-if="view.troops.waiting.length"><ul class="unknowns"><template x-for="line in view.troops.waiting"><li x-text="line"></li></template></ul></template><template x-if="!view.troops.waiting.length"><span x-text="view.troops.note"></span></template></div>
       <p class="town-gloss" data-i18n="town.capacityBuffNote">The capacity buff costs 3,000 gems and triples the batch you start before a troop day. It doesn't speed up training or add anything on the day itself.</p>
     </div>
 
-    <div class="town-shelf town-heroes" id="town-heroes" role="tabpanel" data-shelf="heroes" hidden>
+    <div class="town-shelf town-heroes" id="town-heroes" role="tabpanel" data-shelf="heroes" hidden :hidden="shelf !== 'heroes'">
       <div class="town-heading"><p class="town-gloss" data-i18n="town.heroesNote">Select a hero to record levels, stars, shards and widgets.</p><a href="../heroes/" data-i18n="town.planHeroes">compare heroes →</a></div>
       <div x-data="heroRoster" :data-collection="any ? '' : null" @ks:server-age-change.document="serverChanged($event.detail)" @ks:kingdom-change.document="kingdom++">
       {% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}
@@ -161,19 +163,19 @@ self: town
       </div>
     </div>
 
-    <div class="town-shelf town-masters" id="town-masters" role="tabpanel" data-shelf="masters" hidden>
+    <div class="town-shelf town-masters" id="town-masters" role="tabpanel" data-shelf="masters" hidden :hidden="shelf !== 'masters'">
       <div class="town-heading"><p class="town-gloss" data-i18n="town.mastersNote">Select a master to record affinity, emblems and skill levels.</p><a href="../masters/" data-i18n="town.planMasters">compare masters →</a></div>
       <div class="town-bag town-master-bag">
-        <button type="button" class="town-tile" data-count="general-master-emblem" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/masters/emblem-general.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
+        <button type="button" class="town-tile" data-count="general-master-emblem" :data-state="count('general-master-emblem').state" @click="edit('count', 'general-master-emblem', 'masters.generalEmblem'); $refs.edit.showModal()">
+          <span class="town-tile-art"><img src="../img/masters/emblem-general.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount :data-tally="count('general-master-emblem').tally" :title="count('general-master-emblem').title" x-text="count('general-master-emblem').text">?</output></span>
           <span class="town-tile-name" data-i18n="masters.generalEmblem">General Master Emblems</span>
         </button>
-        <button type="button" class="town-tile" data-count="masters-manuscript" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/items/masters-manuscript.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
+        <button type="button" class="town-tile" data-count="masters-manuscript" :data-state="count('masters-manuscript').state" @click="edit('count', 'masters-manuscript', 'ks.available.item.masters-manuscript'); $refs.edit.showModal()">
+          <span class="town-tile-art"><img src="../img/items/masters-manuscript.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount :data-tally="count('masters-manuscript').tally" :title="count('masters-manuscript').title" x-text="count('masters-manuscript').text">?</output></span>
           <span class="town-tile-name" data-i18n="ks.available.item.masters-manuscript">Master's Manuscript</span>
         </button>
-        <button type="button" class="town-tile" data-duration="speedup-learning" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/items/learning-speedup.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
+        <button type="button" class="town-tile" data-duration="speedup-learning" :data-state="duration('speedup-learning').state" @click="edit('duration', 'speedup-learning', 'town.speedup.learning'); $refs.edit.showModal()">
+          <span class="town-tile-art"><img src="../img/items/learning-speedup.webp" width="56" height="56" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount :data-tally="duration('speedup-learning').tally" x-text="duration('speedup-learning').text">?</output></span>
           <span class="town-tile-name" data-i18n="town.speedup.learning">Learning</span>
         </button>
       </div>
@@ -182,13 +184,13 @@ self: town
       </div>
     </div>
 
-    <div class="town-shelf" id="town-hero-gear" role="tabpanel" data-shelf="hero-gear" hidden>
+    <div class="town-shelf" id="town-hero-gear" role="tabpanel" data-shelf="hero-gear" hidden :hidden="shelf !== 'hero-gear'">
       <div class="town-heading"><p class="town-gloss" data-i18n="town.heroGearNote">Four pieces per troop type.</p><a href="../hero-gear/" data-i18n="town.planGear">plan upgrades →</a></div>
       <div class="town-strip">
         {% assign heroMats = "hero-gear-xp:xp-part-100:gear.xpTotal:XP total,spare-mythic-gear:mythic-gear:gear.mythic:Spare mythic gear,forgehammer:forgehammer:gear.hammers:Forgehammers,mithril:mithril:gear.mithril:Mithril" | split: "," %}
         {% for entry in heroMats %}{% assign m = entry | split: ":" %}
-        <button type="button" class="town-tile town-tile-small" data-count="{{ m[0] }}" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/hero-gear/{{ m[1] }}.webp" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
+        <button type="button" class="town-tile town-tile-small" data-count="{{ m[0] }}" :data-state="count('{{ m[0] }}').state" @click="edit('count', '{{ m[0] }}', '{{ m[2] }}'); $refs.edit.showModal()">
+          <span class="town-tile-art"><img src="../img/hero-gear/{{ m[1] }}.webp" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount :data-tally="count('{{ m[0] }}').tally" :title="count('{{ m[0] }}').title" x-text="count('{{ m[0] }}').text">?</output></span>
           <span class="town-tile-name" data-i18n="{{ m[2] }}">{{ m[3] }}</span>
         </button>
         {% endfor %}
@@ -199,70 +201,70 @@ self: town
         <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="arc" data-action="tabs.select" data-i18n="gear.arc">Archer</button>
       </div>
       {% for troop in troops %}{% case troop %}{% when "inf" %}{% assign art = "infantry" %}{% when "cav" %}{% assign art = "cavalry" %}{% else %}{% assign art = "archer" %}{% endcase %}
-      <div class="town-hero-board" data-troop-board="{{ troop }}"{% unless forloop.first %} hidden{% endunless %}>
+      <div class="town-hero-board" data-troop-board="{{ troop }}"{% unless forloop.first %} hidden{% endunless %} :hidden="troop !== '{{ troop }}'">
         {% for slot in slots %}
-        <button type="button" class="town-hero-piece" data-piece="{{ troop }}-{{ slot }}" data-state="unset" data-action="town-inventory.edit">
-          <span class="town-gear-item" data-quality=""><img src="../img/hero-gear/{{ art }}-{{ slot }}.webp" width="96" height="96" alt=""><strong class="town-gear-level" data-part="level"></strong><span class="town-gear-mastery" data-part="mastery-wrap"><img src="../img/hero-gear/forgehammer.webp" width="14" height="14" alt=""><span data-part="mastery"></span></span><span class="town-gear-band" data-part="band" data-i18n="gov.notSet">not set</span></span>
+        <button type="button" class="town-hero-piece" data-piece="{{ troop }}-{{ slot }}" data-state="unset" :data-state="piece('{{ troop }}-{{ slot }}').state" @click="edit('hero', '{{ troop }}-{{ slot }}', 'gear.{{ slot }}'); $refs.edit.showModal()">
+          <span class="town-gear-item" data-quality="" x-data="{ get gear() { return piece('{{ troop }}-{{ slot }}'); } }" :data-quality="gear.quality"><img src="../img/hero-gear/{{ art }}-{{ slot }}.webp" width="96" height="96" alt=""><strong class="town-gear-level" data-part="level" x-text="gear.level"></strong><span class="town-gear-mastery" data-part="mastery-wrap" :hidden="gear.masteryHidden"><img src="../img/hero-gear/forgehammer.webp" width="14" height="14" alt=""><span data-part="mastery" x-text="gear.mastery"></span></span><span class="town-gear-band" data-part="band" x-text="gear.band">not set</span></span>
           <span class="town-tile-name" data-i18n="gear.{{ slot }}">{{ slot | capitalize }}</span>
         </button>
         {% endfor %}
       </div>
       {% endfor %}
-      <p class="town-count"><output data-target="town-inventory.pieces">—</output></p>
+      <p class="town-count"><output id="town-pieces" x-text="pieces">—</output></p>
     </div>
 
-    <div class="town-shelf" id="town-governor" role="tabpanel" data-shelf="governor" hidden>
+    <div class="town-shelf" id="town-governor" role="tabpanel" data-shelf="governor" hidden :hidden="shelf !== 'governor'">
       <div class="town-heading"><p class="town-gloss" data-i18n="town.govNote">Six gear pieces, with three charms on each. Select a piece to edit both.</p><a href="../governor-gear/" data-i18n="town.planGov">plan upgrades →</a></div>
       <div class="town-strip">
         {% for item in gov.materials %}
-        <button type="button" class="town-tile town-tile-small" data-count="{{ item.id }}" data-action="town-inventory.edit">
-          <span class="town-tile-art"><img src="../img/governor/{{ item.id }}.webp" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount>?</output></span>
+        <button type="button" class="town-tile town-tile-small" data-count="{{ item.id }}" :data-state="count('{{ item.id }}').state" @click="edit('count', '{{ item.id }}', '{{ item.key }}'); $refs.edit.showModal()">
+          <span class="town-tile-art"><img src="../img/governor/{{ item.id }}.webp" width="40" height="40" alt="" loading="lazy"><output class="town-tile-count inkwell" data-amount :data-tally="count('{{ item.id }}').tally" :title="count('{{ item.id }}').title" x-text="count('{{ item.id }}').text">?</output></span>
           <span class="town-tile-name" data-i18n="{{ item.key }}">{{ item.label | escape }}</span>
         </button>
         {% endfor %}
       </div>
       {% include governor/profile.html %}
-      <p class="town-note" data-target="town-inventory.gain"></p>
+      <p class="town-note" id="town-gain" x-text="gain"></p>
     </div>
 
-    <dialog class="town-dialog" data-target="town-inventory.dialog" aria-labelledby="town-edit-title">
-      <div class="town-heading"><h2 id="town-edit-title" data-target="town-inventory.title"></h2><button type="button" data-action="town-inventory.close" data-i18n="gear.done">done</button></div>
-      <div class="town-panel" data-panel="count" hidden>
-        <label class="town-big"><span data-i18n="town.howMany">quantity</span><input type="number" min="0" max="1000000000000000" step="1" inputmode="numeric" placeholder="?" data-field="count" data-unit-input="count" data-action="town-inventory.count"></label>
-        <p class="town-gloss" data-target="town-inventory.rate"></p>
+    <dialog class="town-dialog" x-ref="edit" @close="editing = null" @click.self="$el.close()" aria-labelledby="town-edit-title">
+      <div class="town-heading"><h2 id="town-edit-title" x-text="editing && editing.title"></h2><button type="button" class="town-done" @click="$refs.edit.close()" data-i18n="gear.done">done</button></div>
+      <div class="town-panel" data-panel="count" hidden :hidden="panel !== 'count'">
+        <label class="town-big"><span data-i18n="town.howMany">quantity</span><input type="number" min="0" max="1000000000000000" step="1" inputmode="numeric" placeholder="?" id="town-count" data-unit-input="count" :value="form.value" @input="setBalance($el.value, $el.validity.valid)" x-effect="focusField === 'count' && $el.focus()"></label>
+        <p class="town-gloss" id="town-rate" x-text="form.rate"></p>
       </div>
-      <div class="town-panel" data-panel="duration" hidden>
-        <label class="town-big"><span data-i18n="town.howLong">time</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" data-field="duration" data-unit-input="duration" data-action="town-inventory.duration town-inventory.settle"></label>
-        <p class="town-gloss" data-target="town-inventory.durationRate"></p>
+      <div class="town-panel" data-panel="duration" hidden :hidden="panel !== 'duration'">
+        <label class="town-big"><span data-i18n="town.howLong">time</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="?" id="town-duration" data-unit-input="duration" :value="form.value" @input="setBalance($el.value, $el.validity.valid)" @change="$el.blur()" x-effect="focusField === 'duration' && $el.focus()"></label>
+        <p class="town-gloss" id="town-durationRate" x-text="form.rate"></p>
       </div>
-      <div class="town-panel" data-panel="hero" hidden>
-        <div class="town-edit-art"><span class="town-gear-item" data-target="town-inventory.heroArt" data-quality=""><img src="../img/hero-gear/infantry-helm.webp" width="96" height="96" alt=""><strong class="town-gear-level" data-part="level"></strong><span class="town-gear-mastery" data-part="mastery-wrap"><img src="../img/hero-gear/forgehammer.webp" width="14" height="14" alt=""><span data-part="mastery"></span></span><span class="town-gear-band" data-part="band"></span></span></div>
+      <div class="town-panel" data-panel="hero" hidden :hidden="panel !== 'hero'">
+        <div class="town-edit-art"><span class="town-gear-item" id="town-heroArt" data-quality="" :data-quality="hero.shown.quality"><img src="../img/hero-gear/infantry-helm.webp" width="96" height="96" alt="" :src="hero.art"><strong class="town-gear-level" data-part="level" x-text="hero.shown.level"></strong><span class="town-gear-mastery" data-part="mastery-wrap" :hidden="hero.shown.masteryHidden"><img src="../img/hero-gear/forgehammer.webp" width="14" height="14" alt=""><span data-part="mastery" x-text="hero.shown.mastery"></span></span><span class="town-gear-band" data-part="band" x-text="hero.shown.band"></span></span></div>
         <div class="town-chips" role="group" aria-label="Quality" data-i18n-key="gear.quality" data-i18n-attr="aria-label">
-          <button type="button" aria-pressed="false" data-quality="epic" data-action="town-inventory.quality" data-i18n="gear.epic">Epic</button>
-          <button type="button" aria-pressed="false" data-quality="mythic" data-action="town-inventory.quality" data-i18n="gear.mythicQuality">Mythic</button>
-          <button type="button" aria-pressed="false" data-quality="red" data-action="town-inventory.quality" data-i18n="gear.red">Red</button>
+          <button type="button" aria-pressed="false" data-quality="epic" :aria-pressed="qualityPressed('epic')" @click="setQuality('epic')" data-i18n="gear.epic">Epic</button>
+          <button type="button" aria-pressed="false" data-quality="mythic" :aria-pressed="qualityPressed('mythic')" @click="setQuality('mythic')" data-i18n="gear.mythicQuality">Mythic</button>
+          <button type="button" aria-pressed="false" data-quality="red" :aria-pressed="qualityPressed('red')" @click="setQuality('red')" data-i18n="gear.red">Red</button>
         </div>
-        <div class="town-stepper-row"><span data-i18n="gear.level">Level</span><div class="town-stepper"><button type="button" data-action="town-inventory.step" data-field="level" data-step="-1" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><input type="number" min="0" max="200" step="1" inputmode="numeric" placeholder="?" data-field="level" data-action="town-inventory.piece"><button type="button" data-action="town-inventory.step" data-field="level" data-step="1" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
-        <div class="town-stepper-row" data-target="town-inventory.masteryRow"><span data-i18n="gear.mastery">Mastery</span><div class="town-stepper"><button type="button" data-action="town-inventory.step" data-field="mastery" data-step="-1" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><input type="number" min="0" max="20" step="1" inputmode="numeric" placeholder="?" data-field="mastery" data-action="town-inventory.piece"><button type="button" data-action="town-inventory.step" data-field="mastery" data-step="1" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
+        <div class="town-stepper-row"><span data-i18n="gear.level">Level</span><div class="town-stepper"><button type="button" class="town-step" data-field="level" data-step="-1" @click="stepPiece('level', -1)" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><input type="number" min="0" max="200" step="1" inputmode="numeric" placeholder="?" data-field="level" :max="hero.max" :value="hero.level" @change="setPiece('level', $el.value, $el.validity.valid)"><button type="button" class="town-step" data-field="level" data-step="1" @click="stepPiece('level', 1)" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
+        <div class="town-stepper-row" id="town-masteryRow" :hidden="hero.masteryRow"><span data-i18n="gear.mastery">Mastery</span><div class="town-stepper"><button type="button" class="town-step" data-field="mastery" data-step="-1" @click="stepPiece('mastery', -1)" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><input type="number" min="0" max="20" step="1" inputmode="numeric" placeholder="?" data-field="mastery" :value="hero.mastery" @change="setPiece('mastery', $el.value, $el.validity.valid)"><button type="button" class="town-step" data-field="mastery" data-step="1" @click="stepPiece('mastery', 1)" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
         <p class="town-gloss" data-i18n="gear.levelHint">use total levels: red +20 is level 120.</p>
       </div>
-      <div class="town-panel" data-panel="training" hidden>
-        <label class="town-big"><span data-target="town-inventory.trainingUnit"></span><input type="number" min="0" max="100000" step="any" inputmode="decimal" placeholder="?" data-field="training" data-action="town-inventory.training"></label>
-        <p class="town-gloss" data-target="town-inventory.trainingHint"></p>
+      <div class="town-panel" data-panel="training" hidden :hidden="panel !== 'training'">
+        <label class="town-big"><span id="town-trainingUnit" x-text="form.unit"></span><input type="number" min="0" max="100000" step="any" inputmode="decimal" placeholder="?" id="town-training" :min="form.min" :step="form.step" :inputmode="form.mode" :value="form.value" @input="setTraining($el.value, $el.validity.valid)" x-effect="focusField === 'training' && $el.focus()"></label>
+        <p class="town-gloss" id="town-trainingHint" x-text="form.hint"></p>
       </div>
-      <div class="town-panel" data-panel="position" hidden>
-        <label><span data-i18n="town.training.positionPick">Position you hold</span><select data-field="position" data-action="town-inventory.position"><option value="" data-i18n="town.training.positionNone">none</option>{% for post in site.data.troops.buffs.positions %}<option value="{{ post.id }}" data-i18n="town.training.{{ post.id }}">{{ post.name }}</option>{% endfor %}</select></label>
-        <p class="town-gloss" data-target="town-inventory.positionHint"></p>
+      <div class="town-panel" data-panel="position" hidden :hidden="panel !== 'position'">
+        <label><span data-i18n="town.training.positionPick">Position you hold</span><select id="town-position" :value="form.value" @change="setPosition($el.value)" x-effect="focusField === 'position' && $el.focus()"><option value="" data-i18n="town.training.positionNone">none</option>{% for post in site.data.troops.buffs.positions %}<option value="{{ post.id }}" data-i18n="town.training.{{ post.id }}">{{ post.name }}</option>{% endfor %}</select></label>
+        <p class="town-gloss" id="town-positionHint" x-text="form.hint"></p>
       </div>
-      <div class="town-panel" data-panel="tier" hidden>
-        <label><span data-i18n="town.training.tier">Highest tier this camp trains</span><select data-field="tier" data-action="town-inventory.tier"><option value="" data-i18n="gov.notSet">not set</option>{% for row in site.data.troops.tiers %}<option value="{{ row.tier }}">T{{ row.tier }}</option>{% endfor %}</select></label>
-        <p class="town-gloss" data-target="town-inventory.tierHint"></p>
+      <div class="town-panel" data-panel="tier" hidden :hidden="panel !== 'tier'">
+        <label><span data-i18n="town.training.tier">Highest tier this camp trains</span><select id="town-tier" :value="form.value" @change="setTier($el.value)" x-effect="focusField === 'tier' && $el.focus()"><option value="" data-i18n="gov.notSet">not set</option>{% for row in site.data.troops.tiers %}<option value="{{ row.tier }}">T{{ row.tier }}</option>{% endfor %}</select></label>
+        <p class="town-gloss" id="town-tierHint" x-text="form.hint"></p>
       </div>
-      <div class="town-panel" data-panel="building" hidden>
-        <div class="town-stepper-row"><span data-i18n="town.buildingLevel">Level</span><div class="town-stepper"><button type="button" data-action="town-inventory.buildingStep" data-step="-1" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><select data-field="building" data-action="town-inventory.buildingLevel" aria-label="Level" data-i18n-key="town.buildingLevel" data-i18n-attr="aria-label"></select><button type="button" data-action="town-inventory.buildingStep" data-step="1" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
-        <p class="town-gloss" data-target="town-inventory.buildingPlan"></p>
+      <div class="town-panel" data-panel="building" hidden :hidden="panel !== 'building'">
+        <div class="town-stepper-row"><span data-i18n="town.buildingLevel">Level</span><div class="town-stepper"><button type="button" class="town-buildingStep" data-step="-1" @click="stepBuilding(-1)" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button><select id="town-building" @change="setBuilding($el.value)" x-effect="focusField === 'building' && $el.focus()" aria-label="Level" data-i18n-key="town.buildingLevel" data-i18n-attr="aria-label"><template x-for="option in form.options || []" :key="option.id"><option :value="option.id" :selected="option.id === form.value" x-text="option.name"></option></template></select><button type="button" class="town-buildingStep" data-step="1" @click="stepBuilding(1)" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button></div></div>
+        <p class="town-gloss" id="town-buildingPlan" x-text="form.plan"></p>
       </div>
-      <button type="button" class="town-clear" data-action="town-inventory.clear" data-target="town-inventory.clear" data-i18n="town.clear">mark as unknown</button>
+      <button type="button" class="town-clear" :hidden="panel === 'hero'" @click="clear()" data-i18n="town.clear">mark as unknown</button>
     </dialog>
 
     <output class="town-status" hidden aria-live="polite" data-module="result-panel" data-status-scope="town" data-target="result-panel.message"></output>
@@ -272,35 +274,35 @@ self: town
     <h2 id="town-points-title" data-i18n="town.pointsTitle">Event points</h2>
     {% include empty-state.html needs="inventory" key="empty.town" text="Count what's in your bag to see the event points it can score." import=true fill="#town-bag" %}
     <div class="town-events" data-module="tabs" data-tabs-bind="town-event" role="tablist" aria-label="Event" data-i18n-key="town.event" data-i18n-attr="aria-label">
-      <button type="button" role="tab" aria-selected="true" data-value="prep" data-action="tabs.select"><span data-i18n="ks.today.kickerPrep">KvK prep</span><output data-event-total="prep">—</output></button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="sg" data-action="tabs.select"><span data-i18n="ks.governor.title">Strongest Governor</span><output data-event-total="sg">—</output></button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="brawl" data-action="tabs.select"><span data-i18n="ks.brawl.title">Alliance Brawl</span><output data-event-total="brawl">—</output></button>
+      <button type="button" role="tab" aria-selected="true" data-value="prep" data-action="tabs.select"><span data-i18n="ks.today.kickerPrep">KvK prep</span><output data-event-total="prep" :data-partial="view.points.totals.prep.partial" x-text="view.points.totals.prep.text">—</output></button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="sg" data-action="tabs.select"><span data-i18n="ks.governor.title">Strongest Governor</span><output data-event-total="sg" :data-partial="view.points.totals.sg.partial" x-text="view.points.totals.sg.text">—</output></button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="brawl" data-action="tabs.select"><span data-i18n="ks.brawl.title">Alliance Brawl</span><output data-event-total="brawl" :data-partial="view.points.totals.brawl.partial" x-text="view.points.totals.brawl.text">—</output></button>
     </div>
-    <p class="town-note" data-target="town-centre.coverage" aria-live="polite"></p>
-    <p class="town-gloss" data-target="town-centre.buildingMax" hidden></p>
-    <details id="missing-details" data-target="town-centre.missingDisclosure" hidden>
+    <p class="town-note" id="town-coverage" aria-live="polite" x-text="view.points.coverage"></p>
+    <p class="town-gloss" id="town-buildingMax" hidden :hidden="!view.points.buildingMax" x-text="view.points.buildingMax"></p>
+    <details id="missing-details" hidden :hidden="view.points.complete">
       <summary data-i18n="town.missingDetails">Missing details</summary>
-      <ul class="town-also" data-target="town-centre.missing"></ul>
+      <ul class="town-also" id="town-missing"><template x-for="(label, at) in view.points.missing" :key="at"><li x-text="label"></li></template></ul>
     </details>
 
-    <ol class="town-days" data-target="town-centre.days" aria-label="Days" data-i18n-key="town.days" data-i18n-attr="aria-label"></ol>
+    <ol class="town-days" id="town-days" aria-label="Days" data-i18n-key="town.days" data-i18n-attr="aria-label"><template x-for="day in view.points.days" :key="day.day"><li><button type="button" class="town-daybar" :data-day="day.day" :aria-pressed="day.pressed" :style="day.style" @click="chooseDay(day.day)"><span class="town-daybar-label" x-text="day.label"></span><span class="town-daybar-rule"></span><output x-text="day.total"></output></button></li></template></ol>
 
     <div class="town-day" aria-live="polite">
-      <h3 data-target="town-centre.dayTitle"></h3>
+      <h3 id="town-dayTitle" x-text="view.points.dayTitle"></h3>
       <div class="town-scroll"><table class="town-lines">
         <thead><tr><th scope="col" data-i18n="town.col.item">item</th><th scope="col" data-i18n="town.col.have">usable amount</th><th scope="col" data-i18n="town.col.each">each</th><th scope="col" data-i18n="town.col.points">points</th></tr></thead>
-        <tbody data-target="town-centre.lines"></tbody>
+        <tbody id="town-lines"><template x-for="line in view.points.lines" :key="line.key"><tr><th scope="row" x-text="line.name"></th><td x-text="line.amount"></td><td x-text="line.rate"></td><td x-text="line.points"></td></tr></template></tbody>
       </table></div>
-      <p class="town-gloss" data-target="town-centre.dayEmpty" hidden></p>
+      <p class="town-gloss" id="town-dayEmpty" hidden :hidden="!view.points.dayEmpty" x-text="view.points.dayEmpty"></p>
       <details id="day-activities">
         <summary data-i18n="town.alsoScores">Activities outside this total</summary>
-        <ul class="town-also" data-target="town-centre.also"></ul>
+        <ul class="town-also" id="town-also"><template x-for="(label, at) in view.points.also" :key="at"><li x-text="label"></li></template></ul>
       </details>
     </div>
 
     <details id="best-day-plan">
       <summary data-i18n="town.bestPlan">Best day for each item</summary>
-      <ul class="town-plan" data-target="town-centre.plan"></ul>
+      <ul class="town-plan" id="town-plan"><template x-for="item in view.points.plan" :key="item.key"><li><span x-text="item.text"></span><template x-if="item.strip.length"><ol class="days"><template x-for="mark in item.strip" :key="mark.n"><li :data-best="mark.best" :aria-label="mark.label" x-text="mark.n"></li></template></ol></template></li></template></ul>
     </details>
     <noscript><p data-i18n="town.noJS">Enable JavaScript to count your points. Your inventory is saved in this browser.</p></noscript>
   </section>

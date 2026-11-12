@@ -62,7 +62,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await choose('have', 'embassy', '14');
   await choose('have', 'stable', '14');
   await page.waitForFunction(() => document.querySelector('.reqs-headline').textContent === 'Town Center 15 · upgrades: 1');
-  await page.locator('[data-action="building-paths.addGoal"]').click();
+  await page.locator('#reqs-addGoal').click();
   assert.deepEqual(await page.evaluate(() => PlayerLedger.shared().priority().goals), [{ kind: 'building', target: 'town-center', level: '15' }]);
   await choose('have', 'stable', '');
   assert.equal((await saved()).stable, undefined);
@@ -70,7 +70,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   // A tile opens its goal level at once; with one goal there is nothing to remove.
   await page.locator('.reqs-pick[data-building="town-center"]').click();
   await page.locator('.reqs-picker[open]').waitFor();
-  assert.equal(await page.locator('.reqs-picker [data-action="building-paths.drop"]').count(), 0);
+  assert.equal(await page.locator('.reqs-picker .reqs-drop').count(), 0);
   await page.keyboard.press('Escape');
   await page.waitForFunction(() => !document.querySelector('.reqs-picker').open);
   // A second goal tile joins the same plan with its level picked straight from the grid, rides in
@@ -85,7 +85,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.screenshot({ path: path.join(output, 'en-390-two-goals.png'), fullPage: true });
   assert.equal(await page.locator('.reqs-pick[data-building="barracks"] .reqs-badge').innerText(), '15');
   await page.locator('.reqs-pick[data-building="barracks"]').click();
-  await page.locator('.reqs-picker[open] [data-action="building-paths.drop"]').click();
+  await page.locator('.reqs-picker[open] .reqs-drop').click();
   await page.waitForFunction(() => !document.querySelector('.reqs-picker').open);
   assert.equal(await page.locator('.reqs-pick[aria-pressed="true"]').count(), 1);
   assert.match(page.url(), /goal=town-center:15$/);
@@ -107,7 +107,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   const before = await saved();
   await open('?lang=en&goal=barracks:TG3&have=town-center:TG1,barracks:TG1');
   assert.ok(await page.locator('[data-sheet="notice"]').isVisible());
-  assert.ok(await page.locator('[data-target="building-paths.addGoal"]').isHidden());
+  assert.ok(await page.locator('#reqs-addGoal').isHidden());
   await choose('have', 'embassy', 'TG 2');
   await page.waitForFunction(() => location.search.includes('embassy:TG2'));
   assert.deepEqual(await saved(), before);
@@ -236,7 +236,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.waitForFunction(() => document.querySelector('[data-sheet="guest"]').getAttribute('aria-checked') === 'false');
   assert.equal((await saved())['town-center'], 'TG 3', 'Save as mine writes the sheet\'s levels');
   assert.doesNotMatch(page.url(), /have=|guest/);
-  assert.match(page.url(), /goal=town-center:TG3/, 'the goal stays when the sheet is saved');
+  // The page writes the goal back into the address once it starts, after the sheet bar paints.
+  await page.waitForURL(/goal=town-center:TG3/, { timeout: 5000 });
   assert.ok(await page.locator('[data-sheet="notice"]').isHidden());
   assert.deepEqual(errors, []);
   console.log('building requirements UI ok');

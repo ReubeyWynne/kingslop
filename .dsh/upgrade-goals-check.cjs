@@ -144,10 +144,10 @@ assert.deepEqual(copy.priority().goals, goals);
 // Page wiring and dictionaries.
 const pages = JSON.parse(fs.readFileSync('_data/pages.json', 'utf8'));
 const page = Object.values(pages).find(p => p && p.token === 'priority');
-['../js/building-spend.mjs', '../js/pet-plan.mjs', '../js/upgrade-goals.mjs', '../js/upgrade-goals-page.js'].forEach(s => assert.ok(page.scripts.includes(s), s));
+['../js/building-spend.mjs', '../js/pet-plan.mjs', '../js/upgrade-goals.mjs', '../js/pages/upgrade-goals.mjs'].forEach(s => assert.ok(page.scripts.includes(s), s));
 assert.ok(page.scripts.indexOf('../js/upgrade-goals.mjs') > page.scripts.indexOf('../js/pet-plan.mjs'));
-const markup = fs.readFileSync('upgrade-priority/index.html', 'utf8'), script = fs.readFileSync('js/upgrade-goals-page.js', 'utf8');
-assert.match(markup, /data-module="upgrade-goals"/);
+const markup = fs.readFileSync('upgrade-priority/index.html', 'utf8'), script = fs.readFileSync('js/pages/upgrade-goals.mjs', 'utf8');
+assert.match(markup, /x-data="upgradeGoals"/);
 const dict = lang => { const sandbox = { window: {} }; vm.runInNewContext(fs.readFileSync('i18n/' + lang + '.js', 'utf8'), sandbox); return sandbox.window.__BH_I18N_DATA[lang]; };
 const en = dict('en'), used = new Set();
 for (const m of markup.matchAll(/data-i18n="(priority\.goal[A-Za-z0-9.-]*)"/g)) used.add(m[1]);

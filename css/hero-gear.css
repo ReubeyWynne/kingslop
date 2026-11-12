@@ -410,3 +410,5 @@
   .gear-settings { margin-top: .4rem; padding-top: .3rem; }
   .gear-spend { margin-top: .6rem; }
 }
+/* The page's Alpine state spans main and its dialogs; markup placed whole (x-html) sits in a box that adds no layout. */
+.gear-scope, .gear-markup { display: contents; }

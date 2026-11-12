@@ -9,7 +9,7 @@ self: buildings
   <a href="#how" data-i18n="notes.how">How it works</a>
   <a href="#sources" data-i18n="directory.sources">Sources &amp; confidence</a>
 </nav>
-<main data-module="building-paths" data-sheet-root>
+<main data-sheet-root x-data="buildingPaths">
   <section class="section hero" id="top">
     <h1 data-i18n="reqs.title">Building requirements</h1>
     {% include ascii/motif.html kind="keep" %}
@@ -18,68 +18,68 @@ self: buildings
   <section class="section reqs-goal" id="goal" aria-labelledby="goal-title">
     <h2 id="goal-title" data-i18n="reqs.goal">Your goal</h2>
     {% include page-sheet.html part="notice" %}
-    <ul class="reqs-picks" data-target="building-paths.picks">{% for b in data.buildings %}
-      <li><button type="button" class="reqs-pick inkwell" data-building="{{ b.id }}" data-action="building-paths.pick" aria-pressed="{% if b.id == 'town-center' %}true{% else %}false{% endif %}" disabled><span class="reqs-art"><img src="../img/buildings/{{ b.id }}.webp" width="128" height="128" alt="" loading="lazy" decoding="async"><b class="reqs-badge">{% if b.id == 'town-center' %}3{% endif %}</b></span><span class="reqs-pick-name" data-i18n="town.building.{{ b.id }}">{{ b.name }}</span></button></li>{% endfor %}
+    <ul class="reqs-picks">{% for b in data.buildings %}
+      <li><button type="button" class="reqs-pick inkwell" data-building="{{ b.id }}" aria-pressed="{% if b.id == 'town-center' %}true{% else %}false{% endif %}" disabled :disabled="false" :aria-pressed="pressed('{{ b.id }}')" @click="pick('{{ b.id }}')" x-effect="refocus('tile', '{{ b.id }}') && $el.focus()"><span class="reqs-art"><img src="../img/buildings/{{ b.id }}.webp" width="128" height="128" alt="" loading="lazy" decoding="async"><b class="reqs-badge" x-text="badge('{{ b.id }}')">{% if b.id == 'town-center' %}3{% endif %}</b></span><span class="reqs-pick-name" data-i18n="town.building.{{ b.id }}">{{ b.name }}</span></button></li>{% endfor %}
     </ul>
     <noscript><p data-i18n="reqs.noJS">Turn on JavaScript to work out a plan.</p></noscript>
   </section>
 
-  <section class="section reqs-levels" id="your-levels" aria-labelledby="levels-title" data-target="building-paths.levels">
+  <section class="section reqs-levels" id="your-levels" aria-labelledby="levels-title" :class="{ 'loose-leaf': guest }">
     <h2 id="levels-title" data-i18n="reqs.path">What it takes</h2>
-    <div class="reqs-saved" data-target="building-paths.saveMark" hidden><output class="seal" data-target="building-paths.saved" role="status"></output><details class="shared-by" id="reqs-shared-by"><summary data-target="building-paths.sharedBy"><i data-page="town"></i><i data-page="priority"></i></summary><span class="motif-names"><span data-i18n="town.nav">Town Centre</span> · <span data-i18n="priority.title">Upgrade priority</span></span></details></div>
-    <ol class="reqs-runs" data-target="building-paths.summary"></ol>
+    <div class="reqs-saved" id="reqs-saveMark" hidden :hidden="!own"><output class="seal" id="reqs-saved" role="status" :data-state="own ? saveState : null" x-text="sealText"></output><details class="shared-by" id="reqs-shared-by"><summary :aria-label="own ? sharedLabel : null"><i data-page="town"></i><i data-page="priority"></i></summary><span class="motif-names"><span data-i18n="town.nav">Town Centre</span> · <span data-i18n="priority.title">Upgrade priority</span></span></details></div>
+    <ol class="reqs-runs" id="reqs-summary"><template x-for="row in view.rows" :key="row.key"><li class="reqs-run" :data-state="row.state" :data-goal="row.goal ? '' : null"><span class="reqs-art"><img :src="row.art" alt="" width="128" height="128" loading="lazy" decoding="async"></span><div class="reqs-run-body"><p class="reqs-run-head"><b class="reqs-run-name" x-text="row.name"></b><template x-if="row.goal"><span class="reqs-tag" x-text="row.tag"></span></template></p><p class="reqs-run-levels"><button type="button" class="reqs-lv inkwell" :class="{ ghost: row.have.ghost }" data-kind="have" :data-building="row.key" :data-value="row.have.value" :aria-label="row.have.label" x-text="row.have.text" @click="open('have', row.key)" x-effect="refocus('have', row.key) && $el.focus()"></button><span class="reqs-arrow" x-text="row.arrow"></span><template x-if="row.target"><button type="button" class="reqs-lv inkwell reqs-lv-goal" data-kind="goal" :data-building="row.key" :data-value="row.target.value" :data-index="row.target.index" :aria-label="row.target.label" x-text="row.target.text" @click="open('goal', row.key)" x-effect="refocus('goal', row.key) && $el.focus()"></button></template><template x-if="row.tick"><button type="button" class="reqs-done" :data-building="row.key" :data-level="row.tick.level" :aria-label="row.tick.label" :title="row.tick.label" @click="markDone(row.key, row.tick.level)">✓</button></template></p><template x-if="row.reason"><p class="reqs-run-why" x-text="row.reason"></p></template><template x-if="row.costs"><ul class="reqs-cost reqs-cost-small"><template x-for="cost in row.costs" :key="cost.r"><li :title="cost.title" :data-short="cost.short"><img :src="cost.art" alt="" :width="cost.size" :height="cost.size" loading="lazy"><b x-text="cost.amount"></b><span class="reqs-res" x-text="cost.name"></span><template x-if="cost.have"><small class="reqs-have" x-text="cost.have"></small></template></li></template><template x-if="row.time"><li class="reqs-run-time" x-text="row.time"></li></template></ul></template></div></li></template></ol>
   </section>
 
   <!-- A child of main, not of the section, so it can stay pinned from the first screen. -->
   <div class="reqs-answer" aria-live="polite">
-    <p class="reqs-headline" data-target="building-paths.headline"></p>
-    <ul class="reqs-cost" data-target="building-paths.total"></ul>
-    <p class="reqs-saul" data-target="building-paths.saulCost" hidden></p>
-    <p class="reqs-time" data-target="building-paths.time"></p>
-    <details class="reqs-points-box" id="reqs-points" data-target="building-paths.pointsBox" hidden>
-      <summary><span data-i18n="reqs.pointsTitle">Event points</span> <span class="reqs-points-sum" data-target="building-paths.pointsSum"></span></summary>
-      <table class="reqs-points" data-target="building-paths.points"></table>
+    <p class="reqs-headline" x-text="view.headline" :title="view.headline"></p>
+    <ul class="reqs-cost" id="reqs-total"><template x-for="cost in view.total" :key="cost.r"><li :title="cost.title" :data-short="cost.short"><img :src="cost.art" alt="" :width="cost.size" :height="cost.size" loading="lazy"><b x-text="cost.amount"></b><span class="reqs-res" x-text="cost.name"></span><template x-if="cost.have"><small class="reqs-have" x-text="cost.have"></small></template></li></template></ul>
+    <p class="reqs-saul" hidden :hidden="!view.saul" x-text="view.saul"></p>
+    <p class="reqs-time" x-text="view.time"></p>
+    <details class="reqs-points-box" id="reqs-points" hidden :hidden="!view.points.top">
+      <summary><span data-i18n="reqs.pointsTitle">Event points</span> <span class="reqs-points-sum" x-text="view.points.sum"></span></summary>
+      <table class="event-points reqs-points" x-html="view.points.table"></table>
     </details>
-    <p class="reqs-flag" data-target="building-paths.flag" hidden></p>
+    <p class="reqs-flag" hidden :hidden="!view.flag" x-text="view.flag"></p>
   </div>
 
   <div class="section reqs-tail">
     <div class="reqs-share">
-      <span class="reqs-copy"><button type="button" data-action="building-paths.copy" data-i18n="reqs.copy">Copy link</button><ul class="carries"><li data-i18n="reqs.goalTag">goal</li><li data-i18n="reqs.carriesSpeed">speed</li><li data-off data-i18n="reqs.carriesLevels">your levels</li></ul></span>
-      <button type="button" data-target="building-paths.addGoal" data-action="building-paths.addGoal" data-i18n="reqs.addGoal" hidden>Add to my goals</button>
-      <output role="status" data-target="building-paths.copied"></output>
+      <span class="reqs-copy"><button type="button" class="reqs-copy-link" @click="copy()" data-i18n="reqs.copy">Copy link</button><ul class="carries"><li data-i18n="reqs.goalTag">goal</li><li data-i18n="reqs.carriesSpeed">speed</li><li data-off data-i18n="reqs.carriesLevels">your levels</li></ul></span>
+      <button type="button" id="reqs-addGoal" @click="addGoal()" data-i18n="reqs.addGoal" hidden :hidden="!view.canAdd">Add to my goals</button>
+      <output role="status" id="reqs-copied" x-text="message"></output>
     </div>
     <details class="fold reqs-more reqs-speed" id="reqs-speed">
-      <summary><span data-i18n="reqs.speedTitle">Construction speed</span> <span class="reqs-speed-sum" data-target="building-paths.speedSum"></span></summary>
-      <div class="reqs-chips reqs-mode" role="group" data-target="building-paths.speedMode"></div>
-      <div class="reqs-boost" data-target="building-paths.overview">
-        <label><span data-i18n="reqs.speed">Construction speed bonus (%)</span><input type="number" inputmode="decimal" min="0" max="1000" step="0.1" data-target="building-paths.speed" data-field="overview" data-action="building-paths.number" disabled></label>
+      <summary><span data-i18n="reqs.speedTitle">Construction speed</span> <span class="reqs-speed-sum" x-text="view.speedSum"></span></summary>
+      <div class="reqs-chips reqs-mode" role="group"><template x-for="chip in chips.mode" :key="chip.key + chip.value"><button type="button" :data-key="chip.key" :data-value="chip.value" :aria-pressed="chip.on" :aria-label="chip.label" x-text="chip.text" @click="setChip(chip)"></button></template></div>
+      <div class="reqs-boost" id="reqs-overview" :hidden="cs.mode === 'parts'">
+        <label><span data-i18n="reqs.speed">Construction speed bonus (%)</span><input type="number" inputmode="decimal" min="0" max="1000" step="0.1" id="reqs-speed-figure" data-field="overview" disabled :disabled="false" :value="figure('overview')" @input="setFigure('overview', $el.value)"></label>
         <p class="note" data-i18n="reqs.overviewNote">Construction Speed from your Bonus Overview, read with no temporary boosts running. Add those below.</p>
       </div>
-      <div data-target="building-paths.parts" hidden>
-        <div class="reqs-boost"><span class="reqs-boost-name">VIP</span><div class="reqs-chips" role="group" aria-label="VIP" data-boost="vip"></div></div>
-        <div class="reqs-boost"><label><span data-i18n="reqs.research">Research and alliance tech (%)</span><input type="number" inputmode="decimal" min="0" max="500" step="0.1" data-field="research" data-action="building-paths.number"></label><p class="note" data-i18n="reqs.researchNote">Tooling Up in the Academy and Adaptive Tools in alliance tech.</p></div>
+      <div id="reqs-parts" hidden :hidden="cs.mode !== 'parts'">
+        <div class="reqs-boost"><span class="reqs-boost-name">VIP</span><div class="reqs-chips" role="group" aria-label="VIP" data-boost="vip"><template x-for="chip in chips.vip" :key="chip.key + chip.value"><button type="button" :data-key="chip.key" :data-value="chip.value" :aria-pressed="chip.on" :aria-label="chip.label" x-text="chip.text" @click="setChip(chip)"></button></template></div></div>
+        <div class="reqs-boost"><label><span data-i18n="reqs.research">Research and alliance tech (%)</span><input type="number" inputmode="decimal" min="0" max="500" step="0.1" data-field="research" :value="figure('research')" @input="setFigure('research', $el.value)"></label><p class="note" data-i18n="reqs.researchNote">Tooling Up in the Academy and Adaptive Tools in alliance tech.</p></div>
       </div>
-      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.saulSkill">Saul's construction skill</span><div class="reqs-chips" role="group" data-boost="saul"></div><p class="note" data-i18n="reqs.saulNote">Resourceful: the same share off construction time and off bread, wood, stone and iron (not Truegold). Its speed is already in your Bonus Overview figure; with Add it up it is counted here.</p></div>
+      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.saulSkill">Saul's construction skill</span><div class="reqs-chips" role="group" data-boost="saul"><template x-for="chip in chips.saul" :key="chip.key + chip.value"><button type="button" :data-key="chip.key" :data-value="chip.value" :aria-pressed="chip.on" :aria-label="chip.label" x-text="chip.text" @click="setChip(chip)"></button></template></div><p class="note" data-i18n="reqs.saulNote">Resourceful: the same share off construction time and off bread, wood, stone and iron (not Truegold). Its speed is already in your Bonus Overview figure; with Add it up it is counted here.</p></div>
       <h3 class="reqs-boost-head" data-i18n="reqs.whileBuilding">Boosts when you start each upgrade</h3>
-      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.wolfSkill">Gray Wolf's skill</span><div class="reqs-chips" role="group" data-boost="wolf"></div></div>
-      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.position">Kingdom position</span><div class="reqs-chips" role="group" data-boost="position"></div></div>
-      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.decrees">Decrees and events</span><div class="reqs-chips" role="group" data-boost="toggles"></div></div>
-      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.pan">Pan's Master Architect: hours off every upgrade</span><div class="reqs-chips" role="group" data-boost="pan"></div></div>
+      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.wolfSkill">Gray Wolf's skill</span><div class="reqs-chips" role="group" data-boost="wolf"><template x-for="chip in chips.wolf" :key="chip.key + chip.value"><button type="button" :data-key="chip.key" :data-value="chip.value" :aria-pressed="chip.on" :aria-label="chip.label" x-text="chip.text" @click="setChip(chip)"></button></template></div></div>
+      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.position">Kingdom position</span><div class="reqs-chips" role="group" data-boost="position"><template x-for="chip in chips.position" :key="chip.key + chip.value"><button type="button" :data-key="chip.key" :data-value="chip.value" :aria-pressed="chip.on" :aria-label="chip.label" x-text="chip.text" @click="setChip(chip)"></button></template></div></div>
+      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.decrees">Decrees and events</span><div class="reqs-chips" role="group" data-boost="toggles"><template x-for="chip in chips.toggles" :key="chip.key + chip.value"><button type="button" :data-key="chip.key" :data-value="chip.value" :aria-pressed="chip.on" :aria-label="chip.label" x-text="chip.text" @click="setChip(chip)"></button></template></div></div>
+      <div class="reqs-boost"><span class="reqs-boost-name" data-i18n="reqs.pan">Pan's Master Architect: hours off every upgrade</span><div class="reqs-chips" role="group" data-boost="pan"><template x-for="chip in chips.pan" :key="chip.key + chip.value"><button type="button" :data-key="chip.key" :data-value="chip.value" :aria-pressed="chip.on" :aria-label="chip.label" x-text="chip.text" @click="setChip(chip)"></button></template></div></div>
       <p class="note" data-i18n="reqs.speedHow">Speed bonuses add up and divide each upgrade's base time. Double Time then takes 20% off, and Pan's hours come off last, from every upgrade. ◇ The High King's construction value comes from one alliance's report.</p>
     </details>
     <details class="fold reqs-more" id="reqs-order">
       <summary data-i18n="reqs.inOrder">Every step, in order</summary>
-      <ol class="reqs-steps" data-target="building-paths.steps"></ol>
+      <ol class="reqs-steps"><template x-for="step in view.steps" :key="step.key"><li :class="{ 'reqs-blocked': step.blocked }"><span x-text="step.text"></span><template x-if="step.time"><small x-text="step.time"></small></template></li></template></ol>
     </details>
     {% include page-notes.html part="pointer" checked="2026-10-17" %}
   </div>
 
-  <dialog class="reqs-picker" data-target="building-paths.picker" aria-labelledby="reqs-picker-title">
-    <div class="reqs-picker-head"><span class="reqs-art" data-target="building-paths.pickerArt"></span><h2 id="reqs-picker-title" data-target="building-paths.pickerTitle"></h2><button type="button" class="reqs-close" data-action="building-paths.close" data-i18n-key="reqs.close" data-i18n-attr="aria-label title" aria-label="Close" title="Close">×</button></div>
-    <div class="reqs-picker-extra" data-target="building-paths.pickerExtra"></div>
-    <div class="reqs-tiers" data-target="building-paths.tiers"></div>
-    <div class="reqs-grid" data-target="building-paths.grid"></div>
+  <dialog class="reqs-picker" id="reqs-picker" aria-labelledby="reqs-picker-title" x-effect="picking ? $el.open || $el.showModal() : $el.open && $el.close()" @close="closePicker()" @click.self="closePicker()">
+    <div class="reqs-picker-head"><span class="reqs-art"><template x-if="picker.art"><img :src="picker.art" alt="" width="128" height="128" loading="lazy" decoding="async"></template></span><h2 id="reqs-picker-title" x-text="picker.title"></h2><button type="button" class="reqs-close" @click="closePicker()" data-i18n-key="reqs.close" data-i18n-attr="aria-label title" aria-label="Close" title="Close">×</button></div>
+    <div class="reqs-picker-extra"><template x-for="option in picker.extra" :key="option.value"><button type="button" class="reqs-wide" :data-level="option.value" :aria-pressed="option.pressed" x-text="option.text" @click="choose(option.value)" x-effect="focused(option.value) && $el.focus()"></button></template><template x-if="picker.drop"><button type="button" class="reqs-drop" x-text="picker.drop" @click="drop()"></button></template></div>
+    <div class="reqs-tiers" :hidden="!picker.tiers.length"><template x-for="tab in picker.tiers" :key="tab.n"><button type="button" :data-tier="tab.n" :aria-pressed="tab.pressed" x-text="tab.text" @click="chooseTier(tab.n)"></button></template></div>
+    <div class="reqs-grid"><template x-for="option in picker.grid" :key="option.value"><button type="button" :data-level="option.value" :aria-pressed="option.pressed" x-text="option.text" @click="choose(option.value)" x-effect="focused(option.value) && $el.focus()"></button></template></div>
   </dialog>
   {% capture points_extra %}<p data-i18n="reqs.pointsHow">Truegold and Tempered Truegold score when you spend them on these upgrades. Speedups score per minute used, so the Sped up row assumes you finish every upgrade with construction or general speedups, at the construction speed above. Each event lists the days that pay most; the rates are the ones on the Events page.</p>{% endcapture %}
   {% include page-notes.html part="how" points_id="reqs-points-note" points_extra=points_extra %}
