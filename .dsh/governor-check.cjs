@@ -185,7 +185,7 @@ const en = dictionaries.find(([file]) => file === 'en.js')[1];
 const html = fs.readFileSync('governor-gear/index.html', 'utf8');
 for (const match of html.matchAll(/data-i18n(?:-key)?="(gov\.[a-zA-Z.]+)"/g)) assert.ok(en[match[1]], match[1]);
 for (const material of data.materials) assert.ok(en[material.key], material.key);
-const planner = fs.readFileSync('js/governor-planner.js', 'utf8');
+const planner = fs.readFileSync('js/pages/governor-planner.mjs', 'utf8');
 for (const match of planner.matchAll(/^\s+'?([a-zA-Z.]+)'?: '/gm)) if (en['gov.' + match[1]] !== undefined) assert.ok(en['gov.' + match[1]]);
 assert.doesNotMatch(planner, /innerHTML/);
 // Art: a card for every piece at every tier and grade, a gem for every charm level, an icon per material.

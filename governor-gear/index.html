@@ -14,53 +14,53 @@ self: governor
     {% include ascii/motif.html kind="seal" %}
   </section>
 
-  <section class="section gov-console" id="governor-planner" data-module="governor-sheet page-sheet" data-screen-import-sheet="governor" aria-label="Governor planner" data-i18n-key="gov.planner" data-i18n-attr="aria-label">
+  <section class="section gov-console" id="governor-planner" x-data="govSheet" @screen-import:sheet="importSheet($event.detail)" data-sheet-root data-screen-import-sheet="governor" aria-label="Governor planner" data-i18n-key="gov.planner" data-i18n-attr="aria-label">
     {% include page-sheet.html part="notice" %}
-    <div class="sheet-workspace">
+    <div class="sheet-workspace" :class="{ 'loose-leaf': $store.ledger.guest }">
       <div class="gov-left sheet-side">
         <h2 data-i18n="gov.theGovernor">The governor</h2>
         <button type="button" class="gov-drop sheet-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="gov.drop.title">Fill this in from a screenshot</strong> <span data-i18n="gov.drop.body">Use your whole Governor Profile screen.</span></button>
         {% include governor/profile.html %}
-        <div class="gov-bag" id="governor-bag" data-module="ledger-form" data-saved-key="gov.sheet.bagSaved" data-save-failed-key="gear.saveFailed">
+        <div class="gov-bag" id="governor-bag" data-module="ledger-form" x-effect="$store.ledger.v; inkBag($el)" :data-saved-key="$store.ledger.guest ? 'gov.sheet.bagSaved' : 'gear.saved'" data-saved-key="gov.sheet.bagSaved" data-save-failed-key="gear.saveFailed">
           {% for item in gov.materials %}{% if gov.gear.materials contains item.id %}{% assign group = "gear" %}{% else %}{% assign group = "charms" %}{% endif %}
           <label data-kind="{{ group }}"><img src="../img/governor/{{ item.id }}.webp" width="40" height="40" alt=""><span data-i18n="{{ item.key }}">{{ item.label | escape }}</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-tally="blank" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize" aria-label="{{ item.label | escape }}" data-i18n-key="{{ item.key }}" data-i18n-attr="aria-label"></label>
           {% endfor %}
-          <div class="gov-bag-caption"><details class="shared-by" id="governor-bag-shared"><summary aria-label="Also used by 2 pages" data-i18n-key="gov.bagSharedLabel" data-i18n-attr="aria-label"><i data-page="town" style="--hue: #DC8FDB"></i><i data-page="priority" style="--hue: #DD8FD6"></i></summary><span class="motif-names" data-i18n="gov.bagShared">Town Centre · Upgrade priority</span></details> <output class="seal" data-target="ledger-form.save" role="status"></output></div>
+          <div class="gov-bag-caption"><details class="shared-by" id="governor-bag-shared"><summary aria-label="Also used by 2 pages" data-i18n-key="gov.bagSharedLabel" data-i18n-attr="aria-label"><i data-page="town" style="--hue: #DC8FDB"></i><i data-page="priority" style="--hue: #DD8FD6"></i></summary><span class="motif-names" data-i18n="gov.bagShared">Town Centre · Upgrade priority</span></details> <output class="seal" data-target="ledger-form.save" role="status" x-init="sealBag($el, $el.closest('#governor-bag'))"></output></div>
         </div>
       </div>
 
-      <div class="gov-answer sheet-answer" data-module="governor-planner" data-art="../img/governor/" id="gov-answer">
+      <div class="gov-answer sheet-answer" x-data="govPlanner" data-art="../img/governor/" id="gov-answer" :data-mode="mode" @tabs:select="select($event)">
         <h2 data-i18n="gov.theAnswer">The answer</h2>
         <div class="sheet-modes" data-module="tabs" data-tabs-bind="governor-mode" role="tablist" aria-label="Question" data-i18n-key="gov.mode" data-i18n-attr="aria-label">
           <button type="button" role="tab" aria-selected="true" data-value="spend" data-action="tabs.select" data-i18n="gov.withWhatIHave">With what I have</button>
           <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="reach" data-action="tabs.select" data-i18n="gov.costToReach">Cost to reach</button>
         </div>
 
-        <div class="gov-mode" data-target="governor-planner.spendPanel">
-          <label class="gov-priority"><span class="sheet-label" data-i18n="gov.priority">Priority</span><select data-target="governor-planner.profile" data-action="governor-planner.profile">{% include priority-options.html score=true %}</select></label>
-          <p class="gov-gloss" data-target="governor-planner.profileNote"></p>
+        <div class="gov-mode" data-planner="spendPanel" :hidden="mode !== 'spend'">
+          <label class="gov-priority"><span class="sheet-label" data-i18n="gov.priority">Priority</span><select data-planner="profile" :value="plan.options.profile" @change="setProfile($event.target, $refs.weights)">{% include priority-options.html score=true %}</select></label>
+          <p class="gov-gloss" data-planner="profileNote" x-text="profileNote" :hidden="!profileNote"></p>
         </div>
-        <div class="gov-mode" data-target="governor-planner.reachPanel" hidden>
+        <div class="gov-mode" data-planner="reachPanel" hidden :hidden="mode !== 'reach'">
           <div class="gov-targets">
-            <label><span data-i18n="gov.troops">Troops</span><select data-target="governor-planner.reachTroop" data-action="governor-planner.reachTroop"><option value="all" data-i18n="gov.chip.all">all</option>{% for troop in rows %}<option value="{{ troop }}" data-i18n="gear.{{ troop }}">{% case troop %}{% when "inf" %}Infantry{% when "cav" %}Cavalry{% else %}Archer{% endcase %}</option>{% endfor %}</select></label>
-            <label><span data-i18n="gov.gear">Gear</span><select data-target="governor-planner.gearTarget" data-action="governor-planner.option" data-option="gearTarget">{% for row in gov.gear.levels %}<option value="{{ forloop.index }}">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★</option>{% endfor %}</select></label>
-            <label><span data-i18n="gov.charms">Charms</span><select data-target="governor-planner.charmTarget" data-action="governor-planner.option" data-option="charmTarget">{% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}</select></label>
+            <label><span data-i18n="gov.troops">Troops</span><select data-planner="reachTroop" x-model="reachTroop"><option value="all" data-i18n="gov.chip.all">all</option>{% for troop in rows %}<option value="{{ troop }}" data-i18n="gear.{{ troop }}">{% case troop %}{% when "inf" %}Infantry{% when "cav" %}Cavalry{% else %}Archer{% endcase %}</option>{% endfor %}</select></label>
+            <label><span data-i18n="gov.gear">Gear</span><select data-planner="gearTarget" data-option="gearTarget" :value="String(plan.options.gearTarget)" @change="setOption($event.target)">{% for row in gov.gear.levels %}<option value="{{ forloop.index }}" x-text="view.level('gear', {{ forloop.index }})">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★</option>{% endfor %}</select></label>
+            <label><span data-i18n="gov.charms">Charms</span><select data-planner="charmTarget" data-option="charmTarget" :value="String(plan.options.charmTarget)" @change="setOption($event.target)">{% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}</select></label>
           </div>
         </div>
 
-        <ol class="gov-result" data-target="governor-planner.rows" aria-live="polite"></ol>
+        <ol class="gov-result" data-planner="rows" aria-live="polite"><template x-for="row in plan.rows" :key="row.id"><li class="gov-row" :data-item="row.id" :data-moved="row.moved"><span class="gov-card" :data-state="row.card.state" :data-tier="row.card.tier"><img :src="row.card.src" alt="" width="160" height="160"></span><span class="gov-row-text"><span class="gov-row-name" x-text="row.name"></span><span class="gov-row-gear" :data-tally="row.unset ? 'unknown' : null" x-text="row.gear"></span><span class="gov-row-charms"><template x-for="gem in row.gems" :key="gem.c"><span class="gov-row-charm" :data-moved="gem.moved"><span class="gov-gem" :data-state="gem.state"><img :src="gem.src" alt="" width="72" height="72"></span><span x-text="gem.text"></span></span></template></span></span></li></template></ol>
         <div class="gov-bill">
-          <h3 data-target="governor-planner.billTitle"></h3>
-          <div class="gov-strip sheet-strip" data-target="governor-planner.bill"></div>
-          <div class="gov-score"><output data-target="governor-planner.score"></output><details class="src" data-src="est" id="governor-score-estimate"><summary aria-label="Estimate" data-i18n-key="gov.estimateLabel" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="gov.estimateMark">From published scores, which are rounded</span></details></div>
-          <div class="gov-events" data-target="governor-planner.events"></div>
-          <p class="gov-applied" data-target="governor-planner.applied" hidden><button type="button" data-action="governor-planner.apply" data-kind="gear"></button><button type="button" data-action="governor-planner.apply" data-kind="charms"></button></p>
+          <h3 data-planner="billTitle" x-text="say(mode === 'spend' ? 'billSpend' : 'billReach')"></h3>
+          <div class="gov-strip sheet-strip" data-planner="bill"><template x-for="cell in bill" :key="cell.id"><div :data-material="cell.id" :title="cell.title"><img class="gov-icon gov-icon-lg" :src="cell.src" alt="" width="40" height="40"><strong :title="cell.exact" x-text="cell.text"></strong><small :class="cell.below.cls" :title="cell.below.title" x-text="cell.below.text"></small></div></template></div>
+          <div class="gov-score"><output data-planner="score" x-text="plan.score"></output><details class="src" data-src="est" id="governor-score-estimate"><summary aria-label="Estimate" data-i18n-key="gov.estimateLabel" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="gov.estimateMark">From published scores, which are rounded</span></details></div>
+          <div class="gov-events" data-planner="events" x-effect="placeEvents($el)"></div>
+          <p class="gov-applied" data-planner="applied" hidden :hidden="!anyApply"><button type="button" data-planner="apply" data-kind="gear" :hidden="!applyState('gear').show" :data-state="applyState('gear').back ? 'applied' : 'planned'" x-text="applyLabel('gear')" @click="apply('gear')"></button><button type="button" data-planner="apply" data-kind="charms" :hidden="!applyState('charms').show" :data-state="applyState('charms').back ? 'applied' : 'planned'" x-text="applyLabel('charms')" @click="apply('charms')"></button></p>
         </div>
-        <p class="gov-note" data-target="governor-planner.notes" hidden></p>
-        <details id="weights" class="fold" data-target="governor-planner.weightsFold">
+        <p class="gov-note" data-planner="notes" hidden :hidden="!plan.notes" x-text="plan.notes"></p>
+        <details id="weights" class="fold" data-planner="weightsFold" x-ref="weights" :hidden="!weights || mode !== 'spend'">
           <summary data-i18n="gear.advancedWeights">Advanced: custom weights</summary>
-          <div class="gov-weights" role="group" aria-labelledby="gov-weights-label" data-target="governor-planner.weights"><span id="gov-weights-label" class="sheet-label" data-i18n="gov.weights">Weights</span>
-            {% assign weighted = "inf,cav,arc" | split: "," %}{% for troop in weighted %}<label><span data-i18n="gear.{{ troop }}">{% case troop %}{% when "inf" %}Infantry{% when "cav" %}Cavalry{% else %}Archer{% endcase %}</span><input type="number" min="0" max="10" step="0.1" inputmode="decimal" data-troop="{{ troop }}" data-action="governor-planner.weight"></label>{% endfor %}
+          <div class="gov-weights" role="group" aria-labelledby="gov-weights-label" data-planner="weights"><span id="gov-weights-label" class="sheet-label" data-i18n="gov.weights">Weights</span>
+            {% assign weighted = "inf,cav,arc" | split: "," %}{% for troop in weighted %}<label><span data-i18n="gear.{{ troop }}">{% case troop %}{% when "inf" %}Infantry{% when "cav" %}Cavalry{% else %}Archer{% endcase %}</span><input type="number" min="0" max="10" step="0.1" inputmode="decimal" data-troop="{{ troop }}" data-planner="weight" :value="weights ? String(weights['{{ troop }}']) : ''" @change="setWeight($event.target)"></label>{% endfor %}
           </div>
           <p class="gov-gloss" data-i18n="gov.weightsHint">Each troop's gains count that many times. A preset's weight is its lethality plus health from Hero gear, since every governor piece and charm gives both at once. Typing one makes them custom.</p>
         </details>

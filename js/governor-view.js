@@ -8,7 +8,6 @@
     notSet: 'not set', notCrafted: 'not crafted', noCharm: 'no charm', lv: 'Lv {n}'
   };
   function state(index) { return index === null || index === undefined ? 'unset' : index === 0 ? 'empty' : 'set'; }
-  function setSrc(img, src) { if (img && img.getAttribute('src') !== src) img.setAttribute('src', src); }
   function create(engine, api, artBase, options) {
     options = options || {};
     var emptyGemLabel = options.emptyGemLabel === undefined ? '·' : options.emptyGemLabel;
@@ -23,19 +22,11 @@
     }
     function gearArt(id, index) { var d = gear(index); return artBase + 'gear/' + id + '-' + d.tier + '-' + d.grade + '.webp'; }
     function charmArt(id, level) { return artBase + 'charms/' + id.split('-')[0] + '-' + Math.max(1, level || 1) + '.webp'; }
-    function paintCard(card, id, index) {
-      card.dataset.state = state(index);
-      card.dataset.tier = index ? gear(index).tier : '';
-      setSrc(card.querySelector('img'), gearArt(id, index));
-      var stars = options.stars && card.querySelector(options.stars);
-      if (stars) stars.textContent = '★'.repeat(index ? gear(index).stars : 0);
-    }
-    function paintGem(gem, id, level) {
-      gem.dataset.state = state(level);
-      setSrc(gem.querySelector('img'), charmArt(id, level));
-      var label = gem.querySelector('b'); if (label) label.textContent = level ? api.fmt(level) : emptyGemLabel;
-    }
-    return { levelName: levelName, state: state, gearArt: gearArt, charmArt: charmArt, paintCard: paintCard, paintGem: paintGem };
+    // What a gear card and a charm gem show, for the controllers to bind: the state and tier
+    // the CSS draws, the art, the stars and the gem's level.
+    function card(id, index) { return { state: state(index), tier: index ? gear(index).tier : '', src: gearArt(id, index), stars: '★'.repeat(index ? gear(index).stars : 0) }; }
+    function gem(id, level) { return { state: state(level), src: charmArt(id, level), label: level ? api.fmt(level) : emptyGemLabel }; }
+    return { levelName: levelName, state: state, gearArt: gearArt, charmArt: charmArt, card: card, gem: gem };
   }
   return { create: create };
 });

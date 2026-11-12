@@ -78,7 +78,7 @@
   .sheet-page .sheet-views button { min-height: 2.75rem; color: var(--ink-muted); font: 700 1rem var(--body); background: transparent; border: 0; border-bottom: 2px solid transparent; cursor: pointer; }
   .sheet-page .sheet-views button + button { border-inline-start: 1px solid var(--signal-line); }
   .sheet-page .sheet-views [aria-selected="true"] { color: var(--amber); background: var(--signal-tint); border-bottom-color: var(--amber); }
-  [data-module~="planner"][data-view="mine"] [data-half="answer"], [data-module~="planner"][data-view="answer"] [data-half="mine"] { display: none; }
-  [data-module~="planner"] .sheet-answer { margin-top: 0; padding-top: 0; border-top: 0; }
-  [data-module~="planner"] .sheet-side > h2, [data-module~="planner"] .sheet-answer > h2 { display: none; }
+  .roster-console[data-view="mine"] [data-half="answer"], .roster-console[data-view="answer"] [data-half="mine"] { display: none; }
+  .roster-console .sheet-answer { margin-top: 0; padding-top: 0; border-top: 0; }
+  .roster-console .sheet-side > h2, .roster-console .sheet-answer > h2 { display: none; }
 }

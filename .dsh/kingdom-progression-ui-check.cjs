@@ -23,19 +23,19 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await field('warAcademy').selectOption('true');
   const other = await context.newPage();
   await other.goto(origin + '/heroes/?lang=en');
-  await other.waitForFunction(() => document.querySelector('[data-target="hero-directory.server"]').value === '3');
+  await other.waitForFunction(() => document.querySelector('[data-roster="server"]').value === '3');
   const visible = () => other.locator('[data-hero]:visible').count();
   const heroes = require('../_data/heroes.json').heroes;
   assert.equal(await visible(), heroes.filter(h => h.generation <= 3).length);
-  assert.equal(await other.locator('[data-target="hero-directory.showAll"]').count(), 0);
+  assert.equal(await other.locator('[data-roster="showAll"]').count(), 0);
   assert.equal(await other.locator('.kingdom-scope').count(), 0);
-  await other.locator('[data-target="hero-directory.generation"]').selectOption('7');
+  await other.locator('[data-roster="generation"]').selectOption('7');
   assert.equal(await visible(), heroes.filter(h => h.generation === 7).length);
   assert.equal(await other.locator('.hero-upcoming:visible').count(), heroes.filter(h => h.generation === 7).length);
   assert.equal(await other.evaluate(() => KS_SERVER_AGE.getGeneration()), 3);
-  await other.locator('[data-target="hero-directory.generation"]').selectOption('');
+  await other.locator('[data-roster="generation"]').selectOption('');
   assert.equal(await visible(), heroes.filter(h => h.generation <= 3).length);
-  await other.locator('[data-target="hero-directory.server"]').selectOption('2');
+  await other.locator('[data-roster="server"]').selectOption('2');
   await page.waitForFunction(() => document.querySelector('[data-target="kingdom-timeline.generation"]').value === '2');
   assert.equal(await field('truegold').inputValue(), '5');
   assert.equal(await field('warAcademy').inputValue(), 'true');
@@ -43,10 +43,10 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.waitForFunction(() => document.querySelector('[data-target="kingdom-timeline.generation"]').value === '2');
   const saved = await page.evaluate(() => PlayerLedger.shared().exportJSON());
   await page.locator('[data-action="kingdom-timeline.reset"]').click();
-  await other.waitForFunction(() => document.querySelector('[data-target="hero-directory.server"]').value === '');
+  await other.waitForFunction(() => document.querySelector('[data-roster="server"]').value === '');
   await page.evaluate(saved => PlayerLedger.shared().importJSON(saved), saved);
   assert.equal(await field('truegold').inputValue(), '5');
-  await other.waitForFunction(() => document.querySelector('[data-target="hero-directory.server"]').value === '2');
+  await other.waitForFunction(() => document.querySelector('[data-roster="server"]').value === '2');
   await other.close();
   fs.mkdirSync(output, { recursive: true });
   for (const lang of fs.readdirSync('i18n').filter(f => f.endsWith('.js')).map(f => f.slice(0, -3))) {

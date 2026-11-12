@@ -13,7 +13,8 @@
      for them.
    - $store.ledger: the latest snapshot of the store the page works on (your save, or a shared
      sheet's copy), replaced on every save, in this tab or another. `snapshot` is null when the
-     ledger cannot be read (storage blocked).
+     ledger cannot be read (storage blocked). `store` is that ledger itself, for the forms that
+     write to it, and null then too.
 
    Static copy stays on data-i18n, painted by i18n.js. Only text that depends on state is
    bound here, and never on a node that also carries data-i18n. */
@@ -27,19 +28,24 @@ document.addEventListener('i18n:change', () => { Alpine.store('i18n').v++; });
 
 // The snapshot is kept outside Alpine's reactivity (a large object, never edited here);
 // `v` is what bindings track. Filled in at start, from the store the page works on.
-let snapshot = null;
+let snapshot = null, guest = false, store = null;
 Alpine.store('ledger', {
   v: 0,
   get snapshot() { this.v; return snapshot; },
-  get ready() { this.v; return snapshot !== null; }
+  get ready() { this.v; return snapshot !== null; },
+  // True on a shared link or ?guest: the page works on a sheet, not your save.
+  get guest() { this.v; return guest; },
+  // The ledger to write to: setHero, setBalance and the rest. Writes come back through `v`.
+  get store() { this.v; return store; }
 });
 /* The store the page works on: your save, or a sheet's in-memory copy when the page is on a
    shared link or ?guest (page-sheet.js chooses before the page starts). */
 function connect() {
   let ledger = null;
-  try { ledger = globalThis.Interactions ? Interactions.ledger() : PlayerLedger.shared(); snapshot = ledger.snapshot(); }
+  try { ledger = globalThis.Interactions ? Interactions.ledger() : PlayerLedger.shared(); snapshot = ledger.snapshot(); guest = ledger !== PlayerLedger.shared(); }
   catch (cause) { ledger = null; snapshot = null; }
-  if (ledger && snapshot) ledger.subscribe(next => { snapshot = next; Alpine.store('ledger').v++; });
+  store = ledger && snapshot ? ledger : null;
+  if (store) store.subscribe(next => { snapshot = next; Alpine.store('ledger').v++; });
   Alpine.store('ledger').v++;
 }
 

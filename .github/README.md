@@ -65,11 +65,14 @@ Modules so far: the player ledger (`js/player-ledger.mjs`); the battle, combat, 
 
 ### Pages declared in markup (Alpine)
 
-Pages are moving to [Alpine.js](https://alpinejs.dev/), one at a time: the page's template declares its view with `x-data`, `x-text`, `x-model` and the rest, and a small controller in `js/pages/` holds its state. So far: the VIP calculator, the Swordland calculator, the Vikings guide's wave map, Castle Battle, the KvK points on Heroes and Masters, the Event Cycle page (its clock, today's card and available points), Bear Hunt and the lead finder, the Vikings planner, the Island (its canvas board stays a widget in `js/island-board.mjs`), and the battle simulator.
+Pages are moving to [Alpine.js](https://alpinejs.dev/), one at a time: the page's template declares its view with `x-data`, `x-text`, `x-model` and the rest, and a small controller in `js/pages/` holds its state. So far: the VIP calculator, the Swordland calculator, the Vikings guide's wave map, Castle Battle, the guest sheet bar and empty states, the Heroes, Masters and Pets pages (rosters, planner frame and answers), the governor page and profile, the Event Cycle page (its clock, today's card and available points), Bear Hunt and the lead finder, the Vikings planner, the Island (its canvas board stays a widget in `js/island-board.mjs`), and the battle simulator.
 
 - A controller registers its state with `Alpine.data` (or `shared` from `js/alpine.mjs`, for one state bound in several places) and calls the engines for the maths. It holds no DOM code, apart from a bridge to a shared widget that is still built in script.
 - Expressions in attributes stay short: a field, or one call. Anything longer is a getter in the controller.
 - `$store.i18n` changes on a language switch and `$store.ledger` holds the player ledger's latest snapshot. Static copy stays on `data-i18n`; only text that depends on state is bound, never on a node that also carries `data-i18n`.
+- `$store.ledger.store` is the ledger the page works on (your save, or a shared sheet's copy), for forms that write; it is null when storage is blocked. `$store.ledger.guest` is true on a sheet.
+- An expensive view is worked out once per change of its inputs. Prefer a getter that memoises on the inputs it reads (`plan` in `js/pages/governor-planner.mjs`). An `Alpine.effect` in `init()` that assigns a field also works, but only while no binding reads both that field and one of its inputs: Alpine runs a binding at most once per flush, so such a binding can show the view one change behind.
+- `:class` takes a string, an array or an object, never null.
 - `js/alpine.mjs` starts Alpine when common.js boots the page. It is in the site bundle, so every page shares one cached copy.
 
 ### Repository layout

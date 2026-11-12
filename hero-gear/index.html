@@ -14,7 +14,7 @@ self: gear
     {% include ascii/motif.html kind="helm" %}
   </section>
 
-  <section class="section gear-console" id="gear-forge" data-module="ledger-form page-sheet" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed" aria-label="Hero gear planner" data-i18n-key="gear.planner" data-i18n-attr="aria-label">
+  <section class="section gear-console" id="gear-forge" data-module="ledger-form" data-sheet-root data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed" aria-label="Hero gear planner" data-i18n-key="gear.planner" data-i18n-attr="aria-label">
     {% include page-sheet.html part="notice" %}
     <div class="gear-views" role="tablist" aria-label="Hero gear planner" data-i18n-key="gear.planner" data-i18n-attr="aria-label">
       <button type="button" role="tab" id="gear-view-gear" aria-controls="gear-planner" aria-selected="true" data-view="gear" data-i18n="gear.yourGear">Your gear</button>

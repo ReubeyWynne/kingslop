@@ -1,69 +1,40 @@
 /* ═══════════════════════════════════════════════════════════
    The planner frame (css/sheet.css, INTERACTIONS.md)
 
-   Two interaction modules for a calculator laid out as yours beside the answer:
-
-   planner        on the frame's section. Its `tabs` row (data-tabs-bind="view")
-                  picks which half a phone shows; the choice sets the root's
-                  data-view ("mine" or "answer"). It opens on the answer when the
-                  shelf holds anything at first paint, and a link into either half
-                  opens that one.
-   roster-shelf   [data-shelf="heroes|masters|pets"]. It counts the entries the save
-                  owns, shows [data-target="roster-shelf.empty"] when there are none
-                  (your half's roster below is where you add them) and fires
-                  `roster-shelf:paint` with { owned } on the root.
+   A calculator laid out as yours beside the answer: the section binds
+   x-data="planner('heroes|masters|pets')". Its `tabs` row (data-tabs-bind="view")
+   picks which half a phone shows, as the section's data-view ("mine" or
+   "answer"). It opens on the answer when the save already owns something of
+   its kind, and a link into either half opens that one; later edits never move
+   the reader. While nothing is owned, the shelf points to the roster in your
+   half (_includes/planner.html).
    ═══════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
-  var M = window.Interactions;
-  if (!M) return;
-
-  M.register('roster-shelf', function (context) {
-    var root = context.root, kind = root.dataset.shelf;
-    function roster() {
-      try {
-        var store = context.ledger;
-        if (!store) return {};
-        return (kind === 'masters' ? store.masters() : kind === 'pets' ? store.pets() : store.heroes()).roster || {};
-      } catch (cause) { return {}; }
-    }
-    function paint() {
-      var mine = roster(), owned = Object.keys(mine).filter(function (key) { return mine[key]; }).length;
-      context.targets('empty').forEach(function (node) { node.hidden = owned > 0; });
-      context.emit('roster-shelf:paint', { owned: owned });
-    }
-    if (context.ledger && context.ledger.subscribe) context.cleanup(context.ledger.subscribe(paint));
-    paint();
-    return { refresh: paint };
-  });
-
-  M.register('planner', function (context) {
-    var root = context.root, chosen = false;
-    function show(view) {
-      root.dataset.view = view;
-      root.querySelectorAll('.sheet-views [role="tab"][data-value]').forEach(function (tab) {
-        var on = tab.dataset.value === view;
-        tab.setAttribute('aria-selected', String(on)); tab.tabIndex = on ? 0 : -1;
-      });
-    }
-    // A link to anything inside one half opens that half on a phone.
-    function follow() {
-      var id = decodeURIComponent(location.hash.slice(1)), target = id && document.getElementById(id);
-      if (!target || !root.contains(target)) return false;
-      var half = target.closest('[data-half]');
-      if (half) { chosen = true; show(half.dataset.half); }
-      return Boolean(half);
-    }
-    context.listen(root, 'tabs:select', function (event) {
-      if (event.detail.binding !== 'view') return;
-      chosen = true; show(event.detail.value);
-      var tabs = root.querySelector('.sheet-views');
-      if (tabs && tabs.getBoundingClientRect().top < 0) tabs.scrollIntoView({ block: 'start' });
+  document.addEventListener('alpine:init', function () {
+    window.Alpine.data('planner', function (kind) {
+      return {
+        view: null,
+        // How many entries of this kind the save owns.
+        get owned() {
+          var saved = window.Alpine.store('ledger').snapshot, roster = (saved && saved[kind] && saved[kind].roster) || {};
+          return Object.keys(roster).filter(function (key) { return roster[key]; }).length;
+        },
+        init() { if (!this.follow()) this.view = this.owned ? 'answer' : 'mine'; },
+        // A link to anything inside one half opens that half on a phone.
+        follow() {
+          var id = decodeURIComponent(location.hash.slice(1)), target = id && document.getElementById(id);
+          var half = target && this.$root.contains(target) && target.closest('[data-half]');
+          if (half) this.view = half.dataset.half;
+          return Boolean(half);
+        },
+        pick(detail) {
+          if (detail.binding !== 'view') return;
+          this.view = detail.value;
+          var tabs = this.$root.querySelector('.sheet-views');
+          if (tabs && tabs.getBoundingClientRect().top < 0) tabs.scrollIntoView({ block: 'start' });
+        }
+      };
     });
-    // The first paint picks the opening half; later edits never move the reader.
-    context.listen(root, 'roster-shelf:paint', function (event) { if (chosen) return; chosen = true; show(event.detail.owned ? 'answer' : 'mine'); });
-    context.listen(window, 'hashchange', follow);
-    if (!follow()) show(root.dataset.view || 'mine');
-    return {};
   });
 })();

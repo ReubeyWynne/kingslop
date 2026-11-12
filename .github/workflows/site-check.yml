@@ -57,8 +57,9 @@ jobs:
               - js/common.js
               - js/page-chrome.js
               - js/page-deck.js
-              - js/roster-editor.js
+              - js/roster-form.mjs
               - js/governor-view.js
+              - js/pages/governor-profile.mjs
               - css/equipment.css
               - .dsh/lib/**
               - js/i18n.js
@@ -148,6 +149,8 @@ jobs:
               - _includes/heroes/**
               - js/hero-directory*.js
               - js/hero-directory*.mjs
+              - js/pages/hero-roster.mjs
+              - js/roster-form.mjs
               - js/hero-spend.mjs
               - js/hero-points.js
               - js/pages/hero-points.mjs
@@ -168,6 +171,7 @@ jobs:
               - .dsh/masters-ui-check.cjs
               - masters/**
               - js/master-*
+              - js/pages/master-roster.mjs
               - js/pages/master-points.mjs
               - _data/masters.json
               - css/masters.css
@@ -188,6 +192,7 @@ jobs:
               - masters/**
               - pets/**
               - js/pet-*
+              - js/pages/pet-den.mjs
               - _data/pets.json
               - css/pets.css
               - css/ascii-frames-pets.css
@@ -234,6 +239,7 @@ jobs:
               - .dsh/governor-fixtures/**
               - governor-gear/**
               - js/governor-*
+              - js/pages/governor-*
               - js/screen-import*.js
               - js/import-adapters/governor.js
               - css/screen-import.css
@@ -254,6 +260,7 @@ jobs:
               - js/town-centre*.mjs
               - js/event-*
               - js/governor-*
+              - js/pages/governor-*
               - js/hero-gear-engine.mjs
               - _data/event_rules.json
               - _data/governor.json
@@ -263,6 +270,8 @@ jobs:
               - _includes/heroes/**
               - js/hero-directory*.js
               - js/hero-directory*.mjs
+              - js/pages/hero-roster.mjs
+              - js/roster-form.mjs
               - js/hero-spend.mjs
               - js/hero-points.js
               - js/building-*
@@ -274,6 +283,7 @@ jobs:
               - _data/heroes.json
               - css/heroes.css
               - js/master-*
+              - js/pages/master-roster.mjs
               - _data/masters.json
               - css/masters.css
               - _includes/masters/**
@@ -296,15 +306,18 @@ jobs:
               - css/priority.css
               - js/hero-spend.mjs
               - js/master-*
+              - js/pages/master-roster.mjs
               - _data/masters.json
               - js/hero-gear-engine.mjs
               - js/governor-*
+              - js/pages/governor-*
               - _data/governor.json
               - js/building-*
               - _data/buildings.json
               - js/hero-data.liquid
               - _data/heroes.json
               - js/pet-*
+              - js/pages/pet-den.mjs
               - _data/pets.json
             # Your kingdom on the home page.
             hints:
@@ -333,10 +346,15 @@ jobs:
               - js/hero-gear*.js
               - js/hero-gear*.mjs
               - js/governor-*
+              - js/pages/governor-*
               - js/pet-*
+              - js/pages/pet-den.mjs
               - js/master-*
+              - js/pages/master-roster.mjs
               - js/hero-directory*.js
               - js/hero-directory*.mjs
+              - js/pages/hero-roster.mjs
+              - js/roster-form.mjs
               - js/hero-points.js
               - js/town-centre*.js
               - js/town-centre*.mjs
@@ -541,9 +559,9 @@ jobs:
       - name: Check governor equipment presentation
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/governor-view-check.cjs
-      - name: Check shared roster editing
+      - name: Check shared roster forms
         if: needs.changes.outputs.logic == 'true'
-        run: node .dsh/roster-editor-check.cjs
+        run: node .dsh/roster-form-check.cjs
       - name: Check hero spending plan and Heroes page points
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/hero-spend-check.cjs

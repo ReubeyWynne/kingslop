@@ -158,7 +158,7 @@ assert.equal(nav[petsAt - 1].self, 'governor'); assert.equal(nav[petsAt + 1].sel
 assert.equal(pages.pets.swipePrev.page, 'governor'); assert.equal(pages.pets.swipeNext.page, 'buildings');
 assert.equal(pages.governor.swipeNext.page, 'pets'); assert.equal(pages.buildings.swipePrev.page, 'pets');
 const petScripts = pages.pets.scripts.map(script => script.split('/').at(-1));
-for (const [dependency, consumer] of [['pet-data.js', 'pet-plan.mjs'], ['pet-plan.mjs', 'pet-den.js'], ['pet-care.mjs', 'pet-den.js'], ['roster-editor.js', 'pet-den.js'], ['pet-den.js', 'pet-live.js']]) {
+for (const [dependency, consumer] of [['pet-data.js', 'pet-plan.mjs'], ['pet-plan.mjs', 'pet-den.mjs'], ['pet-care.mjs', 'pet-den.mjs'], ['pet-den.mjs', 'pet-live.js']]) {
   assert.ok(petScripts.indexOf(dependency) >= 0 && petScripts.indexOf(consumer) > petScripts.indexOf(dependency), dependency + ' before ' + consumer);
 }
 // Every pet with a portrait is drawn live from its model (pets/models/<id>.bin and .json) and keeps its baked portrait as the fallback.
@@ -174,14 +174,14 @@ assert.ok(pages.pets.css.includes('../css/pets.css') && pages.pets.css.includes(
 assert.match(read('_includes/ascii/deck-scene.html'), /{% when 'pets' %}\n<span class="ascii-mini ascii-mini--pet" data-pet="gray-wolf"/);
 const page = read('pets/index.html');
 for (const pet of data.pets) assert.match(page, /data-deep-link="pet-{{ pet.id }}"/);
-assert.doesNotMatch(read('js/pet-den.js'), /innerHTML/);
+assert.doesNotMatch(read('js/pages/pet-den.mjs'), /innerHTML/);
 const dictionaries = fs.readdirSync(path.join(__dirname, '../i18n')).filter(f => f.endsWith('.js')).map(file => { const ctx = { window: {} }; vm.runInNewContext(read('i18n/' + file), ctx); return [file, Object.values(ctx.window.__BH_I18N_DATA)[0]]; });
 assert.equal(dictionaries.length, 10);
 for (const [file, d] of dictionaries) for (const key of ['pets.nav', 'ev.deck.lede.pets', 'pets.title', 'pets.cardLede', 'pets.kicker', 'pets.metaTitle']) assert.equal(typeof d[key], 'string', file + ' ' + key);
 const en = dictionaries.find(([file]) => file === 'en.js')[1];
 for (const [, key] of (page + read('index.html')).matchAll(/data-i18n(?:-key)?="(pets\.[^"{]+)"/g)) assert.ok(Object.hasOwn(en, key), 'en.js lacks ' + key);
-const den = read('js/pet-den.js');
-const keys = [...den.match(/var EN = \{([\s\S]*?)\n  \};/)[1].matchAll(/'?([\w.]+)'?: '/g)].map(m => m[1]);
+const den = read('js/pages/pet-den.mjs');
+const keys = [...den.match(/const EN = \{([\s\S]*?)\n\};/)[1].matchAll(/'?([\w.]+)'?: '/g)].map(m => m[1]);
 for (const key of keys) if (key !== 'nextOnly') assert.ok(Object.hasOwn(en, 'pets.' + key), 'en.js lacks pets.' + key);
 for (const [file, d] of dictionaries) for (const key of ['bond.new', 'bond.familiar', 'bond.close', 'bond.trusted', 'bondDays', 'bondHint', 'spot.head', 'spot.cheeks', 'spot.chin', 'favourite', 'explore']) assert.equal(typeof d['pets.' + key], 'string', file + ' pets.' + key);
 console.log('Pets: research totals, Advance costs and points, care meters and moods, the ledger section, the pens, navigation and dictionaries pass.');

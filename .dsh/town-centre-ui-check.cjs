@@ -122,7 +122,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal((await ledger()).governorCharms.slots['inf-1-1'].level, 0);
     await govDialog.locator('select[data-level="gear"]').selectOption('3');
     assert.equal((await ledger()).governorGear.pieces['inf-1'].level, 3);
-    await govDialog.locator('[data-action="governor-profile.close"]').click(); await govDialog.waitFor({ state: 'hidden' });
+    await govDialog.locator('[data-profile="close"]').click(); await govDialog.waitFor({ state: 'hidden' });
     assert.equal(await page.locator('[data-gov="inf-1"] [data-part="level"]').textContent(), 'Blue 0★');
     assert.match(await page.locator('[data-charm="inf-1-1"] img').getAttribute('src'), /charms\/inf-1\.webp$/);
     assert.equal(await page.locator('[data-gov="inf-1"]').getAttribute('data-state'), 'set');
@@ -137,7 +137,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.locator('#hero-chenko [data-field="owned"]').check();
     await page.locator('#hero-chenko [data-field="level"]').fill('40'); await page.locator('#hero-chenko [data-field="level"]').press('Tab');
     assert.equal((await ledger()).heroes.roster.chenko.level, 40);
-    assert.match(await page.locator('#hero-chenko [data-target~="hero-directory.badge"]').textContent(), /40/);
+    assert.match(await page.locator('#hero-chenko [data-roster="badge"]').textContent(), /40/);
     assert.equal(await page.locator('#town-heroes .hero-bag').count(), 0, 'shards stay on the bag shelf');
     await page.locator('#town-heroes #hero-chenko summary').click(); await page.locator('#town-heroes #hero-amadeus summary').click();
     await page.locator('#hero-amadeus [data-field="widgets"]').fill('3'); await page.locator('#hero-amadeus [data-field="widgets"]').press('Tab');
@@ -243,7 +243,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('#town-bag [data-count="mithril"] [data-amount]').textContent(), '10');
     assert.equal(await page.locator('[data-building="town-center"] [data-level]').textContent(), 'TG 2');
     const other = await context.newPage(); await other.goto(origin + '/governor-gear/?lang=en');
-    await other.waitForFunction(() => document.querySelector('[data-target="page-sheet.source"]').textContent);
+    await other.waitForFunction(() => document.querySelector('[data-sheet="source"]').textContent);
     assert.equal(await other.locator('#governor-bag input[data-bind="inventory.charm-guide"]').inputValue(), '5');
     assert.equal(await other.locator('.gov-piece[data-gov="inf-1"]').getAttribute('data-state'), 'set');
     await other.close();
