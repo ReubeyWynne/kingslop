@@ -78,7 +78,7 @@ jobs:
               - js/event-rules.mjs
               - _data/event_rules.json
               - js/server-age.js
-              - js/kingdom-progression.js
+              - js/pages/kingdom.mjs
               - js/kingdom-data.liquid
               - _data/kingdom_progression.json
               - kingdom-timeline/**
@@ -144,7 +144,7 @@ jobs:
               - _includes/lead-lineup.html
               - css/bear-hunt.css
               - .dsh/hero-breakpoint-ui-check.cjs
-              - js/hero-breakpoint.js
+              - js/pages/hero-breakpoint.mjs
               - heroes/**
               - _includes/heroes/**
               - js/hero-directory*.js

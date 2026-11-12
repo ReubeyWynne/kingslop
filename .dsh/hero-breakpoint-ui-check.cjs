@@ -6,8 +6,8 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' }), page = await context.newPage(), errors = [];
   page.on('pageerror', e => errors.push(e.message));
   const field = (side, name, slot) => page.locator(`#breakpoint [data-side="${side}"][data-field="${name}"]${slot === undefined ? '' : `[data-skill="${slot}"]`}`);
-  const verdict = () => page.locator('[data-target="hero-breakpoint.verdict"]').textContent();
-  const ready = (re) => page.waitForFunction(r => { const res = document.querySelector('[data-target="hero-breakpoint.result"]'); return !res.hidden && new RegExp(r).test(document.querySelector('[data-target="hero-breakpoint.verdict"]').textContent) && !document.querySelector('[data-target="hero-breakpoint.status"]').textContent; }, re.source, { timeout: 30000 });
+  const verdict = () => page.locator('[data-bp="verdict"]').textContent();
+  const ready = (re) => page.waitForFunction(r => { const res = document.querySelector('[data-bp="result"]'); return !res.hidden && new RegExp(r).test(document.querySelector('[data-bp="verdict"]').textContent) && !document.querySelector('[data-bp="status"]').textContent; }, re.source, { timeout: 30000 });
   await page.goto(origin + '/heroes/?lang=en#breakpoint');
   await page.waitForFunction(() => !document.querySelector('.bp-hero').disabled);
   await ready(/./);
@@ -19,8 +19,8 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   await field('b', 'key').selectOption('rosa');
   await field('a', 'stars').selectOption('30'); await field('a', 'widget').selectOption('10');
   await field('b', 'stars').selectOption('24'); await field('b', 'widget').selectOption('4');
-  await page.locator('[data-target="hero-breakpoint.account"]').selectOption('whale');
-  await page.locator('[data-target="hero-breakpoint.gen"]').selectOption('4');
+  await page.locator('[data-bp="account"]').selectOption('whale');
+  await page.locator('[data-bp="gen"]').selectOption('4');
   await ready(/(Marlin 5★ W10|Rosa 4★ W4) \+[\d.]+% Bear damage|Level/);
   assert.match(await page.locator('[data-grid="b"] .lead-kicker').textContent(), /Rosa catches Marlin 5★ W10/);
   assert.match(await page.locator('[data-grid="b"] .bp-line').textContent(), /^from \d★/);

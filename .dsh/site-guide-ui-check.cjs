@@ -1,4 +1,4 @@
-// The guide's two notes (js/site-guide.js): the page note teaches the deck's
+// The guide's two notes (js/pages/site-guide.mjs): the page note teaches the deck's
 // swipe (or ❧ and the arrow keys), the rail note teaches the scrubber; each
 // leaves once the reader does what it teaches, and #site-guide brings both back.
 //

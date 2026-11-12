@@ -2,7 +2,7 @@
 layout: page
 self: kingdom
 ---
-<main data-module="kingdom-timeline">
+<main x-data="kingdomTimeline" @ks:kingdom-change.document="clock++">
   <section class="section hero" id="top">
     <h1 data-i18n="kingdom.title">Kingdom timeline</h1>
     <p class="lede" data-i18n="kingdom.intro">Find your kingdom’s chapter.</p>
@@ -12,23 +12,23 @@ self: kingdom
     <p data-i18n="kingdom.instructions">Pick your chapter, then fix any unlock that’s different on your server.</p>
     <fieldset class="kingdom-fields">
       <legend data-i18n="kingdom.unlocks">What has unlocked?</legend>
-      <label><span data-i18n="directory.server">Server generation</span><select data-field="generation" data-target="kingdom-timeline.generation" data-action="kingdom-timeline.edit" disabled><option value="" data-i18n="kingdom.unknown">Not sure</option>{% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}{% for gen in generations %}<option value="{{ gen }}">{{ gen }}</option>{% endfor %}</select></label>
-      <label><span data-i18n="kingdom.truegold">Kingdom Truegold cap</span><select data-field="truegold" data-target="kingdom-timeline.truegold" data-action="kingdom-timeline.edit" disabled><option value="" data-i18n="kingdom.unknown">Not sure</option><option value="0" data-i18n="kingdom.noTruegold">Not unlocked</option><option value="3">TG 3</option><option value="5">TG 5</option><option value="8">TG 8</option><option value="10">TG 10</option></select></label>
-      <label><span data-i18n="kingdom.warAcademy">War Academy</span><select data-field="warAcademy" data-target="kingdom-timeline.warAcademy" data-action="kingdom-timeline.edit" disabled><option value="" data-i18n="kingdom.unknown">Not sure</option><option value="false" data-i18n="kingdom.noTruegold">Not unlocked</option><option value="true" data-i18n="kingdom.unlocked">Unlocked</option></select></label>
+      <label><span data-i18n="directory.server">Server generation</span><select data-field="generation" data-kingdom="generation" :value="value('generation')" :disabled="!writable" @change="edit($event.target)" disabled><option value="" data-i18n="kingdom.unknown">Not sure</option>{% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}{% for gen in generations %}<option value="{{ gen }}">{{ gen }}</option>{% endfor %}</select></label>
+      <label><span data-i18n="kingdom.truegold">Kingdom Truegold cap</span><select data-field="truegold" data-kingdom="truegold" :value="value('truegold')" :disabled="!writable" @change="edit($event.target)" disabled><option value="" data-i18n="kingdom.unknown">Not sure</option><option value="0" data-i18n="kingdom.noTruegold">Not unlocked</option><option value="3">TG 3</option><option value="5">TG 5</option><option value="8">TG 8</option><option value="10">TG 10</option></select></label>
+      <label><span data-i18n="kingdom.warAcademy">War Academy</span><select data-field="warAcademy" data-kingdom="warAcademy" :value="value('warAcademy')" :disabled="!writable" @change="edit($event.target)" disabled><option value="" data-i18n="kingdom.unknown">Not sure</option><option value="false" data-i18n="kingdom.noTruegold">Not unlocked</option><option value="true" data-i18n="kingdom.unlocked">Unlocked</option></select></label>
     </fieldset>
-    <button type="button" class="kingdom-reset" data-target="kingdom-timeline.reset" data-action="kingdom-timeline.reset" data-i18n="kingdom.reset" disabled>Clear kingdom progression</button>
-    <output class="seal kingdom-status" role="status" data-target="kingdom-timeline.status"></output>
+    <button type="button" class="kingdom-reset" data-kingdom="reset" :disabled="!writable" @click="reset()" data-i18n="kingdom.reset" disabled>Clear kingdom progression</button>
+    <output class="seal kingdom-status" role="status" data-kingdom="status" :data-state="statusState" x-text="statusText"></output>
     <noscript><p data-i18n="kingdom.noJS">Enable JavaScript to save your position. You can still read the timeline.</p></noscript>
   </section>
   <section class="section" id="milestones">
     <h2><span data-i18n="kingdom.chapters">The kingdom’s chapters</span><details class="src" id="chapters-estimate" data-src="est"><summary aria-label="Community estimate" data-i18n-key="src.estimate" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="kingdom.approximate">The order varies by kingdom, and there are no dates.</span></details></h2>
     <ol class="kingdom-rail">
       {% for stage in site.data.kingdom_progression.stages %}
-      <li class="kingdom-milestone" id="{{ stage.id }}" data-stage="{{ stage.id }}" data-target="kingdom-timeline.card">
+      <li class="kingdom-milestone" id="{{ stage.id }}" data-stage="{{ stage.id }}" data-kingdom="card" :data-progress="cardState('{{ stage.id }}')">
         <h3 {% if stage.titleKey != '' %}data-i18n="{{ stage.titleKey }}" data-i18n-n="{{ stage.profile.generation }}"{% endif %}>{{ stage.title }}</h3>
-        <span class="kingdom-state" data-milestone-status></span>
+        <span class="kingdom-state" data-milestone-status x-text="cardLabel('{{ stage.id }}')"></span>
         <p data-i18n="{{ stage.noteKey }}">{{ stage.note }}</p>
-        <div class="kingdom-links"><button type="button" class="kingdom-choose" data-stage="{{ stage.id }}" data-target="kingdom-timeline.choose" data-action="kingdom-timeline.choose" aria-pressed="false" data-i18n="kingdom.choose" disabled>My kingdom is here</button><a href="../{{ stage.url }}" data-i18n="kingdom.explore">Explore the guide</a></div>
+        <div class="kingdom-links"><button type="button" class="kingdom-choose" data-stage="{{ stage.id }}" data-kingdom="choose" :aria-pressed="String(profile.position === '{{ stage.id }}')" :disabled="!writable" @click="choose('{{ stage.id }}')" aria-pressed="false" data-i18n="kingdom.choose" disabled>My kingdom is here</button><a href="../{{ stage.url }}" data-i18n="kingdom.explore">Explore the guide</a></div>
       </li>
       {% endfor %}
     </ol>

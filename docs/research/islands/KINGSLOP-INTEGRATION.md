@@ -12,7 +12,7 @@ These notes describe the repository at the branch base, `30c98e5`, and the paral
 | Shared player state | `js/player-ledger.mjs` | Add an explicit schema extension if island ownership becomes confirmed player data; do not add arbitrary bindings |
 | Imported/shared copies | Store selection described in `INTERACTIONS.md` | Keep a viewed or edited shared design separate from the player's persistent save until they choose to adopt it |
 | Save import/export | `save-transfer` capability in `js/player-modules.js` | Preserve validation, revision checks and undo behaviour if this becomes part of whole-player state |
-| Kingdom progression | `js/kingdom-progression.js`, `_data/kingdom_progression.json` | Reuse shared kingdom context only when island unlock rules are verified |
+| Kingdom progression | `js/pages/kingdom.mjs`, `_data/kingdom_progression.json` | Reuse shared kingdom context only when island unlock rules are verified |
 | Localisation | `i18n/en.js`, the other dictionaries, `_data/langs.json` | Translate UI copy using existing conventions; source English catalogue labels need separate name provenance |
 | Disclosures and links | `js/deep-link.js`, `INTERACTIONS.md` | Stable IDs and `data-deep-link`; avoid a page-specific hash handler that conflicts with a future design share payload |
 | Game art sourcing | Existing `img/` hierarchy and source notes elsewhere in the repo | Review research art before promoting a selected subset to production |

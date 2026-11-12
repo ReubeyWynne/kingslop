@@ -354,7 +354,7 @@
   .lead-foe-list .lead-foe-kit { grid-column: 1; }
 }
 
-/* Break-point finder (js/hero-breakpoint.js): two heroes side by side in the lead
+/* Break-point finder (js/pages/hero-breakpoint.mjs): two heroes side by side in the lead
    finder's ink-line fields, then a star-by-tier table per direction whose cells
    brighten the less widget they need. */
 .breakpoint { margin-top: var(--space-m); }
