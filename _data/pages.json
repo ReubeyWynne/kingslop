@@ -1368,7 +1368,7 @@
       "../js/common.js",
       "../js/island-data.js",
       "../js/island-model.mjs",
-      "../js/island.js"
+      "../js/pages/island.mjs"
     ],
     "footMainKey": "",
     "footMain": "THE ISLAND",
