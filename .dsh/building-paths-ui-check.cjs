@@ -236,7 +236,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await page.waitForFunction(() => document.querySelector('[data-sheet="guest"]').getAttribute('aria-checked') === 'false');
   assert.equal((await saved())['town-center'], 'TG 3', 'Save as mine writes the sheet\'s levels');
   assert.doesNotMatch(page.url(), /have=|guest/);
-  assert.match(page.url(), /goal=town-center:TG3/, 'the goal stays when the sheet is saved');
+  // The page writes the goal back into the address once it starts, after the sheet bar paints.
+  await page.waitForURL(/goal=town-center:TG3/, { timeout: 5000 });
   assert.ok(await page.locator('[data-sheet="notice"]').isHidden());
   assert.deepEqual(errors, []);
   console.log('building requirements UI ok');
