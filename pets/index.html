@@ -13,7 +13,7 @@ self: pets
     <p class="lede" data-i18n="pets.intro">Fourteen pets, one skill each. Tame yours to plan its Advances.</p>
     {% include ascii/motif.html kind="pet" %}
   </section>
-  <section class="section sheet-console roster-console" id="planner" data-module="planner page-sheet" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label">
+  <section class="section sheet-console roster-console" id="planner" data-sheet-root x-data="planner('pets')" :data-view="view" @tabs:select="pick($event.detail)" @hashchange.window="follow()" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label">
     {% include page-sheet.html part="notice" %}
     {% include planner.html part="views" mine="planner.pets" mine_en="Your pets" %}
     <div class="sheet-workspace">
@@ -22,46 +22,46 @@ self: pets
         {% include planner.html part="shelf" kind="pets" fill="#cage" empty="planner.petsEmpty" empty_en="Tame your pets ↓" %}
         {% comment %}Pets drawn from a model: one span per ink of .dsh/pet-portraits/<id>.json.{% endcomment %}{% assign portraits = 'alpha-black-panther,bison,cheetah,giant-rhino,gray-wolf,great-moose,grizzly-bear,ironclad-war-bear,ironclad-war-elephant,lion,lynx,mighty-bison,moose,regal-white-lion' | split: ',' %}
         {% assign pets = site.data.pets.pets %}{% assign generations = pets | map: 'generation' | uniq %}
-        <div class="pet-den" id="cage" data-module="pet-den">
-        <p class="pet-count"><output aria-live="polite" dir="auto" data-target="pet-den.count">{{ pets.size }} pets</output></p>
+        <div class="pet-den" id="cage" x-data="petDen" :data-collection="owned ? '' : null" @visibilitychange.document="visible()">
+        <p class="pet-count"><output aria-live="polite" dir="auto" data-roster="count" x-text="count">{{ pets.size }} pets</output></p>
         <div class="pet-roster">
         {% for gen in generations %}{% assign band = pets | where: 'generation', gen %}
           <div class="pet-band" data-generation="{{ gen }}">
             <p class="band-label"><span class="band-gen"><span class="band-gen-word" data-i18n="pets.genShort">Gen</span> <b>{{ gen }}</b></span></p>
             <div class="pet-catalogue">
             {% for pet in band %}{% assign profile = site.data.pets.profiles[pet.profile] %}
-              <article class="pet-card" id="pet-{{ pet.id }}" data-pet="{{ pet.id }}" data-owned="false" data-verified="{{ pet.verified }}">
+              <article class="pet-card" id="pet-{{ pet.id }}" data-pet="{{ pet.id }}" data-owned="false" data-verified="{{ pet.verified }}" x-data="pet('{{ pet.id }}')" :data-owned="String(Boolean(copy))">
                 <div class="pet-pen" data-swipe-ignore>
-                  <span class="ascii-mini ascii-mini--pet" data-pet="{{ pet.id }}" data-mood="content" data-pen{% if portraits contains pet.id %} data-model="{{ pet.id }}"{% endif %} aria-hidden="true">{% if portraits contains pet.id %}<span class="ascii-mini--portrait" data-pet="{{ pet.id }}">{% for ink in (0..6) %}<span data-ink="{{ ink }}"></span>{% endfor %}</span>{% endif %}</span>
-                  <button type="button" class="pet-stroke" data-target="pet-den.stroke" data-action="pet-den.pat" aria-label="Pet" hidden></button>
+                  <span class="ascii-mini ascii-mini--pet" data-pet="{{ pet.id }}" data-mood="content" :data-mood="mood" :data-react="shown ? shown.kind : null" :data-favourite="shown && shown.favourite ? '' : null" :data-welcome="shown && shown.welcome ? '' : null" :data-sniff="sniff ? '' : null" data-pen{% if portraits contains pet.id %} data-model="{{ pet.id }}"{% endif %} aria-hidden="true">{% if portraits contains pet.id %}<span class="ascii-mini--portrait" data-pet="{{ pet.id }}">{% for ink in (0..6) %}<span data-ink="{{ ink }}"></span>{% endfor %}</span>{% endif %}</span>
+                  <button type="button" class="pet-stroke" data-roster="stroke" aria-label="Pet" hidden :hidden="!isTamed" :aria-label="strokeLabel" :aria-description="say('explore')" @click="press($event, 'pat')" @keydown.up.prevent="explore(false)" @keydown.down.prevent="explore(true)" @pointerdown="stroke($event)" @pointermove="stroke($event)" @pointerup="unstroke($event)" @pointercancel="unstroke($event)" @pointerout="unstroke($event)"></button>
                 </div>
-                <label class="pet-tame"><input type="checkbox" data-field="owned" disabled><span class="pet-name"><b lang="en">{{ pet.name | escape }}</b> <small lang="en">{{ pet.skill.name | escape }}</small></span></label>
-                <div class="pet-care" data-target="pet-den.care" hidden>
-                  <p class="pet-bowl"><span aria-hidden="true">\__</span><button type="button" class="pet-food" data-target="pet-den.food" data-action="pet-den.feed" aria-label="Feed" data-i18n-key="pets.feed" data-i18n-attr="aria-label"><span aria-hidden="true"><img src="../img/items/stamina.webp" width="64" height="64" alt="" loading="lazy" draggable="false"></span></button><span aria-hidden="true">__/</span></p>
-                  <div class="pet-meters"><p class="pet-bond" data-target="pet-den.bond"></p><p class="pet-favourite" data-target="pet-den.favourite" role="status" hidden></p><p><span class="pet-meter-bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-label="Fullness" data-i18n-key="pets.fullness" data-i18n-attr="aria-label" data-meter="fullness"><span></span></span><span class="pet-meter-bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-label="Affection" data-i18n-key="pets.affection" data-i18n-attr="aria-label" data-meter="affection"><span></span></span></p></div>
+                <label class="pet-tame"><input type="checkbox" data-field="owned" disabled :disabled="!$store.ledger.store" :checked="Boolean(copy)" @change="edit($event.target)"><span class="pet-name"><b lang="en">{{ pet.name | escape }}</b> <small lang="en">{{ pet.skill.name | escape }}</small></span></label>
+                <div class="pet-care" data-roster="care" hidden :hidden="!isTamed">
+                  <p class="pet-bowl"><span aria-hidden="true">\__</span><button type="button" class="pet-food" data-roster="food" @click="press($event, 'feed')" @pointerdown="lift($event)" @pointermove="move($event)" @pointerup="drop($event)" @pointercancel="drop($event)" aria-label="Feed" data-i18n-key="pets.feed" data-i18n-attr="aria-label"><span aria-hidden="true"><img src="../img/items/stamina.webp" width="64" height="64" alt="" loading="lazy" draggable="false"></span></button><span aria-hidden="true">__/</span></p>
+                  <div class="pet-meters"><p class="pet-bond" data-roster="bond" x-text="bond" :title="say('bondHint')"></p><p class="pet-favourite" data-roster="favourite" role="status" hidden :hidden="!favourite" x-text="favourite || ''"></p><p><span class="pet-meter-bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-label="Fullness" data-i18n-key="pets.fullness" data-i18n-attr="aria-label" data-meter="fullness" :aria-valuenow="isTamed ? meter('fullness') : null" :data-low="isTamed && meter('fullness') < 25 ? '' : null"><span :style="{ width: meter('fullness') + '%' }"></span></span><span class="pet-meter-bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-label="Affection" data-i18n-key="pets.affection" data-i18n-attr="aria-label" data-meter="affection" :aria-valuenow="isTamed ? meter('affection') : null" :data-low="isTamed && meter('affection') < 25 ? '' : null"><span :style="{ width: meter('affection') + '%' }"></span></span></p></div>
                 </div>
-                <details class="pet-dossier" name="pet-dossier" data-module="disclosure" data-deep-link="pet-{{ pet.id }}">
+                <details class="pet-dossier" name="pet-dossier" data-module="disclosure" data-deep-link="pet-{{ pet.id }}" @toggle="opened($el)">
                   <summary data-i18n="pets.dossier">Skill &amp; costs</summary>
                   <div class="pet-dossier-body">
                     <div class="pet-skill"><b><span lang="en">{{ pet.skill.name | escape }}</span>{% unless pet.verified %}<details class="src" id="pet-{{ pet.id }}-sources" data-src="2"><summary aria-label="Two sources agree" data-i18n-key="pets.twoSources" data-i18n-attr="aria-label"></summary><span class="motif-names" data-i18n="pets.twoSources">Two of the three sources agree</span></details>{% endunless %}</b> <span lang="en">{{ pet.skill.say | escape }}</span></div>
                     <div class="pet-ladder-scroll"><table class="pet-ladder">
-                      <thead><tr><th scope="col" data-i18n="pets.advance">Advance</th>{% for value in pet.skill.ladder[0].values %}<th scope="col" data-level="{{ forloop.index }}">{{ forloop.index }}</th>{% endfor %}</tr></thead>
-                      <tbody>{% for row in pet.skill.ladder %}<tr><th scope="row" lang="en">{{ row.label | escape }}</th>{% for value in row.values %}<td data-level="{{ forloop.index }}">{{ value }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+                      <thead><tr><th scope="col" data-i18n="pets.advance">Advance</th>{% for value in pet.skill.ladder[0].values %}<th scope="col" data-level="{{ forloop.index }}" :data-reached="reached({{ forloop.index }}) ? '' : null">{{ forloop.index }}</th>{% endfor %}</tr></thead>
+                      <tbody>{% for row in pet.skill.ladder %}<tr><th scope="row" lang="en">{{ row.label | escape }}</th>{% for value in row.values %}<td data-level="{{ forloop.index }}" :data-reached="reached({{ forloop.index }}) ? '' : null">{{ value }}</td>{% endfor %}</tr>{% endfor %}</tbody>
                     </table></div>
                     <dl class="pet-facts">
                       <div><dt data-i18n="pets.unlocks">Unlocks</dt><dd data-i18n="pets.serverDay" data-i18n-n="{{ pet.unlockDay }}">about server day {{ pet.unlockDay }}</dd></div>
                       <div><dt data-i18n="pets.maxLevel">Max level</dt><dd>{{ pet.maxLevel }}</dd></div>
                       <div><dt data-i18n="pets.advances">Advances</dt><dd>{{ pet.advances }}</dd></div>
                     </dl>
-                    <fieldset class="pet-mine" disabled data-target="pet-den.form">
+                    <fieldset class="pet-mine" disabled :disabled="!$store.ledger.store" data-roster="form" @change="edit($event.target)">
                       <legend data-i18n="pets.yours">Your pet</legend>
-                      <label><span data-i18n="pets.level">Level</span><input type="number" min="1" max="{{ pet.maxLevel }}" step="1" inputmode="numeric" placeholder="?" data-field="level"></label>
-                      <label class="pet-advanced" data-target="pet-den.advanced" hidden><input type="checkbox" data-field="advanced"><span data-i18n="pets.advancedHere">The Advance at this level is done</span></label>
-                      <p class="pet-mine-note"><output class="seal" data-target="pet-den.saved" role="status"></output></p>
+                      <label><span data-i18n="pets.level">Level</span><input type="number" min="1" max="{{ pet.maxLevel }}" step="1" inputmode="numeric" placeholder="?" data-field="level" :value="level" :disabled="!copy" :data-tally="copy && copy.level === null ? 'unknown' : null"></label>
+                      <label class="pet-advanced" data-roster="advanced" hidden :hidden="!gate"><input type="checkbox" data-field="advanced" :checked="Boolean(copy && copy.advanced)" :disabled="!copy"><span data-i18n="pets.advancedHere">The Advance at this level is done</span></label>
+                      <p class="pet-mine-note"><output class="seal" data-roster="saved" role="status" :data-state="seal" x-text="seal ? t(seal === 'saved' ? 'gear.saved' : 'gear.saveFailed', '') : ''"></output></p>
                     </fieldset>
-                    <p class="pet-next" data-target="pet-den.next"></p>
-                    <p class="pet-tomax" data-target="pet-den.tomax"></p>
-                    <p class="pet-totals"><span data-i18n="pets.totals" data-i18n-n="{{ pet.maxLevel }}">Level 1 to {{ pet.maxLevel }}:</span> <span data-number="{{ profile.totals.petFood }}">{{ profile.totals.petFood }}</span> <span data-i18n="pets.mat.petFood">Pet Food</span> · <span data-number="{{ profile.totals.growthManual }}">{{ profile.totals.growthManual }}</span> <span data-i18n="pets.mat.growthManual">Growth Manuals</span> · <span data-number="{{ profile.totals.nutrientPotion }}">{{ profile.totals.nutrientPotion }}</span> <span data-i18n="pets.mat.nutrientPotion">Nutrient Potions</span> · <span data-number="{{ profile.totals.promotionMedallion }}">{{ profile.totals.promotionMedallion }}</span> <span data-i18n="pets.mat.promotionMedallion">Promotion Medallions</span></p>
+                    <p class="pet-next" data-roster="next" x-text="next"></p>
+                    <p class="pet-tomax" data-roster="tomax" x-text="tomax"></p>
+                    <p class="pet-totals"><span data-i18n="pets.totals" data-i18n-n="{{ pet.maxLevel }}">Level 1 to {{ pet.maxLevel }}:</span> <span x-text="fmt({{ profile.totals.petFood }})">{{ profile.totals.petFood }}</span> <span data-i18n="pets.mat.petFood">Pet Food</span> · <span x-text="fmt({{ profile.totals.growthManual }})">{{ profile.totals.growthManual }}</span> <span data-i18n="pets.mat.growthManual">Growth Manuals</span> · <span x-text="fmt({{ profile.totals.nutrientPotion }})">{{ profile.totals.nutrientPotion }}</span> <span data-i18n="pets.mat.nutrientPotion">Nutrient Potions</span> · <span x-text="fmt({{ profile.totals.promotionMedallion }})">{{ profile.totals.promotionMedallion }}</span> <span data-i18n="pets.mat.promotionMedallion">Promotion Medallions</span></p>
                   </div>
                 </details>
               </article>
@@ -73,16 +73,16 @@ self: pets
         <noscript><p data-i18n="pets.noJS">Enable JavaScript to tame your pets.</p></noscript>
         </div>
       </div>
-      <div class="sheet-answer" data-half="answer" id="advances" data-module="pet-advances" aria-labelledby="advances-title">
+      <div class="sheet-answer" data-half="answer" id="advances" x-data="petAdvances" aria-labelledby="advances-title">
         <h2 data-i18n="gov.theAnswer">The answer</h2>
         <h3 class="sheet-subhead" id="advances-title" data-i18n="pets.advancesTitle">Advances and KvK points</h3>
         {% include empty-state.html needs="pets" key="empty.pets" text="Tame your pets to plan their Advances." import=true fill="#cage" %}
-        <p class="hero-points-total"><output data-target="pet-advances.total">—</output></p>
-        <ul class="unknowns" data-target="pet-advances.coverage" aria-live="polite"></ul>
-        <div data-target="pet-advances.events"></div>
-        <div class="hero-points-scroll" data-target="pet-advances.table" hidden><table class="hero-points-table">
+        <p class="hero-points-total"><output data-answer="total" :data-open="view.open" x-text="view.total">—</output></p>
+        <ul class="unknowns" data-answer="coverage" aria-live="polite"><template x-for="name in view.unread"><li lang="en" x-text="name"></li></template></ul>
+        <div x-effect="placeEvents($el)"></div>
+        <div class="hero-points-scroll" hidden :hidden="!view.rows.length"><table class="hero-points-table">
           <thead><tr><th scope="col" data-i18n="pets.col.pet">pet</th><th scope="col" data-i18n="pets.col.next">next Advance</th><th scope="col" data-i18n="spend.col.points">KvK prep points</th><th scope="col" data-i18n="pets.col.left">Advances left</th></tr></thead>
-          <tbody data-target="pet-advances.rows"></tbody>
+          <tbody data-answer="rows"><template x-for="row in view.rows" :key="row.key"><tr><th scope="row" lang="en"><span x-text="row.name"></span><small x-text="row.now"></small></th><td x-text="row.cells[0]"></td><td x-text="row.cells[1]"></td><td x-text="row.cells[2]"></td></tr></template></tbody>
         </table></div>
         {% include page-notes.html part="pointer" checked="2026-10-17" %}
       </div>

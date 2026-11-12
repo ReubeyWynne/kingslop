@@ -8,8 +8,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
     const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce' }), page = await context.newPage(), errors = [];
     page.on('pageerror', error => errors.push(error.message));
     const ready = () => page.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
-    const target = key => page.locator('[data-target="governor-planner.' + key + '"]');
-    const profile = key => page.locator({ dialog: '.gov-profile .gov-dialog', editTitle: '#gov-edit-title', editNext: '#gov-editNext' }[key]);
+    const target = key => page.locator('[data-planner="' + key + '"]');
+    const profile = key => page.locator('[data-profile="' + key + '"]');
     const tile = id => page.locator('.gov-piece[data-gov="' + id + '"]');
     const row = id => page.locator('.gov-row[data-item="' + id + '"]');
     await page.goto(origin + '/governor-gear/?lang=en'); await ready();
@@ -32,7 +32,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.ok(await dialog.evaluate(node => node.open));
     assert.equal(await profile('editTitle').textContent(), 'Staff · Archer');
     await gearLevel.selectOption('');
-    await dialog.locator('.gov-done').click();
+    await dialog.locator('[data-profile="close"]').click();
     assert.equal(await tile('arc-2').getAttribute('data-state'), 'unset');
     await tile('cav-2').click();
     await dialog.locator('.gov-edit-gear [data-step="1"]').click();
@@ -49,7 +49,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.waitForFunction(() => document.querySelector('.gov-row[data-item="arc-1"]').dataset.moved === 'true');
     assert.match(await row('arc-1').locator('.gov-row-gear').textContent(), /^not crafted → /);
     assert.equal(await row('arc-2').locator('.gov-row-gear').textContent(), 'not set');
-    assert.equal(await page.locator('select[data-action=\"governor-planner.profile\"]').inputValue(), 'bear');
+    assert.equal(await page.locator('select[data-planner=\"profile\"]').inputValue(), 'bear');
     assert.match(await target('score').textContent(), /^\+[\d,]+ governor score$/);
     // Event points: gear and charms on their own rows, one column per event, as on Hero gear.
     assert.deepEqual(await target('events').locator('tbody th').allTextContents(), ['Gear', 'Charms']);
@@ -59,25 +59,25 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await gearPoints.nth(1).getAttribute('data-points'), 'none', 'Strongest Governor does not score gear');
     assert.match(await gearPoints.nth(2).textContent(), /^[\d,]+days 5, 6$/);
     // The profiles are Hero gear's, in its order, plus Event score.
-    assert.deepEqual(await page.locator('select[data-action="governor-planner.profile"] option').evaluateAll(o => o.map(n => n.value)), ['bear', 'growth', 'combat', 'gen4', 'garrison', 'equal', 'score', 'custom']);
-    assert.equal(await page.locator('[data-target="governor-planner.bill"] > div').count(), 5);
+    assert.deepEqual(await page.locator('select[data-planner="profile"] option').evaluateAll(o => o.map(n => n.value)), ['bear', 'growth', 'combat', 'gen4', 'garrison', 'equal', 'score', 'custom']);
+    assert.equal(await page.locator('[data-planner="bill"] > div').count(), 5);
     assert.equal(await page.locator('.gov-result').evaluate(n => getComputedStyle(n).overflowY), 'visible', 'no box that scrolls');
     // Bear first shows its weights in the Advanced fold; typing one makes them custom weights, which travel in the link.
     await target('weightsFold').locator('summary').click();
-    const weights = () => page.locator('[data-action="governor-planner.weight"]').evaluateAll(nodes => nodes.map(n => n.dataset.troop + ' ' + n.value));
+    const weights = () => page.locator('[data-planner="weight"]').evaluateAll(nodes => nodes.map(n => n.dataset.troop + ' ' + n.value));
     assert.deepEqual(await weights(), ['inf 2.2', 'cav 1.6', 'arc 4.2']);
-    await page.fill('[data-action="governor-planner.weight"][data-troop="cav"]', '0');
-    await page.locator('[data-action="governor-planner.weight"][data-troop="cav"]').dispatchEvent('change');
+    await page.fill('[data-planner="weight"][data-troop="cav"]', '0');
+    await page.locator('[data-planner="weight"][data-troop="cav"]').dispatchEvent('change');
     // On your own save the weights are kept there; a share link carries them as w=.
     await page.waitForFunction(() => window.Governor.encodeLink({ gear: {}, charms: {}, bag: {}, prefs: window.PlayerLedger.shared().snapshot().preferences.governor || {} }).w === '2.2_0_4.2');
-    assert.equal(await page.locator('select[data-action=\"governor-planner.profile\"]').inputValue(), 'custom');
+    assert.equal(await page.locator('select[data-planner=\"profile\"]').inputValue(), 'custom');
     assert.deepEqual(await page.locator('.gov-row[data-moved="true"]').evaluateAll(rows => rows.map(r => r.dataset.item).filter(id => /^cav/.test(id))), [], 'a troop at 0 stays where it is');
-    await page.fill('[data-action="governor-planner.weight"][data-troop="inf"]', '1.5');
-    await page.locator('[data-action="governor-planner.weight"][data-troop="inf"]').dispatchEvent('change');
+    await page.fill('[data-planner="weight"][data-troop="inf"]', '1.5');
+    await page.locator('[data-planner="weight"][data-troop="inf"]').dispatchEvent('change');
     await page.waitForFunction(() => window.Governor.encodeLink({ gear: {}, charms: {}, bag: {}, prefs: window.PlayerLedger.shared().snapshot().preferences.governor || {} }).w === '1.5_0_4.2');
-    await page.selectOption('select[data-action="governor-planner.profile"]', 'score');
+    await page.selectOption('select[data-planner="profile"]', 'score');
     assert.equal(await target('weightsFold').isHidden(), true, 'event score has no weights');
-    await page.selectOption('select[data-action="governor-planner.profile"]', 'custom');
+    await page.selectOption('select[data-planner="profile"]', 'custom');
     assert.equal(await target('weightsFold').evaluate(node => node.open), true, 'choosing Custom opens the weights, as on Hero gear');
     assert.deepEqual(await weights(), ['inf 1.5', 'cav 0', 'arc 4.2'], 'custom weights are kept');
     await page.click('[role="tab"][data-value="reach"]');
@@ -94,10 +94,10 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await tile('inf-1').getAttribute('data-state'), 'empty');
     assert.equal(await tile('arc-2').getAttribute('data-state'), 'unset');
     assert.equal(await tile('cav-2').getAttribute('data-state'), 'empty');
-    assert.equal(await page.locator('select[data-action=\"governor-planner.profile\"]').inputValue(), 'custom');
+    assert.equal(await page.locator('select[data-planner=\"profile\"]').inputValue(), 'custom');
     assert.equal(await page.locator('[data-bind="inventory.satin"]').inputValue(), '20000');
     // Without a link the page works on your save: edits save as you go and the address stays clean.
-    const sheet = key => page.locator('[data-target="page-sheet.' + key + '"]');
+    const sheet = key => page.locator('[data-sheet="' + key + '"]');
     assert.doesNotMatch(page.url(), /gov=/);
     assert.equal(await page.evaluate(() => PlayerLedger.shared().governor('gear')['inf-1']), 0);
     assert.equal(await page.evaluate(() => PlayerLedger.shared().balance('satin').amount), 20000);
@@ -106,8 +106,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.ok(await sheet('saveMine').isHidden()); assert.ok(await sheet('loadMine').isHidden());
     // Copy share link carries the governor, bag and priority.
     await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin });
-    await page.locator('[data-action="page-sheet.copy"]').click();
-    await page.waitForFunction(() => document.querySelector('[data-action="page-sheet.copy"]').textContent === 'Link copied');
+    await page.locator('[data-sheet="copy"]').click();
+    await page.waitForFunction(() => document.querySelector('[data-sheet="copy"]').textContent === 'Link copied');
     const shared = await page.evaluate(() => navigator.clipboard.readText());
     assert.match(shared, /[?&]gov=[^&]{24}/); assert.match(shared, /[?&]bag=20000\.200\.0\.\.(&|$)/);
     // Start blank opens a sheet of its own; Load mine goes back to your save.
@@ -115,7 +115,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await tile('inf-1').getAttribute('data-state'), 'unset');
     assert.equal(await sheet('source').textContent(), 'A blank sheet.');
     assert.match(page.url(), /gov=\.{24}(&|#|$)/); assert.doesNotMatch(page.url(), /bag=/);
-    await tile('inf-1').click(); await dialog.locator('.gov-edit-gear [data-step="1"]').click(); await dialog.locator('.gov-done').click();
+    await tile('inf-1').click(); await dialog.locator('.gov-edit-gear [data-step="1"]').click(); await dialog.locator('[data-profile="close"]').click();
     assert.equal(await page.evaluate(() => PlayerLedger.shared().governor('gear')['inf-1']), 0, 'a sheet leaves the save');
     assert.equal(await sheet('source').textContent(), 'A shared sheet.');
     await Promise.all([page.waitForNavigation(), sheet('loadMine').click()]); await ready();
@@ -125,22 +125,22 @@ withBrowser({ root }, async ({ browser, origin }) => {
     const visitor = await browser.newContext({ viewport: { width, height: 900 } }), guest = await visitor.newPage();
     await guest.goto(origin + '/hero-gear/?lang=en'); await guest.locator('#gear-mithril').fill('7');
     await guest.goto(shared); await guest.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
-    assert.equal(await guest.locator('[data-target="page-sheet.source"]').textContent(), 'A shared sheet.');
+    assert.equal(await guest.locator('[data-sheet="source"]').textContent(), 'A shared sheet.');
     assert.equal(await guest.locator('.gov-piece[data-gov="cav-2"]').getAttribute('data-state'), 'empty');
-    assert.equal(await guest.locator('select[data-action=\"governor-planner.profile\"]').inputValue(), 'custom', 'the profile travels in the link');
-    assert.equal(await guest.locator('[data-action="governor-planner.weight"][data-troop="cav"]').inputValue(), '0', 'and its weights');
+    assert.equal(await guest.locator('select[data-planner=\"profile\"]').inputValue(), 'custom', 'the profile travels in the link');
+    assert.equal(await guest.locator('[data-planner="weight"][data-troop="cav"]').inputValue(), '0', 'and its weights');
     assert.equal(await guest.locator('[data-bind="inventory.satin"]').inputValue(), '20000');
     assert.equal(await guest.evaluate(() => PlayerLedger.shared().governor('gear')['cav-2']), null);
-    await guest.locator('[data-action="page-sheet.saveMine"]').click();
-    await Promise.all([guest.waitForNavigation(), guest.locator('[data-action="page-sheet.confirm"]').click()]);
+    await guest.locator('[data-sheet="saveMine"]').click();
+    await Promise.all([guest.waitForNavigation(), guest.locator('[data-sheet="confirm"]').click()]);
     await guest.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
     assert.equal(await guest.evaluate(() => PlayerLedger.shared().governor('gear')['inf-1']), 0, 'save as mine writes the sheet');
     assert.equal(await guest.evaluate(() => PlayerLedger.shared().balance('satin').amount), 20000);
     assert.equal(await guest.evaluate(() => PlayerLedger.shared().balance('mithril').amount), 7, 'other facts in the save stay');
-    assert.equal(await guest.locator('[data-target="page-sheet.source"]').textContent(), 'Your save.');
+    assert.equal(await guest.locator('[data-sheet="source"]').textContent(), 'Your save.');
     assert.doesNotMatch(guest.url(), /gov=/);
     await guest.goto(origin + '/governor-gear/?lang=en&gov=nonsense'); await guest.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
-    assert.match(await guest.locator('[data-target="page-sheet.source"]').textContent(), /could not be read/);
+    assert.match(await guest.locator('[data-sheet="source"]').textContent(), /could not be read/);
     await visitor.close();
     assert.deepEqual(errors, []);
     await context.close();
@@ -195,17 +195,17 @@ withBrowser({ root }, async ({ browser, origin }) => {
     const context = await browser.newContext({ viewport: { width: 390, height: 900 } }), page = await context.newPage(), errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(origin + '/governor-gear/?lang=en'); await page.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
-    const button = kind => page.locator('[data-action="governor-planner.apply"][data-kind="' + kind + '"]');
-    assert.ok(await page.locator('[data-target="governor-planner.applied"]').isHidden(), 'nothing to apply before anything is set');
+    const button = kind => page.locator('[data-planner="apply"][data-kind="' + kind + '"]');
+    assert.ok(await page.locator('[data-planner="applied"]').isHidden(), 'nothing to apply before anything is set');
     await page.locator('.gov-fill select[data-kind="gear"]').selectOption('0');
     await page.evaluate(() => { const s = PlayerLedger.shared(); s.setGovernor('charms', Object.fromEntries(Object.keys(s.governor('charms')).map(id => [id, 0]))); });
     for (const [id, n] of [['satin', '20000'], ['gilded-threads', '200'], ['artisans-vision', '0'], ['charm-guide', '400'], ['charm-design', '400']]) await page.fill('[data-bind="inventory.' + id + '"]', n);
-    await page.waitForFunction(() => document.querySelector('[data-action="governor-planner.apply"][data-kind="charms"]').hidden === false);
+    await page.waitForFunction(() => document.querySelector('[data-planner="apply"][data-kind="charms"]').hidden === false);
     assert.equal(await button('gear').textContent(), 'Mark gear applied');
     assert.equal(await button('charms').textContent(), 'Mark charms applied');
     const planned = await page.evaluate(() => [...document.querySelectorAll('.gov-row')].map(r => r.querySelector('.gov-row-gear').textContent));
     await button('gear').click();
-    await page.waitForFunction(() => document.querySelector('[data-action="governor-planner.apply"][data-kind="gear"]').dataset.state === 'applied');
+    await page.waitForFunction(() => document.querySelector('[data-planner="apply"][data-kind="gear"]').dataset.state === 'applied');
     const saved = await page.evaluate(() => { const s = PlayerLedger.shared(); return { gear: s.governor('gear'), charms: s.governor('charms'), satin: s.balance('satin').amount, guide: s.balance('charm-guide').amount }; });
     assert.ok(Object.values(saved.gear).some(level => level > 0), 'the planned gear levels are saved');
     assert.ok(saved.satin < 20000, 'the gear materials are spent');
@@ -221,9 +221,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.goto(origin + '/governor-gear/?lang=en'); await page.waitForFunction(() => document.querySelectorAll('.gov-row').length === 6);
     // A fresh page has nothing to undo, so the gear spend is final there; undo is checked on the page that applied it.
     await page.evaluate(() => { const s = PlayerLedger.shared(); s.setGovernor('gear', Object.fromEntries(Object.keys(s.governor('gear')).map(id => [id, 0]))); s.setBalance('satin', 20000); s.setBalance('gilded-threads', 200); s.setBalance('artisans-vision', 0); });
-    await page.waitForFunction(() => document.querySelector('[data-action="governor-planner.apply"][data-kind="gear"]').hidden === false);
+    await page.waitForFunction(() => document.querySelector('[data-planner="apply"][data-kind="gear"]').hidden === false);
     await button('gear').click();
-    await page.waitForFunction(() => document.querySelector('[data-action="governor-planner.apply"][data-kind="gear"]').dataset.state === 'applied');
+    await page.waitForFunction(() => document.querySelector('[data-planner="apply"][data-kind="gear"]').dataset.state === 'applied');
     await button('gear').click();
     await page.waitForFunction(() => PlayerLedger.shared().balance('satin').amount === 20000 && PlayerLedger.shared().balance('gilded-threads').amount === 200);
     assert.ok(Object.values(await page.evaluate(() => PlayerLedger.shared().governor('gear'))).every(level => level === 0), 'undo puts the gear back');

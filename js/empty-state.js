@@ -1,7 +1,7 @@
 /* A tool's teaching empty state: shown while the player's own save lacks the part this tool
    works from (`data-needs`), so a blank tool says what is missing and where to add it. The save
    tells unknown apart from zero, so a confirmed 0 counts as recorded. It stays hidden under a
-   guest or shared-link store, and without JavaScript. */
+   guest or shared-link store, and without JavaScript. The include binds to it with Alpine. */
 (function (root) {
   'use strict';
   function some(map, test) { return Object.keys(map || {}).some(function (id) { return test(map[id]); }); }
@@ -19,14 +19,13 @@
   function missing(snapshot, needs) { return Object.hasOwn(MISSING, needs) && MISSING[needs](snapshot || {}); }
   var api = { missing: missing, needs: Object.keys(MISSING) };
   if (typeof module === 'object' && module.exports) module.exports = api;
-  if (!root || !root.Interactions) return;
+  if (!root || !root.document) return;
   root.EmptyState = api;
-  root.Interactions.register('empty-state', function (context) {
-    var node = context.root, needs = node.dataset.needs, store = null;
-    try { store = context.ledger === root.PlayerLedger.shared() ? context.ledger : null; if (store) store.snapshot(); } catch (cause) { store = null; }
-    function render() { node.hidden = !store || !missing(store.snapshot(), needs); }
-    if (store) context.cleanup(store.subscribe(render));
-    render();
-    return { refresh: render };
+  // The include's x-data="emptyState('<needs>')": hidden while the save has that part, on a
+  // sheet, or while the save cannot be read.
+  root.document.addEventListener('alpine:init', function () {
+    root.Alpine.data('emptyState', function (needs) {
+      return { get hidden() { var ledger = root.Alpine.store('ledger'); return ledger.guest || !ledger.ready || !missing(ledger.snapshot, needs); } };
+    });
   });
 })(typeof window === 'undefined' ? null : window);

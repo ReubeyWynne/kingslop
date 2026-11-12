@@ -157,7 +157,7 @@ self: town
 
     <div class="town-shelf town-heroes" id="town-heroes" role="tabpanel" data-shelf="heroes" hidden :hidden="shelf !== 'heroes'">
       <div class="town-heading"><p class="town-gloss" data-i18n="town.heroesNote">Select a hero to record levels, stars, shards and widgets.</p><a href="../heroes/" data-i18n="town.planHeroes">compare heroes →</a></div>
-      <div data-module="hero-directory">
+      <div x-data="heroRoster" :data-collection="any ? '' : null" @ks:server-age-change.document="serverChanged($event.detail)" @ks:kingdom-change.document="kingdom++">
       {% assign generations = site.data.heroes.heroes | map: 'generation' | uniq | sort %}
       {% include heroes/roster.html %}
       </div>
@@ -179,7 +179,7 @@ self: town
           <span class="town-tile-name" data-i18n="town.speedup.learning">Learning</span>
         </button>
       </div>
-      <div class="town-heroes" data-module="master-directory">
+      <div class="town-heroes" x-data="masterRoster" :data-collection="any ? '' : null" @ks:kingdom-change.document="kingdom++">
       {% include masters/roster.html %}
       </div>
     </div>

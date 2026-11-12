@@ -124,7 +124,7 @@ assert.equal(pages.masters.swipePrev.page, 'heroes'); assert.equal(pages.masters
 assert.equal(pages.heroes.swipeNext.page, 'masters'); assert.equal(pages.gear.swipePrev.page, 'masters');
 for (const page of ['masters', 'town']) {
   const scripts = pages[page].scripts.map(s => s.replace('../js/', ''));
-  for (const need of ['hero-spend.mjs', 'master-data.js', 'master-spend.mjs', 'master-directory.js']) assert(scripts.includes(need), page + ' loads ' + need);
+  for (const need of ['hero-spend.mjs', 'master-data.js', 'master-spend.mjs', 'pages/master-roster.mjs']) assert(scripts.includes(need), page + ' loads ' + need);
   assert(scripts.indexOf('master-spend.mjs') > scripts.indexOf('master-data.js') && scripts.indexOf('master-spend.mjs') > scripts.indexOf('hero-spend.mjs'), page + ' script order');
   assert(pages[page].css.includes('../css/masters.css'), page + ' css');
 }
@@ -133,7 +133,7 @@ assert(town.indexOf('master-spend.mjs') < town.indexOf('town-centre-engine.mjs')
 assert(town.indexOf('master-points.js') < town.indexOf('pages/town-centre.mjs'));
 const townPage = read('town-centre/index.html');
 assert.match(townPage, /aria-controls="town-masters"/); assert.match(townPage, /id="town-masters"[^>]*data-shelf="masters"/);
-assert.match(townPage, /data-module="master-directory">\s*{% include masters\/roster.html %}/);
+assert.match(townPage, /x-data="masterRoster"[^>]*>\s*{% include masters\/roster.html %}/);
 assert.match(townPage, /data-count="general-master-emblem"/);
 assert.match(townPage, /item.id == "master-emblem" %}{% continue %}/);
 const sources = ['masters/index.html', '_includes/masters/roster.html', 'town-centre/index.html', 'index.html'].map(read).join('\n');

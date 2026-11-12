@@ -30,10 +30,10 @@ withBrowser({ root }, async ({ browser, origin }) => {
     // Your own save needs no notice; the guest switch, sharing and starting over sit in the one
     // sheet row every calculator shows at the top of its planner.
     assert.equal(await page.locator('.sheet-hero h1').count(),1);
-    assert.equal(await page.locator('[data-target="page-sheet.notice"]').isHidden(),true,'your own save shows no sheet notice');
+    assert.equal(await page.locator('[data-sheet="notice"]').isHidden(),true,'your own save shows no sheet notice');
     assert.equal(await page.locator('.sheet-bar').count(),0);
-    assert.equal(await page.locator('#gear-forge > .sheet-row .sheet-tools [data-action="page-sheet.copy"]').isVisible(),true);
-    assert.equal(await page.locator('#gear-forge > .sheet-row [data-target="page-sheet.guest"]').isVisible(),true);
+    assert.equal(await page.locator('#gear-forge > .sheet-row .sheet-tools [data-sheet="copy"]').isVisible(),true);
+    assert.equal(await page.locator('#gear-forge > .sheet-row [data-sheet="guest"]').isVisible(),true);
     assert.equal(await page.locator('.gear-editor #gear-import.sheet-drop[data-screen-import-drop]').count(),1);
     // Three troop cards, four pieces each; one answer with no tabs; custom weights fold away under Advanced.
     assert.equal(await page.locator('.gear-card').count(),3);
@@ -359,25 +359,25 @@ withBrowser({ root }, async ({ browser, origin }) => {
       await guestContext.grantPermissions(['clipboard-read','clipboard-write'],{origin});
       const owner=await guestContext.newPage();owner.on('pageerror',e=>errors.push(e.message));
       await owner.goto(origin+'/hero-gear/?lang=en');await owner.waitForFunction(()=>document.querySelectorAll('.gear-card .gear-row').length===12);
-      assert.equal(await owner.locator('[data-action="page-sheet.loadMine"]').isHidden(),true,'your own gear is no separate sheet');
+      assert.equal(await owner.locator('[data-sheet="loadMine"]').isHidden(),true,'your own gear is no separate sheet');
       await owner.locator('#gear-hammers').fill('500');
       await owner.locator('.gear-row[data-select="inf-helm"]').click();
       await owner.locator('[data-piece="inf-helm"][data-field="level"]').fill('90');await owner.locator('[data-piece="inf-helm"][data-field="level"]').press('Tab');
       await owner.locator('#gear-close-edit').click();
-      await owner.locator('[data-action="page-sheet.copy"]').click();
-      await owner.locator('[data-action="page-sheet.copy"][data-copied]').waitFor();
-      assert.equal(await owner.locator('[data-action="page-sheet.copy"]').textContent(),'Link copied','the button confirms the copy');
+      await owner.locator('[data-sheet="copy"]').click();
+      await owner.locator('[data-sheet="copy"][data-copied]').waitFor();
+      assert.equal(await owner.locator('[data-sheet="copy"]').textContent(),'Link copied','the button confirms the copy');
       assert.equal(await owner.locator('#gear-status').isHidden(),true,'no note lingers below the gear');
-      await owner.locator('[data-action="page-sheet.copy"]:not([data-copied])').waitFor();
-      assert.equal(await owner.locator('[data-action="page-sheet.copy"]').textContent(),'Copy share link');
+      await owner.locator('[data-sheet="copy"]:not([data-copied])').waitFor();
+      assert.equal(await owner.locator('[data-sheet="copy"]').textContent(),'Copy share link');
       const shared=await owner.evaluate(()=>navigator.clipboard.readText());
       assert.match(shared,/\/hero-gear\/\?gear=m90\.0(-m0\.0){11}&w=bear$/);
       const visitor=await guestContext.newPage();visitor.on('pageerror',e=>errors.push(e.message));
       await visitor.goto(shared);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-card .gear-row').length===12);
       // Your own link, opened beside your save, is your save: nothing to save back yet.
-      assert.match(await visitor.locator('[data-target="page-sheet.notice"] > span').textContent(),/Your save\. Edits here stay on this page until you save them\./);
-      assert.equal(await visitor.locator('[data-action="page-sheet.saveMine"]').isHidden(),true);
-      assert.equal(await visitor.locator('[data-action="page-sheet.loadMine"]').isVisible(),true);
+      assert.match(await visitor.locator('[data-sheet="notice"] > span').textContent(),/Your save\. Edits here stay on this page until you save them\./);
+      assert.equal(await visitor.locator('[data-sheet="saveMine"]').isHidden(),true);
+      assert.equal(await visitor.locator('[data-sheet="loadMine"]').isVisible(),true);
       assert.equal(await visitor.locator('#gear-hammers').inputValue(),'','a link carries gear, not the sender\'s bag');
       assert.match(await visitor.locator('.gear-row[data-select="inf-helm"]').textContent(),/\+90/);
       await visitor.locator('#gear-hammers').fill('999');
@@ -385,8 +385,8 @@ withBrowser({ root }, async ({ browser, origin }) => {
       await visitor.locator('[data-piece="inf-boots"][data-field="level"]').fill('50');await visitor.locator('[data-piece="inf-boots"][data-field="level"]').press('Tab');
       await visitor.locator('#gear-close-edit').click();
       assert.match(visitor.url(),/gear=m90\.0-m0\.0-m0\.0-m50\.0/,'the address bar follows edits to a sheet');
-      assert.match(await visitor.locator('[data-target="page-sheet.notice"] > span').textContent(),/A shared sheet\. Your save is untouched\./);
-      assert.equal(await visitor.locator('[data-action="page-sheet.saveMine"]').isVisible(),true);
+      assert.match(await visitor.locator('[data-sheet="notice"] > span').textContent(),/A shared sheet\. Your save is untouched\./);
+      assert.equal(await visitor.locator('[data-sheet="saveMine"]').isVisible(),true);
       assert.equal(await visitor.locator('#gear-save').textContent(),'on this sheet only');
       const saved=await owner.evaluate(()=>JSON.parse(localStorage.getItem('bh:player-ledger:v1')));
       assert.equal(saved.inventory.forgehammer.amount,500,'guest edits never reach the saved inventory');
@@ -395,21 +395,21 @@ withBrowser({ root }, async ({ browser, origin }) => {
       assert.equal(await visitor.locator('#gear-hammers').inputValue(),'500','plain guest mode starts from a copy of your save');
       assert.match(visitor.url(),/\?lang=en&guest$/,'a guest sheet that still matches your save carries no link');
       // Load mine goes back to your own gear; Start blank opens an empty sheet; Save as mine writes a sheet back.
-      await Promise.all([visitor.waitForNavigation(),visitor.locator('[data-action="page-sheet.loadMine"]').click()]);
+      await Promise.all([visitor.waitForNavigation(),visitor.locator('[data-sheet="loadMine"]').click()]);
       assert.match(visitor.url(),/\/hero-gear\/\?lang=en$/);
-      await Promise.all([visitor.waitForNavigation(),visitor.locator('[data-action="page-sheet.blank"]').click()]);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-card .gear-row').length===12);
-      assert.match(await visitor.locator('[data-target="page-sheet.source"]').textContent(),/A blank sheet\./);
-      assert.equal(await visitor.locator('[data-action="page-sheet.blank"]').isHidden(),true);
-      assert.equal(await visitor.locator('[data-action="page-sheet.saveMine"]').isHidden(),true,'nothing to save from a blank sheet');
+      await Promise.all([visitor.waitForNavigation(),visitor.locator('[data-sheet="blank"]').click()]);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-card .gear-row').length===12);
+      assert.match(await visitor.locator('[data-sheet="source"]').textContent(),/A blank sheet\./);
+      assert.equal(await visitor.locator('[data-sheet="blank"]').isHidden(),true);
+      assert.equal(await visitor.locator('[data-sheet="saveMine"]').isHidden(),true,'nothing to save from a blank sheet');
       await visitor.goto(shared.replace('m90.0','m95.3'));await visitor.waitForFunction(()=>document.querySelectorAll('.gear-card .gear-row').length===12);
-      await visitor.locator('[data-action="page-sheet.saveMine"]').click();
-      await Promise.all([visitor.waitForNavigation(),visitor.locator('[data-action="page-sheet.confirm"]').click()]);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-card .gear-row').length===12);
+      await visitor.locator('[data-sheet="saveMine"]').click();
+      await Promise.all([visitor.waitForNavigation(),visitor.locator('[data-sheet="confirm"]').click()]);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-card .gear-row').length===12);
       const mine=await visitor.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear));
       assert.deepEqual(mine.pieces['inf-helm'],{quality:'mythic',level:95,mastery:3},'Save as mine writes the sheet\'s gear');
       assert.equal(mine.resources.hammers,500,'a material the sheet left at 0 keeps your number');
-      assert.equal(await visitor.locator('[data-target="page-sheet.notice"]').isHidden(),true,'back on your own save, the notice goes');
+      assert.equal(await visitor.locator('[data-sheet="notice"]').isHidden(),true,'back on your own save, the notice goes');
       await visitor.goto(origin+'/hero-gear/?gear=broken');await visitor.waitForFunction(()=>document.querySelectorAll('.gear-card .gear-row').length===12);
-      assert.match(await visitor.locator('[data-target="page-sheet.source"]').textContent(),/That link could not be read, so this is a copy of your save\./);
+      assert.match(await visitor.locator('[data-sheet="source"]').textContent(),/That link could not be read, so this is a copy of your save\./);
       await visitor.goto(origin+'/hero-gear/?lang=en&gear=m69.2-r120.11-m100.6-m72.3-m20.20-m100.0-r160.13-e80.0-r200.20-r200.20-r200.20-r200.20&w=growth');
       await visitor.waitForFunction(()=>document.querySelectorAll('.gear-card .gear-row').length===12);
       await visitor.locator('#gear-optimal .gear-headline').waitFor({timeout:90000});

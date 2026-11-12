@@ -142,7 +142,7 @@
    day over the tiles. A wave with a master open takes the full width, so the dossier has
    the measure. Measured on the roster's own width, since on Masters it sits in the
    planner's half beside the answer. */
-[data-module~="master-directory"] { container: master-directory / inline-size; }
+[x-data="masterRoster"] { container: master-directory / inline-size; }
 @container master-directory (min-width: 36rem) {
   /* Tracks sized so every tile matches across waves: eight tiles, three band gaps, four tile gaps. */
   .master-roster { --tile: calc((100% - 5rem) / 8); grid-template-columns: calc(3 * var(--tile) + 1rem) var(--tile) calc(2 * var(--tile) + .5rem) calc(2 * var(--tile) + .5rem); column-gap: 1rem; }

@@ -2,59 +2,59 @@
 Centre: hat, armour and ring on the left, amulet, trousers and staff on the right, three
 charms under each, drawn with the game's art (shape is the level, colour the troop). Tapping
 a piece opens one editor; "All gear" and "All charms" set every piece at once. The
-governorProfile state (js/pages/governor-profile.mjs) paints and writes the store the page works on.{% endcomment %}{% assign gov = site.data.governor %}{% assign rows = "cav,inf,arc" | split: "," %}
-<div class="gov-profile" x-data="governorProfile('../img/governor/')">
+controller js/pages/governor-profile.mjs paints and writes whichever store the page works on.{% endcomment %}{% assign gov = site.data.governor %}{% assign rows = "cav,inf,arc" | split: "," %}
+<div class="gov-profile" x-data="govProfile" data-art="../img/governor/">
   <div class="gov-board">
     {% for troop in rows %}{% for piece in gov.gear.pieces %}{% if piece.troop == troop %}
-    <button type="button" class="gov-piece" data-gov="{{ piece.id }}" data-troop="{{ troop }}" data-state="unset" x-data="{ get tile() { return piece('{{ piece.id }}', '{{ troop }}') } }" :data-state="tile.card.state" :aria-label="tile.label" @click="editing = '{{ piece.id }}'; $refs.govEdit.showModal()">
-      <span class="gov-card" data-state="unset" :data-state="tile.card.state" :data-tier="tile.card.tier"><img src="../img/governor/gear/{{ piece.id }}-green-0.webp" width="160" height="160" alt="" :src="tile.card.art"><span class="gov-stars" data-part="stars" aria-hidden="true" x-text="tile.card.stars"></span></span>
-      <span class="gov-gems" aria-hidden="true">{% for c in (1..3) %}<span class="gov-gem" data-charm="{{ piece.id }}-{{ c }}" data-state="unset" :data-state="tile.gems[{{ forloop.index0 }}].state"><img src="../img/governor/charms/{{ troop }}-1.webp" width="72" height="72" alt="" :src="tile.gems[{{ forloop.index0 }}].art"><b x-text="tile.gems[{{ forloop.index0 }}].text"></b></span>{% endfor %}</span>
+    <button type="button" class="gov-piece" data-gov="{{ piece.id }}" data-troop="{{ troop }}" data-state="unset" x-data="govPiece('{{ piece.id }}', '{{ troop }}')" :data-state="pieceState" :aria-label="label" @click="edit('{{ piece.id }}')">
+      <span class="gov-card" data-state="unset" :data-state="pieceState" :data-tier="view.tier(at)"><img src="../img/governor/gear/{{ piece.id }}-green-0.webp" :src="view.gearArt('{{ piece.id }}', at)" width="160" height="160" alt=""><span class="gov-stars" data-part="stars" aria-hidden="true" x-text="view.stars(at)"></span></span>
+      <span class="gov-gems" aria-hidden="true">{% for c in (1..3) %}<span class="gov-gem" data-charm="{{ piece.id }}-{{ c }}" data-state="unset" :data-state="view.state(gemAt({{ c }}))"><img src="../img/governor/charms/{{ troop }}-1.webp" :src="view.charmArt(troop, gemAt({{ c }}))" width="72" height="72" alt=""><b x-text="view.gemLabel(gemAt({{ c }}))"></b></span>{% endfor %}</span>
       <span class="gov-piece-name" data-i18n="gov.slot.{{ piece.slot }}">{{ piece.slot | capitalize }}</span>
-      <span class="gov-piece-level inkwell" data-part="level" data-tally="unknown" :data-tally="tile.tally" x-text="tile.level">not set</span>
+      <span class="gov-piece-level inkwell" data-part="level" data-tally="unknown" :data-tally="at === null ? 'unknown' : null" x-text="levelName">not set</span>
     </button>
     {% endif %}{% endfor %}{% endfor %}
     <div class="gov-crest">
       <span class="gov-crest-mark" aria-hidden="true">❧</span>
-      <p><span data-i18n="gov.gearScore">gear score</span><output id="gov-gearScore" x-text="score('gear')">—</output></p>
-      <p><span data-i18n="gov.charmScore">charm score</span><output id="gov-charmScore" x-text="score('charms')">—</output></p>
+      <p><span data-i18n="gov.gearScore">gear score</span><output data-profile="gearScore" x-text="score('gear')">—</output></p>
+      <p><span data-i18n="gov.charmScore">charm score</span><output data-profile="charmScore" x-text="score('charms')">—</output></p>
     </div>
   </div>
   <div class="gov-fill">
-    <label><span data-i18n="gov.allGear">All gear</span><select id="gov-fillGear" data-kind="gear" x-model="allGear"><option value="" data-i18n="gov.setAll">set all…</option><option value="0" data-i18n="gov.notCrafted">not crafted</option>{% for row in gov.gear.levels %}<option value="{{ forloop.index }}" x-text="gearName({{ forloop.index }})">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★</option>{% endfor %}</select></label>
-    <label><span data-i18n="gov.allCharms">All charms</span><select id="gov-fillCharms" data-kind="charms" x-model="allCharms"><option value="" data-i18n="gov.setAll">set all…</option><option value="0" data-i18n="gov.noCharm">no charm</option>{% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}</select></label>
+    <label><span data-i18n="gov.allGear">All gear</span><select data-kind="gear" data-profile="fillGear" @change="fillAll('gear', $event.target)"><option value="" data-i18n="gov.setAll">set all…</option><option value="0" data-i18n="gov.notCrafted">not crafted</option>{% for row in gov.gear.levels %}<option value="{{ forloop.index }}" x-text="option({{ forloop.index }})">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★</option>{% endfor %}</select></label>
+    <label><span data-i18n="gov.allCharms">All charms</span><select data-kind="charms" @change="fillAll('charms', $event.target)"><option value="" data-i18n="gov.setAll">set all…</option><option value="0" data-i18n="gov.noCharm">no charm</option>{% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}</select></label>
   </div>
 
-  <dialog class="gov-dialog" x-ref="govEdit" @close="editing = null" @click.self="$el.close()" aria-labelledby="gov-edit-title">
-    <div class="gov-dialog-head"><h2 id="gov-edit-title" x-text="form.title"></h2><button type="button" class="gov-done" @click="$refs.govEdit.close()" data-i18n="gear.done">done</button></div>
+  <dialog class="gov-dialog" data-profile="dialog" x-ref="dialog" aria-labelledby="gov-edit-title" @close="editing = null" @click="$event.target === $el && $el.close()">
+    <div class="gov-dialog-head"><h2 id="gov-edit-title" data-profile="editTitle" x-text="editing ? pieceName(editing) : ''"></h2><button type="button" data-profile="close" @click="$refs.dialog.close()" data-i18n="gear.done">done</button></div>
     <div class="gov-edit-gear">
-      <span class="gov-card" id="gov-editCard" data-state="unset" :data-state="form.card.state" :data-tier="form.card.tier"><img src="../img/governor/gear/inf-1-green-0.webp" width="160" height="160" alt="" :src="form.card.art"><span class="gov-stars" data-part="stars" aria-hidden="true" x-text="form.card.stars"></span></span>
+      <span class="gov-card" data-profile="editCard" data-state="unset" :data-state="view.state(index)" :data-tier="view.tier(index)"><img src="../img/governor/gear/inf-1-green-0.webp" :src="view.gearArt(editing || 'inf-1', index)" width="160" height="160" alt=""><span class="gov-stars" data-part="stars" aria-hidden="true" x-text="view.stars(index)"></span></span>
       <div class="gov-edit-info">
-        <p class="gov-edit-level" id="gov-editLevel" x-text="form.level"></p>
-        <p class="gov-edit-stat" id="gov-editStat" x-text="form.stat"></p>
+        <p class="gov-edit-level" data-profile="editLevel" x-text="editing ? view.level('gear', index) : ''"></p>
+        <p class="gov-edit-stat" data-profile="editStat" x-text="editStat"></p>
         <div class="gov-stepper">
-          <button type="button" data-step="-1" @click="step('gear', editing, -1)" aria-label="one step down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button>
-          <select data-level="gear" id="gov-editGear" :value="form.value" @change="set('gear', editing, $el.value)" aria-label="Gear level" data-i18n-key="gov.gearLevel" data-i18n-attr="aria-label">
+          <button type="button" data-step="-1" @click="step('gear', -1)" aria-label="one step down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button>
+          <select data-level="gear" :data-item="editing || ''" :value="value(index)" @change="pick('gear', $event.target.value)" aria-label="Gear level" data-i18n-key="gov.gearLevel" data-i18n-attr="aria-label">
             <option value="" data-i18n="gov.notSet">not set</option>
             <option value="0" data-i18n="gov.notCrafted">not crafted</option>
-            {% for row in gov.gear.levels %}<option value="{{ forloop.index }}" x-text="gearName({{ forloop.index }})">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★</option>{% endfor %}
+            {% for row in gov.gear.levels %}<option value="{{ forloop.index }}" x-text="option({{ forloop.index }})">{{ row.tier | capitalize }}{% if row.grade > 0 %} T{{ row.grade }}{% endif %} {{ row.stars }}★</option>{% endfor %}
           </select>
-          <button type="button" data-step="1" @click="step('gear', editing, 1)" aria-label="one step up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button>
+          <button type="button" data-step="1" @click="step('gear', 1)" aria-label="one step up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button>
         </div>
-        <p class="gov-edit-next" id="gov-editNext"><span x-text="form.next.text"></span><template x-if="form.next.costs"><span class="gov-costs"><template x-for="cost in form.next.costs" :key="cost.id"><span class="gov-cost" :title="cost.title"><img class="gov-icon" :src="cost.art" alt="" width="24" height="24"><span x-text="cost.n"></span></span></template></span></template></p>
+        <p class="gov-edit-next" data-profile="editNext"><span x-text="editNext ? editNext.text : ''"></span><template x-if="editNext && editNext.cost.length"><span class="gov-costs"><template x-for="cost in editNext.cost" :key="cost.id"><span class="gov-cost" :title="cost.title"><img class="gov-icon" :src="cost.src" alt="" width="24" height="24"><span x-text="cost.n"></span></span></template></span></template></p>
       </div>
     </div>
-    <h3><span data-i18n="gov.charms">Charms</span> <small id="gov-editCharmStat" x-text="form.charmStat"></small></h3>
+    <h3><span data-i18n="gov.charms">Charms</span> <small data-profile="editCharmStat" x-text="charmStat"></small></h3>
     {% for c in (1..3) %}
-    <div class="gov-edit-charm" data-charm-row="{{ c }}" x-data="{ get charm() { return form.charms[{{ forloop.index0 }}] } }">
-      <span class="gov-gem" data-state="unset" :data-state="charm.gem.state"><img src="../img/governor/charms/inf-1.webp" width="72" height="72" alt="" :src="charm.gem.art"></span>
+    <div class="gov-edit-charm" data-charm-row="{{ c }}">
+      <span class="gov-gem" data-state="unset" :data-state="view.state(charmOf({{ c }}))"><img src="../img/governor/charms/inf-1.webp" :src="view.charmArt(troop, charmOf({{ c }}))" width="72" height="72" alt=""></span>
       <div class="gov-stepper">
-        <button type="button" data-step="-1" @click="step('charms', editing && charm.id, -1)" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button>
-        <select data-level="charms" :value="charm.value" @change="set('charms', editing && charm.id, $el.value)" aria-label="Charm {{ c }}">
+        <button type="button" data-step="-1" @click="step({{ c }}, -1)" aria-label="one level down" data-i18n-key="gov.down" data-i18n-attr="aria-label">−</button>
+        <select data-level="charms" :data-item="editing ? editing + '-{{ c }}' : ''" :value="value(charmOf({{ c }}))" @change="pick({{ c }}, $event.target.value)" aria-label="Charm {{ c }}">
           <option value="" data-i18n="gov.notSet">not set</option>
           <option value="0" data-i18n="gov.noCharm">no charm</option>
           {% for row in gov.charms.levels %}<option value="{{ row.level }}">{{ row.level }}</option>{% endfor %}
         </select>
-        <button type="button" data-step="1" @click="step('charms', editing && charm.id, 1)" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button>
+        <button type="button" data-step="1" @click="step({{ c }}, 1)" aria-label="one level up" data-i18n-key="gov.up" data-i18n-attr="aria-label">+</button>
       </div>
     </div>
     {% endfor %}
