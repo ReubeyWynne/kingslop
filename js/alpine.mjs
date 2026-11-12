@@ -95,7 +95,9 @@ function start() {
 }
 function begin() { if (globalThis.I18N) I18N.onReady(start); else start(); }
 const nav = globalThis.performance && performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
-if (document.readyState === 'complete' || (document.readyState === 'interactive' && nav && nav.domContentLoadedEventStart > 0)) begin();
+// Loaded after the page was ready (the home page's loader): the rest of this bundle registers its
+// controllers first, so start on the next task.
+if (document.readyState === 'complete' || (document.readyState === 'interactive' && nav && nav.domContentLoadedEventStart > 0)) setTimeout(begin, 0);
 else document.addEventListener('DOMContentLoaded', begin, { once: true });
 
 export { Alpine };

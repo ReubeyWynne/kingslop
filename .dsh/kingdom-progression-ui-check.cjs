@@ -7,12 +7,12 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await context.addInitScript(() => { window.moduleErrors = []; document.addEventListener('module:error', e => moduleErrors.push(e.detail)); });
 
   await page.goto(origin + '/kingdom-timeline/?lang=en');
-  const field = key => page.locator('[data-target="kingdom-timeline.' + key + '"]');
+  const field = key => page.locator("[data-kingdom=\"" + key + "\"]");
   await field('generation').waitFor();
-  await page.waitForFunction(() => !document.querySelector('[data-target="kingdom-timeline.generation"]').disabled);
+  await page.waitForFunction(() => !document.querySelector('[data-kingdom="generation"]').disabled);
   assert.equal(await field('generation').inputValue(), '');
   assert.equal(await page.locator('.kingdom-milestone').count(), 11);
-  await page.locator('#generation-3 [data-action="kingdom-timeline.choose"]').click();
+  await page.locator('#generation-3 [data-kingdom="choose"]').click();
   assert.equal(await field('generation').inputValue(), '3');
   assert.equal(await field('truegold').inputValue(), '3');
   assert.equal(await page.locator('#generation-3').getAttribute('data-progress'), 'current');
@@ -36,13 +36,13 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await other.locator('[data-roster="generation"]').selectOption('');
   assert.equal(await visible(), heroes.filter(h => h.generation <= 3).length);
   await other.locator('[data-roster="server"]').selectOption('2');
-  await page.waitForFunction(() => document.querySelector('[data-target="kingdom-timeline.generation"]').value === '2');
+  await page.waitForFunction(() => document.querySelector('[data-kingdom="generation"]').value === '2');
   assert.equal(await field('truegold').inputValue(), '5');
   assert.equal(await field('warAcademy').inputValue(), 'true');
   await page.reload();
-  await page.waitForFunction(() => document.querySelector('[data-target="kingdom-timeline.generation"]').value === '2');
+  await page.waitForFunction(() => document.querySelector('[data-kingdom="generation"]').value === '2');
   const saved = await page.evaluate(() => PlayerLedger.shared().exportJSON());
-  await page.locator('[data-action="kingdom-timeline.reset"]').click();
+  await page.locator('[data-kingdom="reset"]').click();
   await other.waitForFunction(() => document.querySelector('[data-roster="server"]').value === '');
   await page.evaluate(saved => PlayerLedger.shared().importJSON(saved), saved);
   assert.equal(await field('truegold').inputValue(), '5');
@@ -51,7 +51,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   fs.mkdirSync(output, { recursive: true });
   for (const lang of fs.readdirSync('i18n').filter(f => f.endsWith('.js')).map(f => f.slice(0, -3))) {
     await page.goto(origin + '/kingdom-timeline/?lang=' + lang);
-    await page.waitForFunction(lang => document.documentElement.lang === lang && !document.querySelector('[data-target="kingdom-timeline.generation"]').disabled, lang);
+    await page.waitForFunction(lang => document.documentElement.lang === lang && !document.querySelector('[data-kingdom="generation"]').disabled, lang);
     for (const width of [320, 768]) {
       await page.setViewportSize({ width, height: 900 });
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), lang + ' overflow at ' + width);
@@ -68,14 +68,14 @@ withBrowser({ root }, async ({ browser, origin }) => {
   await blocked.addInitScript(() => { Storage.prototype.setItem = () => { throw new Error('blocked'); }; });
   const blockedPage = await blocked.newPage();
   await blockedPage.goto(origin + '/kingdom-timeline/?lang=en');
-  await blockedPage.locator('#generation-2 [data-action="kingdom-timeline.choose"]').click();
-  assert.match(await blockedPage.locator('[data-target="kingdom-timeline.status"]').textContent(), /Could not save/);
-  assert.equal(await blockedPage.locator('[data-target="kingdom-timeline.generation"]').inputValue(), '');
+  await blockedPage.locator('#generation-2 [data-kingdom="choose"]').click();
+  assert.match(await blockedPage.locator('[data-kingdom="status"]').textContent(), /Could not save/);
+  assert.equal(await blockedPage.locator('[data-kingdom="generation"]').inputValue(), '');
   await blocked.close();
   const noJS = await browser.newContext({ javaScriptEnabled: false });
   const staticPage = await noJS.newPage(); await staticPage.goto(origin + '/kingdom-timeline/');
   assert.equal(await staticPage.locator('.kingdom-milestone').count(), 11);
-  assert.equal(await staticPage.locator('[data-target="kingdom-timeline.generation"]').isDisabled(), true);
+  assert.equal(await staticPage.locator('[data-kingdom="generation"]').isDisabled(), true);
   await noJS.close();
   assert.deepEqual(errors, []);
   await context.close();

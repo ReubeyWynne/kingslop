@@ -55,44 +55,54 @@ self: heroes
     {% include page-sheet.html part="confirm" class="sheet-dialog" title="sheet.heroes.confirmTitle" title_en="Save these heroes as yours?" body="sheet.heroes.confirmBody" body_en="It replaces the heroes in your save." confirm="sheet.heroes.confirm" confirm_en="replace my heroes" %}
   </section>
   {% include lead-finder.html %}
-  <section class="section breakpoint" id="breakpoint" data-module="hero-breakpoint" aria-labelledby="breakpoint-title">
+  <section class="section breakpoint" id="breakpoint" x-data="heroBreakpoint" aria-labelledby="breakpoint-title">
     <h2 id="breakpoint-title" data-i18n="bp.title">Break points</h2>
     <p data-i18n="bp.intro">How far do you have to build one hero before it beats the other?</p>
-    <fieldset class="lead-jobs" disabled data-target="hero-breakpoint.controls">
+    <fieldset class="lead-jobs" disabled :disabled="!ready">
       <legend data-i18n="leads.job">Job</legend>
-      <label><input type="radio" name="bp-job" value="bear" checked data-target="hero-breakpoint.job" data-action="hero-breakpoint.run"><span data-i18n="leads.job.bear">Bear lead</span></label>
-      <label><input type="radio" name="bp-job" value="rally" data-target="hero-breakpoint.job" data-action="hero-breakpoint.run"><span data-i18n="leads.job.rally">Rally lead</span></label>
-      <label><input type="radio" name="bp-job" value="garrison" data-target="hero-breakpoint.job" data-action="hero-breakpoint.run"><span data-i18n="leads.job.garrison">Garrison lead</span></label>
+      <label><input type="radio" name="bp-job" value="bear" :checked="job === 'bear'" @change="job = 'bear'; run()"><span data-i18n="leads.job.bear">Bear lead</span></label>
+      <label><input type="radio" name="bp-job" value="rally" :checked="job === 'rally'" @change="job = 'rally'; run()"><span data-i18n="leads.job.rally">Rally lead</span></label>
+      <label><input type="radio" name="bp-job" value="garrison" :checked="job === 'garrison'" @change="job = 'garrison'; run()"><span data-i18n="leads.job.garrison">Garrison lead</span></label>
     </fieldset>
     {% assign bp_heroes = site.data.heroes.heroes | sort: 'generation' %}
     <div class="bp-pair">
-      <fieldset class="bp-hero" disabled data-side="a" data-target="hero-breakpoint.controls">
+      <fieldset class="bp-hero" disabled :disabled="!ready" data-side="a">
         <legend class="bp-legend" data-i18n="bp.side.a">Hero A</legend>
-        <div class="bp-face" data-target="hero-breakpoint.face" data-side="a"></div>
-        <label class="bp-wide"><select aria-label="Hero" data-side="a" data-field="key" data-target="hero-breakpoint.field" data-action="hero-breakpoint.pick">{% for troop in troops %}<optgroup label="{{ troop }}" data-troop="{{ troop }}" data-i18n-key="sim.calc.{{ troop }}" data-i18n-attr="label">{% assign typed_heroes = bp_heroes | where: 'type', troop %}{% for hero in typed_heroes %}<option value="{{ hero.key }}" data-troop="{{ troop }}">{{ hero.name | escape }} · G{{ hero.generation }}</option>{% endfor %}</optgroup>{% endfor %}</select></label>
-        <label><span data-i18n="bp.stars">Stars</span><select data-side="a" data-field="stars" data-target="hero-breakpoint.field" data-action="hero-breakpoint.run">{% for step in (0..30) %}{% assign whole = step | divided_by: 6 %}{% assign tier = step | modulo: 6 %}<option value="{{ step }}">{{ whole }}★{% if tier > 0 %} {{ tier }}/6{% endif %}</option>{% endfor %}</select></label>
-        <label><span data-i18n="bp.widget">Widget</span><select data-side="a" data-field="widget" data-target="hero-breakpoint.field" data-action="hero-breakpoint.run">{% for level in (0..10) %}<option value="{{ level }}">{% if level == 0 %}—{% else %}{{ level }}{% endif %}</option>{% endfor %}</select></label>
-        <div class="bp-skills"><span data-i18n="bp.skills">Skills</span>{% for slot in (0..2) %}<select data-side="a" data-field="skill" data-skill="{{ slot }}" data-target="hero-breakpoint.field" data-action="hero-breakpoint.run" aria-label="Skill {{ forloop.index }}"><option value="" data-i18n="bp.skillAuto">max</option>{% for level in (0..5) %}<option value="{{ level }}">{{ level }}</option>{% endfor %}</select>{% endfor %}</div>
+        <div class="bp-face"><template x-if="done"><img :src="face('a')" alt="" width="56" height="56" loading="lazy" decoding="async"></template></div>
+        <label class="bp-wide"><select aria-label="Hero" data-side="a" data-field="key" :value="a.key" @change="pick('a', $event.target.value)">{% for troop in troops %}<optgroup label="{{ troop }}" data-troop="{{ troop }}" data-i18n-key="sim.calc.{{ troop }}" data-i18n-attr="label">{% assign typed_heroes = bp_heroes | where: 'type', troop %}{% for hero in typed_heroes %}<option value="{{ hero.key }}" data-troop="{{ troop }}">{{ hero.name | escape }} · G{{ hero.generation }}</option>{% endfor %}</optgroup>{% endfor %}</select></label>
+        <label><span data-i18n="bp.stars">Stars</span><select data-side="a" data-field="stars" :value="a.stars" @change="a.stars = $event.target.value; run()">{% for step in (0..30) %}{% assign whole = step | divided_by: 6 %}{% assign tier = step | modulo: 6 %}<option value="{{ step }}">{{ whole }}★{% if tier > 0 %} {{ tier }}/6{% endif %}</option>{% endfor %}</select></label>
+        <label><span data-i18n="bp.widget">Widget</span><select data-side="a" data-field="widget" :value="a.widget" :disabled="!hasWidget('a')" @change="a.widget = $event.target.value; run()">{% for level in (0..10) %}<option value="{{ level }}">{% if level == 0 %}—{% else %}{{ level }}{% endif %}</option>{% endfor %}</select></label>
+        <div class="bp-skills"><span data-i18n="bp.skills">Skills</span>{% for slot in (0..2) %}<select data-side="a" data-field="skill" data-skill="{{ slot }}" :value="a.skills[{{ slot }}]" @change="a.skills[{{ slot }}] = $event.target.value; run()" aria-label="Skill {{ forloop.index }}"><option value="" data-i18n="bp.skillAuto">max</option>{% for level in (0..5) %}<option value="{{ level }}">{{ level }}</option>{% endfor %}</select>{% endfor %}</div>
       </fieldset>
-      <fieldset class="bp-hero" disabled data-side="b" data-target="hero-breakpoint.controls">
+      <fieldset class="bp-hero" disabled :disabled="!ready" data-side="b">
         <legend class="bp-legend" data-i18n="bp.side.b">Hero B</legend>
-        <div class="bp-face" data-target="hero-breakpoint.face" data-side="b"></div>
-        <label class="bp-wide"><select aria-label="Hero" data-side="b" data-field="key" data-target="hero-breakpoint.field" data-action="hero-breakpoint.pick">{% for troop in troops %}<optgroup label="{{ troop }}" data-troop="{{ troop }}" data-i18n-key="sim.calc.{{ troop }}" data-i18n-attr="label">{% assign typed_heroes = bp_heroes | where: 'type', troop %}{% for hero in typed_heroes %}<option value="{{ hero.key }}" data-troop="{{ troop }}">{{ hero.name | escape }} · G{{ hero.generation }}</option>{% endfor %}</optgroup>{% endfor %}</select></label>
-        <label><span data-i18n="bp.stars">Stars</span><select data-side="b" data-field="stars" data-target="hero-breakpoint.field" data-action="hero-breakpoint.run">{% for step in (0..30) %}{% assign whole = step | divided_by: 6 %}{% assign tier = step | modulo: 6 %}<option value="{{ step }}">{{ whole }}★{% if tier > 0 %} {{ tier }}/6{% endif %}</option>{% endfor %}</select></label>
-        <label><span data-i18n="bp.widget">Widget</span><select data-side="b" data-field="widget" data-target="hero-breakpoint.field" data-action="hero-breakpoint.run">{% for level in (0..10) %}<option value="{{ level }}">{% if level == 0 %}—{% else %}{{ level }}{% endif %}</option>{% endfor %}</select></label>
-        <div class="bp-skills"><span data-i18n="bp.skills">Skills</span>{% for slot in (0..2) %}<select data-side="b" data-field="skill" data-skill="{{ slot }}" data-target="hero-breakpoint.field" data-action="hero-breakpoint.run" aria-label="Skill {{ forloop.index }}"><option value="" data-i18n="bp.skillAuto">max</option>{% for level in (0..5) %}<option value="{{ level }}">{{ level }}</option>{% endfor %}</select>{% endfor %}</div>
+        <div class="bp-face"><template x-if="done"><img :src="face('b')" alt="" width="56" height="56" loading="lazy" decoding="async"></template></div>
+        <label class="bp-wide"><select aria-label="Hero" data-side="b" data-field="key" :value="b.key" @change="pick('b', $event.target.value)">{% for troop in troops %}<optgroup label="{{ troop }}" data-troop="{{ troop }}" data-i18n-key="sim.calc.{{ troop }}" data-i18n-attr="label" :hidden="type('a') !== '{{ troop }}'" :disabled="type('a') !== '{{ troop }}'">{% assign typed_heroes = bp_heroes | where: 'type', troop %}{% for hero in typed_heroes %}<option value="{{ hero.key }}" data-troop="{{ troop }}">{{ hero.name | escape }} · G{{ hero.generation }}</option>{% endfor %}</optgroup>{% endfor %}</select></label>
+        <label><span data-i18n="bp.stars">Stars</span><select data-side="b" data-field="stars" :value="b.stars" @change="b.stars = $event.target.value; run()">{% for step in (0..30) %}{% assign whole = step | divided_by: 6 %}{% assign tier = step | modulo: 6 %}<option value="{{ step }}">{{ whole }}★{% if tier > 0 %} {{ tier }}/6{% endif %}</option>{% endfor %}</select></label>
+        <label><span data-i18n="bp.widget">Widget</span><select data-side="b" data-field="widget" :value="b.widget" :disabled="!hasWidget('b')" @change="b.widget = $event.target.value; run()">{% for level in (0..10) %}<option value="{{ level }}">{% if level == 0 %}—{% else %}{{ level }}{% endif %}</option>{% endfor %}</select></label>
+        <div class="bp-skills"><span data-i18n="bp.skills">Skills</span>{% for slot in (0..2) %}<select data-side="b" data-field="skill" data-skill="{{ slot }}" :value="b.skills[{{ slot }}]" @change="b.skills[{{ slot }}] = $event.target.value; run()" aria-label="Skill {{ forloop.index }}"><option value="" data-i18n="bp.skillAuto">max</option>{% for level in (0..5) %}<option value="{{ level }}">{{ level }}</option>{% endfor %}</select>{% endfor %}</div>
       </fieldset>
     </div>
-    <fieldset class="bp-account" disabled data-target="hero-breakpoint.controls">
-      <label><span data-i18n="bp.account">Account</span><select data-target="hero-breakpoint.account" data-action="hero-breakpoint.run"><option value="mine" data-i18n="bp.account.mine">Mine</option>{% for foe in site.data.megafauna.foes %}<option value="{{ foe.id }}" data-i18n="leads.foe.{{ foe.id }}">{{ foe.name | escape }}</option>{% endfor %}</select></label>
-      <label><span data-i18n="bp.gen">Generation</span><select data-target="hero-breakpoint.gen" data-action="hero-breakpoint.run">{% for gen in site.data.megafauna.generations %}<option value="{{ gen }}">G{{ gen }}</option>{% endfor %}</select></label>
+    <fieldset class="bp-account" disabled :disabled="!ready">
+      <label><span data-i18n="bp.account">Account</span><select data-bp="account" :value="account" @change="account = $event.target.value; run()"><option value="mine" data-i18n="bp.account.mine">Mine</option>{% for foe in site.data.megafauna.foes %}<option value="{{ foe.id }}" data-i18n="leads.foe.{{ foe.id }}">{{ foe.name | escape }}</option>{% endfor %}</select></label>
+      <label><span data-i18n="bp.gen">Generation</span><select data-bp="gen" :value="gen" @change="gen = $event.target.value; run()">{% for gen in site.data.megafauna.generations %}<option value="{{ gen }}">G{{ gen }}</option>{% endfor %}</select></label>
     </fieldset>
-    <p class="note" data-target="hero-breakpoint.status" aria-live="polite"></p>
-    <article class="bp-result" data-target="hero-breakpoint.result" hidden aria-labelledby="bp-result-title">
-      <p class="lead-verdict" id="bp-result-title" data-target="hero-breakpoint.verdict"></p>
+    <p class="note" data-bp="status" aria-live="polite" x-text="status" @ks:server-age-change.document="aged()"></p>
+    <article class="bp-result" data-bp="result" :hidden="!done" hidden aria-labelledby="bp-result-title">
+      <p class="lead-verdict" id="bp-result-title" data-bp="verdict" x-text="verdict"></p>
       <div class="bp-grids">
-        <section class="bp-grid-block" data-target="hero-breakpoint.grid" data-grid="b"></section>
-        <section class="bp-grid-block" data-target="hero-breakpoint.grid" data-grid="a"></section>
+        <section class="bp-grid-block" data-grid="b"><template x-if="done"><div>
+          <p class="lead-kicker" x-text="grid('b').title"></p>
+          <p class="bp-line" x-text="grid('b').line"></p>
+          <table class="bp-grid"><thead><tr><td></td><template x-for="(tier, i) in grid('b').tiers" :key="i"><th scope="col" x-text="tier"></th></template></tr></thead>
+          <tbody><template x-for="row in grid('b').rows" :key="row.whole"><tr><th scope="row" x-text="row.name"></th><template x-for="cell in row.cells" :key="cell.at"><td :data-state="cell.state" :data-first="cell.first ? '' : null" :title="cell.title" :style="{'--need': cell.need}" x-text="cell.text"></td></template></tr></template></tbody></table>
+        </div></template></section>
+        <section class="bp-grid-block" data-grid="a"><template x-if="done"><div>
+          <p class="lead-kicker" x-text="grid('a').title"></p>
+          <p class="bp-line" x-text="grid('a').line"></p>
+          <table class="bp-grid"><thead><tr><td></td><template x-for="(tier, i) in grid('a').tiers" :key="i"><th scope="col" x-text="tier"></th></template></tr></thead>
+          <tbody><template x-for="row in grid('a').rows" :key="row.whole"><tr><th scope="row" x-text="row.name"></th><template x-for="cell in row.cells" :key="cell.at"><td :data-state="cell.state" :data-first="cell.first ? '' : null" :title="cell.title" :style="{'--need': cell.need}" x-text="cell.text"></td></template></tr></template></tbody></table>
+        </div></template></section>
       </div>
       <p class="lead-panel-note" data-i18n="bp.gridNote">W = widget level needed · ✓ no widget needed · — never</p>
     </article>

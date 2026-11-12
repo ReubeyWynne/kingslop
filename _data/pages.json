@@ -647,7 +647,7 @@
       "../js/lead-inputs.mjs",
       "../js/lead-account.mjs",
       "../js/pages/lead-finder.mjs",
-      "../js/hero-breakpoint.js",
+      "../js/pages/hero-breakpoint.mjs",
       "../js/empty-state.js"
     ],
     "footMainKey": "directory.title",
