@@ -8,7 +8,7 @@
      2. every character cell is reduced to one glyph and one ink: line glyphs where the
         silhouette (or the muzzle's depth) runs through it, otherwise a glyph from how bright
         the fur is, coloured by the fur under it (the nose keeps the darkest of the seven inks);
-     3. the cells are drawn from a glyph atlas, with the face (eyes, brows, mouth, blush) and
+     3. the cells are drawn from a glyph atlas, with the face (eyes in cleared sockets, brows, mouth, blush) and
         anything floating above it (z's, hearts, a thought) laid over them.
    The art only ever changes whole glyphs in a fixed grid: nothing is scaled, rotated or slid.
 
@@ -106,16 +106,15 @@ void main(){
   for(int j=0;j<SY;j++) for(int i=0;i<SX;i++){
     ivec2 t=b+ivec2(i,j); if(!cov(t)) continue; n++;
     vec4 dt=texelFetch(uData,t,0); col+=texelFetch(uCol,t,0).rgb; if(dt.b>0.7) nose++;
-    if(dt.a<0.5) continue;                         // lines only on the head: the body sinks back
-    bool l=cov(t-ivec2(1,0)), r=cov(t+ivec2(1,0)), u=cov(t+ivec2(0,1)), dn=cov(t-ivec2(0,1));
+        bool l=cov(t-ivec2(1,0)), r=cov(t+ivec2(1,0)), u=cov(t+ivec2(0,1)), dn=cov(t-ivec2(0,1));
     float d=dep(t); float fl=l?dep(t-ivec2(1,0)):1., fr=r?dep(t+ivec2(1,0)):1., fu=u?dep(t+ivec2(0,1)):1., fd=dn?dep(t-ivec2(0,1)):1.;
-    bool sil=!(l&&r&&u&&dn); bool step=dt.b>0.4 && abs(fl+fr+fu+fd-4.*d)>0.03;   // creases on the muzzle only: on the brow they read as a frown
+    bool sil=!(l&&r&&u&&dn); bool step=dt.a>0.5 && dt.b>0.4 && abs(fl+fr+fu+fd-4.*d)>0.03;   // creases on the muzzle only: on the brow they read as a frown
     if(sil||step){ edges++; float gx=fr-fl, gy=fu-fd; float a=mod(degrees(atan(gy,gx))+180.,180.);
       int k=(a<22.5||a>=157.5)?0:(a<67.5?3:(a<112.5?2:1)); hist[k]++; if(k==2) hy+=gy; }   // the line runs across the gradient
   }
   if(float(n)<0.2*float(SX*SY)){ o=vec4(0); oc=vec4(0); return; }
   col/=float(n); int ink=0; float best=9.;
-  float y=dot(col,vec3(.3,.59,.11)); vec3 hue=pow(clamp(mix(vec3(y),col,1.45)*1.1,0.,1.),vec3(.7));   // the fur's own colour, a little richer than the inks
+  float y=dot(col,vec3(.3,.59,.11)); vec3 hue=pow(clamp(mix(vec3(y),col,1.45)*1.15,0.,1.),vec3(.95));   // the fur's own colour, a little richer than the inks, its shadows left deep so the body keeps its form
   for(int k=0;k<7;k++){ vec3 dd=uInk[k]-col; float e=dot(dd,dd); if(e<best){best=e;ink=k;} }
   int g;
   oc=vec4(hue,1.);
@@ -295,7 +294,10 @@ void main(){
       pen.petCareSpots = [spot('head', [centre[0], centre[1] + 2]), spot('chin', [mouth[0], mouth[1] - 2]),
         ...cfg.cheeks.map(p => spot('cheeks', cellOf(apply(bones[2], p))))];
       const glyph = asleep || full || now < st.blinkUntil ? '-' : happy ? '^' : '●';
-      eyes.forEach(([c, r]) => put(c, r, glyph, EYE));
+      eyes.forEach(([c, r]) => {                                      // each eye sits in a dark socket, so it reads against bright fur
+        [[-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]].forEach(([dc, dr]) => put(c + dc, r + dr, ' ', 0, true));
+        put(c, r, glyph, EYE, true);
+      });
       if (low) { put(eyes[0][0], eyes[0][1] + 1, '/', 7); put(eyes[1][0], eyes[1][1] + 1, '\\', 7); }   // worried brows
       if (happy) cfg.cheeks.forEach(p => { const [c, r] = cellOf(apply(bones[2], p)); put(c, r, '~', BLUSH); });
       const chew = react === 'feed' && Math.floor(t / 150) % 2 === 0;

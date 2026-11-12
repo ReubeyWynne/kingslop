@@ -167,25 +167,6 @@ PETS = {
                   pivots=dict(neck=[0, 0.35, 0.2], head=[0, 0.4, 0.45], ear=[0.3, 0.4, 0.5], nose=[0, 0.0, 0.78]),
                   weights=dict(neck=dict(z=[0.1, 0.35]), head=dict(z=[0.35, 0.5]), ear=dict(y=[0.05, 0.15], x=[0.28, 0.34], c=[0.5, 0.5], r=[0.25, 0.35]), nose=dict(z=[0.65, 0.75], y=[-0.9, -0.1])),
                   scale=1.06)),
-    'cheetah': dict(
-        orient=dict(up=[0, 0, 1], fwd=[1, 0, 0]),
-        inks={'night': '#6B4A2A', 'umber': '#8E6638', 'bark': '#B0854A', 'fur': '#CDA45E', 'tawny': '#E3C27E', 'cream': '#F2DDAA', 'bone': '#FFF5DE'},
-        cols=72, rows=24, render_rows=30, yaw=-0.9, pitch=0.08, focus=dict(zmin=0.0, ymin=-0.2), start=dict(target=[0, 0.2, 0.5], dist=3.0),
-        fur=[0.86, 0.64, 0.34],
-        spots=dict(scale=30, cut=0.33, zmax=0.9, ymin=-0.45, rgb=[0.24, 0.15, 0.09]),
-        regions=dict(muzzle=dict(zmin=0.93, ymax=0.38, rgb=[1.0, 0.93, 0.8]),
-                     **{'tear-l': dict(xmin=-0.07, xmax=-0.03, ymin=0.31, ymax=0.41, zmin=0.955, rgb=[0.12, 0.08, 0.06]),
-                        'tear-r': dict(xmin=0.03, xmax=0.07, ymin=0.31, ymax=0.41, zmin=0.955, rgb=[0.12, 0.08, 0.06])},
-                     nose=dict(zmin=0.985, ymin=0.33, ymax=0.38, xmin=-0.035, xmax=0.035, rgb=[0.15, 0.1, 0.1])),
-        eyes=[(-0.051, 0.418, 0.981), (0.058, 0.42, 0.98)], head=dict(zmin=0.75),
-        rest=dict(lift=-0.2, turn=-0.4, scale=1.15), low=0.1, asleep=0.18,
-        neck=dict(pivot=[0, 0.32, 0.72], soft=[0.62, 0.8]),
-        ear_flick=dict(sel=dict(ymin=0.46, xmin=0.06, zmin=0.8), pivot=[0.1, 0.46, 0.88], axis=[0, 0, 1], angle=0.28),
-        sniff=dict(sel=dict(zmin=0.96, ymax=0.4), pivot=[0, 0.36, 0.98], scale=1.12, move=[0, 0.015, 0]),
-        live=dict(mouth=[0, 0.3, 0.98], top=[0, 0.55, 0.88], cheeks=[[-0.09, 0.36, 0.96], [0.09, 0.36, 0.96]],
-                  pivots=dict(neck=[0, 0.3, 0.5], head=[0, 0.35, 0.78], ear=[0.11, 0.47, 0.88], nose=[0, 0.36, 0.97]),
-                  weights=dict(neck=dict(z=[0.35, 0.6]), head=dict(z=[0.65, 0.8]), ear=dict(y=[0.45, 0.49], x=[0.07, 0.09], c=[0.11, 0.88], r=[0.05, 0.08]), nose=dict(z=[0.95, 0.99], y=[0.3, 0.34])),
-                  scale=1.15)),
     'moose': dict(
         orient=dict(up=[0, 1, 0], fwd=[0, 0, 1]),
         inks={'night': '#4A3427', 'umber': '#664837', 'bark': '#85604A', 'fur': '#A27B5F', 'tawny': '#BF997A', 'cream': '#DABA9C', 'bone': '#F4E6D6'},
@@ -242,6 +223,15 @@ PETS = {
 
 # The mighty, regal, great and ironclad pets are their base pet reskinned, with a small change to the model (`shape`, bent
 # into the rest pose by render.cjs and mesh.cjs) or to how it holds its head.
+# The cheetah is the panther's model in a spotted tawny coat with tear marks: a cat's build reads as a cheetah; the blocky model it had did not.
+PETS['cheetah'] = dict(PETS['alpha-black-panther'],
+    inks={'night': '#6B4A2A', 'umber': '#8E6638', 'bark': '#B0854A', 'fur': '#CDA45E', 'tawny': '#E3C27E', 'cream': '#F2DDAA', 'bone': '#FFF5DE'},
+    fur=[0.86, 0.64, 0.34],
+    spots=dict(scale=30, cut=0.33, zmax=0.86, ymin=-0.45, rgb=[0.24, 0.15, 0.09]),
+    regions={'muzzle': dict(zmin=0.95, ymax=0.15, rgb=[1.0, 0.93, 0.8]),
+             'tear-l': dict(xmin=-0.012, xmax=0.012, ymin=0.09, ymax=0.2, zmin=0.9, rgb=[0.34, 0.22, 0.13]),
+             'tear-r': dict(xmin=0.092, xmax=0.116, ymin=0.09, ymax=0.2, zmin=0.9, rgb=[0.34, 0.22, 0.13]),
+             'nose': dict(zmin=0.99, rgb=[0.15, 0.1, 0.1])})
 PETS['mighty-bison'] = dict(PETS['bison'],
     inks={'night': '#3A2420', 'umber': '#55332A', 'bark': '#744635', 'fur': '#935E44', 'tawny': '#B57D5B', 'cream': '#D7A77F', 'bone': '#F6E4C6'},
     fur=[0.44, 0.27, 0.19],
@@ -261,7 +251,7 @@ PETS['great-moose'] = dict(PETS['moose'],
     inks={'night': '#3A2A22', 'umber': '#55402F', 'bark': '#725A43', 'fur': '#8E7559', 'tawny': '#AC9375', 'cream': '#CDB698', 'bone': '#EEE3D2'},
     fur=[0.42, 0.31, 0.23],
     regions=dict(PETS['moose']['regions'], antlers=dict(ymin=0.47, rgb=[0.95, 0.88, 0.72])),
-    shape=[dict(sel=dict(ymin=0.45), pivot=[0, 0.47, 0.66], scale=0.7)])
+    shape=[dict(sel=dict(ymin=0.45), pivot=[0, 0.47, 0.66], scale=0.7)], fill=0.68)   # pulled back so the bigger antlers stay inside the pen
 PETS['ironclad-war-bear'] = dict(PETS['grizzly-bear'],
     inks={'night': '#3F4652', 'umber': '#56606E', 'bark': '#6F7A89', 'fur': '#8A95A3', 'tawny': '#A8B1BD', 'cream': '#C8CED6', 'bone': '#EEF1F4'},
     fur=[0.5, 0.52, 0.56],
