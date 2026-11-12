@@ -261,7 +261,7 @@ PETS['great-moose'] = dict(PETS['moose'],
     inks={'night': '#3A2A22', 'umber': '#55402F', 'bark': '#725A43', 'fur': '#8E7559', 'tawny': '#AC9375', 'cream': '#CDB698', 'bone': '#EEE3D2'},
     fur=[0.42, 0.31, 0.23],
     regions=dict(PETS['moose']['regions'], antlers=dict(ymin=0.47, rgb=[0.95, 0.88, 0.72])),
-    shape=[dict(sel=dict(ymin=0.45), pivot=[0, 0.47, 0.66], scale=0.7)])
+    shape=[dict(sel=dict(ymin=0.45), pivot=[0, 0.47, 0.66], scale=0.7)], fill=0.68)   # pulled back so the bigger antlers stay inside the pen
 PETS['ironclad-war-bear'] = dict(PETS['grizzly-bear'],
     inks={'night': '#3F4652', 'umber': '#56606E', 'bark': '#6F7A89', 'fur': '#8A95A3', 'tawny': '#A8B1BD', 'cream': '#C8CED6', 'bone': '#EEF1F4'},
     fur=[0.5, 0.52, 0.56],
