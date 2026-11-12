@@ -64,6 +64,7 @@ def poses(cfg):
 PETS = {
     'grizzly-bear': dict(
         orient=dict(up=[0, 0, 1], fwd=[0, -1, 0]),
+        eye=[1.0, 0.93, 0.8],
         inks={'night': '#6E4636', 'umber': '#93604A', 'bark': '#B67F5A', 'fur': '#D49C6C', 'tawny': '#EDBC86', 'cream': '#F8DDB0', 'bone': '#FFF5E2'},
         cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(zmin=0.3, ymin=-0.2),
         fur=[0.62, 0.40, 0.27],
@@ -81,6 +82,7 @@ PETS = {
                   scale=1.12)),
     'gray-wolf': dict(
         orient=dict(up=[0, 0, 1], fwd=[0, -1, 0]),
+        eye=[1.0, 0.82, 0.36],
         inks={'night': '#4C4E5C', 'umber': '#666A7A', 'bark': '#848899', 'fur': '#A4A8B6', 'tawny': '#C3C5CE', 'cream': '#DEDDDC', 'bone': '#F7F4EE'},
         cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(zmin=0.45, ymin=-0.2),
         fur=[0.56, 0.57, 0.63],
@@ -98,6 +100,7 @@ PETS = {
                   scale=1.12)),
     'bison': dict(
         orient=dict(up=[0, 0, 1], fwd=[0, -1, 0]),
+        eye=[1.0, 0.92, 0.78],
         inks={'night': '#4A3128', 'umber': '#694535', 'bark': '#895D44', 'fur': '#A87956', 'tawny': '#C79A70', 'cream': '#E2C29C', 'bone': '#F8EDDA'},
         cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(zmin=0.55, ymin=-0.3),
         fur=[0.5, 0.33, 0.24],
@@ -117,6 +120,7 @@ PETS = {
                   scale=1.12)),
     'lion': dict(
         orient=dict(up=[0, 0, 1], fwd=[0, -1, 0]),
+        eye=[1.0, 1.0, 0.88],
         inks={'night': '#7A4826', 'umber': '#9C6330', 'bark': '#BE8240', 'fur': '#D9A255', 'tawny': '#EBC175', 'cream': '#F6DDA2', 'bone': '#FFF4D8'},
         cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(ymin=0.15, zmin=0.0), fill=0.7, start=dict(target=[0, 0.6, 0.3], dist=3.0),
         fur=[0.86, 0.64, 0.36],
@@ -134,6 +138,7 @@ PETS = {
                   scale=1.06)),
     'alpha-black-panther': dict(
         orient=dict(up=[0, 0, 1], fwd=[-1, 0, 0]),
+        eye=[0.62, 1.0, 0.56],
         inks={'night': '#433E58', 'umber': '#585273', 'bark': '#6F688E', 'fur': '#8881A8', 'tawny': '#A6A0C2', 'cream': '#C7C2DA', 'bone': '#EEEBF6'},
         cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(zmin=0.45, ymin=-0.1), start=dict(target=[0, 0.25, 0.75], dist=2.5),
         fur=[0.5, 0.47, 0.62],
@@ -150,6 +155,7 @@ PETS = {
                   scale=1.12)),
     'ironclad-war-elephant': dict(
         orient=dict(up=[0, 1, 0], fwd=[1, 0, 0]),
+        eye=[0.82, 0.92, 1.0],
         inks={'night': '#55504F', 'umber': '#716A69', 'bark': '#8E8684', 'fur': '#ABA29F', 'tawny': '#C6BEBA', 'cream': '#DFD8D3', 'bone': '#F7F2EC'},
         cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(zmin=0.4, ymin=-0.5), start=dict(target=[0, 0.2, 0.6], dist=3.0),
         fur=[0.62, 0.58, 0.57],
@@ -169,6 +175,7 @@ PETS = {
                   scale=1.06)),
     'moose': dict(
         orient=dict(up=[0, 1, 0], fwd=[0, 0, 1]),
+        eye=[1.0, 0.92, 0.78],
         inks={'night': '#4A3427', 'umber': '#664837', 'bark': '#85604A', 'fur': '#A27B5F', 'tawny': '#BF997A', 'cream': '#DABA9C', 'bone': '#F4E6D6'},
         cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(zmin=0.55, ymin=-0.1, xmin=-0.3, xmax=0.3), start=dict(target=[0, 0.3, 0.75], dist=3.0),
         fur=[0.52, 0.38, 0.28],
@@ -187,6 +194,7 @@ PETS = {
                   scale=1.08)),
     'giant-rhino': dict(
         orient=dict(up=[0, 1, 0], fwd=[1, 0, 0]),
+        eye=[1.0, 0.93, 0.82],
         inks={'night': '#4E4A48', 'umber': '#6A6461', 'bark': '#878079', 'fur': '#A39C94', 'tawny': '#BEB8AF', 'cream': '#D9D4CC', 'bone': '#F4F1EC'},
         cols=72, rows=24, render_rows=30, yaw=-0.5, pitch=0.05, focus=dict(zmin=0.4, ymin=-0.45), start=dict(target=[0, 0.0, 0.6], dist=2.5),
         fur=[0.6, 0.57, 0.53],
@@ -203,6 +211,7 @@ PETS = {
                   scale=1.1)),
     'lynx': dict(
         orient=dict(up=[0, 0, 1], fwd=[-0.71, -0.70, 0]),
+        eye=[0.8, 0.96, 0.46],
         inks={'night': '#5C4535', 'umber': '#7F604A', 'bark': '#A07E62', 'fur': '#BF9C7C', 'tawny': '#D8BA98', 'cream': '#EBD6BC', 'bone': '#FAF1E4'},
         cols=72, rows=24, render_rows=30, yaw=-0.2, pitch=0.05, focus=dict(ymin=0.1, xmin=0.45), start=dict(target=[0.75, 0.5, -0.1], dist=2.0),
         fur=[0.78, 0.62, 0.48],
@@ -225,6 +234,7 @@ PETS = {
 # into the rest pose by render.cjs and mesh.cjs) or to how it holds its head.
 # The cheetah is the panther's model in a spotted tawny coat with tear marks: a cat's build reads as a cheetah; the blocky model it had did not.
 PETS['cheetah'] = dict(PETS['alpha-black-panther'],
+    eye=[0.86, 1.0, 0.66],
     inks={'night': '#6B4A2A', 'umber': '#8E6638', 'bark': '#B0854A', 'fur': '#CDA45E', 'tawny': '#E3C27E', 'cream': '#F2DDAA', 'bone': '#FFF5DE'},
     fur=[0.86, 0.64, 0.34],
     spots=dict(scale=30, cut=0.33, zmax=0.86, ymin=-0.45, rgb=[0.24, 0.15, 0.09]),
@@ -232,7 +242,9 @@ PETS['cheetah'] = dict(PETS['alpha-black-panther'],
              'tear-l': dict(xmin=-0.012, xmax=0.012, ymin=0.09, ymax=0.2, zmin=0.9, rgb=[0.34, 0.22, 0.13]),
              'tear-r': dict(xmin=0.092, xmax=0.116, ymin=0.09, ymax=0.2, zmin=0.9, rgb=[0.34, 0.22, 0.13]),
              'nose': dict(zmin=0.99, rgb=[0.15, 0.1, 0.1])})
+STEEL, GOLD = [0.9, 0.93, 1.0], [1.0, 0.8, 0.3]
 PETS['mighty-bison'] = dict(PETS['bison'],
+    eye=[1.0, 0.6, 0.3],
     inks={'night': '#3A2420', 'umber': '#55332A', 'bark': '#744635', 'fur': '#935E44', 'tawny': '#B57D5B', 'cream': '#D7A77F', 'bone': '#F6E4C6'},
     fur=[0.44, 0.27, 0.19],
     regions={**PETS['bison']['regions'], 'mane': dict(ymin=0.05, zmax=0.82, rgb=[0.6, 0.38, 0.24]),
@@ -241,6 +253,7 @@ PETS['mighty-bison'] = dict(PETS['bison'],
            dict(sel=dict(xmin=0.22, ymin=0.18, zmin=0.65), pivot=[0.24, 0.2, 0.76], scale=1.3)],
     rest=dict(PETS['bison']['rest'], lift=-0.3))
 PETS['regal-white-lion'] = dict(PETS['lion'],
+    eye=[0.6, 0.86, 1.0],
     inks={'night': '#6E6A8C', 'umber': '#A07A48', 'bark': '#C9984E', 'fur': '#E2B868', 'tawny': '#EED6A2', 'cream': '#F8EEDB', 'bone': '#FFFFFF'},
     fur=[0.95, 0.9, 0.8],
     regions=dict(mane=dict(PETS['lion']['regions']['mane'], rgb=[0.95, 0.68, 0.32]),
@@ -248,11 +261,13 @@ PETS['regal-white-lion'] = dict(PETS['lion'],
                  nose=dict(PETS['lion']['regions']['nose'], rgb=[0.82, 0.45, 0.48])),
     rest=dict(PETS['lion']['rest'], lift=-0.1, scale=1.1))
 PETS['great-moose'] = dict(PETS['moose'],
+    eye=[0.74, 0.92, 1.0],
     inks={'night': '#3A2A22', 'umber': '#55402F', 'bark': '#725A43', 'fur': '#8E7559', 'tawny': '#AC9375', 'cream': '#CDB698', 'bone': '#EEE3D2'},
     fur=[0.42, 0.31, 0.23],
     regions=dict(PETS['moose']['regions'], antlers=dict(ymin=0.47, rgb=[0.95, 0.88, 0.72])),
     shape=[dict(sel=dict(ymin=0.45), pivot=[0, 0.47, 0.66], scale=0.7)], fill=0.68)   # pulled back so the bigger antlers stay inside the pen
 PETS['ironclad-war-bear'] = dict(PETS['grizzly-bear'],
+    eye=[1.0, 0.45, 0.36],
     inks={'night': '#3F4652', 'umber': '#56606E', 'bark': '#6F7A89', 'fur': '#8A95A3', 'tawny': '#A8B1BD', 'cream': '#C8CED6', 'bone': '#EEF1F4'},
     fur=[0.5, 0.52, 0.56],
     regions=dict(ears=dict(PETS['grizzly-bear']['regions']['ears'], rgb=[0.64, 0.66, 0.72]),
@@ -263,9 +278,53 @@ PETS['ironclad-war-bear'] = dict(PETS['grizzly-bear'],
     rest=dict(PETS['grizzly-bear']['rest'], turn=-0.35))
 
 
+def solid(points, faces):
+    """A convex solid's triangles, wound to face outwards."""
+    P = np.array(points, float); centre = P.mean(0); out = []
+    for f in faces:
+        a, b, c = P[list(f)]
+        out.append([a, b, c] if np.cross(b - a, c - a) @ (a - centre) > 0 else [a, c, b])
+    return np.array(out)
+
+
+def prop(spec):
+    """One piece worn by a variant, as triangles in model space: a `box` (centre `c`, size `s`), a `drum` (an upright
+    ring of `n` sides: centre `c`, radius `r`, height `h`) or a `spike` (from `base` to `tip`, `r` wide at the base)."""
+    kind = spec['kind']
+    if kind == 'box':
+        c, h = np.array(spec['c'], float), np.array(spec['s'], float) / 2
+        pts = [c + h * [x, y, z] for x in (-1, 1) for y in (-1, 1) for z in (-1, 1)]
+        return solid(pts, [(0, 1, 3), (0, 3, 2), (4, 5, 7), (4, 7, 6), (0, 1, 5), (0, 5, 4), (2, 3, 7), (2, 7, 6), (0, 2, 6), (0, 6, 4), (1, 3, 7), (1, 7, 5)])
+    n = spec.get('n', 8 if kind == 'drum' else 5)
+    if kind == 'drum':
+        c, r, h = np.array(spec['c'], float), spec['r'], spec['h'] / 2
+        ring = [c + [r * np.cos(t), y, r * np.sin(t)] for y in (-h, h) for t in np.arange(n) * 2 * np.pi / n]
+        faces = [f for i in range(n) for f in ((i, (i + 1) % n, n + i), ((i + 1) % n, n + (i + 1) % n, n + i))]
+        faces += [(0, i, i + 1) for i in range(1, n - 1)] + [(n, n + i, n + i + 1) for i in range(1, n - 1)]
+        return solid(ring, faces)
+    base, tip = np.array(spec['base'], float), np.array(spec['tip'], float)
+    axis = (tip - base) / np.linalg.norm(tip - base); u = np.cross(axis, [0.3, 0.5, 0.81]); u /= np.linalg.norm(u); v = np.cross(axis, u)
+    ring = [base + spec['r'] * (np.cos(t) * u + np.sin(t) * v) for t in np.arange(n) * 2 * np.pi / n]
+    return solid(ring + [tip], [(i, (i + 1) % n, n) for i in range(n)] + [(0, i, i + 1) for i in range(1, n - 1)])
+
+
+def dressed(cfg):
+    """A pet with its `props` built: their triangles under `extra`, and one region each (its box, a little loose) so
+    the piece takes its own colour. A `metal` piece glints in the live pen."""
+    if not cfg.get('props'):
+        return cfg
+    regions, extra = dict(cfg['regions']), []
+    for i, spec in enumerate(cfg['props']):
+        tris = prop(spec); extra.append(tris)
+        lo, hi = tris.reshape(-1, 3).min(0) - 0.012, tris.reshape(-1, 3).max(0) + 0.012
+        regions[f'prop-{i}'] = dict({f'{a}{m}': round(float(v[k]), 3) for k, a in enumerate('xyz') for m, v in (('min', lo), ('max', hi))},
+                                    rgb=spec['rgb'], **({'metal': 1} if spec.get('metal') else {}))
+    return dict(cfg, regions=regions, extra=[round(float(v), 4) for v in np.concatenate(extra).ravel()])
+
+
 def model(cfg):
-    """How render.cjs and mesh.cjs read the model: turned by `orient`, then reshaped by a variant's `shape`."""
-    return dict(cfg['orient'], shape=cfg.get('shape', []))
+    """How render.cjs and mesh.cjs read the model: turned by `orient`, given a variant's `extra` pieces, then reshaped by its `shape`."""
+    return dict(cfg['orient'], shape=cfg.get('shape', []), extra=cfg.get('extra', []), range=cfg.get('range', 1))
 
 
 def render(stl, tmp, cols, rows, modes=('lit', 'normal', 'depth', 'pos'), **opts):
@@ -401,15 +460,15 @@ def shade(R, cfg, cols, rows, eye='o', mouth='w', body_dim=0.8, edge_frac=0.1, d
 def live(cfg, cam):
     """What js/pet-live.js needs besides the mesh: inks, fur regions, face, skeleton and camera."""
     ids = {'muzzle': 2, 'nose': 3}
-    regions = [dict(id=ids.get(name, 1), rgb=spec['rgb'], **{k: v for k, v in spec.items() if k != 'rgb'}) for name, spec in cfg['regions'].items()]
+    regions = [dict(id=4 if spec.get('metal') else ids.get(name, 1), rgb=spec['rgb'], **{k: v for k, v in spec.items() if k not in ('rgb', 'metal')}) for name, spec in cfg['regions'].items()]
     return dict(inks=list(cfg['inks'].values()), fur=cfg['fur'], regions=regions, head=cfg['head'], ramp=ramp(cfg), eyes=[list(e) for e in cfg['eyes']],
                 rest=dict(lift=cfg['rest']['lift'], turn=cfg['rest']['turn'], scale=cfg['live']['scale']),
                 camera={k: cam[k] for k in ('yaw', 'pitch', 'fov', 'dist', 'target')}, lights=dict(key=LIGHT['keypos'], rim=[2, 0.6, -1.5]),
-                **({'spots': cfg['spots']} if 'spots' in cfg else {}), **{k: v for k, v in cfg['live'].items() if k != 'scale'})
+                **({'spots': cfg['spots']} if 'spots' in cfg else {}), **({'eye': cfg['eye']} if 'eye' in cfg else {}), **({'range': cfg['range']} if 'range' in cfg else {}), **{k: v for k, v in cfg['live'].items() if k != 'scale'})
 
 
 def main(pet, stl):
-    cfg = PETS[pet]
+    cfg = dressed(PETS[pet])
     cols, rows, tall = cfg['cols'], cfg['rows'], cfg['render_rows']
     subprocess.run(['node', os.path.join(HERE, 'mesh.cjs'), pet, stl, json.dumps(dict(model(cfg), tris=cfg.get('tris', 1000)))], check=True)
     with tempfile.TemporaryDirectory() as tmp:
@@ -433,5 +492,19 @@ def main(pet, stl):
     print(f'{pet}: {len(baked)} poses, rows {top}..{top + rows} of {tall}')
 
 
+def relive(pet):
+    """Rewrite pets/models/<pet>.json from PETS, keeping the camera it was baked with (for a change that needs no new frames)."""
+    path = os.path.join(LIVE, f'{pet}.json')
+    with open(path) as f:
+        cam = json.load(f)['camera']
+    with open(path, 'w') as f:
+        json.dump(live(dressed(PETS[pet]), cam), f, separators=(',', ':'))
+        f.write('\n')
+
+
 if __name__ == '__main__':
-    main(*sys.argv[1:3])
+    if sys.argv[1] == '--live':                 # python3 shade.py --live [pet ...]
+        for name in sys.argv[2:] or PETS:
+            relive(name)
+    else:
+        main(*sys.argv[1:3])

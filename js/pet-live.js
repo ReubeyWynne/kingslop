@@ -8,7 +8,7 @@
      2. every character cell is reduced to one glyph and one ink: line glyphs where the
         silhouette (or the muzzle's depth) runs through it, otherwise a glyph from how bright
         the fur is, coloured by the fur under it (the nose keeps the darkest of the seven inks);
-     3. the cells are drawn from a glyph atlas, with the face (eyes in cleared sockets, brows, mouth, blush) and
+     3. the cells are drawn from a glyph atlas, with the face (eyes, brows, mouth, blush) and
         anything floating above it (z's, hearts, a thought) laid over them.
    The art only ever changes whole glyphs in a fixed grid: nothing is scaled, rotated or slid.
 
@@ -25,8 +25,8 @@
   const COLS = 90, ROWS = 30, ART = 25, SX = 4, SY = 8;   // the model fills the lower 25 rows; z's and hearts rise into the rest
   const GLYPHS = " .:-=+*#%@|/_\\o-^w●ωzZO()><♥~vu,'‾";
   const G = c => GLYPHS.indexOf(c);
-  // Overlay inks after the seven fur inks: eye, blush, sky, dim sky, coral, tongue.
-  const EYE = 6, BLUSH = 8, SKY = 9, DIM = 10, CORAL = 11, TONGUE = 12;
+  // Overlay inks after the seven fur inks: dark, blush, sky, dim sky, coral, tongue, and the pet's own eye colour.
+  const EYE = 6, BLUSH = 8, SKY = 9, DIM = 10, CORAL = 11, TONGUE = 12, IRIS = 13;
   const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255);
   const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
@@ -102,13 +102,13 @@ float dep(ivec2 t){ vec4 d=texelFetch(uData,t,0); return d.r + d.g/255.; }
 bool cov(ivec2 t){ return texelFetch(uCol,t,0).a>0.5; }
 void main(){
   ivec2 c=ivec2(gl_FragCoord.xy); ivec2 b=c*ivec2(SX,SY);
-  float hy=0.; int n=0, nose=0, edges=0; vec3 col=vec3(0); int hist[4]=int[4](0,0,0,0);
+  float hy=0., front=1.; int n=0, nose=0, edges=0; vec3 col=vec3(0); int hist[4]=int[4](0,0,0,0);
   for(int j=0;j<SY;j++) for(int i=0;i<SX;i++){
     ivec2 t=b+ivec2(i,j); if(!cov(t)) continue; n++;
-    vec4 dt=texelFetch(uData,t,0); col+=texelFetch(uCol,t,0).rgb; if(dt.b>0.7) nose++;
+    vec4 dt=texelFetch(uData,t,0); col+=texelFetch(uCol,t,0).rgb; front=min(front, dt.r + dt.g/255.); if(dt.b>0.7 && dt.b<0.9) nose++;
         bool l=cov(t-ivec2(1,0)), r=cov(t+ivec2(1,0)), u=cov(t+ivec2(0,1)), dn=cov(t-ivec2(0,1));
     float d=dep(t); float fl=l?dep(t-ivec2(1,0)):1., fr=r?dep(t+ivec2(1,0)):1., fu=u?dep(t+ivec2(0,1)):1., fd=dn?dep(t-ivec2(0,1)):1.;
-    bool sil=!(l&&r&&u&&dn); bool step=dt.a>0.5 && dt.b>0.4 && abs(fl+fr+fu+fd-4.*d)>0.03;   // creases on the muzzle only: on the brow they read as a frown
+    bool sil=!(l&&r&&u&&dn); bool step=(dt.b>0.9 || (dt.a>0.5 && dt.b>0.4)) && abs(fl+fr+fu+fd-4.*d)>0.03;   // creases on the muzzle only: on the brow they read as a frown
     if(sil||step){ edges++; float gx=fr-fl, gy=fu-fd; float a=mod(degrees(atan(gy,gx))+180.,180.);
       int k=(a<22.5||a>=157.5)?0:(a<67.5?3:(a<112.5?2:1)); hist[k]++; if(k==2) hy+=gy; }   // the line runs across the gradient
   }
@@ -121,20 +121,22 @@ void main(){
   if(float(nose)>0.3*float(n)){ g=9; ink=0; oc.a=0.; }
   else if(float(edges)>0.1*float(SX*SY)){ int k=0; for(int m=1;m<4;m++) if(hist[m]>hist[k]) k=m; g=(k==2 && hy>0.) ? 33 : 10+k; ink=min(ink+2,6); oc.rgb=min(hue*1.25+0.08,1.); }   // a top edge hangs from the cell's top
   else { float t=min(0.999,dot(col,vec3(.5,.35,.15))/${(+cfg.ramp).toFixed(3)}); g=clamp(int(t*10.),1,8); }   // '@' is kept for the nose
-  o=vec4(float(g)/255., float(ink)/255., 1., 1.);
+  o=vec4(float(g)/255., float(ink)/255., 1., front);   // and how near the model comes in this cell, so the face is never drawn through it
 }`;
   const screenFS = `#version 300 es
-precision highp float; uniform sampler2D uCells, uCellCol, uAtlas, uOver; uniform vec2 uCell; uniform vec3 uAll[13]; uniform vec4 uMono; uniform float uGlyphs; out vec4 o;
+precision highp float; uniform sampler2D uCells, uCellCol, uAtlas, uOver; uniform vec2 uCell; uniform vec3 uAll[14]; uniform vec4 uMono; uniform float uGlyphs; out vec4 o;
 void main(){
   vec2 f=gl_FragCoord.xy; ivec2 c=ivec2(floor(f/uCell)); vec2 local=fract(f/uCell);
   vec4 cell=texelFetch(uCells,c,0); int g=int(cell.r*255.+.5), ink=int(cell.g*255.+.5);
   vec4 ov=texelFetch(uOver,c,0); int om=int(ov.b*255.+.5);
   vec4 hue=texelFetch(uCellCol,c,0);
-  if(om==2 || (om==1 && cell.b>0.5)){ g=int(ov.r*255.+.5); ink=int(ov.g*255.+.5); hue.a=0.; }
+  bool seen=ov.a==0. || ov.a<=cell.a+0.04; float dim=1.;                      // a mark with a depth shows only where nothing stands in front of it
+  if(om==3){ if(cell.b>0.5 && seen) dim=0.3; }                                 // shade: the cell keeps its glyph and darkens
+  else if(om==2 || (om==1 && cell.b>0.5 && seen)){ g=int(ov.r*255.+.5); ink=int(ov.g*255.+.5); hue.a=0.; }
   if(g==0){ o=vec4(0); return; }
   float a=texture(uAtlas, vec2((float(g)+local.x)/uGlyphs, local.y)).r;
   vec3 col=uMono.a>0.5 ? uMono.rgb : hue.a>0.5 ? hue.rgb : uAll[ink];
-  o=vec4(col*a, a);
+  o=vec4(col*a*dim, a);
 }`;
 
   // Phones keep only a few WebGL contexts alive (Android Chrome, eight) and drop the oldest past that, so
@@ -186,7 +188,7 @@ void main(){
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, tCellCol, 0);
     gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
     const inkRGB = new Float32Array(cfg.inks.flatMap(rgb));
-    const allRGB = new Float32Array(cfg.inks.concat(['#2B1B19', '#F49A9A', '#CFEAF6', '#7FA3B3', '#F0907A', '#EA7F86']).flatMap(rgb));
+    const allRGB = new Float32Array(cfg.inks.concat(['#2B1B19', '#F49A9A', '#CFEAF6', '#7FA3B3', '#F0907A', '#EA7F86']).flatMap(rgb).concat(cfg.eye || [1, 0.95, 0.86]));
 
     // the camera shade.py framed the model with, its art pushed into the bottom ART rows
     const cam = cfg.camera;
@@ -201,6 +203,7 @@ void main(){
     const at = p => { const v = [dot(xr, sub(p, eye)), dot(yu, sub(p, eye)), dot(zf, sub(p, eye))];
       return [((v[0] * ft / aspect) / -v[2] + 1) / 2 * COLS, ((v[1] * ft * ky) / -v[2] - oy + 1) / 2 * ROWS]; };
     const cellOf = p => at(p).map(Math.floor);
+    const depthOf = p => Math.max(1, Math.min(255, Math.round((-dot(zf, sub(p, eye)) - near) / (far - near) * 255)));
     // Every pet follows the pointer as far: its eyes sweep about a fifth of the pen across and a sixth up and down,
     // however big its head is in the frame or however far its eyes sit from the neck.
     const eyeAt = (turn, lift) => at(apply(skeleton(cfg, { lift: cfg.rest.lift + lift, turn: cfg.rest.turn + turn, tilt: 0, earL: 0, earR: 0, earBack: 0, sniff: 1 })[2], cfg.eyes[0]));
@@ -284,9 +287,10 @@ void main(){
 
       // ── the face, and whatever floats above it, laid over the shaded cells ──
       over.fill(0);
-      const put = (c, r, ch, ink, anywhere) => { if (c < 0 || r < 0 || c >= COLS || r >= ROWS) return; const i = (r * COLS + c) * 4; over[i] = G(ch); over[i + 1] = ink; over[i + 2] = anywhere ? 2 : 1; };
+      const put = (c, r, ch, ink, anywhere, depth) => { if (c < 0 || r < 0 || c >= COLS || r >= ROWS) return; const i = (r * COLS + c) * 4; over[i] = G(ch); over[i + 1] = ink; over[i + 2] = anywhere ? 2 : 1; over[i + 3] = depth || 0; };
+      const shadow = (c, r, depth) => { if (c < 0 || r < 0 || c >= COLS || r >= ROWS) return; const i = (r * COLS + c) * 4; if (!over[i + 2]) { over[i + 2] = 3; over[i + 3] = depth; } };
       const text = (c, r, str, inks) => [...str].forEach((ch, i) => ch !== ' ' && put(c + i, r, ch, Array.isArray(inks) ? inks[i] : inks, true));
-      const eyes = cfg.eyes.map(p => cellOf(apply(bones[2], p))).sort((a, b) => a[0] - b[0]);
+      const eyes = cfg.eyes.map(p => { const q = apply(bones[2], p); return [...cellOf(q), depthOf(q)]; }).sort((a, b) => a[0] - b[0]);
       const mouth = cellOf(apply(bones[5], cfg.mouth)); mouth[1] -= 1;
       const top = cellOf(apply(bones[2], cfg.top)), t = now - st.moodAt;
       const centre = [(eyes[0][0] + eyes[1][0]) / 2, (eyes[0][1] + eyes[1][1]) / 2];
@@ -294,9 +298,9 @@ void main(){
       pen.petCareSpots = [spot('head', [centre[0], centre[1] + 2]), spot('chin', [mouth[0], mouth[1] - 2]),
         ...cfg.cheeks.map(p => spot('cheeks', cellOf(apply(bones[2], p))))];
       const glyph = asleep || full || now < st.blinkUntil ? '-' : happy ? '^' : '●';
-      eyes.forEach(([c, r]) => {                                      // each eye sits in a dark socket, so it reads against bright fur
-        [[-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]].forEach(([dc, dr]) => put(c + dc, r + dr, ' ', 0, true));
-        put(c, r, glyph, EYE, true);
+      eyes.forEach(([c, r, d]) => {                                   // each eye in its own colour, the fur beside and above it in shadow so it reads against bright fur
+        put(c, r, glyph, IRIS, false, d);
+        [[-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]].forEach(([dc, dr]) => shadow(c + dc, r + dr, d));
       });
       if (low) { put(eyes[0][0], eyes[0][1] + 1, '/', 7); put(eyes[1][0], eyes[1][1] + 1, '\\', 7); }   // worried brows
       if (happy) cfg.cheeks.forEach(p => { const [c, r] = cellOf(apply(bones[2], p)); put(c, r, '~', BLUSH); });
@@ -358,7 +362,7 @@ void main(){
     return Promise.all([get('json', 'json'), get('bin', 'arrayBuffer')]).then(([cfg, buf]) => {
       const head = new DataView(buf), nv = head.getUint32(0, true), ni = head.getUint32(4, true), at = 8 + Math.ceil(nv * 6 / 4) * 4;
       const q = new Int16Array(buf, 8, nv * 3), tri = new Uint16Array(buf, at, ni), pos = new Float32Array(nv * 3);
-      q.forEach((v, i) => { pos[i] = v / 32767; });
+      q.forEach((v, i) => { pos[i] = v / 32767 * (cfg.range || 1); });   // a crowned or antlered variant may stand taller than the base model
       return [cfg, { pos: pos, tri: tri }];
     });
   }

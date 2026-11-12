@@ -27,7 +27,7 @@ const right = [up[1] * fwd[2] - up[2] * fwd[1], up[2] * fwd[0] - up[0] * fwd[2],
 function bend(v) {
   for (const d of opt.shape || []) {
     const s = d.sel || {};
-    if (v[1] < (s.ymin ?? -9) || v[1] > (s.ymax ?? 9) || v[0] < (s.xmin ?? -9) || v[0] > (s.xmax ?? 9) || v[2] < (s.zmin ?? -9)) continue;
+    if (v[1] < (s.ymin ?? -9) || v[1] > (s.ymax ?? 9) || v[0] < (s.xmin ?? -9) || v[0] > (s.xmax ?? 9) || v[2] < (s.zmin ?? -9) || v[2] > (s.zmax ?? 9)) continue;
     let w = 1;
     if (d.soft) { const t = Math.min(1, Math.max(0, (v[d.softAxis ?? 2] - d.soft[0]) / (d.soft[1] - d.soft[0]))); w = t * t * (3 - 2 * t); }
     const k = unit(d.axis || [0, 0, 1]), a = (d.angle || 0) * w, c = Math.cos(a), sn = Math.sin(a);
@@ -60,16 +60,20 @@ function bend(v) {
   }
   const P = new Float32Array(pos);
   const [kept] = count > opt.tris ? MeshoptSimplifier.simplify(idx, P, 3, opt.tris * 3, 0.05, ['LockBorder']) : [idx];
-  const remap = new Map(), q = [], ind = new Uint16Array(kept.length);
+  // A variant's own pieces (`extra`: triangles in the fitted model's space) are kept whole, after the simplifier.
+  const extra = opt.extra || [], range = opt.range || 1;
+  const remap = new Map(), q = [], ind = new Uint16Array(kept.length + extra.length / 3);
+  const put = v => { for (let a = 0; a < 3; a++) q.push(Math.round(Math.max(-1, Math.min(1, v[a] / range)) * 32767)); };
   for (let i = 0; i < kept.length; i++) {
     let j = remap.get(kept[i]);
-    if (j === undefined) { j = remap.size; remap.set(kept[i], j); for (let a = 0; a < 3; a++) q.push(Math.round(Math.max(-1, Math.min(1, P[kept[i] * 3 + a])) * 32767)); }
+    if (j === undefined) { j = remap.size; remap.set(kept[i], j); put([0, 1, 2].map(a => P[kept[i] * 3 + a])); }
     ind[i] = j;
   }
-  const head = Buffer.alloc(8); head.writeUInt32LE(remap.size, 0); head.writeUInt32LE(ind.length, 4);
+  for (let c = 0; c < extra.length / 3; c++) { ind[kept.length + c] = q.length / 3; put(bend(extra.slice(c * 3, c * 3 + 3))); }
+  const head = Buffer.alloc(8); head.writeUInt32LE(q.length / 3, 0); head.writeUInt32LE(ind.length, 4);
   const verts = Buffer.from(new Int16Array(q).buffer), pad = Buffer.alloc((4 - verts.length % 4) % 4);
   const out = path.resolve(__dirname, '../../pets/models', pet + '.bin');
   fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, Buffer.concat([head, verts, pad, Buffer.from(ind.buffer)]));
-  console.log(`${pet}: ${ind.length / 3} triangles, ${remap.size} vertices, ${fs.statSync(out).size} bytes`);
+  console.log(`${pet}: ${ind.length / 3} triangles, ${q.length / 3} vertices, ${fs.statSync(out).size} bytes`);
 })();
