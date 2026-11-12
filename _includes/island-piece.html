@@ -1,0 +1,2 @@
+{% comment %} A piece button in the Island's lists, from js/pages/island.mjs `piece` (in scope as `d`):
+   its art or swatch, its name and what you own of it. {% endcomment %}<li><button type="button" class="island-piece" :data-slug="d.slug" :data-own="d.own" @click="{{ include.click }}"><template x-if="d.img"><img :src="d.img" width="128" height="128" alt="" loading="lazy" decoding="async"></template><template x-if="!d.img"><i class="island-swatch" :style="d.swatch"></i></template><span x-text="d.name"></span><small x-text="d.meta"></small></button></li>

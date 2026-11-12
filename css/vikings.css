@@ -266,9 +266,11 @@
 .vv-page .vv-row-x { display:flex; align-items:center; justify-content:center; margin-inline-start:.5rem; color:var(--ink-muted); font-size:1.3rem; border-bottom:1px solid color-mix(in srgb,var(--ink-muted) 35%,transparent); border-inline-start:1px solid color-mix(in srgb,var(--ink-muted) 25%,transparent); }
 .vv-page .vv-row-x:hover { color:var(--ink); border-bottom-color:var(--oxblood); }
 /* While a remembered plan opens, hold its place instead of flashing the start screen. */
-.vv-opening .vv-next,.vv-opening [data-target="vikings.start"],.vv-opening [data-target="vikings.calculator"] { display:none; }
-.vv-opening [data-target="vikings.event"][hidden] { display:block; min-height:7.5rem; }
-.vv-opening [data-target="vikings.personal"]:empty { min-height:24rem; }
+.vv-opening .vv-next,.vv-opening .vv-start,.vv-opening .vv-calculator { display:none; }
+.vv-opening .vv-event[hidden] { display:block; min-height:7.5rem; }
+.vv-opening .vv-personal { min-height:24rem; }
+/* Wrappers the markup needs for x-if and x-for (js/pages/vikings.mjs); they leave no box. */
+.vv-contents,.vv-row-slot { display:contents; }
 /* Counts in thousands: the input carries a "k" so 240 reads as 240k. */
 .vv-k { display:flex; flex-direction:column; gap:.25rem; }
 .vv-troop-inputs .vv-k { align-items:center; }

@@ -65,7 +65,7 @@ Modules so far: the player ledger (`js/player-ledger.mjs`); the battle, combat, 
 
 ### Pages declared in markup (Alpine)
 
-Pages are moving to [Alpine.js](https://alpinejs.dev/), one at a time: the page's template declares its view with `x-data`, `x-text`, `x-model` and the rest, and a small controller in `js/pages/` holds its state. So far: the VIP calculator, the Swordland calculator, the Vikings guide's wave map, Castle Battle, the KvK points on Heroes and Masters, the Event Cycle page (its clock, today's card and available points), Bear Hunt and the lead finder.
+Pages are moving to [Alpine.js](https://alpinejs.dev/), one at a time: the page's template declares its view with `x-data`, `x-text`, `x-model` and the rest, and a small controller in `js/pages/` holds its state. So far: the VIP calculator, the Swordland calculator, the Vikings guide's wave map, Castle Battle, the KvK points on Heroes and Masters, the Event Cycle page (its clock, today's card and available points), Bear Hunt and the lead finder, the Vikings planner, the Island (its canvas board stays a widget in `js/island-board.mjs`), and the battle simulator.
 
 - A controller registers its state with `Alpine.data` (or `shared` from `js/alpine.mjs`, for one state bound in several places) and calls the engines for the maths. It holds no DOM code, apart from a bridge to a shared widget that is still built in script.
 - Expressions in attributes stay short: a field, or one call. Anything longer is a getter in the controller.

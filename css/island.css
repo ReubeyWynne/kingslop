@@ -191,3 +191,8 @@ html:has(.island-page[data-full]), html:has(.island-page[data-full]) body { over
   .island-sheet-body .island-pieces > li { width: calc((100% - 5 * .3rem) / 6); }
   .island-hint { inset-block-end: 5.6rem; }
 }
+
+/* Wrappers the markup needs for x-if and x-for (js/pages/island.mjs) leave no box; a card just
+   opened ignores the finger that opened it for a moment. */
+.island-contents { display: contents; }
+.island-page .is-guarded { pointer-events: none; }
