@@ -114,13 +114,13 @@ withBrowser({ root }, async ({ browser, origin }) => {
           assert.equal(await dialog.evaluate(d => d.open), true, lang + ': a tile opens its dialog');
           assert.equal(await page.locator('#sim-edit-' + side + '-' + troop).isVisible(), true, lang + ': at that troop\'s tab');
           await fn(dialog);
-          await dialog.locator('[data-action="sim-army.close"]').click();
+          await dialog.locator('.sim-dialog-head button').click();
           assert.equal(await dialog.evaluate(d => d.open), false);
         };
         await edit('you', 'inf', () => page.locator('#sim-atk-inf').fill('333'));
         assert.match(await page.locator('#sim-you .army-tile[data-troop="inf"]').innerText(), /333/, lang + ': the tile shows what the dialog holds');
         for (const mode of ['mystic', 'battle', 'bear-damage', 'bear-ratio']) {
-          await page.locator('.mode-rail a[data-mode="' + mode + '"]').click();
+          await page.locator('.mode-rail a[href="?mode=' + mode + '"]').click();
           await view('armies');
           assert.equal(await page.locator('#sim-load').isVisible(), true);
           assert.equal(await page.locator('#sim-foe').isVisible(), !mode.startsWith('bear'));
@@ -135,15 +135,15 @@ withBrowser({ root }, async ({ browser, origin }) => {
             await view('armies');
             assert.equal(await page.locator('#sim-ledger').isVisible(), true);
             await page.locator('#sim-ledger > summary').click();
-            await page.locator('[data-action="sim-player.save"]').click();
+            await page.locator('#sim-ledger .sim-ledger-actions button').nth(1).click();
             const saved = await page.evaluate(() => window.PlayerLedger.shared().combat());
             assert.equal(saved.stats.inf.attack, 333, lang + ': your stats reach the shared player save');
             assert.ok(saved.troops.length > 0);
             await edit('you', 'inf', () => page.locator('#sim-atk-inf').fill('1'));
-            await page.locator('[data-action="sim-player.load"]').click();
+            await page.locator('#sim-ledger .sim-ledger-actions button').nth(0).click();
             assert.equal(await page.locator('#sim-atk-inf').inputValue(), '333', lang + ': the player save fills your stats back');
             assert.match(await page.locator('#sim-you .army-tile[data-troop="inf"]').innerText(), /333/, lang + ': and the tile follows');
-            await page.locator('[data-dialog="sim-roster-dialog"]').click();
+            await page.locator('#sim-ledger .sim-ledger-actions button').nth(2).click();
             const roster = page.locator('#sim-roster [data-troop-type="cav"]');
             const before = await roster.locator('.roster-row').count();
             await roster.locator('[data-action="troop-roster.add"]').click();
@@ -151,7 +151,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
             assert.ok((await page.evaluate(() => window.PlayerLedger.shared().combat().troops)).some(t => t.type === 'cav' && t.amount === 4321), lang + ': the roster writes troops to the player save');
             await roster.locator('.roster-row').nth(before).locator('[data-action="troop-roster.remove"]').click();
             assert.equal(await roster.locator('.roster-row').count(), before);
-            await page.locator('#sim-roster-dialog [data-action="sim-army.close"]').click();
+            await page.locator('#sim-roster-dialog .sim-dialog-head button').click();
             if (width === 390) {
               assert.match(await page.locator('.sim-peek').innerText(), /\S/, lang + ': the answer peeks in under the armies');
               assert.equal(await page.locator('.sim-peek').evaluate(node => getComputedStyle(node).position), 'sticky');

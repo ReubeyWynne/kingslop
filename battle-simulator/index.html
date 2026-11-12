@@ -33,35 +33,37 @@ self: sim
       {% include ascii/motif.html kind="dice" %}
   </section>
 
-  <section class="section sim-console" id="console" data-module="sim-player sim-army sim-run" data-sheet-key="bh:sim:v1" data-view="armies">
+  {%- capture heroNames -%}{% for h in fighters %}{% if site.data.combat.heroSkills[h.key] %}{{ h.key }}:{{ h.name }}|{% endif %}{% endfor %}{%- endcapture -%}
+  <section class="section sim-console" id="console" x-data="simulator($el.dataset)" data-worker="../js/sim-worker.js?v={{ site.time | date: '%s' }}" data-heroes="{{ heroNames | escape }}"
+    :data-view="view" :data-run="runState" @tabs:select="picked($event.detail)" @input="edited" @change="edited" @popstate.window="popped">
     <div class="sim-heading">
       <h2 data-i18n="sim.console.title">The console</h2>
     </div>
 
     <nav class="mode-rail" id="mode-rail" aria-label="Pick the fight" data-i18n-key="sim.rail.aria" data-i18n-attr="aria-label">
-      <a href="?mode=bear-ratio" data-mode="bear-ratio"><span data-i18n="sim.rail.ratio">Bear ratio</span></a>
-      <a href="?mode=bear-damage" data-mode="bear-damage"><span data-i18n="sim.rail.damage">Bear march</span></a>
-      <a href="?mode=mystic" data-mode="mystic"><span data-i18n="sim.rail.mystic">Mystic Trial</span></a>
-      <a href="?mode=battle" data-mode="battle"><span data-i18n="sim.rail.battle">Battle</span></a>
+      <a href="?mode=bear-ratio" :aria-current="current('bear-ratio')" @click="go($event, 'bear-ratio')"><span data-i18n="sim.rail.ratio">Bear ratio</span></a>
+      <a href="?mode=bear-damage" :aria-current="current('bear-damage')" @click="go($event, 'bear-damage')"><span data-i18n="sim.rail.damage">Bear march</span></a>
+      <a href="?mode=mystic" :aria-current="current('mystic')" @click="go($event, 'mystic')"><span data-i18n="sim.rail.mystic">Mystic Trial</span></a>
+      <a href="?mode=battle" :aria-current="current('battle')" @click="go($event, 'battle')"><span data-i18n="sim.rail.battle">Battle</span></a>
     </nav>
 
-    <!-- Phones show one side of the workspace at a time (js/sim-army.js sets data-view) -->
-    <div class="sim-views" data-module="tabs" data-tabs-bind="view" role="tablist" aria-label="Console view" data-i18n-key="sim.view.aria" data-i18n-attr="aria-label">
-      <button type="button" id="sim-view-armies" role="tab" aria-controls="sim-armies" aria-selected="true" data-value="armies" data-action="tabs.select" data-i18n="sim.view.armies">Armies</button>
-      <button type="button" id="sim-view-answer" role="tab" aria-controls="sim-answer" aria-selected="false" tabindex="-1" data-value="answer" data-action="tabs.select" data-i18n="sim.view.answer">Answer</button>
+    <!-- Phones show one side of the workspace at a time (data-view on the console) -->
+    <div class="sim-views" data-module="tabs" data-tabs-bind="view" role="tablist" aria-label="Console view" data-i18n-key="sim.view.aria" data-i18n-attr="aria-label" x-effect="jump && $el.scrollIntoView({ block: 'start', behavior: 'instant' })">
+      <button type="button" id="sim-view-armies" role="tab" aria-controls="sim-armies" x-bind="tab('view', 'armies')" aria-selected="true" tabindex="0" data-value="armies" data-action="tabs.select" data-i18n="sim.view.armies">Armies</button>
+      <button type="button" id="sim-view-answer" role="tab" aria-controls="sim-answer" x-bind="tab('view', 'answer')" aria-selected="false" tabindex="-1" data-value="answer" data-action="tabs.select" data-i18n="sim.view.answer" x-effect="jump && $el.focus({ preventScroll: true })">Answer</button>
     </div>
 
     <div class="sim-workspace">
       <!-- ── The armies: a card per side, a tile per troop type ── -->
       <div class="sim-armies" id="sim-armies" role="tabpanel" aria-labelledby="sim-view-armies">
-        <div class="load" id="sim-load" data-screen-import-sheet="battle-report">
+        <div class="load" id="sim-load" data-screen-import-sheet="battle-report" @screen-import:sheet="imported($event.detail)">
           <div class="sim-ocr">
             <button type="button" id="sim-ocr-btn" data-screen-import="pick" data-i18n="sim.ocr.btn">Read a battle screenshot</button>
             <span class="sim-ocr-hint" data-i18n="sim.ocr.hint">you check the numbers, then they fill both Bonus Details columns — or paste one</span>
           </div>
 
           {%- for side in sides %}{% assign sd = side | split: "|" %}
-          <article class="army{% if sd[0] == 'foe' %} sim-for{% endif %}" data-side="{{ sd[0] }}"{% if sd[0] == 'foe' %} data-for="fight" id="sim-foe" hidden{% else %} id="sim-you"{% endif %}>
+          <article class="army" data-side="{{ sd[0] }}" id="sim-{{ sd[0] }}"{% if sd[0] == 'foe' %} :hidden="!shows('fight')" hidden{% endif %}>
             {%- if sd[0] == 'foe' %}
             <p class="army-vs" aria-hidden="true" data-i18n="sim.army.vs">vs</p>
             {%- endif %}
@@ -70,65 +72,77 @@ self: sim
               <h3 data-i18n="sim.foe.title">The opponent</h3>
               <small data-i18n="sim.army.foeHint">their stats and troops, from the report's right column</small>
               {%- else %}
-              <h3><span class="sim-for" data-for="bear" data-i18n="sim.army.lead">The rally lead</span><span class="sim-for" data-for="fight" hidden data-i18n="sim.army.you">You</span></h3>
-              <small class="sim-for" data-for="ratio" data-i18n="sim.army.ratioHint">the lead's attack and lethality, from the rally report</small>
-              <small class="sim-for" data-for="bear-march" hidden data-i18n="sim.army.bearHint">the lead's stats, with the troops you send</small>
-              <small class="sim-for" data-for="fight" hidden data-i18n="sim.army.youHint">your stats and the troops you bring</small>
+              <h3><span :hidden="!shows('bear')" data-i18n="sim.army.lead">The rally lead</span><span :hidden="!shows('fight')" hidden data-i18n="sim.army.you">You</span></h3>
+              <small :hidden="!shows('ratio')" data-i18n="sim.army.ratioHint">the lead's attack and lethality, from the rally report</small>
+              <small :hidden="!shows('bear-march')" hidden data-i18n="sim.army.bearHint">the lead's stats, with the troops you send</small>
+              <small :hidden="!shows('fight')" hidden data-i18n="sim.army.youHint">your stats and the troops you bring</small>
               {%- endif %}
             </header>
             <div class="army-tiles">
               {%- for t in types %}{% assign tp = t | split: "|" %}
-              <button type="button" class="army-tile" data-action="sim-army.edit" data-dialog="sim-edit-{{ sd[0] }}" data-troop="{{ tp[0] }}">
+              <button type="button" class="army-tile" data-troop="{{ tp[0] }}" :data-empty="empty('{{ sd[1] }}n-{{ tp[0] }}')" @click="edit('sim-edit-{{ sd[0] }}', '{{ sd[0] }}', '{{ tp[0] }}')">
                 <img class="army-art" src="../img/hero-gear/{{ tp[3] }}-helm.webp" width="96" height="96" alt="" loading="lazy" decoding="async">
                 <span class="army-body">
                   <span class="army-name" data-i18n="{{ tp[1] }}">{{ tp[2] }}</span>
-                  <span class="army-count{% if sd[0] == 'you' %} sim-for{% endif %}"{% if sd[0] == 'you' %} data-for="march" hidden{% endif %}><b class="inkwell" data-show="{{ sd[1] }}n-{{ tp[0] }}" data-format="count">50,000</b> <span class="army-tier" data-show="{{ sd[1] }}tier-{{ tp[0] }} {{ sd[1] }}tg-{{ tp[0] }}" data-format="tier">T10 · TG0</span></span>
+                  <span class="army-count"{% if sd[0] == 'you' %} :hidden="!shows('march')" hidden{% endif %}><b class="inkwell" x-text="count('{{ sd[1] }}n-{{ tp[0] }}')">50,000</b> <span class="army-tier" x-text="tier('{{ sd[1] }}', '{{ tp[0] }}')">T10 · TG0</span></span>
                   <span class="army-stats">
                     {%- for s in stats %}{% assign sp = s | split: "|" %}
-                    {% assign fightOnly = false %}{% if sd[0] == 'you' %}{% if sp[0] == 'def' or sp[0] == 'hea' %}{% assign fightOnly = true %}{% endif %}{% endif %}<span class="army-stat{% if fightOnly %} sim-for{% endif %}"{% if fightOnly %} data-for="fight" hidden{% endif %}><span data-i18n="sim.army.s.{{ sp[0] }}">{{ sp[4] }}</span> <b class="inkwell" data-show="{{ sd[1] }}{{ sp[0] }}-{{ tp[0] }}" data-format="pct">0%</b></span>
+                    {% assign fightOnly = false %}{% if sd[0] == 'you' %}{% if sp[0] == 'def' or sp[0] == 'hea' %}{% assign fightOnly = true %}{% endif %}{% endif %}<span class="army-stat"{% if fightOnly %} :hidden="!shows('fight')" hidden{% endif %}><span data-i18n="sim.army.s.{{ sp[0] }}">{{ sp[4] }}</span> <b class="inkwell" x-text="stat('{{ sd[1] }}{{ sp[0] }}-{{ tp[0] }}')">0%</b></span>
                     {%- endfor %}
                   </span>
                 </span>
               </button>
               {%- endfor %}
             </div>
-            <button type="button" class="army-heroes sim-for" data-for="fight" hidden data-action="sim-army.edit" data-dialog="sim-heroes-{{ sd[0] }}">
+            <button type="button" class="army-heroes" :hidden="!shows('fight')" hidden @click="edit('sim-heroes-{{ sd[0] }}')">
               <span class="army-heroes-label" data-i18n="sim.heroes.title">Heroes</span>
-              <span class="army-heroes-sum" id="{{ sd[1] }}heroes-sum" data-i18n="sim.heroes.none">none yet — add them</span>
+              <span class="army-heroes-sum" id="{{ sd[1] }}heroes-sum"><span x-show="!heroLine('{{ sd[1] }}')" data-i18n="sim.heroes.none">none yet — add them</span><span x-text="heroLine('{{ sd[1] }}')"></span></span>
             </button>
             {%- if sd[0] == 'you' %}
-            <p class="calc-out sim-total sim-for" data-for="march" id="sim-total" hidden></p>
-            <!-- Your stats and troops in the shared player save (js/sim-player.js, troop-roster) -->
-            <details class="sim-ledger sim-for" data-for="fight" id="sim-ledger" hidden>
+            <p class="calc-out sim-total" id="sim-total" :hidden="!shows('march')" hidden x-html="totalLine"></p>
+            <!-- Your stats and troops in the shared player save (the troop roster edits its troops) -->
+            <details class="sim-ledger" id="sim-ledger" :hidden="!shows('fight')" hidden>
               <summary data-i18n="sim.ledger.title">your player save</summary>
               <div class="sim-ledger-actions">
-                <button type="button" data-action="sim-player.load" data-i18n="sim.ledger.load">Use my saved stats and troops</button>
-                <button type="button" data-action="sim-player.save" data-i18n="sim.ledger.save">Save these as mine</button>
-                <output class="seal" data-target="sim-player.saved" role="status" data-saved-key="sim.ledger.saved" data-failed-key="sim.ledger.notSaved"></output>
-                <button type="button" data-action="sim-army.edit" data-dialog="sim-roster-dialog" data-i18n="sim.roster.title">Your troops</button>
+                <button type="button" :disabled="nothingSaved" @click="loadMine" data-i18n="sim.ledger.load">Use my saved stats and troops</button>
+                <button type="button" @click="saveMine" data-i18n="sim.ledger.save">Save these as mine</button>
+                <output class="seal" role="status" :data-state="sealed" x-text="sealText"></output>
+                <button type="button" @click="edit('sim-roster-dialog')" data-i18n="sim.roster.title">Your troops</button>
               </div>
-              <output class="sim-ocr-hint" data-target="sim-player.status" aria-live="polite"
-                data-empty-key="sim.ledger.empty" data-has-key="sim.ledger.has"
-                data-has-stats-key="sim.ledger.hasStats" data-has-troops-key="sim.ledger.hasTroops" data-loaded-key="sim.ledger.loaded"
-                data-failed-key="sim.ledger.failed"></output>
+              <output class="sim-ocr-hint" aria-live="polite" x-text="saveStatus"></output>
             </details>
             {%- endif %}
           </article>
           {%- endfor %}
         </div>
-        <button type="button" class="sim-peek" data-action="sim-army.answer">
-          <span data-target="sim-army.peek"></span>
+        <button type="button" class="sim-peek" :hidden="!peek" @click="answer">
+          <span x-html="peek"></span>
           <span class="sim-peek-go" data-i18n="sim.army.seeAnswer">see the answer</span>
         </button>
       </div>
 
       <!-- ── The answer: the active fight's panel first ── -->
-      <div class="sim-answer" id="sim-answer" role="tabpanel" aria-labelledby="sim-view-answer">
-        <div class="sim-panel" data-mode="bear-ratio">
+      <div class="sim-answer" id="sim-answer" role="tabpanel" aria-labelledby="sim-view-answer" :aria-busy="busy ? 'true' : null">
+        <div class="sim-panel" data-mode="bear-ratio" :hidden="mode !== 'bear-ratio'">
           <h3 class="calc-title sim-panel-title" data-i18n="sim.calc.titleTag">TRY IT — YOUR BEAR RATIO</h3>
-          <p class="calc-out" id="sim-headline" data-peek>The ideal march lands here.</p>
-          <div class="sim-out" id="sim-out" role="table" data-i18n-key="sim.calc.tableAria" data-i18n-attr="aria-label" hidden></div>
-          <p class="calc-out" id="sim-k"></p>
+          <p class="calc-out" id="sim-headline" x-html="ratio.headline">The ideal march lands here.</p>
+          <div class="sim-out" id="sim-out" role="table" data-i18n-key="sim.calc.tableAria" data-i18n-attr="aria-label" :hidden="!ratio.ok" hidden>
+            <div class="sim-head" role="row">
+              <span role="columnheader" data-i18n="sim.calc.thType">Troop</span>
+              <span role="columnheader" data-i18n="sim.calc.thA">A factor</span>
+              <span role="columnheader" data-i18n="sim.calc.thWeight">weight</span>
+              <span role="columnheader" data-i18n="sim.calc.thShare">ideal share</span>
+            </div>
+            {%- for t in types %}{% assign tp = t | split: "|" %}
+            <div class="sim-row" role="row">
+              <span class="sim-type" role="cell" data-i18n="{{ tp[1] }}">{{ tp[2] }}</span>
+              <span class="sim-a" role="cell" x-text="ratio.rows.{{ tp[0] }}.a"></span>
+              <span class="sim-w" role="cell" x-text="ratio.rows.{{ tp[0] }}.w"></span>
+              <span class="sim-share" role="cell" x-text="ratio.rows.{{ tp[0] }}.share"></span>
+            </div>
+            {%- endfor %}
+          </div>
+          <p class="calc-out" id="sim-k" x-html="ratio.k"></p>
           <details id="reading-kills" class="sim-why">
             <summary data-i18n="sim.why">how this reads</summary>
             <p class="note" data-i18n-html="sim.calc.lede">The lead's attack and lethality make their <b>A factor</b> per
@@ -140,11 +154,26 @@ self: sim
           </details>
         </div>
 
-        <div class="sim-panel" data-mode="bear-damage" hidden>
+        <div class="sim-panel" data-mode="bear-damage" :hidden="mode !== 'bear-damage'" hidden>
           <h3 class="calc-title sim-panel-title" data-i18n="sim.dmg.titleTag">TRY IT — YOUR BEAR MARCH</h3>
-          <p class="calc-out" id="sim-dmg-headline" data-peek></p>
-          <div class="sim-out march-out" id="sim-dmg-out" role="table" data-i18n-key="sim.dmg.tableAria" data-i18n-attr="aria-label" hidden></div>
-          <p class="calc-out" id="sim-dmg-ideal"></p>
+          <p class="calc-out" id="sim-dmg-headline" x-html="march.headline"></p>
+          <div class="sim-out march-out" id="sim-dmg-out" role="table" data-i18n-key="sim.dmg.tableAria" data-i18n-attr="aria-label" :hidden="!march.ok" hidden>
+            <div class="sim-head" role="row">
+              <span role="columnheader" data-i18n="sim.calc.thType">Troop</span>
+              <span role="columnheader" data-i18n="sim.dmg.thCount">troops</span>
+              <span role="columnheader" data-i18n="sim.dmg.thYours">your share</span>
+              <span role="columnheader" data-i18n="sim.dmg.thIdeal">ideal share</span>
+            </div>
+            {%- for t in types %}{% assign tp = t | split: "|" %}
+            <div class="sim-row" role="row">
+              <span class="sim-type" role="cell" data-i18n="{{ tp[1] }}">{{ tp[2] }}</span>
+              <span class="sim-n" role="cell" x-text="march.rows.{{ tp[0] }}.n"></span>
+              <span class="sim-a" role="cell" x-text="march.rows.{{ tp[0] }}.yours"></span>
+              <span class="sim-share" role="cell" x-text="march.rows.{{ tp[0] }}.ideal"></span>
+            </div>
+            {%- endfor %}
+          </div>
+          <p class="calc-out" id="sim-dmg-ideal" x-html="march.ideal"></p>
           <p class="note bench" data-i18n-html="sim.dmg.bench"><b>A damage figure — and the bracket it lands in — needs
             heroes.</b> The bear's own skills and the lead's and joiners' hero kits ride on every hit, and those are not in
             this engine yet. The Frakinator's ladder doubles from <b>47M</b> to <b>38.4B</b>; until heroes land, this panel
@@ -162,9 +191,9 @@ self: sim
           </details>
         </div>
 
-        <div class="sim-panel" data-mode="mystic" hidden>
+        <div class="sim-panel" data-mode="mystic" :hidden="mode !== 'mystic'" hidden>
           <h3 class="calc-title sim-panel-title" data-i18n="sim.mystic.titleTag">TRY IT — CLEAR THE STAGE</h3>
-          <p class="calc-out" id="sim-mystic-today"></p>
+          <p class="calc-out" id="sim-mystic-today" x-html="todayLine"></p>
           <p class="sim-label" id="sim-rooms-label" data-i18n="sim.review.rooms">Choose a room</p>
           <div class="sim-out rooms" aria-describedby="sim-rooms-label" id="sim-rooms" role="table" data-i18n-key="sim.mystic.tableAria" data-i18n-attr="aria-label">
             <div class="sim-head" role="row">
@@ -173,44 +202,44 @@ self: sim
               <span role="columnheader" data-i18n="sim.mystic.thStart">start</span>
               <span role="columnheader" data-i18n="sim.mystic.thAlt">first alt</span>
             </div>
-            <div class="sim-row" role="row" data-days="1 2" data-room="coliseum" data-start="50 10 40">
-              <span class="room-name" role="rowheader"><button type="button" class="room-pick" aria-pressed="false"><span data-i18n="sim.mystic.r.coliseum">Coliseum</span></button>
-                <em class="room-days" data-i18n="sim.mystic.d.monTue">Mon–Tue</em></span>
+            <div class="sim-row" role="row" data-room="coliseum" :class="{ today: today('coliseum'), picked: room === 'coliseum' }">
+              <span class="room-name" role="rowheader"><button type="button" class="room-pick" :aria-pressed="pressed('coliseum')" @click="toggleRoom('coliseum')"><span data-i18n="sim.mystic.r.coliseum">Coliseum</span></button>
+                <em class="room-days" data-i18n="sim.mystic.d.monTue">Mon–Tue</em><span class="room-today" x-show="today('coliseum')" style="display: none" data-i18n="sim.mystic.today">open today</span></span>
               <span class="room-checks" role="cell" data-i18n="sim.mystic.c.coliseum">Heroes + hero gear</span>
               <span class="room-ratio" role="cell">50 / 10 / 40</span>
               <span class="room-alt" role="cell">55 / 15 / 30</span>
             </div>
-            <div class="sim-row" role="row" data-days="3 4" data-room="forest" data-start="50 15 35">
-              <span class="room-name" role="rowheader"><button type="button" class="room-pick" aria-pressed="false"><span data-i18n="sim.mystic.r.forest">Forest of Life</span></button>
-                <em class="room-days" data-i18n="sim.mystic.d.wedThu">Wed–Thu</em></span>
+            <div class="sim-row" role="row" data-room="forest" :class="{ today: today('forest'), picked: room === 'forest' }">
+              <span class="room-name" role="rowheader"><button type="button" class="room-pick" :aria-pressed="pressed('forest')" @click="toggleRoom('forest')"><span data-i18n="sim.mystic.r.forest">Forest of Life</span></button>
+                <em class="room-days" data-i18n="sim.mystic.d.wedThu">Wed–Thu</em><span class="room-today" x-show="today('forest')" style="display: none" data-i18n="sim.mystic.today">open today</span></span>
               <span class="room-checks" role="cell" data-i18n="sim.mystic.c.forest">Pets</span>
               <span class="room-ratio" role="cell">50 / 15 / 35</span>
               <span class="room-alt" role="cell">55 / 10 / 35</span>
             </div>
-            <div class="sim-row" role="row" data-days="3 4" data-room="crystal" data-start="60 20 20">
-              <span class="room-name" role="rowheader"><button type="button" class="room-pick" aria-pressed="false"><span data-i18n="sim.mystic.r.crystal">Crystal Cave</span></button>
-                <em class="room-days" data-i18n="sim.mystic.d.wedThu">Wed–Thu</em></span>
+            <div class="sim-row" role="row" data-room="crystal" :class="{ today: today('crystal'), picked: room === 'crystal' }">
+              <span class="room-name" role="rowheader"><button type="button" class="room-pick" :aria-pressed="pressed('crystal')" @click="toggleRoom('crystal')"><span data-i18n="sim.mystic.r.crystal">Crystal Cave</span></button>
+                <em class="room-days" data-i18n="sim.mystic.d.wedThu">Wed–Thu</em><span class="room-today" x-show="today('crystal')" style="display: none" data-i18n="sim.mystic.today">open today</span></span>
               <span class="room-checks" role="cell" data-i18n="sim.mystic.c.crystal">Governor charms</span>
               <span class="room-ratio" role="cell">60 / 20 / 20</span>
               <span class="room-alt" role="cell">65 / 15 / 20</span>
             </div>
-            <div class="sim-row" role="row" data-days="5 6" data-room="nexus" data-start="50 20 30">
-              <span class="room-name" role="rowheader"><button type="button" class="room-pick" aria-pressed="false"><span data-i18n="sim.mystic.r.nexus">Knowledge Nexus</span></button>
-                <em class="room-days" data-i18n="sim.mystic.d.friSat">Fri–Sat</em></span>
+            <div class="sim-row" role="row" data-room="nexus" :class="{ today: today('nexus'), picked: room === 'nexus' }">
+              <span class="room-name" role="rowheader"><button type="button" class="room-pick" :aria-pressed="pressed('nexus')" @click="toggleRoom('nexus')"><span data-i18n="sim.mystic.r.nexus">Knowledge Nexus</span></button>
+                <em class="room-days" data-i18n="sim.mystic.d.friSat">Fri–Sat</em><span class="room-today" x-show="today('nexus')" style="display: none" data-i18n="sim.mystic.today">open today</span></span>
               <span class="room-checks" role="cell" data-i18n="sim.mystic.c.nexus">Academy + War Academy research</span>
               <span class="room-ratio" role="cell">50 / 20 / 30</span>
               <span class="room-alt" role="cell">55 / 15 / 30</span>
             </div>
-            <div class="sim-row" role="row" data-days="5 6" data-room="molten" data-start="60 15 25">
-              <span class="room-name" role="rowheader"><button type="button" class="room-pick" aria-pressed="false"><span data-i18n="sim.mystic.r.molten">Molten Fort</span></button>
-                <em class="room-days" data-i18n="sim.mystic.d.friSat">Fri–Sat</em></span>
+            <div class="sim-row" role="row" data-room="molten" :class="{ today: today('molten'), picked: room === 'molten' }">
+              <span class="room-name" role="rowheader"><button type="button" class="room-pick" :aria-pressed="pressed('molten')" @click="toggleRoom('molten')"><span data-i18n="sim.mystic.r.molten">Molten Fort</span></button>
+                <em class="room-days" data-i18n="sim.mystic.d.friSat">Fri–Sat</em><span class="room-today" x-show="today('molten')" style="display: none" data-i18n="sim.mystic.today">open today</span></span>
               <span class="room-checks" role="cell" data-i18n="sim.mystic.c.molten">Governor gear</span>
               <span class="room-ratio" role="cell">60 / 15 / 25</span>
               <span class="room-alt" role="cell">65 / 15 / 20</span>
             </div>
-            <div class="sim-row" role="row" data-days="0" data-room="spire" data-start="50 15 35">
-              <span class="room-name" role="rowheader"><button type="button" class="room-pick" aria-pressed="false"><span data-i18n="sim.mystic.r.spire">Radiant Spire</span></button>
-                <em class="room-days" data-i18n="sim.mystic.d.sun">Sunday</em></span>
+            <div class="sim-row" role="row" data-room="spire" :class="{ today: today('spire'), picked: room === 'spire' }">
+              <span class="room-name" role="rowheader"><button type="button" class="room-pick" :aria-pressed="pressed('spire')" @click="toggleRoom('spire')"><span data-i18n="sim.mystic.r.spire">Radiant Spire</span></button>
+                <em class="room-days" data-i18n="sim.mystic.d.sun">Sunday</em><span class="room-today" x-show="today('spire')" style="display: none" data-i18n="sim.mystic.today">open today</span></span>
               <span class="room-checks" role="cell" data-i18n="sim.mystic.c.spire">the full combat build — your own troops</span>
               <span class="room-ratio" role="cell">50 / 15 / 35</span>
               <span class="room-alt" role="cell">55 / 10 / 35</span>
@@ -226,7 +255,8 @@ self: sim
           </details>
         </div>
 
-        <div class="sim-panel" data-mode="battle" hidden>
+
+        <div class="sim-panel" data-mode="battle" :hidden="mode !== 'battle'" hidden>
           <h3 class="calc-title sim-panel-title" data-i18n="sim.battle.titleTag">TRY IT — ANY BATTLE</h3>
           <details id="reading-battle" class="sim-why">
             <summary data-i18n="sim.why">how this reads</summary>
@@ -236,33 +266,71 @@ self: sim
           </details>
         </div>
 
+
         <!-- ── The fight: shared by the Mystic and battle modes ── -->
-        <div class="fight sim-for" data-for="fight" id="sim-fight" hidden>
+        <div class="fight" id="sim-fight" :hidden="!shows('fight')" hidden>
           <h3 class="calc-title" data-i18n="sim.fight.title">The fight, as typed</h3>
-          <p class="calc-out" id="sim-fight-headline" data-peek></p>
-          <div class="sim-out fight-out" id="sim-fight-out" role="table" data-i18n-key="sim.fight.tableAria" data-i18n-attr="aria-label" hidden></div>
+          <p class="calc-out" id="sim-fight-headline" x-html="fight.headline"></p>
+          <div class="sim-out fight-out" id="sim-fight-out" role="table" data-i18n-key="sim.fight.tableAria" data-i18n-attr="aria-label" :hidden="!fight.ready" hidden>
+            <div class="sim-head" role="row">
+              <span role="columnheader" data-i18n="sim.calc.thType">Troop</span>
+              <span role="columnheader" data-i18n="sim.fight.thYou">you</span>
+              <span role="columnheader" data-i18n="sim.fight.thLeft">left</span>
+              <span role="columnheader" data-i18n="sim.fight.thFoe">them</span>
+              <span role="columnheader" data-i18n="sim.fight.thLeft">left</span>
+            </div>
+            {%- for t in types %}{% assign tp = t | split: "|" %}
+            <div class="sim-row" role="row">
+              <span class="sim-type" role="cell" data-i18n="{{ tp[1] }}">{{ tp[2] }}</span>
+              <span class="sim-n" role="cell" x-text="fight.rows.{{ tp[0] }}.you"></span>
+              <span class="sim-share" role="cell" x-text="fight.rows.{{ tp[0] }}.left"></span>
+              <span class="sim-n" role="cell" x-text="fight.rows.{{ tp[0] }}.foe"></span>
+              <span class="sim-left-foe" role="cell" x-text="fight.rows.{{ tp[0] }}.foeLeft"></span>
+            </div>
+            {%- endfor %}
+            <div class="sim-row sim-sum" role="row">
+              <span class="sim-type" role="cell" data-i18n="sim.fight.total">Total</span>
+              <span class="sim-n" role="cell" x-text="fight.rows.sum.you"></span>
+              <span class="sim-share" role="cell" x-text="fight.rows.sum.left"></span>
+              <span class="sim-n" role="cell" x-text="fight.rows.sum.foe"></span>
+              <span class="sim-left-foe" role="cell" x-text="fight.rows.sum.foeLeft"></span>
+            </div>
+          </div>
 
           <h3 class="calc-title" data-i18n="sim.sweep.title">Find the mix that wins</h3>
           <div class="sim-ocr sweep-go">
-            <button type="button" id="sim-sweep-btn" data-i18n="sim.sweep.btn">Try every mix</button>
-            <span class="sim-ocr-hint" id="sim-sweep-size"></span>
+            <button type="button" id="sim-sweep-btn" :disabled="!cells || busy" @click="sweep(true)" data-i18n="sim.sweep.btn">Try every mix</button>
+            <span class="sim-ocr-hint" id="sim-sweep-size" x-text="sweepSize"></span>
           </div>
           <div class="sim-run">
-            <progress id="sim-sweep-progress" data-target="sim-run.bar" max="1" value="0" aria-label="Simulation progress" data-i18n-key="sim.review.progress" data-i18n-attr="aria-label" hidden></progress>
-            <output id="sim-sweep-metrics" class="sim-run-metrics" data-target="sim-run.meter" hidden></output>
+            <progress id="sim-sweep-progress" :max="barMax" :value="barValue" :hidden="runHidden" max="1" value="0" aria-label="Simulation progress" data-i18n-key="sim.review.progress" data-i18n-attr="aria-label" hidden></progress>
+            <output id="sim-sweep-metrics" class="sim-run-metrics" :hidden="runHidden" x-text="meter" hidden></output>
             {% include ascii/hammer-loader.html %}
           </div>
-          <output id="sim-sweep-status" class="sim-ocr-status" aria-live="polite" hidden></output>
+          <output id="sim-sweep-status" class="sim-ocr-status" :class="noteClass" aria-live="polite" :hidden="!note" x-text="noteText" hidden></output>
 
-          <div class="sweep-result" id="sim-sweep-result" hidden>
-            <p class="calc-out" id="sim-sweep-headline"></p>
+          <div class="sweep-result" id="sim-sweep-result" :hidden="!swept" :data-stale="stale ? '' : null" x-effect="reveal && $el.scrollIntoView({ block: 'nearest' })" hidden>
+            <p class="calc-out" id="sim-sweep-headline" x-html="bestLine"></p>
             <figure class="tri" id="sim-tri">
-              <svg id="sim-tri-svg" viewBox="0 0 320 300" role="img" aria-labelledby="sim-tri-cap"></svg>
+              <svg id="sim-tri-svg" viewBox="0 0 320 300" role="img" aria-labelledby="sim-tri-cap" x-html="triangle"></svg>
               <figcaption id="sim-tri-cap" data-i18n-html="sim.sweep.cap">Every mix you tried: the brighter the cell, the
                 likelier the win. Corners are all infantry, all cavalry, all archers; <b>❧</b> marks the best mix.</figcaption>
             </figure>
-            <div class="sim-out sweep-out" id="sim-sweep-out" role="table" data-i18n-key="sim.sweep.tableAria" data-i18n-attr="aria-label"></div>
-            <p class="calc-out" id="sim-sweep-room"></p>
+            <div class="sim-out sweep-out" id="sim-sweep-out" role="table" data-i18n-key="sim.sweep.tableAria" data-i18n-attr="aria-label">
+              <div class="sim-head" role="row">
+                <span role="columnheader" data-i18n="sim.sweep.thMix">mix</span>
+                <span role="columnheader" data-i18n="sim.sweep.thWin">win chance</span>
+                <span role="columnheader" data-i18n="sim.sweep.thLeft">left standing</span>
+              </div>
+              <template x-for="row in ranked" :key="row.i">
+                <div class="sim-row" role="row">
+                  <span class="mix" role="cell" x-text="row.mix"></span>
+                  <span class="sim-share" role="cell" x-text="row.win"></span>
+                  <span class="sim-n" role="cell" x-text="row.left"></span>
+                </div>
+              </template>
+            </div>
+            <p class="calc-out" id="sim-sweep-room" x-html="roomLine"></p>
           </div>
           <details id="sweep-limits" class="sim-why sweep-settings">
             <summary data-i18n="sim.sweep.settings">grid &amp; limits</summary>
@@ -272,42 +340,42 @@ self: sim
             <div class="sweep-set" id="sim-sweep-set">
               <span class="sim-field">
                 <label for="sim-sw-step" data-i18n="sim.sweep.step">grid step</label>
-                <select id="sim-sw-step">
+                <select id="sim-sw-step" x-model="f['sim-sw-step']">
                   <option value="0.1">10%</option>
-                  <option value="0.05" selected>5%</option>
+                  <option value="0.05">5%</option>
                   <option value="0.025">2.5%</option>
                   <option value="0.02">2%</option>
                 </select>
               </span>
               <span class="sim-field">
                 <label for="sim-sw-battles" data-i18n="sim.sweep.battles">battles per mix</label>
-                <select id="sim-sw-battles">
-                  <option value="20">20</option>
-                  <option value="50" selected>50</option>
-                  <option value="100">100</option>
-                  <option value="250">250</option>
+                <select id="sim-sw-battles" x-model="f['sim-sw-battles']">
+                  <option value="20" :disabled="!fits(20)">20</option>
+                  <option value="50" :disabled="!fits(50)">50</option>
+                  <option>100</option>
+                  <option value="250" :disabled="!fits(250)">250</option>
                 </select>
               </span>
               <span class="sim-field">
                 <label for="sim-sw-mininf" data-i18n="sim.sweep.minInf">infantry from</label>
-                <input id="sim-sw-mininf" type="number" min="0" max="100" step="5" inputmode="numeric" value="0">
+                <input id="sim-sw-mininf" x-model="f['sim-sw-mininf']" type="number" min="0" max="100" step="5" inputmode="numeric">
               </span>
               <span class="sim-field">
                 <label for="sim-sw-maxinf" data-i18n="sim.sweep.maxInf">infantry to</label>
-                <input id="sim-sw-maxinf" type="number" min="0" max="100" step="5" inputmode="numeric" value="100">
+                <input id="sim-sw-maxinf" x-model="f['sim-sw-maxinf']" type="number" min="0" max="100" step="5" inputmode="numeric">
               </span>
               <span class="sim-field">
                 <label for="sim-sw-mincav" data-i18n="sim.sweep.minCav">cavalry from</label>
-                <input id="sim-sw-mincav" type="number" min="0" max="100" step="5" inputmode="numeric" value="0">
+                <input id="sim-sw-mincav" x-model="f['sim-sw-mincav']" type="number" min="0" max="100" step="5" inputmode="numeric">
               </span>
               <span class="sim-field">
                 <label for="sim-sw-maxcav" data-i18n="sim.sweep.maxCav">cavalry to</label>
-                <input id="sim-sw-maxcav" type="number" min="0" max="100" step="5" inputmode="numeric" value="100">
+                <input id="sim-sw-maxcav" x-model="f['sim-sw-maxcav']" type="number" min="0" max="100" step="5" inputmode="numeric">
               </span>
             </div>
           </details>
 
-          <details id="room-rules" class="sim-why sim-for" data-for="mystic">
+          <details id="room-rules" class="sim-why" :hidden="!shows('mystic')" hidden>
             <summary data-i18n="sim.mystic.notes">room rules &amp; tips</summary>
             <p class="note" data-i18n-html="sim.mystic.fixed"><b>Five of the six rooms fix your troops at Level 10</b> —
               training more won't clear them; upgrading the system they check will. Only the <b>Coliseum</b> and the
@@ -321,7 +389,7 @@ self: sim
             <p class="note" data-i18n-html="sim.mystic.caveat">Community tables put the <b>Crystal Cave</b> in the same
               Wed–Thu window as the Forest of Life; older notes list the pets alone. The event screen is the tiebreaker.</p>
           </details>
-          <div class="sim-for" data-for="battle" hidden>
+          <div :hidden="!shows('battle')" hidden>
             <p class="note" data-i18n-html="sim.battle.heroes"><b>Pick each side's heroes</b> under its army. Only their skills are added — their stats are already in the report's Bonus Details. Joiners count in a rally or a garrison, four at most.</p>
           </div>
         </div>
@@ -329,71 +397,73 @@ self: sim
     </div>
 
     <!-- ── Edit dialogs: one per side, a tab per troop type ── -->
-    {%- for side in sides %}{% assign sd = side | split: "|" %}
-    <dialog class="sim-dialog" id="sim-edit-{{ sd[0] }}" aria-labelledby="sim-edit-{{ sd[0] }}-title">
+    {%- for side in sides %}{% assign sd = side | split: "|" %}{% capture dlg %}sim-edit-{{ sd[0] }}{% endcapture %}
+    <dialog class="sim-dialog" id="{{ dlg }}" aria-labelledby="{{ dlg }}-title" x-effect="dialog === '{{ dlg }}' ? $el.open || $el.showModal() : $el.open && $el.close()"
+      @close="dialog = null" @click.self="outside($event, $el.getBoundingClientRect()) && (dialog = null)" @tabs:select="pickTroop('{{ sd[0] }}', $event.detail)">
       <div class="sim-dialog-head">
         {%- if sd[0] == 'foe' %}
         <h2 id="sim-edit-foe-title" data-i18n="sim.foe.title">The opponent</h2>
         {%- else %}
-        <h2 id="sim-edit-you-title"><span class="sim-for" data-for="bear" data-i18n="sim.army.lead">The rally lead</span><span class="sim-for" data-for="fight" hidden data-i18n="sim.army.you">You</span></h2>
+        <h2 id="sim-edit-you-title"><span :hidden="!shows('bear')" data-i18n="sim.army.lead">The rally lead</span><span :hidden="!shows('fight')" hidden data-i18n="sim.army.you">You</span></h2>
         {%- endif %}
-        <button type="button" data-action="sim-army.close" data-i18n="sim.army.done">done</button>
+        <button type="button" @click="dialog = null" data-i18n="sim.army.done">done</button>
       </div>
       {%- if sd[0] == 'foe' %}
       <p class="sim-gloss" data-i18n-html="sim.foe.lede">Their stats from the report's right column, and the troops they
         field. On a Mystic Trial report, switch it to show <b>troop numbers</b>, not percentages.</p>
       {%- else %}
-      <p class="sim-gloss sim-for" data-for="bear" data-i18n-html="sim.load.lede">On a bear report, the left column of
+      <p class="sim-gloss" :hidden="!shows('bear')" data-i18n-html="sim.load.lede">On a bear report, the left column of
         <b>Bonus Details</b> is the <b>rally lead's</b>. Everyone in the rally sees the same panel, so those are the
         lead's numbers, not yours.</p>
-      <p class="sim-gloss sim-for" data-for="fight" hidden data-i18n-html="sim.load.ledeFight">In <b>Bonus Details</b>,
+      <p class="sim-gloss" :hidden="!shows('fight')" hidden data-i18n-html="sim.load.ledeFight">In <b>Bonus Details</b>,
         the <b>left column is you</b> and the right column is the opponent.</p>
       {%- endif %}
       <div class="sim-tabs" data-module="tabs" data-tabs-bind="troop" role="tablist" aria-label="Troop type" data-i18n-key="sim.army.troopAria" data-i18n-attr="aria-label">
         {%- for t in types %}{% assign tp = t | split: "|" %}
-        <button type="button" id="sim-edit-{{ sd[0] }}-tab-{{ tp[0] }}" role="tab" aria-controls="sim-edit-{{ sd[0] }}-{{ tp[0] }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"{% unless forloop.first %} tabindex="-1"{% endunless %} data-value="{{ tp[0] }}" data-action="tabs.select" data-i18n="{{ tp[1] }}">{{ tp[2] }}</button>
+        <button type="button" id="{{ dlg }}-tab-{{ tp[0] }}" role="tab" aria-controls="{{ dlg }}-{{ tp[0] }}" x-bind="tab('{{ sd[0] }}', '{{ tp[0] }}')" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" data-value="{{ tp[0] }}" data-action="tabs.select" data-i18n="{{ tp[1] }}">{{ tp[2] }}</button>
         {%- endfor %}
       </div>
       {%- for t in types %}{% assign tp = t | split: "|" %}
-      <div class="sim-troop" id="sim-edit-{{ sd[0] }}-{{ tp[0] }}" role="tabpanel" aria-labelledby="sim-edit-{{ sd[0] }}-tab-{{ tp[0] }}" data-troop-panel="{{ tp[0] }}"{% unless forloop.first %} hidden{% endunless %}>
+      <div class="sim-troop" id="{{ dlg }}-{{ tp[0] }}" role="tabpanel" aria-labelledby="{{ dlg }}-tab-{{ tp[0] }}" :hidden="troop.{{ sd[0] }} !== '{{ tp[0] }}'">
         <img class="army-art" src="../img/hero-gear/{{ tp[3] }}-helm.webp" width="96" height="96" alt="" loading="lazy" decoding="async">
-        <fieldset class="sim-troop-march{% if sd[0] == 'you' %} sim-for{% endif %}"{% if sd[0] == 'you' %} data-for="march" hidden{% endif %}>
+        <fieldset class="sim-troop-march"{% if sd[0] == 'you' %} :hidden="!shows('march')" hidden{% endif %}>
           <legend data-i18n="sim.army.march">In the march</legend>
           <label class="sim-field sim-count"><span data-i18n="sim.dmg.thCount">troops</span>
-            <input id="{{ sd[1] }}n-{{ tp[0] }}" type="number" min="0" step="1000" inputmode="numeric" value="50000" placeholder="0" data-unit-input="count"{% if sd[0] == 'you' %} data-player-march="amount" data-troop="{{ tp[0] }}"{% endif %}></label>
+            <input id="{{ sd[1] }}n-{{ tp[0] }}" type="number" min="0" step="1000" inputmode="numeric" placeholder="0" data-unit-input="count" x-model="f['{{ sd[1] }}n-{{ tp[0] }}']" :aria-label="label('{{ sd[1] }}', '{{ tp[0] }}', 'n')"></label>
           <label class="sim-field"><span data-i18n="sim.dmg.thTier">tier</span>
-            <select id="{{ sd[1] }}tier-{{ tp[0] }}"{% if sd[0] == 'you' %} data-player-march="tier" data-troop="{{ tp[0] }}"{% endif %}>{% for i in (1..11) %}<option value="{{ i }}"{% if i == 10 %} selected{% endif %}>T{{ i }}</option>{% endfor %}</select></label>
+            <select id="{{ sd[1] }}tier-{{ tp[0] }}" x-model="f['{{ sd[1] }}tier-{{ tp[0] }}']" :aria-label="label('{{ sd[1] }}', '{{ tp[0] }}', 'tier')">{% for i in (1..11) %}<option value="{{ i }}">T{{ i }}</option>{% endfor %}</select></label>
           <label class="sim-field"><span data-i18n="sim.dmg.thTg">TG</span>
-            <select id="{{ sd[1] }}tg-{{ tp[0] }}"{% if sd[0] == 'you' %} data-player-march="tg" data-troop="{{ tp[0] }}"{% endif %}>{% for i in (0..8) %}<option value="{{ i }}">TG{{ i }}</option>{% endfor %}</select></label>
+            <select id="{{ sd[1] }}tg-{{ tp[0] }}" x-model="f['{{ sd[1] }}tg-{{ tp[0] }}']" :aria-label="label('{{ sd[1] }}', '{{ tp[0] }}', 'tg')">{% for i in (0..8) %}<option value="{{ i }}">TG{{ i }}</option>{% endfor %}</select></label>
         </fieldset>
         <fieldset class="sim-troop-stats">
           <legend data-i18n="sim.army.stats">Bonus Details</legend>
           {%- for s in stats %}{% assign sp = s | split: "|" %}
-          {% assign fightOnly = false %}{% if sd[0] == 'you' %}{% if sp[0] == 'def' or sp[0] == 'hea' %}{% assign fightOnly = true %}{% endif %}{% endif %}<label class="sim-field{% if fightOnly %} sim-for{% endif %}"{% if fightOnly %} data-for="fight" hidden{% endif %}><span data-i18n="{{ sp[1] }}">{{ sp[2] }}</span>
-            <input id="{{ sd[1] }}{{ sp[0] }}-{{ tp[0] }}" type="number" min="0" step="0.1" inputmode="decimal" value="{% if sd[0] == 'foe' %}200{% elsif sp[0] == 'atk' or sp[0] == 'def' %}250{% else %}163{% endif %}"{% if sd[0] == 'you' %} data-player-stat="{{ sp[3] }}" data-troop="{{ tp[0] }}"{% endif %}></label>
+          {% assign fightOnly = false %}{% if sd[0] == 'you' %}{% if sp[0] == 'def' or sp[0] == 'hea' %}{% assign fightOnly = true %}{% endif %}{% endif %}<label class="sim-field"{% if fightOnly %} :hidden="!shows('fight')" hidden{% endif %}><span data-i18n="{{ sp[1] }}">{{ sp[2] }}</span>
+            <input id="{{ sd[1] }}{{ sp[0] }}-{{ tp[0] }}" type="number" min="0" step="0.1" inputmode="decimal" x-model="f['{{ sd[1] }}{{ sp[0] }}-{{ tp[0] }}']" :aria-label="label('{{ sd[1] }}', '{{ tp[0] }}', '{{ sp[0] }}')"></label>
           {%- endfor %}
         </fieldset>
       </div>
       {%- endfor %}
       {%- if sd[0] == 'you' %}
-      <p class="note sim-for" data-for="bear" data-i18n-html="sim.army.bearNote"><b>Defense</b> and <b>health</b> never
+      <p class="note" :hidden="!shows('bear')" data-i18n-html="sim.army.bearNote"><b>Defense</b> and <b>health</b> never
         move a bear fight, so a bear report only needs attack and lethality here.</p>
       {%- endif %}
     </dialog>
     {%- endfor %}
 
-    {%- comment -%} A side's heroes: three leads and four joiners. js/sim.js reads them by id; only their skills enter the fight. {%- endcomment -%}
-    {%- for side in sides %}{% assign sd = side | split: "|" %}
-    <dialog class="sim-dialog sim-heroes" id="sim-heroes-{{ sd[0] }}" aria-labelledby="sim-heroes-{{ sd[0] }}-title">
+    {%- comment -%} A side's heroes: three leads and four joiners. Only their skills enter the fight. {%- endcomment -%}
+    {%- for side in sides %}{% assign sd = side | split: "|" %}{% capture dlg %}sim-heroes-{{ sd[0] }}{% endcapture %}
+    <dialog class="sim-dialog sim-heroes" id="{{ dlg }}" aria-labelledby="{{ dlg }}-title" x-effect="dialog === '{{ dlg }}' ? $el.open || $el.showModal() : $el.open && $el.close()"
+      @close="dialog = null" @click.self="outside($event, $el.getBoundingClientRect()) && (dialog = null)">
       <div class="sim-dialog-head">
-        <h2 id="sim-heroes-{{ sd[0] }}-title" data-i18n="sim.heroes.{{ sd[0] }}Title">{% if sd[0] == 'foe' %}Their heroes{% else %}Your heroes{% endif %}</h2>
-        <button type="button" data-action="sim-army.close" data-i18n="sim.army.done">done</button>
+        <h2 id="{{ dlg }}-title" data-i18n="sim.heroes.{{ sd[0] }}Title">{% if sd[0] == 'foe' %}Their heroes{% else %}Your heroes{% endif %}</h2>
+        <button type="button" @click="dialog = null" data-i18n="sim.army.done">done</button>
       </div>
       <p class="sim-gloss" data-i18n-html="sim.heroes.lede">Only their <b>skills</b> are added. A hero's stats and exclusive
         gear stats are already in the report's Bonus Details.</p>
       {%- if sd[0] == 'you' %}
       <label class="sim-field sim-role"><span data-i18n="sim.heroes.role">The fight</span>
-        <select id="sim-fight-role">
+        <select id="sim-fight-role" x-model="f['sim-fight-role']">
           <option value="solo" data-i18n="sim.heroes.roleSolo">Field fight — no joiners</option>
           <option value="rally" data-i18n="sim.heroes.roleRally">You rally their garrison</option>
           <option value="defender" data-i18n="sim.heroes.roleDefend">You hold against their rally</option>
@@ -404,11 +474,11 @@ self: sim
         {%- for t in types %}{% assign tp = t | split: "|" %}
         <div class="sim-hero-row">
           <label class="sim-field sim-hero-pick"><span data-i18n="{{ tp[1] }}">{{ tp[2] }}</span>
-            <select id="{{ sd[1] }}hero-{{ tp[0] }}"><option value="" data-i18n="sim.heroes.empty">no hero</option>{% for h in fighters %}{% if h.type == tp[0] and site.data.combat.heroSkills[h.key] %}<option value="{{ h.key }}">{{ h.name }}</option>{% endif %}{% endfor %}</select></label>
+            <select id="{{ sd[1] }}hero-{{ tp[0] }}" x-model="f['{{ sd[1] }}hero-{{ tp[0] }}']"><option value="" data-i18n="sim.heroes.empty">no hero</option>{% for h in fighters %}{% if h.type == tp[0] and site.data.combat.heroSkills[h.key] %}<option value="{{ h.key }}">{{ h.name }}</option>{% endif %}{% endfor %}</select></label>
           <label class="sim-field"><span data-i18n="sim.heroes.level">skill level</span>
-            <select id="{{ sd[1] }}hero-lv-{{ tp[0] }}">{% for i in (1..5) %}<option value="{{ i }}"{% if i == 5 %} selected{% endif %}>{{ i }}</option>{% endfor %}</select></label>
+            <select id="{{ sd[1] }}hero-lv-{{ tp[0] }}" x-model="f['{{ sd[1] }}hero-lv-{{ tp[0] }}']">{% for i in (1..5) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}</select></label>
           <label class="sim-field"><span data-i18n="sim.heroes.gear">gear level</span>
-            <select id="{{ sd[1] }}hero-gear-{{ tp[0] }}">{% for i in (0..10) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}</select></label>
+            <select id="{{ sd[1] }}hero-gear-{{ tp[0] }}" x-model="f['{{ sd[1] }}hero-gear-{{ tp[0] }}']">{% for i in (0..10) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}</select></label>
         </div>
         {%- endfor %}
       </fieldset>
@@ -419,19 +489,20 @@ self: sim
         {%- for i in (1..4) %}
         <div class="sim-hero-row">
           <label class="sim-field sim-hero-pick"><span data-i18n="sim.heroes.joiner">joiner</span>
-            <select id="{{ sd[1] }}join-{{ i }}"><option value="" data-i18n="sim.heroes.empty">no hero</option>{% for h in fighters %}{% if site.data.combat.heroSkills[h.key] %}<option value="{{ h.key }}">{{ h.name }}</option>{% endif %}{% endfor %}</select></label>
+            <select id="{{ sd[1] }}join-{{ i }}" x-model="f['{{ sd[1] }}join-{{ i }}']"><option value="" data-i18n="sim.heroes.empty">no hero</option>{% for h in fighters %}{% if site.data.combat.heroSkills[h.key] %}<option value="{{ h.key }}">{{ h.name }}</option>{% endif %}{% endfor %}</select></label>
           <label class="sim-field"><span data-i18n="sim.heroes.level">skill level</span>
-            <select id="{{ sd[1] }}join-lv-{{ i }}">{% for l in (1..5) %}<option value="{{ l }}"{% if l == 5 %} selected{% endif %}>{{ l }}</option>{% endfor %}</select></label>
+            <select id="{{ sd[1] }}join-lv-{{ i }}" x-model="f['{{ sd[1] }}join-lv-{{ i }}']">{% for l in (1..5) %}<option value="{{ l }}">{{ l }}</option>{% endfor %}</select></label>
         </div>
         {%- endfor %}
       </fieldset>
     </dialog>
     {%- endfor %}
 
-    <dialog class="sim-dialog" id="sim-roster-dialog" aria-labelledby="sim-roster-title">
+    <dialog class="sim-dialog" id="sim-roster-dialog" aria-labelledby="sim-roster-title" x-effect="dialog === 'sim-roster-dialog' ? $el.open || $el.showModal() : $el.open && $el.close()"
+      @close="dialog = null" @click.self="outside($event, $el.getBoundingClientRect()) && (dialog = null)">
       <div class="sim-dialog-head">
         <h2 id="sim-roster-title" data-i18n="sim.roster.title">Your troops</h2>
-        <button type="button" data-action="sim-army.close" data-i18n="sim.army.done">done</button>
+        <button type="button" @click="dialog = null" data-i18n="sim.army.done">done</button>
       </div>
       <div class="roster" id="sim-roster" data-module="troop-roster" data-total-key="sim.roster.total" data-empty-key="sim.roster.empty">
         {%- for t in types %}{% assign tp = t | split: "|" %}
