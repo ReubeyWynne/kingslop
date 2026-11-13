@@ -225,7 +225,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('[data-plan="mobilize"]').getAttribute('aria-pressed'), 'true');
     assert.equal(await page.locator('[data-training="position"] [data-amount]').textContent(), '+75%');
     assert.equal(await troopText('troopSpeed'), '225%, 255% on the day');
-    await page.locator('[data-value="prep"][data-action="tabs.select"]').click();
+    await page.locator('[data-value="prep"][role="tab"]').click();
     assert.match(await troopText('troopTitle'), /KvK prep, day 4$/);
     assert.equal(await troopText('troopSpeed'), '225%, 255% on the day', 'KvK prep: +25% for everyone and +50% for the Advisor, as the High King has ended');
     await page.locator('#town-troops [data-plan="highKing"]').click(); await page.locator('#town-troops [data-plan="mobilize"]').click();

@@ -11,16 +11,16 @@ self: town
 
   <section class="section town-shelves" id="town-inventory" aria-labelledby="town-inventory-title">
     <div class="town-heading"><h2 id="town-inventory-title" data-i18n="town.inventory">Your inventory</h2><span class="town-saved"><output class="seal" id="town-saved" role="status" :data-state="seal" x-text="sealText"></output><details class="shared-by" id="town-shared-by"><summary aria-label="Also used by 7 pages" data-i18n-key="town.sharedByAria" data-i18n-attr="aria-label"><i data-page="gear"></i><i data-page="governor"></i><i data-page="heroes"></i><i data-page="masters"></i><i data-page="buildings"></i><i data-page="priority"></i><i data-page="kvksg"></i></summary><span class="motif-names" data-i18n="town.sharedBy">Hero gear · Governor gear · Heroes · Masters · Buildings · Upgrade priority · Event Cycle</span></details></span><button type="button" class="town-read-shots" data-screen-import="pick" data-i18n="town.readShots">read screenshots</button></div>
-    <div class="town-rail" data-module="tabs" data-tabs-bind="town-shelf" role="tablist" aria-label="Inventory" data-i18n-key="town.inventory" data-i18n-attr="aria-label">
-      <button type="button" role="tab" aria-selected="true" aria-controls="town-bag" data-value="bag" data-action="tabs.select" data-i18n="town.shelf.bag">Bag</button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-speedups" data-value="speedups" data-action="tabs.select" data-i18n="town.shelf.speedups">Speedups</button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-resources" data-value="resources" data-action="tabs.select" data-i18n="town.shelf.resources">Resources</button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-buildings" data-value="buildings" data-action="tabs.select" data-i18n="town.shelf.buildings">Buildings</button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-troops" data-value="troops" data-action="tabs.select" data-i18n="town.shelf.troops">Troops</button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-heroes" data-value="heroes" data-action="tabs.select" data-i18n="town.shelf.heroes">Heroes</button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-masters" data-value="masters" data-action="tabs.select" data-i18n="town.shelf.masters">Masters</button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-hero-gear" data-value="hero-gear" data-action="tabs.select" data-i18n="town.shelf.heroGear">Hero gear</button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-governor" data-value="governor" data-action="tabs.select" data-i18n="town.shelf.governor">Governor</button>
+    <div class="town-rail" x-data="tabs" @keydown="tabsKey($event)" data-tabs-bind="town-shelf" role="tablist" aria-label="Inventory" data-i18n-key="town.inventory" data-i18n-attr="aria-label">
+      <button type="button" role="tab" aria-selected="true" aria-controls="town-bag" data-value="bag" @click="tabsSelect($el)" data-i18n="town.shelf.bag">Bag</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-speedups" data-value="speedups" @click="tabsSelect($el)" data-i18n="town.shelf.speedups">Speedups</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-resources" data-value="resources" @click="tabsSelect($el)" data-i18n="town.shelf.resources">Resources</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-buildings" data-value="buildings" @click="tabsSelect($el)" data-i18n="town.shelf.buildings">Buildings</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-troops" data-value="troops" @click="tabsSelect($el)" data-i18n="town.shelf.troops">Troops</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-heroes" data-value="heroes" @click="tabsSelect($el)" data-i18n="town.shelf.heroes">Heroes</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-masters" data-value="masters" @click="tabsSelect($el)" data-i18n="town.shelf.masters">Masters</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-hero-gear" data-value="hero-gear" @click="tabsSelect($el)" data-i18n="town.shelf.heroGear">Hero gear</button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="town-governor" data-value="governor" @click="tabsSelect($el)" data-i18n="town.shelf.governor">Governor</button>
     </div>
 
     <div class="town-shelf" id="town-bag" role="tabpanel" data-shelf="bag" :hidden="shelf !== 'bag'">
@@ -195,10 +195,10 @@ self: town
         </button>
         {% endfor %}
       </div>
-      <div class="town-rail town-troops" data-module="tabs" data-tabs-bind="town-troop" role="tablist" aria-label="Troop type" data-i18n-key="gear.troopType" data-i18n-attr="aria-label">
-        <button type="button" role="tab" aria-selected="true" data-value="inf" data-action="tabs.select" data-i18n="gear.inf">Infantry</button>
-        <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="cav" data-action="tabs.select" data-i18n="gear.cav">Cavalry</button>
-        <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="arc" data-action="tabs.select" data-i18n="gear.arc">Archer</button>
+      <div class="town-rail town-troops" x-data="tabs" @keydown="tabsKey($event)" data-tabs-bind="town-troop" role="tablist" aria-label="Troop type" data-i18n-key="gear.troopType" data-i18n-attr="aria-label">
+        <button type="button" role="tab" aria-selected="true" data-value="inf" @click="tabsSelect($el)" data-i18n="gear.inf">Infantry</button>
+        <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="cav" @click="tabsSelect($el)" data-i18n="gear.cav">Cavalry</button>
+        <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="arc" @click="tabsSelect($el)" data-i18n="gear.arc">Archer</button>
       </div>
       {% for troop in troops %}{% case troop %}{% when "inf" %}{% assign art = "infantry" %}{% when "cav" %}{% assign art = "cavalry" %}{% else %}{% assign art = "archer" %}{% endcase %}
       <div class="town-hero-board" data-troop-board="{{ troop }}"{% unless forloop.first %} hidden{% endunless %} :hidden="troop !== '{{ troop }}'">
@@ -267,16 +267,16 @@ self: town
       <button type="button" class="town-clear" :hidden="panel === 'hero'" @click="clear()" data-i18n="town.clear">mark as unknown</button>
     </dialog>
 
-    <output class="town-status" hidden aria-live="polite" data-module="result-panel" data-status-scope="town" data-target="result-panel.message"></output>
+    <output class="town-status" hidden aria-live="polite" data-status x-data="resultPanel('town')" @player-status.document="panelHear($event)" x-text="panelText" :hidden="!panelText" data-status-scope="town"></output>
   </section>
 
   <section class="section town-points" id="town-points" aria-labelledby="town-points-title">
     <h2 id="town-points-title" data-i18n="town.pointsTitle">Event points</h2>
     {% include empty-state.html needs="inventory" key="empty.town" text="Count what's in your bag to see the event points it can score." import=true fill="#town-bag" %}
-    <div class="town-events" data-module="tabs" data-tabs-bind="town-event" role="tablist" aria-label="Event" data-i18n-key="town.event" data-i18n-attr="aria-label">
-      <button type="button" role="tab" aria-selected="true" data-value="prep" data-action="tabs.select"><span data-i18n="ks.today.kickerPrep">KvK prep</span><output data-event-total="prep" :data-partial="view.points.totals.prep.partial" x-text="view.points.totals.prep.text">—</output></button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="sg" data-action="tabs.select"><span data-i18n="ks.governor.title">Strongest Governor</span><output data-event-total="sg" :data-partial="view.points.totals.sg.partial" x-text="view.points.totals.sg.text">—</output></button>
-      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="brawl" data-action="tabs.select"><span data-i18n="ks.brawl.title">Alliance Brawl</span><output data-event-total="brawl" :data-partial="view.points.totals.brawl.partial" x-text="view.points.totals.brawl.text">—</output></button>
+    <div class="town-events" x-data="tabs" @keydown="tabsKey($event)" data-tabs-bind="town-event" role="tablist" aria-label="Event" data-i18n-key="town.event" data-i18n-attr="aria-label">
+      <button type="button" role="tab" aria-selected="true" data-value="prep" @click="tabsSelect($el)"><span data-i18n="ks.today.kickerPrep">KvK prep</span><output data-event-total="prep" :data-partial="view.points.totals.prep.partial" x-text="view.points.totals.prep.text">—</output></button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="sg" @click="tabsSelect($el)"><span data-i18n="ks.governor.title">Strongest Governor</span><output data-event-total="sg" :data-partial="view.points.totals.sg.partial" x-text="view.points.totals.sg.text">—</output></button>
+      <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="brawl" @click="tabsSelect($el)"><span data-i18n="ks.brawl.title">Alliance Brawl</span><output data-event-total="brawl" :data-partial="view.points.totals.brawl.partial" x-text="view.points.totals.brawl.text">—</output></button>
     </div>
     <p class="town-note" id="town-coverage" aria-live="polite" x-text="view.points.coverage"></p>
     <p class="town-gloss" id="town-buildingMax" hidden :hidden="!view.points.buildingMax" x-text="view.points.buildingMax"></p>
@@ -308,11 +308,11 @@ self: town
   </section>
 
   <section class="section town-notes" id="town-save">
-    <details id="save-backups" data-module="save-transfer disclosure" data-status-scope="town" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
+    <details id="save-backups" x-data="saveTransfer" data-status-scope="town" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
       <summary data-i18n="gear.manageSave">your save &amp; backups</summary>
-      <button type="button" data-action="save-transfer.export" data-i18n="gear.export">download backup</button>
-      <button type="button" data-action="save-transfer.choose" data-i18n="gear.load">import backup</button>
-      <input type="file" accept="application/json,.json" hidden data-target="save-transfer.file" data-action="save-transfer.import">
+      <button type="button" data-save="export" @click="transferExport()" data-i18n="gear.export">download backup</button>
+      <button type="button" data-save="choose" @click="$refs.file.click()" data-i18n="gear.load">import backup</button>
+      <input type="file" accept="application/json,.json" hidden data-save="file" x-ref="file" @change="transferImport($el)">
     </details>
     <details id="town-maths">
       <summary data-i18n="town.maths">How points are counted</summary>

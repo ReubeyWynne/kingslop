@@ -21,19 +21,19 @@ self: governor
         <h2 data-i18n="gov.theGovernor">The governor</h2>
         <button type="button" class="gov-drop sheet-drop" data-screen-import="pick" data-screen-import-drop><strong data-i18n="gov.drop.title">Fill this in from a screenshot</strong> <span data-i18n="gov.drop.body">Use your whole Governor Profile screen.</span></button>
         {% include governor/profile.html %}
-        <div class="gov-bag" id="governor-bag" data-module="ledger-form" x-effect="$store.ledger.v; inkBag($el)" :data-saved-key="$store.ledger.guest ? 'gov.sheet.bagSaved' : 'gear.saved'" data-saved-key="gov.sheet.bagSaved" data-save-failed-key="gear.saveFailed">
+        <div class="gov-bag" id="governor-bag" x-data="ledgerForm" x-effect="$store.ledger.v; inkBag($el)" :data-saved-key="$store.ledger.guest ? 'gov.sheet.bagSaved' : 'gear.saved'" data-saved-key="gov.sheet.bagSaved" data-save-failed-key="gear.saveFailed">
           {% for item in gov.materials %}{% if gov.gear.materials contains item.id %}{% assign group = "gear" %}{% else %}{% assign group = "charms" %}{% endif %}
-          <label data-kind="{{ group }}"><img src="../img/governor/{{ item.id }}.webp" width="40" height="40" alt=""><span data-i18n="{{ item.key }}">{{ item.label | escape }}</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-tally="blank" data-bind="inventory.{{ item.id }}" data-action="ledger-form.set ledger-form.normalize" aria-label="{{ item.label | escape }}" data-i18n-key="{{ item.key }}" data-i18n-attr="aria-label"></label>
+          <label data-kind="{{ group }}"><img src="../img/governor/{{ item.id }}.webp" width="40" height="40" alt=""><span data-i18n="{{ item.key }}">{{ item.label | escape }}</span><input type="number" min="0" max="1000000000" step="1" inputmode="numeric" data-tally="blank" data-bind="inventory.{{ item.id }}" :value="formValue('inventory.{{ item.id }}')" :data-state="formState('inventory.{{ item.id }}')" @input="formSet($el)" @change="formNormalize()" aria-label="{{ item.label | escape }}" data-i18n-key="{{ item.key }}" data-i18n-attr="aria-label"></label>
           {% endfor %}
-          <div class="gov-bag-caption"><details class="shared-by" id="governor-bag-shared"><summary aria-label="Also used by 2 pages" data-i18n-key="gov.bagSharedLabel" data-i18n-attr="aria-label"><i data-page="town" style="--hue: #DC8FDB"></i><i data-page="priority" style="--hue: #DD8FD6"></i></summary><span class="motif-names" data-i18n="gov.bagShared">Town Centre · Upgrade priority</span></details> <output class="seal" data-target="ledger-form.save" role="status" x-init="sealBag($el, $el.closest('#governor-bag'))"></output></div>
+          <div class="gov-bag-caption"><details class="shared-by" id="governor-bag-shared"><summary aria-label="Also used by 2 pages" data-i18n-key="gov.bagSharedLabel" data-i18n-attr="aria-label"><i data-page="town" style="--hue: #DC8FDB"></i><i data-page="priority" style="--hue: #DD8FD6"></i></summary><span class="motif-names" data-i18n="gov.bagShared">Town Centre · Upgrade priority</span></details> <output class="seal" role="status" x-text="formNote" :data-state="formMark"></output></div>
         </div>
       </div>
 
       <div class="gov-answer sheet-answer" x-data="govPlanner" data-art="../img/governor/" id="gov-answer" :data-mode="mode" @tabs:select="select($event)">
         <h2 data-i18n="gov.theAnswer">The answer</h2>
-        <div class="sheet-modes" data-module="tabs" data-tabs-bind="governor-mode" role="tablist" aria-label="Question" data-i18n-key="gov.mode" data-i18n-attr="aria-label">
-          <button type="button" role="tab" aria-selected="true" data-value="spend" data-action="tabs.select" data-i18n="gov.withWhatIHave">With what I have</button>
-          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="reach" data-action="tabs.select" data-i18n="gov.costToReach">Cost to reach</button>
+        <div class="sheet-modes" x-data="tabs" @keydown="tabsKey($event)" data-tabs-bind="governor-mode" role="tablist" aria-label="Question" data-i18n-key="gov.mode" data-i18n-attr="aria-label">
+          <button type="button" role="tab" aria-selected="true" data-value="spend" @click="tabsSelect($el)" data-i18n="gov.withWhatIHave">With what I have</button>
+          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-value="reach" @click="tabsSelect($el)" data-i18n="gov.costToReach">Cost to reach</button>
         </div>
 
         <div class="gov-mode" data-planner="spendPanel" :hidden="mode !== 'spend'">
@@ -67,7 +67,7 @@ self: governor
         {% include page-notes.html part="pointer" checked="2026-10-09" %}
       </div>
     </div>
-    <output class="gov-status" hidden aria-live="polite" data-module="result-panel" data-status-scope="governor" data-target="result-panel.message"></output>
+    <output class="gov-status" hidden aria-live="polite" x-data="resultPanel('governor')" @player-status.document="panelHear($event)" x-text="panelText" :hidden="!panelText" data-status-scope="governor"></output>
     {% include page-sheet.html part="confirm" class="gov-dialog" title="gov.sheet.confirmTitle" title_en="Save this sheet as yours?" body="gov.sheet.confirmBody" body_en="It replaces the governor levels in your save. A material this sheet has not counted keeps your number." confirm="gov.sheet.confirm" confirm_en="replace my levels" %}
     <noscript><p data-i18n="gov.noJS">Enable JavaScript to use the planner. The cost tables below remain available.</p></noscript>
   </section>

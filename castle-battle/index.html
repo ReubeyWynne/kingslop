@@ -8,11 +8,11 @@ self: castle
     <p class="lede">Take the castle, keep it reinforced, and hold it long enough to win.</p>
     {% include ascii/motif.html kind='castle' %}
   </header>
-  <div class="castle-tabs castle-views" role="tablist" aria-label="Castle Battle lessons" data-module="tabs" data-tabs-bind="view">
-    <button type="button" id="castle-event-tab" role="tab" aria-controls="castle-event" aria-selected="true" tabindex="0" data-value="event" data-action="tabs.select">Event</button>
-    <button type="button" id="castle-combat-tab" role="tab" aria-controls="castle-combat" aria-selected="false" tabindex="-1" data-value="combat" data-action="tabs.select">Combat</button>
-    <button type="button" id="castle-joiners-tab" role="tab" aria-controls="castle-joiners" aria-selected="false" tabindex="-1" data-value="joiners" data-action="tabs.select">Joiners</button>
-    <button type="button" id="castle-formation-tab" role="tab" aria-controls="castle-formation" aria-selected="false" tabindex="-1" data-value="formation" data-action="tabs.select">Troops</button>
+  <div class="castle-tabs castle-views" role="tablist" aria-label="Castle Battle lessons" x-data="tabs" @keydown="tabsKey($event)" data-tabs-bind="view">
+    <button type="button" id="castle-event-tab" role="tab" aria-controls="castle-event" aria-selected="true" tabindex="0" data-value="event" @click="tabsSelect($el)">Event</button>
+    <button type="button" id="castle-combat-tab" role="tab" aria-controls="castle-combat" aria-selected="false" tabindex="-1" data-value="combat" @click="tabsSelect($el)">Combat</button>
+    <button type="button" id="castle-joiners-tab" role="tab" aria-controls="castle-joiners" aria-selected="false" tabindex="-1" data-value="joiners" @click="tabsSelect($el)">Joiners</button>
+    <button type="button" id="castle-formation-tab" role="tab" aria-controls="castle-formation" aria-selected="false" tabindex="-1" data-value="formation" @click="tabsSelect($el)">Troops</button>
   </div>
   <section id="castle-event" class="castle-panel" role="tabpanel" aria-labelledby="castle-event-tab" data-view="event" :hidden="view !== 'event'">
     <div class="castle-chapter">
@@ -72,9 +72,9 @@ self: castle
       <p>Squad-wide skills help the whole army, even without the hero's matching troop type. Read the skill's scope. Widget skills can require rally or defender duty.</p>
     <details id="leader-kits" class="castle-reason"><summary>Leader kits · Gen 2–3</summary>
       <p>Compare with your saved roster: stars, skills, gear and widgets all matter.</p>
-      <div class="castle-tabs castle-roles" role="tablist" aria-label="Leader duty" data-module="tabs" data-tabs-bind="role">
-        <button type="button" id="castle-defense-tab" role="tab" aria-controls="castle-leaders" aria-selected="true" tabindex="0" data-value="defense" data-action="tabs.select">Garrison lead</button>
-        <button type="button" id="castle-attack-tab" role="tab" aria-controls="castle-leaders" aria-selected="false" tabindex="-1" data-value="attack" data-action="tabs.select">Rally lead</button>
+      <div class="castle-tabs castle-roles" role="tablist" aria-label="Leader duty" x-data="tabs" @keydown="tabsKey($event)" data-tabs-bind="role">
+        <button type="button" id="castle-defense-tab" role="tab" aria-controls="castle-leaders" aria-selected="true" tabindex="0" data-value="defense" @click="tabsSelect($el)">Garrison lead</button>
+        <button type="button" id="castle-attack-tab" role="tab" aria-controls="castle-leaders" aria-selected="false" tabindex="-1" data-value="attack" @click="tabsSelect($el)">Rally lead</button>
       </div>
       <div id="castle-leaders" role="tabpanel" aria-labelledby="castle-defense-tab" :aria-labelledby="'castle-' + role + '-tab'">
         <label class="castle-progress">Your roster<select x-model="stage" disabled :disabled="false">{% for stage in site.data.castle_battle.stages %}<option value="{{ stage.id }}"{% if stage.id == 'mature' %} selected{% endif %}>{{ stage.label }}</option>{% endfor %}</select></label>

@@ -48,9 +48,9 @@ self: sim
     </nav>
 
     <!-- Phones show one side of the workspace at a time (data-view on the console) -->
-    <div class="sim-views" data-module="tabs" data-tabs-bind="view" role="tablist" aria-label="Console view" data-i18n-key="sim.view.aria" data-i18n-attr="aria-label" x-effect="jump && $el.scrollIntoView({ block: 'start', behavior: 'instant' })">
-      <button type="button" id="sim-view-armies" role="tab" aria-controls="sim-armies" x-bind="tab('view', 'armies')" aria-selected="true" tabindex="0" data-value="armies" data-action="tabs.select" data-i18n="sim.view.armies">Armies</button>
-      <button type="button" id="sim-view-answer" role="tab" aria-controls="sim-answer" x-bind="tab('view', 'answer')" aria-selected="false" tabindex="-1" data-value="answer" data-action="tabs.select" data-i18n="sim.view.answer" x-effect="jump && $el.focus({ preventScroll: true })">Answer</button>
+    <div class="sim-views" x-data="tabs" @keydown="tabsKey($event)" data-tabs-bind="view" role="tablist" aria-label="Console view" data-i18n-key="sim.view.aria" data-i18n-attr="aria-label" x-effect="jump && $el.scrollIntoView({ block: 'start', behavior: 'instant' })">
+      <button type="button" id="sim-view-armies" role="tab" aria-controls="sim-armies" x-bind="tab('view', 'armies')" aria-selected="true" tabindex="0" data-value="armies" @click="tabsSelect($el)" data-i18n="sim.view.armies">Armies</button>
+      <button type="button" id="sim-view-answer" role="tab" aria-controls="sim-answer" x-bind="tab('view', 'answer')" aria-selected="false" tabindex="-1" data-value="answer" @click="tabsSelect($el)" data-i18n="sim.view.answer" x-effect="jump && $el.focus({ preventScroll: true })">Answer</button>
     </div>
 
     <div class="sim-workspace">
@@ -418,9 +418,9 @@ self: sim
       <p class="sim-gloss" :hidden="!shows('fight')" hidden data-i18n-html="sim.load.ledeFight">In <b>Bonus Details</b>,
         the <b>left column is you</b> and the right column is the opponent.</p>
       {%- endif %}
-      <div class="sim-tabs" data-module="tabs" data-tabs-bind="troop" role="tablist" aria-label="Troop type" data-i18n-key="sim.army.troopAria" data-i18n-attr="aria-label">
+      <div class="sim-tabs" x-data="tabs" @keydown="tabsKey($event)" data-tabs-bind="troop" role="tablist" aria-label="Troop type" data-i18n-key="sim.army.troopAria" data-i18n-attr="aria-label">
         {%- for t in types %}{% assign tp = t | split: "|" %}
-        <button type="button" id="{{ dlg }}-tab-{{ tp[0] }}" role="tab" aria-controls="{{ dlg }}-{{ tp[0] }}" x-bind="tab('{{ sd[0] }}', '{{ tp[0] }}')" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" data-value="{{ tp[0] }}" data-action="tabs.select" data-i18n="{{ tp[1] }}">{{ tp[2] }}</button>
+        <button type="button" id="{{ dlg }}-tab-{{ tp[0] }}" role="tab" aria-controls="{{ dlg }}-{{ tp[0] }}" x-bind="tab('{{ sd[0] }}', '{{ tp[0] }}')" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" data-value="{{ tp[0] }}" @click="tabsSelect($el)" data-i18n="{{ tp[1] }}">{{ tp[2] }}</button>
         {%- endfor %}
       </div>
       {%- for t in types %}{% assign tp = t | split: "|" %}
@@ -504,27 +504,24 @@ self: sim
         <h2 id="sim-roster-title" data-i18n="sim.roster.title">Your troops</h2>
         <button type="button" @click="dialog = null" data-i18n="sim.army.done">done</button>
       </div>
-      <div class="roster" id="sim-roster" data-module="troop-roster" data-total-key="sim.roster.total" data-empty-key="sim.roster.empty">
+      <div class="roster" id="sim-roster" x-data="troopRoster" data-total-key="sim.roster.total" data-empty-key="sim.roster.empty">
         {%- for t in types %}{% assign tp = t | split: "|" %}
         <fieldset class="roster-type" data-troop-type="{{ tp[0] }}">
           <legend data-i18n="{{ tp[1] }}">{{ tp[2] }}</legend>
-          <ol class="roster-rows" data-target="troop-roster.rows"></ol>
-          <button type="button" class="roster-add" data-action="troop-roster.add" data-i18n="sim.roster.add">Add a tier</button>
+          <ol class="roster-rows"><template x-for="row in rosterRows('{{ tp[0] }}')" :key="row.key"><li class="roster-row" :data-key="row.key">
+            <label class="sim-field"><span data-i18n="sim.dmg.thTier">tier</span>
+              <select data-field="tier" :value="String(row.tier)" @change="rosterMove($el, row)">{% for i in (1..11) %}<option value="{{ i }}">T{{ i }}</option>{% endfor %}</select></label>
+            <label class="sim-field"><span data-i18n="sim.dmg.thTg">TG</span>
+              <select data-field="tg" :value="String(row.tg)" @change="rosterMove($el, row)">{% for i in (0..5) %}<option value="{{ i }}">TG{{ i }}</option>{% endfor %}</select></label>
+            <label class="sim-field"><span data-i18n="sim.dmg.thCount">troops</span>
+              <input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="0" data-field="amount" data-unit-input="count" :value="row.amount" @input="rosterSet($el, row)"></label>
+            <button type="button" class="roster-remove" data-roster="remove" @click="rosterRemove(row)" aria-label="Remove this tier"
+              data-i18n-key="sim.roster.remove" data-i18n-attr="aria-label">×</button>
+          </li></template></ol>
+          <button type="button" class="roster-add" data-roster="add" @click="rosterAdd('{{ tp[0] }}')" data-i18n="sim.roster.add">Add a tier</button>
         </fieldset>
         {%- endfor %}
-        <output class="roster-total" data-target="troop-roster.total" aria-live="polite"></output>
-        <template data-target="troop-roster.row">
-          <li class="roster-row">
-            <label class="sim-field"><span data-i18n="sim.dmg.thTier">tier</span>
-              <select data-field="tier" data-action="troop-roster.move">{% for i in (1..11) %}<option value="{{ i }}"{% if i == 10 %} selected{% endif %}>T{{ i }}</option>{% endfor %}</select></label>
-            <label class="sim-field"><span data-i18n="sim.dmg.thTg">TG</span>
-              <select data-field="tg" data-action="troop-roster.move">{% for i in (0..5) %}<option value="{{ i }}">TG{{ i }}</option>{% endfor %}</select></label>
-            <label class="sim-field"><span data-i18n="sim.dmg.thCount">troops</span>
-              <input type="number" min="0" max="1000000000" step="1" inputmode="numeric" placeholder="0" data-field="amount" data-unit-input="count" data-action="troop-roster.set"></label>
-            <button type="button" class="roster-remove" data-action="troop-roster.remove" aria-label="Remove this tier"
-              data-i18n-key="sim.roster.remove" data-i18n-attr="aria-label">×</button>
-          </li>
-        </template>
+        <output class="roster-total" x-text="rosterTotal" aria-live="polite"></output>
       </div>
     </dialog>
   </section>

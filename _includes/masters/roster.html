@@ -9,7 +9,7 @@
         {% for master in wave %}
           <article class="master-card" id="master-{{ master.id }}" data-master="{{ master.id }}" data-day="{{ master.unlockDay }}"{% for need in master.kingdom %} data-kingdom-{{ need[0] }}="{{ need[1] }}"{% endfor %} data-verified="{{ master.verified }}" x-data="master('{{ master.id }}')" :data-owned="String(Boolean(copy))">
             <span class="hero-upcoming" data-kingdom-upcoming hidden :hidden="!upcoming" data-i18n="kingdom.upcoming">Upcoming</span>
-            <details class="master-dossier" name="master-dossier" data-module="disclosure" data-deep-link="master-{{ master.id }}" @toggle="opened($el)">
+            <details class="master-dossier" name="master-dossier"  data-deep-link="master-{{ master.id }}" @toggle="opened($el)">
               <summary class="master-heading">
                 <span class="master-portrait"><img src="../img/masters/{{ master.id }}.webp" width="80" height="80" alt="" loading="lazy" decoding="async"><img class="master-emblem-mark" src="../img/masters/emblem-{{ master.id }}.webp" width="22" height="22" alt="" loading="lazy"><span class="master-portrait-level" data-portrait="affinity" aria-hidden="true" hidden :hidden="!known" x-text="known ? fmt(affinity) : ''"></span><img class="master-portrait-soul" src="../img/masters/kindred-soul.webp" width="20" height="20" alt="" loading="lazy" data-portrait="soul" hidden :hidden="!soul"></span>
                 <span class="master-name"><h3>{{ master.name | escape }}</h3><span class="master-title" lang="en">{{ master.title | escape }}</span><span class="master-scope" lang="en">{{ master.scope | escape }}</span><span class="master-mine-line" data-roster="badge" x-text="badge"></span></span>

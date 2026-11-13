@@ -8,9 +8,9 @@ the gear pages (css/sheet.css), and two tabs on a phone (js/planner.js). Wrap th
 Each half is a div with data-half="mine" or data-half="answer".
 {%- endcomment -%}
 {%- if include.part == "views" -%}
-<div class="sheet-views" role="tablist" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label" data-module="tabs" data-tabs-bind="view">
-  <button type="button" role="tab" aria-selected="true" tabindex="0" :aria-selected="String(view === 'mine')" :tabindex="view === 'mine' ? 0 : -1" data-value="mine" data-action="tabs.select" data-i18n="{{ include.mine }}">{{ include.mine_en }}</button>
-  <button type="button" role="tab" aria-selected="false" tabindex="-1" :aria-selected="String(view === 'answer')" :tabindex="view === 'answer' ? 0 : -1" data-value="answer" data-action="tabs.select" data-i18n="gov.theAnswer">The answer</button>
+<div class="sheet-views" role="tablist" aria-label="Planner" data-i18n-key="planner.views" data-i18n-attr="aria-label" x-data="tabs" @keydown="tabsKey($event)" data-tabs-bind="view">
+  <button type="button" role="tab" aria-selected="true" tabindex="0" :aria-selected="String(view === 'mine')" :tabindex="view === 'mine' ? 0 : -1" data-value="mine" @click="tabsSelect($el)" data-i18n="{{ include.mine }}">{{ include.mine_en }}</button>
+  <button type="button" role="tab" aria-selected="false" tabindex="-1" :aria-selected="String(view === 'answer')" :tabindex="view === 'answer' ? 0 : -1" data-value="answer" @click="tabsSelect($el)" data-i18n="gov.theAnswer">The answer</button>
 </div>
 {%- elsif include.part == "shelf" -%}
 <div class="sheet-shelf" data-shelf="{{ include.kind }}">
