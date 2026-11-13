@@ -16,9 +16,11 @@ const g=new STLLoader().parse(await (await fetch('/model.stl')).arrayBuffer());
  g.applyMatrix4(new THREE.Matrix4().makeBasis(x,up,f).transpose());}
 g.computeBoundingBox();const b=g.boundingBox,ctr=new THREE.Vector3();b.getCenter(ctr);const s=2/Math.max(...b.getSize(new THREE.Vector3()).toArray());
 g.translate(-ctr.x,-ctr.y,-ctr.z);g.scale(s,s,s);
+// a variant's own pieces (extra: triangles in the fitted model space) join the model before it is reshaped
+if((o.extra||[]).length){const a=g.attributes.position.array,n=new Float32Array(a.length+o.extra.length);n.set(a);n.set(o.extra,a.length);g.setAttribute('position',new THREE.BufferAttribute(n,3));g.deleteAttribute('normal');}
 // a variant's own shape (bigger horns, say) is part of its rest pose; the poses bend that
 const bend=list=>{for(const d of list){const P=g.attributes.position,v=new THREE.Vector3(),pv=new THREE.Vector3(...d.pivot),q=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(...(d.axis||[0,0,1])).normalize(),d.angle||0);
- for(let i=0;i<P.count;i++){v.fromBufferAttribute(P,i);const s=d.sel;if(v.y<(s.ymin??-9)||v.y>(s.ymax??9)||v.x<(s.xmin??-9)||v.x>(s.xmax??9)||v.z<(s.zmin??-9))continue;
+ for(let i=0;i<P.count;i++){v.fromBufferAttribute(P,i);const s=d.sel;if(v.y<(s.ymin??-9)||v.y>(s.ymax??9)||v.x<(s.xmin??-9)||v.x>(s.xmax??9)||v.z<(s.zmin??-9)||v.z>(s.zmax??9))continue;
   let w=1;if(d.soft){const a=v.getComponent(d.softAxis??2);const t=Math.min(1,Math.max(0,(a-d.soft[0])/(d.soft[1]-d.soft[0])));w=t*t*(3-2*t);}
   const qw=new THREE.Quaternion().slerp(q,w);
   v.sub(pv);if(d.scale)v.multiplyScalar(1+(d.scale-1)*w);v.applyQuaternion(qw);v.add(pv);if(d.move)v.add(new THREE.Vector3(...d.move).multiplyScalar(w));P.setXYZ(i,v.x,v.y,v.z);}}};
