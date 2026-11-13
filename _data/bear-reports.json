@@ -1,5 +1,5 @@
 {
-  "_note": "Bear hunt results that set the Bear's defence in js/battle-engine.mjs (BEAR.def); .dsh/bear-reports-check.cjs refits it from every entry. One entry per rally setup: the Bonus Details off a terror rally report with the same heroes, gear and buffs (attack and lethality per type), the troops' tier and Truegold, each lead hero's three skill levels, the formation sent, Valora's Hunter Instinct %, and the Damage Points of each Bear hit made with that setup. joiners: the four joiner heroes at skill level 5 when known, null when not (then the Bear Hunt page's usual four are assumed). source 'game' is a player's own hits; 'frakinator' is the Frakinator's battle-engine Bear for the same inputs (its mean only).",
+  "_note": "Bear hunt results that set the Bear's defence in js/battle-engine.mjs (BEAR.def); .dsh/bear-reports-check.cjs refits it from every entry. One entry per rally setup: the Bonus Details off a terror rally report with the same heroes, gear and buffs (attack and lethality per type), the troops' tier and Truegold, each lead hero's three skill levels, the formation sent, Valora's Hunter Instinct %, and the Damage Points of each Bear hit made with that setup. joiners: the four joiner heroes at skill level 5 when known, null when not (then the Bear Hunt page's usual four are assumed). source 'game' is a player's own hits; 'frakinator' is the Frakinator's battle-engine Bear for the same inputs (its mean only). fit: false keeps an entry out of the fit (it is still simulated, printed and band-checked) while something about it is unconfirmed.",
   "defaultJoiners": ["chenko", "chenko", "amane", "amane"],
   "reports": [
     {
@@ -9,6 +9,15 @@
       "heroes": [{ "key": "amadeus", "skills": [4, 4, 4] }, { "key": "petra", "skills": [5, 5, 5] }, { "key": "marlin", "skills": [5, 5, 5] }],
       "joiners": null, "march": [9000, 28500, 52500], "valora": 24,
       "hits": [40185881, 50653325, 41701585, 57194303, 44869569]
+    },
+    {
+      "date": "2026-11-13", "player": "Deyci", "source": "game", "trap": "Hunting Trap 2, enhancement level 5",
+      "attack": [704.9, 732.0, 785.4], "lethality": [465.5, 488.1, 780.6],
+      "tier": [10, 10, 10], "tg": [4, 4, 4],
+      "heroes": [{ "key": "amadeus", "skills": [4, 4, 4] }, { "key": "petra", "skills": [5, 5, 5] }, { "key": "marlin", "skills": [5, 5, 5] }],
+      "joiners": null, "march": [4200, 28500, 57300], "valora": 24,
+      "hits": [74671175, 64612482], "fit": false,
+      "comment": "Not in the fit until its joiners and Valora are confirmed: it asks for a defence of 53.6 against 62.6 from the 4 November hits, about 14% apart, and Petra's value cannot explain that (both rallies had her). Stats are the lead finder's page path from the Bonus Overview, hero gear, widgets (Amadeus 6, Petra 8, Marlin 10), stars and the TG4 town; Valora assumed still 24%. Of the five own-rally hits that event, 86.2M is left out (unusually strong joiners, the owner expects) and so are 57.5M and 50.7M (possibly fewer than four joiner heroes). Joiners were not captured."
     },
     {
       "date": "2026-11-05", "player": "Deyci", "source": "frakinator",

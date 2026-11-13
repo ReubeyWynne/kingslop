@@ -16,8 +16,8 @@ const rows = log.reports.map(r => {
   if (r.hits) r.hits.forEach(h => assert.ok(h >= lo * 0.9 && h <= hi * 1.1, `${r.date} ${r.player}: a hit of ${(h / 1e6).toFixed(1)}M is far outside ${(lo / 1e6).toFixed(1)}–${(hi / 1e6).toFixed(1)}M — check the entry`));
   return { r, sim: sim.mean, seen, def: E.BEAR.def * sim.mean / seen, weight: r.hits ? r.hits.length : 1 };
 });
-rows.forEach(x => console.log(`  ${x.r.date} ${x.r.player} (${x.r.source}${x.r.joiners ? '' : ', joiners assumed'}): seen ${(x.seen / 1e6).toFixed(1)}M, simulated ${(x.sim / 1e6).toFixed(1)}M → defence ${x.def.toFixed(1)}`));
-const game = rows.filter(x => x.r.source === 'game'), use = game.length >= 3 ? game : rows;
+rows.forEach(x => console.log(`  ${x.r.date} ${x.r.player} (${x.r.source}${x.r.joiners ? '' : ', joiners assumed'}${x.r.fit === false ? ', not fitted' : ''}): seen ${(x.seen / 1e6).toFixed(1)}M, simulated ${(x.sim / 1e6).toFixed(1)}M → defence ${x.def.toFixed(1)}`));
+const fitted = rows.filter(x => x.r.fit !== false), game = fitted.filter(x => x.r.source === 'game'), use = game.length >= 3 ? game : fitted;
 const fit = use.reduce((s, x) => s + x.def * x.weight, 0) / use.reduce((s, x) => s + x.weight, 0);
 console.log(`Bear reports: ${rows.length} entries, ${game.length} from the game. Fitted defence ${fit.toFixed(1)} (${game.length >= 3 ? 'game hits only' : 'all entries until three game setups'}); BEAR.def is ${E.BEAR.def}.`);
 assert.ok(Math.abs(E.BEAR.def / fit - 1) < 0.03, `BEAR.def ${E.BEAR.def} has drifted from the reports' ${fit.toFixed(1)}: update it`);
