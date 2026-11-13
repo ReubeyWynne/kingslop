@@ -102,14 +102,13 @@ assert.equal(L.copyOf('amadeus', { stars: null }, data), null, 'no stars, no lea
   near(skill([{ kind: 'passive', effects: [{ code: 102, pct: 25 }] }]), 1.25, 'passive');
   near(skill([{ kind: 'perRound', chance: 0.4, effects: [{ code: 102, pct: 50 }] }]), 1.2, 'per round');
   near(skill([{ kind: 'everyN', every: 4, offset: 3, turns: 1, effects: [{ code: 102, pct: 100 }] }]), 1 + 100 * (0.9998 + 0.9992) / 100 / (10 - 0.0055), 'every fourth round from the fourth', 1e-4);
-  // Evil Eye and Infinite Arsenal: 50% on each type's attack, one success holds +50% enemy
-  // damage taken for the whole turn, and 211 does nothing on turn 1 (Strat Game Sloth,
-  // 2026-11-12): 0.875 × 50% over nine of ten rounds is about +39%. Archers alone roll once.
-  const evil = { kind: 'anyAttack', chance: 0.5, effects: [{ code: 211, pct: 50 }] };
-  near(skill([evil]), 1 + 0.875 * 0.5 * 0.9, 'Evil Eye', 1e-3);
-  near(skill([evil], [0, 0, 100000]), 1 + 0.5 * 0.5 * 0.9, 'Evil Eye with archers alone', 1e-3);
+  // Evil Eye and Infinite Arsenal: one 50% roll a round (a Terror rally's trigger counts,
+  // 2026-11-13), and 211 does nothing on turn 1 (Strat Game Sloth, 2026-11-12): 50% × 50%
+  // over nine of ten rounds is +22.5%.
+  const evil = { kind: 'perRound', chance: 0.5, effects: [{ code: 211, pct: 50 }] };
+  near(skill([evil]), 1 + 0.5 * 0.5 * 0.9, 'Evil Eye', 1e-3);
   near(skill([{ kind: 'passive', effects: [{ code: 211, pct: 25 }] }]), 1 + 0.25 * 0.9, '211 is dead on turn 1', 1e-3);
-  near(skill([evil, { ...evil }]), skill([evil]), 'Petra and Zoe together: the duplicate is dead');
+  near(skill([evil, { ...evil }]), 1 + 0.75 * 0.5 * 0.9, 'Petra and Zoe together: one +50%, live when either rolls', 1e-3);
   // The expectation and the simulation are one model: their means agree.
   const C = require('../js/combat.mjs');
   const kit = C.side(data, { role: 'rally', heroes: [{ key: 'amadeus', widget: 10 }, { key: 'petra', widget: 10 }, { key: 'yang', widget: 10 }], joiners: ['amane', 'amane', 'chenko', 'vivian'].map(key => ({ key, level: 5 })) });
@@ -122,13 +121,13 @@ assert.equal(L.copyOf('amadeus', { stars: null }, data), null, 'no stars, no lea
   const lead = (key, stars, widget) => L.bear(you(flat(250)), [copy('amadeus', 30, 10), copy('petra', 30, 10), copy(key, stars, widget)], data);
   const marlin = lead('marlin', 30, 10).score;
   const ratio = (s, w) => lead('rosa', s, w).score / marlin;
-  // Marlin's chance skills do not stack with Amadeus's and Petra's of the same code;
-  // they are dead duplicates. Rosa's fixed ones do stack, which moves the breakpoint
-  // down to a 4★ widget-5 Rosa. Marlin's damage-dealt chances (104) multiply with
-  // Petra's attack-up one (102) rather than dying behind it.
-  assert.ok(ratio(24, 4) < 1, '4★ widget 4 Rosa is behind');
-  assert.ok(ratio(24, 5) > 1, '4★ widget 5 Rosa is ahead');
-  assert.ok(ratio(24, 5) > ratio(24, 4) && ratio(24, 6) > ratio(24, 5), 'each widget level helps');
+  // Marlin's chance skills do not stack with Amadeus's of the same code (104), but they
+  // fill in for it: +50% damage dealt is live whenever any of the three rolls. Rosa's fixed
+  // skills stack, which puts the breakpoint at a 4★ widget-6 Rosa. Marlin's damage-dealt
+  // chances (104) multiply with Petra's attack-up one (102).
+  assert.ok(ratio(24, 5) < 1, '4★ widget 5 Rosa is behind');
+  assert.ok(ratio(24, 6) > 1, '4★ widget 6 Rosa is ahead');
+  assert.ok(ratio(24, 6) > ratio(24, 5) && ratio(24, 7) > ratio(24, 6), 'each widget level helps');
   const mix = lead('marlin', 30, 10).mix;
   near(mix[0] + mix[1] + mix[2], 1, 'the ideal mix is whole');
   assert.ok(mix[2] > 0.5, 'archers carry the Bear');
@@ -144,13 +143,14 @@ assert.equal(L.copyOf('amadeus', { stars: null }, data), null, 'no stars, no lea
 assert.equal(L.valoraPoints({ affinity: 90, ready: true, skills: [0, 0, 0, 0] }), 24, 'a class waiting at 90 is still level 9');
 assert.equal(L.valoraPoints({ affinity: 100, ready: false, skills: [0, 0, 0, 0] }), 30);
 assert.equal(L.valoraPoints(null), 0);
-// Chance effects of one code never stack: only the strongest is active, duplicates are dead; fixed ones add.
+// Chance effects of one code never stack, but fill in for each other: the largest that rolled counts; fixed ones add.
 {
   const E = require('../js/battle-engine.mjs');
   const side = skills => ({ n: [2000, 16000, 82000], tier: [10, 10, 10], tg: [0, 0, 0], atk: [300, 300, 300], let: [300, 300, 300], skills });
   const skill = skills => E.bearExpect(side(skills)).mean / E.bearExpect(side([])).mean;
   near(skill([{ kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 50 }] }, { kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 40 }] }]), 1.5, 'two sure chance skills: the larger');
-  near(skill([{ kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }, { kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }]), 1.25, 'two coin flips: the duplicate is dead');
+  near(skill([{ kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }, { kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }]), 1 + 0.75 * 0.5, 'two coin flips: +50% when either lands');
+  near(skill([{ kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }, { kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 20 }] }]), 1 + 0.5 * 0.5 + 0.25 * 0.2, 'the larger when both land, the smaller fills in');
   near(skill([{ kind: 'passive', effects: [{ code: 102, pct: 25 }] }, { kind: 'passive', effects: [{ code: 102, pct: 25 }] }]), 1.5, 'fixed ones add');
   near(skill([{ kind: 'passive', effects: [{ code: 102, pct: 25 }] }, { kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 50 }] }]), 1.75, 'a fixed and a chance one add');
   // Defensive skills add no Bear damage: Rosa's Rose of War is enemy damage down.
@@ -241,7 +241,7 @@ assert.equal(L.opponent(megafauna.foes[3], 4, 'garrison', data).lineup[2].key, '
   };
   const rosa = L.breakpoint('bear', me, team, copy('marlin', 30, 10), 'rosa', 4, data, {});
   assert.deepEqual(rosa.widgets, brute(copy('marlin', 30, 10), 'rosa'), 'Rosa catching a 5★ widget-10 Marlin');
-  assert.equal(rosa.widgets[24], 5, 'the same 4★ widget-5 break point as above');
+  assert.equal(rosa.widgets[24], 6, 'the same 4★ widget-6 break point as above');
   assert.ok(rosa.scores < 60, 'a staircase, not every cell');
   assert.deepEqual(L.breakpoint('bear', me, team, copy('rosa', 24, 4), 'marlin', 4, data, {}).widgets, brute(copy('rosa', 24, 4), 'marlin'), 'and the other way round');
   const infantry = [null, copy('petra', 30, 10), copy('rosa', 30, 10)];

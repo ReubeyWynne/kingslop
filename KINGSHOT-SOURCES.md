@@ -142,26 +142,26 @@ Verbatim rule the game uses (also blog "how-special-bonuses-work"):
 ```
 
 - Same-stat specials add their percents first, then apply **once**.
-- **Chance effects of one skill code don't stack** (player-confirmed, 2026-11): of the
-  per-round or per-attack chance skills sharing a code, only one is ever active and the
-  duplicates are dead skills (we keep the strongest, pct × chance). Fixed percentages
-  (passives, every-N-turn buffs) of one code still add, and the two totals add before
-  codes multiply. This is why Yeonwoo, Amane and Chenko are the usual Bear joiners:
-  their skills are fixed, so duplicates are safe. The battle engine drops the dead
-  duplicates at compile, and the lead finder's Bear score is the battle engine's own exact
-  expectation (`bearExpect`), so both follow the same rule.
-- **Evil Eye and Infinite Arsenal roll on every attack and hold for the turn** (Strat Game
-  Sloth with Frak and Zebrave, unit-tested, 2026-11-12): 50% on each troop type's attack, and
-  one success gives +50% enemy damage taken (211) to all troops that turn, 87.5% a turn with
-  three types. The helper has Evil Eye as a debuff on the target hit and Infinite Arsenal as one
-  roll a round; build-combat.py overrides both to `anyAttack`. They share 211, so a Petra joiner
-  in a Zoe rally (or the reverse) adds nothing.
+- **Chance effects of one skill code don't stack, but fill in for each other** (owner's Terror
+  rally Battle Details, 2026-11-13): of the per-round or per-attack chance skills sharing a code,
+  each rolls and the effect is live when any succeeds; when several land, the largest counts.
+  The trigger counts showed Dynamo 10, Wild Card 2 and Unrighteous Strike 1 (all 104), the
+  pattern of the weaker ones counting only when the stronger missed. This replaces the
+  earlier "duplicates are dead" reading (player-reported). Fixed percentages (passives, every-N
+  buffs) of one code still add, and the two totals add before codes multiply. The battle
+  engine and the lead finder's Bear score (`bearExpect`) follow the same rule.
+- **Evil Eye and Infinite Arsenal roll once a round, 50%.** Strat Game Sloth (with Frak and
+  Zebrave, 2026-11-12) has them rolling on each type's attack, 87.5% a turn, but the same
+  Battle Details showed Evil Eye 7 triggers beside The Favor 9 and Dynamo 10 (both 50% a
+  round). build-combat.py sets both to one roll a round (the helper had Evil Eye as a debuff on
+  the target hit). They share 211, so Petra and Zoe together give +50% when either rolls.
+  Infinite Arsenal is untested; it follows Evil Eye.
 - **211 does nothing on a battle's first turn** (same source). The engine applies this to the
   Bear only (`lateEnemyHurt`); untested in PvP.
 - **Open, needs an in-game test:** Sloth's team finds one Marlin joiner adds damage beside
   Amadeus or Jabel ("a working assumption"). Here Marlin's Wild Card, Amadeus's Unrighteous
-  Strike and Jabel's Hero's Domain are all chance skills on 104, so a Marlin joiner is a dead
-  duplicate. Test: Amadeus/Jabel/Marlin with Amane, Amane, Chenko and either Marlin or a third
+  Strike and Jabel's Hero's Domain are all chance skills on 104, so a Marlin joiner only
+  fills in rounds the others missed (a small gain, not a full extra +50%). Test: Amadeus/Jabel/Marlin with Amane, Amane, Chenko and either Marlin or a third
   Amane as the fourth joiner, many hits each. Vivian's 211 is also unverified (by symmetry).
 - **Attack up and damage dealt up are separate codes** (player-confirmed, 2026-11): the
   helper files both under 102, but Petra's The Favor ("Squads' Attack") is distinct from

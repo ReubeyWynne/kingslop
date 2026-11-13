@@ -124,23 +124,30 @@ other), so a lineup could rank one way and simulate another. Now there is one mo
   (expected damage per √troops): §4–5 still hold with `A_t × SkillMod_t` replaced by `roots_t`,
   so `f_t ∝ roots_t²` and `D* ∝ √Σ roots_t²`.
 
-Two skill rules changed with it, from Strat Game Sloth's unit tests with Frak and Zebrave
-("The Hidden Mechanic Nobody Noticed About Zoe", 2026-11-12):
+Three skill rules, from Strat Game Sloth's unit tests with Frak and Zebrave ("The Hidden
+Mechanic Nobody Noticed About Zoe", 2026-11-12) and the owner's Terror rally Battle Details
+(2026-11-13), which count each skill's triggers:
 
-- **Evil Eye (Petra sk1) and Infinite Arsenal (Zoe sk3)** roll 50% on each troop type's attack;
-  one success gives +50% enemy damage taken to every attack that turn. With three types
-  attacking that is 87.5% a turn; with archers alone, 50%. The two share code 211, so together
-  they are one effect (the dead-duplicate rule).
-- **Enemy damage taken up (211) does nothing on the Bear's first turn.** Over ten rounds Evil
-  Eye is worth 0.875 × 50% × 0.9 ≈ +39%. Applied to the Bear only for now; Sloth describes it as a
-  battle rule, so PvP may need the same once tested.
+- **Chance skills sharing a code fill in for each other.** They don't add, but each rolls and
+  the code's effect is live when any succeeds. Marlin's Dynamo (50%) showed 10 triggers, Wild
+  Card (40%) 2 and Amadeus's Unrighteous Strike (32% at level 4) 1, all code 104. Rolling on
+  their own they would show about 0.8× and 0.6× Dynamo's count; filling in only when Dynamo
+  (then Wild Card) missed gives 0.2× and 0.06×, which matches. So +50% damage dealt is live
+  1 − 0.5 × 0.6 × 0.68 ≈ 80% of rounds, not 50% (the old "dead duplicate" rule).
+- **Evil Eye (Petra sk1) and Infinite Arsenal (Zoe sk3) roll once a round, 50%.** Sloth has
+  them rolling on each type's attack (87.5% a turn), but Evil Eye showed 7 triggers beside The
+  Favor's 9 and Dynamo's 10, both 50% a round; at 87.5% it would show about 1.75× Dynamo's.
+- **Enemy damage taken up (211) does nothing on the Bear's first turn** (Sloth). Evil Eye is
+  then worth 0.5 × 50% × 0.9 = +22.5% on the Bear. Applied to the Bear only for now.
 
-The Bear's defence (`BEAR.def`) is fitted to logged hits, so it was refitted after the change
-(74.8 → 62.1), and again to 59.3 when the 13 November hits went in. The two game events disagree by
-about 10% (4 Nov asks for 62.6, 13 Nov for 56.0, joiners unknown for both), so 59.3 is their
-weighted middle: 4 Nov comes out 5% high and 13 Nov 6% low. The real spread of hits is wider than
-the model's (CV 15–21% against 12%), which fits rallies whose joiners vary; 13 Nov's 86.2M sits at
-the model's 99.5th percentile even with the best four joiners.
+For an Amadeus/Petra/Marlin rally the first two roughly cancel (+12% and −12%).
+
+The Bear's defence (`BEAR.def`) is fitted to logged hits, so it is refitted with each change:
+74.8 → 62.1 (Sloth's rules), 59.3 (the 13 November hits), 58.4 (the Terror report's rules). The
+two game events disagree by about 11% (4 Nov asks for 61.5, 13 Nov for 55.0, joiners unknown
+for both), so the fit is their weighted middle. The real spread of hits is wider than the
+model's (CV 15–21% against 12%), which fits rallies whose joiners vary; 13 Nov's 86.2M sits
+near the model's 99th percentile even with the best four joiners.
 
 ## 6. Theory-crafting: the general battle model
 

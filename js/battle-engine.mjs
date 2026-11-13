@@ -136,10 +136,8 @@ function prepare(side) {
 // and vs as type indexes. The family of a code: 10x damage up, 11x defence
 // up, 20x enemy damage down, 21x enemy defence down.
 function family(code) { return (code >= 200 ? 2 : 0) + (code % 100 >= 10 ? 1 : 0); }
-// The kinds that roll. anyAttack (Petra's Evil Eye, Zoe's Infinite Arsenal) rolls on each
-// troop type's attack in a turn, and one success holds the effect for every attack that
-// turn: 50% three times is an 87.5% chance a turn (Strat Game Sloth, 2026-11-12).
-var CHANCE = { perRound: true, perAttack: true, anyAttack: true };
+// The kinds that roll.
+var CHANCE = { perRound: true, perAttack: true };
 var LATE_CODE = 211;
 function mask(list) {
   if (!list) return null;
@@ -159,20 +157,12 @@ function compile(raw) {
       on: [0, 1, 2].map(function (t) { return fx.some(function (e) { return e.troops[t]; }); })
     };
   });
-  // Chance skills sharing a code don't stack: only one of them is ever
-  // active and the duplicates are dead. Keep the strongest (pct × its chance
-  // a turn; an any-attack skill rolls once for each of the three troop types).
-  var keep = {};
+  // Chance skills sharing a code don't stack, but they fill in for each other: each rolls,
+  // and the code's effect is live when any of them succeeds (add() keeps one chance
+  // effect per code). A Terror rally's Battle Details (owner, 2026-11-13) showed Marlin's
+  // Dynamo 10 triggers, Wild Card 2 and Amadeus's Unrighteous Strike 1, which is the
+  // pattern when the weaker ones only count in rounds the stronger missed.
   list.forEach(function (sk) {
-    sk.fx.forEach(function (e) {
-      if (!e.chance) return;
-      var v = e.pct * (sk.kind === 'anyAttack' ? 1 - Math.pow(1 - sk.chance, 3) : sk.chance);
-      if (!keep[e.code] || v > keep[e.code].v) keep[e.code] = { v: v, e: e };
-    });
-  });
-  list.forEach(function (sk) {
-    sk.fx = sk.fx.filter(function (e) { return !e.chance || keep[e.code].e === e; });
-    sk.on = [0, 1, 2].map(function (t) { return sk.fx.some(function (e) { return e.troops[t]; }); });
     // Enemy damage taken up (211) does nothing on a battle's first turn (Strat Game Sloth,
     // 2026-11-12, measured on the Bear): the Bear's first round uses this list instead.
     sk.fxFirst = sk.fx.filter(function (e) { return e.code !== LATE_CODE; });
@@ -180,8 +170,8 @@ function compile(raw) {
   return list.filter(function (sk) { return sk.fx.length || sk.special === 'dodge'; });
 }
 
-// One code's live effects: fixed (passive or scheduled) ones add, and the
-// one chance effect per code left after compile adds to them.
+// One code's live effects: fixed (passive or scheduled) ones add, and of the
+// chance effects of the code that rolled this round only the largest counts.
 function add(sums, e) {
   var s = sums[e.code] || (sums[e.code] = { fixed: 0, chance: 0 });
   if (e.chance) s.chance = Math.max(s.chance, e.pct); else s.fixed += e.pct;
@@ -221,10 +211,9 @@ function fill(F, fx, terror) {
       for (var en = 0; en < 3; en++) F[fam][own][en] = factor(fx, fam, own, en, terror);
 }
 
-// Start of a round: passives, per-round, any-attack and pity rolls, every-N
+// Start of a round: passives, per-round and pity rolls, every-N
 // skills, and whatever an earlier round's skill still holds. round counts from
-// 1; the every-N skills count from 0 the way the helper's engine does. alive is
-// the side's troops per type: an any-attack skill rolls once per type attacking.
+// 1; the every-N skills count from 0 the way the helper's engine does.
 // A side with lateEnemyHurt (the Bear's attacker) leaves 211 out of round 1.
 function begin(f, st, round, rand, alive) {
   var first = round === 1 && f.lateEnemyHurt;
@@ -236,7 +225,6 @@ function begin(f, st, round, rand, alive) {
     if (sk.special === 'dodge' || sk.kind === 'perAttack') continue;
     if (sk.kind === 'passive') on = true;
     else if (sk.kind === 'perRound') on = rand() < sk.chance;
-    else if (sk.kind === 'anyAttack') { for (var a = 0; a < 3; a++) if (alive[a] > 0 && rand() < sk.chance) on = true; }
     else if (sk.kind === 'everyN') on = (round - 1) % sk.every === sk.offset;
     else if (sk.kind === 'pity') {
       var fails = st.pity[i] || 0;
@@ -414,7 +402,7 @@ function run(sideA, sideB, battles, seed) {
 // Frakinator's battle-engine Bear), a level-5 trap. .dsh/bear-reports-check.cjs
 // refits it from every entry and fails when this drifts. Skills flagged
 // bear: false (Zoe's Sundering Wound) do nothing here.
-var BEAR = { troops: 5000, rounds: 10, def: 59.3 };
+var BEAR = { troops: 5000, rounds: 10, def: 58.4 };
 
 function bearSide(side) {
   var s = {};
@@ -480,8 +468,8 @@ function bearHunt(side, hunts, seed, pointsPct) {
 //
 // roots[t] is the expected damage of type t per √(n_t × armyMin): damage = roots[t] ×
 // √(n_t × min(march, 5,000)). So the best split of a march is f_t ∝ roots[t]², and a
-// march's damage at that split is √(N × armyMin × Σ roots²). An any-attack skill's chance
-// depends on how many types attack; roots uses the types the side sends (n > 0).
+// march's damage at that split is √(N × armyMin × Σ roots²); roots uses the types the
+// side sends (n > 0).
 function bearExpect(side, pointsPct) {
   var a = bearSide(side), bear = bearFoe();
   var n = a.n, armyMin = Math.min(n[0] + n[1] + n[2], BEAR.troops);
@@ -518,8 +506,7 @@ function bearExpect(side, pointsPct) {
         pity[i] = next;
         return on;
       }
-      var c = sk.kind === 'anyAttack' ? 1 - Math.pow(1 - sk.chance, present.length) : sk.chance;
-      return 1 - Math.pow(1 - c, held);
+      return 1 - Math.pow(1 - sk.chance, held);
     });
     // Expected family factors per attacking type, with and without terror on the Bear.
     var EU = [0, 0, 0], EUT = [0, 0, 0];
