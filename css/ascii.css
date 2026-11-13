@@ -127,6 +127,11 @@
    faster, a content one at ease; hungry, lonely and restless pets keep the tail
    still. Petted, fed or offered food, it squeezes its eyes shut and wags. */
 .ascii-mini--pet { width: 44ch; height: 18.75em; }
+/* Where the pet lives: a backdrop behind it in the same grid (backdrops() in .dsh/build-ascii.py), dim so the pet stands in front.
+   Only behind a live pet, whose cells are filled: baked frames are bare glyphs and the backdrop would show through them. */
+.pet-pen::before { display: none; }
+.pet-pen:has([data-live])::before { position: absolute; top: 0; left: calc(50% - 22ch); display: block; width: 44ch; font-family: var(--ascii-font); font-variant-ligatures: none; font-size: min(13px, 3.5cqi); line-height: 1.25; white-space: pre; direction: ltr; color: var(--ink-muted); opacity: .4; pointer-events: none; }
+.pet-card[data-owned="true"] .pet-pen:has([data-live])::before { color: var(--amber-dim); opacity: .55; }
 .ascii-mini--pet::after { position: absolute; top: 0; left: calc(var(--marks, 0) * 1ch); display: block; white-space: pre; color: var(--ink); }
 /* A pet with a portrait: the pen holds one span per ink, darkest first, each
    stepping through the same frames (.dsh/pet-portrait/shade.py bakes them from

@@ -1076,6 +1076,122 @@ def pets():
     return '\n'.join(css) + '\n'
 
 
+# ── pen backdrops ────────────────────────────────────────────────────────
+# Where each pet lives, drawn behind it in the pen's own 44 x 15 grid and kept to the
+# edges, the sky and the ground so the pet stands clear of it. Only the sky moves: its
+# stars (or the jungle's fireflies) change glyph where they are.
+
+BACKDROPS = {
+    'forest': r"""
+      .                          +
+                    .
+  .                                    .
+
+
+
+                                        ^
+    ^                                  /^\
+   /^\                                /^^^\
+  /^^^\                              /^^^^^\
+ /^^^^^\                                |
+/^^^^^^^\    ^                    ^     |
+    |       /^\                  /^\    |
+    |        |    ,          ,    |     |  ,
+_.,_|__,.__._|_.,___.,_.__,._.,___|_.,__|_.,""",
+    'plains': r"""
+   .                              .
+            +                           .
+
+
+
+
+                                 ._-~~~~-_.
+                                (__________)
+        _.                          \ |/
+   _.-'   `-._                       \|
+_-'           `-.__                   |
+                                      |
+ ,     '',            ,       ,,      |   ',
+',, ,       ',,  ,        ',      , ,'|, ,
+__.,__,.___.,_,.__.,___,._.,__.,__,.__|,.__,""",
+    'jungle': r"""
+  ) (     )            (     )      ( )
+ (   )   (              )   (      )   (
+  ) (     )            (     )      (   )
+ (   '   (              '   (        ) (
+  )       '                  )      (   '
+  '                          '       )
+                                     '
+
+                                  .
+ \|/        .                         \|/
+--*--                                --*--
+ /|\  ,                           ,   /|\
+  |  /|\                         /|\   |
+ \|/  |   ,,              ,,      |   \|/
+__|___|_.,__,._.,_,.__.,_,._.,____|____|_.,_""",
+    'peaks': r"""
+      .                  +                .
+                 .
+
+
+   /\                                  /\
+  /^^\                                /^^\
+ /    \  /\                      /\  /    \
+/      \/^^\                    /^^\/      \
+       /    \                  /    \
+      /      \                /      \
+
+
+ ,                                        ,
+',,    ,',                       ',    ,,'
+_.,__,.___.,_.__,.___,._.,__.,__,.___.,__,._""",
+    'camp': r"""
+   .                       +             .
+               .
+
+
+
+  |>                                   <|
+  |>>                                 <<|
+  |                                     |
+  |                                     |
+  |                                     |
+/\|/\/\/\                       /\/\/\|/\
+|||||||||                       |||||||||
+|||||||||                       |||||||||
+|||||||||  ,                 ,  |||||||||
+|||||||||_.,__,.___.,_.__,._.,__|||||||||_.,""",
+}
+BACKDROP_OF = {'gray-wolf': 'forest', 'lynx': 'forest', 'grizzly-bear': 'forest', 'moose': 'forest',
+               'bison': 'plains', 'cheetah': 'plains', 'lion': 'plains', 'giant-rhino': 'plains', 'regal-white-lion': 'plains',
+               'alpha-black-panther': 'jungle', 'mighty-bison': 'peaks', 'great-moose': 'peaks',
+               'ironclad-war-elephant': 'camp', 'ironclad-war-bear': 'camp'}
+BACKDROP_STEP = 1.2
+PET_ROWS = 15
+
+
+def backdrops():
+    css = ['/* where the pets live */']
+    for name, drawing in BACKDROPS.items():
+        rows = art(drawing)
+        assert len(rows) == PET_ROWS and all(len(row) <= PET_W for row in rows), f'{name}: the backdrop does not fit the pen'
+        base = grid(PET_W, PET_ROWS)
+        for r, row in enumerate(rows):
+            put(base, 0, r, row)
+        lights = [(8, 34), (9, 12)] if name == 'jungle' else [(r, c) for r in range(3) for c in range(PET_W) if base[r][c] in '.+']
+        frames = []
+        for k in range(4):                      # each light steps through . + . and dark, out of step with its neighbours
+            frame = [row[:] for row in base]
+            for i, (r, c) in enumerate(lights):
+                frame[r][c] = '.+. '[(i + k) % 4]
+            frames.append(frame)
+        pets_here = [pet for pet, scene in BACKDROP_OF.items() if scene == name]
+        selector = ','.join(f'.pet-card[data-pet="{pet}"] .pet-pen::before' for pet in pets_here)
+        css.append(animation(selector, f'ascii-pen-{name}', frames, round(BACKDROP_STEP * len(frames), 3)))
+    return '\n'.join(css) + '\n'
+
+
 # ── pet portraits ────────────────────────────────────────────────────────
 # A pet with a portrait is drawn from its low-poly model instead of by hand:
 # .dsh/pet-portrait/shade.py renders the model offline through a text shader
@@ -1742,7 +1858,7 @@ def generated_files():
     pens = {pet: data for pet, data in baked.items() if pet not in shared}
     sheets = {
         'css/ascii-frames.css': fire_css + hearth() + forge() + minis() + pets() + portraits(shared) + march() + constellations() + aurora() + swipe(),
-        'css/ascii-frames-pets.css': portraits(pens).rstrip('\n') + '\n',
+        'css/ascii-frames-pets.css': backdrops() + portraits(pens).rstrip('\n') + '\n',
     }
     files, loads = {}, {}
     for name, css in sheets.items():

@@ -23,10 +23,10 @@
 
   const FPS = 12;                                    // the pen steps like the baked frames, never smoothly
   const COLS = 90, ROWS = 30, ART = 25, SX = 4, SY = 8;   // the model fills the lower 25 rows; z's and hearts rise into the rest
-  const GLYPHS = " .:-=+*#%@|/_\\o-^w●ωzZO()><♥~vu,'‾";
+  const GLYPHS = " .:-=+*#%@|/_\\o-^w●ωzZO()><♥~vu,'‾grRAW!";
   const G = c => GLYPHS.indexOf(c);
-  // Overlay inks after the seven fur inks: dark, blush, sky, dim sky, coral, tongue, and the pet's own eye colour.
-  const EYE = 6, BLUSH = 8, SKY = 9, DIM = 10, CORAL = 11, TONGUE = 12, IRIS = 13;
+  // Overlay inks after the seven fur inks: dark, blush, sky, dim sky, coral, tongue, the pet's own eye colour, and gold.
+  const EYE = 6, BLUSH = 8, SKY = 9, DIM = 10, CORAL = 11, TONGUE = 12, IRIS = 13, GOLD = 14;
   const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255);
   const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
@@ -43,6 +43,10 @@
       return [1 - neck, neck - head, head - el - er - nose, el, er, nose];
     };
   }
+
+  // An upgraded pet has a move of its own (cfg.trait): how long it lasts, and how it holds the head meanwhile. It plays now
+  // and then while the pet is in good spirits, and at once when the pet is tapped.
+  const TRAIT = { roar: [1200, -0.16], snort: [1400, 0.1], shake: [900, 0], regal: [1700, -0.09] };
 
   // How each mood holds the head against the pet's rest pose: lift (negative raises the chin), how closely it follows you.
   const POSTURE = { content: [0, 1], delighted: [-0.04, 1], restless: [0.04, 0.7], lonely: [0.08, 1], hungry: [0.06, 0.4], asleep: [0.1, 0], happy: [-0.05, 1] };
@@ -102,10 +106,10 @@ float dep(ivec2 t){ vec4 d=texelFetch(uData,t,0); return d.r + d.g/255.; }
 bool cov(ivec2 t){ return texelFetch(uCol,t,0).a>0.5; }
 void main(){
   ivec2 c=ivec2(gl_FragCoord.xy); ivec2 b=c*ivec2(SX,SY);
-  float hy=0., front=1.; int n=0, nose=0, edges=0; vec3 col=vec3(0); int hist[4]=int[4](0,0,0,0);
+  float hy=0., front=1.; int n=0, nose=0, metal=0, edges=0; vec3 col=vec3(0); int hist[4]=int[4](0,0,0,0);
   for(int j=0;j<SY;j++) for(int i=0;i<SX;i++){
     ivec2 t=b+ivec2(i,j); if(!cov(t)) continue; n++;
-    vec4 dt=texelFetch(uData,t,0); col+=texelFetch(uCol,t,0).rgb; front=min(front, dt.r + dt.g/255.); if(dt.b>0.7 && dt.b<0.9) nose++;
+    vec4 dt=texelFetch(uData,t,0); col+=texelFetch(uCol,t,0).rgb; front=min(front, dt.r + dt.g/255.); if(dt.b>0.7 && dt.b<0.9) nose++; if(dt.b>0.9) metal++;
         bool l=cov(t-ivec2(1,0)), r=cov(t+ivec2(1,0)), u=cov(t+ivec2(0,1)), dn=cov(t-ivec2(0,1));
     float d=dep(t); float fl=l?dep(t-ivec2(1,0)):1., fr=r?dep(t+ivec2(1,0)):1., fu=u?dep(t+ivec2(0,1)):1., fd=dn?dep(t-ivec2(0,1)):1.;
     bool sil=!(l&&r&&u&&dn); bool step=(dt.b>0.9 || (dt.a>0.5 && dt.b>0.4)) && abs(fl+fr+fu+fd-4.*d)>0.03;   // creases on the muzzle only: on the brow they read as a frown
@@ -121,10 +125,10 @@ void main(){
   if(float(nose)>0.3*float(n)){ g=9; ink=0; oc.a=0.; }
   else if(float(edges)>0.1*float(SX*SY)){ int k=0; for(int m=1;m<4;m++) if(hist[m]>hist[k]) k=m; g=(k==2 && hy>0.) ? 33 : 10+k; ink=min(ink+2,6); oc.rgb=min(hue*1.25+0.08,1.); }   // a top edge hangs from the cell's top
   else { float t=min(0.999,dot(col,vec3(.5,.35,.15))/${(+cfg.ramp).toFixed(3)}); g=clamp(int(t*10.),1,8); }   // '@' is kept for the nose
-  o=vec4(float(g)/255., float(ink)/255., 1., front);   // and how near the model comes in this cell, so the face is never drawn through it
+  o=vec4(float(g)/255., float(ink)/255., 2*metal>n ? 0.75 : 1., front);   // (0.75: a metal cell, which can glint)   // and how near the model comes in this cell, so the face is never drawn through it
 }`;
   const screenFS = `#version 300 es
-precision highp float; uniform sampler2D uCells, uCellCol, uAtlas, uOver; uniform vec2 uCell; uniform vec3 uAll[14]; uniform vec4 uMono; uniform float uGlyphs; out vec4 o;
+precision highp float; uniform sampler2D uCells, uCellCol, uAtlas, uOver; uniform vec2 uCell; uniform vec3 uAll[15]; uniform vec4 uMono; uniform vec3 uNight; uniform float uGlyphs, uGlint; out vec4 o;
 void main(){
   vec2 f=gl_FragCoord.xy; ivec2 c=ivec2(floor(f/uCell)); vec2 local=fract(f/uCell);
   vec4 cell=texelFetch(uCells,c,0); int g=int(cell.r*255.+.5), ink=int(cell.g*255.+.5);
@@ -134,9 +138,11 @@ void main(){
   if(om==3){ if(cell.b>0.5 && seen) dim=0.3; }                                 // shade: the cell keeps its glyph and darkens
   else if(om==2 || (om==1 && cell.b>0.5 && seen)){ g=int(ov.r*255.+.5); ink=int(ov.g*255.+.5); hue.a=0.; }
   if(g==0){ o=vec4(0); return; }
+  if(cell.b<0.9 && om!=1 && om!=2 && abs(float(c.x)-0.7*float(c.y)-uGlint)<1.3){ g=6; hue=vec4(1.,1.,0.94,1.); }   // a glint crosses the metal: a band of bright stars
   float a=texture(uAtlas, vec2((float(g)+local.x)/uGlyphs, local.y)).r;
   vec3 col=uMono.a>0.5 ? uMono.rgb : hue.a>0.5 ? hue.rgb : uAll[ink];
-  o=vec4(col*a*dim, a);
+  float solid=cell.b>0.5 ? 0.86 : 0.;                                         // the pet stands in front of its pen's backdrop: its own cells are filled with the night behind the glyph
+  o=vec4(col*a*dim + uNight*solid*(1.-a), a + solid*(1.-a));
 }`;
 
   // Phones keep only a few WebGL contexts alive (Android Chrome, eight) and drop the oldest past that, so
@@ -188,7 +194,7 @@ void main(){
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, tCellCol, 0);
     gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
     const inkRGB = new Float32Array(cfg.inks.flatMap(rgb));
-    const allRGB = new Float32Array(cfg.inks.concat(['#2B1B19', '#F49A9A', '#CFEAF6', '#7FA3B3', '#F0907A', '#EA7F86']).flatMap(rgb).concat(cfg.eye || [1, 0.95, 0.86]));
+    const allRGB = new Float32Array(cfg.inks.concat(['#2B1B19', '#F49A9A', '#CFEAF6', '#7FA3B3', '#F0907A', '#EA7F86']).flatMap(rgb).concat(cfg.eye || [1, 0.95, 0.86], [1, 0.85, 0.42]));
 
     // the camera shade.py framed the model with, its art pushed into the bottom ART rows
     const cam = cfg.camera;
@@ -230,8 +236,8 @@ void main(){
     // ── behaviour ──
     const st = { look: [0, 0], aim: [0, 0], lift: cfg.rest.lift, turn: cfg.rest.turn, tilt: 0, ear: 0, earL: 0, earBack: 0,
       blinkUntil: 0, nextBlink: 2000, earUntil: 0, nextEar: 5000, sniffUntil: 0, nextSniff: 3500, tiltUntil: 0, nextTilt: 6000,
-      sighUntil: 0, nextSigh: 4000, lickUntil: 0, nextLick: 2500, grrUntil: 0, nextGrr: 5000, glanceAt: 0, nextSpark: 0, moodAt: 0, mood: '', react: '', sparks: [] };
-    let mono = null, owned = null;
+      sighUntil: 0, nextSigh: 4000, lickUntil: 0, nextLick: 2500, grrUntil: 0, nextGrr: 5000, glanceAt: 0, nextSpark: 0, moodAt: 0, mood: '', react: '', sparks: [], actAt: -1e9, nextAct: 5000 + Math.random() * 5000, glintAt: -1e9, nextGlint: 3000 };
+    let mono = null, owned = null, night = [0, 0, 0];
     function point(event) {
       const r = canvas.getBoundingClientRect();
       if (!r.width) return;
@@ -251,17 +257,25 @@ void main(){
       const happy = react === 'pet' || react === 'feed' || sniffing, full = react === 'full';
       const mood = happy ? 'happy' : base, asleep = mood === 'asleep', hungry = mood === 'hungry', lonely = mood === 'lonely', low = hungry || lonely;
       const isOwned = card ? card.dataset.owned !== 'false' : true;
-      if (isOwned !== owned) { owned = isOwned; const m = /(\d+)\D+(\d+)\D+(\d+)/.exec(getComputedStyle(pen).color); mono = owned || !m ? null : [m[1] / 255, m[2] / 255, m[3] / 255]; }
+      if (isOwned !== owned) { owned = isOwned;                        // (and find the page's own night, for the fill behind the pet)
+        for (let el = pen; el; el = el.parentElement) { const b = /(\d+)\D+(\d+)\D+(\d+)(?:\D+([\d.]+))?/.exec(getComputedStyle(el).backgroundColor); if (b && b[4] !== '0') { night = [b[1] / 255, b[2] / 255, b[3] / 255]; break; } }
+        const m = /(\d+)\D+(\d+)\D+(\d+)/.exec(getComputedStyle(pen).color); mono = owned || !m ? null : [m[1] / 255, m[2] / 255, m[3] / 255]; }
 
       const [lift, follow] = POSTURE[mood] || POSTURE.content, k = 1 - Math.exp(-dt * 4);
       if (mood === 'restless' && now > st.glanceAt) { st.aim = [Math.random() * 2 - 1, Math.random() - 0.5]; st.glanceAt = now + 1200 + Math.random() * 1500; }   // can't settle
       st.look = st.look.map((v, i) => v + (st.aim[i] * follow - v) * k);
       if (low && now > st.nextSigh) { st.sighUntil = now + 1400; st.nextSigh = now + 6000 + Math.random() * 3000; }
       const breath = asleep ? Math.sin(now / 1500) * 0.035 : 0, sigh = low && now < st.sighUntil ? 0.08 : 0;
-      st.lift += (cfg.rest.lift + lift + st.look[1] * 0.18 * gain[1] + breath + sigh - st.lift) * k;
+      const trait = TRAIT[cfg.trait], lively = trait && owned && !asleep && !low && !full;
+      if (lively && now > st.nextAct) { st.actAt = now; st.nextAct = now + 9000 + Math.random() * 9000; }
+      const act = lively && now - st.actAt < trait[0] ? now - st.actAt : -1, acting = act >= 0 ? cfg.trait : '';
+      if (acting && st.glintAt < st.actAt) st.glintAt = st.actAt;
+      if (owned && !asleep && now > st.nextGlint) { st.glintAt = now; st.nextGlint = now + 5000 + Math.random() * 5000; }   // metal catches the light now and then
+      st.lift += (cfg.rest.lift + lift + st.look[1] * 0.18 * gain[1] + breath + sigh + (acting ? trait[1] : 0) - st.lift) * (acting ? Math.min(1, k * 3) : k);
       st.turn += (cfg.rest.turn + st.look[0] * 0.35 * gain[0] + (full ? 0.5 : 0) - st.turn) * k;   // turns its nose up at food when full
       if (mood === 'content' && now > st.nextTilt) { st.tiltUntil = now + 1800; st.nextTilt = now + 6000 + Math.random() * 6000; }
       st.tilt += ((asleep ? 0.14 : happy ? (favourite ? 0.22 : welcoming ? -0.12 : 0.12) : low ? -0.06 : full ? -0.1 : now < st.tiltUntil ? 0.18 : 0) - st.tilt) * k;   // a curious head tilt
+      if (acting === 'shake') st.tilt = Math.floor(act / 110) % 2 ? 0.16 : -0.16;                 // antlers shaken side to side, a whole step at a time
       if (now > st.nextBlink) { st.blinkUntil = now + 140; st.nextBlink = now + 2500 + Math.random() * 3500; }
       if (now > st.nextEar && !asleep) { st.earUntil = now + 260; st.nextEar = now + (mood === 'restless' ? 1500 : 4000) + Math.random() * 5000; }
       st.ear = now < st.earUntil ? 0.28 : 0;
@@ -305,7 +319,18 @@ void main(){
       if (low) { put(eyes[0][0], eyes[0][1] + 1, '/', 7); put(eyes[1][0], eyes[1][1] + 1, '\\', 7); }   // worried brows
       if (happy) cfg.cheeks.forEach(p => { const [c, r] = cellOf(apply(bones[2], p)); put(c, r, '~', BLUSH); });
       const chew = react === 'feed' && Math.floor(t / 150) % 2 === 0;
-      put(mouth[0], mouth[1], asleep ? '.' : full ? '~' : chew ? 'o' : happy ? (cfg.mouthHappy || 'ω') : (cfg.mouthGlyph || 'w'), cfg.mouthInk ?? EYE);
+      put(mouth[0], mouth[1], asleep ? '.' : full ? '~' : acting === 'roar' && act > 200 ? 'O' : chew ? 'o' : happy ? (cfg.mouthHappy || 'ω') : (cfg.mouthGlyph || 'w'), cfg.mouthInk ?? EYE);
+      if (acting === 'roar' && act > 200) {                            // the roar, a letter at a time, and the air shaking around it
+        text(top[0] + 2, top[1] + 4, 'RAWR!'.slice(0, 1 + Math.floor((act - 200) / 110)), CORAL);
+        const shake = Math.floor(act / 120) % 2;
+        put(top[0] - 2 - shake, top[1] + 3, '\\', BLUSH, true); put(top[0] + 8 + shake, top[1] + 3, '/', BLUSH, true);
+      }
+      if (acting === 'snort' && act > 300) {                           // head down, and breath puffing out to either side
+        const nose = cellOf(apply(bones[5], cfg.pivots.nose)), step = Math.floor((act - 300) / 140);
+        [-1, 1].forEach(side => { for (let n = 0; n < 3; n++) { const age = step - n; if (age >= 0 && age < 5) put(nose[0] + side * (2 + age * 2), nose[1] - 1 - (age > 2 ? 1 : 0), age < 2 ? 'o' : age < 4 ? 'O' : '~', age < 3 ? SKY : DIM, true); } });
+      }
+      if (acting === 'shake') [-11, -6, 7, 12].forEach((dc, i) => { const step = Math.floor(act / 130) - (i % 2); if (step >= 0 && step < 5) put(top[0] + dc, top[1] + 3 - step, step < 3 ? "'" : '.', step < 3 ? SKY : DIM, true); });   // what was caught in the antlers falls
+      if (acting === 'regal') [[-4, 3], [0, 5], [4, 3], [-2, 6], [3, 6]].forEach(([dc, dr], i) => { const ph = Math.floor(act / 170) + i; if (ph % 3 !== 2) put(top[0] + dc, top[1] + dr, ph % 3 ? '*' : '+', GOLD, true); });   // the crown catches the light
       if (hungry) {                                                   // licks its lips, dreams of fish, tummy rumbles
         if (now > st.nextLick) { st.lickUntil = now + 700; st.nextLick = now + 3500 + Math.random() * 2500; }
         if (now < st.lickUntil) put(mouth[0] + (Math.floor((st.lickUntil - now) / 230) % 2), mouth[1] - 1, 'u', TONGUE, true);
@@ -338,6 +363,8 @@ void main(){
       gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D, tCellCol); gl.uniform1i(u(screen, 'uCellCol'), 3);
       gl.uniform2f(u(screen, 'uCell'), cellPx[0], cellPx[1]); gl.uniform3fv(u(screen, 'uAll'), allRGB); gl.uniform1f(u(screen, 'uGlyphs'), GLYPHS.length);
       gl.uniform4f(u(screen, 'uMono'), ...(mono || [0, 0, 0]), mono ? 1 : 0);
+      gl.uniform3fv(u(screen, 'uNight'), night);
+      gl.uniform1f(u(screen, 'uGlint'), Math.floor((now - st.glintAt) / 1000 * 40) - 30);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       out.clearRect(0, 0, canvas.width, canvas.height); out.drawImage(ctx.canvas, 0, 0);
     }
@@ -349,9 +376,14 @@ void main(){
     const resize = new ResizeObserver(layout); resize.observe(pen);
     const seen = new IntersectionObserver(entries => { visible = entries[entries.length - 1].isIntersecting; wake(); });
     seen.observe(pen);
+    function poke(event) {                                        // a tap on the pen sets off the pet's own move
+      const r = canvas.getBoundingClientRect();
+      if (event.clientX >= r.left && event.clientX <= r.right && event.clientY >= r.top && event.clientY <= r.bottom) st.nextAct = 0;
+    }
     document.addEventListener('pointermove', point, { passive: true });
+    document.addEventListener('pointerdown', poke, { passive: true });
     ctx.lost.push(() => {                            // back to the baked frames
-      visible = false; seen.disconnect(); resize.disconnect(); document.removeEventListener('pointermove', point);
+      visible = false; seen.disconnect(); resize.disconnect(); document.removeEventListener('pointermove', point); document.removeEventListener('pointerdown', poke);
       delete pen.dataset.live; delete pen.petCareSpots; canvas.remove();
     });
     return canvas;

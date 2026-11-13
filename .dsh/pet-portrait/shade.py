@@ -244,6 +244,7 @@ PETS['cheetah'] = dict(PETS['alpha-black-panther'],
              'nose': dict(zmin=0.99, rgb=[0.15, 0.1, 0.1])})
 STEEL, GOLD = [0.9, 0.93, 1.0], [1.0, 0.8, 0.3]
 PETS['mighty-bison'] = dict(PETS['bison'],
+    trait='snort',
     eye=[1.0, 0.6, 0.3],
     inks={'night': '#3A2420', 'umber': '#55332A', 'bark': '#744635', 'fur': '#935E44', 'tawny': '#B57D5B', 'cream': '#D7A77F', 'bone': '#F6E4C6'},
     fur=[0.44, 0.27, 0.19],
@@ -255,6 +256,7 @@ PETS['mighty-bison'] = dict(PETS['bison'],
     props=[dict(kind='spike', base=[0, -0.14, 0.86], tip=[0, -0.48, 0.8], r=0.1, rgb=[0.36, 0.2, 0.14])],   # a beard
     rest=dict(PETS['bison']['rest'], lift=-0.3))
 PETS['regal-white-lion'] = dict(PETS['lion'],
+    trait='regal',
     eye=[0.6, 0.86, 1.0],
     inks={'night': '#6E6A8C', 'umber': '#A07A48', 'bark': '#C9984E', 'fur': '#E2B868', 'tawny': '#EED6A2', 'cream': '#F8EEDB', 'bone': '#FFFFFF'},
     fur=[0.95, 0.9, 0.8],
@@ -270,6 +272,7 @@ PETS['regal-white-lion'] = dict(PETS['lion'],
            dict(kind='spike', base=[0.025, 1.03, 0.254], tip=[0.048, 1.2, 0.221], r=0.07, n=4, rgb=GOLD, metal=1)],
     rest=dict(PETS['lion']['rest'], lift=-0.1, scale=1.1), fill=0.84)
 PETS['great-moose'] = dict(PETS['moose'],
+    trait='shake',
     eye=[0.74, 0.92, 1.0],
     inks={'night': '#3A2A22', 'umber': '#55402F', 'bark': '#725A43', 'fur': '#8E7559', 'tawny': '#AC9375', 'cream': '#CDB698', 'bone': '#EEE3D2'},
     fur=[0.42, 0.31, 0.23],
@@ -279,6 +282,7 @@ PETS['great-moose'] = dict(PETS['moose'],
            dict(kind='spike', base=[0.55, 0.62, 0.6], tip=[0.5, 1.0, 0.6], r=0.06, rgb=[0.95, 0.88, 0.72])],
     shape=[dict(sel=dict(ymin=0.45), pivot=[0, 0.47, 0.66], scale=0.7)], fill=0.68)   # pulled back so the bigger antlers stay inside the pen
 PETS['ironclad-war-bear'] = dict(PETS['grizzly-bear'],
+    trait='roar',
     eye=[1.0, 0.45, 0.36],
     inks={'night': '#3F4652', 'umber': '#56606E', 'bark': '#6F7A89', 'fur': '#8A95A3', 'tawny': '#A8B1BD', 'cream': '#C8CED6', 'bone': '#EEF1F4'},
     fur=[0.34, 0.36, 0.42],
@@ -485,7 +489,7 @@ def live(cfg, cam):
     return dict(inks=list(cfg['inks'].values()), fur=cfg['fur'], regions=regions, head=cfg['head'], ramp=ramp(cfg), eyes=[list(e) for e in cfg['eyes']],
                 rest=dict(lift=cfg['rest']['lift'], turn=cfg['rest']['turn'], scale=cfg['live']['scale']),
                 camera={k: cam[k] for k in ('yaw', 'pitch', 'fov', 'dist', 'target')}, lights=dict(key=LIGHT['keypos'], rim=[2, 0.6, -1.5]),
-                **({'spots': cfg['spots']} if 'spots' in cfg else {}), **({'eye': cfg['eye']} if 'eye' in cfg else {}), **({'range': cfg['range']} if 'range' in cfg else {}), **{k: v for k, v in cfg['live'].items() if k != 'scale'})
+                **({'spots': cfg['spots']} if 'spots' in cfg else {}), **({'eye': cfg['eye']} if 'eye' in cfg else {}), **({'trait': cfg['trait']} if 'trait' in cfg else {}), **({'range': cfg['range']} if 'range' in cfg else {}), **{k: v for k, v in cfg['live'].items() if k != 'scale'})
 
 
 def main(pet, stl):
