@@ -1,6 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["ko"] = {
   "seasonal.nav": "시즌 이벤트",
+  "leads.damageRange": "랠리마다: 합류 영웅 없이 {lo}, 최고의 4명으로 {hi} ({names}).",
   "seasonal.lede": "현재 진행 상황에 맞춘 시즌 이벤트 계획.",
   "castle.nav": "성",
   "castle.deck.lede": "성 점령, 전투 원리, 집결 참가자 스킬과 병력 선택.",

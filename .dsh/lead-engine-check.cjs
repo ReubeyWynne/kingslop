@@ -292,4 +292,23 @@ assert.equal(L.opponent(megafauna.foes[3], 4, 'garrison', data).lineup[2].key, '
   const ideal = L.hunt(owner, lineup, r.mix.map(f => Math.round(90000 * f)), data, { hunts: 10000, pointsPct: 24 });
   assert.ok(ideal.mean > sent.mean, 'the ideal mix beats the one sent');
 }
+// Joiners: the best four for a lineup, and the range of a hit across rallies, from no joiner
+// heroes to that four. Hilde stays out (alliance policy); identical first skills count once.
+{
+  const line = [copy('amadeus', 30, 10), copy('petra', 30, 10), copy('marlin', 30, 10)], me = you(flat(500));
+  assert.ok(!L.joinerPool(data, 7).includes('hilde'), 'no Hilde');
+  assert.ok(!L.joinerPool(data, 7).includes('yeonwoo') && !L.joinerPool(data, 7).includes('margot'), 'Chenko and Amane stand for their twins');
+  assert.ok(!L.joinerPool(data, 3).includes('vivian'), 'only heroes the generation has');
+  // The greedy search finds the best four: checked against every set of four in Generation III.
+  const E = require('../js/battle-engine.mjs'), C = require('../js/combat.mjs'), pool = L.joinerPool(data, 3), counts = [2000, 16000, 82000];
+  const value = keys => E.bearExpect({ ...L.bearSide(me, line, data, counts).side, skills: C.side(data, { role: 'rally', heroes: line.map(c => ({ key: c.key, levels: c.levels, widget: 0 })), joiners: keys.map(key => ({ key, level: 5 })) }) }).mean;
+  const found = value(L.bestJoiners(me, line, counts, data, 3).map(j => j.key));
+  let top = 0;
+  for (let a = 0; a < pool.length; a++) for (let b = a; b < pool.length; b++) for (let c = b; c < pool.length; c++) for (let d = c; d < pool.length; d++) top = Math.max(top, value([pool[a], pool[b], pool[c], pool[d]]));
+  near(found / top, 1, 'the best four of every set', 1e-9);
+  assert.ok(found > value(['chenko', 'chenko', 'amane', 'amane']) * 0.97, 'and close to the usual four');
+  const range = L.huntRange(me, line, [2000, 16000, 82000], data, { gen: 3, hunts: 500 });
+  const usual = L.hunt({ ...me, joiners: ['chenko', 'chenko', 'amane', 'amane'].map(key => ({ key, level: 5 })) }, line, [2000, 16000, 82000], data, { hunts: 500 }).mean;
+  assert.ok(range.lo < range.none && range.none < usual && usual <= range.best * 1.02 && range.best < range.hi, 'no joiners < the usual four ≤ the best four (within sampling), inside the range');
+}
 console.log('Lead engine: stars, widgets, skill caps, Bear score, joiners, pets, city layers, megafauna opponents, ranking and break points pass.');

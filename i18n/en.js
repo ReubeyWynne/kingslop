@@ -2512,6 +2512,7 @@ window.__BH_I18N_DATA["en"] = {
   "leads.tier": "Troop tier",
   "leads.damageNote": "{n} = 1/15 of a {cap} rally{est}{valora}.",
   "leads.damageBand": "80% of hits land between {lo} and {hi}",
+  "leads.damageRange": "Across rallies: {lo} with no joiner heroes to {hi} with the best four ({names}).",
   "leads.damageBin": "{n}% of hits from {lo} to {hi}",
   "leads.valora": ", Valora +{n}%",
   "leads.damageTitle": "Estimated Bear damage",

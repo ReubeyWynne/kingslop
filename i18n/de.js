@@ -1,6 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["de"] = {
   "seasonal.nav": "Saisonal",
+  "leads.damageRange": "Je nach Rallye: {lo} ohne Beitritts-Helden bis {hi} mit den besten vier ({names}).",
   "seasonal.lede": "saisonale Events, geplant ab deinem aktuellen Fortschritt.",
   "castle.nav": "Burg",
   "castle.deck.lede": "Burgkontrolle, Kampfmechanik, Beitrittsfähigkeiten und Truppenwahl.",

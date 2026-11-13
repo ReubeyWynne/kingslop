@@ -231,6 +231,79 @@ function bear(you, lineup, data) {
   return { score: Math.sqrt(sq), mix: terms.map(function (x) { return sq ? x * x / sq : 1 / 3; }), panel: b.panel, terms: terms };
 }
 
+// Who joins a rally changes its damage more than any chance roll: with no joiner heroes a
+// rally does about half what the usual four give. The heroes that can add Bear damage as a
+// joiner, up to your generation: a first skill with damage up or enemy defence down. Heroes
+// whose first skills are the same (Chenko, Yeonwoo and Amadeus; Amane and Margot) count once,
+// under the usual joiner's name. Hilde is left out: many alliances ban her from Bear joins.
+var USUAL = ['chenko', 'amane'];
+function joinerPool(data, gen) {
+  var seen = {};
+  return Object.keys(data.heroSkills).filter(function (key) {
+    var hero = data.heroes[key], sk1 = (data.heroSkills[key] || []).filter(function (r) { return r.slot === 'sk1'; })[0];
+    if (key === 'hilde' || !hero || !sk1 || sk1.bear === false || (gen && hero.generation > gen)) return false;
+    return (sk1.effects || []).some(function (e) { var fam = (e.code >= 200 ? 2 : 0) + (e.code % 100 >= 10 ? 1 : 0); return fam === 0 || fam === 3; });
+  }).sort(function (a, b) {
+    var ua = USUAL.indexOf(a), ub = USUAL.indexOf(b);
+    return (ua < 0 ? 9 : ua) - (ub < 0 ? 9 : ub) || data.heroes[a].generation - data.heroes[b].generation || (a < b ? -1 : 1);
+  }).filter(function (key) {
+    var sk1 = data.heroSkills[key].filter(function (r) { return r.slot === 'sk1'; })[0];
+    var sig = JSON.stringify([sk1.trigger, sk1.effects]);
+    if (seen[sig]) return false;
+    seen[sig] = true;
+    return true;
+  });
+}
+
+// The four joiner heroes (level 5) that give this lineup the most Bear damage for this march,
+// from joinerPool, scored with the exact expected Bear. Searching every set of four is too
+// slow for a phone in later generations, so this fills the four slots one at a time with the
+// best addition, then swaps one slot at a time until no swap helps.
+function bestJoiners(you, lineup, counts, data, gen) {
+  var heroes = lineup.filter(Boolean).map(function (c) { return { key: c.key, levels: c.levels, widget: 0 }; });
+  return bestJoinersFor(bearSide(you, lineup, data, counts).side, heroes, data, gen);
+}
+// The same search for a battle-engine Bear side as a report gives it (stats already in),
+// with its lead heroes as js/combat.mjs takes them.
+function bestJoinersFor(base, heroes, data, gen) {
+  var pool = joinerPool(data, gen), memo = {};
+  function value(keys) {
+    var id = keys.slice().sort().join(',');
+    if (!(id in memo)) {
+      var joiners = keys.map(function (key) { return { key: key, level: 5 }; });
+      memo[id] = BattleEngine.bearExpect(Object.assign({}, base, { skills: CombatSkills.side(data, { role: 'rally', heroes: heroes, joiners: joiners }) })).mean;
+    }
+    return memo[id];
+  }
+  var pick = [];
+  for (var slot = 0; slot < 4 && pool.length; slot++) {
+    var top = null;
+    pool.forEach(function (key) { var v = value(pick.concat([key])); if (!top || v > top.v + 1e-9) top = { key: key, v: v }; });
+    pick.push(top.key);
+  }
+  for (var pass = 0, better = true; better && pass < 8; pass++) {
+    better = false;
+    for (var i = 0; i < pick.length; i++) {
+      var now = value(pick);
+      pool.forEach(function (key) {
+        var next = pick.slice(); next[i] = key;
+        if (value(next) > now + 1e-9) { pick = next; now = value(next); better = true; }
+      });
+    }
+  }
+  return pick.sort(function (a, b) { return pool.indexOf(a) - pool.indexOf(b); }).map(function (key) { return { key: key, level: 5 }; });
+}
+
+// The Bear damage a march can see across rallies: the 10th percentile with no joiner heroes
+// to the 90th with the best four. A rally's own spread (hunt()) sits inside it.
+function huntRange(you, lineup, counts, data, opts) {
+  opts = opts || {};
+  var none = hunt(Object.assign({}, you, { joiners: [] }), lineup, counts, data, opts);
+  var joiners = bestJoiners(you, lineup, counts, data, opts.gen);
+  var best = hunt(Object.assign({}, you, { joiners: joiners }), lineup, counts, data, opts);
+  return { lo: BattleEngine.quantile(none.totals, 0.1), hi: BattleEngine.quantile(best.totals, 0.9), none: none.mean, best: best.mean, joiners: joiners };
+}
+
 // Bear damage: the battle engine's ten-round Bear hunt (js/battle-engine.mjs BEAR), run many
 // times for the spread. counts is the march per type; pointsPct is Valora's Hunter Instinct
 // talent, which adds to your own Damage Points only.
@@ -408,14 +481,14 @@ function firstBreak(widgets) {
   return { any: any, bare: bare };
 }
 
-export { hunt, valoraPoints, VALORA_POINTS, stockAccount, score, seated, walker, breakpoint,
+export { hunt, huntRange, bestJoiners, bestJoinersFor, joinerPool, bearSide, valoraPoints, VALORA_POINTS, stockAccount, score, seated, walker, breakpoint,
   firstBreak, TYPES, STAR_SKILLS, copyOf, statLine, widgetStat, gearLayer, townLayer, TOWN_TG,
   panel, reportPanel, bear, opponent, loadout, fight, candidates, lineups, rank,
   LAYER_KEYS, blank, petLevelPct, petLayer, cityLayer, layered, battleSide };
 
 // The same exports as one object: what the page's classic scripts read as window.LeadEngine
 // and what require() returns to the CommonJS checks, until neither needs it.
-const api = { hunt, valoraPoints, VALORA_POINTS, stockAccount, score, seated, walker, breakpoint,
+const api = { hunt, huntRange, bestJoiners, bestJoinersFor, joinerPool, bearSide, valoraPoints, VALORA_POINTS, stockAccount, score, seated, walker, breakpoint,
   firstBreak, TYPES, STAR_SKILLS, copyOf, statLine, widgetStat, gearLayer, townLayer, TOWN_TG,
   panel, reportPanel, bear, opponent, loadout, fight, candidates, lineups, rank,
   LAYER_KEYS, blank, petLevelPct, petLayer, cityLayer, layered, battleSide };

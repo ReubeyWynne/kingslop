@@ -1,6 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["ar"] = {
   "seasonal.nav": "الموسمية",
+  "leads.damageRange": "بين الحشود: من {lo} دون أبطال منضمين إلى {hi} مع أفضل أربعة ({names}).",
   "seasonal.lede": "خطط للفعاليات الموسمية انطلاقًا من تقدمك الحالي.",
   "castle.nav": "القلعة",
   "castle.deck.lede": "السيطرة على القلعة وآليات القتال ومهارات المنضمين واختيار القوات.",

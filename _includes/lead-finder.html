@@ -77,6 +77,7 @@
               <div class="lead-damage-head"><output class="lead-damage-value" :title="best.damage.title" :data-open="best.damage.open" x-text="best.damage.value"></output><template x-if="best.estimated"><details class="src" id="lead-damage-est" data-src="est"><summary :aria-label="t('leads.est', 'Estimate')"></summary><span class="motif-names" x-text="best.estNames"></span></details></template></div>
               <div class="lead-hist" role="img" :aria-label="best.damage.band"><template x-for="bin in best.damage.bins"><span class="lead-hist-bar" :style="bin.style" :data-band="bin.band ? '' : null" :title="bin.title"></span></template></div>
               <p class="lead-damage-band" x-text="best.damage.band"></p>
+              <p class="lead-damage-band lead-damage-range" x-text="best.damage.range"></p>
               <span class="lead-damage-split"><template x-for="part in best.damage.split"><span :data-troop="part.type"><svg aria-hidden="true" focusable="false"><use :href="'#troop-' + part.type"></use></svg><span x-text="part.n"></span></span></template></span>
               <p class="lead-answer-note" x-text="best.damage.note"></p>
             </div>

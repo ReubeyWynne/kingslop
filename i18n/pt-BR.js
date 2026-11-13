@@ -1,6 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["pt-BR"] = {
   "seasonal.nav": "Sazonais",
+  "leads.damageRange": "Entre rallies: de {lo} sem heróis de apoio a {hi} com os quatro melhores ({names}).",
   "seasonal.lede": "eventos sazonais, a partir do seu progresso atual.",
   "castle.nav": "Castelo",
   "castle.deck.lede": "controle do castelo, mecânicas de combate, habilidades dos participantes e escolha de tropas.",

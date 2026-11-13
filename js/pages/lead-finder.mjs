@@ -25,6 +25,7 @@ const EN = {
   damageTitle: 'Estimated Bear damage', damageNote: '{n} = 1/15 of a {cap} rally{est}{valora}. One hit can land about 20% either side.', valora: ', Valora +{n}%', estimated: ' (estimated: 15 × joiner cap)',
   troops: '{n} troops',
   damageBand: '80% of hits land between {lo} and {hi}', damageBin: '{n}% of hits from {lo} to {hi}',
+  damageRange: 'Across rallies: {lo} with no joiner heroes to {hi} with the best four ({names}).',
   railTitle: 'Against each opponent', railNote: 'Win chance over repeated fights, and how much of your army is still standing.', win: '{n}%', empty: 'empty seat',
   foesNote: 'Generation {n} accounts, {total} troops a side.',
   kit: 'At generation {gen}: {stars}★ heroes, widgets at {widget}, {pct}% Bonus Overview, TG{tg}, {gear} hero gear, level {joiners} joiners, pets at {pets}, {city}.',
@@ -264,10 +265,15 @@ Alpine.data('leadFinder', (self, here) => ({
       const rc = A.rallyCap(this.prefs), march = Math.floor(rc.cap / 15), counts = TYPES.map((type, i) => Math.round(march * r.mix[i])), valora = A.valora(store);
       const sim = L.hunt(you, r.lineup, counts, data, { hunts: 2000, pointsPct: valora });
       const lo = BattleEngine.quantile(sim.totals, 0.1), hi = BattleEngine.quantile(sim.totals, 0.9), tile = BH().tileText(sim.mean);
+      // Who joins moves a hit more than any roll: the range from no joiner heroes to the best four.
+      const spread = L.huntRange(you, r.lineup, counts, data, { gen, hunts: 2000, pointsPct: valora });
+      const joined = {};
+      spread.joiners.forEach(j => { joined[j.key] = (joined[j.key] || 0) + 1; });
       best.damage = {
         // Anything left out only adds damage, so the number stays open until it's in.
         value: tile.text, title: tile.title || null, open: inputs.open.length ? '' : null,
         band: fill('damageBand', { lo: BH().compact(lo), hi: BH().compact(hi) }),
+        range: fill('damageRange', { lo: BH().compact(spread.lo), hi: BH().compact(spread.hi), names: Object.keys(joined).map(key => data.heroes[key].name + (joined[key] > 1 ? ' ×' + fmt(joined[key]) : '')).join(', ') }),
         bins: histogram(sim.totals, lo, hi),
         split: TYPES.map((type, i) => ({ type, n: fmt(counts[i]) })),
         note: fill('damageNote', { n: fill('troops', { n: fmt(march) }), cap: fmt(rc.cap), est: rc.estimated ? t('estimated') : '', valora: valora ? fill('valora', { n: fmt(valora) }) : '' })

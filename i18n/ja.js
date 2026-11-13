@@ -1,6 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["ja"] = {
   "seasonal.nav": "季節イベント",
+  "leads.damageRange": "ラリーごと: 参加英雄なしで{lo}、最良の4人で{hi}（{names}）。",
   "seasonal.lede": "現在の進行状況から季節イベントを計画。",
   "castle.nav": "城",
   "castle.deck.lede": "城の制圧、戦闘の仕組み、集結参加者のスキル、兵種の選び方。",
