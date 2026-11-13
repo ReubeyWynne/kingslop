@@ -249,8 +249,10 @@ PETS['mighty-bison'] = dict(PETS['bison'],
     fur=[0.44, 0.27, 0.19],
     regions={**PETS['bison']['regions'], 'mane': dict(ymin=0.05, zmax=0.82, rgb=[0.6, 0.38, 0.24]),
              'horn-l': dict(xmax=-0.22, ymin=0.18, zmin=0.65, rgb=[0.98, 0.85, 0.55]), 'horn-r': dict(xmin=0.22, ymin=0.18, zmin=0.65, rgb=[0.98, 0.85, 0.55])},
-    shape=[dict(sel=dict(xmax=-0.22, ymin=0.18, zmin=0.65), pivot=[-0.24, 0.2, 0.76], scale=1.3),
-           dict(sel=dict(xmin=0.22, ymin=0.18, zmin=0.65), pivot=[0.24, 0.2, 0.76], scale=1.3)],
+    shape=[dict(sel=dict(xmax=-0.22, ymin=0.18, zmin=0.65), pivot=[-0.24, 0.2, 0.76], scale=1.8),
+           dict(sel=dict(xmin=0.22, ymin=0.18, zmin=0.65), pivot=[0.24, 0.2, 0.76], scale=1.8),
+           dict(sel=dict(ymin=0.22, zmax=0.6), pivot=[0, 0.22, 0.2], scale=1.3)],                         # a taller hump
+    props=[dict(kind='spike', base=[0, -0.14, 0.86], tip=[0, -0.48, 0.8], r=0.1, rgb=[0.36, 0.2, 0.14])],   # a beard
     rest=dict(PETS['bison']['rest'], lift=-0.3))
 PETS['regal-white-lion'] = dict(PETS['lion'],
     eye=[0.6, 0.86, 1.0],
@@ -259,23 +261,42 @@ PETS['regal-white-lion'] = dict(PETS['lion'],
     regions=dict(mane=dict(PETS['lion']['regions']['mane'], rgb=[0.95, 0.68, 0.32]),
                  muzzle=dict(PETS['lion']['regions']['muzzle'], rgb=[1.0, 0.98, 0.93]),
                  nose=dict(PETS['lion']['regions']['nose'], rgb=[0.82, 0.45, 0.48])),
-    rest=dict(PETS['lion']['rest'], lift=-0.1, scale=1.1))
+    range=1.3,                                                                                             # the crown stands above the model's own height
+    props=[dict(kind='drum', c=[-0.05, 1.0, 0.36], r=0.2, h=0.1, rgb=GOLD, metal=1),                       # a crown: a band and five points
+           dict(kind='spike', base=[0.074, 1.03, 0.398], tip=[0.112, 1.2, 0.410], r=0.07, n=4, rgb=GOLD, metal=1),
+           dict(kind='spike', base=[-0.048, 1.03, 0.490], tip=[-0.048, 1.2, 0.530], r=0.07, n=4, rgb=GOLD, metal=1),
+           dict(kind='spike', base=[-0.173, 1.03, 0.402], tip=[-0.211, 1.2, 0.415], r=0.07, n=4, rgb=GOLD, metal=1),
+           dict(kind='spike', base=[-0.128, 1.03, 0.256], tip=[-0.152, 1.2, 0.224], r=0.07, n=4, rgb=GOLD, metal=1),
+           dict(kind='spike', base=[0.025, 1.03, 0.254], tip=[0.048, 1.2, 0.221], r=0.07, n=4, rgb=GOLD, metal=1)],
+    rest=dict(PETS['lion']['rest'], lift=-0.1, scale=1.1), fill=0.84)
 PETS['great-moose'] = dict(PETS['moose'],
     eye=[0.74, 0.92, 1.0],
     inks={'night': '#3A2A22', 'umber': '#55402F', 'bark': '#725A43', 'fur': '#8E7559', 'tawny': '#AC9375', 'cream': '#CDB698', 'bone': '#EEE3D2'},
     fur=[0.42, 0.31, 0.23],
     regions=dict(PETS['moose']['regions'], antlers=dict(ymin=0.47, rgb=[0.95, 0.88, 0.72])),
+    props=[dict(kind='spike', base=[0, 0.06, 0.82], tip=[0, -0.26, 0.8], r=0.07, rgb=[0.3, 0.22, 0.17]),        # a bell under the chin
+           dict(kind='spike', base=[-0.55, 0.62, 0.6], tip=[-0.5, 1.0, 0.6], r=0.06, rgb=[0.95, 0.88, 0.72]),  # and a tine more on each antler
+           dict(kind='spike', base=[0.55, 0.62, 0.6], tip=[0.5, 1.0, 0.6], r=0.06, rgb=[0.95, 0.88, 0.72])],
     shape=[dict(sel=dict(ymin=0.45), pivot=[0, 0.47, 0.66], scale=0.7)], fill=0.68)   # pulled back so the bigger antlers stay inside the pen
 PETS['ironclad-war-bear'] = dict(PETS['grizzly-bear'],
     eye=[1.0, 0.45, 0.36],
     inks={'night': '#3F4652', 'umber': '#56606E', 'bark': '#6F7A89', 'fur': '#8A95A3', 'tawny': '#A8B1BD', 'cream': '#C8CED6', 'bone': '#EEF1F4'},
-    fur=[0.5, 0.52, 0.56],
+    fur=[0.34, 0.36, 0.42],
     regions=dict(ears=dict(PETS['grizzly-bear']['regions']['ears'], rgb=[0.64, 0.66, 0.72]),
                  muzzle=dict(PETS['grizzly-bear']['regions']['muzzle'], rgb=[0.86, 0.87, 0.9]),
                  nose=dict(PETS['grizzly-bear']['regions']['nose'], rgb=[0.08, 0.08, 0.1])),
     shape=[dict(sel=dict(ymin=0.36, xmax=-0.08, zmin=0.25), pivot=[-0.2, 0.42, 0.45], scale=0.8),
            dict(sel=dict(ymin=0.36, xmin=0.08, zmin=0.25), pivot=[0.2, 0.42, 0.45], scale=0.8)],
-    rest=dict(PETS['grizzly-bear']['rest'], turn=-0.35))
+    rest=dict(PETS['grizzly-bear']['rest'], turn=-0.35),
+    props=[dict(kind='box', c=[0, 0.5, 0.42], s=[0.3, 0.1, 0.36], rgb=STEEL, metal=1),                    # a helm, crested
+           dict(kind='spike', base=[0, 0.55, 0.3], tip=[0, 0.75, 0.26], r=0.06, rgb=STEEL, metal=1),
+           dict(kind='spike', base=[0, 0.55, 0.44], tip=[0, 0.8, 0.42], r=0.06, rgb=STEEL, metal=1),
+           dict(kind='spike', base=[0, 0.55, 0.56], tip=[0, 0.75, 0.6], r=0.06, rgb=STEEL, metal=1),
+           dict(kind='box', c=[-0.38, 0.3, 0.05], s=[0.2, 0.22, 0.4], rgb=STEEL, metal=1),                 # pauldrons, spiked
+           dict(kind='box', c=[0.38, 0.3, 0.05], s=[0.2, 0.22, 0.4], rgb=STEEL, metal=1),
+           dict(kind='spike', base=[-0.42, 0.4, 0.05], tip=[-0.62, 0.62, 0.05], r=0.07, rgb=STEEL, metal=1),
+           dict(kind='spike', base=[0.42, 0.4, 0.05], tip=[0.62, 0.62, 0.05], r=0.07, rgb=STEEL, metal=1),
+           dict(kind='box', c=[0, 0.5, -0.3], s=[0.5, 0.08, 0.55], rgb=STEEL, metal=1)])                    # a back plate
 
 
 def solid(points, faces):
