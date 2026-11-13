@@ -105,7 +105,7 @@ Alpine.data('leadFinder', (self, here) => ({
   status: '', saved: '', savedState: null, chips: [], pets: '', joinersTitle: 'Joiners',
   overview: null, best: null, list: [], foes: false, foesNote: '', kits: {},
   init() {
-    const data = globalThis.LeadData, store = (() => { try { const s = globalThis.Interactions.ledger(); s.snapshot(); return s; } catch (cause) { return null; } })();
+    const data = globalThis.LeadData, store = (() => { try { const s = globalThis.PlayerLedger.current(); s.snapshot(); return s; } catch (cause) { return null; } })();
     // Kept out of Alpine's reactivity: the engine's data and the store are large and never bound.
     this.engine = () => ({ data, store });
     this.prefs = A.prefs();

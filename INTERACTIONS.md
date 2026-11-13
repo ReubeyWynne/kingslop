@@ -1,67 +1,55 @@
-# Declarative interactions
+# Interactions
 
-The layout loads `interactions.js` and `player-modules.js` before page scripts. `common.js` starts module discovery with the normal `BH` API before booting the page and refreshes modules after a language change. Existing page controllers remain compatible.
+Every control on the site is an Alpine component. A page's own behaviour is a small controller in `js/pages/<page>.mjs` (`Alpine.data('name', ...)`, `x-data="name"` in the markup); what many pages share lives in the site bundle (`_data/boot.json`, `before`). The arithmetic stays in plain engine modules (`js/*-engine.mjs`), which the controllers call and the Node checks test without a browser. There is no framework beyond Alpine, no module registry and no `data-module` / `data-action` layer.
 
-Load `page-deck.js` and `page-chrome.js` before `common.js` on every page. A page marked `lateBoot` in `_data/pages.json` (home) does not defer its scripts: `_layouts/page.html` inserts them in the same order once the page has loaded and painted (`window.__bhAfterPaint` in `_includes/head.html`), so its first paint and largest paint wait on no script. The document has finished parsing by then, so boot runs as soon as the dictionary arrives, possibly before a later page script runs: a lateBoot page must not register a page `boot` (home registers none). Its modules still mount, since a late `register` scans the page. These classic scripts define factories; `common.js` creates the navigation and chrome at parse time, retaining early keyboard/swipe listeners and scroll restoration. Dictionary readiness and completion of page-script parsing gate chrome wiring, then module discovery, then the page's `boot`; neighbour prefetching is scheduled last. If a cached dictionary arrives during parsing, discovery waits for DOMContentLoaded so later page scripts can configure their store and register their controller. A language change still repaints the page before refreshing modules.
+`js/alpine.mjs` starts Alpine once the dictionary has arrived and every script has run, and provides:
 
-Hero Gear's page (`js/pages/hero-gear.mjs`, Alpine) imports `hero-gear-view.mjs`. Its view factory receives the engine, translations, number formatting, text substitution and art URL, and returns HTML without owning state, persistence, workers or listeners; the page places it with `x-html` where it holds no controls. The helper also supports CommonJS domain checks.
+- `$store.i18n.v`, which moves on a language change, and `words` (`t`, `count`, `fmt`, `date`) that read it, so a binding using one repaints.
+- `$store.ledger`: `v` (moves on every change to the store the page works on), `snapshot`, `ready`, `guest`, and `store`, the ledger itself (null when storage is blocked). `PlayerLedger.current()` is that store for code outside Alpine: your save, or a guest sheet's copy once `page-sheet.js` has called `PlayerLedger.use(...)`.
+- `shared(name, definition)` for one state behind several `x-data` regions.
 
-## Markup contract
+Load `page-deck.js` and `page-chrome.js` before `common.js` on every page. A page marked `lateBoot` in `_data/pages.json` (home) does not defer its scripts: `_layouts/page.html` inserts them once the page has loaded and painted, so Alpine starts on the next task after the site bundle runs and the bundle's controllers register first.
 
-| Attribute | Meaning |
+Hero Gear's page (`js/pages/hero-gear.mjs`) imports `hero-gear-view.mjs`. Its view factory receives the engine, translations, number formatting, text substitution and art URL, and returns HTML without owning state, persistence, workers or listeners; the page places it with `x-html` where it holds no controls.
+
+## Conventions
+
+- Static copy stays `data-i18n`; never bind a node that also has `data-i18n`. Bound text uses `words.t(...)` with an English fallback.
+- A controller reads and writes the save through `$store.ledger.store` (or `PlayerLedger.current()`), and sees changes through `$store.ledger.v`.
+- Checks find controls through hooks that say what they are (`data-roster`, `data-sheet`, `data-planner`, `data-profile`, `data-answer`, `data-kingdom`, `data-bp`, `data-import`, `data-save`, `data-status`), not through the Alpine attributes.
+- Alpine runs a binding at most once per flush, so a field assigned in an effect that a binding also depends on can show a stale view; keep derived values in a getter keyed on its inputs.
+- A widget's scope sits inside its page's. Widget names carry a prefix (`tabs…`, `form…`, `transfer…`, `roster…`, `panel…`) so they never shadow the page's own.
+- A control pressed before Alpine starts is not heard: `deep-link.js` waits for `alpine:initialized` before it presses buttons, and `widgets.mjs` chooses a tab pressed earlier and announces it again.
+
+## Shared widgets (`js/pages/widgets.mjs`)
+
+| Component | Use |
 | --- | --- |
-| `data-module="ledger-form tabs"` | Named capabilities mounted once on this root |
-| `data-action="ledger-form.set"` | An explicit module/action name; never JavaScript or an expression |
-| `data-bind="inventory.forgehammer"` | A binding understood by the ledger-form capability |
-| `data-target="save-transfer.file"` | A target qualified by its owning capability |
+| `x-data="tabs"` with `@keydown="tabsKey($event)"` | A tablist: `role="tab"` buttons with `data-value` and `@click="tabsSelect($el)"`, arrow keys, Home and End (RTL and vertical aware). It sets `aria-selected` and `tabindex` and emits `tabs:select` `{ binding, value }` (from `data-tabs-bind`) for the page to handle. |
+| `x-data="ledgerForm"` | Number fields bound to the save: `data-bind="inventory.<id>"` (or `heroGear.parts.ten`) with `:value="formValue(key)" :data-state="formState(key)" @input="formSet($el)" @change="formNormalize()"`. The seal reads `formNote` and `formMark`, from the root's `data-saved-key` and `data-save-failed-key`. Emits `ledger-form:edited` and, on a failed write, `module:error`. |
+| `x-data="saveTransfer"` | Download, choose and import the whole player save (`data-status-scope`, `data-import-success`, `data-import-failure`). Emits `player-save:exported`, `player-save:imported` `{ before, after }` and `player-save:rejected`, and `player-status` for the toast. `transferSeal` and `transferSealText` say whether this browser has saved anything. |
+| `x-data="resultPanel('<scope>')"` | The toast a `player-status` `{ scope, key }` event writes to, listening on the document. |
+| `x-data="troopRoster"` | The troops you own, a row per type, tier and TG, kept as `troop-{type}-t{tier}-tg{tg}` in the save. |
 
-A module owns nodes whose nearest `data-module` ancestor is its root. Nested roots are isolated. Multiple modules may share a root, with qualified action and target names. A target may be the root itself. Delegated actions work for newly inserted controls. MutationObserver discovers inserted module roots and disposes detached roots; module lists on existing roots are static.
-
-Static markup stays meaningful: native forms, labels, details, tabs and output elements remain the source of truth. Modules add persistence and live behaviour. There is no framework, expression evaluator, arbitrary property setter, virtual DOM or innerHTML rendering contract.
-
-## Capabilities
-
-- **ledger-form:** confirmed inventory fields, explicit unknown values, derived hero XP-part fields and formatted output. Only valid numeric input is committed. Empty inventory input marks the balance unknown; blank XP-part input retains its previous value until a number is entered. Change normalises the visible input back to saved facts. Writes update the shared ledger and emit `ledger-form:edited`.
-- **save-transfer:** whole-player JSON download, file selection, validated import and rejection. It captures the ledger revision before reading a file, so a later edit cannot be silently replaced by a stale import. Superseded imports and detached roots cannot commit. Legacy hero saves use the existing pure `HeroGear` engine when present; unified saves have no engine dependency. Successful import emits `player-save:imported` with before/after snapshots, allowing an independent consumer to offer undo; `before` is the ledger's `backup()`, so it carries the inventory history and undo restores both.
-- **tabs:** click, Home/End and directional keyboard selection, with RTL and vertical orientation support. It updates only its tabs' ARIA selection/tabindex and emits `tabs:select`; the consumer handles domain selection and panel content.
-- **disclosure:** native details change events or an explicit toggle action for a bounded panel. Custom controls update `aria-expanded` and emit `disclosure:change`.
-- **troop-roster:** the troops you own, one row per type, tier and TG, in the shared ledger (`troop-{type}-t{tier}-tg{tg}` inventory). Markup supplies each type's home (`data-troop-type` with a `troop-roster.rows` target), a `<template data-target="troop-roster.row">` whose fields carry `data-field="tier|tg|amount"`, a `troop-roster.total` output and the copy keys (`data-total-key`, `data-empty-key`). Rows are keyed by ledger id and reconciled in place, so a field being typed into is never replaced. `add` opens a row at the next free tier, `set` commits a whole count (blank forgets the row), `move` re-keys a row when its tier or TG changes (merging into an existing row), and `remove` forgets it. Edits emit `troop-roster:edited`.
-- **site-guide:** the first-visit guide (`_includes/site-guide.html`, `js/pages/site-guide.mjs`, an Alpine `siteGuide`). Its swipe note teaches the deck (a sideways swipe, or ❧ and the arrow keys) and retires on `deck:open` or "got it"; its rail note (`#guide-rail`, in the deck) takes the hint's place and retires on the first `deck:scrub`; its door card writes the server generation through `KS_SERVER_AGE` and the role through `setPriorityRole`, and retires on a way in or "just looking". Each part stops after three visits left alone, the door is skipped once both answers are saved, and `[data-guide-replay]` (the deck's "show me how") or a `#site-guide` link brings them back. Progress is `localStorage` `bh:guide`, outside the player save. `page-deck.js` dispatches `deck:open` and `deck:close` on the document and `deck:scrub` from the rail.
-- **empty-state:** a tool's teaching note, from `_includes/empty-state.html` with `needs` (the part of the save the tool works from: `inventory`, `hero-gear`, `governor`, `heroes`, `masters` or `pets`), the line's key and English text, `import=true` only when a screenshot adapter fills that part, and `fill` (the Town Centre shelf, or the place on the page where it is filled in). It is an Alpine component (`x-data="emptyState('<needs>')"`). It shows while the player's own save lacks that part (a confirmed zero counts as recorded), follows the save live, and stays hidden under guest or shared-link stores and without JavaScript. `EmptyState.missing(snapshot, needs)` holds the rule and also loads under CommonJS.
-- **home-yours** (now Alpine, `$store.yours` from `js/pages/home-yours.mjs`): the home page's own corner (`#yours` in `index.html`). It shows once the player's own save holds anything (confirmed items, heroes, masters, pets or hero gear), with today on the 28-day clock (UTC, the `js/event-cycle.mjs` weeks) and the holdings as counts; it follows the save live and stays hidden on an empty save, under a shared-link store and without JavaScript. Its scripts are home's `lateScripts` in `_data/pages.json`, which `_layouts/page.html` fetches once the page has loaded and painted, after its scripts, when the head script marked a save (`has-save`), or on the save's first write; an empty save never fetches them, so they never hold up first paint. They arrive after Alpine has started, so the corner is a store the markup reads with optional chaining, and `data-empty` gives back the held space when the save holds nothing it shows.
-- **planner:** the calculator-first frame on Heroes, Masters and Pets (`_includes/planner.html`, `js/planner.js`, `css/sheet.css`), an Alpine component. The frame is a section with class `roster-console`, `data-sheet-root` and `x-data="planner('<kind>')"` holding the guest row, a `tabs` row bound to `view`, and two halves marked `data-half="mine"` and `data-half="answer"`. The section's `data-view` follows the tabs and picks the half a phone shows. At first paint it opens on the answer when the save owns something of its kind and on your own half when it owns nothing, and it never moves the reader after an edit. A link to anything inside one half opens that half. While nothing is owned, the shelf in your half points to the roster.
-- **rosters:** the "Your copy" forms on Heroes, Masters and Pets (and the Town Centre's Heroes and Masters shelves) are Alpine controllers in `js/pages/`: `hero-roster.mjs` (`heroRoster` and `hero('<key>')`), `master-roster.mjs` (`masterRoster` and `master('<id>')`) and `pet-den.mjs` (`petDen`, `pet('<id>')` and `petAdvances`). Each card reads the store the page works on (`$store.ledger`) and writes through it, with the seal under the form from `js/roster-form.mjs`. Checks find their parts by `data-roster`.
-- **result-panel:** scoped semantic status messages, translated and formatted through `BH`, written as text to its targets. A null key clears the result. Locale changes refresh the latest message.
-
-The battle simulator is an Alpine page (`js/pages/simulator.mjs`): its army cards, edit dialogs, run meter and player-save buttons are bound in `battle-simulator/index.html`. It composes the shared `tabs` widget (the phone's two views and each dialog's troop tabs, read from `tabs:select`), `troop-roster` (your troops in the player save) and the screenshot import (`screen-import:sheet` on `#sim-load`). The console's `data-view` sets the phone layout and its `data-run` (`running` or `done`) shows the loader while a sweep runs.
-
-Hero gear composes these capabilities in its existing markup. Resource persistence, file export/import, tab keyboard handling and status output no longer live in its page controller. Optimisation and gear editing remain domain-specific consumers of the ledger and semantic events. Screenshot review is the site-wide import panel: a page opens it with `data-screen-import="pick"` on a button (any other value, such as `"recipe"`, opens it without the file picker, at the screenshot recipe; a link to `#screenshot-recipe` does the same), and a page with its own sheet to fill (the battle simulator) marks it `data-screen-import-sheet="battle-report"` and answers the panel's `screen-import:sheet` event (`detail.values` by field id; it fills `detail.before` with what it replaced, for undo).
-
-## Example
+The dock that reads screenshots is `x-data="screenImport"` (`js/pages/screen-import.mjs`, `_includes/screen-import.html`, `SCREENSHOT-IMPORT.md`). The kingdom links, the first-visit guide and the break-point finder are `kingdomContext`, `kingdomTimeline`, `siteGuide` and `heroBreakpoint`.
 
 ```html
-<section data-module="ledger-form" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed">
+<section x-data="ledgerForm" data-saved-key="gear.saved" data-save-failed-key="gear.saveFailed">
   <label>Forgehammers
-    <input type="number" min="0" max="1000000000" step="1"
-      data-bind="inventory.forgehammer"
-      data-action="ledger-form.set ledger-form.normalize">
+    <input type="number" min="0" max="1000000000" step="1" data-bind="inventory.forgehammer"
+      :value="formValue('inventory.forgehammer')" :data-state="formState('inventory.forgehammer')"
+      @input="formSet($el)" @change="formNormalize()">
   </label>
-  <output data-bind="inventory.forgehammer"></output>
-  <output data-target="ledger-form.save" role="status"></output>
+  <output role="status" x-text="formNote" :data-state="formMark"></output>
 </section>
-<details data-module="save-transfer disclosure" data-status-scope="player"
-  data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
+<details x-data="saveTransfer" data-status-scope="player" data-import-success="gear.loaded" data-import-failure="gear.invalidSave">
   <summary>Manage save</summary>
-  <button type="button" data-action="save-transfer.export">Export</button>
-  <button type="button" data-action="save-transfer.choose">Import</button>
-  <input type="file" accept="application/json,.json" hidden
-    data-target="save-transfer.file" data-action="save-transfer.import">
+  <button type="button" data-save="export" @click="transferExport()">Export</button>
+  <button type="button" data-save="choose" @click="$refs.file.click()">Import</button>
+  <input type="file" accept="application/json,.json" hidden data-save="file" x-ref="file" @change="transferImport($el)">
 </details>
-<output data-module="result-panel" data-target="result-panel.message"
-  data-status-scope="player" role="status" hidden></output>
+<output x-data="resultPanel('player')" @player-status.document="panelHear($event)" x-text="panelText" :hidden="!panelText" role="status" hidden></output>
 ```
-
-A new tool can use these controls without a new page controller. It adds only its domain-specific calculation and listens for ledger or semantic events. Page labels use the existing i18n conventions; the module layer introduces no new product copy.
 
 ## Deep links
 
@@ -88,20 +76,6 @@ Rules for new markup:
 - Do not write page-specific `hashchange` or `location.hash` handlers for disclosures. If a pattern is not covered, extend `deep-link.js` instead.
 - Panels rendered by script after boot may carry ids; the module hears their `toggle` events, but a link to them only opens once they exist.
 
-## Extension API
-
-Modules read the selected player store through the lazy `context.ledger` getter. Controllers outside a module use `Interactions.ledger()` (also `BH.modules.ledger()`). With no configuration, either lookup calls `PlayerLedger.shared()`. Constructing a context never reads storage; a factory's lookup failure is caught as that module's `module:error`, so unrelated modules still mount.
-
-Configure page dependencies before `Interactions.start(BH)` discovers roots:
-
-```js
-Interactions.configure({ ledger: store });
-// Or defer store construction until a consumer requests it:
-Interactions.configure({ ledger: function () { return selectedStore; } });
-```
-
-Providers return the same store for every consumer. Configuration does not call the provider, and changing configuration while started throws to prevent mixed subscriptions. `destroy()` removes mounts but retains the page configuration; configure again before restarting if needed. Configuring `ledger: undefined` restores the default lookup.
-
 ## Sheets
 
 Every calculator with a link shares one guest mode, `js/page-sheet.js`. A page calls `PageSheet.define({ keys, read, write, blank, of, load, same? })` before discovery: the query keys its link owns, how to read and write that link, an empty sheet, the sheet a store holds, and how to put a sheet into a store (`mine` is true when it is your save). `?guest` or a readable link then configures a memoized in-memory store, which every module on the page uses: controllers, ledger forms, save transfer, screenshot import and undo. Plain `?guest` and an unreadable link start from a copy of the save; a readable link starts with only what it carries. `PlayerLedger.shared()` is never replaced, so consumers that need persistent kingdom facts can still read it.
@@ -112,28 +86,4 @@ Event points use one scorer and table, `js/event-points.js` (`forItems` for item
 
 Every calculator ends with the same two sections, from `_includes/page-notes.html` and styled by `css/page-notes.css`: **How it works** (`part="how"`: the page's own folds first, captured into `own`, then the shared folds How event points score, Links and guest mode, and Your save and backups) and **Sources & confidence** (`part="sources"`: a Checked chip, the page's confidence note, one row per source from the page's data with the day it was checked, marked when it is more than 30 days older than the page, then any extra credits and the art line). The answer ends with `part="pointer"`, one quiet line linking down to both. One mark, ◇, flags a figure with a single source on every page. Dates are `<time datetime data-local-date>`, which `js/i18n.js` formats in the reader's language. Users: Governor gear, Hero gear, Building requirements, Heroes, Masters and Pets.
 
-`BH.modules` exposes the same registry as `window.Interactions`. Register capabilities before boot or later:
-
-```js
-BH.modules.register('example', function (context) {
-  context.listen(document, 'example:result', function (event) {
-    context.targets('value').forEach(function (node) {
-      node.textContent = event.detail.value;
-    });
-  });
-  return {
-    actions: {
-      run: {
-        events: ['click'],
-        run: function (node, event) {
-          context.emit('example:requested', { id: node.dataset.id });
-        }
-      }
-    }
-  };
-});
-```
-
-`context.nodes(selector)` and `context.targets(key)` stay within ownership boundaries. `context.listen` tracks listener cleanup; `context.cleanup(fn)` tracks subscriptions. An instance may return `refresh` and `dispose`. Action failures emit `module:error` with the module name and message; one failed module does not prevent other roots from mounting. `Interactions.destroy()` removes delegated listeners, observers and module subscriptions.
-
-Run the ledger and gear domain checks locally. `node .dsh/interaction-modules-check.cjs --pure` checks lazy selection, persistent accessor compatibility, module-local storage failures, cleanup and boot ordering without launching a browser. Its normal invocation also runs the existing Chromium checks covering nested roots, idempotent start, unknown/invalid bindings, RTL tabs, disclosure, scoped messages, export/import, dynamic discovery and cleanup, followed by the existing hero-gear visual/OCR/interaction checks. The Node page-deck harness must evaluate `page-deck.js`, `page-chrome.js` and `common.js`, in that order, in its existing VM scope. CI's existing recursive syntax check covers all three helpers. Add `js/page-deck.js` and `js/page-chrome.js` to the shared changed-path filter; `hero-gear-view.mjs` already matches the Hero Gear filter.
+Run the ledger and gear domain checks locally. The browser checks in `.dsh/` run against a built `_site` (see `.github/workflows/site-check.yml` for the list); the engines have Node tests that need no browser.

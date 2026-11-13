@@ -59,7 +59,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     const atkBefore = await raw(page, 'sim-atk-inf');
     await upload(page);
     await page.locator('#screen-import .import-chip', { hasText: '1 to review' }).waitFor();
-    assert.equal(await page.locator('#screen-import [data-target="screen-import.screen"]').textContent(), 'Battle report');
+    assert.equal(await page.locator('#screen-import [data-import="screen"]').textContent(), 'Battle report');
     assert.deepEqual(await tiles(page), { 'sim-atk-inf': '411.5', 'sim-foe-atk-inf': '220', 'sim-foe-let-inf': '230', 'sim-n-inf': '70,500', 'sim-foe-n-inf': '60,000', 'sim-n-cav': '30,000', 'sim-foe-n-cav': '45,000', 'sim-n-arc': '49,500', 'sim-foe-n-arc': '45,000' });
     assert.equal(await page.locator('#screen-import .import-crop:not([hidden])').count(), 3, 'each row of the report shows its cut-out once');
     assert.equal(await page.locator('#screen-import .import-tile [data-field="crop"]:not([hidden])').count(), 0, 'the values sit under their row, not under copies of it');
@@ -75,14 +75,14 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await lethality.fill('333.3'); await lethality.dispatchEvent('change');
     assert.ok(await page.evaluate(() => { const box = document.querySelector('#screen-import .import-sheet').getBoundingClientRect(); return box.left >= 0 && box.right <= innerWidth + 1 && document.documentElement.scrollWidth <= innerWidth + 1; }));
     await page.screenshot({ path: path.join(output, 'review-' + lang + '-' + width + '.png') });
-    await page.locator('#screen-import [data-action="screen-import.apply"]').click();
-    await page.locator('#screen-import [data-target="screen-import.status"]', { hasText: 'Saved 9 values' }).waitFor();
+    await page.locator('#screen-import [data-import="apply"]').click();
+    await page.locator('#screen-import [data-import="status"]', { hasText: 'Saved 9 values' }).waitFor();
     assert.equal(await raw(page, 'sim-atk-inf'), '411.5');
     assert.equal(await raw(page, 'sim-let-inf'), '163', 'a value the report lacks keeps the sheet');
     assert.equal(await raw(page, 'sim-foe-let-inf'), '333.3', 'the correction is what lands');
     assert.equal(await raw(page, 'sim-n-inf'), '70500');
     assert.equal(await raw(page, 'sim-foe-n-inf'), '60000');
-    await page.locator('#screen-import [data-target="screen-import.chip"]').click();
+    await page.locator('#screen-import [data-import="chip"]').click();
     if (width <= 860) await page.locator('#sim-view-answer').click();
     await page.locator('.sweep-settings summary').click();
     await page.locator('#sim-sw-step').selectOption('0.1');
@@ -111,13 +111,13 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.locator('.mode-rail a[href="?mode=bear-ratio"]').click();
     if (width <= 860) await page.locator('#sim-view-armies').click();
     // Undo puts back what the report replaced.
-    await page.locator('#screen-import [data-target="screen-import.chip"]').click();
-    await page.locator('#screen-import [data-action="screen-import.undo"]').click();
+    await page.locator('#screen-import [data-import="chip"]').click();
+    await page.locator('#screen-import [data-import="undo"]').click();
     assert.equal(await raw(page, 'sim-atk-inf'), atkBefore);
-    await page.locator('#screen-import [data-target="screen-import.chip"]').click();
+    await page.locator('#screen-import [data-import="chip"]').click();
     await page.evaluate(() => { window.unreadable = true; });
     await upload(page, 'blank.png');
-    await page.locator('#screen-import [data-target="screen-import.status"]', { hasText: 'can’t read that screen yet' }).waitFor();
+    await page.locator('#screen-import [data-import="status"]', { hasText: 'can’t read that screen yet' }).waitFor();
     assert.equal(await raw(page, 'sim-atk-inf'), atkBefore, 'an unreadable shot changes nothing');
     assert.deepEqual(errors, []);
     await page.close();

@@ -8,10 +8,10 @@ These notes describe the repository at the branch base, `30c98e5`, and the paral
 | --- | --- | --- |
 | Page layout and asset loading | `_layouts/page.html`, `_includes/head.html`, `_data/pages.json` | Add island-specific scripts, styles and data through the existing page configuration |
 | Navigation and home deck | `_data/nav.json`, `_data/pages.json`, `js/page-deck.js` | Add the island page through the existing page/deck model |
-| Interaction modules | `INTERACTIONS.md`, `js/interactions.js`, `js/player-modules.js` | Native controls with explicit `data-module`, `data-action`, `data-target` contracts |
+| Interaction modules | `INTERACTIONS.md`, `js/pages/widgets.mjs` | Native controls with Alpine components |
 | Shared player state | `js/player-ledger.mjs` | Add an explicit schema extension if island ownership becomes confirmed player data; do not add arbitrary bindings |
 | Imported/shared copies | Store selection described in `INTERACTIONS.md` | Keep a viewed or edited shared design separate from the player's persistent save until they choose to adopt it |
-| Save import/export | `save-transfer` capability in `js/player-modules.js` | Preserve validation, revision checks and undo behaviour if this becomes part of whole-player state |
+| Save import/export | `saveTransfer` in `js/pages/widgets.mjs` | Preserve validation, revision checks and undo behaviour if this becomes part of whole-player state |
 | Kingdom progression | `js/pages/kingdom.mjs`, `_data/kingdom_progression.json` | Reuse shared kingdom context only when island unlock rules are verified |
 | Localisation | `i18n/en.js`, the other dictionaries, `_data/langs.json` | Translate UI copy using existing conventions; source English catalogue labels need separate name provenance |
 | Disclosures and links | `js/deep-link.js`, `INTERACTIONS.md` | Stable IDs and `data-deep-link`; avoid a page-specific hash handler that conflicts with a future design share payload |

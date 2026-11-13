@@ -56,12 +56,12 @@ The ledger stays local to the browser. Export/import ships with it from day one.
 
 ## Milestone 2 — declarative interaction architecture
 
-**Implementation:** `js/interactions.js` supplies scoped discovery, delegated actions, target ownership and lifecycle cleanup through `BH.modules`. `js/player-modules.js` adds ledger forms, save transfer, tabs, disclosure and result messages. Hero gear consumes these attributes and events in its existing markup. See [INTERACTIONS.md](INTERACTIONS.md) for the contracts and browser checks. The next deliverable is milestone 3's event availability calculator.
+**Implementation:** the controls are Alpine components: `js/pages/widgets.mjs` holds the ledger forms, save transfer, tabs and result messages, and each page's own controller is in `js/pages/`. Hero gear consumes them in its existing markup. See [INTERACTIONS.md](INTERACTIONS.md) for the contracts and browser checks. The next deliverable is milestone 3's event availability calculator.
 
 
-Use a small DOM-oriented convention, not an SPA framework and not a generic virtual DOM.
+Use Alpine with small page controllers, not an SPA framework and not a generic virtual DOM.
 
-- HTML declares module roots (`data-module`), actions (`data-action`), targets (`data-target`) and state/binding keys (`data-bind` or equivalent).
+- HTML declares its components (`x-data`), events and bindings; checks find controls through hooks that say what they are (`data-save`, `data-import` and so on).
 - Modules are narrowly scoped: ledger form, resource field, import review, result panel, tabs, optimisation run, and so on.
 - Modules communicate through named browser events and the shared store—not direct calls between page-sized scripts.
 - Each action updates a bounded target region and emits a semantic event; another tool can listen without importing its controller.

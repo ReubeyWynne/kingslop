@@ -63,7 +63,6 @@ jobs:
               - css/equipment.css
               - .dsh/lib/**
               - js/i18n.js
-              - js/interactions.js
               - js/player-ledger.mjs
               - js/pages/widgets.mjs
               - js/unit-input.js

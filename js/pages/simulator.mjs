@@ -24,7 +24,7 @@ import Combat from '../combat.mjs';
 
 const BH = () => globalThis.BH;
 const lang = () => Alpine.store('i18n').v;
-const ledger = () => globalThis.Interactions.ledger();
+const ledger = () => globalThis.PlayerLedger.current();
 
 // ── The three troop types, in troop-table order, and the report's four stat columns ──
 const TYPES = [

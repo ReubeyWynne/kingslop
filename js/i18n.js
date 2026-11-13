@@ -72,7 +72,7 @@
 
   // Substitution for template keys. `{n}` comes from the element's own
   // data-i18n-n (rewards.forgeAria and friends). Every other token comes from
-  // the value provider named by data-i18n-vars (js/bind.js), which is read at
+  // the value provider named by data-i18n-vars (declared groups, removed), which is read at
   // paint time and never cached — so a live figure can sit inside a translated
   // sentence while the dictionary carries neither its value nor an id.
   function varsFor(name) {
@@ -156,7 +156,7 @@
     document.documentElement.dir = DIRS[lang] || 'ltr';
   }
 
-  // Repaint the region a group owns (js/bind.js) after its inputs moved: the
+  // Repaint the region a group owns (declared groups, removed) after its inputs moved: the
   // tokens are re-read from the provider, so the figures follow the inputs
   // without re-walking the document — and without any code holding a reference
   // to a node a repaint is about to replace.

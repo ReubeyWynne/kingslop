@@ -64,7 +64,7 @@ function parseLink(value) {
 const shareUrl = (role, code) => new URL('../vv/#' + PREFIX[role] + '-' + code, location.href).href;
 // A march as the march rows show it (_includes/vikings-march.html).
 const march = (row, label, note, plain) => ({ queue: row.queue, hq: row.destination === 'hq', label, total: kfmt(total(row)), row, note: note || '', plain: !!plain });
-const ledger = () => globalThis.Interactions.ledger();
+const ledger = () => globalThis.PlayerLedger.current();
 
 Alpine.data('vikings', api => {
   const ROOT = api || API;

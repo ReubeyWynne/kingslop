@@ -70,7 +70,7 @@ function markup(depth) {
   return { art, rewardTable, fixedItems, value };
 }
 
-const ledger = () => { try { const store = globalThis.Interactions.ledger(); store.snapshot(); return store; } catch (cause) { return null; } };
+const ledger = () => { try { const store = globalThis.PlayerLedger.current(); store.snapshot(); return store; } catch (cause) { return null; } };
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 Alpine.data('seasonal', (occurrence, workerURL, depth) => {

@@ -24,7 +24,7 @@ Alpine.data('island', (artBase, examplesSrc) => {
   // The plan and the board stay outside Alpine's reactivity; `rev` is what bindings track.
   const model = IslandModel.create(DATA.pieces, N), def = model.def;
   let board = null, hintTimer = 0, guardTimer = 0, examples = null;
-  const store = (() => { try { const s = globalThis.Interactions.ledger(); s.snapshot(); return s; } catch (e) { return null; } })();
+  const store = (() => { try { const s = globalThis.PlayerLedger.current(); s.snapshot(); return s; } catch (e) { return null; } })();
   const saved = read(PLAN_KEY, null);
   if (!saved || model.load(saved) === -1) model.load(BLANK);
 

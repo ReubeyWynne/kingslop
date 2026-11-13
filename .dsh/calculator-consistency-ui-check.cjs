@@ -67,7 +67,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   await page.goto(origin + '/buildings/?lang=en');
   assert.deepEqual(await page.locator('table b').evaluateAll(b => b.map(x => x.textContent).filter(t => /\d[a-z]/i.test(t))), [], 'no table shortens a figure');
   // On a sheet (?guest), the KvK points read the sheet's copy, never your save.
-  for (const [self, record] of [['heroes', () => Interactions.ledger().setHero('jabel', { level: 60, stars: 8 })], ['masters', () => Interactions.ledger().setMaster('valora', { affinity: 29 })]]) {
+  for (const [self, record] of [['heroes', () => PlayerLedger.current().setHero('jabel', { level: 60, stars: 8 })], ['masters', () => PlayerLedger.current().setMaster('valora', { affinity: 29 })]]) {
     await page.goto(origin + '/' + self + '/?lang=en&guest', { waitUntil: 'networkidle' });
     await page.evaluate(record);
     await page.waitForFunction(() => document.querySelectorAll('#kvk-points .hero-points-table tbody tr').length === 1);

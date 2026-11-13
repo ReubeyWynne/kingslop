@@ -13,7 +13,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
   const yours = page.locator('#yours');
   async function open(lang) {
     await page.goto(origin + '/?lang=' + (lang || 'en'));
-    await page.waitForFunction(lang => document.documentElement.lang === lang && window.PlayerLedger && window.Interactions, lang || 'en');
+    await page.waitForFunction(lang => document.documentElement.lang === lang && window.PlayerLedger && window.Alpine, lang || 'en');
   }
 
   // A first visit sees the plain guide list.

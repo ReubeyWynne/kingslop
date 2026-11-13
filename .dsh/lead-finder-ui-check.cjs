@@ -72,7 +72,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
 
   // A hero gear screenshot lands in the save; the gear chip and the open list follow it.
   await page.evaluate(() => {
-    // What the import dock applies for a hero gear shot (js/screen-import.js apply).
+    // What the import dock applies for a hero gear shot (js/pages/screen-import.mjs apply).
     const piece = { quality: 'mythic', level: 40, mastery: 5 }, s = PlayerLedger.shared(), snap = s.snapshot();
     const itemDelta = Object.fromEntries(['inf-helm', 'cav-helm', 'arc-helm'].map(id => [id, { before: null, after: piece }]));
     s.applyImport({ id: 'shot-gear', sourceType: 'hero-gear', at: new Date().toISOString(), contentHash: 'a'.repeat(64), confirmation: 'confirmed', itemDelta }, snap.revision);

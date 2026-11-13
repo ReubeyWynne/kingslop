@@ -22,7 +22,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     // quick to catch by polling, so every status line is recorded with
     // whether the bar showed beside it.
     await page.evaluate(() => {
-      const node = document.querySelector('#screen-import [data-target~="screen-import.status"]'), bar = document.querySelector('#screen-import [data-target~="screen-import.progress"]');
+      const node = document.querySelector('#screen-import [data-import="status"]'), bar = document.querySelector('#screen-import [data-import="progress"]');
       window.importSaid = [];
       new MutationObserver(() => window.importSaid.push({ text: node.textContent, bar: !bar.hidden })).observe(node, { childList: true, characterData: true, subtree: true });
     });
@@ -31,10 +31,10 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     await (await chooser).setFiles([fixture('overview-resources'), fixture('overview-speedups')]);
     // A device without the models downloads them once, with a bar that says how far it has got.
     await page.waitForFunction(() => window.importSaid.some(s => s.text.includes('Downloading the reading models')), null, { timeout: 120000 });
-    if ((await page.locator('#screen-import [data-target~="screen-import.status"]').textContent()).includes('Downloading')) await page.screenshot({ path: path.join(output, 'downloading-390.png') });
+    if ((await page.locator('#screen-import [data-import="status"]').textContent()).includes('Downloading')) await page.screenshot({ path: path.join(output, 'downloading-390.png') });
     assert.ok(await page.evaluate(() => window.importSaid.filter(s => s.text.includes('Downloading the reading models')).every(s => s.bar)), 'the download shows its progress');
     await page.locator('.import-tile').first().waitFor({ timeout: 240000 });
-    await page.locator('#screen-import [data-target~="screen-import.count"]', { hasText: '2 to review' }).waitFor({ timeout: 240000 });
+    await page.locator('#screen-import [data-import="count"]', { hasText: '2 to review' }).waitFor({ timeout: 240000 });
     await page.screenshot({ path: path.join(output, 'review-resources-390.png') });
     const tiles = () => page.locator('.import-tile').evaluateAll(list => Promise.all(list.map(async li => {
       // A freshly rendered cut-out may still be decoding.
@@ -43,10 +43,10 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
       return { key: li.dataset.key, value: li.querySelector('[data-field="value"]').value, state: li.dataset.state, crop: img.naturalWidth > 0 };
     })));
     const first = await tiles();
-    const screen = await page.locator('[data-target~="screen-import.screen"]').textContent();
+    const screen = await page.locator('[data-import="screen"]').textContent();
     const resources = screen.includes('Resources') ? first : null;
     // Either shot may finish first; walk to the resources one.
-    if (!resources) await page.locator('[data-action~="screen-import.next"]').click();
+    if (!resources) await page.locator('[data-import="next"]').click();
     const res = Object.fromEntries((await tiles()).map(t => [t.key, t]));
     assert.deepEqual(Object.keys(res), ['bread', 'wood', 'stone', 'iron']);
     assert.equal(res.bread.value, '597,910,000', 'values are grouped the way the page language writes them');
@@ -58,8 +58,8 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     await page.locator('.import-tile[data-key="wood"] [data-field="value"]').press('Enter');
     assert.equal(await page.locator('.import-tile[data-key="wood"] [data-field="value"]').inputValue(), '557,000,000', 'a typed number is read with its separators');
     await page.locator('.import-tile[data-key="iron"] [data-field="include"]').uncheck();
-    await page.locator('[data-action~="screen-import.apply"]').click();
-    await page.locator('[data-target~="screen-import.status"]', { hasText: 'Saved 3 values' }).waitFor();
+    await page.locator('[data-import="apply"]').click();
+    await page.locator('[data-import="status"]', { hasText: 'Saved 3 values' }).waitFor();
     const balances = await page.evaluate(() => { const s = PlayerLedger.shared(); return ['bread', 'wood', 'stone', 'iron'].map(id => s.balance(id)); });
     assert.deepEqual(balances.map(b => b.amount), [597910000, 557000000, 104680000, null]);
     assert.equal(balances[0].provenance.source, 'screenshot');
@@ -72,31 +72,31 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     const spd = Object.fromEntries((await tiles()).map(t => [t.key, t.value]));
     assert.equal(spd['speedup-general'], (17 * 1440 + 20 * 60 + 1).toLocaleString('en-GB'));
     assert.equal(spd['speedup-learning'], '720');
-    await page.locator('[data-action~="screen-import.apply"]').click();
-    await page.locator('[data-target~="screen-import.status"]', { hasText: 'Saved 6 values' }).waitFor();
+    await page.locator('[data-import="apply"]').click();
+    await page.locator('[data-import="status"]', { hasText: 'Saved 6 values' }).waitFor();
     assert.equal(await page.evaluate(() => PlayerLedger.shared().balance('speedup-healing').amount), 8 * 1440 + 645);
-    await page.locator('[data-action~="screen-import.undo"]').click();
+    await page.locator('[data-import="undo"]').click();
     assert.equal(await page.evaluate(() => PlayerLedger.shared().balance('speedup-healing').amount), null, 'undo restores the save before the apply');
 
     // A file already applied is refused before it is read again.
-    await page.locator('#screen-import [data-target~="screen-import.files"]').setInputFiles(fixture('overview-resources'));
-    await page.locator('[data-target~="screen-import.status"]', { hasText: 'already applied' }).waitFor();
+    await page.locator('#screen-import [data-import="files"]').setInputFiles(fixture('overview-resources'));
+    await page.locator('[data-import="status"]', { hasText: 'already applied' }).waitFor();
 
     // The models are on this device now: later reads say which shot they are on, not that a download is coming.
     const said = [];
     await page.exposeFunction('importStatus', text => said.push(text));
-    await page.evaluate(() => { const node = document.querySelector('[data-target~="screen-import.status"]'); new MutationObserver(() => window.importStatus(node.textContent)).observe(node, { childList: true, characterData: true, subtree: true }); });
+    await page.evaluate(() => { const node = document.querySelector('[data-import="status"]'); new MutationObserver(() => window.importStatus(node.textContent)).observe(node, { childList: true, characterData: true, subtree: true }); });
 
     // Backpack tiles: icons matched to event items, counts read enlarged. The
     // two shots come from different moments; the later file wins.
-    await page.locator('#screen-import [data-target~="screen-import.files"]').setInputFiles([fixture('other-a2'), fixture('other-c2')]);
+    await page.locator('#screen-import [data-import="files"]').setInputFiles([fixture('other-a2'), fixture('other-c2')]);
     await page.locator('#screen-import .import-chip', { hasText: '2 to review' }).waitFor({ timeout: 240000 });
     const backpack = async () => Object.fromEntries((await tiles()).map(t => [t.key, t.value]));
     const screens = {};
     for (let i = 0; i < 2; i++) {
       const read = await backpack();
       screens[read['masters-manuscript']] = { read, include: await page.locator('.import-tile[data-key="masters-manuscript"] [data-field="include"]').isChecked(), note: await page.locator('.import-tile[data-key="masters-manuscript"] [data-field="note"]').textContent() };
-      if (i === 0) { await page.screenshot({ path: path.join(output, 'review-backpack-390.png') }); await page.locator('[data-action~="screen-import.next"]').click(); }
+      if (i === 0) { await page.screenshot({ path: path.join(output, 'review-backpack-390.png') }); await page.locator('[data-import="next"]').click(); }
     }
     assert.ok(said.some(text => /Reading screenshot 1 of 2/.test(text)), 'reading says which shot it is on');
     assert.ok(!said.some(text => /Downloading/.test(text)), 'a device with the models cached is not warned about a download');
@@ -107,31 +107,31 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     assert.equal(screens['2,632'].include, true);
     // Applying the newer shot settles the older one: every item it showed was
     // superseded, so it leaves the dock rather than writing stale counts.
-    if ((await backpack())['masters-manuscript'] !== '2,632') await page.locator('[data-action~="screen-import.next"]').click();
-    await page.locator('[data-action~="screen-import.apply"]').click();
-    await page.locator('[data-target~="screen-import.status"]', { hasText: 'Saved 8 values' }).waitFor();
+    if ((await backpack())['masters-manuscript'] !== '2,632') await page.locator('[data-import="next"]').click();
+    await page.locator('[data-import="apply"]').click();
+    await page.locator('[data-import="status"]', { hasText: 'Saved 8 values' }).waitFor();
     assert.equal(await page.locator('.import-tile').count(), 0, 'the superseded shot left the dock');
     assert.deepEqual(await page.evaluate(() => ['masters-manuscript', 'common-taming-mark', 'forgehammer', 'mythic-hero-shard'].map(id => PlayerLedger.shared().balance(id).amount)), [2632, 60, 201, 316]);
 
     // Gen widget chests look alike; the S2 and S3 badges and the contents tell them apart.
-    await page.locator('#screen-import [data-target~="screen-import.files"]').setInputFiles(fixture('other-d1'));
+    await page.locator('#screen-import [data-import="files"]').setInputFiles(fixture('other-d1'));
     await page.locator('.import-tile[data-key="hero-widget-chest-gen1"]').waitFor({ timeout: 240000 });
     assert.deepEqual(await backpack(), { 'hero-widget-chest-gen3': '4', 'hero-widget-chest-gen2': '4', 'hero-widget-chest-gen1': '34' });
-    await page.locator('[data-action~="screen-import.discard"]').click();
+    await page.locator('[data-import="discard"]').click();
 
     // Pet List: portraits told apart by colour, levels read from their corners.
-    await page.locator('#screen-import [data-target~="screen-import.files"]').setInputFiles(fixture('pet-list'));
+    await page.locator('#screen-import [data-import="files"]').setInputFiles(fixture('pet-list'));
     await page.locator('.import-tile[data-key="lion"]').waitFor({ timeout: 240000 });
     await page.screenshot({ path: path.join(output, 'review-pets-390.png') });
     assert.deepEqual(await backpack(), { lion: '70', 'grizzly-bear': '26', moose: '50', cheetah: '50', bison: '60', lynx: '40', 'gray-wolf': '50' });
-    await page.locator('[data-action~="screen-import.apply"]').click();
-    await page.locator('[data-target~="screen-import.status"]', { hasText: 'Saved 7 values' }).waitFor();
+    await page.locator('[data-import="apply"]').click();
+    await page.locator('[data-import="status"]', { hasText: 'Saved 7 values' }).waitFor();
     assert.deepEqual(await page.evaluate(() => PlayerLedger.shared().pets().roster.bison), { level: 60, advanced: false });
 
     const desktop = await browser.newContext({ viewport: { width: 1280, height: 900 } });
     const wide = await desktop.newPage();
     await wide.goto(base + '/town-centre/?lang=de');
-    await wide.locator('#screen-import [data-target~="screen-import.files"]').setInputFiles(fixture('overview-speedups'));
+    await wide.locator('#screen-import [data-import="files"]').setInputFiles(fixture('overview-speedups'));
     await wide.locator('.import-tile').first().waitFor({ timeout: 240000 });
     assert.equal(await wide.locator('.import-tile[data-key="speedup-general"] [data-field="value"]').inputValue(), '25.681', 'German groups digits with a full stop');
     await wide.screenshot({ path: path.join(output, 'review-1280.png') });

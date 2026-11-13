@@ -28,7 +28,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
   const dock = page.locator('#screen-import');
   const recipe = dock.locator('#screenshot-recipe');
   const state = () => recipe.locator('[data-recipe]').evaluateAll(list => list.map(li => li.dataset.recipe + ':' + li.dataset.done));
-  const count = () => recipe.locator('[data-target~="screen-import.recipeCount"]').textContent();
+  const count = () => recipe.locator('[data-import="recipeCount"]').textContent();
   const apply = (names, start) => page.evaluate(({ names, records, start }) => {
     const store = PlayerLedger.shared();
     names.forEach((name, i) => {
@@ -41,11 +41,11 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     // A link opens the dock at the recipe, from any page.
     await page.goto(base + '/events/?lang=en#screenshot-recipe');
     await recipe.waitFor({ state: 'visible', timeout: 15000 });
-    assert.equal(await dock.locator('[data-target~="screen-import.chip"]').getAttribute('aria-expanded'), 'true', 'the link presses the dock open');
+    assert.equal(await dock.locator('[data-import="chip"]').getAttribute('aria-expanded'), 'true', 'the link presses the dock open');
     assert.equal(await recipe.locator('#import-recipe-title').textContent(), 'Start with these five screenshots');
     assert.deepEqual(await state(), ['resources:false', 'speedups:false', 'backpack:false', 'gear:false', 'pets:false']);
     assert.equal(await count(), '0 of 5');
-    assert.equal(await recipe.locator('[data-target~="screen-import.recipeNext"]').isHidden(), true, 'Town Centre waits for the bag');
+    assert.equal(await recipe.locator('[data-import="recipeNext"]').isHidden(), true, 'Town Centre waits for the bag');
     const pictures = await recipe.locator('img').evaluateAll(list => Promise.all(list.map(img => img.decode().then(() => img.naturalWidth, () => 0))));
     assert.equal(pictures.length, 5);
     assert.ok(pictures.every(w => w > 0), 'every row shows its in-game screen');
@@ -58,14 +58,14 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     assert.deepEqual(await state(), ['resources:true', 'speedups:true', 'backpack:false', 'gear:false', 'pets:false'], 'the Overview tabs are told apart by what they saved');
     assert.equal(await recipe.locator('[data-recipe="resources"] [data-field="state"]').textContent(), 'saved');
     assert.equal(await count(), '2 of 5');
-    assert.equal(await recipe.locator('[data-target~="screen-import.recipeNext"]').isHidden(), true);
+    assert.equal(await recipe.locator('[data-import="recipeNext"]').isHidden(), true);
 
     // The third bag screen brings the Town Centre link.
     await apply(['backpack'], 3);
     await page.reload();
     await recipe.waitFor({ state: 'visible' });
     assert.equal(await count(), '3 of 5');
-    const next = recipe.locator('[data-target~="screen-import.recipeNext"]');
+    const next = recipe.locator('[data-import="recipeNext"]');
     assert.equal(await next.isVisible(), true, 'after the first three, the dock links to Town Centre');
     assert.match(await next.locator('a').getAttribute('href'), /town-centre\/$/);
     await page.screenshot({ path: path.join(output, 'recipe-three-390.png') });
@@ -82,12 +82,12 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     await dock.locator('.import-chip').click();
     await dock.locator('.import-tile[data-key="lion"]').waitFor();
     assert.equal(await recipe.isHidden(), true, 'a review hides the recipe');
-    await dock.locator('[data-action~="screen-import.apply"]').click();
-    await dock.locator('[data-target~="screen-import.status"]', { hasText: 'Saved 1 values' }).waitFor();
+    await dock.locator('[data-import="apply"]').click();
+    await dock.locator('[data-import="status"]', { hasText: 'Saved 1 values' }).waitFor();
     await recipe.waitFor({ state: 'visible' });
     assert.equal(await recipe.locator('[data-recipe="pets"]').getAttribute('data-done'), 'true', 'an apply ticks its row at once');
     assert.equal(await count(), '4 of 5');
-    await dock.locator('[data-action~="screen-import.undo"]').click();
+    await dock.locator('[data-import="undo"]').click();
     assert.equal(await recipe.locator('[data-recipe="pets"]').getAttribute('data-done'), 'false', 'undo takes the tick back');
 
     // All five: the recipe folds to its count.
@@ -95,7 +95,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
     await page.goto(base + '/town-centre/?lang=en#screenshot-recipe');
     await recipe.waitFor({ state: 'visible' });
     assert.equal(await count(), '5 of 5');
-    assert.equal(await recipe.locator('[data-target~="screen-import.recipeList"]').isHidden(), true, 'a finished recipe folds');
+    assert.equal(await recipe.locator('[data-import="recipeList"]').isHidden(), true, 'a finished recipe folds');
     assert.equal(await next.locator('a').getAttribute('aria-current'), 'page');
 
     // Every language carries the recipe, and the rows fit a small phone.
@@ -110,7 +110,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
       const fit = await p.evaluate(() => {
         const sheet = document.querySelector('#screen-import .import-sheet').getBoundingClientRect();
         const rows = Array.from(document.querySelectorAll('#screenshot-recipe [data-recipe]')).map(li => li.getBoundingClientRect());
-        return { sheet: sheet.left >= 0 && sheet.right <= innerWidth + 1, rows: rows.every(b => b.left >= sheet.left - 1 && b.right <= sheet.right + 1), page: document.documentElement.scrollWidth <= innerWidth + 1, count: document.querySelector('#screenshot-recipe [data-target~="screen-import.recipeCount"]').textContent };
+        return { sheet: sheet.left >= 0 && sheet.right <= innerWidth + 1, rows: rows.every(b => b.left >= sheet.left - 1 && b.right <= sheet.right + 1), page: document.documentElement.scrollWidth <= innerWidth + 1, count: document.querySelector('#screenshot-recipe [data-import="recipeCount"]').textContent };
       });
       assert.deepEqual([fit.sheet, fit.rows, fit.page], [true, true, true], lang + ' recipe fits 320px');
       assert.ok(fit.count.length > 0, lang + ' recipe counts');

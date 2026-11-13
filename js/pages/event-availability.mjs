@@ -24,7 +24,7 @@ function lineName(line) {
 let calculator;
 function sums() {
   if (calculator === undefined) {
-    try { calculator = TownCentre.forLedger(globalThis.Interactions.ledger()); } catch (cause) { calculator = null; }
+    try { calculator = TownCentre.forLedger(globalThis.PlayerLedger.current()); } catch (cause) { calculator = null; }
   }
   return calculator;
 }
