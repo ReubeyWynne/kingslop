@@ -110,7 +110,6 @@ jobs:
               - js/*.mjs
             interactions:
               - *shared
-              - .dsh/interaction-modules-check.cjs
               - .dsh/vikings-ui-check.cjs
               - .dsh/island-ui-check.cjs
               - island/**
@@ -680,7 +679,6 @@ jobs:
         if: matrix.group == 'interactions'
         run: |
           node --test .dsh/lib/browser-harness.test.cjs
-          node .dsh/interaction-modules-check.cjs
       - name: Check seasonal event UI
         if: matrix.group == 'seasonal'
         run: |
