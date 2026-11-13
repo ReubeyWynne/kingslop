@@ -1,46 +1,57 @@
-<aside class="import-dock" id="screen-import" data-module="screen-import" data-filter="all" hidden aria-labelledby="import-title">
-  <button type="button" class="import-chip" data-target="screen-import.chip" data-action="screen-import.toggle" aria-expanded="false" aria-controls="screenshot-import" data-deep-link="screenshot-import">
+<aside class="import-dock" id="screen-import" x-data="screenImport" :data-filter="filter" :data-open="String(expanded)" data-filter="all" :hidden="!visible" hidden aria-labelledby="import-title">
+  <button type="button" class="import-chip" data-import="chip" @click="toggle()" :aria-expanded="String(expanded)" aria-expanded="false" aria-controls="screenshot-import" data-deep-link="screenshot-import">
     <span class="import-chip-mark" aria-hidden="true">❧</span>
     <span data-i18n="import.chip">Import</span>
-    <output data-target="screen-import.count"></output>
+    <output data-import="count" x-text="countText"></output>
   </button>
-  <section class="import-sheet" id="screenshot-import" data-target="screen-import.sheet" hidden>
+  <section class="import-sheet" id="screenshot-import" data-import="sheet" :hidden="!expanded" hidden>
     <header class="import-head">
       <h2 id="import-title" data-i18n="import.title">Screenshot import</h2>
-      <button type="button" class="import-prompt" data-action="screen-import.toggle" data-i18n="import.minimise">minimise</button>
+      <button type="button" class="import-prompt" @click="toggle()" data-i18n="import.minimise">minimise</button>
     </header>
-    <p class="import-status" data-target="screen-import.status" role="status"></p>
-    <progress class="import-progress" data-target="screen-import.progress" max="1" aria-label="Reading progress" data-i18n-key="import.progress" data-i18n-attr="aria-label" hidden></progress>
-    <section class="import-recipe" id="screenshot-recipe" data-target="screen-import.recipe" aria-labelledby="import-recipe-title">
-      <p class="import-recipe-head"><strong id="import-recipe-title" data-i18n="import.recipe.title">Start with these five screenshots</strong> <output data-target="screen-import.recipeCount"></output></p>
-      <ol class="import-recipe-list" data-target="screen-import.recipeList">
-        <li data-recipe="resources" data-done="false"><img src="{{ p.depth }}img/screen-import/resources.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.resources">Backpack → chart icon → Resources</strong><small data-i18n="import.recipe.resourcesFills">Bread, wood, stone and iron totals</small></span><span class="import-recipe-state" data-field="state"></span></li>
-        <li data-recipe="speedups" data-done="false"><img src="{{ p.depth }}img/screen-import/speedups.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.speedups">Backpack → chart icon → Speedups</strong><small data-i18n="import.recipe.speedupsFills">Every speedup, in minutes</small></span><span class="import-recipe-state" data-field="state"></span></li>
-        <li data-recipe="backpack" data-done="false"><img src="{{ p.depth }}img/screen-import/backpack.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.backpack">Backpack → Other, one shot per scroll</strong><small data-i18n="import.recipe.backpackFills">Event items and widget chests</small></span><span class="import-recipe-state" data-field="state"></span></li>
-        <li data-recipe="gear" data-done="false"><img src="{{ p.depth }}img/screen-import/gear.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.gear">A hero’s gear screen</strong><small data-i18n="import.recipe.gearFills">That hero’s gear pieces</small></span><span class="import-recipe-state" data-field="state"></span></li>
-        <li data-recipe="pets" data-done="false"><img src="{{ p.depth }}img/screen-import/pets.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.pets">Pets → Pet List</strong><small data-i18n="import.recipe.petsFills">Pet levels</small></span><span class="import-recipe-state" data-field="state"></span></li>
+    <p class="import-status" data-import="status" role="status" x-text="statusText"></p>
+    <progress class="import-progress" data-import="progress" :max="bar.max" :value="bar.value" :hidden="bar.hidden" aria-label="Reading progress" data-i18n-key="import.progress" data-i18n-attr="aria-label" hidden></progress>
+    <section class="import-recipe" id="screenshot-recipe" data-import="recipe" :hidden="recipe.hidden" aria-labelledby="import-recipe-title">
+      <p class="import-recipe-head"><strong id="import-recipe-title" data-i18n="import.recipe.title">Start with these five screenshots</strong> <output data-import="recipeCount" x-text="recipe.count"></output></p>
+      <ol class="import-recipe-list" data-import="recipeList" :hidden="recipe.listHidden">
+        <li data-recipe="resources" :data-done="String(Boolean(recipe.have.resources))" data-done="false"><img src="{{ p.depth }}img/screen-import/resources.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.resources">Backpack → chart icon → Resources</strong><small data-i18n="import.recipe.resourcesFills">Bread, wood, stone and iron totals</small></span><span class="import-recipe-state" data-field="state" x-text="recipe.have[$el.closest('li').dataset.recipe] ? t('import.recipe.done', 'saved') : ''"></span></li>
+        <li data-recipe="speedups" :data-done="String(Boolean(recipe.have.speedups))" data-done="false"><img src="{{ p.depth }}img/screen-import/speedups.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.speedups">Backpack → chart icon → Speedups</strong><small data-i18n="import.recipe.speedupsFills">Every speedup, in minutes</small></span><span class="import-recipe-state" data-field="state" x-text="recipe.have[$el.closest('li').dataset.recipe] ? t('import.recipe.done', 'saved') : ''"></span></li>
+        <li data-recipe="backpack" :data-done="String(Boolean(recipe.have.backpack))" data-done="false"><img src="{{ p.depth }}img/screen-import/backpack.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.backpack">Backpack → Other, one shot per scroll</strong><small data-i18n="import.recipe.backpackFills">Event items and widget chests</small></span><span class="import-recipe-state" data-field="state" x-text="recipe.have[$el.closest('li').dataset.recipe] ? t('import.recipe.done', 'saved') : ''"></span></li>
+        <li data-recipe="gear" :data-done="String(Boolean(recipe.have.gear))" data-done="false"><img src="{{ p.depth }}img/screen-import/gear.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.gear">A hero’s gear screen</strong><small data-i18n="import.recipe.gearFills">That hero’s gear pieces</small></span><span class="import-recipe-state" data-field="state" x-text="recipe.have[$el.closest('li').dataset.recipe] ? t('import.recipe.done', 'saved') : ''"></span></li>
+        <li data-recipe="pets" :data-done="String(Boolean(recipe.have.pets))" data-done="false"><img src="{{ p.depth }}img/screen-import/pets.webp" alt="" width="136" height="170" loading="lazy" decoding="async"><span class="import-recipe-text"><strong data-i18n="import.recipe.pets">Pets → Pet List</strong><small data-i18n="import.recipe.petsFills">Pet levels</small></span><span class="import-recipe-state" data-field="state" x-text="recipe.have[$el.closest('li').dataset.recipe] ? t('import.recipe.done', 'saved') : ''"></span></li>
       </ol>
-      <p class="import-recipe-next" data-target="screen-import.recipeNext" hidden><span data-i18n="import.recipe.next">See what your bag scores:</span> <a href="{{ p.depth }}town-centre/"{% if self == 'town' %} aria-current="page"{% endif %} data-i18n="town.nav">Town Centre</a></p>
+      <p class="import-recipe-next" data-import="recipeNext" :hidden="recipe.nextHidden" hidden><span data-i18n="import.recipe.next">See what your bag scores:</span> <a href="{{ p.depth }}town-centre/"{% if self == 'town' %} aria-current="page"{% endif %} data-i18n="town.nav">Town Centre</a></p>
     </section>
-    <div class="import-shot" data-target="screen-import.shot" hidden>
-      <p class="import-shot-name"><strong data-target="screen-import.screen"></strong> <small data-target="screen-import.name"></small></p>
-      <ul class="import-grid" data-target="screen-import.tiles"></ul>
+    <div class="import-shot" data-import="shot" :hidden="!entry" hidden>
+      <p class="import-shot-name"><strong data-import="screen" x-text="screenText"></strong> <small data-import="name" x-text="entry && entry.name"></small></p>
+      <ul class="import-grid" data-import="tiles" :data-layout="layout">
+        <template x-for="row in tiles" :key="row.key"><li :class="row.crop ? 'import-crop' : 'import-tile'" :data-key="row.key" :data-state="row.state" :data-group="row.crop ? null : row.group" :data-cols="row.crop ? null : row.cols" :hidden="row.crop && row.hidden">
+          <template x-if="row.crop"><img :src="row.src || null" :hidden="!row.src" alt=""></template>
+          <template x-if="row.crop"><span class="import-crop-name" x-text="row.label"></span></template>
+          <template x-if="!row.crop"><img data-field="crop" :src="row.src || null" :hidden="!row.src" alt="" width="358" height="40"></template>
+          <template x-if="!row.crop"><label class="import-field">
+            <span class="import-name"><span data-field="label" :class="row.hideLabel && 'import-hidden'" x-text="row.label"></span><small class="import-note" data-field="note" x-text="row.note"></small></span>
+            <input type="text" :inputmode="row.inputMode" autocomplete="off" spellcheck="false" min="0" step="1" data-field="value" :placeholder="row.placeholder" x-effect="syncBox($el, row)" @change="editBox($el, row)">
+          </label></template>
+          <template x-if="!row.crop"><label class="import-include"><input type="checkbox" data-field="include" :checked="row.include" @change="editBox($el, row)"><span class="import-hidden" data-i18n="import.include">include</span></label></template>
+        </li></template>
+      </ul>
       <div class="import-bar">
-        <button type="button" class="import-prompt" data-action="screen-import.needsLook" aria-pressed="false" data-target="screen-import.needsLook"></button>
+        <button type="button" class="import-prompt" data-import="needsLook" @click="needsLook()" :aria-pressed="String(filter === 'doubt')" :hidden="needsLookHidden" x-text="needsLookText" aria-pressed="false"></button>
         <span class="import-steps">
-          <button type="button" class="import-prompt" data-action="screen-import.prev" aria-label="Previous screenshot" data-i18n-key="import.prev" data-i18n-attr="aria-label">‹</button>
-          <output data-target="screen-import.position"></output>
-          <button type="button" class="import-prompt" data-action="screen-import.next" aria-label="Next screenshot" data-i18n-key="import.next" data-i18n-attr="aria-label">›</button>
+          <button type="button" class="import-prompt" data-import="prev" @click="prev()" aria-label="Previous screenshot" data-i18n-key="import.prev" data-i18n-attr="aria-label">‹</button>
+          <output data-import="position" x-text="positionText"></output>
+          <button type="button" class="import-prompt" data-import="next" @click="next()" aria-label="Next screenshot" data-i18n-key="import.next" data-i18n-attr="aria-label">›</button>
         </span>
       </div>
       <div class="import-bar">
-        <button type="button" class="import-prompt" data-action="screen-import.discard" data-i18n="import.discard">skip this shot</button>
-        <button type="button" class="import-apply" data-action="screen-import.apply" data-target="screen-import.apply" data-i18n="import.apply">apply</button>
+        <button type="button" class="import-prompt" data-import="discard" @click="discard()" data-i18n="import.discard">skip this shot</button>
+        <button type="button" class="import-apply" data-import="apply" @click="apply()" data-i18n="import.apply">apply</button>
       </div>
     </div>
     <div class="import-bar">
-      <button type="button" class="import-prompt" data-action="screen-import.pick" data-i18n="import.add">add screenshots</button>
-      <button type="button" class="import-prompt" data-action="screen-import.undo" data-target="screen-import.undo" data-i18n="import.undo" hidden>undo last apply</button>
+      <button type="button" class="import-prompt" data-import="pick" @click="pick()" data-i18n="import.add">add screenshots</button>
+      <button type="button" class="import-prompt" data-import="undo" @click="undo()" :hidden="undoHidden" data-i18n="import.undo" hidden>undo last apply</button>
     </div>
     <details class="import-help" id="screenshot-help">
       <summary data-i18n="import.help">what can I screenshot?</summary>
@@ -54,16 +65,6 @@
       </ul>
       <p class="import-gloss"><span data-i18n="import.ask">Still wanted: Gen 4 and later widget chests, tempered truegold, truegold dust, pets past the first seven, and Governor Profiles with red gear or charms above level 6.</span> <a href="mailto:screenshots@dey.ci?subject=Screenshot%20import">screenshots@dey.ci</a></p>
     </details>
-    <input type="file" accept="image/*" multiple hidden data-target="screen-import.files" data-action="screen-import.add">
+    <input type="file" accept="image/*" multiple hidden data-import="files" x-ref="files" @change="add($el)">
   </section>
-  <template data-target="screen-import.tile">
-    <li class="import-tile" data-state="sure">
-      <img data-field="crop" alt="" width="358" height="40">
-      <label class="import-field">
-        <span class="import-name"><span data-field="label"></span><small class="import-note" data-field="note"></small></span>
-        <input type="text" inputmode="numeric" autocomplete="off" spellcheck="false" min="0" step="1" data-field="value" data-action="screen-import.edit">
-      </label>
-      <label class="import-include"><input type="checkbox" data-field="include" data-action="screen-import.edit"><span class="import-hidden" data-i18n="import.include">include</span></label>
-    </li>
-  </template>
 </aside>

@@ -97,10 +97,10 @@ withBrowser({ root }, async ({ browser, origin }) => {
     // The piece is named once, above its two values, with its quality.
     assert.equal(await page.locator('#screen-import [data-key="crop:inf-helm"] .import-crop-name').textContent(),'Infantry Helm · red');
     assert.equal(await page.locator('#screen-import .import-crop').count(),1,'one piece, one heading');
-    await page.locator('#screen-import [data-action="screen-import.apply"]').click();
+    await page.locator('#screen-import [data-import="apply"]').click();
     await page.waitForFunction(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm'].level===119);
     assert.deepEqual(await page.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear).pieces['inf-helm']),{quality:'red',level:119,mastery:10});
-    await page.locator('#screen-import [data-target="screen-import.chip"]').click();
+    await page.locator('#screen-import [data-import="chip"]').click();
     await page.unroute('**/js/ocr-worker.js**');
     // Marking a step done from the piece's sheet, then undoing it.
     await page.locator('.gear-row[data-select="inf-helm"]').click();
@@ -164,7 +164,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     for(const width of [320,390,768,1280,1440]){
       const height=width===390?844:900;
       await page.setViewportSize({width,height});await fits(page,'width '+width);
-      await Promise.all([page.waitForEvent('filechooser'),page.locator('#gear-import').click()]);await fits(page,'import panel '+width);await page.locator('#screen-import [data-target="screen-import.chip"]').click();
+      await Promise.all([page.waitForEvent('filechooser'),page.locator('#gear-import').click()]);await fits(page,'import panel '+width);await page.locator('#screen-import [data-import="chip"]').click();
       await page.locator('[data-open="inf"]').click();await fits(page,'troop view '+width);
       if(width===390)await page.locator('#gear-detail').screenshot({path:path.join(output,'mobile-troop.png')});
       await page.locator('#gear-detail [data-select="inf-gloves"]').click();await fits(page,'piece sheet '+width);
@@ -264,22 +264,22 @@ withBrowser({ root }, async ({ browser, origin }) => {
       const ledgerGear=()=>overviewPage.evaluate(()=>window.PlayerLedger.shared().heroGear(window.HeroGear));
       async function pick(names){
         // The open panel can cover the page's button on a phone; minimise it first.
-        if(await dock.locator('.import-sheet').isVisible())await dock.locator('[data-target="screen-import.chip"]').click();
+        if(await dock.locator('.import-sheet').isVisible())await dock.locator('[data-import="chip"]').click();
         const [chooser]=await Promise.all([overviewPage.waitForEvent('filechooser'),overviewPage.locator('#gear-import').click()]);
         await chooser.setFiles(names.map(name=>path.resolve('.dsh/gear-fixtures/'+name+'.jpg')));
-        await overviewPage.waitForFunction(()=>{const t=document.querySelector('[data-target="screen-import.count"]').textContent;return t&&!/reading/.test(t);},null,{timeout:240000});
-        assert.equal(await dock.locator('[data-target="screen-import.count"]').textContent(),names.length+' to review',names.join(', ')+' all read as hero gear');
+        await overviewPage.waitForFunction(()=>{const t=document.querySelector('[data-import="count"]').textContent;return t&&!/reading/.test(t);},null,{timeout:240000});
+        assert.equal(await dock.locator('[data-import="count"]').textContent(),names.length+' to review',names.join(', ')+' all read as hero gear');
       }
       // Every shot's tiles, by file: troop, slot, quality, and the level as
       // the game shows it (red +20 reviews as 20).
       async function reads(n){
         const out={};
         for(let i=0;i<n;i++){
-          const name=(await dock.locator('[data-target="screen-import.name"]').textContent()).replace(/\.jpg$/,'');
+          const name=(await dock.locator('[data-import="name"]').textContent()).replace(/\.jpg$/,'');
           const heads=await dock.locator('.import-crop').evaluateAll(rows=>Object.fromEntries(rows.map(li=>[li.dataset.key.slice(5),{name:li.querySelector('.import-crop-name').textContent,crop:!li.querySelector('img').hidden}])));
           out[name]=await dock.locator('.import-tile').evaluateAll(tiles=>tiles.map(li=>({key:li.dataset.key,value:li.querySelector('[data-field="value"]').value})));
           out[name].forEach(t=>{t.head=heads[/^gear-(\w+-\w+)-/.exec(t.key)[1]];});
-          await dock.locator('[data-action="screen-import.next"]').click();
+          await dock.locator('[data-import="next"]').click();
         }
         return out;
       }
@@ -317,33 +317,33 @@ withBrowser({ root }, async ({ browser, origin }) => {
       }
       await overviewPage.setViewportSize({width:390,height:844});
       // A number the box refuses is never applied as the value read before it.
-      while(!/^zoe/.test(await dock.locator('[data-target="screen-import.name"]').textContent()))await dock.locator('[data-action="screen-import.next"]').click();
+      while(!/^zoe/.test(await dock.locator('[data-import="name"]').textContent()))await dock.locator('[data-import="next"]').click();
       const helm=dock.locator('[data-key="gear-inf-helm-level"] [data-field="value"]');
       assert.equal(await helm.getAttribute('max'),'100');
       await helm.fill('101');await helm.dispatchEvent('change');
-      await dock.locator('[data-action="screen-import.apply"]').click();
-      assert.match(await dock.locator('[data-target="screen-import.status"]').textContent(),/can’t be saved/);
+      await dock.locator('[data-import="apply"]').click();
+      assert.match(await dock.locator('[data-import="status"]').textContent(),/can’t be saved/);
       assert.equal((await ledgerGear()).pieces['inf-helm'].level,0,'an invalid visible number applies nothing');
       await helm.fill('69');await helm.dispatchEvent('change');
       let beforeLast=null;
       for(let i=0;i<3;i++){
         beforeLast=(await ledgerGear()).pieces;
         const revision=await overviewPage.evaluate(()=>window.PlayerLedger.shared().snapshot().revision);
-        await dock.locator('[data-action="screen-import.apply"]').click();
+        await dock.locator('[data-import="apply"]').click();
         await overviewPage.waitForFunction(r=>window.PlayerLedger.shared().snapshot().revision>r,revision);
       }
       const imported=await ledgerGear();
       for(const item of expected.slice(0,3).flat())assert.deepEqual(imported.pieces[item.troop+'-'+item.slot],{quality:item.quality,level:Number(item.level),mastery:Number(item.mastery)});
       assert.deepEqual(imported.resources,E.defaults().resources);
       assert.match(await overviewPage.locator('.gear-row[data-select="inf-gloves"]').textContent(),/\+20/,'the gear page repaints from the ledger');
-      await dock.locator('[data-action="screen-import.undo"]').click();
+      await dock.locator('[data-import="undo"]').click();
       assert.deepEqual((await ledgerGear()).pieces,beforeLast,'undo restores the gear before the last shot');
       await pick(fixtures.slice(3));
       const second=await reads(3);
       for(let i=3;i<6;i++)assert.deepEqual(pieces(second[fixtures[i]]),expected[i],'real overview screenshot '+fixtures[i]);
       for(let i=0;i<3;i++){
         const revision=await overviewPage.evaluate(()=>window.PlayerLedger.shared().snapshot().revision);
-        await dock.locator('[data-action="screen-import.apply"]').click();
+        await dock.locator('[data-import="apply"]').click();
         await overviewPage.waitForFunction(r=>window.PlayerLedger.shared().snapshot().revision>r,revision);
       }
       const unlevelled=await ledgerGear();

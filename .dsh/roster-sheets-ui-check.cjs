@@ -22,9 +22,9 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin });
     const page = await context.newPage();
     page.on('pageerror', e => errors.push(p.page + ': ' + e.message));
-    const open = async query => { await page.goto(origin + '/' + p.page + '/' + query); await page.waitForFunction(() => window.Interactions && document.querySelector('[data-sheet="source"]').textContent !== ''); };
+    const open = async query => { await page.goto(origin + '/' + p.page + '/' + query); await page.waitForFunction(() => window.Alpine && document.querySelector('[data-sheet="source"]').textContent !== ''); };
     const own = () => page.evaluate(s => PlayerLedger.shared()[s]().roster, p.section);
-    const onPage = () => page.evaluate(s => Interactions.ledger()[s]().roster, p.section);
+    const onPage = () => page.evaluate(s => PlayerLedger.current()[s]().roster, p.section);
     const notice = () => page.locator('[data-sheet="notice"]');
 
     // Your own save: no notice, and the link tools.
@@ -41,19 +41,19 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.match(await page.locator('[data-sheet="source"]').textContent(), /A shared sheet\./, p.page);
     assert.deepEqual((await onPage())[p.id], p.record, p.page + ': the page works on the link');
     assert.deepEqual(await own(), {}, p.page + ': the save is untouched');
-    if (p.item) assert.equal(await page.evaluate(id => PlayerLedger.confirmed(Interactions.ledger().snapshot(), id), p.item[0]), p.item[1]);
+    if (p.item) assert.equal(await page.evaluate(id => PlayerLedger.confirmed(PlayerLedger.current().snapshot(), id), p.item[0]), p.item[1]);
 
     // Copying it gives a link that opens the same sheet.
     await page.locator('[data-sheet="copy"]').click();
     await page.locator('[data-sheet="copy"][data-copied]').waitFor();
     const copied = await page.evaluate(() => navigator.clipboard.readText());
-    await page.goto(copied); await page.waitForFunction(() => window.Interactions && document.querySelector('[data-sheet="source"]').textContent !== '');
+    await page.goto(copied); await page.waitForFunction(() => window.Alpine && document.querySelector('[data-sheet="source"]').textContent !== '');
     assert.deepEqual((await onPage())[p.id], p.record, p.page + ': the copied link round-trips');
 
     // Save as mine writes it to the save and returns to it.
     await page.locator('[data-sheet="saveMine"]').click();
     await Promise.all([page.waitForNavigation(), page.locator('[data-sheet="confirm"]').click()]);
-    await page.waitForFunction(() => window.Interactions && document.querySelector('[data-sheet="source"]').textContent !== '');
+    await page.waitForFunction(() => window.Alpine && document.querySelector('[data-sheet="source"]').textContent !== '');
     assert.deepEqual((await own())[p.id], p.record, p.page + ': Save as mine writes the sheet');
     assert.doesNotMatch(page.url(), /[?&](h|m|pets)=/);
     assert.equal(await notice().isHidden(), true);

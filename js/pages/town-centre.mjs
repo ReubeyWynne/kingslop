@@ -152,7 +152,7 @@ function troops(say, snapshot, found, event) {
 }
 
 const HERO = Object.freeze({ shown: { quality: '', level: '', mastery: '', masteryHidden: true, band: '' }, art: '../img/hero-gear/infantry-helm.webp', quality: null, level: '', mastery: '', max: 200, masteryRow: false });
-const store = () => globalThis.Interactions.ledger();
+const store = () => globalThis.PlayerLedger.current();
 // Unknown counts show a dim ?, none a solid 0.
 const tally = n => n === null || n === undefined ? 'unknown' : n === 0 ? 'zero' : null;
 

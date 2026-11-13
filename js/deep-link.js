@@ -144,7 +144,11 @@
   // common.js boots by; readyState alone is 'interactive' while deferred
   // scripts still run.
   function begin() {
-    if (window.BH && window.BH.whenLoaded) window.BH.whenLoaded(start);
+    if (window.BH && window.BH.whenLoaded) window.BH.whenLoaded(function () {
+      // Buttons that Alpine wires (the import dock's chip) take presses once it has started.
+      if (window.SiteAlpine && !window.Alpine) document.addEventListener('alpine:initialized', start, { once: true });
+      else start();
+    });
     else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
   }

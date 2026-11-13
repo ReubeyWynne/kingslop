@@ -164,7 +164,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await drop.getAttribute('data-dragging'), null);
     await page.waitForFunction(() => document.querySelectorAll('#screen-import .import-tile').length === 24, null, { timeout: 60000 });
     const tile = key => page.locator('#screen-import .import-tile[data-key="' + key + '"]');
-    assert.equal(await page.locator('#screen-import [data-target="screen-import.screen"]').textContent(), 'Governor Profile');
+    assert.equal(await page.locator('#screen-import [data-import="screen"]').textContent(), 'Governor Profile');
     assert.equal(await page.locator('#screen-import .import-grid').getAttribute('data-layout'), 'pieces');
     assert.deepEqual(await page.locator('#screen-import .import-tile').evaluateAll(nodes => nodes.slice(0, 8).map(n => n.dataset.key)), ['gov-cav-1', 'gov-cav-1-1', 'gov-cav-1-2', 'gov-cav-1-3', 'gov-cav-2', 'gov-cav-2-1', 'gov-cav-2-2', 'gov-cav-2-3'], 'laid out as the profile is, row by row');
     assert.equal(await tile('gov-cav-1').locator('[data-field="note"]').textContent(), 'Purple 0★');
@@ -173,10 +173,10 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('#screen-import .import-tile[data-state="doubt"]').count(), 0, 'a clean screenshot needs no second look');
     assert.equal(await page.locator('#screen-import .import-tile img:not([hidden])').count(), 24, 'every value shows its cut-out');
     await page.locator('#screen-import').screenshot({ path: path.join(output, 'read-390.png') });
-    await page.click('#screen-import [data-action="screen-import.apply"]');
+    await page.click('#screen-import [data-import="apply"]');
     // Say what the dock and the sheet show if the reading never lands.
     await page.waitForFunction(() => document.querySelector('.gov-piece[data-gov="cav-1"] [data-part="level"]').textContent === 'Purple 0★').catch(async error => {
-      const seen = await page.evaluate(() => ({ status: document.querySelector('#screen-import [data-target="screen-import.status"]').textContent, cav1: document.querySelector('.gov-piece[data-gov="cav-1"] [data-part="level"]').textContent, url: location.search }));
+      const seen = await page.evaluate(() => ({ status: document.querySelector('#screen-import [data-import="status"]').textContent, cav1: document.querySelector('.gov-piece[data-gov="cav-1"] [data-part="level"]').textContent, url: location.search }));
       throw new Error('the reading never reached the sheet: ' + JSON.stringify(seen) + ' errors ' + JSON.stringify(errors) + '\n' + error.message);
     });
     assert.equal(await page.locator('[data-charm="cav-1-1"] b').textContent(), '3');
@@ -184,7 +184,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     assert.equal(await page.locator('.gov-piece[data-gov="arc-1"] [data-part="level"]').textContent(), 'Purple 1★');
     assert.notEqual(await page.evaluate(() => PlayerLedger.shared().governor('gear')['cav-1']), null, 'on your own governor the reading is saved');
     // Undo puts it back.
-    await page.click('#screen-import [data-action="screen-import.undo"]');
+    await page.click('#screen-import [data-import="undo"]');
     await page.waitForFunction(() => document.querySelector('.gov-piece[data-gov="cav-1"]').dataset.state === 'unset');
     assert.equal(await page.evaluate(() => PlayerLedger.shared().governor('gear')['cav-1']), null);
     assert.deepEqual(errors, []);

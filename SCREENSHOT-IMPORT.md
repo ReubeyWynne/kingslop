@@ -109,17 +109,16 @@ worker call to keep reads few.
 ### 4. Review grid — `screen-import` module
 
 Markup lives in `_includes/screen-import.html`, included once by
-`_layouts/page.html`. It is a module (`data-module="screen-import"`) with:
+`_layouts/page.html`. It is an Alpine component (`x-data="screenImport"`, `js/pages/screen-import.mjs`) with:
 
-- `[data-target="screen-import.chip"]`: the minimised state, a count of files
+- `[data-import="chip"]`: the minimised state, a count of files
   waiting and values to check.
-- `[data-target="screen-import.sheet"]`: one screenshot's proposals at a time,
-  laid out in the screen's own grid.
-- `<template data-target="screen-import.tile">` containing
-  `img[data-field="crop"]`, `input[data-field="value"]`,
+- `[data-import="sheet"]`: one screenshot's proposals at a time,
+  laid out in the screen's own grid (`[data-import="tiles"]`), one row per
+  cut-out and value: `img[data-field="crop"]`, `input[data-field="value"]`,
   `input[type=checkbox][data-field="include"]`, `[data-field="label"]`.
-- Actions: `screen-import.pick`, `.paste`, `.next`, `.prev`, `.needsLook`,
-  `.apply`, `.undo`, `.minimise`, `.discard`.
+- Buttons: `[data-import="pick"]`, `next`, `prev`, `needsLook`, `apply`,
+  `undo`, `discard`; paste and drop are document listeners.
 
 Pick, paste (clipboard image) and drop all add to the queue. Low-confidence
 and unread tiles carry `data-state="doubt"`; the "Needs a look" filter hides
@@ -207,7 +206,7 @@ Each step lands as its own commit with its checks passing.
   fixture: build the site, then `node .dsh/import-record.cjs <fixture-name>`.
   The real-worker browser check comes with the dock (step 6).
 - [x] 6. Dock UI: `_includes/screen-import.html` (in the layout),
-  `css/screen-import.css`, the `screen-import` module in `js/screen-import.js`
+  `css/screen-import.css`, the `screen-import` module in `js/pages/screen-import.mjs`
   (loads the OCR side on first use), English keys `import.*` in `i18n/en.js`
   (other languages fall back). Pages open it with `data-screen-import="pick"`
   (Town Centre's "read screenshots"); a pasted image anywhere also opens it.

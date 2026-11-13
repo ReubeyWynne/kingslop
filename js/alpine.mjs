@@ -42,7 +42,7 @@ Alpine.store('ledger', {
    shared link or ?guest (page-sheet.js chooses before the page starts). */
 function connect() {
   let ledger = null;
-  try { ledger = globalThis.Interactions ? Interactions.ledger() : PlayerLedger.shared(); snapshot = ledger.snapshot(); guest = ledger !== PlayerLedger.shared(); }
+  try { ledger = PlayerLedger.current(); snapshot = ledger.snapshot(); guest = ledger !== PlayerLedger.shared(); }
   catch (cause) { ledger = null; snapshot = null; }
   store = ledger && snapshot ? ledger : null;
   if (store) store.subscribe(next => { snapshot = next; Alpine.store('ledger').v++; });

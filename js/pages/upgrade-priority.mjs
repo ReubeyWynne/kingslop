@@ -58,7 +58,7 @@ Alpine.data('upgradePriority', () => ({
   },
   setRole(role) {
     const t = key => globalThis.BH.tr('priority.' + key, key);
-    try { globalThis.Interactions.ledger().setPriorityRole(role); this.seal = t('saved'); this.sealState = 'saved'; }
+    try { globalThis.PlayerLedger.current().setPriorityRole(role); this.seal = t('saved'); this.sealState = 'saved'; }
     catch (cause) { this.seal = t('saveFailed'); this.sealState = 'failed'; }
   }
 }));

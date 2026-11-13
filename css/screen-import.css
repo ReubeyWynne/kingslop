@@ -1,4 +1,4 @@
-/* The screenshot import dock (_includes/screen-import.html, js/screen-import.js).
+/* The screenshot import dock (_includes/screen-import.html, js/pages/screen-import.mjs).
    A float, so it pairs a hairline with a soft lift (DESIGN.md "Thin-Line + Lift").
    It wears the page's own signal hue: every page's --amber pair. */
 .import-dock {

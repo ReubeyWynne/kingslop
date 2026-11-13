@@ -66,7 +66,7 @@
   // value, the values here. One helper rather than a `.replace(/\{…\}/g, …)`
   // chain at each call site — several had dropped the /g or disagreed on
   // whether `{n}` should be locale-formatted, and the same helper is what
-  // js/bind.js uses to paint a declared group.
+  // a declared group was painted with.
   function fill(str, vars) {
     if (!vars || str.indexOf('{') === -1) return str;
     var out = str;
@@ -81,16 +81,6 @@
   function tpl(key, fallback, vars) {
     return fill(tr(key, fallback), vars);
   }
-
-  // ── Page registration ──────────────────────────────────
-  // Page files call BH.registerPage({ boot, onChange }) before boot runs
-  // (boot waits for the active dictionary, which loads asynchronously, or
-  // for DOMContentLoaded when i18n is missing entirely). Page files supply
-  // only what's theirs: their page toys.
-  var pageCfg = {
-    boot: function () {},
-    onChange: function () {}
-  };
 
   // A single parchment slip, reused — functional feedback only (e.g. the
   // copy confirmation on the Event Cycle page). Fixed bottom-centre so the
@@ -125,16 +115,6 @@
     navigation.wire();
     chrome.wireTopbar();
 
-    // Language change: let the page repaint (BH.fmt reformats itself)
-    document.addEventListener('i18n:change', function () {
-      pageCfg.onChange();
-      if (window.Interactions) window.Interactions.refresh();
-    });
-
-    // Page toys (calculators)
-    if (window.Interactions) window.Interactions.start(BH);
-    pageCfg.boot(BH);
-
     // The page in front of the reader is whole now — only then spend bytes on
     // the pages the swipe can reach (page-deck.js).
     navigation.scheduleWarm();
@@ -151,13 +131,7 @@
     trCount: trCount,
     tpl: tpl,
     fill: fill,
-    showNote: showNote,
-    modules: window.Interactions,
-    registerPage: function (cfg) {
-      if (!cfg) return;
-      if (cfg.boot) pageCfg.boot = cfg.boot;
-      if (cfg.onChange) pageCfg.onChange = cfg.onChange;
-    }
+    showNote: showNote
   };
   window.BH = BH;
 

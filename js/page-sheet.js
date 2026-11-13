@@ -60,7 +60,7 @@
       // Repaint after the page changed something its link depends on outside the store.
       sync: function () { repaint.forEach(function (fn) { fn(); }); }
     };
-    if (sheet.guest) root.Interactions.configure({ ledger: guestStore });
+    if (sheet.guest) root.PlayerLedger.use(guestStore);
     api.current = sheet;
     return sheet;
   }

@@ -727,6 +727,11 @@ if (typeof window === 'object') {
     if (!instance) instance = api.create(globalThis.localStorage, globalThis);
     return instance;
   };
+  // The ledger the page reads and writes: your save, or a guest sheet's copy once the page has
+  // chosen one with use(store) (a store, or a function that makes it).
+  let chosen;
+  api.use = function (store) { chosen = store; };
+  api.current = function () { return chosen === undefined ? api.shared() : typeof chosen === 'function' ? chosen() : chosen; };
 }
 export { KEY, LEGACY as LEGACY_KEY, confirmed, exportedITEMS as ITEMS, exportedGOVERNOR as GOVERNOR,
   exportedTROOP_TYPES as TROOP_TYPES, exportedTRAINING as TRAINING,

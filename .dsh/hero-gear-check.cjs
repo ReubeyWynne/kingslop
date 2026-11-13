@@ -22,6 +22,8 @@ function checkGuestLedger() {
     let reads = 0;
     const nodes = new Map();
     const shared = () => { reads++; return persistent; };
+    let chosen;
+    const use = store => { chosen = store; }, current = () => chosen === undefined ? shared() : typeof chosen === 'function' ? chosen() : chosen;
     const scope = {
       URL, URLSearchParams, location: { search },
       document: {
@@ -31,15 +33,14 @@ function checkGuestLedger() {
           return nodes.get(id);
         }
       },
-      window: { HeroGear: E, HeroGearView: View, PlayerLedger: { ...Ledger, shared }, BH: { registerPage() {} } }
+      window: { HeroGear: E, HeroGearView: View, PlayerLedger: { ...Ledger, shared, use, current }, }
     };
-    vm.runInNewContext(fs.readFileSync('js/interactions.js', 'utf8'), scope);
     vm.runInNewContext(fs.readFileSync('js/page-sheet.js', 'utf8'), scope);
     vm.runInNewContext(fs.readFileSync('js/hero-gear-sheet.js', 'utf8'), scope);
     assert.equal(reads, 0, 'guest configuration does not read storage before module mount');
-    const selected = scope.window.Interactions.ledger();
+    const selected = scope.window.PlayerLedger.current();
     assert.notEqual(selected, persistent);
-    assert.equal(scope.window.Interactions.ledger(), selected);
+    assert.equal(scope.window.PlayerLedger.current(), selected);
     assert.equal(scope.window.PlayerLedger.shared, shared);
     if (search === '?guest') assert.equal(selected.balance('forgehammer').amount, 50, 'plain guest mode starts with saved facts');
     selected.setBalance('forgehammer', 90);

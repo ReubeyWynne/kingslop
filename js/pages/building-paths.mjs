@@ -27,7 +27,7 @@ const ICONS = { bread: 'img/items/bread.webp', wood: 'img/items/wood.webp', ston
 
 function stored(key) { try { return JSON.parse(localStorage.getItem(key)); } catch (ignored) { return null; } }
 function keep(key, value) { if (!guest) try { localStorage.setItem(key, JSON.stringify(value)); } catch (ignored) {} }
-const store = () => globalThis.Interactions.ledger();
+const store = () => globalThis.PlayerLedger.current();
 const tier = id => { const m = /^TG ?(\d+)/.exec(id); return m ? Number(m[1]) : 0; };
 
 /* The page's words, in the reader's language. */

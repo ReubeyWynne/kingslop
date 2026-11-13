@@ -6,9 +6,8 @@
     "js/pages/kingdom.mjs",
     "js/pages/widgets.mjs",
     "js/unit-input.js",
-    "js/interactions.js",
     "js/import-queue.js",
-    "js/screen-import.js",
+    "js/pages/screen-import.mjs",
     "js/server-age.js",
     "js/pages/site-guide.mjs"
   ],

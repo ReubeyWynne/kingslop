@@ -52,7 +52,7 @@ Alpine.data('heroGear', () => ({
     this.seal = this.guest ? 'unsaved' : 'saved';
     let state = E.defaults(), input = null;
     try {
-      ledger = globalThis.Interactions.ledger();
+      ledger = globalThis.PlayerLedger.current();
       const saved = ledger.migrate(E);
       input = ledger.heroGear(E);
       ledgerRevision = saved.revision;

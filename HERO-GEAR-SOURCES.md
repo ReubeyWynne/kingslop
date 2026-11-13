@@ -250,7 +250,7 @@ Without a link the planner works on the saved player ledger and every edit saves
 as it goes. A link (`?gear=…`), `?guest` or Start blank opens a sheet of its own:
 a ledger held in memory, seeded from the link or from a copy of the save.
 `hero-gear-sheet.js` swaps it in for `PlayerLedger.shared()` before the shared modules
-mount (the page itself, `js/pages/hero-gear.mjs`, reads it through `Interactions.ledger()`), so the bag fields, backups, screenshot import, reset and undo all act on
+mount (the page itself, `js/pages/hero-gear.mjs`, reads it through `PlayerLedger.current()`), so the bag fields, backups, screenshot import, reset and undo all act on
 the sheet, and nothing typed there reaches `localStorage` until Save as mine.
 
 On your save there is no bar: edits save as you go. On a sheet one slim notice
