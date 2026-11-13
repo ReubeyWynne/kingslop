@@ -12,12 +12,12 @@
     },
     {
       "date": "2026-11-13", "player": "Deyci", "source": "game", "trap": "Hunting Trap 2, enhancement level 5",
-      "attack": [704.9, 732.0, 785.4], "lethality": [465.5, 488.1, 780.6],
+      "attack": [705.8, 732.9, 786.4], "lethality": [465.5, 488.0, 780.6],
       "tier": [10, 10, 10], "tg": [4, 4, 4],
       "heroes": [{ "key": "amadeus", "skills": [4, 4, 4] }, { "key": "petra", "skills": [5, 5, 5] }, { "key": "marlin", "skills": [5, 5, 5] }],
       "joiners": null, "march": [4200, 28500, 57300], "valora": 24,
-      "hits": [74671175, 64612482], "fit": false,
-      "comment": "Not in the fit until its joiners are known: it asks for a defence of 53.6 against 62.6 from the 4 November hits, about 14% apart, and Petra's value cannot explain that (both rallies had her). Stats are the lead finder's page path from the Bonus Overview, hero gear, widgets (Amadeus 6, Petra 8, Marlin 10), stars and the TG4 town; Valora unchanged at 24% (owner). Of the five own-rally hits that event, 86.2M is left out (unusually strong joiners, the owner expects) and so are 57.5M and 50.7M (possibly fewer than four joiner heroes). Joiners were not captured."
+      "hits": [86197965, 74671175, 64612482, 57536364, 50736698],
+      "comment": "All five own-rally hits that event. Attack and lethality are the rally report's Bonus Details, which matched the lead finder's page path from the Bonus Overview, gear, widgets (Amadeus 6, Petra 8, Marlin 10), stars and the TG4 town to within 1 point; Valora unchanged at 24% (owner). Joiners were not captured, so the hits are checked against the no-joiners to best-joiners range."
     },
     {
       "date": "2026-11-05", "player": "Deyci", "source": "frakinator",

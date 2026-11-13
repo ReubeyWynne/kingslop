@@ -136,7 +136,11 @@ Two skill rules changed with it, from Strat Game Sloth's unit tests with Frak an
   battle rule, so PvP may need the same once tested.
 
 The Bear's defence (`BEAR.def`) is fitted to logged hits, so it was refitted after the change
-(74.8 → 62.1): the owner's hits still come out at 47.3M simulated against 46.9M seen.
+(74.8 → 62.1), and again to 59.3 when the 13 November hits went in. The two game events disagree by
+about 10% (4 Nov asks for 62.6, 13 Nov for 56.0, joiners unknown for both), so 59.3 is their
+weighted middle: 4 Nov comes out 5% high and 13 Nov 6% low. The real spread of hits is wider than
+the model's (CV 15–21% against 12%), which fits rallies whose joiners vary; 13 Nov's 86.2M sits at
+the model's 99.5th percentile even with the best four joiners.
 
 ## 6. Theory-crafting: the general battle model
 

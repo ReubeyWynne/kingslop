@@ -414,7 +414,7 @@ function run(sideA, sideB, battles, seed) {
 // Frakinator's battle-engine Bear), a level-5 trap. .dsh/bear-reports-check.cjs
 // refits it from every entry and fails when this drifts. Skills flagged
 // bear: false (Zoe's Sundering Wound) do nothing here.
-var BEAR = { troops: 5000, rounds: 10, def: 62.1 };
+var BEAR = { troops: 5000, rounds: 10, def: 59.3 };
 
 function bearSide(side) {
   var s = {};

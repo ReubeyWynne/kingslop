@@ -287,8 +287,9 @@ assert.equal(L.opponent(megafauna.foes[3], 4, 'garrison', data).lineup[2].key, '
   const hits = [40185881, 50653325, 41701585, 57194303, 44869569], mean = hits.reduce((a, b) => a + b) / hits.length;
   const sent = L.hunt(owner, lineup, [9000, 28500, 52500], data, { hunts: 10000, pointsPct: 24 });
   assert.ok(Math.abs(sent.mean / mean - 1) < 0.08, `the owner's rallies: ${(sent.mean / 1e6).toFixed(1)}M against ${(mean / 1e6).toFixed(1)}M`);
-  const lo = E.quantile(sent.totals, 0.05), hi = E.quantile(sent.totals, 0.95);
-  assert.ok(hits.every(h => h >= lo && h <= hi), 'every hit inside the 90% band');
+  // Joiners unknown, so the hits are checked against the page's range: no joiner heroes to the best four.
+  const range = L.huntRange(owner, lineup, [9000, 28500, 52500], data, { gen: 3, hunts: 10000, pointsPct: 24 });
+  assert.ok(hits.every(h => h >= range.lo && h <= range.hi), `every hit inside the range ${(range.lo / 1e6).toFixed(1)}–${(range.hi / 1e6).toFixed(1)}M`);
   const ideal = L.hunt(owner, lineup, r.mix.map(f => Math.round(90000 * f)), data, { hunts: 10000, pointsPct: 24 });
   assert.ok(ideal.mean > sent.mean, 'the ideal mix beats the one sent');
 }
