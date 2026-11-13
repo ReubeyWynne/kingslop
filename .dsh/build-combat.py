@@ -187,6 +187,13 @@ check(set(hero_skills) | {'diana'} >= {key_of[n] for n in ref['HERO_CLASS']}, 'h
 # Skills that do nothing against the Bear (player-confirmed in game).
 DEAD_ON_BEAR = {('zoe', 'sk1')}  # Sundering Wound
 
+# Skills that roll on each troop type's attack and, on any success, hold their effect for
+# every attack that turn: 50% three times is 87.5% a turn. Strat Game Sloth's unit tests
+# with Frak and Zebrave ("The Hidden Mechanic Nobody Noticed About Zoe", 2026-11-12). The
+# helper has Evil Eye as a per-attack debuff on the target hit and Infinite Arsenal as one
+# roll a round.
+ANY_ATTACK = {('petra', 'sk1'), ('zoe', 'sk3')}
+
 # Every value that scales with skill level must be the in-game top level heroes.json
 # carries for that slot. The skill keeps the site's name; the helper's has typos.
 for key, rows in hero_skills.items():
@@ -201,6 +208,9 @@ for key, rows in hero_skills.items():
         row['name'] = skill['name']
         if (key, row['slot']) in DEAD_ON_BEAR:
             row['bear'] = False
+        if (key, row['slot']) in ANY_ATTACK:
+            row['trigger'] = {'kind': 'anyAttack', 'chance': row['trigger']['chance']}
+            row.pop('special', None)
         # A 102 effect is damage dealt (104) unless the skill's in-game scale says
         # Attack Up; Jabel's Youthful Rage reads Lethality Up and stays as the helper has it.
         labels = [s['label'] for s in skill['scales']]

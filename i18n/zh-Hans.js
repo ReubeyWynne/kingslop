@@ -1,6 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["zh-Hans"] = {
   "seasonal.nav": "季节活动",
+  "leads.damageRange": "不同集结之间：没有加入英雄时为{lo}，最佳四位时为{hi}（{names}）。",
   "seasonal.lede": "根据当前进度规划季节活动。",
   "castle.nav": "城堡",
   "castle.deck.lede": "城堡控制、战斗机制、集结参与者技能与兵种选择。",

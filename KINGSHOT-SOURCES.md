@@ -148,7 +148,21 @@ Verbatim rule the game uses (also blog "how-special-bonuses-work"):
   (passives, every-N-turn buffs) of one code still add, and the two totals add before
   codes multiply. This is why Yeonwoo, Amane and Chenko are the usual Bear joiners:
   their skills are fixed, so duplicates are safe. The battle engine drops the dead
-  duplicates at compile; the lead finder's Bear score takes the strongest chance per code.
+  duplicates at compile, and the lead finder's Bear score is the battle engine's own exact
+  expectation (`bearExpect`), so both follow the same rule.
+- **Evil Eye and Infinite Arsenal roll on every attack and hold for the turn** (Strat Game
+  Sloth with Frak and Zebrave, unit-tested, 2026-11-12): 50% on each troop type's attack, and
+  one success gives +50% enemy damage taken (211) to all troops that turn, 87.5% a turn with
+  three types. The helper has Evil Eye as a debuff on the target hit and Infinite Arsenal as one
+  roll a round; build-combat.py overrides both to `anyAttack`. They share 211, so a Petra joiner
+  in a Zoe rally (or the reverse) adds nothing.
+- **211 does nothing on a battle's first turn** (same source). The engine applies this to the
+  Bear only (`lateEnemyHurt`); untested in PvP.
+- **Open, needs an in-game test:** Sloth's team finds one Marlin joiner adds damage beside
+  Amadeus or Jabel ("a working assumption"). Here Marlin's Wild Card, Amadeus's Unrighteous
+  Strike and Jabel's Hero's Domain are all chance skills on 104, so a Marlin joiner is a dead
+  duplicate. Test: Amadeus/Jabel/Marlin with Amane, Amane, Chenko and either Marlin or a third
+  Amane as the fourth joiner, many hits each. Vivian's 211 is also unverified (by symmetry).
 - **Attack up and damage dealt up are separate codes** (player-confirmed, 2026-11): the
   helper files both under 102, but Petra's The Favor ("Squads' Attack") is distinct from
   Marlin's Wild Card and Amadeus's Unrighteous Strike ("damage dealt"). We keep 102 for

@@ -107,6 +107,41 @@ D* = L · √( (A_inf/3)² + A_cav² + (4.4·A_arc/3)² )
 This is the "leader strength" `K = √((A_inf/3)² + A_cav² + (4.4·A_arc/3)²)` used to rank rally
 leads, times the constant `L`.
 
+### 5.1 One Bear model on the site (2026-11-13)
+
+The site used to score the Bear twice: the lead finder ranked lineups with §4–5 and every chance
+skill at a flat expected value, while the damage card ran the battle engine's ten-round Bear. The
+two treated chance skills differently (Petra's Evil Eye was +25% in one and about +68% in the
+other), so a lineup could rank one way and simulate another. Now there is one model,
+`js/battle-engine.mjs`:
+
+- `bearHunt` samples the ten rounds for the damage card's spread.
+- `bearExpect` works out the same hunt's expectation exactly: each round's SkillMod averaged
+  over every on/off combination of the random skills, with Truegold rolls, volley, terror,
+  pity skills and fatigue as `bearHunt` has them. Its mean matches the simulation's to about
+  0.1% (the rest is the kill law's rounding up).
+- The lead finder's score and ideal mix come from `bearExpect`'s per-type `roots`
+  (expected damage per √troops): §4–5 still hold with `A_t × SkillMod_t` replaced by `roots_t`,
+  so `f_t ∝ roots_t²` and `D* ∝ √Σ roots_t²`.
+
+Two skill rules changed with it, from Strat Game Sloth's unit tests with Frak and Zebrave
+("The Hidden Mechanic Nobody Noticed About Zoe", 2026-11-12):
+
+- **Evil Eye (Petra sk1) and Infinite Arsenal (Zoe sk3)** roll 50% on each troop type's attack;
+  one success gives +50% enemy damage taken to every attack that turn. With three types
+  attacking that is 87.5% a turn; with archers alone, 50%. The two share code 211, so together
+  they are one effect (the dead-duplicate rule).
+- **Enemy damage taken up (211) does nothing on the Bear's first turn.** Over ten rounds Evil
+  Eye is worth 0.875 × 50% × 0.9 ≈ +39%. Applied to the Bear only for now; Sloth describes it as a
+  battle rule, so PvP may need the same once tested.
+
+The Bear's defence (`BEAR.def`) is fitted to logged hits, so it was refitted after the change
+(74.8 → 62.1), and again to 59.3 when the 13 November hits went in. The two game events disagree by
+about 10% (4 Nov asks for 62.6, 13 Nov for 56.0, joiners unknown for both), so 59.3 is their
+weighted middle: 4 Nov comes out 5% high and 13 Nov 6% low. The real spread of hits is wider than
+the model's (CV 15–21% against 12%), which fits rallies whose joiners vary; 13 Nov's 86.2M sits at
+the model's 99.5th percentile even with the best four joiners.
+
 ## 6. Theory-crafting: the general battle model
 
 From the Frakinator's "Theory-crafting" tab. Frak's own disclaimer: *"I do not claim that any of

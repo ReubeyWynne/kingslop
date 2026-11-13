@@ -6,18 +6,29 @@
 const assert = require('node:assert/strict');
 const E = require('../js/battle-engine.mjs'), C = require('../js/combat.mjs');
 const combat = require('../_data/combat.json'), log = require('../_data/bear-reports.json');
-const data = { heroSkills: combat.heroSkills, widgets: combat.widgets, widgetSkill: combat.widgetSkill };
+const L = require('../js/lead-engine.mjs'), catalogue = require('../_data/heroes.json');
+const data = { heroSkills: combat.heroSkills, widgets: combat.widgets, widgetSkill: combat.widgetSkill,
+  heroes: Object.fromEntries(catalogue.heroes.map(h => [h.key, { name: h.name, generation: h.generation }])) };
 const rows = log.reports.map(r => {
   const joiners = (r.joiners || log.defaultJoiners).map(key => ({ key, level: 5 }));
   const skills = C.side(data, { role: 'rally', heroes: r.heroes.map(h => ({ key: h.key, levels: h.skills, widget: 0 })), joiners });
   const sim = E.bearHunt({ n: r.march, tier: r.tier, tg: r.tg, atk: r.attack, let: r.lethality, skills }, 10000, 7, r.valora);
   const seen = r.hits ? r.hits.reduce((a, b) => a + b) / r.hits.length : r.mean;
-  const lo = E.quantile(sim.totals, 0.05), hi = E.quantile(sim.totals, 0.95);
+  let lo = E.quantile(sim.totals, 0.05), hi = E.quantile(sim.totals, 0.95);
+  // Joiners not recorded: a hit can come from a rally with no joiner heroes up to one with the
+  // best four, so it is checked against that whole range rather than the assumed four's.
+  if (!r.joiners) {
+    const heroes = r.heroes.map(h => ({ key: h.key, levels: h.skills, widget: 0 })), side = { n: r.march, tier: r.tier, tg: r.tg, atk: r.attack, let: r.lethality };
+    const none = E.bearHunt({ ...side, skills: C.side(data, { role: 'rally', heroes, joiners: [] }) }, 10000, 7, r.valora);
+    const top = L.bestJoinersFor({ ...side, skills: [] }, heroes, data);
+    const best = E.bearHunt({ ...side, skills: C.side(data, { role: 'rally', heroes, joiners: top }) }, 10000, 7, r.valora);
+    lo = E.quantile(none.totals, 0.05); hi = E.quantile(best.totals, 0.95);
+  }
   if (r.hits) r.hits.forEach(h => assert.ok(h >= lo * 0.9 && h <= hi * 1.1, `${r.date} ${r.player}: a hit of ${(h / 1e6).toFixed(1)}M is far outside ${(lo / 1e6).toFixed(1)}–${(hi / 1e6).toFixed(1)}M — check the entry`));
   return { r, sim: sim.mean, seen, def: E.BEAR.def * sim.mean / seen, weight: r.hits ? r.hits.length : 1 };
 });
-rows.forEach(x => console.log(`  ${x.r.date} ${x.r.player} (${x.r.source}${x.r.joiners ? '' : ', joiners assumed'}): seen ${(x.seen / 1e6).toFixed(1)}M, simulated ${(x.sim / 1e6).toFixed(1)}M → defence ${x.def.toFixed(1)}`));
-const game = rows.filter(x => x.r.source === 'game'), use = game.length >= 3 ? game : rows;
+rows.forEach(x => console.log(`  ${x.r.date} ${x.r.player} (${x.r.source}${x.r.joiners ? '' : ', joiners assumed'}${x.r.fit === false ? ', not fitted' : ''}): seen ${(x.seen / 1e6).toFixed(1)}M, simulated ${(x.sim / 1e6).toFixed(1)}M → defence ${x.def.toFixed(1)}`));
+const fitted = rows.filter(x => x.r.fit !== false), game = fitted.filter(x => x.r.source === 'game'), use = game.length >= 3 ? game : fitted;
 const fit = use.reduce((s, x) => s + x.def * x.weight, 0) / use.reduce((s, x) => s + x.weight, 0);
 console.log(`Bear reports: ${rows.length} entries, ${game.length} from the game. Fitted defence ${fit.toFixed(1)} (${game.length >= 3 ? 'game hits only' : 'all entries until three game setups'}); BEAR.def is ${E.BEAR.def}.`);
 assert.ok(Math.abs(E.BEAR.def / fit - 1) < 0.03, `BEAR.def ${E.BEAR.def} has drifted from the reports' ${fit.toFixed(1)}: update it`);

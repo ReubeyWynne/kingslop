@@ -29,10 +29,10 @@
 
    Three jobs are scored:
 
-   - bear: the expected Bear damage of the lead's ideal mix (MATHS.md §1–5):
-       D* = √Σ (base_att_t × vsInfantry_t × A_t × SkillMod_t)²
-     with every chance skill at its expected value. Only the ranking and
-     the ratios mean anything; the scale is arbitrary.
+   - bear: the expected Bear damage of the lead's ideal mix, worked out exactly by
+     js/battle-engine.mjs bearExpect, the same ten-round Bear the damage card
+     simulates (MATHS.md §1–5): D* ∝ √Σ roots_t², roots_t a type's expected
+     damage per √troops. Only the ranking and the ratios mean anything.
    - rally: your march, as a rally lead, against each stock garrison.
    - garrison: your march, as a garrison lead, against each stock rally.
      Both fights are js/battle-engine.mjs battles, scored by the edge
@@ -59,7 +59,6 @@ var TYPES = ['inf', 'cav', 'arc'];
 // Expedition skill levels a star unlocks (KingShot Battle Helper,
 // STAR_TO_MAX_SKILL_LVL): a hero's levels unless the roster says lower.
 var STAR_SKILLS = [[1, 0, 0], [2, 2, 0], [3, 3, 3], [4, 4, 4], [5, 5, 5], [5, 5, 5]];
-var BEAR_ROUNDS = 10;
 var PER_TYPE = 4;
 
 function num(x) { x = +x; return isFinite(x) ? x : 0; }
@@ -211,76 +210,98 @@ function layered(p, own, foe) {
 // with city and pets already turned into layers.
 function layersOf(you) { return { city: you.city || blank(), pet: you.pets || blank() }; }
 
-// How often a skill is up across the Bear's ten rounds.
-function uptime(skill) {
-  if (skill.kind === 'perRound' || skill.kind === 'perAttack') {
-    var c = clamp(num(skill.chance), 0, 1), turns = Math.max(1, skill.turns | 0);
-    return 1 - Math.pow(1 - c, turns);
-  }
-  if (skill.kind === 'everyN') {
-    var every = Math.max(1, skill.every | 0), offset = skill.offset | 0, turns2 = Math.max(1, skill.turns | 0), up = 0;
-    for (var r = 0; r < BEAR_ROUNDS; r++) if (r >= offset && (r - offset) % every < turns2) up++;
-    return up / BEAR_ROUNDS;
-  }
-  return 1;
-}
-
-// The expected SkillMod per troop type against the Bear. Only the
-// attacker's families count: damage up and enemy defence down. Within a code,
-// fixed effects (passive or scheduled) add; of the chance effects only one is
-// ever active and the duplicates are dead, so the code takes the strongest.
-// Skills flagged bear: false (Zoe's Sundering Wound) do nothing here.
-function bearMod(skills) {
-  var mod = [1, 1, 1];
-  TYPES.forEach(function (type, t) {
-    var fixed = {}, chances = {};
-    skills.forEach(function (s) {
-      if (s.bear === false) return;
-      var up = uptime(s), chance = s.kind === 'perRound' || s.kind === 'perAttack';
-      s.effects.forEach(function (e) {
-        var fam = (e.code >= 200 ? 2 : 0) + (e.code % 100 >= 10 ? 1 : 0);
-        if (fam !== 0 && fam !== 3) return;
-        if (e.troops && e.troops.indexOf(t) < 0) return;
-        if (e.vs && e.vs.indexOf(0) < 0) return;
-        if (chance) (chances[e.code] = chances[e.code] || []).push({ pct: e.pct, up: up });
-        else fixed[e.code] = (fixed[e.code] || 0) + e.pct * up;
-      });
-    });
-    var codes = {};
-    Object.keys(fixed).concat(Object.keys(chances)).forEach(function (c) { codes[c] = true; });
-    Object.keys(codes).forEach(function (code) {
-      var best = 0;
-      (chances[code] || []).forEach(function (c) { best = Math.max(best, c.pct * c.up); });
-      mod[t] *= 1 + ((fixed[code] || 0) + best) / 100;
-    });
-  });
-  return mod;
-}
-
-// Truegold troop skills on the Bear, at their expected value (js/battle-engine.mjs TRUEGOLD):
-// cavalry may deal double, archers half again more (three quarters at TG8). Infantry's
-// only takes damage, which the Bear never deals in this score.
-function truegoldBear(t, tg) {
-  var G = BattleEngine.TRUEGOLD, steps = t === 1 ? G.cav : t === 2 ? G.arc : null;
-  if (!steps || tg < steps[0][0]) return 1;
-  var step = tg >= steps[1][0] ? steps[1] : steps[0];
-  return 1 + step[1] * (step[2] + (t === 2 && tg >= 8 ? G.arcTg8 : 0));
-}
-
-// A lineup's Bear score (the expected-value formula, MATHS.md §1) and its ideal mix. Only
-// ever compared with other scores, to rank lineups fast: the damage itself is hunt() below.
-function bear(you, lineup, data) {
-  var E = BattleEngine, troops = you.troops;
+// The Bear side the battle engine scores: your report stats with the lineup seated, the
+// lineup's and joiners' skills, and your troops (counts, tier, Truegold).
+function bearSide(you, lineup, data, counts) {
   var p = layered(reportPanel(panel(you.overview, lineup, data, you.gear, you.town), lineup, 'rally', data), layersOf(you), null);
-  var mod = bearMod(skillsOf(lineup, 'rally', data, you.joiners));
-  var terms = TYPES.map(function (type, t) {
-    var tier = troops.tier[t], tg = troops.tg[t];
-    // Archers deal +10% to the all-infantry Bear, and again from T7 / TG3 (Volley).
-    var vs = t === 2 ? 1.1 * (E.hasSecondSkill(tier, tg) ? 1.1 : 1) : 1;
-    return E.baseAtk(t, tier, tg) * vs * (1 + (p.atk[t] + (t === 2 && tg >= 8 ? E.TRUEGOLD.flatTg8 : 0)) / 100) * (1 + p.let[t] / 100) * mod[t] * truegoldBear(t, tg);
-  });
+  return {
+    panel: p,
+    side: { n: counts.map(function (n) { return Math.max(0, Math.round(num(n))); }), tier: you.troops.tier, tg: you.troops.tg, atk: p.atk, let: p.let, skills: skillsOf(lineup, 'rally', data, you.joiners) }
+  };
+}
+
+// A lineup's Bear score and its ideal mix, from the battle engine's exact expected Bear
+// (js/battle-engine.mjs bearExpect, the same model hunt() below samples). roots[t] is a
+// type's expected damage per √troops, so the best split is f_t ∝ roots[t]² and the score,
+// √Σ roots², is the expected damage at that split per √(march × 5,000): only ever
+// compared with other scores. All three types are assumed sent, which the ideal mix does.
+function bear(you, lineup, data) {
+  var b = bearSide(you, lineup, data, [1, 1, 1]), terms = BattleEngine.bearExpect(b.side).roots;
   var sq = terms.reduce(function (s, x) { return s + x * x; }, 0);
-  return { score: Math.sqrt(sq) / 1000, mix: terms.map(function (x) { return x * x / sq; }), panel: p, terms: terms };
+  return { score: Math.sqrt(sq), mix: terms.map(function (x) { return sq ? x * x / sq : 1 / 3; }), panel: b.panel, terms: terms };
+}
+
+// Who joins a rally changes its damage more than any chance roll: with no joiner heroes a
+// rally does about half what the usual four give. The heroes that can add Bear damage as a
+// joiner, up to your generation: a first skill with damage up or enemy defence down. Heroes
+// whose first skills are the same (Chenko, Yeonwoo and Amadeus; Amane and Margot) count once,
+// under the usual joiner's name. Hilde is left out: many alliances ban her from Bear joins.
+var USUAL = ['chenko', 'amane'];
+function joinerPool(data, gen) {
+  var seen = {};
+  return Object.keys(data.heroSkills).filter(function (key) {
+    var hero = data.heroes[key], sk1 = (data.heroSkills[key] || []).filter(function (r) { return r.slot === 'sk1'; })[0];
+    if (key === 'hilde' || !hero || !sk1 || sk1.bear === false || (gen && hero.generation > gen)) return false;
+    return (sk1.effects || []).some(function (e) { var fam = (e.code >= 200 ? 2 : 0) + (e.code % 100 >= 10 ? 1 : 0); return fam === 0 || fam === 3; });
+  }).sort(function (a, b) {
+    var ua = USUAL.indexOf(a), ub = USUAL.indexOf(b);
+    return (ua < 0 ? 9 : ua) - (ub < 0 ? 9 : ub) || data.heroes[a].generation - data.heroes[b].generation || (a < b ? -1 : 1);
+  }).filter(function (key) {
+    var sk1 = data.heroSkills[key].filter(function (r) { return r.slot === 'sk1'; })[0];
+    var sig = JSON.stringify([sk1.trigger, sk1.effects]);
+    if (seen[sig]) return false;
+    seen[sig] = true;
+    return true;
+  });
+}
+
+// The four joiner heroes (level 5) that give this lineup the most Bear damage for this march,
+// from joinerPool, scored with the exact expected Bear. Searching every set of four is too
+// slow for a phone in later generations, so this fills the four slots one at a time with the
+// best addition, then swaps one slot at a time until no swap helps.
+function bestJoiners(you, lineup, counts, data, gen) {
+  var heroes = lineup.filter(Boolean).map(function (c) { return { key: c.key, levels: c.levels, widget: 0 }; });
+  return bestJoinersFor(bearSide(you, lineup, data, counts).side, heroes, data, gen);
+}
+// The same search for a battle-engine Bear side as a report gives it (stats already in),
+// with its lead heroes as js/combat.mjs takes them.
+function bestJoinersFor(base, heroes, data, gen) {
+  var pool = joinerPool(data, gen), memo = {};
+  function value(keys) {
+    var id = keys.slice().sort().join(',');
+    if (!(id in memo)) {
+      var joiners = keys.map(function (key) { return { key: key, level: 5 }; });
+      memo[id] = BattleEngine.bearExpect(Object.assign({}, base, { skills: CombatSkills.side(data, { role: 'rally', heroes: heroes, joiners: joiners }) })).mean;
+    }
+    return memo[id];
+  }
+  var pick = [];
+  for (var slot = 0; slot < 4 && pool.length; slot++) {
+    var top = null;
+    pool.forEach(function (key) { var v = value(pick.concat([key])); if (!top || v > top.v + 1e-9) top = { key: key, v: v }; });
+    pick.push(top.key);
+  }
+  for (var pass = 0, better = true; better && pass < 8; pass++) {
+    better = false;
+    for (var i = 0; i < pick.length; i++) {
+      var now = value(pick);
+      pool.forEach(function (key) {
+        var next = pick.slice(); next[i] = key;
+        if (value(next) > now + 1e-9) { pick = next; now = value(next); better = true; }
+      });
+    }
+  }
+  return pick.sort(function (a, b) { return pool.indexOf(a) - pool.indexOf(b); }).map(function (key) { return { key: key, level: 5 }; });
+}
+
+// The Bear damage a march can see across rallies: the 10th percentile with no joiner heroes
+// to the 90th with the best four. A rally's own spread (hunt()) sits inside it.
+function huntRange(you, lineup, counts, data, opts) {
+  opts = opts || {};
+  var none = hunt(Object.assign({}, you, { joiners: [] }), lineup, counts, data, opts);
+  var joiners = bestJoiners(you, lineup, counts, data, opts.gen);
+  var best = hunt(Object.assign({}, you, { joiners: joiners }), lineup, counts, data, opts);
+  return { lo: BattleEngine.quantile(none.totals, 0.1), hi: BattleEngine.quantile(best.totals, 0.9), none: none.mean, best: best.mean, joiners: joiners };
 }
 
 // Bear damage: the battle engine's ten-round Bear hunt (js/battle-engine.mjs BEAR), run many
@@ -288,9 +309,7 @@ function bear(you, lineup, data) {
 // talent, which adds to your own Damage Points only.
 function hunt(you, lineup, counts, data, opts) {
   opts = opts || {};
-  var p = layered(reportPanel(panel(you.overview, lineup, data, you.gear, you.town), lineup, 'rally', data), layersOf(you), null);
-  var side = { n: counts.map(function (n) { return Math.max(0, Math.round(num(n))); }), tier: you.troops.tier, tg: you.troops.tg, atk: p.atk, let: p.let, skills: skillsOf(lineup, 'rally', data, you.joiners) };
-  return BattleEngine.bearHunt(side, opts.hunts || 2000, opts.seed || 1, opts.pointsPct);
+  return BattleEngine.bearHunt(bearSide(you, lineup, data, counts).side, opts.hunts || 2000, opts.seed || 1, opts.pointsPct);
 }
 var VALORA_POINTS = [0, 2, 4, 6, 9, 12, 15, 18, 21, 24, 27, 30];
 // Valora's talent level from her save record: one level per class reached (affinity 1, 10,
@@ -462,15 +481,15 @@ function firstBreak(widgets) {
   return { any: any, bare: bare };
 }
 
-export { hunt, valoraPoints, VALORA_POINTS, stockAccount, score, seated, walker, breakpoint,
+export { hunt, huntRange, bestJoiners, bestJoinersFor, joinerPool, bearSide, valoraPoints, VALORA_POINTS, stockAccount, score, seated, walker, breakpoint,
   firstBreak, TYPES, STAR_SKILLS, copyOf, statLine, widgetStat, gearLayer, townLayer, TOWN_TG,
-  panel, reportPanel, uptime, bearMod, bear, opponent, loadout, fight, candidates, lineups, rank,
+  panel, reportPanel, bear, opponent, loadout, fight, candidates, lineups, rank,
   LAYER_KEYS, blank, petLevelPct, petLayer, cityLayer, layered, battleSide };
 
 // The same exports as one object: what the page's classic scripts read as window.LeadEngine
 // and what require() returns to the CommonJS checks, until neither needs it.
-const api = { hunt, valoraPoints, VALORA_POINTS, stockAccount, score, seated, walker, breakpoint,
+const api = { hunt, huntRange, bestJoiners, bestJoinersFor, joinerPool, bearSide, valoraPoints, VALORA_POINTS, stockAccount, score, seated, walker, breakpoint,
   firstBreak, TYPES, STAR_SKILLS, copyOf, statLine, widgetStat, gearLayer, townLayer, TOWN_TG,
-  panel, reportPanel, uptime, bearMod, bear, opponent, loadout, fight, candidates, lineups, rank,
+  panel, reportPanel, bear, opponent, loadout, fight, candidates, lineups, rank,
   LAYER_KEYS, blank, petLevelPct, petLayer, cityLayer, layered, battleSide };
 export { api as default, api as 'module.exports' };

@@ -57,7 +57,8 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   const damageAt = () => page.locator('.lead-damage-value').textContent();
   assert.equal(await page.locator('.lead-hist-bar').count(), 24, 'a 24-bin histogram');
   assert.ok(await page.locator('.lead-hist-bar[data-band]').count() >= 8, 'the 80% band lit');
-  assert.match(await page.locator('.lead-damage-band').textContent(), /^80% of hits land between \S+ and \S+$/);
+  assert.match(await page.locator('.lead-damage-band').first().textContent(), /^80% of hits land between \S+ and \S+$/);
+  assert.match(await page.locator('.lead-damage-range').textContent(), /^Across rallies: \S+ with no joiner heroes to \S+ with the best four \(.+\)\.$/, 'the range across joiners');
   const estimated = await damageAt();
   await page.locator('#bonus-overview summary').click();
   await page.locator('.lead-rally-cap input').fill('1800000');

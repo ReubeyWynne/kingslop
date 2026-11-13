@@ -1,6 +1,7 @@
 window.__BH_I18N_DATA = window.__BH_I18N_DATA || {};
 window.__BH_I18N_DATA["id"] = {
   "seasonal.nav": "Musiman",
+  "leads.damageRange": "Antar rally: {lo} tanpa hero pendukung hingga {hi} dengan empat terbaik ({names}).",
   "seasonal.lede": "rencanakan acara musiman dari progresmu saat ini.",
   "castle.nav": "Kastel",
   "castle.deck.lede": "kontrol kastel, mekanik pertempuran, keterampilan peserta reli, dan pilihan pasukan.",

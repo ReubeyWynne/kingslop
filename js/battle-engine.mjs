@@ -136,6 +136,11 @@ function prepare(side) {
 // and vs as type indexes. The family of a code: 10x damage up, 11x defence
 // up, 20x enemy damage down, 21x enemy defence down.
 function family(code) { return (code >= 200 ? 2 : 0) + (code % 100 >= 10 ? 1 : 0); }
+// The kinds that roll. anyAttack (Petra's Evil Eye, Zoe's Infinite Arsenal) rolls on each
+// troop type's attack in a turn, and one success holds the effect for every attack that
+// turn: 50% three times is an 87.5% chance a turn (Strat Game Sloth, 2026-11-12).
+var CHANCE = { perRound: true, perAttack: true, anyAttack: true };
+var LATE_CODE = 211;
 function mask(list) {
   if (!list) return null;
   var m = [false, false, false];
@@ -146,7 +151,7 @@ function compile(raw) {
   var list = (raw || []).map(function (sk) {
     var vsTerror = sk.special === 'vsTerror';
     var fx = (sk.effects || []).map(function (e) {
-      return { code: e.code, fam: family(e.code), pct: +e.pct || 0, troops: mask(e.troops) || [true, true, true], vs: mask(e.vs), vsTerror: vsTerror, chance: sk.kind === 'perRound' || sk.kind === 'perAttack' };
+      return { code: e.code, fam: family(e.code), pct: +e.pct || 0, troops: mask(e.troops) || [true, true, true], vs: mask(e.vs), vsTerror: vsTerror, chance: CHANCE[sk.kind] === true };
     });
     return {
       kind: sk.kind || 'passive', chance: pos(sk.chance), every: Math.max(1, sk.every | 0), offset: sk.offset | 0,
@@ -155,18 +160,22 @@ function compile(raw) {
     };
   });
   // Chance skills sharing a code don't stack: only one of them is ever
-  // active and the duplicates are dead. Keep the strongest (pct × chance).
+  // active and the duplicates are dead. Keep the strongest (pct × its chance
+  // a turn; an any-attack skill rolls once for each of the three troop types).
   var keep = {};
   list.forEach(function (sk) {
     sk.fx.forEach(function (e) {
       if (!e.chance) return;
-      var v = e.pct * sk.chance;
+      var v = e.pct * (sk.kind === 'anyAttack' ? 1 - Math.pow(1 - sk.chance, 3) : sk.chance);
       if (!keep[e.code] || v > keep[e.code].v) keep[e.code] = { v: v, e: e };
     });
   });
   list.forEach(function (sk) {
     sk.fx = sk.fx.filter(function (e) { return !e.chance || keep[e.code].e === e; });
     sk.on = [0, 1, 2].map(function (t) { return sk.fx.some(function (e) { return e.troops[t]; }); });
+    // Enemy damage taken up (211) does nothing on a battle's first turn (Strat Game Sloth,
+    // 2026-11-12, measured on the Bear): the Bear's first round uses this list instead.
+    sk.fxFirst = sk.fx.filter(function (e) { return e.code !== LATE_CODE; });
   });
   return list.filter(function (sk) { return sk.fx.length || sk.special === 'dodge'; });
 }
@@ -199,7 +208,7 @@ function factor(fx, fam, own, enemy, terror) {
 // A side's state for one round: the effects live this round, the Truegold
 // rolls, and what the enemy's hits left on each of its troop types.
 function roundState() {
-  return { timed: [], pity: {}, out: [1, 1, 1], inc: [1, 1, 1], hurt: [0, 0, 0], terror: [0, 0, 0], F: null, FT: null };
+  return { timed: [], pity: {}, out: [1, 1, 1], inc: [1, 1, 1], terror: [0, 0, 0], F: null, FT: null };
 }
 
 // Every family factor for this round's effects, by [family][own][enemy],
@@ -212,11 +221,14 @@ function fill(F, fx, terror) {
       for (var en = 0; en < 3; en++) F[fam][own][en] = factor(fx, fam, own, en, terror);
 }
 
-// Start of a round: passives, per-round and pity rolls, every-N skills, and
-// whatever an earlier round's skill still holds. round counts from 1; the
-// every-N skills count from 0 the way the helper's engine does.
-function begin(f, st, round, rand) {
-  var fx = [], key = '';
+// Start of a round: passives, per-round, any-attack and pity rolls, every-N
+// skills, and whatever an earlier round's skill still holds. round counts from
+// 1; the every-N skills count from 0 the way the helper's engine does. alive is
+// the side's troops per type: an any-attack skill rolls once per type attacking.
+// A side with lateEnemyHurt (the Bear's attacker) leaves 211 out of round 1.
+function begin(f, st, round, rand, alive) {
+  var first = round === 1 && f.lateEnemyHurt;
+  var fx = [], key = first ? 'first:' : '';
   st.timed = st.timed.filter(function (x) { return x.until >= round; });
   st.timed.forEach(function (x) { if (x.from <= round) { push(fx, x.fx); key += x.id + ','; } });
   for (var i = 0; i < f.skills.length; i++) {
@@ -224,6 +236,7 @@ function begin(f, st, round, rand) {
     if (sk.special === 'dodge' || sk.kind === 'perAttack') continue;
     if (sk.kind === 'passive') on = true;
     else if (sk.kind === 'perRound') on = rand() < sk.chance;
+    else if (sk.kind === 'anyAttack') { for (var a = 0; a < 3; a++) if (alive[a] > 0 && rand() < sk.chance) on = true; }
     else if (sk.kind === 'everyN') on = (round - 1) % sk.every === sk.offset;
     else if (sk.kind === 'pity') {
       var fails = st.pity[i] || 0;
@@ -231,7 +244,7 @@ function begin(f, st, round, rand) {
       st.pity[i] = on ? 0 : fails + 1;
     }
     if (!on) continue;
-    push(fx, sk.fx);
+    push(fx, first ? sk.fxFirst : sk.fx);
     key += i + ',';
     if (sk.turns > 1) st.timed.push({ id: 't' + i, fx: sk.fx, from: round + 1, until: round + sk.turns - 1 });
   }
@@ -245,7 +258,6 @@ function begin(f, st, round, rand) {
   }
   st.F = hit.F;
   st.FT = hit.FT;
-  st.hurt[0] = st.hurt[1] = st.hurt[2] = 0;
   for (var t = 0; t < 3; t++) {
     st.out[t] = 1;
     st.inc[t] = 1;
@@ -267,8 +279,7 @@ function begin(f, st, round, rand) {
 function push(into, fx) { for (var i = 0; i < fx.length; i++) into.push(fx[i]); }
 
 // The skills one attack rolls for: per-attack chances on the attacking
-// type. A damage-up effect rides this hit; Petra's mark raises the damage
-// the target takes for the rest of the round; Sophia's terror holds the
+// type. A damage-up effect rides this hit; Sophia's terror holds the
 // target through the next round; anything else holds the side for its turns.
 function onAttack(f, st, foe, t, g, round, rand) {
   var sums = null;
@@ -279,7 +290,6 @@ function onAttack(f, st, foe, t, g, round, rand) {
     if (sk.special === 'terrorOnHit') foe.terror[g] = round + 1;
     for (var j = 0; j < sk.fx.length; j++) {
       var e = sk.fx[j];
-      if (sk.special === 'debuffTargetOnHit') { if (e.fam === 3) foe.hurt[g] += e.pct; continue; }
       if (e.fam === 0 && e.troops[t] && (!e.vs || e.vs[g])) {
         sums = sums || {};
         add(sums, e);
@@ -295,7 +305,7 @@ function onAttack(f, st, foe, t, g, round, rand) {
 function skillMod(fa, sa, fd, sd, t, g, round, rand) {
   var extra = onAttack(fa, sa, sd, t, g, round, rand);
   var F = sa.FT && sd.terror[g] >= round ? sa.FT : sa.F;
-  var up = F[0][t][g] * F[3][g][g] * (1 + sd.hurt[g] / 100) * extra;
+  var up = F[0][t][g] * F[3][g][g] * extra;
   var down = sd.F[1][g][t] * sd.F[2][t][t];
   return up / down * sa.out[t] * sd.inc[g];
 }
@@ -325,7 +335,7 @@ function random(a, b) {
     (b.s2[1] && b.n[1] > 0) || (b.s2[2] && b.n[2] > 0) || chancy(a) || chancy(b);
 }
 function chancy(f) {
-  return f.gold || f.dodge > 0 || f.skills.some(function (sk) { return sk.kind === 'perRound' || sk.kind === 'perAttack' || sk.kind === 'pity'; });
+  return f.gold || f.dodge > 0 || f.skills.some(function (sk) { return CHANCE[sk.kind] === true || sk.kind === 'pity'; });
 }
 
 function strike(att, def, nAtt, nDef, armyMin, round, rand, kills, sa, sd) {
@@ -359,7 +369,7 @@ function battle(a, b, rand) {
     while (round < MAX_ROUNDS) {
       round++;
       ka[0] = ka[1] = ka[2] = kb[0] = kb[1] = kb[2] = 0;
-      if (live) { begin(a, sa, round, rand); begin(b, sb, round, rand); }
+      if (live) { begin(a, sa, round, rand, na); begin(b, sb, round, rand, nb); }
       strike(a, b, na, nb, armyMin, round, rand, kb, sa, sb);
       strike(b, a, nb, na, armyMin, round, rand, ka, sb, sa);
       totA = totB = 0;
@@ -404,13 +414,15 @@ function run(sideA, sideB, battles, seed) {
 // Frakinator's battle-engine Bear), a level-5 trap. .dsh/bear-reports-check.cjs
 // refits it from every entry and fails when this drifts. Skills flagged
 // bear: false (Zoe's Sundering Wound) do nothing here.
-var BEAR = { troops: 5000, rounds: 10, def: 74.8 };
+var BEAR = { troops: 5000, rounds: 10, def: 59.3 };
 
 function bearSide(side) {
   var s = {};
   for (var k in side) s[k] = side[k];
   s.skills = (side.skills || []).filter(function (sk) { return sk.bear !== false; });
-  return prepare(s);
+  var f = prepare(s);
+  f.lateEnemyHurt = true;
+  return f;
 }
 function bearFoe() {
   var f = prepare({ n: [BEAR.troops, 0, 0], skills: [] });
@@ -427,8 +439,8 @@ function hunt(a, bear, rand) {
   var armyMin = Math.min(na[0] + na[1] + na[2], BEAR.troops);
   var sa = roundState(), sb = roundState();
   for (var round = 1; round <= BEAR.rounds; round++) {
-    if (a.live) begin(a, sa, round, rand);
-    begin(bear, sb, round, rand);
+    if (a.live) begin(a, sa, round, rand, na);
+    begin(bear, sb, round, rand, nb);
     for (var t = 0; t < 3; t++) {
       if (na[t] <= 0) continue;
       var one = [na[0] * (t === 0), na[1] * (t === 1), na[2] * (t === 2)];
@@ -454,6 +466,108 @@ function bearHunt(side, hunts, seed, pointsPct) {
   totals.sort(function (x, y) { return x - y; });
   return { mean: sum / count, byType: byType, totals: totals, hunts: count };
 }
+// The Bear's expected damage, worked out exactly instead of simulated: the same skills,
+// rules and kill law as hunt() above, so bearHunt()'s mean converges on it (the only gap is
+// the kill law's rounding up, a troop or so per attack). This is the one Bear model: the
+// lead finder ranks lineups and picks the ideal mix with it, and the damage card samples
+// the same thing with bearHunt() for the spread.
+//
+// The Bear never strikes back or falls, so every round is independent of the last except
+// through the skills: each round's damage is a sum over the attacking types, and its
+// expectation needs only the chance of each skill being live that round. Skills roll
+// independently, so the round's SkillMod is averaged over every on/off combination of the
+// random skills (a handful), which keeps the per-code rule (fixed add, one chance) exact.
+//
+// roots[t] is the expected damage of type t per √(n_t × armyMin): damage = roots[t] ×
+// √(n_t × min(march, 5,000)). So the best split of a march is f_t ∝ roots[t]², and a
+// march's damage at that split is √(N × armyMin × Σ roots²). An any-attack skill's chance
+// depends on how many types attack; roots uses the types the side sends (n > 0).
+function bearExpect(side, pointsPct) {
+  var a = bearSide(side), bear = bearFoe();
+  var n = a.n, armyMin = Math.min(n[0] + n[1] + n[2], BEAR.troops);
+  var present = [0, 1, 2].filter(function (t) { return n[t] > 0; });
+  var det = [], rand = [], hit = [];
+  a.skills.forEach(function (sk) {
+    if (sk.special === 'dodge') return;
+    if (sk.kind === 'passive' || sk.kind === 'everyN') det.push(sk);
+    else if (sk.kind === 'perAttack') hit.push(sk);
+    else rand.push(sk);
+  });
+  var terrorBy = hit.filter(function (sk) { return sk.special === 'terrorOnHit'; });
+  var pity = rand.map(function () { return [1]; });
+  var roots = [0, 0, 0];
+  for (var round = 1; round <= BEAR.rounds; round++) {
+    var first = round === 1;
+    var fixed = [];
+    det.forEach(function (sk) {
+      var on = sk.kind === 'passive';
+      if (!on) for (var r0 = Math.max(1, round - Math.max(1, sk.turns) + 1); r0 <= round; r0++) if ((r0 - 1) % sk.every === sk.offset) on = true;
+      if (on) push(fixed, first ? sk.fxFirst : sk.fx);
+    });
+    // Each random skill's chance of being live this round.
+    var p = rand.map(function (sk, i) {
+      var held = Math.min(Math.max(1, sk.turns), round);
+      if (sk.kind === 'pity') {
+        var dist = pity[i], on = 0, next = [];
+        dist.forEach(function (w, fails) {
+          var c = Math.min(1, sk.chance * (1 + fails));
+          on += w * c;
+          next[0] = (next[0] || 0) + w * c;
+          next[fails + 1] = (next[fails + 1] || 0) + w * (1 - c);
+        });
+        pity[i] = next;
+        return on;
+      }
+      var c = sk.kind === 'anyAttack' ? 1 - Math.pow(1 - sk.chance, present.length) : sk.chance;
+      return 1 - Math.pow(1 - c, held);
+    });
+    // Expected family factors per attacking type, with and without terror on the Bear.
+    var EU = [0, 0, 0], EUT = [0, 0, 0];
+    for (var mask = 0; mask < (1 << rand.length); mask++) {
+      var w = 1, fx = fixed.slice();
+      for (var i = 0; i < rand.length; i++) {
+        if (mask & (1 << i)) { w *= p[i]; push(fx, first ? rand[i].fxFirst : rand[i].fx); } else w *= 1 - p[i];
+      }
+      if (!w) continue;
+      for (var t = 0; t < 3; t++) {
+        EU[t] += w * factor(fx, 0, t, 0, false) * factor(fx, 3, 0, 0, false);
+        EUT[t] += w * factor(fx, 0, t, 0, true) * factor(fx, 3, 0, 0, true);
+      }
+    }
+    present.forEach(function (t) {
+      // Terror from this type's own roll, an earlier type's this round, or last round's.
+      var mine = hit.filter(function (sk) { return sk.on[t]; });
+      var miss = 1;
+      terrorBy.forEach(function (sk) {
+        present.forEach(function (u) { if (sk.on[u]) { if (round > 1) miss *= 1 - sk.chance; if (u < t) miss *= 1 - sk.chance; } });
+      });
+      var before = 1 - miss, mod = 0;
+      for (var m = 0; m < (1 << mine.length); m++) {
+        var pw = 1, sums = null, terror = false;
+        for (var j = 0; j < mine.length; j++) {
+          if (!(m & (1 << j))) { pw *= 1 - mine[j].chance; continue; }
+          pw *= mine[j].chance;
+          if (mine[j].special === 'terrorOnHit') terror = true;
+          mine[j].fx.forEach(function (e) {
+            if (e.fam === 0 && e.troops[t] && (!e.vs || e.vs[0])) { sums = sums || {}; add(sums, e); }
+          });
+        }
+        var pT = terror ? 1 : before;
+        mod += pw * (sums ? product(sums) : 1) * (pT * EUT[t] + (1 - pT) * EU[t]);
+      }
+      // Truegold's damage roll and the archers' volley, both independent of the skills.
+      var tg = a.tg[t], out = 1;
+      if (t === 1 && tg >= 3) { var cav = truegoldStep(TRUEGOLD.cav, tg); out = 1 + cav[1] * cav[2]; }
+      if (t === 2 && tg >= 3) { var arc = truegoldStep(TRUEGOLD.arc, tg); out = 1 + arc[1] * (arc[2] + (tg >= 8 ? TRUEGOLD.arcTg8 : 0)); }
+      var volley = t === 2 && a.s2[2] ? 1 + VOLLEY : 1;
+      var atk = a.A[t] * (BEATS[t] === 0 ? COUNTER : 1);
+      roots[t] += atk / bear.D[0] / 100 * mod * out * volley * (1 - FATIGUE * round);
+    });
+  }
+  var scale = 1 + pos(pointsPct) / 100, byType = [0, 1, 2].map(function (t) { roots[t] *= scale; return roots[t] * Math.sqrt(n[t] * armyMin); });
+  return { mean: byType[0] + byType[1] + byType[2], byType: byType, roots: roots };
+}
+
 // The share of hunts at or under a damage, read off sorted totals.
 function quantile(sorted, q) {
   if (!sorted.length) return 0;
@@ -524,11 +638,11 @@ function seedOf(obj) {
 }
 
 export { TIERS, TGS, MAX_TG, TG_HIGH, TRUEGOLD, baseAtk, baseHea, hasSecondSkill, family, factor,
-  compile, dead, prepare, battle, run, grid, sweep, best, rng, seedOf, BEAR, bearHunt, quantile };
+  compile, dead, prepare, battle, run, grid, sweep, best, rng, seedOf, BEAR, bearHunt, bearExpect, quantile };
 
 // The same exports as one object: what the page's classic scripts read as window.BattleEngine
 // and what require() returns to the CommonJS checks, until neither needs it.
 const api = { TIERS, TGS, MAX_TG, TG_HIGH, TRUEGOLD, baseAtk, baseHea, hasSecondSkill, family,
   factor, compile, dead, prepare, battle, run, grid, sweep, best, rng, seedOf, BEAR, bearHunt,
-  quantile };
+  bearExpect, quantile };
 export { api as default, api as 'module.exports' };
