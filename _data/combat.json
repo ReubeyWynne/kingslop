@@ -587,7 +587,6 @@
    {
     "slot": "sk1",
     "name": "Sundering Wound",
-    "bear": false,
     "trigger": {
      "kind": "perAttack",
      "chance": 0.2,
@@ -598,7 +597,8 @@
       "code": 104,
       "pct": 40.0
      }
-    ]
+    ],
+    "bear": false
    },
    {
     "slot": "sk2",
@@ -617,7 +617,7 @@
     "slot": "sk3",
     "name": "Infinite Arsenal",
     "trigger": {
-     "kind": "perRound",
+     "kind": "anyAttack",
      "chance": 0.5
     },
     "effects": [
@@ -770,7 +770,7 @@
     "slot": "sk1",
     "name": "Evil Eye",
     "trigger": {
-     "kind": "perAttack",
+     "kind": "anyAttack",
      "chance": 0.5
     },
     "effects": [
@@ -778,8 +778,7 @@
       "code": 211,
       "pct": 50.0
      }
-    ],
-    "special": "debuffTargetOnHit"
+    ]
    },
    {
     "slot": "sk2",

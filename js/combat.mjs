@@ -84,7 +84,7 @@ function joinerSkills(data, joiners) {
     var row = (data.heroSkills[j.key] || []).filter(function (r) { return r.slot === 'sk1'; })[0];
     var s = row && skill(row, j.level);
     if (!s) return;
-    var chance = s.kind === 'perRound' || s.kind === 'perAttack';
+    var chance = s.kind === 'perRound' || s.kind === 'perAttack' || s.kind === 'anyAttack';
     if (chance && rolled[j.key]) return;
     if (chance) rolled[j.key] = true;
     out.push(s);

@@ -92,11 +92,30 @@ assert.deepEqual(copy('amadeus', 5, 0).levels, [1, 0, 0]);
 assert.deepEqual(copy('amadeus', 30, 0, [5, 2, 4]).levels, [5, 2, 4]);
 assert.deepEqual(copy('amadeus', 12, 0, [5, 5, 5]).levels, [3, 3, 3]);
 assert.equal(L.copyOf('amadeus', { stars: null }, data), null, 'no stars, no lead');
-// Uptime of a chance skill over the Bear's ten rounds.
-near(L.uptime({ kind: 'passive' }), 1, 'passive');
-near(L.uptime({ kind: 'perRound', chance: 0.4 }), 0.4, 'per round');
-near(L.uptime({ kind: 'perRound', chance: 0.2, turns: 2 }), 0.36, 'lasting two rounds');
-near(L.uptime({ kind: 'everyN', every: 4, offset: 3, turns: 1 }), 0.2, 'every fourth round from the fourth');
+// One Bear model: the lead finder's score is js/battle-engine.mjs bearExpect, the exact
+// expectation of the ten-round hunt the damage card samples. A skill's worth is its
+// damage with it over without it, so skill(...) is that factor for a 2/16/82 march.
+{
+  const E = require('../js/battle-engine.mjs');
+  const side = (skills, n = [2000, 16000, 82000]) => ({ n, tier: [10, 10, 10], tg: [0, 0, 0], atk: [300, 300, 300], let: [300, 300, 300], skills });
+  const skill = (skills, n) => E.bearExpect(side(skills, n)).mean / E.bearExpect(side([], n)).mean;
+  near(skill([{ kind: 'passive', effects: [{ code: 102, pct: 25 }] }]), 1.25, 'passive');
+  near(skill([{ kind: 'perRound', chance: 0.4, effects: [{ code: 102, pct: 50 }] }]), 1.2, 'per round');
+  near(skill([{ kind: 'everyN', every: 4, offset: 3, turns: 1, effects: [{ code: 102, pct: 100 }] }]), 1 + 100 * (0.9998 + 0.9992) / 100 / (10 - 0.0055), 'every fourth round from the fourth', 1e-4);
+  // Evil Eye and Infinite Arsenal: 50% on each type's attack, one success holds +50% enemy
+  // damage taken for the whole turn, and 211 does nothing on turn 1 (Strat Game Sloth,
+  // 2026-11-12): 0.875 × 50% over nine of ten rounds is about +39%. Archers alone roll once.
+  const evil = { kind: 'anyAttack', chance: 0.5, effects: [{ code: 211, pct: 50 }] };
+  near(skill([evil]), 1 + 0.875 * 0.5 * 0.9, 'Evil Eye', 1e-3);
+  near(skill([evil], [0, 0, 100000]), 1 + 0.5 * 0.5 * 0.9, 'Evil Eye with archers alone', 1e-3);
+  near(skill([{ kind: 'passive', effects: [{ code: 211, pct: 25 }] }]), 1 + 0.25 * 0.9, '211 is dead on turn 1', 1e-3);
+  near(skill([evil, { ...evil }]), skill([evil]), 'Petra and Zoe together: the duplicate is dead');
+  // The expectation and the simulation are one model: their means agree.
+  const C = require('../js/combat.mjs');
+  const kit = C.side(data, { role: 'rally', heroes: [{ key: 'amadeus', widget: 10 }, { key: 'petra', widget: 10 }, { key: 'yang', widget: 10 }], joiners: ['amane', 'amane', 'chenko', 'vivian'].map(key => ({ key, level: 5 })) });
+  const full = { ...side(kit), tg: [5, 5, 5] };
+  near(E.bearHunt(full, 20000, 3).mean / E.bearExpect(full).mean, 1, 'simulated mean = expected', 0.005);
+}
 
 // The Bear: Rosa against a 5★, widget-10 Marlin beside the same Amadeus and Petra.
 {
@@ -126,12 +145,17 @@ assert.equal(L.valoraPoints({ affinity: 90, ready: true, skills: [0, 0, 0, 0] })
 assert.equal(L.valoraPoints({ affinity: 100, ready: false, skills: [0, 0, 0, 0] }), 30);
 assert.equal(L.valoraPoints(null), 0);
 // Chance effects of one code never stack: only the strongest is active, duplicates are dead; fixed ones add.
-near(L.bearMod([{ kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 50 }] }, { kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 40 }] }])[0], 1.5, 'two sure chance skills: the larger');
-near(L.bearMod([{ kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }, { kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }])[0], 1.25, 'two coin flips: the duplicate is dead');
-near(L.bearMod([{ kind: 'passive', effects: [{ code: 102, pct: 25 }] }, { kind: 'passive', effects: [{ code: 102, pct: 25 }] }])[0], 1.5, 'fixed ones add');
-near(L.bearMod([{ kind: 'passive', effects: [{ code: 102, pct: 25 }] }, { kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 50 }] }])[0], 1.75, 'a fixed and a chance one add');
-// Defensive skills add no Bear damage: Rosa's Rose of War is enemy damage down.
-assert.deepEqual(L.bearMod([{ kind: 'passive', effects: [{ code: 201, pct: 20 }] }]), [1, 1, 1]);
+{
+  const E = require('../js/battle-engine.mjs');
+  const side = skills => ({ n: [2000, 16000, 82000], tier: [10, 10, 10], tg: [0, 0, 0], atk: [300, 300, 300], let: [300, 300, 300], skills });
+  const skill = skills => E.bearExpect(side(skills)).mean / E.bearExpect(side([])).mean;
+  near(skill([{ kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 50 }] }, { kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 40 }] }]), 1.5, 'two sure chance skills: the larger');
+  near(skill([{ kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }, { kind: 'perRound', chance: 0.5, effects: [{ code: 102, pct: 50 }] }]), 1.25, 'two coin flips: the duplicate is dead');
+  near(skill([{ kind: 'passive', effects: [{ code: 102, pct: 25 }] }, { kind: 'passive', effects: [{ code: 102, pct: 25 }] }]), 1.5, 'fixed ones add');
+  near(skill([{ kind: 'passive', effects: [{ code: 102, pct: 25 }] }, { kind: 'perRound', chance: 1, effects: [{ code: 102, pct: 50 }] }]), 1.75, 'a fixed and a chance one add');
+  // Defensive skills add no Bear damage: Rosa's Rose of War is enemy damage down.
+  near(skill([{ kind: 'passive', effects: [{ code: 201, pct: 20 }] }]), 1, 'no damage from a defensive skill');
+}
 
 // Four rising spender tiers for every generation, each with its own loadout there.
 assert.deepEqual(megafauna.foes.map(f => f.id), ['f2p', 'dolphin', 'whale', 'kraken']);
