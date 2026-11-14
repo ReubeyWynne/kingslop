@@ -599,6 +599,20 @@
   color: var(--amber-dim);
 }
 .sim-troop .sim-count { grid-column: 1 / -1; }
+/* A march's tier rows: the troop count on its own line, tier and TG under it, and a remove
+   button from the second row on. The add button sits under the last row. */
+.sim-troop .sim-tier-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 2.75rem;
+  gap: 0.6rem 0.75rem;
+  align-items: end;
+}
+.sim-troop .sim-tier-row + .sim-tier-row { padding-top: 0.6rem; border-top: 1px solid rgba(157, 149, 127, 0.15); }
+.sim-troop .sim-tier-row[hidden] { display: none; }
+.sim-troop .sim-tier-row .roster-remove { grid-column: 3; }
+.sim-troop .roster-add { grid-column: 1 / -1; justify-self: start; margin-top: 0; }
+.sim-troop .roster-add[hidden] { display: none; }
 .sim-troop .sim-field { min-width: 0; }
 .sim-troop .sim-field[hidden] { display: none; }
 .sim-troop .sim-field > span { font-size: 0.82em; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-muted); }

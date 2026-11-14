@@ -96,6 +96,30 @@ assert.equal(E.grid({ step: 0.05, minInf: 0.9, minCav: 0.2 }).cells.length, 0);
   assert.equal(random.battles, random.cells.length * 20);
 }
 
+// Several tiers of one type fight as one army with blended stats (SoS Fighter.calcByType):
+// a weighted geometric mean, each row weighted by its share of the type's attack (health).
+{
+  const one = E.blend(1, [{ n: 5000, tier: 9, tg: 2 }]);
+  assert.deepEqual([one.n, one.atk, one.hea, one.tg], [5000, E.baseAtk(1, 9, 2), E.baseHea(1, 9, 2), 2], 'one row is that row');
+  const rows = [{ n: 9475, tier: 9, tg: 0 }, { n: 14215, tier: 8, tg: 0 }], b = E.blend(2, rows);
+  const a9 = E.baseAtk(2, 9, 0), a8 = E.baseAtk(2, 8, 0), w9 = 9475 * a9 / (9475 * a9 + 14215 * a8);
+  assert.ok(Math.abs(b.atk - Math.pow(a9, w9) * Math.pow(a8, 1 - w9)) < 1e-9, 'geometric mean weighted by attack share');
+  assert.ok(b.atk > a8 && b.atk < a9 && b.n === 23690);
+  assert.equal(E.blend(2, [{ n: 10, tier: 6, tg: 0 }, { n: 10, tier: 5, tg: 4 }]).tg, 4, 'Truegold rolls from the top TG');
+  assert.equal(E.blend(2, [{ n: 10, tier: 6, tg: 0 }, { n: 0, tier: 10, tg: 5 }]).tg, 0, 'an empty row adds nothing');
+  // side.mix fights the same as one row with the blended stats.
+  const mixed = { n: [0, 0, 23690], mix: [null, null, rows], atk: [200, 200, 200], let: [200, 200, 200], def: [200, 200, 200], hea: [200, 200, 200] };
+  const f = E.prepare(mixed);
+  assert.equal(f.n[2], 23690);
+  assert.ok(Math.abs(f.A[2] - b.atk * 9) < 1e-6 && Math.abs(f.D[2] - b.hea * 9) < 1e-6);
+  // A sweep's count for the type keeps the rows' shares.
+  const half = E.prepare(Object.assign({}, mixed, { n: [0, 0, 11845] }));
+  assert.equal(half.n[2], 11845);
+  assert.ok(Math.abs(half.A[2] / f.A[2] - 1) < 1e-4, 'same shares, same blend');
+  const s = E.sweep(Object.assign({}, mixed, { n: [0, 0, 0] }), side([20000, 20000, 20000], 9, 200), { total: 60000, step: 0.25, battles: 5 });
+  assert.ok(s.cells.every(c => c.n[0] + c.n[1] + c.n[2] === 60000));
+}
+
 assert.equal(E.seedOf({ a: 1 }), E.seedOf({ a: 1 }));
 assert.notEqual(E.seedOf({ a: 1 }), E.seedOf({ a: 2 }));
 
