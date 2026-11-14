@@ -383,6 +383,7 @@ jobs:
               - .dsh/page-deck-browser-check.cjs
               - .dsh/site-guide-ui-check.cjs
               - .dsh/simulator-ui-check.cjs
+              - .dsh/sim-tiers-ui-check.cjs
               - '**/index.html'
               - css/**
               - js/**
@@ -757,6 +758,9 @@ jobs:
       - name: Check simulator battle reports and activity
         if: matrix.group == 'deck'
         run: node .dsh/simulator-ui-check.cjs
+      - name: Check simulator tier rows
+        if: matrix.group == 'deck'
+        run: node .dsh/sim-tiers-ui-check.cjs
       - name: Check calculator folds, icons and contents rails
         if: matrix.group == 'deck'
         run: node .dsh/calculator-consistency-ui-check.cjs
