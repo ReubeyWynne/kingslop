@@ -134,17 +134,18 @@ Mechanic Nobody Noticed About Zoe", 2026-11-12) and the owner's Terror rally Bat
   their own they would show about 0.8× and 0.6× Dynamo's count; filling in only when Dynamo
   (then Wild Card) missed gives 0.2× and 0.06×, which matches. So +50% damage dealt is live
   1 − 0.5 × 0.6 × 0.68 ≈ 80% of rounds, not 50% (the old "dead duplicate" rule).
-- **Evil Eye (Petra sk1) and Infinite Arsenal (Zoe sk3) roll once a round, 50%.** Sloth has
-  them rolling on each type's attack (87.5% a turn), but Evil Eye showed 7 triggers beside The
-  Favor's 9 and Dynamo's 10, both 50% a round; at 87.5% it would show about 1.75× Dynamo's.
+- **Evil Eye (Petra sk1) and Infinite Arsenal (Zoe sk3)** roll 50% on each troop type's attack
+  (Sloth, Frak and Zebrave); one success gives +50% enemy damage taken to every attack that
+  turn, 87.5% a turn with three types. The Terror report's Evil Eye count (7) fits this if The
+  Favor (9) and Dynamo (10) count once per attack, so the fight ran about 8 rounds; it would
+  contradict it only if they count once a round, which the report can't tell apart. Petra and
+  Zoe share 211, so together they fill in for each other (about 98% a turn).
 - **Enemy damage taken up (211) does nothing on the Bear's first turn** (Sloth). Evil Eye is
-  then worth 0.5 × 50% × 0.9 = +22.5% on the Bear. Applied to the Bear only for now.
-
-For an Amadeus/Petra/Marlin rally the first two roughly cancel (+12% and −12%).
+  then worth 0.875 × 50% × 0.9 ≈ +39% on the Bear. Applied to the Bear only for now.
 
 The Bear's defence (`BEAR.def`) is fitted to logged hits, so it is refitted with each change:
-74.8 → 62.1 (Sloth's rules), 59.3 (the 13 November hits), 58.4 (the Terror report's rules). The
-two game events disagree by about 11% (4 Nov asks for 61.5, 13 Nov for 55.0, joiners unknown
+74.8 → 62.1 (Sloth's rules), 59.3 (the 13 November hits), 66.5 (the fill-in rule). The
+two game events disagree by about 11% (4 Nov asks for 70.0, 13 Nov for 62.6, joiners unknown
 for both), so the fit is their weighted middle. The real spread of hits is wider than the
 model's (CV 15–21% against 12%), which fits rallies whose joiners vary; 13 Nov's 86.2M sits
 near the model's 99th percentile even with the best four joiners.

@@ -617,7 +617,7 @@
     "slot": "sk3",
     "name": "Infinite Arsenal",
     "trigger": {
-     "kind": "perRound",
+     "kind": "anyAttack",
      "chance": 0.5
     },
     "effects": [
@@ -770,7 +770,7 @@
     "slot": "sk1",
     "name": "Evil Eye",
     "trigger": {
-     "kind": "perRound",
+     "kind": "anyAttack",
      "chance": 0.5
     },
     "effects": [

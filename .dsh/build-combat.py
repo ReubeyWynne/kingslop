@@ -187,13 +187,12 @@ check(set(hero_skills) | {'diana'} >= {key_of[n] for n in ref['HERO_CLASS']}, 'h
 # Skills that do nothing against the Bear (player-confirmed in game).
 DEAD_ON_BEAR = {('zoe', 'sk1')}  # Sundering Wound
 
-# Skills that roll once a round and hold their effect for every attack that round. The
-# helper has Evil Eye as a per-attack debuff on the target hit. Strat Game Sloth
-# (2026-11-12) has Evil Eye and Infinite Arsenal rolling on each type's attack (87.5% a
-# turn), but a Terror rally's Battle Details (owner, 2026-11-13) showed Evil Eye 7 triggers
-# against The Favor's 9 and Dynamo's 10, both 50% a round: one roll a round fits, 87.5%
-# doesn't. Infinite Arsenal is the helper's one roll a round already.
-ONE_ROLL_A_ROUND = {('petra', 'sk1'), ('zoe', 'sk3')}
+# Skills that roll on each troop type's attack and, on any success, hold their effect for
+# every attack that turn: 50% three times is 87.5% a turn. Strat Game Sloth's unit tests
+# with Frak and Zebrave ("The Hidden Mechanic Nobody Noticed About Zoe", 2026-11-12). The
+# helper has Evil Eye as a per-attack debuff on the target hit and Infinite Arsenal as one
+# roll a round.
+ANY_ATTACK = {('petra', 'sk1'), ('zoe', 'sk3')}
 
 # Every value that scales with skill level must be the in-game top level heroes.json
 # carries for that slot. The skill keeps the site's name; the helper's has typos.
@@ -209,8 +208,8 @@ for key, rows in hero_skills.items():
         row['name'] = skill['name']
         if (key, row['slot']) in DEAD_ON_BEAR:
             row['bear'] = False
-        if (key, row['slot']) in ONE_ROLL_A_ROUND:
-            row['trigger'] = {'kind': 'perRound', 'chance': row['trigger']['chance']}
+        if (key, row['slot']) in ANY_ATTACK:
+            row['trigger'] = {'kind': 'anyAttack', 'chance': row['trigger']['chance']}
             row.pop('special', None)
         # A 102 effect is damage dealt (104) unless the skill's in-game scale says
         # Attack Up; Jabel's Youthful Rage reads Lethality Up and stays as the helper has it.

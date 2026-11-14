@@ -150,12 +150,13 @@ Verbatim rule the game uses (also blog "how-special-bonuses-work"):
   earlier "duplicates are dead" reading (player-reported). Fixed percentages (passives, every-N
   buffs) of one code still add, and the two totals add before codes multiply. The battle
   engine and the lead finder's Bear score (`bearExpect`) follow the same rule.
-- **Evil Eye and Infinite Arsenal roll once a round, 50%.** Strat Game Sloth (with Frak and
-  Zebrave, 2026-11-12) has them rolling on each type's attack, 87.5% a turn, but the same
-  Battle Details showed Evil Eye 7 triggers beside The Favor 9 and Dynamo 10 (both 50% a
-  round). build-combat.py sets both to one roll a round (the helper had Evil Eye as a debuff on
-  the target hit). They share 211, so Petra and Zoe together give +50% when either rolls.
-  Infinite Arsenal is untested; it follows Evil Eye.
+- **Evil Eye and Infinite Arsenal roll on every attack and hold for the turn** (Strat Game
+  Sloth with Frak and Zebrave, unit-tested, 2026-11-12): 50% on each troop type's attack, and
+  one success gives +50% enemy damage taken (211) to all troops that turn, 87.5% a turn with
+  three types. build-combat.py overrides both to `anyAttack`. The owner's Terror report (Evil
+  Eye 7, The Favor 9, Dynamo 10) agrees if those two count per attack (about 8 rounds); it would
+  disagree only if they count once a round, which one report can't settle. They share 211, so
+  Petra and Zoe together fill in for each other.
 - **211 does nothing on a battle's first turn** (same source). The engine applies this to the
   Bear only (`lateEnemyHurt`); untested in PvP.
 - **Open, needs an in-game test:** Sloth's team finds one Marlin joiner adds damage beside
