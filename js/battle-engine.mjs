@@ -159,20 +159,12 @@ function compile(raw) {
       on: [0, 1, 2].map(function (t) { return fx.some(function (e) { return e.troops[t]; }); })
     };
   });
-  // Chance skills sharing a code don't stack: only one of them is ever
-  // active and the duplicates are dead. Keep the strongest (pct × its chance
-  // a turn; an any-attack skill rolls once for each of the three troop types).
-  var keep = {};
+  // Chance skills sharing a code don't stack, but they fill in for each other: each rolls,
+  // and the code's effect is live when any of them succeeds (add() keeps one chance
+  // effect per code). A Terror rally's Battle Details (owner, 2026-11-13) showed Marlin's
+  // Dynamo 10 triggers, Wild Card 2 and Amadeus's Unrighteous Strike 1, which is the
+  // pattern when the weaker ones only count in rounds the stronger missed.
   list.forEach(function (sk) {
-    sk.fx.forEach(function (e) {
-      if (!e.chance) return;
-      var v = e.pct * (sk.kind === 'anyAttack' ? 1 - Math.pow(1 - sk.chance, 3) : sk.chance);
-      if (!keep[e.code] || v > keep[e.code].v) keep[e.code] = { v: v, e: e };
-    });
-  });
-  list.forEach(function (sk) {
-    sk.fx = sk.fx.filter(function (e) { return !e.chance || keep[e.code].e === e; });
-    sk.on = [0, 1, 2].map(function (t) { return sk.fx.some(function (e) { return e.troops[t]; }); });
     // Enemy damage taken up (211) does nothing on a battle's first turn (Strat Game Sloth,
     // 2026-11-12, measured on the Bear): the Bear's first round uses this list instead.
     sk.fxFirst = sk.fx.filter(function (e) { return e.code !== LATE_CODE; });
@@ -180,8 +172,8 @@ function compile(raw) {
   return list.filter(function (sk) { return sk.fx.length || sk.special === 'dodge'; });
 }
 
-// One code's live effects: fixed (passive or scheduled) ones add, and the
-// one chance effect per code left after compile adds to them.
+// One code's live effects: fixed (passive or scheduled) ones add, and of the
+// chance effects of the code that rolled this round only the largest counts.
 function add(sums, e) {
   var s = sums[e.code] || (sums[e.code] = { fixed: 0, chance: 0 });
   if (e.chance) s.chance = Math.max(s.chance, e.pct); else s.fixed += e.pct;
@@ -414,7 +406,7 @@ function run(sideA, sideB, battles, seed) {
 // Frakinator's battle-engine Bear), a level-5 trap. .dsh/bear-reports-check.cjs
 // refits it from every entry and fails when this drifts. Skills flagged
 // bear: false (Zoe's Sundering Wound) do nothing here.
-var BEAR = { troops: 5000, rounds: 10, def: 59.3 };
+var BEAR = { troops: 5000, rounds: 10, def: 66.5 };
 
 function bearSide(side) {
   var s = {};

@@ -142,26 +142,27 @@ Verbatim rule the game uses (also blog "how-special-bonuses-work"):
 ```
 
 - Same-stat specials add their percents first, then apply **once**.
-- **Chance effects of one skill code don't stack** (player-confirmed, 2026-11): of the
-  per-round or per-attack chance skills sharing a code, only one is ever active and the
-  duplicates are dead skills (we keep the strongest, pct × chance). Fixed percentages
-  (passives, every-N-turn buffs) of one code still add, and the two totals add before
-  codes multiply. This is why Yeonwoo, Amane and Chenko are the usual Bear joiners:
-  their skills are fixed, so duplicates are safe. The battle engine drops the dead
-  duplicates at compile, and the lead finder's Bear score is the battle engine's own exact
-  expectation (`bearExpect`), so both follow the same rule.
+- **Chance effects of one skill code don't stack, but fill in for each other** (owner's Terror
+  rally Battle Details, 2026-11-13): of the per-round or per-attack chance skills sharing a code,
+  each rolls and the effect is live when any succeeds; when several land, the largest counts.
+  The trigger counts showed Dynamo 10, Wild Card 2 and Unrighteous Strike 1 (all 104), the
+  pattern of the weaker ones counting only when the stronger missed. This replaces the
+  earlier "duplicates are dead" reading (player-reported). Fixed percentages (passives, every-N
+  buffs) of one code still add, and the two totals add before codes multiply. The battle
+  engine and the lead finder's Bear score (`bearExpect`) follow the same rule.
 - **Evil Eye and Infinite Arsenal roll on every attack and hold for the turn** (Strat Game
   Sloth with Frak and Zebrave, unit-tested, 2026-11-12): 50% on each troop type's attack, and
   one success gives +50% enemy damage taken (211) to all troops that turn, 87.5% a turn with
-  three types. The helper has Evil Eye as a debuff on the target hit and Infinite Arsenal as one
-  roll a round; build-combat.py overrides both to `anyAttack`. They share 211, so a Petra joiner
-  in a Zoe rally (or the reverse) adds nothing.
+  three types. build-combat.py overrides both to `anyAttack`. The owner's Terror report (Evil
+  Eye 7, The Favor 9, Dynamo 10) agrees if those two count per attack (about 8 rounds); it would
+  disagree only if they count once a round, which one report can't settle. They share 211, so
+  Petra and Zoe together fill in for each other.
 - **211 does nothing on a battle's first turn** (same source). The engine applies this to the
   Bear only (`lateEnemyHurt`); untested in PvP.
 - **Open, needs an in-game test:** Sloth's team finds one Marlin joiner adds damage beside
   Amadeus or Jabel ("a working assumption"). Here Marlin's Wild Card, Amadeus's Unrighteous
-  Strike and Jabel's Hero's Domain are all chance skills on 104, so a Marlin joiner is a dead
-  duplicate. Test: Amadeus/Jabel/Marlin with Amane, Amane, Chenko and either Marlin or a third
+  Strike and Jabel's Hero's Domain are all chance skills on 104, so a Marlin joiner only
+  fills in rounds the others missed (a small gain, not a full extra +50%). Test: Amadeus/Jabel/Marlin with Amane, Amane, Chenko and either Marlin or a third
   Amane as the fourth joiner, many hits each. Vivian's 211 is also unverified (by symmetry).
 - **Attack up and damage dealt up are separate codes** (player-confirmed, 2026-11): the
   helper files both under 102, but Petra's The Favor ("Squads' Attack") is distinct from
@@ -438,6 +439,11 @@ site already carries from elsewhere disagrees:
 - **Still open (`unverified` in the JSON):** TG6–TG8 stats and Truegold chances have no stated
   basis; the op codes are marked probable by their authors; the helper's fatigue starts at
   round 0, `js/battle-engine.mjs` at round 1.
+- **TG5 troop skills confirmed in game** (owner's Terror rally Battle Details tooltips,
+  2026-11-14): Unyielding Shield (infantry) 37.5% chance to take 36% less damage; Assault Lance
+  (cavalry) 15% chance of double damage; Howling Wind (archers) 30% chance of +50% damage. All
+  three match `TRUEGOLD` at TG5. Ambusher's tooltip reads 20%, as the engine has it. Battle
+  Details' gold rows are these troop skills, not widgets.
 - **Regression case** (kingshotsim.com): 40,233 T10.1 infantry (attack 293.66%, lethality
   251.82%) in a 120,789 army against a 78,872 army, defender per-troop 2,557.9, SkillMod 1.26,
   round 0 → **189** deaths. Pinned in `.dsh/combat-check.cjs`.
