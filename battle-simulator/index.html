@@ -80,11 +80,11 @@ self: sim
             </header>
             <div class="army-tiles">
               {%- for t in types %}{% assign tp = t | split: "|" %}
-              <button type="button" class="army-tile" data-troop="{{ tp[0] }}" :data-empty="empty('{{ sd[1] }}n-{{ tp[0] }}')" @click="edit('sim-edit-{{ sd[0] }}', '{{ sd[0] }}', '{{ tp[0] }}')">
+              <button type="button" class="army-tile" data-troop="{{ tp[0] }}" :data-empty="emptyType('{{ sd[1] }}', '{{ tp[0] }}')" @click="edit('sim-edit-{{ sd[0] }}', '{{ sd[0] }}', '{{ tp[0] }}')">
                 <img class="army-art" src="../img/hero-gear/{{ tp[3] }}-helm.webp" width="96" height="96" alt="" loading="lazy" decoding="async">
                 <span class="army-body">
                   <span class="army-name" data-i18n="{{ tp[1] }}">{{ tp[2] }}</span>
-                  <span class="army-count"{% if sd[0] == 'you' %} :hidden="!shows('march')" hidden{% endif %}><b class="inkwell" x-text="count('{{ sd[1] }}n-{{ tp[0] }}')">50,000</b> <span class="army-tier" x-text="tier('{{ sd[1] }}', '{{ tp[0] }}')">T10 · TG0</span></span>
+                  <span class="army-count"{% if sd[0] == 'you' %} :hidden="!shows('march')" hidden{% endif %}><b class="inkwell" x-text="typeCountText('{{ sd[1] }}', '{{ tp[0] }}')">50,000</b> <span class="army-tier" x-text="tier('{{ sd[1] }}', '{{ tp[0] }}')">T10 · TG0</span></span>
                   <span class="army-stats">
                     {%- for s in stats %}{% assign sp = s | split: "|" %}
                     {% assign fightOnly = false %}{% if sd[0] == 'you' %}{% if sp[0] == 'def' or sp[0] == 'hea' %}{% assign fightOnly = true %}{% endif %}{% endif %}<span class="army-stat"{% if fightOnly %} :hidden="!shows('fight')" hidden{% endif %}><span data-i18n="sim.army.s.{{ sp[0] }}">{{ sp[4] }}</span> <b class="inkwell" x-text="stat('{{ sd[1] }}{{ sp[0] }}-{{ tp[0] }}')">0%</b></span>
@@ -428,12 +428,20 @@ self: sim
         <img class="army-art" src="../img/hero-gear/{{ tp[3] }}-helm.webp" width="96" height="96" alt="" loading="lazy" decoding="async">
         <fieldset class="sim-troop-march"{% if sd[0] == 'you' %} :hidden="!shows('march')" hidden{% endif %}>
           <legend data-i18n="sim.army.march">In the march</legend>
+          {%- for slot in (1..3) %}{% if slot == 1 %}{% assign sl = '' %}{% else %}{% assign sl = slot %}{% endif %}
+          <div class="sim-tier-row"{% if slot > 1 %} :hidden="shown('{{ sd[1] }}', '{{ tp[0] }}') < {{ slot }}" hidden{% endif %}>
           <label class="sim-field sim-count"><span data-i18n="sim.dmg.thCount">troops</span>
-            <input id="{{ sd[1] }}n-{{ tp[0] }}" type="number" min="0" step="1000" inputmode="numeric" placeholder="0" data-unit-input="count" x-model="f['{{ sd[1] }}n-{{ tp[0] }}']" :aria-label="label('{{ sd[1] }}', '{{ tp[0] }}', 'n')"></label>
+            <input id="{{ sd[1] }}n{{ sl }}-{{ tp[0] }}" type="number" min="0" step="1000" inputmode="numeric" placeholder="0" data-unit-input="count" x-model="f['{{ sd[1] }}n{{ sl }}-{{ tp[0] }}']" :aria-label="label('{{ sd[1] }}', '{{ tp[0] }}', 'n')"></label>
           <label class="sim-field"><span data-i18n="sim.dmg.thTier">tier</span>
-            <select id="{{ sd[1] }}tier-{{ tp[0] }}" x-model="f['{{ sd[1] }}tier-{{ tp[0] }}']" :aria-label="label('{{ sd[1] }}', '{{ tp[0] }}', 'tier')">{% for i in (1..11) %}<option value="{{ i }}">T{{ i }}</option>{% endfor %}</select></label>
+            <select id="{{ sd[1] }}tier{{ sl }}-{{ tp[0] }}" x-model="f['{{ sd[1] }}tier{{ sl }}-{{ tp[0] }}']" :aria-label="label('{{ sd[1] }}', '{{ tp[0] }}', 'tier')">{% for i in (1..11) %}<option value="{{ i }}">T{{ i }}</option>{% endfor %}</select></label>
           <label class="sim-field"><span data-i18n="sim.dmg.thTg">TG</span>
-            <select id="{{ sd[1] }}tg-{{ tp[0] }}" x-model="f['{{ sd[1] }}tg-{{ tp[0] }}']" :aria-label="label('{{ sd[1] }}', '{{ tp[0] }}', 'tg')">{% for i in (0..8) %}<option value="{{ i }}">TG{{ i }}</option>{% endfor %}</select></label>
+            <select id="{{ sd[1] }}tg{{ sl }}-{{ tp[0] }}" x-model="f['{{ sd[1] }}tg{{ sl }}-{{ tp[0] }}']" :aria-label="label('{{ sd[1] }}', '{{ tp[0] }}', 'tg')">{% for i in (0..8) %}<option value="{{ i }}">TG{{ i }}</option>{% endfor %}</select></label>
+          {%- if slot > 1 %}
+          <button type="button" class="roster-remove" @click="removeRow('{{ sd[1] }}', '{{ tp[0] }}', {{ slot | minus: 1 }})" aria-label="Remove this tier" data-i18n-key="sim.roster.remove" data-i18n-attr="aria-label">×</button>
+          {%- endif %}
+          </div>
+          {%- endfor %}
+          <button type="button" class="roster-add" @click="addRow('{{ sd[1] }}', '{{ tp[0] }}')" :hidden="shown('{{ sd[1] }}', '{{ tp[0] }}') >= 3" data-i18n="sim.roster.add">Add a tier</button>
         </fieldset>
         <fieldset class="sim-troop-stats">
           <legend data-i18n="sim.army.stats">Bonus Details</legend>

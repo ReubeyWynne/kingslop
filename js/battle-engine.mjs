@@ -107,19 +107,67 @@ var BEATS = [1, 2, 0];
 
 function pos(x) { x = +x; return isFinite(x) && x > 0 ? x : 0; }
 
-// A side, as typed: counts, tier/TG and the four Bonus Details stats per
-// type. Returns the fighting numbers the round loop needs.
+// One troop type's tier rows, as the game fields them: a march can hold several tiers of
+// the same type, and they fight as one army. The SoS engine (Fight.java's Fighter
+// calcByType, KINGSHOT-SOURCES.md §1) blends their base stats into a weighted geometric
+// mean, each row weighted by its share of the type's total attack (or health), and the
+// count is the rows' sum. The type's troop skills come from its best row: the second skill
+// when any row has it, and the Truegold rolls of the highest TG fielded (a report's tooltip
+// shows the march's top TG; how the game splits the roll across rows is unverified).
+// rows: [{ n, tier, tg }]. Returns { n, atk, hea, s2, tg } — atk and hea before bonuses.
+function blend(t, rows) {
+  var list = (rows || []).map(function (r) {
+    var tier = (r && r.tier) || 10, tg = Math.min(MAX_TG, Math.max(0, (r && r.tg) | 0));
+    return { n: Math.floor(pos(r && r.n)), tier: tier, tg: tg, a: baseAtk(t, tier, tg), h: baseHea(t, tier, tg) };
+  });
+  var live = list.filter(function (r) { return r.n > 0; });
+  if (!live.length) live = list.slice(0, 1);
+  if (!live.length) return { n: 0, atk: baseAtk(t, 10, 0), hea: baseHea(t, 10, 0), s2: hasSecondSkill(10, 0), tg: 0 };
+  var n = 0, ta = 0, th = 0;
+  live.forEach(function (r) { n += r.n; ta += r.n * r.a; th += r.n * r.h; });
+  var atk = 1, hea = 1;
+  live.forEach(function (r) {
+    atk *= ta > 0 ? Math.pow(r.a, r.n * r.a / ta) : (live.length === 1 ? r.a : 1);
+    hea *= th > 0 ? Math.pow(r.h, r.n * r.h / th) : (live.length === 1 ? r.h : 1);
+  });
+  return {
+    n: n, atk: atk, hea: hea,
+    s2: live.some(function (r) { return hasSecondSkill(r.tier, r.tg); }),
+    tg: live.reduce(function (m, r) { return Math.max(m, r.tg); }, 0)
+  };
+}
+
+// A type's tier rows: side.mix[t] when the side fields several tiers, else its one row.
+// When side.n names a different count for the type (a sweep's mix of the same march), the
+// rows keep their shares of it (rows left empty split it evenly).
+function rowsOf(side, t) {
+  var mix = side.mix && side.mix[t];
+  if (!mix || !mix.length) return [{ n: side.n && side.n[t], tier: side.tier && side.tier[t], tg: side.tg && side.tg[t] }];
+  var sum = 0;
+  mix.forEach(function (r) { sum += Math.floor(pos(r && r.n)); });
+  var want = side.n && side.n[t] != null ? Math.floor(pos(side.n[t])) : sum;
+  if (want === sum) return mix;
+  var left = want;
+  return mix.map(function (r, i) {
+    var share = sum > 0 ? Math.floor(pos(r.n)) / sum : 1 / mix.length;
+    var k = i === mix.length - 1 ? left : Math.min(left, Math.round(want * share));
+    left -= k;
+    return { n: k, tier: r.tier, tg: r.tg };
+  });
+}
+
+// A side, as typed: counts, tier/TG (or several tier rows per type, side.mix) and the four
+// Bonus Details stats per type. Returns the fighting numbers the round loop needs.
 function prepare(side) {
   var f = { n: [0, 0, 0], A: [0, 0, 0], D: [0, 0, 0], s2: [false, false, false], tg: [0, 0, 0] };
   var gold = side.truegold !== false;
   for (var t = 0; t < 3; t++) {
-    var tier = (side.tier && side.tier[t]) || 10;
-    var tg = Math.min(MAX_TG, Math.max(0, (side.tg && side.tg[t]) | 0));
+    var b = blend(t, rowsOf(side, t)), tg = b.tg;
     var flat = gold && tg >= 8 ? TRUEGOLD.flatTg8 : 0;
-    f.n[t] = Math.floor(pos(side.n && side.n[t]));
-    f.A[t] = baseAtk(t, tier, tg) * (1 + (pos(side.atk && side.atk[t]) + (t === 2 ? flat : 0)) / 100) * (1 + pos(side.let && side.let[t]) / 100);
-    f.D[t] = baseHea(t, tier, tg) * (1 + (pos(side.def && side.def[t]) + (t === 0 ? flat : 0)) / 100) * (1 + pos(side.hea && side.hea[t]) / 100);
-    f.s2[t] = hasSecondSkill(tier, tg);
+    f.n[t] = b.n;
+    f.A[t] = b.atk * (1 + (pos(side.atk && side.atk[t]) + (t === 2 ? flat : 0)) / 100) * (1 + pos(side.let && side.let[t]) / 100);
+    f.D[t] = b.hea * (1 + (pos(side.def && side.def[t]) + (t === 0 ? flat : 0)) / 100) * (1 + pos(side.hea && side.hea[t]) / 100);
+    f.s2[t] = b.s2;
     f.tg[t] = gold ? tg : 0;
   }
   f.skills = compile(side.skills);
@@ -599,7 +647,7 @@ function sweep(sideA, sideB, opts, onCell) {
   for (var c = 0; c < g.cells.length; c++) {
     var cell = g.cells[c];
     var a = {
-      n: split(total, cell, g.k), tier: sideA.tier, tg: sideA.tg,
+      n: split(total, cell, g.k), tier: sideA.tier, tg: sideA.tg, mix: sideA.mix,
       atk: sideA.atk, let: sideA.let, def: sideA.def, hea: sideA.hea,
       skills: sideA.skills, truegold: sideA.truegold
     };
@@ -629,12 +677,12 @@ function seedOf(obj) {
   return h >>> 0;
 }
 
-export { TIERS, TGS, MAX_TG, TG_HIGH, TRUEGOLD, baseAtk, baseHea, hasSecondSkill, family, factor,
+export { TIERS, TGS, MAX_TG, TG_HIGH, TRUEGOLD, baseAtk, baseHea, hasSecondSkill, blend, family, factor,
   compile, dead, prepare, battle, run, grid, sweep, best, rng, seedOf, BEAR, bearHunt, bearExpect, quantile };
 
 // The same exports as one object: what the page's classic scripts read as window.BattleEngine
 // and what require() returns to the CommonJS checks, until neither needs it.
-const api = { TIERS, TGS, MAX_TG, TG_HIGH, TRUEGOLD, baseAtk, baseHea, hasSecondSkill, family,
+const api = { TIERS, TGS, MAX_TG, TG_HIGH, TRUEGOLD, baseAtk, baseHea, hasSecondSkill, blend, family,
   factor, compile, dead, prepare, battle, run, grid, sweep, best, rng, seedOf, BEAR, bearHunt,
   bearExpect, quantile };
 export { api as default, api as 'module.exports' };

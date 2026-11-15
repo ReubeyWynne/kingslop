@@ -203,6 +203,24 @@ N₀ = min( attacker total troops, defender total troops )
   formula is written in troop fractions, its `√N_tot` comes from substituting
   `N_t = f_t·N_tot`; it is not a separate rally-size multiplier.
 
+### 6.3a Several tiers of one troop type
+
+A march can hold several tiers of one type, and they fight as **one army**: the count is the
+rows' sum, and the base attack (health) is a weighted geometric mean of the rows', each row
+weighted by its share of the type's total attack (health):
+
+```
+A_t = Π_i a_i ^ (n_i·a_i / Σ_j n_j·a_j)        (the same for health)
+```
+
+This is the SoS engine's rule (`Fighter.calcByType` in request-laurent/sos.battle, the engine
+KingShot reuses). The type's troop skills come from its best row: the second skill when any row
+has it, and the Truegold rolls of the highest TG fielded. The battle engine takes the rows as
+`side.mix`; the Battle Simulator's march dialog holds up to three per type. A field Grizzly Bear
+report (Lv27, T9 and T8 within cavalry and archers) checked with the blend still came out
+about 20% under the game's losses, so the blend is not what that gap is made of (owner,
+2026-11-14).
+
 ### 6.4 Widgets (and similar buffs) are just multiplicative percentages
 
 A widget's `w%` multiplies the attack factor: `1 + x/100 = (1 + 234.6/100) × (1 + 7.5/100)`

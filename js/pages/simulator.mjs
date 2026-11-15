@@ -40,6 +40,10 @@ const STATS = [
 ];
 const MARCH = { n: ['sim.dmg.thCount', 'troops'], tier: ['sim.dmg.thTier', 'tier'], tg: ['sim.dmg.thTg', 'TG'] };
 const SIDES = ['sim-', 'sim-foe-'];
+// A march can field several tiers of one troop type, as the game's march screen does: each
+// type has up to three tier rows. Row 1 keeps the original ids (sim-n-inf, sim-tier-inf,
+// sim-tg-inf); rows 2 and 3 add their number (sim-n2-inf …). sim-rows-inf counts the rows shown.
+const SLOTS = ['', '2', '3'];
 
 const MODES = ['bear-ratio', 'bear-damage', 'mystic', 'battle'];
 const DEFAULT_MODE = 'bear-ratio';
@@ -77,6 +81,13 @@ const tierScale = (tier, tg) => E.baseAtk(0, tier, tg) / E.baseAtk(0, REF_TIER, 
 // The archers' second ×1.1 vs the all-infantry bear, from T7+ / TG3+ (MATHS.md §2); the flat
 // ×1.1 is already inside WEIGHTS[2].
 const typeWeight = (i, tier, tg) => WEIGHTS[i] * tierScale(tier, tg) * (i === 2 && E.hasSecondSkill(tier, tg) ? 1.1 : 1);
+// The same weight for a type fielding several tiers: the engine's blend of the rows (taken on
+// the infantry series, like tierScale), with the second skill from the best row.
+const rowsWeight = (i, rows) => {
+  if (rows.length === 1) return typeWeight(i, rows[0].tier, rows[0].tg);
+  const b = E.blend(0, rows);
+  return WEIGHTS[i] * b.atk / E.baseAtk(0, REF_TIER, REF_TG) * (i === 2 && b.s2 ? 1.1 : 1);
+};
 
 // ── Numbers ──
 const locale = () => (globalThis.I18N && I18N.locale) || 'en-GB';
@@ -101,6 +112,8 @@ function blankSheet() {
   SIDES.forEach(p => {
     TYPES.forEach(ty => {
       f[p + 'n-' + ty.key] = '50000'; f[p + 'tier-' + ty.key] = '10'; f[p + 'tg-' + ty.key] = '0';
+      SLOTS.slice(1).forEach(k => { f[p + 'n' + k + '-' + ty.key] = ''; f[p + 'tier' + k + '-' + ty.key] = '10'; f[p + 'tg' + k + '-' + ty.key] = '0'; });
+      f[p + 'rows-' + ty.key] = '1';
       STATS.forEach(s => { f[p + s.key + '-' + ty.key] = p === 'sim-foe-' ? '200' : s.key === 'atk' || s.key === 'def' ? '250' : '163'; });
       f[p + 'hero-' + ty.key] = ''; f[p + 'hero-lv-' + ty.key] = '5'; f[p + 'hero-gear-' + ty.key] = '0';
     });
@@ -112,7 +125,8 @@ const range = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => Stri
 const heroKeys = () => [''].concat(Object.keys((globalThis.CombatData && CombatData.heroSkills) || {}));
 // A select takes back only one of its own options; a typed box takes any text.
 const CHOICES = [
-  [/^sim-(foe-)?tier-/, () => range(1, 11)], [/^sim-(foe-)?tg-/, () => range(0, 8)],
+  [/^sim-(foe-)?tier\d?-/, () => range(1, 11)], [/^sim-(foe-)?tg\d?-/, () => range(0, 8)],
+  [/^sim-(foe-)?rows-/, () => range(1, SLOTS.length)],
   [/-lv-/, () => range(1, 5)], [/-gear-/, () => range(0, 10)],
   [/^sim-(foe-)?(hero|join)-/, heroKeys],
   [/^sim-fight-role$/, () => ['solo', 'rally', 'defender']],
@@ -197,15 +211,49 @@ Alpine.data('simulator', options => {
     },
     // An empty sheet is not a lead with zeroes — it is no answer yet.
     anyStat(prefix) { return STATS.some(s => TYPES.some(ty => { const v = parseFloat(this.f[prefix + s.key + '-' + ty.key]); return isFinite(v) && v > 0; })); },
-    // One side as the engine takes it.
+    // A type's tier rows as shown: [{ n, tier, tg }], row 1 first.
+    shown(prefix, key) { return Math.min(SLOTS.length, Math.max(1, this.pick(prefix + 'rows-' + key, 1))); },
+    rows(prefix, key) {
+      return SLOTS.slice(0, this.shown(prefix, key)).map(k => ({
+        n: Math.max(0, Math.floor(this.num(prefix + 'n' + k + '-' + key))),
+        tier: this.pick(prefix + 'tier' + k + '-' + key, 10), tg: this.pick(prefix + 'tg' + k + '-' + key, 0)
+      }));
+    },
+    typeCount(prefix, key) { return this.rows(prefix, key).reduce((sum, r) => sum + r.n, 0); },
+    // Another tier row for a type, or one taken away: the rows below it move up.
+    addRow(prefix, key) {
+      const k = this.shown(prefix, key);
+      if (k >= SLOTS.length) return;
+      const last = this.rows(prefix, key)[k - 1], slot = SLOTS[k];
+      this.f[prefix + 'n' + slot + '-' + key] = '';
+      this.f[prefix + 'tier' + slot + '-' + key] = String(Math.max(1, last.tier - 1));
+      this.f[prefix + 'tg' + slot + '-' + key] = '0';
+      this.f[prefix + 'rows-' + key] = String(k + 1);
+      this.edited();
+    },
+    removeRow(prefix, key, at) {
+      const k = this.shown(prefix, key);
+      if (k <= 1) return;
+      for (let i = at; i < k - 1; i++) ['n', 'tier', 'tg'].forEach(f => { this.f[prefix + f + SLOTS[i] + '-' + key] = this.f[prefix + f + SLOTS[i + 1] + '-' + key]; });
+      const gone = SLOTS[k - 1];
+      this.f[prefix + 'n' + gone + '-' + key] = ''; this.f[prefix + 'tier' + gone + '-' + key] = '10'; this.f[prefix + 'tg' + gone + '-' + key] = '0';
+      this.f[prefix + 'rows-' + key] = String(k - 1);
+      this.edited();
+    },
+    // One side as the engine takes it. A type with several tier rows goes in as side.mix.
     side(prefix) {
       const side = { n: [], tier: [], tg: [], atk: [], let: [], def: [], hea: [] };
-      TYPES.forEach((ty, i) => {
-        side.n[i] = Math.max(0, Math.floor(this.num(prefix + 'n-' + ty.key)));
-        side.tier[i] = this.pick(prefix + 'tier-' + ty.key, 10);
-        side.tg[i] = this.pick(prefix + 'tg-' + ty.key, 0);
+      let mixed = false;
+      const mix = TYPES.map((ty, i) => {
+        const rows = this.rows(prefix, ty.key);
+        if (rows.length > 1) mixed = true;
+        side.n[i] = rows.reduce((sum, r) => sum + r.n, 0);
+        side.tier[i] = rows[0].tier;
+        side.tg[i] = rows[0].tg;
         STATS.forEach(s => { side[s.key][i] = Math.max(0, this.num(prefix + s.key + '-' + ty.key)); });
+        return rows;
       });
+      if (mixed) side.mix = mix;
       side.skills = globalThis.CombatData ? Combat.side(CombatData, this.lineup(prefix)) : [];
       return side;
     },
@@ -258,10 +306,12 @@ Alpine.data('simulator', options => {
 
     // ── The army tiles ──
     count(id) { const n = Math.max(0, Math.floor(this.num(id))); return n > 0 ? words.fmt(n) : t('sim.army.none', 'none'); },
+    typeCountText(prefix, key) { const n = this.typeCount(prefix, key); return n > 0 ? words.fmt(n) : t('sim.army.none', 'none'); },
     stat(id) { lang(); return Math.max(0, this.num(id)).toLocaleString(locale(), { maximumFractionDigits: 1 }) + '%'; },
-    tier(prefix, key) { return 'T' + this.num(prefix + 'tier-' + key) + ' · TG' + this.num(prefix + 'tg-' + key); },
+    tier(prefix, key) { return this.rows(prefix, key).map(r => 'T' + r.tier + ' · TG' + r.tg).join(' + '); },
     // A troop type the march leaves out reads dimmer on its tile.
     empty(id) { return this.num(id) <= 0 ? '' : null; },
+    emptyType(prefix, key) { return this.typeCount(prefix, key) <= 0 ? '' : null; },
     // The composed accessible names: side, type and stat, in the active language.
     label(prefix, type, field) {
       const ty = TYPES.find(x => x.key === type), s = STATS.find(x => x.key === field), m = MARCH[field];
@@ -300,9 +350,9 @@ Alpine.data('simulator', options => {
       const A = this.leadA(), n = [], q = [];
       let sum = 0, dot = 0, kk = 0;
       TYPES.forEach((ty, i) => {
-        n[i] = Math.max(0, this.num('sim-n-' + ty.key));
+        n[i] = this.typeCount('sim-', ty.key);
         sum += n[i];
-        q[i] = typeWeight(i, this.pick('sim-tier-' + ty.key, 10), this.pick('sim-tg-' + ty.key, 0)) * A[ty.key];
+        q[i] = rowsWeight(i, this.rows('sim-', ty.key)) * A[ty.key];
         dot += q[i] * Math.sqrt(n[i]);
         kk += q[i] * q[i];
       });
@@ -367,7 +417,7 @@ Alpine.data('simulator', options => {
         battles: parseInt(this.f['sim-sw-battles'], 10) || 50,
         minInf: this.frac('sim-sw-mininf', 0), maxInf: this.frac('sim-sw-maxinf', 1),
         minCav: this.frac('sim-sw-mincav', 0), maxCav: this.frac('sim-sw-maxcav', 1),
-        total: TYPES.reduce((sum, ty) => sum + Math.max(0, Math.floor(this.num('sim-n-' + ty.key))), 0)
+        total: TYPES.reduce((sum, ty) => sum + this.typeCount('sim-', ty.key), 0)
       };
     },
     // The mix is what the sweep varies, so only the total enters the key.
@@ -397,7 +447,7 @@ Alpine.data('simulator', options => {
       }
       this.note = null;
       const key = this.sweepKey(you, foe, o);
-      o.seed = E.seedOf([you.tier, you.tg, you.atk, you.let, you.def, you.hea, you.skills, foe, o.total]);
+      o.seed = E.seedOf([you.tier, you.tg, you.mix || null, you.atk, you.let, you.def, you.hea, you.skills, foe, o.total]);
       this.busy = true;
       again = false;
       const started = performance.now(), mixes = E.grid(o).cells.length, planned = mixes * o.battles;
@@ -613,8 +663,8 @@ Alpine.data('simulator', options => {
     },
     get nothingSaved() { const data = this.combat; return !data || (!Object.keys(data.stats).length && !data.troops.some(row => row.amount)); },
     get sealText() { return this.sealed === null ? '' : this.sealed === 'saved' ? t('sim.ledger.saved', 'Saved') : t('sim.ledger.notSaved', 'Not saved'); },
-    // Your stats per type, and the best tier you own per type: a march fights at one tier per
-    // type. Returns whether the save had anything.
+    // Your stats per type, and your troops per type as tier rows, best tier first (up to three,
+    // the march's rows). Returns whether the save had anything.
     load() {
       const data = this.combat;
       if (!data) return false;
@@ -622,10 +672,12 @@ Alpine.data('simulator', options => {
       TYPES.forEach(ty => {
         const row = data.stats[ty.key];
         if (row) { any = true; STATS.forEach(s => this.put('sim-' + s.key + '-' + ty.key, row[s.save])); }
-        const best = data.troops.find(r => r.type === ty.key);
-        if (!best) return;
+        const own = data.troops.filter(r => r.type === ty.key && r.amount > 0)
+          .sort((a, b) => (b.tier - a.tier) || (b.tg - a.tg)).slice(0, SLOTS.length);
+        if (!own.length) return;
         any = true;
-        this.put('sim-tier-' + ty.key, best.tier); this.put('sim-tg-' + ty.key, best.tg); this.put('sim-n-' + ty.key, best.amount);
+        own.forEach((r, i) => { const k = SLOTS[i]; this.put('sim-tier' + k + '-' + ty.key, r.tier); this.put('sim-tg' + k + '-' + ty.key, r.tg); this.put('sim-n' + k + '-' + ty.key, r.amount); });
+        this.put('sim-rows-' + ty.key, own.length);
       });
       if (any) this.edited();
       return any;
@@ -641,10 +693,12 @@ Alpine.data('simulator', options => {
         if (v > 0) entered = true;
         (bag[ty.key] = bag[ty.key] || {})[s.save] = v;
       }));
-      TYPES.forEach(ty => {
-        const n = Math.floor(parseFloat(this.f['sim-n-' + ty.key]));
-        if (isFinite(n) && n > 0) troops.push({ type: ty.key, tier: +this.f['sim-tier-' + ty.key], tg: +this.f['sim-tg-' + ty.key], amount: n });
-      });
+      // Two rows of the same tier and TG are one stock in the save.
+      TYPES.forEach(ty => this.rows('sim-', ty.key).forEach(r => {
+        if (!(r.n > 0)) return;
+        const same = troops.find(x => x.type === ty.key && x.tier === r.tier && x.tg === r.tg);
+        if (same) same.amount += r.n; else troops.push({ type: ty.key, tier: r.tier, tg: r.tg, amount: r.n });
+      }));
       if (!entered) bag = {};
       if (!troops.length && !entered) return false;
       ledger().setCombat({ stats: bag, troops }, 'manual');
