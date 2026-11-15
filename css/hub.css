@@ -18,8 +18,7 @@
 .hub-task-main { display:flex; flex-direction:column; min-width:0; flex:1; }
 .hub-task-main strong { overflow-wrap:anywhere; }
 .hub-holders { color:var(--ink-dim); overflow-wrap:anywhere; }
-.hub-task[data-nobody=true] .hub-holders { color:var(--amber); }
-.hub-task[data-mine=true] .hub-holders { color:var(--ink); }
+.hub-task[data-mine=true] .hub-holders { color:var(--amber); }
 .hub-holder-pick { display:flex; align-items:center; justify-content:space-between; gap:.5rem 1rem; padding:.15rem 0; }
 .hub-holder-pick label { display:flex; align-items:center; gap:.5rem; min-width:0; overflow-wrap:anywhere; }
 .hub-holder-pick input[type=text],.hub-holder-pick input:not([type]) { width:9rem; max-width:45%; }
@@ -28,3 +27,8 @@
 .hub-message { align-items:flex-start; flex-wrap:wrap; }
 .hub-message .hub-task-main { flex:1 1 16rem; min-width:0; }
 .hub-copytext { display:block; max-height:9rem; overflow:auto; padding:.4rem .6rem; border-radius:.4rem; background:color-mix(in srgb,var(--ink-muted) 10%,transparent); font-size:.9em; }
+
+.hub-tabs { gap:.25rem 1.1rem; flex-wrap:wrap; margin:.75rem 0 0; }
+.hub-tabs button { padding:.55rem 0; }
+.hub-preview summary { cursor:pointer; color:var(--ink-dim); padding:.1rem 0; }
+.hub-preview[open] summary { margin-bottom:.25rem; }

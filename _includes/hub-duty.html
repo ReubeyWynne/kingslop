@@ -1,5 +1,5 @@
 {% comment %} One date on the Coming up list (`d` in scope): when, what, who has it. Anyone leading takes it with one tap, or opens it to hand it on or mark it done. {% endcomment %}<div class="hub-task" :data-nobody="String(d.unowned)" :data-mine="String(d.mine)" :data-done="String(d.done)">
-          <span class="hub-task-main"><span class="vv-row-top"><strong x-text="d.task"></strong><span class="vv-avail" x-text="d.until"></span><template x-if="d.done"><span class="vv-avail">Done</span></template></span><span class="hub-holders" x-text="d.when + ' · ' + d.line"></span></span>
+          <span class="hub-task-main"><span class="vv-row-top"><strong x-text="d.task"></strong><template x-if="d.done"><span class="vv-avail">Done</span></template></span><span class="hub-holders" x-text="[d.when, d.until, d.line].filter(Boolean).join(' · ')"></span></span>
           <template x-if="!d.mine && d.unowned && !d.done"><button type="button" class="vv-secondary" :disabled="busy" :aria-label="'Take ' + d.task + ' on ' + d.when" @click="takeDuty(d)">Take</button></template>
           <button type="button" class="vv-quiet" :aria-label="'Open ' + d.task + ' on ' + d.when" @click="editDuty(d)">Open</button>
         </div>
