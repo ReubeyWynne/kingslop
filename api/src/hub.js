@@ -60,8 +60,8 @@ export async function hubRoute(request, env, url, ip, k) {
   if (!part) {
     if (request.method === 'GET') {
       const result = { hub: hubView(hub, isOwner), access: kind(state) };
-      if (isOwner) result.leaders = (await env.DB.prepare('SELECT * FROM hub_leaders WHERE hub_id = ? ORDER BY created_at, id').bind(hubId).all()).results.map(row => leaderView(row, true));
-      else if (kind(state) === 'r4') result.leaders = (await env.DB.prepare("SELECT * FROM hub_leaders WHERE hub_id = ? AND status = 'approved' ORDER BY created_at, id").bind(hubId).all()).results.map(row => leaderView(row, false));
+      if (isOwner) result.leaders = (await env.DB.prepare('SELECT * FROM hub_leaders WHERE hub_id = ? ORDER BY created_at, rowid').bind(hubId).all()).results.map(row => leaderView(row, true));
+      else if (kind(state) === 'r4') result.leaders = (await env.DB.prepare("SELECT * FROM hub_leaders WHERE hub_id = ? AND status = 'approved' ORDER BY created_at, rowid").bind(hubId).all()).results.map(row => leaderView(row, false));
       if (state.leader) result.me = { ...leaderView(state.leader, true) };
       return json(result);
     }
