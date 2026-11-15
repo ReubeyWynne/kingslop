@@ -2,7 +2,7 @@
 // owner's approval, and members read through one member link. Codes work like the Vikings
 // ones: random, stored only as hashes, sent in the Authorization header.
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
-import { STARTER_TASKS } from './hub-tasks.js';
+import { STARTER_TASKS, STARTER_ROLES } from './hub-tasks.js';
 import Cadence from '../../js/hub-engine.mjs';
 const HUB_FIELDS = ['name', 'ownerName'];
 const SECTIONS = ['rules', 'notes', 'times'];
@@ -24,6 +24,13 @@ export async function hubRoute(request, env, url, ip, k) {
   const { HttpError, requireValue, text, integer, body, secret, digest, json, bearer, nowIso, KEEP_MS, limit } = k;
 
   const starterTasks = (hubId, now) => STARTER_TASKS.map(([name, pub, cadence], i) => env.DB.prepare('INSERT INTO hub_tasks (id, hub_id, name, is_public, position, created_at, cadence) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(crypto.randomUUID(), hubId, name, Number(pub), i + 1, now, cadence ? JSON.stringify(cadence) : null));
+
+  // The starter roles, over the starter tasks made just before them in the same batch.
+  const starterRoles = (hubId, now) => STARTER_ROLES.flatMap(([name, tasks], i) => {
+    const id = crypto.randomUUID();
+    return [env.DB.prepare('INSERT INTO hub_roles (id, hub_id, name, position, created_at) VALUES (?, ?, ?, ?, ?)').bind(id, hubId, name, i + 1, now),
+      ...tasks.map(task => env.DB.prepare('INSERT INTO hub_role_tasks (role_id, task_id) SELECT ?, id FROM hub_tasks WHERE hub_id = ? AND name = ?').bind(id, hubId, task))];
+  });
 
   async function access(hubId) {
     const token = await env.DB.prepare('SELECT role, leader_id FROM hub_tokens WHERE token_hash = ? AND hub_id = ?').bind(await digest(bearer(request)), hubId).first();
@@ -73,6 +80,47 @@ export async function hubRoute(request, env, url, ip, k) {
     throw new HttpError(405, 'Method not allowed.');
   }
 
+  // Roles: named bundles of tasks. The owner shapes them; an owner or approved R4 enlists, which takes every task in the
+  // role, and steps back, which drops them. A role has no holders of its own: whoever holds all its tasks covers it.
+  async function rolesRoute([, hubId, roleId, segment, target]) {
+    requireValue(UUID.test(hubId) && (!roleId || UUID.test(roleId)) && (!target || ['me', 'owner'].includes(target) || UUID.test(target)), 'Endpoint not found.', 404);
+    const state = await access(hubId), { token } = state, isOwner = token.role === 'owner', leader = kind(state) === 'r4';
+    const tasksOf = async value => {
+      requireValue(Array.isArray(value) && value.length <= 40 && new Set(value).size === value.length && value.every(id => typeof id === 'string' && UUID.test(id)), 'Choose tasks from this hub.');
+      for (const id of value) requireValue(await env.DB.prepare('SELECT 1 AS ok FROM hub_tasks WHERE id = ? AND hub_id = ?').bind(id, hubId).first(), 'Choose tasks from this hub.', 404);
+      return value;
+    };
+    const link = (id, ids) => ids.map(task => env.DB.prepare('INSERT INTO hub_role_tasks (role_id, task_id) VALUES (?, ?)').bind(id, task));
+    if (!roleId && request.method === 'POST') {
+      owner(token);
+      const input = await body(request, ['name', 'taskIds'], 'Role'), ids = await tasksOf(input.taskIds ?? []), last = await env.DB.prepare('SELECT max(position) AS n FROM hub_roles WHERE hub_id = ?').bind(hubId).first(), id = crypto.randomUUID();
+      await env.DB.batch([env.DB.prepare('INSERT INTO hub_roles (id, hub_id, name, position, created_at) VALUES (?, ?, ?, ?, ?)').bind(id, hubId, text(input.name, 'name', 40, true), (last.n || 0) + 1, nowIso()), ...link(id, ids)]);
+      return json({ id }, 201);
+    }
+    requireValue(roleId, 'Endpoint not found.', 404);
+    const role = await env.DB.prepare('SELECT * FROM hub_roles WHERE id = ? AND hub_id = ?').bind(roleId, hubId).first();
+    requireValue(role, 'Role not found.', 404);
+    if (!segment && request.method === 'PUT') {
+      owner(token);
+      const input = await body(request, ['name', 'taskIds'], 'Role'), ids = 'taskIds' in input ? await tasksOf(input.taskIds) : null;
+      await env.DB.batch([env.DB.prepare('UPDATE hub_roles SET name = ? WHERE id = ?').bind('name' in input ? text(input.name, 'name', 40, true) : role.name, roleId), ...(ids ? [env.DB.prepare('DELETE FROM hub_role_tasks WHERE role_id = ?').bind(roleId), ...link(roleId, ids)] : [])]);
+      return json({ ok: true });
+    }
+    if (!segment && request.method === 'DELETE') { owner(token); await env.DB.prepare('DELETE FROM hub_roles WHERE id = ?').bind(roleId).run(); return new Response(null, { status: 204 }); }
+    if (segment === 'enlist' && ['PUT', 'DELETE'].includes(request.method)) {
+      requireValue(isOwner || leader, 'Only the owner and approved R4s can take roles.', 403);
+      const own = isOwner ? 'owner' : state.leader.id, holder = target === 'me' ? own : target;
+      requireValue(isOwner || holder === own, 'You can only change your own roles.', 403);
+      if (holder !== 'owner') requireValue(await env.DB.prepare("SELECT 1 AS ok FROM hub_leaders WHERE id = ? AND hub_id = ? AND status = 'approved'").bind(holder, hubId).first(), 'That R4 is not on this hub.', 404);
+      const ids = (await env.DB.prepare('SELECT task_id FROM hub_role_tasks WHERE role_id = ?').bind(roleId).all()).results.map(r => r.task_id);
+      await env.DB.batch(ids.map(task => request.method === 'PUT'
+        ? env.DB.prepare("INSERT INTO hub_claims (task_id, holder, label, created_at) VALUES (?, ?, '', ?) ON CONFLICT (task_id, holder) DO NOTHING").bind(task, holder, nowIso())
+        : env.DB.prepare('DELETE FROM hub_claims WHERE task_id = ? AND holder = ?').bind(task, holder)));
+      return request.method === 'PUT' ? json({ ok: true }) : new Response(null, { status: 204 });
+    }
+    throw new HttpError(405, 'Method not allowed.');
+  }
+
   // A cadence and a duty rule from a request body, checked: `cadence` null clears it, and a field left out stays as it was.
   function cadenceInput(input) {
     const out = {};
@@ -98,7 +146,7 @@ export async function hubRoute(request, env, url, ip, k) {
       owner(token);
       await body(request, [], 'Task');
       requireValue((await env.DB.prepare('SELECT count(*) AS n FROM hub_tasks WHERE hub_id = ?').bind(hubId).first()).n === 0, 'This hub already has tasks.', 409);
-      await env.DB.batch(starterTasks(hubId, nowIso()));
+      await env.DB.batch([...starterTasks(hubId, nowIso()), ...starterRoles(hubId, nowIso())]);
       return json({ ok: true }, 201);
     }
     if (taskId && taskId !== 'template' && !segment && request.method === 'PATCH') {
@@ -164,9 +212,11 @@ export async function hubRoute(request, env, url, ip, k) {
     const id = crypto.randomUUID(), now = nowIso(), expiresAt = new Date(Date.now() + KEEP_MS).toISOString();
     const codes = { owner: secret(), invite: secret(), member: secret() };
     const tokens = await Promise.all(Object.entries(codes).map(async ([role, code]) => env.DB.prepare('INSERT INTO hub_tokens (token_hash, hub_id, role) VALUES (?, ?, ?)').bind(await digest(code), id, role)));
-    await env.DB.batch([env.DB.prepare('INSERT INTO hubs (id, name, owner_name, created_at, updated_at, expires_at) VALUES (?, ?, ?, ?, ?, ?)').bind(id, name, ownerName, now, now, expiresAt), ...tokens, ...starterTasks(id, now)]);
+    await env.DB.batch([env.DB.prepare('INSERT INTO hubs (id, name, owner_name, created_at, updated_at, expires_at) VALUES (?, ?, ?, ?, ?, ?)').bind(id, name, ownerName, now, now, expiresAt), ...tokens, ...starterTasks(id, now), ...starterRoles(id, now)]);
     return json({ hub: hubView(await env.DB.prepare('SELECT * FROM hubs WHERE id = ?').bind(id).first(), true), codes }, 201);
   }
+  const roles = url.pathname.match(/^\/v1\/hubs\/([^/]+)\/roles(?:\/([^/]+)(?:\/(enlist)\/([^/]+))?)?$/);
+  if (roles) return rolesRoute(roles);
   const templates = url.pathname.match(/^\/v1\/hubs\/([^/]+)\/templates(?:\/([^/]+))?$/);
   if (templates) return templatesRoute(templates);
   const tasks = url.pathname.match(/^\/v1\/hubs\/([^/]+)\/tasks(?:\/([^/]+)(?:\/(claims|duties)\/([^/]+))?)?$/);
@@ -201,6 +251,10 @@ export async function hubRoute(request, env, url, ip, k) {
           const owners = taker ? [taker.name] : t.duty_rule === 'usual' ? holders : [];
           return { taskId: t.id, task: t.name, date, taker, owners, unowned: !owners.length, done: Boolean(row && row.done) };
         })).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+      }
+      if (leadership) {
+        const links = (await env.DB.prepare('SELECT rt.* FROM hub_role_tasks rt JOIN hub_roles r ON r.id = rt.role_id WHERE r.hub_id = ?').bind(hubId).all()).results;
+        result.roles = (await env.DB.prepare('SELECT * FROM hub_roles WHERE hub_id = ? ORDER BY position, rowid').bind(hubId).all()).results.map(r => ({ id: r.id, name: r.name, taskIds: taskRows.filter(t => links.some(l => l.role_id === r.id && l.task_id === t.id)).map(t => t.id) }));
       }
       if (leadership) result.templates = (await env.DB.prepare('SELECT * FROM hub_templates WHERE hub_id = ? ORDER BY position, rowid').bind(hubId).all()).results.map(t => ({ id: t.id, title: t.title, body: t.body, taskId: t.task_id, editedBy: t.edited_by, editedAt: t.edited_at }));
       if (state.leader) result.me = { ...leaderView(state.leader, true) };

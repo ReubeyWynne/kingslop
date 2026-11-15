@@ -43,8 +43,8 @@ Alpine.data('hub', api => {
   let timer = null, disposed = false;
   return {
     state: null, credential: null, pending: null, busy: false, opened: false, message: '', error: false,
-    dialog: null, dialogMessage: '', renders: 0, tab: '',
-    forms: { link: '', create: null, settings: null, section: null, join: '', claim: null, task: null, duty: null, template: null },
+    dialog: null, dialogMessage: '', renders: 0, tab: '', asMember: false,
+    forms: { link: '', create: null, settings: null, section: null, join: '', claim: null, task: null, duty: null, template: null, role: null },
     weekdays: Cadence.WEEKDAYS.map((label, value) => ({ value: String(value), label })),
 
     init() {
@@ -59,12 +59,16 @@ Alpine.data('hub', api => {
 
     /* ---- reading the hub ---- */
     get access() { return this.state ? this.state.access : null; },
-    get owner() { return this.access === 'owner'; },
-    get canEdit() { return this.owner || this.access === 'r4'; },
+    // A leader can look at the hub as a member does: the same panes, read only, nothing of the leaders' own.
+    get leader() { return this.access === 'owner' || this.access === 'r4'; },
+    get owner() { return this.access === 'owner' && !this.asMember; },
+    get r4() { return this.access === 'r4' && !this.asMember; },
+    get canEdit() { return this.owner || this.r4; },
+    preview() { this.asMember = !this.asMember; this.tab = ''; this.close(); window.scrollTo(0, 0); },
     get mine() { return { text: this.state && this.state.me && this.credential ? 'Open ' + this.state.hub.name + ': ' + linkTo('leader', this.credential.code) : '' }; },
     get bar() {
-      const s = this.state, who = { owner: 'Owner · ' + s.hub.ownerName, r4: 'R4 · ' + (s.me ? s.me.name : ''), waiting: 'Waiting · ' + (s.me ? s.me.name : ''), invite: 'Invitation', member: 'Member' }[s.access];
-      return { label: who, line: s.hub.ownerName + (s.access === 'owner' ? '' : ' leads this alliance') };
+      const s = this.state, who = this.asMember ? 'Member view' : { owner: 'Owner · ' + s.hub.ownerName, r4: 'R4 · ' + (s.me ? s.me.name : ''), waiting: 'Waiting · ' + (s.me ? s.me.name : ''), invite: 'Invitation', member: 'Member' }[s.access];
+      return { label: who, line: s.hub.ownerName + (s.access === 'owner' && !this.asMember ? '' : ' leads this alliance') };
     },
     get sections() {
       const s = this.state; if (!s) return [];
@@ -89,12 +93,23 @@ Alpine.data('hub', api => {
       return list;
     },
     get view() { return this.tabs.some(t => t.key === this.tab) ? this.tab : this.tabs[0].key; },
-    get leadership() { return this.owner || this.access === 'r4'; },
+    get leadership() { return this.owner || this.r4; },
     // Who I am on a task: the owner holds as 'owner', an R4 under their own id.
     get myId() { return this.owner ? 'owner' : this.state && this.state.me ? this.state.me.id : null; },
     get tasks() {
       const s = this.state; if (!s) return [];
-      return (s.tasks || []).map(t => ({ ...t, mine: t.holders.some(h => h.id && h.id === this.myId), nobody: this.leadership && !t.holders.length, line: t.holders.map(h => h.label ? h.name + ' (' + h.label + ')' : h.name).join(' · ') }));
+      // As a member sees it: only the public tasks somebody holds.
+      return (s.tasks || []).filter(t => !this.asMember || (t.public && t.holders.length)).map(t => ({ ...t, mine: t.holders.some(h => h.id && h.id === this.myId), nobody: this.leadership && !t.holders.length, line: t.holders.map(h => h.label ? h.name + ' (' + h.label + ')' : h.name).join(' · ') }));
+    },
+    // Roles bundle tasks. Whoever holds every task in one is covering it, so the page works that out from the tasks.
+    get roles() {
+      if (!this.leadership || !this.state) return [];
+      const tasks = this.tasks;
+      return (this.state.roles || []).map(r => {
+        const own = r.taskIds.map(id => tasks.find(t => t.id === id)).filter(Boolean);
+        const covering = own.length ? own[0].holders.filter(h => h.id && own.every(t => t.holders.some(x => x.id === h.id))) : [];
+        return { ...r, count: own.length, line: own.map(t => t.name).join(' · '), covering: covering.map(h => h.name).join(' · '), mine: covering.some(h => h.id === this.myId), empty: !own.length };
+      });
     },
     get duties() { return this.leadership && this.state ? (this.state.duties || []).map(d => ({ ...d, day: dayLabel(d.date), when: dateLabel(d.date), until: until(d.date), mine: !!d.taker && d.taker.id === this.myId, line: d.owners.join(' · ') })) : []; },
     // The dates in the order they fall, grouped by week: this week, next week, then "Week of …".
@@ -247,6 +262,10 @@ Alpine.data('hub', api => {
             else if (!p.on && p.was) await this.request(base + '/' + id + '/claims/' + p.id, 'DELETE');
           }
           await this.load(); this.close(); this.say('Saved.');
+        } else if (kind === 'role') {
+          const f = this.forms.role, base = '/v1/hubs/' + this.state.hub.id + '/roles', body = { name: f.name, taskIds: f.tasks.filter(t => t.on).map(t => t.id) };
+          await this.request(f.id ? base + '/' + f.id : base, f.id ? 'PUT' : 'POST', body);
+          await this.load(); this.close(); this.say('Saved.');
         } else if (kind === 'template') {
           const f = this.forms.template, base = '/v1/hubs/' + this.state.hub.id + '/templates', body = { title: f.title, body: f.body, taskId: f.taskId || null };
           await this.request(f.id ? base + '/' + f.id : base, f.id ? 'PUT' : 'POST', body);
@@ -273,6 +292,14 @@ Alpine.data('hub', api => {
       return { text, wide: c.wide, parts: c.parts.length, open: Messages.gaps(f.body).filter(g => !Messages.GAPS.includes(g)), left: 1000 - f.body.length, gaps: Messages.GAPS.map(g => '{' + g + '}').join(' ') };
     },
     removeTemplate(f) { return this.ask('Remove ' + f.title + '?', 'Everyone leading loses this message.', 'Remove', async () => { await this.request('/v1/hubs/' + this.state.hub.id + '/templates/' + f.id, 'DELETE'); this.close(); await this.load(); this.say('Removed.'); }); },
+    enlist(r) { return this.mutate('/roles/' + r.id + '/enlist/me', 'PUT'); },
+    stepBack(r) { return this.mutate('/roles/' + r.id + '/enlist/me', 'DELETE'); },
+    editRole(r) {
+      const found = r && this.state.roles.find(x => x.id === r.id);
+      this.forms.role = { id: found ? found.id : '', name: found ? found.name : '', tasks: this.tasks.map(t => ({ id: t.id, name: t.name, on: !!found && found.taskIds.includes(t.id) })) };
+      this.modal('role', found ? found.name : 'New role');
+    },
+    removeRole(f) { return this.ask('Remove ' + f.name + '?', 'Its tasks and who holds them stay.', 'Remove', async () => { await this.request('/v1/hubs/' + this.state.hub.id + '/roles/' + f.id, 'DELETE'); this.close(); await this.load(); this.say('Removed.'); }); },
     take(t) { return this.mutate('/tasks/' + t.id + '/claims/me', 'PUT', { label: '' }); },
     claim(t) { const mine = t.holders.find(h => h.id === this.myId); this.forms.claim = { id: t.id, label: mine ? mine.label : '' }; this.modal('claim', t.name); },
     drop(id) { return this.run(async () => { await this.request('/v1/hubs/' + this.state.hub.id + '/tasks/' + id + '/claims/me', 'DELETE'); this.close(); await this.load(); }); },

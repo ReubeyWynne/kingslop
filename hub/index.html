@@ -18,7 +18,7 @@ self: hub
 
   <template x-if="state"><div class="vv-contents">
     <section class="vv-event" aria-label="Your place in the hub">
-      <div class="vv-bar-head"><div><p class="vv-label" x-text="bar.label"></p><p class="vv-dim" x-text="bar.line"></p></div><button type="button" class="vv-quiet" @click="leave()">Leave</button></div>
+      <div class="vv-bar-head"><div><p class="vv-label" x-text="bar.label"></p><p class="vv-dim" x-text="bar.line"></p></div><div class="hub-bar-actions"><template x-if="leader"><button type="button" :class="asMember ? 'vv-primary' : 'vv-quiet'" @click="preview()" x-text="asMember ? 'Back to leading' : 'Member view'"></button></template><button type="button" class="vv-quiet" @click="leave()">Leave</button></div></div>
     </section>
 
     <template x-if="tabs.length > 1"><div class="vv-tabs hub-tabs" role="tablist" aria-label="Hub sections"><template x-for="t in tabs" :key="t.key"><button type="button" role="tab" :aria-selected="String(view === t.key)" @click="tab = t.key" x-text="t.label"></button></template></div></template>
@@ -59,7 +59,17 @@ self: hub
     </div></template>
 
     <template x-if="view === 'tasks'"><div :class="leadership ? 'vv-contents' : 'loose-leaf hub-leaf'">
-    <template x-if="tasks.length || owner"><section class="hub-section" id="tasks" aria-labelledby="tasks-title">
+    <template x-if="roles.length || (owner && tasks.length)"><section class="hub-section" id="roles" aria-labelledby="roles-title">
+      <div class="vv-heading"><h2 id="roles-title">Roles</h2><template x-if="owner"><button type="button" class="vv-quiet" @click="editRole(null)">Add a role</button></template></div>
+      <div class="hub-tasks"><template x-for="r in roles" :key="r.id"><div class="hub-task hub-role" :data-nobody="String(!r.covering)" :data-mine="String(r.mine)">
+        <span class="hub-task-main"><span class="vv-row-top"><strong x-text="r.name"></strong></span><span class="hub-holders"><template x-if="!r.covering"><output class="hub-slot" data-tally="blank">Nobody yet</output></template><span x-text="r.covering"></span></span><span class="hub-role-tasks vv-caption" x-text="r.line"></span></span>
+        <template x-if="owner"><button type="button" class="vv-quiet" :aria-label="'Edit ' + r.name" @click="editRole(r)">Edit</button></template>
+        <template x-if="canEdit && !r.mine && !r.empty"><button type="button" class="vv-secondary" :disabled="busy" :aria-label="'Enlist for ' + r.name" @click="enlist(r)">Enlist</button></template>
+        <template x-if="canEdit && r.mine"><button type="button" class="vv-primary" :disabled="busy" :aria-label="'Step back from ' + r.name" @click="stepBack(r)">Mine</button></template>
+      </div></template></div>
+    </section></template>
+
+        <template x-if="tasks.length || owner"><section class="hub-section" id="tasks" aria-labelledby="tasks-title">
       <div class="vv-heading"><h2 id="tasks-title" x-text="leadership ? 'Tasks' : 'Who to ask'"></h2><template x-if="owner"><button type="button" class="vv-quiet" @click="editTask(null)">Add a task</button></template></div>
       <div class="hub-tasks"><template x-for="t in tasks" :key="t.id"><div class="hub-task" :data-nobody="String(t.nobody)" :data-mine="String(t.mine)">
         <span class="hub-task-main"><span class="vv-row-top"><strong x-text="t.name"></strong></span><span class="hub-holders"><template x-if="t.nobody"><output class="hub-slot" data-tally="blank">Nobody yet</output></template><span x-text="[t.line, leadership && t.cadence ? t.cadenceText : ''].filter(Boolean).join(' · ')"></span></span><template x-if="t.note"><span class="vv-caption" x-text="t.note"></span></template></span>
@@ -84,9 +94,9 @@ self: hub
     </section></template>
     </div></template>
 
-    <template x-if="owner || access === 'r4'"><div class="vv-actions vv-lead">
+    <template x-if="leadership"><div class="vv-actions vv-lead">
       <template x-if="owner"><button type="button" class="vv-primary" @click="share()">Links</button></template>
-      <template x-if="access === 'r4'"><button type="button" class="vv-secondary" @click="copy(mine.text)" x-text="'Copy my sign-in link'"></button></template>
+      <template x-if="r4"><button type="button" class="vv-secondary" @click="copy(mine.text)" x-text="'Copy my sign-in link'"></button></template>
     </div></template>
     <template x-if="owner"><details class="vv-tools" id="hub-tools" x-effect="renders; $el.open = false"><summary>More</summary><div class="vv-actions"><button type="button" @click="settings()">Settings</button><button type="button" @click="handover()">Hand over</button><button type="button" @click="refresh()">Refresh</button><button type="button" class="vv-danger" @click="deleteHub()">Delete</button></div></details></template>
   </div></template>
@@ -122,6 +132,12 @@ self: hub
         <p class="vv-label">Held by</p>
         <template x-for="p in forms.task.people" :key="p.id"><div class="hub-holder-pick"><label><input type="checkbox" :name="'holder-' + p.id" x-model="p.on"><span x-text="p.name"></span></label><input :name="'label-' + p.id" :aria-label="p.name + ' part'" x-model="p.label" maxlength="40" placeholder="Part" :disabled="!p.on"></div></template>
         <div class="vv-actions vv-foot"><template x-if="forms.task.id"><button type="button" class="vv-danger" @click="removeTask(forms.task)">Remove</button></template><button type="submit" class="vv-primary" :disabled="busy">Save</button></div>
+      </form></template>
+      <template x-if="dialog && dialog.kind === 'role'"><form @submit.prevent="send('role')">
+        <label>Role<input name="name" x-model="forms.role.name" required maxlength="40"></label>
+        <p class="vv-label">Its tasks</p>
+        <template x-for="t in forms.role.tasks" :key="t.id"><label class="vv-chip hub-role-pick"><input type="checkbox" :name="'task-' + t.id" x-model="t.on"><span x-text="t.name"></span></label></template>
+        <div class="vv-actions vv-foot"><template x-if="forms.role.id"><button type="button" class="vv-danger" @click="removeRole(forms.role)">Remove</button></template><button type="submit" class="vv-primary" :disabled="busy">Save</button></div>
       </form></template>
       <template x-if="dialog && dialog.kind === 'template'"><form @submit.prevent="send('template')">
         <div class="vv-form-grid"><label class="vv-wide">Title<input name="title" x-model="forms.template.title" required maxlength="60"></label>

@@ -359,6 +359,7 @@ export default {
       if (error instanceof HttpError) response = json({ error: error.message }, error.status);
       else if (/hub_leader_limit/.test(error.message)) response = json({ error: 'This hub has reached its 60-R4 limit.' }, 409);
       else if (/hub_waiting_limit/.test(error.message)) response = json({ error: 'Too many R4s are waiting for approval. Ask the R5 to approve or remove some.' }, 409);
+      else if (/hub_role_limit/.test(error.message)) response = json({ error: 'A hub holds at most 20 roles.' }, 409);
       else if (/hub_template_limit/.test(error.message)) response = json({ error: 'A hub holds at most 40 messages.' }, 409);
       else if (/hub_task_limit/.test(error.message)) response = json({ error: 'A hub holds at most 40 tasks.' }, 409);
       else if (/registration_limit/.test(error.message)) response = json({ error: 'This plan has reached its 120-player limit.' }, 409);

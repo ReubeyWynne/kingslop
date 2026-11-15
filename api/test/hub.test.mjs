@@ -205,7 +205,7 @@ test('a new hub starts with the sixteen tasks, public ones first, and the owner 
   const env = environment(), hub = await create(env), path = `/v1/hubs/${hub.hub.id}`;
   const all = await tasksOf(env, hub, hub.codes.owner);
   assert.equal(all.length, 16);
-  assert.deepEqual(all.slice(0, 3).map(t => t.name), ['Alliance Championship Signups', 'Swordland Signups', 'Tri-Alliance Signups']);
+  assert.deepEqual(all.slice(0, 3).map(t => t.name), ['Run Alliance Championship signups', 'Run Swordland signups', 'Run Tri-Alliance signups']);
   assert.equal(all.filter(t => t.public).length, 8);
   assert.equal((await tasksOf(env, hub, hub.codes.member)).length, 0, 'members see public tasks only once somebody holds them');
   assert.equal((await call(env, `${path}/tasks/template`, 'POST', {}, hub.codes.owner)).status, 409);
@@ -221,7 +221,7 @@ test('claims: several holders per task, labels, R4s change only their own, the o
   const env = environment(), hub = await create(env), path = `/v1/hubs/${hub.hub.id}`;
   const bran = await join(env, hub, 'Bran'), cara = await join(env, hub, 'Cara'), waiting = await join(env, hub, 'Waiting');
   for (const r of [bran, cara]) await call(env, `${path}/leaders/${r.leader.id}/approve`, 'POST', undefined, hub.codes.owner);
-  const tasks = await tasksOf(env, hub, hub.codes.owner), bear = tasks.find(t => t.name === 'Bear Management'), nap = tasks.find(t => t.name === 'NAP Enforcer');
+  const tasks = await tasksOf(env, hub, hub.codes.owner), bear = tasks.find(t => t.name === 'Run the Bear traps'), nap = tasks.find(t => t.name === 'Enforce NAPs');
 
   assert.equal((await call(env, `${path}/tasks/${bear.id}/claims/me`, 'PUT', { label: 'Trap 1' }, bran.code)).status, 200);
   assert.equal((await call(env, `${path}/tasks/${bear.id}/claims/me`, 'PUT', { label: 'Trap 2' }, cara.code)).status, 200);
@@ -245,7 +245,7 @@ test('claims: several holders per task, labels, R4s change only their own, the o
 
   // Members see only public tasks that somebody holds, with names and labels but no ids.
   const seen = await tasksOf(env, hub, hub.codes.member);
-  assert.deepEqual(seen.map(t => t.name), ['Bear Management']);
+  assert.deepEqual(seen.map(t => t.name), ['Run the Bear traps']);
   assert.deepEqual(seen[0].holders, [{ name: 'Cara', label: 'Trap 2' }, { name: 'Owner', label: 'Trap 3 (Academy)' }]);
   assert.ok(!JSON.stringify(await tasksOf(env, hub, waiting.code)).includes(nap.id));
 
@@ -288,17 +288,17 @@ test('the starter tasks fall due on the right days, for leaders only', () => onT
   const env = environment(), hub = await create(env);
   const duties = await dutiesOf(env, hub, hub.codes.owner);
   const dates = name => duties.filter(d => d.task === name).map(d => d.date);
-  assert.deepEqual(dates('Swordland Signups'), ['2026-11-26', '2026-12-10']);
-  assert.deepEqual(dates('Tri-Alliance Signups'), ['2026-11-26']);
-  assert.deepEqual(dates('Vikings HQ Management'), ['2026-11-19', '2026-12-03']);
-  assert.deepEqual(dates('Alliance Championship Signups'), ['2026-11-16', '2026-11-23', '2026-11-30', '2026-12-07']);
-  assert.deepEqual(dates('Sanctuary Reward Distribution'), ['2026-11-20', '2026-11-27', '2026-12-04', '2026-12-11']);
+  assert.deepEqual(dates('Run Swordland signups'), ['2026-11-26', '2026-12-10']);
+  assert.deepEqual(dates('Run Tri-Alliance signups'), ['2026-11-26']);
+  assert.deepEqual(dates('Pick the Vikings HQ lineup'), ['2026-11-19', '2026-12-03']);
+  assert.deepEqual(dates('Run Alliance Championship signups'), ['2026-11-16', '2026-11-23', '2026-11-30', '2026-12-07']);
+  assert.deepEqual(dates('Hand out Sanctuary rewards'), ['2026-11-20', '2026-11-27', '2026-12-04', '2026-12-11']);
   assert.deepEqual(duties.map(d => d.date), [...duties.map(d => d.date)].sort());
   assert.ok(duties.every(d => d.unowned && !d.done && d.taker === null));
   const tasks = await tasksOf(env, hub, hub.codes.owner);
-  assert.deepEqual(tasks.find(t => t.name === 'Tri-Alliance Signups').cadence, { type: 'wheel', days: [18] });
-  assert.equal(tasks.find(t => t.name === 'Vikings HQ Management').cadenceText, 'Vikings, Thursdays');
-  assert.equal(tasks.find(t => t.name === 'Bear Management').cadence, null);
+  assert.deepEqual(tasks.find(t => t.name === 'Run Tri-Alliance signups').cadence, { type: 'wheel', days: [18] });
+  assert.equal(tasks.find(t => t.name === 'Pick the Vikings HQ lineup').cadenceText, 'Vikings, Thursdays');
+  assert.equal(tasks.find(t => t.name === 'Run the Bear traps').cadence, null);
   const member = await (await call(env, `/v1/hubs/${hub.hub.id}`, 'GET', undefined, hub.codes.member)).json();
   assert.equal(member.duties, undefined);
   assert.ok(!JSON.stringify(member).includes('cadence'));
@@ -308,9 +308,9 @@ test('the starter tasks fall due on the right days, for leaders only', () => onT
 test('an untaken date falls to the task holders unless the task must be claimed each time', () => onTheDay(async () => {
   const env = environment(), hub = await create(env), path = `/v1/hubs/${hub.hub.id}`, bran = await join(env, hub, 'Bran');
   await call(env, `${path}/leaders/${bran.leader.id}/approve`, 'POST', undefined, hub.codes.owner);
-  const sanctuary = (await tasksOf(env, hub, hub.codes.owner)).find(t => t.name === 'Sanctuary Reward Distribution');
+  const sanctuary = (await tasksOf(env, hub, hub.codes.owner)).find(t => t.name === 'Hand out Sanctuary rewards');
   await call(env, `${path}/tasks/${sanctuary.id}/claims/me`, 'PUT', {}, bran.code);
-  const next = async () => (await dutiesOf(env, hub, hub.codes.owner)).find(d => d.task === 'Sanctuary Reward Distribution' && d.date === '2026-11-20');
+  const next = async () => (await dutiesOf(env, hub, hub.codes.owner)).find(d => d.task === 'Hand out Sanctuary rewards' && d.date === '2026-11-20');
   assert.deepEqual([(await next()).owners, (await next()).unowned], [['Bran'], false]);
   assert.equal((await call(env, `${path}/tasks/${sanctuary.id}`, 'PATCH', { dutyRule: 'claim' }, hub.codes.owner)).status, 200);
   assert.deepEqual([(await next()).owners, (await next()).unowned], [[], true]);
@@ -322,8 +322,8 @@ test('taking, handing on, releasing and finishing a date, with who may do what',
   const env = environment(), hub = await create(env), path = `/v1/hubs/${hub.hub.id}`;
   const bran = await join(env, hub, 'Bran'), cara = await join(env, hub, 'Cara'), waiting = await join(env, hub, 'Waiting');
   for (const r of [bran, cara]) await call(env, `${path}/leaders/${r.leader.id}/approve`, 'POST', undefined, hub.codes.owner);
-  const task = (await tasksOf(env, hub, hub.codes.owner)).find(t => t.name === 'Swordland Signups'), at = `${path}/tasks/${task.id}/duties/2026-11-26`;
-  const row = async code => (await dutiesOf(env, hub, code)).find(d => d.task === 'Swordland Signups' && d.date === '2026-11-26');
+  const task = (await tasksOf(env, hub, hub.codes.owner)).find(t => t.name === 'Run Swordland signups'), at = `${path}/tasks/${task.id}/duties/2026-11-26`;
+  const row = async code => (await dutiesOf(env, hub, code)).find(d => d.task === 'Run Swordland signups' && d.date === '2026-11-26');
 
   assert.equal((await call(env, at, 'PUT', { taker: 'me' }, bran.code)).status, 200);
   assert.deepEqual((await row(hub.codes.owner)).taker, { id: bran.leader.id, name: 'Bran' });
@@ -384,7 +384,7 @@ test('messages: the owner and approved R4s write them, nobody else reads them, a
   const env = environment(), hub = await create(env), path = `/v1/hubs/${hub.hub.id}`, owner = hub.codes.owner;
   const bran = await join(env, hub, 'Bran'), waiting = await join(env, hub, 'Waiting');
   await call(env, `${path}/leaders/${bran.leader.id}/approve`, 'POST', undefined, owner);
-  const swordland = (await tasksOf(env, hub, owner)).find(t => t.name === 'Swordland Signups');
+  const swordland = (await tasksOf(env, hub, owner)).find(t => t.name === 'Run Swordland signups');
   const read = async code => (await (await call(env, path, 'GET', undefined, code)).json()).templates;
 
   const made = await call(env, `${path}/templates`, 'POST', { title: 'Swordland call', body: 'SWORDLAND {date}\nAsk {holder}', taskId: swordland.id }, bran.code);
@@ -421,5 +421,54 @@ test('messages: the owner and approved R4s write them, nobody else reads them, a
   assert.equal(full.status, 409); assert.match((await full.json()).error, /40 messages/);
   assert.equal((await call(env, path, 'DELETE', undefined, owner)).status, 204);
   assert.equal(env.sql.prepare('SELECT count(*) AS n FROM hub_templates').get().n, 0);
+  env.sql.close();
+});
+
+test('roles: bundles of tasks that sit on top of claims; enlisting takes every task, stepping back drops them', async () => {
+  const env = environment(), hub = await create(env), path = `/v1/hubs/${hub.hub.id}`, owner = hub.codes.owner;
+  const bran = await join(env, hub, 'Bran'), waiting = await join(env, hub, 'Waiting');
+  await call(env, `${path}/leaders/${bran.leader.id}/approve`, 'POST', undefined, owner);
+  const read = async code => (await (await call(env, path, 'GET', undefined, code)).json());
+  const state = await read(owner), signups = state.roles.find(r => r.name === 'Signups desk'), byName = name => state.tasks.find(t => t.name === name).id;
+  assert.deepEqual(state.roles.map(r => r.name), ['Signups desk', 'Vikings', 'Bears and buildings', 'Diplomacy', 'Sanctuary', 'Order']);
+  assert.deepEqual(signups.taskIds, ['Run Alliance Championship signups', 'Run Swordland signups', 'Run Tri-Alliance signups'].map(byName));
+  for (const code of [hub.codes.member, hub.codes.invite, waiting.code]) assert.equal((await read(code)).roles, undefined, 'only leaders see roles');
+
+  // Enlisting takes all three tasks; the claims are ordinary claims, so a task can still be dropped alone.
+  assert.equal((await call(env, `${path}/roles/${signups.id}/enlist/me`, 'PUT', undefined, bran.code)).status, 200);
+  const held = async code => (await read(code)).tasks.filter(t => t.holders.some(h => h.name === 'Bran')).map(t => t.id);
+  assert.deepEqual((await held(owner)).sort(), [...signups.taskIds].sort());
+  assert.equal((await call(env, `${path}/tasks/${signups.taskIds[1]}/claims/me`, 'DELETE', undefined, bran.code)).status, 204);
+  assert.equal((await held(owner)).length, 2);
+  // Enlisting again fills the gap and keeps any label already set.
+  await call(env, `${path}/tasks/${signups.taskIds[0]}/claims/me`, 'PUT', { label: 'Mon' }, bran.code);
+  await call(env, `${path}/roles/${signups.id}/enlist/me`, 'PUT', undefined, bran.code);
+  assert.equal((await read(owner)).tasks.find(t => t.id === signups.taskIds[0]).holders.find(h => h.name === 'Bran').label, 'Mon');
+  assert.equal((await held(owner)).length, 3);
+  assert.equal((await call(env, `${path}/roles/${signups.id}/enlist/me`, 'DELETE', undefined, bran.code)).status, 204);
+  assert.equal((await held(owner)).length, 0);
+
+  // Who may: leaders enlist themselves, the owner anyone; nobody else; only the owner shapes roles.
+  assert.equal((await call(env, `${path}/roles/${signups.id}/enlist/owner`, 'PUT', undefined, bran.code)).status, 403);
+  assert.equal((await call(env, `${path}/roles/${signups.id}/enlist/${bran.leader.id}`, 'PUT', undefined, owner)).status, 200);
+  assert.equal((await call(env, `${path}/roles/${signups.id}/enlist/me`, 'PUT', undefined, owner)).status, 200);
+  for (const code of [hub.codes.member, hub.codes.invite, waiting.code]) assert.equal((await call(env, `${path}/roles/${signups.id}/enlist/me`, 'PUT', undefined, code)).status, 403);
+  assert.equal((await call(env, `${path}/roles`, 'POST', { name: 'Mine', taskIds: [] }, bran.code)).status, 403);
+  assert.equal((await call(env, `${path}/roles/${signups.id}`, 'DELETE', undefined, bran.code)).status, 403);
+
+  // The owner makes, renames, re-bundles and removes roles; the tasks must be this hub's own.
+  const made = await call(env, `${path}/roles`, 'POST', { name: 'Closer', taskIds: [byName('Run Swordland signups')] }, owner);
+  assert.equal(made.status, 201);
+  const id = (await made.json()).id;
+  assert.equal((await call(env, `${path}/roles`, 'POST', { name: 'Bad', taskIds: ['5b0f6b3e-0d0f-4c3a-9b5e-1f2d3c4b5a69'] }, owner)).status, 404);
+  assert.equal((await call(env, `${path}/roles`, 'POST', { name: 'Bad', taskIds: 'all' }, owner)).status, 400);
+  assert.equal((await call(env, `${path}/roles/${id}`, 'PUT', { name: 'Finisher', taskIds: [byName('Run Swordland signups'), byName('Run Tri-Alliance signups')] }, owner)).status, 200);
+  assert.deepEqual((await read(owner)).roles.find(r => r.id === id).taskIds, [byName('Run Swordland signups'), byName('Run Tri-Alliance signups')]);
+  // Removing a task takes it out of its roles; removing a role leaves its tasks and their holders.
+  await call(env, `${path}/tasks/${byName('Run Tri-Alliance signups')}`, 'DELETE', undefined, owner);
+  assert.equal((await read(owner)).roles.find(r => r.id === id).taskIds.length, 1);
+  assert.equal((await call(env, `${path}/roles/${id}`, 'DELETE', undefined, owner)).status, 204);
+  assert.equal((await read(owner)).roles.some(r => r.id === id), false);
+  assert.equal((await read(owner)).tasks.find(t => t.id === byName('Run Swordland signups')).holders.length, 2);
   env.sql.close();
 });
