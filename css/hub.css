@@ -1,0 +1,14 @@
+/* The alliance hub reuses the Vikings planner's page furniture (css/vikings.css: .vv-*);
+   these are the few things only it has. */
+.hub-section { margin:1.25rem 0 0; padding-top:.5rem; border-top:1px solid color-mix(in srgb,var(--ink-muted) 35%,transparent); scroll-margin-top:5rem; }
+.hub-section h2 { font-size:var(--step-1); margin:.25rem 0; }
+.hub-section h2::before { content:none; }
+.hub-text { margin:.4rem 0 0; white-space:pre-line; overflow-wrap:anywhere; }
+.hub-waiting { margin:.5rem 0 1rem; }
+.hub-join { margin:1rem 0; display:grid; gap:.75rem; max-width:24rem; }
+.hub-join h2 { font-size:var(--step-1); margin:0; }
+.hub-join h2::before { content:none; }
+.hub-join input { width:100%; }
+.hub-leader { display:flex; align-items:center; gap:.5rem 1rem; justify-content:space-between; padding:.25rem 0; }
+.hub-leader[data-status=waiting] .vv-row-top strong { color:var(--amber); }
+.hub-editor { width:100%; min-height:10rem; resize:vertical; box-sizing:border-box; }

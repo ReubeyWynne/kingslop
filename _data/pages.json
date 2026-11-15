@@ -1422,5 +1422,64 @@
     ],
     "headScripts": [],
     "skipGuide": true
+  },
+  "hub": {
+    "token": "hub",
+    "depth": "../",
+    "canonicalPath": "/hub/",
+    "themeColor": "#150D08",
+    "icon": "<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23150D08'/%3E%3Ctext x='16' y='24' font-size='22' text-anchor='middle' fill='%23E08A3C'%3E%F0%9F%90%BB%3C/text%3E%3C/svg%3E\">",
+    "titleKey": "",
+    "titleText": "Alliance hub — dey.ci",
+    "metaDescKey": "",
+    "metaDesc": "Your alliance's rules, notes and event times in one place, kept by the R5 and the R4s.",
+    "ogTitleKey": "",
+    "ogTitle": "Alliance hub",
+    "ogDescKey": "",
+    "ogDesc": "Your alliance's rules, notes and event times in one place.",
+    "skipHref": "#start",
+    "skipKey": "",
+    "skipText": "Skip to the hub",
+    "dust": "<i></i><i></i><i></i>",
+    "brand": "ALLIANCE HUB",
+    "brandNoteKey": "",
+    "brandNote": "rules, notes & times",
+    "swipePrev": {
+      "url": "../bear-hunt/",
+      "page": "bearhunt",
+      "title": "Bear Hunt",
+      "lede": "the lead's stats × your troops — with a square root on your count."
+    },
+    "swipeNext": {
+      "url": "../swordland-showdown/",
+      "page": "swordland",
+      "title": "Swordland Showdown",
+      "lede": "two scoreboards, one 180,000, and winning is only one lever."
+    },
+    "css": [
+      "../css/styles.css",
+      "../css/events.css",
+      "../css/vikings.css",
+      "../css/hub.css"
+    ],
+    "scripts": [
+      "../js/i18n.js",
+      "../js/page-deck.js",
+      "../js/page-chrome.js",
+      "../js/common.js",
+      "../js/pages/hub.mjs"
+    ],
+    "footMainKey": "",
+    "footMain": "ALLIANCE HUB",
+    "footSubs": [
+      {
+        "key": "",
+        "html": "Written by your alliance's leaders. Check anything that matters in game."
+      }
+    ],
+    "headScripts": [
+      "(function () { var m = /^#(?:own|r4|ally|me)-([A-Za-z0-9_-]{22})$/.exec(location.hash); if (!m) return; window.HubAccess = { code: m[1] }; history.replaceState(history.state, '', location.pathname + location.search); })();"
+    ],
+    "skipGuide": true
   }
 }

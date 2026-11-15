@@ -168,3 +168,33 @@ test('using a hub keeps it alive, at most one write a day', async () => {
   assert.ok(env.sql.prepare('SELECT expires_at FROM hubs').get().expires_at > new Date(Date.now() + 59 * 86400000).toISOString());
   env.sql.close();
 });
+
+test('the owner and approved R4s write the rules, notes and times; everyone with a link reads them', async () => {
+  const env = environment(), hub = await create(env), path = `/v1/hubs/${hub.hub.id}`;
+  const waiting = await join(env, hub, 'Waiting'), approved = await join(env, hub, 'Approved');
+  await call(env, `${path}/leaders/${approved.leader.id}/approve`, 'POST', undefined, hub.codes.owner);
+  const read = async code => (await (await call(env, path, 'GET', undefined, code)).json()).sections;
+  assert.deepEqual(await read(hub.codes.member), { rules: { body: '', revision: 0, editedBy: null, editedAt: null }, notes: { body: '', revision: 0, editedBy: null, editedAt: null }, times: { body: '', revision: 0, editedBy: null, editedAt: null } });
+
+  const first = await call(env, `${path}/sections/rules`, 'PUT', { body: 'No attacking allies.', revision: 0 }, approved.code);
+  assert.equal(first.status, 200);
+  assert.deepEqual({ ...(await first.json()).section, editedAt: null }, { body: 'No attacking allies.', revision: 1, editedBy: 'Approved', editedAt: null });
+  const second = await call(env, `${path}/sections/rules`, 'PUT', { body: 'Be kind.', revision: 1 }, hub.codes.owner);
+  assert.equal((await second.json()).section.editedBy, 'Owner');
+  for (const code of [hub.codes.owner, hub.codes.invite, hub.codes.member, waiting.code, approved.code]) {
+    if (code === hub.codes.invite) assert.equal((await call(env, path, 'GET', undefined, code)).status, 200);
+    else assert.equal((await read(code)).rules.body, 'Be kind.');
+  }
+
+  assert.equal((await call(env, `${path}/sections/rules`, 'PUT', { body: 'Stale', revision: 1 }, approved.code)).status, 409);
+  assert.equal((await call(env, `${path}/sections/rules`, 'PUT', { body: 'Again', revision: 0 }, approved.code)).status, 409);
+  for (const code of [hub.codes.member, hub.codes.invite, waiting.code]) assert.equal((await call(env, `${path}/sections/notes`, 'PUT', { body: 'No', revision: 0 }, code)).status, 403);
+  assert.equal((await call(env, `${path}/sections/secret`, 'PUT', { body: 'No', revision: 0 }, hub.codes.owner)).status, 404);
+  assert.equal((await call(env, `${path}/sections/notes`, 'PUT', { body: 'x'.repeat(4001), revision: 0 }, hub.codes.owner)).status, 400);
+  assert.equal((await call(env, `${path}/sections/notes`, 'PUT', { body: 'x', revision: 0, extra: 1 }, hub.codes.owner)).status, 400);
+  assert.equal((await call(env, `${path}/sections/times`, 'PUT', { body: '', revision: 0 }, hub.codes.owner)).status, 200);
+
+  assert.equal((await call(env, path, 'DELETE', undefined, hub.codes.owner)).status, 204);
+  assert.equal(env.sql.prepare('SELECT count(*) AS n FROM hub_sections').get().n, 0);
+  env.sql.close();
+});
