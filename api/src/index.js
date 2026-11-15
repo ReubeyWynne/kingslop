@@ -381,6 +381,7 @@ export default {
   },
   async scheduled(controller, env) {
     await env.DB.prepare('DELETE FROM plans WHERE id IN (SELECT id FROM plans WHERE expires_at <= ? ORDER BY expires_at LIMIT 100)').bind(nowIso()).run();
+    await env.DB.prepare('DELETE FROM hub_duties WHERE date < ?').bind(new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10)).run();
     await env.DB.prepare('DELETE FROM hubs WHERE id IN (SELECT id FROM hubs WHERE expires_at <= ? ORDER BY expires_at LIMIT 100)').bind(nowIso()).run();
   }
 };

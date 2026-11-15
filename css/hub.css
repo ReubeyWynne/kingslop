@@ -23,3 +23,5 @@
 .hub-holder-pick { display:flex; align-items:center; justify-content:space-between; gap:.5rem 1rem; padding:.15rem 0; }
 .hub-holder-pick label { display:flex; align-items:center; gap:.5rem; min-width:0; overflow-wrap:anywhere; }
 .hub-holder-pick input[type=text],.hub-holder-pick input:not([type]) { width:9rem; max-width:45%; }
+.hub-task[data-done=true] .hub-task-main strong { color:var(--ink-dim); text-decoration:line-through; }
+.hub-task[data-done=true] .hub-holders { color:var(--ink-dim); }

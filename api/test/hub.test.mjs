@@ -276,3 +276,106 @@ test('only the owner adds, edits and removes tasks; names are bounded and a hub 
   assert.equal((await call(env, `/v1/hubs/${other.hub.id}/tasks/${made.id}`, 'PATCH', { name: 'x' }, other.codes.owner)).status, 404);
   env.sql.close();
 });
+
+// Sunday 15 November 2026, noon UTC: wheel day 7, the start of a Swordland Sunday.
+async function onTheDay(fn) {
+  const real = Date.now; Date.now = () => Date.parse('2026-11-15T12:00:00Z');
+  try { return await fn(); } finally { Date.now = real; }
+}
+const dutiesOf = async (env, hub, code) => (await (await call(env, `/v1/hubs/${hub.hub.id}`, 'GET', undefined, code)).json()).duties;
+
+test('the starter tasks fall due on the right days, for leaders only', () => onTheDay(async () => {
+  const env = environment(), hub = await create(env);
+  const duties = await dutiesOf(env, hub, hub.codes.owner);
+  const dates = name => duties.filter(d => d.task === name).map(d => d.date);
+  assert.deepEqual(dates('Swordland Signups'), ['2026-11-15', '2026-11-29']);
+  assert.deepEqual(dates('Tri-Alliance Signups'), ['2026-11-28']);
+  assert.deepEqual(dates('Vikings HQ Management'), ['2026-11-19', '2026-12-03']);
+  assert.deepEqual(dates('Alliance Championship Signups'), ['2026-11-16', '2026-11-23', '2026-11-30', '2026-12-07']);
+  assert.deepEqual(dates('Sanctuary Reward Distribution'), ['2026-11-20', '2026-11-27', '2026-12-04', '2026-12-11']);
+  assert.deepEqual(duties.map(d => d.date), [...duties.map(d => d.date)].sort());
+  assert.ok(duties.every(d => d.unowned && !d.done && d.taker === null));
+  const tasks = await tasksOf(env, hub, hub.codes.owner);
+  assert.deepEqual(tasks.find(t => t.name === 'Tri-Alliance Signups').cadence, { type: 'wheel', days: [20] });
+  assert.equal(tasks.find(t => t.name === 'Vikings HQ Management').cadenceText, 'Vikings, Thursdays');
+  assert.equal(tasks.find(t => t.name === 'Bear Management').cadence, null);
+  const member = await (await call(env, `/v1/hubs/${hub.hub.id}`, 'GET', undefined, hub.codes.member)).json();
+  assert.equal(member.duties, undefined);
+  assert.ok(!JSON.stringify(member).includes('cadence'));
+  env.sql.close();
+}));
+
+test('an untaken date falls to the task holders unless the task must be claimed each time', () => onTheDay(async () => {
+  const env = environment(), hub = await create(env), path = `/v1/hubs/${hub.hub.id}`, bran = await join(env, hub, 'Bran');
+  await call(env, `${path}/leaders/${bran.leader.id}/approve`, 'POST', undefined, hub.codes.owner);
+  const sanctuary = (await tasksOf(env, hub, hub.codes.owner)).find(t => t.name === 'Sanctuary Reward Distribution');
+  await call(env, `${path}/tasks/${sanctuary.id}/claims/me`, 'PUT', {}, bran.code);
+  const next = async () => (await dutiesOf(env, hub, hub.codes.owner)).find(d => d.task === 'Sanctuary Reward Distribution' && d.date === '2026-11-20');
+  assert.deepEqual([(await next()).owners, (await next()).unowned], [['Bran'], false]);
+  assert.equal((await call(env, `${path}/tasks/${sanctuary.id}`, 'PATCH', { dutyRule: 'claim' }, hub.codes.owner)).status, 200);
+  assert.deepEqual([(await next()).owners, (await next()).unowned], [[], true]);
+  assert.equal((await call(env, `${path}/tasks/${sanctuary.id}`, 'PATCH', { dutyRule: 'sometimes' }, hub.codes.owner)).status, 400);
+  env.sql.close();
+}));
+
+test('taking, handing on, releasing and finishing a date, with who may do what', () => onTheDay(async () => {
+  const env = environment(), hub = await create(env), path = `/v1/hubs/${hub.hub.id}`;
+  const bran = await join(env, hub, 'Bran'), cara = await join(env, hub, 'Cara'), waiting = await join(env, hub, 'Waiting');
+  for (const r of [bran, cara]) await call(env, `${path}/leaders/${r.leader.id}/approve`, 'POST', undefined, hub.codes.owner);
+  const task = (await tasksOf(env, hub, hub.codes.owner)).find(t => t.name === 'Swordland Signups'), at = `${path}/tasks/${task.id}/duties/2026-11-29`;
+  const row = async code => (await dutiesOf(env, hub, code)).find(d => d.task === 'Swordland Signups' && d.date === '2026-11-29');
+
+  assert.equal((await call(env, at, 'PUT', { taker: 'me' }, bran.code)).status, 200);
+  assert.deepEqual((await row(hub.codes.owner)).taker, { id: bran.leader.id, name: 'Bran' });
+  assert.deepEqual((await row(cara.code)).owners, ['Bran']);
+  // Others cannot take it off Bran, only the owner can; an R4 can put back their own.
+  assert.equal((await call(env, at, 'PUT', { taker: 'none' }, cara.code)).status, 403);
+  assert.equal((await call(env, at, 'PUT', { taker: cara.leader.id }, bran.code)).status, 403);
+  assert.equal((await call(env, at, 'PUT', { taker: cara.leader.id }, hub.codes.owner)).status, 200);
+  assert.equal((await row(hub.codes.owner)).taker.name, 'Cara');
+  assert.equal((await call(env, at, 'PUT', { done: true }, bran.code)).status, 200);
+  assert.equal((await row(hub.codes.owner)).done, true);
+  assert.equal((await call(env, at, 'PUT', { taker: 'none' }, cara.code)).status, 200);
+  assert.equal(env.sql.prepare('SELECT count(*) AS n FROM hub_duties').get().n, 1, 'a done date keeps its row');
+  assert.equal((await call(env, at, 'PUT', { done: false }, cara.code)).status, 200);
+  assert.equal(env.sql.prepare('SELECT count(*) AS n FROM hub_duties').get().n, 0, 'a date back at its default has no row');
+
+  for (const code of [hub.codes.member, hub.codes.invite, waiting.code]) assert.equal((await call(env, at, 'PUT', { taker: 'me' }, code)).status, 403);
+  assert.equal((await call(env, at, 'PUT', {}, bran.code)).status, 400);
+  assert.equal((await call(env, at, 'PUT', { taker: 'me', extra: 1 }, bran.code)).status, 400);
+  assert.equal((await call(env, at, 'PUT', { done: 'yes' }, bran.code)).status, 400);
+  assert.equal((await call(env, at, 'PUT', { taker: waiting.leader.id }, hub.codes.owner)).status, 404);
+  assert.equal((await call(env, `${path}/tasks/${task.id}/duties/2026-11-30`, 'PUT', { taker: 'me' }, bran.code)).status, 404, 'a date the task is not due');
+  assert.equal((await call(env, `${path}/tasks/${task.id}/duties/2027-11-29`, 'PUT', { taker: 'me' }, bran.code)).status, 404, 'beyond four weeks');
+  assert.equal((await call(env, `${path}/tasks/${task.id}/duties/tomorrow`, 'PUT', { taker: 'me' }, bran.code)).status, 404);
+
+  // A removed R4 gives their dates back; deleting a task takes its dates; old dates are swept.
+  await call(env, at, 'PUT', { taker: 'me' }, bran.code);
+  await call(env, `${path}/leaders/${bran.leader.id}`, 'DELETE', undefined, hub.codes.owner);
+  assert.deepEqual([(await row(hub.codes.owner)).taker, (await row(hub.codes.owner)).unowned], [null, true]);
+  await call(env, at, 'PUT', { done: true }, cara.code);
+  env.sql.prepare("INSERT INTO hub_duties (task_id, date, done) VALUES (?, '2026-01-01', 1)").run(task.id);
+  await worker.scheduled({}, env);
+  assert.deepEqual(env.sql.prepare('SELECT date FROM hub_duties').all().map(r => r.date), ['2026-11-29']);
+  await call(env, `${path}/tasks/${task.id}`, 'DELETE', undefined, hub.codes.owner);
+  assert.equal(env.sql.prepare('SELECT count(*) AS n FROM hub_duties').get().n, 0);
+  env.sql.close();
+}));
+
+test('cadences are validated when a task is made or changed, and null clears one', () => onTheDay(async () => {
+  const env = environment(), hub = await create(env), path = `/v1/hubs/${hub.hub.id}`, owner = hub.codes.owner;
+  const made = await call(env, `${path}/tasks`, 'POST', { name: 'Trap rota', cadence: { type: 'every', weeks: 2, from: '2026-11-02' }, dutyRule: 'claim' }, owner);
+  assert.equal(made.status, 201);
+  const id = (await made.json()).id, find = async () => (await tasksOf(env, hub, owner)).find(t => t.id === id);
+  assert.deepEqual([(await find()).cadenceText, (await find()).dutyRule], ['Every 2 weeks on Mondays from 2026-11-02', 'claim']);
+  assert.deepEqual((await dutiesOf(env, hub, owner)).filter(d => d.taskId === id).map(d => d.date), ['2026-11-16', '2026-11-30']);
+  for (const cadence of [{ type: 'daily' }, { type: 'weekly', weekday: 9 }, { type: 'wheel', days: [0] }, 'Fridays', { type: 'date', date: '2026-02-30' }]) assert.equal((await call(env, `${path}/tasks/${id}`, 'PATCH', { cadence }, owner)).status, 400);
+  assert.equal((await call(env, `${path}/tasks/${id}`, 'PATCH', { name: 'Trap rota 2' }, owner)).status, 200);
+  assert.equal((await find()).cadenceText, 'Every 2 weeks on Mondays from 2026-11-02', 'a field left out stays');
+  assert.equal((await call(env, `${path}/tasks/${id}`, 'PATCH', { cadence: { type: 'date', date: '2026-12-05' } }, owner)).status, 200);
+  assert.deepEqual((await dutiesOf(env, hub, owner)).filter(d => d.taskId === id).map(d => d.date), ['2026-12-05']);
+  assert.equal((await call(env, `${path}/tasks/${id}`, 'PATCH', { cadence: null }, owner)).status, 200);
+  assert.deepEqual([(await find()).cadence, (await dutiesOf(env, hub, owner)).filter(d => d.taskId === id).length], [null, 0]);
+  assert.equal((await call(env, `${path}/tasks`, 'POST', { name: 'Bad', cadence: { type: 'weekly' } }, owner)).status, 400);
+  env.sql.close();
+}));

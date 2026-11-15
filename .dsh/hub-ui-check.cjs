@@ -101,7 +101,41 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     assert.equal(await M.locator('#tasks-title').textContent(), 'Who to ask');
     assert.equal(await M.locator('#tasks .hub-task').count(), 1, 'members see public tasks somebody holds');
     assert.match(await M.locator('#tasks .hub-task').textContent(), /Bear Management[\s\S]*Bran \(Trap 2\) · Ada \(Trap 1\)/);
-    assert.equal(await M.getByRole('button', { name: /^(Take|Mine|Edit)/ }).count(), 0);
+    assert.equal(await M.getByRole('button', { name: /^(Take|Mine|Edit|Open)/ }).count(), 0);
+    assert.equal(await M.locator('#duties').count(), 0, 'members see no duties');
+
+    // Coming up: the R4 takes a Sanctuary Friday and finishes it; the R5 gives Bear Management a weekly day and the list grows.
+    await O.locator('#hub-tools summary').click(); await O.getByRole('button', { name: 'Refresh' }).click();
+    await O.locator('#duties').waitFor();
+    assert(await O.locator('#duties .hub-task', { hasText: 'Sanctuary Reward Distribution' }).count() >= 4, 'every Friday for four weeks');
+    await R.reload();
+    const friday = R.locator('#duties .hub-task', { hasText: 'Sanctuary Reward Distribution' }).first();
+    await friday.getByRole('button', { name: /^Take Sanctuary Reward Distribution/ }).click();
+    await R.locator('#duties .hub-task[data-mine=true]', { hasText: 'Sanctuary Reward Distribution' }).first().waitFor();
+    await R.locator('#duties .hub-task[data-mine=true]').first().getByRole('button', { name: /^Open/ }).click();
+    await dialog(R).locator('[name=done]').check();
+    await R.getByRole('button', { name: 'Save', exact: true }).click();
+    await R.locator('#duties .hub-task[data-done=true]').first().waitFor();
+    await O.locator('#hub-tools summary').click(); await O.getByRole('button', { name: 'Refresh' }).click();
+    await O.locator('#duties .hub-task[data-done=true]', { hasText: 'Bran' }).first().waitFor();
+    const before = await O.locator('#duties .hub-task').count();
+    await O.getByRole('button', { name: 'Edit Bear Management' }).click();
+    await dialog(O).locator('[name=cadenceType]').selectOption('wheel');
+    await dialog(O).locator('[name=days]').fill('40');
+    await O.getByRole('button', { name: 'Save', exact: true }).click();
+    await dialog(O).locator('.vv-dialog-message', { hasText: 'Pick days' }).waitFor();
+    await dialog(O).locator('[name=cadenceType]').selectOption('weekly');
+    await dialog(O).locator('[name=weekday]').selectOption('3');
+    await dialog(O).locator('[name=dutyRule]').selectOption('claim');
+    await O.getByRole('button', { name: 'Save', exact: true }).click();
+    await O.locator('#tasks .hub-task', { hasText: 'Bear Management' }).getByText('Every Wednesday').waitFor();
+    assert(await O.locator('#duties .hub-task', { hasText: 'Bear Management' }).count() >= 4);
+    assert(await O.locator('#duties .hub-task[data-nobody=true]', { hasText: 'Bear Management' }).first().isVisible(), 'a date that must be claimed shows nobody yet');
+    assert(await O.locator('#duties .hub-task').count() > before);
+    await O.locator('#duties .hub-task', { hasText: 'Bear Management' }).first().getByRole('button', { name: /^Open/ }).click();
+    await dialog(O).locator('[name=taker]').selectOption({ label: 'Ada' });
+    await O.getByRole('button', { name: 'Save', exact: true }).click();
+    await O.locator('#duties .hub-task[data-mine=true]', { hasText: 'Bear Management' }).first().waitFor();
 
     // The member sees the R4's notes after a reload; the R5 removes the R4, whose sign-in then stops working.
     await M.reload(); await M.locator('#notes .hub-text').waitFor();
