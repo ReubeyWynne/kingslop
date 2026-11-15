@@ -79,32 +79,32 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     assert(await R.getByRole('button', { name: 'Copy my sign-in link' }).isVisible());
     assert.equal(await R.getByRole('button', { name: 'Links', exact: true }).count(), 0, 'an R4 cannot see the owner links');
 
-    // Tasks: the R4 takes Bear Management for one trap, the R5 takes another and gives an internal task to the R4.
+    // Tasks: the R4 takes Run the Bear traps for one trap, the R5 takes another and gives an internal task to the R4.
     await at(O, 'Tasks'); await at(R, 'Tasks');
     assert.equal(await O.locator('#tasks .hub-task').count(), 16);
-    await R.locator('#tasks .hub-task', { hasText: 'Bear Management' }).getByRole('button', { name: 'Take Bear Management' }).click();
-    await R.locator('#tasks .hub-task[data-mine=true]', { hasText: 'Bear Management' }).waitFor();
-    await R.getByRole('button', { name: 'Change or drop Bear Management' }).click();
+    await R.locator('#tasks .hub-task', { hasText: 'Run the Bear traps' }).getByRole('button', { name: 'Take Run the Bear traps' }).click();
+    await R.locator('#tasks .hub-task[data-mine=true]', { hasText: 'Run the Bear traps' }).waitFor();
+    await R.getByRole('button', { name: 'Change or drop Run the Bear traps' }).click();
     await dialog(R).locator('[name=label]').fill('Trap 2');
     await R.getByRole('button', { name: 'Save', exact: true }).click();
     await R.locator('#tasks .hub-task', { hasText: 'Bran (Trap 2)' }).waitFor();
     await O.locator('#hub-tools summary').click(); await O.getByRole('button', { name: 'Refresh' }).click();
     await O.locator('#tasks .hub-task', { hasText: 'Bran (Trap 2)' }).waitFor();
-    await O.getByRole('button', { name: 'Edit Bear Management' }).click();
+    await O.getByRole('button', { name: 'Edit Run the Bear traps' }).click();
     await dialog(O).locator('[name=holder-owner]').check();
     await dialog(O).locator('[name=label-owner]').fill('Trap 1');
     await O.getByRole('button', { name: 'Save', exact: true }).click();
-    await O.locator('#tasks .hub-task', { hasText: 'Bear Management' }).getByText('Bran (Trap 2) · Ada (Trap 1)').waitFor();
-    await O.getByRole('button', { name: 'Edit AFK Maintenance' }).click();
+    await O.locator('#tasks .hub-task', { hasText: 'Run the Bear traps' }).getByText('Bran (Trap 2) · Ada (Trap 1)').waitFor();
+    await O.getByRole('button', { name: 'Edit Clear out AFK members' }).click();
     await dialog(O).locator('[name^=holder-]:not([name=holder-owner])').first().check();
     await O.getByRole('button', { name: 'Save', exact: true }).click();
-    await O.locator('#tasks .hub-task', { hasText: 'AFK Maintenance' }).getByText('Bran').waitFor();
-    assert(await O.locator('#tasks .hub-task', { hasText: 'AFK Maintenance' }).getByText('Leaders only').count() === 0, 'no leaders-only tag: tasks are for R4s');
+    await O.locator('#tasks .hub-task', { hasText: 'Clear out AFK members' }).getByText('Bran').waitFor();
+    assert(await O.locator('#tasks .hub-task', { hasText: 'Clear out AFK members' }).getByText('Leaders only').count() === 0, 'no leaders-only tag: tasks are for R4s');
     assert(await O.locator('#tasks .hub-task[data-nobody=true]').count() >= 13, 'the R5 sees every task nobody holds');
     await M.reload(); await at(M, 'Who to ask');
     assert.equal(await M.locator('#tasks-title').textContent(), 'Who to ask');
     assert.equal(await M.locator('#tasks .hub-task').count(), 1, 'members see public tasks somebody holds');
-    assert.match(await M.locator('#tasks .hub-task').textContent(), /Bear Management[\s\S]*Bran \(Trap 2\) · Ada \(Trap 1\)/);
+    assert.match(await M.locator('#tasks .hub-task').textContent(), /Run the Bear traps[\s\S]*Bran \(Trap 2\) · Ada \(Trap 1\)/);
     assert.equal(await M.getByRole('button', { name: /^(Take|Mine|Edit|Open)/ }).count(), 0);
     assert.equal(await M.locator('#duties').count(), 0, 'members see no duties');
 
@@ -116,21 +116,43 @@ const API = 'https://kingslop.reubeycw.workers.dev';
       assert.equal(await page.locator('.hub-leaf').count(), 1, 'the member sheet is a loose leaf');
       await page.getByRole('tab', { name: 'Who to ask', exact: true }).click();
       assert.equal(await page.locator('#tasks .hub-task').count(), 1, 'the same one task members see');
-      assert.match(await page.locator('#tasks .hub-task').textContent(), /Bear Management[\s\S]*Bran \(Trap 2\)/);
+      assert.match(await page.locator('#tasks .hub-task').textContent(), /Run the Bear traps[\s\S]*Bran \(Trap 2\)/);
       await page.getByRole('button', { name: 'Back to leading' }).click();
       assert((await page.getByRole('tab').allTextContents()).includes('Messages'), who + ' is back to leading');
     }
     await at(O, 'Tasks');
 
-    // Coming up: the R4 takes a Sanctuary Friday and finishes it; the R5 gives Bear Management a weekly day and the list grows.
+    // Roles: the owner has the starter bundles; an R4 enlists for one and holds all its tasks, then steps back.
+    await at(O, 'Tasks'); await at(R, 'Tasks');
+    assert.equal(await O.locator('#roles .hub-role').count(), 6);
+    await R.reload(); await at(R, 'Tasks');
+    const heldBefore = await R.locator('#tasks .hub-task[data-mine=true]').count();
+    await R.getByRole('button', { name: 'Enlist for Signups desk' }).click();
+    await R.getByRole('button', { name: 'Step back from Signups desk' }).waitFor();
+    assert.equal(await R.locator('#tasks .hub-task[data-mine=true]').count(), heldBefore + 3, 'enlisting takes the three signup tasks');
+    await R.getByRole('button', { name: 'Step back from Signups desk' }).click();
+    await R.getByRole('button', { name: 'Enlist for Signups desk' }).waitFor();
+    assert.equal(await R.locator('#tasks .hub-task[data-mine=true]').count(), heldBefore, 'stepping back drops only the role’s tasks');
+    await O.getByRole('button', { name: 'Add a role' }).click();
+    await dialog(O).locator('[name=name]').fill('Night watch');
+    await dialog(O).locator('label', { hasText: 'Enforce NAPs' }).locator('input').check();
+    await O.getByRole('button', { name: 'Save', exact: true }).click();
+    await O.locator('#roles .hub-role', { hasText: 'Night watch' }).waitFor();
+    await O.getByRole('button', { name: 'Edit Night watch' }).click();
+    await dialog(O).getByRole('button', { name: 'Remove', exact: true }).click();
+    await dialog(O).getByRole('button', { name: 'Remove', exact: true }).click();
+    await O.locator('#roles .hub-role', { hasText: 'Night watch' }).waitFor({ state: 'detached' });
+    await at(O, 'Tasks');
+
+    // Coming up: the R4 takes a Sanctuary Friday and finishes it; the R5 gives Run the Bear traps a weekly day and the list grows.
     await O.locator('#hub-tools summary').click(); await O.getByRole('button', { name: 'Refresh' }).click();
     await at(O, 'Up next');
     await O.locator('#duties').waitFor();
-    assert(await O.locator('#duties .hub-task', { hasText: 'Sanctuary Reward Distribution' }).count() >= 4, 'every Friday for four weeks');
+    assert(await O.locator('#duties .hub-task', { hasText: 'Hand out Sanctuary rewards' }).count() >= 4, 'every Friday for four weeks');
     await R.reload(); await at(R, 'Up next');
-    const friday = R.locator('#duties .hub-task', { hasText: 'Sanctuary Reward Distribution' }).first();
-    await friday.getByRole('button', { name: /^Take Sanctuary Reward Distribution/ }).click();
-    await R.locator('#duties .hub-task[data-mine=true]', { hasText: 'Sanctuary Reward Distribution' }).first().waitFor();
+    const friday = R.locator('#duties .hub-task', { hasText: 'Hand out Sanctuary rewards' }).first();
+    await friday.getByRole('button', { name: /^Take Hand out Sanctuary rewards/ }).click();
+    await R.locator('#duties .hub-task[data-mine=true]', { hasText: 'Hand out Sanctuary rewards' }).first().waitFor();
     await R.locator('#duties .hub-task[data-mine=true]').first().getByRole('button', { name: /^Open/ }).click();
     await dialog(R).locator('[name=done]').check();
     await R.getByRole('button', { name: 'Save', exact: true }).click();
@@ -139,7 +161,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await O.locator('#duties .hub-task[data-done=true]', { hasText: 'Bran' }).first().waitFor();
     const before = await O.locator('#duties .hub-task').count();
     await at(O, 'Tasks');
-    await O.getByRole('button', { name: 'Edit Bear Management' }).click();
+    await O.getByRole('button', { name: 'Edit Run the Bear traps' }).click();
     await dialog(O).locator('[name=cadenceType]').selectOption('wheel');
     await dialog(O).locator('[name=days]').fill('40');
     await O.getByRole('button', { name: 'Save', exact: true }).click();
@@ -148,15 +170,15 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await dialog(O).locator('[name=weekday]').selectOption('3');
     await dialog(O).locator('[name=dutyRule]').selectOption('claim');
     await O.getByRole('button', { name: 'Save', exact: true }).click();
-    await O.locator('#tasks .hub-task', { hasText: 'Bear Management' }).getByText(/Every Wednesday/).waitFor();
+    await O.locator('#tasks .hub-task', { hasText: 'Run the Bear traps' }).getByText(/Every Wednesday/).waitFor();
     await at(O, 'Up next');
-    assert(await O.locator('#duties .hub-task', { hasText: 'Bear Management' }).count() >= 4);
-    assert(await O.locator('#duties .hub-task[data-nobody=true]', { hasText: 'Bear Management' }).first().isVisible(), 'a date that must be claimed shows nobody yet');
+    assert(await O.locator('#duties .hub-task', { hasText: 'Run the Bear traps' }).count() >= 4);
+    assert(await O.locator('#duties .hub-task[data-nobody=true]', { hasText: 'Run the Bear traps' }).first().isVisible(), 'a date that must be claimed shows nobody yet');
     assert(await O.locator('#duties .hub-task').count() > before);
-    await O.locator('#duties .hub-task', { hasText: 'Bear Management' }).first().getByRole('button', { name: /^Open/ }).click();
+    await O.locator('#duties .hub-task', { hasText: 'Run the Bear traps' }).first().getByRole('button', { name: /^Open/ }).click();
     await dialog(O).locator('[name=taker]').selectOption({ label: 'Ada' });
     await O.getByRole('button', { name: 'Save', exact: true }).click();
-    await O.locator('#duties .hub-task[data-mine=true]', { hasText: 'Bear Management' }).first().waitFor();
+    await O.locator('#duties .hub-task[data-mine=true]', { hasText: 'Run the Bear traps' }).first().waitFor();
 
     // Messages: today's Event Cycle card is there to copy; the R5 writes one about a task and the gaps fill in; a member sees none.
     await at(O, 'Messages');
@@ -165,9 +187,9 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     assert.equal(await M.locator('#messages').count(), 0, 'members have no messages');
     await O.getByRole('button', { name: 'Add a message' }).click();
     await dialog(O).locator('[name=title]').fill('Sanctuary reminder');
-    await dialog(O).locator('[name=taskId]').selectOption({ label: 'Bear Management' });
+    await dialog(O).locator('[name=taskId]').selectOption({ label: 'Run the Bear traps' });
     await dialog(O).locator('[name=body]').fill('{task} falls to {holder}. {oops}');
-    assert(/Bear Management falls to/.test(await dialog(O).locator('.hub-copytext').innerText()), 'the draft shows the gaps filled');
+    assert(/Run the Bear traps falls to/.test(await dialog(O).locator('.hub-copytext').innerText()), 'the draft shows the gaps filled');
     await O.getByRole('button', { name: 'Save', exact: true }).click();
     const note = O.locator('#messages .hub-message', { hasText: 'Sanctuary reminder' });
     await note.waitFor();
@@ -175,11 +197,11 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await note.getByRole('button', { name: /^Edit/ }).click();
     await dialog(O).locator('[name=body]').fill('{task}: {holder}');
     await O.getByRole('button', { name: 'Save', exact: true }).click();
-    await O.locator('#messages .hub-message', { hasText: 'Bear Management:' }).waitFor();
+    await O.locator('#messages .hub-message', { hasText: 'Run the Bear traps:' }).waitFor();
     await O.locator('#messages .hub-message').nth(1).getByRole('button', { name: /^Copy /, exact: false }).click();
     // Without clipboard rights the text comes up to copy by hand; either way it is the filled message.
     await O.locator('.vv-message:has-text("Copied"), dialog[open] textarea.vv-link').first().waitFor();
-    if (await dialog(O).locator('textarea.vv-link').count()) { assert(/^Bear Management: /.test(await dialog(O).locator('textarea.vv-link').inputValue())); await O.keyboard.press('Escape'); }
+    if (await dialog(O).locator('textarea.vv-link').count()) { assert(/^Run the Bear traps: /.test(await dialog(O).locator('textarea.vv-link').inputValue())); await O.keyboard.press('Escape'); }
     await O.locator('#messages .hub-message').nth(1).getByRole('button', { name: /^Edit/ }).click();
     await dialog(O).getByRole('button', { name: 'Remove', exact: true }).click();
     await dialog(O).getByRole('button', { name: 'Remove', exact: true }).click();
