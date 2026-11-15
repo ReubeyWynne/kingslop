@@ -33,6 +33,9 @@ function ago(iso) {
   const m = Math.max(0, Math.round((Date.now() - t) / 60000));
   return m < 1 ? 'just now' : m < 60 ? m + 'm ago' : m < 1440 ? Math.round(m / 60) + 'h ago' : Math.round(m / 1440) + 'd ago';
 }
+// A date as weekday and day number, for a row in a week; and the Monday that starts its week.
+const dayLabel = d => new Date(d + 'T00:00:00Z').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', timeZone: 'UTC' });
+const weekStart = d => { const t = Date.parse(d + 'T00:00:00Z'), back = (new Date(t).getUTCDay() + 6) % 7; return new Date(t - back * 86400000).toISOString().slice(0, 10); };
 const linkTo = (kind, code) => location.origin + location.pathname + '#' + PREFIX[kind] + '-' + code;
 
 Alpine.data('hub', api => {
@@ -93,9 +96,24 @@ Alpine.data('hub', api => {
       const s = this.state; if (!s) return [];
       return (s.tasks || []).map(t => ({ ...t, mine: t.holders.some(h => h.id && h.id === this.myId), nobody: this.leadership && !t.holders.length, line: t.holders.map(h => h.label ? h.name + ' (' + h.label + ')' : h.name).join(' · ') }));
     },
-    get duties() { return this.leadership && this.state ? (this.state.duties || []).map(d => ({ ...d, when: dateLabel(d.date), until: until(d.date), mine: !!d.taker && d.taker.id === this.myId, line: d.owners.join(' · ') })) : []; },
-    get soon() { return this.duties.slice(0, 8); },
-    get later() { return this.duties.slice(8); },
+    get duties() { return this.leadership && this.state ? (this.state.duties || []).map(d => ({ ...d, day: dayLabel(d.date), when: dateLabel(d.date), until: until(d.date), mine: !!d.taker && d.taker.id === this.myId, line: d.owners.join(' · ') })) : []; },
+    // The dates in the order they fall, grouped by week: this week, next week, then "Week of …".
+    get weeks() {
+      const today = new Date(Math.floor(Date.now() / 86400000) * 86400000).toISOString().slice(0, 10), here = weekStart(today), out = [];
+      for (const d of this.duties) {
+        const key = weekStart(d.date); let w = out[out.length - 1];
+        if (!w || w.key !== key) {
+          const n = Math.round((Date.parse(key + 'T00:00:00Z') - Date.parse(here + 'T00:00:00Z')) / 604800000);
+          w = { key, label: n <= 0 ? 'This week' : n === 1 ? 'Next week' : 'Week of ' + dayLabel(key).replace(/^\w+ /, '') + ' ' + new Date(key + 'T00:00:00Z').toLocaleDateString('en-GB', { month: 'short', timeZone: 'UTC' }), items: [] };
+          out.push(w);
+        }
+        w.items.push(d);
+      }
+      return out;
+    },
+    get soonWeeks() { return this.weeks.slice(0, 2); },
+    get laterWeeks() { return this.weeks.slice(2); },
+    get laterCount() { return this.laterWeeks.reduce((n, w) => n + w.items.length, 0); },
     // Messages to paste into game chat: today's Event Cycle card, then the R4s' own, gaps filled in.
     get messages() {
       if (!this.leadership || !this.state) return [];

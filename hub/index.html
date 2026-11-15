@@ -42,8 +42,8 @@ self: hub
     <template x-if="view === 'up'"><div class="vv-contents">
     <template x-if="leadership && duties.length"><section class="hub-section" id="duties" aria-labelledby="duties-title">
       <h2 id="duties-title">Coming up</h2>
-      <div class="hub-tasks"><template x-for="d in soon" :key="d.taskId + d.date">{% include hub-duty.html %}</template></div>
-      <template x-if="later.length"><details class="vv-gaps" id="duties-later" x-effect="renders; $el.open = false"><summary x-text="'Later · ' + later.length"></summary><div class="hub-tasks"><template x-for="d in later" :key="d.taskId + d.date">{% include hub-duty.html %}</template></div></details></template>
+      <template x-for="w in soonWeeks" :key="w.key"><div class="hub-week"><h3 class="hub-weekhead" x-text="w.label"></h3><div class="hub-tasks"><template x-for="d in w.items" :key="d.taskId + d.date">{% include hub-duty.html %}</template></div></div></template>
+      <template x-if="laterWeeks.length"><details class="vv-gaps" id="duties-later" x-effect="renders; $el.open = false"><summary x-text="'Later · ' + laterCount"></summary><template x-for="w in laterWeeks" :key="w.key"><div class="hub-week"><h3 class="hub-weekhead" x-text="w.label"></h3><div class="hub-tasks"><template x-for="d in w.items" :key="d.taskId + d.date">{% include hub-duty.html %}</template></div></div></template></details></template>
     </section></template>
     </div></template>
 
