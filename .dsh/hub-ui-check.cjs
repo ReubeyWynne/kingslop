@@ -137,6 +137,32 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await O.getByRole('button', { name: 'Save', exact: true }).click();
     await O.locator('#duties .hub-task[data-mine=true]', { hasText: 'Bear Management' }).first().waitFor();
 
+    // Messages: today's Event Cycle card is there to copy; the R5 writes one about a task and the gaps fill in; a member sees none.
+    await O.locator('#messages .hub-message').first().waitFor();
+    assert(/Event Cycle · day \d+/.test(await O.locator('#messages .hub-message').first().innerText()));
+    assert.equal(await M.locator('#messages').count(), 0, 'members have no messages');
+    await O.getByRole('button', { name: 'Add a message' }).click();
+    await dialog(O).locator('[name=title]').fill('Sanctuary reminder');
+    await dialog(O).locator('[name=taskId]').selectOption({ label: 'Bear Management' });
+    await dialog(O).locator('[name=body]').fill('{task} falls to {holder}. {oops}');
+    assert(/Bear Management falls to/.test(await dialog(O).locator('.hub-copytext').innerText()), 'the draft shows the gaps filled');
+    await O.getByRole('button', { name: 'Save', exact: true }).click();
+    const note = O.locator('#messages .hub-message', { hasText: 'Sanctuary reminder' });
+    await note.waitFor();
+    assert(/Still to fill: \{oops\}/.test(await note.innerText()), 'an unknown gap is flagged');
+    await note.getByRole('button', { name: /^Edit/ }).click();
+    await dialog(O).locator('[name=body]').fill('{task}: {holder}');
+    await O.getByRole('button', { name: 'Save', exact: true }).click();
+    await O.locator('#messages .hub-message', { hasText: 'Bear Management:' }).waitFor();
+    await O.locator('#messages .hub-message').nth(1).getByRole('button', { name: /^Copy /, exact: false }).click();
+    // Without clipboard rights the text comes up to copy by hand; either way it is the filled message.
+    await O.locator('.vv-message:has-text("Copied"), dialog[open] textarea.vv-link').first().waitFor();
+    if (await dialog(O).locator('textarea.vv-link').count()) { assert(/^Bear Management: /.test(await dialog(O).locator('textarea.vv-link').inputValue())); await O.keyboard.press('Escape'); }
+    await O.locator('#messages .hub-message').nth(1).getByRole('button', { name: /^Edit/ }).click();
+    await dialog(O).getByRole('button', { name: 'Remove', exact: true }).click();
+    await dialog(O).getByRole('button', { name: 'Remove', exact: true }).click();
+    await O.locator('#messages .hub-message', { hasText: 'Sanctuary reminder' }).waitFor({ state: 'detached' });
+
     // The member sees the R4's notes after a reload; the R5 removes the R4, whose sign-in then stops working.
     await M.reload(); await M.locator('#notes .hub-text').waitFor();
     await O.locator('#leaders').getByRole('button', { name: 'Remove Bran' }).click();

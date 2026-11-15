@@ -379,3 +379,47 @@ test('cadences are validated when a task is made or changed, and null clears one
   assert.equal((await call(env, `${path}/tasks`, 'POST', { name: 'Bad', cadence: { type: 'weekly' } }, owner)).status, 400);
   env.sql.close();
 }));
+
+test('messages: the owner and approved R4s write them, nobody else reads them, and a task is optional', async () => {
+  const env = environment(), hub = await create(env), path = `/v1/hubs/${hub.hub.id}`, owner = hub.codes.owner;
+  const bran = await join(env, hub, 'Bran'), waiting = await join(env, hub, 'Waiting');
+  await call(env, `${path}/leaders/${bran.leader.id}/approve`, 'POST', undefined, owner);
+  const swordland = (await tasksOf(env, hub, owner)).find(t => t.name === 'Swordland Signups');
+  const read = async code => (await (await call(env, path, 'GET', undefined, code)).json()).templates;
+
+  const made = await call(env, `${path}/templates`, 'POST', { title: 'Swordland call', body: 'SWORDLAND {date}\nAsk {holder}', taskId: swordland.id }, bran.code);
+  assert.equal(made.status, 201);
+  const id = (await made.json()).id;
+  assert.deepEqual((await read(owner)).map(t => [t.title, t.taskId, t.editedBy]), [['Swordland call', swordland.id, 'Bran']]);
+  assert.equal((await call(env, `${path}/templates`, 'POST', { title: 'Loose', body: 'Hello' }, owner)).status, 201);
+  assert.equal((await read(bran.code)).length, 2);
+  for (const code of [hub.codes.member, hub.codes.invite, waiting.code]) {
+    assert.equal((await call(env, `${path}/templates`, 'POST', { title: 'No', body: 'No' }, code)).status, 403);
+    assert.equal((await call(env, `${path}/templates/${id}`, 'DELETE', undefined, code)).status, 403);
+    assert.equal((await read(code)), undefined);
+  }
+
+  assert.equal((await call(env, `${path}/templates/${id}`, 'PUT', { body: 'SWORDLAND {date}\nSign up with {holder}' }, owner)).status, 200);
+  const edited = (await read(owner)).find(t => t.id === id);
+  assert.deepEqual([edited.body, edited.title, edited.taskId, edited.editedBy], ['SWORDLAND {date}\nSign up with {holder}', 'Swordland call', swordland.id, 'Owner']);
+  assert.equal((await call(env, `${path}/templates/${id}`, 'PUT', { taskId: null }, bran.code)).status, 200);
+  assert.equal((await read(owner)).find(t => t.id === id).taskId, null);
+
+  for (const payload of [{ title: '', body: 'x' }, { title: 'x', body: '' }, { title: 'x'.repeat(61), body: 'x' }, { title: 'x', body: 'x'.repeat(1001) }, { title: 'x', body: 'x', extra: 1 }, { title: 'x', body: 'x', taskId: 'nope' }]) assert.equal((await call(env, `${path}/templates`, 'POST', payload, owner)).status, payload.taskId ? 404 : 400);
+  const other = await create(env), otherTask = (await tasksOf(env, other, other.codes.owner))[0];
+  assert.equal((await call(env, `${path}/templates`, 'POST', { title: 'x', body: 'x', taskId: otherTask.id }, owner)).status, 404, 'a task from another hub');
+  assert.equal((await call(env, `/v1/hubs/${other.hub.id}/templates/${id}`, 'PUT', { title: 'x' }, other.codes.owner)).status, 404);
+
+  // Removing a task keeps its messages; removing an R4 or the message itself behaves as expected.
+  await call(env, `${path}/templates/${id}`, 'PUT', { taskId: swordland.id }, owner);
+  await call(env, `${path}/tasks/${swordland.id}`, 'DELETE', undefined, owner);
+  assert.equal((await read(owner)).find(t => t.id === id).taskId, null);
+  assert.equal((await call(env, `${path}/templates/${id}`, 'DELETE', undefined, bran.code)).status, 204);
+  assert.equal((await call(env, `${path}/templates/${id}`, 'DELETE', undefined, owner)).status, 404);
+  for (let i = 0; i < 39; i++) assert.equal((await call(env, `${path}/templates`, 'POST', { title: 'T' + i, body: 'x' }, owner)).status, 201);
+  const full = await call(env, `${path}/templates`, 'POST', { title: 'One too many', body: 'x' }, owner);
+  assert.equal(full.status, 409); assert.match((await full.json()).error, /40 messages/);
+  assert.equal((await call(env, path, 'DELETE', undefined, owner)).status, 204);
+  assert.equal(env.sql.prepare('SELECT count(*) AS n FROM hub_templates').get().n, 0);
+  env.sql.close();
+});
