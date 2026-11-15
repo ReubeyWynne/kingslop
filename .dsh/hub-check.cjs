@@ -36,3 +36,19 @@ test('cadences describe themselves', () => {
   assert.equal(H.describe({ type: 'wheel', days: [7, 21] }), 'Event Cycle days 7, 21'); assert.equal(H.describe({ type: 'wheel', days: [20] }), 'Event Cycle day 20');
   assert.equal(H.describe({ type: 'vikings', day: 'thu' }), 'Vikings, Thursdays'); assert.equal(H.describe({ type: 'date', date: '2026-12-05' }), 'On 2026-12-05');
 });
+test('messages fill their gaps and leave unknown or empty ones showing', () => {
+  const M = require('../js/hub-messages.mjs'), now = day('2026-11-15') + 3e7;
+  const task = { name: 'Sanctuary Rewards', holders: [{ name: 'Ana', label: '' }, { name: 'Bo', label: 'Trap 2' }] };
+  assert.equal(M.fill('{task} {when} ({date}): {holder}. {today}', { now, task, next: '2026-11-20' }), 'Sanctuary Rewards in 5 days (Fri 20 Nov): Ana, Bo (Trap 2). Sun 15 Nov');
+  assert.equal(M.fill('{when}', { now, task, next: '2026-11-15' }), 'today'); assert.equal(M.fill('{when}', { now, task, next: '2026-11-16' }), 'tomorrow');
+  assert.equal(M.fill('{task} {date} {oops}', { now, task: null, next: null }), '{task} {date} {oops}', 'a gap with nothing to put there stays visible');
+  assert.equal(M.fill('{holder}', { now, task: { name: 'x', holders: [] }, next: null }), 'Nobody yet');
+  assert.deepEqual(M.gaps('{task} and {task} then {when}'), ['task', 'when']);
+});
+test('messages are checked against the KingShot chat limits', () => {
+  const M = require('../js/hub-messages.mjs');
+  assert.deepEqual([M.check('short').wide, M.check('short').parts.length, M.check('short').fits], [0, 1, true]);
+  assert.equal(M.check('x'.repeat(29)).wide, 1); assert.equal(M.check('x'.repeat(28)).wide, 0); assert.equal(M.check('漢'.repeat(15)).wide, 1, 'a wide character counts double');
+  const long = Array.from({ length: 40 }, (_, i) => 'line ' + i + ' ' + 'x'.repeat(10)).join('\n'), c = M.check(long);
+  assert(c.parts.length > 1 && !c.fits && c.parts.every(p => p.length <= 512));
+});

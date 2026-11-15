@@ -43,6 +43,36 @@ export async function hubRoute(request, env, url, ip, k) {
   const owner = token => requireValue(token.role === 'owner', 'The owner link is required.', 403);
   const kind = ({ token, leader }) => token.role === 'leader' ? (leader.status === 'approved' ? 'r4' : 'waiting') : token.role;
 
+  // Messages to copy into game chat: written and kept by the owner and approved R4s.
+  async function templatesRoute([, hubId, templateId]) {
+    requireValue(UUID.test(hubId) && (!templateId || UUID.test(templateId)), 'Endpoint not found.', 404);
+    const state = await access(hubId), { token, hub } = state;
+    requireValue(token.role === 'owner' || kind(state) === 'r4', 'Only the owner and approved R4s can write messages.', 403);
+    const by = token.role === 'owner' ? hub.owner_name : state.leader.name, now = nowIso();
+    // A task is optional; when given it must be one of this hub's.
+    const taskOf = async value => {
+      if (value === null) return null;
+      requireValue(typeof value === 'string' && UUID.test(value) && await env.DB.prepare('SELECT 1 AS ok FROM hub_tasks WHERE id = ? AND hub_id = ?').bind(value, hubId).first(), 'Choose one of this hub’s tasks.', 404);
+      return value;
+    };
+    if (!templateId && request.method === 'POST') {
+      const input = await body(request, ['title', 'body', 'taskId'], 'Message'), last = await env.DB.prepare('SELECT max(position) AS n FROM hub_templates WHERE hub_id = ?').bind(hubId).first(), id = crypto.randomUUID();
+      await env.DB.prepare('INSERT INTO hub_templates (id, hub_id, task_id, title, body, position, edited_by, edited_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(id, hubId, await taskOf(input.taskId ?? null), text(input.title, 'title', 60, true), text(input.body, 'body', 1000, true), (last.n || 0) + 1, by, now, now).run();
+      return json({ id }, 201);
+    }
+    if (templateId) {
+      const row = await env.DB.prepare('SELECT * FROM hub_templates WHERE id = ? AND hub_id = ?').bind(templateId, hubId).first();
+      requireValue(row, 'Message not found.', 404);
+      if (request.method === 'PUT') {
+        const input = await body(request, ['title', 'body', 'taskId'], 'Message');
+        await env.DB.prepare('UPDATE hub_templates SET title = ?, body = ?, task_id = ?, edited_by = ?, edited_at = ? WHERE id = ?').bind('title' in input ? text(input.title, 'title', 60, true) : row.title, 'body' in input ? text(input.body, 'body', 1000, true) : row.body, 'taskId' in input ? await taskOf(input.taskId) : row.task_id, by, now, templateId).run();
+        return json({ ok: true });
+      }
+      if (request.method === 'DELETE') { await env.DB.prepare('DELETE FROM hub_templates WHERE id = ?').bind(templateId).run(); return new Response(null, { status: 204 }); }
+    }
+    throw new HttpError(405, 'Method not allowed.');
+  }
+
   // A cadence and a duty rule from a request body, checked: `cadence` null clears it, and a field left out stays as it was.
   function cadenceInput(input) {
     const out = {};
@@ -137,6 +167,8 @@ export async function hubRoute(request, env, url, ip, k) {
     await env.DB.batch([env.DB.prepare('INSERT INTO hubs (id, name, owner_name, created_at, updated_at, expires_at) VALUES (?, ?, ?, ?, ?, ?)').bind(id, name, ownerName, now, now, expiresAt), ...tokens, ...starterTasks(id, now)]);
     return json({ hub: hubView(await env.DB.prepare('SELECT * FROM hubs WHERE id = ?').bind(id).first(), true), codes }, 201);
   }
+  const templates = url.pathname.match(/^\/v1\/hubs\/([^/]+)\/templates(?:\/([^/]+))?$/);
+  if (templates) return templatesRoute(templates);
   const tasks = url.pathname.match(/^\/v1\/hubs\/([^/]+)\/tasks(?:\/([^/]+)(?:\/(claims|duties)\/([^/]+))?)?$/);
   if (tasks) return tasksRoute(tasks);
   const match = url.pathname.match(/^\/v1\/hubs\/([^/]+)(?:\/(leaders|rotate|handover|sections)(?:\/([^/]+?)(?:\/(approve))?)?)?$/);
@@ -170,6 +202,7 @@ export async function hubRoute(request, env, url, ip, k) {
           return { taskId: t.id, task: t.name, date, taker, owners, unowned: !owners.length, done: Boolean(row && row.done) };
         })).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
       }
+      if (leadership) result.templates = (await env.DB.prepare('SELECT * FROM hub_templates WHERE hub_id = ? ORDER BY position, rowid').bind(hubId).all()).results.map(t => ({ id: t.id, title: t.title, body: t.body, taskId: t.task_id, editedBy: t.edited_by, editedAt: t.edited_at }));
       if (state.leader) result.me = { ...leaderView(state.leader, true) };
       return json(result);
     }

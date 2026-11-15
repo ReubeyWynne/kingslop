@@ -7,6 +7,8 @@
    decides the role from the code. */
 import { Alpine } from '../alpine.mjs';
 import Cadence from '../hub-engine.mjs';
+import Messages from '../hub-messages.mjs';
+import { todayDay, present, splitParts } from '../event-cycle.mjs';
 
 const API = 'https://kingslop.reubeycw.workers.dev';
 const KEY = 'bh:hub:v1';
@@ -39,7 +41,7 @@ Alpine.data('hub', api => {
   return {
     state: null, credential: null, pending: null, busy: false, opened: false, message: '', error: false,
     dialog: null, dialogMessage: '', renders: 0,
-    forms: { link: '', create: null, settings: null, section: null, join: '', claim: null, task: null, duty: null },
+    forms: { link: '', create: null, settings: null, section: null, join: '', claim: null, task: null, duty: null, template: null },
     weekdays: Cadence.WEEKDAYS.map((label, value) => ({ value: String(value), label })),
 
     init() {
@@ -78,6 +80,20 @@ Alpine.data('hub', api => {
     get duties() { return this.leadership && this.state ? (this.state.duties || []).map(d => ({ ...d, when: dateLabel(d.date), until: until(d.date), mine: !!d.taker && d.taker.id === this.myId, line: d.owners.length ? d.owners.join(' · ') : 'Nobody yet' })) : []; },
     get soon() { return this.duties.slice(0, 8); },
     get later() { return this.duties.slice(8); },
+    // Messages to paste into game chat: today's Event Cycle card, then the R4s' own, gaps filled in.
+    get messages() {
+      if (!this.leadership || !this.state) return [];
+      const day = todayDay(), card = present(day, true, null), rows = [{ id: 'cycle', fixed: true, title: 'Event Cycle · day ' + day + ' · ' + card.title, text: card.copy, task: '' }];
+      for (const m of this.state.templates || []) rows.push({ id: m.id, title: m.title, text: this.fillTemplate(m.body, m.taskId), task: this.taskName(m.taskId), by: m.editedBy ? m.editedBy + ' · ' + ago(m.editedAt) : '' });
+      return rows.map(r => { const c = Messages.check(r.text); return { ...r, parts: c.parts, wide: c.wide, open: r.fixed ? [] : c.open, chars: c.chars }; });
+    },
+    taskName(id) { const t = id && (this.state.tasks || []).find(x => x.id === id); return t ? t.name : ''; },
+    // A message with its gaps filled from the task it is about: its holders and its next date.
+    fillTemplate(body, taskId) {
+      const task = taskId && (this.state.tasks || []).find(x => x.id === taskId), now = Date.now();
+      const next = task ? (this.duties.find(d => d.taskId === taskId && !d.done) || {}).date || Cadence.upcoming(task.cadence, now)[0] || null : null;
+      return Messages.fill(body, { now, task: task ? { name: task.name, holders: task.holders } : null, next });
+    },
     get leaders() { return (this.state && this.state.leaders) || []; },
     get shareRows() {
       const c = this.credential, codes = (c && c.codes) || {}, name = this.state.hub.name;
@@ -197,6 +213,10 @@ Alpine.data('hub', api => {
             else if (!p.on && p.was) await this.request(base + '/' + id + '/claims/' + p.id, 'DELETE');
           }
           await this.load(); this.close(); this.say('Saved.');
+        } else if (kind === 'template') {
+          const f = this.forms.template, base = '/v1/hubs/' + this.state.hub.id + '/templates', body = { title: f.title, body: f.body, taskId: f.taskId || null };
+          await this.request(f.id ? base + '/' + f.id : base, f.id ? 'PUT' : 'POST', body);
+          await this.load(); this.close(); this.say('Saved.');
         } else if (kind === 'section') {
           const f = this.forms.section;
           try { await this.request('/v1/hubs/' + this.state.hub.id + '/sections/' + f.key, 'PUT', { body: f.body, revision: f.revision }); }
@@ -206,6 +226,19 @@ Alpine.data('hub', api => {
       });
     },
     mutate(path, method, data, done) { return this.run(async () => { await this.request('/v1/hubs/' + this.state.hub.id + path, method, data); await this.load(); if (done) this.say(done); }); },
+    // Copy one part of a message; the cycle card and the notes are plain text either way.
+    copyPart(m, i) { return this.run(async () => { await this.copyText(m.parts[i]); }); },
+    editTemplate(m) {
+      const found = m && this.state.templates.find(x => x.id === m.id);
+      this.forms.template = { id: found ? found.id : '', title: found ? found.title : '', body: found ? found.body : '', taskId: found ? found.taskId || '' : '' };
+      this.modal('template', found ? found.title : 'New message');
+    },
+    get draft() {
+      const f = this.forms.template; if (!f || !this.state) return null;
+      const text = this.fillTemplate(f.body, f.taskId || null), c = Messages.check(text);
+      return { text, wide: c.wide, parts: c.parts.length, open: Messages.gaps(f.body).filter(g => !Messages.GAPS.includes(g)), left: 1000 - f.body.length, gaps: Messages.GAPS.map(g => '{' + g + '}').join(' ') };
+    },
+    removeTemplate(f) { return this.ask('Remove ' + f.title + '?', 'Everyone leading loses this message.', 'Remove', async () => { await this.request('/v1/hubs/' + this.state.hub.id + '/templates/' + f.id, 'DELETE'); this.close(); await this.load(); this.say('Removed.'); }); },
     take(t) { return this.mutate('/tasks/' + t.id + '/claims/me', 'PUT', { label: '' }); },
     claim(t) { const mine = t.holders.find(h => h.id === this.myId); this.forms.claim = { id: t.id, label: mine ? mine.label : '' }; this.modal('claim', t.name); },
     drop(id) { return this.run(async () => { await this.request('/v1/hubs/' + this.state.hub.id + '/tasks/' + id + '/claims/me', 'DELETE'); this.close(); await this.load(); }); },

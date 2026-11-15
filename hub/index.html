@@ -41,6 +41,16 @@ self: hub
       <template x-if="later.length"><details class="vv-gaps" id="duties-later" x-effect="renders; $el.open = false"><summary x-text="'Later · ' + later.length"></summary><div class="hub-tasks"><template x-for="d in later" :key="d.taskId + d.date">{% include hub-duty.html %}</template></div></details></template>
     </section></template>
 
+    <template x-if="messages.length"><section class="hub-section" id="messages" aria-labelledby="messages-title">
+      <div class="vv-heading"><h2 id="messages-title">Messages</h2><button type="button" class="vv-quiet" @click="editTemplate(null)">Add a message</button></div>
+      <p class="vv-caption">Copy into game chat. Long ones come in parts: paste them in order.</p>
+      <div class="hub-tasks"><template x-for="m in messages" :key="m.id"><div class="hub-task hub-message">
+        <span class="hub-task-main"><span class="vv-row-top"><strong x-text="m.title"></strong><template x-if="m.task"><span class="vv-avail" x-text="m.task"></span></template></span><span class="hub-text hub-copytext" x-text="m.text"></span><template x-if="m.open.length"><span class="vv-flag" x-text="'Still to fill: ' + m.open.map(g => '{' + g + '}').join(' ')"></span></template><template x-if="m.wide"><span class="vv-flag" x-text="m.wide + (m.wide === 1 ? ' line is' : ' lines are') + ' wider than game chat'"></span></template><template x-if="m.by"><span class="vv-caption" x-text="m.by"></span></template></span>
+        <template x-if="!m.fixed"><button type="button" class="vv-quiet" :aria-label="'Edit ' + m.title" @click="editTemplate(m)">Edit</button></template>
+        <template x-for="(p, i) in m.parts" :key="i"><button type="button" class="vv-secondary" :disabled="busy" :aria-label="'Copy ' + m.title + (m.parts.length > 1 ? ' part ' + (i + 1) : '')" @click="copyPart(m, i)" x-text="m.parts.length > 1 ? 'Copy ' + (i + 1) + '/' + m.parts.length : 'Copy'"></button></template>
+      </div></template></div>
+    </section></template>
+
     <template x-if="tasks.length || owner"><section class="hub-section" id="tasks" aria-labelledby="tasks-title">
       <div class="vv-heading"><h2 id="tasks-title" x-text="leadership ? 'Tasks' : 'Who to ask'"></h2><template x-if="owner"><button type="button" class="vv-quiet" @click="editTask(null)">Add a task</button></template></div>
       <div class="hub-tasks"><template x-for="t in tasks" :key="t.id"><div class="hub-task" :data-nobody="String(t.nobody)" :data-mine="String(t.mine)">
@@ -101,6 +111,13 @@ self: hub
         <p class="vv-label">Held by</p>
         <template x-for="p in forms.task.people" :key="p.id"><div class="hub-holder-pick"><label><input type="checkbox" :name="'holder-' + p.id" x-model="p.on"><span x-text="p.name"></span></label><input :name="'label-' + p.id" :aria-label="p.name + ' part'" x-model="p.label" maxlength="40" placeholder="Part" :disabled="!p.on"></div></template>
         <div class="vv-actions vv-foot"><template x-if="forms.task.id"><button type="button" class="vv-danger" @click="removeTask(forms.task)">Remove</button></template><button type="submit" class="vv-primary" :disabled="busy">Save</button></div>
+      </form></template>
+      <template x-if="dialog && dialog.kind === 'template'"><form @submit.prevent="send('template')">
+        <div class="vv-form-grid"><label class="vv-wide">Title<input name="title" x-model="forms.template.title" required maxlength="60"></label>
+        <label class="vv-wide">About a task<select name="taskId" x-model="forms.template.taskId"><option value="">None</option><template x-for="t in tasks" :key="t.id"><option :value="t.id" x-text="t.name"></option></template></select></label></div>
+        <label>Message<textarea name="body" class="hub-editor" x-model="forms.template.body" rows="7" maxlength="1000" required></textarea></label>
+        <template x-if="draft"><div class="vv-contents"><p class="vv-caption" x-text="'Gaps: ' + draft.gaps + ' · ' + draft.left + ' characters left'"></p><p class="vv-label">As it will copy</p><p class="hub-text hub-copytext" x-text="draft.text"></p><template x-if="draft.wide"><p class="vv-flag" x-text="draft.wide + (draft.wide === 1 ? ' line is' : ' lines are') + ' wider than game chat'"></p></template><template x-if="draft.parts > 1"><p class="vv-flag" x-text="'Comes in ' + draft.parts + ' parts'"></p></template></div></template>
+        <div class="vv-actions vv-foot"><template x-if="forms.template.id"><button type="button" class="vv-danger" @click="removeTemplate(forms.template)">Remove</button></template><button type="submit" class="vv-primary" :disabled="busy">Save</button></div>
       </form></template>
       <template x-if="dialog && dialog.kind === 'share'"><div class="vv-contents"><template x-for="row in shareRows" :key="row.role"><div class="vv-share"><div><strong x-text="row.title"></strong><span class="vv-dim" x-text="row.note"></span></div><div class="vv-share-actions"><template x-if="row.code && row.role !== 'owner'"><button type="button" class="vv-quiet" @click="rotate(row.role)">Replace</button></template><template x-if="row.code"><button type="button" :class="row.role === 'invite' ? 'vv-primary' : 'vv-secondary'" :data-copy="row.text" @click="copy(row.text)">Copy</button></template><template x-if="!row.code"><button type="button" class="vv-secondary" @click="rotate(row.role)">New link</button></template></div></div></template></div></template>
     </div>

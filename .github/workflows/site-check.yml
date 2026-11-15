@@ -114,6 +114,7 @@ jobs:
               - hub/**
               - js/pages/hub.mjs
               - js/hub-engine.mjs
+              - js/hub-messages.mjs
               - _includes/hub-*.html
               - css/hub.css
               - .dsh/island-ui-check.cjs
