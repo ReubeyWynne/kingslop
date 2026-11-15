@@ -74,3 +74,22 @@ Stale revisions return 409. A database trigger enforces the 120-player cap, incl
 Plans (alliance rooms) expire 60 days after they were last used: any access moves expiry 60 days ahead. Expired plans are inaccessible immediately. The daily scheduled handler deletes up to 100 expired plans and cascades deletion to registrations and credentials. Manual deletion also cascades. Cloudflare's backup retention still applies. The main-site planner adds city assignments and HQ planning. See [VIKINGS-PLANNER.md](../VIKINGS-PLANNER.md) for its data model and the additional endpoints. There is no event archive, billing, account synchronisation or automatic group assignment.
 
 Use backwards-compatible migrations: the previous Worker may still be serving requests while a deployment runs. Cloudflare deployments and D1 migrations are separate operations; rolling back Worker code does not undo schema changes.
+
+## Alliance hubs
+
+Hubs use the same Worker, D1 database and code style as plans (migration `0005_hubs.sql`, `src/hub.js`). A hub belongs to one alliance. The R5 holds the only **owner** code. R4s join through one shared **invite** code, type a name, get a private **leader** code back and wait for the owner's approval. Members read through one **member** code. Codes are 22 random characters, stored as hashes, and sent in `Authorization: Bearer <code>`.
+
+| Method | Path | Permission |
+| --- | --- | --- |
+| POST | `/v1/hubs` | Create a hub from `name` and `ownerName`; returns the owner, invite and member codes once |
+| GET | `/v1/hubs/access` | Resolve a code to its hub and role: `owner`, `invite`, `member`, `r4` or `waiting` |
+| GET | `/v1/hubs/:id` | Any code. The owner also gets every R4 and their state, an approved R4 gets the approved R4s, anyone else gets only the hub's name |
+| PATCH | `/v1/hubs/:id` | Owner; rename with the expected `revision` |
+| DELETE | `/v1/hubs/:id` | Owner; deletes the hub, its R4s and its codes |
+| POST | `/v1/hubs/:id/leaders` | Invite code; body `{ name }`, creates a waiting R4 and returns their code once |
+| POST | `/v1/hubs/:id/leaders/:leaderId/approve` | Owner |
+| DELETE | `/v1/hubs/:id/leaders/:leaderId` | Owner removes anyone; an R4 can remove themselves |
+| POST | `/v1/hubs/:id/rotate` | Owner; `{ role: "invite" \| "member" }` replaces that link |
+| POST | `/v1/hubs/:id/handover` | Owner; issues a new owner code and ends the old one |
+
+A hub allows 60 R4s and 20 waiting at once, so a leaked invite link cannot flood it. Hubs last while they are used: any access pushes expiry 60 days ahead (at most one write a day), and the daily cleanup deletes unused ones. Hubs hold no player troops, gear or accounts.

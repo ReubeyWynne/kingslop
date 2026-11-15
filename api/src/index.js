@@ -1,4 +1,5 @@
 import Engine from '../../js/vikings-engine.mjs';
+import { hubRoute } from './hub.js';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 // New codes are 16 random bytes (22 characters) so links fit in game chat; codes issued before that are 43.
 const TOKEN = /^(?:[A-Za-z0-9_-]{22}|[A-Za-z0-9_-]{43})$/;
@@ -31,7 +32,7 @@ function integer(value, name, min, max) {
   return value;
 }
 
-async function body(request, fields) {
+async function body(request, fields, label = 'Vikings planning') {
   requireValue(request.headers.get('content-type')?.split(';')[0].trim() === 'application/json', 'Send application/json.', 415);
   const chunks = [];
   let size = 0;
@@ -56,7 +57,7 @@ async function body(request, fields) {
   try { value = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)); }
   catch { throw new HttpError(400, 'Invalid JSON.'); }
   requireValue(value && typeof value === 'object' && !Array.isArray(value), 'Send a JSON object.');
-  requireValue(Object.keys(value).every(key => fields.includes(key)), 'Only Vikings planning fields are accepted.');
+  requireValue(Object.keys(value).every(key => fields.includes(key)), `Only ${label} fields are accepted.`);
   return value;
 }
 
@@ -177,6 +178,7 @@ async function route(request, env) {
     requireValue(token, 'This link has expired, was replaced or was deleted.', 404);
     return json({ planId: token.plan_id, access: token.role });
   }
+  if (url.pathname === '/v1/hubs' || url.pathname.startsWith('/v1/hubs/')) return hubRoute(request, env, url, ip, { HttpError, requireValue, text, integer, body, secret, digest, json, bearer, nowIso, KEEP_MS, limit });
   if (url.pathname === '/v1/plans' && request.method === 'POST') {
     await limit(env.CREATE_LIMIT, ip);
     const input = planInput(await body(request, PLAN_FIELDS));
@@ -355,6 +357,8 @@ export default {
       response = request.method === 'OPTIONS' ? new Response(null, { status: 204 }) : await route(request, env);
     } catch (error) {
       if (error instanceof HttpError) response = json({ error: error.message }, error.status);
+      else if (/hub_leader_limit/.test(error.message)) response = json({ error: 'This hub has reached its 60-R4 limit.' }, 409);
+      else if (/hub_waiting_limit/.test(error.message)) response = json({ error: 'Too many R4s are waiting for approval. Ask the R5 to approve or remove some.' }, 409);
       else if (/registration_limit/.test(error.message)) response = json({ error: 'This plan has reached its 120-player limit.' }, 409);
       else if (/registration_expired/.test(error.message)) response = json({ error: 'This plan has expired.' }, 404);
       else if (/registration_closed/.test(error.message)) response = json({ error: 'Registration is closed.' }, 409);
@@ -376,5 +380,6 @@ export default {
   },
   async scheduled(controller, env) {
     await env.DB.prepare('DELETE FROM plans WHERE id IN (SELECT id FROM plans WHERE expires_at <= ? ORDER BY expires_at LIMIT 100)').bind(nowIso()).run();
+    await env.DB.prepare('DELETE FROM hubs WHERE id IN (SELECT id FROM hubs WHERE expires_at <= ? ORDER BY expires_at LIMIT 100)').bind(nowIso()).run();
   }
 };
