@@ -18,7 +18,7 @@ self: hub
 
   <template x-if="state"><div class="vv-contents">
     <section class="vv-event" aria-label="Your place in the hub">
-      <div class="vv-bar-head"><div><p class="vv-label" x-text="bar.label"></p><p class="vv-dim" x-text="bar.line"></p></div><button type="button" class="vv-quiet" @click="leave()">Leave</button></div>
+      <div class="vv-bar-head"><div><p class="vv-label" x-text="bar.label"></p><p class="vv-dim" x-text="bar.line"></p></div><div class="hub-bar-actions"><template x-if="leader"><button type="button" :class="asMember ? 'vv-primary' : 'vv-quiet'" @click="preview()" x-text="asMember ? 'Back to leading' : 'Member view'"></button></template><button type="button" class="vv-quiet" @click="leave()">Leave</button></div></div>
     </section>
 
     <template x-if="tabs.length > 1"><div class="vv-tabs hub-tabs" role="tablist" aria-label="Hub sections"><template x-for="t in tabs" :key="t.key"><button type="button" role="tab" :aria-selected="String(view === t.key)" @click="tab = t.key" x-text="t.label"></button></template></div></template>
@@ -84,9 +84,9 @@ self: hub
     </section></template>
     </div></template>
 
-    <template x-if="owner || access === 'r4'"><div class="vv-actions vv-lead">
+    <template x-if="leadership"><div class="vv-actions vv-lead">
       <template x-if="owner"><button type="button" class="vv-primary" @click="share()">Links</button></template>
-      <template x-if="access === 'r4'"><button type="button" class="vv-secondary" @click="copy(mine.text)" x-text="'Copy my sign-in link'"></button></template>
+      <template x-if="r4"><button type="button" class="vv-secondary" @click="copy(mine.text)" x-text="'Copy my sign-in link'"></button></template>
     </div></template>
     <template x-if="owner"><details class="vv-tools" id="hub-tools" x-effect="renders; $el.open = false"><summary>More</summary><div class="vv-actions"><button type="button" @click="settings()">Settings</button><button type="button" @click="handover()">Hand over</button><button type="button" @click="refresh()">Refresh</button><button type="button" class="vv-danger" @click="deleteHub()">Delete</button></div></details></template>
   </div></template>

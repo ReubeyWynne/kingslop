@@ -108,6 +108,20 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     assert.equal(await M.getByRole('button', { name: /^(Take|Mine|Edit|Open)/ }).count(), 0);
     assert.equal(await M.locator('#duties').count(), 0, 'members see no duties');
 
+    // A leader can see what members see: the member's panes and tasks, nothing editable, and back again.
+    for (const [who, page] of [['owner', O], ['R4', R]]) {
+      await page.getByRole('button', { name: 'Member view' }).click();
+      assert.deepEqual(await page.getByRole('tab').allTextContents(), ['Info', 'Who to ask'], who + ' sees the member panes');
+      assert.equal(await page.getByRole('button', { name: /^(Write|Edit|Take|Mine|Open|Links|Add)/ }).count(), 0, who + ' has nothing to change in the member view');
+      assert.equal(await page.locator('.hub-leaf').count(), 1, 'the member sheet is a loose leaf');
+      await page.getByRole('tab', { name: 'Who to ask', exact: true }).click();
+      assert.equal(await page.locator('#tasks .hub-task').count(), 1, 'the same one task members see');
+      assert.match(await page.locator('#tasks .hub-task').textContent(), /Bear Management[\s\S]*Bran \(Trap 2\)/);
+      await page.getByRole('button', { name: 'Back to leading' }).click();
+      assert((await page.getByRole('tab').allTextContents()).includes('Messages'), who + ' is back to leading');
+    }
+    await at(O, 'Tasks');
+
     // Coming up: the R4 takes a Sanctuary Friday and finishes it; the R5 gives Bear Management a weekly day and the list grows.
     await O.locator('#hub-tools summary').click(); await O.getByRole('button', { name: 'Refresh' }).click();
     await at(O, 'Up next');

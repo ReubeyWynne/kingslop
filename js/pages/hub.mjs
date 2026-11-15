@@ -43,7 +43,7 @@ Alpine.data('hub', api => {
   let timer = null, disposed = false;
   return {
     state: null, credential: null, pending: null, busy: false, opened: false, message: '', error: false,
-    dialog: null, dialogMessage: '', renders: 0, tab: '',
+    dialog: null, dialogMessage: '', renders: 0, tab: '', asMember: false,
     forms: { link: '', create: null, settings: null, section: null, join: '', claim: null, task: null, duty: null, template: null },
     weekdays: Cadence.WEEKDAYS.map((label, value) => ({ value: String(value), label })),
 
@@ -59,12 +59,16 @@ Alpine.data('hub', api => {
 
     /* ---- reading the hub ---- */
     get access() { return this.state ? this.state.access : null; },
-    get owner() { return this.access === 'owner'; },
-    get canEdit() { return this.owner || this.access === 'r4'; },
+    // A leader can look at the hub as a member does: the same panes, read only, nothing of the leaders' own.
+    get leader() { return this.access === 'owner' || this.access === 'r4'; },
+    get owner() { return this.access === 'owner' && !this.asMember; },
+    get r4() { return this.access === 'r4' && !this.asMember; },
+    get canEdit() { return this.owner || this.r4; },
+    preview() { this.asMember = !this.asMember; this.tab = ''; this.close(); window.scrollTo(0, 0); },
     get mine() { return { text: this.state && this.state.me && this.credential ? 'Open ' + this.state.hub.name + ': ' + linkTo('leader', this.credential.code) : '' }; },
     get bar() {
-      const s = this.state, who = { owner: 'Owner · ' + s.hub.ownerName, r4: 'R4 · ' + (s.me ? s.me.name : ''), waiting: 'Waiting · ' + (s.me ? s.me.name : ''), invite: 'Invitation', member: 'Member' }[s.access];
-      return { label: who, line: s.hub.ownerName + (s.access === 'owner' ? '' : ' leads this alliance') };
+      const s = this.state, who = this.asMember ? 'Member view' : { owner: 'Owner · ' + s.hub.ownerName, r4: 'R4 · ' + (s.me ? s.me.name : ''), waiting: 'Waiting · ' + (s.me ? s.me.name : ''), invite: 'Invitation', member: 'Member' }[s.access];
+      return { label: who, line: s.hub.ownerName + (s.access === 'owner' && !this.asMember ? '' : ' leads this alliance') };
     },
     get sections() {
       const s = this.state; if (!s) return [];
@@ -89,12 +93,13 @@ Alpine.data('hub', api => {
       return list;
     },
     get view() { return this.tabs.some(t => t.key === this.tab) ? this.tab : this.tabs[0].key; },
-    get leadership() { return this.owner || this.access === 'r4'; },
+    get leadership() { return this.owner || this.r4; },
     // Who I am on a task: the owner holds as 'owner', an R4 under their own id.
     get myId() { return this.owner ? 'owner' : this.state && this.state.me ? this.state.me.id : null; },
     get tasks() {
       const s = this.state; if (!s) return [];
-      return (s.tasks || []).map(t => ({ ...t, mine: t.holders.some(h => h.id && h.id === this.myId), nobody: this.leadership && !t.holders.length, line: t.holders.map(h => h.label ? h.name + ' (' + h.label + ')' : h.name).join(' · ') }));
+      // As a member sees it: only the public tasks somebody holds.
+      return (s.tasks || []).filter(t => !this.asMember || (t.public && t.holders.length)).map(t => ({ ...t, mine: t.holders.some(h => h.id && h.id === this.myId), nobody: this.leadership && !t.holders.length, line: t.holders.map(h => h.label ? h.name + ' (' + h.label + ')' : h.name).join(' · ') }));
     },
     get duties() { return this.leadership && this.state ? (this.state.duties || []).map(d => ({ ...d, day: dayLabel(d.date), when: dateLabel(d.date), until: until(d.date), mine: !!d.taker && d.taker.id === this.myId, line: d.owners.join(' · ') })) : []; },
     // The dates in the order they fall, grouped by week: this week, next week, then "Week of …".

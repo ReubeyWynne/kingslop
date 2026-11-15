@@ -53,3 +53,5 @@
 .hub-duty-main { display:flex; align-items:center; gap:.75rem; flex:1; min-width:0; padding:.15rem 0; background:none; border:0; color:inherit; font:inherit; text-align:start; cursor:pointer; }
 .hub-day { flex:0 0 3.4rem; width:3.4rem; color:var(--amber); font-variant-numeric:tabular-nums; white-space:nowrap; }
 .hub-duty[data-done=true] .hub-day { color:var(--ink-dim); }
+
+.hub-bar-actions { display:flex; align-items:center; gap:.25rem .75rem; flex-wrap:wrap; justify-content:flex-end; }
