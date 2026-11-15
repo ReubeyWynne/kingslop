@@ -158,12 +158,13 @@ Alpine.data('heroGear', () => ({
         (moved ? '<small class="gear-tile-was">' + esc(tr('splitNow')) + ' ' + view.levelLabel(was) + ' · ' + was.mastery + '</small>' : '')
     };
   },
-  // A troop's share of optimal, from the same search as the whole.
+  // A troop's share of optimal, from the same search as the whole. Not capped: the best
+  // layout is found across all troops, so an overbuilt troop can sit above 100%.
   troopShare(type) {
     if (!this.optimum) return null;
     let now = 0, best = 0;
     E.SLOTS.forEach(slot => { const id = type + '-' + slot; now += E.score(id, this.state.pieces[id], this.state.weights); best += E.score(id, this.optimum.pieces[id], this.state.weights); });
-    return best > 0 ? Math.min(1, now / best) : 1;
+    return best > 0 ? now / best : 1;
   },
   get cards() {
     return E.TYPES.map(type => ({
@@ -273,7 +274,7 @@ Alpine.data('heroGear', () => ({
   get planShare() {
     const planned = this.planned, result = this.result;
     if (!planned || !result) return '';
-    const before = planned.score > 0 ? Math.min(1, planned.current / planned.score) : 1, after = planned.score > 0 ? Math.min(1, result.score / planned.score) : 1;
+    const before = planned.score > 0 ? Math.min(1, planned.current / planned.score) : 1, after = planned.score > 0 ? result.score / planned.score : 1;
     return '<div class="gear-headline gear-before-after-share"><strong>' + pct(before) + '</strong><span aria-hidden="true">→</span><strong>' + pct(after) + '</strong></div>' +
       '<p class="gear-gloss">' + esc(tr('planShare')) + '</p>';
   },
