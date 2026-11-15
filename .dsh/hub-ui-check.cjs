@@ -21,6 +21,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     }
     const dialog = page => page.locator('dialog.vv-dialog');
     const local = url => url.replace(/^https?:\/\/[^/]+/, origin);
+    const at = (page, name) => page.getByRole('tab', { name, exact: true }).click();
     const fits = page => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1);
 
     // The R5 sets up an alliance, writes the rules, and copies the three links.
@@ -32,6 +33,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await dialog(O).locator('[name=ownerName]').fill('Ada');
     await O.getByRole('button', { name: 'Set up', exact: true }).click();
     await O.getByRole('heading', { name: '[TST] Test alliance', level: 1 }).waitFor();
+    await at(O, 'Info');
     assert(await O.locator('#rules').getByText('No rules written yet.').isVisible());
     await O.locator('#rules').getByRole('button', { name: 'Write' }).click();
     await dialog(O).locator('[name=body]').fill('No attacking allies.\nBe online for Vikings.');
@@ -64,10 +66,11 @@ const API = 'https://kingslop.reubeycw.workers.dev';
 
     // The R5 lets them in; the R4's phone now edits the notes, with their name on it.
     await O.locator('#hub-tools summary').click(); await O.getByRole('button', { name: 'Refresh' }).click();
+    await at(O, 'Leaders');
     await O.locator('#leaders').getByText('Bran').waitFor();
     await O.locator('#leaders').getByRole('button', { name: 'Let in' }).click();
     await O.locator('#leaders .hub-leader[data-status=approved]').waitFor();
-    await R.reload();
+    await R.reload(); await at(R, 'Info');
     await R.locator('#notes').getByRole('button', { name: 'Write' }).click();
     await dialog(R).locator('[name=body]').fill('Rally at 20:00 UTC.');
     await R.getByRole('button', { name: 'Save', exact: true }).click();
@@ -77,6 +80,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     assert.equal(await R.getByRole('button', { name: 'Links', exact: true }).count(), 0, 'an R4 cannot see the owner links');
 
     // Tasks: the R4 takes Bear Management for one trap, the R5 takes another and gives an internal task to the R4.
+    await at(O, 'Tasks'); await at(R, 'Tasks');
     assert.equal(await O.locator('#tasks .hub-task').count(), 16);
     await R.locator('#tasks .hub-task', { hasText: 'Bear Management' }).getByRole('button', { name: 'Take Bear Management' }).click();
     await R.locator('#tasks .hub-task[data-mine=true]', { hasText: 'Bear Management' }).waitFor();
@@ -95,9 +99,9 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await dialog(O).locator('[name^=holder-]:not([name=holder-owner])').first().check();
     await O.getByRole('button', { name: 'Save', exact: true }).click();
     await O.locator('#tasks .hub-task', { hasText: 'AFK Maintenance' }).getByText('Bran').waitFor();
-    assert(await O.locator('#tasks .hub-task', { hasText: 'AFK Maintenance' }).getByText('Leaders only').isVisible());
+    assert(await O.locator('#tasks .hub-task', { hasText: 'AFK Maintenance' }).getByText('Leaders only').count() === 0, 'no leaders-only tag: tasks are for R4s');
     assert(await O.locator('#tasks .hub-task[data-nobody=true]').count() >= 13, 'the R5 sees every task nobody holds');
-    await M.reload(); await M.locator('#tasks').waitFor();
+    await M.reload(); await at(M, 'Who to ask');
     assert.equal(await M.locator('#tasks-title').textContent(), 'Who to ask');
     assert.equal(await M.locator('#tasks .hub-task').count(), 1, 'members see public tasks somebody holds');
     assert.match(await M.locator('#tasks .hub-task').textContent(), /Bear Management[\s\S]*Bran \(Trap 2\) · Ada \(Trap 1\)/);
@@ -106,9 +110,10 @@ const API = 'https://kingslop.reubeycw.workers.dev';
 
     // Coming up: the R4 takes a Sanctuary Friday and finishes it; the R5 gives Bear Management a weekly day and the list grows.
     await O.locator('#hub-tools summary').click(); await O.getByRole('button', { name: 'Refresh' }).click();
+    await at(O, 'Up next');
     await O.locator('#duties').waitFor();
     assert(await O.locator('#duties .hub-task', { hasText: 'Sanctuary Reward Distribution' }).count() >= 4, 'every Friday for four weeks');
-    await R.reload();
+    await R.reload(); await at(R, 'Up next');
     const friday = R.locator('#duties .hub-task', { hasText: 'Sanctuary Reward Distribution' }).first();
     await friday.getByRole('button', { name: /^Take Sanctuary Reward Distribution/ }).click();
     await R.locator('#duties .hub-task[data-mine=true]', { hasText: 'Sanctuary Reward Distribution' }).first().waitFor();
@@ -119,6 +124,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await O.locator('#hub-tools summary').click(); await O.getByRole('button', { name: 'Refresh' }).click();
     await O.locator('#duties .hub-task[data-done=true]', { hasText: 'Bran' }).first().waitFor();
     const before = await O.locator('#duties .hub-task').count();
+    await at(O, 'Tasks');
     await O.getByRole('button', { name: 'Edit Bear Management' }).click();
     await dialog(O).locator('[name=cadenceType]').selectOption('wheel');
     await dialog(O).locator('[name=days]').fill('40');
@@ -128,7 +134,8 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await dialog(O).locator('[name=weekday]').selectOption('3');
     await dialog(O).locator('[name=dutyRule]').selectOption('claim');
     await O.getByRole('button', { name: 'Save', exact: true }).click();
-    await O.locator('#tasks .hub-task', { hasText: 'Bear Management' }).getByText('Every Wednesday').waitFor();
+    await O.locator('#tasks .hub-task', { hasText: 'Bear Management' }).getByText(/Every Wednesday/).waitFor();
+    await at(O, 'Up next');
     assert(await O.locator('#duties .hub-task', { hasText: 'Bear Management' }).count() >= 4);
     assert(await O.locator('#duties .hub-task[data-nobody=true]', { hasText: 'Bear Management' }).first().isVisible(), 'a date that must be claimed shows nobody yet');
     assert(await O.locator('#duties .hub-task').count() > before);
@@ -138,6 +145,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await O.locator('#duties .hub-task[data-mine=true]', { hasText: 'Bear Management' }).first().waitFor();
 
     // Messages: today's Event Cycle card is there to copy; the R5 writes one about a task and the gaps fill in; a member sees none.
+    await at(O, 'Messages');
     await O.locator('#messages .hub-message').first().waitFor();
     assert(/Event Cycle · day \d+/.test(await O.locator('#messages .hub-message').first().innerText()));
     assert.equal(await M.locator('#messages').count(), 0, 'members have no messages');
@@ -165,9 +173,11 @@ const API = 'https://kingslop.reubeycw.workers.dev';
 
     // The member sees the R4's notes after a reload; the R5 removes the R4, whose sign-in then stops working.
     await M.reload(); await M.locator('#notes .hub-text').waitFor();
+    await at(O, 'Leaders');
     await O.locator('#leaders').getByRole('button', { name: 'Remove Bran' }).click();
     await dialog(O).getByRole('button', { name: 'Remove', exact: true }).click();
     await O.locator('#leaders').getByText('No R4s yet.').waitFor();
+    await at(O, 'Tasks');
     assert.equal(await O.locator('#tasks .hub-task', { hasText: 'Bran' }).count(), 0, 'a removed R4 holds nothing');
     await R.reload();
     await R.locator('.vv-message', { hasText: 'no longer works' }).waitFor();
@@ -192,6 +202,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
       assert(await page.evaluate(() => { const r = document.querySelector('dialog.vv-dialog').getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && Math.abs(r.left - (innerWidth - r.right)) < 2; }), 'the dialog is centred');
       await page.screenshot({ path: path.join(out, 'owner-links-390.png') });
       await page.keyboard.press('Escape'); await page.screenshot({ path: path.join(out, 'owner-390.png'), fullPage: true });
+      for (const name of ['Up next', 'Tasks', 'Messages', 'Info', 'Leaders']) { await at(page, name); assert(await fits(page), name + ' fits'); await page.screenshot({ path: path.join(out, 'owner-' + name.toLowerCase().replace(' ', '-') + '-390.png'), fullPage: true }); }
       await context.close();
     }
     assert.deepEqual(errors, []);

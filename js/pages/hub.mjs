@@ -40,7 +40,7 @@ Alpine.data('hub', api => {
   let timer = null, disposed = false;
   return {
     state: null, credential: null, pending: null, busy: false, opened: false, message: '', error: false,
-    dialog: null, dialogMessage: '', renders: 0,
+    dialog: null, dialogMessage: '', renders: 0, tab: '',
     forms: { link: '', create: null, settings: null, section: null, join: '', claim: null, task: null, duty: null, template: null },
     weekdays: Cadence.WEEKDAYS.map((label, value) => ({ value: String(value), label })),
 
@@ -70,14 +70,30 @@ Alpine.data('hub', api => {
         return { key, title: TITLES[key], body: x.body, empty: EMPTY[key], by: x.editedBy ? 'Edited by ' + x.editedBy + ' · ' + ago(x.editedAt) : '' };
       });
     },
+    // The page is one pane at a time: what an R4 works in, or what a member reads.
+    get tabs() {
+      if (!this.state) return [];
+      const list = [];
+      if (this.leadership) {
+        if (this.duties.length) list.push({ key: 'up', label: 'Up next' });
+        if (this.tasks.length || this.owner) list.push({ key: 'tasks', label: 'Tasks' });
+        list.push({ key: 'messages', label: 'Messages' }, { key: 'info', label: 'Info' });
+        if (this.leaders.length || this.owner) list.push({ key: 'leaders', label: 'Leaders' });
+      } else {
+        list.push({ key: 'info', label: 'Info' });
+        if (this.tasks.length) list.push({ key: 'tasks', label: 'Who to ask' });
+      }
+      return list;
+    },
+    get view() { return this.tabs.some(t => t.key === this.tab) ? this.tab : this.tabs[0].key; },
     get leadership() { return this.owner || this.access === 'r4'; },
     // Who I am on a task: the owner holds as 'owner', an R4 under their own id.
     get myId() { return this.owner ? 'owner' : this.state && this.state.me ? this.state.me.id : null; },
     get tasks() {
       const s = this.state; if (!s) return [];
-      return (s.tasks || []).map(t => ({ ...t, mine: t.holders.some(h => h.id && h.id === this.myId), nobody: this.leadership && !t.holders.length, line: t.holders.length ? t.holders.map(h => h.label ? h.name + ' (' + h.label + ')' : h.name).join(' · ') : 'Nobody yet' }));
+      return (s.tasks || []).map(t => ({ ...t, mine: t.holders.some(h => h.id && h.id === this.myId), nobody: this.leadership && !t.holders.length, line: t.holders.map(h => h.label ? h.name + ' (' + h.label + ')' : h.name).join(' · ') }));
     },
-    get duties() { return this.leadership && this.state ? (this.state.duties || []).map(d => ({ ...d, when: dateLabel(d.date), until: until(d.date), mine: !!d.taker && d.taker.id === this.myId, line: d.owners.length ? d.owners.join(' · ') : 'Nobody yet' })) : []; },
+    get duties() { return this.leadership && this.state ? (this.state.duties || []).map(d => ({ ...d, when: dateLabel(d.date), until: until(d.date), mine: !!d.taker && d.taker.id === this.myId, line: d.owners.join(' · ') })) : []; },
     get soon() { return this.duties.slice(0, 8); },
     get later() { return this.duties.slice(8); },
     // Messages to paste into game chat: today's Event Cycle card, then the R4s' own, gaps filled in.
