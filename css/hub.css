@@ -32,3 +32,14 @@
 .hub-tabs button { padding:.55rem 0; }
 .hub-preview summary { cursor:pointer; color:var(--ink-dim); padding:.1rem 0; }
 .hub-preview[open] summary { margin-bottom:.25rem; }
+
+/* Motifs (css/motifs.css): nobody on it is an empty dotted slot and a dashed rule, a link's sheet is a loose leaf,
+   a finished date wears the saved seal, an unwritten section is ghost ink, and a request waiting is a dashed frame. */
+.hub-slot { width:3rem; height:1.1em; overflow:hidden; white-space:nowrap; vertical-align:text-bottom; margin-right:.6rem; }
+.hub-leaf { margin-top:1rem; }
+.hub-task[data-nobody=true] { border-top-style:dashed; border-top-color:var(--amber-dim); }
+.hub-ghost { font-style:italic; color:var(--ink-muted); }
+.loose-leaf .hub-section { border-top:0; margin-top:0; }
+.loose-leaf .hub-task { border-top:0; padding:0; }
+.loose-leaf .hub-tasks { margin-top:0; }
+.loose-leaf h2 { margin:0; line-height:var(--rule); }
