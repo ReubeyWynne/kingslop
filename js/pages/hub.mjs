@@ -36,7 +36,7 @@ Alpine.data('hub', api => {
   return {
     state: null, credential: null, pending: null, busy: false, opened: false, message: '', error: false,
     dialog: null, dialogMessage: '', renders: 0,
-    forms: { link: '', create: null, settings: null, section: null, join: '' },
+    forms: { link: '', create: null, settings: null, section: null, join: '', claim: null, task: null },
 
     init() {
       // A link just followed wins; otherwise the hub this phone keeps.
@@ -63,6 +63,13 @@ Alpine.data('hub', api => {
         const x = s.sections[key];
         return { key, title: TITLES[key], body: x.body, empty: EMPTY[key], by: x.editedBy ? 'Edited by ' + x.editedBy + ' · ' + ago(x.editedAt) : '' };
       });
+    },
+    get leadership() { return this.owner || this.access === 'r4'; },
+    // Who I am on a task: the owner holds as 'owner', an R4 under their own id.
+    get myId() { return this.owner ? 'owner' : this.state && this.state.me ? this.state.me.id : null; },
+    get tasks() {
+      const s = this.state; if (!s) return [];
+      return (s.tasks || []).map(t => ({ ...t, mine: t.holders.some(h => h.id && h.id === this.myId), nobody: this.leadership && !t.holders.length, line: t.holders.length ? t.holders.map(h => h.label ? h.name + ' (' + h.label + ')' : h.name).join(' · ') : 'Nobody yet' }));
     },
     get leaders() { return (this.state && this.state.leaders) || []; },
     get shareRows() {
@@ -164,6 +171,18 @@ Alpine.data('hub', api => {
         } else if (kind === 'settings') {
           const f = this.forms.settings; await this.request('/v1/hubs/' + this.state.hub.id, 'PATCH', { name: f.name, ownerName: f.ownerName, revision: this.state.hub.revision });
           await this.load(); this.close(); this.say('Saved.');
+        } else if (kind === 'claim') {
+          const f = this.forms.claim; await this.request('/v1/hubs/' + this.state.hub.id + '/tasks/' + f.id + '/claims/me', 'PUT', { label: f.label });
+          await this.load(); this.close();
+        } else if (kind === 'task') {
+          const f = this.forms.task, base = '/v1/hubs/' + this.state.hub.id + '/tasks', body = { name: f.name, note: f.note, public: !!f.public };
+          const id = f.id ? f.id : (await this.request(base, 'POST', body)).id;
+          if (f.id) await this.request(base + '/' + id, 'PATCH', body);
+          for (const p of f.people) {
+            if (p.on && (!p.was || p.label !== p.was_label)) await this.request(base + '/' + id + '/claims/' + p.id, 'PUT', { label: p.label });
+            else if (!p.on && p.was) await this.request(base + '/' + id + '/claims/' + p.id, 'DELETE');
+          }
+          await this.load(); this.close(); this.say('Saved.');
         } else if (kind === 'section') {
           const f = this.forms.section;
           try { await this.request('/v1/hubs/' + this.state.hub.id + '/sections/' + f.key, 'PUT', { body: f.body, revision: f.revision }); }
@@ -172,6 +191,17 @@ Alpine.data('hub', api => {
         }
       });
     },
+    mutate(path, method, data, done) { return this.run(async () => { await this.request('/v1/hubs/' + this.state.hub.id + path, method, data); await this.load(); if (done) this.say(done); }); },
+    take(t) { return this.mutate('/tasks/' + t.id + '/claims/me', 'PUT', { label: '' }); },
+    claim(t) { const mine = t.holders.find(h => h.id === this.myId); this.forms.claim = { id: t.id, label: mine ? mine.label : '' }; this.modal('claim', t.name); },
+    drop(id) { return this.run(async () => { await this.request('/v1/hubs/' + this.state.hub.id + '/tasks/' + id + '/claims/me', 'DELETE'); this.close(); await this.load(); }); },
+    starter() { return this.mutate('/tasks/template', 'POST', {}); },
+    editTask(t) {
+      const people = [{ id: 'owner', name: this.state.hub.ownerName }].concat(this.leaders.filter(l => l.status === 'approved').map(l => ({ id: l.id, name: l.name })));
+      this.forms.task = { id: t ? t.id : '', name: t ? t.name : '', note: t ? t.note : '', public: t ? t.public : false, people: people.map(p => { const h = t && t.holders.find(x => x.id === p.id); return { id: p.id, name: p.name, on: !!h, was: !!h, label: h ? h.label : '', was_label: h ? h.label : '' }; }) };
+      this.modal('task', t ? t.name : 'New task');
+    },
+    removeTask(f) { return this.ask('Remove ' + f.name + '?', 'Everyone holding it is let go.', 'Remove', async () => { await this.request('/v1/hubs/' + this.state.hub.id + '/tasks/' + f.id, 'DELETE'); this.close(); await this.load(); this.say('Removed.'); }); },
     join() {
       return this.run(async () => {
         const made = await this.request('/v1/hubs/' + this.state.hub.id + '/leaders', 'POST', { name: this.forms.join });

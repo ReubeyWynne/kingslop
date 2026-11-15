@@ -12,3 +12,14 @@
 .hub-leader { display:flex; align-items:center; gap:.5rem 1rem; justify-content:space-between; padding:.25rem 0; }
 .hub-leader[data-status=waiting] .vv-row-top strong { color:var(--amber); }
 .hub-editor { width:100%; min-height:10rem; resize:vertical; box-sizing:border-box; }
+.hub-tasks { display:grid; gap:0; margin-top:.25rem; }
+.hub-task { display:flex; align-items:center; gap:.5rem 1rem; justify-content:space-between; padding:.5rem 0; border-top:1px solid color-mix(in srgb,var(--ink-muted) 25%,transparent); }
+.hub-task:first-child { border-top:0; }
+.hub-task-main { display:flex; flex-direction:column; min-width:0; flex:1; }
+.hub-task-main strong { overflow-wrap:anywhere; }
+.hub-holders { color:var(--ink-dim); overflow-wrap:anywhere; }
+.hub-task[data-nobody=true] .hub-holders { color:var(--amber); }
+.hub-task[data-mine=true] .hub-holders { color:var(--ink); }
+.hub-holder-pick { display:flex; align-items:center; justify-content:space-between; gap:.5rem 1rem; padding:.15rem 0; }
+.hub-holder-pick label { display:flex; align-items:center; gap:.5rem; min-width:0; overflow-wrap:anywhere; }
+.hub-holder-pick input[type=text],.hub-holder-pick input:not([type]) { width:9rem; max-width:45%; }
