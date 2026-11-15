@@ -113,6 +113,8 @@ jobs:
               - .dsh/hub-ui-check.cjs
               - hub/**
               - js/pages/hub.mjs
+              - js/hub-engine.mjs
+              - _includes/hub-*.html
               - css/hub.css
               - .dsh/island-ui-check.cjs
               - island/**
@@ -501,6 +503,9 @@ jobs:
       - name: Check Vikings allocation
         if: needs.changes.outputs.logic == 'true'
         run: node --test .dsh/vikings-check.cjs
+      - name: Check alliance hub cadences
+        if: needs.changes.outputs.logic == 'true'
+        run: node --test .dsh/hub-check.cjs
       - name: Check battle engine
         if: needs.changes.outputs.logic == 'true'
         run: node .dsh/battle-engine-check.cjs

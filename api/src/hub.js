@@ -3,6 +3,7 @@
 // ones: random, stored only as hashes, sent in the Authorization header.
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 import { STARTER_TASKS } from './hub-tasks.js';
+import Cadence from '../../js/hub-engine.mjs';
 const HUB_FIELDS = ['name', 'ownerName'];
 const SECTIONS = ['rules', 'notes', 'times'];
 
@@ -22,7 +23,7 @@ function leaderView(row, owner) {
 export async function hubRoute(request, env, url, ip, k) {
   const { HttpError, requireValue, text, integer, body, secret, digest, json, bearer, nowIso, KEEP_MS, limit } = k;
 
-  const starterTasks = (hubId, now) => STARTER_TASKS.map(([name, pub], i) => env.DB.prepare('INSERT INTO hub_tasks (id, hub_id, name, is_public, position, created_at) VALUES (?, ?, ?, ?, ?, ?)').bind(crypto.randomUUID(), hubId, name, Number(pub), i + 1, now));
+  const starterTasks = (hubId, now) => STARTER_TASKS.map(([name, pub, cadence], i) => env.DB.prepare('INSERT INTO hub_tasks (id, hub_id, name, is_public, position, created_at, cadence) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(crypto.randomUUID(), hubId, name, Number(pub), i + 1, now, cadence ? JSON.stringify(cadence) : null));
 
   async function access(hubId) {
     const token = await env.DB.prepare('SELECT role, leader_id FROM hub_tokens WHERE token_hash = ? AND hub_id = ?').bind(await digest(bearer(request)), hubId).first();
@@ -42,40 +43,47 @@ export async function hubRoute(request, env, url, ip, k) {
   const owner = token => requireValue(token.role === 'owner', 'The owner link is required.', 403);
   const kind = ({ token, leader }) => token.role === 'leader' ? (leader.status === 'approved' ? 'r4' : 'waiting') : token.role;
 
+  // A cadence and a duty rule from a request body, checked: `cadence` null clears it, and a field left out stays as it was.
+  function cadenceInput(input) {
+    const out = {};
+    if ('cadence' in input) { const problem = Cadence.validate(input.cadence); requireValue(problem === null, problem); out.cadence = input.cadence === null ? null : JSON.stringify(input.cadence); }
+    if ('dutyRule' in input) { requireValue(['usual', 'claim'].includes(input.dutyRule), 'dutyRule must be usual or claim.'); out.dutyRule = input.dutyRule; }
+    return out;
+  }
   // Tasks and who holds them. The owner shapes the list and can put anyone on a task; an approved R4 takes
   // and drops their own claims.
-  async function tasksRoute([, hubId, taskId, target]) {
-    requireValue(UUID.test(hubId) && (!taskId || taskId === 'template' || UUID.test(taskId)) && (!target || ['me', 'owner'].includes(target) || UUID.test(target)), 'Endpoint not found.', 404);
+  async function tasksRoute([, hubId, taskId, segment, target]) {
+    requireValue(UUID.test(hubId) && (!taskId || taskId === 'template' || UUID.test(taskId)) && (!target || (segment === 'claims' ? ['me', 'owner'].includes(target) || UUID.test(target) : !Number.isNaN(Cadence.parse(target)))), 'Endpoint not found.', 404);
     const state = await access(hubId), { token, hub } = state, isOwner = token.role === 'owner', leader = kind(state) === 'r4';
     const find = async () => { const row = await env.DB.prepare('SELECT * FROM hub_tasks WHERE id = ? AND hub_id = ?').bind(taskId, hubId).first(); requireValue(row, 'Task not found.', 404); return row; };
     if (!taskId && request.method === 'POST') {
       owner(token);
-      const input = await body(request, ['name', 'note', 'public'], 'Task');
+      const input = await body(request, ['name', 'note', 'public', 'cadence', 'dutyRule'], 'Task'), plan = cadenceInput(input);
       requireValue(input.public === undefined || typeof input.public === 'boolean', 'public must be true or false.');
       const last = await env.DB.prepare('SELECT max(position) AS n FROM hub_tasks WHERE hub_id = ?').bind(hubId).first(), id = crypto.randomUUID();
-      await env.DB.prepare('INSERT INTO hub_tasks (id, hub_id, name, note, is_public, position, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(id, hubId, text(input.name, 'name', 60, true), text(input.note ?? '', 'note', 300), Number(input.public ?? false), (last.n || 0) + 1, nowIso()).run();
+      await env.DB.prepare('INSERT INTO hub_tasks (id, hub_id, name, note, is_public, position, created_at, cadence, duty_rule) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(id, hubId, text(input.name, 'name', 60, true), text(input.note ?? '', 'note', 300), Number(input.public ?? false), (last.n || 0) + 1, nowIso(), plan.cadence ?? null, plan.dutyRule ?? 'usual').run();
       return json({ id }, 201);
     }
-    if (taskId === 'template' && request.method === 'POST' && !target) {
+    if (taskId === 'template' && request.method === 'POST' && !segment) {
       owner(token);
       await body(request, [], 'Task');
       requireValue((await env.DB.prepare('SELECT count(*) AS n FROM hub_tasks WHERE hub_id = ?').bind(hubId).first()).n === 0, 'This hub already has tasks.', 409);
       await env.DB.batch(starterTasks(hubId, nowIso()));
       return json({ ok: true }, 201);
     }
-    if (taskId && taskId !== 'template' && !target && request.method === 'PATCH') {
+    if (taskId && taskId !== 'template' && !segment && request.method === 'PATCH') {
       owner(token);
-      const task = await find(), input = await body(request, ['name', 'note', 'public'], 'Task');
+      const task = await find(), input = await body(request, ['name', 'note', 'public', 'cadence', 'dutyRule'], 'Task'), plan = cadenceInput(input);
       requireValue(input.public === undefined || typeof input.public === 'boolean', 'public must be true or false.');
-      await env.DB.prepare('UPDATE hub_tasks SET name = ?, note = ?, is_public = ? WHERE id = ?').bind('name' in input ? text(input.name, 'name', 60, true) : task.name, 'note' in input ? text(input.note, 'note', 300) : task.note, 'public' in input ? Number(input.public) : task.is_public, taskId).run();
+      await env.DB.prepare('UPDATE hub_tasks SET name = ?, note = ?, is_public = ?, cadence = ?, duty_rule = ? WHERE id = ?').bind('name' in input ? text(input.name, 'name', 60, true) : task.name, 'note' in input ? text(input.note, 'note', 300) : task.note, 'public' in input ? Number(input.public) : task.is_public, 'cadence' in input ? plan.cadence : task.cadence, plan.dutyRule ?? task.duty_rule, taskId).run();
       return json({ ok: true });
     }
-    if (taskId && taskId !== 'template' && !target && request.method === 'DELETE') {
+    if (taskId && taskId !== 'template' && !segment && request.method === 'DELETE') {
       owner(token); await find();
       await env.DB.prepare('DELETE FROM hub_tasks WHERE id = ?').bind(taskId).run();
       return new Response(null, { status: 204 });
     }
-    if (taskId && taskId !== 'template' && target && ['PUT', 'DELETE'].includes(request.method)) {
+    if (taskId && taskId !== 'template' && segment === 'claims' && ['PUT', 'DELETE'].includes(request.method)) {
       requireValue(isOwner || leader, 'Only the owner and approved R4s can hold tasks.', 403);
       await find();
       const own = isOwner ? 'owner' : state.leader.id, holder = target === 'me' ? own : target;
@@ -84,6 +92,30 @@ export async function hubRoute(request, env, url, ip, k) {
       if (request.method === 'DELETE') { await env.DB.prepare('DELETE FROM hub_claims WHERE task_id = ? AND holder = ?').bind(taskId, holder).run(); return new Response(null, { status: 204 }); }
       const input = await body(request, ['label'], 'Task'), label = text(input.label ?? '', 'label', 40);
       await env.DB.prepare('INSERT INTO hub_claims (task_id, holder, label, created_at) VALUES (?, ?, ?, ?) ON CONFLICT (task_id, holder) DO UPDATE SET label = excluded.label').bind(taskId, holder, label, nowIso()).run();
+      return json({ ok: true });
+    }
+    if (taskId && taskId !== 'template' && segment === 'duties' && request.method === 'PUT') {
+      // Take a date, hand it on (the owner), put it back, or mark it done.
+      requireValue(isOwner || leader, 'Only the owner and approved R4s can take dates.', 403);
+      const task = await find(), input = await body(request, ['taker', 'done'], 'Task');
+      requireValue(input.taker !== undefined || input.done !== undefined, 'Say who takes it, or whether it is done.');
+      requireValue(input.done === undefined || typeof input.done === 'boolean', 'done must be true or false.');
+      requireValue(Cadence.upcoming(task.cadence ? JSON.parse(task.cadence) : null, Date.now()).includes(target), 'That task is not due on that date.', 404);
+      const own = isOwner ? 'owner' : state.leader.id, row = await env.DB.prepare('SELECT * FROM hub_duties WHERE task_id = ? AND date = ?').bind(taskId, target).first();
+      let taker = row ? row.taker : null;
+      if (input.taker !== undefined) {
+        requireValue(typeof input.taker === 'string', 'taker must be me, none or an R4.');
+        if (input.taker === 'me') taker = own;
+        else if (input.taker === 'none') { requireValue(isOwner || !taker || taker === own, 'Only the owner can take a date from someone else.', 403); taker = null; }
+        else {
+          requireValue(isOwner, 'Only the owner can give a date to someone else.', 403);
+          if (input.taker !== 'owner') requireValue(await env.DB.prepare("SELECT 1 AS ok FROM hub_leaders WHERE id = ? AND hub_id = ? AND status = 'approved'").bind(input.taker, hubId).first(), 'That R4 is not on this hub.', 404);
+          taker = input.taker;
+        }
+      }
+      const done = input.done === undefined ? Number(row ? row.done : 0) : Number(input.done);
+      if (taker === null && !done) await env.DB.prepare('DELETE FROM hub_duties WHERE task_id = ? AND date = ?').bind(taskId, target).run();
+      else await env.DB.prepare('INSERT INTO hub_duties (task_id, date, taker, done) VALUES (?, ?, ?, ?) ON CONFLICT (task_id, date) DO UPDATE SET taker = excluded.taker, done = excluded.done').bind(taskId, target, taker, done).run();
       return json({ ok: true });
     }
     throw new HttpError(405, 'Method not allowed.');
@@ -105,7 +137,7 @@ export async function hubRoute(request, env, url, ip, k) {
     await env.DB.batch([env.DB.prepare('INSERT INTO hubs (id, name, owner_name, created_at, updated_at, expires_at) VALUES (?, ?, ?, ?, ?, ?)').bind(id, name, ownerName, now, now, expiresAt), ...tokens, ...starterTasks(id, now)]);
     return json({ hub: hubView(await env.DB.prepare('SELECT * FROM hubs WHERE id = ?').bind(id).first(), true), codes }, 201);
   }
-  const tasks = url.pathname.match(/^\/v1\/hubs\/([^/]+)\/tasks(?:\/([^/]+)(?:\/claims\/([^/]+))?)?$/);
+  const tasks = url.pathname.match(/^\/v1\/hubs\/([^/]+)\/tasks(?:\/([^/]+)(?:\/(claims|duties)\/([^/]+))?)?$/);
   if (tasks) return tasksRoute(tasks);
   const match = url.pathname.match(/^\/v1\/hubs\/([^/]+)(?:\/(leaders|rotate|handover|sections)(?:\/([^/]+?)(?:\/(approve))?)?)?$/);
   requireValue(match && UUID.test(match[1]) && (!match[3] || match[2] === 'sections' || UUID.test(match[3])), 'Endpoint not found.', 404);
@@ -126,8 +158,18 @@ export async function hubRoute(request, env, url, ip, k) {
       const claimRows = (await env.DB.prepare('SELECT c.* FROM hub_claims c JOIN hub_tasks t ON t.id = c.task_id WHERE t.hub_id = ? ORDER BY c.created_at, c.rowid').bind(hubId).all()).results;
       const named = new Map((await env.DB.prepare('SELECT id, name FROM hub_leaders WHERE hub_id = ?').bind(hubId).all()).results.map(r => [r.id, r.name]));
       named.set('owner', hub.owner_name);
-      result.tasks = taskRows.map(t => ({ id: t.id, name: t.name, note: t.note, public: Boolean(t.is_public), holders: claimRows.filter(c => c.task_id === t.id && named.has(c.holder)).map(c => leadership ? { id: c.holder, name: named.get(c.holder), label: c.label } : { name: named.get(c.holder), label: c.label }) }))
+      result.tasks = taskRows.map(t => ({ id: t.id, name: t.name, note: t.note, public: Boolean(t.is_public), ...(leadership ? { cadence: t.cadence ? JSON.parse(t.cadence) : null, cadenceText: Cadence.describe(t.cadence ? JSON.parse(t.cadence) : null), dutyRule: t.duty_rule } : {}), holders: claimRows.filter(c => c.task_id === t.id && named.has(c.holder)).map(c => leadership ? { id: c.holder, name: named.get(c.holder), label: c.label } : { name: named.get(c.holder), label: c.label }) }))
         .filter(t => leadership || (t.public && t.holders.length));
+      if (leadership) {
+        // Dates are worked out here from each cadence; a stored row only says who took a date or that it is done.
+        const dutyRows = (await env.DB.prepare('SELECT d.* FROM hub_duties d JOIN hub_tasks t ON t.id = d.task_id WHERE t.hub_id = ?').bind(hubId).all()).results, now = Date.now();
+        result.duties = taskRows.flatMap(t => Cadence.upcoming(t.cadence ? JSON.parse(t.cadence) : null, now).map(date => {
+          const row = dutyRows.find(d => d.task_id === t.id && d.date === date), holders = claimRows.filter(c => c.task_id === t.id && named.has(c.holder)).map(c => named.get(c.holder));
+          const taker = row && row.taker && named.has(row.taker) ? { id: row.taker, name: named.get(row.taker) } : null;
+          const owners = taker ? [taker.name] : t.duty_rule === 'usual' ? holders : [];
+          return { taskId: t.id, task: t.name, date, taker, owners, unowned: !owners.length, done: Boolean(row && row.done) };
+        })).sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+      }
       if (state.leader) result.me = { ...leaderView(state.leader, true) };
       return json(result);
     }

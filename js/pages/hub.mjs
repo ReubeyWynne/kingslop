@@ -6,6 +6,7 @@
    rides in the fragment, the head script keeps it out of the address bar, and the server
    decides the role from the code. */
 import { Alpine } from '../alpine.mjs';
+import Cadence from '../hub-engine.mjs';
 
 const API = 'https://kingslop.reubeycw.workers.dev';
 const KEY = 'bh:hub:v1';
@@ -23,6 +24,8 @@ function write(value) { try { localStorage.setItem(KEY, JSON.stringify(value)); 
 function drop() { try { localStorage.removeItem(KEY); } catch (_) {} }
 function stored() { const c = read(); return c && UUID.test(c.hubId) && CODE.test(c.code) && RANK[c.role] ? c : null; }
 function parseLink(value) { const m = /#(?:own|r4|ally|me)-([A-Za-z0-9_-]{22})\s*$/.exec(String(value || '').trim()); return m ? { code: m[1] } : null; }
+const dateLabel = d => new Date(d + 'T00:00:00Z').toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
+function until(d) { const n = Math.round((Date.parse(d + 'T00:00:00Z') - Math.floor(Date.now() / 86400000) * 86400000) / 86400000); return n <= 0 ? 'today' : n === 1 ? 'tomorrow' : 'in ' + n + ' days'; }
 function ago(iso) {
   const t = Date.parse(iso); if (!t) return '';
   const m = Math.max(0, Math.round((Date.now() - t) / 60000));
@@ -36,7 +39,8 @@ Alpine.data('hub', api => {
   return {
     state: null, credential: null, pending: null, busy: false, opened: false, message: '', error: false,
     dialog: null, dialogMessage: '', renders: 0,
-    forms: { link: '', create: null, settings: null, section: null, join: '', claim: null, task: null },
+    forms: { link: '', create: null, settings: null, section: null, join: '', claim: null, task: null, duty: null },
+    weekdays: Cadence.WEEKDAYS.map((label, value) => ({ value: String(value), label })),
 
     init() {
       // A link just followed wins; otherwise the hub this phone keeps.
@@ -71,6 +75,9 @@ Alpine.data('hub', api => {
       const s = this.state; if (!s) return [];
       return (s.tasks || []).map(t => ({ ...t, mine: t.holders.some(h => h.id && h.id === this.myId), nobody: this.leadership && !t.holders.length, line: t.holders.length ? t.holders.map(h => h.label ? h.name + ' (' + h.label + ')' : h.name).join(' · ') : 'Nobody yet' }));
     },
+    get duties() { return this.leadership && this.state ? (this.state.duties || []).map(d => ({ ...d, when: dateLabel(d.date), until: until(d.date), mine: !!d.taker && d.taker.id === this.myId, line: d.owners.length ? d.owners.join(' · ') : 'Nobody yet' })) : []; },
+    get soon() { return this.duties.slice(0, 8); },
+    get later() { return this.duties.slice(8); },
     get leaders() { return (this.state && this.state.leaders) || []; },
     get shareRows() {
       const c = this.credential, codes = (c && c.codes) || {}, name = this.state.hub.name;
@@ -171,11 +178,18 @@ Alpine.data('hub', api => {
         } else if (kind === 'settings') {
           const f = this.forms.settings; await this.request('/v1/hubs/' + this.state.hub.id, 'PATCH', { name: f.name, ownerName: f.ownerName, revision: this.state.hub.revision });
           await this.load(); this.close(); this.say('Saved.');
+        } else if (kind === 'duty') {
+          const f = this.forms.duty, body = { done: !!f.done };
+          if (f.taker !== f.was) body.taker = f.taker === '' ? 'none' : f.taker === this.myId ? 'me' : f.taker;
+          await this.request('/v1/hubs/' + this.state.hub.id + '/tasks/' + f.taskId + '/duties/' + f.date, 'PUT', body);
+          await this.load(); this.close();
         } else if (kind === 'claim') {
           const f = this.forms.claim; await this.request('/v1/hubs/' + this.state.hub.id + '/tasks/' + f.id + '/claims/me', 'PUT', { label: f.label });
           await this.load(); this.close();
         } else if (kind === 'task') {
-          const f = this.forms.task, base = '/v1/hubs/' + this.state.hub.id + '/tasks', body = { name: f.name, note: f.note, public: !!f.public };
+          const f = this.forms.task, base = '/v1/hubs/' + this.state.hub.id + '/tasks', cadence = this.cadenceOf(f), problem = Cadence.validate(cadence);
+          if (problem) { this.say(problem, true); return; }
+          const body = { name: f.name, note: f.note, public: !!f.public, cadence, dutyRule: f.dutyRule };
           const id = f.id ? f.id : (await this.request(base, 'POST', body)).id;
           if (f.id) await this.request(base + '/' + id, 'PATCH', body);
           for (const p of f.people) {
@@ -198,10 +212,37 @@ Alpine.data('hub', api => {
     starter() { return this.mutate('/tasks/template', 'POST', {}); },
     editTask(t) {
       const people = [{ id: 'owner', name: this.state.hub.ownerName }].concat(this.leaders.filter(l => l.status === 'approved').map(l => ({ id: l.id, name: l.name })));
-      this.forms.task = { id: t ? t.id : '', name: t ? t.name : '', note: t ? t.note : '', public: t ? t.public : false, people: people.map(p => { const h = t && t.holders.find(x => x.id === p.id); return { id: p.id, name: p.name, on: !!h, was: !!h, label: h ? h.label : '', was_label: h ? h.label : '' }; }) };
+      this.forms.task = { id: t ? t.id : '', name: t ? t.name : '', note: t ? t.note : '', public: t ? t.public : false, ...this.cadenceForm(t && t.cadence), dutyRule: t ? t.dutyRule || 'usual' : 'usual', people: people.map(p => { const h = t && t.holders.find(x => x.id === p.id); return { id: p.id, name: p.name, on: !!h, was: !!h, label: h ? h.label : '', was_label: h ? h.label : '' }; }) };
       this.modal('task', t ? t.name : 'New task');
     },
+    // The task dialog's cadence fields, and back: one object the engine validates.
+    cadenceForm(c) {
+      const today = new Date().toISOString().slice(0, 10), f = { cadenceType: c ? c.type : '', weekday: '5', weeks: '2', from: today, days: '', vikingsDay: 'thu', date: today };
+      if (c && c.type === 'weekly') f.weekday = String(c.weekday);
+      if (c && c.type === 'every') { f.weeks = String(c.weeks); f.from = c.from; }
+      if (c && c.type === 'wheel') f.days = c.days.join(', ');
+      if (c && c.type === 'vikings') f.vikingsDay = c.day;
+      if (c && c.type === 'date') f.date = c.date;
+      return f;
+    },
+    cadenceOf(f) {
+      if (f.cadenceType === 'weekly') return { type: 'weekly', weekday: Number(f.weekday) };
+      if (f.cadenceType === 'every') return { type: 'every', weeks: Number(f.weeks), from: f.from };
+      if (f.cadenceType === 'wheel') return { type: 'wheel', days: String(f.days).split(/[\s,]+/).filter(Boolean).map(Number) };
+      if (f.cadenceType === 'vikings') return { type: 'vikings', day: f.vikingsDay };
+      if (f.cadenceType === 'date') return { type: 'date', date: f.date };
+      return null;
+    },
     removeTask(f) { return this.ask('Remove ' + f.name + '?', 'Everyone holding it is let go.', 'Remove', async () => { await this.request('/v1/hubs/' + this.state.hub.id + '/tasks/' + f.id, 'DELETE'); this.close(); await this.load(); this.say('Removed.'); }); },
+    takeDuty(d) { return this.mutate('/tasks/' + d.taskId + '/duties/' + d.date, 'PUT', { taker: 'me' }); },
+    editDuty(d) {
+      const mine = this.myId, options = [];
+      if (this.owner) options.push({ value: '', label: 'Usual' }, { value: 'owner', label: this.state.hub.ownerName }, ...this.leaders.filter(l => l.status === 'approved').map(l => ({ value: l.id, label: l.name })));
+      else { if (d.taker && d.taker.id !== mine) options.push({ value: d.taker.id, label: d.taker.name, fixed: true }); else options.push({ value: '', label: 'Usual' }); options.push({ value: mine, label: 'Me' }); }
+      const taker = d.taker ? d.taker.id : '';
+      this.forms.duty = { taskId: d.taskId, date: d.date, was: taker, taker, done: d.done, options };
+      this.modal('duty', d.task + ' · ' + d.when);
+    },
     join() {
       return this.run(async () => {
         const made = await this.request('/v1/hubs/' + this.state.hub.id + '/leaders', 'POST', { name: this.forms.join });

@@ -35,10 +35,16 @@ self: hub
       <template x-if="s.by"><p class="vv-caption" x-text="s.by"></p></template>
     </section></template>
 
+    <template x-if="leadership && duties.length"><section class="hub-section" id="duties" aria-labelledby="duties-title">
+      <h2 id="duties-title">Coming up</h2>
+      <div class="hub-tasks"><template x-for="d in soon" :key="d.taskId + d.date">{% include hub-duty.html %}</template></div>
+      <template x-if="later.length"><details class="vv-gaps" id="duties-later" x-effect="renders; $el.open = false"><summary x-text="'Later · ' + later.length"></summary><div class="hub-tasks"><template x-for="d in later" :key="d.taskId + d.date">{% include hub-duty.html %}</template></div></details></template>
+    </section></template>
+
     <template x-if="tasks.length || owner"><section class="hub-section" id="tasks" aria-labelledby="tasks-title">
       <div class="vv-heading"><h2 id="tasks-title" x-text="leadership ? 'Tasks' : 'Who to ask'"></h2><template x-if="owner"><button type="button" class="vv-quiet" @click="editTask(null)">Add a task</button></template></div>
       <div class="hub-tasks"><template x-for="t in tasks" :key="t.id"><div class="hub-task" :data-nobody="String(t.nobody)" :data-mine="String(t.mine)">
-        <span class="hub-task-main"><span class="vv-row-top"><strong x-text="t.name"></strong><template x-if="leadership && !t.public"><span class="vv-avail">Leaders only</span></template></span><span class="hub-holders" x-text="t.line"></span><template x-if="t.note"><span class="vv-caption" x-text="t.note"></span></template></span>
+        <span class="hub-task-main"><span class="vv-row-top"><strong x-text="t.name"></strong><template x-if="leadership && !t.public"><span class="vv-avail">Leaders only</span></template></span><span class="hub-holders" x-text="t.line"></span><template x-if="leadership && t.cadenceText && t.cadence"><span class="vv-caption" x-text="t.cadenceText"></span></template><template x-if="t.note"><span class="vv-caption" x-text="t.note"></span></template></span>
         <template x-if="owner"><button type="button" class="vv-quiet" :aria-label="'Edit ' + t.name" @click="editTask(t)">Edit</button></template>
         <template x-if="canEdit && !t.mine"><button type="button" class="vv-secondary" :disabled="busy" :aria-label="'Take ' + t.name" @click="take(t)">Take</button></template>
         <template x-if="canEdit && t.mine"><button type="button" class="vv-primary" :aria-label="'Change or drop ' + t.name" @click="claim(t)">Mine</button></template>
@@ -76,8 +82,22 @@ self: hub
       <template x-if="dialog && dialog.kind === 'settings'"><form @submit.prevent="send('settings')"><div class="vv-form-grid"><label class="vv-wide">Alliance<input name="name" x-model="forms.settings.name" required maxlength="80"></label><label class="vv-wide">Owner name<input name="ownerName" x-model="forms.settings.ownerName" required maxlength="40"></label></div><div class="vv-actions vv-foot"><button type="submit" class="vv-primary" :disabled="busy">Save</button></div></form></template>
       <template x-if="dialog && dialog.kind === 'section'"><form @submit.prevent="send('section')"><label><span x-text="dialog.label"></span><textarea name="body" class="hub-editor" x-model="forms.section.body" rows="10" maxlength="4000" x-init="$nextTick(() => $el.focus())"></textarea></label><p class="vv-caption" x-text="(4000 - forms.section.body.length) + ' characters left'"></p><div class="vv-actions vv-foot"><button type="submit" class="vv-primary" :disabled="busy">Save</button></div></form></template>
       <template x-if="dialog && dialog.kind === 'claim'"><form @submit.prevent="send('claim')"><label>Which part?<input name="label" x-model="forms.claim.label" maxlength="40" placeholder="Trap 2"></label><div class="vv-actions vv-foot"><button type="button" class="vv-danger" @click="drop(forms.claim.id)">Drop it</button><button type="submit" class="vv-primary" :disabled="busy">Save</button></div></form></template>
+      <template x-if="dialog && dialog.kind === 'duty'"><form @submit.prevent="send('duty')">
+        <label>Who takes it<select name="taker" x-model="forms.duty.taker"><template x-for="o in forms.duty.options"><option :value="o.value" :disabled="o.fixed" x-text="o.label"></option></template></select></label>
+        <label class="vv-chip"><input type="checkbox" name="done" x-model="forms.duty.done"><span>Done</span></label>
+        <div class="vv-actions vv-foot"><button type="submit" class="vv-primary" :disabled="busy">Save</button></div>
+      </form></template>
       <template x-if="dialog && dialog.kind === 'task'"><form @submit.prevent="send('task')">
         <div class="vv-form-grid"><label class="vv-wide">Task<input name="name" x-model="forms.task.name" required maxlength="60"></label><label class="vv-wide">Note<input name="note" x-model="forms.task.note" maxlength="300"></label><label class="vv-chip vv-wide"><input type="checkbox" name="public" x-model="forms.task.public"><span>Members see who holds it</span></label></div>
+        <div class="vv-form-grid">
+          <label class="vv-wide">Falls due<select name="cadenceType" x-model="forms.task.cadenceType"><option value="">No set day</option><option value="weekly">Every week</option><option value="every">Every few weeks</option><option value="wheel">Days of the Event Cycle</option><option value="vikings">On Vikings days</option><option value="date">Once</option></select></label>
+          <template x-if="forms.task.cadenceType === 'weekly'"><label class="vv-wide">Day<select name="weekday" x-model="forms.task.weekday"><template x-for="w in weekdays"><option :value="w.value" x-text="w.label"></option></template></select></label></template>
+          <template x-if="forms.task.cadenceType === 'every'"><div class="vv-contents"><label>Weeks<input type="number" name="weeks" min="1" max="12" x-model="forms.task.weeks" inputmode="numeric"></label><label>Starting<input type="date" name="from" x-model="forms.task.from"></label></div></template>
+          <template x-if="forms.task.cadenceType === 'wheel'"><label class="vv-wide">Days (1 to 28)<input name="days" x-model="forms.task.days" placeholder="7, 21" inputmode="numeric"></label></template>
+          <template x-if="forms.task.cadenceType === 'vikings'"><label class="vv-wide">Vikings day<select name="vikingsDay" x-model="forms.task.vikingsDay"><option value="tue">Tuesday</option><option value="thu">Thursday</option></select></label></template>
+          <template x-if="forms.task.cadenceType === 'date'"><label class="vv-wide">Date<input type="date" name="date" x-model="forms.task.date"></label></template>
+          <template x-if="forms.task.cadenceType"><label class="vv-wide">When nobody takes it<select name="dutyRule" x-model="forms.task.dutyRule"><option value="usual">It falls to who holds the task</option><option value="claim">Somebody takes it each time</option></select></label></template>
+        </div>
         <p class="vv-label">Held by</p>
         <template x-for="p in forms.task.people" :key="p.id"><div class="hub-holder-pick"><label><input type="checkbox" :name="'holder-' + p.id" x-model="p.on"><span x-text="p.name"></span></label><input :name="'label-' + p.id" :aria-label="p.name + ' part'" x-model="p.label" maxlength="40" placeholder="Part" :disabled="!p.on"></div></template>
         <div class="vv-actions vv-foot"><template x-if="forms.task.id"><button type="button" class="vv-danger" @click="removeTask(forms.task)">Remove</button></template><button type="submit" class="vv-primary" :disabled="busy">Save</button></div>
