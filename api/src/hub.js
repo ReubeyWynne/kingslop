@@ -3,11 +3,14 @@
 // ones: random, stored only as hashes, sent in the Authorization header.
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const HUB_FIELDS = ['name', 'ownerName'];
+const SECTIONS = ['rules', 'notes', 'times'];
 
 function hubView(row, owner) {
   const view = { id: row.id, name: row.name, ownerName: row.owner_name };
   return owner ? { ...view, revision: row.revision, createdAt: row.created_at, updatedAt: row.updated_at, expiresAt: row.expires_at } : view;
 }
+
+function sectionView(row) { return { body: row.body, revision: row.revision, editedBy: row.edited_by, editedAt: row.edited_at }; }
 
 // The owner sees every R4 with their state; an approved R4 sees who else is approved.
 function leaderView(row, owner) {
@@ -52,8 +55,8 @@ export async function hubRoute(request, env, url, ip, k) {
     await env.DB.batch([env.DB.prepare('INSERT INTO hubs (id, name, owner_name, created_at, updated_at, expires_at) VALUES (?, ?, ?, ?, ?, ?)').bind(id, name, ownerName, now, now, expiresAt), ...tokens]);
     return json({ hub: hubView(await env.DB.prepare('SELECT * FROM hubs WHERE id = ?').bind(id).first(), true), codes }, 201);
   }
-  const match = url.pathname.match(/^\/v1\/hubs\/([^/]+)(?:\/(leaders|rotate|handover)(?:\/([^/]+?)(?:\/(approve))?)?)?$/);
-  requireValue(match && UUID.test(match[1]) && (!match[3] || UUID.test(match[3])), 'Endpoint not found.', 404);
+  const match = url.pathname.match(/^\/v1\/hubs\/([^/]+)(?:\/(leaders|rotate|handover|sections)(?:\/([^/]+?)(?:\/(approve))?)?)?$/);
+  requireValue(match && UUID.test(match[1]) && (!match[3] || match[2] === 'sections' || UUID.test(match[3])), 'Endpoint not found.', 404);
   const [, hubId, part, leaderId, step] = match;
   const state = await access(hubId), { token, hub } = state, isOwner = token.role === 'owner';
 
@@ -62,6 +65,9 @@ export async function hubRoute(request, env, url, ip, k) {
       const result = { hub: hubView(hub, isOwner), access: kind(state) };
       if (isOwner) result.leaders = (await env.DB.prepare('SELECT * FROM hub_leaders WHERE hub_id = ? ORDER BY created_at, rowid').bind(hubId).all()).results.map(row => leaderView(row, true));
       else if (kind(state) === 'r4') result.leaders = (await env.DB.prepare("SELECT * FROM hub_leaders WHERE hub_id = ? AND status = 'approved' ORDER BY created_at, rowid").bind(hubId).all()).results.map(row => leaderView(row, false));
+      // The written pages are for everyone who has any link.
+      const rows = (await env.DB.prepare('SELECT * FROM hub_sections WHERE hub_id = ?').bind(hubId).all()).results;
+      result.sections = Object.fromEntries(SECTIONS.map(name => { const row = rows.find(r => r.section === name); return [name, row ? sectionView(row) : { body: '', revision: 0, editedBy: null, editedAt: null }]; }));
       if (state.leader) result.me = { ...leaderView(state.leader, true) };
       return json(result);
     }
@@ -105,6 +111,19 @@ export async function hubRoute(request, env, url, ip, k) {
     requireValue(isOwner || (token.role === 'leader' && token.leader_id === leaderId), 'You cannot remove this R4.', 403);
     await env.DB.prepare('DELETE FROM hub_leaders WHERE id = ? AND hub_id = ?').bind(leaderId, hubId).run();
     return new Response(null, { status: 204 });
+  }
+  if (part === 'sections' && leaderId && !step && request.method === 'PUT') {
+    // The owner and approved R4s write the rules, notes and event times; the last name stays on the page.
+    requireValue(SECTIONS.includes(leaderId), 'Endpoint not found.', 404);
+    requireValue(isOwner || kind(state) === 'r4', 'Only the owner and approved R4s can edit this.', 403);
+    const input = await body(request, ['body', 'revision'], 'Hub');
+    integer(input.revision, 'revision', 0, Number.MAX_SAFE_INTEGER);
+    const written = text(input.body, 'body', 4000), by = isOwner ? hub.owner_name : state.leader.name, now = nowIso();
+    const result = input.revision === 0
+      ? await env.DB.prepare('INSERT INTO hub_sections (hub_id, section, body, edited_by, edited_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT (hub_id, section) DO NOTHING').bind(hubId, leaderId, written, by, now).run()
+      : await env.DB.prepare('UPDATE hub_sections SET body = ?, revision = revision + 1, edited_by = ?, edited_at = ? WHERE hub_id = ? AND section = ? AND revision = ?').bind(written, by, now, hubId, leaderId, input.revision).run();
+    requireValue(result.meta.changes === 1, 'Someone saved this first. Reload before saving.', 409);
+    return json({ section: sectionView(await env.DB.prepare('SELECT * FROM hub_sections WHERE hub_id = ? AND section = ?').bind(hubId, leaderId).first()) });
   }
   if (part === 'rotate' && !leaderId && request.method === 'POST') {
     owner(token);

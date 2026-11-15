@@ -1,0 +1,71 @@
+---
+layout: page
+self: hub
+---
+<main class="vv-page hub-page" x-data="hub($el.dataset.hubApi)" :class="state && 'vv-active'" :aria-busy="busy ? 'true' : null">
+  <header class="vv-header" id="top">
+    <div><p class="vv-eyebrow">Alliance hub</p><h1 x-text="state ? state.hub.name : 'Alliance hub'">Alliance hub</h1></div>
+    <img src="../img/buildings/town-center.webp" width="128" height="128" alt="" decoding="async">
+  </header>
+  <p class="vv-message" role="status" aria-live="polite" :data-error="String(error)" x-text="message"></p>
+
+  <section class="vv-start" id="start" :hidden="!!state || !opened">
+    <div class="vv-paths">
+      <div class="vv-path"><p class="vv-label">Leading</p><h2>Your alliance</h2><p>Rules, notes and event times in one place.</p><button type="button" class="vv-primary" @click="create()">Set up your alliance</button></div>
+      <div class="vv-path"><p class="vv-label">Joining</p><h2>Got a link?</h2><p>Paste it to read the rules or join the leaders.</p><button type="button" class="vv-primary" @click="paste()">Paste a link</button></div>
+    </div>
+  </section>
+
+  <template x-if="state"><div class="vv-contents">
+    <section class="vv-event" aria-label="Your place in the hub">
+      <div class="vv-bar-head"><div><p class="vv-label" x-text="bar.label"></p><p class="vv-dim" x-text="bar.line"></p></div><button type="button" class="vv-quiet" @click="leave()">Leave</button></div>
+    </section>
+
+    <template x-if="access === 'invite'"><form class="hub-join" @submit.prevent="join()">
+      <h2>Join the leaders</h2>
+      <label>In-game name<input name="name" x-model="forms.join" required maxlength="40" autocomplete="nickname"></label>
+      <div class="vv-actions"><button type="submit" class="vv-primary" :disabled="busy">Ask to join</button></div>
+    </form></template>
+    <template x-if="access === 'waiting'"><p class="vv-flag hub-waiting" x-text="'Waiting for ' + state.hub.ownerName + ' to let you in.'"></p></template>
+
+    <template x-for="s in sections" :key="s.key"><section class="hub-section" :id="s.key" :aria-labelledby="s.key + '-title'">
+      <div class="vv-heading"><h2 :id="s.key + '-title'" x-text="s.title"></h2><template x-if="canEdit"><button type="button" class="vv-quiet" @click="edit(s.key)" x-text="s.body ? 'Edit' : 'Write'"></button></template></div>
+      <template x-if="s.body"><p class="hub-text" x-text="s.body"></p></template>
+      <template x-if="!s.body"><p class="vv-caption" x-text="s.empty"></p></template>
+      <template x-if="s.by"><p class="vv-caption" x-text="s.by"></p></template>
+    </section></template>
+
+    <template x-if="leaders.length || owner"><section class="hub-section" id="leaders" aria-labelledby="leaders-title">
+      <h2 id="leaders-title">Leaders</h2>
+      <p class="vv-caption" x-text="'Run by ' + state.hub.ownerName"></p>
+      <div class="vv-rows"><template x-for="l in leaders" :key="l.id"><div class="vv-row-line hub-leader" :data-status="l.status || 'approved'">
+        <span class="vv-row-main"><span class="vv-row-top"><strong x-text="l.name"></strong><template x-if="l.status === 'waiting'"><span class="vv-avail">Waiting</span></template><template x-if="l.lastSeenAt"><span class="vv-avail" x-text="ago(l.lastSeenAt)"></span></template></span></span>
+        <template x-if="owner && l.status === 'waiting'"><button type="button" class="vv-primary" :disabled="busy" @click="approve(l)">Let in</button></template>
+        <template x-if="owner"><button type="button" class="vv-row-x" :aria-label="'Remove ' + l.name" title="Remove" @click="remove(l)">×</button></template>
+      </div></template></div>
+      <template x-if="!leaders.length"><p class="vv-caption">No R4s yet.</p></template>
+    </section></template>
+
+    <template x-if="owner || access === 'r4'"><div class="vv-actions vv-lead">
+      <template x-if="owner"><button type="button" class="vv-primary" @click="share()">Links</button></template>
+      <template x-if="access === 'r4'"><button type="button" class="vv-secondary" @click="copy(mine.text)" x-text="'Copy my sign-in link'"></button></template>
+    </div></template>
+    <template x-if="owner"><details class="vv-tools" id="hub-tools" x-effect="renders; $el.open = false"><summary>More</summary><div class="vv-actions"><button type="button" @click="settings()">Settings</button><button type="button" @click="handover()">Hand over</button><button type="button" @click="refresh()">Refresh</button><button type="button" class="vv-danger" @click="deleteHub()">Delete</button></div></details></template>
+  </div></template>
+
+  <dialog class="vv-dialog" aria-labelledby="hub-dialog-title" x-effect="dialog ? $el.open || $el.showModal() : $el.open && $el.close()" @close="dialog = null">
+    <div class="vv-dialog-head"><h2 id="hub-dialog-title" x-text="dialog ? dialog.title : ''"></h2><button type="button" aria-label="Close" @click="close()">×</button></div>
+    <p class="vv-dialog-message" role="alert" x-text="dialogMessage"></p>
+    <div class="vv-dialog-body">
+      <template x-if="dialog && dialog.kind === 'copy'"><div class="vv-contents"><textarea class="vv-link" readonly rows="3" :value="dialog.value" x-init="$nextTick(() => $el.select())"></textarea><template x-if="dialog.after"><div class="vv-actions vv-foot"><button type="button" class="vv-primary" @click="dialog.after()">Done</button></div></template></div></template>
+      <template x-if="dialog && dialog.kind === 'ask'"><div class="vv-contents"><p x-text="dialog.text"></p><div class="vv-actions vv-foot"><button type="button" class="vv-quiet" @click="close()">Cancel</button><button type="button" :class="dialog.cls" @click="dialog.yes()" x-text="dialog.label"></button></div></div></template>
+      <template x-if="dialog && dialog.kind === 'switch'"><div class="vv-contents"><p x-text="dialog.text"></p><div class="vv-actions vv-foot"><button type="button" class="vv-quiet" @click="close()" x-text="dialog.keep"></button><button type="button" class="vv-primary" @click="confirmSwitch()">Open it</button></div></div></template>
+      <template x-if="dialog && dialog.kind === 'open'"><form @submit.prevent="send('open')"><label>Link from your leader<input type="url" name="link" x-model="forms.link" required placeholder="https://dey.ci/hub/#r4-…"></label><div class="vv-actions vv-foot"><button type="submit" class="vv-primary" :disabled="busy">Open</button></div></form></template>
+      <template x-if="dialog && dialog.kind === 'create'"><form @submit.prevent="send('create')"><div class="vv-form-grid"><label class="vv-wide">Alliance<input name="name" x-model="forms.create.name" required maxlength="80" placeholder="[TAG] Alliance"></label><label class="vv-wide">Your in-game name<input name="ownerName" x-model="forms.create.ownerName" required maxlength="40" autocomplete="nickname"></label></div><div class="vv-actions vv-foot"><button type="submit" class="vv-primary" :disabled="busy">Set up</button></div></form></template>
+      <template x-if="dialog && dialog.kind === 'settings'"><form @submit.prevent="send('settings')"><div class="vv-form-grid"><label class="vv-wide">Alliance<input name="name" x-model="forms.settings.name" required maxlength="80"></label><label class="vv-wide">Owner name<input name="ownerName" x-model="forms.settings.ownerName" required maxlength="40"></label></div><div class="vv-actions vv-foot"><button type="submit" class="vv-primary" :disabled="busy">Save</button></div></form></template>
+      <template x-if="dialog && dialog.kind === 'section'"><form @submit.prevent="send('section')"><label><span x-text="dialog.label"></span><textarea name="body" class="hub-editor" x-model="forms.section.body" rows="10" maxlength="4000" x-init="$nextTick(() => $el.focus())"></textarea></label><p class="vv-caption" x-text="(4000 - forms.section.body.length) + ' characters left'"></p><div class="vv-actions vv-foot"><button type="submit" class="vv-primary" :disabled="busy">Save</button></div></form></template>
+      <template x-if="dialog && dialog.kind === 'share'"><div class="vv-contents"><template x-for="row in shareRows" :key="row.role"><div class="vv-share"><div><strong x-text="row.title"></strong><span class="vv-dim" x-text="row.note"></span></div><div class="vv-share-actions"><template x-if="row.code && row.role !== 'owner'"><button type="button" class="vv-quiet" @click="rotate(row.role)">Replace</button></template><template x-if="row.code"><button type="button" :class="row.role === 'invite' ? 'vv-primary' : 'vv-secondary'" :data-copy="row.text" @click="copy(row.text)">Copy</button></template><template x-if="!row.code"><button type="button" class="vv-secondary" @click="rotate(row.role)">New link</button></template></div></div></template></div></template>
+    </div>
+  </dialog>
+  <noscript><p class="vv-caption">The hub needs JavaScript.</p></noscript>
+</main>

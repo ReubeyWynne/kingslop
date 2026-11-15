@@ -110,6 +110,10 @@ jobs:
             interactions:
               - *shared
               - .dsh/vikings-ui-check.cjs
+              - .dsh/hub-ui-check.cjs
+              - hub/**
+              - js/pages/hub.mjs
+              - css/hub.css
               - .dsh/island-ui-check.cjs
               - island/**
               - js/island*.js
@@ -736,6 +740,9 @@ jobs:
       - name: Check Vikings planner UI
         if: matrix.group == 'interactions'
         run: node .dsh/vikings-ui-check.cjs
+      - name: Check the alliance hub UI
+        if: matrix.group == 'interactions'
+        run: node .dsh/hub-ui-check.cjs
       - name: Check the Island planner UI
         if: matrix.group == 'interactions'
         run: node .dsh/island-ui-check.cjs
