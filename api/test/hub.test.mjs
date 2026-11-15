@@ -198,3 +198,81 @@ test('the owner and approved R4s write the rules, notes and times; everyone with
   assert.equal(env.sql.prepare('SELECT count(*) AS n FROM hub_sections').get().n, 0);
   env.sql.close();
 });
+
+async function tasksOf(env, hub, code) { return (await (await call(env, `/v1/hubs/${hub.hub.id}`, 'GET', undefined, code)).json()).tasks; }
+
+test('a new hub starts with the sixteen tasks, public ones first, and the owner can restore them once', async () => {
+  const env = environment(), hub = await create(env), path = `/v1/hubs/${hub.hub.id}`;
+  const all = await tasksOf(env, hub, hub.codes.owner);
+  assert.equal(all.length, 16);
+  assert.deepEqual(all.slice(0, 3).map(t => t.name), ['Alliance Championship Signups', 'Swordland Signups', 'Tri-Alliance Signups']);
+  assert.equal(all.filter(t => t.public).length, 8);
+  assert.equal((await tasksOf(env, hub, hub.codes.member)).length, 0, 'members see public tasks only once somebody holds them');
+  assert.equal((await call(env, `${path}/tasks/template`, 'POST', {}, hub.codes.owner)).status, 409);
+  for (const task of all) await call(env, `${path}/tasks/${task.id}`, 'DELETE', undefined, hub.codes.owner);
+  assert.equal((await tasksOf(env, hub, hub.codes.owner)).length, 0);
+  assert.equal((await call(env, `${path}/tasks/template`, 'POST', {}, hub.codes.member)).status, 403);
+  assert.equal((await call(env, `${path}/tasks/template`, 'POST', {}, hub.codes.owner)).status, 201);
+  assert.equal((await tasksOf(env, hub, hub.codes.owner)).length, 16);
+  env.sql.close();
+});
+
+test('claims: several holders per task, labels, R4s change only their own, the owner assigns anyone', async () => {
+  const env = environment(), hub = await create(env), path = `/v1/hubs/${hub.hub.id}`;
+  const bran = await join(env, hub, 'Bran'), cara = await join(env, hub, 'Cara'), waiting = await join(env, hub, 'Waiting');
+  for (const r of [bran, cara]) await call(env, `${path}/leaders/${r.leader.id}/approve`, 'POST', undefined, hub.codes.owner);
+  const tasks = await tasksOf(env, hub, hub.codes.owner), bear = tasks.find(t => t.name === 'Bear Management'), nap = tasks.find(t => t.name === 'NAP Enforcer');
+
+  assert.equal((await call(env, `${path}/tasks/${bear.id}/claims/me`, 'PUT', { label: 'Trap 1' }, bran.code)).status, 200);
+  assert.equal((await call(env, `${path}/tasks/${bear.id}/claims/me`, 'PUT', { label: 'Trap 2' }, cara.code)).status, 200);
+  assert.equal((await call(env, `${path}/tasks/${bear.id}/claims/me`, 'PUT', { label: 'Trap 3 (Academy)' }, hub.codes.owner)).status, 200);
+  assert.equal((await call(env, `${path}/tasks/${nap.id}/claims/${cara.leader.id}`, 'PUT', {}, hub.codes.owner)).status, 200);
+  const held = (await tasksOf(env, hub, hub.codes.owner)).find(t => t.id === bear.id);
+  assert.deepEqual(held.holders.map(h => [h.name, h.label]), [['Bran', 'Trap 1'], ['Cara', 'Trap 2'], ['Owner', 'Trap 3 (Academy)']]);
+  assert.deepEqual(held.holders.map(h => h.id), [bran.leader.id, cara.leader.id, 'owner']);
+
+  // Changing a label keeps one claim per holder.
+  await call(env, `${path}/tasks/${bear.id}/claims/me`, 'PUT', { label: 'Trap 4' }, bran.code);
+  assert.equal((await tasksOf(env, hub, bran.code)).find(t => t.id === bear.id).holders.length, 3);
+
+  // R4s cannot touch someone else's claim, and the others cannot hold tasks.
+  assert.equal((await call(env, `${path}/tasks/${bear.id}/claims/${cara.leader.id}`, 'DELETE', undefined, bran.code)).status, 403);
+  assert.equal((await call(env, `${path}/tasks/${bear.id}/claims/owner`, 'PUT', {}, bran.code)).status, 403);
+  assert.equal((await call(env, `${path}/tasks/${bear.id}/claims/${bran.leader.id}`, 'DELETE', undefined, bran.code)).status, 204);
+  for (const code of [hub.codes.member, hub.codes.invite, waiting.code]) assert.equal((await call(env, `${path}/tasks/${bear.id}/claims/me`, 'PUT', {}, code)).status, 403);
+  assert.equal((await call(env, `${path}/tasks/${bear.id}/claims/${waiting.leader.id}`, 'PUT', {}, hub.codes.owner)).status, 404, 'only approved R4s hold tasks');
+  assert.equal((await call(env, `${path}/tasks/${bear.id}/claims/me`, 'PUT', { label: 'x'.repeat(41) }, bran.code)).status, 400);
+
+  // Members see only public tasks that somebody holds, with names and labels but no ids.
+  const seen = await tasksOf(env, hub, hub.codes.member);
+  assert.deepEqual(seen.map(t => t.name), ['Bear Management']);
+  assert.deepEqual(seen[0].holders, [{ name: 'Cara', label: 'Trap 2' }, { name: 'Owner', label: 'Trap 3 (Academy)' }]);
+  assert.ok(!JSON.stringify(await tasksOf(env, hub, waiting.code)).includes(nap.id));
+
+  // A removed R4 takes their claims with them.
+  await call(env, `${path}/leaders/${cara.leader.id}`, 'DELETE', undefined, hub.codes.owner);
+  assert.equal(env.sql.prepare('SELECT count(*) AS n FROM hub_claims WHERE holder = ?').get(cara.leader.id).n, 0);
+  assert.deepEqual((await tasksOf(env, hub, hub.codes.owner)).find(t => t.id === nap.id).holders, []);
+  env.sql.close();
+});
+
+test('only the owner adds, edits and removes tasks; names are bounded and a hub holds forty', async () => {
+  const env = environment(), hub = await create(env), path = `/v1/hubs/${hub.hub.id}`, r4 = await join(env, hub, 'Bran');
+  await call(env, `${path}/leaders/${r4.leader.id}/approve`, 'POST', undefined, hub.codes.owner);
+  for (const code of [r4.code, hub.codes.member, hub.codes.invite]) assert.equal((await call(env, `${path}/tasks`, 'POST', { name: 'Nope' }, code)).status, 403);
+  for (const payload of [{ name: '' }, { name: 'x'.repeat(61) }, { name: 'x', public: 'yes' }, { name: 'x', note: 'n'.repeat(301) }, { name: 'x', owner: 1 }]) assert.equal((await call(env, `${path}/tasks`, 'POST', payload, hub.codes.owner)).status, 400);
+  const made = await (await call(env, `${path}/tasks`, 'POST', { name: 'Trap rota', note: 'Mon to Fri', public: true }, hub.codes.owner)).json();
+  assert.equal((await call(env, `${path}/tasks/${made.id}`, 'PATCH', { name: 'Hijacked' }, r4.code)).status, 403);
+  assert.equal((await call(env, `${path}/tasks/${made.id}`, 'PATCH', { note: 'Weekends too' }, hub.codes.owner)).status, 200);
+  const edited = (await tasksOf(env, hub, hub.codes.owner)).find(t => t.id === made.id);
+  assert.deepEqual([edited.name, edited.note, edited.public], ['Trap rota', 'Weekends too', true]);
+  assert.equal((await call(env, `${path}/tasks/${made.id}`, 'DELETE', undefined, r4.code)).status, 403);
+  assert.equal((await call(env, `${path}/tasks/${made.id}`, 'DELETE', undefined, hub.codes.owner)).status, 204);
+  assert.equal((await call(env, `${path}/tasks/${made.id}`, 'PATCH', { name: 'Gone' }, hub.codes.owner)).status, 404);
+  for (let i = 0; i < 24; i++) assert.equal((await call(env, `${path}/tasks`, 'POST', { name: 'Extra ' + i }, hub.codes.owner)).status, 201);
+  const over = await call(env, `${path}/tasks`, 'POST', { name: 'One too many' }, hub.codes.owner);
+  assert.equal(over.status, 409); assert.match((await over.json()).error, /40 tasks/);
+  const other = await create(env);
+  assert.equal((await call(env, `/v1/hubs/${other.hub.id}/tasks/${made.id}`, 'PATCH', { name: 'x' }, other.codes.owner)).status, 404);
+  env.sql.close();
+});

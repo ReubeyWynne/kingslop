@@ -76,11 +76,39 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     assert(await R.getByRole('button', { name: 'Copy my sign-in link' }).isVisible());
     assert.equal(await R.getByRole('button', { name: 'Links', exact: true }).count(), 0, 'an R4 cannot see the owner links');
 
+    // Tasks: the R4 takes Bear Management for one trap, the R5 takes another and gives an internal task to the R4.
+    assert.equal(await O.locator('#tasks .hub-task').count(), 16);
+    await R.locator('#tasks .hub-task', { hasText: 'Bear Management' }).getByRole('button', { name: 'Take Bear Management' }).click();
+    await R.locator('#tasks .hub-task[data-mine=true]', { hasText: 'Bear Management' }).waitFor();
+    await R.getByRole('button', { name: 'Change or drop Bear Management' }).click();
+    await dialog(R).locator('[name=label]').fill('Trap 2');
+    await R.getByRole('button', { name: 'Save', exact: true }).click();
+    await R.locator('#tasks .hub-task', { hasText: 'Bran (Trap 2)' }).waitFor();
+    await O.locator('#hub-tools summary').click(); await O.getByRole('button', { name: 'Refresh' }).click();
+    await O.locator('#tasks .hub-task', { hasText: 'Bran (Trap 2)' }).waitFor();
+    await O.getByRole('button', { name: 'Edit Bear Management' }).click();
+    await dialog(O).locator('[name=holder-owner]').check();
+    await dialog(O).locator('[name=label-owner]').fill('Trap 1');
+    await O.getByRole('button', { name: 'Save', exact: true }).click();
+    await O.locator('#tasks .hub-task', { hasText: 'Bear Management' }).getByText('Bran (Trap 2) · Ada (Trap 1)').waitFor();
+    await O.getByRole('button', { name: 'Edit AFK Maintenance' }).click();
+    await dialog(O).locator('[name^=holder-]:not([name=holder-owner])').first().check();
+    await O.getByRole('button', { name: 'Save', exact: true }).click();
+    await O.locator('#tasks .hub-task', { hasText: 'AFK Maintenance' }).getByText('Bran').waitFor();
+    assert(await O.locator('#tasks .hub-task', { hasText: 'AFK Maintenance' }).getByText('Leaders only').isVisible());
+    assert(await O.locator('#tasks .hub-task[data-nobody=true]').count() >= 13, 'the R5 sees every task nobody holds');
+    await M.reload(); await M.locator('#tasks').waitFor();
+    assert.equal(await M.locator('#tasks-title').textContent(), 'Who to ask');
+    assert.equal(await M.locator('#tasks .hub-task').count(), 1, 'members see public tasks somebody holds');
+    assert.match(await M.locator('#tasks .hub-task').textContent(), /Bear Management[\s\S]*Bran \(Trap 2\) · Ada \(Trap 1\)/);
+    assert.equal(await M.getByRole('button', { name: /^(Take|Mine|Edit)/ }).count(), 0);
+
     // The member sees the R4's notes after a reload; the R5 removes the R4, whose sign-in then stops working.
     await M.reload(); await M.locator('#notes .hub-text').waitFor();
     await O.locator('#leaders').getByRole('button', { name: 'Remove Bran' }).click();
     await dialog(O).getByRole('button', { name: 'Remove', exact: true }).click();
     await O.locator('#leaders').getByText('No R4s yet.').waitFor();
+    assert.equal(await O.locator('#tasks .hub-task', { hasText: 'Bran' }).count(), 0, 'a removed R4 holds nothing');
     await R.reload();
     await R.locator('.vv-message', { hasText: 'no longer works' }).waitFor();
     assert(await R.locator('#start').isVisible());
@@ -103,6 +131,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
       await page.getByRole('button', { name: 'Links', exact: true }).click();
       assert(await page.evaluate(() => { const r = document.querySelector('dialog.vv-dialog').getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && Math.abs(r.left - (innerWidth - r.right)) < 2; }), 'the dialog is centred');
       await page.screenshot({ path: path.join(out, 'owner-links-390.png') });
+      await page.keyboard.press('Escape'); await page.screenshot({ path: path.join(out, 'owner-390.png'), fullPage: true });
       await context.close();
     }
     assert.deepEqual(errors, []);
