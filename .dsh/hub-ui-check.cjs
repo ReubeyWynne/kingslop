@@ -40,6 +40,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await O.getByRole('button', { name: 'Save', exact: true }).click();
     await O.locator('#rules .hub-text').waitFor();
     assert.match(await O.locator('#rules').textContent(), /No attacking allies\.\s+Be online for Vikings\.[\s\S]*Edited by Ada/);
+    await O.screenshot({ path: path.join(out, 'owner-new-390.png'), fullPage: true });
     await O.getByRole('button', { name: 'Links', exact: true }).click();
     const [ownerLink, invite, member] = await dialog(O).locator('[data-copy]').evaluateAll(nodes => nodes.map(n => n.dataset.copy.match(/https?:\S+/)[0]));
     assert.match(ownerLink, /\/hub\/#own-[A-Za-z0-9_-]{22}$/); assert.match(invite, /\/hub\/#r4-[A-Za-z0-9_-]{22}$/); assert.match(member, /\/hub\/#ally-[A-Za-z0-9_-]{22}$/);
