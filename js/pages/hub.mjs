@@ -85,7 +85,7 @@ Alpine.data('hub', api => {
         if (this.duties.length) list.push({ key: 'up', label: 'Up next' });
         if (this.tasks.length || this.owner) list.push({ key: 'tasks', label: 'Tasks' });
         list.push({ key: 'messages', label: 'Messages' }, { key: 'info', label: 'Info' });
-        if (this.leaders.length || this.owner) list.push({ key: 'leaders', label: 'Leaders' });
+        if (this.leaders.length || this.owner) list.push({ key: 'leaders', label: 'Leaders', badge: this.owner ? this.leaders.filter(l => l.status === 'waiting').length || '' : '' });
       } else {
         list.push({ key: 'info', label: 'Info' });
         if (this.tasks.length) list.push({ key: 'tasks', label: 'Who to ask' });
@@ -144,6 +144,7 @@ Alpine.data('hub', api => {
       return Messages.fill(body, { now, task: task ? { name: task.name, holders: task.holders } : null, next });
     },
     get leaders() { return (this.state && this.state.leaders) || []; },
+    get codes() { return (this.credential && this.credential.codes) || {}; },
     get shareRows() {
       const c = this.credential, codes = (c && c.codes) || {}, name = this.state.hub.name;
       const rows = [['owner', 'Owner', 'only for you', c.code], ['invite', 'R4 invite', 'for leadership chat', codes.invite], ['member', 'Member', 'for alliance chat', codes.member]];
