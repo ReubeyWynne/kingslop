@@ -1,0 +1,17 @@
+{
+ "note": "Hero skills the Battle Helper does not carry, read from the game client's skill_config (build 1.14.27, English strings) and merged into combat.json by build-combat.py. Values are the level-5 top; skills scale by level like the helper's. Howard and Chenko were checked against 40 recorded terror rallies (loss error 9.3 to 3.8 points).",
+ "skills": {
+  "howard": [
+   {"slot": "sk2", "name": "Weaken", "trigger": {"kind": "passive"}, "effects": [{"code": 202, "pct": 20.0}]}
+  ],
+  "chenko": [
+   {"slot": "sk2", "name": "Shield Wall", "trigger": {"kind": "passive"}, "effects": [{"code": 111, "pct": 20.0}]}
+  ],
+  "gordon": [
+   {"slot": "sk2", "name": "Trash Talk", "trigger": {"kind": "passive"}, "effects": [{"code": 102, "pct": 25.0}]}
+  ],
+  "quinn": [
+   {"slot": "sk2", "name": "Precision Shot", "trigger": {"kind": "perAttack", "chance": 0.5}, "effects": [{"code": 104, "pct": 50.0}]}
+  ]
+ }
+}
