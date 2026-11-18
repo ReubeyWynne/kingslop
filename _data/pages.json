@@ -934,9 +934,8 @@
       "../js/event-points.js",
       "../js/page-sheet.js",
       "../js/roster-sheets.js",
-      "../js/planner.js",
       "../js/pages/pet-den.mjs",
-      "../js/pet-live.js",
+      "../js/pet-habitat.js",
       "../js/empty-state.js"
     ],
     "footMainKey": "pets.title",

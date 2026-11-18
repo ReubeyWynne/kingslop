@@ -1,45 +1,61 @@
-// Pets page in a browser: pens, deep-linked dossiers, taming into the shared save, care that
-// decays with the clock, petting by rubbing and feeding by dragging food onto the pet, the
-// Advances table, and layout in every language.
+// Planner, text-only care, and the shared 3D habitat in Chromium.
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');const { withBrowser } = require('./lib/browser-harness.cjs');
 const pets=require('../_data/pets.json').pets;
 const root=path.resolve('_site'),output=path.resolve('.dsh/pets-preview');
 withBrowser({ root, launchOptions: { args: ['--disable-3d-apis'] } }, async ({ browser, origin, launch }) => {fs.mkdirSync(output,{recursive:true});
-// The care and layout runs draw the baked frames (no WebGL here); the live pets get their own browser below.
+// The care and layout runs exercise the no-WebGL path.
 const errors=[];
 
  // Six in the morning on the page's clock, so nobody is asleep yet.
  const context=await browser.newContext({viewport:{width:390,height:844},timezoneId:'UTC'}),page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+ await context.addInitScript(()=>localStorage.setItem('bh:guide','{"swipe":"done","door":"done"}'));
  await page.clock.install({time:new Date('2026-10-17T06:00:00Z')});
- // Ready, and on Your pets: a save with a pet in it opens the phone on the answer.
- const ready=async()=>{await page.waitForFunction(()=>![...document.querySelectorAll('.pet-card [data-field="owned"]')].some(f=>f.disabled)&&document.getElementById('planner').dataset.view);if(await page.locator('#planner').getAttribute('data-view')==='answer')await page.locator('.sheet-views [data-value="mine"]').click();};
- const pen=id=>page.locator('#pet-'+id+' [data-pen]');
- // Rub a pet back and forth with the mouse: three turns make a pat.
- const rub=async id=>{const card=page.locator('#pet-'+id);await card.scrollIntoViewIfNeeded();const box=await card.locator('.pet-stroke').boundingBox(),y=box.y+box.height*.45;
-  await page.mouse.move(box.x+box.width*.3,y);for(const x of [.7,.3,.7,.3])await page.mouse.move(box.x+box.width*x,y,{steps:4});await page.mouse.move(1,1);};
- // Carry the food from the bowl and let it go over the pet (or anywhere else).
- const drag=async(id,onto=true)=>{const card=page.locator('#pet-'+id);await card.scrollIntoViewIfNeeded();const food=await card.locator('.pet-food').boundingBox(),box=await card.locator('[data-pen]').boundingBox();
-  await page.mouse.move(food.x+food.width/2,food.y+food.height/2);await page.mouse.down();
-  await page.mouse.move(onto?box.x+box.width*.8:food.x+food.width*3,onto?box.y+box.height*.4:food.y+food.height/2,{steps:8});
-  if(onto)assert.equal(await pen(id).getAttribute('data-sniff'),'');assert.equal(await card.locator('.pet-food').getAttribute('data-carried'),'');
-  assert.match(await card.locator('.pet-food').getAttribute('style'),/--cx: -?\d+; --cy: -?\d+;/);
-  await page.mouse.up();assert.equal(await card.locator('.pet-food').getAttribute('style'),'');assert.equal(await pen(id).getAttribute('data-sniff'),null);};
+ const ready=async()=>page.waitForFunction(()=>document.querySelector('.pet-card:not([hidden])')&&![...document.querySelectorAll('.pet-profile [data-field="owned"]')].some(f=>f.disabled));
+ const openPen=async(p=page)=>{await p.locator('#pet-pen-tab').click();await p.locator('#pet-play').waitFor();};
+ const pen=id=>page.locator('#pen-'+id);
+ const feed=()=>page.locator('.pet-feed');
+ const pet=id=>page.locator('#pen-'+id+' .pet-stroke');
+ const back=()=>page.getByRole('button',{name:'Back to habitat'});
+ const stroke=()=>page.getByRole('button',{name:'Pet Gray Wolf',exact:true});
+ const openCare=async()=>{const list=page.locator('#pet-care-list');if(await list.getAttribute('open')===null)await list.locator('summary').click();};
+ const care=id=>page.evaluate(id=>PetCare.load(localStorage)[id],id);
  await page.goto(origin+'/pets/?lang=en');await ready();
- assert.equal(await page.locator('h1').count(),1);assert.equal(await page.locator('.pet-card').count(),pets.length);
+ assert.equal(await page.locator('h1').count(),1);assert.equal(await page.locator('.pet-profile:visible').count(),pets.length);
  assert.deepEqual(await page.locator('.pet-band').evaluateAll(n=>n.map(x=>x.dataset.generation)),['1','2','3','4','5','6','7']);
- for(const p of pets){const card=page.locator('#pet-'+p.id);assert.equal(await card.locator('.pet-name b').textContent(),p.name);assert.equal(await card.locator('.pet-ladder tbody tr').count(),p.skill.ladder.length);assert.equal(await card.locator('.pet-ladder thead th[data-level]').count(),p.advances);}
- // Untamed pets stand in their pens without care controls.
- assert.equal(await page.locator('.pet-care:visible').count(),0);assert.equal(await pen('lion').getAttribute('data-mood'),'content');
- assert.equal(await page.locator('#pet-moose .ascii-mini--portrait > [data-ink="0"]').evaluate(n=>getComputedStyle(n,'::before').animationName),'ascii-portrait-moose-0');
- // Every dossier is a link, and one is open at a time.
- await page.goto(origin+'/pets/?lang=en#pet-moose');await ready();assert.equal(await page.locator('#pet-moose .pet-dossier').getAttribute('open'),'');
- await page.locator('#pet-gray-wolf summary').click();assert.equal(await page.locator('.pet-dossier[open]').count(),1);await page.waitForURL(/#pet-gray-wolf$/);
+ await page.screenshot({path:path.join(output,'roster-390.png')});
+ for(const p of pets){
+  const card=page.locator('#pet-'+p.id);
+  assert.equal(await card.locator('.pet-name').textContent(),p.name);
+  const image=card.locator('img');
+  await image.scrollIntoViewIfNeeded();await image.evaluate(n=>n.decode());
+  assert.equal(await image.evaluate(n=>n.naturalWidth),128);
+ }
+ await openPen();
+ await openCare();
+ assert.equal(await page.locator('#pet-care-list .pet-stroke:visible').count(),pets.length);
+ await page.getByText('The 3D habitat is unavailable.',{exact:false}).waitFor();
+ assert.equal(await page.locator('.pet-profile:visible').count(),0);
+ assert.equal(await page.locator('#pet-play select, #pet-play [role="meter"]').count(),0);
+ await pet('lynx').click();
+ assert.equal(await pen('lynx').getAttribute('data-picked'),'true');
+ assert.equal(await pen('lynx').getAttribute('data-react'),null,'choosing a pet is not care');
+ assert.equal(await feed().getAttribute('aria-label'),'Feed Lynx');
+ await feed().click();
+ assert.equal(await pen('lynx').getAttribute('data-react'),'feed');
+ assert.equal(await pen('gray-wolf').getAttribute('data-react'),null);
+ assert.equal(await care('lynx'),undefined);
+ assert.deepEqual(await page.evaluate(()=>PlayerLedger.shared().pets().roster),{});
+ await back().click();
+ await pet('regal-white-lion').click();
+ assert.equal(await feed().getAttribute('aria-label'),'Feed Regal White Lion');
+ await feed().click();
+ assert.equal(await pen('regal-white-lion').getAttribute('data-react'),'feed');
+ await page.goto(origin+'/pets/?lang=en#pet-moose');await ready();await page.locator('#pet-moose .pet-ladder').waitFor();
+ await page.locator('#pet-gray-wolf .pet-heading').click();
+ assert.equal(await page.locator('.pet-dossier[open]').count(),1);
  // Taming writes the shared save and opens the pen's care.
  await page.locator('#pet-gray-wolf [data-field="owned"]').check();await page.waitForFunction(()=>PlayerLedger.shared().pets().roster['gray-wolf']);
- assert.equal(await page.locator('#pet-gray-wolf .pet-care').isVisible(),true);
- assert.equal(await page.locator('#pet-gray-wolf [data-meter="fullness"]').getAttribute('aria-valuenow'),'60');
- assert.equal(await page.locator('#pet-gray-wolf [data-meter="affection"]').getAttribute('aria-valuenow'),'50');
- assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'content');
+ assert.equal(await page.locator('[data-pen]:visible').count(),0);
  const level=page.locator('#pet-gray-wolf [data-field="level"]');await level.fill('20');await level.press('Tab');
  assert.equal(await page.locator('#pet-gray-wolf [data-roster="advanced"]').isVisible(),true);
  assert.match(await page.locator('#pet-gray-wolf [data-roster="next"]').textContent(),/level 20: 30 Growth Manuals\. Worth 50,000 KvK prep points/);
@@ -47,110 +63,128 @@ const errors=[];
  assert.deepEqual((await page.evaluate(()=>PlayerLedger.shared().pets().roster))['gray-wolf'],{level:20,advanced:true});
  assert.equal(await page.locator('#pet-gray-wolf .pet-ladder td[data-reached]').count(),2);
  assert.match(await page.locator('#pet-gray-wolf [data-roster="next"]').textContent(),/level 30:/);
- // There are no buttons to read: a click on the pet or its food does nothing.
- assert.deepEqual(await page.locator('#pet-gray-wolf .pet-care button:visible').evaluateAll(n=>n.map(b=>b.textContent.trim()+(b.querySelector('img')||{}).src)),[origin+'/img/items/stamina.webp']);
- await page.locator('#pet-gray-wolf .pet-stroke').click();await page.locator('#pet-gray-wolf .pet-food').click();
- assert.equal(await pen('gray-wolf').getAttribute('data-react'),null);assert.equal(await page.locator('#pet-gray-wolf [data-meter="affection"]').getAttribute('aria-valuenow'),'50');
- // Rubbing the pet pets it and dragging food onto it feeds it; each shows a reaction, which clears on its own.
- await rub('gray-wolf');
- assert.equal(await pen('gray-wolf').getAttribute('data-react'),'pet');assert.equal(await page.locator('#pet-gray-wolf [data-meter="affection"]').getAttribute('aria-valuenow'),'70');
- assert.equal(await pen('gray-wolf').evaluate(n=>getComputedStyle(n,'::after').animationName),'ascii-pet-marks-pet');
- assert.equal(await page.locator('#pet-gray-wolf .ascii-mini--portrait > [data-ink="0"]').evaluate(n=>getComputedStyle(n,'::before').animationName),'ascii-portrait-gray-wolf-happy-0');
- await drag('gray-wolf',false);assert.equal(await page.locator('#pet-gray-wolf [data-meter="fullness"]').getAttribute('aria-valuenow'),'60');
- await drag('gray-wolf');assert.equal(await pen('gray-wolf').getAttribute('data-react'),'feed');
- assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'delighted');
- // From the keyboard the pen and the bowl are buttons; a full pet turns food down.
- await page.locator('#pet-gray-wolf .pet-food').press('Enter');await page.locator('#pet-gray-wolf .pet-food').press('Enter');
+ await openPen();
+ assert.equal(await feed().isVisible(),false);
+ assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'content');
+ await openCare();await pet('gray-wolf').click();
+ await stroke().click();
+ assert.equal(await pen('gray-wolf').getAttribute('data-react'),'pet');
+ assert.equal(Math.round((await care('gray-wolf')).affection.value),70);
+ await feed().click();
+ assert.equal(await pen('gray-wolf').getAttribute('data-react'),'feed');
+ assert.match(await page.locator('#pen-gray-wolf [data-care-status]').textContent(),/Eating/);
+ assert.equal(Math.round((await care('gray-wolf')).fullness.value),90);
+ await feed().press('Enter');await feed().press('Enter');
  assert.equal(await pen('gray-wolf').getAttribute('data-react'),'full');
- assert.match(await page.locator('#pet-gray-wolf .pet-stroke').getAttribute('aria-label'),/^Pet · Delighted$/);
- await page.clock.runFor(3000);assert.equal(await pen('gray-wolf').getAttribute('data-react'),null);
- await page.locator('#cage').screenshot({path:path.join(output,'cage-390.png')});
- // Real time: a few hours alone and the wolf is lonely, then hungry; it remembers across a reload.
- await page.clock.runFor(6*3600000);assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'lonely');
- assert.match(await page.locator('[data-roster="count"]').textContent(),/14 pets · 1 tamed · 1 need you/);
- await page.clock.runFor(7*3600000);await page.reload();await ready();assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'hungry');
- assert.equal(await page.locator('#pet-gray-wolf .ascii-mini--portrait > [data-ink="0"]').evaluate(n=>getComputedStyle(n,'::before').animationName),'ascii-portrait-gray-wolf-low-0');
- // Night: left alone it sleeps; a pat wakes it.
- await page.clock.runFor(4.5*3600000);await page.reload();await ready();assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'asleep');
- assert.equal(await pen('gray-wolf').evaluate(n=>getComputedStyle(n,'::after').animationName),'ascii-pet-marks-asleep');
- await rub('gray-wolf');await page.clock.runFor(3000);assert.notEqual(await pen('gray-wolf').getAttribute('data-mood'),'asleep');
+ assert.match(await page.locator('#pen-gray-wolf [data-care-status]').textContent(),/Full/);
+ assert.equal((await care('gray-wolf')).fullness.value,100);
+ assert.deepEqual(await page.evaluate(()=>PlayerLedger.shared().pets().roster),{'gray-wolf':{level:20,advanced:true}});
+ await page.clock.fastForward(17*3600000 + 30*60000);
+ assert.equal(await pen('gray-wolf').getAttribute('data-mood'),'asleep');
+ assert.match(await page.locator('#pen-gray-wolf [data-care-status]').textContent(),/Asleep/);
+ await stroke().press('Enter');
+ assert.notEqual(await pen('gray-wolf').getAttribute('data-mood'),'asleep');
+ await page.locator('#pet-play').screenshot({path:path.join(output,'pen-390.png')});
  // The Advances table counts the next Advance of each tamed pet with a level.
- await page.locator('#pet-lion [data-field="owned"]').check();
+ await page.locator('#pet-roster-tab').click();
+ await page.locator('#pet-lion .pet-heading').click();await page.locator('#pet-lion [data-field="owned"]').check();
  assert.equal(await page.locator('[data-answer="coverage"] li').textContent(),'Lion');
  assert.equal(await page.locator('[data-answer="total"]').getAttribute('data-open'),'');
  assert.equal(await page.locator('[data-answer="rows"] tr').count(),1);
  assert.match(await page.locator('[data-answer="total"]').textContent(),/100,000 KvK prep points/);
- await page.locator('.sheet-views [data-value="answer"]').click();await page.locator('#advances').screenshot({path:path.join(output,'advances-390.png')});await page.locator('.sheet-views [data-value="mine"]').click();
+ assert.equal(await page.locator('[data-answer="total"]').isVisible(),true);
+ assert.equal(await page.locator('#advances [data-answer="rows"]').isVisible(),false);
+ await page.locator('#advances > summary').click();await page.locator('#advances').screenshot({path:path.join(output,'advances-390.png')});
  // Corrupt care in storage starts the pen again rather than breaking the page.
- await page.evaluate(()=>localStorage.setItem('ks.pet-care.v1','{oops'));await page.reload();await ready();assert.equal(await page.locator('#pet-gray-wolf [data-meter="fullness"]').getAttribute('aria-valuenow'),'60');
-
+ await page.evaluate(()=>localStorage.setItem('ks.pet-care.v1','{oops'));await page.reload();await ready();await openPen();
+ assert.equal((await care('gray-wolf')).fullness.value,60);
  await page.clock.setSystemTime(new Date('2026-10-20T12:00:00Z'));
- const stroke=page.locator('#pet-gray-wolf .pet-stroke');
- await stroke.press('ArrowDown');await stroke.press('ArrowDown');await stroke.press('Enter');
+ await openCare();await pet('gray-wolf').click();
+ await stroke().focus();await stroke().press('ArrowDown');await stroke().press('ArrowDown');await stroke().press('Enter');
  assert.equal(await pen('gray-wolf').getAttribute('data-favourite'),'');
- assert.equal(await page.locator('#pet-gray-wolf .pet-favourite').textContent(),'Favourite spot: Cheeks');
- assert.match(await page.locator('#pet-gray-wolf .pet-bond').textContent(),/Care days: 1/);
- await stroke.press('Enter');
- assert.match(await page.locator('#pet-gray-wolf .pet-bond').textContent(),/Care days: 1/);
- await page.reload();await ready();
- assert.equal(await page.locator('#pet-gray-wolf .pet-favourite').isVisible(),true);
- await page.locator('#pet-gray-wolf .pet-stroke').press('Enter');
- assert.match(await page.locator('#pet-gray-wolf .pet-bond').textContent(),/Care days: 1/);
- await page.evaluate(()=>{const now=Date.now(),den=PetCare.load(localStorage);den['gray-wolf'].bond={days:3,day:20261019,earned:now-86400000,seen:now-5*3600000,favourite:true};PetCare.save(localStorage,den);});
- await page.reload();await ready();await pen('gray-wolf').scrollIntoViewIfNeeded();
- await page.waitForFunction(()=>document.querySelector('#pet-gray-wolf [data-pen]').hasAttribute('data-welcome'));
- await page.locator('#pet-gray-wolf').screenshot({path:path.join(output,'familiar-wolf-390.png')});
- await page.clock.runFor(2500);
- assert.equal(await pen('gray-wolf').getAttribute('data-welcome'),null);
- await page.reload();await ready();await pen('gray-wolf').scrollIntoViewIfNeeded();
- assert.equal(await pen('gray-wolf').getAttribute('data-welcome'),null);
- await page.clock.setSystemTime(new Date('2026-11-20T12:00:00Z'));
- await page.reload();await ready();
- assert.match(await page.locator('#pet-gray-wolf .pet-bond').textContent(),/Familiar/);
- assert.match(await page.locator('#pet-gray-wolf .pet-bond').textContent(),/Care days: 3/);
+ assert.equal((await care('gray-wolf')).bond.days,1);
+ await page.reload();await ready();await openPen();
+ assert.equal((await care('gray-wolf')).bond.favourite,true);
  await context.close();
  // Every language at every width: nothing overflows.
  const wide=await browser.newContext({viewport:{width:390,height:900}}),view=await wide.newPage();view.on('pageerror',e=>errors.push(e.message));
  const langs=fs.readdirSync('i18n').filter(f=>f.endsWith('.js')).map(f=>f.slice(0,-3));
  for(const lang of langs){await view.goto(origin+'/pets/?lang='+lang+'#pet-lion');await view.waitForFunction(lang=>document.documentElement.lang===lang,lang);
-  await view.locator('#pet-lion [data-field="owned"]').check();await view.locator('#pet-lion .pet-stroke').press('Enter');
+  await view.locator('#pet-lion [data-field="owned"]').check();
   assert.equal(await view.locator('h1').textContent(),await view.evaluate(()=>I18N.tr('pets.title')));
-  for(const width of [320,390,768,1280,1920]){await view.setViewportSize({width,height:900});const failures=await view.evaluate(()=>[...document.querySelectorAll('.pet-roster,.pet-card,.pet-dossier-body,.topbar,.ev-switch')].filter(el=>el.getClientRects().length&&el.scrollWidth>el.clientWidth+2).map(el=>el.className+' '+el.scrollWidth+'>'+el.clientWidth+' '+(el.closest('.pet-card')||{}).id));assert.deepEqual(failures,[],lang+' at '+width);assert(await view.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),lang+' page at '+width);}
-  if(lang==='en'){await view.setViewportSize({width:1280,height:900});await view.locator('#cage').screenshot({path:path.join(output,'cage-1280.png')});}
+  for(const width of [320,390,768,1280,1920]){await view.setViewportSize({width,height:900});assert(await view.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),lang+' roster at '+width);}
+  await view.setViewportSize({width:320,height:900});await openPen(view);
+  assert(await view.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),lang+' pen at 320');
  }
  await wide.close();
  // Without JavaScript the roster and dossiers still read.
- // Still frames here: fourteen stepping portraits can keep a slow runner from ever calling the dossier stable.
- const nojs=await browser.newContext({javaScriptEnabled:false,reducedMotion:'reduce'});const plain=await nojs.newPage();await plain.goto(origin+'/pets/');assert.equal(await plain.locator('.pet-card').count(),pets.length);assert.equal(await plain.locator('[data-field="owned"]').first().isDisabled(),true);await plain.locator('#pet-bison summary').click();assert.equal(await plain.locator('#pet-bison .pet-ladder').isVisible(),true);await nojs.close();
+ const nojs=await browser.newContext({javaScriptEnabled:false,reducedMotion:'reduce'});const plain=await nojs.newPage();await plain.goto(origin+'/pets/');assert.equal(await plain.locator('.pet-profile:visible').count(),pets.length);assert.equal(await plain.locator('[data-field="owned"]').first().isDisabled(),true);await plain.locator('#pet-bison .pet-heading').click();assert.equal(await plain.locator('#pet-bison .pet-ladder').isVisible(),true);await nojs.close();
  const home=await browser.newPage();await home.goto(origin+'/?lang=en');assert.equal(await home.locator('#tools a[href="pets/"]').count(),1);await home.close();
- // The pets drawn live (js/pet-live.js): with WebGL 2 the grizzly's canvas covers the pen, draws, and reacts; the baked
- // frames stay underneath. With reduced motion, or with the script blocked, the baked frames show.
+ // WebGL 2 is loaded on entry to the pen, not in the planner.
  const gpu=await launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
  try{
-  const ctx=await gpu.newContext({viewport:{width:390,height:900}}),live=await ctx.newPage();live.on('pageerror',e=>errors.push(e.message));
-  await live.goto(origin+'/pets/?lang=en');const pen=live.locator('#pet-grizzly-bear [data-pen]');await pen.scrollIntoViewIfNeeded();
-  await live.waitForFunction(()=>document.querySelector('#pet-grizzly-bear [data-pen]').hasAttribute('data-live'),null,{timeout:10000});
-  assert.equal(await live.locator('#pet-grizzly-bear canvas.pet-live').count(),1);
-  assert.equal(await live.locator('#pet-grizzly-bear .ascii-mini--portrait').evaluate(n=>getComputedStyle(n).visibility),'hidden');
-  const box=await pen.boundingBox(),canvasBox=await live.locator('#pet-grizzly-bear canvas.pet-live').boundingBox();
-  assert.ok(Math.abs(canvasBox.width-box.width)<1&&canvasBox.height<=box.height+1,'the live pet fits its pen');
-  await live.waitForTimeout(600);const drawn=await live.locator('#pet-grizzly-bear canvas.pet-live').screenshot();assert.ok(drawn.length>3000,'the live pet draws');
-  assert.equal(await pen.evaluate(n=>n.petCareSpots.length),4);
-  assert.equal(await pen.evaluate(n=>n.petCareSpots.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y))),true);
-  await pen.evaluate(n=>{n.dataset.mood='asleep';});await live.waitForTimeout(2500);
-  await live.locator('#pet-grizzly-bear .pet-pen').screenshot({path:path.join(output,'live-asleep.png')});
-  await pen.evaluate(n=>{n.dataset.mood='content';n.dataset.react='pet';});await live.waitForTimeout(1500);
-  await live.locator('#pet-grizzly-bear .pet-pen').screenshot({path:path.join(output,'live-petted.png')});
-  // every other pet with a model comes alive too, its canvas drawn over its pen
-  for(const id of fs.readdirSync(path.join(__dirname,'pet-portraits')).map(f=>f.replace(/\.json$/,'')).filter(id=>id!=='grizzly-bear')){
-   const other=live.locator('#pet-'+id+' [data-pen]');await other.scrollIntoViewIfNeeded();
-   await live.waitForFunction(id=>document.querySelector('#pet-'+id+' [data-pen]').hasAttribute('data-live'),id,{timeout:10000});
-   await live.waitForTimeout(400);assert.ok((await live.locator('#pet-'+id+' canvas.pet-live').screenshot()).length>3000,id+' draws live');}
+  const ctx=await gpu.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'}),live=await ctx.newPage();live.on('pageerror',e=>errors.push(e.message));
+  await ctx.addInitScript(()=>{
+   localStorage.setItem('bh:guide','{"swipe":"done","door":"done"}');
+   const read=WebGL2RenderingContext.prototype.readPixels;
+   WebGL2RenderingContext.prototype.readPixels=function(...args){
+    const w=this.drawingBufferWidth,h=this.drawingBufferHeight,buf=new Uint8Array(w*h*4), points={};
+    read.call(this,0,0,w,h,this.RGBA,this.UNSIGNED_BYTE,buf);
+    if(this.getError()!==this.NO_ERROR)throw Error('ID buffer read failed: '+w+'×'+h+' / '+this.checkFramebufferStatus(this.FRAMEBUFFER));
+    for(let i=0;i<buf.length;i+=4) if(buf[i]>0&&!buf[i+1]&&!buf[i+2]){
+     const x=(i/4)%w,y=Math.floor(i/4/w),p=points[buf[i]]??={n:0,x:0,y:0,minX:w,minY:h,maxX:0,maxY:0};
+     p.n++;p.x+=x;p.y+=y;p.minX=Math.min(x,p.minX);p.minY=Math.min(y,p.minY);p.maxX=Math.max(x,p.maxX);p.maxY=Math.max(y,p.maxY);
+    }
+    for(const p of Object.values(points)){p.x/=p.n;p.y/=p.n;p.distance=Infinity;}
+    for(let i=0;i<buf.length;i+=4){
+     const p=points[buf[i]];if(!p)continue;
+     const x=(i/4)%w,y=Math.floor(i/4/w),distance=(x-p.x)**2+(y-p.y)**2;
+     if(distance<p.distance){p.distance=distance;p.tapX=x;p.tapY=y;}
+    }
+    window.pickPoints=Object.fromEntries(Object.entries(points).map(([id,p])=>[id,{x:(p.tapX+.5)/w,y:1-(p.tapY+.5)/h,n:p.n,fits:p.minX>0&&p.minY>0&&p.maxX<w-1&&p.maxY<h-1}]));
+    return read.apply(this,args);
+   };
+  });
+  const requested=[];live.on('request',r=>{if(r.url().includes('/pets/models/'))requested.push(r.url());});
+  await live.goto(origin+'/pets/?lang=en&shader=1');await live.locator('#pet-roster-tab').waitFor();
+  assert.equal(requested.length,0);
+  await openPen(live);const canvas=live.locator('.pet-world-canvas[data-ready]');
+  await canvas.waitFor({timeout:12000});await canvas.scrollIntoViewIfNeeded();
+  assert.equal(await live.getByRole('button',{name:/^Feed /}).count(),0);
+  await canvas.screenshot({path:path.join(output,'habitat-3d-390.png')});
+  await canvas.tap({position:{x:8,y:8}});
+  const points=await live.evaluate(()=>window.pickPoints);
+  assert.equal(Object.keys(points).length,pets.length,`all meshes visible: ${JSON.stringify(points)}`);
+  assert(Object.values(points).every(p=>p.n>20&&p.fits),`whole meshes fit default framing: ${JSON.stringify(points)}`);
+  assert.deepEqual(requested.filter(url=>url.endsWith('.bin')).map(url=>path.basename(url,'.bin')).sort(),pets.map(p=>p.id).sort());
+  assert.equal(await live.locator('#pet-play canvas').count(),1);
+  assert.equal(await live.locator('#pet-play .ascii-mini--portrait').count(),0);
+  const box=await canvas.boundingBox(), lynx=points[pets.findIndex(p=>p.id==='lynx')+1];
+  await canvas.tap({position:{x:lynx.x*box.width,y:lynx.y*box.height}});
+  const visit=live.getByRole('button',{name:'Back to habitat'});
+  await visit.waitFor();
+  assert.equal(await live.locator('#pen-lynx').getAttribute('data-react'),null);
+  await canvas.tap({position:{x:8,y:8}});
+  const focused=await live.evaluate(()=>window.pickPoints), lynxId=pets.findIndex(p=>p.id==='lynx')+1;
+  assert.deepEqual(Object.keys(focused),[String(lynxId)],'the visit renders just the selected animal');
+  assert(focused[lynxId].fits&&focused[lynxId].n>lynx.n*2);
+  await live.getByRole('button',{name:'Feed Lynx'}).tap();
+  assert.equal(await live.locator('#pen-lynx').getAttribute('data-react'),'feed');
+  await live.getByRole('button',{name:'Pet Lynx',exact:true}).tap();
+  assert.equal(await live.locator('#pen-lynx').getAttribute('data-react'),'pet');
+  await live.getByRole('button',{name:'Play with Lynx'}).tap();
+  assert.match(await live.locator('.pet-visit [aria-live]').textContent(),/Playing/);
+  await canvas.screenshot({path:path.join(output,'companion-390.png')});
+  await visit.tap();
+  assert.equal(await live.getByRole('button',{name:'Feed Lynx'}).count(),0);
+  const rows=live.getByRole('slider',{name:'Glyph rows'}), cols=live.getByRole('slider',{name:'Glyph columns'});
+  const preset=()=>live.getByRole('textbox',{name:'Shader settings JSON'}).inputValue().then(JSON.parse);
+  await rows.press('Home');
+  assert.equal((await preset()).rows,16);
+  assert.equal((await preset()).columns,210);
+  await cols.press('End');
+  assert.equal((await preset()).columns,280);
   await ctx.close();
-  const still=await gpu.newContext({viewport:{width:390,height:900},reducedMotion:'reduce'}),calm=await still.newPage();
-  await calm.goto(origin+'/pets/?lang=en');await calm.waitForTimeout(800);
-  assert.equal(await calm.locator('canvas.pet-live').count(),0);assert.equal(await calm.locator('#pet-grizzly-bear .ascii-mini--portrait').evaluate(n=>getComputedStyle(n).visibility),'visible');
-  await still.close();
  }finally{await gpu.close();}
- assert.deepEqual(errors,[]);console.log('Pets UI: pens, deep-linked dossiers, taming, petting by rubbing and feeding by dragging, care with real-time decay, sleep and reactions, the live pets and their baked fallback, the Advances table, static fallback and 10 languages at 5 widths pass.');
+ assert.deepEqual(errors,[]);console.log('Pets UI: planning, care, mobile 3D world, all fourteen visible meshes, touch picking and camera pass.');
 }).catch(e=>{console.error(e);process.exitCode=1;});

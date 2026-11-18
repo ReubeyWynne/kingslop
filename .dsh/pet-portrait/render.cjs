@@ -11,6 +11,10 @@ import * as THREE from 'three';import {STLLoader} from 'three/addons/loaders/STL
 const o=${JSON.stringify(o)};
 const r=new THREE.WebGLRenderer({canvas:c,preserveDrawingBuffer:true,antialias:false});
 const g=new STLLoader().parse(await (await fetch('/model.stl')).arrayBuffer());
+if(o.rgb){
+ const rgb=new Uint8Array(await (await fetch('/model.rgb')).arrayBuffer());
+ g.setAttribute('color',new THREE.BufferAttribute(rgb,3,true));
+}
 // turn the model so its own up is +y and its forward +z (as mesh.cjs does), then fit it to -1..1
 {const up=new THREE.Vector3(...(o.up||[0,0,1])).normalize(),f=new THREE.Vector3(...(o.fwd||[0,-1,0]));f.addScaledVector(up,-f.dot(up)).normalize();const x=new THREE.Vector3().crossVectors(up,f);
  g.applyMatrix4(new THREE.Matrix4().makeBasis(x,up,f).transpose());}
@@ -33,6 +37,7 @@ const mats={
  normal:new THREE.MeshNormalMaterial({flatShading:true}),
  depth:new THREE.MeshDepthMaterial(),
  pos:new THREE.ShaderMaterial({vertexShader:'attribute vec3 rest;varying vec3 p;void main(){p=rest;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec3 p;void main(){gl_FragColor=vec4(p*0.5+0.5,1.);}'}),
+ ...(o.rgb?{rgb:new THREE.ShaderMaterial({vertexColors:true,vertexShader:'varying vec3 rgb;void main(){rgb=color;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec3 rgb;void main(){gl_FragColor=vec4(rgb,1.);}'})}:{}),
 };
 const m=new THREE.Mesh(g,mats.lit);scene.add(m);
 const key=new THREE.DirectionalLight(0xffffff,o.key);key.position.set(...o.keypos);scene.add(key);
@@ -46,6 +51,6 @@ window.done=out;
 (async()=>{const br=await chromium.launch({args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});const p=await br.newPage({viewport:{width:o.w,height:o.h}});
 p.on('console',m=>console.log('page:',m.text()));p.on('pageerror',e=>console.log('err',e.message));
 await p.route('http://x/**',rt=>{const u=new URL(rt.request().url()).pathname;if(u==='/')return rt.fulfill({body:page,contentType:'text/html'});
- const f=u==='/model.stl'?o.stl:path.join(threeDir,u.replace(/^\/three\//,''));rt.fulfill({body:fs.readFileSync(f),contentType:f.endsWith('.js')?'text/javascript':'application/octet-stream'});});
+ const f=u==='/model.stl'?o.stl:u==='/model.rgb'?o.rgb:path.join(threeDir,u.replace(/^\/three\//,''));return rt.fulfill({body:fs.readFileSync(f),contentType:f.endsWith('.js')?'text/javascript':'application/octet-stream'});});
 await p.goto('http://x/');await p.waitForFunction('window.done',null,{timeout:120000});const d=await p.evaluate('window.done');
 for(const [k,v] of Object.entries(d))fs.writeFileSync(`${o.out}-${k}.png`,Buffer.from(v.split(',')[1],'base64'));await br.close();})();

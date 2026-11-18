@@ -354,11 +354,11 @@
       "reviewedAt": "2026-10-08",
       "skillNotes": [
         {
-          "name": "Precision Shot",
+          "name": "Sixth Sense",
           "summary": "Reduces incoming damage for every troop type."
         },
         {
-          "name": "Burst Fire",
+          "name": "Precision Shot",
           "summary": "Each attack has a 50% chance to gain the listed damage bonus."
         }
       ]
@@ -457,6 +457,7 @@
         }
       ],
       "portrait": "hilde.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50013_kingshot_end/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -490,6 +491,7 @@
         }
       ],
       "portrait": "marlin.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50018_kingshot_end/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -523,6 +525,7 @@
         }
       ],
       "portrait": "zoe.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50021_kingshot_end/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -556,6 +559,7 @@
         }
       ],
       "portrait": "eric.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50010_kingshot_end/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -583,6 +587,7 @@
         }
       ],
       "portrait": "jaeger.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/jaegar/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -622,6 +627,7 @@
         }
       ],
       "portrait": "petra.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50016_kingshot_end/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -649,6 +655,7 @@
         }
       ],
       "portrait": "alcar.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50023_kingshot_end/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -721,6 +728,7 @@
         }
       ],
       "portrait": "rosa.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50022_kingshot_end/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -729,7 +737,7 @@
           "summary": "A 40% proc raises damage across the march."
         },
         {
-          "name": "Rose of War",
+          "name": "Enchanting Dance",
           "summary": "Reduces damage dealt by every enemy troop type."
         },
         {
@@ -748,6 +756,7 @@
         }
       ],
       "portrait": "longfei.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/long-fei/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -781,6 +790,7 @@
         }
       ],
       "portrait": "thrud.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50025_kingshot_end/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -814,6 +824,7 @@
         }
       ],
       "portrait": "vivian.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50026_kingshot_end/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -841,6 +852,7 @@
         }
       ],
       "portrait": "sophia.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50030_kingshot_end/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -868,6 +880,7 @@
         }
       ],
       "portrait": "triton.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50019_kingshot_end/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -946,6 +959,7 @@
         }
       ],
       "portrait": "ava.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50015_kingshot_end/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -973,6 +987,7 @@
         }
       ],
       "portrait": "charles.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50032_kingshot_end/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [
@@ -1006,6 +1021,7 @@
         }
       ],
       "portrait": "weewoo.webp",
+      "fullArt": true,
       "wiki": "https://kingshotwiki.com/heroes/weewoo/",
       "reviewedAt": "2026-10-08",
       "skillNotes": [

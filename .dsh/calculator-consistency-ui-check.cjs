@@ -22,8 +22,8 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
     assert.equal(foldSizes.size, 1, 'one fold style at ' + width + ': ' + [...foldSizes].join(' | '));
     await context.close();
   }
-  // Heroes, Masters and Pets open on the planner frame: yours beside the answer, two tabs on a phone.
-  const rosters = { heroes: ['#kvk-points', () => PlayerLedger.shared().setHero('jabel', { level: 60 })], masters: ['#kvk-points', () => PlayerLedger.shared().setMaster('valora', { affinity: 29 })], pets: ['#advances', () => PlayerLedger.shared().setPet('lion', { level: 20 })] };
+  // Heroes and Masters open on the planner frame; Pets has its own stable check.
+  const rosters = { heroes: ['#kvk-points', () => PlayerLedger.shared().setHero('jabel', { level: 60 })], masters: ['#kvk-points', () => PlayerLedger.shared().setMaster('valora', { affinity: 29 })] };
   for (const [self, [answer, record]] of Object.entries(rosters)) {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' }), page = await context.newPage();
     page.on('pageerror', e => errors.push(e.message));
@@ -39,7 +39,7 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
     assert.equal(await page.locator('#planner').getAttribute('data-view'), 'answer', self + ': a save with something in it opens on the answer');
     await page.locator('.sheet-views [data-value="mine"]').click();
     // One roster per page, and it is your half: no chips and no second grid.
-    const grid = { heroes: '[x-data="heroRoster"]', masters: '[x-data="masterRoster"]', pets: '[x-data="petDen"]' }[self];
+    const grid = { heroes: '[x-data="heroRoster"]', masters: '[x-data="masterRoster"]' }[self];
     assert.equal(await page.locator('.sheet-chip').count(), 0, self + ': no chips beside the roster');
     assert.equal(await page.locator(grid).count(), 1, self + ': one grid');
     assert.equal(await page.locator('[data-half="mine"] ' + grid).isVisible(), true, self + ': the grid is your half');
@@ -75,5 +75,5 @@ withBrowser({ root: path.resolve('_site') }, async ({ browser, origin }) => {
   }
   await context.close();
   assert.deepEqual(errors, []);
-  console.log('Calculator consistency: one fold style, 40px tile icons, two heading sizes, a rail ending in How it works · Sources on ' + pages.length + ' pages at 2 widths, the planner frame on Heroes, Masters and Pets, KvK points on a sheet, and the number rules pass.');
+  console.log('Calculator consistency: one fold style, 40px tile icons, two heading sizes, a rail ending in How it works · Sources on ' + pages.length + ' pages at 2 widths, the planner frame on Heroes and Masters, KvK points on a sheet, and the number rules pass.');
 }).catch(e => { console.error(e); process.exitCode = 1; });

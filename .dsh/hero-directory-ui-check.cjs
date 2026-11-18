@@ -14,8 +14,8 @@ const field=k=>page.locator('[data-roster="'+k+'"]'),visible=()=>page.locator('[
  await other.evaluate(()=>KS_SERVER_AGE.setGeneration(9));await page.waitForFunction(()=>document.querySelector('[data-roster="server"]').value==='9');assert.equal(await visible(),34);await other.evaluate(()=>KS_SERVER_AGE.clear());await page.waitForFunction(()=>document.querySelector('[data-roster="server"]').value==='');await other.close();
  await field('query').fill('<script>');assert.equal(await visible(),0);await page.locator('[data-roster="reset"]').click();await page.locator('#hero-chenko summary').click();assert.equal(await page.locator('#hero-chenko .hero-skills').isVisible(),true);
  assert.equal(await page.locator('.ev-switch a[aria-current="page"]').getAttribute('href'),'../heroes/');assert.equal(await page.locator('.ev-switch a').count(),nav.length);assert.equal(await page.locator('.ev-foot a').count(),nav.length);assert.equal(await page.locator('#page-deck .deck-card:not(.deck-copy)').count(),nav.length);
- const portraits=await page.locator('.directory-hero-heading img').evaluateAll(imgs=>imgs.map(i=>i.getAttribute('src')));for(const src of portraits)assert(fs.existsSync(path.resolve(root,'heroes',src)),src);
- assert.equal(await page.locator('.directory-hero-heading img').count(),34);
+ const portraits=await page.locator('.directory-hero-heading .directory-portrait > img').evaluateAll(imgs=>imgs.map(i=>i.getAttribute('src')));for(const src of portraits)assert(fs.existsSync(path.resolve(root,'heroes',src)),src);
+ assert.equal(portraits.length,34);
  assert.equal(await page.locator('.hero-dossier[open]').count(),1);
  assert.equal(await page.locator('.hero-first-skill').count(),34);
  await field('query').fill('quinn');await page.locator('#hero-quinn summary').click();assert.match(await page.locator('#hero-quinn .hero-skills').textContent(),/50% chance/);await page.locator('[data-roster="reset"]').click();

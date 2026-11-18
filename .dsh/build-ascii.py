@@ -1193,13 +1193,9 @@ def backdrops():
 
 
 # ── pet portraits ────────────────────────────────────────────────────────
-# A pet with a portrait is drawn from its low-poly model instead of by hand:
-# .dsh/pet-portrait/shade.py renders the model offline through a text shader
-# and bakes each pose into .dsh/pet-portraits/<pet>.json as one layer of rows
-# per ink, darkest first. Here every ink becomes a span in the pen whose
-# frames step together, so the portrait keeps its colours. The poses are the
-# same model bent a little (an ear tipped, the nose flared, the head lowered)
-# through the same camera; nothing moves at runtime but the glyphs.
+# shade.py bakes each mesh pose into
+# .dsh/pet-portraits/<pet>.json, with one layer of rows per ink.
+# The layers step together; nothing moves at runtime but the glyphs.
 
 PORTRAIT_FPS = 8
 PORTRAIT_UP = [('still', 20), ('blink', 1), ('still', 14), ('ear', 2), ('still', 1), ('ear', 2), ('still', 16),
@@ -1882,8 +1878,8 @@ def main():
     parser.add_argument('--check', action='store_true', help='fail if any generated file is missing, stale or unexpected')
     args = parser.parse_args()
     files = generated_files()
-    unexpected = sorted(str(path.relative_to(ROOT)) for path in (ROOT / 'css').glob('ascii-frames*.css')
-                        if str(path.relative_to(ROOT)) not in files)
+    names = (path.relative_to(ROOT).as_posix() for path in (ROOT / 'css').glob('ascii-frames*.css'))
+    unexpected = sorted(name for name in names if name not in files)
     if args.check:
         stale = [name for name, text in files.items()
                  if not (ROOT / name).is_file() or (ROOT / name).read_bytes() != text.encode('utf-8')]
