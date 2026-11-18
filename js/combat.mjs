@@ -14,8 +14,9 @@
      widget in a garrison. Its flat stats are already on the battle report.
    - Joiners give only their first skill. Four count: the highest skill
      levels, join order breaking ties (kingshotsim.com, Rally & troops).
-     A second copy of the same chance skill still takes a place but never
-     rolls twice: four Jabels are one roll.
+     Every copy of a chance skill rolls for itself: four Marlins are four
+     rolls. The engine still keeps one chance effect per code, the largest
+     (see js/battle-engine.mjs), so extra rolls raise the odds, not the size.
    - The leaders' own stats and gear are already in the report's Bonus
      Details, so only their skills are added here. */
 
@@ -79,15 +80,11 @@ function chosen(joiners) {
 }
 
 function joinerSkills(data, joiners) {
-  var out = [], rolled = {};
+  var out = [];
   chosen(joiners).forEach(function (j) {
     var row = (data.heroSkills[j.key] || []).filter(function (r) { return r.slot === 'sk1'; })[0];
     var s = row && skill(row, j.level);
-    if (!s) return;
-    var chance = s.kind === 'perRound' || s.kind === 'perAttack' || s.kind === 'anyAttack';
-    if (chance && rolled[j.key]) return;
-    if (chance) rolled[j.key] = true;
-    out.push(s);
+    if (s) out.push(s);
   });
   return out;
 }

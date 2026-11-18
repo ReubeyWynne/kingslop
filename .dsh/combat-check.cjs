@@ -60,13 +60,13 @@ near(E.factor(fx(joined(['saul', 'saul', 'saul', 'saul'])), 1, 0, 0), 2.24, 'fou
   assert.equal(C.widget(data, 'zoe', 1, 'defender'), null, 'widget level 1 has no skill');
 }
 
-// Joiners: the four highest skill levels, join order breaking ties; a second
-// copy of a chance skill takes a place but does not roll again.
+// Joiners: the four highest skill levels, join order breaking ties; every copy
+// of a chance skill rolls for itself (terror-rally Battle Details, 2026-11-18).
 {
   const order = C.joiners([{ key: 'a', level: 3 }, { key: 'b', level: 5 }, { key: 'c', level: 3 }, { key: 'd', level: 4 }, { key: 'e', level: 5 }]);
   assert.deepEqual(order.map(j => j.key), ['b', 'e', 'd', 'a']);
   const jabels = C.joinerSkills(data, [{ key: 'jabel' }, { key: 'jabel' }, { key: 'jabel' }, { key: 'jabel' }, { key: 'chenko' }]);
-  assert.equal(jabels.length, 1, 'four Jabels are one roll, and Chenko is the fifth');
+  assert.equal(jabels.length, 4, 'four Jabels are four rolls, and Chenko is the fifth');
   assert.equal(C.side(data, { role: 'solo', joiners: [{ key: 'chenko' }] }).length, 0, 'a solo march has no joiners');
   assert.equal(C.joinerSkills(data, [{ key: 'diana' }]).length, 0, 'Diana joins without a combat skill');
 }

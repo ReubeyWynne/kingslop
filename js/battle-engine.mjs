@@ -209,9 +209,9 @@ function compile(raw) {
   });
   // Chance skills sharing a code don't stack, but they fill in for each other: each rolls,
   // and the code's effect is live when any of them succeeds (add() keeps one chance
-  // effect per code). A Terror rally's Battle Details (owner, 2026-11-13) showed Marlin's
-  // Dynamo 10 triggers, Wild Card 2 and Amadeus's Unrighteous Strike 1, which is the
-  // pattern when the weaker ones only count in rounds the stronger missed.
+  // effect per code). 106 terror rallies' Battle Details (owner, 2026-11-18) show every
+  // copy and every skill counting its own successes, and the rallies' troop losses fit
+  // the largest effect better than the sum of them (MATHS.md §5.1).
   list.forEach(function (sk) {
     // Enemy damage taken up (211) does nothing on a battle's first turn (Strat Game Sloth,
     // 2026-11-12, measured on the Bear): the Bear's first round uses this list instead.
