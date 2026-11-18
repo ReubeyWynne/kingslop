@@ -40,6 +40,7 @@ const API = 'https://kingslop.reubeycw.workers.dev';
     await O.getByRole('button', { name: 'Save', exact: true }).click();
     await O.locator('#rules .hub-text').waitFor();
     assert.match(await O.locator('#rules').textContent(), /No attacking allies\.\s+Be online for Vikings\.[\s\S]*Edited by Ada/);
+    await O.screenshot({ path: path.join(out, 'owner-new-390.png'), fullPage: true });
     await O.getByRole('button', { name: 'Links', exact: true }).click();
     const [ownerLink, invite, member] = await dialog(O).locator('[data-copy]').evaluateAll(nodes => nodes.map(n => n.dataset.copy.match(/https?:\S+/)[0]));
     assert.match(ownerLink, /\/hub\/#own-[A-Za-z0-9_-]{22}$/); assert.match(invite, /\/hub\/#r4-[A-Za-z0-9_-]{22}$/); assert.match(member, /\/hub\/#ally-[A-Za-z0-9_-]{22}$/);
@@ -241,6 +242,28 @@ const API = 'https://kingslop.reubeycw.workers.dev';
       for (const name of ['Up next', 'Tasks', 'Messages', 'Info', 'Leaders']) { await at(page, name); assert(await fits(page), name + ' fits'); await page.screenshot({ path: path.join(out, 'owner-' + name.toLowerCase().replace(' ', '-') + '-390.png'), fullPage: true }); }
       await context.close();
     }
+    // Handing over: the owner gets one new owner link to give away, the old one stops working, and the new one opens the hub as owner.
+    {
+      const old = ownerLink.split('#own-')[1];
+      await O.getByRole('button', { name: 'Member view' }).waitFor();
+      await O.locator('#hub-tools summary').click(); await O.getByRole('button', { name: 'Hand over' }).click();
+      await dialog(O).getByRole('button', { name: 'Hand over', exact: true }).click();
+      await dialog(O).locator('textarea.vv-link').waitFor();
+      const fresh = await dialog(O).locator('textarea.vv-link').inputValue();
+      assert.match(fresh, /\/hub\/#own-[A-Za-z0-9_-]{22}$/, 'a new owner link is shown');
+      assert.notEqual(fresh.split('#own-')[1], old, 'and it is a new one');
+      const heir = await device(), H = heir.page;
+      await H.goto(local(fresh));
+      await H.getByRole('heading', { name: '[TST] Test alliance', level: 1 }).waitFor();
+      await H.getByRole('button', { name: 'Links', exact: true }).waitFor();
+      const gone = await device();
+      await gone.page.goto(local(ownerLink));
+      await gone.page.locator('.vv-message', { hasText: 'was replaced' }).waitFor();
+      await gone.context.close(); await heir.context.close();
+      await dialog(O).getByRole('button', { name: 'Done' }).click();
+      assert(await O.locator('#start').isVisible(), 'this phone lets go of the old owner link once the new one is dealt with');
+    }
+
     assert.deepEqual(errors, []);
     console.log('hub UI ok');
   });

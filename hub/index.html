@@ -21,7 +21,15 @@ self: hub
       <div class="vv-bar-head"><div><p class="vv-label" x-text="bar.label"></p><p class="vv-dim" x-text="bar.line"></p></div><div class="hub-bar-actions"><template x-if="leader"><button type="button" :class="asMember ? 'vv-primary' : 'vv-quiet'" @click="preview()" x-text="asMember ? 'Back to leading' : 'Member view'"></button></template><button type="button" class="vv-quiet" @click="leave()">Leave</button></div></div>
     </section>
 
-    <template x-if="tabs.length > 1"><div class="vv-tabs hub-tabs" role="tablist" aria-label="Hub sections"><template x-for="t in tabs" :key="t.key"><button type="button" role="tab" :aria-selected="String(view === t.key)" @click="tab = t.key" x-text="t.label"></button></template></div></template>
+    <template x-if="leadership"><div class="hub-share" role="group" aria-label="Share">
+      <template x-if="owner && codes.invite"><button type="button" class="vv-primary" @click="copy(shareText('invite', codes.invite, state.hub.name))">Copy R4 invite</button></template>
+      <template x-if="owner && codes.member"><button type="button" class="vv-secondary" @click="copy(shareText('member', codes.member, state.hub.name))">Copy member link</button></template>
+      <template x-if="owner"><button type="button" class="vv-quiet" @click="share()">Links</button></template>
+      <template x-if="r4"><button type="button" class="vv-secondary" @click="copy(mine.text)">Copy my sign-in link</button></template>
+      <template x-if="owner"><details class="vv-tools" id="hub-tools" x-effect="renders; $el.open = false"><summary>More</summary><div class="vv-actions"><button type="button" @click="settings()">Settings</button><button type="button" @click="handover()">Hand over</button><button type="button" @click="refresh()">Refresh</button><button type="button" class="vv-danger" @click="deleteHub()">Delete</button></div></details></template>
+    </div></template>
+
+    <template x-if="tabs.length > 1"><div class="vv-tabs hub-tabs" role="tablist" aria-label="Hub sections"><template x-for="t in tabs" :key="t.key"><button type="button" role="tab" :aria-selected="String(view === t.key)" @click="tab = t.key" ><span x-text="t.label"></span><template x-if="t.badge"><i class="hub-badge" aria-hidden="true" x-text="t.badge"></i></template></button></template></div></template>
 
     <template x-if="access === 'invite'"><form class="hub-join" @submit.prevent="join()">
       <h2>Join the leaders</h2>
@@ -94,18 +102,13 @@ self: hub
     </section></template>
     </div></template>
 
-    <template x-if="leadership"><div class="vv-actions vv-lead">
-      <template x-if="owner"><button type="button" class="vv-primary" @click="share()">Links</button></template>
-      <template x-if="r4"><button type="button" class="vv-secondary" @click="copy(mine.text)" x-text="'Copy my sign-in link'"></button></template>
-    </div></template>
-    <template x-if="owner"><details class="vv-tools" id="hub-tools" x-effect="renders; $el.open = false"><summary>More</summary><div class="vv-actions"><button type="button" @click="settings()">Settings</button><button type="button" @click="handover()">Hand over</button><button type="button" @click="refresh()">Refresh</button><button type="button" class="vv-danger" @click="deleteHub()">Delete</button></div></details></template>
   </div></template>
 
-  <dialog class="vv-dialog" aria-labelledby="hub-dialog-title" x-effect="dialog ? $el.open || $el.showModal() : $el.open && $el.close()" @close="dialog = null">
+  <dialog class="vv-dialog" aria-labelledby="hub-dialog-title" x-effect="dialog ? $el.open || $el.showModal() : $el.open && $el.close()" @close="close()">
     <div class="vv-dialog-head"><h2 id="hub-dialog-title" x-text="dialog ? dialog.title : ''"></h2><button type="button" aria-label="Close" @click="close()">×</button></div>
     <p class="vv-dialog-message" role="alert" x-text="dialogMessage"></p>
     <div class="vv-dialog-body">
-      <template x-if="dialog && dialog.kind === 'copy'"><div class="vv-contents"><textarea class="vv-link" readonly rows="3" :value="dialog.value" x-init="$nextTick(() => $el.select())"></textarea><template x-if="dialog.after"><div class="vv-actions vv-foot"><button type="button" class="vv-primary" @click="dialog.after()">Done</button></div></template></div></template>
+      <template x-if="dialog && dialog.kind === 'copy'"><div class="vv-contents"><textarea class="vv-link" readonly rows="3" :value="dialog.value" x-init="$nextTick(() => $el.select())"></textarea><template x-if="!!dialog.after"><div class="vv-actions vv-foot"><button type="button" class="vv-primary" @click="dialog.after()">Done</button></div></template></div></template>
       <template x-if="dialog && dialog.kind === 'ask'"><div class="vv-contents"><p x-text="dialog.text"></p><div class="vv-actions vv-foot"><button type="button" class="vv-quiet" @click="close()">Cancel</button><button type="button" :class="dialog.cls" @click="dialog.yes()" x-text="dialog.label"></button></div></div></template>
       <template x-if="dialog && dialog.kind === 'switch'"><div class="vv-contents"><p x-text="dialog.text"></p><div class="vv-actions vv-foot"><button type="button" class="vv-quiet" @click="close()" x-text="dialog.keep"></button><button type="button" class="vv-primary" @click="confirmSwitch()">Open it</button></div></div></template>
       <template x-if="dialog && dialog.kind === 'open'"><form @submit.prevent="send('open')"><label>Link from your leader<input type="url" name="link" x-model="forms.link" required placeholder="https://dey.ci/hub/#r4-…"></label><div class="vv-actions vv-foot"><button type="submit" class="vv-primary" :disabled="busy">Open</button></div></form></template>

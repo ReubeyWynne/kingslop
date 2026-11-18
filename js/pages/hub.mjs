@@ -85,7 +85,7 @@ Alpine.data('hub', api => {
         if (this.duties.length) list.push({ key: 'up', label: 'Up next' });
         if (this.tasks.length || this.owner) list.push({ key: 'tasks', label: 'Tasks' });
         list.push({ key: 'messages', label: 'Messages' }, { key: 'info', label: 'Info' });
-        if (this.leaders.length || this.owner) list.push({ key: 'leaders', label: 'Leaders' });
+        if (this.leaders.length || this.owner) list.push({ key: 'leaders', label: 'Leaders', badge: this.owner ? this.leaders.filter(l => l.status === 'waiting').length || '' : '' });
       } else {
         list.push({ key: 'info', label: 'Info' });
         if (this.tasks.length) list.push({ key: 'tasks', label: 'Who to ask' });
@@ -144,6 +144,7 @@ Alpine.data('hub', api => {
       return Messages.fill(body, { now, task: task ? { name: task.name, holders: task.holders } : null, next });
     },
     get leaders() { return (this.state && this.state.leaders) || []; },
+    get codes() { return (this.credential && this.credential.codes) || {}; },
     get shareRows() {
       const c = this.credential, codes = (c && c.codes) || {}, name = this.state.hub.name;
       const rows = [['owner', 'Owner', 'only for you', c.code], ['invite', 'R4 invite', 'for leadership chat', codes.invite], ['member', 'Member', 'for alliance chat', codes.member]];
@@ -158,7 +159,8 @@ Alpine.data('hub', api => {
     /* ---- talking to the hub ---- */
     say(message, error) { this.message = message; this.error = !!error; if (this.dialog) this.dialogMessage = error ? message : ''; },
     modal(kind, title, extra) { this.dialog = Object.assign({ kind, title }, extra); this.dialogMessage = ''; },
-    close() { this.dialog = null; },
+    // Closing a dialog, by any way, runs what it asked to run on closing.
+    close() { const d = this.dialog; this.dialog = null; if (d && d.onclose) d.onclose(); },
     persist() { const c = this.credential; return !!c && write({ hubId: c.hubId, code: c.code, role: c.role, codes: c.codes || null, name: this.state ? this.state.hub.name : c.name }); },
     async request(path, method, data, token) {
       const controller = new AbortController(), timeout = setTimeout(() => controller.abort(), 20000), bearer = token || (this.credential && this.credential.code);
@@ -371,8 +373,8 @@ Alpine.data('hub', api => {
     handover() {
       return this.ask('Hand over ' + this.state.hub.name + '?', 'You get one new owner link to give them. Your own owner link stops working.', 'Hand over', async () => {
         const made = await this.request('/v1/hubs/' + this.state.hub.id + '/handover', 'POST', {});
-        const link = linkTo('owner', made.code); this.forget();
-        this.modal('copy', 'New owner link', { value: link, after: () => this.close() });
+        // The page keeps the hub open until the new link is dealt with, then lets go of this device's old one.
+        this.modal('copy', 'New owner link', { value: linkTo('owner', made.code), after: () => this.close(), onclose: () => this.forget() });
       });
     },
   };
