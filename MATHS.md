@@ -128,18 +128,36 @@ Three skill rules, from Strat Game Sloth's unit tests with Frak and Zebrave ("Th
 Mechanic Nobody Noticed About Zoe", 2026-11-12) and the owner's Terror rally Battle Details
 (2026-11-13), which count each skill's triggers:
 
-- **Chance skills sharing a code fill in for each other.** They don't add, but each rolls and
-  the code's effect is live when any succeeds. Marlin's Dynamo (50%) showed 10 triggers, Wild
-  Card (40%) 2 and Amadeus's Unrighteous Strike (32% at level 4) 1, all code 104. Rolling on
-  their own they would show about 0.8× and 0.6× Dynamo's count; filling in only when Dynamo
-  (then Wild Card) missed gives 0.2× and 0.06×, which matches. So +50% damage dealt is live
-  1 − 0.5 × 0.6 × 0.68 ≈ 80% of rounds, not 50% (the old "dead duplicate" rule).
+- **Chance skills sharing a code: every copy rolls, and the largest live effect counts.** They
+  don't add, but each rolls and the code's effect is live when any succeeds, so +50% damage
+  dealt is live 1 − 0.5 × 0.6 × 0.68 ≈ 80% of rounds, not 50% (the old "dead duplicate" rule).
+  The 2026-11-13 report (Dynamo 10 triggers, Wild Card 2, Unrighteous Strike 1, all code 104)
+  was first read as the weaker skills counting only when the stronger one missed. 106 terror
+  rallies (Battle Details, 2026-11-18) say otherwise:
+  - Wild Card's triggers per Marlin copy per round are 0.52 with no other code-104 skill in the
+    lead, 0.54 with Marlin leading (Dynamo rolling too) and 0.49 with Jabel or Amadeus leading.
+    Nothing is suppressed. Dynamo's bigger count is that it rolls on each troop type's attack,
+    Wild Card once a round.
+  - The count rises with the copies, so each copy rolls for itself: 0.53, 1.04 and 1.50 per
+    round with one, two and three chosen Marlin joiners (Jabel's Rally Flag: 0.48, 0.99, 1.93).
+    A joiner dedupe gives a flat line; fill-in would give about 1 : 1.5 : 1.75.
+  - Scored against the real troop losses of those rallies, largest-counts with every copy
+    rolling gives 3.90 points of error, one roll per hero 4.44, and adding the effects 4.50 with
+    losses predicted 3.6 points low (1.2 for largest-counts). The counts cannot tell largest from
+    adding on their own; the losses favour largest, modestly (95% interval on the gap
+    +0.03 to +1.16 points).
+  - "Round" here is the report's 90007 statistic, which fits the rates above but is not
+    documented anywhere.
 - **Evil Eye (Petra sk1) and Infinite Arsenal (Zoe sk3)** roll 50% on each troop type's attack
   (Sloth, Frak and Zebrave); one success gives +50% enemy damage taken to every attack that
   turn, 87.5% a turn with three types. The Terror report's Evil Eye count (7) fits this if The
   Favor (9) and Dynamo (10) count once per attack, so the fight ran about 8 rounds; it would
   contradict it only if they count once a round, which the report can't tell apart. Petra and
-  Zoe share 211, so together they fill in for each other (about 98% a turn).
+  Zoe share 211, so together they fill in for each other (about 98% a turn). The 106 rallies
+  settle the roll rate, not the hold: Evil Eye triggers 1.8 to 2.0 times a round per copy and
+  Infinite Arsenal 1.4 to 1.6, against 0.5 for Wild Card, so they roll several times a round
+  (Sloth's per-attack roll). Evil Eye's rate is the same with and without Zoe leading
+  (1.77 against 1.96), so the counts show no suppression there either.
 - **Enemy damage taken up (211) does nothing on the Bear's first turn** (Sloth). Evil Eye is
   then worth 0.875 × 50% × 0.9 ≈ +39% on the Bear. Applied to the Bear only for now.
 

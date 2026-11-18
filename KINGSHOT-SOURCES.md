@@ -145,9 +145,12 @@ Verbatim rule the game uses (also blog "how-special-bonuses-work"):
 - **Chance effects of one skill code don't stack, but fill in for each other** (owner's Terror
   rally Battle Details, 2026-11-13): of the per-round or per-attack chance skills sharing a code,
   each rolls and the effect is live when any succeeds; when several land, the largest counts.
-  The trigger counts showed Dynamo 10, Wild Card 2 and Unrighteous Strike 1 (all 104), the
-  pattern of the weaker ones counting only when the stronger missed. This replaces the
-  earlier "duplicates are dead" reading (player-reported). Fixed percentages (passives, every-N
+  The first report's counts (Dynamo 10, Wild Card 2, Unrighteous Strike 1, all 104) looked
+  like the weaker ones counting only when the stronger missed; 106 terror rallies (2026-11-18)
+  show each copy and each skill counting its own successes whatever else is rolling, so that
+  gap was roll frequency (Dynamo rolls per attack, Wild Card per round); see MATHS.md §5.1.
+  This replaces the earlier "duplicates are dead" reading (player-reported), and every copy
+  of a joiner's chance skill rolls. Fixed percentages (passives, every-N
   buffs) of one code still add, and the two totals add before codes multiply. The battle
   engine and the lead finder's Bear score (`bearExpect`) follow the same rule.
 - **Evil Eye and Infinite Arsenal roll on every attack and hold for the turn** (Strat Game
@@ -159,11 +162,17 @@ Verbatim rule the game uses (also blog "how-special-bonuses-work"):
   Petra and Zoe together fill in for each other.
 - **211 does nothing on a battle's first turn** (same source). The engine applies this to the
   Bear only (`lateEnemyHurt`); untested in PvP.
-- **Open, needs an in-game test:** Sloth's team finds one Marlin joiner adds damage beside
-  Amadeus or Jabel ("a working assumption"). Here Marlin's Wild Card, Amadeus's Unrighteous
-  Strike and Jabel's Hero's Domain are all chance skills on 104, so a Marlin joiner only
-  fills in rounds the others missed (a small gain, not a full extra +50%). Test: Amadeus/Jabel/Marlin with Amane, Amane, Chenko and either Marlin or a third
-  Amane as the fourth joiner, many hits each. Vivian's 211 is also unverified (by symmetry).
+- **Joiner selection, confirmed (2026-11-18):** the four joiners with the highest first-hero
+  skill-1 level count, earlier formation position winning ties. Over 106 terror rallies this
+  predicts which joiner skills appear in Battle Details in 169 of 169 cases (three joiners
+  0.91, five 0.89, later position winning ties 0.69; the 4th and 5th tie in 143 of them).
+- **Sloth's Marlin joiner, mostly settled:** Wild Card, Unrighteous Strike and Hero's Domain
+  are all chance skills on 104, so under largest-counts a Marlin joiner raises the odds that
+  the +50% is live in a round (a small gain, not a full extra +50%). A Marlin joiner's rolls
+  are independent of the leader's 104 skills, and adding the effects instead fits the rallies'
+  troop losses worse (4.50 against 3.90 points). Still open: whether a second success carries
+  a partial bonus, and PvP, which these terror reports don't cover. Vivian's 211 is also
+  unverified (by symmetry).
 - **Attack up and damage dealt up are separate codes** (player-confirmed, 2026-11): the
   helper files both under 102, but Petra's The Favor ("Squads' Attack") is distinct from
   Marlin's Wild Card and Amadeus's Unrighteous Strike ("damage dealt"). We keep 102 for
