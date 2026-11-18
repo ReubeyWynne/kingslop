@@ -8,6 +8,7 @@
 // fit -1..1 (as render.cjs frames it for shade.py), welded, simplified to about `tris`
 // triangles and quantised. Layout, little-endian:
 //   uint32 vertices, uint32 indices, int16 x/y/z per vertex (padded to 4 bytes), uint16 indices.
+// Optional channels follow the indices: uint8 RGB and six uint8 skin weights per vertex.
 // `shape` reshapes a variant (bigger horns, smaller ears) with the same bends render.cjs uses.
 const fs = require('node:fs');
 const path = require('node:path');
@@ -42,6 +43,12 @@ function bend(v) {
 (async () => {
   await MeshoptSimplifier.ready;
   const buf = fs.readFileSync(stl), count = buf.readUInt32LE(80);
+  const channels = Object.entries({ rgb: 3, skin: 6 }).flatMap(([name, width]) => {
+    if (!opt[name]) return [];
+    const bytes = fs.readFileSync(opt[name]);
+    if (bytes.length !== count * 3 * width) throw new Error(`Exhibit ${name} count does not match mesh corners`);
+    return [{ width, bytes, values: [], output: [] }];
+  });
   const raw = new Float64Array(count * 9);
   for (let t = 0; t < count; t++) for (let k = 0; k < 3; k++) {
     const o = 84 + t * 50 + 12 + k * 12, v = [buf.readFloatLE(o), buf.readFloatLE(o + 4), buf.readFloatLE(o + 8)];
@@ -53,20 +60,29 @@ function bend(v) {
   // Weld on the fitted model, so the tolerance doesn't depend on the file's units.
   const seen = new Map(), pos = [], idx = new Uint32Array(count * 3);
   for (let c = 0; c < count * 3; c++) {
-    const v = bend([0, 1, 2].map(a => (raw[c * 3 + a] - centre[a]) * scale)), key = v.map(x => Math.round(x * 1e5)).join();
+    const v = bend([0, 1, 2].map(a => (raw[c * 3 + a] - centre[a]) * scale));
+    const slices = channels.map(({ width, bytes }) => bytes.subarray(c * width, (c + 1) * width));
+    const key = [v.map(x => Math.round(x * 1e5)), ...slices.map(s => s.join())].join(':');
     let i = seen.get(key);
-    if (i === undefined) { i = pos.length / 3; seen.set(key, i); pos.push(...v); }
+    if (i === undefined) {
+      i = pos.length / 3; seen.set(key, i); pos.push(...v);
+      channels.forEach(({ values }, n) => values.push(...slices[n]));
+    }
     idx[c] = i;
   }
   const P = new Float32Array(pos);
   const [kept] = count > opt.tris ? MeshoptSimplifier.simplify(idx, P, 3, opt.tris * 3, 0.05, ['LockBorder']) : [idx];
   // A variant's own pieces (`extra`: triangles in the fitted model's space) are kept whole, after the simplifier.
   const extra = opt.extra || [], range = opt.range || 1;
+  if (channels.length && extra.length) throw new Error('Exhibit meshes cannot use props without matching vertex channels');
   const remap = new Map(), q = [], ind = new Uint16Array(kept.length + extra.length / 3);
   const put = v => { for (let a = 0; a < 3; a++) q.push(Math.round(Math.max(-1, Math.min(1, v[a] / range)) * 32767)); };
   for (let i = 0; i < kept.length; i++) {
     let j = remap.get(kept[i]);
-    if (j === undefined) { j = remap.size; remap.set(kept[i], j); put([0, 1, 2].map(a => P[kept[i] * 3 + a])); }
+    if (j === undefined) {
+      j = remap.size; remap.set(kept[i], j); put([0, 1, 2].map(a => P[kept[i] * 3 + a]));
+      for (const { width, values, output } of channels) output.push(...values.slice(kept[i] * width, (kept[i] + 1) * width));
+    }
     ind[i] = j;
   }
   for (let c = 0; c < extra.length / 3; c++) { ind[kept.length + c] = q.length / 3; put(bend(extra.slice(c * 3, c * 3 + 3))); }
@@ -74,6 +90,6 @@ function bend(v) {
   const verts = Buffer.from(new Int16Array(q).buffer), pad = Buffer.alloc((4 - verts.length % 4) % 4);
   const out = path.resolve(__dirname, '../../pets/models', pet + '.bin');
   fs.mkdirSync(path.dirname(out), { recursive: true });
-  fs.writeFileSync(out, Buffer.concat([head, verts, pad, Buffer.from(ind.buffer)]));
+  fs.writeFileSync(out, Buffer.concat([head, verts, pad, Buffer.from(ind.buffer), ...channels.map(c => Buffer.from(c.output))]));
   console.log(`${pet}: ${ind.length / 3} triangles, ${q.length / 3} vertices, ${fs.statSync(out).size} bytes`);
 })();

@@ -17,7 +17,7 @@ const check = (ok, message) => { if (!ok) failures.push(message); };
 
 const MOTION = /\b(transform|translate|rotate|scale|skew|matrix|perspective|offset-path|animation-timeline|scroll-timeline|view-timeline)\b/;
 const sheets = ['css/ascii.css', ...fs.readdirSync(path.join(root, 'css')).filter(file => /^ascii-frames.*\.css$/.test(file)).sort().map(file => 'css/' + file)];
-const LIVE = 'pet-live.js';
+const LIVE = 'pet-habitat.js';
 
 function keyframes(css) {
   const blocks = [];
@@ -66,17 +66,8 @@ for (const file of fs.readdirSync(path.join(root, 'js')).filter(f => f.endsWith(
   if (file === LIVE) continue;
   check(!/requestAnimationFrame|\.animate\(|new\s+Animation\(|KeyframeEffect/.test(js), `js/${file}: no JavaScript animation loops or Web Animations`);
 }
-// The one exception: a pet drawn live from its model (DESIGN.md, "Live pets"). It still steps at a
-// fixed rate, changes whole glyphs in a fixed grid, never moves or transforms its canvas, and the
-// pen keeps its baked frames underneath for reduced motion and browsers without WebGL 2.
-{
-  const js = read('js/' + LIVE);
-  check(/const FPS = (\d+);/.test(js) && +js.match(/const FPS = (\d+);/)[1] <= 12, `js/${LIVE}: steps at a fixed rate of 12 fps or fewer`);
-  check(/prefers-reduced-motion: reduce/.test(js), `js/${LIVE}: leaves reduced motion to the baked frames`);
-  check(!/\.style\b|\.animate\(|new\s+Animation\(|KeyframeEffect|transform/.test(js), `js/${LIVE}: never styles, moves or transforms the canvas`);
-  check(/texelFetch\(uCells/.test(js) && /floor\(f\/uCell\)/.test(js), `js/${LIVE}: draws one glyph per fixed character cell`);
-  check(/\[data-pen\]\[data-live\] > \.ascii-mini--portrait, \[data-pen\]\[data-live\]::after \{ visibility: hidden; \}/.test(read('css/pets.css')), `css/pets.css: the baked portrait stays in the pen under the live one`);
-}
+// The live 3D habitat is not an ASCII scene; its motion stays inside its canvas.
+check(/prefers-reduced-motion: reduce/.test(read('js/' + LIVE)), `js/${LIVE}: respects reduced motion`);
 for (const file of fs.readdirSync(path.join(root, '_includes/ascii'))) {
   const markup = read('_includes/ascii/' + file);
   check(!/<script|<canvas|\son\w+=/i.test(markup), `_includes/ascii/${file}: scenes are plain HTML`);

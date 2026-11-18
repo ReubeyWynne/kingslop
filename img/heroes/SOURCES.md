@@ -53,3 +53,26 @@ The 15 missing portraits were matched by the wiki card title and hero page, then
 | sophia.webp | https://got-global-wiki.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/04/2-Sophia.jpg | https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50030_kingshot_end/ |
 | triton.webp | https://got-global-wiki.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/04/1-Triton.jpg | https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50019_kingshot_end/ |
 | charles.webp | https://got-global-wiki.s3.us-west-1.amazonaws.com/wp-content/uploads/2026/05/Charles.png | https://kingshotwiki.com/heroes/kingshot_wiki_hero_name_50032_kingshot_end/ |
+
+## In-game character art · client 1.14.27
+
+The Heroes and Town Centre rosters keep the wiki portraits on their tiles and show
+the in-game character art beside the name when a dossier is open. The
+`fullArt` flag in `_data/hero_roles.json` enables `full/<hero-id>.webp`.
+The WebPs were made from the supplied `hero-images/full_part_*.png` exports:
+trimmed to their alpha bounds, fit within 248×248 without cropping the artwork,
+centered on a transparent 256×256 canvas, and encoded at quality 84.
+
+| Source PNG suffix | Hero ID | Source PNG suffix | Hero ID |
+|---|---|---|---|
+| `1-02` | `jaeger` | `2-02` | `longfei` |
+| `1-04` | `zoe` | `2-03` | `charles` |
+| `1-05` | `petra` | `2-06` | `vivian` |
+| `1-07` | `marlin` | `2-07` | `weewoo` |
+| `1-08` | `eric` | `2-08` | `sophia` |
+| `1-09` | `triton` | `2-09` | `thrud` |
+| `1-10` | `ava` | `2-10` | `rosa` |
+| `1-11` | `hilde` | `2-11` | `alcar` |
+
+The four exports without a confirmed catalogue match (`1-03`, `1-06`, `2-04`,
+`2-05`) are not published in the roster.

@@ -979,7 +979,7 @@
    },
    {
     "slot": "sk2",
-    "name": "Rose of War",
+    "name": "Enchanting Dance",
     "trigger": {
      "kind": "passive"
     },
@@ -1474,6 +1474,19 @@
       "pct": 20.0
      }
     ]
+   },
+   {
+    "slot": "sk2",
+    "name": "Weaken",
+    "trigger": {
+     "kind": "passive"
+    },
+    "effects": [
+     {
+      "code": 202,
+      "pct": 20.0
+     }
+    ]
    }
   ],
   "chenko": [
@@ -1489,6 +1502,19 @@
       "pct": 25.0
      }
     ]
+   },
+   {
+    "slot": "sk2",
+    "name": "Shield Wall",
+    "trigger": {
+     "kind": "passive"
+    },
+    "effects": [
+     {
+      "code": 111,
+      "pct": 20.0
+     }
+    ]
    }
   ],
   "gordon": [
@@ -1501,6 +1527,19 @@
     "effects": [
      {
       "code": 113,
+      "pct": 25.0
+     }
+    ]
+   },
+   {
+    "slot": "sk2",
+    "name": "Trash Talk",
+    "trigger": {
+     "kind": "passive"
+    },
+    "effects": [
+     {
+      "code": 102,
       "pct": 25.0
      }
     ]
@@ -1524,7 +1563,7 @@
   "quinn": [
    {
     "slot": "sk1",
-    "name": "Precision Shot",
+    "name": "Sixth Sense",
     "trigger": {
      "kind": "passive"
     },
@@ -1532,6 +1571,20 @@
      {
       "code": 111,
       "pct": 20.0
+     }
+    ]
+   },
+   {
+    "slot": "sk2",
+    "name": "Precision Shot",
+    "trigger": {
+     "kind": "perAttack",
+     "chance": 0.5
+    },
+    "effects": [
+     {
+      "code": 104,
+      "pct": 50.0
      }
     ]
    }

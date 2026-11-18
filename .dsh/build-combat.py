@@ -184,6 +184,12 @@ for fn in (n for n in catalog_tree.body if isinstance(n, ast.FunctionDef) and n.
             hero_skills[key_of[name]] = rows
 check(set(hero_skills) | {'diana'} >= {key_of[n] for n in ref['HERO_CLASS']}, 'hero skill list')
 
+# Skills the helper lacks, read from the game client's own skill config (.dsh/datamined-skills.json).
+# A slot the helper already has is left alone. The value check below still applies to them.
+for key, rows in json.loads((Path(__file__).resolve().parent / 'datamined-skills.json').read_text())['skills'].items():
+    have = {r['slot'] for r in hero_skills.setdefault(key, [])}
+    hero_skills[key] += [r for r in rows if r['slot'] not in have]
+
 # Skills that do nothing against the Bear (player-confirmed in game).
 DEAD_ON_BEAR = {('zoe', 'sk1')}  # Sundering Wound
 

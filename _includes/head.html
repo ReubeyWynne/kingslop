@@ -32,8 +32,7 @@ window.__bhAfterPaint = (function () {
 <noscript><link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel:wght@400..900&family=Cinzel+Decorative:wght@400;700;900&family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="{{ p.depth }}css/ascii.css?v={{ site.time | date: '%s' }}">
 <link rel="stylesheet" href="{{ p.depth }}css/ascii-frames.css?v={{ site.time | date: '%s' }}">
-{% if self == 'pets' %}<link rel="stylesheet" href="{{ p.depth }}css/ascii-frames-pets.css?v={{ site.time | date: '%s' }}">
-{% endif %}<script>
+<script>
 /* The frames that move the ASCII scenes are nearly all of their bytes, so the
    stills above paint first and the keyframes follow once the page has loaded,
    taking no bandwidth from anything the first view needs. Each sheet arrives
@@ -45,7 +44,7 @@ window.__bhAfterPaint = (function () {
   function load() {
     // One sheet per part (.dsh/build-ascii.py writes the list), so each parses
     // as its own short task rather than one long freeze.
-    [{% for f in site.data.ascii_motion.shared %}'{{ p.depth }}{{ f }}', {% endfor %}{% if self == 'pets' %}{% for f in site.data.ascii_motion.pets %}'{{ p.depth }}{{ f }}', {% endfor %}{% endif %}].forEach(function (href) {
+    [{% for f in site.data.ascii_motion.shared %}'{{ p.depth }}{{ f }}', {% endfor %}].forEach(function (href) {
       var link = document.createElement('link');
       link.rel = 'stylesheet';
       link.media = 'print';

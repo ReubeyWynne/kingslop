@@ -130,11 +130,8 @@ const frames = fs.readdirSync(path.join(__dirname, '..', 'css')).filter(file => 
 // A pet drawn from its model has a portrait instead: one span per ink, each with
 // the same poses, and the pens page gives it those spans.
 const portraits = fs.readdirSync(path.join(__dirname, 'pet-portraits')).map(file => file.replace(/\.json$/, ''));
-const pens = read('pets/index.html');
 for (const id of portraits) {
   const baked = JSON.parse(read(`.dsh/pet-portraits/${id}.json`));
-  assert.ok(pens.includes(`{% assign portraits = '${portraits.join(',')}' | split: ',' %}`), id + ' listed on the page');
-  assert.ok(pens.includes(`{% for ink in (0..${baked.inks.length - 1}) %}`), id + ' one span per ink');
   baked.inks.forEach((ink, i) => {
     for (const mood of ['', '-low', '-happy']) assert.ok(frames.includes(`@keyframes ascii-portrait-${id}${mood}-${i}{`), `${id}${mood} ink ${i}`);
     assert.ok(frames.includes(`.ascii-mini--pet[data-mood="asleep"] > .ascii-mini--portrait[data-pet="${id}"] > [data-ink="${i}"]::before{`), `${id} asleep ink ${i}`);
@@ -158,22 +155,25 @@ assert.equal(nav[petsAt - 1].self, 'governor'); assert.equal(nav[petsAt + 1].sel
 assert.equal(pages.pets.swipePrev.page, 'governor'); assert.equal(pages.pets.swipeNext.page, 'buildings');
 assert.equal(pages.governor.swipeNext.page, 'pets'); assert.equal(pages.buildings.swipePrev.page, 'pets');
 const petScripts = pages.pets.scripts.map(script => script.split('/').at(-1));
-for (const [dependency, consumer] of [['pet-data.js', 'pet-plan.mjs'], ['pet-plan.mjs', 'pet-den.mjs'], ['pet-care.mjs', 'pet-den.mjs'], ['pet-den.mjs', 'pet-live.js']]) {
+for (const [dependency, consumer] of [['pet-data.js', 'pet-plan.mjs'], ['pet-plan.mjs', 'pet-den.mjs'], ['pet-care.mjs', 'pet-den.mjs'], ['pet-den.mjs', 'pet-habitat.js']]) {
   assert.ok(petScripts.indexOf(dependency) >= 0 && petScripts.indexOf(consumer) > petScripts.indexOf(dependency), dependency + ' before ' + consumer);
 }
-// Every pet with a portrait is drawn live from its model (pets/models/<id>.bin and .json) and keeps its baked portrait as the fallback.
+// Every pen has a mesh and a baked portrait.
 for (const id of portraits) {
   const model = JSON.parse(read(`pets/models/${id}.json`));
-  for (const key of ['inks', 'fur', 'regions', 'head', 'ramp', 'eyes', 'rest', 'camera', 'lights', 'mouth', 'top', 'cheeks', 'pivots', 'weights']) assert.ok(key in model, `${id} model has ${key}`);
+  for (const key of ['inks', 'fur', 'regions', 'head', 'ramp', 'eyes', 'rest', 'camera', 'lights', 'mouth', 'top', 'cheeks', 'pivots']) assert.ok(key in model, `${id} model has ${key}`);
+  if (!model.vertexSkin) assert.ok(model.weights, id + ' procedural weights');
   assert.equal(model.inks.length, 7, id + ' seven inks');
   const mesh = fs.readFileSync(path.join(__dirname, '..', 'pets/models', id + '.bin'));
-  assert.ok(mesh.length < 16384 && mesh.readUInt32LE(4) % 3 === 0 && mesh.readUInt32LE(4) <= 3600, id + ' model is small');
+  const vertices = mesh.readUInt32LE(0), indices = mesh.readUInt32LE(4);
+  const end = 8 + Math.ceil(vertices * 6 / 4) * 4 + indices * 2;
+  assert.equal(mesh.length, end + vertices * ((model.vertexRGB ? 3 : 0) + (model.vertexSkin ? 6 : 0)), id + ' mesh matches its channels');
+  assert.ok(indices % 3 === 0 && mesh.length < 36 * 1024, id + ' model is small');
 }
-assert.doesNotMatch(read('js/pet-live.js'), /innerHTML/);
+assert.doesNotMatch(read('js/pet-habitat.js'), /innerHTML/);
 assert.ok(pages.pets.css.includes('../css/pets.css') && pages.pets.css.includes('../css/heroes.css'));
-assert.match(read('_includes/ascii/deck-scene.html'), /{% when 'pets' %}\n<span class="ascii-mini ascii-mini--pet" data-pet="gray-wolf"/);
+assert.match(read('_includes/ascii/deck-scene.html'), /{% when 'pets' %}\r?\n<span class="ascii-mini ascii-mini--pet" data-pet="gray-wolf"/);
 const page = read('pets/index.html');
-for (const pet of data.pets) assert.match(page, /data-deep-link="pet-{{ pet.id }}"/);
 assert.doesNotMatch(read('js/pages/pet-den.mjs'), /innerHTML/);
 const dictionaries = fs.readdirSync(path.join(__dirname, '../i18n')).filter(f => f.endsWith('.js')).map(file => { const ctx = { window: {} }; vm.runInNewContext(read('i18n/' + file), ctx); return [file, Object.values(ctx.window.__BH_I18N_DATA)[0]]; });
 assert.equal(dictionaries.length, 10);

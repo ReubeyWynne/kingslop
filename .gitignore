@@ -16,7 +16,10 @@ _site/
 node_modules/
 
 # AI tooling artifacts (untracked working files; never commit these)
-.dsh/
+.dsh/*
+!.dsh/pet-portrait/
+.dsh/pet-portrait/*
+!.dsh/pet-portrait/exhibit.py
 .scratch/
 .impeccable/
 PRODUCT.md

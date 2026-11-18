@@ -41,8 +41,6 @@ const scenes = [
   ['seal', '/governor-gear/', '.ascii-mini--seal', 0.25, 32, [1024]],
   ['tome', '/masters/', '.ascii-mini--tome', 1 / 6, 48, [1024]],
   ['keep', '/buildings/', '.ascii-mini--keep', 0.15, 40],
-  ['pet', '/pets/', '.ascii-motif-rail .ascii-mini--pet', 1.2 / 16, 16, [1024]],
-  ['portrait', '/pets/', '#pet-grizzly-bear .ascii-mini--pet', 1 / 8, 71],
 ];
 
 withBrowser({ root }, async ({ browser, origin: base }) => {
@@ -57,9 +55,8 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
       (scene[5] || phones).includes(width) &&
       (!only.length || only.some(prefix => scene[0].startsWith(prefix))))) {
       const page = await context.newPage();
-      // These are the baked frames: the live pet (js/pet-live.js) is kept off so they show.
-      await page.route('**/js/pet-live.js*', route => route.abort());
-      await page.goto(base + url + '?lang=en', { waitUntil: 'networkidle' });
+      const destination = new URL(url, base); destination.searchParams.set('lang', 'en');
+      await page.goto(destination.href, { waitUntil: 'networkidle' });
       await page.evaluate(() => document.fonts.ready);
       if (name.endsWith('-card')) {
         await page.waitForFunction(() => document.querySelector('#ledger-btn').getAttribute('aria-controls') === 'page-deck');
@@ -76,7 +73,7 @@ withBrowser({ root }, async ({ browser, origin: base }) => {
       // Motion sheets start after first paint (with a 3s fallback), which can
       // happen after networkidle. Wait for every part to load and switch out
       // of print media before freezing the animations for capture.
-      const sheets = [...motion.shared, ...(url === '/pets/' ? motion.pets : [])];
+      const sheets = [...motion.shared, ...(destination.pathname === '/pets/' ? motion.pets : [])];
       await page.waitForFunction(sheets => sheets.every(file =>
         Array.from(document.querySelectorAll('link[rel="stylesheet"]')).some(link =>
           new URL(link.href).pathname.endsWith('/' + file) && link.sheet &&

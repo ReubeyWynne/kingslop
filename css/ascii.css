@@ -131,7 +131,6 @@
    Only behind a live pet, whose cells are filled: baked frames are bare glyphs and the backdrop would show through them. */
 .pet-pen::before { display: none; }
 .pet-pen:has([data-live])::before { position: absolute; top: 0; left: calc(50% - 22ch); display: block; width: 44ch; font-family: var(--ascii-font); font-variant-ligatures: none; font-size: min(13px, 3.5cqi); line-height: 1.25; white-space: pre; direction: ltr; color: var(--ink-muted); opacity: .4; pointer-events: none; }
-.pet-card[data-owned="true"] .pet-pen:has([data-live])::before { color: var(--amber-dim); opacity: .55; }
 .ascii-mini--pet::after { position: absolute; top: 0; left: calc(var(--marks, 0) * 1ch); display: block; white-space: pre; color: var(--ink); }
 /* A pet with a portrait: the pen holds one span per ink, darkest first, each
    stepping through the same frames (.dsh/pet-portrait/shade.py bakes them from
@@ -141,20 +140,20 @@
 .ascii-mini--portrait { position: absolute; inset: 0 auto auto 0; display: block; width: 72ch; height: 30em; font-size: calc(1em * 44 / 72); line-height: 1.25; white-space: pre; pointer-events: none; }
 .ascii-mini--portrait > span { position: absolute; inset: 0 auto auto 0; display: block; white-space: pre; }
 .ascii-mini--portrait > span::before { display: block; white-space: pre; }
-.ascii-mini--portrait[data-pet="grizzly-bear"] { --tone-0: #6E4636; --tone-1: #93604A; --tone-2: #B67F5A; --tone-3: #D49C6C; --tone-4: #EDBC86; --tone-5: #F8DDB0; --tone-6: #FFF5E2; }
+.ascii-mini--portrait[data-pet="grizzly-bear"] { --tone-0: #674233; --tone-1: #996043; --tone-2: #C77B4F; --tone-3: #EC9A62; --tone-4: #F7BD8A; --tone-5: #FFDBA7; --tone-6: #FFF2DB; }
 .ascii-mini--portrait[data-pet="gray-wolf"] { --tone-0: #4C4E5C; --tone-1: #666A7A; --tone-2: #848899; --tone-3: #A4A8B6; --tone-4: #C3C5CE; --tone-5: #DEDDDC; --tone-6: #F7F4EE; }
 .ascii-mini--portrait[data-pet="bison"] { --tone-0: #4A3128; --tone-1: #694535; --tone-2: #895D44; --tone-3: #A87956; --tone-4: #C79A70; --tone-5: #E2C29C; --tone-6: #F8EDDA; }
 .ascii-mini--portrait[data-pet="lion"] { --tone-0: #7A4826; --tone-1: #9C6330; --tone-2: #BE8240; --tone-3: #D9A255; --tone-4: #EBC175; --tone-5: #F6DDA2; --tone-6: #FFF4D8; }
 .ascii-mini--portrait[data-pet="alpha-black-panther"] { --tone-0: #433E58; --tone-1: #585273; --tone-2: #6F688E; --tone-3: #8881A8; --tone-4: #A6A0C2; --tone-5: #C7C2DA; --tone-6: #EEEBF6; }
 .ascii-mini--portrait[data-pet="ironclad-war-elephant"] { --tone-0: #55504F; --tone-1: #716A69; --tone-2: #8E8684; --tone-3: #ABA29F; --tone-4: #C6BEBA; --tone-5: #DFD8D3; --tone-6: #F7F2EC; }
 .ascii-mini--portrait[data-pet="lynx"] { --tone-0: #5C4535; --tone-1: #7F604A; --tone-2: #A07E62; --tone-3: #BF9C7C; --tone-4: #D8BA98; --tone-5: #EBD6BC; --tone-6: #FAF1E4; }
-.ascii-mini--portrait[data-pet="cheetah"] { --tone-0: #6B4A2A; --tone-1: #8E6638; --tone-2: #B0854A; --tone-3: #CDA45E; --tone-4: #E3C27E; --tone-5: #F2DDAA; --tone-6: #FFF5DE; }
+.ascii-mini--portrait[data-pet="cheetah"] { --tone-0: #674125; --tone-1: #A76725; --tone-2: #DA8A25; --tone-3: #FFC448; --tone-4: #FFE098; --tone-5: #FFF4DE; --tone-6: #5AD8FF; }
 .ascii-mini--portrait[data-pet="moose"] { --tone-0: #4A3427; --tone-1: #664837; --tone-2: #85604A; --tone-3: #A27B5F; --tone-4: #BF997A; --tone-5: #DABA9C; --tone-6: #F4E6D6; }
-.ascii-mini--portrait[data-pet="mighty-bison"] { --tone-0: #3A2420; --tone-1: #55332A; --tone-2: #744635; --tone-3: #935E44; --tone-4: #B57D5B; --tone-5: #D7A77F; --tone-6: #F6E4C6; }
-.ascii-mini--portrait[data-pet="regal-white-lion"] { --tone-0: #6E6A8C; --tone-1: #A07A48; --tone-2: #C9984E; --tone-3: #E2B868; --tone-4: #EED6A2; --tone-5: #F8EEDB; --tone-6: #FFFFFF; }
+.ascii-mini--portrait[data-pet="mighty-bison"] { --tone-0: #45334B; --tone-1: #654859; --tone-2: #855E65; --tone-3: #A97975; --tone-4: #C89785; --tone-5: #E3C4A5; --tone-6: #F8E9CE; }
+.ascii-mini--portrait[data-pet="regal-white-lion"] { --tone-0: #373345; --tone-1: #504B5C; --tone-2: #6C6779; --tone-3: #8D899A; --tone-4: #B5B0BA; --tone-5: #DBD5D4; --tone-6: #F9F4EB; }
 .ascii-mini--portrait[data-pet="great-moose"] { --tone-0: #3A2A22; --tone-1: #55402F; --tone-2: #725A43; --tone-3: #8E7559; --tone-4: #AC9375; --tone-5: #CDB698; --tone-6: #EEE3D2; }
 .ascii-mini--portrait[data-pet="ironclad-war-bear"] { --tone-0: #3F4652; --tone-1: #56606E; --tone-2: #6F7A89; --tone-3: #8A95A3; --tone-4: #A8B1BD; --tone-5: #C8CED6; --tone-6: #EEF1F4; }
-.ascii-mini--portrait[data-pet="giant-rhino"] { --tone-0: #4E4A48; --tone-1: #6A6461; --tone-2: #878079; --tone-3: #A39C94; --tone-4: #BEB8AF; --tone-5: #D9D4CC; --tone-6: #F4F1EC; }
+.ascii-mini--portrait[data-pet="giant-rhino"] { --tone-0: #30313F; --tone-1: #46495A; --tone-2: #556779; --tone-3: #7593A1; --tone-4: #A7B8B9; --tone-5: #D7C4A0; --tone-6: #F4F1E5; }
 .ascii-mini--portrait > [data-ink="0"] { color: var(--tone-0); }
 .ascii-mini--portrait > [data-ink="1"] { color: var(--tone-1); }
 .ascii-mini--portrait > [data-ink="2"] { color: var(--tone-2); }

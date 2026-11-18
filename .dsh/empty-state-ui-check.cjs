@@ -51,6 +51,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     // On a phone a planner opens an empty save on its own half; the note waits in The answer.
     const answer = page.locator('.sheet-views [data-value="answer"]');
     if (await answer.isVisible()) await answer.click();
+    if (dir === 'pets') await page.locator('#advances:not([open]) > summary').click();
   }
 
   // An empty save: every tool says what it is missing, inside the section it would fill.
