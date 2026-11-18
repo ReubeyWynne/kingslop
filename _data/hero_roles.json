@@ -354,11 +354,11 @@
       "reviewedAt": "2026-10-08",
       "skillNotes": [
         {
-          "name": "Precision Shot",
+          "name": "Sixth Sense",
           "summary": "Reduces incoming damage for every troop type."
         },
         {
-          "name": "Burst Fire",
+          "name": "Precision Shot",
           "summary": "Each attack has a 50% chance to gain the listed damage bonus."
         }
       ]
@@ -729,7 +729,7 @@
           "summary": "A 40% proc raises damage across the march."
         },
         {
-          "name": "Rose of War",
+          "name": "Enchanting Dance",
           "summary": "Reduces damage dealt by every enemy troop type."
         },
         {

@@ -1100,7 +1100,7 @@
    ],
    "skills": [
     {
-     "name": "Precision Shot",
+     "name": "Sixth Sense",
      "scales": [
       {
        "label": "Damage Taken Down",
@@ -1115,7 +1115,7 @@
      ]
     },
     {
-     "name": "Burst Fire",
+     "name": "Precision Shot",
      "scales": [
       {
        "label": "Damage Up",
@@ -2284,7 +2284,7 @@
      ]
     },
     {
-     "name": "Rose of War",
+     "name": "Enchanting Dance",
      "scales": [
       {
        "label": "Enemy Damage Down",
