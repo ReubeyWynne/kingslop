@@ -331,8 +331,20 @@
 .gear-headline strong { font: 3rem/1 var(--display-2); color: var(--amber); font-variant-numeric: tabular-nums; }
 .gear-headline span { color: var(--ink-dim); }
 .gear-main .gear-switch { margin: .3rem 0 .5rem; font-size: .9rem; color: var(--ink); }
-.gear-spend, .gear-saving { margin-top: 1.2rem; padding-top: .6rem; border-top: 1px solid var(--signal-line); }
-.gear-spend > h3, .gear-saving > h3 { font-size: 1.1rem; margin: 0 0 .3rem; }
+.gear-spend, .gear-chests, .gear-saving { margin-top: 1.2rem; padding-top: .6rem; border-top: 1px solid var(--signal-line); }
+.gear-spend > h3, .gear-chests > h3, .gear-saving > h3 { font-size: 1.1rem; margin: 0 0 .3rem; }
+/* Gear Boost Custom Chests: one row under the materials, then their split in the answer. */
+.gear-main .gear-editor label.gear-chest-bag { display: grid; grid-template-columns: var(--icon-tile) minmax(0, 1fr) 6rem; column-gap: .6rem; align-items: center; padding: .35rem 0; border-bottom: 1px solid var(--signal-line); }
+.gear-chest-bag img { width: var(--icon-tile); height: var(--icon-tile); object-fit: contain; }
+.gear-chest-bag > span { font-size: .85rem; color: var(--ink-dim); }
+.gear-main .gear-chest-bag input[type="number"] { font: max(1.1rem, 16px) var(--display-2); text-align: center; border-bottom-color: var(--signal-line); }
+.gear-chest-strip [data-zero] { opacity: .5; }
+.gear-chest-alone { width: 100%; border-collapse: collapse; margin: .6rem 0 .2rem; font-size: .85rem; }
+.gear-chest-alone caption { text-align: start; color: var(--ink-muted); font-size: .8rem; padding-bottom: .2rem; }
+.gear-chest-alone th { display: flex; align-items: center; gap: .45rem; font-weight: 400; color: var(--ink-dim); text-align: start; padding: .15rem 0; }
+.gear-chest-alone th img { width: 1.5rem; height: 1.5rem; object-fit: contain; }
+.gear-chest-alone td { text-align: end; font-variant-numeric: tabular-nums; color: var(--ink); }
+.gear-chest-alone tr + tr > * { border-top: 1px solid var(--signal-line); }
 .gear-main .gear-saving .gear-route { grid-template-columns: 3.5rem minmax(0, 1fr) 7rem; }
 .gear-saving .gear-route .gear-item { max-width: 3.5rem; }
 @media (max-width: 780px) {

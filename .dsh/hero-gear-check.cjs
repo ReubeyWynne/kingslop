@@ -400,4 +400,24 @@ for (let t = 0; t < 6; t++) {
     assert.ok(to.mastery >= from.mastery && (from.quality !== 'red' || (to.quality === 'red' && to.level >= from.level)), id + ' never goes backwards');
   }
 }
-console.log('Guest ledger isolation, gear costs, milestones, 40 optimiser conservation cases, OCR parsing, share links, best split, hammer reforge, look-ahead, % of optimal with and without the bag, profile fit and copy checks passed.');
+
+// Gear Boost Custom Chests: the split never opens more chests than there are, what it gives
+// matches the rewards, the mix is at least as good as any single reward, and maxed gear opens none.
+{
+  const chestGear = E.defaults();
+  for (const id in chestGear.pieces) chestGear.pieces[id] = { quality: 'mythic', level: 100, mastery: 10 };
+  chestGear.resources = { xp: 20000, hammers: 200, mythic: 30, mithril: 0 };
+  const plan = E.chestSplit(chestGear, 84);
+  const opened = E.CHEST_OPTIONS.reduce((sum, r) => sum + plan.split[r], 0);
+  assert.equal(opened + plan.kept, 84, 'every chest is opened or kept');
+  assert.deepEqual(plan.resources, { xp: plan.split.xp * 2000, hammers: plan.split.hammers * 10, mythic: 0, mithril: plan.split.mithril }, 'a chest gives 20 × 100 XP parts, 10 Forgehammers or 1 Mithril');
+  plan.alone.forEach(a => assert.ok(plan.gain >= a.gain - 1e-9, 'the mix beats every chest as ' + a.option));
+  assert.ok(plan.split.mithril >= 10 && plan.gain > Math.max(...plan.alone.map(a => a.gain)), 'Mithril joins the mix once hammers and XP reach a red step');
+  assert.equal(plan.points, E.kvkPoints(plan.resources), 'KvK points follow what is opened');
+  const maxed = E.defaults();
+  for (const id in maxed.pieces) maxed.pieces[id] = { quality: 'red', level: 200, mastery: 20 };
+  const none = E.chestSplit(maxed, 12);
+  assert.equal(none.kept, 12, 'maxed gear keeps every chest closed');
+  assert.equal(E.chestSplit(chestGear, 0).kept, 0, 'no chests, nothing to split');
+}
+console.log('Guest ledger isolation, gear costs, milestones, 40 optimiser conservation cases, OCR parsing, share links, best split, hammer reforge, look-ahead, % of optimal with and without the bag, profile fit, Gear Boost Custom Chests and copy checks passed.');

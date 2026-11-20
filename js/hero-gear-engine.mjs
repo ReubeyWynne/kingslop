@@ -533,6 +533,82 @@ function profileFit(input) {
   });
   return out;
 }
+/* Gear Boost Custom Chests: each one opens as one of four rewards. Three are counted here, as
+   the bag resources they give; Lucky Hero Gear Chests give random gear and are not scored.
+   chestSplit finds how many chests to open as each reward so that the bag plus what they give
+   buys the most weighted score, and opens no more than that needs. Each split is scored by the
+   greedy Spend now search with XP reforge off, which is quick enough to run often;
+   a coarse grid over the splits is refined by moving and dropping smaller and smaller groups
+   of chests. It also scores every chest opened as each single reward. */
+var CHEST = { xp: 2000, hammers: 10, mithril: 1 };
+var CHEST_OPTIONS = ['mithril', 'hammers', 'xp'];
+function chestResources(split) {
+  var out = emptyCost();
+  CHEST_OPTIONS.forEach(function (r) { out[r] = (split[r] || 0) * CHEST[r]; });
+  return out;
+}
+function chestSplit(input, chests) {
+  var state = normaliseState(input), n = number(chests, 1e4);
+  var trial = copy(state); trial.reforge = false; trial.hammerReforge = false; trial.greedyOnly = true;
+  var seen = {};
+  function value(split) {
+    var key = CHEST_OPTIONS.map(function (r) { return split[r]; }).join(',');
+    if (seen[key] === undefined) {
+      var bag = copy(state.resources), add = chestResources(split);
+      RES.forEach(function (r) { bag[r] = Math.min(1e9, bag[r] + add[r]); });
+      trial.resources = bag;
+      seen[key] = optimise(trial).score;
+    }
+    return seen[key];
+  }
+  function used(split) { return CHEST_OPTIONS.reduce(function (sum, r) { return sum + split[r]; }, 0); }
+  // Better: more score, then fewer chests opened, then more kept as Mithril, the scarcest reward.
+  function better(a, b) {
+    var va = value(a), vb = value(b), tol = 1e-9 * Math.max(1, Math.abs(vb));
+    if (va > vb + tol) return true;
+    if (va < vb - tol) return false;
+    if (used(a) !== used(b)) return used(a) < used(b);
+    return a.mithril > b.mithril || (a.mithril === b.mithril && a.hammers > b.hammers);
+  }
+  var none = { mithril: 0, hammers: 0, xp: 0 }, base = value(none), best = none;
+  var alone = CHEST_OPTIONS.map(function (r) {
+    var split = { mithril: 0, hammers: 0, xp: 0 }; split[r] = n;
+    if (better(split, best)) best = split;
+    return { option: r, split: split, gain: value(split) - base };
+  });
+  if (n > 0) {
+    var step = Math.max(1, Math.ceil(n / 8));
+    for (var a = 0; a <= n; a += step) for (var b = 0; a + b <= n; b += step) {
+      var grid = { mithril: a, hammers: b, xp: n - a - b };
+      if (better(grid, best)) best = grid;
+    }
+    for (; step >= 1; step = Math.floor(step / 2)) {
+      for (var moved = true, rounds = 0; moved && rounds < 40; rounds++) {
+        moved = false;
+        var tries = [];
+        CHEST_OPTIONS.forEach(function (from) {
+          if (best[from] < step) return;
+          var drop = copy(best); drop[from] -= step; tries.push(drop);
+          CHEST_OPTIONS.forEach(function (to) {
+            if (to === from) return;
+            var move = copy(best); move[from] -= step; move[to] += step; tries.push(move);
+          });
+        });
+        CHEST_OPTIONS.forEach(function (to) {
+          if (used(best) + step > n) return;
+          var add = copy(best); add[to] += step; tries.push(add);
+        });
+        tries.forEach(function (t) { if (better(t, best)) { best = t; moved = true; } });
+      }
+      if (step === 1) break;
+    }
+  }
+  return {
+    chests: n, split: best, kept: n - used(best), resources: chestResources(best),
+    gain: value(best) - base, baseline: total(state.pieces, state), alone: alone,
+    points: kvkPoints(chestResources(best))
+  };
+}
 // A share link carries the twelve pieces and the priorities, nothing from the bag:
 // gear=m100.10-r120.11-… in troop then slot order, and w=<profile> or six custom weights.
 var LINK_QUALITY = { e: 'epic', m: 'mythic', r: 'red' };
@@ -599,12 +675,12 @@ function spendable(pieces, bag) {
 export { XP, CUM, TYPES, SLOTS, RES, KVK_RATES, kvkPoints, spendable, MILESTONES, PROFILES,
   defaults, normaliseState, normalisePiece, cap, cost, target, milestone, gap, affordable, stats,
   score, total, redPlans, nearbyMilestones, optimise, strategyComparison, encodeLink, readLink,
-  invested, bestSet, bestSplit, optimal, profileFit };
+  invested, bestSet, bestSplit, optimal, profileFit, CHEST, CHEST_OPTIONS, chestResources, chestSplit };
 
 // The same exports as one object: what the page's classic scripts read as window.HeroGear
 // and what require() returns to the CommonJS checks, until neither needs it.
 const api = { XP, CUM, TYPES, SLOTS, RES, KVK_RATES, kvkPoints, spendable, MILESTONES, PROFILES,
   defaults, normaliseState, normalisePiece, cap, cost, target, milestone, gap, affordable, stats,
   score, total, redPlans, nearbyMilestones, optimise, strategyComparison, encodeLink, readLink,
-  invested, bestSet, bestSplit, optimal, profileFit };
+  invested, bestSet, bestSplit, optimal, profileFit, CHEST, CHEST_OPTIONS, chestResources, chestSplit };
 export { api as default, api as 'module.exports' };

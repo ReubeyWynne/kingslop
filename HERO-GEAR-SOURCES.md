@@ -409,3 +409,22 @@ first had it; the archer health sits between the sourced profiles' roughly 2:1 s
 and the owner's 3:1. As troop totals that is 2.2 : 1.6 : 4.2, against the sketch's
 2 : 1.5 : 4. Governor gear shares the table, so its Bear first is now 2.2 : 1.6 : 4.2
 too: archers still well ahead, infantry a little ahead of cavalry instead of level.
+
+## Gear Boost Custom Chests
+
+The game describes the chest as one reward of your choice: 10 Lucky Hero Gear
+Chests, 10 Forgehammers, 20 × 100 Enhancement XP Parts or 1 Mithril (owner's
+Backpack screenshot, 20 November 2026). The count is the inventory balance
+`gear-boost-chest` in the shared ledger.
+
+`chestSplit` in `js/hero-gear-engine.mjs` decides how many chests to open as
+each scored reward. A chest gives 2,000 XP, 10 Forgehammers or 1 Mithril. Each
+split adds those to the bag and is scored by the greedy Spend now search with
+XP reforge off. A coarse grid over the splits is refined by moving and
+dropping smaller groups of chests. The best split has the highest score, then
+the fewest chests opened, so chests that add nothing stay closed. Every chest
+opened as a single reward is scored as well, for comparison.
+
+Lucky Hero Gear Chests are not scored. They give a random gear piece, and no
+Kingshot source publishes their odds. In KvK, 10 Forgehammers and 1 Mithril
+both score 40,000 points, so a chest opened as either scores the same.
