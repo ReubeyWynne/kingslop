@@ -35,6 +35,8 @@ const PROFILE_NAMES = { bear: ['gear.bearProfile', 'Bear first'], growth: ['gear
 // Rounded down to a tenth, so gear short of optimal never reads as 100%.
 function pct(share) { return share === null ? '…' : (Math.floor(share * 1000 + 1e-6) / 10).toFixed(1).replace(/\.0$/, '') + '%'; }
 // The toast (result-panel), a shared widget that listens on the document.
+// Gear Boost Custom Chests sit in the shared save under their own item id.
+const CHEST_ID = 'gear-boost-chest';
 function note(key) { document.dispatchEvent(new CustomEvent('player-status', { detail: { scope: 'hero-gear', key: key ? 'gear.' + key : null } })); }
 
 // The store, the undo copy and the search live outside Alpine: none of them is shown.
@@ -44,6 +46,7 @@ let searchWorker = null, searchTimer = null, searchDelay = null, undoTimer = nul
 Alpine.data('heroGear', () => ({
   state: null, parts: { ten: 0, hundred: 0, remainder: 0 },
   result: null, optimum: null, planned: null, fit: null, running: false, searchFailed: false,
+  chests: 0, chestPlan: null, chestsFailed: false,
   showOptimal: false, detail: null, editing: false, resetOpen: false, undoShown: false, guest: false,
   seal: 'saved', typing: null, focusOpen: null, focusTile: null, focusView: null, weightsAsk: 0, viewTurn: 0, lastNote: null,
 
@@ -60,6 +63,7 @@ Alpine.data('heroGear', () => ({
     } catch (error) { ledger = null; this.say('loadFailed'); this.seal = 'failed'; }
     this.state = state;
     if (input) this.readParts(input);
+    this.readChests();
     this.syncXP();
     // A save in another tab, a screenshot read or the bag's fields: the gear follows the store.
     this.$watch('$store.ledger.v', () => this.reload());
@@ -79,7 +83,7 @@ Alpine.data('heroGear', () => ({
     if (snapshot.revision === ledgerRevision) return;
     ledgerRevision = snapshot.revision;
     const input = ledger.heroGear(E);
-    this.state = E.normaliseState(input); this.readParts(input);
+    this.state = E.normaliseState(input); this.readParts(input); this.readChests();
     // A loaded backup keeps its undo; any other change elsewhere drops it.
     if (snapshot.revision !== importedRevision) { previous = null; this.undoShown = false; }
     this.cancelSearch(); revision++; this.clearResults();
@@ -94,6 +98,9 @@ Alpine.data('heroGear', () => ({
     if (this.partsTotal() !== xp) { const x = whole(xp); this.parts = { ten: Math.floor((x % 100) / 10), hundred: Math.floor(x / 100), remainder: x % 10 }; }
   },
   syncXP() { this.state.resources.xp = this.partsTotal(); },
+  readChests() {
+    try { this.chests = ledger ? globalThis.PlayerLedger.confirmed(ledger.snapshot(), CHEST_ID) || 0 : 0; } catch (error) { this.chests = 0; }
+  },
 
   // ── Saving ───────────────────────────────────────────────────────────
   persist(options) {
@@ -110,7 +117,7 @@ Alpine.data('heroGear', () => ({
     }
   },
   get sealText() { return tr(this.seal === 'failed' ? 'saveFailed' : this.guest ? 'guestSaved' : 'saved'); },
-  clearResults() { this.result = null; this.optimum = null; this.planned = null; this.fit = null; },
+  clearResults() { this.result = null; this.optimum = null; this.planned = null; this.fit = null; this.chestPlan = null; this.chestsFailed = false; },
   changed(options) {
     this.cancelSearch();
     revision++;
@@ -330,6 +337,42 @@ Alpine.data('heroGear', () => ({
     const next = copy(this.state); next.pieces = copy(this.result.pieces); next.resources = copy(this.result.remaining);
     if (this.applyState(next, { source: 'plan' })) this.say('applied');
   },
+  // Gear Boost Custom Chests: how many to open as each reward, what that adds on top of the bag,
+  // and every chest as a single reward for comparison.
+  get chestView() {
+    const plan = this.chestPlan, n = this.chests;
+    if (!n || !this.result) return { shown: Boolean(n), busy: Boolean(n) && !this.chestsFailed, html: '', apply: false };
+    if (!plan) return { shown: true, busy: !this.chestsFailed, html: '', apply: false };
+    const art = { mithril: 'mithril', hammers: 'forgehammer', xp: 'xp-part-100' }, names = { mithril: 'mithril', hammers: 'hammers', xp: 'purpleParts' };
+    const gives = r => fmt(plan.resources[r]) + ' ' + tr(r + 'Unit');
+    const opened = n - plan.kept;
+    if (!opened) return { shown: true, busy: false, html: '<p class="gear-gloss">' + esc(tr('chestNone')) + '</p>', apply: false };
+    const cells = E.CHEST_OPTIONS.map(r => '<div data-chest-option="' + r + '"' + (plan.split[r] ? '' : ' data-zero="true"') + '>' + view.image(art[r], 'gear-resource-art') +
+      '<strong>' + (plan.split[r] ? '× ' + fmt(plan.split[r]) : '\u2014') + '</strong><small>' + (plan.split[r] ? esc(gives(r)) : esc(tr(names[r]))) + '</small></div>');
+    if (plan.kept) cells.push('<div data-chest-option="kept">' + view.image('gear-boost-chest', 'gear-resource-art') + '<strong>× ' + fmt(plan.kept) + '</strong><small>' + esc(tr('chestKeep')) + '</small></div>');
+    const rows = plan.alone.map(a => '<tr data-chest-alone="' + a.option + '"><th scope="row">' + view.image(art[a.option], 'gear-resource-art') + esc(tr(names[a.option])) + '</th><td>' + view.gainPct(a.gain, plan.baseline) + '</td></tr>').join('');
+    return {
+      shown: true, busy: false, apply: true,
+      html: '<div class="gear-result-summary"><strong>' + view.gainPct(plan.gain, plan.baseline) + '</strong><span>' + esc(tr('weightedGain')) + '</span><small>' + esc(BH().fill(tr('chestsOpened'), { n: fmt(opened) })) + '</small></div>' +
+        '<div class="gear-cost-strip gear-chest-strip sheet-strip">' + cells.join('') + '</div>' +
+        '<table class="gear-chest-alone"><caption>' + esc(BH().fill(tr('chestAllAs'), { n: fmt(n) })) + '</caption><tbody>' + rows + '</tbody></table>'
+    };
+  },
+  get busyText() { return tr('calculatingBudget'); },
+  get chestApplyText() { return tr('chestApply'); },
+  get chestNotes() { return tr('chestLucky') + ' ' + BH().fill(tr('chestPoints'), { points: fmt(E.kvkPoints({ hammers: E.CHEST.hammers })) }); },
+  // Opening the chests in the game: their rewards join the bag and the chests leave it, as one undo.
+  applyChests() {
+    const plan = this.chestPlan;
+    if (!plan || !ledger || plan.kept === plan.chests) return;
+    const before = ledger.snapshot(), left = this.chests - (plan.chests - plan.kept);
+    try { ledgerRevision = ledger.setBalance(CHEST_ID, Math.max(0, left), 'plan').revision; } catch (error) { this.say('loadFailed'); return; }
+    this.chests = Math.max(0, left);
+    const next = copy(this.state);
+    E.RES.forEach(r => { next.resources[r] = Math.min(1e9, next.resources[r] + plan.resources[r]); });
+    next.parts = Object.assign({}, this.parts, { hundred: Math.min(1e7, this.parts.hundred + plan.split.xp * E.CHEST.xp / 100) });
+    if (this.applyState(next, { source: 'plan' })) { previous.ledger = before; this.say('applied'); }
+  },
   // Red upgrades ranked by stats per resource, with how far the bag is from each.
   get saving() {
     const forecast = E.redPlans(this.state), baseline = forecast.baseline;
@@ -421,6 +464,7 @@ Alpine.data('heroGear', () => ({
         if (worker !== searchWorker || currentRevision !== revision) return;
         const data = event.data;
         if (data && data.ok && data.fit) { this.fit = Object.freeze(data.fit); this.cancelSearch(); return; }
+        if (data && data.ok && 'chests' in data) { this.chestPlan = data.chests ? Object.freeze(data.chests) : null; this.chestsFailed = !data.chests; return; }
         if (!data || !data.ok || !data.result || !data.result.now) { fail(); return; }
         // The answer is in; the worker stays on to say which profile the gear fits best.
         clearTimeout(searchTimer); this.running = false;
@@ -429,7 +473,7 @@ Alpine.data('heroGear', () => ({
         this.planned = data.result.planned ? Object.freeze(data.result.planned) : null;
       };
       worker.onerror = fail;
-      worker.postMessage(copy(this.state));
+      worker.postMessage(Object.assign(copy(this.state), { chests: this.chests }));
     } catch (error) { fail(); }
   },
   retry() { this.searchFailed = false; this.run(); }

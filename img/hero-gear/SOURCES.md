@@ -20,3 +20,8 @@ component adds a CSS rarity frame and labelled band, plus enhancement and
 mastery overlays. The original bitmaps remain unchanged; their baked-in
 backdrop does not represent the piece's current quality. These files are game
 art, not the reference site's interface or code.
+
+`gear-boost-chest.webp` is the Gear Boost Custom Chest from the owner's own
+Backpack screenshot (20 November 2026). It was cut out of the bag tile, the
+printed count was removed, and it was resized to 128 px. No generated
+artwork is included.
