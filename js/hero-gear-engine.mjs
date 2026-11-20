@@ -609,14 +609,26 @@ function chestSplit(input, chests) {
     points: kvkPoints(chestResources(best))
   };
 }
-// A share link carries the twelve pieces and the priorities, nothing from the bag:
-// gear=m100.10-r120.11-… in troop then slot order, and w=<profile> or six custom weights.
+// A share link carries the twelve pieces, the priorities and the bag:
+// gear=m100.10-r120.11-… in troop then slot order, w=<profile> or six custom weights, and bag=.
 var LINK_QUALITY = { e: 'epic', m: 'mythic', r: 'red' };
 function encodeLink(input) {
   var state = normaliseState(input), ids = Object.keys(defaults().pieces);
   var gear = ids.map(function (id) { var p = state.pieces[id]; return p.quality.charAt(0) + p.level + '.' + p.mastery; }).join('-');
   var w = PROFILES[state.profile] ? state.profile : TYPES.map(function (type) { return state.weights[type].join(','); }).join(',');
-  return { gear: gear, w: w };
+  var out = { gear: gear, w: w }, bag = linkBag(input);
+  if (bag) out.bag = bag;
+  return out;
+}
+/* The bag travels as bag=<10 XP parts>.<100 XP parts>.<hammers>.<spare mythic>.<mithril>.<Gear
+   Boost Custom Chests>, and only when one of them is above 0. XP outside whole parts is dropped. */
+var LINK_BAG_MAX = [1e7, 1e7, 1e9, 1e9, 1e9, 1e4];
+function linkBag(input) {
+  var state = normaliseState(input), parts = input && input.parts, xp = state.resources.xp;
+  var whole = function (n, max) { return Number.isSafeInteger(n) && n >= 0 && n <= max; };
+  var ten = parts && whole(parts.ten, 1e7) ? parts.ten : Math.floor(xp % 100 / 10), hundred = parts && whole(parts.hundred, 1e7) ? parts.hundred : Math.floor(xp / 100);
+  var values = [ten, hundred, state.resources.hammers, state.resources.mythic, state.resources.mithril, number(input && input.chests, 1e4)];
+  return values.some(function (n) { return n > 0; }) ? values.join('.') : '';
 }
 function readLink(search) {
   var params = new URLSearchParams(search || ''), gear = params.get('gear');
@@ -640,6 +652,14 @@ function readLink(search) {
       out.weights = {};
       TYPES.forEach(function (type, t) { out.weights[type] = values.slice(t * 2, t * 2 + 2); });
     }
+  }
+  if (params.has('bag')) {
+    var bag = params.get('bag').split('.');
+    if (bag.length !== LINK_BAG_MAX.length || bag.some(function (n, i) { return !/^\d{1,10}$/.test(n) || Number(n) > LINK_BAG_MAX[i]; })) return { invalid: true };
+    bag = bag.map(Number);
+    out.parts = { ten: bag[0], hundred: bag[1], remainder: 0 };
+    out.resources = { xp: bag[0] * 10 + bag[1] * 100, hammers: bag[2], mythic: bag[3], mithril: bag[4] };
+    out.chests = bag[5];
   }
   return out;
 }

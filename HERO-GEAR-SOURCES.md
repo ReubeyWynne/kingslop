@@ -257,15 +257,17 @@ On your save there is no bar: edits save as you go. On a sheet one slim notice
 above the workspace says which it is (a shared sheet, a blank sheet or an
 unreadable link, "Your save is untouched.") with Save as mine and Load mine
 beside it. **Copy share link** and **Start blank** are small links under your
-gear. **Copy share link** copies `?gear=…&w=…`. `gear` lists the twelve pieces in troop
+gear. **Copy share link** copies `?gear=…&w=…&bag=…`. `gear` lists the twelve pieces in troop
 then slot order as quality letter, total level and mastery (`m100.10`, `r120.11`,
-`e80.0`); `w` is a profile name or six custom weights. A link carries no
-resources, so a shared link never shows the sender's bag. On a sheet the address
+`e80.0`); `w` is a profile name or six custom weights. `bag` holds the 10 XP parts,
+100 XP parts, Forgehammers, spare mythic gear, Mithril and Gear Boost Custom Chests,
+separated by dots (`3.250.340.12.20.84`). It is left out when all six are 0, and
+XP outside whole parts is dropped. On a sheet the address
 bar follows every edit, so it is always the shareable link. Malformed or
 impossible pieces reject the whole link, and the sheet starts blank with that
 said in the notice. **Load mine** goes back to your save, **Start blank** opens a
 link of blank gear, and **Save as mine** asks first, then writes the sheet's
-pieces, build profile and weights to your save; a material the sheet left at 0
+pieces, build profile, weights and bag to your save; a material the sheet left at 0
 keeps your number. Governor gear works the same way.
 
 ## Best split — 16 October 2026

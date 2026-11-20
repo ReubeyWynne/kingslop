@@ -293,7 +293,20 @@ shared.resources.hammers = 900;
 const sharedLink = E.encodeLink(shared);
 assert.equal(sharedLink.gear, 'm0.0-m0.0-m0.0-m0.0-m0.0-m0.0-e80.0-m0.0-r120.11-m0.0-m0.0-m0.0');
 assert.equal(sharedLink.w, 'growth');
-assert.deepEqual(E.readLink('?gear=' + sharedLink.gear + '&w=' + sharedLink.w).pieces, shared.pieces, 'links carry pieces, never the bag');
+assert.deepEqual(E.readLink('?gear=' + sharedLink.gear + '&w=' + sharedLink.w).pieces, shared.pieces, 'links carry pieces');
+assert.equal(sharedLink.bag, '0.0.900.0.0.0', 'links carry the bag');
+assert.equal(E.encodeLink(E.defaults()).bag, undefined, 'an empty bag stays out of the link');
+{
+  const bagged = Object.assign(E.defaults(), { parts: { ten: 3, hundred: 250, remainder: 0 }, chests: 84 });
+  bagged.resources = { xp: 25030, hammers: 340, mythic: 12, mithril: 20 };
+  const link = E.encodeLink(bagged), back = E.readLink('?gear=' + link.gear + '&w=' + link.w + '&bag=' + link.bag);
+  assert.equal(link.bag, '3.250.340.12.20.84');
+  assert.deepEqual(back.resources, bagged.resources, 'the bag reads back');
+  assert.deepEqual(back.parts, bagged.parts, 'XP parts read back');
+  assert.equal(back.chests, 84, 'Gear Boost Custom Chests read back');
+  assert.deepEqual(E.encodeLink(Object.assign(E.defaults(), back)), link, 'a link with a bag reads back to itself');
+  for (const bad of ['1.2.3', '1.2.3.4.5.x', '0.0.0.0.0.10001', '-1.0.0.0.0.0']) assert.deepEqual(E.readLink('?gear=' + link.gear + '&bag=' + bad), { invalid: true }, bad);
+}
 assert.equal(E.readLink('?lang=en'), null);
 for (const bad of ['m0.0', 'x1.0' + '-m0.0'.repeat(11), 'e90.0' + '-m0.0'.repeat(11), 'm50.3' + '-m0.0'.repeat(10) + '-r110.2']) assert.deepEqual(E.readLink('?gear=' + bad), {invalid:true}, bad);
 shared.profile = 'custom'; shared.weights.inf = [0.5, 2];
