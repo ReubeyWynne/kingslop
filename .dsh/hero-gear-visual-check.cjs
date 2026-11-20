@@ -371,14 +371,14 @@ withBrowser({ root }, async ({ browser, origin }) => {
       await owner.locator('[data-sheet="copy"]:not([data-copied])').waitFor();
       assert.equal(await owner.locator('[data-sheet="copy"]').textContent(),'Copy share link');
       const shared=await owner.evaluate(()=>navigator.clipboard.readText());
-      assert.match(shared,/\/hero-gear\/\?gear=m90\.0(-m0\.0){11}&w=bear$/);
+      assert.match(shared,/\/hero-gear\/\?gear=m90\.0(-m0\.0){11}&w=bear&bag=0\.0\.500\.0\.0\.0$/);
       const visitor=await guestContext.newPage();visitor.on('pageerror',e=>errors.push(e.message));
       await visitor.goto(shared);await visitor.waitForFunction(()=>document.querySelectorAll('.gear-card .gear-row').length===12);
       // Your own link, opened beside your save, is your save: nothing to save back yet.
       assert.match(await visitor.locator('[data-sheet="notice"] > span').textContent(),/Your save\. Edits here stay on this page until you save them\./);
       assert.equal(await visitor.locator('[data-sheet="saveMine"]').isHidden(),true);
       assert.equal(await visitor.locator('[data-sheet="loadMine"]').isVisible(),true);
-      assert.equal(await visitor.locator('#gear-hammers').inputValue(),'','a link carries gear, not the sender\'s bag');
+      assert.equal(await visitor.locator('#gear-hammers').inputValue(),'500','a link carries the sender\'s bag');
       assert.match(await visitor.locator('.gear-row[data-select="inf-helm"]').textContent(),/\+90/);
       await visitor.locator('#gear-hammers').fill('999');
       await visitor.locator('.gear-row[data-select="inf-boots"]').click();
