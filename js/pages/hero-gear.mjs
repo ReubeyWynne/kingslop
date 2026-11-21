@@ -29,6 +29,19 @@ const view = HeroGearView.create({
   fill: (text, values) => BH().fill(text, values)
 });
 const esc = view.esc;
+// A stat bonus as the game writes it: +57.8%, or +210% once it reaches 100.
+function bonus(n, signed) { const v = Math.abs(n) < 100 ? Math.round(n * 10) / 10 : Math.round(n); return (n > 0 || !signed ? '+' : n < 0 ? '\u2212' : '') + fmt(Math.abs(v)) + '%'; }
+const statOf = slot => slot === 'helm' || slot === 'boots' ? 'lethality' : 'health';
+// What a set of pieces adds: lethality and health from the core stat, attack and defence from red milestones.
+function setBonus(pieces, ids) {
+  const out = { lethality: 0, health: 0, attack: 0, defense: 0 };
+  ids.forEach(id => { const slot = id.split('-')[1], st = E.stats(pieces[id], slot); out[statOf(slot)] += st.core; out.attack += st.attack; out.defense += st.defense; });
+  return out;
+}
+function bonusLine(b, signed, coreOnly) {
+  return ['lethality', 'health', 'attack', 'defense'].filter(k => k === 'lethality' || k === 'health' || (!coreOnly && Math.abs(b[k]) > .01)).filter(k => !signed || Math.abs(b[k]) > .01)
+    .map(k => '<span data-stat="' + k + '"' + (signed ? ' data-sign="' + (b[k] > 0 ? 'up' : 'down') + '"' : '') + '><b>' + esc(bonus(b[k], signed)) + '</b> ' + esc(tr(k).toLowerCase()) + '</span>').join('');
+}
 const copy = s => JSON.parse(JSON.stringify(s));
 // The priority profiles, as _includes/priority-options.html names them.
 const PROFILE_NAMES = { bear: ['gear.bearProfile', 'Bear first'], growth: ['gear.growth', 'Early growth'], combat: ['gear.combat', 'Early combat'], gen4: ['gear.gen4', 'Generation 4+'], garrison: ['gear.garrisonProfile', 'Garrison lead'], equal: ['gear.equal', 'Equal stats'], custom: ['gear.custom', 'Custom'] };
@@ -160,8 +173,9 @@ Alpine.data('heroGear', () => ({
   tile(id) {
     const p = this.shown()[id], was = this.state.pieces[id], moved = this.showOptimal && this.optimum && JSON.stringify(p) !== JSON.stringify(was);
     return {
-      moved: moved ? 'true' : null, label: view.name(id) + ' · ' + view.pieceLabel(p),
+      moved: moved ? 'true' : null, label: view.name(id) + ' · ' + view.pieceLabel(p) + ' · ' + bonus(E.stats(p, id.split('-')[1]).core) + ' ' + tr(statOf(id.split('-')[1])),
       html: view.gearItem(id, p) + '<span class="gear-tile-name">' + esc(tr(id.split('-')[1])) + '</span>' +
+        '<small class="gear-tile-bonus" title="' + esc(tr(statOf(id.split('-')[1]))) + '">' + esc(bonus(E.stats(p, id.split('-')[1]).core)) + '</small>' +
         (moved ? '<small class="gear-tile-was">' + esc(tr('splitNow')) + ' ' + view.levelLabel(was) + ' · ' + was.mastery + '</small>' : '')
     };
   },
@@ -177,9 +191,12 @@ Alpine.data('heroGear', () => ({
     return E.TYPES.map(type => ({
       type, included: String(this.state.included[type]), open: esc(tr(type)) + ' <span aria-hidden="true">›</span>',
       share: this.state.included[type] ? pct(this.troopShare(type)) + ' ' + tr('ofOptimal') : '',
-      ids: E.SLOTS.map(slot => type + '-' + slot)
+      ids: E.SLOTS.map(slot => type + '-' + slot),
+      bonus: bonusLine(setBonus(this.shown(), E.SLOTS.map(slot => type + '-' + slot)), false, true)
     }));
   },
+  // Everything the gear adds, all three sets together.
+  get totals() { return '<span class="sheet-label">' + esc(tr('allTroops')) + '</span>' + bonusLine(setBonus(this.shown(), Object.keys(this.state.pieces))); },
   // One troop as the game lays it out: helm and chest on the left, gloves and boots on the right.
   get board() {
     const type = this.detail;
@@ -314,16 +331,44 @@ Alpine.data('heroGear', () => ({
     }
     const order = {}; E.TYPES.forEach((type, i) => { E.SLOTS.forEach((slot, j) => { order[type + '-' + slot] = i * 4 + j; }); });
     const sorted = result.details.slice().sort((a, b) => order[a.id] - order[b.id]);
-    const back = sorted.filter(d => d.refund || d.hammerRefund), up = sorted.filter(d => !d.refund && !d.hammerRefund);
-    let n = 0;
-    const group = (list, key) => list.length ? '<h4 class="gear-step-head">' + esc(tr(key)) + '</h4>' + list.map(d => view.stepRow(d, ++n)).join('') : '';
+    // Steps in the order to do them in game: reforges first, as they free the XP and hammers.
+    const steps = sorted.filter(d => d.refund || d.hammerRefund).concat(sorted.filter(d => !d.refund && !d.hammerRefund));
+    const number = {}; steps.forEach((d, i) => { number[d.id] = i + 1; });
+    const detail = {}; result.details.forEach(d => { detail[d.id] = d; });
+    const cards = E.TYPES.filter(type => state.included[type]).map(type => {
+      const ids = E.SLOTS.map(slot => type + '-' + slot), change = { lethality: 0, health: 0, attack: 0, defense: 0 };
+      ids.forEach(id => { const d = detail[id]; if (!d) return; change[statOf(id.split('-')[1])] += d.delta.core; change.attack += d.delta.attack; change.defense += d.delta.defense; });
+      return {
+        type, name: tr(type), bonus: bonusLine(change, true) || '<span>' + esc(tr('noStatChange')) + '</span>',
+        tiles: ids.map(id => {
+          const d = detail[id], slot = id.split('-')[1], p = result.pieces[id];
+          if (!d) return { id, changed: false, label: view.name(id) + ' · ' + view.pieceLabel(p), html: view.gearItem(id, p) + '<span class="gear-tile-name">' + esc(tr(slot)) + '</span><small class="gear-tile-bonus">\u2014</small>' };
+          const mark = view.checkpoint(d.from, d.to), direction = d.refund ? 'down' : d.costs.xp ? 'up' : 'same', core = d.delta.core;
+          return {
+            id, changed: true, direction, checkpoint: mark ? mark.kind : '', step: number[id], hammerRefund: d.hammerRefund || null, points: E.kvkPoints(d.costs),
+            label: number[id] + '. ' + view.name(id) + ' · ' + view.pieceLabel(d.from) + ' → ' + view.pieceLabel(d.to) + ' · ' + bonus(core, true) + ' ' + tr(statOf(slot)),
+            html: '<span class="gear-tile-step" aria-hidden="true">' + number[id] + '</span>' + view.gearItem(id, d.to) + '<span class="gear-tile-name">' + esc(tr(slot)) + '</span>' +
+              '<small class="gear-tile-bonus" data-sign="' + (core > .01 ? 'up' : core < -.01 ? 'down' : '') + '">' + esc(Math.abs(core) > .01 ? bonus(core, true) : view.levelLabel(d.to)) + '</small>'
+          };
+        })
+      };
+    });
     return {
-      empty: false,
-      body: '<div class="gear-result-summary"><strong>' + view.gainPct(result.gain, result.baseline) + '</strong><span>' + esc(tr('weightedGain')) + '</span><small>' + result.changes.length + ' ' + esc(tr('piecesChanged')) + '</small></div>' +
-        '<div class="gear-result-grid">' + group(back, 'stepsReforge') + group(up, back.length ? 'stepsUpgrade' : 'stepsUpgradeOnly') + '</div>' +
-        '<div class="gear-cost-title"><strong>' + esc(tr('spend')) + '</strong></div>' + view.spendStrip(result.spent, result.remaining) + this.eventPoints(result.spent) + view.kvkNote() + view.cavalryNote(state, result.pieces),
+      empty: false, cards,
+      head: '<div class="gear-result-summary"><strong>' + view.gainPct(result.gain, result.baseline) + '</strong><span>' + esc(tr('weightedGain')) + '</span><small>' + result.changes.length + ' ' + esc(tr('piecesChanged')) + '</small></div>',
+      foot: '<div class="gear-cost-title"><strong>' + esc(tr('spend')) + '</strong></div>' + view.spendStrip(result.spent, result.remaining) + this.eventPoints(result.spent) + view.kvkNote() + view.cavalryNote(state, result.pieces),
       apply: tr('applyResult'), hint: tr('applyHint')
     };
+  },
+  // A piece of the answer, opened: its step from what it is to what it becomes, and what that takes.
+  stepOpen: null,
+  openStep(id) { this.stepOpen = id; },
+  get stepView() {
+    const result = this.result, id = this.stepOpen;
+    const d = result && id ? result.details.find(x => x.id === id) : null;
+    if (!d) return { title: '', html: '' };
+    const card = (this.answer && this.answer.cards || []).flatMap(c => c.tiles).find(t => t.id === id);
+    return { title: view.name(id), html: '<div class="gear-result-grid" data-sign="' + (d.delta.core < -.01 ? 'down' : 'up') + '">' + view.stepRow(d, card ? card.step : 1) + '</div>' + view.kvkNote() };
   },
   // The same event points table as Governor gear: what Spend now's hammers and mithril score.
   eventPoints(spent) {
@@ -466,6 +511,7 @@ Alpine.data('heroGear', () => ({
         if (data && data.ok && data.fit) { this.fit = Object.freeze(data.fit); this.cancelSearch(); return; }
         if (data && data.ok && 'chests' in data) { this.chestPlan = data.chests ? Object.freeze(data.chests) : null; this.chestsFailed = !data.chests; return; }
         if (!data || !data.ok || !data.result || !data.result.now) { fail(); return; }
+        this.stepOpen = null;
         // The answer is in; the worker stays on to say which profile the gear fits best.
         clearTimeout(searchTimer); this.running = false;
         this.result = Object.freeze(data.result.now);

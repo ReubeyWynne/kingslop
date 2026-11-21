@@ -199,7 +199,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
     await page.locator('#gear-view-plan').click();
     await page.locator('#gear-apply-result').waitFor();
     assert.equal(await page.locator('#gear-results .gear-event-points tbody td').first().getAttribute('data-points'),'2400000');
-    const piecePoints=await page.locator('#gear-results .gear-change .gear-kvk-points').evaluateAll(items=>items.reduce((sum,item)=>sum+Number(item.dataset.kvkPoints),0));
+    const piecePoints=await page.locator('#gear-results .gear-change').evaluateAll(items=>items.reduce((sum,item)=>sum+Number(item.dataset.kvkPoints),0));
     assert.equal(piecePoints,2400000,'per-piece scores sum to the batch total');
     assert.ok(await page.locator('#gear-results .gear-change[data-checkpoint="ascension"] .gear-item[data-quality="red"]').count()>0);
     await fits(page,'supplied gear red ascension');await page.evaluate(()=>scrollTo(0,0));
@@ -211,22 +211,26 @@ withBrowser({ root }, async ({ browser, origin }) => {
     for(const [id,value]of [['parts10','0'],['parts100','120'],['hammers','180'],['mythic','4'],['mithril','0']])await page.locator('#gear-'+id).fill(value);
     await page.locator('#gear-view-plan').click();
     await page.locator('#gear-apply-result').waitFor();
-    const resultRows=page.locator('#gear-results .gear-result-grid .gear-row');
+    // The answer is the troop cards again: each piece as it ends up, reforges numbered first.
+    const resultRows=page.locator('#gear-results .gear-change');
     assert.ok(await resultRows.count() > 0);
-    assert.equal(await page.locator('#gear-results .gear-result-grid .gear-item').count(),2 * await resultRows.count());
-    // Steps say which troop's piece, reforges first, then upgrades.
-    assert.match(await page.locator('#gear-results .gear-step-head').first().textContent(),/First, reforge/i);
-    assert.match(await resultRows.first().locator('.gear-change-name').textContent(),/^(Infantry|Cavalry|Archer) · /);
+    assert.equal(await page.locator('#gear-results .gear-answer-card .gear-item').count(),12,'every counted piece shows once');
     assert.ok(await page.locator('#gear-results .gear-change[data-direction="down"]').count()>0);
+    const firstDown=page.locator('#gear-results .gear-change[data-direction="down"]').first();
+    assert.equal(await firstDown.locator('.gear-tile-step').textContent(),'1','a reforge is the first step');
     for(const row of await page.locator('#gear-results .gear-change[data-direction="down"]').all()){
-      const [from,to]=(await row.locator('.gear-item-mastery').allTextContents()).map(Number);
+      await row.click();
+      const step=page.locator('#gear-step-detail .gear-change');await step.waitFor();
+      assert.match(await step.locator('.gear-change-name').textContent(),/^(Infantry|Cavalry|Archer) · /);
+      const [from,to]=(await step.locator('.gear-item-mastery').allTextContents()).map(Number);
       const hammerPoints=(to*(to+1)-from*(from+1))*5*4000;
-      assert.equal(await row.locator('.gear-kvk-points').count()?await row.locator('.gear-kvk-points').getAttribute('data-kvk-points'):'0',String(hammerPoints),'reforge scores only any new mastery materials, never recovered XP');
+      assert.equal(await row.getAttribute('data-kvk-points'),String(hammerPoints),'reforge scores only any new mastery materials, never recovered XP');
+      assert.match(await step.textContent(),/↓.*XP back/);
+      await page.locator('#gear-close-step').click();
     }
-    assert.match(await page.locator('#gear-results .gear-change[data-direction="down"]').first().textContent(),/↓.*XP back/);
     await fits(page,'mobile spend now');
     assert.ok(await resultRows.evaluateAll(rows=>rows.every(row=>{const box=row.getBoundingClientRect();return box.left>=-1&&box.right<=window.innerWidth+1;})),'changed-piece rows do not overflow the mobile viewport horizontally');
-    await page.locator('#gear-results .gear-result-grid').scrollIntoViewIfNeeded();
+    await page.locator('#gear-results .gear-answer-cards').scrollIntoViewIfNeeded();
     await page.screenshot({path:path.join(output,'mobile-optimise.png')});
     await page.setViewportSize({width:1280,height:900});await fits(page,'desktop spend now');
     await page.screenshot({path:path.join(output,'desktop-optimise.png')});
@@ -419,7 +423,7 @@ withBrowser({ root }, async ({ browser, origin }) => {
       // Hammer reforge is an Advanced option: mastery 20 on a level 20 helm comes back as half its hammers.
       await visitor.locator('#weights > summary').click();
       await visitor.locator('#gear-hammer-reforge').check();
-      await visitor.locator('#gear-results [data-piece-id="cav-helm"] [data-hammer-refund="1050"]').waitFor({timeout:90000});
+      await visitor.locator('#gear-results [data-piece-id="cav-helm"][data-hammer-refund="1050"]').waitFor({timeout:90000});
       assert.equal(await visitor.locator('#gear-results [data-hammer-refund]').count(),1,'only the piece worth reforging is reset');
       await visitor.locator('#gear-hammer-reforge').uncheck();
       await visitor.locator('#weights > summary').click();
