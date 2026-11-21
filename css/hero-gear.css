@@ -294,7 +294,7 @@
 
 /* Your gear — one card per troop, its four pieces in a 2×2 grid. */
 .gear-cards { display: grid; gap: .8rem; }
-.gear-card { border: 1px solid var(--signal-line); padding: .45rem .6rem .6rem; }
+.gear-card, .gear-answer-card { border: 1px solid var(--signal-line); padding: .45rem .6rem .6rem; }
 .gear-card[data-included="false"] { opacity: .6; }
 .gear-card-head { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
 .gear-card-head > small { margin-top: -.35rem; }
@@ -403,7 +403,7 @@
   .gear-main .gear-switch { margin: .1rem 0 .3rem; }
   /* The three troops side by side, each still a 2×2 grid, so all twelve pieces fit one screen. */
   .gear-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem; }
-  .gear-card { padding: .15rem .25rem .3rem; }
+  .gear-card, .gear-answer-card { padding: .15rem .25rem .3rem; }
   .gear-card-head { flex-direction: column; align-items: flex-start; gap: 0; }
   .gear-main .gear-card-open { min-height: 2rem; font-size: .9rem; }
   .gear-card-head > small { font-size: .68rem; margin-top: -.3rem; }
@@ -422,3 +422,36 @@
 }
 /* The page's Alpine state spans main and its dialogs; markup placed whole (x-html) sits in a box that adds no layout. */
 .gear-scope, .gear-markup { display: contents; }
+
+/* Stat bonuses: on each piece, under each set and for all the gear. Gains are green, losses red. */
+.gear-scope { --gain: #86D48A; --loss: #F0907A; }
+.gear-tile-bonus { font-size: .78rem; line-height: 1.1; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+.gear-tile-bonus[data-sign="up"], .gear-bonus-line [data-sign="up"] b { color: var(--gain); }
+.gear-tile-bonus[data-sign="down"], .gear-bonus-line [data-sign="down"] b { color: var(--loss); }
+.gear-main .gear-bonus-line { display: flex; flex-wrap: wrap; gap: 0 .6rem; margin: 0 0 .3rem; font-size: .8rem; line-height: 1.3; color: var(--ink-muted); }
+.gear-bonus-line b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.gear-main .gear-totals { align-items: baseline; margin: .2rem 0 .5rem; font-size: .85rem; }
+.gear-totals .sheet-label { margin-inline-end: .2rem; }
+/* The screenshot button and its "which screenshot?" share one frame. */
+.gear-import-group { display: flex; align-items: stretch; margin: 0 0 .7rem; border: 1px dashed var(--signal-line); }
+.gear-main .gear-import-group .sheet-drop { flex: 1; margin: 0; border: 0; }
+.gear-main .gear-import-group .explain { flex: none; padding: 0 .7rem; border: 0; border-inline-start: 1px dashed var(--signal-line); text-decoration: none; min-height: 0; }
+/* The answer: the same troop cards, each piece as it ends up; tap a changed one for its step. */
+.gear-answer-cards { margin: .4rem 0 .6rem; }
+.gear-main .gear-answer-cards .gear-card-name { display: block; min-height: 2rem; padding-top: .3rem; font: 700 1.05rem var(--body); color: var(--ink); }
+.gear-main .gear-answer-cards .gear-row { position: relative; }
+.gear-main .gear-answer-cards .gear-row:disabled { opacity: .45; cursor: default; }
+.gear-main .gear-answer-cards .gear-row.gear-change { border-color: var(--signal-line); }
+.gear-main .gear-answer-cards .gear-row[data-direction="down"] { border-color: var(--loss); }
+.gear-tile-step { position: absolute; top: -.1rem; inset-inline-start: -.1rem; z-index: 1; min-width: 1.1rem; padding: 0 .2rem; background: var(--void); border: 1px solid var(--signal-line); font: .7rem/1.4 var(--display-2); color: var(--amber); }
+.gear-answer-cards .gear-row[data-direction="down"] .gear-tile-step { color: var(--loss); border-color: var(--loss); }
+#gear-step-dialog .gear-step-row { display: grid; grid-template-columns: 1.1rem 6.2rem minmax(0, 1fr); gap: .55rem; align-items: center; padding: .4rem 0; color: var(--ink-dim); }
+#gear-step-dialog .gear-change-info { display: grid; gap: .15rem; }
+#gear-step-dialog .gear-tile-impact { color: var(--gain); }
+#gear-step-dialog [data-sign="down"] .gear-tile-impact { color: var(--loss); }
+@media (max-width: 780px) {
+  .gear-answer-cards .gear-card-grid .gear-tile-name { display: none; }
+  /* On a phone the "?" stands alone; its words stay for screen readers. */
+  .gear-main .gear-import-group .explain { font-size: 0; gap: 0; padding: 0 .9rem; }
+  .gear-import-group .explain::before { width: 1.5rem; height: 1.5rem; font-size: .9rem; }
+}

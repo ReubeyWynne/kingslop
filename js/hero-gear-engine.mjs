@@ -533,18 +533,23 @@ function profileFit(input) {
   });
   return out;
 }
-/* Gear Boost Custom Chests: each one opens as one of four rewards. Three are counted here, as
-   the bag resources they give; Lucky Hero Gear Chests give random gear and are not scored.
+/* Gear Boost Custom Chests: each one opens as one of four rewards, counted as the bag
+   resources they give. Lucky Hero Gear Chests give random gear: 1% of them hold a mythic piece
+   (the game's Chances of Contents), so ten chests give 0.1 spare mythic gear on average, and
+   the bag counts the whole pieces that many chests give on average. Their epic and rare gear
+   does not count.
    chestSplit finds how many chests to open as each reward so that the bag plus what they give
    buys the most weighted score, and opens no more than that needs. Each split is scored by the
    greedy Spend now search with XP reforge off, which is quick enough to run often;
    a coarse grid over the splits is refined by moving and dropping smaller and smaller groups
    of chests. It also scores every chest opened as each single reward. */
-var CHEST = { xp: 2000, hammers: 10, mithril: 1 };
-var CHEST_OPTIONS = ['mithril', 'hammers', 'xp'];
+var CHEST = { xp: 2000, hammers: 10, mithril: 1, lucky: 10 };
+var LUCKY_MYTHIC = 0.01;
+var CHEST_OPTIONS = ['mithril', 'hammers', 'xp', 'lucky'];
 function chestResources(split) {
   var out = emptyCost();
-  CHEST_OPTIONS.forEach(function (r) { out[r] = (split[r] || 0) * CHEST[r]; });
+  ['mithril', 'hammers', 'xp'].forEach(function (r) { out[r] = (split[r] || 0) * CHEST[r]; });
+  out.mythic = Math.floor((split.lucky || 0) * CHEST.lucky * LUCKY_MYTHIC + 1e-9);
   return out;
 }
 function chestSplit(input, chests) {
@@ -570,16 +575,17 @@ function chestSplit(input, chests) {
     if (used(a) !== used(b)) return used(a) < used(b);
     return a.mithril > b.mithril || (a.mithril === b.mithril && a.hammers > b.hammers);
   }
-  var none = { mithril: 0, hammers: 0, xp: 0 }, base = value(none), best = none;
+  function empty() { return { mithril: 0, hammers: 0, xp: 0, lucky: 0 }; }
+  var none = empty(), base = value(none), best = none;
   var alone = CHEST_OPTIONS.map(function (r) {
-    var split = { mithril: 0, hammers: 0, xp: 0 }; split[r] = n;
+    var split = empty(); split[r] = n;
     if (better(split, best)) best = split;
     return { option: r, split: split, gain: value(split) - base };
   });
   if (n > 0) {
     var step = Math.max(1, Math.ceil(n / 8));
-    for (var a = 0; a <= n; a += step) for (var b = 0; a + b <= n; b += step) {
-      var grid = { mithril: a, hammers: b, xp: n - a - b };
+    for (var a = 0; a <= n; a += step) for (var b = 0; a + b <= n; b += step) for (var c = 0; a + b + c <= n; c += step) {
+      var grid = { mithril: a, hammers: b, xp: c, lucky: n - a - b - c };
       if (better(grid, best)) best = grid;
     }
     for (; step >= 1; step = Math.floor(step / 2)) {
@@ -695,12 +701,12 @@ function spendable(pieces, bag) {
 export { XP, CUM, TYPES, SLOTS, RES, KVK_RATES, kvkPoints, spendable, MILESTONES, PROFILES,
   defaults, normaliseState, normalisePiece, cap, cost, target, milestone, gap, affordable, stats,
   score, total, redPlans, nearbyMilestones, optimise, strategyComparison, encodeLink, readLink,
-  invested, bestSet, bestSplit, optimal, profileFit, CHEST, CHEST_OPTIONS, chestResources, chestSplit };
+  invested, bestSet, bestSplit, optimal, profileFit, CHEST, LUCKY_MYTHIC, CHEST_OPTIONS, chestResources, chestSplit };
 
 // The same exports as one object: what the page's classic scripts read as window.HeroGear
 // and what require() returns to the CommonJS checks, until neither needs it.
 const api = { XP, CUM, TYPES, SLOTS, RES, KVK_RATES, kvkPoints, spendable, MILESTONES, PROFILES,
   defaults, normaliseState, normalisePiece, cap, cost, target, milestone, gap, affordable, stats,
   score, total, redPlans, nearbyMilestones, optimise, strategyComparison, encodeLink, readLink,
-  invested, bestSet, bestSplit, optimal, profileFit, CHEST, CHEST_OPTIONS, chestResources, chestSplit };
+  invested, bestSet, bestSplit, optimal, profileFit, CHEST, LUCKY_MYTHIC, CHEST_OPTIONS, chestResources, chestSplit };
 export { api as default, api as 'module.exports' };

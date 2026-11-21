@@ -423,7 +423,9 @@ for (let t = 0; t < 6; t++) {
   const plan = E.chestSplit(chestGear, 84);
   const opened = E.CHEST_OPTIONS.reduce((sum, r) => sum + plan.split[r], 0);
   assert.equal(opened + plan.kept, 84, 'every chest is opened or kept');
-  assert.deepEqual(plan.resources, { xp: plan.split.xp * 2000, hammers: plan.split.hammers * 10, mythic: 0, mithril: plan.split.mithril }, 'a chest gives 20 × 100 XP parts, 10 Forgehammers or 1 Mithril');
+  assert.deepEqual(plan.resources, { xp: plan.split.xp * 2000, hammers: plan.split.hammers * 10, mythic: Math.floor(plan.split.lucky / 10), mithril: plan.split.mithril }, 'a chest gives 20 × 100 XP parts, 10 Forgehammers, 1 Mithril or 10 Lucky chests');
+  assert.equal(E.chestResources({ lucky: 19 }).mythic, 1, '19 chests as Lucky chests count 1 whole spare mythic piece on average');
+  assert.equal(E.chestResources({ lucky: 20 }).mythic, 2, '20 chests as Lucky chests count 2');
   plan.alone.forEach(a => assert.ok(plan.gain >= a.gain - 1e-9, 'the mix beats every chest as ' + a.option));
   assert.ok(plan.split.mithril >= 10 && plan.gain > Math.max(...plan.alone.map(a => a.gain)), 'Mithril joins the mix once hammers and XP reach a red step');
   assert.equal(plan.points, E.kvkPoints(plan.resources), 'KvK points follow what is opened');
@@ -432,5 +434,8 @@ for (let t = 0; t < 6; t++) {
   const none = E.chestSplit(maxed, 12);
   assert.equal(none.kept, 12, 'maxed gear keeps every chest closed');
   assert.equal(E.chestSplit(chestGear, 0).kept, 0, 'no chests, nothing to split');
+  const noSpare = Object.assign(E.copy ? E.copy(chestGear) : JSON.parse(JSON.stringify(chestGear)), { resources: { xp: 20000, hammers: 200, mythic: 0, mithril: 0 } });
+  const lucky = E.chestSplit(noSpare, 84);
+  assert.ok(lucky.split.lucky >= 10 && lucky.resources.mythic >= 1, 'with no spare mythic gear for mastery, chests open as Lucky chests');
 }
 console.log('Guest ledger isolation, gear costs, milestones, 40 optimiser conservation cases, OCR parsing, share links, best split, hammer reforge, look-ahead, % of optimal with and without the bag, profile fit, Gear Boost Custom Chests and copy checks passed.');
