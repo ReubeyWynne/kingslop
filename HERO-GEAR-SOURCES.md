@@ -420,13 +420,23 @@ Backpack screenshot, 20 November 2026). The count is the inventory balance
 `gear-boost-chest` in the shared ledger.
 
 `chestSplit` in `js/hero-gear-engine.mjs` decides how many chests to open as
-each scored reward. A chest gives 2,000 XP, 10 Forgehammers or 1 Mithril. Each
+each reward. A chest gives 2,000 XP, 10 Forgehammers, 1 Mithril or 10 Lucky
+Hero Gear Chests. Each
 split adds those to the bag and is scored by the greedy Spend now search with
 XP reforge off. A coarse grid over the splits is refined by moving and
 dropping smaller groups of chests. The best split has the highest score, then
 the fewest chests opened, so chests that add nothing stay closed. Every chest
 opened as a single reward is scored as well, for comparison.
 
-Lucky Hero Gear Chests are not scored. They give a random gear piece, and no
-Kingshot source publishes their odds. In KvK, 10 Forgehammers and 1 Mithril
+Lucky Hero Gear Chests are scored by their spare mythic gear. The game's
+Chances of Contents list (owner's screenshots, 21 November 2026) gives each of
+the 12 mythic pieces 0.08% to 0.09%, which totals 1.00% per Lucky chest. The
+epic pieces total 10.0% and the rare pieces 89.0%; the planner does not use
+either. A custom chest gives 10 Lucky chests, so it gives 0.1 spare mythic gear
+on average. `chestResources` counts the whole pieces in that average, so 10
+custom chests opened this way count as 1 spare mythic piece. Marking the chests
+opened does not add that gear to the bag, because the real drop is random and
+the player enters it.
+
+In KvK, 10 Forgehammers and 1 Mithril
 both score 40,000 points, so a chest opened as either scores the same.

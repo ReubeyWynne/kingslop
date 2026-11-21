@@ -388,8 +388,8 @@ Alpine.data('heroGear', () => ({
     const plan = this.chestPlan, n = this.chests;
     if (!n || !this.result) return { shown: Boolean(n), busy: Boolean(n) && !this.chestsFailed, html: '', apply: false };
     if (!plan) return { shown: true, busy: !this.chestsFailed, html: '', apply: false };
-    const art = { mithril: 'mithril', hammers: 'forgehammer', xp: 'xp-part-100' }, names = { mithril: 'mithril', hammers: 'hammers', xp: 'purpleParts' };
-    const gives = r => fmt(plan.resources[r]) + ' ' + tr(r + 'Unit');
+    const art = { mithril: 'mithril', hammers: 'forgehammer', xp: 'xp-part-100', lucky: 'mythic-gear' }, names = { mithril: 'mithril', hammers: 'hammers', xp: 'purpleParts', lucky: 'luckyChests' };
+    const gives = r => r === 'lucky' ? '\u2248 ' + fmt(plan.resources.mythic) + ' ' + tr('mythicUnit') : fmt(plan.resources[r]) + ' ' + tr(r + 'Unit');
     const opened = n - plan.kept;
     if (!opened) return { shown: true, busy: false, html: '<p class="gear-gloss">' + esc(tr('chestNone')) + '</p>', apply: false };
     const cells = E.CHEST_OPTIONS.map(r => '<div data-chest-option="' + r + '"' + (plan.split[r] ? '' : ' data-zero="true"') + '>' + view.image(art[r], 'gear-resource-art') +
@@ -407,6 +407,7 @@ Alpine.data('heroGear', () => ({
   get chestApplyText() { return tr('chestApply'); },
   get chestNotes() { return tr('chestLucky') + ' ' + BH().fill(tr('chestPoints'), { points: fmt(E.kvkPoints({ hammers: E.CHEST.hammers })) }); },
   // Opening the chests in the game: their rewards join the bag and the chests leave it, as one undo.
+  // Lucky Hero Gear Chests give random gear, so the player enters the spare mythic gear they get.
   applyChests() {
     const plan = this.chestPlan;
     if (!plan || !ledger || plan.kept === plan.chests) return;
@@ -414,7 +415,7 @@ Alpine.data('heroGear', () => ({
     try { ledgerRevision = ledger.setBalance(CHEST_ID, Math.max(0, left), 'plan').revision; } catch (error) { this.say('loadFailed'); return; }
     this.chests = Math.max(0, left);
     const next = copy(this.state);
-    E.RES.forEach(r => { next.resources[r] = Math.min(1e9, next.resources[r] + plan.resources[r]); });
+    E.RES.forEach(r => { if (r !== 'mythic') next.resources[r] = Math.min(1e9, next.resources[r] + plan.resources[r]); });
     next.parts = Object.assign({}, this.parts, { hundred: Math.min(1e7, this.parts.hundred + plan.split.xp * E.CHEST.xp / 100) });
     if (this.applyState(next, { source: 'plan' })) { previous.ledger = before; this.say('applied'); }
   },
